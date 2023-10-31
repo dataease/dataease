@@ -558,8 +558,11 @@
                           $t('chart.drag_block_table_data_column')
                         }}</span>
                         <span
-                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall' || view.type === 'area')"
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || (view.type.includes('scatter') && view.render !== 'antv') || view.type === 'chart-mix' || view.type === 'waterfall' || view.type === 'area')"
                         >{{ $t('chart.drag_block_type_axis') }}</span>
+                        <span
+                          v-else-if="view.type && (view.type.includes('scatter') && view.render === 'antv')"
+                        >{{ $t('chart.x_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_label') }}</span>
@@ -579,7 +582,10 @@
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
                         <span v-else-if="view.type === 'flow-map'">{{ $t('chart.start_point') }}</span>
                         <span v-show="view.type !== 'richTextView'"> / </span>
-                        <span v-if="view.type && view.type !== 'table-info'">
+                        <span
+                          v-if="view.type && (view.type.includes('scatter') && view.render === 'antv')"
+                        >{{ $t('chart.dimension_or_quota') }}</span>
+                        <span v-else-if="view.type && view.type !== 'table-info'">
                           {{ $t('chart.dimension') }}
                         </span>
                         <span
@@ -600,22 +606,41 @@
                         @update="calcData(true)"
                       >
                         <transition-group class="draggable-group">
-                          <dimension-item
-                            v-for="(item,index) in view.xaxis"
-                            :key="item.id"
-                            :param="param"
-                            :index="index"
-                            :item="item"
-                            :dimension-data="dimension"
-                            :quota-data="quota"
-                            :chart="chart"
-                            @onDimensionItemChange="dimensionItemChange"
-                            @onDimensionItemRemove="dimensionItemRemove"
-                            @editItemFilter="showDimensionEditFilter"
-                            @onNameEdit="showRename"
-                            @valueFormatter="valueFormatter"
-                            @onCustomSort="onCustomSort"
-                          />
+                          <template v-for="(item,index) in view.xaxis">
+                            <quota-item
+                              v-if="view.type === 'scatter' && item.groupType === 'q' && view.render === 'antv'"
+                              :key="item.id"
+                              :param="param"
+                              :index="index"
+                              :item="item"
+                              :chart="chart"
+                              :dimension-data="dimension"
+                              :quota-data="quota"
+                              special-type="dimension"
+                              @onQuotaItemChange="dimensionItemChange"
+                              @onQuotaItemRemove="dimensionItemRemove"
+                              @editItemFilter="showQuotaEditFilter"
+                              @onNameEdit="showRename"
+                              @editItemCompare="showQuotaEditCompare"
+                              @valueFormatter="valueFormatter"
+                            />
+                            <dimension-item
+                              v-else
+                              :key="item.id"
+                              :param="param"
+                              :index="index"
+                              :item="item"
+                              :dimension-data="dimension"
+                              :quota-data="quota"
+                              :chart="chart"
+                              @onDimensionItemChange="dimensionItemChange"
+                              @onDimensionItemRemove="dimensionItemRemove"
+                              @editItemFilter="showDimensionEditFilter"
+                              @onNameEdit="showRename"
+                              @valueFormatter="valueFormatter"
+                              @onCustomSort="onCustomSort"
+                            />
+                          </template>
                         </transition-group>
                       </draggable>
                       <div
@@ -833,14 +858,29 @@
                     </el-row>
                     <!--extStack-->
                     <el-row
-                      v-if="view.type && view.type.includes('stack')"
+                      v-if="view.type && (view.type.includes('stack') || (view.type === 'scatter' && view.render === 'antv'))"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
                       <span class="data-area-label">
-                        <span>{{ $t('chart.stack_item') }}</span>
+                        <span v-if="view.type.includes('stack')">{{ $t('chart.stack_item') }}</span>
+                        <span v-else>{{ $t('chart.form_type') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
+                        <el-tooltip
+                          v-if="view.type === 'scatter'"
+                          class="item"
+                          effect="dark"
+                          placement="bottom"
+                        >
+                          <div slot="content">
+                            {{ $t('chart.scatter_group_tip') }}
+                          </div>
+                          <i
+                            class="el-icon-info"
+                            style="cursor: pointer;color: #606266;"
+                          />
+                        </el-tooltip>
                         <i
                           class="el-icon-arrow-down el-icon-delete data-area-clear"
                           @click="clearData('extStack')"
@@ -2293,6 +2333,20 @@ export default {
         if (!ele.filter) {
           ele.filter = []
         }
+
+        if (view.type === 'scatter') {
+          if (ele.chartId) {
+            ele.summary = ''
+          } else {
+            if (!ele.summary || ele.summary === '') {
+              if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+                ele.summary = 'count'
+              } else {
+                ele.summary = 'sum'
+              }
+            }
+          }
+        }
       })
       if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map', 'race-bar') ||
         (view.render === 'antv' && view.type === 'line')) {
@@ -2826,6 +2880,9 @@ export default {
       } else if (this.quotaItem.filterType === 'quotaExt') {
         this.view.yaxisExt[this.quotaItem.index].filter = this.quotaItem.filter
         this.view.yaxisExt[this.quotaItem.index].logic = this.quotaItem.logic
+      } else if (this.quotaItem.filterType === 'dimension') {
+        this.view.xaxis[this.quotaItem.index].filter = this.quotaItem.filter
+        this.view.xaxis[this.quotaItem.index].logic = this.quotaItem.logic
       }
       this.calcData(true)
       this.closeQuotaFilter()
@@ -2927,6 +2984,8 @@ export default {
         this.view.yaxis[this.quotaItemCompare.index].compareCalc = this.quotaItemCompare.compareCalc
       } else if (this.quotaItemCompare.calcType === 'quotaExt') {
         this.view.yaxisExt[this.quotaItemCompare.index].compareCalc = this.quotaItemCompare.compareCalc
+      } else if (this.quotaItemCompare.calcType === 'dimension') {
+        this.view.xaxis[this.quotaItemCompare.index].compareCalc = this.quotaItemCompare.compareCalc
       }
       this.calcData(true)
       this.closeQuotaEditCompare()
@@ -3062,10 +3121,17 @@ export default {
       }
     },
     addXaxis(e) {
-      if (this.view.type !== 'table-info') {
+      if (this.view.type !== 'table-info' && (this.view.type !== 'scatter' && this.view.render !== 'antv')) {
         this.dragCheckType(this.view.xaxis, 'd')
       }
       this.dragMoveDuplicate(this.view.xaxis, e)
+      if (this.view.type === 'scatter' && this.view.render === 'antv') {
+        if (this.view.xaxis[0] && this.view.xaxis[0].groupType === 'q') {
+          this.view.xaxis = [this.view.xaxis[0]]
+        } else {
+          this.dragCheckType(this.view.xaxis, 'd')
+        }
+      }
       if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }

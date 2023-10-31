@@ -32,7 +32,7 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
   const options = {
     theme: theme,
     data: data,
-    xField: 'field',
+    xField: 'x',
     yField: 'value',
     colorField: 'category',
     appendPadding: getPadding(chart),

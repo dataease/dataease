@@ -20,4 +20,6 @@ public class AxisChartDataAntVDTO {
     private BigDecimal popSize;
     private String group;
     private BigDecimal extValue;
+
+    private Object x;
 }
