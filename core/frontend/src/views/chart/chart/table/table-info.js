@@ -551,21 +551,22 @@ function getConditions(chart) {
       }
     }
 
+    let filedValueMap = getFieldValueMap(chart)
     for (let i = 0; i < conditions.length; i++) {
       const field = conditions[i]
       res.text.push({
         field: field.field.dataeaseName,
-        mapping(value) {
+        mapping(value,rowData) {
           return {
-            fill: mappingColor(value, valueColor, field, 'color')
+            fill: mappingColor(value, valueColor, field, 'color', filedValueMap, rowData)
           }
         }
       })
       res.background.push({
         field: field.field.dataeaseName,
-        mapping(value) {
+        mapping(value,rowData) {
           return {
-            fill: mappingColor(value, valueBgColor, field, 'backgroundColor')
+            fill: mappingColor(value, valueBgColor, field, 'backgroundColor', filedValueMap, rowData)
           }
         }
       })
@@ -574,13 +575,37 @@ function getConditions(chart) {
   return res
 }
 
-function mappingColor(value, defaultColor, field, type) {
+function getValue(field, filedValueMap, rowData){
+  if (field.summary === 'value') {
+    return rowData[field.curField.dataeaseName]
+  } else {
+    return filedValueMap[field.summary + '-' + field.fieldId]
+  }
+}
+
+function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) {
   let color
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false
     const t = field.conditions[i]
     if (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) {
-      const tv = parseFloat(t.value)
+      let tv,max,min;
+      if (t.field === '1') {
+        if (t.term === 'between') {
+          max = parseFloat(getValue(t.maxField, filedValueMap, rowData))
+          min = parseFloat(getValue(t.minField, filedValueMap, rowData))
+        } else {
+          tv = parseFloat(getValue(t.targetField, filedValueMap, rowData))
+        }
+      } else {
+        if (t.term === 'between') {
+          min = parseFloat(t.min)
+          max = parseFloat(t.max)
+        } else {
+          tv = parseFloat(t.value)
+        }
+      }
+
       if (t.term === 'eq') {
         if (value === tv) {
           color = t[type]
@@ -612,8 +637,6 @@ function mappingColor(value, defaultColor, field, type) {
           flag = true
         }
       } else if (t.term === 'between') {
-        const min = parseFloat(t.min)
-        const max = parseFloat(t.max)
         if (min <= value && value <= max) {
           color = t[type]
           flag = true
@@ -625,7 +648,12 @@ function mappingColor(value, defaultColor, field, type) {
         color = defaultColor
       }
     } else if (field.field.deType === 0 || field.field.deType === 5) {
-      const tv = t.value
+      let tv;
+      if (t.field === '1') {
+        tv = getValue(t.targetField, filedValueMap, rowData)
+      } else {
+        tv = t.value
+      }
       if (t.term === 'eq') {
         if (value === tv) {
           color = t[type]
@@ -664,7 +692,16 @@ function mappingColor(value, defaultColor, field, type) {
       }
     } else {
       // time
-      const tv = new Date(t.value.replace(/-/g, '/') + ' GMT+8').getTime()
+      let tv;
+      if (t.field === '1') {
+        let fieldValue = getValue(t.targetField, filedValueMap, rowData);
+        if (fieldValue) {
+          tv = new Date(fieldValue.replace(/-/g, '/') + ' GMT+8').getTime()
+        }
+      } else {
+        tv = new Date(t.value.replace(/-/g, '/') + ' GMT+8').getTime()
+      }
+
       const v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
       if (t.term === 'eq') {
         if (v === tv) {
@@ -721,4 +758,14 @@ function showTooltip(s2Instance, event, fieldMap) {
     },
     content
   })
+}
+
+function getFieldValueMap(view){
+  let fieldValueMap = {}
+  if (view.data && view.data.dynamicAssistData && view.data.dynamicAssistData.length > 0) {
+    view.data.dynamicAssistData.forEach(ele => {
+      fieldValueMap[ele.summary + '-' + ele.fieldId] = ele.value
+    });
+  }
+  return fieldValueMap;
 }

@@ -9,16 +9,12 @@ import org.springframework.cache.annotation.EnableCaching;
 import org.springframework.context.annotation.PropertySource;
 import org.springframework.scheduling.annotation.EnableScheduling;
 
-@EnableCaching
-@SpringBootApplication(exclude = {
-        QuartzAutoConfiguration.class,
-        LdapAutoConfiguration.class
-})
-@ServletComponentScan
-@EnableScheduling
-@PropertySource(value = {"file:/opt/dataease/conf/dataease.properties"}, encoding = "UTF-8", ignoreResourceNotFound = true)
+import java.io.UnsupportedEncodingException;
+
 public class Application {
-    public static void main(String[] args) {
-        SpringApplication.run(Application.class, args);
+    public static void main(String[] args) throws UnsupportedEncodingException {
+        String s = new String("鍓嶆璇锋眰 AMapUI 澶辫触".getBytes("GBK"),"utf-8");
+        System.out.println(s);
+
     }
 }

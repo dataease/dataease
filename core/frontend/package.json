@@ -35,7 +35,7 @@
     "@antv/l7-scene": "2.15.0",
     "@antv/l7-source": "2.15.0",
     "@antv/l7-utils": "2.15.0",
-    "@antv/s2": "1.35.0",
+    "@antv/s2": "1.49.1",
     "@antv/util": "^2.0.17",
     "@riophae/vue-treeselect": "0.4.0",
     "@tinymce/tinymce-vue": "^3.2.8",
