@@ -484,7 +484,7 @@ export function getTooltip(chart) {
               }
 
               return `
-                     <div class="g2-tooltip">
+                     <div>
                        <div class="g2-tooltip-title">${title}</div>
                        <div class="g2-tooltip-item">
                            <span class="g2-tooltip-name">${key1}:</span><span class="g2-tooltip-value">${v1}</span>
