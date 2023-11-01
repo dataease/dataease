@@ -573,7 +573,7 @@ public class ImpalaQueryProvider extends QueryProvider {
 
         //然后是数值格式的情况还需要传extGroup
         if (xIsNumber && CollectionUtils.isNotEmpty(extGroup)) {
-            xAxisList.add(extGroup.get(0));
+            xAxisList.addAll(extGroup);
         }
 
         if (CollectionUtils.isNotEmpty(xAxisList)) {

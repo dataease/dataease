@@ -913,6 +913,9 @@ public class ChartViewService {
             ChartDrillRequest head = drillRequestList.get(0);
             Map<String, String> dimValMap = new HashMap<>();
             head.getDimensionList().forEach(item -> dimValMap.put(item.getId(), item.getValue()));
+
+            boolean isAntVScatterNumberXAxis = CollectionUtils.isNotEmpty(xAxis) && StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv");
+
             for (int i = 0; i < drillRequestList.size(); i++) {
                 ChartDrillRequest request = drillRequestList.get(i);
                 ChartViewFieldDTO chartViewFieldDTO = drill.get(i);
@@ -924,14 +927,23 @@ public class ChartViewService {
                         dimValMap.put(requestDimension.getId(), requestDimension.getValue());
                         if (!checkDrillExist(xAxis, extStack, requestDimension.getId(), view)) {
                             chartFieldMap.put(chartViewFieldDTO.getId(), chartViewFieldDTO);
-                            xAxis.add(chartViewFieldDTO);
+
+                            if (isAntVScatterNumberXAxis) {
+                                extStack.add(chartViewFieldDTO);
+                            } else {
+                                xAxis.add(chartViewFieldDTO);
+                            }
                         }
                         if (i == drillRequestList.size() - 1) {
                             ChartViewFieldDTO nextDrillField = drill.get(i + 1);
                             if (!checkDrillExist(xAxis, extStack, nextDrillField.getId(), view)) {
                                 // get drill list first element's sort,then assign to nextDrillField
                                 nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
-                                xAxis.add(nextDrillField);
+                                if (isAntVScatterNumberXAxis) {
+                                    extStack.add(nextDrillField);
+                                } else {
+                                    xAxis.add(nextDrillField);
+                                }
                             }
                         }
                     }
@@ -1656,6 +1668,20 @@ public class ChartViewService {
     }
 
     private boolean checkDrillExist(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> extStack, String fieldId, ChartViewWithBLOBs view) {
+
+        if (CollectionUtils.isNotEmpty(xAxis)) {
+            //针对判断 antv 散点图
+            if (StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+                if (CollectionUtils.isNotEmpty(extStack)) {
+                    for (ChartViewFieldDTO x : extStack) {
+                        if (StringUtils.equalsIgnoreCase(x.getId(), fieldId)) {
+                            return true;
+                        }
+                    }
+                }
+            }
+        }
+
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (ChartViewFieldDTO x : xAxis) {
                 if (StringUtils.equalsIgnoreCase(x.getId(), fieldId)) {
@@ -2129,7 +2155,7 @@ public class ChartViewService {
         JSONObject jsonObject = JSONObject.parseObject(senior);
         List<ChartSeniorAssistDTO> list = new ArrayList<>();
         JSONObject threshold = jsonObject.getJSONObject("threshold");
-        if (ObjectUtils.isEmpty(threshold) || StringUtils.isBlank(threshold.toJSONString())){
+        if (ObjectUtils.isEmpty(threshold) || StringUtils.isBlank(threshold.toJSONString())) {
             return list;
         }
         JSONArray tableThreshold = threshold.getJSONArray("tableThreshold");
@@ -2161,7 +2187,7 @@ public class ChartViewService {
         return list;
     }
 
-    private boolean solveThresholdCondition(ChartSeniorAssistDTO fieldDTO, String tableId){
+    private boolean solveThresholdCondition(ChartSeniorAssistDTO fieldDTO, String tableId) {
         String fieldId = fieldDTO.getFieldId();
         String summary = fieldDTO.getSummary();
         if (StringUtils.isEmpty(fieldId) || StringUtils.isEmpty(summary)) {
@@ -2177,7 +2203,7 @@ public class ChartViewService {
         return true;
     }
 
-    private List<ChartSeniorAssistDTO> getConditionFields(ChartSeniorThresholdDTO condition){
+    private List<ChartSeniorAssistDTO> getConditionFields(ChartSeniorThresholdDTO condition) {
         List<ChartSeniorAssistDTO> list = new ArrayList<>();
         if (StringUtils.equalsIgnoreCase(condition.getField(), "0")) {
             return list;
