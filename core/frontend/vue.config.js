@@ -18,6 +18,7 @@ const port = process.env.port || process.env.npm_config_port || 9528 // dev port
 const parallel = process.env.NODE_ENV === 'development'
 module.exports = {
   productionSourceMap: false,
+  publicPath: process.env.VUE_CONTEXT_PATH,
   parallel,
   // 使用mock-server
   devServer: {
@@ -52,7 +53,6 @@ module.exports = {
     },
     output: process.env.NODE_ENV === 'development' ? {} : {
       filename: `js/[name].[contenthash:8].${pkg.version}.js`,
-      publicPath: '/',
       chunkFilename: `js/[name].[contenthash:8].${pkg.version}.js`
     },
     plugins: [

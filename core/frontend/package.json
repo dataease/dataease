@@ -1,6 +1,6 @@
 {
   "name": "dataease",
-  "version": "1.18.11",
+  "version": "1.18.12",
   "description": "dataease front",
   "private": true,
   "scripts": {
@@ -26,17 +26,8 @@
   },
   "dependencies": {
     "@antv/g2plot": "^2.4.9",
-    "@antv/l7": "2.15.0",
-    "@antv/l7-component": "2.15.0",
-    "@antv/l7-core": "2.15.0",
-    "@antv/l7-layers": "2.15.0",
-    "@antv/l7-maps": "2.15.0",
-    "@antv/l7-renderer": "2.15.0",
-    "@antv/l7-scene": "2.15.0",
-    "@antv/l7-source": "2.15.0",
-    "@antv/l7-utils": "2.15.0",
-    "@antv/s2": "1.35.0",
-    "@antv/util": "^2.0.17",
+    "@antv/l7": "^2.15.0",
+    "@antv/s2": "^1.49.1",
     "@riophae/vue-treeselect": "0.4.0",
     "@tinymce/tinymce-vue": "^3.2.8",
     "axios": "^0.21.3",

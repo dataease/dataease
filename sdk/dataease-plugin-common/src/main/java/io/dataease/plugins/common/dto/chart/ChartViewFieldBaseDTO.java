@@ -22,6 +22,8 @@ public class ChartViewFieldBaseDTO implements Serializable {
 
     private String type;
 
+    private String groupType;
+
     private Boolean checked;
 
     private Integer columnIndex;

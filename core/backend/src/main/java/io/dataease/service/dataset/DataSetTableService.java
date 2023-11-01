@@ -159,6 +159,9 @@ public class DataSetTableService {
     @Value("${upload.file.path}")
     private String path;
 
+    @Value("${export.dataset.limit:100000}")
+    private int limit;
+
     private static final Logger logger = LoggerFactory.getLogger(ClassloaderResponsity.class);
 
     @DeCleaner(value = DePermissionType.DATASET, key = "sceneId")
@@ -2983,7 +2986,7 @@ public class DataSetTableService {
                 permissionsTreeService.getField(tree);
             }
             Datasource datasource = datasourceService.get(request.getDataSourceId());
-            int pageSize = (datasource != null && StringUtils.equalsIgnoreCase(datasource.getType(), "es")) ? 10000 : 100000;
+            int pageSize = (datasource != null && StringUtils.equalsIgnoreCase(datasource.getType(), "es")) ? 10000 : limit;
             request.setRow(String.valueOf(pageSize));
             Map<String, Object> previewData = getPreviewData(request, 1, pageSize, null, tree);
             List<DatasetTableField> fields = (List<DatasetTableField>) previewData.get("fields");

@@ -221,7 +221,7 @@ export function checkViewTitle(opt, id, tile) {
   }
 }
 
-export function exportImg(imgName,callback) {
+export function exportImg(imgName, callback) {
   const canvasID = document.getElementById('chartCanvas')
   const a = document.createElement('a')
   html2canvas(canvasID).then(canvas => {
@@ -387,12 +387,12 @@ export function insertBatchTreeNode(nodeInfoArray, tree) {
 
 export function updateCacheTree(opt, treeName, nodeInfoFull, tree) {
   const nodeInfo = deepCopy(nodeInfoFull)
-  if( nodeInfo instanceof Array){
-    nodeInfo.forEach(item=>{
+  if (nodeInfo instanceof Array) {
+    nodeInfo.forEach(item => {
       delete item.panelData
       delete item.panelStyle
     })
-  }else{
+  } else {
     delete nodeInfo.panelData
     delete nodeInfo.panelStyle
   }
@@ -443,7 +443,7 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
   const excelTypes = fields.map(item => item.deType)
   const excelHeaderKeys = fields.map(item => item.dataeaseName)
   let excelData = tableRow.map(item => excelHeaderKeys.map(i => item[i]))
-  const excelName = chart.name
+  const excelName = chart.title ? chart.title : chart.name
   let detailFields = []
   if (chart.data.detailFields?.length) {
     detailFields = chart.data.detailFields.map(item => {

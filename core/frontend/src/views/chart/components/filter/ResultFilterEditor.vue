@@ -198,6 +198,9 @@ export default {
         {
           label: '',
           options: [{
+            value: 'null',
+            label: this.$t('chart.filter_null')
+          }, {
             value: 'not_null',
             label: this.$t('chart.filter_not_null')
           }]
@@ -237,6 +240,9 @@ export default {
         {
           label: '',
           options: [{
+            value: 'null',
+            label: this.$t('chart.filter_null')
+          }, {
             value: 'not_null',
             label: this.$t('chart.filter_not_null')
           }]

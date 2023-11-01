@@ -24,6 +24,7 @@
         @hide="hideTab"
       >
         <dataset-chart-detail
+          v-if="tabStatus"
           type="chart"
           :data="view"
           :tab-status="tabStatus"
@@ -558,8 +559,11 @@
                           $t('chart.drag_block_table_data_column')
                         }}</span>
                         <span
-                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || view.type.includes('scatter') || view.type === 'chart-mix' || view.type === 'waterfall' || view.type === 'area')"
+                          v-else-if="view.type && (view.type.includes('bar') || view.type.includes('line') || (view.type.includes('scatter') && view.render !== 'antv') || view.type === 'chart-mix' || view.type === 'waterfall' || view.type === 'area')"
                         >{{ $t('chart.drag_block_type_axis') }}</span>
+                        <span
+                          v-else-if="view.type && (view.type.includes('scatter') && view.render === 'antv')"
+                        >{{ $t('chart.x_axis') }}</span>
                         <span
                           v-else-if="view.type && view.type.includes('pie')"
                         >{{ $t('chart.drag_block_pie_label') }}</span>
@@ -579,7 +583,10 @@
                         <span v-else-if="view.type && view.type === 'label'">{{ $t('chart.drag_block_label') }}</span>
                         <span v-else-if="view.type === 'flow-map'">{{ $t('chart.start_point') }}</span>
                         <span v-show="view.type !== 'richTextView'"> / </span>
-                        <span v-if="view.type && view.type !== 'table-info'">
+                        <span
+                          v-if="view.type && (view.type.includes('scatter') && view.render === 'antv')"
+                        >{{ $t('chart.dimension_or_quota') }}</span>
+                        <span v-else-if="view.type && view.type !== 'table-info'">
                           {{ $t('chart.dimension') }}
                         </span>
                         <span
@@ -600,22 +607,41 @@
                         @update="calcData(true)"
                       >
                         <transition-group class="draggable-group">
-                          <dimension-item
-                            v-for="(item,index) in view.xaxis"
-                            :key="item.id"
-                            :param="param"
-                            :index="index"
-                            :item="item"
-                            :dimension-data="dimension"
-                            :quota-data="quota"
-                            :chart="chart"
-                            @onDimensionItemChange="dimensionItemChange"
-                            @onDimensionItemRemove="dimensionItemRemove"
-                            @editItemFilter="showDimensionEditFilter"
-                            @onNameEdit="showRename"
-                            @valueFormatter="valueFormatter"
-                            @onCustomSort="onCustomSort"
-                          />
+                          <template v-for="(item,index) in view.xaxis">
+                            <quota-item
+                              v-if="view.type === 'scatter' && item.groupType === 'q' && view.render === 'antv'"
+                              :key="item.id"
+                              :param="param"
+                              :index="index"
+                              :item="item"
+                              :chart="chart"
+                              :dimension-data="dimension"
+                              :quota-data="quota"
+                              special-type="dimension"
+                              @onQuotaItemChange="dimensionItemChange"
+                              @onQuotaItemRemove="dimensionItemRemove"
+                              @editItemFilter="showQuotaEditFilter"
+                              @onNameEdit="showRename"
+                              @editItemCompare="showQuotaEditCompare"
+                              @valueFormatter="valueFormatter"
+                            />
+                            <dimension-item
+                              v-else
+                              :key="item.id"
+                              :param="param"
+                              :index="index"
+                              :item="item"
+                              :dimension-data="dimension"
+                              :quota-data="quota"
+                              :chart="chart"
+                              @onDimensionItemChange="dimensionItemChange"
+                              @onDimensionItemRemove="dimensionItemRemove"
+                              @editItemFilter="showDimensionEditFilter"
+                              @onNameEdit="showRename"
+                              @valueFormatter="valueFormatter"
+                              @onCustomSort="onCustomSort"
+                            />
+                          </template>
                         </transition-group>
                       </draggable>
                       <div
@@ -833,14 +859,29 @@
                     </el-row>
                     <!--extStack-->
                     <el-row
-                      v-if="view.type && view.type.includes('stack')"
+                      v-if="view.type && (view.type.includes('stack') || (view.type === 'scatter' && view.render === 'antv'))"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
                       <span class="data-area-label">
-                        <span>{{ $t('chart.stack_item') }}</span>
+                        <span v-if="view.type.includes('stack')">{{ $t('chart.stack_item') }}</span>
+                        <span v-else>{{ $t('chart.form_type') }}</span>
                         /
                         <span>{{ $t('chart.dimension') }}</span>
+                        <el-tooltip
+                          v-if="view.type === 'scatter'"
+                          class="item"
+                          effect="dark"
+                          placement="bottom"
+                        >
+                          <div slot="content">
+                            {{ $t('chart.scatter_group_tip') }}
+                          </div>
+                          <i
+                            class="el-icon-info"
+                            style="cursor: pointer;color: #606266;"
+                          />
+                        </el-tooltip>
                         <i
                           class="el-icon-arrow-down el-icon-delete data-area-clear"
                           @click="clearData('extStack')"
@@ -1956,7 +1997,7 @@ export default {
       return this.$store.state.panel.panelInfo
     },
     showCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table') && this.view.type !== 'race-bar' ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table', 'liquid') && this.view.type !== 'race-bar' ||
         equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map')
     },
     showSeniorCfg() {
@@ -1974,7 +2015,7 @@ export default {
       if (this.view.type === 'bidirectional-bar') {
         return false
       }
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge') ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'liquid') ||
         equalsAny(this.view.type, 'text', 'label') ||
         (this.view.render === 'antv' && this.view.type.includes('table'))
     },
@@ -1985,7 +2026,7 @@ export default {
       if (this.view.type === 'bidirectional-bar') {
         return false
       }
-      return includesAny(this.view.type, 'gauge') ||
+      return includesAny(this.view.type, 'gauge', 'liquid') ||
         equalsAny(this.view.type, 'text', 'label') ||
         (this.view.render === 'antv' && this.view.type.includes('table'))
     },
@@ -1996,9 +2037,15 @@ export default {
         !equalsAny(this.view.type, 'liquid', 'bidirectional-bar',
           'word-cloud', 'table-pivot', 'label', 'richTextView', 'flow-map')
     },
+    isPlugin() {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      return plugins.some(plugin => plugin.value === this.view.type && plugin.render === this.view.render)
+    },
     watchChartTypeChangeObj() {
       const { type, render } = this.view
-      return { type, render }
+      const isPlugin = this.isPlugin
+      const id = this.chart.id
+      return { type, render, isPlugin, id }
     },
     ...mapState([
       'curComponent',
@@ -2036,10 +2083,33 @@ export default {
       this.$emit('typeChange', newVal)
     },
     watchChartTypeChangeObj(newVal, oldVal) {
-      if (newVal.type === oldVal.type && newVal.render === oldVal.render) {
+      this.view.isPlugin = newVal.isPlugin
+      if (newVal.id === oldVal.id && newVal.type !== oldVal.type && oldVal.type === 'table-info' && this.view.xaxis.length > 0) {
+        // 针对明细表切换为其他图表
+        this.$message({
+          showClose: true,
+          message: this.$t('chart.table_info_switch'),
+          type: 'warning'
+        })
+        this.view.xaxis = []
+      }
+      if (newVal.id === oldVal.id && newVal.type !== oldVal.type) {
+        this.view.senior.threshold = {}
+      }
+      if (newVal.type === oldVal.type && newVal.render === oldVal.render && newVal.isPlugin === oldVal.isPlugin) {
         return
       }
-      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal.type, newVal.render)
+      if (newVal.render === 'antv' && newVal.type === 'chart-mix') {
+        // 针对antv组合图，清理自定义排序
+        this.view.xaxis.forEach(x => {
+          x.customSort = []
+          x.sort = 'none'
+        })
+      }
+      if (oldVal.id !== 'echart') {
+        this.setChartDefaultOptions()
+        this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
+      }
     }
   },
   created() {
@@ -2098,7 +2168,17 @@ export default {
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
         return { name: plugin.render, value: plugin.render }
       })
-      this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
+      const tempList = [...this.renderOptions, ...pluginOptions]
+      this.pluginRenderOptions = this.distinctArray(tempList, 'value')
+    },
+    distinctArray(arr, key) {
+      const m = new Map()
+      for (const item of arr) {
+        if (!m.has(item[key])) {
+          m.set(item[key], item)
+        }
+      }
+      return [...m.values()]
     },
     emptyTableData(id) {
       this.table = {}
@@ -2237,17 +2317,7 @@ export default {
         parseInt(this.view.resultCount) < 1) {
         this.view.resultCount = '1000'
       }
-      if (switchType) {
-        this.view.senior.threshold = {}
-      }
-      if (switchType && (this.view.type === 'table-info' || this.chart.type === 'table-info') && this.view.xaxis.length > 0) {
-        this.$message({
-          showClose: true,
-          message: this.$t('chart.table_info_switch'),
-          type: 'warning'
-        })
-        this.view.xaxis = []
-      }
+
       const view = JSON.parse(JSON.stringify(this.view))
       view.id = this.view.id
       view.sceneId = this.view.sceneId
@@ -2272,6 +2342,20 @@ export default {
         }
         if (!ele.filter) {
           ele.filter = []
+        }
+
+        if (view.type === 'scatter') {
+          if (ele.chartId) {
+            ele.summary = ''
+          } else {
+            if (!ele.summary || ele.summary === '') {
+              if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+                ele.summary = 'count'
+              } else {
+                ele.summary = 'sum'
+              }
+            }
+          }
         }
       })
       if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map', 'race-bar') ||
@@ -2731,7 +2815,7 @@ export default {
 
     onThresholdChange(val) {
       this.view.senior.threshold = val
-      this.calcStyle()
+      this.calcData()
     },
 
     onScrollChange(val) {
@@ -2806,6 +2890,9 @@ export default {
       } else if (this.quotaItem.filterType === 'quotaExt') {
         this.view.yaxisExt[this.quotaItem.index].filter = this.quotaItem.filter
         this.view.yaxisExt[this.quotaItem.index].logic = this.quotaItem.logic
+      } else if (this.quotaItem.filterType === 'dimension') {
+        this.view.xaxis[this.quotaItem.index].filter = this.quotaItem.filter
+        this.view.xaxis[this.quotaItem.index].logic = this.quotaItem.logic
       }
       this.calcData(true)
       this.closeQuotaFilter()
@@ -2907,6 +2994,8 @@ export default {
         this.view.yaxis[this.quotaItemCompare.index].compareCalc = this.quotaItemCompare.compareCalc
       } else if (this.quotaItemCompare.calcType === 'quotaExt') {
         this.view.yaxisExt[this.quotaItemCompare.index].compareCalc = this.quotaItemCompare.compareCalc
+      } else if (this.quotaItemCompare.calcType === 'dimension') {
+        this.view.xaxis[this.quotaItemCompare.index].compareCalc = this.quotaItemCompare.compareCalc
       }
       this.calcData(true)
       this.closeQuotaEditCompare()
@@ -3042,10 +3131,17 @@ export default {
       }
     },
     addXaxis(e) {
-      if (this.view.type !== 'table-info') {
+      if (this.view.type !== 'table-info' && (this.view.type !== 'scatter' && this.view.render !== 'antv')) {
         this.dragCheckType(this.view.xaxis, 'd')
       }
       this.dragMoveDuplicate(this.view.xaxis, e)
+      if (this.view.type === 'scatter' && this.view.render === 'antv') {
+        if (this.view.xaxis[0] && this.view.xaxis[0].groupType === 'q') {
+          this.view.xaxis = [this.view.xaxis[0]]
+        } else {
+          this.dragCheckType(this.view.xaxis, 'd')
+        }
+      }
       if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
       }
@@ -3307,12 +3403,14 @@ export default {
       this.$store.commit('recordViewEdit', { viewId: this.param.id, hasEdit: status })
     },
     changeChartRender() {
-      this.setChartDefaultOptions()
-      this.calcData(true, 'chart', true, false, true)
+      // 调整为监听 watchChartTypeChangeObj
+      // this.setChartDefaultOptions()
+      // this.calcData(true, 'chart', true, false, true)
     },
     changeChartType() {
-      this.setChartDefaultOptions()
-      this.calcData(true, 'chart', true, true)
+      // 调整为监听 watchChartTypeChangeObj
+      // this.setChartDefaultOptions()
+      // this.calcData(true, 'chart', true, true)
     },
 
     setChartDefaultOptions() {

@@ -31,6 +31,11 @@ export function baseLineOptionAntV(plot, container, chart, action) {
   const analyse = getAnalyse(chart)
   // options
   const options = {
+    meta: {
+      category: {
+        type: 'cat'
+      }
+    },
     point: {},
     theme: theme,
     data: data,

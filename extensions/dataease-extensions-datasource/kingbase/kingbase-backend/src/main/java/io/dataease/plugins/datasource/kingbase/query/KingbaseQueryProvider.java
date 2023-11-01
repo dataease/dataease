@@ -721,7 +721,7 @@ public class KingbaseQueryProvider extends QueryProvider {
     public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis,
                                 List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                 List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
-                                List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble,
+                                List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, List<ChartViewFieldDTO> extGroup,
                                 Datasource ds,
                                 ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
@@ -732,9 +732,27 @@ public class KingbaseQueryProvider extends QueryProvider {
         setSchema(tableObj, ds);
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
+
+        boolean xIsNumber = false;
+        List<ChartViewFieldDTO> xAxisList = new ArrayList<>();
+
+        //先判断x轴内是不是数值格式的
         if (CollectionUtils.isNotEmpty(xAxis)) {
-            for (int i = 0; i < xAxis.size(); i++) {
-                ChartViewFieldDTO x = xAxis.get(i);
+            if (StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+                xIsNumber = true;
+            } else {
+                xAxisList.addAll(xAxis);
+            }
+        }
+
+        //然后是数值格式的情况还需要传extGroup
+        if (xIsNumber && CollectionUtils.isNotEmpty(extGroup)) {
+            xAxisList.add(extGroup.get(0));
+        }
+
+        if (CollectionUtils.isNotEmpty(xAxisList)) {
+            for (int i = 0; i < xAxisList.size(); i++) {
+                ChartViewFieldDTO x = xAxisList.get(i);
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
@@ -763,6 +781,9 @@ public class KingbaseQueryProvider extends QueryProvider {
         List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
         List<ChartViewFieldDTO> yList = new ArrayList<>();
+        if (xIsNumber) {
+            yList.add(xAxis.get(0));
+        }
         yList.addAll(yAxis);
         yList.addAll(extBubble);
         if (CollectionUtils.isNotEmpty(yList)) {
@@ -851,10 +872,10 @@ public class KingbaseQueryProvider extends QueryProvider {
                                      List<ChartFieldCustomFilterDTO> fieldCustomFilter,
                                      List<DataSetRowPermissionsTreeDTO> rowPermissionsTree,
                                      List<ChartExtFilterRequest> extFilterRequestList,
-                                     List<ChartViewFieldDTO> extBubble,
+                                     List<ChartViewFieldDTO> extBubble, List<ChartViewFieldDTO> extGroup,
                                      ChartViewWithBLOBs view) {
         return getSQLScatter("(" + sqlFix(table) + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree,
-                extFilterRequestList, extBubble, null, view);
+                extFilterRequestList, extBubble, extGroup, null, view);
     }
 
     @Override

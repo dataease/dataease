@@ -2,7 +2,7 @@ version: '2.1'
 services:
 
   mysql:
-    image: registry.cn-qingdao.aliyuncs.com/dataease/mysql:5.7.43
+    image: registry.cn-qingdao.aliyuncs.com/dataease/mysql:8.1.0
     container_name: mysql
     healthcheck:
       test: ["CMD", "mysqladmin" ,"ping", "-h", "localhost", "-u${DE_MYSQL_USER}", "-p${DE_MYSQL_PASSWORD}"]

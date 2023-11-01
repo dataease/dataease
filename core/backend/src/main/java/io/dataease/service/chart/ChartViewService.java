@@ -487,7 +487,7 @@ public class ChartViewService {
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     datasourceRequest.setQuery(qp.getSQLStack(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, ds, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLScatter(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, ds, view));
+                    datasourceRequest.setQuery(qp.getSQLScatter(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, ds, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLTableInfo(dataTableInfoDTO.getTable(), xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 } else {
@@ -501,7 +501,7 @@ public class ChartViewService {
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 } else {
@@ -516,7 +516,7 @@ public class ChartViewService {
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 } else {
@@ -532,7 +532,7 @@ public class ChartViewService {
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view));
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, view));
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                     datasourceRequest.setQuery(qp.getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 } else {
@@ -557,7 +557,7 @@ public class ChartViewService {
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 datasourceRequest.setQuery(qp.getSQLStack(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, ds, view));
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, ds, view));
+                datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, ds, view));
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 datasourceRequest.setQuery(qp.getSQLTableInfo(tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
             } else {
@@ -604,7 +604,7 @@ public class ChartViewService {
         List<ChartViewFieldDTO> viewFields = gson.fromJson(view.getViewFields(), tokenType);
         final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
         if (CollectionUtils.isNotEmpty(viewFields)) {
-            String[] busiFlagArray = new String[] {"daxis", "locationXaxis", "locationYaxis"};
+            String[] busiFlagArray = new String[]{"daxis", "locationXaxis", "locationYaxis"};
             Map<String, Boolean> flagMap = new HashMap<>();
             for (String s : busiFlagArray) {
                 flagMap.put(s, false);
@@ -963,7 +963,7 @@ public class ChartViewService {
         DatasourceRequest datasourceAssistRequest = new DatasourceRequest();
         datasourceAssistRequest.setDatasource(ds);
         List<String[]> assistData = new ArrayList<>();
-        List<ChartSeniorAssistDTO> dynamicAssistFields = getDynamicAssistFields(view);
+        List<ChartSeniorAssistDTO> dynamicAssistFields = new ArrayList<>();
         List<ChartViewFieldDTO> assistFields = null;
         if (StringUtils.containsIgnoreCase(view.getType(), "bar")
                 || StringUtils.containsIgnoreCase(view.getType(), "line")
@@ -971,7 +971,15 @@ public class ChartViewService {
                 || StringUtils.containsIgnoreCase(view.getType(), "scatter")
                 || StringUtils.containsIgnoreCase(view.getType(), "mix")
         ) {
-            assistFields = getAssistFields(dynamicAssistFields, yAxis);
+            // 动态辅助线
+            dynamicAssistFields = getDynamicAssistFields(view);
+            assistFields = getAssistFields(dynamicAssistFields, yAxis, null);
+        } else if (StringUtils.containsIgnoreCase(view.getType(), "table-info")
+                || StringUtils.containsIgnoreCase(view.getType(), "table-normal")
+                || StringUtils.containsIgnoreCase(view.getType(), "table-pivot")) {
+            // 动态阈值
+            dynamicAssistFields = getDynamicThresholdFields(view);
+            assistFields = getAssistFields(dynamicAssistFields, yAxis, xAxis);
         }
 
         // 处理过滤条件中的单引号
@@ -1060,7 +1068,7 @@ public class ChartViewService {
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     querySql = qp.getSQLStack(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, ds, view);
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    querySql = qp.getSQLScatter(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, ds, view);
+                    querySql = qp.getSQLScatter(dataTableInfoDTO.getTable(), xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, ds, view);
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                     querySql = qp.getSQLWithPage(true, dataTableInfoDTO.getTable(), xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
                     totalPageSql = qp.getResultCount(true, dataTableInfoDTO.getTable(), xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
@@ -1069,7 +1077,10 @@ public class ChartViewService {
                     if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                         detailFieldList.addAll(xAxis);
                         detailFieldList.addAll(viewFields);
+                        String resultMode = view.getResultMode();
+                        view.setResultMode(null);
                         detailFieldSql = qp.getSQLWithPage(true, dataTableInfoDTO.getTable(), detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                        view.setResultMode(resultMode);
                     }
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.SQL.name())) {
@@ -1080,7 +1091,7 @@ public class ChartViewService {
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     querySql = qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view);
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    querySql = qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, view);
+                    querySql = qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, view);
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                     querySql = qp.getSQLWithPage(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
                     totalPageSql = qp.getResultCount(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
@@ -1089,7 +1100,10 @@ public class ChartViewService {
                     if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                         detailFieldList.addAll(xAxis);
                         detailFieldList.addAll(viewFields);
+                        String resultMode = view.getResultMode();
+                        view.setResultMode(null);
                         detailFieldSql = qp.getSQLWithPage(false, sql, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                        view.setResultMode(resultMode);
                     }
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.CUSTOM.name())) {
@@ -1101,7 +1115,7 @@ public class ChartViewService {
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     querySql = qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view);
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    querySql = qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, view);
+                    querySql = qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, view);
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                     querySql = qp.getSQLWithPage(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
                     totalPageSql = qp.getResultCount(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
@@ -1110,7 +1124,10 @@ public class ChartViewService {
                     if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                         detailFieldList.addAll(xAxis);
                         detailFieldList.addAll(viewFields);
+                        String resultMode = view.getResultMode();
+                        view.setResultMode(null);
                         detailFieldSql = qp.getSQLWithPage(false, sql, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                        view.setResultMode(resultMode);
                     }
                 }
             } else if (StringUtils.equalsIgnoreCase(table.getType(), DatasetType.UNION.name())) {
@@ -1122,7 +1139,7 @@ public class ChartViewService {
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     querySql = qp.getSQLAsTmpStack(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view);
                 } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                    querySql = qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, view);
+                    querySql = qp.getSQLAsTmpScatter(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, view);
                 } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                     querySql = qp.getSQLWithPage(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
                     totalPageSql = qp.getResultCount(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
@@ -1131,7 +1148,10 @@ public class ChartViewService {
                     if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                         detailFieldList.addAll(xAxis);
                         detailFieldList.addAll(viewFields);
+                        String resultMode = view.getResultMode();
+                        view.setResultMode(null);
                         detailFieldSql = qp.getSQLWithPage(false, sql, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                        view.setResultMode(resultMode);
                     }
                 }
             }
@@ -1174,7 +1194,7 @@ public class ChartViewService {
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 datasourceRequest.setQuery(qp.getSQLStack(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, ds, view));
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, ds, view));
+                datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, ds, view));
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 datasourceRequest.setQuery(qp.getSQLTableInfo(tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
             } else {
@@ -1182,7 +1202,10 @@ public class ChartViewService {
                 if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
                     detailFieldList.addAll(xAxis);
                     detailFieldList.addAll(viewFields);
+                    String resultMode = view.getResultMode();
+                    view.setResultMode(null);
                     detailFieldSql = qp.getSQLTableInfo(tableName, detailFieldList, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
+                    view.setResultMode(resultMode);
                 }
             }
             if (CollectionUtils.isNotEmpty(assistFields)) {
@@ -1361,7 +1384,7 @@ public class ChartViewService {
             } else if (StringUtils.containsIgnoreCase(view.getType(), "line-stack")) {
                 mapChart = ChartDataBuild.transStackChartDataAntV(xAxis, yAxis, view, data, extStack, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
-                mapChart = ChartDataBuild.transScatterDataAntV(xAxis, yAxis, view, data, extBubble, isDrill);
+                mapChart = ChartDataBuild.transScatterDataAntV(xAxis, yAxis, view, data, extBubble, extStack, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "radar")) {
                 mapChart = ChartDataBuild.transRadarChartDataAntV(xAxis, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "text")
@@ -1457,7 +1480,7 @@ public class ChartViewService {
         map.put("sourceFields", sourceFields);
         // merge assist result
         mergeAssistField(dynamicAssistFields, assistData);
-        map.put("dynamicAssistLines", dynamicAssistFields);
+        map.put("dynamicAssistData", dynamicAssistFields);
 
         ChartViewDTO dto = new ChartViewDTO();
         BeanUtils.copyBean(dto, view);
@@ -2045,28 +2068,39 @@ public class ChartViewService {
         return list;
     }
 
-    private List<ChartViewFieldDTO> getAssistFields(List<ChartSeniorAssistDTO> list, List<ChartViewFieldDTO> yAxis) {
+    private List<ChartViewFieldDTO> getAssistFields(List<ChartSeniorAssistDTO> list, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> xAxis) {
         List<ChartViewFieldDTO> res = new ArrayList<>();
         for (ChartSeniorAssistDTO dto : list) {
             DatasetTableField curField = dto.getCurField();
-            ChartViewFieldDTO yField = null;
+            ChartViewFieldDTO field = null;
             String alias = "";
             for (int i = 0; i < yAxis.size(); i++) {
-                ChartViewFieldDTO field = yAxis.get(i);
-                if (StringUtils.equalsIgnoreCase(field.getId(), curField.getId())) {
-                    yField = field;
+                ChartViewFieldDTO yField = yAxis.get(i);
+                if (StringUtils.equalsIgnoreCase(yField.getId(), curField.getId())) {
+                    field = yField;
                     alias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                     break;
                 }
             }
-            if (ObjectUtils.isEmpty(yField)) {
+
+            if (ObjectUtils.isEmpty(field) && CollectionUtils.isNotEmpty(xAxis)) {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    ChartViewFieldDTO xField = xAxis.get(i);
+                    if (StringUtils.equalsIgnoreCase(xField.getId(), curField.getId())) {
+                        field = xField;
+                        alias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
+                        break;
+                    }
+                }
+            }
+            if (ObjectUtils.isEmpty(field)) {
                 continue;
             }
 
             ChartViewFieldDTO chartViewFieldDTO = new ChartViewFieldDTO();
             BeanUtils.copyBean(chartViewFieldDTO, curField);
             chartViewFieldDTO.setSummary(dto.getSummary());
-            chartViewFieldDTO.setOriginName(alias);// yAxis的字段别名，就是查找的字段名
+            chartViewFieldDTO.setOriginName(alias);// 字段别名，就是查找的字段名
             res.add(chartViewFieldDTO);
         }
         return res;
@@ -2077,11 +2111,82 @@ public class ChartViewService {
             return;
         }
         String[] strings = assistData.get(0);
-        for (int i = 0; i < dynamicAssistFields.size(); i++) {
-            if (i < strings.length) {
-                ChartSeniorAssistDTO chartSeniorAssistDTO = dynamicAssistFields.get(i);
-                chartSeniorAssistDTO.setValue(strings[i]);
+        for (int i = 0, size = Math.min(dynamicAssistFields.size(), strings.length); i < size; i++) {
+            ChartSeniorAssistDTO chartSeniorAssistDTO = dynamicAssistFields.get(i);
+            chartSeniorAssistDTO.setValue(strings[i]);
+        }
+    }
+
+    private List<ChartSeniorAssistDTO> getDynamicThresholdFields(ChartViewDTO view) {
+        String senior = view.getSenior();
+        JSONObject jsonObject = JSONObject.parseObject(senior);
+        List<ChartSeniorAssistDTO> list = new ArrayList<>();
+        JSONObject threshold = jsonObject.getJSONObject("threshold");
+        if (ObjectUtils.isEmpty(threshold) || StringUtils.isBlank(threshold.toJSONString())){
+            return list;
+        }
+        JSONArray tableThreshold = threshold.getJSONArray("tableThreshold");
+        if (ObjectUtils.isEmpty(tableThreshold) || StringUtils.isBlank(tableThreshold.toJSONString())) {
+            return list;
+        }
+
+        for (int i = 0; i < tableThreshold.size(); i++) {
+            JSONObject item = tableThreshold.getJSONObject(i);
+            JSONArray itemConditions = item.getJSONArray("conditions");
+            if (ObjectUtils.isEmpty(itemConditions) || StringUtils.isBlank(itemConditions.toJSONString())) {
+                continue;
+            }
+            List<ChartSeniorThresholdDTO> conditions = gson.fromJson(itemConditions.toJSONString(), new TypeToken<List<ChartSeniorThresholdDTO>>() {
+            }.getType());
+            for (ChartSeniorThresholdDTO condition : conditions) {
+                if (StringUtils.equalsIgnoreCase(condition.getField(), "0")) {
+                    continue;
+                }
+
+                for (ChartSeniorAssistDTO fieldDTO : getConditionFields(condition)) {
+                    if (solveThresholdCondition(fieldDTO, view.getTableId())) {
+                        list.add(fieldDTO);
+                    }
+                }
             }
         }
+
+        return list;
+    }
+
+    private boolean solveThresholdCondition(ChartSeniorAssistDTO fieldDTO, String tableId){
+        String fieldId = fieldDTO.getFieldId();
+        String summary = fieldDTO.getSummary();
+        if (StringUtils.isEmpty(fieldId) || StringUtils.isEmpty(summary)) {
+            return false;
+        }
+        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+        datasetTableFieldExample.createCriteria().andTableIdEqualTo(tableId).andIdEqualTo(fieldId);
+        List<DatasetTableField> fieldList = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+        if (CollectionUtils.isEmpty(fieldList)) {
+            return false;
+        }
+        fieldDTO.setCurField(fieldList.get(0));
+        return true;
+    }
+
+    private List<ChartSeniorAssistDTO> getConditionFields(ChartSeniorThresholdDTO condition){
+        List<ChartSeniorAssistDTO> list = new ArrayList<>();
+        if (StringUtils.equalsIgnoreCase(condition.getField(), "0")) {
+            return list;
+        }
+        if ("between".equals(condition.getTerm())) {
+            if (!StringUtils.equalsIgnoreCase(condition.getMaxField().getSummary(), "value")) {
+                list.add(condition.getMaxField());
+            }
+            if (!StringUtils.equalsIgnoreCase(condition.getMinField().getSummary(), "value")) {
+                list.add(condition.getMinField());
+            }
+        } else {
+            if (!StringUtils.equalsIgnoreCase(condition.getTargetField().getSummary(), "value")) {
+                list.add(condition.getTargetField());
+            }
+        }
+        return list;
     }
 }

@@ -300,21 +300,28 @@ export function getTooltip(chart) {
       const t = JSON.parse(JSON.stringify(customAttr.tooltip))
       if (t.show) {
         tooltip = {}
+        let xAxis, yAxis, extStack
+
+        try {
+          xAxis = JSON.parse(chart.xaxis)
+        } catch (e) {
+          xAxis = JSON.parse(JSON.stringify(chart.xaxis))
+        }
+        try {
+          yAxis = JSON.parse(chart.yaxis)
+        } catch (e) {
+          yAxis = JSON.parse(JSON.stringify(chart.yaxis))
+        }
+        try {
+          extStack = JSON.parse(chart.extStack)
+        } catch (e) {
+          extStack = JSON.parse(JSON.stringify(chart.extStack))
+        }
+
         // tooltip value formatter
         if (chart.type && chart.type !== 'waterfall') {
           tooltip.formatter = function(param) {
-            let yAxis, extStack
             let res = param.value
-            try {
-              yAxis = JSON.parse(chart.yaxis)
-            } catch (e) {
-              yAxis = JSON.parse(JSON.stringify(chart.yaxis))
-            }
-            try {
-              extStack = JSON.parse(chart.extStack)
-            } catch (e) {
-              extStack = JSON.parse(JSON.stringify(chart.extStack))
-            }
 
             let obj
             if (equalsAny(chart.type, 'bar-stack', 'line-stack',
@@ -444,6 +451,51 @@ export function getTooltip(chart) {
             }
             obj.value = res === null ? '' : res
             return obj
+          }
+          //
+          if (chart.type === 'scatter' && xAxis && xAxis.length > 0 && xAxis[0].groupType === 'q') {
+            tooltip.fields = ['x', 'category', 'value', 'group']
+            tooltip.customContent = (title, data) => {
+              const key1 = xAxis[0]?.name
+              let key2, v1, v2
+
+              if (data && data.length > 0) {
+                title = data[0].data.category
+                key2 = data[0].data.group
+
+                const fx = xAxis[0]
+                if (fx.formatterCfg) {
+                  v1 = valueFormatter(data[0].data.x, fx.formatterCfg)
+                } else {
+                  v1 = valueFormatter(data[0].data.x, formatterItem)
+                }
+
+                for (let i = 0; i < yAxis.length; i++) {
+                  const f = yAxis[i]
+                  if (f.name === key2) {
+                    if (f.formatterCfg) {
+                      v2 = valueFormatter(data[0].data.value, f.formatterCfg)
+                    } else {
+                      v2 = valueFormatter(data[0].data.value, formatterItem)
+                    }
+                    break
+                  }
+                }
+              }
+
+              return `
+                     <div>
+                       <div class="g2-tooltip-title">${title}</div>
+                       <div class="g2-tooltip-item">
+                           <span class="g2-tooltip-name">${key1}:</span><span class="g2-tooltip-value">${v1}</span>
+                       </div>
+                       <div class="g2-tooltip-item">
+                           <span class="g2-tooltip-name">${key2}:</span><span class="g2-tooltip-value">${v2}</span>
+                       </div>
+                       <div class="g2-tooltip-item">&nbsp;</div>
+                     </div>
+                    `
+            }
           }
         }
       } else {
@@ -952,7 +1004,7 @@ export function getAnalyse(chart) {
       }
 
       const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
-      const dynamicLines = chart.data.dynamicAssistLines
+      const dynamicLines = chart.data.dynamicAssistData
       const lines = fixedLines.concat(dynamicLines)
 
       lines.forEach(ele => {

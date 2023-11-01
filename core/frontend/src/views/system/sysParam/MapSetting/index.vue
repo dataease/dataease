@@ -1,109 +1,88 @@
 <template>
-  <de-container
-    v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
-    class="de-earth"
-    style="height: calc(100vh - 200px);"
-  >
-    <div class="de-map-tips">
-      <el-alert
-        :title="$t('map_setting.prohibit_prompts')"
-        type="warning"
-        description=""
-        :closable="false"
-        show-icon
-      />
-    </div>
-    <de-aside-container
-      type="mapset"
-      class="map-setting-aside"
-    >
-      <map-setting-left
-        ref="map_setting_tree"
-        :tree-data="treeData"
-        @emit-add="emitAdd"
-        @refresh-tree="refreshTree"
-        @show-node-info="loadForm"
-      />
-    </de-aside-container>
+  <el-container class="map-setting-container">
+    <el-aside class="map-setting-left">
+      <div class="left-container">
 
-    <de-main-container
-      class="map-setting-main"
-    >
-      <map-setting-right
-        ref="map_setting_form"
-        :tree-data="treeData"
-        :status="formStatus"
-        @refresh-tree="refreshTree"
-      />
-    </de-main-container>
-  </de-container>
+        <div
+          v-for="(item, index) in leftOptions"
+          :key="item.id"
+          class="left-menu-item"
+          :class="{'active': activeIndex === item.id}"
+          @click="selectHandler(index)"
+        >
+          <span>{{ $t(item.name) }}</span>
+        </div>
+      </div>
+    </el-aside>
+    <el-main class="map-setting-right">
+      <div class="right-container">
+        <OnlineMap v-if="activeIndex" />
+        <geometry v-else />
+      </div>
+    </el-main>
+  </el-container>
 </template>
 
 <script>
-import DeMainContainer from '@/components/dataease/DeMainContainer'
-import DeContainer from '@/components/dataease/DeContainer'
-import DeAsideContainer from '@/components/dataease/DeAsideContainer'
-import { areaMapping } from '@/api/map/map'
-import MapSettingLeft from './MapSettingLeft'
-import MapSettingRight from './MapSettingRight'
+import Geometry from './Geometry'
+import OnlineMap from './OnlineMap'
 export default {
   name: 'MapSetting',
-  components: { DeMainContainer, DeContainer, DeAsideContainer, MapSettingLeft, MapSettingRight },
+  components: { Geometry, OnlineMap },
   data() {
     return {
-      formStatus: 'empty',
-      treeData: []
+      leftOptions: [
+        { id: 0, name: 'online_map.geometry' },
+        { id: 1, name: 'online_map.onlinemap' }
+      ],
+      activeIndex: 0
     }
   },
-  created() {
-    this.loadTreeData()
-  },
   methods: {
-    emitAdd(form) {
-      this.setStatus(form.status)
-      this.$refs['map_setting_form']?.emitAdd(form)
-    },
-
-    loadForm(nodeInfo) {
-      this.setStatus(nodeInfo.status)
-      this.$refs['map_setting_form']?.loadForm(nodeInfo)
-    },
-
-    setStatus(status) {
-      this.formStatus = status
-    },
-    loadTreeData() {
-      !Object.keys(this.treeData).length && areaMapping().then(res => {
-        this.treeData = res.data
-      })
-    },
-    refreshTree(node) {
-      areaMapping().then(res => {
-        this.treeData = res.data
-        if (!node?.code) return
-        this.$refs['map_setting_tree']?.showNewNode(node.code)
-      })
+    selectHandler(index) {
+      this.activeIndex = index
     }
   }
 }
 </script>
-
 <style lang="scss" scoped>
-.de-earth {
-  padding: 24px;
+.map-setting-container {
   width: 100%;
-  overflow: auto;
-  .de-map-tips {
-    position: absolute;
-    width: calc(100% - 135px);
+  height: 100%;
+  padding-bottom: 0px !important;
+  .map-setting-left {
+    width: 200px !important;
+    height: calc(100% + 20px);
+    border-right: 1px solid #1f232926;
+    .left-container {
+      padding: 16px 16px 16px 16px;
+      width: 100%;
+      height: 100%;
+      .left-menu-item {
+        width: 168px;
+        height: 40px;
+        padding: 9px 8px;
+        line-height: 22px;
+        border-radius: 4px;
+        font-size: 14px;
+        font-weight: 400;
+        cursor: pointer;
+        &:hover {
+          background: #1f232926;
+        }
+      }
+      .active {
+        background: #3370FF1A;
+        color: #3370FF;
+        font-weight: 500;
+      }
+    }
   }
-  .map-setting-aside {
-    top: 50px;
-    height: calc(100% - 40px) !important;
-  }
-  .map-setting-main {
-    margin-top: 50px;
-    height: calc(100% - 50px);
+  .map-setting-right {
+    padding-bottom: 0 !important;
+    .right-container {
+      height: 100%;
+    }
   }
 }
 </style>

@@ -22,6 +22,7 @@ import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -55,6 +56,7 @@ public class SystemParameterService {
     public String searchEmail() {
         return extSystemParameterMapper.email();
     }
+
 
     public BasicInfo basicInfo() {
         List<SystemParameter> paramList = this.getParamList("basic");
@@ -407,6 +409,29 @@ public class SystemParameterService {
 
     @CacheEvict("multiLogin")
     public void clearMultiLoginCache() {
+    }
+
+    public String onlineMapKey() {
+        return getValue("map.key");
+    }
+
+    public void saveMapKey(String key) {
+        String paramKey = "map.key";
+        SystemParameterExample example = new SystemParameterExample();
+        example.createCriteria().andParamKeyEqualTo(paramKey);
+        List<SystemParameter> systemParameters = systemParameterMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(systemParameters)) {
+            SystemParameter systemParameter = systemParameters.get(0);
+            systemParameter.setParamValue(key);
+            systemParameterMapper.updateByExample(systemParameter, example);
+            return;
+        }
+        SystemParameter record = new SystemParameter();
+        record.setParamKey(paramKey);
+        record.setParamValue(key);
+        record.setType("text");
+        record.setSort(1);
+        systemParameterMapper.insert(record);
     }
 
 }

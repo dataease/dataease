@@ -242,7 +242,7 @@ export default {
       })
       window.addEventListener('resize', this.calcHeightDelay)
     },
-    drawView() {
+    async drawView() {
       const chart = JSON.parse(JSON.stringify(this.chart))
       // type
       // if (chart.data) {
@@ -298,7 +298,7 @@ export default {
       } else if (chart.type === 'chart-mix') {
         this.myChart = baseMixOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'flow-map') {
-        this.myChart = baseFlowMapOption(this.myChart, this.chartId, chart, this.antVAction)
+        this.myChart = await baseFlowMapOption(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'bidirectional-bar') {
         this.myChart = baseBidirectionalBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else {
@@ -338,7 +338,6 @@ export default {
       }
       this.setBackGroundBorder()
     },
-
     antVAction(param) {
       switch (this.chart.type) {
         case 'treemap':
@@ -355,7 +354,8 @@ export default {
       }
       this.linkageActiveParam = {
         category: this.pointParam.data.category ? this.pointParam.data.category : 'NO_DATA',
-        name: this.pointParam.data.name ? this.pointParam.data.name : 'NO_DATA'
+        name: this.pointParam.data.name ? this.pointParam.data.name : 'NO_DATA',
+        group: this.pointParam.data.group ? this.pointParam.data.group : 'NO_DATA'
       }
       if (this.trackMenu.length < 2) { // 只有一个事件直接调用
         this.trackClick(this.trackMenu[0])
@@ -392,14 +392,18 @@ export default {
         name: this.pointParam.data.name,
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,
-        quotaList: quotaList
+        quotaList: quotaList,
+        category: this.pointParam.data.category,
+        group: this.pointParam.data.group
       }
       const jumpParam = {
         option: 'jump',
         name: this.pointParam.data.name,
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,
-        quotaList: quotaList
+        quotaList: quotaList,
+        category: this.pointParam.data.category,
+        group: this.pointParam.data.group
       }
 
       switch (trackAction) {

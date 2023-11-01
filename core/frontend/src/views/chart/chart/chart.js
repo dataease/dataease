@@ -481,6 +481,7 @@ export const DEFAULT_FUNCTION_CFG = {
 }
 export const DEFAULT_THRESHOLD = {
   gaugeThreshold: '',
+  liquidThreshold: '',
   labelThreshold: [],
   tableThreshold: [],
   textLabelThreshold: []

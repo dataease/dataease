@@ -631,9 +631,14 @@ export default {
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
+    isPlugin() {
+      const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
+      return plugins.some(plugin => plugin.value === this.view.type && plugin.render === this.view.render)
+    },
     watchChartTypeChangeObj() {
       const { type, render } = this.view
-      return { type, render }
+      const isPlugin = this.isPlugin
+      return { type, render, isPlugin }
     }
   },
   watch: {
@@ -657,10 +662,11 @@ export default {
     //   this.view.isPlugin = val && this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(val)
     // },
     watchChartTypeChangeObj(newVal, oldVal) {
-      if (newVal.type === oldVal.type && newVal.render === oldVal.render) {
-        return
-      }
-      this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal.type, newVal.render)
+      this.view.isPlugin = newVal.isPlugin
+      // if (newVal.type === oldVal.type && newVal.render === oldVal.render && newVal.isPlugin === oldVal.isPlugin) {
+      //   return
+      // }
+      // this.view.isPlugin = this.$refs['cu-chart-type'] && this.$refs['cu-chart-type'].currentIsPlugin(newVal.type, newVal.render)
     }
 
   },
@@ -687,12 +693,22 @@ export default {
     this.getChartGroupTree()
   },
   methods: {
+    distinctArray(arr, key) {
+      const m = new Map()
+      for (const item of arr) {
+        if (!m.has(item[key])) {
+          m.set(item[key], item)
+        }
+      }
+      return [...m.values()]
+    },
     loadPluginType() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
       const pluginOptions = plugins.filter(plugin => !this.renderOptions.some(option => option.value === plugin.render)).map(plugin => {
         return { name: plugin.render, value: plugin.render }
       })
-      this.pluginRenderOptions = [...this.renderOptions, ...pluginOptions]
+      const tempList = [...this.renderOptions, ...pluginOptions]
+      this.pluginRenderOptions = this.distinctArray(tempList, 'value')
     },
     clickAdd(param) {
       this.currGroup = param.data

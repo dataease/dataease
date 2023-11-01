@@ -7,6 +7,7 @@ import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.service.panel.PanelLinkService;
 import org.apache.commons.lang3.StringUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -28,6 +29,9 @@ public class IndexController {
 
     @Resource
     private PanelLinkService panelLinkService;
+
+    @Value("${server.servlet.context-path:#{null}}")
+    private String contextPath;
 
     @GetMapping(value = "/")
     public String index() {
@@ -51,6 +55,9 @@ public class IndexController {
             url = panelLinkService.getUrlByIndex(Long.parseLong(index));
         } else {
             url = panelLinkService.getUrlByUuid(index);
+        }
+        if (StringUtils.isNotBlank(contextPath)) {
+            url = contextPath + url;
         }
         HttpServletResponse response = ServletUtils.response();
         try {

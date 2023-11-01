@@ -281,7 +281,7 @@ public class ApiProvider extends Provider {
                         JSONArray jsonArray = jsonObject.getJSONArray(s);
                         List<JSONObject> childrenField = new ArrayList<>();
                         for (Object object : jsonArray) {
-                            handleStr(apiDefinition, JSON.toJSONString(object, SerializerFeature.WriteMapNullValue), childrenField, rootPath + "." + s + "[*]");
+                            handleStr(apiDefinition, JSON.toJSONString(object, SerializerFeature.WriteMapNullValue), childrenField, rootPath + "." + String.format(path, s) + "[*]");
                         }
                         o.put("children", childrenField);
                         o.put("childrenDataType", "LIST");

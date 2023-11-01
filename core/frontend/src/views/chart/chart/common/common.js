@@ -336,7 +336,7 @@ export function seniorCfg(chart_option, chart) {
         }
 
         const fixedLines = senior.assistLine.filter(ele => ele.field === '0')
-        const dynamicLines = chart.data.dynamicAssistLines
+        const dynamicLines = chart.data.dynamicAssistData
         const lines = fixedLines.concat(dynamicLines)
 
         lines.forEach(ele => {

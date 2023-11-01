@@ -1019,7 +1019,8 @@ export default {
     fast_calc: '快速計算',
     sum: '求和',
     count: '計數',
-    avg: '平均',
+    value: '字段值',
+    avg: '平均值',
     max: '最大值',
     min: '最小值',
     stddev_pop: '標準差',
@@ -1507,6 +1508,7 @@ export default {
     table_column_width_tip: '列寬並非任何時候都能生效。<br/>容器寬度優先級高於列寬。即(表格容器寬度 / 列數 > 指定列寬)，則列寬優先取(容器寬度 / 列數)',
     reference_field_tip: '引用字段以 "[" 開始，"]" 結束。請<br/>勿修改引用內容，否則將引用失敗。<br/>若輸入與引用字段相同格式的內容，將被當做引用字段處理。',
     scatter_tip: '該指標生效時，樣式大小中的氣泡大小屬性將失效',
+    scatter_group_tip: '僅當橫軸內為指標時生效',
     place_name_mapping: '地名映射',
     axis_tip: '最小值、最大值、間隔均為數值類型；若不填，則該項視為自動。<br/>請確保填寫數值能正確計算，否則將無法正常顯示值軸',
     format_tip: `模板變量有 {a}, {b}，{c}，{d}，分別表示系列名，數據名，數據值等。<br>
@@ -1948,8 +1950,8 @@ export default {
     jsonpath_info: '請輸入JsonPath',
     req_param: '請求參數',
     headers: '請求頭',
-    query_param: "QUERY參數",
-    query_info: "地址欄中跟在？後面的參數，如：updateapi？ id=112",
+    query_param: 'QUERY參數',
+    query_info: '地址欄中跟在？後面的參數，如：updateapi？ id=112',
     key: '鍵',
     value: '值',
     data_path: '提取數據',
@@ -2929,5 +2931,10 @@ export default {
     confirm_title: '強行登錄會導致其他客戶端掉線',
     confirm: '是否強行登錄？',
     forced_offline: '`當前賬號在客戶端【${ip}】登錄，您已被擠下線！`'
+  },
+  online_map: {
+    geometry: '地理信息',
+    onlinemap: '在線地圖',
+    empty_desc: '暫無在線地圖key'
   }
 }

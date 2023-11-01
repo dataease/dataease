@@ -102,6 +102,18 @@ public class DorisQueryProvider extends QueryProvider {
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
+        int originSize = fields.size();
+        List<String> fieldList = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(sortFields)) {
+            sortFields.forEach(item -> {
+                int indexOf = fieldList.indexOf(item.getId());
+                if (indexOf == -1) {
+                    fields.add(item);
+                } else {
+                    fields.set(indexOf, item);
+                }
+            });
+        }
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
@@ -113,7 +125,15 @@ public class DorisQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
                     originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
                 } else {
-                    originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
+                    if (f.getDeType() == 2 || f.getDeType() == 3) {
+                        if (f.getDeExtractType() == 1) {
+                            originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
+                        } else {
+                            originField = String.format(DorisConstants.CAST, String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName()), DorisConstants.DEFAULT_FLOAT_FORMAT);
+                        }
+                    } else {
+                        originField = String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getDataeaseName());
+                    }
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
                 String fieldName = "";
@@ -151,6 +171,14 @@ public class DorisQueryProvider extends QueryProvider {
                         .fieldName(fieldName)
                         .fieldAlias(fieldAlias)
                         .build());
+                if (f instanceof DeSortField) {
+                    DeSortField x = (DeSortField) f;
+                    xOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(x.getOrderDirection())
+                            .build());
+                }
             }
         }
 
@@ -170,19 +198,27 @@ public class DorisQueryProvider extends QueryProvider {
         if (whereTrees != null) wheres.add(whereTrees);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
-        if (CollectionUtils.isNotEmpty(sortFields)) {
-            int step = fields.size();
-            for (int i = step; i < (step + sortFields.size()); i++) {
-                DeSortField deSortField = sortFields.get(i - step);
-                SQLObj order = buildSortField(deSortField, tableObj, i);
-                xOrders.add(order);
-            }
-        }
-        if (ObjectUtils.isNotEmpty(xOrders)) {
-            st_sql.add("orders", xOrders);
-        }
+        String sql = st_sql.render();
+        ST st = stg.getInstanceOf("previewSql");
+        st.add("isGroup", false);
+        SQLObj tableSQL = SQLObj.builder()
+                .tableName(String.format(DorisConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+                .build();
+        st.add("table", tableSQL);
 
-        return st_sql.render();
+        List<SQLObj> outFieldList = new ArrayList<>();
+        for (int i = 0; i < originSize; i++) {
+            SQLObj fieldObj = xFields.get(i);
+            String outFieldAlias = tableSQL.getTableAlias() + "." + fieldObj.getFieldAlias();
+            outFieldList.add(SQLObj.builder().fieldName(outFieldAlias).fieldAlias(fieldObj.getFieldAlias()).build());
+        }
+        st.add("groups", outFieldList);
+        if (CollectionUtils.isNotEmpty(xOrders)) {
+            st.add("orders", xOrders);
+            return st.render() + " LIMIT 0, 10000000";
+        }
+        return st.render();
     }
 
     private SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i) {
@@ -595,16 +631,34 @@ public class DorisQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, Datasource ds, ChartViewWithBLOBs view) {
+    public String getSQLScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, List<ChartViewFieldDTO> extGroup, Datasource ds, ChartViewWithBLOBs view) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(DorisConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
+
+        boolean xIsNumber = false;
+        List<ChartViewFieldDTO> xAxisList = new ArrayList<>();
+
+        //先判断x轴内是不是数值格式的
         if (CollectionUtils.isNotEmpty(xAxis)) {
-            for (int i = 0; i < xAxis.size(); i++) {
-                ChartViewFieldDTO x = xAxis.get(i);
+            if (StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+                xIsNumber = true;
+            } else {
+                xAxisList.addAll(xAxis);
+            }
+        }
+
+        //然后是数值格式的情况还需要传extGroup
+        if (xIsNumber && CollectionUtils.isNotEmpty(extGroup)) {
+            xAxisList.add(extGroup.get(0));
+        }
+
+        if (CollectionUtils.isNotEmpty(xAxisList)) {
+            for (int i = 0; i < xAxisList.size(); i++) {
+                ChartViewFieldDTO x = xAxisList.get(i);
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
@@ -632,6 +686,9 @@ public class DorisQueryProvider extends QueryProvider {
         List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
         List<ChartViewFieldDTO> yList = new ArrayList<>();
+        if (xIsNumber) {
+            yList.add(xAxis.get(0));
+        }
         yList.addAll(yAxis);
         yList.addAll(extBubble);
         if (CollectionUtils.isNotEmpty(yList)) {
@@ -707,8 +764,8 @@ public class DorisQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, ChartViewWithBLOBs view) {
-        return getSQLScatter("(" + table + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, extBubble, null, view);
+    public String getSQLAsTmpScatter(String table, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extBubble, List<ChartViewFieldDTO> extGroup, ChartViewWithBLOBs view) {
+        return getSQLScatter("(" + table + ")", xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, extBubble, extGroup, null, view);
     }
 
     @Override
