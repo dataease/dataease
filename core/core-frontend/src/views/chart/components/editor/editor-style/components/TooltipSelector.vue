@@ -69,7 +69,7 @@ const initSeriesTooltip = () => {
       ...next,
       seriesId: next.seriesId ?? next.id,
       show: index <= quotaAxis.value.length - 1,
-      summary: 'sum'
+      summary: COUNT_DE_TYPE.includes(next.deType) ? 'count' : 'sum'
     } as SeriesFormatter
     if (seriesAxisMap[tmp.seriesId]) {
       tmp = {
@@ -136,6 +136,18 @@ const AGGREGATION_TYPE = [
   { name: t('chart.count'), value: 'count' },
   { name: t('chart.count_distinct'), value: 'count_distinct' }
 ]
+const COUNT_AGGREGATION_TYPE = [
+  { name: t('chart.count'), value: 'count' },
+  { name: t('chart.count_distinct'), value: 'count_distinct' }
+]
+const COUNT_DE_TYPE = [0, 1, 5]
+
+const aggregationList = computed(() => {
+  if (COUNT_DE_TYPE.includes(curSeriesFormatter.value?.deType)) {
+    return COUNT_AGGREGATION_TYPE
+  }
+  return AGGREGATION_TYPE
+})
 watch(
   [() => props.chart.customAttr.tooltip, () => props.chart.customAttr.tooltip.show],
   () => {
@@ -188,10 +200,8 @@ const init = () => {
       formatterSelector.value?.blur()
       // 新增视图
       const formatter = state.tooltipForm.seriesTooltipFormatter
-      if (!quotaAxis.value?.length) {
-        if (!formatter.length) {
-          quotaData.value?.forEach(i => formatter.push({ ...i, seriesId: i.id, show: false }))
-        }
+      if (!formatter.length) {
+        quotaData.value?.forEach(i => formatter.push({ ...i, seriesId: i.id, show: false }))
         curSeriesFormatter.value = {}
         return
       }
@@ -209,7 +219,13 @@ const init = () => {
   }
 }
 
-const showProperty = prop => props.propertyInner?.includes(prop)
+const showProperty = prop => {
+  const instance = chartViewManager.getChartView(props.chart.render, props.chart.type)
+  if (instance) {
+    return instance.propertyInner['tooltip-selector'].includes(prop)
+  }
+  return props.propertyInner?.includes(prop)
+}
 const updateSeriesTooltipFormatter = (form: AxisEditForm) => {
   const { axisType, editType } = form
   if (
@@ -575,7 +591,7 @@ onMounted(() => {
                   @change="changeTooltipAttr('seriesTooltipFormatter', true)"
                 >
                   <el-option
-                    v-for="item in AGGREGATION_TYPE"
+                    v-for="item in aggregationList"
                     :label="item.name"
                     :value="item.value"
                     :key="item.value"
