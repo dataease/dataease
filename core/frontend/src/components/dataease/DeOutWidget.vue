@@ -207,7 +207,6 @@ export default {
         if (!this.titleStyle) {
           this.titleStyle = {}
         }
-        this.titleStyle.marginTop = '-20px'
       }
     },
     getCondition() {
