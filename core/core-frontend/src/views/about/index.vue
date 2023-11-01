@@ -153,8 +153,8 @@ const update = (licKey: string) => {
           {{
             !license?.edition
               ? $t('about.standard')
-              : license.edition === 'Embeded'
-              ? $t('about.Embeded')
+              : license.edition === 'Embedded'
+              ? $t('about.Embedded')
               : $t('about.enterprise')
           }}
         </div>
