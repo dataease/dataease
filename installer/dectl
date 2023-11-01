@@ -83,7 +83,7 @@ function _healthcheck() {
    echo
 }
 function _get_current_version() {
-   de_current_version=$(grep "^    image:.*dataease2.0:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease2.0:' '{print $2}')
+   de_current_version=$(grep "^    image:.*dataease:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease:' '{print $2}')
    echo $de_current_version
 }
 function status() {
