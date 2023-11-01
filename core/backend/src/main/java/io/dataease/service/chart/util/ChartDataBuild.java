@@ -329,7 +329,12 @@ public class ChartDataBuild {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
 
                 if (xIsNumber) {
-                    axisChartDataDTO.setX(new BigDecimal(a.toString()));
+                    BigDecimal v = null;
+                    try {
+                        v = new BigDecimal(a.toString());
+                    } catch (Exception ignore) {
+                    }
+                    axisChartDataDTO.setX(v);
                 } else {
                     axisChartDataDTO.setX(a.toString());
                 }
