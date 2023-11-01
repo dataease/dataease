@@ -313,7 +313,7 @@ public class ChartDataBuild {
             String[] row = data.get(i1);
 
             StringBuilder a = new StringBuilder();
-            if (isDrill) {
+            if (isDrill && !xIsNumber) {
                 a.append(row[extGroupList.size() + xAxis.size() - 1]);
             } else {
                 for (int i = extGroupList.size(); i < extGroupList.size() + xAxis.size(); i++) {
@@ -329,7 +329,7 @@ public class ChartDataBuild {
                 AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
 
                 if (xIsNumber) {
-                    BigDecimal v = null;
+                    Object v = a.toString();
                     try {
                         v = new BigDecimal(a.toString());
                     } catch (Exception ignore) {
@@ -345,11 +345,20 @@ public class ChartDataBuild {
                 List<ChartDimensionDTO> dimensionList = new ArrayList<>();
                 List<ChartQuotaDTO> quotaList = new ArrayList<>();
 
-                for (int j = 0; j < xAxis.size(); j++) {
-                    ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
-                    chartDimensionDTO.setId(xAxis.get(j).getId());
-                    chartDimensionDTO.setValue(row[j]);
-                    dimensionList.add(chartDimensionDTO);
+                if (xIsNumber && CollectionUtils.isNotEmpty(extGroupList)) {
+                    for (int j = 0; j < extGroupList.size(); j++) {
+                        ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                        chartDimensionDTO.setId(extGroupList.get(j).getId());
+                        chartDimensionDTO.setValue(row[j]);
+                        dimensionList.add(chartDimensionDTO);
+                    }
+                } else {
+                    for (int j = 0; j < xAxis.size(); j++) {
+                        ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                        chartDimensionDTO.setId(xAxis.get(j).getId());
+                        chartDimensionDTO.setValue(row[j]);
+                        dimensionList.add(chartDimensionDTO);
+                    }
                 }
                 axisChartDataDTO.setDimensionList(dimensionList);
 
@@ -365,7 +374,11 @@ public class ChartDataBuild {
                 }
 
                 if (CollectionUtils.isNotEmpty(extGroup) && xIsNumber) { //有分组时其实就是第一个
-                    axisChartDataDTO.setCategory(row[0]);
+                    if (isDrill) {
+                        axisChartDataDTO.setCategory(row[extGroupList.size() - 1]);
+                    } else {
+                        axisChartDataDTO.setCategory(row[0]);
+                    }
                 } else {
                     axisChartDataDTO.setCategory(yAxis.get(j).getName());
                 }
@@ -988,7 +1001,7 @@ public class ChartDataBuild {
                 }
             }
             if (xIsNumber && CollectionUtils.isNotEmpty(extStack)) {
-                fields.add(extStack.get(0));
+                fields.addAll(extStack);
             }
 
             if (xIsNumber) {
