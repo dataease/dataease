@@ -183,7 +183,7 @@ else
    cd ${DE_RUN_BASE} && docker-compose $compose_files pull 2>&1
 
    DEVERSION=$(cat ${CURRENT_DIR}/dataease/templates/version)
-   #curl -sfL https://resource.fit2cloud.com/installation-log.sh | sh -s de ${INSTALL_TYPE} ${DEVERSION}
+   curl -sfL https://resource.fit2cloud.com/installation-log.sh | sh -s de ${INSTALL_TYPE} ${DEVERSION}
    cd -
 fi
 
