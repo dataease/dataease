@@ -1,5 +1,6 @@
 <template>
-  <span style="transform: translate(0);">
+  <span style="transform: translate(0);display: inline-block;position: relative;
+    z-index: 10;">
     <el-popover
       placement="bottom"
       trigger="hover"
@@ -75,7 +76,6 @@ export default {
   padding: 0;
   border: none;
   margin-top: 8px!important;
-  background: transparent;
   top: 22px !important;
 }
 </style>
