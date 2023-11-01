@@ -44,7 +44,7 @@ function usage() {
    echo "  version      查看 DATAEASE 版本"
 }
 function _check_apisix_init() {
-   if [[ $DE_INSTALL_MODE = "enterprise" ]];then
+   if [[ $DE_INSTALL_MODE != "community" ]];then
       _prepare_apisix
    fi
 }
