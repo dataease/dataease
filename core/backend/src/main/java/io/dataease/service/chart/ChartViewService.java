@@ -1250,8 +1250,15 @@ public class ChartViewService {
         // 同比/环比计算，通过对比类型和数据设置，计算出对应指标的结果，然后替换结果data数组中的对应元素
         // 如果因维度变化（如时间字段缺失，时间字段的展示格式变化）导致无法计算结果的，则结果data数组中的对应元素全置为null
         // 根据不同图表类型，获得需要替换的指标index array
-        for (int i = 0; i < yAxis.size(); i++) {
-            ChartViewFieldDTO chartViewFieldDTO = yAxis.get(i);
+        List<ChartViewFieldDTO> tempYAxis = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+            //针对散点图scatter处理
+            tempYAxis.add(xAxis.get(0));
+        }
+        tempYAxis.addAll(yAxis);
+
+        for (int i = 0; i < tempYAxis.size(); i++) {
+            ChartViewFieldDTO chartViewFieldDTO = tempYAxis.get(i);
             ChartFieldCompareDTO compareCalc = chartViewFieldDTO.getCompareCalc();
             if (ObjectUtils.isEmpty(compareCalc)) {
                 continue;
