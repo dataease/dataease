@@ -3,7 +3,7 @@
     <img
       v-if="!showLink"
       :style="imageAdapter"
-      :src="imgUrl"
+      :src="element.propValue"
     >
     <a
       v-if="showLink"
@@ -13,15 +13,13 @@
     >
       <img
         :style="imageAdapter"
-        :src="imgUrl"
+        :src="element.propValue"
       >
     </a>
   </div>
 </template>
 
 <script>
-import { imgUrlTrans } from '@/components/canvas/utils/utils'
-
 export default {
   props: {
     element: {
@@ -35,9 +33,6 @@ export default {
     }
   },
   computed: {
-    imgUrl() {
-      return imgUrlTrans(this.element.propValue)
-    },
     showLink() {
       return this.editMode === 'preview' && this.element && this.element.hyperlinks && this.element.hyperlinks.enable
     },
