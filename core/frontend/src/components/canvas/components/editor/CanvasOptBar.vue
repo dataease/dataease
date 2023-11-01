@@ -12,7 +12,7 @@
     >
       <el-button-group size="mini">
         <el-button
-          v-if="!isNewBlank"
+          v-if="fromLink"
           size="mini"
           type="button"
           @click="back2Last"
@@ -89,8 +89,8 @@ export default {
     isPublicLink() {
       return this.$router.currentRoute.path === '/delink'
     },
-    isNewBlank() {
-      return window.history.length === 1
+    fromLink() {
+      return this.$route.query.fromLink === 'true'
     },
     containerClass() {
       return this.isPublicLink ? 'trans-pc' : 'bar-main'

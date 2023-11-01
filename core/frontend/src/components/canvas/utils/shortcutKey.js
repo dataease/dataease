@@ -50,10 +50,32 @@ const unlockMap = {
 
 let isCtrlOrCommandDown = false
 
+
+// 检查当前页面是否有弹框
+const checkDialog = () => {
+  let haveDialog = false
+  document.querySelectorAll('.el-dialog__wrapper').forEach(element => {
+    if (window.getComputedStyle(element).getPropertyValue('display') !== 'none') {
+      haveDialog = true
+    }
+  })
+  document.querySelectorAll('.el-popover').forEach(element => {
+    if (window.getComputedStyle(element).getPropertyValue('display') !== 'none') {
+      haveDialog = true
+    }
+  })
+  // 富文本单框
+  if (document.querySelector('.tox-dialog-wrap')) {
+    haveDialog = true
+  }
+
+  return haveDialog
+}
+
 // Monitor key operations globally and execute corresponding commands
 export function listenGlobalKeyDown() {
   window.onkeydown = (e) => {
-    if (!store.state.isInEditor) return
+    if (!store.state.isInEditor || checkDialog()) return
     const { keyCode } = e
     if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
