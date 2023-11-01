@@ -173,31 +173,8 @@ const dsClick = (data: Tree) => {
     }
     //选中赋值
     _modelValue.value = data.id
-    getFields(data.id, props.viewId)
     //关闭弹窗
     datasetSelectorPopover.value?.hide()
-  }
-}
-const getFields = (id, chartId) => {
-  if (id && chartId) {
-    getFieldByDQ(id, chartId)
-      .then(res => {
-        state.value.dimension = (res.dimensionList as unknown as Field[]) || []
-        state.value.quota = (res.quotaList as unknown as Field[]) || []
-        state.value.dimensionData = JSON.parse(JSON.stringify(state.value.dimension))
-        state.value.quotaData = JSON.parse(JSON.stringify(state.value.quota))
-      })
-      .catch(() => {
-        state.value.dimension = []
-        state.value.quota = []
-        state.value.dimensionData = []
-        state.value.quotaData = []
-      })
-  } else {
-    state.value.dimension = []
-    state.value.quota = []
-    state.value.dimensionData = []
-    state.value.quotaData = []
   }
 }
 const _popoverShow = ref(false)
