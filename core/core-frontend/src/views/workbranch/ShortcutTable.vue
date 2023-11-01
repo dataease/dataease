@@ -336,8 +336,9 @@ const getEmptyDesc = (): string => {
   padding: 8px 24px 0 24px;
   background: #fff;
   border-radius: 4px;
-  height: calc(100% - 280px);
-  margin-top: 16px;
+  // height: calc(100% - 280px);
+  // margin-top: 16px;
+  height: 100%;
 
   .select-type-list {
     width: 104px;
