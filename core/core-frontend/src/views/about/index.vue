@@ -150,7 +150,13 @@ const update = (licKey: string) => {
       <div class="item">
         <div class="label">{{ $t('about.version') }}</div>
         <div class="value">
-          {{ !license?.edition ? $t('about.standard') : $t('about.enterprise') }}
+          {{
+            !license?.edition
+              ? $t('about.standard')
+              : license.edition === 'Embeded'
+              ? $t('about.Embeded')
+              : $t('about.enterprise')
+          }}
         </div>
       </div>
       <div class="item">
