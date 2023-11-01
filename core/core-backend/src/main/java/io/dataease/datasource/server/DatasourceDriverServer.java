@@ -31,7 +31,7 @@ import java.util.*;
 @RequestMapping("/datasourceDriver")
 public class DatasourceDriverServer implements DatasourceDriverApi {
 
-    private final static String DRIVER_PATH = "/opt/dataease/custom-drivers/";
+    private final static String DRIVER_PATH = "/opt/dataease2.0/custom-drivers/";
 
     @Resource
     private CoreDriverMapper coreDriverMapper;
