@@ -49,6 +49,7 @@ import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
 import { set, concat, keys } from 'lodash-es'
+import { Field, getFieldByDQ } from '@/api/chart'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -146,6 +147,7 @@ const state = reactive({
 watch(
   [() => view.value['tableId']],
   () => {
+    getFields(props.view.tableId, props.view.id)
     const nodeId = view.value['tableId']
     if (!!nodeId) {
       cacheId = nodeId as unknown as string
@@ -157,7 +159,28 @@ watch(
   },
   { deep: true }
 )
-
+const getFields = (id, chartId) => {
+  if (id && chartId) {
+    getFieldByDQ(id, chartId)
+      .then(res => {
+        state.dimension = (res.dimensionList as unknown as Field[]) || []
+        state.quota = (res.quotaList as unknown as Field[]) || []
+        state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
+        state.quotaData = JSON.parse(JSON.stringify(state.quota))
+      })
+      .catch(() => {
+        state.dimension = []
+        state.quota = []
+        state.dimensionData = []
+        state.quotaData = []
+      })
+  } else {
+    state.dimension = []
+    state.quota = []
+    state.dimensionData = []
+    state.quotaData = []
+  }
+}
 watch(
   [() => state.searchField],
   newVal => {
