@@ -12,8 +12,6 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
-import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
-import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.constant.DataSourceType;
@@ -43,7 +41,6 @@ import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -88,8 +85,6 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private DatasetDataManage datasetDataManage;
 
-    @Autowired(required = false)
-    private InteractiveAuthApi interactiveAuthApi;
 
     @Resource
     private CoreUserManage coreUserManage;
@@ -618,14 +613,12 @@ public class DatasourceServer implements DatasourceApi {
         record.setStatus(coreDatasource.getStatus());
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         wrapper.eq("id", coreDatasource.getId());
-        datasourceMapper.update(record, wrapper);
-        if (interactiveAuthApi != null) {
-            BusiResourceEditor editor = new BusiResourceEditor();
-            editor.setId((long) coreDatasource.getId());
-            editor.setName(coreDatasource.getName());
-            editor.setExtraFlag(getExtraFlag(coreDatasource.getType(), coreDatasource.getStatus()));
-            interactiveAuthApi.editResource(editor);
+        CoreDatasource originData = datasourceMapper.selectById(coreDatasource.getId());
+        String originStatus = originData.getStatus();
+        if (StringUtils.equals(coreDatasource.getStatus(), originStatus)) {
+            return datasourceDTO;
         }
+        dataSourceManage.innerEditStatus(coreDatasource);
         return datasourceDTO;
     }
 
