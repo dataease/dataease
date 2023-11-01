@@ -1,9 +1,10 @@
 <template>
-  <span>
+  <span style="transform: translate(0);">
     <el-popover
       placement="bottom"
       trigger="hover"
       width="300"
+      :append-to-body="false"
       popper-class="remark-pop"
       :visible-arrow="false"
     >
@@ -75,5 +76,6 @@ export default {
   border: none;
   margin-top: 8px!important;
   background: transparent;
+  top: 22px !important;
 }
 </style>
