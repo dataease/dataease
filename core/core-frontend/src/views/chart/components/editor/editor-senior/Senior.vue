@@ -5,7 +5,7 @@ import ScrollCfg from '@/views/chart/components/editor/editor-senior/components/
 import AssistLine from '@/views/chart/components/editor/editor-senior/components/AssistLine.vue'
 import Threshold from '@/views/chart/components/editor/editor-senior/components/Threshold.vue'
 import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
-import { computed, PropType, ref, toRefs, watch } from 'vue'
+import { computed, PropType, ref, toRefs, watch, onMounted } from 'vue'
 import LinkJumpSet from '@/components/visualization/LinkJumpSet.vue'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import { canvasSave } from '@/utils/canvasUtils'
@@ -172,6 +172,10 @@ const linkageActiveChange = () => {
     dvMainStore.setNowPanelTrackInfo(rsp.data)
   })
 }
+const isDataEaseBi = ref(false)
+onMounted(() => {
+  isDataEaseBi.value = !!window.DataEaseBi
+})
 </script>
 
 <template>
@@ -298,7 +302,7 @@ const linkageActiveChange = () => {
             </div>
           </collapse-switch-item>
           <collapse-switch-item
-            v-if="showProperties('jump-set')"
+            v-if="showProperties('jump-set') && !isDataEaseBi"
             :themes="themes"
             name="jumpSet"
             :title="'跳转设置'"
