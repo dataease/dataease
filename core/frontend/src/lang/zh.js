@@ -2423,6 +2423,7 @@ export default {
     webFormat: '请输入以[https://或http://]开头的正确网址'
   },
   auth: {
+    selct_filter_fields: '请选择筛选字段',
     no_item_selected: '请在左侧选择组织、角色或用户',
     no_resource_selected: '请在左侧选择资源',
     search_pre: '通过',
