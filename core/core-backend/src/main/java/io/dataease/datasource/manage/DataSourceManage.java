@@ -88,6 +88,13 @@ public class DataSourceManage {
     }
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
+    public void innerEditStatus(CoreDatasource coreDatasource) {
+        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", coreDatasource.getId());
+        coreDatasourceMapper.update(coreDatasource, updateWrapper);
+    }
+
+    @XpackInteract(value = "datasourceResourceTree", before = false)
     public void move(DatasourceDTO dataSourceDTO) {
         Long id = dataSourceDTO.getId();
         CoreDatasource sourceData = null;
