@@ -175,14 +175,16 @@ const addItemBox = component => {
 }
 
 const moveOutFromTab = component => {
-  component.canvasId = canvasId.value
-  dvMainStore.addComponent({
-    component,
-    index: undefined,
-    isFromGroup: true,
-    componentData: componentData.value
-  })
-  addItemBox(component)
+  setTimeout(() => {
+    component.canvasId = canvasId.value
+    dvMainStore.addComponent({
+      component,
+      index: undefined,
+      isFromGroup: true,
+      componentData: componentData.value
+    })
+    addItemBox(component)
+  }, 500)
 }
 
 // 全局监听按键事件
