@@ -14,8 +14,6 @@ import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
 import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
-import io.dataease.api.permissions.user.api.UserApi;
-import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.constant.DataSourceType;
@@ -34,13 +32,13 @@ import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.datasource.type.Pg;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -89,10 +87,12 @@ public class DatasourceServer implements DatasourceApi {
     private CoreDsFinishPageMapper coreDsFinishPageMapper;
     @Resource
     private DatasetDataManage datasetDataManage;
-    @Autowired(required = false)
-    private UserApi userApi;
+
     @Autowired(required = false)
     private InteractiveAuthApi interactiveAuthApi;
+
+    @Resource
+    private CoreUserManage coreUserManage;
 
     @Override
     public List<DatasourceDTO> query(String keyWord) {
@@ -311,16 +311,16 @@ public class DatasourceServer implements DatasourceApi {
 
     private static void checkParams(String configurationStr) {
         DatasourceConfiguration configuration = JsonUtil.parseObject(configurationStr, DatasourceConfiguration.class);
-        if(configuration.getInitialPoolSize() < configuration.getMinPoolSize()){
+        if (configuration.getInitialPoolSize() < configuration.getMinPoolSize()) {
             DEException.throwException("初始连接数不能小于最小连接数！");
         }
-        if(configuration.getInitialPoolSize() > configuration.getMaxPoolSize()){
+        if (configuration.getInitialPoolSize() > configuration.getMaxPoolSize()) {
             DEException.throwException("初始连接数不能大于最大连接数！");
         }
-        if(configuration.getMaxPoolSize() < configuration.getMinPoolSize()){
+        if (configuration.getMaxPoolSize() < configuration.getMinPoolSize()) {
             DEException.throwException("最大连接数不能小于最小连接数！");
         }
-        if(configuration.getQueryTimeout() < 0){
+        if (configuration.getQueryTimeout() < 0) {
             DEException.throwException("查询超时不能小于0！");
         }
     }
@@ -540,12 +540,8 @@ public class DatasourceServer implements DatasourceApi {
         }
         datasourceDTO.setConfiguration(new String(Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
 
-        if (userApi != null) {
-            UserFormVO userFormVO = userApi.queryById(Long.valueOf(datasourceDTO.getCreateBy()));
-            if (userFormVO != null) {
-                datasourceDTO.setCreator(userFormVO.getName());
-            }
-        }
+        datasourceDTO.setCreator(coreUserManage.getUserName(Long.valueOf(datasourceDTO.getCreateBy())));
+
         return datasourceDTO;
     }
 
@@ -882,7 +878,7 @@ public class DatasourceServer implements DatasourceApi {
         List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
         for (int i = 0; i < pager.getRecords().size(); i++) {
             for (int i1 = 0; i1 < datasetTableDTOS.size(); i1++) {
-                if(pager.getRecords().get(i).getTableName().equalsIgnoreCase(datasetTableDTOS.get(i1).getTableName())){
+                if (pager.getRecords().get(i).getTableName().equalsIgnoreCase(datasetTableDTOS.get(i1).getTableName())) {
                     pager.getRecords().get(i).setName(datasetTableDTOS.get(i1).getName());
                 }
             }
