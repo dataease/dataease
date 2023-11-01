@@ -145,32 +145,31 @@
 </template>
 
 <script>
-import {getStyle} from '@/components/canvas/utils/style'
-import {mapState} from 'vuex'
+import { getStyle } from '@/components/canvas/utils/style'
+import { mapState } from 'vuex'
 import ComponentWrapper from './ComponentWrapper'
-import {changeStyleWithScale} from '@/components/canvas/utils/translate'
-import {uuid} from 'vue-uuid'
-import {deepCopy, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { changeStyleWithScale } from '@/components/canvas/utils/translate'
+import { uuid } from 'vue-uuid'
+import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 import bus from '@/utils/bus'
-import {buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch} from '@/utils/conditionUtil'
-import {hasDataPermission} from '@/utils/permission'
-import {activeWatermark} from '@/components/canvas/tools/watermark'
-import {proxyUserLoginInfo, userLoginInfo} from '@/api/systemInfo/userLogin'
+import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
+import { hasDataPermission } from '@/utils/permission'
+import { activeWatermark } from '@/components/canvas/tools/watermark'
+import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 import html2canvas from 'html2canvasde'
-import {queryAll} from '@/api/panel/pdfTemplate'
+import { queryAll } from '@/api/panel/pdfTemplate'
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
-import {listenGlobalKeyDownPreview} from '@/components/canvas/utils/shortcutKey'
+import { listenGlobalKeyDownPreview } from '@/components/canvas/utils/shortcutKey'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
-import {hexColorToRGBA} from "@/views/chart/chart/util";
-import {isMobile} from '@/utils/index'
-
+import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { isMobile } from '@/utils/index'
 
 const erd = elementResizeDetectorMaker()
 export default {
-  components: {UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport},
+  components: { UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport },
   model: {
     prop: 'show',
     event: 'change'
@@ -207,14 +206,14 @@ export default {
     componentData: {
       type: Array,
       required: false,
-      default: function () {
+      default: function() {
         return []
       }
     },
     canvasStyleData: {
       type: Object,
       required: false,
-      default: function () {
+      default: function() {
         return {}
       }
     },
@@ -463,7 +462,7 @@ export default {
       return this.$refs['viewWrapperChild']
     },
     getAllWrapperChildRefs() {
-      let allChildRefs = []
+      const allChildRefs = []
       const currentChildRefs = this.getWrapperChildRefs()
       if (currentChildRefs && currentChildRefs.length > 0) {
         allChildRefs.push.apply(allChildRefs, currentChildRefs)
@@ -649,7 +648,7 @@ export default {
     },
     clearAllLinkage() {
       this.$store.commit('clearPanelLinkageInfo')
-      bus.$emit('clear_panel_linkage', {viewId: 'all'})
+      bus.$emit('clear_panel_linkage', { viewId: 'all' })
     },
     changeStyleWithScale,
     getStyle,
@@ -714,7 +713,7 @@ export default {
     },
     deselectCurComponent(e) {
       if (!this.isClickComponent) {
-        this.$store.commit('setCurComponent', {component: null, index: null})
+        this.$store.commit('setCurComponent', { component: null, index: null })
         if (this.$refs?.['canvas-opt-bar']) {
           this.$refs['canvas-opt-bar'].setWidgetStatus()
         }
