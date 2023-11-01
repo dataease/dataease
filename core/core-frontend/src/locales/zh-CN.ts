@@ -264,7 +264,7 @@ export default {
     data_source_table: '数据源表',
     auth_method: '认证方式',
     passwd: '用户名密码',
-    kerbers_info: '请确保 krb5.Conf、Keytab Key，已经添加到路径：/opt/dataease/conf',
+    kerbers_info: '请确保 krb5.Conf、Keytab Key，已经添加到路径：/opt/dataease2.0/conf',
     client_principal: 'Client Principal',
     keytab_Key_path: 'Keytab Key Path',
     please_select_left: '请从左侧选择',
