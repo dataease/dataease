@@ -56,7 +56,7 @@ function _prepare_apisix() {
       cd $DE_RUNNING_BASE
       env | grep DE_ >.env
       sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/apisix/apisix_conf/config.yaml
-      sed -i -e "s/key:.*/key: ${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
+      sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
    fi
    compose_files="${compose_files} -f docker-compose-apisix.yml"
 }
