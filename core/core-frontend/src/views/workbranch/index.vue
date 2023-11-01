@@ -17,6 +17,8 @@ const { t } = useI18n()
 const busiDataMap = computed(() => interactiveStore.getData)
 const busiCountCardList = ref([])
 
+const showTemplate = ref(false)
+
 const router = useRouter()
 
 const quickCreationList = shallowRef([
@@ -159,7 +161,7 @@ fillCardInfo()
       </div>
     </div>
     <div class="template-market-dashboard">
-      <div class="template-market">
+      <div v-if="showTemplate" class="template-market">
         <div class="label">
           模版市场
           <div class="expand-all">
