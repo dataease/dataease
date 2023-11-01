@@ -1,14 +1,12 @@
 package io.dataease.chart.manage;
 
 import cn.hutool.core.collection.CollectionUtil;
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.*;
 import io.dataease.api.chart.request.ChartDrillRequest;
 import io.dataease.api.chart.request.ChartExtRequest;
 import io.dataease.api.dataset.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
-import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.chart.constant.ChartConstants;
@@ -30,6 +28,7 @@ import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.result.ResultCode;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -37,7 +36,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -65,8 +63,9 @@ public class ChartDataManage {
     private ChartViewManege chartViewManege;
     @Resource
     private PermissionManage permissionManage;
-    @Autowired(required = false)
-    private InteractiveAuthApi interactiveAuthApi;
+
+    @Resource
+    private CorePermissionManage corePermissionManage;
 
     private static Logger logger = LoggerFactory.getLogger(ChartDataManage.class);
 
@@ -140,11 +139,12 @@ public class ChartDataManage {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
         }
         // check permission
-        if (interactiveAuthApi != null) {
-            BusiPerCheckDTO dto = new BusiPerCheckDTO();
-            dto.setId(table.getId());
-            dto.setAuthEnum(AuthEnum.READ);
-            interactiveAuthApi.checkAuth(dto);
+        BusiPerCheckDTO dto = new BusiPerCheckDTO();
+        dto.setId(table.getId());
+        dto.setAuthEnum(AuthEnum.READ);
+        boolean checked = corePermissionManage.checkAuth(dto);
+        if (!checked) {
+            DEException.throwException(Translator.get("i18n_no_datasource_permission"));
         }
 
         // column permission
