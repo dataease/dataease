@@ -116,6 +116,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
       pre[next.id] = next
       return pre
     }, {})
+    // 默认是灰色
     tmpOptions.label.style.fill = DEFAULT_LABEL.color
     const label = {
       fields: [],
@@ -242,6 +243,7 @@ export class StackBar extends Bar {
       return baseOptions
     }
     const { label: labelAttr } = parseJson(chart.customAttr)
+    baseOptions.label.style.fill = labelAttr.color
     const label = {
       ...baseOptions.label,
       formatter: function (param: Datum) {

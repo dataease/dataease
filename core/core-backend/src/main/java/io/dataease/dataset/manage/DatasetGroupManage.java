@@ -31,6 +31,7 @@ import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
+import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -70,6 +71,9 @@ public class DatasetGroupManage {
     private CoreDatasourceMapper coreDatasourceMapper;
     @Autowired(required = false)
     private UserApi userApi;
+
+    @Resource
+    private CoreUserManage coreUserManage;
 
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
@@ -232,13 +236,13 @@ public class DatasetGroupManage {
         DataSetBarVO dataSetBarVO = coreDataSetExtMapper.queryBarInfo(id);
         // get creator
         if (userApi != null) {
-            UserFormVO userFormVO = userApi.queryById(Long.valueOf(dataSetBarVO.getCreateBy()));
-            if (userFormVO != null) {
-                dataSetBarVO.setCreator(userFormVO.getName());
+            String userName = coreUserManage.getUserName(Long.valueOf(dataSetBarVO.getCreateBy()));
+            if (StringUtils.isNotBlank(userName)) {
+                dataSetBarVO.setCreator(userName);
             }
-            UserFormVO userFormVOUpdateBy = userApi.queryById(Long.valueOf(dataSetBarVO.getUpdateBy()));
-            if (userFormVOUpdateBy != null) {
-                dataSetBarVO.setUpdater(userFormVOUpdateBy.getName());
+            String updateUserName = coreUserManage.getUserName(Long.valueOf(dataSetBarVO.getUpdateBy()));
+            if (StringUtils.isNotBlank(updateUserName)) {
+                dataSetBarVO.setUpdater(updateUserName);
             }
         }
         dataSetBarVO.setDatasourceDTOList(getDatasource(id));

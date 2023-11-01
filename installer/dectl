@@ -56,7 +56,7 @@ function _prepare_apisix() {
       cd $DE_RUNNING_BASE
       env | grep DE_ >.env
       sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/apisix/apisix_conf/config.yaml
-      sed -i -e "s/key:.*/key: ${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
+      sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
    fi
    compose_files="${compose_files} -f docker-compose-apisix.yml"
 }
@@ -83,7 +83,7 @@ function _healthcheck() {
    echo
 }
 function _get_current_version() {
-   de_current_version=$(grep "^    image:.*dataease2.0:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease2.0:' '{print $2}')
+   de_current_version=$(grep "^    image:.*dataease:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease:' '{print $2}')
    echo $de_current_version
 }
 function status() {
