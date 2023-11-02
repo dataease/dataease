@@ -95,6 +95,9 @@ export const pathValid = path => {
  * @returns
  */
 const hasCurrentRouter = (locations, routers, index) => {
+  if (!routers?.length) {
+    return false
+  }
   const location = locations[index]
   let kids = []
   const isvalid = routers.some(router => {

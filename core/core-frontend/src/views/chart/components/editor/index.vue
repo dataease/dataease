@@ -15,7 +15,6 @@ import {
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Field, getFieldByDQ } from '@/api/chart'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElMessage, ElTreeSelect } from 'element-plus-secondary'
@@ -43,13 +42,14 @@ import CustomSortEdit from '@/views/chart/components/editor/drag-item/components
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, get } from 'lodash-es'
 import { deleteField, saveField } from '@/api/dataset'
 import { getWorldTree } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
-import _ from 'lodash'
+import { set, concat, keys } from 'lodash-es'
+import { Field, getFieldByDQ } from '@/api/chart'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -63,7 +63,7 @@ const tabActiveVQuery = ref('style')
 const datasetSelector = ref(null)
 const curDatasetWeight = ref(0)
 const renameForm = ref<FormInstance>()
-
+const { emitter } = useEmitt()
 const props = defineProps({
   view: {
     type: Object as PropType<ChartObj>,
@@ -145,16 +145,9 @@ const state = reactive({
 })
 
 watch(
-  [() => props.view.tableId],
-  () => {
-    getFields(props.view.tableId, props.view.id)
-  },
-  { deep: true }
-)
-
-watch(
   [() => view.value['tableId']],
   () => {
+    getFields(props.view.tableId, props.view.id)
     const nodeId = view.value['tableId']
     if (!!nodeId) {
       cacheId = nodeId as unknown as string
@@ -166,7 +159,28 @@ watch(
   },
   { deep: true }
 )
-
+const getFields = (id, chartId) => {
+  if (id && chartId) {
+    getFieldByDQ(id, chartId)
+      .then(res => {
+        state.dimension = (res.dimensionList as unknown as Field[]) || []
+        state.quota = (res.quotaList as unknown as Field[]) || []
+        state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
+        state.quotaData = JSON.parse(JSON.stringify(state.quota))
+      })
+      .catch(() => {
+        state.dimension = []
+        state.quota = []
+        state.dimensionData = []
+        state.quotaData = []
+      })
+  } else {
+    state.dimension = []
+    state.quota = []
+    state.dimensionData = []
+    state.quotaData = []
+  }
+}
 watch(
   [() => state.searchField],
   newVal => {
@@ -222,31 +236,8 @@ const filterNode = (value, data) => {
   return data.name?.includes(value)
 }
 
-const getFields = (id, chartId) => {
-  if (id && chartId) {
-    getFieldByDQ(id, chartId)
-      .then(res => {
-        state.dimension = (res.dimensionList as unknown as Field[]) || []
-        state.quota = (res.quotaList as unknown as Field[]) || []
-        state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
-        state.quotaData = JSON.parse(JSON.stringify(state.quota))
-      })
-      .catch(() => {
-        state.dimension = []
-        state.quota = []
-        state.dimensionData = []
-        state.quotaData = []
-      })
-  } else {
-    state.dimension = []
-    state.quota = []
-    state.dimensionData = []
-    state.quotaData = []
-  }
-}
-
 const allFields = computed(() => {
-  return _.concat(state.quotaData, state.dimensionData)
+  return concat(state.quotaData, state.dimensionData)
 })
 
 const queryList = computed(() => {
@@ -266,9 +257,9 @@ const queryList = computed(() => {
 
 const quotaData = computed(() => {
   if (view.value?.type === 'table-info') {
-    return state.quotaData?.filter(item => item.id !== '-1')
+    return state.quota?.filter(item => item.id !== '-1')
   }
-  return state.quotaData
+  return state.quota
 })
 provide('quotaData', quotaData)
 
@@ -313,23 +304,29 @@ const dimensionItemRemove = item => {
   }
 }
 
-const quotaItemChange = () => {
+const quotaItemChange = (axis: Axis, axisType: AxisType) => {
   recordSnapshotInfo('calcData')
   // do quotaItemChange
+  emitter.emit('updateAxis', { axisType, axis: [axis], editType: 'update' })
 }
 const quotaItemRemove = item => {
   recordSnapshotInfo('calcData')
+  let axisType: AxisType = item.removeType
+  let axis
   if (item.removeType === 'quota') {
-    view.value.yAxis.splice(item.index, 1)
+    axisType = 'yAxis'
+    axis = view.value.yAxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
-    view.value.yAxisExt.splice(item.index, 1)
+    axisType = 'yAxisExt'
+    axis = view.value.yAxisExt.splice(item.index, 1)
   } else if (item.removeType === 'extLabel') {
-    view.value.extLabel.splice(item.index, 1)
+    axis = view.value.extLabel.splice(item.index, 1)
   } else if (item.removeType === 'extTooltip') {
-    view.value.extTooltip.splice(item.index, 1)
+    axis = view.value.extTooltip.splice(item.index, 1)
   } else if (item.removeType === 'extBubble') {
-    view.value.extBubble.splice(item.index, 1)
+    axis = view.value.extBubble.splice(item.index, 1)
   }
+  useEmitt().emitter.emit('removeAxis', { axisType, axis, editType: 'remove' })
 }
 const arrowIcon = () => {
   return h(Icon, { name: 'icon_down_outlined-1' })
@@ -394,7 +391,7 @@ const onMove = e => {
 // drag
 const dragCheckType = (list, type) => {
   if (list && list.length > 0) {
-    var valid = true
+    let valid = true
     for (let i = 0; i < list.length; i++) {
       if (list[i].groupType !== type) {
         list.splice(i, 1)
@@ -407,6 +404,7 @@ const dragCheckType = (list, type) => {
         type: 'warning'
       })
     }
+    return valid
   }
 }
 const dragMoveDuplicate = (list, e, mode) => {
@@ -418,6 +416,7 @@ const dragMoveDuplicate = (list, e, mode) => {
     })
     if (dup && dup.length > 1) {
       list.splice(e.newDraggableIndex, 1)
+      return dup
     }
   }
 }
@@ -439,14 +438,37 @@ const addAxis = (e, axis: AxisType) => {
     return
   }
   const { type, limit, duplicate } = axisSpec
+  let typeValid, dup
   if (type) {
-    dragCheckType(view.value[axis], type)
+    typeValid = dragCheckType(view.value[axis], type)
   }
   if (!duplicate) {
-    dragMoveDuplicate(view.value[axis], e, 'chart')
+    dup = dragMoveDuplicate(view.value[axis], e, 'chart')
   }
-  if (limit) {
-    view.value[axis] = view.value[axis].splice(0, limit)
+  if (view.value[axis].length > limit) {
+    const removedAxis = view.value[axis].splice(limit)
+    if (e.newDraggableIndex + 1 <= limit) {
+      emitter.emit('removeAxis', { axisType: axis, axis: removedAxis, editType: 'remove' })
+      emitter.emit('addAxis', {
+        axisType: axis,
+        axis: [view.value[axis][e.newDraggableIndex]],
+        editType: 'add'
+      })
+    }
+  } else {
+    if (!dup && typeValid) {
+      emitter.emit('addAxis', {
+        axisType: axis,
+        axis: [view.value[axis][e.newDraggableIndex]],
+        editType: 'add'
+      })
+    }
+  }
+  if (view.value.type === 'line') {
+    if (view.value?.xAxisExt?.length && view.value?.yAxis?.length > 1) {
+      const axis = view.value.yAxis.splice(1)
+      emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
+    }
   }
 }
 
@@ -505,6 +527,13 @@ const moveToQuota = e => {
   dragMoveDuplicate(state.quotaData, e, 'ds')
 }
 
+const onAxisChange = (e, axis: AxisType) => {
+  if (e.removed) {
+    const { element } = e.removed
+    emitter.emit('removeAxis', { axisType: axis, axis: [element], editType: 'remove' })
+  }
+}
+
 const calcData = (view, resetDrill = false, updateQuery = '') => {
   if (
     view.refreshTime === '' ||
@@ -551,26 +580,36 @@ const onTypeChange = (render, type) => {
     view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
     // 处理轴
     const axisConfig = chartViewInstance.axisConfig
-    _.keys(axisConfig).forEach((axis: AxisType) => {
+    keys(axisConfig).forEach((axis: AxisType) => {
       const axisArr = view.value[axis] as Axis[]
       if (!axisArr?.length) {
         return
       }
       const axisSpec = axisConfig[axis]
       const { type, limit } = axisSpec
+      const removedAxis = []
       // check type
       if (type) {
         for (let i = axisArr.length - 1; i >= 0; i--) {
           if (axisArr[i].groupType !== type) {
-            axisArr.splice(i, 1)
+            const [axis] = axisArr.splice(i, 1)
+            removedAxis.push(axis)
           }
         }
       }
       // check limit
-      if (limit && axisArr.length) {
-        axisArr.splice(0, axisArr.length - limit)
+      if (limit && limit < axisArr.length) {
+        axisArr.splice(limit).forEach(i => removedAxis.push(i))
       }
+      removedAxis.length &&
+        emitter.emit('removeAxis', { axisType: axis, axis: removedAxis, editType: 'remove' })
     })
+    if (view.value.type === 'line') {
+      if (view.value?.xAxisExt?.length && view.value?.yAxis?.length > 1) {
+        const axis = view.value.yAxis.splice(1)
+        emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
+      }
+    }
   }
   curComponent.value.innerType = type
   calcData(view.value, true)
@@ -617,23 +656,22 @@ const onLabelChange = val => {
   view.value.customAttr.label = val
   renderChart(view.value)
 }
-watch([() => view.value.xAxisExt?.length, () => view.value.yAxis?.length], () => {
-  if (view.value.type === 'line') {
-    if (view.value?.xAxisExt?.length && view.value?.yAxis?.length > 1) {
-      view.value.yAxis.splice(1)
-    }
-  }
-})
 
-const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>) => {
+const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>, prop: string) => {
   const { data, requestData, render } = chartForm
+  let tooltipObj = data
   if (!data) {
-    view.value.customAttr.tooltip = chartForm as unknown as ChartTooltipAttr
+    tooltipObj = chartForm as unknown as ChartTooltipAttr
+  }
+  if (prop) {
+    const val = get(tooltipObj, prop)
+    set(view.value.customAttr.tooltip, prop, val)
   } else {
-    view.value.customAttr.tooltip = data
+    view.value.customAttr.tooltip = tooltipObj
   }
   if (requestData) {
     calcData(view.value)
+    return
   }
   // for compatibility
   if (render !== false) {
@@ -716,29 +754,31 @@ const removeItems = (
   _type: 'xAxis' | 'xAxisExt' | 'extStack' | 'yAxis' | 'extBubble' | 'customFilter' | 'drillFields'
 ) => {
   recordSnapshotInfo('calcData')
+  let axis = []
   switch (_type) {
     case 'xAxis':
-      view.value.xAxis = []
+      axis = view.value.xAxis?.splice(0)
       break
     case 'xAxisExt':
-      view.value.xAxisExt = []
+      axis = view.value.xAxisExt?.splice(0)
       break
     case 'extStack':
-      view.value.extStack = []
+      axis = view.value.extStack?.splice(0)
       break
     case 'yAxis':
-      view.value.yAxis = []
+      axis = view.value.yAxis?.splice(0)
       break
     case 'extBubble':
-      view.value.extBubble = []
+      axis = view.value.extBubble?.splice(0)
       break
     case 'customFilter':
-      view.value.customFilter = []
+      axis = view.value.customFilter?.splice(0)
       break
     case 'drillFields':
-      view.value.drillFields = []
+      axis = view.value.drillFields?.splice(0)
       break
   }
+  axis?.length && emitter.emit('removeAxis', { axisType: _type, axis, editType: 'remove' })
 }
 
 const saveRename = ref => {
@@ -746,14 +786,19 @@ const saveRename = ref => {
   ref.validate(valid => {
     if (valid) {
       const { renameType, index, chartShowName } = state.itemForm
+      let axisType, axis
       switch (renameType) {
         case 'quota':
+          axisType = 'yAxis'
+          axis = view.value.yAxis[index]
           view.value.yAxis[index].chartShowName = chartShowName
           break
         case 'dimension':
           view.value.xAxis[index].chartShowName = chartShowName
           break
         case 'quotaExt':
+          axisType = 'yAxisExt'
+          axis = view.value.yAxisExt[index]
           view.value.yAxisExt[index].chartShowName = chartShowName
           break
         case 'dimensionExt':
@@ -763,6 +808,8 @@ const saveRename = ref => {
           view.value.extStack[index].chartShowName = chartShowName
           break
         case 'extBubble':
+          axisType = 'extBubble'
+          axis = view.value.extBubble[index]
           view.value.extBubble[index].chartShowName = chartShowName
           break
         case 'extLabel':
@@ -774,6 +821,7 @@ const saveRename = ref => {
         default:
           break
       }
+      axisType && emitter.emit('updateAxis', { axisType, axis: [axis], editType: 'update' })
       closeRename()
     } else {
       return false
@@ -1356,6 +1404,7 @@ const onRefreshChange = val => {
                         class="drag-block-style"
                         :class="{ dark: themes === 'dark' }"
                         @add="addYaxis"
+                        @change="e => onAxisChange(e, 'yAxis')"
                       >
                         <template #item="{ element, index }">
                           <quota-item
@@ -1366,7 +1415,7 @@ const onRefreshChange = val => {
                             :index="index"
                             type="quota"
                             :themes="props.themes"
-                            @onQuotaItemChange="quotaItemChange"
+                            @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
                             @onQuotaItemRemove="quotaItemRemove"
                             @onNameEdit="showRename"
                             @editItemFilter="showQuotaEditFilter"
@@ -1403,6 +1452,7 @@ const onRefreshChange = val => {
                         class="drag-block-style"
                         :class="{ dark: themes === 'dark' }"
                         @add="addExtBubble"
+                        @change="e => onAxisChange(e, 'extBubble')"
                       >
                         <template #item="{ element, index }">
                           <quota-item
@@ -1413,7 +1463,7 @@ const onRefreshChange = val => {
                             :index="index"
                             type="extBubble"
                             :themes="props.themes"
-                            @onQuotaItemChange="quotaItemChange"
+                            @onQuotaItemChange="item => quotaItemChange(item, 'extBubble')"
                             @onQuotaItemRemove="quotaItemRemove"
                             @onNameEdit="showRename"
                             @editItemFilter="showQuotaEditFilter"

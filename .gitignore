@@ -48,3 +48,5 @@ core/core-frontend/src/assets/fsSvg.html
 /sdk/dataease-plugin-filter/
 /sdk/dataease-plugin-interface/
 /sdk/dataease-plugin-view/
+/extensions/
+.vite/

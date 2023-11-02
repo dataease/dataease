@@ -443,7 +443,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
               </el-tooltip>
               <el-tooltip class="box-item" effect="dark" content="新建数据集" placement="top">
                 <el-icon class="custom-icon btn" @click="createDataset">
-                  <Icon name="icon_dataset_outlined" />
+                  <Icon name="icon_file-add_outlined" />
                 </el-icon>
               </el-tooltip>
             </div>

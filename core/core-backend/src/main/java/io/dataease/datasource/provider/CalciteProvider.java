@@ -47,15 +47,14 @@ import java.util.stream.Collectors;
 @Component("calciteProvider")
 public class CalciteProvider {
 
-    //TODO mongo impala es hive
     @Resource
     protected CoreDatasourceMapper coreDatasourceMapper;
     @Resource
     private EngineServer engineServer;
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
     private Map<Long, ExtendedJdbcClassLoader> customJdbcClassLoaders = new HashMap<>();
-    private final String FILE_PATH = "/opt/dataease/drivers";
-    private final String CUSTOM_PATH = "/opt/dataease/custom-drivers/";
+    private final String FILE_PATH = "/opt/dataease2.0/drivers";
+    private final String CUSTOM_PATH = "/opt/dataease2.0/custom-drivers/";
     private static String split = "DE";
 
     @Resource
@@ -93,7 +92,7 @@ public class CalciteProvider {
                 schemas.add(resultSet.getString(1));
             }
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         }
         return schemas;
     }
@@ -107,7 +106,7 @@ public class CalciteProvider {
                     tables.add(getTableDesc(datasourceRequest, resultSet));
                 }
             } catch (Exception e) {
-                DEException.throwException(e);
+                DEException.throwException(e.getMessage());
             }
         }
         return tables;
@@ -145,13 +144,9 @@ public class CalciteProvider {
         String querySql = getTablesSql(datasourceRequest).get(0);
         try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         }
         return "Success";
-    }
-
-    public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
-        return null;
     }
 
     public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException {
@@ -242,7 +237,7 @@ public class CalciteProvider {
             Class.forName("org.apache.calcite.jdbc.Driver");
             connection = DriverManager.getConnection("jdbc:calcite:", info);
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         }
         return connection;
     }
@@ -433,7 +428,7 @@ public class CalciteProvider {
                 list.add(row);
             }
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         }
         return list;
     }
@@ -573,7 +568,7 @@ public class CalciteProvider {
             Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
             conn = driverClass.connect(configuration.getJdbc(), props);
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         }
         return conn;
     }
@@ -587,7 +582,7 @@ public class CalciteProvider {
             stat = connection.createStatement();
             stat.setQueryTimeout(queryTimeout);
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         }
         return stat;
     }
@@ -640,7 +635,7 @@ public class CalciteProvider {
             customJdbcClassLoaders.put(coreDriver.getId(), customJdbcClassLoader);
             return customJdbcClassLoader;
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         }
         return null;
     }
@@ -691,7 +686,7 @@ public class CalciteProvider {
             SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
             addCustomFunctions(rootSchema);
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         }
     }
 
@@ -709,7 +704,7 @@ public class CalciteProvider {
                 rootSchema.removeSubSchema(datasourceSchemaDTO.getSchemaAlias());
             }
         } catch (Exception e) {
-            DEException.throwException(e);
+            DEException.throwException(e.getMessage());
         }
     }
 

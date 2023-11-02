@@ -164,11 +164,12 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    const { customAttr } = chart
+    const { customAttr, senior } = chart
     const { label } = customAttr
     if (!['left', 'middle', 'right'].includes(label.position)) {
       label.position = 'middle'
     }
+    senior.functionCfg.emptyDataStrategy = 'ignoreData'
     return chart
   }
 
@@ -185,6 +186,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       pre[next.id] = next
       return pre
     }, {})
+    // 默认灰色
     tmpOptions.label.style.fill = DEFAULT_LABEL.color
     const label = {
       fields: [],
@@ -272,6 +274,7 @@ export class HorizontalStackBar extends HorizontalBar {
       return baseOptions
     }
     const { label: labelAttr } = parseJson(chart.customAttr)
+    baseOptions.label.style.fill = labelAttr.color
     const label = {
       ...baseOptions.label,
       formatter: function (param: Datum) {

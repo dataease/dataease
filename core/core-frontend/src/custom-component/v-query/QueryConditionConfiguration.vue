@@ -364,6 +364,16 @@ const init = (queryId: string) => {
 
   const datasetMapKeyList = Object.keys(datasetMap)
 
+  getSqlParams([
+    ...new Set(
+      datasetFieldList.value
+        .map(ele => ele.tableId)
+        .filter(ele => !datasetMapKeyList.includes(ele) && ele)
+    )
+  ]).then(res => {
+    parameters.value = res || []
+  })
+
   if (datasetFieldIdList.every(ele => datasetMapKeyList.includes(ele))) {
     fields.value = datasetFieldList.value
       .map(ele => {
@@ -400,15 +410,6 @@ const init = (queryId: string) => {
     .finally(() => {
       handleCheckedFieldsChange(curComponent.value.checkedFields)
     })
-  getSqlParams([
-    ...new Set(
-      datasetFieldList.value
-        .map(ele => ele.tableId)
-        .filter(ele => !datasetMapKeyList.includes(ele) && ele)
-    )
-  ]).then(res => {
-    parameters.value = res || []
-  })
 }
 
 const weightlessness = () => {
@@ -729,9 +730,16 @@ defineExpose({
                   value="0"
                 />
                 <el-option
+                  v-if="curComponent.displayType === '2'"
                   :disabled="curComponent.displayType !== '2'"
                   label="数字下拉"
                   value="2"
+                />
+                <el-option
+                  v-else
+                  :disabled="curComponent.displayType !== '5'"
+                  label="数字下拉"
+                  value="5"
                 />
                 <el-option
                   :disabled="!['1', '7'].includes(curComponent.displayType)"
@@ -802,7 +810,7 @@ defineExpose({
                         <el-icon size="18px" v-if="data.leaf">
                           <Icon name="icon_dataset"></Icon>
                         </el-icon>
-                        <span class="label" style="margin-left: 8px" :title="node.label">{{
+                        <span class="label ellipsis" style="margin-left: 8px" :title="node.label">{{
                           node.label
                         }}</span>
                       </div>
@@ -1287,9 +1295,10 @@ defineExpose({
     align-items: center;
     .label {
       margin-left: 5px;
+      width: calc(100% - 45px);
     }
   }
-
+  max-width: 321px;
   .ed-select-dropdown__item.selected {
     font-weight: 400;
   }

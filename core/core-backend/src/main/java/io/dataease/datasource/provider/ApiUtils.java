@@ -319,7 +319,7 @@ public class ApiUtils {
                             }
                         }
                         for (JsonNode node : jsonArray) {
-                            handleStr(apiDefinition, node.toString(), childrenField, rootPath + "." + fieldName + "[*]");
+                            handleStr(apiDefinition, node.toString(), childrenField, rootPath + "." + String.format(path, fieldName) + "[*]");
                         }
                         o.put("children", childrenField);
                         o.put("childrenDataType", "LIST");

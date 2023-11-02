@@ -654,7 +654,7 @@ onMounted(() => {
               </el-tooltip>
               <el-tooltip effect="dark" :content="t('datasource.create')" placement="top">
                 <el-icon class="custom-icon btn" @click="createDatasource">
-                  <Icon name="icon_dataset_outlined" />
+                  <Icon name="icon_file-add_outlined" />
                 </el-icon>
               </el-tooltip>
             </div>

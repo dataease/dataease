@@ -44,7 +44,7 @@ function usage() {
    echo "  version      查看 DATAEASE 版本"
 }
 function _check_apisix_init() {
-   if [[ $DE_INSTALL_MODE = "enterprise" ]];then
+   if [[ $DE_INSTALL_MODE != "community" ]];then
       _prepare_apisix
    fi
 }
@@ -56,7 +56,7 @@ function _prepare_apisix() {
       cd $DE_RUNNING_BASE
       env | grep DE_ >.env
       sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/apisix/apisix_conf/config.yaml
-      sed -i -e "s/key:.*/key: ${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
+      sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
    fi
    compose_files="${compose_files} -f docker-compose-apisix.yml"
 }
@@ -83,7 +83,7 @@ function _healthcheck() {
    echo
 }
 function _get_current_version() {
-   de_current_version=$(grep "^    image:.*dataease2.0:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease2.0:' '{print $2}')
+   de_current_version=$(grep "^    image:.*dataease:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease:' '{print $2}')
    echo $de_current_version
 }
 function status() {
@@ -143,7 +143,7 @@ function version() {
 }
 function upgrade() {
    echo
-   git_urls=('gitee.com' 'github.com')
+   git_urls=('github.com')
    if [[ -x "$(command -v python)" ]]; then
       py_cmd='python'
    elif [[ -x "$(command -v python3)" ]]; then
@@ -170,7 +170,7 @@ function upgrade() {
    done
 
    if [[ "x${server_url}" == "x" ]]; then
-      echo "没有找到稳定的下载服务器，请稍候重试"
+      echo "没有找到稳定的下载服务器，请访问 https://community.fit2cloud.com/#/products/dataease/downloads 下载离线安装包"
       exit 1
    fi
 

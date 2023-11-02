@@ -434,7 +434,7 @@ onMounted(() => {
     }
   })
   useEmitt({
-    name: 'calc-data-' + view.value.id,
+    name: 'calcData-' + view.value.id,
     callback: function (val) {
       if (!state.initReady) {
         return
