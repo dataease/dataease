@@ -7,6 +7,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
 import io.dataease.plugins.common.constants.DeTypeConstants;
+import io.dataease.plugins.common.constants.datasource.DorisConstants;
 import io.dataease.plugins.common.constants.datasource.MySQLConstants;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.constants.engine.MysqlConstants;
@@ -160,6 +161,19 @@ public class MysqlQueryProvider extends QueryProvider {
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
+        int originSize = fields.size();
+        List<String> fieldList = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
+        if (CollectionUtils.isNotEmpty(sortFields)) {
+            sortFields.forEach(item -> {
+                int indexOf = fieldList.indexOf(item.getId());
+                if (indexOf == -1) {
+                    fields.add(item);
+                } else {
+                    fields.set(indexOf, item);
+                }
+            });
+        }
+        List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableField f = fields.get(i);
@@ -212,6 +226,14 @@ public class MysqlQueryProvider extends QueryProvider {
                         .fieldName(fieldName)
                         .fieldAlias(fieldAlias)
                         .build());
+                if (f instanceof DeSortField) {
+                    DeSortField x = (DeSortField) f;
+                    xOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(x.getOrderDirection())
+                            .build());
+                }
             }
         }
 
@@ -229,20 +251,27 @@ public class MysqlQueryProvider extends QueryProvider {
         if (whereTrees != null) wheres.add(whereTrees);
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
-        List<SQLObj> xOrders = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(sortFields)) {
-            int step = fields.size();
-            for (int i = step; i < (step + sortFields.size()); i++) {
-                DeSortField deSortField = sortFields.get(i - step);
-                SQLObj order = buildSortField(deSortField, tableObj, i);
-                xOrders.add(order);
-            }
-        }
-        if (ObjectUtils.isNotEmpty(xOrders)) {
-            st_sql.add("orders", xOrders);
-        }
+        String sql = st_sql.render();
+        ST st = stg.getInstanceOf("previewSql");
+        st.add("isGroup", false);
+        SQLObj tableSQL = SQLObj.builder()
+                .tableName(String.format(DorisConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+                .build();
+        st.add("table", tableSQL);
 
-        return st_sql.render();
+        List<SQLObj> outFieldList = new ArrayList<>();
+        for (int i = 0; i < originSize; i++) {
+            SQLObj fieldObj = xFields.get(i);
+            String outFieldAlias = tableSQL.getTableAlias() + "." + fieldObj.getFieldAlias();
+            outFieldList.add(SQLObj.builder().fieldName(outFieldAlias).fieldAlias(fieldObj.getFieldAlias()).build());
+        }
+        st.add("groups", outFieldList);
+        if (CollectionUtils.isNotEmpty(xOrders)) {
+            st.add("orders", xOrders);
+            return st.render() + " LIMIT 0, 10000000";
+        }
+        return st.render();
     }
 
     @Override
