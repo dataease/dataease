@@ -86,7 +86,7 @@ export function panelInit(componentData, componentStyle) {
 
 export function panelDataPrepare(componentData, componentStyle, callback) {
   // style初始化
-  componentStyle.autoSizeAdaptor = (componentStyle.autoSizeAdaptor || true)
+  componentStyle.autoSizeAdaptor = (componentStyle.autoSizeAdaptor === undefined ? true : componentStyle.autoSizeAdaptor)
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)
   componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
   componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
