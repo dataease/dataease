@@ -1,11 +1,11 @@
 <template>
   <div class="info-card">
-    <div class="info-title">{{ t('visualization.create_by') }}</div>
-    <div class="info-content">{{ dvInfo.creatorName || 'N/A' }}</div>
+    <div v-if="dvInfo.creatorName" class="info-title">{{ t('visualization.create_by') }}</div>
+    <div v-if="dvInfo.creatorName" class="info-content">{{ dvInfo.creatorName }}</div>
     <div class="info-title">{{ t('visualization.create_time') }}</div>
     <div class="info-content">{{ timestampFormatDate(dvInfo.createTime) }}</div>
-    <div class="info-title">{{ t('visualization.update_by') }}</div>
-    <div class="info-content">{{ dvInfo.updateName || 'N/A' }}</div>
+    <div v-if="dvInfo.updateName" class="info-title">{{ t('visualization.update_by') }}</div>
+    <div v-if="dvInfo.updateName" class="info-content">{{ dvInfo.updateName }}</div>
     <div class="info-title">{{ t('visualization.update_time') }}</div>
     <div v-if="dvInfo.updateTime" class="info-content">
       {{ timestampFormatDate(dvInfo.updateTime) }}
