@@ -286,8 +286,11 @@
                 min-width="200px"
                 :prop="field.fieldName"
                 :label="field.remarks"
-                resizable
-              />
+                resizable>
+                <template slot-scope="scope">
+                  <span>{{ at(scope.row, field.fieldName)[0] }}</span>
+                </template>
+              </el-table-column>
             </el-table>
             </div>
             <el-table
@@ -303,7 +306,11 @@
                 :prop="field.fieldName"
                 :label="field.remarks"
                 resizable
-              />
+              >
+                <template slot-scope="scope">
+                  <span>{{ at(scope.row, field.fieldName)[0] }}</span>
+                </template>
+              </el-table-column>
             </el-table>
           </div>
           <div
@@ -623,6 +630,7 @@ import { pySort } from './util'
 import _ from 'lodash'
 import GridTable from '@/components/gridTable/index.vue'
 import { updateCacheTree } from '@/components/canvas/utils/utils'
+import { at } from 'lodash'
 
 export default {
   name: 'AddSQL',
@@ -742,7 +750,8 @@ export default {
             }
           ]
         }
-      ]
+      ],
+      at
     }
   },
   computed: {
