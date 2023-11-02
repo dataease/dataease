@@ -260,7 +260,9 @@ export default {
       ],
       needToChangeWidth: [
         'left',
-        'width',
+        'width'
+      ],
+      needToChangeInnerWidth: [
         'fontSize',
         'activeFontSize',
         'borderWidth',
@@ -370,6 +372,7 @@ export default {
       return this.componentDataShow || []
     },
     ...mapState([
+      'previewCanvasScale',
       'isClickComponent'
     ]),
 
@@ -681,6 +684,10 @@ export default {
     format(value, scale) {
       return value * scale / 100
     },
+
+    formatPoint(value, pointScale) {
+      return value * pointScale
+    },
     handleScaleChange() {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
@@ -690,10 +697,13 @@ export default {
               component.style[key] = this.format(component.style[key], this.scaleHeight)
             }
             if (this.needToChangeWidth.includes(key)) {
+              component.style[key] = this.format(component.style[key], this.scaleWidth)
+            }
+            if (this.needToChangeInnerWidth.includes(key)) {
               if ((key === 'fontSize' || key === 'activeFontSize') && (this.terminal === 'mobile' || ['custom', 'v-text'].includes(component.type))) {
                 // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
               } else {
-                component.style[key] = this.format(component.style[key], this.scaleWidth)
+                component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth)
               }
             }
           })

@@ -6,6 +6,20 @@
   "description": "",
   "glyphs": [
     {
+      "icon_id": "34289857",
+      "name": "adaptor",
+      "font_class": "adaptor",
+      "unicode": "e63e",
+      "unicode_decimal": 58942
+    },
+    {
+      "icon_id": "9626971",
+      "name": "颜色",
+      "font_class": "yanse",
+      "unicode": "e886",
+      "unicode_decimal": 59526
+    },
+    {
       "icon_id": "1567487",
       "name": "command",
       "font_class": "command",

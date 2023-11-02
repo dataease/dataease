@@ -1117,6 +1117,7 @@ export default {
     this.$store.commit('getEditor')
     const _this = this
     eventBus.$on('hideArea', this.hideArea)
+    eventBus.$on('componentSizeAdaptorChange', this.changeScale)
     eventBus.$on('startMoveIn', this.startMoveIn)
     bus.$on('onRemoveLastItem', this.removeLastItem)
     bus.$on('trigger-search-button', this.triggerSearchButton)
@@ -1133,6 +1134,7 @@ export default {
   beforeDestroy() {
     eventBus.$off('hideArea', this.hideArea)
     eventBus.$off('startMoveIn', this.startMoveIn)
+    eventBus.$off('componentSizeAdaptorChange', this.changeScale)
     bus.$off('onRemoveLastItem', this.removeLastItem)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('refresh-button-info', this.refreshButtonInfo)
