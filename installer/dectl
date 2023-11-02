@@ -143,7 +143,7 @@ function version() {
 }
 function upgrade() {
    echo
-   git_urls=('gitee.com' 'github.com')
+   git_urls=('github.com')
    if [[ -x "$(command -v python)" ]]; then
       py_cmd='python'
    elif [[ -x "$(command -v python3)" ]]; then
@@ -170,7 +170,7 @@ function upgrade() {
    done
 
    if [[ "x${server_url}" == "x" ]]; then
-      echo "没有找到稳定的下载服务器，请稍候重试"
+      echo "没有找到稳定的下载服务器，请访问 https://community.fit2cloud.com/#/products/dataease/downloads 下载离线安装包"
       exit 1
    fi
 
