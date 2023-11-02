@@ -110,7 +110,7 @@
           <el-col style="width: 130px!important;">
             <el-upload
               action=""
-              accept=".jpeg,.jpg,.png,.gif"
+              accept=".jpeg,.jpg,.png,.gif,.svg"
               class="avatar-uploader"
               list-type="picture-card"
               :class="{disabled:uploadDisabled}"

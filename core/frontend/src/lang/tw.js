@@ -2058,7 +2058,7 @@ export default {
     panel_cache_use_tips: '檢查到上次有儀表板未能正常保存，是否使用上次未保存的儀表板？',
     template_name_tips: '儀表板名稱必填',
     panel_background_item: '自定義儀表板背景',
-    panel_background_image_tips: '當前支持.jpeg,.jpg,.png,.gif文件,大小不要超過15M',
+    panel_background_image_tips: '當前支持jpeg,jpg,png,gif,svg文件,大小15M内',
     reUpload: '重新上傳',
     create_by: '創建人',
     create_time: '創建時間',
