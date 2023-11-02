@@ -2307,6 +2307,7 @@ export default {
     suspension: '懸浮',
     new_element_distribution: '元素移入分佈方式',
     aided_grid: '輔助設計網格',
+    auto_size_adaptor: '組件自適應',
     aided_grid_open: '打開',
     aided_grid_close: '關閉',
     export_pdf_page: '分頁線',
