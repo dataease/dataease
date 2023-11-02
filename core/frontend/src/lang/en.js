@@ -2313,6 +2313,7 @@ export default {
     suspension: 'suspension',
     new_element_distribution: 'Element Distribution',
     aided_grid: 'Aided Grid',
+    auto_size_adaptor: 'Component Adaptor',
     aided_grid_open: 'Open',
     aided_grid_close: 'Close',
     export_pdf_page: 'Pagination Line',

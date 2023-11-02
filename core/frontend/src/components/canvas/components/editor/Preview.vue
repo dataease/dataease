@@ -664,8 +664,8 @@ export default {
       }
       if (this.isMainCanvas()) {
         this.$store.commit('setPreviewCanvasScale', {
-          scaleWidth: (this.scaleWidth / 100),
-          scaleHeight: (this.scaleHeight / 100)
+          scaleWidth: this.canvasStyleData.autoSizeAdaptor ? (this.scaleWidth / 100) : 1,
+          scaleHeight: this.canvasStyleData.autoSizeAdaptor ? (this.scaleHeight / 100) : 1
         })
       }
       this.handleScaleChange()
