@@ -351,7 +351,7 @@ export function insertTreeNode(nodeInfo, tree) {
   if (!nodeInfo) {
     return
   }
-  if (nodeInfo.pid === 0 || nodeInfo.pid === '0') {
+  if (nodeInfo.pid === 0 || nodeInfo.pid === '0' || nodeInfo.pid === 'panel_list') {
     tree.push(nodeInfo)
     return
   }
