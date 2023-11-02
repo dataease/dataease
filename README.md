@@ -10,7 +10,7 @@
 
 |说明|
 |------------------|
-|此分支为 DataEase v1.18 版本的开发分支。DataEase v2 版本的开发分支为 [dev-v2](https://github.com/dataease/dataease/tree/dev-v2)，v2 版本正在快速迭代中，如是在生产环境部署 DataEase，建议使用 v1.18.* 的最新稳定版本。|
+|此分支为 DataEase v1.18 版本的开发分支。[DataEase v2.0.0](https://github.com/dataease/dataease/releases/tag/v2.0.0) 也已经正式发布，v2 版本的开发分支为 [dev-v2](https://github.com/dataease/dataease/tree/dev-v2)。v2 版本正在快速迭代中，如是在生产环境部署 DataEase，建议继续使用 v1.18.* 的最新稳定版本。|
 
 <hr/>
 
