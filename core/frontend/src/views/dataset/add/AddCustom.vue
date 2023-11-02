@@ -152,6 +152,7 @@ export default {
       this.getCustomTable()
       this.getUnionData()
     }
+    this.$emit('setSaveDisabled', false)
   },
   methods: {
     calHeight() {

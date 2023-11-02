@@ -905,8 +905,11 @@ export default {
 
     initTableInfo() {
       const tableId = this.param.tableId || this.$route.query.id
+      if (!tableId) {
+        this.$emit('setSaveDisabled', false)
+        return
+      }
       if (tableId) {
-        this.$emit('datasourceLoading', true)
         getTable(tableId).then((response) => {
           const table = response.data
           this.dataSource = table.dataSourceId
@@ -922,7 +925,7 @@ export default {
           }
           this.variables = JSON.parse(table.sqlVariableDetails)
         }).finally(() => {
-          this.$emit('datasourceLoading', false)
+          this.$emit('setSaveDisabled', false)
         })
       }
     },

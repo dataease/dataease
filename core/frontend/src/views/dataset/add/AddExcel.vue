@@ -316,6 +316,7 @@ export default {
   mounted() {
     window.addEventListener('resize', this.calHeight)
     this.calHeight()
+    this.$emit('setSaveDisabled', false)
   },
   created() {
     if (!this.param.tableId) {

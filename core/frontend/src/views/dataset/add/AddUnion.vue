@@ -229,6 +229,7 @@ export default {
   },
   mounted() {
     this.initTableData()
+    this.$emit('setSaveDisabled', false)
   },
   methods: {
     mousedownDrag() {

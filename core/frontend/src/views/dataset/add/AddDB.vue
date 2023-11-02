@@ -343,6 +343,7 @@ export default {
     this.initDataSource()
     window.addEventListener('resize', this.calHeight)
     this.calHeight()
+    this.$emit('setSaveDisabled', false)
   },
   activated() {
     this.initDataSource()
