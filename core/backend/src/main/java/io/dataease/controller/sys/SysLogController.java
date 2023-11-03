@@ -53,6 +53,7 @@ public class SysLogController {
     @ApiOperation("导出操作日志")
     @PostMapping("/export")
     @ApiImplicitParam(name = "request", value = "查询条件", required = true)
+    @SqlInjectValidator(value = {"time"})
     public void export(@RequestBody LogGridRequest request) throws Exception {
         logService.exportExcel(request);
     }
