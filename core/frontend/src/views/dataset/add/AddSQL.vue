@@ -274,7 +274,7 @@
               :description="$t('deDataset.run_failed')"
             >{{ errMsgCont }}
             </el-empty>
-            <div style="float: left" v-else-if="fields.length">
+            <div style="float: left; min-width: 100%;" v-else-if="fields.length">
               <el-table
               :data="plxTableData"
               size="mini"
