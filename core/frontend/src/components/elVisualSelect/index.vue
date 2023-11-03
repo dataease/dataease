@@ -22,7 +22,8 @@
         v-customStyle="customStyle"
         :indeterminate="isIndeterminate"
         @change="selectAllChange"
-      >{{ $t('dataset.check_all') }}
+      >
+      <span :style="{ color: `${isConfig ? '#1F2329' : customStyle.wordColor} !important`}">{{ $t('dataset.check_all') }}</span>
       </el-checkbox>
     </p>
     <el-option
@@ -39,7 +40,6 @@
 
 <script>
 import { handlerInputStyle } from '@/components/widget/deWidget/serviceNameFn.js'
-
 import { uuid } from 'vue-uuid'
 
 export default {
@@ -68,6 +68,10 @@ export default {
     value: {
       type: [String, Number, Array],
       default: ''
+    },
+    isConfig: {
+      type: Boolean,
+      default: false
     },
     keyWord: {
       type: String,
@@ -181,7 +185,7 @@ export default {
       this.options = this.newList.slice(0, this.maxLength)
     },
     customInputStyle() {
-      if (!this.$parent.$parent.handlerInputStyle || !this.$refs.visualSelect) return
+      if (!this.$parent.$parent.handlerInputStyle || !this.$refs.visualSelect || this.isConfig) return
       handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-input__inner'), this.$parent.element.style)
       handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-select__input'), { wordColor: this.$parent.element.style.wordColor })
     },
