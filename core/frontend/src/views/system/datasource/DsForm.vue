@@ -46,13 +46,13 @@
     <div style="height: calc(100% - 56px)">
       <DsFormContent
         ref="DsFormContent"
-        @editeTodisable="backToList"
         :outer-params="outerParams"
         :reference-position="referencePosition"
         :form-type.sync="formType"
         :type-map.sync="typeMap"
         :can-edit.sync="canEdit"
         :form-loading.sync="formLoading"
+        @editeTodisable="backToList"
         @refreshType="refreshType"
         @closeDraw="closeDraw"
         @setParams="setParams"
@@ -96,7 +96,7 @@ export default {
     },
     tips() {
       const { id, showModel } = this.params
-      if(showModel === 'copy'){
+      if (showModel === 'copy') {
         return this.$t('datasource.copy')
       }
       return id && showModel === 'show' && !this.canEdit

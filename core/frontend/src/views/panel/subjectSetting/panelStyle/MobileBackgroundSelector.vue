@@ -24,13 +24,13 @@
       >
         <el-col :span="4">
           <el-color-picker
-              v-model="mobileSetting.color"
-              :predefine="predefineColors"
-              size="mini"
-              class="color-picker-custom"
-              :disabled="!mobileSetting.customSetting"
-              @change="onChangeType"
-            />
+            v-model="mobileSetting.color"
+            :predefine="predefineColors"
+            size="mini"
+            class="color-picker-custom"
+            :disabled="!mobileSetting.customSetting"
+            @change="onChangeType"
+          />
         </el-col>
         <el-col :span="5">
           <span class="params-title-small">{{ $t('chart.not_alpha') }}</span>
@@ -281,7 +281,6 @@ span {
   color: var(--TextPrimary, #1F2329) !important;
   line-height: 22px;
 }
-
 
 ::v-deep .el-slider__input {
   width: 40px;

@@ -277,7 +277,6 @@ span {
   line-height: 22px;
 }
 
-
 ::v-deep .el-slider__input {
   width: 40px;
   padding-left: 0px;

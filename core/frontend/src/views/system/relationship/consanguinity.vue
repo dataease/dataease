@@ -1,6 +1,9 @@
 <template>
   <div :style="chartSize">
-    <div id="main" :style="chartSizeMax"></div>
+    <div
+      id="main"
+      :style="chartSizeMax"
+    />
   </div>
 </template>
 
@@ -16,7 +19,7 @@ export default {
     chartSize: {
       type: Object,
       default: () => {}
-    },
+    }
   },
   data() {
     return {
@@ -36,8 +39,8 @@ export default {
   computed: {
     chartSizeMax() {
       const { height } = this.chartSize
-      return this.maxSize > parseInt(height)/25  ? {
-        height: this.maxSize * 25  + 'px',
+      return this.maxSize > parseInt(height) / 25 ? {
+        height: this.maxSize * 25 + 'px',
         width: this.chartSize.width
       } : this.chartSize
     }
@@ -141,7 +144,7 @@ export default {
       })
     },
     deleteRepeat(arr = []) {
-      let list = JSON.parse(JSON.stringify(arr))
+      const list = JSON.parse(JSON.stringify(arr))
       const repeatPanel = {}
       list.forEach((ele) => {
         if (ele[6] === this.datasourcePanel[this.current.queryType]) {
@@ -192,9 +195,10 @@ export default {
       })
 
       arr.forEach((ele) => {
+        // eslint-disable-next-line
         const [index, start, end, width, id, name, type, pid] = ele
         if (type === this.datasourcePanel[this.current.queryType]) {
-          let dataset = dataItemListMap[pid]
+          const dataset = dataItemListMap[pid]
           if (repeatPanel[id]) {
             repeatPanel[id].push({ index, start })
           } else {
@@ -236,10 +240,9 @@ export default {
       const ctx = c.getContext('2d')
       ctx.font = '14px Arial'
       const dataItemList = []
-      let list = []
-      const repeatPanel = {}
+      const list = []
 
-      let max = {
+      const max = {
         dataset: 0,
         datasource: 0,
         panel: 0
@@ -248,7 +251,7 @@ export default {
       const { queryType, num, label } = this.current
       max[queryType] = ctx.measureText(label).width + 30
 
-      if (!arr.length)
+      if (!arr.length) {
         return [
           [[0, 0, max[queryType], max[queryType], num, label, queryType, 0]],
           {
@@ -257,10 +260,11 @@ export default {
             panel: 0
           }
         ]
+      }
 
       arr.forEach((ele, index) => {
         const { id, name, type, pid } = ele
-        let width = ctx.measureText(name).width + 30
+        const width = ctx.measureText(name).width + 30
         max[type] = Math.max(width, max[type])
         dataItemList.push([width, id, name, type, pid])
       })
@@ -331,7 +335,7 @@ export default {
           30
         )
       }
-      let gap = {
+      const gap = {
         dataset: maxGap('dataset', 'datasource'),
         datasource: maxGap('datasource', 'datasource'),
         panel: maxGap('panel', 'dataset')
@@ -347,6 +351,7 @@ export default {
 
       this.myChart = echarts.init(document.getElementById('main'))
       const that = this
+      // eslint-disable-next-line
       let [data, gap] = this.calculatedWidth(this.treeData)
       const gapDetail = {
         dataset: gap.dataset,
@@ -360,11 +365,11 @@ export default {
 
       const lineEnd = [clickNode[0]]
       lineData = lineData.map(ele => {
-        let arr = [...ele]
+        const arr = [...ele]
         if (clickNode[0] === ele[0]) {
           arr.push(1)
           lineEnd.push(ele[3])
-        } else if(clickNode[0] === ele[3]) {
+        } else if (clickNode[0] === ele[3]) {
           arr.push(1)
           lineEnd.push(ele[0])
         } else {
@@ -374,20 +379,20 @@ export default {
       })
 
       data = data.map(ele => {
-        let arr = [...ele]
+        const arr = [...ele]
         arr.push(Boolean(lineEnd.includes(ele[0])))
         return arr
       })
-      
+
       if (this.maxSize !== data.length) {
         this.maxSize = data.length
         return
       }
-      let option = {
+      const option = {
         xAxis: {
-          show: false, //不显示分隔线,
+          show: false, // 不显示分隔线,
           splitLine: {
-            show: false //不显示分隔线
+            show: false // 不显示分隔线
           }
         },
         grid: {
@@ -406,7 +411,7 @@ export default {
           show: false,
           type: 'category',
           splitLine: {
-            show: false //不显示分隔线
+            show: false // 不显示分隔线
           }
         },
         series: [
@@ -419,11 +424,11 @@ export default {
               y: 0
             },
             roam: true,
-            renderItem: function (params, api) {
-              let categoryIndex = api.value(0)
-              let startPoint = api.coord([api.value(1), categoryIndex])
-              let width = api.value(3)
-              let height = 22
+            renderItem: function(params, api) {
+              const categoryIndex = api.value(0)
+              const startPoint = api.coord([api.value(1), categoryIndex])
+              const width = api.value(3)
+              const height = 22
 
               const imageType = {
                 datasource: '/static/svg/de-datasource.svg',
@@ -431,19 +436,18 @@ export default {
                 dataset: '/static/svg/de-dataset.svg'
               }
 
-              
               return {
-                type: 'group', //当需要多个自定义拼接时，需要用group，此案例是文字和图形的拼接
+                type: 'group', // 当需要多个自定义拼接时，需要用group，此案例是文字和图形的拼接
                 children: [
                   {
                     type: 'text',
                     position: [
                       startPoint[0] + gapDetail[api.value(6)],
                       startPoint[1] - height / 2
-                    ], //相对位置
+                    ], // 相对位置
                     z2: 10,
                     style: {
-                      text: isNaN(api.value(5)) ? data.find(ele => ele[4] === api.value(4))[5] : api.value(5), //data中取值
+                      text: isNaN(api.value(5)) ? data.find(ele => ele[4] === api.value(4))[5] : api.value(5), // data中取值
                       color: '#1F2329',
                       x: 25,
                       y: 5
@@ -503,13 +507,11 @@ export default {
               y: [0, 3]
             },
             roam: true,
-            renderItem: function (params, api) {
-              let categoryIndex = api.value(0)
-              let categoryIndex2 = api.value(3)
-              let startPoint = api.coord([api.value(1), categoryIndex])
-              let endPoint = api.coord([api.value(2), categoryIndex2])
-              let height = 20
-
+            renderItem: function(params, api) {
+              const categoryIndex = api.value(0)
+              const categoryIndex2 = api.value(3)
+              const startPoint = api.coord([api.value(1), categoryIndex])
+              const endPoint = api.coord([api.value(2), categoryIndex2])
               function startPointX1() {
                 if (api.value(5) === 'dataset') {
                   return startPoint[0] + api.value(4)
@@ -526,10 +528,10 @@ export default {
                 }
               }
 
-              let x1 = startPointX1()
+              const x1 = startPointX1()
 
               return {
-                type: 'group', //当需要多个自定义拼接时，需要用group，此案例是文字和图形的拼接
+                type: 'group', // 当需要多个自定义拼接时，需要用group，此案例是文字和图形的拼接
                 children: [
                   {
                     type: 'bezierCurve',
@@ -539,10 +541,10 @@ export default {
                       y1: startPoint[1],
                       x2: endPoint[0] + gapDetail[api.value(5)],
                       y2: endPoint[1],
-                      cpx1:endPoint[0] + gapDetail[api.value(5)] - 50,
-                      cpx2:endPoint[0] + gapDetail[api.value(5)] - 10,
-                      cpy1:endPoint[1],
-                      cpy2:endPoint[1],
+                      cpx1: endPoint[0] + gapDetail[api.value(5)] - 50,
+                      cpx2: endPoint[0] + gapDetail[api.value(5)] - 10,
+                      cpy1: endPoint[1],
+                      cpy2: endPoint[1],
                       percent: 1
                     },
                     style: {
@@ -559,9 +561,9 @@ export default {
         ]
       }
       this.myChart.setOption(option, true)
-      this.myChart.on('click', function (params) {
-          that.initEchart(params.value)
-      });
+      this.myChart.on('click', function(params) {
+        that.initEchart(params.value)
+      })
     }
   }
 }

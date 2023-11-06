@@ -156,11 +156,11 @@ export default {
     bus.$off('fieldSelect-' + this.element.propValue.viewId)
   },
   methods: {
-    changeRightDrawOpen(param){
-      if(param){
+    changeRightDrawOpen(param) {
+      if (param) {
         this.drawLeft = 'auto!important'
         this.drawRight = '380px'
-      }else{
+      } else {
         this.drawLeft = 'none'
         this.drawRight = 'auto'
       }
@@ -301,5 +301,4 @@ export default {
   right: var(--drawRight);
 }
 </style>
-
 

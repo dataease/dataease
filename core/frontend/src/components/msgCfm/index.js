@@ -42,8 +42,7 @@ export default {
         })
     },
     withLink(options, confirmButtonTextInfo) {
-      const h = this.$createElement;
-      const that = this
+      const h = this.$createElement
       const { title, content, type = 'danger', cb, confirmButtonText = confirmButtonTextInfo || this.$t('commons.delete'), showCancelButton = true, cancelButtonText = this.$t('commons.cancel'), cancelCb = () => {}, finallyCb = () => {}, link = '', templateDel, linkTo } = options
       const customClass = `de-confirm de-confirm-fail de-use-html`
       const confirmButtonClass = `de-confirm-${type}-btn de-confirm-btn`
@@ -55,14 +54,14 @@ export default {
                 title,
                 content,
                 link
-              },
+              }
             },
             on: {
               change: () => {
                 linkTo()
               }
             }
-          }),
+          })
         ]),
         duration: 0,
         confirmButtonText,
@@ -71,18 +70,18 @@ export default {
         cancelButtonClass: 'de-confirm-btn de-confirm-plain-cancel',
         confirmButtonClass,
         customClass,
-        iconClass: 'el-icon-warning',
+        iconClass: 'el-icon-warning'
       }).then(action => {
-        if ('confirm' === action) {
+        if (action === 'confirm') {
           cb()
         }
       })
-      .catch((action) => {
-        cancelCb(action)
-      })
-      .finally(() => {
-        finallyCb()
-      })
+        .catch((action) => {
+          cancelCb(action)
+        })
+        .finally(() => {
+          finallyCb()
+        })
     }
   }
 }

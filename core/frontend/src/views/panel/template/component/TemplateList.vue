@@ -47,7 +47,7 @@
             @command="(type) => clickMore(type, ele)"
           >
             <span class="el-dropdown-link">
-              <i class="el-icon-more"/>
+              <i class="el-icon-more" />
             </span>
             <el-dropdown-menu
               slot="dropdown"

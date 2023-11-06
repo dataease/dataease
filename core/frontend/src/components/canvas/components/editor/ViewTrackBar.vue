@@ -1,7 +1,8 @@
 <template>
   <div>
     <el-dropdown
-      trigger="click">
+      trigger="click"
+    >
       <input
         id="input"
         ref="trackButton"

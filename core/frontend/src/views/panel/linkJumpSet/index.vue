@@ -302,7 +302,7 @@
                       clearable
                     />
                     <div class="field-height">
-                      <el-divider/>
+                      <el-divider />
                       <draggable
                         v-model="linkJumpInfoArray"
                         :options="{group:{name: 'drag',pull:'clone'},sort: true}"

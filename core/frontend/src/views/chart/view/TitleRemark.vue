@@ -1,6 +1,8 @@
 <template>
-  <span style="transform: translate(0);display: inline-block;position: relative;
-    z-index: 10;">
+  <span
+    style="transform: translate(0);display: inline-block;position: relative;
+    z-index: 10;"
+  >
     <el-popover
       placement="bottom"
       trigger="hover"

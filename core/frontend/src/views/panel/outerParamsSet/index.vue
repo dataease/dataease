@@ -287,12 +287,12 @@ export default {
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
-    viewSelectedField(){
+    viewSelectedField() {
       const viewIds = []
-      this.outerParamsInfo.targetViewInfoList.forEach((targetViewInfo)=>{
+      this.outerParamsInfo.targetViewInfoList.forEach((targetViewInfo) => {
         viewIds.push(targetViewInfo.targetViewId)
       })
-      console.log('viewIds='+JSON.stringify(viewIds))
+      console.log('viewIds=' + JSON.stringify(viewIds))
       return viewIds
     },
     ...mapState([

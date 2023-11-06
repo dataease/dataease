@@ -35,7 +35,7 @@ export const DEFAULT_COLOR_CASE = {
   mapStyle: 'normal',
   mapLineGradient: false,
   mapLineSourceColor: '#146C94',
-  mapLineTargetColor: '#576CBC',
+  mapLineTargetColor: '#576CBC'
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -57,7 +57,7 @@ export const DEFAULT_COLOR_CASE_DARK = {
   mapStyle: 'darkblue',
   mapLineGradient: false,
   mapLineSourceColor: '#2F58CD',
-  mapLineTargetColor: '#3795BD',
+  mapLineTargetColor: '#3795BD'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,

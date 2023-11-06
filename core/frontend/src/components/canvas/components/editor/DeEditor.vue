@@ -126,7 +126,7 @@
       :canvas-id="canvasId"
     />
     <!-- 右击菜单 -->
-    <ContextMenu/>
+    <ContextMenu />
 
     <!-- 对齐标线 -->
     <span
@@ -150,13 +150,13 @@
 </template>
 
 <script>
-import {mapState} from 'vuex'
+import { mapState } from 'vuex'
 import Shape from './Shape'
 import DeDrag from '@/components/deDrag'
 
 // eslint-disable-next-line no-unused-vars
-import {getComponentRotatedStyle, getStyle} from '@/components/canvas/utils/style'
-import {_$, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { getComponentRotatedStyle, getStyle } from '@/components/canvas/utils/style'
+import { _$, imgUrlTrans } from '@/components/canvas/utils/utils'
 import ContextMenu from './ContextMenu'
 import MarkLine from './MarkLine'
 import Area from './Area'
@@ -164,19 +164,19 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import Grid from './Grid'
 import PageLineEditor from './PageLineEditor'
 import PGrid from './PGrid'
-import {changeStyleWithScale} from '@/components/canvas/utils/translate'
+import { changeStyleWithScale } from '@/components/canvas/utils/translate'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import DragShadow from '@/components/deDrag/Shadow'
 import bus from '@/utils/bus'
 import LinkJumpSet from '@/views/panel/linkJumpSet'
-import {buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch} from '@/utils/conditionUtil'
+import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
 // 挤占式画布
 import _ from 'lodash'
 import _jq from 'jquery'
 import Background from '@/views/background/index'
 import PointShadow from '@/components/deDrag/PointShadow'
-import {hexColorToRGBA} from "@/views/chart/chart/util";
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 // let positionBox = []
 // let coordinates = [] // 坐标点集合
@@ -190,11 +190,11 @@ let itemMaxX = 0
 
 function debounce(func, time) {
   if (!isOverlay) {
-    (function (t) {
+    (function(t) {
       isOverlay = true
-      setTimeout(function () {
+      setTimeout(function() {
         t()
-        setTimeout(function () {
+        setTimeout(function() {
           isOverlay = false
           if (lastTask !== undefined) {
             debounce(lastTask, time)
@@ -319,10 +319,10 @@ function init() {
   resetPositionBox.call(this)
   initPosition(this)
   let i = 0
-  const timeid = setInterval(function () {
+  const timeid = setInterval(function() {
     if (i >= vm.yourList.length) {
       clearInterval(timeid)
-      vm.$nextTick(function () {
+      vm.$nextTick(function() {
         vm.moveAnimate = true
       })
     } else {
@@ -339,7 +339,7 @@ function resizePlayer(item, newSize) {
   removeItemFromPositionBox.call(vm, item)
 
   const belowItems = findBelowItems.call(this, item)
-  _.forEach(belowItems, function (upItem) {
+  _.forEach(belowItems, function(upItem) {
     const canGoUpRows = canItemGoUp.call(vm, upItem)
     if (canGoUpRows > 0) {
       moveItemUp.call(vm, upItem, canGoUpRows)
@@ -426,7 +426,7 @@ function movePlayer(item, position) {
   removeItemFromPositionBox.call(vm, item)
 
   const belowItems = findBelowItems.call(this, item)
-  _.forEach(belowItems, function (upItem) {
+  _.forEach(belowItems, function(upItem) {
     const canGoUpRows = canItemGoUp.call(vm, upItem)
     if (canGoUpRows > 0) {
       moveItemUp.call(vm, upItem, canGoUpRows)
@@ -452,7 +452,7 @@ function removeItem(index) {
     removeItemFromPositionBox.call(vm, item)
 
     const belowItems = findBelowItems.call(this, item)
-    _.forEach(belowItems, function (upItem) {
+    _.forEach(belowItems, function(upItem) {
       const canGoUpRows = canItemGoUp.call(vm, upItem)
       if (canGoUpRows > 0) {
         moveItemUp.call(vm, upItem, canGoUpRows)
@@ -544,7 +544,7 @@ function findClosetCoords(item, tCoord) {
     y: collisionsItem[0].coord.el.y
   })
 
-  setTimeout(function () {
+  setTimeout(function() {
     isOverlay = false
   }, 200)
 }
@@ -592,7 +592,7 @@ function changeItemCoord(item) {
     el: item
   }
 
-  const index = _.findIndex(vm.coordinates, function (o) {
+  const index = _.findIndex(vm.coordinates, function(o) {
     return o.el._dragId === item._dragId
   })
   if (index !== -1) {
@@ -609,7 +609,7 @@ function emptyTargetCell(item) {
   const vm = this
   const belowItems = findBelowItems.call(vm, item)
 
-  _.forEach(belowItems, function (downItem, index) {
+  _.forEach(belowItems, function(downItem, index) {
     if (downItem._dragId === item._dragId) return
     const moveSize = item.y + item.sizey - downItem.y
     if (moveSize > 0) {
@@ -649,7 +649,7 @@ function moveItemDown(item, size) {
   const vm = this
   removeItemFromPositionBox.call(vm, item)
   const belowItems = findBelowItems.call(vm, item)
-  _.forEach(belowItems, function (downItem, index) {
+  _.forEach(belowItems, function(downItem, index) {
     if (downItem._dragId === item._dragId) return
     const moveSize = calcDiff.call(vm, item, downItem, size)
     if (moveSize > 0) {
@@ -722,7 +722,7 @@ function moveItemUp(item, size) {
 
   changeItemCoord.call(this, item)
 
-  _.forEach(belowItems, function (upItem, index) {
+  _.forEach(belowItems, function(upItem, index) {
     const moveSize = canItemGoUp.call(vm, upItem)
     if (moveSize > 0) {
       moveItemUp.call(vm, upItem, moveSize)
@@ -806,19 +806,19 @@ export default {
     dragStart: {
       required: false,
       type: Function,
-      default: function () {
+      default: function() {
       }
     },
     dragging: {
       required: false,
       type: Function,
-      default: function () {
+      default: function() {
       }
     },
     dragEnd: {
       required: false,
       type: Function,
-      default: function () {
+      default: function() {
       }
     },
     resizable: {
@@ -829,19 +829,19 @@ export default {
     resizeStart: {
       required: false,
       type: Function,
-      default: function () {
+      default: function() {
       }
     },
     resizing: {
       required: false,
       type: Function,
-      default: function () {
+      default: function() {
       }
     },
     resizeEnd: {
       required: false,
       type: Function,
-      default: function () {
+      default: function() {
       }
     },
     matrixCount: {
@@ -1147,7 +1147,7 @@ export default {
       return this.$refs['wrapperChild']
     },
     getAllWrapperChildRefs() {
-      let allChildRefs = []
+      const allChildRefs = []
       const currentChildRefs = this.getWrapperChildRefs()
       if (currentChildRefs && currentChildRefs.length > 0) {
         allChildRefs.push.apply(allChildRefs, currentChildRefs)
@@ -1290,7 +1290,7 @@ export default {
       }
       return -1
     },
-    pluginEditHandler({e, id}) {
+    pluginEditHandler({ e, id }) {
       let index = -1
       for (let i = 0; i < this.componentData.length; i++) {
         const item = this.componentData[i]
@@ -1400,12 +1400,12 @@ export default {
     getSelectArea() {
       const result = []
       // 区域起点坐标
-      const {x, y} = this.start
+      const { x, y } = this.start
       // 计算所有的组件数据，判断是否在选中区域内
       this.componentData.forEach(component => {
         if (component.isLock) return
 
-        const {left, top, width, height} = component.style
+        const { left, top, width, height } = component.style
         if (x <= left && y <= top && (left + width <= x + this.width) && (top + height <= y + this.height)) {
           result.push(component)
         }
@@ -1461,7 +1461,7 @@ export default {
 
     getTextareaHeight(element, text) {
       // eslint-disable-next-line prefer-const
-      let {lineHeight, fontSize, height} = element.style
+      let { lineHeight, fontSize, height } = element.style
       if (lineHeight === '') {
         lineHeight = 1.5
       }
@@ -1552,7 +1552,7 @@ export default {
       }
     },
     getRefLineParams(params) {
-      const {vLine, hLine} = params
+      const { vLine, hLine } = params
       this.vLine = vLine
       this.hLine = hLine
     },
@@ -1689,10 +1689,6 @@ export default {
       const resizeItem = _.get(infoBox, 'resizeItem')
       const vm = this
       vm.$set(resizeItem, 'isPlayer', true)
-      const startX = infoBox.startX
-      const startY = infoBox.startY
-      const moveXSize = e.pageX - startX // X方向移动的距离
-      const moveYSize = e.pageY - startY // Y方向移动的距离
       let nowX = Math.round(item.style.width * this.matrixScaleWidth)
       let nowY = Math.round(item.style.height * this.matrixScaleHeight)
       nowX = nowX > 0 ? nowX : 1
@@ -1705,8 +1701,8 @@ export default {
       newX = newX > 0 ? newX : 1
       newY = newY > 0 ? newY : 1
       if (item.sizex !== nowX || item.sizey !== nowY) {
-        debounce((function (newX, oldX, newY, oldY) {
-          return function () {
+        debounce((function(newX, oldX, newY, oldY) {
+          return function() {
             if (newX !== oldX || oldY !== newY) {
               movePlayer.call(vm, resizeItem, {
                 x: newX,
@@ -1742,8 +1738,8 @@ export default {
         return
       }
       if (newX !== oldX || oldY !== newY) {
-        debounce((function (newX, oldX, newY, oldY) {
-          return function () {
+        debounce((function(newX, oldX, newY, oldY) {
+          return function() {
             if (newX !== oldX || oldY !== newY) {
               movePlayer.call(vm, moveItem, {
                 x: newX,
@@ -1781,7 +1777,7 @@ export default {
       // 不使用copy 保持原有对象
       const finalList = []
       const _this = this
-      _.forEach(this.componentData, function (item, index) {
+      _.forEach(this.componentData, function(item, index) {
         if (_.isEmpty(item)) return
         if (_this.canvasId === item.canvasId) {
           delete item['_dragId']
@@ -1823,7 +1819,7 @@ export default {
     addItemBox(item) {
       this.yourList.push(item)
 
-      this.$nextTick(function () {
+      this.$nextTick(function() {
         addItem.call(this, item, this.yourList.length - 1)
       })
     },
@@ -1854,7 +1850,7 @@ export default {
     // 调整父级组件边界
     resizeParentBoundsRef() {
       const _this = this
-      _this.componentData.forEach(function (data, index) {
+      _this.componentData.forEach(function(data, index) {
         _this.$refs.deDragRef && _this.$refs.deDragRef[index] && _this.$refs.deDragRef[index].checkParentSize()
       })
     },

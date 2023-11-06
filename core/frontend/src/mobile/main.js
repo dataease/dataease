@@ -11,7 +11,6 @@ import store from '../store'
 import router from '../router/mobile.js'
 import message from '../utils/message'
 import '@/icons' // icon
-import '@/permission' // permission control
 import api from '@/api/index.js'
 import filter from '@/filter/filter'
 import directives from '../directive'
