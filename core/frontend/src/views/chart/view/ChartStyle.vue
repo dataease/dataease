@@ -766,6 +766,16 @@ span {
   font-size: 12px;
 }
 
+.form-item {
+  ::v-deep .el-form-item__content {
+    .el-checkbox {
+      .el-checkbox__label {
+        font-size: 12px;
+      }
+    }
+  }
+}
+
 .no-properties {
   width: 100%;
   text-align: center;

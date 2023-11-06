@@ -423,4 +423,12 @@ span {
 .dialog-css ::v-deep .el-dialog__body {
   padding: 10px 20px 20px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 </style>
