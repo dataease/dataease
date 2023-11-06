@@ -56,7 +56,6 @@
 
 <script>
 import { compareDayList, compareMonthList, compareYearList } from '@/views/chart/chart/compare'
-import { SUPPORT_Y_M } from '@/views/chart/chart/chart'
 
 export default {
   name: 'CompareEdit',

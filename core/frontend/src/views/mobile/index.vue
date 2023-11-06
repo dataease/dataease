@@ -4,7 +4,7 @@
     class="this_mobile_canvas_main"
     :style="mobileCanvasStyle"
   >
-    <canvas-opt-bar/>
+    <canvas-opt-bar />
     <de-canvas
       ref="canvasMainRef"
       :canvas-style-data="canvasStyleData"
@@ -20,54 +20,54 @@ import DeCanvas from '@/components/canvas/DeCanvas'
 import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 import {
   imgUrlTrans,
-  getNowCanvasComponentData,
-} from "@/components/canvas/utils/utils";
-import { mapState } from "vuex";
-import { hexColorToRGBA } from "@/views/chart/chart/util";
+  getNowCanvasComponentData
+} from '@/components/canvas/utils/utils'
+import { mapState } from 'vuex'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 export default {
   components: { DeCanvas, CanvasOptBar },
   data() {
     return {
-      canvasId: "canvas-main",
-      previewVisible: false,
-    };
+      canvasId: 'canvas-main',
+      previewVisible: false
+    }
   },
   computed: {
-    ...mapState(["canvasStyleData", "mobileLayoutStatus", 'componentData']),
+    ...mapState(['canvasStyleData', 'mobileLayoutStatus', 'componentData']),
     mainCanvasComponentData() {
-      return getNowCanvasComponentData(this.canvasId);
+      return getNowCanvasComponentData(this.canvasId)
     },
     mobileCanvasStyle() {
-      let style;
+      let style
       if (this.canvasStyleData.openCommonStyle) {
         const styleInfo =
           this.canvasStyleData.panel.mobileSetting &&
           this.canvasStyleData.panel.mobileSetting.customSetting
             ? this.canvasStyleData.panel.mobileSetting
-            : this.canvasStyleData.panel;
+            : this.canvasStyleData.panel
         if (
-          styleInfo.backgroundType === "image" &&
-          typeof styleInfo.imageUrl === "string"
+          styleInfo.backgroundType === 'image' &&
+          typeof styleInfo.imageUrl === 'string'
         ) {
           style = {
-            background: `url(${imgUrlTrans(styleInfo.imageUrl)}) no-repeat`,
-          };
-        } else if (styleInfo.backgroundType === "color") {
+            background: `url(${imgUrlTrans(styleInfo.imageUrl)}) no-repeat`
+          }
+        } else if (styleInfo.backgroundType === 'color') {
           const colorRGBA = hexColorToRGBA(
             styleInfo.color,
-            styleInfo.alpha === undefined ? 100 : styleInfo.alpha,
-          );
+            styleInfo.alpha === undefined ? 100 : styleInfo.alpha
+          )
           style = {
-            background: colorRGBA,
-          };
+            background: colorRGBA
+          }
         } else {
           style = {
-            background: "#f7f8fa",
-          };
+            background: '#f7f8fa'
+          }
         }
       }
-      return style;
-    },
+      return style
+    }
   },
   mounted() {
     this.$store.commit('setMobileLayoutStatus', true)

@@ -5,7 +5,7 @@ Vue.use(Router)
 export const constantRoutes = [
   {
     path: '/',
-    component: () => import('@/views/mobile/index.vue'),
+    component: () => import('@/views/mobile/index.vue')
   }
 ]
 

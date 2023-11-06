@@ -37,23 +37,34 @@
             </el-tab-pane>
 
             <!--query 参数-->
-            <el-tab-pane :label="$t('datasource.query_param')" name="parameters">
-              <el-tooltip class="item-tabs" effect="dark" :content="$t('datasource.query_info')"
-                          placement="top-start" slot="label">
-              <span>{{ $t('datasource.query_param') }}
-                <div class="el-step__icon is-text ms-api-col ms-header" v-if="request.arguments.length>1">
-                  <div class="el-step__icon-inner">{{ request.arguments.length - 1 }}</div>
-                </div>
-              </span>
+            <el-tab-pane
+              :label="$t('datasource.query_param')"
+              name="parameters"
+            >
+              <el-tooltip
+                slot="label"
+                class="item-tabs"
+                effect="dark"
+                :content="$t('datasource.query_info')"
+                placement="top-start"
+              >
+                <span>{{ $t('datasource.query_param') }}
+                  <div
+                    v-if="request.arguments.length>1"
+                    class="el-step__icon is-text ms-api-col ms-header"
+                  >
+                    <div class="el-step__icon-inner">{{ request.arguments.length - 1 }}</div>
+                  </div>
+                </span>
               </el-tooltip>
               <api-variable
-                @editScenarioAdvance="editScenarioAdvance"
+                v-if="activeName === 'parameters'"
                 :scenario-definition="scenarioDefinition"
                 :with-more-setting="true"
                 :is-read-only="isReadOnly"
-                :isShowEnable="isShowEnable"
+                :is-show-enable="isShowEnable"
                 :parameters="request.arguments"
-                v-if="activeName === 'parameters'"
+                @editScenarioAdvance="editScenarioAdvance"
               />
             </el-tab-pane>
 

@@ -111,8 +111,8 @@
               class="no-tdata-new"
               @click="() => clickAdd()"
             >{{
-                $t('deDataset.create')
-              }}</span>
+              $t('deDataset.create')
+            }}</span>
           </div>
           <el-tree
             v-else
@@ -134,7 +134,7 @@
             >
               <span style="display: flex; flex: 1; width: 0">
                 <span>
-                  <svg-icon icon-class="scene"/>
+                  <svg-icon icon-class="scene" />
                 </span>
                 <span
                   style="
@@ -242,15 +242,15 @@
                       class="de-card-dropdown"
                     >
                       <el-dropdown-item command="rename">
-                        <svg-icon icon-class="de-ds-rename"/>
+                        <svg-icon icon-class="de-ds-rename" />
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="move">
-                        <svg-icon icon-class="de-ds-move"/>
+                        <svg-icon icon-class="de-ds-move" />
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="delete">
-                        <svg-icon icon-class="de-ds-trash"/>
+                        <svg-icon icon-class="de-ds-trash" />
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -353,15 +353,15 @@
                       class="de-card-dropdown"
                     >
                       <el-dropdown-item command="editTable">
-                        <svg-icon icon-class="de-ds-rename"/>
+                        <svg-icon icon-class="de-ds-rename" />
                         {{ $t('dataset.rename') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="moveDs">
-                        <svg-icon icon-class="de-ds-move"/>
+                        <svg-icon icon-class="de-ds-move" />
                         {{ $t('dataset.move_to') }}
                       </el-dropdown-item>
                       <el-dropdown-item command="deleteTable">
-                        <svg-icon icon-class="de-ds-trash"/>
+                        <svg-icon icon-class="de-ds-trash" />
                         {{ $t('dataset.delete') }}
                       </el-dropdown-item>
                     </el-dropdown-menu>
@@ -434,7 +434,7 @@
           :label="$t('dataset.name')"
           prop="name"
         >
-          <el-input v-model="tableForm.name"/>
+          <el-input v-model="tableForm.name" />
         </el-form-item>
       </el-form>
       <div
@@ -445,8 +445,8 @@
           secondary
           @click="closeTable()"
         >{{
-            $t('dataset.cancel')
-          }}
+          $t('dataset.cancel')
+        }}
         </deBtn>
         <deBtn
           type="primary"
@@ -469,8 +469,8 @@
           :title="moveDialogTitle"
           class="text-overflow"
         >{{
-            moveDialogTitle
-          }}</span>
+          moveDialogTitle
+        }}</span>
         {{ $t('dataset.m2') }}
       </template>
       <group-move-selector
@@ -483,8 +483,8 @@
           secondary
           @click="closeMoveGroup()"
         >{{
-            $t('dataset.cancel')
-          }}
+          $t('dataset.cancel')
+        }}
         </deBtn>
         <deBtn
           :disabled="groupMoveConfirmDisabled"
@@ -508,8 +508,8 @@
           :title="moveDialogTitle"
           class="text-overflow"
         >{{
-            moveDialogTitle
-          }}</span>
+          moveDialogTitle
+        }}</span>
         {{ $t('dataset.m2') }}
       </template>
       <group-move-selector
@@ -521,8 +521,8 @@
           secondary
           @click="closeMoveDs()"
         >{{
-            $t('dataset.cancel')
-          }}
+          $t('dataset.cancel')
+        }}
         </deBtn>
         <deBtn
           :disabled="dsMoveConfirmDisabled"
@@ -534,7 +534,7 @@
     </el-drawer>
 
     <!-- 新增数据集文件夹 -->
-    <CreatDsGroup ref="CreatDsGroup"/>
+    <CreatDsGroup ref="CreatDsGroup" />
   </el-col>
 </template>
 
@@ -692,7 +692,7 @@ export default {
   },
   methods: {
     init(cache = true) {
-      const { id, name } = this.$route.params
+      const { id } = this.$route.params
       const modelInfo = localStorage.getItem('dataset-tree')
       const userCache = modelInfo && cache
       if (userCache) {
@@ -890,8 +890,7 @@ export default {
             _this.expandedArray.push(table.sceneId)
             _this.$refs.datasetTreeRef.setCurrentKey(table.id)
             const renameNode = { id: table.id, name: table.name, label: table.name }
-            updateCacheTree('rename', 'dataset-tree', renameNode, this.tData)
-            ('rename', 'dataset-tree', response.data, this.tData)
+            updateCacheTree('rename', 'dataset-tree', renameNode, this.tData)('rename', 'dataset-tree', response.data, this.tData)
             this.$emit('switchComponent', { name: '' })
           })
         } else {

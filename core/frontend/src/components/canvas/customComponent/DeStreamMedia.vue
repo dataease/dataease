@@ -33,7 +33,7 @@
       class="info-stream-class"
     >
       <span>{{ $t('panel.link_add_tips_pre') }}</span>
-      <i class="icon iconfont icon-chaolianjie"/>
+      <i class="icon iconfont icon-chaolianjie" />
       <span>{{ $t('panel.stream_media_add_tips') }}</span>
     </div>
   </el-row>

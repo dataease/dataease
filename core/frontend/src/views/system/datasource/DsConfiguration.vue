@@ -71,7 +71,10 @@
                     popper-class="api-table-delete"
                     trigger="click"
                   >
-                    <svg-icon :disabled="disabled" icon-class="icon_info_filled" />
+                    <svg-icon
+                      :disabled="disabled"
+                      icon-class="icon_info_filled"
+                    />
                     <div class="tips">
                       {{ $t('datasource.delete_this_item') }}
                     </div>
@@ -541,8 +544,8 @@
             :label="$t('datasource.isUseJsonPath')"
           >
             <el-input
-              :disabled="!apiItem.useJsonPath"
               v-model="apiItem.jsonPath"
+              :disabled="!apiItem.useJsonPath"
               :placeholder="$t('datasource.jsonpath_info')"
               class="input-with-select"
               size="small"
@@ -562,18 +565,24 @@
               </el-select>
 
               <el-button
-                :disabled="!apiItem.useJsonPath"
                 slot="append"
+                :disabled="!apiItem.useJsonPath"
                 @click="showApiData"
               >{{ $t('datasource.show_api_data') }}
               </el-button>
             </el-input>
           </el-form-item>
 
-          <div class="row-rules" v-show="apiItem.useJsonPath">
+          <div
+            v-show="apiItem.useJsonPath"
+            class="row-rules"
+          >
             <span>{{ $t('datasource.column_info') }}</span>
           </div>
-          <div class="table-container de-svg-in-table" v-show="apiItem.useJsonPath">
+          <div
+            v-show="apiItem.useJsonPath"
+            class="table-container de-svg-in-table"
+          >
             <el-table
               ref="apiItemTable"
               :data="originFieldItem.jsonFields"
@@ -1085,7 +1094,7 @@ export default {
       originFieldItem: {
         jsonFields: [],
         fields: []
-      },
+      }
     }
   },
   methods: {
@@ -1151,7 +1160,7 @@ export default {
             const data = Base64.encode(JSON.stringify(this.apiItem))
             this.loading = true
             this.disabledNext = true
-            checkApiDatasource({'data': data})
+            checkApiDatasource({ 'data': data })
               .then((res) => {
                 this.loading = false
                 this.disabledNext = false
@@ -1174,16 +1183,16 @@ export default {
         })
       }
     },
-    showApiData(){
+    showApiData() {
       this.$refs.apiItemBasicInfo.validate((valid) => {
         if (valid) {
           const data = Base64.encode(JSON.stringify(this.apiItem))
           this.loading = true
-          checkApiDatasource({'data': data, 'type': 'apiStructure'})
+          checkApiDatasource({ 'data': data, 'type': 'apiStructure' })
             .then((res) => {
-              res.data.jsonFields.forEach(((item) => {
+              res.data.jsonFields.forEach((item) => {
                 item.checked = false
-              }))
+              })
               this.originFieldItem.jsonFields = res.data.jsonFields
               this.loading = false
               this.$success(i18n.t('commons.success'))
@@ -1227,10 +1236,10 @@ export default {
         for (let i = 0; i < this.form.apiConfiguration.length; i++) {
           if (this.form.apiConfiguration[i].serialNumber === this.apiItem.serialNumber) {
             this.certinKey = !this.certinKey
-            if(this.form.apiConfiguration[i].name !== this.apiItem.name){
+            if (this.form.apiConfiguration[i].name !== this.apiItem.name) {
               this.apiItem.reName = true
               this.apiItem.orgName = this.form.apiConfiguration[i].name
-            }else {
+            } else {
               this.apiItem.reName = false
             }
             this.form.apiConfiguration[i] = JSON.parse(JSON.stringify(this.apiItem))

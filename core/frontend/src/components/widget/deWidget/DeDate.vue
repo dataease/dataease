@@ -21,28 +21,44 @@
       @focus="toFocus"
       @blur="onBlur"
     />
-    <div v-if="isMobileStatus" class="vant-mobile" :class="isRange && 'wl50'" @click="showPopup"/>
-    <div v-if="isMobileStatus && isRange" class="vant-mobile" :class="['datetimerange', 'datetime', 'daterange'].includes(componentType) && 'wr50'" @click="showPopupRight"/>
-    <van-popup get-container="body" v-if="isMobileStatus" v-model="showDate" position="bottom" style="height: auto">
+    <div
+      v-if="isMobileStatus"
+      class="vant-mobile"
+      :class="isRange && 'wl50'"
+      @click="showPopup"
+    />
+    <div
+      v-if="isMobileStatus && isRange"
+      class="vant-mobile"
+      :class="['datetimerange', 'datetime', 'daterange'].includes(componentType) && 'wr50'"
+      @click="showPopupRight"
+    />
+    <van-popup
+      v-if="isMobileStatus"
+      v-model="showDate"
+      get-container="body"
+      position="bottom"
+      style="height: auto"
+    >
       <van-datetime-picker
         v-if="showdDatetimePicker"
-        @confirm="confirm"
-        @cancel="cancel"
         v-model="currentDate"
         :type="componentTypeVant"
         title="选择时间"
         :min-date="minDate"
         :max-date="maxDate"
-        />
-        <van-picker
-          v-else
-          title="选择时间"
-          :default-index="defaultIndex"
-          show-toolbar
-          :columns="columns"
-          @confirm="onConfirm"
-          @cancel="onCancel"
-        />
+        @confirm="confirm"
+        @cancel="cancel"
+      />
+      <van-picker
+        v-else
+        title="选择时间"
+        :default-index="defaultIndex"
+        show-toolbar
+        :columns="columns"
+        @confirm="onConfirm"
+        @cancel="onCancel"
+      />
     </van-popup>
   </div>
 </template>
@@ -51,7 +67,7 @@
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import { timeSection } from '@/utils'
 import bus from '@/utils/bus'
-import customInput from '@/components/widget/deWidget/customInput' 
+import customInput from '@/components/widget/deWidget/customInput'
 import { dateMap, years, seconds } from '@/components/widget/deWidget/serviceNameFn'
 import { mapState } from 'vuex'
 import vanPopup from 'vant/lib/popup'
@@ -262,6 +278,7 @@ export default {
   },
   methods: {
     showPopupRight() {
+      // eslint-disable-next-line
       const [_, end] = this.values || []
       !!end && (this.currentDate = new Date(end))
       this.selectSecondInput = true

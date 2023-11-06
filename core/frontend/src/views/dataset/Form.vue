@@ -1,6 +1,9 @@
 <template>
   <div class="de-dataset-form">
-    <div v-loading="saveDisabled" class="top">
+    <div
+      v-loading="saveDisabled"
+      class="top"
+    >
       <span class="name">
         <i
           class="el-icon-arrow-left"

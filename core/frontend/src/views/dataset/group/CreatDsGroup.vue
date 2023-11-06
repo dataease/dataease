@@ -18,7 +18,7 @@
         :label="$t('dataset.name')"
         prop="name"
       >
-        <el-input v-model="datasetForm.name"/>
+        <el-input v-model="datasetForm.name" />
       </el-form-item>
       <el-form-item
         :label="$t('deDataset.folder')"
@@ -45,7 +45,7 @@
               class="custom-tree-node-dataset"
             >
               <span v-if="data.modelInnerType === 'group'">
-                <svg-icon icon-class="scene"/>
+                <svg-icon icon-class="scene" />
               </span>
               <span
                 style="

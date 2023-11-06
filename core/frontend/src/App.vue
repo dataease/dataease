@@ -13,7 +13,7 @@
       :title="$t('user.change_password')"
       :show-close="false"
     >
-      <PasswordUpdateForm oldPwd="dataease" />
+      <PasswordUpdateForm old-pwd="dataease" />
     </el-dialog>
   </div>
 </template>
@@ -26,21 +26,15 @@ import PasswordUpdateForm from '@/views/system/user/PasswordUpdateForm.vue'
 export default {
   name: 'App',
   components: { PluginCom, PasswordUpdateForm },
-  computed: {
-    ...mapState('user', [
-      'passwordModified',
-    ])
-  },
   data() {
     return {
       showPasswordModifiedDialog: false
     }
   },
-  mounted() {
-    const passwordModified = JSON.parse(localStorage.getItem('passwordModified'))
-    if (typeof passwordModified === 'boolean') {
-      this.$store.commit('user/SET_PASSWORD_MODIFIED', passwordModified)
-    }
+  computed: {
+    ...mapState('user', [
+      'passwordModified'
+    ])
   },
   watch: {
     passwordModified: {
@@ -48,6 +42,12 @@ export default {
         this.showPasswordModifiedDialog = !val
       },
       immediate: true
+    }
+  },
+  mounted() {
+    const passwordModified = JSON.parse(localStorage.getItem('passwordModified'))
+    if (typeof passwordModified === 'boolean') {
+      this.$store.commit('user/SET_PASSWORD_MODIFIED', passwordModified)
     }
   }
 }

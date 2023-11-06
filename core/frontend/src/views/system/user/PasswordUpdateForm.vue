@@ -7,17 +7,30 @@
     label-width="auto"
     label-position="right"
   >
-    <el-form-item v-if="!oldPwd" :label="$t('user.origin_passwd')" prop="oldPwd">
+    <el-form-item
+      v-if="!oldPwd"
+      :label="$t('user.origin_passwd')"
+      prop="oldPwd"
+    >
       <dePwd v-model="form.oldPwd" />
     </el-form-item>
-    <el-form-item :label="$t('user.new_passwd')" prop="newPwd">
+    <el-form-item
+      :label="$t('user.new_passwd')"
+      prop="newPwd"
+    >
       <dePwd v-model="form.newPwd" />
     </el-form-item>
-    <el-form-item :label="$t('user.confirm_passwd')" prop="repeatPwd">
+    <el-form-item
+      :label="$t('user.confirm_passwd')"
+      prop="repeatPwd"
+    >
       <dePwd v-model="form.repeatPwd" />
     </el-form-item>
     <el-form-item>
-      <el-button type="primary" @click="save">{{
+      <el-button
+        type="primary"
+        @click="save"
+      >{{
         $t('commons.confirm')
       }}</el-button>
     </el-form-item>
@@ -34,7 +47,7 @@ export default {
   props: {
     oldPwd: {
       type: String,
-      default: ""
+      default: ''
     }
   },
   data() {

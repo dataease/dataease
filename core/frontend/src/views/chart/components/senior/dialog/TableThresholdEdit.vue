@@ -95,35 +95,35 @@
 
           <el-col :span="3">
             <el-select
-                v-show="!item.term.includes('null') && !item.term.includes('empty')"
-                v-model="item.field"
-                size="mini"
-                style="margin-left: 10px;"
-                @change="changeThresholdField(item)"
+              v-show="!item.term.includes('null') && !item.term.includes('empty')"
+              v-model="item.field"
+              size="mini"
+              style="margin-left: 10px;"
+              @change="changeThresholdField(item)"
             >
               <el-option
-                  v-for="opt in fieldTypeOptions"
-                  :key="opt.value"
-                  :label="opt.label"
-                  :value="opt.value"
+                v-for="opt in fieldTypeOptions"
+                :key="opt.value"
+                :label="opt.label"
+                :value="opt.value"
               />
             </el-select>
           </el-col>
           <el-col
-              v-if="item.field === '0'"
-              :span="12"
+            v-if="item.field === '0'"
+            :span="12"
           >
-              <el-input
-                v-show="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
-                v-model="item.value"
-                class="value-item"
-                style="margin-left: 10px;"
-                :placeholder="$t('chart.drag_block_label_value')"
-                size="mini"
-                clearable
-                @change="changeThreshold"
-              />
-              <span v-if="item.term === 'between'">
+            <el-input
+              v-show="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
+              v-model="item.value"
+              class="value-item"
+              style="margin-left: 10px;"
+              :placeholder="$t('chart.drag_block_label_value')"
+              size="mini"
+              clearable
+              @change="changeThreshold"
+            />
+            <span v-if="item.term === 'between'">
               <el-input
                 v-model="item.min"
                 class="item-long-between"
@@ -144,8 +144,8 @@
             </span>
           </el-col>
           <el-col
-              v-if="item.field === '1'"
-              :span="12"
+            v-if="item.field === '1'"
+            :span="12"
           >
             <span v-show="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'">
               <el-select
@@ -162,45 +162,45 @@
                   :label="fieldOption.name"
                   :value="fieldOption.id"
                 >
-                <span style="float: left">
-                  <svg-icon
-                    v-if="fieldOption.deType === 0"
-                    icon-class="field_text"
-                    class="field-icon-text"
-                  />
-                  <svg-icon
-                    v-if="fieldOption.deType === 1"
-                    icon-class="field_time"
-                    class="field-icon-time"
-                  />
-                  <svg-icon
-                    v-if="fieldOption.deType === 2 || fieldOption.deType === 3"
-                    icon-class="field_value"
-                    class="field-icon-value"
-                  />
-                  <svg-icon
-                    v-if="fieldOption.deType === 5"
-                    icon-class="field_location"
-                    class="field-icon-location"
-                  />
-                </span>
+                  <span style="float: left">
+                    <svg-icon
+                      v-if="fieldOption.deType === 0"
+                      icon-class="field_text"
+                      class="field-icon-text"
+                    />
+                    <svg-icon
+                      v-if="fieldOption.deType === 1"
+                      icon-class="field_time"
+                      class="field-icon-time"
+                    />
+                    <svg-icon
+                      v-if="fieldOption.deType === 2 || fieldOption.deType === 3"
+                      icon-class="field_value"
+                      class="field-icon-value"
+                    />
+                    <svg-icon
+                      v-if="fieldOption.deType === 5"
+                      icon-class="field_location"
+                      class="field-icon-location"
+                    />
+                  </span>
                   <span style="float: left; color: #8492a6; font-size: 12px">{{ fieldOption.name }}</span>
                 </el-option>
               </el-select>
               <el-select
-                  v-model="item.targetField.summary"
-                  size="mini"
-                  class="item-long select-item"
-                  style="margin-left: 10px;"
-                  :placeholder="$t('chart.aggregation')"
-                  @change="changeThreshold"
-                  @visible-change="$forceUpdate()"
+                v-model="item.targetField.summary"
+                size="mini"
+                class="item-long select-item"
+                style="margin-left: 10px;"
+                :placeholder="$t('chart.aggregation')"
+                @change="changeThreshold"
+                @visible-change="$forceUpdate()"
               >
                 <el-option
-                        v-for="opt in getSummaryOptions(fieldItem.field.deType)"
-                        :key="opt.id"
-                        :value="opt.id"
-                        :label="opt.name"
+                  v-for="opt in getSummaryOptions(fieldItem.field.deType)"
+                  :key="opt.id"
+                  :value="opt.id"
+                  :label="opt.name"
                 />
               </el-select>
             </span>
@@ -220,28 +220,28 @@
                   :label="fieldOption.name"
                   :value="fieldOption.id"
                 >
-                <span style="float: left">
-                  <svg-icon
-                    v-if="fieldOption.deType === 0"
-                    icon-class="field_text"
-                    class="field-icon-text"
-                  />
-                  <svg-icon
-                    v-if="fieldOption.deType === 1"
-                    icon-class="field_time"
-                    class="field-icon-time"
-                  />
-                  <svg-icon
-                    v-if="fieldOption.deType === 2 || fieldOption.deType === 3"
-                    icon-class="field_value"
-                    class="field-icon-value"
-                  />
-                  <svg-icon
-                    v-if="fieldOption.deType === 5"
-                    icon-class="field_location"
-                    class="field-icon-location"
-                  />
-                </span>
+                  <span style="float: left">
+                    <svg-icon
+                      v-if="fieldOption.deType === 0"
+                      icon-class="field_text"
+                      class="field-icon-text"
+                    />
+                    <svg-icon
+                      v-if="fieldOption.deType === 1"
+                      icon-class="field_time"
+                      class="field-icon-time"
+                    />
+                    <svg-icon
+                      v-if="fieldOption.deType === 2 || fieldOption.deType === 3"
+                      icon-class="field_value"
+                      class="field-icon-value"
+                    />
+                    <svg-icon
+                      v-if="fieldOption.deType === 5"
+                      icon-class="field_location"
+                      class="field-icon-location"
+                    />
+                  </span>
                   <span style="float: left; color: #8492a6; font-size: 12px">{{ fieldOption.name }}</span>
                 </el-option>
               </el-select>
@@ -255,10 +255,10 @@
                 @visible-change="$forceUpdate()"
               >
                 <el-option
-                        v-for="opt in getSummaryOptions(fieldItem.field.deType)"
-                        :key="opt.id"
-                        :value="opt.id"
-                        :label="opt.name"
+                  v-for="opt in getSummaryOptions(fieldItem.field.deType)"
+                  :key="opt.id"
+                  :value="opt.id"
+                  :label="opt.name"
                 />
               </el-select>
               <span style="margin: 0 4px;">≤{{ $t('chart.drag_block_label_value') }}≤</span>
@@ -275,28 +275,28 @@
                   :label="fieldOption.name"
                   :value="fieldOption.id"
                 >
-                <span style="float: left">
-                  <svg-icon
-                    v-if="fieldOption.deType === 0"
-                    icon-class="field_text"
-                    class="field-icon-text"
-                  />
-                  <svg-icon
-                    v-if="fieldOption.deType === 1"
-                    icon-class="field_time"
-                    class="field-icon-time"
-                  />
-                  <svg-icon
-                    v-if="fieldOption.deType === 2 || fieldOption.deType === 3"
-                    icon-class="field_value"
-                    class="field-icon-value"
-                  />
-                  <svg-icon
-                    v-if="fieldOption.deType === 5"
-                    icon-class="field_location"
-                    class="field-icon-location"
-                  />
-                </span>
+                  <span style="float: left">
+                    <svg-icon
+                      v-if="fieldOption.deType === 0"
+                      icon-class="field_text"
+                      class="field-icon-text"
+                    />
+                    <svg-icon
+                      v-if="fieldOption.deType === 1"
+                      icon-class="field_time"
+                      class="field-icon-time"
+                    />
+                    <svg-icon
+                      v-if="fieldOption.deType === 2 || fieldOption.deType === 3"
+                      icon-class="field_value"
+                      class="field-icon-value"
+                    />
+                    <svg-icon
+                      v-if="fieldOption.deType === 5"
+                      icon-class="field_location"
+                      class="field-icon-location"
+                    />
+                  </span>
                   <span style="float: left; color: #8492a6; font-size: 12px">{{ fieldOption.name }}</span>
                 </el-option>
               </el-select>
@@ -319,7 +319,6 @@
             </span>
 
           </el-col>
-
 
           <el-col
             :span="3"
@@ -400,22 +399,22 @@ export default {
         backgroundColor: '#ffffff00',
         min: '0',
         max: '1',
-        targetField:{},
-        minField:{},
-        maxField:{}
+        targetField: {},
+        minField: {},
+        maxField: {}
       },
       summaryOptions: [{
-          id: 'value',
-          name: this.$t('chart.value')
+        id: 'value',
+        name: this.$t('chart.value')
       }, {
-          id: 'avg',
-          name: this.$t('chart.avg')
+        id: 'avg',
+        name: this.$t('chart.avg')
       }, {
-          id: 'max',
-          name: this.$t('chart.max')
+        id: 'max',
+        name: this.$t('chart.max')
       }, {
-          id: 'min',
-          name: this.$t('chart.min')
+        id: 'min',
+        name: this.$t('chart.min')
       }],
       textOptions: [
         {
@@ -546,13 +545,13 @@ export default {
     initConditionField(item) {
       // 兼容旧数据
       if (!item.targetField) {
-        item.targetField = {};
+        item.targetField = {}
       }
       if (!item.minField) {
-        item.minField = {};
+        item.minField = {}
       }
       if (!item.maxField) {
-        item.maxField = {};
+        item.maxField = {}
       }
     },
     initOptions(item) {
@@ -609,7 +608,7 @@ export default {
       this.fields.forEach(ele => {
         // 视图字段和计数字段不可用
         if (ele.chartId || ele.id === 'count') {
-          return;
+          return
         }
         if (ele.deType === 0 || ele.deType === 5) {
           this.fieldsByType.text.push(ele)
@@ -622,17 +621,17 @@ export default {
     },
     getSummaryOptions(deType) {
       if (deType === 1) {
-          // 时间
-          return this.summaryOptions.filter(ele => {
-              return ele.id !== 'avg'
-          })
+        // 时间
+        return this.summaryOptions.filter(ele => {
+          return ele.id !== 'avg'
+        })
       } else if (deType === 0 || deType === 5) {
-          // 文本、地理位置
-          return this.summaryOptions.filter(ele => {
-              return ele.id === 'value'
-          })
+        // 文本、地理位置
+        return this.summaryOptions.filter(ele => {
+          return ele.id === 'value'
+        })
       } else {
-          return this.summaryOptions
+        return this.summaryOptions
       }
     },
     addThreshold() {
@@ -651,31 +650,31 @@ export default {
         if (item.term === 'between') {
           item.minField.curField = this.getQuotaField(item.minField.fieldId)
           item.maxField.curField = this.getQuotaField(item.maxField.fieldId)
-          item.targetField = {};
+          item.targetField = {}
         } else {
           item.targetField.curField = this.getQuotaField(item.targetField.fieldId)
-          item.minField = {};
-          item.maxField = {};
+          item.minField = {}
+          item.maxField = {}
         }
       } else {
-          item.targetField = {};
-          item.minField = {};
-          item.maxField = {};
+        item.targetField = {}
+        item.minField = {}
+        item.maxField = {}
       }
       this.changeThreshold()
     },
     getQuotaField(id) {
-        if (!id) {
-            return {}
-        }
-        const fields = this.fields.filter(ele => {
-            return ele.id === id
-        })
-        if (fields.length === 0) {
-            return {}
-        } else {
-            return fields[0]
-        }
+      if (!id) {
+        return {}
+      }
+      const fields = this.fields.filter(ele => {
+        return ele.id === id
+      })
+      if (fields.length === 0) {
+        return {}
+      } else {
+        return fields[0]
+      }
     },
     addConditions(item) {
       item.conditions.push(JSON.parse(JSON.stringify(this.thresholdCondition)))

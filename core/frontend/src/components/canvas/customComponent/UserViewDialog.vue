@@ -225,7 +225,7 @@ export default {
             }
           })
         }
-        const result = { ...temp, ...{ DetailAreaCode: DetailAreaCode } }
+        const result = { ...temp, ...{ DetailAreaCode: DetailAreaCode }}
         this.setLastMapChart(result)
         return result
       }

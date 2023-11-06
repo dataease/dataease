@@ -192,6 +192,7 @@ import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
 import bus from '@/utils/bus'
 import BackgroundItemOverall from '@/views/background/BackgroundItemOverall'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   name: 'BackgroundOverall',
