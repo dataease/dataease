@@ -1376,6 +1376,10 @@ public class ChartViewService {
         // 图表组件可再扩展
         Map<String, Object> mapChart = new HashMap<>();
         if (StringUtils.equalsIgnoreCase(view.getRender(), "echarts")) {
+            // reverse data
+            if (StringUtils.containsIgnoreCase(view.getType(), "horizontal")) {
+                Collections.reverse(data);
+            }
             if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 mapChart = ChartDataBuild.transStackChartData(xAxis, yAxis, view, data, extStack, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
