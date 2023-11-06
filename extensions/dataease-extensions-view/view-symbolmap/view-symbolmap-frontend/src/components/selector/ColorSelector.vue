@@ -8,7 +8,7 @@
               placement="bottom"
               width="400"
               trigger="click"
-              
+
             >
               <div style="padding: 6px 10px;">
                 <div>
@@ -46,7 +46,7 @@
             </el-popover>
           </el-form-item>
 
-          
+
 
         <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">
           <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini" @change="changeColorCase" />
@@ -255,6 +255,14 @@ export default {
 .form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 .el-select-dropdown__item{
   padding: 0 20px;
 }

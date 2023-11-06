@@ -8,7 +8,7 @@
               placement="bottom"
               width="400"
               trigger="click"
-              
+
             >
               <div style="padding: 6px 10px;">
                 <div>
@@ -66,7 +66,7 @@
           <el-form-item v-show="(chart.type && chart.type.includes('table')) || sourceType==='panelTable'" :label="$t('chart.table_border_color')" class="form-item">
             <el-color-picker v-model="colorForm.tableBorderColor" class="color-picker-style" :predefine="predefineColors" @change="changeColorCase" />
           </el-form-item>
-          
+
         </div>
 
         <el-form-item v-show="chart.type && !chart.type.includes('text')" :label="$t('chart.not_alpha')" class="form-item form-item-slider">
@@ -284,6 +284,14 @@ export default {
 .form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 .el-select-dropdown__item{
   padding: 0 20px;
 }

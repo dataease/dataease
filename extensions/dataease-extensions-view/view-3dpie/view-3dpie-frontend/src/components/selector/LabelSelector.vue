@@ -6,7 +6,7 @@
           <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
         <div v-show="labelForm.show">
-          
+
           <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
             <el-select v-model="labelForm.fontSize" :placeholder="$t('chart.text_fontsize')" size="mini" @change="changeLabelAttr">
               <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value" />
@@ -37,7 +37,7 @@
         </div>
       </el-form>
 
-      
+
     </el-col>
   </div>
 </template>
@@ -143,6 +143,14 @@ export default {
 .form-item>>>.el-form-item__label{
   font-size: 12px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 .el-select-dropdown__item{
   padding: 0 20px;
 }
