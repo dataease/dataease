@@ -58,7 +58,6 @@ export default {
     removeClass(document.body, 'showRightPanel')
   },
   created() {
-    console.log('log test')
     this.initDs()
     this.$store.dispatch('app/toggleSideBarHide', true)
     const routerParam = this.$router.currentRoute.params
