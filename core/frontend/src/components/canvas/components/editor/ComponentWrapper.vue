@@ -40,6 +40,7 @@
         :style="getComponentStyleDefault(config.style)"
         style="overflow: hidden"
         :out-style="config.style"
+        :terminal="terminal"
         :is-relation="isRelation"
         :element="config"
         :in-screen="inScreen"

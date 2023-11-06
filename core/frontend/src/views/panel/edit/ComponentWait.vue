@@ -47,7 +47,7 @@ import { mapState } from 'vuex'
 import ComponentWaitItem from '@/views/panel/edit/ComponentWaitItem'
 import MobileBackgroundSelector from '@/views/panel/subjectSetting/panelStyle/MobileBackgroundSelector'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
-import {hexColorToRGBA} from "@/views/chart/chart/util";
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   name: 'ComponentWait',
