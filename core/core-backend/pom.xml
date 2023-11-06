@@ -92,7 +92,20 @@
             </properties>
 
             <dependencies>
-
+                <dependency>
+                    <groupId>com.h2database</groupId>
+                    <artifactId>h2</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>io.dataease</groupId>
+                    <artifactId>xpack-permissions</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>io.dataease</groupId>
+                    <artifactId>xpack-base</artifactId>
+                    <version>${project.version}</version>
+                </dependency>
             </dependencies>
 
             <build>
