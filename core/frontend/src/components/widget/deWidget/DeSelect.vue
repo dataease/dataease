@@ -16,6 +16,7 @@
     :key-word="keyWord"
     popper-class="coustom-de-select"
     :list="data"
+    :is-config="isConfig"
     @resetKeyWords="filterMethod"
     :custom-style="customStyle"
     @change="changeValue"
@@ -65,6 +66,10 @@ export default {
     inDraw: {
       type: Boolean,
       default: true
+    },
+    isConfig: {
+      type: Boolean,
+      default: false
     },
     inScreen: {
       type: Boolean,
@@ -274,6 +279,7 @@ export default {
       // this.onFocus = false
     },
     handleElTagStyle() {
+      if (this.isConfig) return
       setTimeout(() => {
         this.$refs['deSelect'] && this.$refs['deSelect'].$el && textSelectWidget(this.$refs['deSelect'].$el, this.element.style)
       }, 500)

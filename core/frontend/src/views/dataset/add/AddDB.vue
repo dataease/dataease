@@ -292,6 +292,9 @@ export default {
         this.activeName = ''
         this.activeTable = {}
         const dsName = this.options.find((ele) => ele.id === val).name
+        this.$currentHttpRequestList.forEach((item, key) => {
+          key.indexOf('/datasource/getTables/') > -1 && item('Operation canceled by the user.')
+        })
         post('/datasource/getTables/' + val, {}).then((response) => {
           this.tables = response.data
           this.tables.forEach((ele) => {
@@ -340,6 +343,7 @@ export default {
     this.initDataSource()
     window.addEventListener('resize', this.calHeight)
     this.calHeight()
+    this.$emit('setSaveDisabled', false)
   },
   activated() {
     this.initDataSource()

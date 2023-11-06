@@ -274,7 +274,7 @@
               :description="$t('deDataset.run_failed')"
             >{{ errMsgCont }}
             </el-empty>
-            <div style="float: left" v-else-if="fields.length">
+            <div style="float: left; min-width: 100%;" v-else-if="fields.length">
               <el-table
               :data="plxTableData"
               size="mini"
@@ -914,8 +914,11 @@ export default {
 
     initTableInfo() {
       const tableId = this.param.tableId || this.$route.query.id
+      if (!tableId) {
+        this.$emit('setSaveDisabled', false)
+        return
+      }
       if (tableId) {
-        this.$emit('datasourceLoading', true)
         getTable(tableId).then((response) => {
           const table = response.data
           this.dataSource = table.dataSourceId
@@ -931,7 +934,7 @@ export default {
           }
           this.variables = JSON.parse(table.sqlVariableDetails)
         }).finally(() => {
-          this.$emit('datasourceLoading', false)
+          this.$emit('setSaveDisabled', false)
         })
       }
     },

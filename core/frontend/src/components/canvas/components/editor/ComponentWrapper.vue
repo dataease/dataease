@@ -387,9 +387,9 @@ export default {
   height: 100% !important;
 }
 
-.component-outer {
-  transform: translate(0);
-}
+// .component-outer {
+//   transform: translate(0);
+// }
 
 .component-active {
   z-index: 1;

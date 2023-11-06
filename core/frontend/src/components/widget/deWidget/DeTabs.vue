@@ -1,13 +1,14 @@
 <template>
   <div
     class="de-tabs-div"
-    :class="headClass"
+    :class="[headClass, headClassScroll]"
   >
     <div
       v-if="maskShow"
       class="frame-mask edit-mask"
     />
     <dataease-tabs
+      ref="deTabsConstom"
       v-model="activeTabName"
       type="card"
       style-type="radioGroup"
@@ -228,7 +229,7 @@ import { getNowCanvasComponentData } from '@/components/canvas/utils/utils'
 import DeCanvasTab from '@/components/canvas/DeCanvas'
 import Preview from '@/components/canvas/components/editor/Preview'
 import TextAttr from '@/components/canvas/components/TextAttr'
-
+import _ from 'lodash'
 export default {
   name: 'DeTabs',
   components: { TextAttr, Preview, DeCanvasTab, TabUseList, ViewSelect, DataeaseTabs },
@@ -294,6 +295,7 @@ export default {
         'de-stream-media',
         'de-frame'
       ],
+      headClassScroll: 'head-class-scroll',
       activeTabName: null,
       tabIndex: 1,
       dialogVisible: false,
@@ -400,6 +402,14 @@ export default {
     }
   },
   watch: {
+    'outStyle.width': {
+      handler() {
+        this.setTabLayout()
+      }
+    },
+    headClass() {
+      this.setTabLayout()
+    },
     'element.style.carouselEnable': {
       handler(newVal, oldVla) {
         this.initCarousel()
@@ -471,11 +481,15 @@ export default {
   mounted() {
     this.initCarousel()
     this.calcTabLength()
+    this.setTabLayout()
   },
   beforeDestroy() {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
+    setTabLayout: _.debounce(function() {
+      this.headClassScroll = !!this.$refs.deTabsConstom.$refs.tabsConstom.$refs.nav.scrollable && 'head-class-scroll'
+    }, 100),
     calcTabLength(){
       this.$nextTick(()=>{
         if(this.element.options.tabList.length>1){
@@ -695,9 +709,11 @@ export default {
       }
       this.$store.dispatch('chart/setViewId', null)
       this.styleChange()
+      this.setTabLayout()
     },
     addTab() {
       this.addNewTab(this.element.id)
+      this.setTabLayout()
     },
 
     addNewTab(componentId) {
@@ -781,6 +797,10 @@ export default {
 .tab-head-center ::v-deep .el-tabs__nav-scroll {
   display: flex;
   justify-content: center;
+}
+
+.head-class-scroll ::v-deep .el-tabs__nav-scroll {
+  display: block !important;
 }
 
 .frame-mask {

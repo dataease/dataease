@@ -423,6 +423,7 @@ export default {
   .el-tree {
     background: var(--BgSelectTreeColor, #FFFFFF) !important;
     color: var(--SelectTreeColor, #606266) !important;
+    width: max-content;
 
     .el-tree-node.is-current {
       background-color: rgb(245, 247, 250, .5) !important;

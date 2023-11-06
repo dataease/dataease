@@ -311,6 +311,7 @@ export default {
     width: calc(50% - 10px) !important;
     display: inline-block;
     padding: 0 5px;
+    margin-bottom: 0;
   }
 }
 </style>

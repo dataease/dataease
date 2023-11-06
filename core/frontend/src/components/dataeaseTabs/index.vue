@@ -1,5 +1,6 @@
 <template>
   <el-tabs
+    ref="tabsConstom"
     :class="['de-tabs',...tabClassName]"
     :style="tabStyle"
     v-bind="$attrs"

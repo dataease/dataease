@@ -15,6 +15,7 @@
               :id="'component' + element.id"
               class="component"
               :style="element.style"
+              is-config
               :element="element"
               :in-draw="false"
             />
