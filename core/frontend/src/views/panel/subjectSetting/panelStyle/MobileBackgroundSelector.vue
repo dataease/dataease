@@ -51,7 +51,7 @@
       >
         <el-upload
           action=""
-          accept=".jpeg,.jpg,.png,.gif"
+          accept=".jpeg,.jpg,.png,.gif,.svg"
           class="avatar-uploader"
           list-type="picture-card"
           :http-request="upload"
@@ -106,6 +106,7 @@ import { mapState } from 'vuex'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
+import bus from '@/utils/bus'
 
 export default {
   name: 'MobileBackgroundSelector',
@@ -141,6 +142,7 @@ export default {
       const canvasStyleData = deepCopy(this.canvasStyleData)
       canvasStyleData.panel.mobileSetting = this.mobileSetting
       this.$store.commit('setCanvasStyle', canvasStyleData)
+      bus.$emit('mobile-status-change', 'setCanvasStyle', canvasStyleData)
       this.$store.commit('recordSnapshot', 'commitStyle')
     },
     onChangeType() {

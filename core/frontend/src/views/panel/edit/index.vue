@@ -188,7 +188,7 @@
           class="mobile_canvas_main"
         >
           <el-col
-            :span="8"
+            :span="10"
             class="this_mobile_canvas_cell"
           >
             <div
@@ -200,23 +200,8 @@
               <el-row class="this_mobile_canvas_inner_top">
                 {{ panelInfo.name }}
               </el-row>
-              <el-row class="this_mobile_canvas_main_outer">
-                <el-row
-                  id="canvasInfoMobile"
-                  class="this_mobile_canvas_main"
-                  :style="mobileCanvasStyle"
-                >
-                  <canvas-opt-bar v-if="!previewVisible&&mobileLayoutStatus"/>
-                  <de-canvas
-                    v-if="!previewVisible&&mobileLayoutStatus"
-                    ref="canvasMainRef"
-                    :canvas-style-data="canvasStyleData"
-                    :component-data="mainCanvasComponentData"
-                    :canvas-id="canvasId"
-                    :canvas-pid="'0'"
-                    :mobile-layout-status="true"
-                  />
-                </el-row>
+              <el-row v-loading="mobileLoading" class="this_mobile_canvas_main_outer">
+                <iframe  src="./mobile.html" @load="handleLoad" frameborder="0" width="360" height="570"></iframe>
               </el-row>
               <el-row class="this_mobile_canvas_inner_bottom">
                 <el-col :span="12">
@@ -249,7 +234,7 @@
             </div>
           </el-col>
           <el-col
-            :span="16"
+            :span="14"
             class="this_mobile_canvas_cell this_mobile_canvas_wait_cell"
           >
             <component-wait/>
@@ -593,6 +578,7 @@ export default {
       autoMoveOffSet: 15,
       mobileEditorShow: true,
       hasStar: false,
+      mobileLoading: true,
       drawerSize: '300px',
       visible: false,
       show: false,
@@ -652,7 +638,7 @@ export default {
         { label: '适应新主题', value: true },
         { label: '保持源样式', value: false }
       ],
-      multiplexingStyleAdaptSelf : true
+      multiplexingStyleAdaptSelf: true
     }
   },
 
@@ -776,7 +762,7 @@ export default {
     curCanvasScaleSelf() {
       return this.curCanvasScaleMap[this.canvasId]
     },
-    selectComponentCount(){
+    selectComponentCount() {
       return Object.keys(this.curMultiplexingComponents).length
     },
     ...mapState([
@@ -786,6 +772,7 @@ export default {
       'canvasStyleData',
       'curComponentIndex',
       'componentData',
+      'pcComponentData',
       'linkageSettingStatus',
       'dragComponentInfo',
       'componentGap',
@@ -817,7 +804,8 @@ export default {
         this.recordStyleChange(this.$store.state.styleChangeTimes)
       }
     },
-    mobileLayoutStatus() {
+    mobileLayoutStatus(val) {
+      this.mobileLoading = val
       this.restore()
     },
     previewVisible(val) {
@@ -849,6 +837,21 @@ export default {
     listenGlobalKeyDown()
   },
   mounted() {
+    bus.$on('mobile-status-change', this.mobileStatusChange)
+    window.addEventListener('message', (event) => {
+      if (event.data.type === 'deleteComponentWithId') {
+        console.log('event1', event.data)
+        this.$store.commit('deleteComponentWithId', event.data.value)
+        this.deleteComponentWithId(event.data.value)
+      }
+      if (event.data.type === 'setComponentData') {
+        console.log('setComponentData', event.data)
+        this.$store.commit('setComponentData', event.data.value)
+        setTimeout(() => {
+          bus.$emit('editSave')
+        }, 1000)
+      }
+    })
     this.initWatermark()
     this.initEvents()
     const _this = this
@@ -864,6 +867,7 @@ export default {
     this.multiplexingStyleAdaptSelf = this.multiplexingStyleAdapt
   },
   beforeDestroy() {
+    bus.$off('mobile-status-change', this.mobileStatusChange)
     bus.$off('component-on-drag', this.componentOnDrag)
     bus.$off('component-dialog-style', this.componentDialogStyle)
     bus.$off('previewFullScreenClose', this.previewFullScreenClose)
@@ -875,6 +879,40 @@ export default {
     elx && elx.remove()
   },
   methods: {
+    handleLoad() {
+      this.mobileLoading = false
+      this.mobileStatusChange('openMobileLayout', this.componentData)
+    },
+    deleteComponentWithId(id) {
+      for (let index = 0; index < this.pcComponentData.length; index++) {
+        const element = this.pcComponentData[index]
+        if (element.id && element.id === id) {
+          element.mobileSelected = false
+          if (element.type === 'de-tabs') {
+            this.deleteComponentWithId(element.id)
+          }
+          break
+        }
+      }
+    },
+    mobileStatusChange(type, value) {
+      console.log('mobileLayoutStatustype', type, this.mobileLayoutStatus)
+      if (!this.mobileLayoutStatus) return
+      const iframe = document.querySelector('iframe')
+      console.log('iframe', iframe)
+      if (iframe) {
+        iframe.contentWindow.postMessage(
+          {
+            type,
+            value
+          },
+          '*'
+        )
+      }
+      // if (['setCanvasStyle', 'addComponent'].includes(type)) {
+        
+      // }
+    },
     initWatermark() {
       if (this.panelInfo.watermarkInfo) {
         this.$nextTick(() => {
@@ -1557,14 +1595,14 @@ export default {
 .mobile_canvas_main {
   width: 80%;
   height: 90%;
-  margin-left: 10%;
+  margin-left: 7%;
   margin-top: 3%;
 }
 
 .this_mobile_canvas {
   border-radius: 30px;
-  min-width: 300px;
-  max-width: 350px;
+  min-width: 370px;
+  max-width: 370px;
   min-height: 600px;
   max-height: 700px;
   overflow: hidden;

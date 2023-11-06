@@ -158,8 +158,13 @@ export function getLabel(chart) {
         // label value formatter
         if (chart.type && chart.type !== 'waterfall') {
           label.formatter = function(param) {
-            let yAxis, extStack, xaxisExt
+            let xAxis, yAxis, extStack, xaxisExt
             let res = param.value
+            try {
+              xAxis = JSON.parse(chart.xaxis)
+            } catch (e) {
+              xAxis = JSON.parse(JSON.stringify(chart.xaxis))
+            }
             try {
               yAxis = JSON.parse(chart.yaxis)
             } catch (e) {
@@ -244,38 +249,46 @@ export function getLabel(chart) {
             } else {
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
-                if (f.name === param.category) {
-                  let formatterCfg = formatterItem
-                  if (f.formatterCfg) {
-                    formatterCfg = f.formatterCfg
-                  }
-                  // 饼图和环形图格式优化
-                  if (equalsAny(chart.type, 'pie', 'pie-donut')) {
-                    // 这边默认值取指标是为了兼容存量的视图
-                    const labelContent = l.labelContent ?? ['quota']
-                    const contentItems = []
-                    if (labelContent.includes('dimension')) {
-                      contentItems.push(param.field)
-                    }
-                    if (labelContent.includes('quota')) {
-                      contentItems.push(valueFormatter(param.value, formatterCfg))
-                    }
-                    if (labelContent.includes('proportion')) {
-                      const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(l.reserveDecimalCount)}%`
-                      if (labelContent.length === 3) {
-                        contentItems.push(`(${percentage})`)
-                      } else {
-                        contentItems.push(percentage)
-                      }
-                    }
-                    res = contentItems.join(' ')
-                  } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
-                    const quotaValue = valueFormatter(param.value, formatterCfg)
-                    res = [param.field, quotaValue].join(' ')
-                  } else {
+                let formatterCfg = formatterItem
+                if (f.formatterCfg) {
+                  formatterCfg = f.formatterCfg
+                }
+
+                if (chart.type === 'scatter' && xAxis && xAxis.length > 0 && xAxis[0].groupType === 'q') {
+                  // 针对横轴为指标的散点图
+                  if (f.name === param.group) {
                     res = valueFormatter(param.value, formatterCfg)
                   }
-                  break
+                } else {
+                  if (f.name === param.category) {
+                  // 饼图和环形图格式优化
+                    if (equalsAny(chart.type, 'pie', 'pie-donut')) {
+                    // 这边默认值取指标是为了兼容存量的视图
+                      const labelContent = l.labelContent ?? ['quota']
+                      const contentItems = []
+                      if (labelContent.includes('dimension')) {
+                        contentItems.push(param.field)
+                      }
+                      if (labelContent.includes('quota')) {
+                        contentItems.push(valueFormatter(param.value, formatterCfg))
+                      }
+                      if (labelContent.includes('proportion')) {
+                        const percentage = `${(Math.round(param.percent * 10000) / 100).toFixed(l.reserveDecimalCount)}%`
+                        if (labelContent.length === 3) {
+                          contentItems.push(`(${percentage})`)
+                        } else {
+                          contentItems.push(percentage)
+                        }
+                      }
+                      res = contentItems.join(' ')
+                    } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
+                      const quotaValue = valueFormatter(param.value, formatterCfg)
+                      res = [param.field, quotaValue].join(' ')
+                    } else {
+                      res = valueFormatter(param.value, formatterCfg)
+                    }
+                    break
+                  }
                 }
               }
             }

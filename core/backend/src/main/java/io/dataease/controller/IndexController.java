@@ -67,6 +67,10 @@ public class IndexController {
             if (StringUtils.isNotEmpty(attachParams)) {
                 url = url + "&attachParams=" + attachParams;
             }
+            String fromLink = request.getParameter("fromLink");
+            if (StringUtils.isNotEmpty(fromLink)) {
+                url = url + "&fromLink=" + fromLink;
+            }
             response.sendRedirect(url);
         } catch (IOException e) {
             LogUtil.error(e.getMessage());

@@ -145,32 +145,31 @@
 </template>
 
 <script>
-import {getStyle} from '@/components/canvas/utils/style'
-import {mapState} from 'vuex'
+import { getStyle } from '@/components/canvas/utils/style'
+import { mapState } from 'vuex'
 import ComponentWrapper from './ComponentWrapper'
-import {changeStyleWithScale} from '@/components/canvas/utils/translate'
-import {uuid} from 'vue-uuid'
-import {deepCopy, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { changeStyleWithScale } from '@/components/canvas/utils/translate'
+import { uuid } from 'vue-uuid'
+import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 import bus from '@/utils/bus'
-import {buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch} from '@/utils/conditionUtil'
-import {hasDataPermission} from '@/utils/permission'
-import {activeWatermark} from '@/components/canvas/tools/watermark'
-import {proxyUserLoginInfo, userLoginInfo} from '@/api/systemInfo/userLogin'
+import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
+import { hasDataPermission } from '@/utils/permission'
+import { activeWatermark } from '@/components/canvas/tools/watermark'
+import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 import html2canvas from 'html2canvasde'
-import {queryAll} from '@/api/panel/pdfTemplate'
+import { queryAll } from '@/api/panel/pdfTemplate'
 import PDFPreExport from '@/views/panel/export/PDFPreExport'
-import {listenGlobalKeyDownPreview} from '@/components/canvas/utils/shortcutKey'
+import { listenGlobalKeyDownPreview } from '@/components/canvas/utils/shortcutKey'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
-import {hexColorToRGBA} from "@/views/chart/chart/util";
-import {isMobile} from '@/utils/index'
-
+import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { isMobile } from '@/utils/index'
 
 const erd = elementResizeDetectorMaker()
 export default {
-  components: {UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport},
+  components: { UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport },
   model: {
     prop: 'show',
     event: 'change'
@@ -207,14 +206,14 @@ export default {
     componentData: {
       type: Array,
       required: false,
-      default: function () {
+      default: function() {
         return []
       }
     },
     canvasStyleData: {
       type: Object,
       required: false,
-      default: function () {
+      default: function() {
         return {}
       }
     },
@@ -261,7 +260,9 @@ export default {
       ],
       needToChangeWidth: [
         'left',
-        'width',
+        'width'
+      ],
+      needToChangeInnerWidth: [
         'fontSize',
         'activeFontSize',
         'borderWidth',
@@ -371,6 +372,7 @@ export default {
       return this.componentDataShow || []
     },
     ...mapState([
+      'previewCanvasScale',
       'isClickComponent'
     ]),
 
@@ -463,7 +465,7 @@ export default {
       return this.$refs['viewWrapperChild']
     },
     getAllWrapperChildRefs() {
-      let allChildRefs = []
+      const allChildRefs = []
       const currentChildRefs = this.getWrapperChildRefs()
       if (currentChildRefs && currentChildRefs.length > 0) {
         allChildRefs.push.apply(allChildRefs, currentChildRefs)
@@ -649,7 +651,7 @@ export default {
     },
     clearAllLinkage() {
       this.$store.commit('clearPanelLinkageInfo')
-      bus.$emit('clear_panel_linkage', {viewId: 'all'})
+      bus.$emit('clear_panel_linkage', { viewId: 'all' })
     },
     changeStyleWithScale,
     getStyle,
@@ -665,8 +667,8 @@ export default {
       }
       if (this.isMainCanvas()) {
         this.$store.commit('setPreviewCanvasScale', {
-          scaleWidth: (this.scaleWidth / 100),
-          scaleHeight: (this.scaleHeight / 100)
+          scaleWidth: this.canvasStyleData.autoSizeAdaptor ? (this.scaleWidth / 100) : 1,
+          scaleHeight: this.canvasStyleData.autoSizeAdaptor ? (this.scaleHeight / 100) : 1
         })
       }
       this.handleScaleChange()
@@ -682,6 +684,10 @@ export default {
     format(value, scale) {
       return value * scale / 100
     },
+
+    formatPoint(value, pointScale) {
+      return value * pointScale
+    },
     handleScaleChange() {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
@@ -691,10 +697,13 @@ export default {
               component.style[key] = this.format(component.style[key], this.scaleHeight)
             }
             if (this.needToChangeWidth.includes(key)) {
+              component.style[key] = this.format(component.style[key], this.scaleWidth)
+            }
+            if (this.needToChangeInnerWidth.includes(key)) {
               if ((key === 'fontSize' || key === 'activeFontSize') && (this.terminal === 'mobile' || ['custom', 'v-text'].includes(component.type))) {
                 // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
               } else {
-                component.style[key] = this.format(component.style[key], this.scaleWidth)
+                component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth)
               }
             }
           })
@@ -714,7 +723,7 @@ export default {
     },
     deselectCurComponent(e) {
       if (!this.isClickComponent) {
-        this.$store.commit('setCurComponent', {component: null, index: null})
+        this.$store.commit('setCurComponent', { component: null, index: null })
         if (this.$refs?.['canvas-opt-bar']) {
           this.$refs['canvas-opt-bar'].setWidgetStatus()
         }

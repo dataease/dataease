@@ -153,6 +153,7 @@
         v-if="chart && showMapLayerController"
         :chart="chart"
         :series-id-map="seriesIdMap"
+        :show-edit-position="showEditPosition"
       />
     </div>
 

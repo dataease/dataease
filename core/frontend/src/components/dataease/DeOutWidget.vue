@@ -43,6 +43,7 @@
                 ref="deOutWidget"
                 :canvas-id="canvasId"
                 class="component-custom"
+                :terminal="terminal"
                 :out-style="element.style"
                 :is-relation="isRelation"
                 :element="element"
@@ -101,6 +102,10 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    terminal: {
+      type: String,
+      default: 'pc'
     }
   },
   data() {
