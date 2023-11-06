@@ -1630,7 +1630,7 @@ export default {
     weeks_4: '周四',
     weeks_5: '周五',
     weeks_6: '周六',
-    system_parameter_setting: '系统参数设置',
+    system_parameter_setting: '系统参数',
     connection_successful: '连接成功',
     connection_failed: '连接失败',
     save_failed: '保存失败',
