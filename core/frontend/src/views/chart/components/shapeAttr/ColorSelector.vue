@@ -120,6 +120,7 @@
                 v-show="showProperty('customColor')"
                 class="custom-color-style"
               >
+                aaa
                 <div
                   v-for="(item,index) in colorForm.seriesColors"
                   :key="index"

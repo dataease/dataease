@@ -357,6 +357,11 @@ public class ChartViewService {
         }
         List<ChartViewFieldDTO> extStack = gson.fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+            List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+            }.getType());
+            extStack.addAll(xAxisExt);
+        }
         List<ChartViewFieldDTO> extBubble = gson.fromJson(view.getExtBubble(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<ChartFieldCustomFilterDTO>();
@@ -640,6 +645,9 @@ public class ChartViewService {
             yAxis.addAll(sizeField);
         }
         List<ChartViewFieldDTO> extStack = gson.fromJson(view.getExtStack(), tokenType);
+        if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+            extStack.addAll(xAxisExt);
+        }
         List<ChartViewFieldDTO> extBubble = gson.fromJson(view.getExtBubble(), tokenType);
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = gson.fromJson(view.getCustomFilter(), filterTokenType);
         List<ChartViewFieldDTO> drill = gson.fromJson(view.getDrillFields(), tokenType);
@@ -939,6 +947,8 @@ public class ChartViewService {
                             if (!checkDrillExist(xAxis, extStack, nextDrillField.getId(), view)) {
                                 // get drill list first element's sort,then assign to nextDrillField
                                 nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
+                                nextDrillField.setDrill(true);
+
                                 if (isAntVScatterNumberXAxis) {
                                     extStack.add(nextDrillField);
                                 } else {
