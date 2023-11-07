@@ -93,6 +93,7 @@ watch(
         jsname="L2NvbXBvbmVudC9zaGFyZS9TaGFyZVZpc3VhbEhlYWQ="
         :resource-id="dvInfo.id"
         :weight="dvInfo.weight"
+        :resource-type="dvInfo.type"
       />
       <el-button v-if="dvInfo.weight > 6" type="primary" @click="dvEdit()">
         <template #icon>
