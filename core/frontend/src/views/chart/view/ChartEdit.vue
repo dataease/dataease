@@ -2147,31 +2147,34 @@ export default {
     },
     watchChartTypeChangeObj(newVal, oldVal) {
       this.view.isPlugin = newVal.isPlugin
-      if (newVal.id === oldVal.id && newVal.type !== oldVal.type && oldVal.type === 'table-info' && this.view.xaxis.length > 0) {
-        // 针对明细表切换为其他图表
-        this.$message({
-          showClose: true,
-          message: this.$t('chart.table_info_switch'),
-          type: 'warning'
-        })
-        this.view.xaxis = []
-      }
-      if (newVal.id === oldVal.id && newVal.type !== oldVal.type) {
-        this.view.senior.threshold = {}
-      }
       if (newVal.type === oldVal.type && newVal.render === oldVal.render && newVal.isPlugin === oldVal.isPlugin) {
         return
       }
-      if (newVal.render === 'antv' && newVal.type === 'chart-mix') {
-        // 针对antv组合图，清理自定义排序
-        this.view.xaxis.forEach(x => {
-          x.customSort = []
-          x.sort = 'none'
-        })
-      }
-      if (oldVal.id !== 'echart') {
-        this.setChartDefaultOptions()
-        this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
+      // 针对同一个图表，更改类型或者render时
+      if (newVal.id === oldVal.id) {
+        if (newVal.type !== oldVal.type && oldVal.type === 'table-info' && this.view.xaxis.length > 0) {
+          // 针对明细表切换为其他图表
+          this.$message({
+            showClose: true,
+            message: this.$t('chart.table_info_switch'),
+            type: 'warning'
+          })
+          this.view.xaxis = []
+        }
+        if (newVal.type !== oldVal.type) {
+          this.view.senior.threshold = {}
+        }
+        if (newVal.render === 'antv' && newVal.type === 'chart-mix') {
+          // 针对antv组合图，清理自定义排序
+          this.view.xaxis.forEach(x => {
+            x.customSort = []
+            x.sort = 'none'
+          })
+        }
+        if (newVal.type !== oldVal.type || newVal.render !== oldVal.render) {
+          this.setChartDefaultOptions()
+          this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
+        }
       }
     }
   },
