@@ -105,11 +105,12 @@
                   <span class="el-dropdown-link">
                     <el-button
                       :title="$t('dataset.field_manage')"
-                      icon="el-icon-setting"
                       type="text"
                       size="mini"
                       style="float: right;width: 20px;margin-left: 4px;"
-                    />
+                    >
+                      <svg-icon icon-class="icon-setting" />
+                    </el-button>
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
@@ -129,12 +130,13 @@
                 </el-dropdown>
                 <el-button
                   :title="$t('chart.change_ds')"
-                  icon="el-icon-refresh"
                   type="text"
                   size="mini"
                   style="float: right;width: 20px;margin-left: 4px;"
                   @click="changeDs"
-                />
+                >
+                  <svg-icon icon-class="icon_switch_outlined" />
+                </el-button>
               </div>
 
               <div
