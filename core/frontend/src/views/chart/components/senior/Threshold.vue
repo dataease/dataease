@@ -7,6 +7,7 @@
         :model="thresholdForm"
         label-width="80px"
         size="mini"
+        @submit.native.prevent
       >
         <el-form-item
           :label="$t('chart.threshold_range')+'(%)'"
@@ -46,6 +47,7 @@
         :model="thresholdForm"
         label-width="80px"
         size="mini"
+        @submit.native.prevent
       >
         <el-form-item
           :label="$t('chart.threshold_range')+'(%)'"
