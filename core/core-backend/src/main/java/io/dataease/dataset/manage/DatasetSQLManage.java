@@ -6,12 +6,10 @@ import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.dataset.union.model.SQLObj;
-import io.dataease.api.permissions.auth.api.InteractiveAuthApi;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.constant.AuthEnum;
 import io.dataease.dataset.constant.DatasetTableType;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.DatasetTableTypeConstants;
 import io.dataease.dataset.utils.SqlUtils;
@@ -24,6 +22,7 @@ import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -31,7 +30,6 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
 
@@ -44,16 +42,14 @@ import java.util.stream.Collectors;
  */
 @Component
 public class DatasetSQLManage {
-    @Resource
-    private CoreDatasetTableMapper coreDatasetTableMapper;
-    @Resource
-    private DatasetTableFieldManage datasetTableFieldManage;
+
     @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
     @Resource
     private EngineServer engineServer;
-    @Autowired(required = false)
-    private InteractiveAuthApi interactiveAuthApi;
+
+    @Resource
+    private CorePermissionManage corePermissionManage;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetSQLManage.class);
 
@@ -328,16 +324,14 @@ public class DatasetSQLManage {
 
     private String putObj2Map(Map<Long, DatasourceSchemaDTO> dsMap, DatasetTableDTO ds) throws Exception {
         // 通过datasource id校验数据源权限
-        if (interactiveAuthApi != null) {
-            BusiPerCheckDTO dto = new BusiPerCheckDTO();
-            dto.setId(ds.getDatasourceId());
-            dto.setAuthEnum(AuthEnum.READ);
-            try {
-                interactiveAuthApi.checkAuth(dto);
-            } catch (Exception e) {
-                DEException.throwException(Translator.get("i18n_no_datasource_permission"));
-            }
+        BusiPerCheckDTO dto = new BusiPerCheckDTO();
+        dto.setId(ds.getDatasourceId());
+        dto.setAuthEnum(AuthEnum.READ);
+        boolean checked = corePermissionManage.checkAuth(dto);
+        if (!checked) {
+            DEException.throwException(Translator.get("i18n_no_datasource_permission"));
         }
+
 
         String schemaAlias;
         if (StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.DB) || StringUtils.equalsIgnoreCase(ds.getType(), DatasetTableType.SQL)) {

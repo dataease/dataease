@@ -287,7 +287,7 @@ const showEditPosition = computed(() => {
   if (showPosition.value === 'canvas') {
     const baseLeft = element.value.x - 1
     const baseRight = pcMatrixCount.value.x - (element.value.x + element.value.sizeX - 1)
-    if (baseLeft === 0 && baseRight === 0) {
+    if ((baseLeft === 0 && baseRight === 0) || baseRight < 0) {
       return 'bar-main-right-inner'
     } else if (baseRight === 0) {
       return 'bar-main-left-outer'

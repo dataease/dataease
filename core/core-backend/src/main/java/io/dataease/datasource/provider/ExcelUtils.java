@@ -35,7 +35,7 @@ import java.util.stream.Collectors;
 
 public class ExcelUtils {
     public static final String UFEFF = "\uFEFF";
-    private static String path = "/opt/dataease/data/excel/";
+    private static String path = "/opt/dataease2.0/data/excel/";
     private static ObjectMapper objectMapper = new ObjectMapper();
 
     private static  TypeReference<List<TableField>> TableFieldListTypeReference = new TypeReference<List<TableField>>() {

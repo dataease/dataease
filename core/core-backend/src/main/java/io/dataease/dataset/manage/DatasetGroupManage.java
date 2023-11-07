@@ -9,8 +9,6 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.api.ds.vo.DatasourceDTO;
-import io.dataease.api.permissions.user.api.UserApi;
-import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
@@ -31,11 +29,11 @@ import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
+import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -68,8 +66,10 @@ public class DatasetGroupManage {
     private CoreDatasetTableMapper coreDatasetTableMapper;
     @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
-    @Autowired(required = false)
-    private UserApi userApi;
+
+
+    @Resource
+    private CoreUserManage coreUserManage;
 
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
@@ -88,13 +88,9 @@ public class DatasetGroupManage {
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
                 datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
             }
-            if (userApi == null) {
-                checkName(datasetGroupInfoDTO);
-            }
-            if (userApi != null) {
-                datasetGroupInfoDTO.setUpdateBy(userApi.info().getId() + "");
-                datasetGroupInfoDTO.setLastUpdateTime(System.currentTimeMillis());
-            }
+            checkName(datasetGroupInfoDTO);
+            datasetGroupInfoDTO.setUpdateBy(AuthUtils.getUser().getUserId() + "");
+            datasetGroupInfoDTO.setLastUpdateTime(System.currentTimeMillis());
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
                 if (!rename && ObjectUtils.isEmpty(datasetGroupInfoDTO.getAllFields())) {
                     DEException.throwException(Translator.get("i18n_no_fields"));
@@ -112,10 +108,8 @@ public class DatasetGroupManage {
             if (ObjectUtils.isEmpty(datasetGroupInfoDTO.getId())) {
                 isCreate = true;
                 datasetGroupInfoDTO.setId(IDUtils.snowID());
-                if (userApi != null) {
-                    datasetGroupInfoDTO.setCreateBy(userApi.info().getId() + "");
-                    datasetGroupInfoDTO.setUpdateBy(userApi.info().getId() + "");
-                }
+                datasetGroupInfoDTO.setCreateBy(AuthUtils.getUser().getUserId() + "");
+                datasetGroupInfoDTO.setUpdateBy(AuthUtils.getUser().getUserId() + "");
                 datasetGroupInfoDTO.setCreateTime(time);
                 datasetGroupInfoDTO.setLastUpdateTime(time);
                 datasetGroupInfoDTO.setPid(datasetGroupInfoDTO.getPid() == null ? 0L : datasetGroupInfoDTO.getPid());
@@ -152,21 +146,19 @@ public class DatasetGroupManage {
         CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
         coreDatasetGroup.setLastUpdateTime(System.currentTimeMillis());
         coreDatasetGroupMapper.updateById(coreDatasetGroup);
-        coreOptRecentManage.saveOpt(datasetGroupInfoDTO.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET,OptConstants.OPT_TYPE.UPDATE);
+        coreOptRecentManage.saveOpt(datasetGroupInfoDTO.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.UPDATE);
     }
 
     @XpackInteract(value = "authResourceTree", before = false)
     public void innerSave(DatasetGroupInfoDTO datasetGroupInfoDTO) {
         CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
         coreDatasetGroupMapper.insert(coreDatasetGroup);
-        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET,OptConstants.OPT_TYPE.NEW);
+        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.NEW);
     }
 
     @XpackInteract(value = "authResourceTree", before = false)
     public DatasetGroupInfoDTO move(DatasetGroupInfoDTO datasetGroupInfoDTO) {
-        if (userApi == null) {
-            checkName(datasetGroupInfoDTO);
-        }
+        checkName(datasetGroupInfoDTO);
         if (datasetGroupInfoDTO.getPid() != 0) {
             checkMove(datasetGroupInfoDTO);
         }
@@ -174,12 +166,10 @@ public class DatasetGroupManage {
         long time = System.currentTimeMillis();
         CoreDatasetGroup coreDatasetGroup = new CoreDatasetGroup();
         BeanUtils.copyBean(coreDatasetGroup, datasetGroupInfoDTO);
-        if (userApi != null) {
-            datasetGroupInfoDTO.setUpdateBy(userApi.info().getId() + "");
-        }
+        datasetGroupInfoDTO.setUpdateBy(AuthUtils.getUser().getUserId() + "");
         coreDatasetGroup.setLastUpdateTime(time);
         coreDatasetGroupMapper.updateById(coreDatasetGroup);
-        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET,OptConstants.OPT_TYPE.UPDATE);
+        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.UPDATE);
         return datasetGroupInfoDTO;
     }
 
@@ -190,7 +180,7 @@ public class DatasetGroupManage {
             DEException.throwException("resource not exist");
         }
         Objects.requireNonNull(CommonBeanFactory.getBean(this.getClass())).recursionDel(id);
-        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET,OptConstants.OPT_TYPE.DELETE);
+        coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.DELETE);
     }
 
     public void recursionDel(Long id) {
@@ -231,15 +221,13 @@ public class DatasetGroupManage {
     public DataSetBarVO queryBarInfo(Long id) {
         DataSetBarVO dataSetBarVO = coreDataSetExtMapper.queryBarInfo(id);
         // get creator
-        if (userApi != null) {
-            UserFormVO userFormVO = userApi.queryById(Long.valueOf(dataSetBarVO.getCreateBy()));
-            if (userFormVO != null) {
-                dataSetBarVO.setCreator(userFormVO.getName());
-            }
-            UserFormVO userFormVOUpdateBy = userApi.queryById(Long.valueOf(dataSetBarVO.getUpdateBy()));
-            if (userFormVOUpdateBy != null) {
-                dataSetBarVO.setUpdater(userFormVOUpdateBy.getName());
-            }
+        String userName = coreUserManage.getUserName(Long.valueOf(dataSetBarVO.getCreateBy()));
+        if (StringUtils.isNotBlank(userName)) {
+            dataSetBarVO.setCreator(userName);
+        }
+        String updateUserName = coreUserManage.getUserName(Long.valueOf(dataSetBarVO.getUpdateBy()));
+        if (StringUtils.isNotBlank(updateUserName)) {
+            dataSetBarVO.setUpdater(updateUserName);
         }
         dataSetBarVO.setDatasourceDTOList(getDatasource(id));
         return dataSetBarVO;
@@ -254,13 +242,13 @@ public class DatasetGroupManage {
 
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper<>();
         datasourceQueryWrapper.in("id", ids);
-        List<DatasourceDTO>  datasourceDTOList = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().map(ele -> {
+        List<DatasourceDTO> datasourceDTOList = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().map(ele -> {
             DatasourceDTO dto = new DatasourceDTO();
             BeanUtils.copyBean(dto, ele);
             dto.setConfiguration(null);
             return dto;
         }).collect(Collectors.toList());
-        if(ids.size() != datasourceDTOList.size()){
+        if (ids.size() != datasourceDTOList.size()) {
             DEException.throwException("由于数据集所用的数据源已被删除,无法显示数据集");
         }
         return datasourceDTOList;
@@ -366,15 +354,13 @@ public class DatasetGroupManage {
         DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
         BeanUtils.copyBean(dto, coreDatasetGroup);
         // get creator
-        if (userApi != null) {
-            UserFormVO userFormVO = userApi.queryById(Long.valueOf(dto.getCreateBy()));
-            if (userFormVO != null) {
-                dto.setCreator(userFormVO.getName());
-            }
-            UserFormVO userFormVOUpdateBy = userApi.queryById(Long.valueOf(dto.getUpdateBy()));
-            if (userFormVOUpdateBy != null) {
-                dto.setUpdater(userFormVOUpdateBy.getName());
-            }
+        String userName = coreUserManage.getUserName(Long.valueOf(dto.getCreateBy()));
+        if (StringUtils.isNotBlank(userName)) {
+            dto.setCreator(userName);
+        }
+        String updateUserName = coreUserManage.getUserName(Long.valueOf(dto.getUpdateBy()));
+        if (StringUtils.isNotBlank(updateUserName)) {
+            dto.setUpdater(updateUserName);
         }
         dto.setUnionSql(null);
         if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
@@ -440,8 +426,8 @@ public class DatasetGroupManage {
             for (CoreDatasetTable datasetTable : datasetTables) {
                 if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
                     List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(datasetTable.getSqlVariableDetails(), listTypeReference);
-                    if(CollectionUtil.isNotEmpty(defaultsSqlVariableDetails)){
-                       List<String> fullName = new ArrayList<>();
+                    if (CollectionUtil.isNotEmpty(defaultsSqlVariableDetails)) {
+                        List<String> fullName = new ArrayList<>();
                         geFullName(id, fullName);
                         List<String> finalFullName = CollectionUtil.reverse(fullName);
                         defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {

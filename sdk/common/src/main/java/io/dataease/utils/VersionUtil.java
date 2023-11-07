@@ -1,11 +1,14 @@
 package io.dataease.utils;
 
+import org.springframework.core.env.Environment;
+
 public class VersionUtil {
 
-    private static final String randomId = IDUtils.randomID(16);
 
     public static String getRandomVersion() {
-        return randomId;
+        Environment environment = CommonBeanFactory.getBean(Environment.class);
+        assert environment != null;
+        return environment.getProperty("dataease.version", "2.0.0");
     }
 
 }
