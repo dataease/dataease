@@ -79,6 +79,7 @@ export const buildViewKeyFilters = (panelItems, result) => {
     if (element.type !== 'custom') {
       return true
     }
+    const selectFirst = element.serviceName === 'textSelectWidget' && element.options.attrs.selectFirst
 
     let param = null
     const widget = ApplicationContext.getService(element.serviceName)
@@ -88,15 +89,28 @@ export const buildViewKeyFilters = (panelItems, result) => {
     const filterComponentId = condition.componentId
     Object.keys(result).forEach(viewId => {
       const vidMatch = viewIdMatch(condition.viewIds, viewId)
-      const viewFilters = result[viewId]
-      let j = viewFilters.length
-      while (j--) {
-        const filter = viewFilters[j]
-        if (filter.componentId === filterComponentId) {
-          viewFilters.splice(j, 1)
+      if (vidMatch && selectFirst) {
+        
+        const promise = new Promise(resolve => {
+          cbParam => {
+            const newCondition = buildAfterFilterLoaded1(element, cbParam)
+            resolve(newCondition)
+          }
+        })
+        promise.componentId = filterComponentId
+        // promise.cb = 
+        result[viewId].push(promise)
+      } else {
+        const viewFilters = result[viewId]
+        let j = viewFilters.length
+        while (j--) {
+          const filter = viewFilters[j]
+          if (filter.componentId === filterComponentId) {
+            viewFilters.splice(j, 1)
+          }
         }
+        vidMatch && vValid && viewFilters.push(condition)
       }
-      vidMatch && vValid && viewFilters.push(condition)
     })
   })
   return result
@@ -106,6 +120,41 @@ export const buildFilterMap = panelItems => {
 
   result = buildViewKeyFilters(panelItems, result)
   return result
+}
+
+const getElementById = (componentId, panelItems) => {
+  for (let index = 0; index < panelItems.length; index++) {
+    const element = panelItems[index]
+    if (element.id === componentId) {
+      return element
+    }
+  }
+  return null
+}
+const buildAfterFilterLoaded1 = (element, p) => {
+  const widget = ApplicationContext.getService(element.serviceName)
+  const param = widget.getParam(element, p.val)
+  const condition = formatCondition(param)
+  return condition
+}
+export const buildAfterFilterLoaded = (panelItems, originMap, p) => {
+  const componentId = p.componentId
+  const element = getElementById(componentId, panelItems)
+  let param = null
+  const widget = ApplicationContext.getService(element.serviceName)
+  param = widget.getParam(element, p.val)
+  const condition = formatCondition(param)
+  const vValid = valueValid(condition)
+  Object.keys(originMap).forEach(viewId => {
+    const conditions = originMap[viewId]
+    if (conditions?.length) {
+      conditions.forEach(condition => {
+        if (condition instanceof Promise && condition.componentId === componentId && vValid) {
+          condition.resolve(condition)
+        }
+      })
+    }
+  })
 }
 
 export const fillElementsFilter = (panelItems, filterMap) => {

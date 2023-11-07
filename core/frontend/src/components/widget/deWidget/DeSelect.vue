@@ -133,6 +133,9 @@ export default {
     },
     isCustomSortWidget() {
       return this.element.serviceName === 'textSelectWidget'
+    },
+    selectFirst() {
+      return this.element.serviceName === 'textSelectWidget' && this.element.options.attrs.selectFirst
     }
   },
 
@@ -286,16 +289,26 @@ export default {
     },
     initLoad() {
       this.value = this.fillValueDerfault()
-      this.initOptions()
-      if (this.element.options.value) {
+      this.initOptions(this.fillFirstSelected)
+      if (this.element.options.value && !this.selectFirst) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
+      }
+    },
+    fillFirstSelected() {
+      if (this.selectFirst && this.data?.length) {
+        this.element.options.value = this.data[0]['id']
+        this.value = this.fillValueDerfault()
+        this.$emit('filter-loaded', {
+          componentId: this.element.id,
+          val: this.value
+        })
       }
     },
     refreshLoad() {
       this.initOptions()
     },
-    initOptions() {
+    initOptions(cb) {
       this.data = []
       if (this.element.options.attrs.fieldId) {
         let method = multFieldValues
@@ -310,6 +323,7 @@ export default {
         }).then(res => {
           this.data = this.optionData(res.data)
           bus.$emit('valid-values-change', true)
+          cb && cb()
         }).catch(e => {
           bus.$emit('valid-values-change', false)
         })

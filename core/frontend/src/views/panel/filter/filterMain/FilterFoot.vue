@@ -8,6 +8,14 @@
         >
           <div style="margin-bottom: 10px;">
             <span>{{ $t('dynamic_time.set_default') }}</span>
+
+            <el-checkbox
+              v-if="element.serviceName === 'textSelectWidget'"
+              v-model="element.options.attrs.selectFirst"
+              class="select-first-check"
+              @change="selectFirstChange"
+            >首项
+            </el-checkbox>
           </div>
           <div class="custom-component-class">
             <component
@@ -67,12 +75,15 @@ export default {
   },
   data() {
     return {
-
+      attrs: null
     }
   },
-
+  created() {
+  },
   methods: {
-
+    selectFirstChange(val) {
+      console.log(val)
+    }
   }
 }
 
@@ -90,6 +101,9 @@ export default {
     height: 100%;
     max-height: 100%;
     overflow-y: scroll;
+  }
+  .select-first-check {
+    margin-left: 25px;
   }
 
 </style>

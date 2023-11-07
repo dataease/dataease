@@ -278,7 +278,10 @@
           :active-name="activeName"
         />
 
-        <filter-foot :element="currentElement" />
+        <filter-foot
+          :element="currentElement"
+          :control-attrs="myAttrs"
+        />
 
       </div>
     </de-main-container>

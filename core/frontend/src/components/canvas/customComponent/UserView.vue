@@ -599,7 +599,23 @@ export default {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
       // 如果watch.filters 已经进行数据初始化时候，此处放弃数据初始化
-
+      const unReadyList = []
+      const readyList = []
+      this.filters.forEach(f => {
+        if (f instanceof Promise) {
+          unReadyList.push(f)
+        } else {
+          readyList.push(f)
+        }
+      })
+      if (unReadyList.length) {
+        Promise.all(this.filters.filter(f => f instanceof Promise)).then(fList => {
+          readyList.concat(fList)
+          this.filter.filters = readyList
+          this.getData(this.element.propValue.viewId, false)
+        })
+        return
+      }
       this.getData(this.element.propValue.viewId, false)
     }
   },
