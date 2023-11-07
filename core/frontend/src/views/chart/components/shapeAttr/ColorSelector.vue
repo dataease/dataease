@@ -120,6 +120,7 @@
                 v-show="showProperty('customColor')"
                 class="custom-color-style"
               >
+                aaa
                 <div
                   v-for="(item,index) in colorForm.seriesColors"
                   :key="index"
@@ -637,6 +638,13 @@ export default {
 }
 
 .form-item ::v-deep .el-form-item__label {
+  font-size: 12px;
+}
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
   font-size: 12px;
 }
 

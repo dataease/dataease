@@ -303,8 +303,10 @@ public class ChartDataBuild {
             }
         }
         List<ChartViewFieldDTO> extGroupList = new ArrayList<>();
+        List<ChartViewFieldDTO> extBaseGroupList = new ArrayList<>();
         if (xIsNumber) {
             extGroupList.addAll(extGroup);
+            extBaseGroupList.addAll(extGroup.stream().filter(d -> !d.isDrill()).collect(Collectors.toList()));
         }
 
 
@@ -374,11 +376,20 @@ public class ChartDataBuild {
                 }
 
                 if (CollectionUtils.isNotEmpty(extGroup) && xIsNumber) { //有分组时其实就是第一个
+                    String catalog = null;
                     if (isDrill) {
-                        axisChartDataDTO.setCategory(row[extGroupList.size() - 1]);
+                        catalog = row[extGroupList.size() - 1];
                     } else {
-                        axisChartDataDTO.setCategory(row[0]);
+                        catalog = row[0];
                     }
+                    axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(catalog, "null"));
+
+                    if (!extBaseGroupList.isEmpty()) {
+                        axisChartDataDTO.setField(row[extBaseGroupList.size() - 1]);
+                    } else {
+                        axisChartDataDTO.setField(yAxis.get(j).getName());
+                    }
+
                 } else {
                     axisChartDataDTO.setCategory(yAxis.get(j).getName());
                 }
