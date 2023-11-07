@@ -59,6 +59,7 @@
           :screen-shot="screenShot"
           :canvas-style-data="canvasStyleData"
           :show-position="showPosition"
+          @filter-loaded="filterLoaded"
         />
       </div>
     </div>
@@ -155,7 +156,7 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 import bus from '@/utils/bus'
-import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
+import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch, buildAfterFilterLoaded } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
@@ -461,6 +462,9 @@ export default {
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
+    filterLoaded(p) {
+      buildAfterFilterLoaded(this.filterMap, p)
+    },
     getWrapperChildRefs() {
       return this.$refs['viewWrapperChild']
     },

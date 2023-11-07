@@ -292,7 +292,6 @@ export default {
       this.outerParamsInfo.targetViewInfoList.forEach((targetViewInfo) => {
         viewIds.push(targetViewInfo.targetViewId)
       })
-      console.log('viewIds=' + JSON.stringify(viewIds))
       return viewIds
     },
     ...mapState([

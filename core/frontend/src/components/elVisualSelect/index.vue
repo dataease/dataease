@@ -7,7 +7,7 @@
     popper-class="VisualSelects coustom-de-select"
     no-match-text=" "
     reserve-keyword
-    clearable
+    :clearable="clearable"
     v-bind="$attrs"
     v-on="$listeners"
     @change="visualChange"
@@ -32,6 +32,7 @@
       :label="item.text"
       :value="item.id"
       :class="setSelect(item.id)"
+      :disabled="itemDisabled"
     >
       <span :title="item.text">{{ item.text }}</span>
     </el-option>
@@ -76,6 +77,14 @@ export default {
     keyWord: {
       type: String,
       default: ''
+    },
+    itemDisabled: {
+      type: Boolean,
+      default: false
+    },
+    clearable: {
+      type: Boolean,
+      default: true
     }
   },
   data() {

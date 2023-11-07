@@ -278,7 +278,10 @@
           :active-name="activeName"
         />
 
-        <filter-foot :element="currentElement" />
+        <filter-foot
+          :element="currentElement"
+          :control-attrs="myAttrs"
+        />
 
       </div>
     </de-main-container>
@@ -922,6 +925,9 @@ export default {
     },
 
     getElementInfo() {
+      if (this.currentElement.options.attrs.selectFirst) {
+        this.currentElement.options.value = ''
+      }
       return this.currentElement
     },
 

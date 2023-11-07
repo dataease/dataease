@@ -80,6 +80,7 @@
         :out-style="getShapeStyleInt(item.style)"
         :active="item === curComponent"
         :h="getShapeStyleIntDeDrag(item.style,'height')"
+        @filter-loaded="filterLoaded"
       />
       <component
         :is="item.component"
@@ -170,7 +171,7 @@ import DeOutWidget from '@/components/dataease/DeOutWidget'
 import DragShadow from '@/components/deDrag/Shadow'
 import bus from '@/utils/bus'
 import LinkJumpSet from '@/views/panel/linkJumpSet'
-import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
+import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch, buildAfterFilterLoaded } from '@/utils/conditionUtil'
 // 挤占式画布
 import _ from 'lodash'
 import _jq from 'jquery'
@@ -1143,6 +1144,9 @@ export default {
   created() {
   },
   methods: {
+    filterLoaded(p) {
+      buildAfterFilterLoaded(this.filterMap, p)
+    },
     getWrapperChildRefs() {
       return this.$refs['wrapperChild']
     },

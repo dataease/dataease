@@ -48,6 +48,7 @@
         :h="config.style.height"
         :search-count="searchCount"
         :canvas-id="canvasId"
+        @filter-loaded="filterLoaded"
       />
       <component
         :is="config.component"
@@ -235,6 +236,9 @@ export default {
     runAnimation(this.$el, this.config.animations)
   },
   methods: {
+    filterLoaded(p) {
+      this.$emit('filter-loaded', p)
+    },
     getComponentId() {
       return this.config.id
     },

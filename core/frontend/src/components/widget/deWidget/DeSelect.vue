@@ -6,13 +6,14 @@
     v-model="value"
     :class-id="'visual-' + element.id + '-' + inDraw + '-' + inScreen"
     :collapse-tags="showNumber"
-    :clearable="!element.options.attrs.multiple"
+    :clearable="!element.options.attrs.multiple && (inDraw || !selectFirst)"
     :multiple="element.options.attrs.multiple"
     :placeholder="$t(element.options.attrs.placeholder) + placeholderSuffix"
     :popper-append-to-body="inScreen"
     :size="size"
     :filterable="true"
     :filter-method="filterMethod"
+    :item-disabled="!inDraw && selectFirst"
     :key-word="keyWord"
     popper-class="coustom-de-select"
     :list="data"
@@ -31,6 +32,7 @@
       :style="{width:selectOptionWidth}"
       :label="item[element.options.attrs.label]"
       :value="item[element.options.attrs.value]"
+      :disabled="!inDraw && selectFirst"
     >
       <span
         :title="item[element.options.attrs.label]"
@@ -133,12 +135,16 @@ export default {
     },
     isCustomSortWidget() {
       return this.element.serviceName === 'textSelectWidget'
+    },
+    selectFirst() {
+      return this.element.serviceName === 'textSelectWidget' && this.element.options.attrs.selectFirst
     }
   },
 
   watch: {
     'viewIds': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
+      this.value = this.fillFirstValue()
       this.setCondition()
     },
     'defaultValueStr': function(value, old) {
@@ -164,11 +170,17 @@ export default {
       this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
         this.data = this.optionData(res.data)
+
         this.clearDefault(this.data)
+        this.fillFirstValue()
         bus.$emit('valid-values-change', true)
       }).catch(e => {
         bus.$emit('valid-values-change', false)
       }) || (this.element.options.value = '')
+    },
+    'selectFirst': function(value, old) {
+      if (value === old) return
+      this.fillFirstValue()
     },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
@@ -179,6 +191,7 @@ export default {
 
       this.show = false
       this.$nextTick(() => {
+        this.fillFirstValue()
         this.show = true
         this.handleCoustomStyle()
       })
@@ -204,6 +217,7 @@ export default {
       method(param).then(res => {
         this.data = this.optionData(res.data)
         this.$nextTick(() => {
+          this.fillFirstValue()
           this.show = true
           this.handleCoustomStyle()
         })
@@ -285,17 +299,26 @@ export default {
       }, 500)
     },
     initLoad() {
-      this.value = this.fillValueDerfault()
-      this.initOptions()
-      if (this.element.options.value) {
+      // this.value = this.fillValueDerfault()
+      this.initOptions(this.fillFirstSelected)
+      if (this.element.options.value && !this.selectFirst) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
+      }
+    },
+    fillFirstSelected() {
+      if (this.selectFirst && this.data?.length) {
+        this.fillFirstValue()
+        this.$emit('filter-loaded', {
+          componentId: this.element.id,
+          val: this.value
+        })
       }
     },
     refreshLoad() {
       this.initOptions()
     },
-    initOptions() {
+    initOptions(cb) {
       this.data = []
       if (this.element.options.attrs.fieldId) {
         let method = multFieldValues
@@ -310,6 +333,7 @@ export default {
         }).then(res => {
           this.data = this.optionData(res.data)
           bus.$emit('valid-values-change', true)
+          cb && cb()
         }).catch(e => {
           bus.$emit('valid-values-change', false)
         })
@@ -335,6 +359,10 @@ export default {
       } else {
         this.element.options.manualModify = true
       }
+      this.setCondition()
+      this.handleShowNumber()
+    },
+    firstChange(value) {
       this.setCondition()
       this.handleShowNumber()
     },
@@ -376,6 +404,20 @@ export default {
         return [this.value]
       }
       return this.value.split(',')
+    },
+    fillFirstValue() {
+      if (!this.selectFirst) {
+        return
+      }
+      const defaultV = this.data[0].id
+      if (this.element.options.attrs.multiple) {
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
+        this.value = defaultV.split(this.separator)
+      } else {
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
+        this.value = defaultV.split(this.separator)[0]
+      }
+      this.firstChange(this.value)
     },
     fillValueDerfault() {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()

@@ -49,6 +49,7 @@
                 :element="element"
                 :in-draw="inDraw"
                 :in-screen="inScreen"
+                @filter-loaded="filterLoaded"
               />
             </div>
           </div>
@@ -180,6 +181,9 @@ export default {
     this.$set(this.element.style, 'innerBgColor', innerBgColor || '')
   },
   methods: {
+    filterLoaded(p) {
+      this.$emit('filter-loaded', p)
+    },
     getComponentId() {
       return this.element.id
     },
