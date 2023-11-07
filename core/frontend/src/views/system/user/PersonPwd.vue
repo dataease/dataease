@@ -23,7 +23,7 @@ export default {
   },
   created() {
     this.$store.dispatch('app/toggleSideBarHide', true)
-  },
+  }
 }
 </script>
 <style lang="scss" scoped>

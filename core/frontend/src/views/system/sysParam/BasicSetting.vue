@@ -47,7 +47,10 @@
             :content="$t('system_parameter_setting.front_time_out')"
             placement="top"
           >
-            <svg-icon class="tips" icon-class="icon_info_outlined" />
+            <svg-icon
+              class="tips"
+              icon-class="icon_info_outlined"
+            />
           </el-tooltip>
         </template>
         <el-input

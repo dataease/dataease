@@ -76,8 +76,8 @@
           style="width: 100%;height:100%"
         >
           <Preview
-            :component-data="tabCanvasComponentData(item.name)"
             :ref="'canvasTabRef-'+item.name"
+            :component-data="tabCanvasComponentData(item.name)"
             :canvas-style-data="canvasStyleData"
             :canvas-id="element.id+'-'+item.name"
             :panel-info="panelInfo"
@@ -315,9 +315,9 @@ export default {
       return Boolean(this.$store.state.dragComponentInfo)
     },
     headClass() {
-      if(this.tabsAreaScroll){
+      if (this.tabsAreaScroll) {
         return 'tab-head-left'
-      }else{
+      } else {
         return 'tab-head-' + this.element.style.headPosition
       }
     },
@@ -474,7 +474,7 @@ export default {
     bus.$on('add-new-tab', this.addNewTab)
     this.$nextTick(() => {
       this.activeTabName = this.element.options.tabList[0].name
-    });
+    })
     this.$store.commit('setTabActiveTabNameMap', { tabId: this.element.id, activeTabName: this.activeTabName })
     this.setContentThemeStyle()
   },
@@ -490,12 +490,12 @@ export default {
     setTabLayout: _.debounce(function() {
       this.headClassScroll = !!this.$refs.deTabsConstom.$refs.tabsConstom.$refs.nav.scrollable && 'head-class-scroll'
     }, 100),
-    calcTabLength(){
-      this.$nextTick(()=>{
-        if(this.element.options.tabList.length>1){
-          const containerDom = document.getElementById("tab-"+this.element.options.tabList[this.element.options.tabList.length -1].name)
+    calcTabLength() {
+      this.$nextTick(() => {
+        if (this.element.options.tabList.length > 1) {
+          const containerDom = document.getElementById('tab-' + this.element.options.tabList[this.element.options.tabList.length - 1].name)
           this.tabsAreaScroll = containerDom.parentNode.scrollWidth > containerDom.parentNode.parentNode.scrollWidth
-        }else{
+        } else {
           this.tabsAreaScroll = false
         }
       })
@@ -504,7 +504,7 @@ export default {
       return this.element.type
     },
     getWrapperChildRefs() {
-      let refsSubAll = []
+      const refsSubAll = []
       const _this = this
       this.element.options.tabList.forEach(tabItem => {
         const refsSub = _this.$refs['canvasTabRef-' + tabItem.name]
@@ -544,7 +544,7 @@ export default {
             if (targetRef) {
               targetRef[0]?.restore()
             }
-          });
+          })
         }, switchTime)
       }
     },

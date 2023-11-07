@@ -24,7 +24,7 @@
         </el-button>
       </el-row>
     </el-row>
-    <el-divider/>
+    <el-divider />
     <el-row>
       <el-form :inline="true">
         <el-form-item

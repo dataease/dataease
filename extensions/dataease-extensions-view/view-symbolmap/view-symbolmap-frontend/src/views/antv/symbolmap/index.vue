@@ -550,14 +550,17 @@ export default {
       },
 
       getMapTheme(chart) {
-        let theme = 'light'
+        let theme = 'normal'
         if (chart.customStyle) {
             const customStyle = JSON.parse(chart.customStyle)
             if (customStyle.baseMapStyle && customStyle.baseMapStyle.baseMapTheme) {
                 theme = customStyle.baseMapStyle.baseMapTheme
             }
         }
-        return theme
+        if (theme === 'light') {
+          theme = 'normal'
+        }
+        return `amap://styles/${theme}`
       },
 
 

@@ -17,14 +17,14 @@
             v-if="table.mode === 0"
             class="de-tag primary"
           >{{
-              $t('dataset.direct_connect')
-            }}</span>
+            $t('dataset.direct_connect')
+          }}</span>
           <span
             v-if="table.mode === 1"
             class="de-tag warning"
           >{{
-              $t('dataset.sync_data')
-            }}</span>
+            $t('dataset.sync_data')
+          }}</span>
         </template>
         <span
           v-if="syncStatus === 'Underway'"
@@ -33,7 +33,7 @@
         >
           {{ $t('dataset.dataset_sync') }}
         </span>
-        <el-divider direction="vertical"/>
+        <el-divider direction="vertical" />
         <span class="create-by">{{ $t('dataset.create_by') }}</span>
         <span class="create-by">:{{ table.creatorName || 'N/A' }}</span>
         <el-popover
@@ -48,7 +48,11 @@
             :data="table"
             :tab-status="tabStatus"
           />
-          <svg-icon slot="reference" class="detail" icon-class="icon_info_outlined" />
+          <svg-icon
+            slot="reference"
+            class="detail"
+            icon-class="icon_info_outlined"
+          />
         </el-popover>
       </el-col>
       <el-col
@@ -77,11 +81,11 @@
           </deBtn>
           <el-dropdown-menu slot="dropdown">
             <el-dropdown-item command="0">
-              <svg-icon icon-class="icon_add-entry_outlined"/>
+              <svg-icon icon-class="icon_add-entry_outlined" />
               {{ $t('dataset.excel_replace') + $t('chart.chart_data') }}
             </el-dropdown-item>
             <el-dropdown-item command="1">
-              <svg-icon icon-class="icon_doc-replace_outlined"/>
+              <svg-icon icon-class="icon_doc-replace_outlined" />
               {{ $t('dataset.excel_add') + $t('chart.chart_data') }}
             </el-dropdown-item>
           </el-dropdown-menu>
@@ -218,7 +222,7 @@
         >
           <div class="tree-cont">
             <div class="content">
-              <rowAuth ref="rowAuth"/>
+              <rowAuth ref="rowAuth" />
             </div>
           </div>
         </el-form-item>
@@ -234,8 +238,8 @@
         >{{ $t('dataset.cancel') }}
         </deBtn>
         <deBtn
-          type="primary"
           v-loading="exportDatasetLoading"
+          type="primary"
           @click="exportDatasetRequest"
         >{{ $t('dataset.confirm') }}
         </deBtn>

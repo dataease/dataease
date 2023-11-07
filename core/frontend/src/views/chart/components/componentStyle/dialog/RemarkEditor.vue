@@ -32,7 +32,7 @@ import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
-import {hexColorToRGBA} from "@/views/chart/chart/util";
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 // 编辑器引入
 export default {
   name: 'RemarkEditor',

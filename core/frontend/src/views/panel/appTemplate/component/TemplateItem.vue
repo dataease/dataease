@@ -29,18 +29,18 @@
         trigger="click"
         @command="handleCommand"
       >
-        <i class="el-icon-more"/>
+        <i class="el-icon-more" />
         <el-dropdown-menu
           slot="dropdown"
           class="de-card-dropdown"
         >
           <slot>
             <el-dropdown-item command="update">
-              <i class="el-icon-edit"/>
+              <i class="el-icon-edit" />
               {{ $t('commons.update') }}
             </el-dropdown-item>
             <el-dropdown-item command="delete">
-              <i class="el-icon-delete"/>
+              <i class="el-icon-delete" />
               {{ $t('commons.uninstall') }}
             </el-dropdown-item>
             <el-dropdown-item

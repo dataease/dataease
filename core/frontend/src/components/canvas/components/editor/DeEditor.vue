@@ -1693,10 +1693,6 @@ export default {
       const resizeItem = _.get(infoBox, 'resizeItem')
       const vm = this
       vm.$set(resizeItem, 'isPlayer', true)
-      const startX = infoBox.startX
-      const startY = infoBox.startY
-      const moveXSize = e.pageX - startX // X方向移动的距离
-      const moveYSize = e.pageY - startY // Y方向移动的距离
       let nowX = Math.round(item.style.width * this.matrixScaleWidth)
       let nowY = Math.round(item.style.height * this.matrixScaleHeight)
       nowX = nowX > 0 ? nowX : 1

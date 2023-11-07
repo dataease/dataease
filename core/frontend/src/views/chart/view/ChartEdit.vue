@@ -105,11 +105,12 @@
                   <span class="el-dropdown-link">
                     <el-button
                       :title="$t('dataset.field_manage')"
-                      icon="el-icon-setting"
                       type="text"
                       size="mini"
                       style="float: right;width: 20px;margin-left: 4px;"
-                    />
+                    >
+                      <svg-icon icon-class="icon-setting" />
+                    </el-button>
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
@@ -129,12 +130,13 @@
                 </el-dropdown>
                 <el-button
                   :title="$t('chart.change_ds')"
-                  icon="el-icon-refresh"
                   type="text"
                   size="mini"
                   style="float: right;width: 20px;margin-left: 4px;"
                   @click="changeDs"
-                />
+                >
+                  <svg-icon icon-class="icon_switch_outlined" />
+                </el-button>
               </div>
 
               <div
@@ -915,6 +917,67 @@
                       </draggable>
                       <div
                         v-if="!view.extStack || view.extStack.length === 0"
+                        class="drag-placeholder-style"
+                      >
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                    <el-row
+                      v-if="view.type === 'scatter' && view.render === 'antv'"
+                      class="padding-lr"
+                    >
+                      <span class="data-area-label">
+                        <span>
+                          {{ $t('chart.chart_group') }}
+                        </span>
+                        /
+                        <span>{{ $t('chart.dimension') }}</span>
+                        <el-tooltip
+                          class="item"
+                          effect="dark"
+                          placement="bottom"
+                        >
+                          <div slot="content">
+                            {{ $t('chart.scatter_group_tip') }}
+                          </div>
+                          <i
+                            class="el-icon-info"
+                            style="cursor: pointer;color: #606266;"
+                          />
+                        </el-tooltip>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="clearData('xaxisExt')"
+                        />
+                      </span>
+                      <draggable
+                        v-model="view.xaxisExt"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addXaxisExt"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <dimension-ext-item
+                            v-for="(item,index) in view.xaxisExt"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
+                            :chart="chart"
+                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemRemove="dimensionItemRemove"
+                            @editItemFilter="showDimensionEditFilter"
+                            @onNameEdit="showRename"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div
+                        v-if="!view.xaxisExt || view.xaxisExt.length === 0"
                         class="drag-placeholder-style"
                       >
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
@@ -2084,31 +2147,34 @@ export default {
     },
     watchChartTypeChangeObj(newVal, oldVal) {
       this.view.isPlugin = newVal.isPlugin
-      if (newVal.id === oldVal.id && newVal.type !== oldVal.type && oldVal.type === 'table-info' && this.view.xaxis.length > 0) {
-        // 针对明细表切换为其他图表
-        this.$message({
-          showClose: true,
-          message: this.$t('chart.table_info_switch'),
-          type: 'warning'
-        })
-        this.view.xaxis = []
-      }
-      if (newVal.id === oldVal.id && newVal.type !== oldVal.type) {
-        this.view.senior.threshold = {}
-      }
       if (newVal.type === oldVal.type && newVal.render === oldVal.render && newVal.isPlugin === oldVal.isPlugin) {
         return
       }
-      if (newVal.render === 'antv' && newVal.type === 'chart-mix') {
-        // 针对antv组合图，清理自定义排序
-        this.view.xaxis.forEach(x => {
-          x.customSort = []
-          x.sort = 'none'
-        })
-      }
-      if (oldVal.id !== 'echart') {
-        this.setChartDefaultOptions()
-        this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
+      // 针对同一个图表，更改类型或者render时
+      if (newVal.id === oldVal.id) {
+        if (newVal.type !== oldVal.type && oldVal.type === 'table-info' && this.view.xaxis.length > 0) {
+          // 针对明细表切换为其他图表
+          this.$message({
+            showClose: true,
+            message: this.$t('chart.table_info_switch'),
+            type: 'warning'
+          })
+          this.view.xaxis = []
+        }
+        if (newVal.type !== oldVal.type) {
+          this.view.senior.threshold = {}
+        }
+        if (newVal.render === 'antv' && newVal.type === 'chart-mix') {
+          // 针对antv组合图，清理自定义排序
+          this.view.xaxis.forEach(x => {
+            x.customSort = []
+            x.sort = 'none'
+          })
+        }
+        if (newVal.type !== oldVal.type || newVal.render !== oldVal.render) {
+          this.setChartDefaultOptions()
+          this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
+        }
       }
     }
   },
@@ -3152,7 +3218,7 @@ export default {
         this.dragCheckType(this.view.xaxisExt, 'd')
       }
       this.dragMoveDuplicate(this.view.xaxisExt, e)
-      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxisExt.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'scatter') && this.view.xaxisExt.length > 1) {
         this.view.xaxisExt = [this.view.xaxisExt[0]]
       }
       this.calcData(true)

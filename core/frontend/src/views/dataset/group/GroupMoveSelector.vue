@@ -24,7 +24,7 @@
         >
           <span style="display: flex; flex: 1; width: 0">
             <span v-if="data.modelInnerType === 'group'">
-              <svg-icon icon-class="scene"/>
+              <svg-icon icon-class="scene" />
             </span>
             <span
               style="

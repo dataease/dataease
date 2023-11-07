@@ -51,17 +51,17 @@
               />
             </el-select>
             <el-tooltip
-                class="item"
-                effect="dark"
-                placement="bottom"
+              class="item"
+              effect="dark"
+              placement="bottom"
             >
               <div
-                  slot="content"
-                  v-html="$t('chart.font_family_tip')"
+                slot="content"
+                v-html="$t('chart.font_family_tip')"
               />
               <i
-                  class="el-icon-info"
-                  style="cursor: pointer;color: #606266;margin-left: 4px;"
+                class="el-icon-info"
+                style="cursor: pointer;color: #606266;margin-left: 4px;"
               />
             </el-tooltip>
           </el-form-item>
@@ -303,6 +303,14 @@ export default {
 .form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 .el-select-dropdown__item{
   padding: 0 20px;
 }

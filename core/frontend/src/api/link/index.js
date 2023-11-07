@@ -66,9 +66,9 @@ export function loadGenerate(resourceId) {
   })
 }
 
-export function loadResource(resourceId,userId) {
+export function loadResource(resourceId, userId) {
   return request({
-    url: 'api/link/resourceDetail/' + resourceId+'/'+ userId,
+    url: 'api/link/resourceDetail/' + resourceId + '/' + userId,
     method: 'get'
   })
 }

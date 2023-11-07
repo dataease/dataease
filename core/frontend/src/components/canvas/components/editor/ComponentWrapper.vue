@@ -78,19 +78,19 @@
 </template>
 
 <script>
-import {getStyle} from '@/components/canvas/utils/style'
+import { getStyle } from '@/components/canvas/utils/style'
 import runAnimation from '@/components/canvas/utils/runAnimation'
-import {mixins} from '@/components/canvas/utils/events'
-import {mapState} from 'vuex'
+import { mixins } from '@/components/canvas/utils/events'
+import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/editor/MobileCheckBar'
 import CloseBar from '@/components/canvas/components/editor/CloseBar'
-import {hexColorToRGBA} from '@/views/chart/chart/util'
-import {imgUrlTrans} from '@/components/canvas/utils/utils'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
-  components: {CloseBar, MobileCheckBar, DeOutWidget, EditBar},
+  components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
     canvasId: {
@@ -137,7 +137,7 @@ export default {
     canvasStyleData: {
       type: Object,
       required: false,
-      default: function () {
+      default: function() {
         return {}
       }
     },
@@ -165,7 +165,7 @@ export default {
     },
     chart() {
       if (this.config.propValue?.viewId) {
-        const viewInfo = this.panelViewDetailsInfo[this.config.propValue.viewId];
+        const viewInfo = this.panelViewDetailsInfo[this.config.propValue.viewId]
         return viewInfo ? JSON.parse(viewInfo) : null
       }
       return null
@@ -329,7 +329,7 @@ export default {
       e.stopPropagation()
       const _this = this
       setTimeout(() => {
-        _this.$store.commit('setCurComponent', {component: _this.config, index: _this.index})
+        _this.$store.commit('setCurComponent', { component: _this.config, index: _this.index })
       }, 200)
     },
     showViewDetails(params) {

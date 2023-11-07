@@ -8,7 +8,7 @@
         @tab-click="handleClick"
       >
         <el-tab-pane name="PanelList">
-          <span slot="label"><i class="el-icon-document tablepanel-i"/>{{ $t('panel.panel_list') }}</span>
+          <span slot="label"><i class="el-icon-document tablepanel-i" />{{ $t('panel.panel_list') }}</span>
           <panel-list
             v-show="activeName==='PanelList'"
             ref="panelList"
@@ -18,14 +18,14 @@
           name="panels_star"
           :lazy="true"
         >
-          <span slot="label"><i class="el-icon-star-off tablepanel-i"/>{{ $t('panel.store') }}</span>
-          <enshrine v-if="activeName==='panels_star'"/>
+          <span slot="label"><i class="el-icon-star-off tablepanel-i" />{{ $t('panel.store') }}</span>
+          <enshrine v-if="activeName==='panels_star'" />
         </el-tab-pane>
         <el-tab-pane
           name="panels_share"
           :lazy="true"
         >
-          <span slot="label"><i class="el-icon-share tablepanel-i"/>{{ $t('panel.share') }}</span>
+          <span slot="label"><i class="el-icon-share tablepanel-i" />{{ $t('panel.share') }}</span>
           <share-tree
             v-if="showShare"
             ref="share_tree"

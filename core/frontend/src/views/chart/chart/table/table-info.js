@@ -1,4 +1,4 @@
-import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE, BaseEvent } from '@antv/s2'
+import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
@@ -551,12 +551,12 @@ function getConditions(chart) {
       }
     }
 
-    let filedValueMap = getFieldValueMap(chart)
+    const filedValueMap = getFieldValueMap(chart)
     for (let i = 0; i < conditions.length; i++) {
       const field = conditions[i]
       res.text.push({
         field: field.field.dataeaseName,
-        mapping(value,rowData) {
+        mapping(value, rowData) {
           return {
             fill: mappingColor(value, valueColor, field, 'color', filedValueMap, rowData)
           }
@@ -564,7 +564,7 @@ function getConditions(chart) {
       })
       res.background.push({
         field: field.field.dataeaseName,
-        mapping(value,rowData) {
+        mapping(value, rowData) {
           return {
             fill: mappingColor(value, valueBgColor, field, 'backgroundColor', filedValueMap, rowData)
           }
@@ -575,7 +575,7 @@ function getConditions(chart) {
   return res
 }
 
-function getValue(field, filedValueMap, rowData){
+function getValue(field, filedValueMap, rowData) {
   if (field.summary === 'value') {
     return rowData[field.curField.dataeaseName]
   } else {
@@ -589,7 +589,7 @@ function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) 
     let flag = false
     const t = field.conditions[i]
     if (field.field.deType === 2 || field.field.deType === 3 || field.field.deType === 4) {
-      let tv,max,min;
+      let tv, max, min
       if (t.field === '1') {
         if (t.term === 'between') {
           max = parseFloat(getValue(t.maxField, filedValueMap, rowData))
@@ -648,7 +648,7 @@ function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) 
         color = defaultColor
       }
     } else if (field.field.deType === 0 || field.field.deType === 5) {
-      let tv;
+      let tv
       if (t.field === '1') {
         tv = getValue(t.targetField, filedValueMap, rowData)
       } else {
@@ -692,9 +692,9 @@ function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) 
       }
     } else {
       // time
-      let tv;
+      let tv
       if (t.field === '1') {
-        let fieldValue = getValue(t.targetField, filedValueMap, rowData);
+        const fieldValue = getValue(t.targetField, filedValueMap, rowData)
         if (fieldValue) {
           tv = new Date(fieldValue.replace(/-/g, '/') + ' GMT+8').getTime()
         }
@@ -760,12 +760,12 @@ function showTooltip(s2Instance, event, fieldMap) {
   })
 }
 
-function getFieldValueMap(view){
-  let fieldValueMap = {}
+function getFieldValueMap(view) {
+  const fieldValueMap = {}
   if (view.data && view.data.dynamicAssistData && view.data.dynamicAssistData.length > 0) {
     view.data.dynamicAssistData.forEach(ele => {
       fieldValueMap[ele.summary + '-' + ele.fieldId] = ele.value
-    });
+    })
   }
-  return fieldValueMap;
+  return fieldValueMap
 }

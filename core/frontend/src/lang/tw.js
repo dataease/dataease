@@ -2425,7 +2425,6 @@ export default {
     webFormat: '請輸入以[https://或http://]開頭的正確網址'
   },
   auth: {
-    selct_filter_fields: '請選擇篩選字段',
     no_item_selected: '請在左側選擇組織、角色或用戶',
     no_resource_selected: '請在左側選擇資源',
     search_pre: '通過',

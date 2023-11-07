@@ -143,8 +143,8 @@ export default {
   },
   methods: {
     webMsgTopicCall(param) {
-      const ip = param
       const msg = this.$t('multi_login_lang.forced_offline')
+      // eslint-disable-next-line
       this.$error(eval(msg))
       bus.$emit('sys-logout')
     },
