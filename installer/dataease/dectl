@@ -60,7 +60,7 @@ function _healthcheck() {
    container_name=$(grep "container_name" $DE_BASE/dataease/docker-compose.yml | awk -F': ' '{print $2}')
    sleep 1
    if [ -z $(docker ps --filter "name=$container_name" -q) ];then
-      echo "未找到容器 $container_name，请检查配置文件。"
+      echo "未找到容器 $container_name。"
       exit 1
    fi
 
