@@ -463,7 +463,7 @@ export default {
   },
   methods: {
     filterLoaded(p) {
-      buildAfterFilterLoaded(this.componentData, this.filterMap, p)
+      buildAfterFilterLoaded(this.filterMap, p)
     },
     getWrapperChildRefs() {
       return this.$refs['viewWrapperChild']

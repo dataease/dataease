@@ -925,6 +925,9 @@ export default {
     },
 
     getElementInfo() {
+      if (this.currentElement.options.attrs.selectFirst) {
+        this.currentElement.options.value = ''
+      }
       return this.currentElement
     },
 

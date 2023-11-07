@@ -2018,6 +2018,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    first_item: '首項',
     forbidden_copy: '當前組件不允許復製',
     url_check_error: '跳轉錯誤，URL不合法',
     view_style: '視圖樣式',

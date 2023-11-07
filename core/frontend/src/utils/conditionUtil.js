@@ -70,6 +70,9 @@ export const buildViewKeyMap = panelItems => {
   return result
 }
 
+const cacheCondition = (cb, obj) => {
+  obj.cb = cb
+}
 export const buildViewKeyFilters = (panelItems, result) => {
   if (!(panelItems && panelItems.length > 0)) {
     return result
@@ -90,15 +93,15 @@ export const buildViewKeyFilters = (panelItems, result) => {
     Object.keys(result).forEach(viewId => {
       const vidMatch = viewIdMatch(condition.viewIds, viewId)
       if (vidMatch && selectFirst) {
-        
+        const obj = {}
         const promise = new Promise(resolve => {
-          cbParam => {
-            const newCondition = buildAfterFilterLoaded1(element, cbParam)
+          cacheCondition(cbParam => {
+            const newCondition = getCondition(element, cbParam)
             resolve(newCondition)
-          }
+          }, obj)
         })
         promise.componentId = filterComponentId
-        // promise.cb = 
+        promise.cacheObj = obj
         result[viewId].push(promise)
       } else {
         const viewFilters = result[viewId]
@@ -122,35 +125,20 @@ export const buildFilterMap = panelItems => {
   return result
 }
 
-const getElementById = (componentId, panelItems) => {
-  for (let index = 0; index < panelItems.length; index++) {
-    const element = panelItems[index]
-    if (element.id === componentId) {
-      return element
-    }
-  }
-  return null
-}
-const buildAfterFilterLoaded1 = (element, p) => {
+const getCondition = (element, p) => {
   const widget = ApplicationContext.getService(element.serviceName)
-  const param = widget.getParam(element, p.val)
+  const param = widget.getParam(element, p?.val)
   const condition = formatCondition(param)
   return condition
 }
-export const buildAfterFilterLoaded = (panelItems, originMap, p) => {
+export const buildAfterFilterLoaded = (originMap, p) => {
   const componentId = p.componentId
-  const element = getElementById(componentId, panelItems)
-  let param = null
-  const widget = ApplicationContext.getService(element.serviceName)
-  param = widget.getParam(element, p.val)
-  const condition = formatCondition(param)
-  const vValid = valueValid(condition)
   Object.keys(originMap).forEach(viewId => {
     const conditions = originMap[viewId]
     if (conditions?.length) {
       conditions.forEach(condition => {
-        if (condition instanceof Promise && condition.componentId === componentId && vValid) {
-          condition.resolve(condition)
+        if (condition instanceof Promise && condition.componentId === componentId && condition.cacheObj?.cb) {
+          condition.cacheObj.cb(p)
         }
       })
     }

@@ -74,7 +74,6 @@ export default {
     getTableName(tableId) {
       let tableName = null
       this.$emit('dataset-name', tableId, t => { tableName = t })
-      console.log(tableName)
       return tableName
     },
     onMove(e, originalEvent) {

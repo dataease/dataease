@@ -610,8 +610,7 @@ export default {
       })
       if (unReadyList.length) {
         Promise.all(this.filters.filter(f => f instanceof Promise)).then(fList => {
-          readyList.concat(fList)
-          this.filter.filters = readyList
+          this.filter.filter = readyList.concat(fList)
           this.getData(this.element.propValue.viewId, false)
         })
         return

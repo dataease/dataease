@@ -14,7 +14,8 @@
               v-model="element.options.attrs.selectFirst"
               class="select-first-check"
               @change="selectFirstChange"
-            >首项
+            >
+              {{ $t('panel.first_item') }}
             </el-checkbox>
           </div>
           <div class="custom-component-class">
@@ -82,7 +83,6 @@ export default {
   },
   methods: {
     selectFirstChange(val) {
-      console.log(val)
     }
   }
 }
