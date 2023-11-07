@@ -222,6 +222,8 @@ const action = param => {
   }
 }
 
+const isDataEaseBi = ref(false)
+
 const trackClick = trackAction => {
   const param = state.pointParam
   if (!param?.data?.dimensionList) {
@@ -250,6 +252,7 @@ const trackClick = trackAction => {
       dvMainStore.addViewTrackFilter(linkageParam)
       break
     case 'jump':
+      if (isDataEaseBi.value) return
       emit('onJumpClick', jumpParam)
       break
     default:
@@ -273,7 +276,7 @@ const trackMenu = computed(() => {
       jumpCount++
     }
   })
-  jumpCount && view.value?.jumpActive && trackMenuInfo.push('jump')
+  jumpCount && view.value?.jumpActive && !isDataEaseBi.value && trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')
   return trackMenuInfo
@@ -301,6 +304,7 @@ const preSize = [0, 0]
 const TOLERANCE = 1
 let resizeObserver
 onMounted(() => {
+  isDataEaseBi.value = !!window.DataEaseBi
   resizeObserver = new ResizeObserver(([entry] = []) => {
     const [size] = entry.borderBoxSize || []
     // 拖动的时候宽高重新计算，误差范围内不重绘，误差先设置为1

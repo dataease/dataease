@@ -131,6 +131,7 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
 
 const dynamicAreaId = ref('')
 const country = ref('')
+const isDataEaseBi = ref(false)
 let mapTimer
 const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
   const map = parseJson(chart.customAttr).map
@@ -205,6 +206,7 @@ const trackClick = trackAction => {
       dvMainStore.addViewTrackFilter(linkageParam)
       break
     case 'jump':
+      if (isDataEaseBi.value) return
       emit('onJumpClick', jumpParam)
       break
     default:
@@ -227,7 +229,7 @@ const trackMenu = computed(() => {
         jumpCount++
       }
     })
-    jumpCount && view.value?.jumpActive && trackMenuInfo.push('jump')
+    jumpCount && view.value?.jumpActive && !isDataEaseBi.value && trackMenuInfo.push('jump')
     linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
     view.value.drillFields.length && trackMenuInfo.push('drill')
   }
@@ -242,6 +244,7 @@ defineExpose({
 let resizeObserver
 const TOLERANCE = 0.01
 onMounted(() => {
+  isDataEaseBi.value = !!window.DataEaseBi
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom
   const preSize = [offsetWidth, offsetHeight]

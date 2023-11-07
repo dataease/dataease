@@ -268,7 +268,7 @@ const getSQLPreview = () => {
     sqlVariableDetails: JSON.stringify(state.variables)
   })
     .then(res => {
-      state.plxTableData = res.data.data.map((ele, index) => ({ ...ele, id: index }))
+      state.plxTableData = res.data.data
       state.fields = generateColumns(res.data.fields)
     })
     .finally(() => {
