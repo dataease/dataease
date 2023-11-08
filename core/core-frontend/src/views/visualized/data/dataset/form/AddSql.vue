@@ -159,6 +159,18 @@ const calculateHeight = (e: MouseEvent) => {
   dragHeight.value = e.pageY - 164
 }
 
+const calculateWidth = (e: MouseEvent) => {
+  if (e.pageX < 240) {
+    LeftWidth.value = 240
+    return
+  }
+  if (e.pageX > 400) {
+    LeftWidth.value = 400
+    return
+  }
+  LeftWidth.value = e.pageX
+}
+
 const insertParamToCodeMirror = (value: string) => {
   codeCom.value.dispatch({
     changes: { from: 0, to: codeCom.value.state.doc.toString().length, insert: '' }
@@ -329,6 +341,7 @@ const copyInfo = async (value: string) => {
 
 const mouseupDrag = () => {
   const dom = document.querySelector('.sql-eidtor')
+  dom.removeEventListener('mousemove', calculateWidth)
   dom.removeEventListener('mousemove', calculateHeight)
 }
 
@@ -377,7 +390,7 @@ const saveVariable = () => {
   ElMessage.success('参数设置成功')
 }
 const mousedownDrag = () => {
-  document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateHeight)
+  document.querySelector('.sql-eidtor').addEventListener('mousemove', calculateWidth)
 }
 </script>
 
