@@ -2,6 +2,7 @@
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import {
   getDatasetTree,
   moveDatasetTree,
@@ -270,6 +271,7 @@ const saveDataset = () => {
               ElMessage.success('重命名成功')
               break
             default:
+              useEmitt().emitter.emit('onDatasetSave')
               ElMessage.success(t('common.save_success'))
               break
           }
