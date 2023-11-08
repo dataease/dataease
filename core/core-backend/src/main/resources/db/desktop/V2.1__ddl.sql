@@ -14,4 +14,4 @@ CREATE TABLE `visualization_template` (
                                           `template_data` longtext COMMENT 'template 数据',
                                           `dynamic_data` longtext COMMENT '预存数据',
                                           PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COMMENT='模板表';
+);
