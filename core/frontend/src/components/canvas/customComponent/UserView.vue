@@ -100,7 +100,10 @@
       :ref="element.propValue.id"
       :show-summary="chart.type === 'table-normal'"
       :chart="chart"
+      :track-menu="trackMenu"
       class="table-class"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
       @onPageChange="pageClick"
     />
     <label-normal
@@ -749,7 +752,7 @@ export default {
     clearPanelLinkage(param) {
       if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
         try {
-          this.$refs[this.element.propValue.id]?.reDrawView()
+          this.$refs[this.element.propValue.id]?.reDrawView?.()
         } catch (e) {
           console.error('reDrawView-error：', this.element.propValue.id)
         }
