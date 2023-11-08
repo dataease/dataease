@@ -11,11 +11,12 @@
     :placeholder="$t(element.options.attrs.placeholder) + placeholderSuffix"
     :popper-append-to-body="inScreen"
     :size="size"
-    :filterable="true"
+    :filterable="inDraw || !selectFirst"
     :filter-method="filterMethod"
     :item-disabled="!inDraw && selectFirst"
     :key-word="keyWord"
     popper-class="coustom-de-select"
+    :class="{'disabled-close': !inDraw && selectFirst && element.options.attrs.multiple}"
     :list="data"
     :is-config="isConfig"
     :custom-style="customStyle"
@@ -467,7 +468,14 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+  .disabled-close ::v-deep .el-icon-close {
+    display: none !important;
+  }
+</style>
 <style lang="scss">
+
+
 .coustom-de-select {
   background-color: var(--BgSelectColor, #FFFFFF) !important;
   border-color: var(--BrSelectColor, #E4E7ED) !important;

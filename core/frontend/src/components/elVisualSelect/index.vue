@@ -14,7 +14,7 @@
     @visible-change="popChange"
   >
     <p
-      v-if="startIndex === 0 && $attrs.multiple"
+      v-if="startIndex === 0 && $attrs.multiple && !itemDisabled"
       class="select-all"
     >
       <el-checkbox
