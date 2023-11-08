@@ -61,7 +61,7 @@ const handleCommand = key => {
 }
 </script>
 
-<style lang="scss">
+<style lang="less">
 .de-card-model {
   box-sizing: border-box;
   background: #ffffff;

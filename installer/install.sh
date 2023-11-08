@@ -19,6 +19,12 @@ if [ -f /usr/bin/dectl ]; then
    DE_BASE=$(grep "^DE_BASE=" /usr/bin/dectl | cut -d'=' -f2)
    dectl stop
    INSTALL_TYPE='upgrade'
+
+   v2_version=$(dectl version |grep "^v2.")
+   if [[ -z $v2_version ]];then
+      echo "系统当前版本不是 DataEase v2 版本系列，不支持升级到 v2，请检查离线包版本。"
+      exit 1;
+   fi
 fi
 
 set -a
@@ -238,24 +244,5 @@ log "启动服务"
 dectl start | tee -a ${CURRENT_DIR}/install.log
 dectl status 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
-for b in {1..30}
-do
-   sleep 3
-   http_code=$(curl -sILw "%{http_code}\n" http://localhost:${DE_PORT} -o /dev/null)
-   if [[ $http_code == 000 ]];then
-      log "服务启动中，请稍候 ..."
-   elif [[ $http_code == 200 ]];then
-      log "服务启动成功!"
-      break;
-   else
-      log "服务启动出错!"
-      exit 1
-   fi
-done
-
-if [[ $http_code != 200 ]];then
-   log "【警告】服务在等待时间内未完全启动！请稍后使用 dectl status 检查服务运行状况。"
-fi
-
 echo -e "======================= 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-
+echo -e "系统登录信息如下:\n 用户名: admin\n 初始密码: dataease" 2>&1 | tee -a ${CURRENT_DIR}/install.log
