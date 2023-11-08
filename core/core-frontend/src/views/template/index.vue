@@ -355,7 +355,7 @@ onMounted(() => {
 })
 </script>
 
-<style lang="scss" scoped>
+<style lang="less" scoped>
 .de-template {
   height: 100%;
   background-color: var(--MainBG, #f5f6f7);
