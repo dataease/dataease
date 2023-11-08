@@ -195,7 +195,7 @@ onMounted(() => {
 }
 </style>
 
-<style lang="scss">
+<style lang="less">
 .flex-template {
   width: 100%;
   display: flex;

@@ -143,7 +143,7 @@ const handlerConfirm = options => {
 }
 </script>
 
-<style scoped lang="scss">
+<style scoped lang="less">
 .de-template-list {
   height: 100%;
   position: relative;
