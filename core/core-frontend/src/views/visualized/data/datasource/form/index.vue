@@ -381,7 +381,7 @@ const saveDS = () => {
   const validate = detail.value.submitForm()
   validate(val => {
     if (val) {
-      if (editDs.value) {
+      if (editDs.value && form.id) {
         let options = {
           confirmButtonType: 'danger',
           type: 'warning',
@@ -478,7 +478,7 @@ const drawTitle = computed(() => {
   if (creator && id && currentDsType.value == 'Excel') {
     return editType === 1 ? '追加数据' : '替换数据'
   }
-  return editDs.value ? t('datasource.modify') : '创建数据源'
+  return editDs.value ? (!form.id ? '复制数据源' : t('datasource.modify')) : '创建数据源'
 })
 
 const beforeClose = () => {

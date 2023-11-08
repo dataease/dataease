@@ -11,6 +11,7 @@ import {
   onBeforeUnmount
 } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
 import type { Action } from 'element-plus-secondary'
 import FieldMore from './FieldMore.vue'
@@ -70,7 +71,6 @@ const editUnion = ref(false)
 const datasetDrag = ref()
 const datasetName = ref('未命名数据集')
 const tabActive = ref('preview')
-const originName = ref('')
 const activeName = ref('')
 const dataSource = ref('')
 const searchTable = ref('')
@@ -316,6 +316,9 @@ const editeSave = () => {
   })
     .then(() => {
       ElMessage.success('保存成功')
+      if (willBack) {
+        pushDataset()
+      }
     })
     .finally(() => {
       loading.value = false
@@ -563,23 +566,26 @@ const getTableName = async (datasourceId, tableName) => {
 
 const initEdite = () => {
   const { id, datasourceId, tableName } = route.query
+  const { id: copyId } = route.params
   if (datasourceId) {
     dataSource.value = datasourceId as string
     getTableName(datasourceId as string, tableName)
   }
-  if (!id) return
+  if (!id && !copyId) return
   loading.value = true
-  getDatasetDetails(id)
+  getDatasetDetails(copyId || id)
     .then(res => {
       let arr = []
       const { id, pid, name } = res || {}
       nodeInfo = {
         id,
         pid,
-        name
+        name: copyId ? '复制数据集' : name
       }
-      datasetName.value = name
-      originName.value = name
+      if (copyId) {
+        nodeInfo.id = ''
+      }
+      datasetName.value = nodeInfo.name
       allfields.value = res.allFields || []
       dfsUnion(arr, res.union || [])
       const [fir] = res.union as { currentDs: { datasourceId: string } }[]
@@ -822,8 +828,17 @@ const handleResize = debounce(() => {
   }
   dragHeight.value = clientHeight - sqlResultHeight.value - 56
 }, 60)
+let willBack = false
+const saveAndBack = () => {
+  if (!willBack) return
+  pushDataset()
+}
 
 onMounted(() => {
+  useEmitt({
+    name: 'onDatasetSave',
+    callback: saveAndBack
+  })
   window.addEventListener('resize', handleResize)
   getSqlResultHeight()
   quotaTableHeight.value = sqlResultHeight.value - 242
@@ -855,7 +870,7 @@ const datasetSave = () => {
   }
   const union = []
   dfsNodeList(union, datasetDrag.value.nodeList)
-  const { pid } = route.query
+  const pid = route.query.pid || nodeInfo.pid
   if (!union.length) {
     ElMessage.error('数据集不能为空')
     return
@@ -867,6 +882,10 @@ const datasetSave = () => {
     '',
     datasetName.value
   )
+}
+const datasetSaveAndBack = () => {
+  willBack = true
+  datasetSave()
 }
 
 const datasetPreviewLoading = ref(false)
@@ -1118,6 +1137,9 @@ const getDsIconName = data => {
         </template>
       </span>
       <span class="oprate">
+        <el-button :disabled="showInput" type="primary" @click="datasetSaveAndBack"
+          >保存并返回</el-button
+        >
         <el-button :disabled="showInput" type="primary" @click="datasetSave">保存</el-button>
       </span>
     </div>

@@ -964,6 +964,9 @@ defineExpose({
   }
 
   .input-with-append {
+    :deep(.ed-input__wrapper) {
+      padding-right: 1px;
+    }
     :deep(.ed-input-group__append) {
       width: 55px;
       background: #eff0f1;

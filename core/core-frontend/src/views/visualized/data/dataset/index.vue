@@ -320,6 +320,15 @@ const handleClick = (tabName: TabPaneName) => {
 }
 
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
+  if (cmd === 'copy') {
+    router.push({
+      name: 'dataset-form',
+      params: {
+        id: data.id
+      }
+    })
+    return
+  }
   if (cmd === 'delete') {
     let options = {
       confirmButtonType: 'danger',
@@ -417,6 +426,18 @@ const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
   return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
 }
+
+const getMenuList = (val: boolean) => {
+  return !val
+    ? menuList
+    : [
+        {
+          label: t('common.copy'),
+          svgName: 'icon_copy_filled',
+          command: 'copy'
+        }
+      ].concat(menuList)
+}
 </script>
 
 <template>
@@ -498,7 +519,7 @@ const filterNode = (value: string, data: BusiTreeNode) => {
                   </el-icon>
                   <handle-more
                     @handle-command="cmd => operation(cmd, data, data.leaf ? 'dataset' : 'folder')"
-                    :menu-list="menuList"
+                    :menu-list="getMenuList(data.leaf)"
                   ></handle-more>
                 </div>
               </span>
