@@ -4,6 +4,7 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import { COMMON_BACKGROUND } from '@/components/canvas/customComponent/component-list'
 
 export const TAB_COMMON_STYLE = {
+  titleHide: false,
   headFontColor: '#000000',
   headFontActiveColor: '#000000',
   headBorderColor: '#ffffff',

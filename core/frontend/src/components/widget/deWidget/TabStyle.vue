@@ -11,6 +11,12 @@
       class="de-form-item"
     >
       <el-form-item
+        label="选项卡标题"
+        prop="titleShow"
+      >
+        <el-checkbox v-model="styleInfo.titleHide">隐藏</el-checkbox>
+      </el-form-item>
+      <el-form-item
         label="头部字体颜色"
         prop="headFrontColor"
       >
