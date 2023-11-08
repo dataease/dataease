@@ -34,7 +34,10 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         try {
             engineServer.initSimpleEngine();
-            datasourceServer.updateDemoDs();
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+        try {
             calciteProvider.initConnectionPool();
         }catch (Exception e){
             e.printStackTrace();
