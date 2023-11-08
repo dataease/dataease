@@ -1,4 +1,5 @@
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
+  titleHide: false,
   headFontColor: '#FFFFFF',
   headFontActiveColor: '#FFFFFF',
   headBorderColor: '#131E42',
@@ -7,6 +8,7 @@ export const DEFAULT_TAB_COLOR_CASE_DARK = {
 }
 
 export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
+  titleHide: false,
   headFontColor: '#OOOOOO',
   headFontActiveColor: '#OOOOOO',
   headBorderColor: '#OOOOOO',
