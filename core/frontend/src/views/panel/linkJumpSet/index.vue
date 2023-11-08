@@ -83,7 +83,16 @@
                   style="margin-right: 10px"
                   @select="panelNodeClick"
                   @input="inputVal"
-                />
+                >
+                  <label
+                    slot="option-label"
+                    slot-scope="{ node, labelClassName }"
+                    :class="labelClassName"
+                    :title="node.label"
+                  >
+                    {{ node.label }}
+                  </label>
+                </treeselect>
               </el-col>
             </el-row>
             <el-row style="margin-top: 10px;height: 30px">
