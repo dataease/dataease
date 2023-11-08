@@ -424,6 +424,7 @@ const handleNodeClick = data => {
       createTime,
       creator,
       type,
+      pid,
       configuration,
       syncSetting,
       apiConfigurationStr,
@@ -440,6 +441,7 @@ const handleNodeClick = data => {
     }
     Object.assign(nodeInfo, {
       name,
+      pid,
       description,
       fileName,
       size,
@@ -534,6 +536,13 @@ const handleEdit = async data => {
   datasourceEditor.value.init(nodeInfo)
 }
 
+const handleCopy = async data => {
+  await handleNodeClick(data)
+  nodeInfo.id = ''
+  nodeInfo.name = '复制数据源'
+  datasourceEditor.value.init(nodeInfo)
+}
+
 const handleDatasourceTree = (cmd: string, data?: Tree) => {
   if (cmd === 'datasource') {
     createDatasource(data)
@@ -543,6 +552,10 @@ const handleDatasourceTree = (cmd: string, data?: Tree) => {
   }
 }
 const operation = (cmd: string, data: Tree, nodeType: string) => {
+  if (cmd === 'copy') {
+    handleCopy(data)
+    return
+  }
   if (cmd === 'delete') {
     let options = {
       confirmButtonText: t('common.sure'),
@@ -633,6 +646,18 @@ onMounted(() => {
     datasourceEditor.value.init(null, null)
   }
 })
+
+const getMenuList = (val: boolean) => {
+  return !val
+    ? menuList
+    : [
+        {
+          label: t('common.copy'),
+          svgName: 'icon_copy_filled',
+          command: 'copy'
+        }
+      ].concat(menuList)
+}
 </script>
 
 <template>
@@ -718,7 +743,7 @@ onMounted(() => {
                     @handle-command="
                       cmd => operation(cmd, data, data.leaf ? 'datasource' : 'folder')
                     "
-                    :menu-list="menuList"
+                    :menu-list="getMenuList(!['Excel', 'API'].includes(data.type) && data.leaf)"
                   ></handle-more>
                 </div>
               </span>
