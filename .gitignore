@@ -50,3 +50,4 @@ core/core-frontend/src/assets/fsSvg.html
 /sdk/dataease-plugin-view/
 /extensions/
 .vite/
+/core/backend/
