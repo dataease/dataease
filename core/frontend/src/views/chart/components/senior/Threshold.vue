@@ -196,8 +196,17 @@
                 {{ item.min }}&nbsp;≤{{ $t('chart.drag_block_label_value') }}≤&nbsp;{{ item.max }}
               </span>
             </el-col>
-            <el-col :span="6">
+            <el-col
+              :span="3"
+              :title="$t('chart.textColor')"
+            >
               <span :style="{width:'14px', height:'14px', backgroundColor: item.color, border: 'solid 1px #e1e4e8'}" />
+            </el-col>
+            <el-col
+              :span="3"
+              :title="$t('chart.backgroundColor')"
+            >
+              <span :style="{width:'14px', height:'14px', backgroundColor: item.backgroundColor, border: 'solid 1px #e1e4e8'}" />
             </el-col>
           </el-row>
         </el-col>
