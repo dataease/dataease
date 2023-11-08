@@ -144,7 +144,7 @@ export default {
   watch: {
     'viewIds': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
-      this.value = this.fillFirstValue()
+      this.fillFirstValue()
       this.setCondition()
     },
     'defaultValueStr': function(value, old) {
@@ -180,7 +180,12 @@ export default {
     },
     'selectFirst': function(value, old) {
       if (value === old) return
-      this.fillFirstValue()
+      if (value) {
+        this.fillFirstValue()
+      } else {
+        this.value = ''
+        this.firstChange(this.value)
+      }
     },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
@@ -285,6 +290,11 @@ export default {
     },
     resetDefaultValue(id) {
       if (this.inDraw && this.manualModify && this.element.id === id) {
+        if (this.selectFirst) {
+          this.fillFirstValue()
+          this.firstChange(this.value)
+          return
+        }
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
@@ -311,7 +321,7 @@ export default {
         this.fillFirstValue()
         this.$emit('filter-loaded', {
           componentId: this.element.id,
-          val: this.value
+          val: (this.value && Array.isArray(this.value)) ? this.value.join(',') : this.value
         })
       }
     },
