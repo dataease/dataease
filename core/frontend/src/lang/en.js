@@ -766,6 +766,8 @@ export default {
     can_not_move: `Can't be removed, keep at least one administrator`,
     manage_can_not_move: 'Administrator is a preset role of the system. By default, he has all the permissions of system management and cannot be deleted',
     manage_can_not_update: 'Administrator is a preset role of the system. By default, he has all the permissions of system management and cannot be edit',
+    inner_can_not_move: 'System built-in roles,cannot be deleted',
+    inner_can_not_update: 'System built-in roles,cannot be edit',
     role_description: 'Role description',
     editer_role: 'Edit role',
     add_role: 'Add role',

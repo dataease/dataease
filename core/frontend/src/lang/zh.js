@@ -764,6 +764,8 @@ export default {
     can_not_move: '不可移除，至少保留一位管理员',
     manage_can_not_move: '管理员是系统预置角色，默认拥有系统管理全部权限，无法删除',
     manage_can_not_update: '管理员是系统预置角色，默认拥有系统管理全部权限，无法编辑',
+    inner_can_not_move: '系统预置角色，无法删除',
+    inner_can_not_update: '系统预置角色，无法编辑',
     role_description: '角色描述',
     editer_role: '编辑角色',
     add_role: '添加角色',
