@@ -23,18 +23,19 @@
       <ux-grid
         ref="plxTable"
         size="mini"
+        class="table-class"
         :style="tableStyle"
         :height="height"
         :checkbox-config="{highlight: true}"
         :width-resize="true"
         :header-row-style="table_header_class"
         :row-style="getRowStyle"
-        class="table-class"
         :class="chart.id"
         :merge-cells="mergeCells"
         :show-summary="showSummary"
         :summary-method="summaryMethod"
         :index-config="{seqMethod}"
+        :show-header="showHeader"
         @cell-click="cellClick"
       >
         <ux-table-column
@@ -194,6 +195,7 @@ export default {
       scrollTop: 0,
       showIndex: false,
       indexLabel: '序号',
+      showHeader: true,
       scrollBarColor: DEFAULT_COLOR_CASE.tableScrollBarColor,
       scrollBarHoverColor: DEFAULT_COLOR_CASE.tableScrollBarHoverColor,
       totalStyle: {
@@ -450,6 +452,11 @@ export default {
             this.indexLabel = ' '
           } else {
             this.indexLabel = customAttr.size.indexLabel
+          }
+          if (customAttr.size.showTableHeader === false) {
+            this.showHeader = false
+          } else {
+            this.showHeader = true
           }
 
           const autoBreakLine = customAttr.size.tableAutoBreakLine ? customAttr.size.tableAutoBreakLine : DEFAULT_SIZE.tableAutoBreakLine
