@@ -26,9 +26,12 @@
       <div
         ref="deContentContainer"
         class="condition-content"
-        :class="(element.options.attrs.showTitle && element.options.attrs.title) ? '' : 'condition-content-default'"
+        :class="{'condition-content-default' : !(element.options.attrs.showTitle && element.options.attrs.title)}"
       >
-        <div class="condition-content-container">
+        <div
+          class="condition-content-container"
+          :class="{'widget-required' : element.options.attrs.required}"
+        >
           <div class="first-element">
             <div
               :class="element.component === 'de-select-grid' ? 'first-element-grid-container': ''"
@@ -54,6 +57,12 @@
             </div>
           </div>
 
+        </div>
+        <div
+          v-if="element.options.attrs.required"
+          class="widget-required-symbol"
+        >
+          <span>*</span>
         </div>
       </div>
     </div>
@@ -270,6 +279,16 @@ export default {
   overflow: auto hidden;
   letter-spacing: 0px !important;
   width: 100%;
+  .widget-required {
+    width: calc(100% - 10px) !important;
+    float: left !important;
+  }
+  .widget-required-symbol {
+    color: #f54a45;
+    height: 40px;
+    line-height: 40px;
+    float: right;
+  }
 }
 
 .condition-content-container {

@@ -267,6 +267,7 @@
         <filter-head
           :element="currentElement"
           @dataset-name="dataSetName"
+          @required-change="requiredChange"
         />
 
         <filter-control
@@ -281,6 +282,7 @@
         <filter-foot
           :element="currentElement"
           :control-attrs="myAttrs"
+          @widget-value-changed="widgetValChange"
         />
 
       </div>
@@ -391,12 +393,17 @@ export default {
       datasetParams: [],
       currentElement: null,
       tempTreeData: null,
-      showTips: false
+      showTips: false,
+      widgetValue: null,
+      required: false
     }
   },
   computed: {
     isTree() {
       return this.widget && this.widget.isTree
+    },
+    requiredMatch() {
+      return !this.required || !!this.widgetValue?.length
     },
     ...mapState([
       'componentData'
@@ -408,7 +415,6 @@ export default {
       if (values && values.length > 0) {
         const fieldIds = values.map(val => val.id)
         this.myAttrs.fieldId = fieldIds.join()
-        // this.myAttrs.dragItems = values
         this.myAttrs.activeName = this.activeName
         this.myAttrs.fieldsParent = this.fieldsParent
       } else if (this.myAttrs && this.myAttrs.fieldId) {
@@ -417,7 +423,9 @@ export default {
       }
       this.enableSureButton()
     },
-
+    requiredMatch(val) {
+      this.enableSureButton()
+    },
     keyWord(val) {
       this.expandedArray = []
       if (this.showDomType === 'field') {
@@ -449,6 +457,7 @@ export default {
   created() {
     this.widget = this.widgetInfo
     this.currentElement = JSON.parse(JSON.stringify(this.element))
+    this.required = !!this.currentElement.options.attrs.required
     this.myAttrs = this.currentElement.options.attrs
     this.treeNode(this.groupForm)
     this.loadViews()
@@ -467,6 +476,12 @@ export default {
     bus.$off('valid-values-change', this.validateFilterValue)
   },
   methods: {
+    widgetValChange(val) {
+      this.widgetValue = val
+    },
+    requiredChange(val) {
+      this.required = val
+    },
     dataSetName(tableId, callback) {
       let result = null
       if (tableId) {
@@ -914,14 +929,13 @@ export default {
 
     enableSureButton() {
       let valid = true
-
       const enable =
       this.currentElement.options.attrs.dragItems && this.currentElement.options.attrs.dragItems
         .length > 0
       if (this.widget.validDynamicValue) {
         valid = this.widget.validDynamicValue(this.currentElement)
       }
-      this.$emit('sure-button-status', enable && valid)
+      this.$emit('sure-button-status', enable && valid && this.requiredMatch)
     },
 
     getElementInfo() {
@@ -934,7 +948,7 @@ export default {
     validateFilterValue(valid) {
       const enable = this.currentElement.options.attrs.dragItems && this.currentElement.options.attrs.dragItems
         .length > 0
-      this.$emit('sure-button-status', enable && valid)
+      this.$emit('sure-button-status', enable && valid && this.requiredMatch)
     }
 
   }

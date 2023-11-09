@@ -307,8 +307,11 @@ const data = {
     },
 
     addViewFilter(state, data) {
+      const required = data.component.options.attrs.required
       const condition = formatCondition(data)
-      const vValid = valueValid(condition)
+      let vValid = valueValid(condition)
+      condition.requiredInvalid = required && !vValid
+      vValid = vValid || required
       //   1.根据componentId过滤
       const filterComponentId = condition.componentId
       const canvasId = data.canvasId
