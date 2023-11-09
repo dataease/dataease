@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-col :span="24">
+    <el-col :span="20">
       <div class="filter-field">
         <div class="field-content">
 
@@ -38,6 +38,14 @@
         </div>
       </div>
     </el-col>
+    <el-col :span="4">
+      <div class="de-filter-required">
+        <el-checkbox
+          v-model="element.options.attrs.required"
+          @change="requiredChange"
+        >{{ $t('commons.required') }}</el-checkbox>
+      </div>
+    </el-col>
   </el-row>
 </template>
 
@@ -71,6 +79,9 @@ export default {
 
   },
   methods: {
+    requiredChange(val) {
+      this.$emit('required-change', val)
+    },
     getTableName(tableId) {
       let tableName = null
       this.$emit('dataset-name', tableId, t => { tableName = t })
@@ -94,6 +105,11 @@ export default {
 
 </script>
 <style lang="scss" scoped>
+.de-filter-required {
+  height: 40px;
+  line-height: 40px;
+  float: right;
+}
 .filter-field {
   border-radius: 4px;
   height: 40px;

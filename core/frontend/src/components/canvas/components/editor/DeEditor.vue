@@ -1258,7 +1258,10 @@ export default {
         }
         param = wrapperChild.getCondition && wrapperChild.getCondition()
         const condition = formatCondition(param)
-        const vValid = valueValid(condition)
+        let vValid = valueValid(condition)
+        const required = element.options.attrs.required
+        condition.requiredInvalid = required && !vValid
+        vValid = vValid || required
         const filterComponentId = condition.componentId
         const conditionCanvasId = wrapperChild.getCanvasId && wrapperChild.getCanvasId()
         Object.keys(result).forEach(viewId => {

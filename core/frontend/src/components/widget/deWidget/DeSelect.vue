@@ -143,6 +143,11 @@ export default {
   },
 
   watch: {
+    'value': function(val, old) {
+      if (!this.inDraw) {
+        this.$emit('widget-value-changed', val)
+      }
+    },
     'viewIds': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
       this.fillFirstValue()
@@ -213,6 +218,9 @@ export default {
       const linkToken = this.$store.getters.linkToken || getLinkToken()
       if (!token && linkToken) {
         method = linkMultFieldValues
+      }
+      if (!this.element.options.attrs.fieldId) {
+        return
       }
       const param = { fieldIds: this.element.options.attrs.fieldId.split(this.separator), sort: this.element.options.attrs.sort }
       if (this.panelInfo.proxy) {
@@ -474,14 +482,9 @@ export default {
   }
 </style>
 <style lang="scss">
-
-
 .coustom-de-select {
   background-color: var(--BgSelectColor, #FFFFFF) !important;
   border-color: var(--BrSelectColor, #E4E7ED) !important;
-  // .popper__arrow::after{
-  //   border-bottom-color: var(--BgSelectColor, #FFFFFF) !important;
-  // }
 
   .popper__arrow,
   .popper__arrow::after {

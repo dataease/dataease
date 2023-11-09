@@ -27,6 +27,7 @@
               is-config
               :element="element"
               :in-draw="false"
+              @widget-value-changed="widgetValChange"
             />
           </div>
 
@@ -39,6 +40,7 @@
           <de-date-default
             v-if="element.component === 'de-date' && element.serviceName !== 'timeDateRangeWidget'"
             :element="element"
+            @widget-value-changed="widgetValChange"
           />
         </el-card>
 
@@ -49,6 +51,7 @@
           <de-date-range-default
             v-if="element.component === 'de-date' && element.serviceName === 'timeDateRangeWidget'"
             :element="element"
+            @widget-value-changed="widgetValChange"
           />
         </el-card>
 
@@ -83,6 +86,9 @@ export default {
   },
   methods: {
     selectFirstChange(val) {
+    },
+    widgetValChange(val) {
+      this.$emit('widget-value-changed', val)
     }
   }
 }
