@@ -63,7 +63,8 @@ export const TYPE_CONFIGS = [
         'tableColumnMode',
         'showIndex',
         'indexLabel',
-        'tableColTooltip'
+        'tableColTooltip',
+        'showTableHeader'
       ],
       'title-selector-ant-v': [
         'show',
@@ -113,7 +114,8 @@ export const TYPE_CONFIGS = [
         'tableColumnMode',
         'showIndex',
         'indexLabel',
-        'tableColTooltip'
+        'tableColTooltip',
+        'showTableHeader'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1987,7 +1989,8 @@ export const TYPE_CONFIGS = [
         'tableColumnWidth',
         'showIndex',
         'indexLabel',
-        'tableAutoBreakLine'
+        'tableAutoBreakLine',
+        'showTableHeader'
       ],
       'title-selector': [
         'show',
@@ -2031,7 +2034,8 @@ export const TYPE_CONFIGS = [
         'tableColumnWidth',
         'showIndex',
         'indexLabel',
-        'tableAutoBreakLine'
+        'tableAutoBreakLine',
+        'showTableHeader'
       ],
       'title-selector': [
         'show',

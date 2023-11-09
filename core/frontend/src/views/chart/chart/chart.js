@@ -156,7 +156,8 @@ export const DEFAULT_SIZE = {
   mapLineAnimateInterval: 1,
   mapLineAnimateTrailLength: 1,
   wordSizeRange: [8, 32],
-  wordSpacing: 6
+  wordSpacing: 6,
+  showTableHeader: true
 }
 export const DEFAULT_SUSPENSION = {
   show: true
