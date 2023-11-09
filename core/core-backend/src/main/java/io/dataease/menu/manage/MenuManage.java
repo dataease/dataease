@@ -42,6 +42,7 @@ public class MenuManage {
     @Cacheable(cacheNames = CORE_MENU_CACHE, key = "'-dataease-'")
     public List<CoreMenu> coreMenus() {
         QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
+        wrapper.orderByAsc("menu_sort");
         return coreMenuMapper.selectList(wrapper);
     }
 
