@@ -275,6 +275,7 @@
           :element="element"
           class="relative-time"
           :in-draw="false"
+          @widget-value-changed="widgetValChanged"
         />
       </el-form-item>
 
@@ -334,12 +335,27 @@ export default {
       return result
     }
   },
+  watch: {
+    'dval': function(val, old) {
+      if (this.element.options.attrs.default.isDynamic) {
+        this.$emit('widget-value-changed', val)
+      }
+    }
+  },
   created() {
     this.fillEmptySuffixTime()
     this.setDval()
   },
   methods: {
+    widgetValChanged(val) {
+      if (!this.element.options.attrs.default.isDynamic) {
+        this.$emit('widget-value-changed', val)
+      }
+    },
     dynamicChange(value) {
+      if (!value) {
+        this.$emit('widget-value-changed', this.element.options.value)
+      }
       this.setDval()
     },
     dkeyChange(value) {

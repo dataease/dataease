@@ -477,7 +477,11 @@ export default {
   },
   methods: {
     widgetValChange(val) {
-      this.widgetValue = val
+      if (val === null) {
+        this.widgetValue = null
+        return
+      }
+      this.widgetValue = val.toString()
     },
     requiredChange(val) {
       this.required = val
