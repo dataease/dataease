@@ -33,7 +33,7 @@
 
 <script>
 import {Mix} from '@antv/g2plot'
-import {uuid, hexColorToRGBA} from '../../../utils/chartmix'
+import {uuid, hexColorToRGBA, setGradientColor} from '../../../utils/chartmix'
 import ViewTrackBar from '../../../components/views/ViewTrackBar'
 import {getRemark} from "../../../components/views/utils";
 import {
@@ -41,12 +41,13 @@ import {
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
   transAxisPosition,
-  getLineDash
+  getLineDash, DEFAULT_COLOR_CASE
 } from '../../../utils/map';
 import ChartTitleUpdate from '../../../components/views/ChartTitleUpdate';
 import _ from 'lodash';
 import {clear} from 'size-sensor'
 import {valueFormatter} from '../../../utils/formatter'
+import fa from "element-ui/src/locale/lang/fa";
 
 export default {
   name: 'ChartComponent',
@@ -276,7 +277,9 @@ export default {
       let yaxisCount = yaxisList.length;
 
       let customAttr = undefined;
+      let gradient = false;
       let colors = undefined;
+      let alpha = DEFAULT_COLOR_CASE.alpha;
       let labelSetting = undefined;
       let labelPosition = 'middle';
       if (this.chart.customAttr) {
@@ -284,6 +287,8 @@ export default {
         if (customAttr) {
           if (customAttr.color) {
             colors = customAttr.color.colors;
+            alpha = customAttr.color.alpha;
+            gradient = customAttr.color.gradient;
           }
           if (customAttr.label) {
             labelSetting = customAttr.label.show ? {
@@ -322,6 +327,12 @@ export default {
           }
         }
 
+        let color = colors && _index < colors.length ? hexColorToRGBA(colors[_index], alpha) : undefined;
+        if (color && gradient) {
+          color = setGradientColor(color, true, 270)
+          console.log(color)
+        }
+
         return {
           type: _chartType,
           name: t.name,
@@ -347,7 +358,7 @@ export default {
             yAxis: {
               position: 'left',
             },
-            color: colors && _index < colors.length ? colors[_index] : undefined,
+            color: color,
             label: _labelSetting,
           }
         }
@@ -366,7 +377,6 @@ export default {
 
         names.push(t.name);
 
-
         const _chartType = this.getChartType(yaxisExtList[_index].chartType);
 
         if (_labelSetting) {
@@ -375,6 +385,12 @@ export default {
           } else {
             _labelSetting.position = undefined;
           }
+        }
+
+        let color = colors && (yaxisCount + _index) < colors.length ? hexColorToRGBA(colors[yaxisCount + _index], alpha) : undefined;
+        if (color && gradient) {
+          color = setGradientColor(color, true, 270)
+          console.log(color)
         }
 
         return {
@@ -402,7 +418,7 @@ export default {
             yAxis: {
               position: 'right',
             },
-            color: colors && (yaxisCount + _index) < colors.length ? colors[yaxisCount + _index] : undefined,
+            color: color,
             label: _labelSetting,
           }
         }
