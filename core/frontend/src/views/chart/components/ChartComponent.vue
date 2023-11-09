@@ -467,6 +467,25 @@ export default {
         }
       }
       const chart_option = baseMapOption(base_json, geoJson, chart, this.buttonTextColor, curAreaCode, this.currentSeriesId)
+      if (chart_option.series?.length) {
+        const dataNames = []
+        chart_option.series.filter(se => se.type === 'map').forEach(se => {
+          se.data.forEach(d => {
+            if (d?.name) {
+              dataNames.push(d.name)
+            }
+          })
+        })
+        for (const key in chart_option.geo.nameMap) {
+          if (Object.hasOwnProperty.call(chart_option.geo.nameMap, key)) {
+            const element = chart_option.geo.nameMap[key]
+            if (element && !dataNames.includes(element)) {
+              chart_option.geo.nameMap[key] = key
+            }
+          }
+        }
+      }
+
       this.myEcharts(chart_option)
       const opt = this.myChart.getOption()
       if (opt && opt.series) {
