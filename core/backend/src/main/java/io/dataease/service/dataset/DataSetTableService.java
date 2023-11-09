@@ -218,9 +218,7 @@ public class DataSetTableService {
                     excelSheetDataList.forEach(excelSheetData -> {
                         String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getFieldName)
                                 .toArray(String[]::new);
-                        if (checkIsRepeat(fieldArray)) {
-                            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-                        }
+                        checkIsRepeat(fieldArray);
                         excelSheetData.setData(null);
                         excelSheetData.setJsonArray(null);
                     });
@@ -254,9 +252,7 @@ public class DataSetTableService {
                 for (ExcelSheetData sheet : datasetTable.getSheets()) {
                     String[] fieldArray = sheet.getFields().stream().map(TableField::getFieldName)
                             .toArray(String[]::new);
-                    if (checkIsRepeat(fieldArray)) {
-                        DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-                    }
+                    checkIsRepeat(fieldArray);
                 }
 
                 for (ExcelSheetData sheet : datasetTable.getSheets()) {
@@ -304,9 +300,7 @@ public class DataSetTableService {
             }
 
             String[] fieldArray = sheet.getFields().stream().map(TableField::getFieldName).toArray(String[]::new);
-            if (checkIsRepeat(fieldArray)) {
-                DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-            }
+            checkIsRepeat(fieldArray);
             sheet.setData(null);
             sheet.setJsonArray(null);
             excelSheetDataList.add(sheet);
@@ -1221,9 +1215,7 @@ public class DataSetTableService {
         List<String[]> data = result.get("dataList");
         List<TableField> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
-        if (checkIsRepeat(fieldArray)) {
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-        }
+        checkIsRepeat(fieldArray);
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
@@ -1305,9 +1297,7 @@ public class DataSetTableService {
         List<String[]> data = result.get("dataList");
         List<TableField> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
-        if (checkIsRepeat(fieldArray)) {
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-        }
+        checkIsRepeat(fieldArray);
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
@@ -2755,15 +2745,22 @@ public class DataSetTableService {
     /*
      * 判断数组中是否有重复的值
      */
-    public static boolean checkIsRepeat(String[] array) {
+    public static void checkIsRepeat(String[] array) {
         HashSet<String> hashSet = new HashSet<>();
+        HashSet<String> repeat = new HashSet<>();
         for (String s : array) {
             if (StringUtils.isEmpty(s)) {
                 throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
             }
-            hashSet.add(s);
+            if(hashSet.contains(s)){
+                repeat.add(s);
+            }else {
+                hashSet.add(s);
+            }
         }
-        return hashSet.size() != array.length;
+        if(CollectionUtils.isNotEmpty(repeat)){
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + ": " + String.valueOf(repeat));
+        }
     }
 
     public DatasetTable syncDatasetTableField(String id) throws Exception {
