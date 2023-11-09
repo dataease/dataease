@@ -1,6 +1,7 @@
 <script lang="tsx" setup>
 import {
   ref,
+  unref,
   nextTick,
   reactive,
   shallowRef,
@@ -863,17 +864,53 @@ const getDatasource = () => {
 
 getDatasource()
 
+const resetDfsFields = (arr, idMap) => {
+  for (let i in arr) {
+    const id = guid()
+    idMap[arr[i].currentDs.id] = id
+    arr[i].currentDs.id = id
+    if (!!arr[i].childrenDs?.length) {
+      resetDfsFields(arr[i].childrenDs, idMap)
+    }
+  }
+}
+
+const resetAllfieldsId = arr => {
+  const idMap = {}
+  for (let i in allfields.value) {
+    const id = guid()
+    idMap[allfields.value[i].id] = id
+    allfields.value[i].id = id
+  }
+  resetDfsFields(arr, idMap)
+  return idMap
+}
+
+const resetAllfieldsUnionId = (arr, idMap) => {
+  let strUnion = JSON.stringify(arr) as string
+  let strAllfields = JSON.stringify(unref(allfields.value)) as string
+  Object.entries(idMap).forEach(([key, value]) => {
+    strUnion = strUnion.replace(key, value as string)
+    strAllfields = strAllfields.replace(key, value as string)
+  })
+  allfields.value = JSON.parse(strAllfields)
+  return JSON.parse(strUnion)
+}
+
 const datasetSave = () => {
   if (nodeInfo.id) {
     editeSave()
     return
   }
-  const union = []
+  let union = []
   dfsNodeList(union, datasetDrag.value.nodeList)
   const pid = route.query.pid || nodeInfo.pid
   if (!union.length) {
     ElMessage.error('数据集不能为空')
     return
+  }
+  if (nodeInfo.pid && !nodeInfo.id) {
+    union = resetAllfieldsUnionId(union, resetAllfieldsId(union))
   }
 
   creatDsFolder.value.createInit(
