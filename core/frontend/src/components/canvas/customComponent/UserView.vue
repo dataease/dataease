@@ -28,7 +28,10 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
-    <div v-if="view.unReadyMsg" class="chart-error-class">
+    <div
+      v-if="view && view.unReadyMsg"
+      class="chart-error-class"
+    >
       <div class="chart-error-message-class">
         {{ view.unReadyMsg }},{{ $t('chart.chart_show_error') }}
         <br>
@@ -849,7 +852,7 @@ export default {
         if (!token && linkToken) {
           method = viewInfo
         }
-        
+
         const requestInfo = {
           ...this.filter,
           cache: cache,
