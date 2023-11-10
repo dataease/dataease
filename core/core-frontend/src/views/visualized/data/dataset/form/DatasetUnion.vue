@@ -410,7 +410,7 @@ const flatPathList = computed(() => {
   return flatArr
 })
 
-const dfsNode = (arr, nodeListLocation, x = 0, y = 0) => {
+const dfsNode = (arr = [], nodeListLocation, x = 0, y = 0) => {
   arr.map((ele, index) => {
     const pre = nodeListLocation[index - 1]
     if (!ele.children?.length) {
