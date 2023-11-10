@@ -15,3 +15,21 @@ CREATE TABLE `visualization_template` (
                                           `dynamic_data` longtext COMMENT '预存数据',
                                           PRIMARY KEY (`id`)
 );
+
+BEGIN;
+INSERT INTO `core_menu`
+VALUES (19, 0, 2, 'template-market', 'template-market', 4, NULL, '/template-market', 0, 1, 0);
+INSERT INTO `core_menu`
+VALUES (20, 15, 2, 'template-setting', 'system/template-setting', 4, 'icon_template', '/template-setting', 0, 1, 1);
+COMMIT;
+
+DROP TABLE IF EXISTS `visualization_template_extend_data`;
+CREATE TABLE `visualization_template_extend_data` (
+                                                      `id` bigint NOT NULL,
+                                                      `dv_id` bigint DEFAULT NULL,
+                                                      `view_id` bigint DEFAULT NULL,
+                                                      `view_details` longtext,
+                                                      `copy_from` varchar(255) DEFAULT NULL,
+                                                      `copy_id` varchar(255) DEFAULT NULL,
+                                                      PRIMARY KEY (`id`)
+);

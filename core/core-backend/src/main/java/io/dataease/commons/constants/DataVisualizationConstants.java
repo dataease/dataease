@@ -1,6 +1,24 @@
 package io.dataease.commons.constants;
 
 public class DataVisualizationConstants {
+
+    //新建仪表板来源
+    public static final class NEW_PANEL_FROM {
+
+        // 直接新建
+        public static final String NEW = "new";
+
+        // 内部模板新建
+        public static final String NEW_INNER_TEMPLATE = "new_inner_template";
+
+        // 外部模板新建
+        public static final String NEW_OUTER_TEMPLATE = "new_outer_template";
+
+        // 模板市场新建
+        public static final String NEW_MARKET_TEMPLATE = "new_market_template";
+
+    }
+
     //删除标志
     public static final class DELETE_FLAG {
         //已删除

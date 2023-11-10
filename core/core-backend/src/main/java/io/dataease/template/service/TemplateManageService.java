@@ -1,6 +1,7 @@
 package io.dataease.template.service;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.template.TemplateManageApi;
 import io.dataease.api.template.dto.TemplateManageDTO;
 import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.api.template.vo.VisualizationTemplateVO;
@@ -17,6 +18,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.List;
 import java.util.Optional;
@@ -28,7 +31,9 @@ import static io.dataease.constant.StaticResourceConstants.UPLOAD_URL_PREFIX;
  * @author : WangJiaHao
  * @date : 2023/11/7 13:29
  */
-public class TemplateManageService {
+@RestController
+@RequestMapping("/templateManage")
+public class TemplateManageService implements TemplateManageApi {
 
     @Resource
     private VisualizationTemplateMapper templateMapper;
@@ -37,6 +42,7 @@ public class TemplateManageService {
     @Resource
     private StaticResourceServer staticResourceServer;
 
+    @Override
     public List<TemplateManageDTO> templateList(TemplateManageRequest request) {
         request.setWithBlobs("N");
         List<TemplateManageDTO> templateList = extTemplateMapper.findTemplateList(request);
@@ -58,7 +64,9 @@ public class TemplateManageService {
         return extTemplateMapper.findTemplateList(request);
     }
 
+
     @Transactional
+    @Override
     public TemplateManageDTO save(TemplateManageRequest request) {
         if (StringUtils.isEmpty(request.getId())) {
             request.setId(UUID.randomUUID().toString());
@@ -121,17 +129,17 @@ public class TemplateManageService {
             return CommonConstants.CHECK_RESULT.EXIST_ALL;
         }
     }
-
+    @Override
     public String nameCheck(TemplateManageRequest request) {
         return nameCheck(request.getOptType(), request.getName(), request.getPid(), request.getId());
 
     }
-
+    @Override
     public void delete(String id) {
         Assert.notNull(id, "id cannot be null");
         templateMapper.deleteById(id);
     }
-
+    @Override
     public VisualizationTemplateVO findOne(String panelId) {
         VisualizationTemplate template = templateMapper.selectById(panelId);
         if(template != null){
@@ -142,7 +150,7 @@ public class TemplateManageService {
             return null;
         }
     }
-
+    @Override
     public List<TemplateManageDTO> find(TemplateManageRequest request) {
         return extTemplateMapper.findTemplateList(request);
     }
