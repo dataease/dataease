@@ -746,7 +746,7 @@ defineExpose({
             </el-icon>
           </span>
           <template v-if="showPriority">
-            <el-row :gutter="24">
+            <el-row :gutter="24" class="mb16">
               <el-col :span="12">
                 <el-form-item
                   :label="t('datasource.initial_pool_size')"
@@ -796,19 +796,17 @@ defineExpose({
               </el-col>
               <el-col :span="12">
                 <el-form-item
-                  :label="t('datasource.query_timeout')"
+                  :label="`${t('datasource.query_timeout')}(${t('common.second')})`"
                   prop="configuration.queryTimeout"
                 >
-                  <el-input
+                  <el-input-number
                     v-model="form.configuration.queryTimeout"
+                    controls-position="right"
                     autocomplete="off"
                     :placeholder="t('common.inputText') + t('datasource.query_timeout')"
-                    class="input-with-append"
                     type="number"
                     :min="0"
-                  >
-                    <template v-slot:append>{{ t('cron.second') }}</template>
-                  </el-input>
+                  />
                 </el-form-item>
               </el-col>
             </el-row>
@@ -949,6 +947,12 @@ defineExpose({
     height: 22px;
   }
 
+  .mb16 {
+    :deep(.ed-form-item) {
+      margin-bottom: 16px;
+    }
+  }
+
   .execute-rate-cont {
     background: #f5f6f7;
     border-radius: 4px;
@@ -961,17 +965,6 @@ defineExpose({
   }
   .ed-input-number {
     width: 100%;
-  }
-
-  .input-with-append {
-    :deep(.ed-input__wrapper) {
-      padding-right: 1px;
-    }
-    :deep(.ed-input-group__append) {
-      width: 55px;
-      background: #eff0f1;
-      color: #1f2329;
-    }
   }
 
   :deep(.is-controls-right > span) {
