@@ -1,21 +1,21 @@
 <template>
-  <div>
+  <div style="width: 100%; height: 100%">
     <div class="de-template">
-      <el-tabs v-model="state.currentTemplateType" class="de-tabs" @tab-click="handleClick">
+      <el-tabs v-model="state.currentTemplateType" @tab-click="handleClick">
         <el-tab-pane name="self">
           <template #label>
-            <span>{{ t('panel.user_template') }}</span>
+            <span>{{ t('visualization.user_template') }}</span>
           </template>
         </el-tab-pane>
         <el-tab-pane name="system">
           <template #label>
-            <span>{{ t('panel.sys_template') }}</span>
+            <span>{{ t('visualization.sys_template') }}</span>
           </template>
         </el-tab-pane>
       </el-tabs>
       <div class="tabs-container flex-tabs">
         <div class="de-tabs-left">
-          <template-list
+          <de-template-list
             ref="templateListRef"
             :template-type="state.currentTemplateType"
             :template-list="state.templateList"
@@ -31,19 +31,19 @@
             {{ state.currentTemplateLabel }}&nbsp;&nbsp;({{ state.currentTemplateShowList.length }})
             <el-button
               type="primary"
-              icon="el-icon-upload2"
+              icon="Upload"
               @click="templateImport(state.currentTemplateId)"
             >
-              {{ t('panel.import') }}
+              {{ t('visualization.import') }}
             </el-button>
           </div>
           <el-empty
             v-if="!state.currentTemplateShowList.length"
-            :image="state.noneImg"
-            :description="t('components.no_template')"
+            :image="NoneImage"
+            :description="'暂无模版'"
           />
           <div v-show="state.currentTemplateId !== ''" id="template-box" class="template-box">
-            <template-item
+            <de-template-item
               v-for="item in state.currentTemplateShowList"
               :key="item.id"
               :width="state.templateCurWidth"
@@ -56,7 +56,7 @@
     </div>
     <el-dialog
       :title="state.dialogTitle"
-      v-model:visible="state.editTemplate"
+      v-model="state.editTemplate"
       append-to-body
       class="de-dialog-form"
       width="600px"
@@ -80,16 +80,15 @@
         </div>
       </template>
     </el-dialog>
-
-    <!--导入templatedialog-->
+    <!--导入templateDialog-->
     <el-dialog
       :title="state.templateDialog.title"
-      v-model:visible="state.templateDialog.visible"
+      v-model="state.templateDialog.visible"
       :show-close="true"
       class="de-dialog-form"
       width="600px"
     >
-      <template-import
+      <de-template-import
         v-if="state.templateDialog.visible"
         :pid="state.templateDialog.pid"
         @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
@@ -105,10 +104,13 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
-import TemplateList from '@/views/template/component/TemplateList.vue'
+import DeTemplateList from '@/views/template/component/DeTemplateList.vue'
 const { t } = useI18n()
 const templateEditFormRef = ref(null)
 const templateListRef = ref(null)
+import NoneImage from '@/assets/none.png'
+import DeTemplateImport from '@/views/template/component/DeTemplateImport.vue'
+import DeTemplateItem from '@/views/template/component/DeTemplateItem.vue'
 
 const roleValidator = (rule, value, callback) => {
   if (nameRepeat(value)) {
@@ -160,7 +162,7 @@ const state = reactive({
   formType: '',
   originName: '',
   templateDialog: {
-    title: t('panel.import_template'),
+    title: t('visualization.import_template'),
     visible: false,
     pid: ''
   }
@@ -251,14 +253,10 @@ const showTemplateEditDialog = (type, templateInfo) => {
   state.formType = type
   if (type === 'edit') {
     state.templateEditForm = JSON.parse(JSON.stringify(templateInfo))
-    state.dialogTitle = t(
-      `system_parameter_setting.${
-        state.templateEditForm['nodeType'] === 'folder' ? 'edit_classification' : 'edit_template'
-      }`
-    )
+    state.dialogTitle = state.templateEditForm['nodeType'] === 'folder' ? '编辑分类' : '编辑模版'
     state.originName = state.templateEditForm['label']
   } else {
-    state.dialogTitle = t('panel.add_category')
+    state.dialogTitle = t('visualization.add_category')
     state.templateEditForm = {
       name: '',
       nodeType: 'folder',
@@ -266,11 +264,7 @@ const showTemplateEditDialog = (type, templateInfo) => {
       level: 0
     }
   }
-  state.dialogTitleLabel = t(
-    `system_parameter_setting.${
-      state.templateEditForm['nodeType'] === 'folder' ? 'classification_name' : 'template_name'
-    }`
-  )
+  state.dialogTitleLabel = state.templateEditForm['nodeType'] === 'folder' ? '分类名称' : '模版名称'
   state.editTemplate = true
 }
 
@@ -300,13 +294,15 @@ const close = () => {
   state.editTemplate = false
 }
 const getTree = () => {
-  const request = {
-    templateType: state.currentTemplateType,
-    level: '0'
-  }
-  find(request).then(res => {
-    state.templateList = res.data
-    showFirst()
+  nextTick(() => {
+    const request = {
+      templateType: state.currentTemplateType,
+      level: '0'
+    }
+    find(request).then(res => {
+      state.templateList = res.data
+      showFirst()
+    })
   })
 }
 const showFirst = () => {
@@ -367,6 +363,7 @@ onMounted(() => {
   }
 
   .flex-tabs {
+    margin-top: 16px;
     display: flex;
     background: #f5f6f7;
   }

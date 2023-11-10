@@ -2,33 +2,33 @@ import request from '@/config/axios'
 
 export function save(data) {
   return request.post({
-    url: '/template/save',
+    url: '/templateManage/save',
     data: data,
     loading: true
   })
 }
 export function templateDelete(id) {
   return request.post({
-    url: '/template/delete/' + id
+    url: '/templateManage/delete/' + id
   })
 }
 
 export function showTemplateList(data) {
   return request.post({
-    url: '/template/templateList',
+    url: '/templateManage/templateList',
     data: data
   })
 }
 
 export function findOne(id) {
   return request.get({
-    url: '/template/findOne/' + id
+    url: '/templateManage/findOne/' + id
   })
 }
 
 export function find(data) {
   return request.post({
-    url: '/template/find',
+    url: '/templateManage/find',
     data: data,
     loading: true
   })
@@ -36,7 +36,7 @@ export function find(data) {
 
 export function nameCheck(data) {
   return request.post({
-    url: '/template/nameCheck',
+    url: '/templateManage/nameCheck',
     data: data
   })
 }

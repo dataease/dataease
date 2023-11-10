@@ -3,22 +3,29 @@ package io.dataease.visualization.server;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.chart.dto.ChartViewDTO;
+import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
+import io.dataease.constant.CommonConstants;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.template.dao.auto.entity.VisualizationTemplate;
+import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
+import io.dataease.template.manage.TemplateMarketManage;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
+import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
@@ -29,7 +36,10 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.multipart.MultipartFile;
 
+import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
@@ -53,6 +63,16 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private ChartDataManage chartDataManage;
+
+    @Resource
+    private VisualizationTemplateMapper templateMapper;
+
+    @Resource
+    private TemplateMarketManage templateMarketManage;
+
+    @Resource
+    private StaticResourceServer staticResourceServer;
+
 
     @Override
     @XpackInteract(value = "dataVisualizationServer", original = true)
@@ -193,6 +213,74 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public String findDvType(Long dvId) {
         return extDataVisualizationMapper.findDvType(dvId);
+    }
+
+    @Override
+    public DataVisualizationVO decompression(DataVisualizationBaseRequest request) throws Exception {
+        Long newDvId = IDUtils.snowID();
+        String newFrom = request.getNewFrom();
+        String templateStyle = null;
+        String templateData = null;
+        String dynamicData = null;
+        String staticResource = null;
+        String name = null;
+        String dvType = null;
+        //内部模板新建
+        if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_INNER_TEMPLATE.equals(newFrom)) {
+            VisualizationTemplate visualizationTemplate = templateMapper.selectById(request.getTemplateId());
+            templateStyle = visualizationTemplate.getTemplateStyle();
+            templateData = visualizationTemplate.getTemplateData();
+            dynamicData = visualizationTemplate.getDynamicData();
+            name = visualizationTemplate.getName();
+            dvType = visualizationTemplate.getDvType();
+        } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
+            templateStyle = request.getCanvasStyleData();
+            templateData = request.getCanvasStyleData();
+            dynamicData = request.getDynamicData();
+            staticResource = request.getStaticResource();
+            name = request.getName();
+            dvType = request.getType();
+        } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(newFrom)) {
+            TemplateManageFileDTO templateFileInfo = templateMarketManage.getTemplateFromMarket(request.getTemplateUrl());
+            if (templateFileInfo == null) {
+                DEException.throwException("Can't find the template's info from market,please check");
+            }
+            templateStyle = templateFileInfo.getCanvasStyleData();
+            templateData = templateFileInfo.getComponentData();
+            dynamicData = templateFileInfo.getDynamicData();
+            staticResource = templateFileInfo.getStaticResource();
+            name = request.getName();
+            dvType = request.getType();
+        }
+        // 解析动态数据
+        Map<String, String> dynamicDataMap = JsonUtil.parseObject(dynamicData, Map.class);
+        List<ChartViewDTO> chartViews = new ArrayList<>();
+        Map<Long,ChartViewDTO> canvasViewInfo = new HashMap<>();
+//        List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
+        for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
+            String originViewId = entry.getKey();
+            String originViewData = entry.getValue();
+            ChartViewDTO chartView = JsonUtil.parseObject(originViewData, ChartViewDTO.class);
+            Long newViewId = IDUtils.snowID();
+            chartView.setId(newViewId);
+            chartView.setSceneId(newDvId);
+            chartView.setDataFrom(CommonConstants.VIEW_DATA_FROM.TEMPLATE);
+            // 数据处理 1.替换viewId 2.加入panelView 数据(数据来源为template) 3.加入模板view data数据
+            // viewsData.add(new PanelGroupExtendDataDTO(newPanelId, newViewId, originViewData));
+            templateData = templateData.replaceAll(originViewId, newViewId.toString());
+            chartViewManege.save(chartView);
+            canvasViewInfo.put(chartView.getId(),chartView);
+        }
+        request.setComponentData(templateData);
+        request.setCanvasStyleData(templateStyle);
+        //Store static resource into the server
+        staticResourceServer.saveFilesToServe(staticResource);
+        return new DataVisualizationVO(newDvId,name,dvType,templateStyle,templateData,canvasViewInfo);
+    }
+
+    @Override
+    public DataVisualizationVO decompressionLocalFile(MultipartFile file) {
+        return null;
     }
 
 

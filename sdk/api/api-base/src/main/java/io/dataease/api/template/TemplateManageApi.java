@@ -9,7 +9,7 @@ import java.util.List;
 public interface TemplateManageApi {
 
     @PostMapping("/templateList")
-     List<TemplateManageDTO> templateList();
+     List<TemplateManageDTO> templateList(TemplateManageRequest request);
 
     @PostMapping("/save")
     TemplateManageDTO save(@RequestBody TemplateManageRequest request);

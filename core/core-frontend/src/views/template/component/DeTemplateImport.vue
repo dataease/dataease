@@ -6,17 +6,17 @@
       :model="state.templateInfo"
       :rules="state.templateInfoRules"
     >
-      <el-form-item :label="t('system_parameter_setting.template_name')" prop="name">
+      <el-form-item :label="'模版名称'" prop="name">
         <div class="flex-template">
           <el-input v-model="state.templateInfo.name" clearable size="small" />
           <el-button style="margin-left: 10px" class="el-icon-upload2" secondary @click="goFile">{{
-            t('panel.upload_template')
+            t('visualization.upload_template')
           }}</el-button>
           <input
             id="input"
             ref="filesRef"
             type="file"
-            accept=".DET"
+            accept=".DET2"
             hidden
             @change="handleFileChange"
           />
@@ -25,8 +25,8 @@
     </el-form>
     <el-row class="preview" :style="classBackground" />
     <el-row class="de-root-class">
-      <deBtn secondary @click="cancel()">{{ t('commons.cancel') }}</deBtn>
-      <deBtn type="primary" @click="saveTemplate()">{{ t('commons.confirm') }}</deBtn>
+      <el-button secondary @click="cancel()">{{ t('commons.cancel') }}</el-button>
+      <el-button type="primary" @click="saveTemplate()">{{ t('commons.confirm') }}</el-button>
     </el-row>
   </div>
 </template>
@@ -65,6 +65,7 @@ const state = reactive({
   templateInfo: {
     level: '1',
     pid: props.pid,
+    dvType: 'dashboard',
     name: '',
     templateStyle: null,
     templateData: null,
@@ -115,7 +116,7 @@ const saveTemplate = () => {
         type: 'primary',
         cb: () =>
           save(state.templateInfo).then(response => {
-            ElMessage.success(t('system_parameter_setting.import_succeeded'))
+            ElMessage.success('导入成功')
             emits('refresh')
             emits('closeEditTemplateDialog')
           }),
@@ -124,7 +125,7 @@ const saveTemplate = () => {
       handlerConfirm(options)
     } else {
       save(state.templateInfo).then(response => {
-        ElMessage.success(t('system_parameter_setting.import_succeeded'))
+        ElMessage.success(t('导入成功'))
         emits('refresh')
         emits('closeEditTemplateDialog')
       })
@@ -143,8 +144,9 @@ const handleFileChange = e => {
     const result = res.target.result as string
     state.importTemplateInfo = JSON.parse(result)
     state.templateInfo.name = state.importTemplateInfo['name']
-    state.templateInfo.templateStyle = state.importTemplateInfo['panelStyle']
-    state.templateInfo.templateData = state.importTemplateInfo['panelData']
+    state.templateInfo.dvType = state.importTemplateInfo['dvType']
+    state.templateInfo.templateStyle = state.importTemplateInfo['canvasStyleData']
+    state.templateInfo.templateData = state.importTemplateInfo['componentData']
     state.templateInfo.snapshot = state.importTemplateInfo.snapshot
     state.templateInfo.dynamicData = state.importTemplateInfo['dynamicData']
     state.templateInfo.staticResource = state.importTemplateInfo['staticResource']
@@ -161,7 +163,7 @@ onMounted(() => {
 })
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .my_table :deep(.el-table__row > td) {
   /* 去除表格线 */
   border: none;
@@ -178,7 +180,7 @@ onMounted(() => {
 
 .de-root-class {
   margin-top: 24px;
-  text-align: right;
+  justify-content: flex-end;
 }
 .preview {
   margin-top: -12px;

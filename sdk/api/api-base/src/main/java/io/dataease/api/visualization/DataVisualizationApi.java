@@ -11,6 +11,7 @@ import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
 
@@ -63,4 +64,21 @@ public interface DataVisualizationApi {
 
     @GetMapping("/findDvType/{dvId}")
     String findDvType(@PathVariable("dvId")Long dvId);
+
+    /**
+     * 从模版解压可视化资源 模版来源包括 模版市场、内部模版管理
+     *
+     * @return
+     */
+    @PostMapping("/decompression")
+    DataVisualizationVO decompression(@RequestBody DataVisualizationBaseRequest request) throws Exception;
+
+    /**
+     * 从模版解压可视化资源 模版来源包括本地上传
+     *
+     * @return
+     */
+    @PostMapping("/decompressionLocalFile")
+    DataVisualizationVO decompressionLocalFile(@RequestPart(value = "file") MultipartFile file);
+
 }
