@@ -1,6 +1,7 @@
 <script lang="tsx" setup>
 import {
   ref,
+  toRaw,
   unref,
   nextTick,
   reactive,
@@ -881,6 +882,7 @@ const resetAllfieldsId = arr => {
     const id = guid()
     idMap[allfields.value[i].id] = id
     allfields.value[i].id = id
+    allfields.value[i].datasetGroupId = ''
   }
   resetDfsFields(arr, idMap)
   return idMap
@@ -888,12 +890,15 @@ const resetAllfieldsId = arr => {
 
 const resetAllfieldsUnionId = (arr, idMap) => {
   let strUnion = JSON.stringify(arr) as string
+  let strNodeList = JSON.stringify(toRaw(datasetDrag.value.nodeList)) as string
   let strAllfields = JSON.stringify(unref(allfields.value)) as string
   Object.entries(idMap).forEach(([key, value]) => {
     strUnion = strUnion.replace(key, value as string)
     strAllfields = strAllfields.replace(key, value as string)
+    strNodeList = strNodeList.replace(key, value as string)
   })
   allfields.value = JSON.parse(strAllfields)
+  datasetDrag.value.initState(JSON.parse(strNodeList))
   return JSON.parse(strUnion)
 }
 
@@ -1023,11 +1028,6 @@ const cascaderChangeArr = val => {
   const [deType, dateFormat] = val
   dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
   quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
-  console.log(
-    'dimensionsSelection.value',
-    [...dimensionsSelection.value],
-    [...quotaSelection.value]
-  )
 
   const arr = [...quotaSelection.value, ...dimensionsSelection.value]
   if (dateFormat === 'custom') {
@@ -1122,6 +1122,7 @@ const finish = res => {
     pid,
     name
   }
+  allfields.value = res.allFields || []
 }
 
 const errorTips = ref('')
