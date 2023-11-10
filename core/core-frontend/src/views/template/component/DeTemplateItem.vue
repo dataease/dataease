@@ -1,23 +1,35 @@
 <template>
   <div :style="classBackground" class="de-card-model">
     <div class="card-img-model" :style="classImg">
-      <img :src="model.snapshot" alt="" />
+      <img :src="imgUrlTrans(model.snapshot)" alt="" />
     </div>
     <div class="card-info">
-      <el-tooltip class="item" effect="dark" :content="model.name" placement="top">
-        <span class="de-model-text">{{ model.name }}</span>
-      </el-tooltip>
+      <div style="display: flex; align-items: center">
+        <el-tooltip class="item" effect="dark" :content="dvTypeName" placement="top">
+          <el-icon style="font-size: 18px" v-if="model.dvType === 'dashboard'">
+            <Icon name="dv-dashboard-spine"></Icon>
+          </el-icon>
+          <el-icon class="icon-screen-new" style="font-size: 18px" v-else>
+            <Icon name="icon_operation-analysis_outlined"></Icon>
+          </el-icon>
+        </el-tooltip>
+
+        <el-tooltip class="item" effect="dark" :content="model.name" placement="top">
+          <span class="de-model-text">{{ model.name }}</span>
+        </el-tooltip>
+      </div>
+
       <el-dropdown size="medium" trigger="click" @command="handleCommand">
-        <i class="el-icon-more" />
+        <el-icon class="el-icon-more"><MoreFilled /></el-icon>
         <template #dropdown>
           <el-dropdown-menu class="de-card-dropdown">
             <slot>
               <el-dropdown-item command="rename">
-                <i class="el-icon-edit" />
+                <el-icon><EditPen /></el-icon>
                 {{ $t('chart.rename') }}
               </el-dropdown-item>
               <el-dropdown-item command="delete">
-                <i class="el-icon-delete" />
+                <el-icon><Delete /></el-icon>
                 {{ $t('chart.delete') }}
               </el-dropdown-item>
             </slot>
@@ -29,6 +41,7 @@
 </template>
 
 <script setup lang="ts">
+import { imgUrlTrans } from '@/utils/imgUtils'
 import { computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
@@ -41,6 +54,10 @@ const props = defineProps({
   width: {
     type: Number
   }
+})
+
+const dvTypeName = computed(() => {
+  return props.model.dvType === 'dashboard' ? '仪表板' : '数据大屏'
 })
 
 const classBackground = computed(() => {
@@ -68,6 +85,7 @@ const handleCommand = key => {
   border: 1px solid var(--deCardStrokeColor, #dee0e3);
   border-radius: 4px;
   margin: 0 24px 25px 0;
+  overflow: hidden;
   .card-img-model {
     border-bottom: 1px solid var(--deCardStrokeColor, #dee0e3);
     height: 144px;
@@ -112,6 +130,7 @@ const handleCommand = key => {
   }
 
   .de-model-text {
+    margin-left: 8px;
     font-family: 'PingFang SC';
     font-style: normal;
     font-weight: 400;
@@ -136,5 +155,12 @@ const handleCommand = key => {
   .popper__arrow {
     display: none !important;
   }
+}
+
+.icon-screen-new {
+  background: #3370ff;
+  border-radius: 4px;
+  color: #fff;
+  padding: 3px;
 }
 </style>

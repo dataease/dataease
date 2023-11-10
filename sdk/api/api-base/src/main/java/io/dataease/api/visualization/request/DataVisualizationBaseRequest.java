@@ -10,4 +10,16 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
 
     private Boolean moveFromUpdate = false;
 
+    private String optType;
+
+    private String newFrom;
+
+    private String dynamicData;
+
+    private String templateId;
+
+    private String staticResource;
+
+    private String templateUrl;
+
 }

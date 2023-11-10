@@ -8,7 +8,7 @@ import { ref, watch } from 'vue'
 import { XpackComponent } from '@/components/plugin'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
-const emit = defineEmits(['reload', 'download'])
+const emit = defineEmits(['reload', 'download', 'downloadAsAppTemplate'])
 const { t } = useI18n()
 
 const favorited = ref(false)
@@ -23,6 +23,9 @@ const reload = () => {
 
 const download = type => {
   emit('download', type)
+}
+const downloadAsAppTemplate = downloadType => {
+  emit('downloadAsAppTemplate', downloadType)
 }
 
 const dvEdit = () => {
@@ -123,6 +126,9 @@ watch(
                 <el-dropdown-menu>
                   <el-dropdown-item style="width: 118px" @click="download('pdf')"
                     >PDF</el-dropdown-item
+                  >
+                  <el-dropdown-item style="width: 118px" @click="downloadAsAppTemplate('template')"
+                    >模版</el-dropdown-item
                   >
                   <el-dropdown-item @click="download('img')">{{
                     t('chart.image')

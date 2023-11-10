@@ -7,8 +7,12 @@ import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.List;
+import java.util.Map;
+import java.util.stream.Collectors;
 
 @Component
 public class SysParameterManage {
@@ -56,5 +60,15 @@ public class SysParameterManage {
     private List<CoreSysSetting> all() {
         QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
         return coreSysSettingMapper.selectList(queryWrapper);
+    }
+
+    public Map<String,String> groupVal(String groupKey) {
+        QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
+        queryWrapper.likeLeft("pkey", groupKey);
+        List<CoreSysSetting> sysSettings = coreSysSettingMapper.selectList(queryWrapper);
+        if (!CollectionUtils.isEmpty(sysSettings)) {
+            return sysSettings.stream().collect(Collectors.toMap(CoreSysSetting::getPkey, CoreSysSetting::getPval));
+        }
+        return null;
     }
 }

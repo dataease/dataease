@@ -10,7 +10,7 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
-import { downloadCanvas } from '@/utils/imgUtils'
+import { download2AppTemplate, downloadCanvas } from '@/utils/imgUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
@@ -89,7 +89,16 @@ const downloadH2 = type => {
     downloadCanvas(type, vueDom, state.dvInfo.name, () => {
       downloadStatus.value = false
     })
-  }, 200)
+  })
+}
+
+const downloadAsAppTemplate = downloadType => {
+  nextTick(() => {
+    const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
+    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, () => {
+      downloadStatus.value = false
+    })
+  })
 }
 
 const slideOpenChange = () => {
@@ -155,7 +164,12 @@ defineExpose({
       </div>
       <!--从store中判断当前是否有点击仪表板 复用时也符合-->
       <template v-if="previewShowFlag">
-        <preview-head v-if="showPosition === 'preview'" @reload="reload" @download="downloadH2" />
+        <preview-head
+          v-if="showPosition === 'preview'"
+          @reload="reload"
+          @download="downloadH2"
+          @downloadAsAppTemplate="downloadAsAppTemplate"
+        />
         <div ref="previewCanvasContainer" class="content">
           <de-preview
             ref="dashboardPreview"

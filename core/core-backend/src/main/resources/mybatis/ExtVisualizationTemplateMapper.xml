@@ -1,0 +1,86 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.template.dao.ext.ExtVisualizationTemplateMapper">
+
+    <resultMap id="BaseResultMap" type="io.dataease.api.template.vo.VisualizationTemplateVO">
+        <id column="id" jdbcType="VARCHAR" property="id" />
+        <result column="name" jdbcType="VARCHAR" property="name" />
+        <result column="pid" jdbcType="VARCHAR" property="pid" />
+        <result column="level" jdbcType="INTEGER" property="level" />
+        <result column="node_type" jdbcType="VARCHAR" property="nodeType" />
+        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+        <result column="create_time" jdbcType="BIGINT" property="createTime" />
+        <result column="template_type" jdbcType="VARCHAR" property="templateType" />
+        <result column="snapshot" jdbcType="LONGVARCHAR" property="snapshot" />
+        <result column="template_style" jdbcType="LONGVARCHAR" property="templateStyle" />
+        <result column="template_data" jdbcType="LONGVARCHAR" property="templateData" />
+        <result column="dynamic_data" jdbcType="LONGVARCHAR" property="dynamicData" />
+    </resultMap>
+
+    <resultMap id="BaseResultMapDTO" type="io.dataease.api.template.dto.TemplateManageDTO"
+               extends="BaseResultMap">
+        <result column="label" jdbcType="VARCHAR" property="label"/>
+        <result column="childrenCount" jdbcType="VARCHAR" property="childrenCount"/>
+    </resultMap>
+
+    <sql id="Base_Column_List">
+    visualization_template.id, visualization_template.`name`, visualization_template.pid, visualization_template.`level`,visualization_template.`dv_type`, visualization_template.node_type, visualization_template.create_by, visualization_template.create_time, visualization_template.template_type, visualization_template.snapshot
+  </sql>
+    <sql id="Blob_Column_List">
+     visualization_template.template_style, visualization_template.template_data, visualization_template.dynamic_data
+  </sql>
+
+    <select id="findTemplateList" resultMap="BaseResultMapDTO">
+        SELECT
+        <include refid="Base_Column_List" />
+        ,
+        <if test='withBlobs == "Y"'>
+            <include refid="Blob_Column_List" />
+            ,
+        </if>
+        visualization_template.NAME AS label,
+        ifnull(tempCountInfo.childrenCount,0) as childrenCount
+        FROM
+        visualization_template
+        LEFT JOIN (
+        SELECT
+        pid,
+        count( 1 ) AS childrenCount
+        FROM
+        visualization_template
+        WHERE
+        pid IS NOT NULL
+        GROUP BY
+        pid
+        ) tempCountInfo ON visualization_template.id = tempCountInfo.pid
+        <where>
+            <if test="name != null">
+                and visualization_template.name like CONCAT('%', #{name},'%')
+            </if>
+            <if test="dvType != null">
+                and visualization_template.dv_type = #{dvType}
+            </if>
+            <if test="nodeType != null">
+                and visualization_template.node_type = #{nodeType}
+            </if>
+            <if test="templateType != null">
+                and visualization_template.template_type = #{templateType}
+            </if>
+            <if test="id != null">
+                and visualization_template.id = #{id}
+            </if>
+            <if test="pid != null">
+                and visualization_template.pid = #{pid}
+            </if>
+            <if test="level != null">
+                and visualization_template.level = #{level}
+            </if>
+        </where>
+        <if test="sort != null">
+            order by ${sort}
+        </if>
+        <if test="sort == null">
+            order by visualization_template.create_time desc
+        </if>
+    </select>
+</mapper>

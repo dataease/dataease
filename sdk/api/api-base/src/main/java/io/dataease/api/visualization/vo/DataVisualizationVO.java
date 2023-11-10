@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -11,6 +12,7 @@ import java.util.List;
 import java.util.Map;
 
 @Data
+@NoArgsConstructor
 public class DataVisualizationVO  implements Serializable {
 
     @JsonSerialize(using = ToStringSerializer.class)
@@ -120,4 +122,13 @@ public class DataVisualizationVO  implements Serializable {
      * 视图基本信息
      */
     private Map<Long,ChartViewDTO> canvasViewInfo = new HashMap<>();
+
+    public DataVisualizationVO(Long id, String name, String type, String canvasStyleData, String componentData, Map<Long,ChartViewDTO> canvasViewInfo) {
+        this.id = id;
+        this.name = name;
+        this.type = type;
+        this.canvasStyleData = canvasStyleData;
+        this.componentData = componentData;
+        this.canvasViewInfo = canvasViewInfo;
+    }
 }

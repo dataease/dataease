@@ -2,24 +2,26 @@
   <div class="de-template-list">
     <el-input
       v-model="state.templateFilterText"
-      :placeholder="t('system_parameter_setting.search_keywords')"
+      :placeholder="'搜索关键字'"
       size="small"
       class="de-input-search"
       clearable
     >
       <template #prefix>
-        <svg-icon icon-class="de-search" />
+        <el-icon>
+          <Icon name="de-search" />
+        </el-icon>
       </template>
     </el-input>
     <el-empty
       v-if="!templateListComputed.length && state.templateFilterText === ''"
-      :image="state.noneImg"
-      :description="t('components.no_classification')"
+      :image="NoneImage"
+      :description="'当前无分类'"
     />
     <el-empty
       v-if="!templateListComputed.length && state.templateFilterText !== ''"
-      :image="state.nothingImg"
-      :description="t('components.relevant_content_found')"
+      :image="NothingImage"
+      :description="'没有找到相关内容'"
     />
     <ul>
       <li
@@ -28,7 +30,9 @@
         :class="[{ select: state.activeTemplate === ele.id }]"
         @click="nodeClick(ele)"
       >
-        <svg-icon icon-class="scene" class="de-icon-sense" />
+        <el-icon class="de-icon-sense">
+          <Icon name="scene" />
+        </el-icon>
         <span class="text-template-overflow" :title="ele.name">{{ ele.name }}</span>
         <span class="more" @click.stop>
           <el-dropdown trigger="click" size="small" @command="type => clickMore(type, ele)">
@@ -38,13 +42,13 @@
             <template #dropdown>
               <el-dropdown-menu class="de-template-dropdown">
                 <el-dropdown-item icon="el-icon-upload2" command="import">
-                  {{ t('panel.import') }}
+                  {{ t('visualization.import') }}
                 </el-dropdown-item>
                 <el-dropdown-item icon="el-icon-edit" command="edit">
-                  {{ t('panel.rename') }}
+                  {{ t('visualization.rename') }}
                 </el-dropdown-item>
                 <el-dropdown-item icon="el-icon-delete" command="delete">
-                  {{ t('panel.delete') }}
+                  {{ t('visualization.delete') }}
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -59,7 +63,7 @@
       secondary
       @click="add()"
     >
-      {{ t('panel.add_category') }}
+      {{ t('visualization.add_category') }}
     </el-button>
   </div>
 </template>
@@ -67,6 +71,8 @@
 <script setup lang="ts">
 import { useI18n } from '@/hooks/web/useI18n'
 import { computed, reactive } from 'vue'
+import NoneImage from '@/assets/none.png'
+import NothingImage from '@/assets/nothing.png'
 const { t } = useI18n()
 
 const emits = defineEmits([
@@ -93,7 +99,7 @@ const props = defineProps({
 const state = reactive({
   templateFilterText: '',
   activeTemplate: '',
-  noneImg: '@/assets/None.png',
+  noneImg: '@/assets/none.png',
   nothingImg: '@/assets/nothing.png'
 })
 
@@ -141,6 +147,10 @@ const templateImport = template => {
 const handlerConfirm = options => {
   // do handlerConfirm
 }
+
+defineExpose({
+  nodeClick
+})
 </script>
 
 <style scoped lang="less">
@@ -243,5 +253,10 @@ const handlerConfirm = options => {
   .popper__arrow {
     display: none !important;
   }
+}
+
+.sense {
+  width: 20px;
+  height: 20px;
 }
 </style>
