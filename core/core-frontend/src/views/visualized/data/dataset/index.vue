@@ -390,11 +390,15 @@ const menuList = [
 const expandedKey = ref([])
 
 const nodeExpand = data => {
-  expandedKey.value.push(data.id)
+  if (data.id) {
+    expandedKey.value.push(data.id)
+  }
 }
 
 const nodeCollapse = data => {
-  expandedKey.value = expandedKey.value.filter(ele => ele !== data.id)
+  if (data.id) {
+    expandedKey.value.splice(expandedKey.value.indexOf(data.id), 1)
+  }
 }
 
 const datasetTypeList = [
@@ -490,6 +494,8 @@ const getMenuList = (val: boolean) => {
             node-key="id"
             :data="state.datasetTree"
             :filter-node-method="filterNode"
+            expand-on-click-node
+            highlight-current
             @node-expand="nodeExpand"
             @node-collapse="nodeCollapse"
             :default-expanded-keys="expandedKey"
