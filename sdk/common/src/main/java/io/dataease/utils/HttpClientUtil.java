@@ -200,10 +200,7 @@ public class HttpClientUtil {
      * @return 响应结果字符串
      */
     public static String post(String url, Map<String, String> body, HttpClientConfig config) {
-        CloseableHttpClient httpClient = null;
-
-        try {
-            buildHttpClient(url);
+        try (CloseableHttpClient httpClient = buildHttpClient(url)) {
             HttpPost httpPost = new HttpPost(url);
             if (config == null) {
                 config = new HttpClientConfig();
@@ -231,14 +228,6 @@ public class HttpClientUtil {
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
-        } finally {
-            try {
-                if(httpClient != null){
-                    httpClient.close();
-                }
-            } catch (Exception e) {
-                logger.error("HttpClient关闭连接失败", e);
-            }
         }
     }
 
