@@ -512,11 +512,15 @@ const updateApiDs = () => {
 }
 
 const nodeExpand = data => {
-  expandedKey.value.push(data.id)
+  if (data.id) {
+    expandedKey.value.push(data.id)
+  }
 }
 
 const nodeCollapse = data => {
-  expandedKey.value = expandedKey.value.filter(ele => ele !== data.id)
+  if (data.id) {
+    expandedKey.value.splice(expandedKey.value.indexOf(data.id), 1)
+  }
 }
 
 const filterNode = (value: string, data: BusiTreeNode) => {
