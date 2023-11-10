@@ -11,6 +11,10 @@
           <color-selector :param="param" class="attr-selector" :chart="chart" @onColorChange="onColorChange" />
         </el-collapse-item>
 
+        <el-collapse-item name="size" :title="$t('chart.size')">
+          <size-selector :param="param" class="attr-selector" :chart="chart" @onSizeChange="onSizeChange" />
+        </el-collapse-item>
+
 
         <el-collapse-item name="label" :title="$t('chart.label')" >
           <label-selector
@@ -63,13 +67,15 @@
   import TitleSelector from '../../../components/selector/TitleSelector'
   import TooltipSelectorAntV from '../../../components/selector/TooltipSelectorAntV'
   import LabelSelector from '../../../components/selector/LabelSelector.vue'
+  import SizeSelector from '../../../components/selector/SizeSelector.vue'
   import messages from '@/de-base/lang/messages'
   export default {
     components: {
       ColorSelector,
       TitleSelector,
       TooltipSelectorAntV,
-      LabelSelector
+      LabelSelector,
+      SizeSelector
     },
     data() {
       return {
@@ -108,6 +114,10 @@
     methods: {
       onColorChange(val) {
         this.view.customAttr.color = val
+        this.calcStyle()
+      },
+      onSizeChange(val) {
+        this.view.customAttr.size = val
         this.calcStyle()
       },
       onRefreshViewFields(val) {

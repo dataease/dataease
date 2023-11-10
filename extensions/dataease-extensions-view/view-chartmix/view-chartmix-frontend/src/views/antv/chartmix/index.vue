@@ -330,10 +330,9 @@ export default {
         let color = colors && _index < colors.length ? hexColorToRGBA(colors[_index], alpha) : undefined;
         if (color && gradient) {
           color = setGradientColor(color, true, 270)
-          console.log(color)
         }
 
-        return {
+        const setting = {
           type: _chartType,
           name: t.name,
           options: {
@@ -362,6 +361,7 @@ export default {
             label: _labelSetting,
           }
         }
+        return this.setSizeSetting(setting);
       }) : [];
 
       let _dataExt = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? _.map(_.filter(this.chart.data.data, (c, _index) => {
@@ -390,10 +390,9 @@ export default {
         let color = colors && (yaxisCount + _index) < colors.length ? hexColorToRGBA(colors[yaxisCount + _index], alpha) : undefined;
         if (color && gradient) {
           color = setGradientColor(color, true, 270)
-          console.log(color)
         }
 
-        return {
+        const setting = {
           type: _chartType,
           name: t.name,
           options: {
@@ -422,6 +421,7 @@ export default {
             label: _labelSetting,
           }
         }
+        return this.setSizeSetting(setting);
       }) : [];
 
 
@@ -482,6 +482,41 @@ export default {
       params.annotations = this.getAnalyse(this.chart);
 
       return params;
+    },
+
+    setSizeSetting(setting) {
+      let customAttr = undefined;
+      if (this.chart.customAttr) {
+        customAttr = JSON.parse(this.chart.customAttr);
+      }
+      if (customAttr && customAttr.size) {
+        setting.options.columnWidthRatio = undefined;
+        setting.options.smooth = undefined;
+        setting.options.point = undefined;
+        setting.options.lineStyle = undefined;
+        setting.options.size = undefined;
+        setting.options.shape = undefined;
+
+        if (setting.type === 'column' && !customAttr.size.barDefault) {
+          setting.options.columnWidthRatio = customAttr.size.barWidthPercent / 100.0
+        }
+        if (setting.type === 'line') {
+          setting.options.smooth = customAttr.size.lineSmooth
+          setting.options.point = {
+            size: parseInt(customAttr.size.lineSymbolSize),
+            shape: customAttr.size.lineSymbol
+          }
+          setting.options.lineStyle = {
+            lineWidth: parseInt(customAttr.size.lineWidth)
+          }
+        }
+        if (setting.type === 'scatter') {
+          setting.options.size = parseInt(customAttr.size.scatterSymbolSize)
+          setting.options.shape = customAttr.size.scatterSymbol
+        }
+      }
+
+      return setting;
     },
 
     getAnalyse(chart) {
