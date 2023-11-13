@@ -103,6 +103,11 @@ state.resourceTypeList = [
     command: 'newLeaf'
   },
   {
+    label: '从模版新建',
+    svgName: curCanvasType.value === 'dashboard' ? 'dv-dashboard-spine' : 'dv-screen-spine',
+    command: 'newFromTemplate'
+  },
+  {
     label: '新建文件夹',
     divided: true,
     svgName: 'dv-folder',
@@ -236,6 +241,9 @@ const addOperation = (
     } else {
       window.open(baseUrl, '_blank')
     }
+  } else if(cmd === 'newFromTemplate') {
+    // newFromTemplate
+
   } else {
     resourceGroupOpt.value.optInit(nodeType, data || {}, cmd, parentSelect)
   }

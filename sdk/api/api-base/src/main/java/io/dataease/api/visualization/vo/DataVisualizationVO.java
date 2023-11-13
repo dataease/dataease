@@ -3,6 +3,7 @@ package io.dataease.api.visualization.vo;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.chart.dto.ChartViewDTO;
+import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
@@ -13,7 +14,7 @@ import java.util.Map;
 
 @Data
 @NoArgsConstructor
-public class DataVisualizationVO  implements Serializable {
+public class DataVisualizationVO implements Serializable {
 
     @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
@@ -121,14 +122,20 @@ public class DataVisualizationVO  implements Serializable {
     /**
      * 视图基本信息
      */
-    private Map<Long,ChartViewDTO> canvasViewInfo = new HashMap<>();
+    private Map<Long, ChartViewDTO> canvasViewInfo = new HashMap<>();
 
-    public DataVisualizationVO(Long id, String name, String type, String canvasStyleData, String componentData, Map<Long,ChartViewDTO> canvasViewInfo) {
+    /**
+     * 视图模版数据
+     */
+    private Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
+
+    public DataVisualizationVO(Long id, String name, String type, String canvasStyleData, String componentData, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo) {
         this.id = id;
         this.name = name;
         this.type = type;
         this.canvasStyleData = canvasStyleData;
         this.componentData = componentData;
         this.canvasViewInfo = canvasViewInfo;
+        this.extendDataInfo = extendDataInfo;
     }
 }
