@@ -220,6 +220,7 @@ export default {
         method = linkMultFieldValues
       }
       if (!this.element.options.attrs.fieldId) {
+        this.show = true
         return
       }
       const param = { fieldIds: this.element.options.attrs.fieldId.split(this.separator), sort: this.element.options.attrs.sort }
@@ -238,6 +239,8 @@ export default {
         bus.$emit('valid-values-change', true)
       }).catch(e => {
         bus.$emit('valid-values-change', false)
+      }).finally(() => {
+        this.show = true
       }) || (this.element.options.value = '')
     }
 
