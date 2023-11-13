@@ -182,6 +182,7 @@ public class SysUserController {
     @PostMapping("/personInfo")
     public CurrentUserDto personInfo() {
         CurrentUserDto user = AuthUtils.getUser();
+        user.setPassword(null);
         return user;
     }
 
