@@ -3,11 +3,11 @@
     class="create-dialog"
     title="从模版新建"
     v-model="state.dialogShow"
-    width="600"
+    width="700"
     :before-close="close"
     @submit.prevent
   >
-    <el-row v-loading="state.loading">
+    <el-row class="create-main" v-loading="state.loading">
       <el-row>
         <el-col :span="18" style="height: 40px">
           <el-radio v-model="state.inputType" label="new_outer_template"
@@ -17,7 +17,7 @@
             >{{ t('visualization.copy_template') }}
           </el-radio>
         </el-col>
-        <el-col v-if="state.inputType === 'new_outer_template'" :span="6">
+        <el-col v-if="state.inputType === 'new_outer_template'" :span="6" class="button-main">
           <el-button class="el-icon-upload" size="small" type="primary" @click="goFile"
             >{{ t('visualization.upload_template') }}
           </el-button>
@@ -25,14 +25,14 @@
             id="input"
             ref="files"
             type="file"
-            accept=".DET"
+            accept=".DET2"
             hidden
             @change="handleFileChange"
           />
         </el-col>
       </el-row>
       <el-row style="margin-top: 5px">
-        <el-col :span="4">{{ state.titleSuf }}{{ t('commons.name') }}</el-col>
+        <el-col :span="4" class="name-area">名称</el-col>
         <el-col :span="20">
           <el-input v-model="state.dvCreateInfo.name" clearable size="mini" />
         </el-col>
@@ -204,7 +204,7 @@ const handleFileChange = e => {
   reader.readAsText(file)
 }
 const goFile = () => {
-  files.value.files.click()
+  files.value.click()
 }
 
 const close = () => {
@@ -221,22 +221,39 @@ defineExpose({
 </script>
 
 <style scoped lang="less">
+.create-main {
+  display: inherit;
+}
+
+.name-area {
+  display: flex;
+  align-items: center;
+  justify-content: left;
+}
+
+.button-main {
+  display: flex;
+  align-items: center;
+  justify-content: right;
+}
 .root-class {
+  display: flex;
+  align-items: center;
+  justify-content: right;
   margin: 15px 0px 5px;
-  text-align: center;
 }
 
 .preview {
   margin-top: 5px;
   border: 1px solid #e6e6e6;
-  height: 250px !important;
+  height: 310px !important;
   overflow: hidden;
   background-size: 100% 100% !important;
 }
 
 .preview-show {
   border-left: 1px solid #e6e6e6;
-  height: 250px;
+  height: 310px;
   background-size: 100% 100% !important;
 }
 </style>
