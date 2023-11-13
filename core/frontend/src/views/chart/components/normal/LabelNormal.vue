@@ -203,7 +203,6 @@ export default {
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
-        console.log(customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           this.title_class.fontSize = customStyle.text.fontSize + 'px'
@@ -229,7 +228,6 @@ export default {
     },
 
     colorThreshold(valueColor, setBg) {
-      console.log(valueColor, setBg)
       if (this.chart.senior) {
         const senior = JSON.parse(this.chart.senior)
         if (senior.threshold && senior.threshold.labelThreshold && senior.threshold.labelThreshold.length > 0) {
