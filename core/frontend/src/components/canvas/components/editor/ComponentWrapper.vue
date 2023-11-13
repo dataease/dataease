@@ -401,5 +401,8 @@ export default {
 
 .fullscreen {
   transform: translate(0);
+  .main_view {
+    z-index: 0;
+  }
 }
 </style>
