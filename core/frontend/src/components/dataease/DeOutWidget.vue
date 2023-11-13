@@ -280,7 +280,7 @@ export default {
   letter-spacing: 0px !important;
   width: 100%;
   .widget-required {
-    width: calc(100% - 10px) !important;
+    width: calc(100% - 12px) !important;
     float: left !important;
   }
   .widget-required-symbol {
@@ -288,6 +288,7 @@ export default {
     height: 40px;
     line-height: 40px;
     float: right;
+    width: 12px;
   }
 }
 

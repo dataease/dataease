@@ -2061,11 +2061,11 @@ export default {
     },
     showCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table', 'liquid') && this.view.type !== 'race-bar' ||
-        equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map')
+        equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
     },
     showSeniorCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'table') ||
-        equalsAny(this.view.type, 'table-normal', 'table-info', 'map')
+        equalsAny(this.view.type, 'table-normal', 'table-info', 'map') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
     },
     showFunctionCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'table') ||
@@ -2080,7 +2080,7 @@ export default {
       }
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'liquid') ||
         equalsAny(this.view.type, 'text', 'label') ||
-        (this.view.render === 'antv' && this.view.type.includes('table'))
+        (this.view.render === 'antv' && this.view.type.includes('table')) || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
     },
     showAssistLineCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'mix')

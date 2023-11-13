@@ -1,6 +1,8 @@
 <template>
   <el-row>
-    <el-col :span="20">
+    <el-col
+      class="filter-field-container"
+    >
       <div class="filter-field">
         <div class="field-content">
 
@@ -13,7 +15,7 @@
                 animation="300"
                 :move="onMove"
                 class="row wrap justify-space-around theme-drag"
-                style="width:100%;height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;"
+                style="width:calc(100% - 25px);height: 100%;margin:0 10px;border-radius: 4px;overflow-x: auto;display: flex;align-items: center;"
                 @end="end2"
               >
 
@@ -38,7 +40,9 @@
         </div>
       </div>
     </el-col>
-    <el-col :span="4">
+    <el-col
+      class="filter-required-container"
+    >
       <div class="de-filter-required">
         <el-checkbox
           v-model="element.options.attrs.required"
@@ -105,6 +109,14 @@ export default {
 
 </script>
 <style lang="scss" scoped>
+.filter-field-container {
+  width: calc(100% - 70px);
+  float: left;
+}
+.filter-required-container {
+  width: 70px;
+  float: right;
+}
 .de-filter-required {
   height: 40px;
   line-height: 40px;
@@ -116,7 +128,7 @@ export default {
   overflow-x: overlay;
   .field-content {
     position: relative;
-    display: table;
+    // display: table;
     width: 100%;
     height: 100%;
     white-space: nowrap;

@@ -471,6 +471,11 @@ export const DEFAULT_SPLIT = {
   },
   splitArea: {
     show: true
+  },
+  axisValue: {
+    auto: true,
+    min: 10,
+    max: 100
   }
 }
 export const DEFAULT_FUNCTION_CFG = {
