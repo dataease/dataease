@@ -525,6 +525,20 @@
             </el-input>
           </el-form-item>
 
+          <el-form-item
+              :label="$t('datasource.query_timeout')"
+              prop="apiQueryTimeout"
+          >
+            <el-input
+                v-model="apiItem.queryTimeout"
+                autocomplete="off"
+                type="number"
+                :min="0"
+            >
+              <template slot="append">{{ $t('panel.second') }}</template>
+            </el-input>
+          </el-form-item>
+
           <div v-loading="loading">
             <div class="row-rules mr40">
               <span>{{ $t('datasource.req_param') }}</span>
@@ -981,6 +995,13 @@ export default {
             trigger: 'blur'
           }
         ],
+        'apiQueryTimeout': [
+          {
+            required: true,
+            message: i18n.t('datasource.please_input_query_timeout'),
+            trigger: 'blur'
+          }
+        ],
         dataPath: [
           {
             required: true,
@@ -1001,6 +1022,7 @@ export default {
         name: '',
         url: '',
         method: 'GET',
+        queryTimeout: 30,
         request: {
           headers: [{}],
           arguments: [],
@@ -1018,6 +1040,7 @@ export default {
         url: '',
         method: 'GET',
         dataPath: '',
+        queryTimeout: 30,
         request: {
           headers: [],
           arguments: [],

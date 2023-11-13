@@ -13,7 +13,7 @@
       :title="$t('user.change_password')"
       :show-close="false"
     >
-      <PasswordUpdateForm old-pwd="dataease" />
+      <PasswordUpdateForm :old-pwd=defaultPwd />
     </el-dialog>
   </div>
 </template>
@@ -28,7 +28,8 @@ export default {
   components: { PluginCom, PasswordUpdateForm },
   data() {
     return {
-      showPasswordModifiedDialog: false
+      showPasswordModifiedDialog: false,
+      defaultPwd: 'dataease'
     }
   },
   computed: {
@@ -46,6 +47,7 @@ export default {
   },
   mounted() {
     const passwordModified = JSON.parse(localStorage.getItem('passwordModified'))
+    this.defaultPwd = localStorage.getItem('defaultPwd')
     if (typeof passwordModified === 'boolean') {
       this.$store.commit('user/SET_PASSWORD_MODIFIED', passwordModified)
     }

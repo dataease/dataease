@@ -73,7 +73,7 @@ public class DorisDDLProvider extends DDLProviderImpl {
                     break;
                 case 3:
                    if(datasetTableField.getType().equalsIgnoreCase("DECIMAL") && datasetTableField.getAccuracy() != 0){
-                       Column_Fields.append("DECIMAL(" + datasetTableField.getSize() + "," + datasetTableField.getAccuracy() + ")").append(",`");
+                       Column_Fields.append("DecimalV3(" + datasetTableField.getSize() + "," + datasetTableField.getAccuracy() + ")").append(",`");
                    }else {
                        Column_Fields.append("DOUBLE").append(",`");
                    }
