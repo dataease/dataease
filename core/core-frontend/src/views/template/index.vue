@@ -1,18 +1,6 @@
 <template>
   <div style="width: 100%; height: 100%">
     <div class="de-template">
-      <el-tabs v-model="state.currentTemplateType" @tab-click="handleClick">
-        <el-tab-pane name="self">
-          <template #label>
-            <span>{{ t('visualization.user_template') }}</span>
-          </template>
-        </el-tab-pane>
-        <el-tab-pane name="system">
-          <template #label>
-            <span>{{ t('visualization.sys_template') }}</span>
-          </template>
-        </el-tab-pane>
-      </el-tabs>
       <div class="tabs-container flex-tabs">
         <div class="de-tabs-left">
           <de-template-list
@@ -354,16 +342,12 @@ onMounted(() => {
 <style lang="less" scoped>
 .de-template {
   height: 100%;
-  background-color: var(--MainBG, #f5f6f7);
-
   .tabs-container {
-    height: calc(100% - 48px);
-    background: var(--ContentBG, #ffffff);
+    height: 100%;
     overflow-x: auto;
   }
 
   .flex-tabs {
-    margin-top: 16px;
     display: flex;
     background: #f5f6f7;
   }
