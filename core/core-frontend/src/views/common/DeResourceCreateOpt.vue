@@ -64,13 +64,13 @@
 <script setup lang="ts">
 import { showTemplateList } from '@/api/template'
 import { useI18n } from '@/hooks/web/useI18n'
-import { computed, reactive, ref } from 'vue'
+import { computed, reactive, ref, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
-import { watch } from 'vue/dist/vue'
 import { ElMessage } from 'element-plus-secondary'
 import { decompression } from '@/api/visualization/dataVisualization'
+import { deepCopy } from '@/utils/utils'
 const { t } = useI18n()
-const emits = defineEmits(['closeEditPanelDialog'])
+const emits = defineEmits(['finish'])
 const files = ref(null)
 const props = defineProps({
   editPanelOut: {
@@ -92,7 +92,8 @@ const state = reactive({
     snapshot: ''
   },
   dvCreateInfo: {
-    name:null,
+    pid: -1,
+    name: null,
     canvasStyleData: null,
     componentData: null,
     templateId: null,
@@ -119,14 +120,18 @@ const classBackground = computed(() => {
 watch(
   () => state.inputType,
   val => {
-    state.templateSelected = false
-    state.dvCreateInfo.name = null
-    state.dvCreateInfo.canvasStyleData = null
-    state.dvCreateInfo.componentData = null
-    state.importTemplateInfo.snapshot = null
-    state.dvCreateInfo.templateId = null
+    createInit()
   }
 )
+
+const createInit = () => {
+  state.templateSelected = false
+  state.dvCreateInfo.name = null
+  state.dvCreateInfo.canvasStyleData = null
+  state.dvCreateInfo.componentData = null
+  state.importTemplateInfo.snapshot = null
+  state.dvCreateInfo.templateId = null
+}
 
 const showCurrentTemplateInfo = data => {
   state.dvCreateInfo.templateId = data.id
@@ -154,7 +159,7 @@ const getTree = () => {
 }
 
 const cancel = () => {
-  emits('closeEditPanelDialog')
+  emits('finish')
 }
 
 const save = () => {
@@ -168,10 +173,7 @@ const save = () => {
     return false
   }
 
-  if (
-    !state.dvCreateInfo.templateId &&
-    state.inputType === 'new_inner_template'
-  ) {
+  if (!state.dvCreateInfo.templateId && state.inputType === 'new_inner_template') {
     ElMessage.warning('chart.template_can_not_empty')
     return false
   }
@@ -180,7 +182,7 @@ const save = () => {
   decompression(state.dvCreateInfo)
     .then(response => {
       state.loading = false
-      emits('closeEditPanelDialog', response.data)
+      emits('finish', response.data)
     })
     .catch(() => {
       state.loading = false
@@ -205,11 +207,12 @@ const goFile = () => {
   files.value.files.click()
 }
 
-const close = () ={
- // do close
+const close = () => {
+  state.dialogShow = false
 }
-const optInit = () =>{
-
+const optInit = param => {
+  state.dialogShow = true
+  createInit()
 }
 
 defineExpose({
@@ -217,7 +220,7 @@ defineExpose({
 })
 </script>
 
-<style scoped>
+<style scoped lang="less">
 .root-class {
   margin: 15px 0px 5px;
   text-align: center;

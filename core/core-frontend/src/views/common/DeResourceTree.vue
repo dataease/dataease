@@ -14,6 +14,7 @@ const interactiveStore = interactiveStoreWithOut()
 import router from '@/router'
 import { useI18n } from '@/hooks/web/useI18n'
 import _ from 'lodash'
+import DeResourceCreateOpt from '@/views/common/DeResourceCreateOpt.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -44,6 +45,7 @@ const filterText = ref(null)
 const expandedArray = ref([])
 const resourceListTree = ref()
 const resourceGroupOpt = ref()
+const resourceCreateOpt = ref()
 const returnMounted = ref(false)
 const state = reactive({
   resourceTree: [] as BusiTreeNode[],
@@ -241,9 +243,9 @@ const addOperation = (
     } else {
       window.open(baseUrl, '_blank')
     }
-  } else if(cmd === 'newFromTemplate') {
+  } else if (cmd === 'newFromTemplate') {
     // newFromTemplate
-
+    resourceCreateOpt.value.optInit()
   } else {
     resourceGroupOpt.value.optInit(nodeType, data || {}, cmd, parentSelect)
   }
@@ -260,6 +262,10 @@ const resourceEdit = resourceId => {
 
 const resourceOptFinish = () => {
   getTree()
+}
+
+const resourceCreateFinish = () => {
+  // do create
 }
 
 const getParentKeys = (tree, targetKey, parentKeys = []) => {
@@ -402,6 +408,12 @@ defineExpose({
         @finish="resourceOptFinish"
         ref="resourceGroupOpt"
       />
+      <de-resource-create-opt
+        :cur-canvas-type="curCanvasType"
+        ref="resourceCreateOpt"
+        @finish="resourceCreateFinish"
+      >
+      </de-resource-create-opt>
     </el-scrollbar>
   </div>
 </template>
