@@ -6,10 +6,12 @@ import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.chart.manage.ChartDataManage;
+import io.dataease.constant.CommonConstants;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
 import io.dataease.result.ResultCode;
 import io.dataease.utils.LogUtil;
+import io.dataease.visualization.manage.VisualizationTemplateExtendDataManage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
@@ -41,10 +43,18 @@ public class ChartDataServer implements ChartDataApi {
     @Resource
     private ChartDataManage chartDataManage;
 
+    @Resource
+    private VisualizationTemplateExtendDataManage extendDataManage;
+
     @Override
     public ChartViewDTO getData(ChartViewDTO chartViewDTO) throws Exception {
         try {
-            return chartDataManage.calcData(chartViewDTO);
+            // 从模版数据获取
+            if(CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(chartViewDTO.getDataFrom())){
+                return extendDataManage.getChartDataInfo(chartViewDTO.getId(),chartViewDTO);
+            }else{
+                return chartDataManage.calcData(chartViewDTO);
+            }
         } catch (Exception e) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), e.getMessage());
         }

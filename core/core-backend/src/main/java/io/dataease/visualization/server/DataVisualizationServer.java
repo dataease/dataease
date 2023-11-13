@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
+import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
 import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
@@ -20,6 +21,8 @@ import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
+import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
+import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataMapper;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateMarketManage;
 import io.dataease.utils.AuthUtils;
@@ -72,6 +75,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private StaticResourceServer staticResourceServer;
+
+    @Resource
+    private VisualizationTemplateExtendDataMapper templateExtendDataMapper;
 
 
     @Override
@@ -256,7 +262,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Map<String, String> dynamicDataMap = JsonUtil.parseObject(dynamicData, Map.class);
         List<ChartViewDTO> chartViews = new ArrayList<>();
         Map<Long,ChartViewDTO> canvasViewInfo = new HashMap<>();
-//        List<PanelGroupExtendDataDTO> viewsData = new ArrayList<>();
+        Map<Long,VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
         for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
             String originViewId = entry.getKey();
             String originViewData = entry.getValue();
@@ -265,17 +271,21 @@ public class DataVisualizationServer implements DataVisualizationApi {
             chartView.setId(newViewId);
             chartView.setSceneId(newDvId);
             chartView.setDataFrom(CommonConstants.VIEW_DATA_FROM.TEMPLATE);
-            // 数据处理 1.替换viewId 2.加入panelView 数据(数据来源为template) 3.加入模板view data数据
-            // viewsData.add(new PanelGroupExtendDataDTO(newPanelId, newViewId, originViewData));
+            // 数据处理 1.替换viewId 2.加入模板view data数据
+            VisualizationTemplateExtendDataDTO extendDataDTO = new VisualizationTemplateExtendDataDTO(newViewId, newDvId,originViewData);
+            extendDataInfo.put(newViewId, extendDataDTO);
             templateData = templateData.replaceAll(originViewId, newViewId.toString());
             chartViewManege.save(chartView);
             canvasViewInfo.put(chartView.getId(),chartView);
+            //插入模版数据 此处预先插入减少数据交互量
+            VisualizationTemplateExtendData extendData = new VisualizationTemplateExtendData();
+            templateExtendDataMapper.insert(BeanUtils.copyBean(extendData,extendDataDTO));
         }
         request.setComponentData(templateData);
         request.setCanvasStyleData(templateStyle);
         //Store static resource into the server
         staticResourceServer.saveFilesToServe(staticResource);
-        return new DataVisualizationVO(newDvId,name,dvType,templateStyle,templateData,canvasViewInfo);
+        return new DataVisualizationVO(newDvId,name,dvType,templateStyle,templateData,canvasViewInfo,null);
     }
 
     @Override
