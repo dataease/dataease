@@ -1688,7 +1688,8 @@ export const TYPE_CONFIGS = [
       'split-selector-ant-v': [
         'splitForm',
         'name',
-        'lineStyle'
+        'lineStyle',
+        'axisValue'
       ]
     }
   },

@@ -47,6 +47,7 @@
             />
           </el-select>
         </el-form-item>
+        <el-divider />
         <el-form-item
           v-show="showProperty('lineStyle')"
           :label="$t('chart.axis_color')"
@@ -59,6 +60,34 @@
             @change="changeSplitStyle('axisLine')"
           />
         </el-form-item>
+        <el-divider />
+        <el-form-item
+          v-show="showProperty('axisValue')"
+          :label="$t('chart.axis_value')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="splitForm.axisValue.auto"
+            @change="changeSplitStyle('axisValue')"
+          >
+            <el-radio :label="true">{{ $t('chart.axis_auto') }}</el-radio>
+            <el-radio :label="false">{{ $t('commons.custom') }}</el-radio>
+          </el-radio-group>
+        </el-form-item>
+        <div v-show="showProperty('axisValue') && !splitForm.axisValue.auto">
+          <el-form-item :label="$t('chart.axis_value_min')">
+            <el-input-number
+              v-model="splitForm.axisValue.min"
+              @blur="changeSplitStyle('axisValue')"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('chart.axis_value_max')">
+            <el-input-number
+              v-model="splitForm.axisValue.max"
+              @blur="changeSplitStyle('axisValue')"
+            />
+          </el-form-item>
+        </div>
       </el-form>
     </el-col>
   </div>
@@ -117,6 +146,9 @@ export default {
         }
         if (customStyle.split) {
           this.splitForm = customStyle.split
+          if (this.splitForm.axisValue === undefined) {
+            this.splitForm.axisValue = JSON.parse(JSON.stringify(DEFAULT_SPLIT.axisValue))
+          }
         } else {
           this.splitForm = JSON.parse(JSON.stringify(DEFAULT_SPLIT))
         }
