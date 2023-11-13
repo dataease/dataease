@@ -15,6 +15,7 @@
       v-if="chart.type && antVRenderStatus"
       v-show="title_show"
       ref="title"
+      :class="titleIsRight"
       :style="title_class"
       style="cursor: default;display: block;"
     >
@@ -134,6 +135,9 @@ export default {
   computed: {
     trackBarStyleTime() {
       return this.trackBarStyle
+    },
+    titleIsRight() {
+      return this.title_class?.textAlign === 'right' && 'title-is-right'
     },
     bg_class() {
       return {
@@ -475,6 +479,14 @@ export default {
 .g2-container {
   ::v-deep .g2-tooltip {
     position: fixed !important;
+  }
+}
+
+.fullscreen {
+  .g2-container {
+    ::v-deep .g2-tooltip {
+      position: absolute !important;
+    }
   }
 }
 </style>
