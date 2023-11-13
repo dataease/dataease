@@ -14,6 +14,7 @@
     <span
       v-if="chart.type"
       v-show="title_show"
+      :class="titleIsRight"
       ref="title"
       :style="title_class"
       style="cursor: default;display: block;"
@@ -184,6 +185,9 @@ export default {
   },
 
   computed: {
+    titleIsRight() {
+      return this.title_class?.textAlign === 'right' && 'title-is-right'
+    },
     scale() {
       return this.previewCanvasScale.scalePointWidth
     },

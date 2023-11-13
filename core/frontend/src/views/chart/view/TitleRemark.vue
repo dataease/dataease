@@ -81,4 +81,7 @@ export default {
   top: 22px !important;
   left: auto !important;
 }
+.title-is-right .el-popover.remark-pop {
+  right: 0;
+}
 </style>
