@@ -1,13 +1,13 @@
 <template>
   <span
-    style="transform: translate(0);display: inline-block;position: relative;
+    style="display: inline-block;position: relative;
     z-index: 10;"
   >
     <el-popover
       placement="bottom"
       trigger="hover"
       width="300"
-      :append-to-body="false"
+      :append-to-body="!previewVisible"
       popper-class="remark-pop"
       :visible-arrow="false"
     >
@@ -26,6 +26,7 @@
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'TitleRemark',
   props: {
@@ -33,6 +34,9 @@ export default {
       type: Object,
       required: true
     }
+  },
+  computed: {
+    ...mapState(['previewVisible'])
   }
 }
 </script>
@@ -71,17 +75,5 @@ export default {
 ::v-deep li {
   display: list-item!important;
   text-align: -webkit-match-parent!important;
-}
-</style>
-<style>
-.el-popover.remark-pop{
-  padding: 0;
-  border: none;
-  margin-top: 8px!important;
-  top: 22px !important;
-  left: auto !important;
-}
-.title-is-right .el-popover.remark-pop {
-  right: 0;
 }
 </style>

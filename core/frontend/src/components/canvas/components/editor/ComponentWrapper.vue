@@ -392,10 +392,14 @@ export default {
 }
 
 // .component-outer {
-//   transform: translate(0);
+//   transform: none;
 // }
 
 .component-active {
   z-index: 1;
+}
+
+.fullscreen {
+  transform: translate(0);
 }
 </style>
