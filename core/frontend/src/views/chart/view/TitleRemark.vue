@@ -79,5 +79,6 @@ export default {
   border: none;
   margin-top: 8px!important;
   top: 22px !important;
+  left: auto !important;
 }
 </style>
