@@ -218,7 +218,7 @@
           <el-collapse-item
             v-show="showPropertiesCollapse(['split-selector', 'split-selector-ant-v'])"
             name="split"
-            :title="$t('chart.split')"
+            :title="$t('chart.axis_line')"
           >
             <split-selector
               v-if="showProperties('split-selector')"
