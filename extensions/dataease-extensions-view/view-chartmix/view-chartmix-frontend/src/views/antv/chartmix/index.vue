@@ -485,9 +485,6 @@ export default {
 
       params.legend = this.getLegend(this.chart);
 
-
-      console.log(params)
-
       return params;
     },
 
