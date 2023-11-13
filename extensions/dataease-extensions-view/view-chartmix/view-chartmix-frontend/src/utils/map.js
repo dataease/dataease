@@ -388,9 +388,9 @@ export function hexColorToRGBA(hex, alpha) {
 }
 
 
-export const DEFAULT_YAXIS_EXT_STYLE = {
+export const DEFAULT_YAXIS_STYLE = {
   show: true,
-  position: 'right',
+  position: 'left',
   name: '',
   nameTextStyle: {
     color: '#333333',
@@ -402,6 +402,14 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     fontSize: '12',
     rotate: 0,
     formatter: '{value}'
+  },
+  axisLine: {
+    show: false,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
   },
   splitLine: {
     show: true,
@@ -417,6 +425,59 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     max: null,
     split: null,
     splitCount: null
+  },
+  axisLabelFormatter: {
+    type: 'auto', // auto,value,percent
+    unit: 1, // 换算单位
+    suffix: '', // 单位后缀
+    decimalCount: 2, // 小数位数
+    thousandSeparator: true// 千分符
+  }
+}
+export const DEFAULT_YAXIS_EXT_STYLE = {
+  show: true,
+  position: 'right',
+  name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
+  axisLabel: {
+    show: true,
+    color: '#333333',
+    fontSize: '12',
+    rotate: 0,
+    formatter: '{value}'
+  },
+  axisLine: {
+    show: false,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
+  },
+  splitLine: {
+    show: true,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
+  },
+  axisValue: {
+    auto: true,
+    min: null,
+    max: null,
+    split: null,
+    splitCount: null
+  },
+  axisLabelFormatter: {
+    type: 'auto', // auto,value,percent
+    unit: 1, // 换算单位
+    suffix: '', // 单位后缀
+    decimalCount: 2, // 小数位数
+    thousandSeparator: true// 千分符
   }
 }
 
@@ -475,53 +536,6 @@ export const DEFAULT_XAXIS_STYLE = {
   },
   splitLine: {
     show: false,
-    lineStyle: {
-      color: '#cccccc',
-      width: 1,
-      style: 'solid'
-    }
-  },
-  axisValue: {
-    auto: true,
-    min: null,
-    max: null,
-    split: null,
-    splitCount: null
-  },
-  axisLabelFormatter: {
-    type: 'auto', // auto,value,percent
-    unit: 1, // 换算单位
-    suffix: '', // 单位后缀
-    decimalCount: 2, // 小数位数
-    thousandSeparator: true// 千分符
-  }
-}
-
-export const DEFAULT_YAXIS_STYLE = {
-  show: true,
-  position: 'left',
-  name: '',
-  nameTextStyle: {
-    color: '#333333',
-    fontSize: 12
-  },
-  axisLabel: {
-    show: true,
-    color: '#333333',
-    fontSize: '12',
-    rotate: 0,
-    formatter: '{value}'
-  },
-  axisLine: {
-    show: false,
-    lineStyle: {
-      color: '#cccccc',
-      width: 1,
-      style: 'solid'
-    }
-  },
-  splitLine: {
-    show: true,
     lineStyle: {
       color: '#cccccc',
       width: 1,
