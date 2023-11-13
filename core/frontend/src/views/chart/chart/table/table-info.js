@@ -111,6 +111,15 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
       return new DataCell(viewMeta, viewMeta?.spreadsheet)
     }
   }
+  // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
+  if (customAttr.size.showTableHeader === false) {
+    s2Options.style.colCfg.height = 1
+    s2Options.interaction = {
+      resize: {
+        colCellVertical: false
+      }
+    }
+  }
 
   // 开始渲染
   if (s2) {
@@ -281,6 +290,15 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
         } else {
           node.label = customAttr.size.indexLabel
         }
+      }
+    }
+  }
+  // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
+  if (customAttr.size.showTableHeader === false) {
+    s2Options.style.colCfg.height = 1
+    s2Options.interaction = {
+      resize: {
+        colCellVertical: false
       }
     }
   }

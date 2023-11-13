@@ -14,6 +14,7 @@
       style-type="radioGroup"
       class="de-tabs-height"
       :class="isCurrentEdit ? 'de-tabs-edit' : ''"
+      :hide-title="hideTitle"
       :font-color="fontColor"
       :active-color="activeColor"
       :border-color="borderColor"
@@ -389,6 +390,13 @@ export default {
         return this.element.style.headBorderActiveColor
       } else {
         return 'none'
+      }
+    },
+    hideTitle() {
+      if (this.element && this.element.style && this.element.style.titleHide && typeof this.element.style.titleHide === 'boolean') {
+        return this.element.style.titleHide
+      } else {
+        return false
       }
     },
     titleValid() {

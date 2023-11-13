@@ -2,8 +2,15 @@
   <div
     ref="tableContainer"
     :style="bg_class"
-    style="padding: 8px;width: 100%;height: 100%;overflow: hidden;"
+    style="padding: 8px;width: 100%;height: 100%;overflow: hidden;position: relative;"
   >
+    <view-track-bar
+      ref="viewTrack"
+      :track-menu="trackMenu"
+      :style="trackBarStyle"
+      class="track-bar"
+      @trackClick="trackClick"
+    />
     <el-row
       style="height: 100%;"
       :style="cssVars"
@@ -16,18 +23,20 @@
       <ux-grid
         ref="plxTable"
         size="mini"
+        class="table-class"
         :style="tableStyle"
         :height="height"
         :checkbox-config="{highlight: true}"
         :width-resize="true"
         :header-row-style="table_header_class"
         :row-style="getRowStyle"
-        class="table-class"
         :class="chart.id"
         :merge-cells="mergeCells"
         :show-summary="showSummary"
         :summary-method="summaryMethod"
         :index-config="{seqMethod}"
+        :show-header="showHeader"
+        @cell-click="cellClick"
       >
         <ux-table-column
           type="index"
@@ -95,13 +104,13 @@
 
 <script>
 import { hexColorToRGBA } from '../../chart/util'
-import eventBus from '@/components/canvas/utils/eventBus'
 import { DEFAULT_COLOR_CASE, DEFAULT_SCROLL, DEFAULT_SIZE, NOT_SUPPORT_PAGE_DATASET } from '@/views/chart/chart/chart'
 import { mapState } from 'vuex'
 import DePagination from '@/components/deCustomCm/pagination.js'
+import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar.vue'
 export default {
   name: 'TableNormal',
-  components: { DePagination },
+  components: { ViewTrackBar, DePagination },
   props: {
     chart: {
       type: Object,
@@ -123,6 +132,18 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    trackMenu: {
+      type: Array,
+      required: false,
+      default: function() {
+        return ['drill']
+      }
+    },
+    searchCount: {
+      type: Number,
+      required: false,
+      default: 0
     }
   },
   data() {
@@ -174,6 +195,7 @@ export default {
       scrollTop: 0,
       showIndex: false,
       indexLabel: '序号',
+      showHeader: true,
       scrollBarColor: DEFAULT_COLOR_CASE.tableScrollBarColor,
       scrollBarHoverColor: DEFAULT_COLOR_CASE.tableScrollBarHoverColor,
       totalStyle: {
@@ -186,7 +208,13 @@ export default {
         overflow: 'hidden',
         textOverflow: 'ellipsis',
         whiteSpace: 'nowrap'
-      }
+      },
+      trackBarStyle: {
+        position: 'absolute',
+        left: '0px',
+        top: '0px'
+      },
+      pointParam: null
     }
   },
   computed: {
@@ -234,11 +262,8 @@ export default {
   },
   mounted() {
     this.init()
-    // 监听元素变动事件
-    eventBus.$on('resizing', this.chartResize)
   },
   beforeDestroy() {
-    eventBus.$off('resizing', this.chartResize)
     clearInterval(this.scrollTimer)
     window.removeEventListener('resize', this.calcHeightDelay)
   },
@@ -428,6 +453,11 @@ export default {
           } else {
             this.indexLabel = customAttr.size.indexLabel
           }
+          if (customAttr.size.showTableHeader === false) {
+            this.showHeader = false
+          } else {
+            this.showHeader = true
+          }
 
           const autoBreakLine = customAttr.size.tableAutoBreakLine ? customAttr.size.tableAutoBreakLine : DEFAULT_SIZE.tableAutoBreakLine
           if (autoBreakLine) {
@@ -613,6 +643,83 @@ export default {
             behavior: this.scrollTop === 0 ? 'instant' : 'smooth'
           })
         }, senior.scrollCfg.interval)
+      }
+    },
+    cellClick(row, col, cell, ev) {
+      const nameIdMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['dataeaseName']] = next['id']
+        return pre
+      }, {})
+      const dimensionList = []
+      for (const key in row) {
+        if (nameIdMap[key]) {
+          dimensionList.push({ id: nameIdMap[key], value: row[key] })
+        }
+      }
+      const parent = cell.offsetParent
+      // 元素离顶部距离减去滚动距离加上表头高度加上点击位置高度
+      const y = cell.offsetTop - parent.scrollTop + parent.offsetTop + ev.offsetY
+      const position = {
+        x: cell.offsetLeft + ev.offsetX,
+        y
+      }
+      this.antVActionPost(dimensionList, nameIdMap[col.property] || 'null', position)
+    },
+    antVActionPost(dimensionList, name, param) {
+      this.pointParam = {
+        data: {
+          dimensionList: dimensionList,
+          quotaList: [],
+          name: name,
+          sourceType: this.chart.type
+        }
+      }
+
+      if (this.trackMenu.length < 2) { // 只有一个事件直接调用
+        this.trackClick(this.trackMenu[0])
+      } else { // 视图关联多个事件
+        this.trackBarStyle.left = param.x + 'px'
+        this.trackBarStyle.top = (param.y + 10) + 'px'
+        this.$refs.viewTrack.trackButtonClick()
+      }
+    },
+    trackClick(trackAction) {
+      const param = this.pointParam
+      if (!param?.data?.dimensionList) {
+        // 地图提示没有关联字段 其他没有维度信息的 直接返回
+        if (this.chart.type === 'map') {
+          this.$warning(this.$t('panel.no_drill_field'))
+        }
+        return
+      }
+      const linkageParam = {
+        option: 'linkage',
+        name: this.pointParam.data.name,
+        viewId: this.chart.id,
+        dimensionList: this.pointParam.data.dimensionList,
+        quotaList: this.pointParam.data.quotaList
+      }
+      const jumpParam = {
+        option: 'jump',
+        name: this.pointParam.data.name,
+        viewId: this.chart.id,
+        dimensionList: this.pointParam.data.dimensionList,
+        quotaList: this.pointParam.data.quotaList,
+        sourceType: this.pointParam.data.sourceType
+      }
+      switch (trackAction) {
+        case 'drill':
+          this.currentPage.page = 1
+          this.$emit('onChartClick', this.pointParam)
+          break
+        case 'linkage':
+          this.$store.commit('addViewTrackFilter', linkageParam)
+          break
+        case 'jump':
+          this.$emit('onJumpClick', jumpParam)
+          break
+        default:
+          break
       }
     }
   }

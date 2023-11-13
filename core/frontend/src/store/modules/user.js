@@ -86,6 +86,9 @@ const actions = {
         if (Object.prototype.hasOwnProperty.call(data, 'passwordModified')) {
           passwordModified = data.passwordModified
         }
+        if (Object.prototype.hasOwnProperty.call(data, 'defaultPwd')) {
+          localStorage.setItem('defaultPwd', data.defaultPwd)
+        }
         commit('SET_PASSWORD_MODIFIED', passwordModified)
         localStorage.setItem('passwordModified', passwordModified)
         resolve()

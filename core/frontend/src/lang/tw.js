@@ -765,6 +765,8 @@ export default {
     can_not_move: '不可移除，至少保留一位管理員',
     manage_can_not_move: '管理員是系統預置角色，默認擁有系統管理全部權限，無法刪除',
     manage_can_not_update: '管理員是系統預置角色，默認擁有系統管理全部權限，無法編輯',
+    inner_can_not_move: '系統預置角色，無法刪除',
+    inner_can_not_update: '系統預置角色，無法編輯',
     role_description: '角色描述',
     editer_role: '編輯角色',
     add_role: '添加角色',
@@ -1146,6 +1148,7 @@ export default {
     table_header_font_color: '表頭字體',
     table_item_font_color: '表格字體',
     table_show_index: '顯示序號',
+    table_show_table_header: '顯示表頭',
     stripe: '斑馬紋',
     start_angle: '起始角度',
     end_angle: '結束角度',
@@ -2018,6 +2021,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    first_item: '首項',
     forbidden_copy: '當前組件不允許復製',
     url_check_error: '跳轉錯誤，URL不合法',
     view_style: '視圖樣式',

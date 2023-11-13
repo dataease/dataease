@@ -307,9 +307,6 @@ export default {
             this.addGlobalImage()
 
             this.drawView()
-            this.myChart.on('click', ev => {
-              this.$emit('trigger-edit-click', ev.originEvent)
-            })
           })
         } else {
           this.loading = false

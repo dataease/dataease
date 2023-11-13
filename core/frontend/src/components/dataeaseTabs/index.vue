@@ -14,7 +14,7 @@
 export default {
   name: 'DataeaseTabs',
   props: {
-
+    hideTitle: Boolean,
     fontColor: String,
     activeColor: String,
     borderColor: String,
@@ -43,7 +43,8 @@ export default {
         this.fontColor && 'fontColor',
         this.activeColor && 'activeColor',
         this.noBorder ? 'noBorder' : this.borderColor && 'borderColor',
-        this.borderActiveColor && 'borderActiveColor'
+        this.borderActiveColor && 'borderActiveColor',
+        this.hideTitle && 'no-header'
       ]
       return classes
     },

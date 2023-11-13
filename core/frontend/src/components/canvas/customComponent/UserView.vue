@@ -28,8 +28,18 @@
         {{ $t('chart.chart_error_tips') }}
       </div>
     </div>
+    <div
+      v-if="view && view.unReadyMsg"
+      class="chart-error-class"
+    >
+      <div class="chart-error-message-class">
+        {{ view.unReadyMsg }},{{ $t('chart.chart_show_error') }}
+        <br>
+        {{ $t('chart.chart_error_tips') }}
+      </div>
+    </div>
     <plugin-com
-      v-if="chart.isPlugin"
+      v-else-if="chart.isPlugin"
       :ref="element.propValue.id"
       :component-name="chart.type + '-view'"
       :obj="{active, chart, trackMenu, searchCount, terminalType: scaleCoefficientType}"
@@ -100,7 +110,10 @@
       :ref="element.propValue.id"
       :show-summary="chart.type === 'table-normal'"
       :chart="chart"
+      :track-menu="trackMenu"
       class="table-class"
+      @onChartClick="chartClick"
+      @onJumpClick="jumpClick"
       @onPageChange="pageClick"
     />
     <label-normal
@@ -598,12 +611,48 @@ export default {
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
-      // 如果watch.filters 已经进行数据初始化时候，此处放弃数据初始化
-
+      const group = this.groupFilter(this.filters)
+      const unReadyList = group.unReady
+      const readyList = group.ready
+      if (unReadyList.length) {
+        Promise.all(this.filters.filter(f => f instanceof Promise)).then(fList => {
+          this.filter.filter = readyList.concat(fList)
+          this.getData(this.element.propValue.viewId, false)
+        })
+        return
+      }
       this.getData(this.element.propValue.viewId, false)
     }
   },
   methods: {
+    groupFilter(filters) {
+      const result = {
+        ready: [],
+        unReady: []
+      }
+      filters.forEach(f => {
+        if (f instanceof Promise) {
+          result.unReady.push(f)
+        } else {
+          result.ready.push(f)
+        }
+      })
+      return result
+    },
+    groupRequiredInvalid(filters) {
+      const result = {
+        ready: [],
+        unReady: []
+      }
+      filters.forEach(f => {
+        if (f.requiredInvalid) {
+          result.unReady.push(f)
+        } else {
+          result.ready.push(f)
+        }
+      })
+      return result
+    },
     equalsAny,
     tabSwitch(tabCanvasId) {
       if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
@@ -734,7 +783,7 @@ export default {
     clearPanelLinkage(param) {
       if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
         try {
-          this.$refs[this.element.propValue.id]?.reDrawView()
+          this.$refs[this.element.propValue.id]?.reDrawView?.()
         } catch (e) {
           console.error('reDrawView-error：', this.element.propValue.id)
         }
@@ -773,6 +822,15 @@ export default {
     },
     getData(id, cache = true, dataBroadcast = false) {
       if (id) {
+        const filters = this.filter.filter
+        const group = this.groupRequiredInvalid(filters)
+        if (group.unReady?.length) {
+          this.view.unReadyMsg = '请先完成必填项过滤器！'
+          this.getDataLoading = false
+          return
+        } else {
+          this.view.unReadyMsg = ''
+        }
         if (this.getDataLoading || Vue.prototype.$currentHttpRequestList.get(`/chart/view/getData/${id}/${this.panelInfo.id}`)) {
           const url = `/chart/view/getData/${id}/${this.panelInfo.id}`
           Vue.prototype.$cancelRequest(url)
@@ -794,6 +852,7 @@ export default {
         if (!token && linkToken) {
           method = viewInfo
         }
+
         const requestInfo = {
           ...this.filter,
           cache: cache,

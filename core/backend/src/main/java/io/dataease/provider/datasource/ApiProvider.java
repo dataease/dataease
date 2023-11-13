@@ -37,14 +37,10 @@ public class ApiProvider extends Provider {
 
     private static String path = "['%s']";
 
-    @Resource
-    private SystemParameterService systemParameterService;
-
     @Override
     public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
-        BasicInfo basicInfo = systemParameterService.basicInfo();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        String response = execHttpRequest(apiDefinition, StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10);
+        String response = execHttpRequest(apiDefinition, apiDefinition.getQueryTimeout() == null || apiDefinition.getQueryTimeout()<=0 ? 30 : apiDefinition.getQueryTimeout());
         return fetchResult(response, apiDefinition);
     }
 
@@ -68,12 +64,11 @@ public class ApiProvider extends Provider {
     }
 
     public Map<String, List> fetchResultAndField(DatasourceRequest datasourceRequest) throws Exception {
-        BasicInfo basicInfo = systemParameterService.basicInfo();
         Map<String, List> result = new HashMap<>();
         List<String[]> dataList = new ArrayList<>();
         List<TableField> fieldList = new ArrayList<>();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        String response = execHttpRequest(apiDefinition, StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10);
+        String response = execHttpRequest(apiDefinition, apiDefinition.getQueryTimeout() == null || apiDefinition.getQueryTimeout()<=0 ? 30 : apiDefinition.getQueryTimeout());
 
         fieldList = getTableFields(apiDefinition);
         result.put("fieldList", fieldList);

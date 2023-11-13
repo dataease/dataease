@@ -162,7 +162,60 @@
         </el-form-item>
         <!--radar-end-->
         <!--table-begin-->
-
+        <el-form-item
+          v-show="showProperty('tableItemFontSize')"
+          label-width="100px"
+          :label="$t('chart.table_item_fontsize')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.tableItemFontSize"
+            :placeholder="$t('chart.table_item_fontsize')"
+            @change="changeBarSizeCase('tableItemFontSize')"
+          >
+            <el-option
+              v-for="option in fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('tableItemAlign')"
+          label-width="100px"
+          :label="$t('chart.table_item_align')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.tableItemAlign"
+            :placeholder="$t('chart.table_item_align')"
+            @change="changeBarSizeCase('tableItemAlign')"
+          >
+            <el-option
+              v-for="option in alignOptions"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('tableItemHeight')"
+          label-width="100px"
+          :label="$t('chart.table_item_height')"
+          class="form-item form-item-slider"
+        >
+          <el-slider
+            v-model="sizeForm.tableItemHeight"
+            :min="20"
+            :max="100"
+            show-input
+            :show-input-controls="false"
+            input-size="mini"
+            @change="changeBarSizeCase('tableItemHeight')"
+          />
+        </el-form-item>
         <el-form-item
           v-show="showProperty('tablePageMode')"
           label-width="100px"
@@ -202,114 +255,6 @@
               :value="item.value"
             />
           </el-select>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('tableTitleFontSize')"
-          label-width="100px"
-          :label="$t('chart.table_title_fontsize')"
-          class="form-item"
-        >
-          <el-select
-            v-model="sizeForm.tableTitleFontSize"
-            :placeholder="$t('chart.table_title_fontsize')"
-            @change="changeBarSizeCase('tableTitleFontSize')"
-          >
-            <el-option
-              v-for="option in fontSize"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('tableItemFontSize')"
-          label-width="100px"
-          :label="$t('chart.table_item_fontsize')"
-          class="form-item"
-        >
-          <el-select
-            v-model="sizeForm.tableItemFontSize"
-            :placeholder="$t('chart.table_item_fontsize')"
-            @change="changeBarSizeCase('tableItemFontSize')"
-          >
-            <el-option
-              v-for="option in fontSize"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('tableHeaderAlign')"
-          label-width="100px"
-          :label="$t('chart.table_header_align')"
-          class="form-item"
-        >
-          <el-select
-            v-model="sizeForm.tableHeaderAlign"
-            :placeholder="$t('chart.table_header_align')"
-            @change="changeBarSizeCase('tableHeaderAlign')"
-          >
-            <el-option
-              v-for="option in alignOptions"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('tableItemAlign')"
-          label-width="100px"
-          :label="$t('chart.table_item_align')"
-          class="form-item"
-        >
-          <el-select
-            v-model="sizeForm.tableItemAlign"
-            :placeholder="$t('chart.table_item_align')"
-            @change="changeBarSizeCase('tableItemAlign')"
-          >
-            <el-option
-              v-for="option in alignOptions"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('tableTitleHeight')"
-          label-width="100px"
-          :label="$t('chart.table_title_height')"
-          class="form-item form-item-slider"
-        >
-          <el-slider
-            v-model="sizeForm.tableTitleHeight"
-            :min="20"
-            :max="100"
-            show-input
-            :show-input-controls="false"
-            input-size="mini"
-            @change="changeBarSizeCase('tableTitleHeight')"
-          />
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('tableItemHeight')"
-          label-width="100px"
-          :label="$t('chart.table_item_height')"
-          class="form-item form-item-slider"
-        >
-          <el-slider
-            v-model="sizeForm.tableItemHeight"
-            :min="20"
-            :max="100"
-            show-input
-            :show-input-controls="false"
-            input-size="mini"
-            @change="changeBarSizeCase('tableItemHeight')"
-          />
         </el-form-item>
         <el-form-item
           v-show="showProperty('tableColumnMode')"
@@ -384,29 +329,100 @@
             @blur="changeBarSizeCase('indexLabel')"
           />
         </el-form-item>
+        <el-divider v-show="equalsAny(chart.type, 'table-info', 'table-normal')" />
         <el-form-item
-          v-show="showProperty('tableRowTooltip')"
+          v-show="showProperty('showTableHeader')"
           label-width="100px"
-          :label="$t('chart.table_row_tooltip')"
+          :label="$t('chart.table_show_table_header')"
           class="form-item"
         >
-          <el-checkbox
-            v-model="sizeForm.tableRowTooltip.show"
-            @change="changeBarSizeCase('tableRowTooltip')"
-          />
+          <el-radio-group
+            v-model="sizeForm.showTableHeader"
+            @change="changeBarSizeCase('showTableHeader')"
+          >
+            <el-radio :label="true">{{ $t('commons.yes') }}</el-radio>
+            <el-radio :label="false">{{ $t('commons.no') }}</el-radio>
+          </el-radio-group>
         </el-form-item>
-        <el-form-item
-          v-show="showProperty('tableColTooltip')"
-          label-width="100px"
-          :label="$t('chart.table_col_tooltip')"
-          class="form-item"
-        >
-          <el-checkbox
-            v-model="sizeForm.tableColTooltip.show"
-            @change="changeBarSizeCase('tableColTooltip')"
-          />
-        </el-form-item>
-
+        <div v-show="showProperty('showTableHeader') && sizeForm.showTableHeader">
+          <el-form-item
+            v-show="showProperty('tableTitleFontSize')"
+            label-width="100px"
+            :label="$t('chart.table_title_fontsize')"
+            class="form-item"
+          >
+            <el-select
+              v-model="sizeForm.tableTitleFontSize"
+              :placeholder="$t('chart.table_title_fontsize')"
+              @change="changeBarSizeCase('tableTitleFontSize')"
+            >
+              <el-option
+                v-for="option in fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('tableHeaderAlign')"
+            label-width="100px"
+            :label="$t('chart.table_header_align')"
+            class="form-item"
+          >
+            <el-select
+              v-model="sizeForm.tableHeaderAlign"
+              :placeholder="$t('chart.table_header_align')"
+              @change="changeBarSizeCase('tableHeaderAlign')"
+            >
+              <el-option
+                v-for="option in alignOptions"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('tableTitleHeight')"
+            label-width="100px"
+            :label="$t('chart.table_title_height')"
+            class="form-item form-item-slider"
+          >
+            <el-slider
+              v-model="sizeForm.tableTitleHeight"
+              :min="20"
+              :max="100"
+              show-input
+              :show-input-controls="false"
+              input-size="mini"
+              @change="changeBarSizeCase('tableTitleHeight')"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('tableRowTooltip')"
+            label-width="100px"
+            :label="$t('chart.table_row_tooltip')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="sizeForm.tableRowTooltip.show"
+              @change="changeBarSizeCase('tableRowTooltip')"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('tableColTooltip')"
+            label-width="100px"
+            :label="$t('chart.table_col_tooltip')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="sizeForm.tableColTooltip.show"
+              @change="changeBarSizeCase('tableColTooltip')"
+            />
+          </el-form-item>
+        </div>
+        <!--table-end-->
         <!--chart-mix-start-->
         <span v-show="showProperty('mix')">
           <el-divider
@@ -1427,7 +1443,7 @@
 
 <script>
 import { CHART_FONT_FAMILY, CHART_FONT_LETTER_SPACE, DEFAULT_SIZE } from '../../chart/chart'
-import { equalsAny } from '@/utils/StringUtils'
+import { equalsAny, includesAny } from '@/utils/StringUtils'
 import { mapState } from 'vuex'
 
 export default {
@@ -1537,6 +1553,8 @@ export default {
     this.initData()
   },
   methods: {
+    equalsAny,
+    includesAny,
     initField() {
       this.quotaData = this.quotaFields.filter(ele => !ele.chartId && ele.id !== 'count')
       if (this.sizeForm.gaugeMinField.id) {
@@ -1590,6 +1608,7 @@ export default {
           this.sizeForm.tableColTooltip = this.sizeForm.tableColTooltip ?? DEFAULT_SIZE.tableColTooltip
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
+          this.sizeForm.showTableHeader = this.sizeForm.showTableHeader !== false
           if (this.sizeForm.indexLabel === null || this.sizeForm.indexLabel === undefined) {
             this.sizeForm.indexLabel = DEFAULT_SIZE.indexLabel
           }

@@ -1,4 +1,5 @@
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
+  titleHide: false,
   headFontColor: '#FFFFFF',
   headFontActiveColor: '#FFFFFF',
   headBorderColor: '#131E42',
@@ -7,6 +8,7 @@ export const DEFAULT_TAB_COLOR_CASE_DARK = {
 }
 
 export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
+  titleHide: false,
   headFontColor: '#OOOOOO',
   headFontActiveColor: '#OOOOOO',
   headBorderColor: '#OOOOOO',
@@ -154,7 +156,8 @@ export const DEFAULT_SIZE = {
   mapLineAnimateInterval: 1,
   mapLineAnimateTrailLength: 1,
   wordSizeRange: [8, 32],
-  wordSpacing: 6
+  wordSpacing: 6,
+  showTableHeader: true
 }
 export const DEFAULT_SUSPENSION = {
   show: true

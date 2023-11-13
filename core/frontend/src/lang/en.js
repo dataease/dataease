@@ -766,6 +766,8 @@ export default {
     can_not_move: `Can't be removed, keep at least one administrator`,
     manage_can_not_move: 'Administrator is a preset role of the system. By default, he has all the permissions of system management and cannot be deleted',
     manage_can_not_update: 'Administrator is a preset role of the system. By default, he has all the permissions of system management and cannot be edit',
+    inner_can_not_move: 'System built-in roles,cannot be deleted',
+    inner_can_not_update: 'System built-in roles,cannot be edit',
     role_description: 'Role description',
     editer_role: 'Edit role',
     add_role: 'Add role',
@@ -1147,6 +1149,7 @@ export default {
     table_header_font_color: 'Header Font',
     table_item_font_color: 'Table Font',
     table_show_index: 'Show Index',
+    table_show_table_header: 'Show Table Header',
     stripe: 'Zebra pattern',
     start_angle: 'Start Angle',
     end_angle: 'End Angle',
@@ -2024,6 +2027,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    first_item: 'First item',
     forbidden_copy: 'Forbidden copy',
     url_check_error: 'Jump error, Illegal URL',
     view_style: 'View Style',

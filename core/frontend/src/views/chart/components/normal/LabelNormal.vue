@@ -171,6 +171,8 @@ export default {
           // color threshold
           this.colorThreshold(customAttr.color.quotaColor)
         }
+        // 设置背景
+        this.colorThreshold(null, true)
         if (customAttr.size) {
           this.dimensionShow = customAttr.size.dimensionShow
           this.quotaShow = customAttr.size.quotaShow
@@ -201,6 +203,7 @@ export default {
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
+        console.log(customStyle)
         if (customStyle.text) {
           this.title_show = customStyle.text.show
           this.title_class.fontSize = customStyle.text.fontSize + 'px'
@@ -214,7 +217,9 @@ export default {
           this.title_class.textShadow = customStyle.text.fontShadow ? '2px 2px 4px' : 'none'
         }
         if (customStyle.background) {
-          this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
+          // 没有这个设置，不用管
+          this.colorThreshold(hexColorToRGBA(customStyle.background.color, customStyle.background.alpha), true)
+          // this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
     },
@@ -223,7 +228,8 @@ export default {
       this.calcHeight()
     },
 
-    colorThreshold(valueColor) {
+    colorThreshold(valueColor, setBg) {
+      console.log(valueColor, setBg)
       if (this.chart.senior) {
         const senior = JSON.parse(this.chart.senior)
         if (senior.threshold && senior.threshold.labelThreshold && senior.threshold.labelThreshold.length > 0) {
@@ -232,52 +238,89 @@ export default {
             let flag = false
             const t = senior.threshold.labelThreshold[i]
             const tv = parseFloat(t.value)
+            console.log(t)
             if (t.term === 'eq') {
               if (value === tv) {
-                this.label_content_class.color = t.color
+                if (!setBg) {
+                  this.label_content_class.color = t.color
+                } else {
+                  this.bg_class.background = t.backgroundColor ? t.backgroundColor : valueColor
+                }
                 flag = true
               }
             } else if (t.term === 'not_eq') {
               if (value !== tv) {
-                this.label_content_class.color = t.color
+                if (!setBg) {
+                  this.label_content_class.color = t.color
+                } else {
+                  this.bg_class.background = t.backgroundColor ? t.backgroundColor : valueColor
+                }
                 flag = true
               }
             } else if (t.term === 'lt') {
               if (value < tv) {
-                this.label_content_class.color = t.color
+                if (!setBg) {
+                  this.label_content_class.color = t.color
+                } else {
+                  this.bg_class.background = t.backgroundColor ? t.backgroundColor : valueColor
+                }
                 flag = true
               }
             } else if (t.term === 'gt') {
               if (value > tv) {
-                this.label_content_class.color = t.color
+                if (!setBg) {
+                  this.label_content_class.color = t.color
+                } else {
+                  this.bg_class.background = t.backgroundColor ? t.backgroundColor : valueColor
+                }
                 flag = true
               }
             } else if (t.term === 'le') {
               if (value <= tv) {
-                this.label_content_class.color = t.color
+                if (!setBg) {
+                  this.label_content_class.color = t.color
+                } else {
+                  this.bg_class.background = t.backgroundColor ? t.backgroundColor : valueColor
+                }
                 flag = true
               }
             } else if (t.term === 'ge') {
               if (value >= tv) {
-                this.label_content_class.color = t.color
+                if (!setBg) {
+                  this.label_content_class.color = t.color
+                } else {
+                  this.bg_class.background = t.backgroundColor ? t.backgroundColor : valueColor
+                }
                 flag = true
               }
             } else if (t.term === 'between') {
               const min = parseFloat(t.min)
               const max = parseFloat(t.max)
               if (min <= value && value <= max) {
-                this.label_content_class.color = t.color
+                if (!setBg) {
+                  this.label_content_class.color = t.color
+                } else {
+                  this.bg_class.background = t.backgroundColor ? t.backgroundColor : valueColor
+                }
                 flag = true
               }
             }
             if (flag) {
               break
             } else if (i === senior.threshold.labelThreshold.length - 1) {
-              this.label_content_class.color = valueColor
+              if (!setBg) {
+                this.label_content_class.color = valueColor
+              } else {
+                this.bg_class.background = valueColor
+              }
             }
           }
         } else {
-          this.label_content_class.color = valueColor
+          if (!setBg) {
+            this.label_content_class.color = valueColor
+          } else {
+            this.bg_class.background = valueColor
+          }
         }
       }
     },
