@@ -39,7 +39,7 @@
     "@antv/util": "^2.0.17",
     "@riophae/vue-treeselect": "0.4.0",
     "@tinymce/tinymce-vue": "^3.2.8",
-    "axios": "^0.21.3",
+    "axios": "^1.6.1",
     "core-js": "^2.6.5",
     "echarts": "^5.0.1",
     "element-resize-detector": "^1.2.3",
