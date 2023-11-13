@@ -2130,7 +2130,7 @@ const getDsIconName = data => {
             }
 
             .custom-tree-node {
-              flex: 1;
+              width: calc(100% - 32px);
               display: flex;
               align-items: center;
               padding-right: 8px;
@@ -2138,7 +2138,7 @@ const getDsIconName = data => {
 
               .label-tooltip {
                 margin-left: 5.33px;
-                width: 60%;
+                width: 70%;
                 overflow: hidden;
                 white-space: nowrap;
                 text-overflow: ellipsis;

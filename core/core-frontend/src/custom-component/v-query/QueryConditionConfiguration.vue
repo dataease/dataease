@@ -364,14 +364,12 @@ const init = (queryId: string) => {
 
   const datasetMapKeyList = Object.keys(datasetMap)
 
-  getSqlParams([
-    ...new Set(
-      datasetFieldList.value
-        .map(ele => ele.tableId)
-        .filter(ele => !datasetMapKeyList.includes(ele) && ele)
-    )
-  ]).then(res => {
-    parameters.value = res || []
+  nextTick(() => {
+    getSqlParams([
+      ...new Set(datasetFieldList.value.map(ele => ele.tableId).filter(ele => !!ele))
+    ]).then(res => {
+      parameters.value = res || []
+    })
   })
 
   if (datasetFieldIdList.every(ele => datasetMapKeyList.includes(ele))) {
