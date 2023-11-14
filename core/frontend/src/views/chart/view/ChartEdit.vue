@@ -2065,11 +2065,11 @@ export default {
     },
     showSeniorCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'table') ||
-        equalsAny(this.view.type, 'table-normal', 'table-info', 'map') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
+        equalsAny(this.view.type, 'table-normal', 'table-info', 'map', 'text') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
     },
     showFunctionCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'table') ||
-        equalsAny(this.view.type, 'map')
+        equalsAny(this.view.type, 'map', 'text')
     },
     showScrollCfg() {
       return equalsAny(this.view.type, 'table-normal', 'table-info')
@@ -3514,6 +3514,8 @@ export default {
         if (this.view?.senior?.functionCfg?.emptyDataStrategy === 'ignoreData') {
           this.view.senior.functionCfg.emptyDataStrategy = 'breakLine'
         }
+      } else if (type === 'label-normal') {
+        this.view.senior.functionCfg.emptyDataStrategy = 'breakLine'
       }
       // reset custom colors
       this.view.customAttr.color.seriesColors = []

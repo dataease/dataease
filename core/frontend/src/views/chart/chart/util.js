@@ -251,6 +251,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'quotaColor',
+        'quotaSuffixColor',
         'dimensionColor'
       ],
       'size-selector-ant-v': [
@@ -267,7 +268,13 @@ export const TYPE_CONFIGS = [
         'dimensionFontShadow',
         'spaceSplit',
         'hPosition',
-        'vPosition'
+        'vPosition',
+        'quotaSuffix',
+        'quotaSuffixFontSize',
+        'quotaSuffixFontFamily',
+        'quotaSuffixFontStyle',
+        'quotaSuffixLetterSpace',
+        'quotaSuffixFontShadow'
       ],
       'title-selector-ant-v': [
         'show',
@@ -2123,6 +2130,7 @@ export const TYPE_CONFIGS = [
 
       'color-selector': [
         'quotaColor',
+        'quotaSuffixColor',
         'dimensionColor'
       ],
       'size-selector': [
@@ -2139,7 +2147,13 @@ export const TYPE_CONFIGS = [
         'dimensionFontShadow',
         'spaceSplit',
         'hPosition',
-        'vPosition'
+        'vPosition',
+        'quotaSuffix',
+        'quotaSuffixFontSize',
+        'quotaSuffixFontFamily',
+        'quotaSuffixFontStyle',
+        'quotaSuffixLetterSpace',
+        'quotaSuffixFontShadow'
       ],
       'title-selector': [
         'show',

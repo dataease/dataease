@@ -979,6 +979,95 @@
             >{{ $t('chart.p_bottom') }}</el-option>
           </el-select>
         </el-form-item>
+        <el-divider v-if="showProperty('quotaSuffix')" />
+        <el-form-item
+          v-show="showProperty('quotaSuffix')"
+          :label="$t('chart.quota_suffix')"
+          class="form-item"
+        >
+          <el-input
+            v-model="sizeForm.quotaSuffix"
+            @blur="changeBarSizeCase('quotaSuffix')"
+          />
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixFontSize')"
+          :label="$t('chart.quota_suffix_font_size')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaSuffixFontSize"
+            :placeholder="$t('chart.quota_suffix_font_size')"
+            @change="changeBarSizeCase('quotaSuffixFontSize')"
+          >
+            <el-option
+              v-for="option in fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixFontFamily')"
+          :label="$t('chart.quota_suffix_font_family')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaSuffixFontFamily"
+            :placeholder="$t('chart.quota_suffix_font_family')"
+            @change="changeBarSizeCase('quotaSuffixFontFamily')"
+          >
+            <el-option
+              v-for="option in fontFamily"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixFontStyle')"
+          :label="$t('chart.quota_suffix_text_style')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.quotaSuffixFontIsItalic"
+            @change="changeBarSizeCase('quotaSuffixFontIsItalic')"
+          >{{ $t('chart.italic') }}</el-checkbox>
+          <el-checkbox
+            v-model="sizeForm.quotaSuffixFontIsBolder"
+            @change="changeBarSizeCase('quotaSuffixFontIsBolder')"
+          >{{ $t('chart.bolder') }}</el-checkbox>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixLetterSpace')"
+          :label="$t('chart.quota_suffix_letter_space')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaSuffixLetterSpace"
+            :placeholder="$t('chart.quota_suffix_letter_space')"
+            @change="changeBarSizeCase('quotaSuffixLetterSpace')"
+          >
+            <el-option
+              v-for="option in fontLetterSpace"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixFontShadow')"
+          :label="$t('chart.font_shadow')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.quotaSuffixFontShadow"
+            @change="changeBarSizeCase('quotaSuffixFontShadow')"
+          >{{ $t('chart.font_shadow') }}</el-checkbox>
+        </el-form-item>
         <el-divider v-if="showProperty('dimensionShow')" />
         <el-form-item
           v-show="showProperty('dimensionShow')"
@@ -1638,6 +1727,13 @@ export default {
           this.sizeForm.dimensionFontIsItalic = this.sizeForm.dimensionFontIsItalic ? this.sizeForm.dimensionFontIsItalic : DEFAULT_SIZE.dimensionFontIsItalic
           this.sizeForm.dimensionLetterSpace = this.sizeForm.dimensionLetterSpace ? this.sizeForm.dimensionLetterSpace : DEFAULT_SIZE.dimensionLetterSpace
           this.sizeForm.dimensionFontShadow = this.sizeForm.dimensionFontShadow ? this.sizeForm.dimensionFontShadow : DEFAULT_SIZE.dimensionFontShadow
+
+          this.sizeForm.quotaSuffixFontSize = this.sizeForm.quotaSuffixFontSize ?? DEFAULT_SIZE.quotaSuffixFontSize
+          this.sizeForm.quotaSuffixFontFamily = this.sizeForm.quotaSuffixFontFamily ? this.sizeForm.quotaSuffixFontFamily : DEFAULT_SIZE.quotaSuffixFontFamily
+          this.sizeForm.quotaSuffixFontIsBolder = this.sizeForm.quotaSuffixFontIsBolder ? this.sizeForm.quotaSuffixFontIsBolder : DEFAULT_SIZE.quotaSuffixFontIsBolder
+          this.sizeForm.quotaSuffixFontIsItalic = this.sizeForm.quotaSuffixFontIsItalic ? this.sizeForm.quotaSuffixFontIsItalic : DEFAULT_SIZE.quotaSuffixFontIsItalic
+          this.sizeForm.quotaSuffixLetterSpace = this.sizeForm.quotaSuffixLetterSpace ? this.sizeForm.quotaSuffixLetterSpace : DEFAULT_SIZE.quotaSuffixLetterSpace
+          this.sizeForm.quotaSuffixFontShadow = this.sizeForm.quotaSuffixFontShadow ? this.sizeForm.quotaSuffixFontShadow : DEFAULT_SIZE.quotaSuffixFontShadow
 
           this.sizeForm.hPosition = this.sizeForm.hPosition ? this.sizeForm.hPosition : DEFAULT_SIZE.hPosition
           this.sizeForm.vPosition = this.sizeForm.vPosition ? this.sizeForm.vPosition : DEFAULT_SIZE.vPosition

@@ -175,6 +175,18 @@
             />
           </el-form-item>
           <el-form-item
+            v-show="showProperty('quotaSuffixColor')"
+            :label="$t('chart.quota_suffix_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.quotaSuffixColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('quotaSuffixColor')"
+            />
+          </el-form-item>
+          <el-form-item
             v-show="showProperty('dimensionColor')"
             :label="$t('chart.dimension_color')"
             class="form-item"
@@ -593,6 +605,7 @@ export default {
           this.colorForm.tableHeaderFontColor = this.colorForm.tableHeaderFontColor ? this.colorForm.tableHeaderFontColor : this.colorForm.tableFontColor
           this.$set(this.colorForm, 'gradient', this.colorForm.gradient || false)
           this.colorForm.tableScrollBarColor = this.colorForm.tableScrollBarColor ? this.colorForm.tableScrollBarColor : DEFAULT_COLOR_CASE.tableScrollBarColor
+          this.colorForm.quotaSuffixColor = this.colorForm.quotaSuffixColor ? this.colorForm.quotaSuffixColor :DEFAULT_COLOR_CASE.quotaSuffixColor
 
           this.colorForm.mapStyle = this.colorForm.mapStyle ? this.colorForm.mapStyle : DEFAULT_COLOR_CASE.mapStyle
           this.colorForm.mapLineGradient = this.colorForm.mapLineGradient ? this.colorForm.mapLineGradient : DEFAULT_COLOR_CASE.mapLineGradient
