@@ -18,6 +18,7 @@
     popper-class="coustom-de-select"
     :class="{'disabled-close': !inDraw && selectFirst && element.options.attrs.multiple}"
     :list="data"
+    :flag="flag"
     :is-config="isConfig"
     :custom-style="customStyle"
     @resetKeyWords="filterMethod"
@@ -52,7 +53,7 @@ import { isSameVueObj, mergeCustomSortOption } from '@/utils'
 import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/deWidget/customInput'
 import { textSelectWidget } from '@/components/widget/deWidget/serviceNameFn.js'
-
+import { uuid } from 'vue-uuid'
 export default {
   components: { ElVisualSelect },
   mixins: [customInput],
@@ -96,7 +97,8 @@ export default {
       keyWord: '',
       separator: ',',
       timeMachine: null,
-      changeIndex: 0
+      changeIndex: 0,
+      flag: uuid.v1()
     }
   },
   computed: {
@@ -334,14 +336,8 @@ export default {
       this.element.options.attrs.fieldId &&
       this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
-        // console.log(res.data)
         this.data = this.optionData(res.data)
-        /* this.$nextTick(() => {
-          this.handleCoustomStyle()
-        }) */
-        // bus.$emit('valid-values-change', true)
-      }).catch(e => {
-        // bus.$emit('valid-values-change', false)
+        this.flag = uuid.v1()
       })
     },
     onScroll() {
