@@ -11,7 +11,7 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
-import { downloadCanvas } from '@/utils/imgUtils'
+import { download2AppTemplate, downloadCanvas } from '@/utils/imgUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -83,6 +83,16 @@ const download = type => {
   }, 200)
 }
 
+const downloadAsAppTemplate = downloadType => {
+  downloadStatus.value = true
+  nextTick(() => {
+    const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
+    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, () => {
+      downloadStatus.value = false
+    })
+  })
+}
+
 const slideOpenChange = () => {
   slideShow.value = !slideShow.value
 }
@@ -134,7 +144,12 @@ onBeforeMount(() => {
         <el-icon v-else><ArrowRight /></el-icon>
       </div>
       <template v-if="dvInfo.name">
-        <preview-head v-show="showPosition === 'preview'" @reload="reload" @download="download" />
+        <preview-head
+          v-show="showPosition === 'preview'"
+          @reload="reload"
+          @download="download"
+          @downloadAsAppTemplate="downloadAsAppTemplate"
+        />
         <div ref="previewCanvasContainer" class="content">
           <div class="content-outer">
             <div class="content-inner">

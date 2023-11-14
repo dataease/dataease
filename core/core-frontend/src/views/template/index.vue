@@ -197,12 +197,7 @@ const handlerConfirm = option => {
 }
 
 const templateDeleteConfirm = template => {
-  const options = {
-    title: 'system_parameter_setting.delete_this_template',
-    type: 'primary',
-    cb: () => templateDelete(template.id)
-  }
-  handlerConfirm(options)
+  templateDeleteInfo(template.id)
 }
 
 const handleClick = (tab, event) => {
@@ -222,15 +217,23 @@ const showCurrentTemplate = (pid, label) => {
 const templateFolderDelete = id => {
   if (id) {
     templateDelete(id).then(response => {
-      ElMessage.info(t('commons.delete_success'))
+      ElMessage({
+        message: t('commons.delete_success'),
+        type: 'success',
+        showClose: true
+      })
       getTree()
     })
   }
 }
-const templateDelete = id => {
+const templateDeleteInfo = id => {
   if (id) {
     templateDelete(id).then(response => {
-      ElMessage.info(t('commons.delete_success'))
+      ElMessage({
+        message: t('commons.delete_success'),
+        type: 'success',
+        showClose: true
+      })
       showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)
     })
   }
