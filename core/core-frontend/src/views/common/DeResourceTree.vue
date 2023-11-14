@@ -273,7 +273,7 @@ const resourceCreateFinish = templateData => {
   wsCache.set(`de-template-data`, JSON.stringify(templateData))
   const baseUrl =
     curCanvasType.value === 'dataV'
-      ? '#/dvCanvas?opt=create'
+      ? '#/dvCanvas?opt=create&createType=template'
       : '#/dashboard?opt=create&createType=template'
   if (state.templateCreatePid) {
     window.open(baseUrl + `&pid=${state.templateCreatePid}`, '_blank')

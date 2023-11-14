@@ -36,18 +36,19 @@
         <span class="text-template-overflow" :title="ele.name">{{ ele.name }}</span>
         <span class="more" @click.stop>
           <el-dropdown trigger="click" size="small" @command="type => clickMore(type, ele)">
-            <span class="el-dropdown-link">
-              <i class="el-icon-more" />
-            </span>
+            <el-icon class="el-icon-more"><MoreFilled /></el-icon>
             <template #dropdown>
               <el-dropdown-menu class="de-template-dropdown">
-                <el-dropdown-item icon="el-icon-upload2" command="import">
+                <el-dropdown-item command="import">
+                  <el-icon><Upload /></el-icon>
                   {{ t('visualization.import') }}
                 </el-dropdown-item>
-                <el-dropdown-item icon="el-icon-edit" command="edit">
+                <el-dropdown-item command="edit">
+                  <el-icon><EditPen /></el-icon>
                   {{ t('visualization.rename') }}
                 </el-dropdown-item>
-                <el-dropdown-item icon="el-icon-delete" command="delete">
+                <el-dropdown-item command="delete">
+                  <el-icon><Delete /></el-icon>
                   {{ t('visualization.delete') }}
                 </el-dropdown-item>
               </el-dropdown-menu>

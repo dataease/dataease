@@ -179,7 +179,7 @@ onMounted(() => {
     window.addEventListener('storage', eventCheck)
   }
   initDataset()
-  const { dvId, opt, pid } = window.DataEaseBi || router.currentRoute.value.query
+  const { dvId, opt, pid, createType } = window.DataEaseBi || router.currentRoute.value.query
   if (dvId) {
     state.canvasInitStatus = false
     initCanvasData(dvId, 'dataV', function () {
@@ -197,6 +197,17 @@ onMounted(() => {
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)
       snapshotStore.recordSnapshotCache('renderChart')
+      // 从模版新建
+      if (createType === 'template') {
+        const deTemplateDataStr = wsCache.get(`de-template-data`)
+        const deTemplateData = JSON.parse(deTemplateDataStr)
+        dvMainStore.setComponentData(JSON.parse(deTemplateData['componentData']))
+        dvMainStore.setCanvasStyle(JSON.parse(deTemplateData['canvasStyleData']))
+        dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
+        setTimeout(() => {
+          snapshotStore.recordSnapshotCache()
+        }, 1500)
+      }
     })
   } else {
     let url = '#/screen/index'

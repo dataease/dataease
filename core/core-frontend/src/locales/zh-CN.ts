@@ -1801,7 +1801,7 @@ export default {
     apply: '应用',
     apply_this_template: '应用此模板',
     market_network_tips:
-      '查看模板市场模板需要服务器与模板市场(https://dataease.io/templates)连通，请检查网络...',
+      '查看模板市场模板需要服务器与模板市场(https://dataease.io/templates2)连通，请检查网络...',
     enter_name_tips: '请输入仪表板名称',
     name: '名称',
     apply_template: '应用模板',

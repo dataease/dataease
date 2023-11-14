@@ -134,7 +134,7 @@ export function findStaticSource(callBack) {
       typeof item.propValue['url'] === 'string' &&
       item.propValue['url'].indexOf('static-resource') > -1
     ) {
-      staticResource.push(item.propValue)
+      staticResource.push(item.propValue['url'])
     }
   })
   if (staticResource.length > 0) {
