@@ -481,6 +481,9 @@ export default {
         //     }
         //   }
         // }
+        if (customAttr.color.enableTableCrossBG) {
+          this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemSubBgColor, customAttr.color.alpha)
+        }
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)

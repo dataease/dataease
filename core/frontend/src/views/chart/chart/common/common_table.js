@@ -127,6 +127,8 @@ export function getCustomTheme(chart) {
       const c = JSON.parse(JSON.stringify(customAttr.color))
       const h_c = hexColorToRGBA(c.tableHeaderBgColor, c.alpha)
       const i_c = hexColorToRGBA(c.tableItemBgColor, c.alpha)
+      const i_s_c = hexColorToRGBA(c.tableItemSubBgColor, c.alpha)
+      const enableTableCrossBG = c.enableTableCrossBG
       const b_c = c.tableBorderColor ? hexColorToRGBA(c.tableBorderColor, c.alpha) : hexColorToRGBA(DEFAULT_COLOR_CASE.tableBorderColor, c.alpha)
       theme.splitLine.horizontalBorderColor = b_c
       theme.splitLine.verticalBorderColor = b_c
@@ -163,7 +165,9 @@ export function getCustomTheme(chart) {
       theme.colCell.text.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
       theme.colCell.measureText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
 
-      theme.dataCell.cell.crossBackgroundColor = i_c
+      // 奇数行单元格背景色
+      console.log(enableTableCrossBG, i_s_c, i_c)
+      theme.dataCell.cell.crossBackgroundColor = enableTableCrossBG ? i_s_c : i_c
       theme.dataCell.cell.backgroundColor = i_c
       theme.dataCell.cell.horizontalBorderColor = b_c
       theme.dataCell.cell.verticalBorderColor = b_c
@@ -224,7 +228,7 @@ export function getCustomTheme(chart) {
       theme.dataCell.measureText.textAlign = i_a
     }
   }
-
+  console.log(theme)
   return theme
 }
 

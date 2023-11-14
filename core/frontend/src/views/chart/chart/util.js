@@ -47,6 +47,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
@@ -96,6 +98,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
@@ -148,6 +152,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
@@ -1975,6 +1981,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
@@ -2018,6 +2026,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
