@@ -213,6 +213,28 @@
             />
           </el-form-item>
           <el-form-item
+            v-show="showProperty('enableTableCrossBG')"
+            :label="$t('chart.table_item_sub_enable')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="colorForm.enableTableCrossBG"
+              @change="changeColorCase('enableTableCrossBG')"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('tableItemSubBgColor') && colorForm.enableTableCrossBG"
+            :label="$t('chart.table_item_sub_bg')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.tableItemSubBgColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('tableItemSubBgColor')"
+            />
+          </el-form-item>
+          <el-form-item
             v-show="showProperty('tableHeaderFontColor')"
             :label="$t('chart.table_header_font_color')"
             class="form-item"

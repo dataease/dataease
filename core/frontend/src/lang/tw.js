@@ -1145,6 +1145,8 @@ export default {
     table_item_fontsize: '表格字體大小',
     table_header_bg: '表頭背景',
     table_item_bg: '表格背景',
+    table_item_sub_enable: '斑馬紋',
+    table_item_sub_bg: '奇數行表格背景',
     table_header_font_color: '表頭字體',
     table_item_font_color: '表格字體',
     table_show_index: '顯示序號',
