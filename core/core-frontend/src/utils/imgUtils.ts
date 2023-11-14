@@ -4,8 +4,10 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { findResourceAsBase64 } from '@/api/staticResource'
 import FileSaver from 'file-saver'
+import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
-const { canvasStyleData, componentData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
+const { canvasStyleData, componentData, canvasViewInfo, canvasViewDataInfo, dvInfo } =
+  storeToRefs(dvMainStore)
 const basePath = import.meta.env.VITE_API_BASEPATH
 
 export function imgUrlTrans(url) {
@@ -29,6 +31,10 @@ export function download2AppTemplate(downloadType, canvasDom, name, callBack?) {
   try {
     findStaticSource(function (staticResource) {
       html2canvas(canvasDom).then(canvas => {
+        const canvasViewDataTemplate = deepCopy(canvasViewInfo.value)
+        Object.keys(canvasViewDataTemplate).forEach(viewId => {
+          canvasViewDataTemplate[viewId].data = canvasViewDataInfo.value[viewId]
+        })
         const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
         if (snapshot !== '') {
           const templateInfo = {
@@ -38,7 +44,7 @@ export function download2AppTemplate(downloadType, canvasDom, name, callBack?) {
             dvType: dvInfo.value.type,
             canvasStyleData: JSON.stringify(canvasStyleData.value),
             componentData: JSON.stringify(componentData.value),
-            dynamicData: JSON.stringify(canvasViewInfo.value),
+            dynamicData: JSON.stringify(canvasViewDataTemplate),
             staticResource: JSON.stringify(staticResource || {})
           }
           const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })

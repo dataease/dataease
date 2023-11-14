@@ -15,6 +15,8 @@ import router from '@/router'
 import { useI18n } from '@/hooks/web/useI18n'
 import _ from 'lodash'
 import DeResourceCreateOpt from '@/views/common/DeResourceCreateOpt.vue'
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -95,7 +97,8 @@ const state = reactive({
       divided: true
     }
   ],
-  resourceTypeList: []
+  resourceTypeList: [],
+  templateCreatePid: 0
 })
 
 state.resourceTypeList = [
@@ -244,6 +247,7 @@ const addOperation = (
       window.open(baseUrl, '_blank')
     }
   } else if (cmd === 'newFromTemplate') {
+    state.templateCreatePid = data.id
     // newFromTemplate
     resourceCreateOpt.value.optInit()
   } else {
@@ -264,8 +268,18 @@ const resourceOptFinish = () => {
   getTree()
 }
 
-const resourceCreateFinish = () => {
+const resourceCreateFinish = templateData => {
   // do create
+  wsCache.set(`de-template-data`, JSON.stringify(templateData))
+  const baseUrl =
+    curCanvasType.value === 'dataV'
+      ? '#/dvCanvas?opt=create'
+      : '#/dashboard?opt=create&createType=template'
+  if (state.templateCreatePid) {
+    window.open(baseUrl + `&pid=${state.templateCreatePid}`, '_blank')
+  } else {
+    window.open(baseUrl, '_blank')
+  }
 }
 
 const getParentKeys = (tree, targetKey, parentKeys = []) => {

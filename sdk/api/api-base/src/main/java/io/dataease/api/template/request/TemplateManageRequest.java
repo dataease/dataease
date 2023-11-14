@@ -19,11 +19,14 @@ public class TemplateManageRequest extends VisualizationTemplateVO {
 
     private Boolean withChildren = false;
 
+    private String leafDvType;
+
     public TemplateManageRequest() {
     }
 
-    public TemplateManageRequest(String pid) {
+    public TemplateManageRequest(String pid,String dvType) {
         super.setPid(pid);
+        super.setDvType(dvType);
         withBlobs="N";
     }
 }

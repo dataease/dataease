@@ -1,6 +1,6 @@
 <template>
   <el-col>
-    <el-row style="margin-top: 5px">
+    <el-row style="display: inherit; margin-top: 5px">
       <el-row>
         <el-input
           v-model="state.templateFilterText"
@@ -10,7 +10,7 @@
           prefix-icon="el-icon-search"
         />
       </el-row>
-      <el-row style="margin-top: 5px">
+      <el-row style="display: inherit; margin-top: 5px">
         <el-tree
           ref="templateTree"
           :default-expanded-keys="state.defaultExpandedKeys"
@@ -23,23 +23,17 @@
         >
           <template #default="{ data }">
             <span class="custom-tree-node">
-              <span style="display: flex; flex: 1 1 0%; width: 0px">
-                <span v-if="data.nodeType === 'template'">
-                  <svg-icon icon-class="panel" class="ds-icon-scene" />
-                </span>
-                <span v-if="data.nodeType === 'folder'">
-                  <i class="el-icon-folder" />
-                </span>
-                <span
-                  :title="data.name"
-                  style="
-                    margin-left: 6px;
-                    white-space: nowrap;
-                    overflow: hidden;
-                    text-overflow: ellipsis;
-                  "
-                  >{{ data.name }}</span
-                >
+              <span class="custom-label">
+                <el-icon style="font-size: 18px" v-if="data.nodeType === 'folder'">
+                  <Icon name="dv-folder"></Icon>
+                </el-icon>
+                <el-icon style="font-size: 18px" v-else-if="data.dvType === 'dashboard'">
+                  <Icon name="dv-dashboard-spine"></Icon>
+                </el-icon>
+                <el-icon class="icon-screen-new" style="font-size: 18px" v-else>
+                  <Icon name="icon_operation-analysis_outlined"></Icon>
+                </el-icon>
+                <span :title="data.name" class="custom-name">{{ data.name }}</span>
               </span>
             </span>
           </template>
@@ -57,6 +51,10 @@ const { t } = useI18n()
 const emits = defineEmits(['showCurrentTemplateInfo'])
 
 const props = defineProps({
+  curCanvasType: {
+    type: String,
+    required: true
+  },
   templateList: {
     type: Array,
     default: function () {
@@ -77,13 +75,28 @@ const filterNode = (value, data) => {
 }
 
 const nodeClick = (data, node) => {
-  findOne(data.id).then(res => {
-    emits('showCurrentTemplateInfo', res.data)
-  })
+  if (data.nodeType === 'template') {
+    findOne(data.id).then(res => {
+      emits('showCurrentTemplateInfo', res.data)
+    })
+  }
 }
 </script>
 
-<style scoped>
+<style scoped lang="less">
+.custom-label {
+  display: flex;
+  flex: 1 1 0%;
+  width: 0px;
+}
+
+.custom-name {
+  margin-left: 6px;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .custom-tree-node {
   flex: 1;
   display: flex;

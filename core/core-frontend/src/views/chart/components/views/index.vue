@@ -501,7 +501,8 @@ const chartAreaShow = computed(() => {
     (view.value.tableId &&
       (element.value['state'] === undefined || element.value['state'] === 'ready')) ||
     view.value.type === 'rich-text' ||
-    (view.value.type === 'map' && view.value.customAttr.map.id)
+    (view.value.type === 'map' && view.value.customAttr.map.id) ||
+    view.value['dataFrom'] === 'template'
   )
 })
 
