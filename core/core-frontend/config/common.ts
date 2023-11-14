@@ -84,9 +84,6 @@ export default {
       }
     ]
   },
-  build: {
-    sourcemap: true
-  },
   optimizeDeps: {
     include: [
       'vue',

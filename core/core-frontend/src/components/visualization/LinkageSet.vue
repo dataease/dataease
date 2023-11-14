@@ -481,16 +481,6 @@ defineExpose({
   height: 100%;
   overflow-y: auto;
 }
-
-:deep(.vue-treeselect__control) {
-  height: 28px;
-}
-
-:deep(.vue-treeselect__single-value) {
-  color: #606266;
-  line-height: 28px !important;
-}
-
 .custom-tree-node {
   display: flex;
   align-items: center;
