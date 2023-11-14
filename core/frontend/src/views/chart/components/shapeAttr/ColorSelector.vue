@@ -371,6 +371,7 @@ import { mapState } from 'vuex'
 import GradientColorSelector from '@/components/gradientColorSelector'
 import bus from '@/utils/bus'
 import { equalsAny } from '@/utils/StringUtils'
+import { viewData } from '@/api/panel/panel'
 
 export default {
   name: 'ColorSelector',
@@ -501,6 +502,9 @@ export default {
     }
   },
   computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     checkMapLineGradient() {
       const chart = this.chart
       if (chart.type === 'flow-map') {
@@ -636,6 +640,17 @@ export default {
         if (this.componentViewsData[this.chart.id]) {
           const chart = JSON.parse(JSON.stringify(this.componentViewsData[this.chart.id]))
           this.colorForm.seriesColors = getColors(chart, this.colorForm.colors, reset)
+        } else {
+          const requestInfo = {
+            filter: [],
+            drill: [],
+            queryFrom: 'panel'
+          }
+          viewData(this.chart.id, this.panelInfo.id, requestInfo).then(response => {
+            this.componentViewsData[this.chart.id] = response.data
+            const chart = JSON.parse(JSON.stringify(this.componentViewsData[this.chart.id]))
+            this.colorForm.seriesColors = getColors(chart, this.colorForm.colors, reset)
+          })
         }
       }
     }
