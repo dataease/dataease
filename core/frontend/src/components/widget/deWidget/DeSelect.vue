@@ -94,7 +94,9 @@ export default {
       data: [],
       onFocus: false,
       keyWord: '',
-      separator: ','
+      separator: ',',
+      timeMachine: null,
+      changeIndex: 0
     }
   },
   computed: {
@@ -292,8 +294,55 @@ export default {
       this.value = this.element.options.attrs.multiple ? [] : null
       this.$refs.deSelect && this.$refs.deSelect.resetSelectAll && this.$refs.deSelect.resetSelectAll()
     },
+
+    searchWithKey(index) {
+      this.timeMachine = setTimeout(() => {
+        if (index === this.changeIndex) {
+          this.refreshOptions()
+        }
+        this.destroyTimeMachine()
+      }, 1500)
+    },
+    destroyTimeMachine() {
+      this.timeMachine && clearTimeout(this.timeMachine)
+      this.timeMachine = null
+    },
     filterMethod(key) {
+      if (key === this.keyWord) {
+        return
+      }
       this.keyWord = key
+      this.destroyTimeMachine()
+      this.changeIndex++
+      this.searchWithKey(this.changeIndex)
+    },
+    refreshOptions() {
+      // this.data = []
+      let method = multFieldValues
+      const token = this.$store.getters.token || getToken()
+      const linkToken = this.$store.getters.linkToken || getLinkToken()
+      if (!token && linkToken) {
+        method = linkMultFieldValues
+      }
+      if (!this.element.options.attrs.fieldId) {
+        return
+      }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(this.separator), sort: this.element.options.attrs.sort, keyword: this.keyWord }
+      if (this.panelInfo.proxy) {
+        param.userId = this.panelInfo.proxy
+      }
+      this.element.options.attrs.fieldId &&
+      this.element.options.attrs.fieldId.length > 0 &&
+      method(param).then(res => {
+        // console.log(res.data)
+        this.data = this.optionData(res.data)
+        /* this.$nextTick(() => {
+          this.handleCoustomStyle()
+        }) */
+        // bus.$emit('valid-values-change', true)
+      }).catch(e => {
+        // bus.$emit('valid-values-change', false)
+      })
     },
     onScroll() {
       if (this.onFocus) {

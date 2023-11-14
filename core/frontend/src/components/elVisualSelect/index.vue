@@ -124,9 +124,9 @@ export default {
     },
     list() {
       this.resetList()
-      this.show = false
+      // this.show = false
       this.$nextTick(() => {
-        this.show = true
+        // this.show = true
         this.$nextTick(() => {
           this.init()
         })
@@ -212,14 +212,20 @@ export default {
       )
       this.scrollbar = document.querySelector(`.${this.classId} .el-select-dropdown .el-scrollbar`)
       this.selectBoxDom = document.querySelector(`.${this.classId} .el-select-dropdown__wrap`)
-      this.selectBoxDom.style.display = 'flex'
-      this.selectBoxDom.style.flexDirection = 'row'
-      this.domList = selectDom.querySelector(
-        `.${this.classId} .el-select-dropdown__wrap .el-select-dropdown__list`
-      )
-      this.addScrollDiv(this.selectBoxDom)
+      if (this.selectBoxDom) {
+        this.selectBoxDom.style.display = 'flex'
+        this.selectBoxDom.style.flexDirection = 'row'
+      }
+      if (selectDom) {
+        this.domList = selectDom.querySelector(
+          `.${this.classId} .el-select-dropdown__wrap .el-select-dropdown__list`
+        )
+      }
+      if (this.selectBoxDom) {
+        this.addScrollDiv(this.selectBoxDom)
+      }
 
-      this.scrollFn()
+      this.scrollbar && this.scrollFn()
       this.customInputStyle()
     },
 
