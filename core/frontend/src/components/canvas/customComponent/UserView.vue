@@ -205,34 +205,34 @@
 </template>
 
 <script>
-import {viewData} from '@/api/panel/panel'
-import {viewInfo} from '@/api/link'
+import { viewData } from '@/api/panel/panel'
+import { viewInfo } from '@/api/link'
 import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
-import {uuid} from 'vue-uuid'
+import { uuid } from 'vue-uuid'
 import bus from '@/utils/bus'
-import {mapState} from 'vuex'
-import {isChange} from '@/utils/conditionUtil'
-import {BASE_CHART_STRING} from '@/views/chart/chart/chart'
-import {deepCopy} from '@/components/canvas/utils/utils'
-import {getLinkToken, getToken} from '@/utils/auth'
+import { mapState } from 'vuex'
+import { isChange } from '@/utils/conditionUtil'
+import { BASE_CHART_STRING } from '@/views/chart/chart/chart'
+import { deepCopy } from '@/components/canvas/utils/utils'
+import { getLinkToken, getToken } from '@/utils/auth'
 import DrillPath from '@/views/chart/view/DrillPath'
-import {areaMapping} from '@/api/map/map'
+import { areaMapping } from '@/api/map/map'
 import ChartComponentG2 from '@/views/chart/components/ChartComponentG2'
 import EditBarView from '@/components/canvas/components/editor/EditBarView'
-import {adaptCurTheme, customAttrTrans, customStyleTrans, recursionTransObj} from '@/components/canvas/utils/style'
+import { adaptCurTheme, customAttrTrans, customStyleTrans, recursionTransObj } from '@/components/canvas/utils/style'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
-import {viewEditSave, viewPropsSave} from '@/api/chart/chart'
-import {checkAddHttp} from '@/utils/urlUtils'
+import { viewEditSave, viewPropsSave } from '@/api/chart/chart'
+import { checkAddHttp } from '@/utils/urlUtils'
 import DeRichTextView from '@/components/canvas/customComponent/DeRichTextView'
 import Vue from 'vue'
-import {formatterItem, valueFormatter} from '@/views/chart/chart/formatter'
+import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import UserViewMobileDialog from '@/components/canvas/customComponent/UserViewMobileDialog'
-import {equalsAny} from '@/utils/StringUtils'
+import { equalsAny } from '@/utils/StringUtils'
 
 export default {
   name: 'UserView',
@@ -267,7 +267,7 @@ export default {
     outStyle: {
       type: Object,
       required: false,
-      default: function () {
+      default: function() {
         return {}
       }
     },
@@ -306,7 +306,7 @@ export default {
     canvasStyleData: {
       type: Object,
       required: false,
-      default: function () {
+      default: function() {
         return {}
       }
     },
@@ -508,7 +508,7 @@ export default {
 
   watch: {
     'innerPadding': {
-      handler: function (val1, val2) {
+      handler: function(val1, val2) {
         if (val1 !== val2) {
           this.resizeChart()
         }
@@ -516,7 +516,7 @@ export default {
       deep: true
     },
     'cfilters': {
-      handler: function (val1, val2) {
+      handler: function(val1, val2) {
         if (isChange(val1, val2) && !this.isFirstLoad) {
           this.getData(this.element.propValue.viewId)
           this.getDataLoading = true
@@ -532,13 +532,13 @@ export default {
       },
       deep: true
     },
-    resultCount: function () {
+    resultCount: function() {
       this.getData(this.element.propValue.viewId, false)
     },
-    resultMode: function () {
+    resultMode: function() {
       this.getData(this.element.propValue.viewId, false)
     },
-    gap: function () {
+    gap: function() {
       this.resizeChart()
     },
     // 监听外部的样式变化 （非实时性要求）
@@ -557,13 +557,13 @@ export default {
       deep: true
     },
     // 监听外部计时器变化
-    searchCount: function (val1) {
+    searchCount: function(val1) {
       // 内部计时器启动 忽略外部计时器
       if (val1 > 0 && this.requestStatus !== 'waiting' && !this.innerRefreshTimer) {
         this.getData(this.element.propValue.viewId)
       }
     },
-    'chartType': function (newVal, oldVal) {
+    'chartType': function(newVal, oldVal) {
       if ((newVal === 'map' || newVal === 'buddle-map') && newVal !== oldVal) {
         this.initAreas()
       }
@@ -577,10 +577,10 @@ export default {
       },
       deep: true
     },
-    'chart.yaxis': function (newVal, oldVal) {
+    'chart.yaxis': function(newVal, oldVal) {
       this.$emit('fill-chart-2-parent', this.chart)
     },
-    'chart.title': function (newVal, oldVal) {
+    'chart.title': function(newVal, oldVal) {
       this.$emit('fill-chart-2-parent', this.chart)
     }
   },
@@ -691,7 +691,7 @@ export default {
       })
     },
     pluginEditHandler(e) {
-      this.$emit('trigger-plugin-edit', {e, id: this.element.id})
+      this.$emit('trigger-plugin-edit', { e, id: this.element.id })
     },
     batchOptChange(param) {
       if (this.curBatchOptComponents.includes(this.element.propValue.viewId)) {
@@ -700,7 +700,7 @@ export default {
     },
     optFromBatchSingleProp(param) {
       this.$store.commit('canvasChange')
-      const updateParams = {'id': this.chart.id}
+      const updateParams = { 'id': this.chart.id }
       if (param.custom === 'customAttr') {
         const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
         if (!sourceCustomAttr[param.property]) {
@@ -733,11 +733,11 @@ export default {
       viewPropsSave(this.panelInfo.id, updateParams).then(rsp => {
         this.active && bus.$emit('current-component-change')
       })
-      this.$store.commit('recordViewEdit', {viewId: this.chart.id, hasEdit: true})
+      this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
       this.mergeScale()
     },
     optFromBatchThemeChange() {
-      const updateParams = {'id': this.chart.id}
+      const updateParams = { 'id': this.chart.id }
       const sourceCustomAttr = JSON.parse(this.sourceCustomAttrStr)
       const sourceCustomStyle = JSON.parse(this.sourceCustomStyleStr)
       adaptCurTheme(sourceCustomStyle, sourceCustomAttr, this.chart.type)
@@ -750,7 +750,7 @@ export default {
       viewPropsSave(this.panelInfo.id, updateParams).then(rsp => {
         this.active && bus.$emit('current-component-change')
       })
-      this.$store.commit('recordViewEdit', {viewId: this.chart.id, hasEdit: true})
+      this.$store.commit('recordViewEdit', { viewId: this.chart.id, hasEdit: true })
       this.mergeScale()
     },
     resizeChart() {
@@ -760,7 +760,7 @@ export default {
         this.chartResize(this.changeIndex)
       } else if (this.$refs[this.element.propValue.id]) {
         this.chart.isPlugin
-          ? this.$refs[this.element.propValue.id].callPluginInner({methodName: 'chartResize'})
+          ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
           : this.$refs[this.element.propValue.id].chartResize()
       }
     },
@@ -825,11 +825,11 @@ export default {
         const filters = this.filter.filter
         const group = this.groupRequiredInvalid(filters)
         if (group.unReady?.length) {
-          this.view.unReadyMsg = '请先完成必填项过滤器！'
+          this.view && (this.view.unReadyMsg = '请先完成必填项过滤器！')
           this.getDataLoading = false
           return
         } else {
-          this.view.unReadyMsg = ''
+          this.view && (this.view.unReadyMsg = '')
         }
         if (this.getDataLoading || Vue.prototype.$currentHttpRequestList.get(`/chart/view/getData/${id}/${this.panelInfo.id}`)) {
           const url = `/chart/view/getData/${id}/${this.panelInfo.id}`
@@ -860,7 +860,7 @@ export default {
         }
         if (this.panelInfo.proxy) {
           // method = viewInfo
-          requestInfo.proxy = {userId: this.panelInfo.proxy}
+          requestInfo.proxy = { userId: this.panelInfo.proxy }
         }
         // table-info明细表增加分页
         if (this.view && this.view.customAttr) {
@@ -879,7 +879,7 @@ export default {
             this.chart = response.data
             this.view = response.data
             if (this.chart.type.includes('table')) {
-              this.$store.commit('setLastViewRequestInfo', {viewId: id, requestInfo: requestInfo})
+              this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
             }
             this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
             this.$emit('fill-chart-2-parent', this.chart)
@@ -1048,7 +1048,7 @@ export default {
     chartClick(param) {
       if (this.drillClickDimensionList.length < this.chart.drillFields.length - 1) {
         (this.chart.type === 'map' || this.chart.type === 'buddle-map') && this.sendToChildren(param)
-        this.drillClickDimensionList.push({dimensionList: param.data.dimensionList})
+        this.drillClickDimensionList.push({ dimensionList: param.data.dimensionList })
         this.getData(this.element.propValue.viewId)
       } else if (this.chart.drillFields.length > 0) {
         this.$message({
@@ -1308,7 +1308,7 @@ export default {
         this.timeMachine = setTimeout(() => {
           if (index === this.changeIndex) {
             this.chart.isPlugin
-              ? this.$refs[this.element.propValue.id].callPluginInner({methodName: 'chartResize'})
+              ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
               : this.$refs[this.element.propValue.id].chartResize()
           }
           this.destroyTimeMachine()

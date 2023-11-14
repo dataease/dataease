@@ -134,15 +134,15 @@ export default {
     showSlider() {
       return this.chart.type !== 'bidirectional-bar' &&
         !equalsAny(this.chart.type, 'map') &&
-        !includesAny(this.chart.type, 'table')
+        !includesAny(this.chart.type, 'table', 'text')
     },
     showEmptyStrategy() {
       return (this.chart.render === 'antv' &&
-        includesAny(this.chart.type, 'line', 'bar', 'area', 'table')) ||
+        includesAny(this.chart.type, 'line', 'bar', 'area', 'table', 'text')) ||
         (this.chart.render === 'echarts' && equalsAny(this.chart.type, 'map'))
     },
     showIgnoreOption() {
-      return !equalsAny(this.chart.type, 'map', 'table-pivot', 'table-info')
+      return !equalsAny(this.chart.type, 'map', 'table-pivot', 'table-info', 'text')
     },
     showEmptyDataFieldCtrl() {
       return this.showEmptyStrategy &&

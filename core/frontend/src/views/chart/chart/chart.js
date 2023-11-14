@@ -39,7 +39,8 @@ export const DEFAULT_COLOR_CASE = {
   mapStyle: 'normal',
   mapLineGradient: false,
   mapLineSourceColor: '#146C94',
-  mapLineTargetColor: '#576CBC'
+  mapLineTargetColor: '#576CBC',
+  quotaSuffixColor: '#5470c6'
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -63,7 +64,8 @@ export const DEFAULT_COLOR_CASE_DARK = {
   mapStyle: 'darkblue',
   mapLineGradient: false,
   mapLineSourceColor: '#2F58CD',
-  mapLineTargetColor: '#3795BD'
+  mapLineTargetColor: '#3795BD',
+  quotaSuffixColor: '#5470c6'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -161,7 +163,14 @@ export const DEFAULT_SIZE = {
   mapLineAnimateTrailLength: 1,
   wordSizeRange: [8, 32],
   wordSpacing: 6,
-  showTableHeader: true
+  showTableHeader: true,
+  quotaSuffix: '',
+  quotaSuffixFontSize: 12,
+  quotaSuffixFontFamily: 'Microsoft YaHei',
+  quotaSuffixFontIsItalic: false,
+  quotaSuffixFontIsBolder: false,
+  quotaSuffixLetterSpace: '0',
+  quotaSuffixFontShadow: false
 }
 export const DEFAULT_SUSPENSION = {
   show: true

@@ -28,9 +28,12 @@
       :style="content_class"
     >
       <span :style="label_class">
-        <p :style="label_content_class">
+        <span :style="label_content_class">
           {{ result }}
-        </p>
+        </span>
+        <span :style="label_suffix_class">
+          {{ suffix }}
+        </span>
       </span>
       <span
         v-if="dimensionShow"
@@ -49,7 +52,7 @@ import { getRemark, hexColorToRGBA } from '../../chart/util'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import TitleRemark from '@/views/chart/view/TitleRemark'
-import { CHART_CONT_FAMILY_MAP, DEFAULT_SIZE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
+import { CHART_CONT_FAMILY_MAP, DEFAULT_COLOR_CASE, DEFAULT_SIZE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import ChartTitleUpdate from '../ChartTitleUpdate.vue'
 
 export default {
@@ -110,6 +113,10 @@ export default {
       remarkCfg: {
         show: false,
         content: ''
+      },
+      suffix: '',
+      label_suffix_class: {
+        fontSize: 12
       }
     }
   },
@@ -170,6 +177,7 @@ export default {
           this.label_class.color = customAttr.color.dimensionColor
           // color threshold
           this.colorThreshold(customAttr.color.quotaColor)
+          this.label_suffix_class.color = customAttr.color.quotaSuffixColor ?? DEFAULT_COLOR_CASE.quotaSuffixColor
         }
         // 设置背景
         this.colorThreshold(null, true)
@@ -193,7 +201,15 @@ export default {
 
           this.content_class.alignItems = customAttr.size.hPosition ? customAttr.size.hPosition : DEFAULT_SIZE.hPosition
           this.content_class.justifyContent = customAttr.size.vPosition ? customAttr.size.vPosition : DEFAULT_SIZE.vPosition
-
+          this.suffix = customAttr.size.quotaSuffix
+          if (this.suffix) {
+            this.label_suffix_class.fontSize = (customAttr.size.quotaSuffixFontSize ?? DEFAULT_SIZE.quotaSuffixFontSize) + 'px'
+            this.label_suffix_class.fontFamily = customAttr.size.quotaSuffixFontFamily ? customAttr.size.quotaSuffixFontFamily : DEFAULT_SIZE.quotaSuffixFontFamily
+            this.label_suffix_class.fontWeight = customAttr.size.quotaSuffixFontIsBolder ? 'bold' : 'normal'
+            this.label_suffix_class.fontStyle = customAttr.size.quotaSuffixFontIsItalic ? 'italic' : 'normal'
+            this.label_suffix_class.letterSpacing = (customAttr.size.quotaSuffixLetterSpace ? customAttr.size.quotaSuffixLetterSpace : DEFAULT_SIZE.quotaSuffixLetterSpace) + 'px'
+            this.label_suffix_class.textShadow = customAttr.size.quotaSuffixFontShadow ? '2px 2px 4px' : 'none'
+          }
           if (!this.dimensionShow) {
             this.label_space.marginTop = '0px'
           } else {
@@ -326,8 +342,12 @@ export default {
     resultFormat() {
       if (!this.chart.data) return
       const value = this.chart.data.series[0].data[0]
+      const senior = JSON.parse(this.chart.senior)
       if (value === null || value === undefined) {
         this.result = '-'
+        if (senior?.functionCfg?.emptyDataStrategy === 'setZero') {
+          this.result = 0
+        }
         return
       }
       let yAxis = []

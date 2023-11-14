@@ -524,6 +524,34 @@
           </el-select>
         </el-form-item>
         <el-form-item
+          v-show="showProperty('quotaSuffix')"
+          :label="$t('chart.quota_suffix')"
+          class="form-item"
+        >
+          <el-input
+            v-model="sizeForm.quotaSuffix"
+            @blur="changeBarSizeCase('quotaSuffix')"
+          />
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixFontSize')"
+          :label="$t('chart.quota_suffix_font_size')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaSuffixFontSize"
+            :placeholder="$t('chart.quota_suffix_font_size')"
+            @change="changeBarSizeCase('quotaSuffixFontSize')"
+          >
+            <el-option
+              v-for="option in fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
           v-show="showProperty('quotaFontFamily')"
           :label="$t('chart.quota_font_family')"
           class="form-item"
