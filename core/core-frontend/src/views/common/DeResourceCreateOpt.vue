@@ -39,7 +39,7 @@
       </el-row>
       <el-row v-if="state.inputType === 'new_inner_template'" class="preview">
         <el-col :span="8" style="height: 100%; overflow-y: auto">
-          <template-all-list
+          <de-template-preview-list
             :template-list="state.templateList"
             @showCurrentTemplateInfo="showCurrentTemplateInfo"
           />
@@ -68,13 +68,13 @@ import { computed, reactive, ref, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { ElMessage } from 'element-plus-secondary'
 import { decompression } from '@/api/visualization/dataVisualization'
-import { deepCopy } from '@/utils/utils'
+import DeTemplatePreviewList from '@/views/common/DeTemplatePreviewList.vue'
 const { t } = useI18n()
 const emits = defineEmits(['finish'])
 const files = ref(null)
 const props = defineProps({
-  editPanelOut: {
-    type: Object,
+  curCanvasType: {
+    type: String,
     required: true
   }
 })
@@ -148,7 +148,8 @@ const showCurrentTemplateInfo = data => {
 
 const getTree = () => {
   const request = {
-    level: '-1',
+    level: '0',
+    leafDvType: props.curCanvasType,
     withChildren: true
   }
   state.loading = true

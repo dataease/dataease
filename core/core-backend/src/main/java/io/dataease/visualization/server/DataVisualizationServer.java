@@ -82,8 +82,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     @XpackInteract(value = "dataVisualizationServer", original = true)
-    public DataVisualizationVO findById(Long dvId,String busiFlag) {
-        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId,busiFlag);
+    public DataVisualizationVO findById(Long dvId, String busiFlag) {
+        DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
         if (result != null) {
             //获取视图信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
@@ -154,7 +154,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
      */
     @Transactional
     @Override
-    public void deleteLogic(Long dvId,String busiFlag) {
+    public void deleteLogic(Long dvId, String busiFlag) {
         coreVisualizationManage.delete(dvId);
     }
 
@@ -261,31 +261,34 @@ public class DataVisualizationServer implements DataVisualizationApi {
         // 解析动态数据
         Map<String, String> dynamicDataMap = JsonUtil.parseObject(dynamicData, Map.class);
         List<ChartViewDTO> chartViews = new ArrayList<>();
-        Map<Long,ChartViewDTO> canvasViewInfo = new HashMap<>();
-        Map<Long,VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
+        Map<Long, ChartViewDTO> canvasViewInfo = new HashMap<>();
+        Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
         for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
             String originViewId = entry.getKey();
-            String originViewData = entry.getValue();
+            String originViewData = JsonUtil.toJSONString(entry.getValue()).toString();
             ChartViewDTO chartView = JsonUtil.parseObject(originViewData, ChartViewDTO.class);
+            if(chartView == null){
+                continue;
+            }
             Long newViewId = IDUtils.snowID();
             chartView.setId(newViewId);
             chartView.setSceneId(newDvId);
+            chartView.setTableId(null);
             chartView.setDataFrom(CommonConstants.VIEW_DATA_FROM.TEMPLATE);
             // 数据处理 1.替换viewId 2.加入模板view data数据
-            VisualizationTemplateExtendDataDTO extendDataDTO = new VisualizationTemplateExtendDataDTO(newViewId, newDvId,originViewData);
+            VisualizationTemplateExtendDataDTO extendDataDTO = new VisualizationTemplateExtendDataDTO(newDvId, newViewId, originViewData);
             extendDataInfo.put(newViewId, extendDataDTO);
             templateData = templateData.replaceAll(originViewId, newViewId.toString());
-            chartViewManege.save(chartView);
-            canvasViewInfo.put(chartView.getId(),chartView);
+            canvasViewInfo.put(chartView.getId(), chartView);
             //插入模版数据 此处预先插入减少数据交互量
             VisualizationTemplateExtendData extendData = new VisualizationTemplateExtendData();
-            templateExtendDataMapper.insert(BeanUtils.copyBean(extendData,extendDataDTO));
+            templateExtendDataMapper.insert(BeanUtils.copyBean(extendData, extendDataDTO));
         }
         request.setComponentData(templateData);
         request.setCanvasStyleData(templateStyle);
         //Store static resource into the server
         staticResourceServer.saveFilesToServe(staticResource);
-        return new DataVisualizationVO(newDvId,name,dvType,templateStyle,templateData,canvasViewInfo,null);
+        return new DataVisualizationVO(newDvId, name, dvType, templateStyle, templateData, canvasViewInfo, null);
     }
 
     @Override

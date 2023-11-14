@@ -54,7 +54,7 @@ const viewEditorShow = computed(() => {
 onMounted(() => {
   window.addEventListener('storage', eventCheck)
   initDataset()
-  const { resourceId, opt, pid } = window.DataEaseBi || router.currentRoute.value.query
+  const { resourceId, opt, pid, createType } = window.DataEaseBi || router.currentRoute.value.query
   state.sourcePid = pid
   if (resourceId) {
     dataInitState.value = false
@@ -65,6 +65,14 @@ onMounted(() => {
     dataInitState.value = false
     nextTick(() => {
       dvMainStore.createInit('dashboard', null, pid)
+      // 从模版新建
+      if (createType === 'template') {
+        const deTemplateDataStr = wsCache.get(`de-template-data`)
+        const deTemplateData = JSON.parse(deTemplateDataStr)
+        dvMainStore.setComponentData(JSON.parse(deTemplateData['componentData']))
+        dvMainStore.setCanvasStyle(JSON.parse(deTemplateData['canvasStyleData']))
+        dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
+      }
       dataInitState.value = true
       // preOpt
       canvasStyleData.value.component.chartTitle.color = '#000000'

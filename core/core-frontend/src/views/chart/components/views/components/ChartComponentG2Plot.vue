@@ -58,7 +58,7 @@ const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
 const calcData = (view, callback) => {
-  if (view.tableId) {
+  if (view.tableId || view['dataFrom'] === 'template') {
     state.loading = true
     isError.value = false
     const v = JSON.parse(JSON.stringify(view))

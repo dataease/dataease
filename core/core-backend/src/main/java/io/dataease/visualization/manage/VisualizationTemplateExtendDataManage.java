@@ -27,11 +27,10 @@ public class VisualizationTemplateExtendDataManage {
 
     public ChartViewDTO getChartDataInfo(Long viewId, ChartViewDTO view) {
         QueryWrapper queryWrapper = new QueryWrapper();
-        queryWrapper.ne("view_id",viewId);
+        queryWrapper.eq("view_id",viewId);
         List<VisualizationTemplateExtendData> extendDataList = extendDataMapper.selectList(queryWrapper);
         if (CollectionUtils.isNotEmpty(extendDataList)) {
-            ChartViewDTO chartViewTemplate = JsonUtil.parse(extendDataList.get(0).getViewDetails(),ChartViewDTO.class);
-            Map<String, Object> dataInfo = chartViewTemplate.getData();
+            ChartViewDTO chartViewTemplate = JsonUtil.parseObject(extendDataList.get(0).getViewDetails(),ChartViewDTO.class);
             view.setData(chartViewTemplate.getData());
         } else {
             DEException.throwException("模板缓存数据中未获取指定视图数据：" + viewId);
