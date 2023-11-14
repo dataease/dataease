@@ -9,7 +9,7 @@ import java.util.List;
 public interface TemplateManageApi {
 
     @PostMapping("/templateList")
-     List<TemplateManageDTO> templateList(TemplateManageRequest request);
+     List<TemplateManageDTO> templateList(@RequestBody TemplateManageRequest request);
 
     @PostMapping("/save")
     TemplateManageDTO save(@RequestBody TemplateManageRequest request);
@@ -17,8 +17,8 @@ public interface TemplateManageApi {
     @DeleteMapping("/delete/{id}")
     void delete(@PathVariable String id);
 
-    @GetMapping("/findOne/{id}")
-    VisualizationTemplateVO findOne(@PathVariable String id) throws Exception;
+    @GetMapping("/findOne/{templateId}")
+    VisualizationTemplateVO findOne(@PathVariable String templateId) throws Exception;
 
     @PostMapping("/find")
     List<TemplateManageDTO> find(@RequestBody TemplateManageRequest request);

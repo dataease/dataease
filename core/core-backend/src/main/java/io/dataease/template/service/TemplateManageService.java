@@ -47,16 +47,16 @@ public class TemplateManageService implements TemplateManageApi {
         request.setWithBlobs("N");
         List<TemplateManageDTO> templateList = extTemplateMapper.findTemplateList(request);
         if (request.getWithChildren()) {
-            getTreeChildren(templateList);
+            getTreeChildren(templateList,request.getLeafDvType());
         }
         return templateList;
     }
 
-    public void getTreeChildren(List<TemplateManageDTO> parentTemplateList) {
+    public void getTreeChildren(List<TemplateManageDTO> parentTemplateList,String dvType) {
         Optional.ofNullable(parentTemplateList).ifPresent(parent -> parent.forEach(parentTemplate -> {
-            List<TemplateManageDTO> panelTemplateDTOChildren = extTemplateMapper.findTemplateList(new TemplateManageRequest(parentTemplate.getId()));
+            List<TemplateManageDTO> panelTemplateDTOChildren = extTemplateMapper.findTemplateList(new TemplateManageRequest(parentTemplate.getId(),dvType));
             parentTemplate.setChildren(panelTemplateDTOChildren);
-            getTreeChildren(panelTemplateDTOChildren);
+            getTreeChildren(panelTemplateDTOChildren,dvType);
         }));
     }
 
@@ -140,8 +140,8 @@ public class TemplateManageService implements TemplateManageApi {
         templateMapper.deleteById(id);
     }
     @Override
-    public VisualizationTemplateVO findOne(String panelId) {
-        VisualizationTemplate template = templateMapper.selectById(panelId);
+    public VisualizationTemplateVO findOne(String templateId) {
+        VisualizationTemplate template = templateMapper.selectById(templateId);
         if(template != null){
             VisualizationTemplateVO templateVO = new VisualizationTemplateVO();
             BeanUtils.copyBean(templateVO,template);

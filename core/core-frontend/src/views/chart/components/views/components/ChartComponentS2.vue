@@ -78,7 +78,7 @@ const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
 const calcData = (view: Chart, callback, resetPageInfo = true) => {
-  if (view.tableId) {
+  if (view.tableId || view['dataFrom'] === 'template') {
     isError.value = false
     const v = JSON.parse(JSON.stringify(view))
     getData(v)

@@ -301,7 +301,7 @@ const reShow = () => {
 
 const calcData = (view: Chart, callback) => {
   isError.value = false
-  if (view.tableId) {
+  if (view.tableId || view['dataFrom'] === 'template') {
     const v = JSON.parse(JSON.stringify(view))
     getData(v)
       .then(res => {
