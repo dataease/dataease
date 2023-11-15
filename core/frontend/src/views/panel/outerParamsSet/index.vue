@@ -130,7 +130,7 @@
                     <div class="select-filed">
                       <el-select
                         v-model="targetViewInfo.targetFieldId"
-                        :disabled="viewIdFieldArrayMap[targetViewInfo.targetViewId].length===1 && viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 0"
+                        :disabled="viewIdFieldArrayMap[targetViewInfo.targetViewId].length===1 && viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty'"
                         style="width: 100%"
                         size="mini"
                         :placeholder="$t('fu.search_bar.please_select')"
@@ -190,8 +190,8 @@
                   round
                   @click="addOuterParamsField"
                 >{{
-                    $t('panel.add_param_link_field')
-                  }}
+                  $t('panel.add_param_link_field')
+                }}
                 </el-button>
               </el-row>
 
@@ -240,12 +240,12 @@
 </template>
 
 <script>
-import {detailList} from '@/api/panel/panelView'
-import {mapState} from 'vuex'
-import {queryWithPanelId, updateOuterParamsSet} from '@/api/panel/outerParams'
-import {uuid} from 'vue-uuid'
-import {deepCopy} from '@/components/canvas/utils/utils'
-import {checkRepeat} from '@/utils/check'
+import { detailList } from '@/api/panel/panelView'
+import { mapState } from 'vuex'
+import { queryWithPanelId, updateOuterParamsSet } from '@/api/panel/outerParams'
+import { uuid } from 'vue-uuid'
+import { deepCopy } from '@/components/canvas/utils/utils'
+import { checkRepeat } from '@/utils/check'
 
 export default {
   name: 'OuterParamsSet',
@@ -376,7 +376,7 @@ export default {
               type: 'filter',
               name: componentItem.options.attrs.title ? componentItem.options.attrs.title : '过滤组件'
             })
-            this.viewIdFieldArrayMap[componentItem.id] = [{id: 0, name: this.$t('panel.filter_no_select')}]
+            this.viewIdFieldArrayMap[componentItem.id] = [{ id: 'empty', name: this.$t('panel.filter_no_select') }]
           }
         })
       })
@@ -408,8 +408,8 @@ export default {
       }
     },
     viewInfoOnChange(targetViewInfo) {
-      if (this.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 && this.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 0) {
-        targetViewInfo.targetFieldId = 0
+      if (this.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 && this.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty') {
+        targetViewInfo.targetFieldId = 'empty'
       } else {
         targetViewInfo.targetFieldId = null
       }
