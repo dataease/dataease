@@ -164,6 +164,7 @@ export default {
         this.drawLeft = 'none'
         this.drawRight = 'auto'
       }
+      this.setEdit()
     },
     viewInit() {
       bus.$on('fieldSelect-' + this.element.propValue.viewId, this.fieldSelect)
