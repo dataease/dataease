@@ -291,6 +291,10 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
           node.label = customAttr.size.indexLabel
         }
       }
+      return node.belongsCell
+    }
+    s2Options.dataCell = (viewMeta) => {
+      return new DataCell(viewMeta, viewMeta?.spreadsheet)
     }
   }
   // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
