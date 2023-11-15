@@ -120,7 +120,8 @@ export const customAttrTrans = {
     'quotaFontSize',
     'spaceSplit', // 间隔
     'scatterSymbolSize', // 气泡大小，散点图
-    'radarSize'// 雷达占比
+    'radarSize', // 雷达占比
+    'quotaSuffixFontSize'
   ],
   'label': [
     'fontSize'
