@@ -20,6 +20,7 @@
       :border-color="borderColor"
       :border-active-color="borderActiveColor"
       :addable="isEdit && !mobileLayoutStatus"
+      :force-render="isEdit"
       @tab-add="addTab"
       @tab-click="handleClick"
     >
