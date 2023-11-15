@@ -2027,6 +2027,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    filter_no_select: 'Filter components do not need to be selected',
     first_item: 'First item',
     forbidden_copy: 'Forbidden copy',
     url_check_error: 'Jump error, Illegal URL',
@@ -2343,7 +2344,9 @@ export default {
     link_panel: 'panel',
     select_jump_panel: 'Select Jump Panel',
     link_view: 'Link View',
+    link_component: 'Link Component',
     link_view_field: 'Link View Field',
+    link_component_field: 'Link Component Field',
     add_jump_field: 'Add Jump Field',
     input_jump_link: 'Input Jump Link',
     select_dimension: 'Select Dimension...',

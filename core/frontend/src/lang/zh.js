@@ -2021,6 +2021,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    filter_no_select: '过滤组件无需选择',
     first_item: '首项',
     forbidden_copy: '当前组件不允许复制',
     url_check_error: '跳转错误，URL不合法',
@@ -2337,7 +2338,9 @@ export default {
     link_panel: '仪表板',
     select_jump_panel: '选择关联的仪表板',
     link_view: '联动视图',
+    link_component: '联动组件',
     link_view_field: '联动视图字段',
+    link_component_field: '联动组件字段',
     add_jump_field: '追加跳转联动依赖字段',
     input_jump_link: '请输入跳转连接',
     select_dimension: '请选择维度...',
