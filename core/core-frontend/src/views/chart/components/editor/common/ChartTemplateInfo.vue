@@ -1,30 +1,39 @@
 <script lang="tsx" setup></script>
 
 <template>
-  <div class="template-check-info">
+  <div class="view-panel-Mask">
+    <Icon class-name="item-icon" name="dv-up-arrow" />
     <div>
-      <Icon class-name="item-icon" name="dv-up-arrow" />
+      <el-button style="opacity: 1 !important" type="warning" size="mini" round>
+        <span style="font-weight: bold; opacity: 1"> 当前为模版视图，请更换数据集...</span>
+      </el-button>
     </div>
-    <div>当前为模版视图，请更换数据集...</div>
   </div>
 </template>
 
 <style lang="less" scoped>
-.template-check-info {
-  position: absolute;
+.view-panel-Mask {
   display: flex;
-  justify-content: center;
-  align-items: center;
-  font-size: 12px;
-  color: #9ea6b2;
+  height: calc(100vh - 148px);
   width: 100%;
-  height: 100%;
-  flex-direction: column;
+  background-color: rgba(92, 94, 97, 0.7);
+  position: absolute;
+  top: 85px;
+  left: 0px;
+  z-index: 2;
+  cursor: not-allowed;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .item-icon {
-  width: 50%;
-  height: 50%;
-  opacity: 0.3;
+  position: absolute;
+  top: 10px;
+  left: 300px;
+  width: 40px;
+  height: 40px;
+  opacity: 1;
+  color: #ff8800;
 }
 </style>

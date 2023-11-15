@@ -14,7 +14,7 @@ public interface TemplateManageApi {
     @PostMapping("/save")
     TemplateManageDTO save(@RequestBody TemplateManageRequest request);
 
-    @DeleteMapping("/delete/{id}")
+    @PostMapping("/delete/{id}")
     void delete(@PathVariable String id);
 
     @GetMapping("/findOne/{templateId}")

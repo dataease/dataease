@@ -15,6 +15,7 @@ import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/Cha
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
@@ -25,6 +26,7 @@ const eventCheck = e => {
   }
 }
 const dvMainStore = dvMainStoreWithOut()
+const snapshotStore = snapshotStoreWithOut()
 
 const { componentData, curComponent, canvasStyleData, canvasViewInfo, editMode, batchOptStatus } =
   storeToRefs(dvMainStore)
@@ -72,6 +74,9 @@ onMounted(() => {
         dvMainStore.setComponentData(JSON.parse(deTemplateData['componentData']))
         dvMainStore.setCanvasStyle(JSON.parse(deTemplateData['canvasStyleData']))
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
+        setTimeout(() => {
+          snapshotStore.recordSnapshotCache()
+        }, 1500)
       }
       dataInitState.value = true
       // preOpt

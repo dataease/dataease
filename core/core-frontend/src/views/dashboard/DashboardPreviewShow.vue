@@ -93,6 +93,7 @@ const downloadH2 = type => {
 }
 
 const downloadAsAppTemplate = downloadType => {
+  downloadStatus.value = true
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
     download2AppTemplate(downloadType, vueDom, state.dvInfo.name, () => {

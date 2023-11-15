@@ -50,6 +50,7 @@ import DatasetSelect from '@/views/chart/components/editor/dataset-select/Datase
 import { useDraggable } from '@vueuse/core'
 import { set, concat, keys } from 'lodash-es'
 import { Field, getFieldByDQ } from '@/api/chart'
+import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
@@ -89,6 +90,11 @@ const route = useRoute()
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
+
+const templateStatusShow = computed(() => {
+  return view.value['dataFrom'] === 'template'
+})
+
 const { view } = toRefs(props)
 
 let cacheId = ''
@@ -226,6 +232,7 @@ const treeProps = {
 }
 
 const recordSnapshotInfo = type => {
+  view.value['dataFrom'] = 'calc'
   snapshotStore.recordSnapshotCache(type, view.value.id)
 }
 
@@ -1982,7 +1989,7 @@ const onRefreshChange = val => {
         </el-container>
       </div>
     </el-row>
-
+    <chart-template-info v-if="templateStatusShow"></chart-template-info>
     <!--显示名修改-->
     <el-dialog
       :title="t('chart.show_name_set')"

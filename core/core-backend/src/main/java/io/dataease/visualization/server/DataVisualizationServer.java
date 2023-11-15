@@ -241,7 +241,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             dvType = visualizationTemplate.getDvType();
         } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
             templateStyle = request.getCanvasStyleData();
-            templateData = request.getCanvasStyleData();
+            templateData = request.getComponentData();
             dynamicData = request.getDynamicData();
             staticResource = request.getStaticResource();
             name = request.getName();
