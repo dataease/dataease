@@ -187,6 +187,7 @@ export default {
 
           this.label_class.fontSize = customAttr.size.dimensionFontSize + 'px'
           this.label_class.fontFamily = customAttr.size.dimensionFontFamily ? customAttr.size.dimensionFontFamily : DEFAULT_SIZE.dimensionFontFamily
+          this.label_class.fontFamily = CHART_CONT_FAMILY_MAP[this.label_class.fontFamily]
           this.label_class.fontWeight = customAttr.size.dimensionFontIsBolder ? 'bold' : 'normal'
           this.label_class.fontStyle = customAttr.size.dimensionFontIsItalic ? 'italic' : 'normal'
           this.label_class.letterSpacing = (customAttr.size.dimensionLetterSpace ? customAttr.size.dimensionLetterSpace : DEFAULT_SIZE.dimensionLetterSpace) + 'px'
@@ -194,6 +195,7 @@ export default {
 
           this.label_content_class.fontSize = customAttr.size.quotaFontSize + 'px'
           this.label_content_class.fontFamily = customAttr.size.quotaFontFamily ? customAttr.size.quotaFontFamily : DEFAULT_SIZE.quotaFontFamily
+          this.label_content_class.fontFamily = CHART_CONT_FAMILY_MAP[this.label_content_class.fontFamily]
           this.label_content_class.fontWeight = customAttr.size.quotaFontIsBolder ? 'bold' : 'normal'
           this.label_content_class.fontStyle = customAttr.size.quotaFontIsItalic ? 'italic' : 'normal'
           this.label_content_class.letterSpacing = (customAttr.size.quotaLetterSpace ? customAttr.size.quotaLetterSpace : DEFAULT_SIZE.quotaLetterSpace) + 'px'
@@ -205,6 +207,7 @@ export default {
           if (this.suffix) {
             this.label_suffix_class.fontSize = (customAttr.size.quotaSuffixFontSize ?? DEFAULT_SIZE.quotaSuffixFontSize) + 'px'
             this.label_suffix_class.fontFamily = customAttr.size.quotaSuffixFontFamily ? customAttr.size.quotaSuffixFontFamily : DEFAULT_SIZE.quotaSuffixFontFamily
+            this.label_suffix_class.fontFamily = CHART_CONT_FAMILY_MAP[this.label_suffix_class.fontFamily]
             this.label_suffix_class.fontWeight = customAttr.size.quotaSuffixFontIsBolder ? 'bold' : 'normal'
             this.label_suffix_class.fontStyle = customAttr.size.quotaSuffixFontIsItalic ? 'italic' : 'normal'
             this.label_suffix_class.letterSpacing = (customAttr.size.quotaSuffixLetterSpace ? customAttr.size.quotaSuffixLetterSpace : DEFAULT_SIZE.quotaSuffixLetterSpace) + 'px'
