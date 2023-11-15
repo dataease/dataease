@@ -166,7 +166,6 @@ export function getCustomTheme(chart) {
       theme.colCell.measureText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
 
       // 奇数行单元格背景色
-      console.log(enableTableCrossBG, i_s_c, i_c)
       theme.dataCell.cell.crossBackgroundColor = enableTableCrossBG ? i_s_c : i_c
       theme.dataCell.cell.backgroundColor = i_c
       theme.dataCell.cell.horizontalBorderColor = b_c
@@ -228,7 +227,6 @@ export function getCustomTheme(chart) {
       theme.dataCell.measureText.textAlign = i_a
     }
   }
-  console.log(theme)
   return theme
 }
 
