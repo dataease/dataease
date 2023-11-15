@@ -102,7 +102,6 @@ public class DorisQueryProvider extends QueryProvider {
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
-        int originSize = fields.size();
         List<String> fieldList = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(sortFields)) {
             sortFields.forEach(item -> {
@@ -206,17 +205,8 @@ public class DorisQueryProvider extends QueryProvider {
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         st.add("table", tableSQL);
-
-        List<SQLObj> outFieldList = new ArrayList<>();
-        for (int i = 0; i < originSize; i++) {
-            SQLObj fieldObj = xFields.get(i);
-            String outFieldAlias = tableSQL.getTableAlias() + "." + fieldObj.getFieldAlias();
-            outFieldList.add(SQLObj.builder().fieldName(outFieldAlias).fieldAlias(fieldObj.getFieldAlias()).build());
-        }
-        st.add("groups", outFieldList);
         if (CollectionUtils.isNotEmpty(xOrders)) {
             st.add("orders", xOrders);
-            return st.render() + " LIMIT 0, 10000000";
         }
         return st.render();
     }

@@ -1,6 +1,8 @@
 package io.dataease.service.dataset.impl.direct;
 
 import cn.hutool.core.collection.CollectionUtil;
+import cn.hutool.core.util.ArrayUtil;
+import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.BaseTreeNode;
@@ -11,6 +13,7 @@ import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.dataset.DeSortDTO;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTable;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
@@ -87,15 +90,14 @@ public class DirectFieldService implements DataSetFieldService {
         }
         String id = sortDTO.getId();
         String sortStr = StringUtils.equalsIgnoreCase("chineseDesc", id) ? "desc" : "asc";
-        List<Object> result = CollectionUtil.sort(list, (v1, v2) -> {
+
+        return CollectionUtil.sort(list, (v1, v2) -> {
             Collator instance = Collator.getInstance(Locale.CHINESE);
             if (StringUtils.equals("desc", sortStr)) {
                 return instance.compare(v2, v1);
             }
             return instance.compare(v1, v2);
         });
-
-        return result;
     }
 
     private String formatTableByKeyword(String keyword, String originTable, List<DatasetTableField> fields) {
@@ -155,10 +157,12 @@ public class DirectFieldService implements DataSetFieldService {
             }
         }
 
-
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         Provider datasourceProvider = null;
         String createSQL = null;
+        ChartViewWithBLOBs view = new ChartViewWithBLOBs();
+        view.setResultCount(1000);
+        view.setResultMode("custom");
         if (datasetTable.getMode() == 0) {// 直连
             if (StringUtils.isEmpty(datasetTable.getDataSourceId())) return null;
             Datasource ds = datasourceService.get(datasetTable.getDataSourceId());
@@ -200,7 +204,14 @@ public class DirectFieldService implements DataSetFieldService {
                 }
                 createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
             }
-            datasourceRequest.setQuery(qp.createSQLPreview(createSQL, null));
+            if (StringUtils.equalsAny(ds.getType(), "ds_doris", "mysql")) {
+                Object[] args = new Object[]{createSQL, view};
+                createSQL = ReflectUtil.invoke(qp, "sqlLimit", args);
+                datasourceRequest.setQuery(createSQL);
+            } else {
+                datasourceRequest.setQuery(qp.createSQLPreview(createSQL, null));
+            }
+
         } else if (datasetTable.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
             Datasource ds = engineService.getDeEngine();
@@ -212,8 +223,26 @@ public class DirectFieldService implements DataSetFieldService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             String formatSql = formatTableByKeyword(keyword, tableName, permissionFields);
             createSQL = qp.createQuerySQL(formatSql, permissionFields, !needSort, null, customFilter, rowPermissionsTree, deSortFields);
-            datasourceRequest.setQuery(qp.createSQLPreview(createSQL, null));
+            Object[] args = new Object[]{createSQL, view};
+            createSQL = ReflectUtil.invoke(qp, "sqlLimit", args);
+            datasourceRequest.setQuery(createSQL);
         }
+
+        int originSize = permissionFields.size();
+        boolean existExtSortField = false;
+        if (CollectionUtils.isNotEmpty(deSortFields)) {
+            List<String> fieldList = permissionFields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
+            for (DeSortField sField : deSortFields) {
+                int indexOf = fieldList.indexOf(sField.getId());
+                if (indexOf == -1) {
+                    existExtSortField = true;
+                    permissionFields.add(sField);
+                } else {
+                    permissionFields.set(indexOf, sField);
+                }
+            }
+        }
+
         LogUtil.info(datasourceRequest.getQuery());
         datasourceRequest.setPermissionFields(permissionFields);
         assert datasourceProvider != null;
@@ -222,7 +251,9 @@ public class DirectFieldService implements DataSetFieldService {
             return rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
         }
         Set<String> pkSet = new HashSet<>();
-
+        if (CollectionUtils.isNotEmpty(rows) && existExtSortField && originSize > 0) {
+            rows = rows.stream().map(row -> ArrayUtil.sub(row, 0, originSize)).collect(Collectors.toList());
+        }
         List<BaseTreeNode> treeNodes = rows.stream().map(row -> buildTreeNode(row, pkSet)).flatMap(Collection::stream).collect(Collectors.toList());
         List tree = TreeUtils.mergeDuplicateTree(treeNodes, TreeUtils.DEFAULT_ROOT);
         return tree;
