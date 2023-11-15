@@ -123,11 +123,6 @@ export default {
         return {}
       }
     },
-    showSummary: {
-      type: Boolean,
-      required: false,
-      default: true
-    },
     enableScroll: {
       type: Boolean,
       required: false,
@@ -214,7 +209,8 @@ export default {
         left: '0px',
         top: '0px'
       },
-      pointParam: null
+      pointParam: null,
+      showSummary: true
     }
   },
   computed: {
@@ -362,8 +358,7 @@ export default {
         })
       }
 
-      this.$refs.plxTable.reloadData(data)
-      this.$nextTick(() => {
+      this.$refs.plxTable.reloadData(data).then(() => {
         this.initStyle()
       })
       window.addEventListener('resize', this.calcHeightDelay)
@@ -455,8 +450,10 @@ export default {
           }
           if (customAttr.size.showTableHeader === false) {
             this.showHeader = false
+            this.showSummary = false
           } else {
             this.showHeader = true
+            this.showSummary = this.chart.type === 'table-normal'
           }
 
           const autoBreakLine = customAttr.size.tableAutoBreakLine ? customAttr.size.tableAutoBreakLine : DEFAULT_SIZE.tableAutoBreakLine
@@ -503,16 +500,18 @@ export default {
       }
       // 修改footer合计样式
       const table = document.getElementsByClassName(this.chart.id)
-      for (let i = 0; i < table.length; i++) {
-        const s_table = table[i].getElementsByClassName('elx-table--footer')
-        let s = ''
-        for (const i in this.table_header_class) {
-          s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
+      this.$refs.plxTable.updateFooter().then(() => {
+        for (let i = 0; i < table.length; i++) {
+          const s_table = table[i].getElementsByClassName('elx-table--footer')
+          let s = ''
+          for (const i in this.table_header_class) {
+            s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
+          }
+          for (let i = 0; i < s_table.length; i++) {
+            s_table[i].setAttribute('style', s)
+          }
         }
-        for (let i = 0; i < s_table.length; i++) {
-          s_table[i].setAttribute('style', s)
-        }
-      }
+      })
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {

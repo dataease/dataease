@@ -108,7 +108,6 @@
     <table-normal
       v-else-if="tableShowFlag"
       :ref="element.propValue.id"
-      :show-summary="chart.type === 'table-normal'"
       :chart="chart"
       :track-menu="trackMenu"
       class="table-class"
