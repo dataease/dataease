@@ -451,7 +451,7 @@ public class ChartViewService {
                 List<ChartViewFieldDTO> xAxisExtList = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
                 }.getType());
                 xAxisExtList.forEach((x) -> {
-                    x.setExtField(1);
+                    x.setBusiType("race-bar");
                 });
                 xAxis.addAll(xAxisExtList);
             } else {
@@ -1031,7 +1031,7 @@ public class ChartViewService {
                 List<ChartViewFieldDTO> xAxisExtList = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
                 }.getType());
                 xAxisExtList.forEach((x) -> {
-                    x.setExtField(1);
+                    x.setBusiType("race-bar");
                 });
                 xAxis.addAll(xAxisExtList);
             }
