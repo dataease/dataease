@@ -524,34 +524,6 @@
           </el-select>
         </el-form-item>
         <el-form-item
-          v-show="showProperty('quotaSuffix')"
-          :label="$t('chart.quota_suffix')"
-          class="form-item"
-        >
-          <el-input
-            v-model="sizeForm.quotaSuffix"
-            @blur="changeBarSizeCase('quotaSuffix')"
-          />
-        </el-form-item>
-        <el-form-item
-          v-show="showProperty('quotaSuffixFontSize')"
-          :label="$t('chart.quota_suffix_font_size')"
-          class="form-item"
-        >
-          <el-select
-            v-model="sizeForm.quotaSuffixFontSize"
-            :placeholder="$t('chart.quota_suffix_font_size')"
-            @change="changeBarSizeCase('quotaSuffixFontSize')"
-          >
-            <el-option
-              v-for="option in fontSize"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
           v-show="showProperty('quotaFontFamily')"
           :label="$t('chart.quota_font_family')"
           class="form-item"
@@ -609,6 +581,143 @@
           <el-checkbox
             v-model="sizeForm.quotaFontShadow"
             @change="changeBarSizeCase('quotaFontShadow')"
+          >{{ $t('chart.font_shadow') }}</el-checkbox>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('hPosition')"
+          :label="$t('chart.h_position')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.hPosition"
+            :placeholder="$t('chart.h_position')"
+            @change="changeBarSizeCase('hPosition')"
+          >
+            <el-option
+              value="start"
+              :label="$t('chart.p_left')"
+            >{{ $t('chart.p_left') }}</el-option>
+            <el-option
+              value="center"
+              :label="$t('chart.p_center')"
+            >{{ $t('chart.p_center') }}</el-option>
+            <el-option
+              value="end"
+              :label="$t('chart.p_right')"
+            >{{ $t('chart.p_right') }}</el-option>
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('vPosition')"
+          :label="$t('chart.v_position')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.vPosition"
+            :placeholder="$t('chart.v_position')"
+            @change="changeBarSizeCase('vPosition')"
+          >
+            <el-option
+              value="start"
+              :label="$t('chart.p_top')"
+            >{{ $t('chart.p_top') }}</el-option>
+            <el-option
+              value="center"
+              :label="$t('chart.p_center')"
+            >{{ $t('chart.p_center') }}</el-option>
+            <el-option
+              value="end"
+              :label="$t('chart.p_bottom')"
+            >{{ $t('chart.p_bottom') }}</el-option>
+          </el-select>
+        </el-form-item>
+        <el-divider v-if="showProperty('quotaSuffix')" />
+        <el-form-item
+          v-show="showProperty('quotaSuffix')"
+          :label="$t('chart.quota_suffix')"
+          class="form-item"
+        >
+          <el-input
+            v-model="sizeForm.quotaSuffix"
+            @blur="changeBarSizeCase('quotaSuffix')"
+          />
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixFontSize')"
+          :label="$t('chart.quota_suffix_font_size')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaSuffixFontSize"
+            :placeholder="$t('chart.quota_suffix_font_size')"
+            @change="changeBarSizeCase('quotaSuffixFontSize')"
+          >
+            <el-option
+              v-for="option in fontSize"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixFontFamily')"
+          :label="$t('chart.quota_suffix_font_family')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaSuffixFontFamily"
+            :placeholder="$t('chart.quota_suffix_font_family')"
+            @change="changeBarSizeCase('quotaSuffixFontFamily')"
+          >
+            <el-option
+              v-for="option in fontFamily"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixFontStyle')"
+          :label="$t('chart.quota_suffix_text_style')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.quotaSuffixFontIsItalic"
+            @change="changeBarSizeCase('quotaSuffixFontIsItalic')"
+          >{{ $t('chart.italic') }}</el-checkbox>
+          <el-checkbox
+            v-model="sizeForm.quotaSuffixFontIsBolder"
+            @change="changeBarSizeCase('quotaSuffixFontIsBolder')"
+          >{{ $t('chart.bolder') }}</el-checkbox>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixLetterSpace')"
+          :label="$t('chart.quota_suffix_letter_space')"
+          class="form-item"
+        >
+          <el-select
+            v-model="sizeForm.quotaSuffixLetterSpace"
+            :placeholder="$t('chart.quota_suffix_letter_space')"
+            @change="changeBarSizeCase('quotaSuffixLetterSpace')"
+          >
+            <el-option
+              v-for="option in fontLetterSpace"
+              :key="option.value"
+              :label="option.name"
+              :value="option.value"
+            />
+          </el-select>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('quotaSuffixFontShadow')"
+          :label="$t('chart.font_shadow')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.quotaSuffixFontShadow"
+            @change="changeBarSizeCase('quotaSuffixFontShadow')"
           >{{ $t('chart.font_shadow') }}</el-checkbox>
         </el-form-item>
         <el-divider v-if="showProperty('dimensionShow')" />
@@ -701,7 +810,6 @@
               @change="changeBarSizeCase('dimensionFontShadow')"
             >{{ $t('chart.font_shadow') }}</el-checkbox>
           </el-form-item>
-          <el-divider v-if="showProperty('spaceSplit')" />
           <el-form-item
             v-show="showProperty('spaceSplit')"
             :label="$t('chart.space_split')"
@@ -713,54 +821,6 @@
               size="mini"
               @change="changeBarSizeCase('spaceSplit')"
             />
-          </el-form-item>
-          <el-form-item
-            v-show="showProperty('hPosition')"
-            :label="$t('chart.h_position')"
-            class="form-item"
-          >
-            <el-select
-              v-model="sizeForm.hPosition"
-              :placeholder="$t('chart.h_position')"
-              @change="changeBarSizeCase('hPosition')"
-            >
-              <el-option
-                value="start"
-                :label="$t('chart.p_left')"
-              >{{ $t('chart.p_left') }}</el-option>
-              <el-option
-                value="center"
-                :label="$t('chart.p_center')"
-              >{{ $t('chart.p_center') }}</el-option>
-              <el-option
-                value="end"
-                :label="$t('chart.p_right')"
-              >{{ $t('chart.p_right') }}</el-option>
-            </el-select>
-          </el-form-item>
-          <el-form-item
-            v-show="showProperty('vPosition')"
-            :label="$t('chart.v_position')"
-            class="form-item"
-          >
-            <el-select
-              v-model="sizeForm.vPosition"
-              :placeholder="$t('chart.v_position')"
-              @change="changeBarSizeCase('vPosition')"
-            >
-              <el-option
-                value="start"
-                :label="$t('chart.p_top')"
-              >{{ $t('chart.p_top') }}</el-option>
-              <el-option
-                value="center"
-                :label="$t('chart.p_center')"
-              >{{ $t('chart.p_center') }}</el-option>
-              <el-option
-                value="end"
-                :label="$t('chart.p_bottom')"
-              >{{ $t('chart.p_bottom') }}</el-option>
-            </el-select>
           </el-form-item>
         </div>
         <!--text&label-end-->
@@ -1196,6 +1256,13 @@ export default {
           if (this.sizeForm.indexLabel === null || this.sizeForm.indexLabel === undefined) {
             this.sizeForm.indexLabel = DEFAULT_SIZE.indexLabel
           }
+
+          this.sizeForm.quotaSuffixFontSize = this.sizeForm.quotaSuffixFontSize ?? DEFAULT_SIZE.quotaSuffixFontSize
+          this.sizeForm.quotaSuffixFontFamily = this.sizeForm.quotaSuffixFontFamily ? this.sizeForm.quotaSuffixFontFamily : DEFAULT_SIZE.quotaSuffixFontFamily
+          this.sizeForm.quotaSuffixFontIsBolder = this.sizeForm.quotaSuffixFontIsBolder ? this.sizeForm.quotaSuffixFontIsBolder : DEFAULT_SIZE.quotaSuffixFontIsBolder
+          this.sizeForm.quotaSuffixFontIsItalic = this.sizeForm.quotaSuffixFontIsItalic ? this.sizeForm.quotaSuffixFontIsItalic : DEFAULT_SIZE.quotaSuffixFontIsItalic
+          this.sizeForm.quotaSuffixLetterSpace = this.sizeForm.quotaSuffixLetterSpace ? this.sizeForm.quotaSuffixLetterSpace : DEFAULT_SIZE.quotaSuffixLetterSpace
+          this.sizeForm.quotaSuffixFontShadow = this.sizeForm.quotaSuffixFontShadow ? this.sizeForm.quotaSuffixFontShadow : DEFAULT_SIZE.quotaSuffixFontShadow
 
           this.sizeForm.quotaFontFamily = this.sizeForm.quotaFontFamily ? this.sizeForm.quotaFontFamily : DEFAULT_SIZE.quotaFontFamily
           this.sizeForm.quotaFontIsBolder = this.sizeForm.quotaFontIsBolder ? this.sizeForm.quotaFontIsBolder : DEFAULT_SIZE.quotaFontIsBolder
