@@ -100,9 +100,9 @@ public class DirectFieldService implements DataSetFieldService {
         });
     }
 
-    private String formatTableByKeyword(String keyword, String originTable, List<DatasetTableField> fields) {
+    private String formatTableByKeyword(String keyword, String originTable, List<DatasetTableField> fields, boolean useDataEaseName) {
         if (StringUtils.isBlank(keyword)) return originTable;
-        List<String> fieldNames = fields.stream().map(DatasetTableField::getOriginName).collect(Collectors.toList());
+        List<String> fieldNames = fields.stream().map(f -> useDataEaseName ? f.getDataeaseName() : f.getOriginName()).collect(Collectors.toList());
         String whereSql = fieldNames.stream().map(fieldName -> " " + fieldName + " like '%" + keyword + "%'").collect(Collectors.joining(" or "));
         return "( select * from " + originTable + " where (" + whereSql + ") )";
     }
@@ -176,7 +176,7 @@ public class DirectFieldService implements DataSetFieldService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.DB.toString())) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                String formatSql = formatTableByKeyword(keyword, dataTableInfoDTO.getTable(), permissionFields);
+                String formatSql = formatTableByKeyword(keyword, dataTableInfoDTO.getTable(), permissionFields, false);
                 createSQL = qp.createQuerySQL(formatSql, permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.toString())) {
                 String sql = dataTableInfoDTO.getSql();
@@ -185,7 +185,7 @@ public class DirectFieldService implements DataSetFieldService {
                 }
                 sql = dataSetTableService.handleVariableDefaultValue(sql, null, ds.getType(), false);
                 if (StringUtils.isNotBlank(keyword)) {
-                    sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields);
+                    sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields, false);
                 }
                 createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.CUSTOM.toString())) {
@@ -193,14 +193,14 @@ public class DirectFieldService implements DataSetFieldService {
                 List<DataSetTableUnionDTO> listUnion = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, listUnion, ds);
                 if (StringUtils.isNotBlank(keyword)) {
-                    sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields);
+                    sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields, false);
                 }
                 createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.UNION.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 String sql = (String) dataSetTableService.getUnionSQLDatasource(dt, ds).get("sql");
                 if (StringUtils.isNotBlank(keyword)) {
-                    sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields);
+                    sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields, false);
                 }
                 createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
             }
@@ -221,7 +221,7 @@ public class DirectFieldService implements DataSetFieldService {
             String tableName = "ds_" + datasetTable.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            String formatSql = formatTableByKeyword(keyword, tableName, permissionFields);
+            String formatSql = formatTableByKeyword(keyword, tableName, permissionFields, true);
             createSQL = qp.createQuerySQL(formatSql, permissionFields, !needSort, null, customFilter, rowPermissionsTree, deSortFields);
             Object[] args = new Object[]{createSQL, view};
             createSQL = ReflectUtil.invoke(qp, "sqlLimit", args);
