@@ -1407,7 +1407,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ece7e7;
 }
 
 .chart-error-message-class {
