@@ -2028,6 +2028,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    filter_no_select: '過濾組件無需選擇',
     first_item: '首項',
     forbidden_copy: '當前組件不允許復製',
     url_check_error: '跳轉錯誤，URL不合法',
@@ -2344,7 +2345,9 @@ export default {
     link_panel: '儀表闆',
     select_jump_panel: '選擇關聯的儀表闆',
     link_view: '聯動視圖',
+    link_component: '聯動组件',
     link_view_field: '聯動視圖字段',
+    link_component_field: '聯動组件字段',
     add_jump_field: '追加跳轉聯動依賴字段',
     input_jump_link: '請輸入跳轉連接',
     select_dimension: '請選擇維度...',
