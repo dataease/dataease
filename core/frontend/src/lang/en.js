@@ -1147,7 +1147,7 @@ export default {
     table_header_bg: 'Header Background',
     table_item_bg: 'Table Background',
     table_item_sub_enable: 'Enable CrossBackgroundColor',
-    table_item_sub_bg: 'Table CrossBackgroundColor',
+    table_item_sub_bg: 'CrossBackgroundColor',
     table_header_font_color: 'Header Font',
     table_item_font_color: 'Table Font',
     table_show_index: 'Show Index',

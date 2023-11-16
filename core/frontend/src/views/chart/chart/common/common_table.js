@@ -165,9 +165,14 @@ export function getCustomTheme(chart) {
       theme.colCell.text.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
       theme.colCell.measureText.fill = c.tableHeaderFontColor ? c.tableHeaderFontColor : c.tableFontColor
 
-      // 奇数行单元格背景色
-      theme.dataCell.cell.crossBackgroundColor = enableTableCrossBG ? i_s_c : i_c
-      theme.dataCell.cell.backgroundColor = i_c
+      // 为了与Echarts统一，奇数行是原来颜色
+      if (enableTableCrossBG) {
+        theme.dataCell.cell.crossBackgroundColor = i_c
+        theme.dataCell.cell.backgroundColor = i_s_c
+      } else {
+        theme.dataCell.cell.crossBackgroundColor = i_c
+        theme.dataCell.cell.backgroundColor = i_c
+      }
       theme.dataCell.cell.horizontalBorderColor = b_c
       theme.dataCell.cell.verticalBorderColor = b_c
       theme.dataCell.bolderText.fill = c.tableFontColor
