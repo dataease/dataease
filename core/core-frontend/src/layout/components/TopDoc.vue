@@ -2,13 +2,13 @@
 import { ref } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import TopDocCard from '@/layout/components/TopDocCard.vue'
-const helpLink = ref('https://dataease.io/docs/')
+const helpLink = ref('https://dataease.io/docs/v2/')
 const openBlank = () => {
   window.open(helpLink.value)
 }
 
 const cardInfoList = [
-  { name: '帮助文档', url: 'https://dataease.io/docs/index.html', icon: 'top-help-doc' },
+  { name: '帮助文档', url: 'https://dataease.io/docs/v2/', icon: 'top-help-doc' },
   { name: '产品论坛', url: 'https://bbs.fit2cloud.com/c/de/6', icon: 'top-product-bbs' },
   {
     name: '技术博客',
