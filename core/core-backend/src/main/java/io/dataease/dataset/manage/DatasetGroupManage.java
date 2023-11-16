@@ -346,6 +346,30 @@ public class DatasetGroupManage {
         }
     }
 
+    public DatasetGroupInfoDTO getForCount(Long id) throws Exception {
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+        if (coreDatasetGroup == null) {
+            return null;
+        }
+        DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
+        BeanUtils.copyBean(dto, coreDatasetGroup);
+        if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
+            dto.setUnion(JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
+            }));
+            // 获取field
+            List<DatasetTableFieldDTO> dsFields = datasetTableFieldManage.selectByDatasetGroupId(id);
+            List<DatasetTableFieldDTO> allFields = dsFields.stream().map(ele -> {
+                DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
+                BeanUtils.copyBean(datasetTableFieldDTO, ele);
+                datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
+                return datasetTableFieldDTO;
+            }).collect(Collectors.toList());
+
+            dto.setAllFields(allFields);
+        }
+        return dto;
+    }
+
     public DatasetGroupInfoDTO get(Long id, String type) throws Exception {
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
         if (coreDatasetGroup == null) {
