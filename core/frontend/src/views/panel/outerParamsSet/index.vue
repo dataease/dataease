@@ -130,7 +130,7 @@
                     <div class="select-filed">
                       <el-select
                         v-model="targetViewInfo.targetFieldId"
-                        :disabled="viewIdFieldArrayMap[targetViewInfo.targetViewId].length===1 && viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty'"
+                        :disabled="viewIdFieldArrayMap[targetViewInfo.targetViewId] && viewIdFieldArrayMap[targetViewInfo.targetViewId].length===1 && viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty'"
                         style="width: 100%"
                         size="mini"
                         :placeholder="$t('fu.search_bar.please_select')"
@@ -408,7 +408,8 @@ export default {
       }
     },
     viewInfoOnChange(targetViewInfo) {
-      if (this.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 && this.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty') {
+      console.log('test1=' + this.viewIdFieldArrayMap[targetViewInfo.targetViewId])
+      if (this.viewIdFieldArrayMap[targetViewInfo.targetViewId] && this.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 && this.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty') {
         targetViewInfo.targetFieldId = 'empty'
       } else {
         targetViewInfo.targetFieldId = null
