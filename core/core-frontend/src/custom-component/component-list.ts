@@ -178,8 +178,8 @@ const list = [
   },
   {
     component: 'DeTabs',
-    name: 'Tabs',
-    label: 'Tabs',
+    name: '选项卡',
+    label: '选项卡',
     propValue: [
       {
         name: 'tab',
