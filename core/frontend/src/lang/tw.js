@@ -1478,6 +1478,7 @@ export default {
     dimension_letter_space: '名稱字間距',
     font_family: '字體',
     font_family_tip: '只有操作系統上已安裝該字體才能生效',
+    radar_max_tip: '如果實際數據的最大值大於自定義的最大值，將以實際數據的最大值為準。',
     letter_space: '字間距',
     font_shadow: '字體陰影',
     chart_area: '面積圖',

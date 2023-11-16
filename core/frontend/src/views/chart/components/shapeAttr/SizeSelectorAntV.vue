@@ -164,7 +164,6 @@
         <!--table-begin-->
         <el-form-item
           v-if="showProperty('tableItemFontSize')"
-          label-width="100px"
           :label="$t('chart.table_item_fontsize')"
           class="form-item"
         >
@@ -183,7 +182,6 @@
         </el-form-item>
         <el-form-item
           v-if="showProperty('tableItemAlign')"
-          label-width="100px"
           :label="$t('chart.table_item_align')"
           class="form-item"
         >
@@ -202,7 +200,6 @@
         </el-form-item>
         <el-form-item
           v-if="showProperty('tableItemHeight')"
-          label-width="100px"
           :label="$t('chart.table_item_height')"
           class="form-item form-item-slider"
         >
@@ -218,7 +215,6 @@
         </el-form-item>
         <el-form-item
           v-if="showProperty('tablePageMode')"
-          label-width="100px"
           :label="$t('chart.table_page_mode')"
           class="form-item"
         >
@@ -239,7 +235,6 @@
         </el-form-item>
         <el-form-item
           v-if="showProperty('tablePageSize')&&sizeForm.tablePageMode === 'page'"
-          label-width="100px"
           :label="$t('chart.table_page_size')"
           class="form-item"
         >
@@ -258,7 +253,6 @@
         </el-form-item>
         <el-form-item
           v-if="showProperty('tableColumnMode')"
-          label-width="100px"
           :label="$t('chart.table_column_width_config')"
           class="form-item"
         >
@@ -289,7 +283,6 @@
         <el-form-item
           v-if="showProperty('tableColumnMode') && sizeForm.tableColumnMode === 'custom'"
           label=""
-          label-width="100px"
           class="form-item form-item-slider"
         >
           <el-slider
@@ -304,7 +297,6 @@
         </el-form-item>
         <el-form-item
           v-if="showProperty('showIndex')"
-          label-width="100px"
           :label="$t('chart.table_show_index')"
           class="form-item"
         >
@@ -319,7 +311,6 @@
         </el-form-item>
         <el-form-item
           v-if="showProperty('indexLabel') && sizeForm.showIndex"
-          label-width="100px"
           :label="$t('chart.table_index_desc')"
           class="form-item"
         >
@@ -332,7 +323,6 @@
         <el-divider v-if="equalsAny(chart.type, 'table-info', 'table-normal')" />
         <el-form-item
           v-if="showProperty('showTableHeader')"
-          label-width="100px"
           :label="$t('chart.table_show_table_header')"
           class="form-item"
         >
@@ -347,7 +337,6 @@
         <div v-if="showProperty('showTableHeader') && sizeForm.showTableHeader">
           <el-form-item
             v-if="showProperty('tableTitleFontSize')"
-            label-width="100px"
             :label="$t('chart.table_title_fontsize')"
             class="form-item"
           >
@@ -366,7 +355,6 @@
           </el-form-item>
           <el-form-item
             v-if="showProperty('tableHeaderAlign')"
-            label-width="100px"
             :label="$t('chart.table_header_align')"
             class="form-item"
           >
@@ -385,7 +373,6 @@
           </el-form-item>
           <el-form-item
             v-if="showProperty('tableTitleHeight')"
-            label-width="100px"
             :label="$t('chart.table_title_height')"
             class="form-item form-item-slider"
           >
@@ -401,7 +388,6 @@
           </el-form-item>
           <el-form-item
             v-if="showProperty('tableRowTooltip')"
-            label-width="100px"
             :label="$t('chart.table_row_tooltip')"
             class="form-item"
           >
@@ -412,7 +398,6 @@
           </el-form-item>
           <el-form-item
             v-if="showProperty('tableColTooltip')"
-            label-width="100px"
             :label="$t('chart.table_col_tooltip')"
             class="form-item"
           >
@@ -557,7 +542,7 @@
       <el-form
         ref="sizeFormGauge"
         :model="sizeForm"
-        label-width="100px"
+        label-width="80px"
         size="mini"
       >
         <div v-if="!batchOptStatus">
@@ -849,7 +834,7 @@
       <el-form
         ref="sizeFormPie"
         :model="sizeForm"
-        label-width="100px"
+        label-width="80px"
         size="mini"
       >
         <!--text&label-start-->

@@ -3114,7 +3114,8 @@ export const TYPE_CONFIGS = [
         'axisLine',
         'axisLabel',
         'splitLine',
-        'splitArea'
+        'splitArea',
+        'axisValue'
       ],
       'title-selector': [
         'show',
