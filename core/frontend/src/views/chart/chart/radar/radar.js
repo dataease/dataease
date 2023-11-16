@@ -64,9 +64,15 @@ export function baseRadarOption(chart_option, chart) {
 
       maxValues.push(Math.max.apply(null, y.value))
     }
-    const max = Math.max.apply(null, maxValues)
+    let max = Math.max.apply(null, maxValues)
+    let min
+    const customStyle = JSON.parse(chart.customStyle)
+    if (customStyle?.split?.axisValue?.auto === false) {
+      min = customStyle.split.axisValue.min
+      max = Math.max(customStyle.split.axisValue.max, max)
+    }
     chart.data.x.forEach(function(ele) {
-      chart_option.radar.indicator.push({ name: ele, max: max })
+      chart_option.radar.indicator.push({ name: ele, min, max })
     })
   }
   componentStyle(chart_option, chart)

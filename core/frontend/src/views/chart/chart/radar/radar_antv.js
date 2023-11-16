@@ -125,7 +125,8 @@ export function baseRadarOptionAntV(plot, container, chart, action) {
       }
       if (s.axisValue?.auto === false) {
         yAxis.min = yAxis.minLimit = s.axisValue.min
-        yAxis.max = yAxis.maxLimit = s.axisValue.max
+        const dataMax = _.maxBy(data, 'value')
+        yAxis.max = yAxis.maxLimit = Math.max(s.axisValue.max, dataMax.value)
       }
     }
   }

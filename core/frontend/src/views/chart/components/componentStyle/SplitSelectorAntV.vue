@@ -60,7 +60,7 @@
             @change="changeSplitStyle('axisLine')"
           />
         </el-form-item>
-        <el-divider />
+        <el-divider v-show="showProperty('axisValue')" />
         <el-form-item
           v-show="showProperty('axisValue')"
           :label="$t('chart.axis_value')"
@@ -73,18 +73,34 @@
             <el-radio :label="true">{{ $t('chart.axis_auto') }}</el-radio>
             <el-radio :label="false">{{ $t('commons.custom') }}</el-radio>
           </el-radio-group>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+          >
+            <div
+              slot="content"
+              v-html="$t('chart.radar_max_tip')"
+            />
+            <i
+              class="el-icon-info"
+              style="cursor: pointer;color: #606266;margin-left: 4px;"
+            />
+          </el-tooltip>
         </el-form-item>
         <div v-show="showProperty('axisValue') && !splitForm.axisValue.auto">
           <el-form-item :label="$t('chart.axis_value_min')">
             <el-input-number
               v-model="splitForm.axisValue.min"
-              @blur="changeSplitStyle('axisValue')"
+              :max="splitForm.axisValue.max"
+              @change="changeSplitStyle('axisValue')"
             />
           </el-form-item>
           <el-form-item :label="$t('chart.axis_value_max')">
             <el-input-number
               v-model="splitForm.axisValue.max"
-              @blur="changeSplitStyle('axisValue')"
+              :min="splitForm.axisValue.min"
+              @change="changeSplitStyle('axisValue')"
             />
           </el-form-item>
         </div>
