@@ -211,7 +211,7 @@ public class DatasetDataManage {
     }
 
     public Long getDatasetTotal(Long datasetGroupId) throws Exception {
-        DatasetGroupInfoDTO dto = datasetGroupManage.get(datasetGroupId, null);
+        DatasetGroupInfoDTO dto = datasetGroupManage.getForCount(datasetGroupId);
         if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
             return getDatasetTotal(dto);
         }
