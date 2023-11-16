@@ -210,6 +210,14 @@ public class DatasetDataManage {
         return map;
     }
 
+    public Long getDatasetTotal(Long datasetGroupId) throws Exception {
+        DatasetGroupInfoDTO dto = datasetGroupManage.get(datasetGroupId, null);
+        if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
+            return getDatasetTotal(dto);
+        }
+        return 0L;
+    }
+
     public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
         String sql = (String) sqlMap.get("sql");
