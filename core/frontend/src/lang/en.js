@@ -1240,6 +1240,7 @@ export default {
     center: 'Center',
     split: 'Axis',
     axis_line: 'Axis Line',
+    axis: 'Axis',
     axis_label: 'Axis Label',
     label_fontsize: 'Label Fontsize',
     split_line: 'Split Line',

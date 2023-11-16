@@ -1238,6 +1238,7 @@ export default {
     center: '中心',
     split: '轴线',
     axis_line: '轴线',
+    axis: '坐标轴',
     axis_label: '轴标签',
     label_fontsize: '标签大小',
     split_line: '分割线',
