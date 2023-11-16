@@ -11,15 +11,12 @@ import io.dataease.menu.dao.auto.mapper.CoreMenuMapper;
 import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.cache.annotation.Cacheable;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.stream.Collectors;
-
-import static io.dataease.constant.CacheConstant.OrgCacheConstant.CORE_MENU_CACHE;
 
 @Component
 public class MenuManage {
@@ -39,7 +36,7 @@ public class MenuManage {
         return convertTree(treeNodes);
     }
 
-//    @Cacheable(cacheNames = CORE_MENU_CACHE, key = "'-dataease-'")
+    //    @Cacheable(cacheNames = CORE_MENU_CACHE, key = "'-dataease-'")
     public List<CoreMenu> coreMenus() {
         QueryWrapper<CoreMenu> wrapper = new QueryWrapper<>();
         wrapper.orderByAsc("menu_sort");
@@ -67,7 +64,7 @@ public class MenuManage {
             if (CollectionUtil.isNotEmpty(children = menuTreeNode.getChildren())) {
                 vo.setChildren(convertTree(children));
             }
-            if (CollectionUtil.isNotEmpty(children) || menuTreeNode.getType() != 1) {
+            if (CollectionUtil.isNotEmpty(vo.getChildren()) || menuTreeNode.getType() != 1) {
                 result.add(vo);
             }
         }
@@ -91,6 +88,12 @@ public class MenuManage {
     }
 
     private boolean isXpackMenu(CoreMenu coreMenu) {
-        return coreMenu.getId().equals(7L) || coreMenu.getPid().equals(7L) || coreMenu.getId().equals(14L) || coreMenu.getId().equals(17L) || coreMenu.getId().equals(18L);
+        return coreMenu.getId().equals(7L)
+                || coreMenu.getPid().equals(7L)
+                || coreMenu.getId().equals(14L)
+                || coreMenu.getId().equals(17L)
+                || coreMenu.getId().equals(18L)
+                || coreMenu.getId().equals(21L)
+                || coreMenu.getPid().equals(21L);
     }
 }
