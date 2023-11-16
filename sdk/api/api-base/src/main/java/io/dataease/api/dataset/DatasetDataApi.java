@@ -28,4 +28,7 @@ public interface DatasetDataApi {
 
     @PostMapping("enumValue")
     List<String> getFieldEnum(@RequestBody List<Long> ids) throws Exception;
+
+    @PostMapping("getDatasetCount")
+    Long getDatasetCount(@RequestBody DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception;
 }

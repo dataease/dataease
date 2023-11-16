@@ -46,4 +46,9 @@ public class DatasetDataServer implements DatasetDataApi {
     public List<String> getFieldEnum(List<Long> ids) throws Exception {
         return datasetDataManage.getFieldEnum(ids);
     }
+
+    @Override
+    public Long getDatasetCount(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+        return datasetDataManage.getDatasetTotal(datasetGroupInfoDTO.getId());
+    }
 }
