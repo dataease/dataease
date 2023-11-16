@@ -482,7 +482,7 @@ export default {
   }
 }
 
-.fullscreen {
+.fullscreen, .show-in-dialog {
   .g2-container {
     ::v-deep .g2-tooltip {
       position: absolute !important;
