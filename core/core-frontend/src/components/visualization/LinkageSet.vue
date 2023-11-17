@@ -101,7 +101,7 @@
                           style="width: 100%"
                         >
                           <el-option
-                            v-for="item in state.sourceLinkageInfo.targetViewFields"
+                            v-for="item in sourceLinkageInfoFilter"
                             :key="item.id"
                             :label="item.name"
                             :value="item.id"
@@ -184,7 +184,7 @@
 
 <script lang="ts" setup>
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
-import { reactive, ref, nextTick, watch } from 'vue'
+import { reactive, ref, nextTick, watch, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { ElMessage } from 'element-plus-secondary'
@@ -379,6 +379,22 @@ const linkageFieldAdaptor = async data => {
     }
   }
 }
+
+const sourceLinkageInfoFilter = computed(() => {
+  if (state.sourceLinkageInfo.targetViewFields) {
+    const curCheckAllAxisStr =
+      JSON.stringify(state.curLinkageViewInfo.xAxis) +
+      JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
+      JSON.stringify(state.curLinkageViewInfo.yAxis) +
+      JSON.stringify(state.curLinkageViewInfo.yAxisExt)
+    return state.sourceLinkageInfo.targetViewFields.filter(item =>
+      curCheckAllAxisStr.includes(item.id)
+    )
+  } else {
+    return []
+  }
+})
+
 const targetViewCheckedChange = data => {
   nextTick(() => {
     linkageInfoTree.value.setCurrentKey(data.targetViewId)
