@@ -14,8 +14,8 @@ import java.util.List;
  */
 public interface TemplateMarketApi {
 
-    @PostMapping("/search")
-    MarketBaseResponse searchTemplate(@RequestBody TemplateMarketSearchRequest request);
+    @GetMapping("/search")
+    MarketBaseResponse searchTemplate();
 
     @GetMapping("/categories")
     List<String> categories();

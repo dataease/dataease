@@ -5,12 +5,15 @@ import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.TemplateMarketDTO;
 import io.dataease.api.template.request.TemplateMarketSearchRequest;
 import io.dataease.api.template.response.MarketBaseResponse;
+import io.dataease.api.template.response.MarketCategoryBaseResponse;
+import io.dataease.api.template.response.MarketTemplateBaseResponse;
 import io.dataease.api.template.vo.TemplateCategoryVO;
 import io.dataease.exception.DEException;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
 import io.dataease.utils.JsonUtil;
+import io.swagger.v3.core.util.Json;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -57,14 +60,13 @@ public class TemplateMarketManage {
         return HttpClientUtil.get(url, config);
     }
 
-    public MarketBaseResponse searchTemplate(TemplateMarketSearchRequest request) {
+    public MarketBaseResponse searchTemplate() {
         try {
             Map<String,String>  templateParams = sysParameterManage.groupVal("template.");
             String result = marketGet(templateParams.get("template.url") + POSTS_API, templateParams.get("template.accessKey"));
-            TypeReference<List<TemplateMarketDTO>> market = new TypeReference<>() {
-            };
-            List<TemplateMarketDTO> postsResult = JsonUtil.parseList(result,market);
-            return new MarketBaseResponse(templateParams.get("template.url"), postsResult);
+            MarketTemplateBaseResponse postsResult = JsonUtil.parseObject(result, MarketTemplateBaseResponse.class);
+            MarketBaseResponse response = new MarketBaseResponse(templateParams.get("template.url"), postsResult.getData().getContent());
+            return response;
         } catch (Exception e) {
             DEException.throwException(e);
         }
@@ -74,9 +76,8 @@ public class TemplateMarketManage {
     public List<String> getCategories() {
         Map<String,String>  templateParams = sysParameterManage.groupVal("template.");
         String resultStr = marketGet(templateParams.get("template.url") + CATEGORIES_API, templateParams.get("template.accessKey"));
-        TypeReference<List<TemplateCategoryVO>> market = new TypeReference<>() {
-        };
-        List<TemplateCategoryVO> categories = JsonUtil.parseList(resultStr,market);
+        MarketCategoryBaseResponse categoryBaseResponse = JsonUtil.parseObject(resultStr, MarketCategoryBaseResponse.class);
+        List<TemplateCategoryVO> categories = categoryBaseResponse.getData();
         if (CollectionUtils.isNotEmpty(categories)) {
             return categories.stream().filter(item -> !"应用系列".equals(item.getName())).sorted(Comparator.comparing(TemplateCategoryVO::getPriority)).map(TemplateCategoryVO::getName).collect(Collectors.toList());
         } else {

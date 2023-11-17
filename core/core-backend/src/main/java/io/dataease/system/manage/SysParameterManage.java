@@ -64,7 +64,7 @@ public class SysParameterManage {
 
     public Map<String,String> groupVal(String groupKey) {
         QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
-        queryWrapper.likeLeft("pkey", groupKey);
+        queryWrapper.like("pkey", groupKey);
         List<CoreSysSetting> sysSettings = coreSysSettingMapper.selectList(queryWrapper);
         if (!CollectionUtils.isEmpty(sysSettings)) {
             return sysSettings.stream().collect(Collectors.toMap(CoreSysSetting::getPkey, CoreSysSetting::getPval));
