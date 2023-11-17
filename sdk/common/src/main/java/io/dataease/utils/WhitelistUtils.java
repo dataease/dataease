@@ -14,6 +14,7 @@ public class WhitelistUtils {
             "/dekey",
             "/index.html",
             "/model",
+            "/deApi",
             "/demo.html",
             "/swagger-resources",
             "/doc.html",
