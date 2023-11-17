@@ -335,7 +335,6 @@ const calcData = (view: Chart, callback) => {
 }
 
 const initCurFields = chartDetails => {
-  curFields.value = []
   dataRowFiledName.value = []
   dataRowSelect.value = {}
   dataRowNameSelect.value = {}
@@ -347,10 +346,12 @@ const initCurFields = chartDetails => {
       JSON.stringify(chartDetails.yAxisExt)
     chartDetails.data.sourceFields.forEach(field => {
       if (checkAllAxisStr.indexOf(field.id) > -1) {
-        curFields.value.push(field)
         dataRowFiledName.value.push(`[${field.name}]`)
       }
     })
+    if (checkAllAxisStr.indexOf('"记录数*"') > -1) {
+      dataRowFiledName.value.push(`[记录数*]`)
+    }
     // Get the corresponding relationship between id and value
     const nameIdMap = chartDetails.data.fields.reduce((pre, next) => {
       pre[next['dataeaseName']] = next['id']
