@@ -165,23 +165,23 @@ public class DirectFieldService implements DataSetFieldService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.DB.toString())) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                createSQL = qp.createQuerySQL(dataTableInfoDTO.getTable(), permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields);
+                createSQL = qp.createQuerySQLWithLimit(dataTableInfoDTO.getTable(), permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields, 1000L);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.toString())) {
                 String sql = dataTableInfoDTO.getSql();
                 if (dataTableInfoDTO.isBase64Encryption()) {
                     sql = new String(java.util.Base64.getDecoder().decode(sql));
                 }
                 sql = dataSetTableService.handleVariableDefaultValue(sql, null, ds.getType(), false);
-                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
+                createSQL = qp.createQuerySQLAsTmpWithLimit(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.CUSTOM.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> listUnion = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, listUnion, ds);
-                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
+                createSQL = qp.createQuerySQLAsTmpWithLimit(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.UNION.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 String sql = (String) dataSetTableService.getUnionSQLDatasource(dt, ds).get("sql");
-                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
+                createSQL = qp.createQuerySQLAsTmpWithLimit(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L);
             }
             datasourceRequest.setQuery(qp.createSQLPreview(createSQL, null));
         } else if (datasetTable.getMode() == 1) {// 抽取
