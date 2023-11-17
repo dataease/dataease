@@ -177,7 +177,7 @@ public class DirectFieldService implements DataSetFieldService {
             if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.DB.toString())) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
                 String formatSql = formatTableByKeyword(keyword, dataTableInfoDTO.getTable(), permissionFields, false);
-                createSQL = qp.createQuerySQL(formatSql, permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields);
+                createSQL = qp.createQuerySQLWithLimit(formatSql, permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields, 1000L);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.toString())) {
                 String sql = dataTableInfoDTO.getSql();
                 if (dataTableInfoDTO.isBase64Encryption()) {
@@ -187,7 +187,7 @@ public class DirectFieldService implements DataSetFieldService {
                 if (StringUtils.isNotBlank(keyword)) {
                     sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields, false);
                 }
-                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
+                createSQL = qp.createQuerySQLAsTmpWithLimit(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.CUSTOM.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> listUnion = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
@@ -195,14 +195,14 @@ public class DirectFieldService implements DataSetFieldService {
                 if (StringUtils.isNotBlank(keyword)) {
                     sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields, false);
                 }
-                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
+                createSQL = qp.createQuerySQLAsTmpWithLimit(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.UNION.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 String sql = (String) dataSetTableService.getUnionSQLDatasource(dt, ds).get("sql");
                 if (StringUtils.isNotBlank(keyword)) {
                     sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields, false);
                 }
-                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields);
+                createSQL = qp.createQuerySQLAsTmpWithLimit(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L);
             }
             if (StringUtils.equalsAny(ds.getType(), "ds_doris", "mysql")) {
                 Object[] args = new Object[]{createSQL, view};
