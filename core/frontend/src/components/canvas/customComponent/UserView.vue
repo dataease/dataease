@@ -775,7 +775,13 @@ export default {
     viewInCache(param) {
       this.view = param.view
       if (this.view && this.view.customAttr) {
-        this.currentPage.pageSize = parseInt(JSON.parse(this.view.customAttr).size.tablePageSize)
+        const curPageSize = this.currentPage.pageSize
+        const newPageSize = parseInt(JSON.parse(this.view.customAttr).size.tablePageSize)
+        // 分页小转大重置为第一页
+        if (curPageSize < newPageSize) {
+          this.currentPage.page = 1
+        }
+        this.currentPage.pageSize = newPageSize
       }
       param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
     },
