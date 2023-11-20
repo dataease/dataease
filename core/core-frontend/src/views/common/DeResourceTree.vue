@@ -101,15 +101,19 @@ const state = reactive({
   templateCreatePid: 0
 })
 
+const dvSvgType = computed(() =>
+  curCanvasType.value === 'dashboard' ? 'dv-dashboard-spine' : 'dv-screen-spine'
+)
+
 state.resourceTypeList = [
   {
-    label: newResourceLabel,
-    svgName: curCanvasType.value === 'dashboard' ? 'dv-dashboard-spine' : 'dv-screen-spine',
+    label: '空白新建',
+    svgName: dvSvgType.value,
     command: 'newLeaf'
   },
   {
-    label: '从模版新建',
-    svgName: curCanvasType.value === 'dashboard' ? 'dv-dashboard-spine' : 'dv-screen-spine',
+    label: '使用模版新建',
+    svgName: 'dv-use-template',
     command: 'newFromTemplate'
   },
   {
@@ -247,7 +251,7 @@ const addOperation = (
       window.open(baseUrl, '_blank')
     }
   } else if (cmd === 'newFromTemplate') {
-    state.templateCreatePid = data.id
+    state.templateCreatePid = data?.id
     // newFromTemplate
     resourceCreateOpt.value.optInit()
   } else {
@@ -337,11 +341,28 @@ defineExpose({
               <Icon name="dv-new-folder" />
             </el-icon>
           </el-tooltip>
-          <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
-            <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
+
+          <el-dropdown popper-class="menu-outer-dv_popper" trigger="click">
+            <el-icon class="custom-icon btn" @click.stop>
               <Icon name="icon_file-add_outlined" />
             </el-icon>
-          </el-tooltip>
+            <template #dropdown>
+              <el-dropdown-menu>
+                <el-dropdown-item @click="addOperation('newLeaf', null, 'leaf', true)">
+                  <el-icon class="handle-icon">
+                    <Icon :name="dvSvgType"></Icon>
+                  </el-icon>
+                  空白新建
+                </el-dropdown-item>
+                <el-dropdown-item @click="addOperation('newFromTemplate', null, 'leaf', true)">
+                  <el-icon class="handle-icon">
+                    <Icon name="dv-use-template"></Icon>
+                  </el-icon>
+                  使用模版新建
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
       </div>
       <el-input
@@ -459,6 +480,7 @@ defineExpose({
       line-height: 24px;
     }
     .custom-icon {
+      font-size: 20px;
       &.btn {
         color: #3370ff;
       }
@@ -537,5 +559,12 @@ defineExpose({
     color: #fff;
     padding: 3px;
   }
+}
+</style>
+
+<style lang="less">
+.menu-outer-dv_popper {
+  width: 140px;
+  margin-top: -2px !important;
 }
 </style>

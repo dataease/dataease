@@ -255,8 +255,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
             templateData = templateFileInfo.getComponentData();
             dynamicData = templateFileInfo.getDynamicData();
             staticResource = templateFileInfo.getStaticResource();
-            name = request.getName();
-            dvType = request.getType();
+            name = templateFileInfo.getName();
+            dvType = templateFileInfo.getDvType();
         }
         // 解析动态数据
         Map<String, String> dynamicDataMap = JsonUtil.parseObject(dynamicData, Map.class);

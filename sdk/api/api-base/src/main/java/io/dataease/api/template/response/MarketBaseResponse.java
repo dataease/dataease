@@ -23,4 +23,6 @@ public class MarketBaseResponse {
         this.contents = contents;
     }
 
+
+
 }

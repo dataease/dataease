@@ -1,6 +1,7 @@
 package io.dataease.api.template.vo;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Author: wangjiahao
@@ -8,8 +9,13 @@ import lombok.Data;
  * Description:
  */
 @Data
+@NoArgsConstructor
 public class MarketCategoryVO {
     private String id;
     private String name;
     private String slug;
+
+    public MarketCategoryVO(String name) {
+        this.name = name;
+    }
 }
