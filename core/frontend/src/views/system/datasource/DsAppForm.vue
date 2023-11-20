@@ -566,7 +566,7 @@ export default {
           this.tData.forEach(item => {
             if (item.id === this.form.type) {
               item.children.forEach(child => {
-                if (this.formType === 'modify' && child.id === this.form.id) {
+                if (child.id === this.form.id) {
                   return
                 }
                 const configuration = JSON.parse(child.configuration)
