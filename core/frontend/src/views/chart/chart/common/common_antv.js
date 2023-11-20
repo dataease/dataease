@@ -697,6 +697,11 @@ export function getXAxis(chart) {
           }
         } : null
 
+        if (a.axisLabel.show && chart.type === 'bidirectional-bar') {
+          label.rotate = 0
+          label.style.textAlign = 'start'
+        }
+
         axis = {
           position: transAxisPosition(chart, a),
           title: title,
