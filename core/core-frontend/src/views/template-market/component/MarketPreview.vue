@@ -1,96 +1,98 @@
 <template>
-  <el-row style="display: inherit">
-    <el-col :class="state.asideActive ? 'aside-active' : 'aside-inActive'">
-      <svg-icon
-        v-show="!state.asideActive"
-        icon-class="button_right"
-        class="open-button"
-        @click="asideActiveChange(true)"
-      />
-      <el-row v-show="state.asideActive" style="padding: 12px 12px 0">
-        <el-row>
-          <span class="icon iconfont icon-close icon20 insert" @click="closePreview()" />
-          <span class="main-title">{{ t('visualization.template_preview') }}</span>
-          <span
-            style="float: right"
-            class="icon iconfont icon-icon_up-left_outlined insert icon20"
-            @click="asideActiveChange(false)"
-          />
+  <el-row style="width: 100%">
+    <el-row style="display: table; width: 100%">
+      <el-col style="float: left" :class="state.asideActive ? 'aside-active' : 'aside-inActive'">
+        <el-icon v-show="!state.asideActive" class="insert" @click="asideActiveChange(true)"
+          ><DArrowRight
+        /></el-icon>
+        <el-row v-show="state.asideActive" style="padding: 12px 12px 0">
+          <el-row style="align-items: center">
+            <el-icon class="insert" @click="closePreview()"><Close /></el-icon>
+            <span class="main-title">{{ t('visualization.template_preview') }}</span>
+            <el-icon class="insert" @click="asideActiveChange(false)"><DArrowLeft /></el-icon>
+          </el-row>
+          <el-row class="margin-top16 search-area">
+            <el-input
+              v-model="state.searchText"
+              size="small"
+              prefix-icon="Search"
+              class="title-name-search"
+              :placeholder="t('visualization.enter_template_name_tips')"
+              clearable="true"
+            />
+            <el-icon
+              class="insert-filter filter-icon-span"
+              :class="state.extFilterActive ? 'filter-icon-active' : ''"
+              @click="extFilterActiveChange()"
+              ><Filter
+            /></el-icon>
+          </el-row>
+          <el-row v-show="state.extFilterActive">
+            <el-select
+              v-model="state.marketActiveTab"
+              class="margin-top16"
+              size="small"
+              placeholder="请选择"
+            >
+              <el-option v-for="item in state.marketTabs" :key="item" :label="item" :value="item" />
+            </el-select>
+          </el-row>
+          <el-divider />
         </el-row>
-        <el-row class="margin-top16 search-area">
-          <el-input
-            v-model="state.searchText"
-            size="small"
-            prefix-icon="el-icon-search"
-            class="title-name-search"
-            :placeholder="t('visualization.enter_template_name_tips')"
-            clearable="true"
-          />
-          <span
-            class="icon iconfont icon-icon-filter insert-filter filter-icon-span"
-            :class="state.extFilterActive ? 'filter-icon-active' : ''"
-            @click="extFilterActiveChange()"
-          />
-        </el-row>
-        <el-row v-show="state.extFilterActive">
-          <el-select
-            v-model="state.marketActiveTab"
-            class="margin-top16"
-            size="small"
-            placeholder="请选择"
-          >
-            <el-option v-for="item in state.marketTabs" :key="item" :label="item" :value="item" />
-          </el-select>
-        </el-row>
-        <el-divider />
-      </el-row>
 
-      <el-row
-        v-show="state.asideActive"
-        class="aside-list"
-        :class="state.extFilterActive ? 'aside-list-filter-active' : ''"
+        <el-row
+          v-show="state.asideActive"
+          class="aside-list"
+          :class="state.extFilterActive ? 'aside-list-filter-active' : ''"
+        >
+          <template-market-preview-item
+            v-for="templateItem in state.currentMarketTemplateShowList"
+            v-show="templateItem.showFlag"
+            :key="templateItem.id"
+            :template="templateItem"
+            :base-url="state.baseUrl"
+            :active="active(templateItem)"
+            @previewTemplate="previewTemplate"
+          />
+          <el-row v-show="!state.hasResult" class="custom-position">
+            <div style="text-align: center">
+              <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"></Icon>
+              <br />
+              <span>{{ t('commons.no_result') }}</span>
+            </div>
+          </el-row>
+        </el-row>
+      </el-col>
+      <el-col
+        style="float: left"
+        class="main-area"
+        :class="state.asideActive ? 'main-area-active' : ''"
       >
-        <template-market-preview-item
-          v-for="templateItem in state.currentMarketTemplateShowList"
-          v-show="templateItem.showFlag"
-          :key="templateItem.id"
-          :template="templateItem"
-          :base-url="state.baseUrl"
-          :active="active(templateItem)"
-          @previewTemplate="previewTemplate"
-        />
-        <el-row v-show="!state.hasResult" class="custom-position">
-          <div style="text-align: center">
-            <svg-icon icon-class="no_result" style="margin-bottom: 16px; font-size: 75px" />
-            <br />
-            <span>{{ t('commons.no_result') }}</span>
+        <el-row>
+          <span v-if="state.curTemplate" class="template-title">{{ state.curTemplate.title }}</span>
+          <div style="flex: 1; text-align: right">
+            <el-button
+              style="float: right"
+              type="primary"
+              size="small"
+              @click="templateApply(state.curTemplate)"
+              >{{ t('visualization.apply_this_template') }}</el-button
+            >
           </div>
         </el-row>
-      </el-row>
-    </el-col>
-    <el-col class="main-area" :class="state.asideActive ? 'main-area-active' : ''">
-      <el-row>
-        <span v-if="state.curTemplate" class="template-title">{{ state.curTemplate.title }}</span>
-        <el-button
-          style="float: right"
-          type="primary"
-          size="small"
-          @click="templateApply(state.curTemplate)"
-          >{{ t('visualization.apply_this_template') }}</el-button
-        >
-      </el-row>
-      <el-row class="img-main">
-        <img height="100%" :src="state.templatePreviewUrl" alt="" />
-      </el-row>
-    </el-col>
+        <el-row class="img-main">
+          <img style="height: 100%" :src="state.templatePreviewUrl" alt="" />
+        </el-row>
+      </el-col>
+    </el-row>
   </el-row>
 </template>
 
 <script setup lang="ts">
 import { searchMarket, getCategories } from '@/api/templateMarket'
-import TemplateMarketPreviewItem from '@/views/template-market/component/TemplateMarketPreviewItem.vue'
 import { onMounted, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import TemplateMarketPreviewItem from '@/views/template-market/component/TemplateMarketPreviewItem.vue'
 const { t } = useI18n()
 
 const props = defineProps({
@@ -129,6 +131,13 @@ watch(
 
 watch(
   () => state.searchText,
+  value => {
+    initTemplateShow()
+  }
+)
+
+watch(
+  () => props.previewId,
   value => {
     state.currentMarketTemplateShowList.forEach(template => {
       if (value === template.id) {
@@ -314,7 +323,7 @@ onMounted(() => {
   flex: 1;
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: center;
   font-size: 14px;
   flex-flow: row nowrap;
   color: #646a73;
@@ -356,6 +365,7 @@ onMounted(() => {
 }
 
 .main-title {
+  width: 135px;
   margin-left: 8px;
   font-weight: 500;
   font-size: 16px;
@@ -434,6 +444,7 @@ onMounted(() => {
   margin-top: 16px;
 }
 .img-main {
+  display: inherit;
   border-radius: 4px;
   background: #0f1114;
   overflow-x: auto;

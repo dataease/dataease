@@ -1,6 +1,7 @@
 package io.dataease.api.template.vo;
 
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Author: wangjiahao
@@ -8,6 +9,11 @@ import lombok.Data;
  * Description:
  */
 @Data
+@NoArgsConstructor
 public class MarketMetasVO {
     private String theme_repo;
+
+    public MarketMetasVO(String theme_repo) {
+        this.theme_repo = theme_repo;
+    }
 }

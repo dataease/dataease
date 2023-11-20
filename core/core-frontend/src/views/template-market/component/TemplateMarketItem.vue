@@ -1,13 +1,13 @@
 <template>
   <div class="testcase-template">
-    <div class="template-img" :style="classBackground" @click.stop="templatePreview" />
+    <div class="template-img" :style="classBackground" @click.stop="templateInnerPreview" />
     <el-row class="bottom-area">
       <el-row>
         <span class="demonstration">{{ template.title }}</span>
       </el-row>
     </el-row>
     <el-row class="template-button">
-      <el-button size="mini" style="width: 141px" @click="templatePreview">{{
+      <el-button size="mini" style="width: 141px" @click="templateInnerPreview">{{
         t('visualization.preview')
       }}</el-button>
       <el-button size="mini" style="width: 141px" type="primary" @click="apply">{{
@@ -61,7 +61,7 @@ const apply = () => {
   emits('templateApply', props.template)
 }
 
-const templatePreview = () => {
+const templateInnerPreview = e => {
   emits('templatePreview', props.template.id)
 }
 </script>
