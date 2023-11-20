@@ -97,7 +97,8 @@ public class JdbcProvider extends DefaultJdbcProvider {
             }
             String schemaPattern = "%";
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.oracle.name())) {
-                schemaPattern = databaseMetaData.getUserName();
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
+                schemaPattern = oracleConfiguration.getSchema();
             }
             ResultSet resultSet = databaseMetaData.getColumns(null, schemaPattern, tableNamePattern, "%");
             while (resultSet.next()) {
@@ -121,9 +122,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
                         list.add(tableField);
                     }
                 } else {
+                    System.out.println(database);
                     if (database != null) {
                         if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
                             TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                            System.out.println(new Gson().toJson(tableField));
                             list.add(tableField);
                         }
                     } else {
