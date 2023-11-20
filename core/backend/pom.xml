@@ -99,6 +99,17 @@
             <groupId>com.github.pagehelper</groupId>
             <artifactId>pagehelper</artifactId>
             <version>5.3.1</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>jsqlparser</artifactId>
+                    <groupId>com.github.jsqlparser</groupId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
+            <groupId>com.github.jsqlparser</groupId>
+            <artifactId>jsqlparser</artifactId>
+            <version>4.6</version>
         </dependency>
         <dependency>
             <groupId>org.apache.shiro</groupId>
@@ -330,6 +341,12 @@
             <groupId>ru.yandex.qatools.ashot</groupId>
             <artifactId>ashot</artifactId>
             <version>1.5.4</version>
+        </dependency>
+        <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>dataease-plugin-common</artifactId>
+            <version>1.18.11</version>
+            <scope>compile</scope>
         </dependency>
 
 
