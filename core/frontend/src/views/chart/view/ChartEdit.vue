@@ -2160,6 +2160,10 @@ export default {
             type: 'warning'
           })
           this.view.xaxis = []
+        } else if (newVal.type === 'bidirectional-bar') {
+          if (this.view.customStyle && this.view.customStyle.xAxis && this.view.customStyle.xAxis.name) {
+            this.view.customStyle.xAxis.name = undefined
+          }
         }
         if (newVal.type !== oldVal.type) {
           this.view.senior.threshold = {}
