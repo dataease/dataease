@@ -1,5 +1,10 @@
 <template>
-  <InfoTemplate :label-tooltips="tooltips" setting-key="email" @edit="edit" />
+  <InfoTemplate
+    :label-tooltips="tooltips"
+    setting-title="邮件设置"
+    setting-key="email"
+    @edit="edit"
+  />
   <email-edit ref="editor" />
 </template>
 
