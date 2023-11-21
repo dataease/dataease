@@ -86,6 +86,7 @@ onUnmounted(() => {
         :min="10"
         :max="200"
         :controls="false"
+        @change="handleScaleChange()"
         class="scale-input-number"
       >
         <template #suffix> % </template>
