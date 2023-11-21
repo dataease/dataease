@@ -11,7 +11,7 @@ import io.dataease.commons.utils.Pager;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeRequest;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.dto.request.DataSetRowPermissionsDTO;
 import io.dataease.plugins.xpack.auth.service.RowPermissionService;
 import io.dataease.plugins.xpack.auth.service.RowPermissionTreeService;

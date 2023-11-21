@@ -1,6 +1,6 @@
 package io.dataease.plugins.server;
 
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.watermark.WatermarkService;
 import io.dataease.plugins.xpack.watermark.dto.PanelWatermarkDTO;
 import io.swagger.annotations.ApiOperation;

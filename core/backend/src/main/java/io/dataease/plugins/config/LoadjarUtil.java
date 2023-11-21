@@ -1,10 +1,11 @@
 package io.dataease.plugins.config;
 
 import io.dataease.plugins.common.base.domain.MyPlugin;
-import io.dataease.plugins.loader.ClassloaderResponsity;
+import io.dataease.plugins.common.util.ClassloaderResponsity;
+import io.dataease.plugins.common.util.ModuleClassLoader;
+import io.dataease.plugins.common.util.MybatisLoader;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.loader.ControllerLoader;
-import io.dataease.plugins.loader.ModuleClassLoader;
-import io.dataease.plugins.loader.MybatisLoader;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 

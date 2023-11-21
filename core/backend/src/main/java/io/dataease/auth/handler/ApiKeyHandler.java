@@ -2,7 +2,7 @@ package io.dataease.auth.handler;
 
 import io.dataease.auth.entity.ASKToken;
 import io.dataease.commons.utils.CodingUtil;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.ukey.dto.request.XpackUkeyDto;
 import io.dataease.plugins.xpack.ukey.service.UkeyXpackService;
 import org.apache.commons.lang3.StringUtils;

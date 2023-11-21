@@ -10,7 +10,7 @@ import io.dataease.dto.SysLogDTO;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.dto.DatasourceBaseType;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.dto.request.XpackBaseTreeRequest;
 import io.dataease.plugins.xpack.auth.dto.request.XpackSysAuthRequest;
 import io.dataease.plugins.xpack.auth.dto.response.XpackSysAuthDetail;

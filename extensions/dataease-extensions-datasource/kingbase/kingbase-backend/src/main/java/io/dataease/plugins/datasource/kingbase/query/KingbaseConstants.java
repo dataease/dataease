@@ -28,5 +28,5 @@ public class KingbaseConstants extends SQLConstants {
     public static final String WHERE_BETWEEN = "'%s' AND '%s'";
     public static final String BRACKETS = "(%s)";
     public static final String GROUP_CONCAT = "to_char(listagg(%s,',' ) within GROUP (order by (%s)))";
-    public static final String NAME = "pg";
+    public static final String NAME = "kingbase";
 }
