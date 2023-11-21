@@ -6,7 +6,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData, editMode } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
 const scale = ref(60)
 
@@ -42,6 +42,9 @@ const reposition = () => {
 let lastWheelNum = 0
 
 const handleMouseWheel = e => {
+  if (editMode.value === 'preview') {
+    return
+  }
   let dvMain = document.getElementById('dv-main-center')
   let dvMainLeftSlide = document.getElementById('dv-main-left-sidebar')
   let areaLeftWidth = dvMainLeftSlide.clientWidth
