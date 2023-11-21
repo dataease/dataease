@@ -122,11 +122,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
                         list.add(tableField);
                     }
                 } else {
-                    System.out.println(database);
                     if (database != null) {
                         if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
                             TableField tableField = getTableFiled(resultSet, datasourceRequest);
-                            System.out.println(new Gson().toJson(tableField));
                             list.add(tableField);
                         }
                     } else {

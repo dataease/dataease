@@ -342,12 +342,6 @@
             <artifactId>ashot</artifactId>
             <version>1.5.4</version>
         </dependency>
-        <dependency>
-            <groupId>io.dataease</groupId>
-            <artifactId>dataease-plugin-common</artifactId>
-            <version>1.18.11</version>
-            <scope>compile</scope>
-        </dependency>
 
 
     </dependencies>
