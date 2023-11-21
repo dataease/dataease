@@ -18,9 +18,8 @@ import { storeToRefs } from 'pinia'
 import { BASE_VIEW_CONFIG } from '../util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo } = storeToRefs(dvMainStore)
 
-const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
+const { nowPanelTrackInfo, nowPanelJumpInfo, dvInfo } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 const linkJumpRef = ref(null)
@@ -154,7 +153,7 @@ const noSenior = computed(() => {
 const linkJumpActiveChange = () => {
   // 直接触发刷新
   const params = {
-    sourceDvId: chart.value.sceneId,
+    sourceDvId: dvInfo.value.id,
     sourceViewId: chart.value.id,
     activeStatus: chart.value.jumpActive
   }
@@ -164,7 +163,7 @@ const linkJumpActiveChange = () => {
 }
 const linkageActiveChange = () => {
   const params = {
-    dvId: chart.value.sceneId,
+    dvId: dvInfo.value.id,
     sourceViewId: chart.value.id,
     activeStatus: chart.value.linkageActive
   }
