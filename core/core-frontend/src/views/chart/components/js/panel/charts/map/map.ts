@@ -78,6 +78,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     const geoJson = cloneDeep(await getGeoJsonFile(areaId))
     let options: ChoroplethOptions = {
+      preserveDrawingBuffer: true,
       map: {
         type: 'mapbox',
         style: 'blank'
