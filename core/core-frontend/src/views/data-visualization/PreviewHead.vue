@@ -98,7 +98,7 @@ watch(
         :weight="dvInfo.weight"
         :resource-type="dvInfo.type"
       />
-      <el-button v-if="dvInfo.weight > 6" type="primary" @click="dvEdit()">
+      <el-button class="custom-button" v-if="dvInfo.weight > 6" type="primary" @click="dvEdit()">
         <template #icon>
           <icon name="icon_edit_outlined"></icon>
         </template>
@@ -175,5 +175,9 @@ watch(
   margin-left: 4px;
   font-size: 16px;
   color: #646a73;
+}
+
+.custom-button {
+  margin-left: 12px;
 }
 </style>
