@@ -17,7 +17,7 @@ import io.dataease.plugins.common.base.domain.SysUser;
 import io.dataease.plugins.common.base.mapper.SysLoginLimitMapper;
 import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.service.PluginCommonService;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.dingtalk.service.DingtalkXpackService;

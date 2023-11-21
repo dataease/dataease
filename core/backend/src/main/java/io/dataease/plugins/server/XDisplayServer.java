@@ -1,7 +1,7 @@
 package io.dataease.plugins.server;
 
 
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
 import io.dataease.plugins.xpack.display.service.DisplayXpackService;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
