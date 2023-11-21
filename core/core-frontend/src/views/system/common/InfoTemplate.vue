@@ -2,7 +2,7 @@
   <div class="info-template-container">
     <div class="info-template-header">
       <div class="info-template-title">
-        <span>基础设置</span>
+        <span>{{ curTitle }}</span>
       </div>
       <div>
         <el-button type="primary" @click="edit">{{ t('commons.edit') }}</el-button>
@@ -40,7 +40,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, defineProps, PropType } from 'vue'
+import { ref, defineProps, PropType, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { SettingRecord, ToolTipRecord } from './SettingTemplate'
 const { t } = useI18n()
@@ -52,8 +52,28 @@ const props = defineProps({
   labelTooltips: {
     type: Array as PropType<ToolTipRecord[]>,
     default: () => []
+  },
+  settingData: {
+    type: Array as PropType<SettingRecord[]>,
+    default: () => []
+  },
+  settingTitle: {
+    type: String,
+    default: '基础设置'
   }
 })
+
+const curTitle = computed(() => {
+  return props.settingTitle
+})
+
+const loadList = () => {
+  if (props.settingData?.length) {
+    props.settingData.forEach(item => {
+      settingList.value.push(item)
+    })
+  }
+}
 
 const settingList = ref([] as SettingRecord[])
 
@@ -135,6 +155,9 @@ const init = () => {
   }
   if (props.settingKey === 'email') {
     loadEmail()
+  }
+  if (props.settingData?.length) {
+    loadList()
   }
 }
 const pwdItem = ref({})
