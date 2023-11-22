@@ -3211,12 +3211,10 @@ export default {
         this.dragCheckType(this.view.xaxis, 'd')
       }
       this.dragMoveDuplicate(this.view.xaxis, e)
-      if (this.view.type === 'scatter' && this.view.render === 'antv') {
-        if (this.view.xaxis[0] && this.view.xaxis[0].groupType === 'q') {
-          this.view.xaxis = [this.view.xaxis[0]]
-        } else {
-          this.dragCheckType(this.view.xaxis, 'd')
-        }
+      if (this.view.type === 'scatter' && this.view.render === 'antv' && this.view.xaxis[0] && this.view.xaxis[0].groupType === 'q') {
+        this.view.xaxis = [this.view.xaxis[0]]
+      } else {
+        this.dragCheckType(this.view.xaxis, 'd')
       }
       if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
