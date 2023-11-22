@@ -2175,6 +2175,12 @@ export default {
             x.sort = 'none'
           })
         }
+        if ((newVal.type !== 'scatter' || newVal.type === 'scatter' && newVal.render === 'echarts') && (oldVal.type === 'scatter' && oldVal.render === 'antv')) {
+          // 针对横轴内有指标的情况
+          if (this.view.xaxis && this.view.xaxis.length > 0 && this.view.xaxis[0] && this.view.xaxis[0].groupType === 'q') {
+            this.view.xaxis = []
+          }
+        }
         if (newVal.type !== oldVal.type || newVal.render !== oldVal.render) {
           this.setChartDefaultOptions()
           this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
