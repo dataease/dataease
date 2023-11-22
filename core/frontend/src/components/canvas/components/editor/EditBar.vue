@@ -574,6 +574,7 @@ export default {
 
 <style lang="scss" scoped>
 .bar-main {
+  line-height: 24px;
   position: absolute;
   float: right;
   z-index: 10;
