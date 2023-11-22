@@ -1097,7 +1097,9 @@ public class PrestoQueryProvider extends QueryProvider {
                     SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
                     String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                     String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
-                    whereValue = String.format(PrestoConstants.WHERE_BETWEEN, startTime, endTime);
+                    startTime = String.format("CAST('%s' AS %s)", startTime, "timestamp");
+                    endTime = String.format("CAST('%s' AS %s)", endTime, "timestamp");
+                    whereValue = String.format("%s AND %s",startTime, endTime);
                 } else {
                     whereValue = String.format(PrestoConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
