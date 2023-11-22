@@ -138,8 +138,8 @@
               <span class="icon iconfont icon-adaptor icon16" />
               <span class="text14 margin-left8">{{ $t('panel.auto_size_adaptor') }}</span>
               <el-switch
-                v-model="autoSizeAdaptorSwitch"
-                :class="[{['grid-active']: autoSizeAdaptorSwitch},'margin-left8']"
+                v-model="canvasStyleData.autoSizeAdaptor"
+                :class="[{['grid-active']: canvasStyleData.autoSizeAdaptor},'margin-left8']"
                 size="mini"
                 @change="showSizeAdaptorSwitchChange"
               />
@@ -285,7 +285,6 @@ export default {
     return {
       showPageLine: false,
       showGridSwitch: false,
-      autoSizeAdaptorSwitch: true,
       mobileLayoutInitStatus: false,
       isShowPreview: false,
       needToChange: [
@@ -346,7 +345,6 @@ export default {
     this.scale = this.canvasStyleData.scale
     this.mobileLayoutInitStatus = this.mobileLayoutStatus
     this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
-    this.autoSizeAdaptorSwitch = this.canvasStyleData.autoSizeAdaptor || true
     this.showPageLine = this.canvasStyleData.pdfPageLine?.showPageLine
     this.autoCache()
   },
@@ -640,7 +638,7 @@ export default {
     },
     showSizeAdaptorSwitchChange() {
       this.$store.commit('canvasChange')
-      this.canvasStyleData.autoSizeAdaptor = !this.canvasStyleData.autoSizeAdaptor
+      // this.canvasStyleData.autoSizeAdaptor = !this.canvasStyleData.autoSizeAdaptor
       eventBus.$emit('componentSizeAdaptorChange')
     },
     showPageLineChange() {
