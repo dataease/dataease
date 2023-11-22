@@ -20,7 +20,6 @@
       :border-color="borderColor"
       :border-active-color="borderActiveColor"
       :addable="isEdit && !mobileLayoutStatus"
-      :force-render="isEdit"
       @tab-add="addTab"
       @tab-click="handleClick"
     >
@@ -28,7 +27,7 @@
       <el-tab-pane
         v-for="(item, index) in element.options.tabList"
         :key="item.name+index"
-        :lazy="true"
+        :lazy="!isEdit"
         :name="item.name"
       >
         <span slot="label">
