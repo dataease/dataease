@@ -374,7 +374,7 @@ export default {
   computed: {
     // 首次加载且非编辑状态新复制的视图，使用外部filter
     initLoad() {
-      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad && this.canvasId === 'canvas-main'
+      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad
     },
     scaleCoefficient() {
       if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
@@ -422,7 +422,7 @@ export default {
     },
     filter() {
       const filter = {}
-      filter.filter = this.initLoad ? this.filters : this.cfilters
+      filter.filter = this.initLoad && this.cfilters?.length === 0 ? this.filters : this.cfilters
       filter.linkageFilters = this.element.linkageFilters
       filter.outerParamsFilters = this.element.outerParamsFilters
       filter.drill = this.drillClickDimensionList
