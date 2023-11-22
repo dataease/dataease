@@ -2865,9 +2865,8 @@ public class DataSetTableService {
 
                 visitBinaryExpression(likeExpression,
                         (likeExpression.isNot() ? " NOT" : "") + (likeExpression.isCaseInsensitive() ? " ILIKE " : " LIKE "));
-                String escape = likeExpression.getEscape();
-                if (escape != null) {
-                    buffer.append(" ESCAPE '").append(escape).append('\'');
+                if (likeExpression.getEscape() != null) {
+                    buffer.append(" ESCAPE '").append(likeExpression.getEscape()).append('\'');
                 }
             }
 

@@ -40,7 +40,7 @@ public class ApiProvider extends Provider {
     @Override
     public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        String response = execHttpRequest(apiDefinition, apiDefinition.getQueryTimeout() == null || apiDefinition.getQueryTimeout()<=0 ? 30 : apiDefinition.getQueryTimeout());
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout()<=0 ? 30 : apiDefinition.getApiQueryTimeout());
         return fetchResult(response, apiDefinition);
     }
 
@@ -68,7 +68,7 @@ public class ApiProvider extends Provider {
         List<String[]> dataList = new ArrayList<>();
         List<TableField> fieldList = new ArrayList<>();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        String response = execHttpRequest(apiDefinition, apiDefinition.getQueryTimeout() == null || apiDefinition.getQueryTimeout()<=0 ? 30 : apiDefinition.getQueryTimeout());
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout()<=0 ? 30 : apiDefinition.getApiQueryTimeout());
 
         fieldList = getTableFields(apiDefinition);
         result.put("fieldList", fieldList);
