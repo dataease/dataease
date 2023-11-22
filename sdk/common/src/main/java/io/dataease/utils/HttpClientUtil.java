@@ -148,7 +148,7 @@ public class HttpClientUtil {
     public static String post(String url, String json, HttpClientConfig config) {
         CloseableHttpClient httpClient = null;
         try {
-            buildHttpClient(url);
+            httpClient = buildHttpClient(url);
             HttpPost httpPost = new HttpPost(url);
             if (config == null) {
                 config = new HttpClientConfig();
