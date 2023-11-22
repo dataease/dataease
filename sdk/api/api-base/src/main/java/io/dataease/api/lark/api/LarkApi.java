@@ -1,5 +1,6 @@
 package io.dataease.api.lark.api;
 
+import io.dataease.api.lark.dto.LarkTokenRequest;
 import io.dataease.api.lark.vo.LarkInfoVO;
 import io.dataease.api.lark.dto.LarkSettingCreator;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -13,5 +14,8 @@ public interface LarkApi {
 
     @PostMapping("/create")
     void save(@RequestBody LarkSettingCreator creator);
+
+    @PostMapping("/token")
+    String larkToken(@RequestBody LarkTokenRequest request);
 
 }
