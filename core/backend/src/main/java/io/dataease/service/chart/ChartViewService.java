@@ -357,6 +357,10 @@ public class ChartViewService {
         }
         List<ChartViewFieldDTO> extStack = gson.fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        if (StringUtils.equalsIgnoreCase(view.getType(), "scatter") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+            xAxis.addAll(extStack);
+        }
+
         if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
             List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
             }.getType());
@@ -1882,7 +1886,15 @@ public class ChartViewService {
                     getIndex = i;
                 }
             }
-            if (StringUtils.equalsIgnoreCase(fieldType, "extStack")) {
+            boolean skipAddIndex = false;
+            if (StringUtils.equalsIgnoreCase(fieldType, "extStack") && StringUtils.equalsIgnoreCase("antv", view.getRender()) && StringUtils.equalsIgnoreCase("scatter", view.getType())) {
+                List<ChartViewFieldDTO> xAxis = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equalsIgnoreCase(xAxis.get(0).getGroupType(), "q")) {
+                    skipAddIndex = true;
+                }
+            }
+            if (StringUtils.equalsIgnoreCase(fieldType, "extStack") && !skipAddIndex) {
                 List<ChartViewFieldDTO> stack = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
                 }.getType());
                 index += stack.size();
