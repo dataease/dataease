@@ -377,14 +377,14 @@ export default {
       return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad
     },
     scaleCoefficient() {
-      if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
+      if (this.terminal === 'pc' && (!this.mobileLayoutStatus || this.showPosition === 'preview-wait')) {
         return 1.1
       } else {
         return 4.5
       }
     },
     scaleCoefficientType() {
-      if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
+      if (this.terminal === 'pc' && (!this.mobileLayoutStatus || this.showPosition === 'preview-wait')) {
         return 'pc'
       } else {
         return 'mobile'
