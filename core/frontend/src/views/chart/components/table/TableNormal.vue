@@ -326,7 +326,7 @@ export default {
         data = []
         this.resetPage()
       }
-      if (this.chart.data.detailFields?.length) {
+      if (this.chart.data?.detailFields?.length) {
         let result = []
         let groupRowIndex = 0
         data.forEach(item => {

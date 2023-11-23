@@ -244,7 +244,7 @@ export default {
   beforeDestroy() {
     clearInterval(this.scrollTimer)
     window.removeEventListener('resize', this.onResize)
-    this.myChart.destroy()
+    this.myChart?.destroy?.()
     this.myChart = null
   },
   methods: {

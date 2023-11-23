@@ -1576,7 +1576,8 @@ export default {
     map_line_theta_offset: '弧度',
     gauge_axis_label: '刻度标签',
     word_size_range: '字号区间',
-    word_spacing: '文字间隔'
+    word_spacing: '文字间隔',
+    axis_multi_select_tip: '按住 Ctrl 键或者 Shift 键再点击可多选'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
