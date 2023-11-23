@@ -3,7 +3,7 @@
     <el-aside class="geonetry-aside">
       <div class="geo-title">
         <span>{{ t('online_map.geometry') }}</span>
-        <span class="add-icon-span">
+        <span class="add-icon-span" @click="add()">
           <el-icon>
             <Icon name="icon_add_outlined"></Icon>
           </el-icon>
@@ -83,6 +83,7 @@
       </div>
     </el-main>
   </el-container>
+  <geometry-edit ref="editor" :tree-data="treeData" @saved="loadTreeData" />
 </template>
 
 <script lang="ts" setup>
@@ -93,9 +94,11 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { getGeoJsonFile } from '@/views/chart/components/js/util'
 import { cloneDeep } from 'lodash-es'
 import { setColorName } from '@/utils/utils'
+import GeometryEdit from './GeometryEdit.vue'
 const { t } = useI18n()
 const keyword = ref('')
 const treeData = ref([])
+const editor = ref()
 interface Tree {
   label: string
   children?: Tree[]
@@ -136,6 +139,10 @@ const loadTreeData = () => {
     })
 }
 
+const add = (pid?: string) => {
+  editor?.value.edit(pid)
+}
+
 loadTreeData()
 </script>
 
@@ -158,7 +165,7 @@ loadTreeData()
         line-height: 24px;
       }
       .add-icon-span {
-        display: none;
+        // display: none;
         color: #3370ff;
         height: 20px;
         width: 20px;
