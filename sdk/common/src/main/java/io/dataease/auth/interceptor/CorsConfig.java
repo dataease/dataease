@@ -17,7 +17,7 @@ public class CorsConfig implements WebMvcConfigurer {
     @Resource(name = "deCorsInterceptor")
     private CorsInterceptor corsInterceptor;
 
-    @Value("#{'${dataease.origin-list}'.split(',')}")
+    @Value("#{'${dataease.origin-list:http://127.0.0.1:8100}'.split(',')}")
     private List<String> originList;
 
     @Override
