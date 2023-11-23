@@ -15,5 +15,5 @@ public class LarkInfoVO implements Serializable {
 
     private String callBack;
 
-    private Boolean enable;
+    private Boolean enable = false;
 }
