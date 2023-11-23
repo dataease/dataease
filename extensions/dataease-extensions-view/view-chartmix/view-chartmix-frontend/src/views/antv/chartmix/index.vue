@@ -190,8 +190,10 @@ export default {
 
       this.myChart = new this.$chartmix(this.chartId, _params)
 
-      this.myChart.off('edge:click')
-      this.myChart.on('edge:click', this.antVAction)
+      this.myChart.off('point:click')
+      this.myChart.on('point:click', this.antVAction)
+      this.myChart.off('interval:click')
+      this.myChart.on('interval:click', this.antVAction)
 
       this.myChart.render();
 
@@ -342,6 +344,8 @@ export default {
           options: {
             data: _.map(t.data, (v) => {
               return {
+                quotaList: v.quotaList,
+                dimensionList: v.dimensionList,
                 key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
                 value: v.value,
                 i: _index,
@@ -401,6 +405,8 @@ export default {
           options: {
             data: _.map(t.data, (v) => {
               return {
+                quotaList: v.quotaList,
+                dimensionList: v.dimensionList,
                 key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
                 value: v.value,
                 i: _index,
