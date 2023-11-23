@@ -12,7 +12,7 @@ const formatterUrl = <T extends Node>(node: T, prefix: string) => {
       url = node.src
     }
 
-    if (url.includes(suffix)) {
+    if (url.includes(suffix) || url.includes('dataease-private')) {
       const currentUrlprefix = new URL(url).origin
       const newUrl = url.replace(currentUrlprefix, prefix)
       if (node instanceof HTMLLinkElement) {
