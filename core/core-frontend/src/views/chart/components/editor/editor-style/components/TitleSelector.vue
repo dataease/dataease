@@ -358,7 +358,14 @@ watch(
     >
       <div @keydown.stop @keyup.stop>
         <el-form-item :label="t('chart.remark')" class="form-item" prop="chartShowName">
-          <el-input type="textarea" autosize v-model="tempRemark" :maxlength="50" clearable />
+          <el-input
+            type="textarea"
+            autosize
+            v-model="tempRemark"
+            :maxlength="50"
+            clearable
+            :placeholder="t('chart.remark_placeholder')"
+          />
         </el-form-item>
       </div>
       <template #footer>

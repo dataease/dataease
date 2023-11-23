@@ -1,5 +1,10 @@
 <template>
-  <InfoTemplate :label-tooltips="tooltips" setting-key="basic" @edit="edit" />
+  <InfoTemplate
+    :label-tooltips="tooltips"
+    setting-key="basic"
+    setting-title="基础设置"
+    @edit="edit"
+  />
   <basic-edit ref="editor" />
 </template>
 

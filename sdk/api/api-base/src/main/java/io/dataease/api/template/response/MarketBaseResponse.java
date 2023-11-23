@@ -1,6 +1,7 @@
 package io.dataease.api.template.response;
 
 import io.dataease.api.template.dto.TemplateMarketDTO;
+import lombok.Data;
 
 import java.util.List;
 
@@ -8,6 +9,7 @@ import java.util.List;
  * @author : WangJiaHao
  * @date : 2023/11/6 17:43
  */
+@Data
 public class MarketBaseResponse {
     private String baseUrl;
 
@@ -20,5 +22,7 @@ public class MarketBaseResponse {
         this.baseUrl = baseUrl;
         this.contents = contents;
     }
+
+
 
 }
