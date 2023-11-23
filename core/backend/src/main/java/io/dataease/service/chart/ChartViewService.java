@@ -1294,7 +1294,9 @@ public class ChartViewService {
                 String compareFieldId = compareCalc.getField();// 选中字段
                 // 计算指标对应的下标
                 int dataIndex = 0;// 数据字段下标
-                if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+                    dataIndex = extStack.size() + i;
+                } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     dataIndex = xAxis.size() + extStack.size() + i;
                 } else {
                     dataIndex = xAxis.size() + i;
