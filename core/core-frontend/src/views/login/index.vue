@@ -16,6 +16,7 @@ import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import PreheatImage from '@/assets/preheat.png'
+import { isLarkPlatform } from '@/utils/utils'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
@@ -129,7 +130,7 @@ const showLoginImage = computed<boolean>(() => {
 const checkPlatform = () => {
   const flagArray = ['/casbi', 'oidcbi']
   const pathname = window.location.pathname
-  if (!flagArray.some(flag => pathname.includes(flag))) {
+  if (!flagArray.some(flag => pathname.includes(flag)) && !isLarkPlatform()) {
     cleanPlatformFlag()
   }
 }
