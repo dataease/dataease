@@ -1067,7 +1067,15 @@ export default {
     jumpClick(param) {
       let dimension, jumpInfo, sourceInfo
       // 如果有名称name 获取和name匹配的dimension 否则倒序取最后一个能匹配的
-      if (param.name) {
+      if (param.scatterSpecial) {
+        param.scatterSpecialData.dimensionList.forEach(dimensionItem => {
+          if (param.scatterSpecialData.field === dimensionItem.value) {
+            dimension = dimensionItem
+            sourceInfo = param.viewId + '#' + dimension.id
+            jumpInfo = this.nowPanelJumpInfo[sourceInfo]
+          }
+        })
+      } else if (param.name) {
         param.dimensionList.forEach(dimensionItem => {
           if (dimensionItem.id === param.name || dimensionItem.value === param.name) {
             dimension = dimensionItem
@@ -1091,6 +1099,7 @@ export default {
           }
         }
       }
+
       if (jumpInfo) {
         param.sourcePanelId = this.panelInfo.id
         param.sourceViewId = param.viewId
