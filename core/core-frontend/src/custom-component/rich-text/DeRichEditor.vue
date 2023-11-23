@@ -3,6 +3,7 @@
 </template>
 
 <script setup lang="ts">
+import { formatDataEaseBi } from '@/utils/url'
 //JS部分
 //在js中引入所需的主题和组件
 import tinymce from 'tinymce/tinymce'
@@ -58,9 +59,9 @@ const tinymceId = ref('vue-tinymce-' + +new Date() + ((Math.random() * 1000).toF
 const init = reactive({
   // inline: true, // 开启内联模式
   selector: '#' + tinymceId.value, //富文本编辑器的id,
-  language_url: '/tinymce-dataease-private/langs/zh_CN.js', // 语言包的路径，具体路径看自己的项目，文档后面附上中文js文件
+  language_url: formatDataEaseBi('/tinymce-dataease-private/langs/zh_CN.js'), // 语言包的路径，具体路径看自己的项目，文档后面附上中文js文件
   language: 'zh_CN', //语言
-  skin_url: '/tinymce-dataease-private/skins/ui/oxide', // skin路径，具体路径看自己的项目
+  skin_url: formatDataEaseBi('/tinymce-dataease-private/skins/ui/oxide'), // skin路径，具体路径看自己的项目
   height: 400, //编辑器高度
   branding: false, //是否禁用“Powered by TinyMCE”
   menubar: true, //顶部菜单栏显示
@@ -75,7 +76,7 @@ const init = reactive({
   nonbreaking_force_tab: false,
   paste_auto_cleanup_on_paste: false,
   file_picker_types: 'file',
-  content_css: '/tinymce-dataease-private/skins/content/default/content.css', //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
+  content_css: formatDataEaseBi('/tinymce-dataease-private/skins/content/default/content.css'), //以css文件方式自定义可编辑区域的css样式，css文件需自己创建并引入
   //图片上传
   images_upload_handler: blobInfo =>
     new Promise((resolve, reject) => {
