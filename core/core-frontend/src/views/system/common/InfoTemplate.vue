@@ -33,6 +33,9 @@
               </el-icon>
             </el-tooltip>
           </div>
+          <span v-else-if="item.pkey === '数据源检测时间间隔'">
+            <span>{{ item.pval + ' ' + executeTime + '执行一次' }}</span>
+          </span>
           <span v-else>{{ item.pval }}</span>
         </div>
       </div>
@@ -62,22 +65,35 @@ const props = defineProps({
     default: '基础设置'
   }
 })
-
+const executeTime = ref('0分0秒')
 const curTitle = computed(() => {
   return props.settingTitle
 })
 
 const loadList = () => {
+  settingList.value = []
   if (props.settingData?.length) {
     props.settingData.forEach(item => {
-      settingList.value.push(item)
+      if (item.pkey === '数据源检测频率') {
+        executeTime.value = getExecuteTime(item.pval)
+      } else {
+        settingList.value.push(item)
+      }
     })
   }
 }
 
+const getExecuteTime = val => {
+  const options = [
+    { value: 'minute', label: '分钟（执行时间：0秒）' },
+    { value: 'hour', label: '小时（执行时间：0分0秒）' }
+  ]
+  return options.filter(item => item.value === val)[0].label
+}
+
 const settingList = ref([] as SettingRecord[])
 
-const loadBasic = () => {
+/* const loadBasic = () => {
   settingList.value.push({
     pkey: '请求超时时间',
     pval: '100',
@@ -147,15 +163,9 @@ const loadEmail = () => {
     type: 'text',
     sort: 7
   })
-}
+} */
 
 const init = () => {
-  if (props.settingKey === 'basic') {
-    loadBasic()
-  }
-  if (props.settingKey === 'email') {
-    loadEmail()
-  }
   if (props.settingData?.length) {
     loadList()
   }
@@ -186,6 +196,9 @@ const emits = defineEmits(['edit'])
 const edit = () => {
   emits('edit')
 }
+defineExpose({
+  init
+})
 init()
 formatPwd()
 formatLabel()
