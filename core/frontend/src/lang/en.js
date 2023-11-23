@@ -1584,7 +1584,8 @@ export default {
     map_line_theta_offset: 'Radian',
     gauge_axis_label: 'Axis Label',
     word_size_range: 'Word Size Range',
-    word_spacing: 'Word Spacing'
+    word_spacing: 'Word Spacing',
+    axis_multi_select_tip: 'Hold down the Ctrl or Shift key and click to select more than one'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
