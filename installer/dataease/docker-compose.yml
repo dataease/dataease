@@ -11,6 +11,7 @@ services:
       - ${DE_BASE}/dataease2.0/logs:/opt/dataease2.0/logs
       - ${DE_BASE}/dataease2.0/data/static-resource:/opt/dataease2.0/data/static-resource
       - ${DE_BASE}/dataease2.0/cache:/opt/dataease2.0/cache
+      - ${DE_BASE}/dataease2.0/data/geo:/opt/dataease2.0/data/geo
     depends_on:
       DE_MYSQL_HOST:
         condition: service_healthy
