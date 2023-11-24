@@ -92,7 +92,7 @@ const getLicense = result => {
     status: result.status,
     corporation: result.license ? result.license.corporation : '',
     expired: result.license ? result.license.expired : '',
-    count: result.license ? result.license.count : '',
+    count: result.license ? result.license.count : 0,
     version: result.license ? result.license.version : '',
     edition: result.license ? result.license.edition : '',
     serialNo: result.license ? result.license.serialNo : '',
@@ -145,7 +145,7 @@ const update = (licKey: string) => {
       </div>
       <div class="item">
         <div class="label">{{ $t('about.auth_num') }}</div>
-        <div class="value">{{ license.count }}</div>
+        <div class="value">{{ `${license.count} 套` }}</div>
       </div>
       <div class="item">
         <div class="label">{{ $t('about.version') }}</div>
