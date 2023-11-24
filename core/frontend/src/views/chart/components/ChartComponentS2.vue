@@ -254,6 +254,9 @@ export default {
       if (this.chart.data && this.chart.data.fields) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
+        if (this.currentPage.pageSize < attr.size.tablePageSize) {
+          this.currentPage.page = 1
+        }
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
         if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
