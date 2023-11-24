@@ -1482,7 +1482,7 @@ export default {
     dimension_letter_space: 'Name Letter Space',
     font_family: 'Font Family',
     font_family_tip: 'The font will only take effect if it is installed on the operating system',
-    radar_max_tip: 'If the maximum value of the actual data is greater than the custom maximum value, the maximum value of the actual data will prevail.',
+    radar_min_max_tip: 'If the minimum value of the actual data is less than the custom minimum value, or the maximum value is greater than the custom maximum value, the actual data will prevail.',
     letter_space: 'Letter Space',
     font_shadow: 'Font Shadow',
     chart_area: 'Area',

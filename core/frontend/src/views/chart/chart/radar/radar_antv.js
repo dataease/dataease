@@ -1,6 +1,7 @@
 import { getLabel, getLegend, getPadding, getTheme, getTooltip } from '@/views/chart/chart/common/common_antv'
 import { Radar } from '@antv/g2plot'
 import { antVCustomColor } from '@/views/chart/chart/util'
+import { minBy, maxBy } from 'lodash'
 
 export function baseRadarOptionAntV(plot, container, chart, action) {
   // theme
@@ -124,8 +125,9 @@ export function baseRadarOptionAntV(plot, container, chart, action) {
         }
       }
       if (s.axisValue?.auto === false) {
-        yAxis.min = yAxis.minLimit = s.axisValue.min
-        const dataMax = _.maxBy(data, 'value')
+        const dataMin = minBy(data, 'value')
+        yAxis.min = yAxis.minLimit = Math.min(s.axisValue.min, dataMin.value)
+        const dataMax = maxBy(data, 'value')
         yAxis.max = yAxis.maxLimit = Math.max(s.axisValue.max, dataMax.value)
       }
     }
