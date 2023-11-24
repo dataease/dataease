@@ -2760,7 +2760,7 @@ public class DataSetTableService {
             }
         }
         if(CollectionUtils.isNotEmpty(repeat)){
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + ": " + String.valueOf(repeat));
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + "" + String.valueOf(repeat));
         }
     }
 
