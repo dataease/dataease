@@ -2436,10 +2436,11 @@ public class DataSetTableService {
             });
             data = (isPreview && noModelDataListener.getData().size() > 1000 ? new ArrayList<>(data.subList(0, 1000)) : data);
             if (isPreview) {
-                for (List<String> datum : data) {
-                    for (int i = 0; i < datum.size(); i++) {
-                        if (i < fields.size()) {
-                            cellType(datum.get(i), i, fields.get(i));
+                for (int i = 0; i < data.size(); i++) {
+                    List<String> datum = data.get(i);
+                    for (int j = 0; j < datum.size(); j++) {
+                        if (j < fields.size()) {
+                            cellType(datum.get(j), i, fields.get(j));
                         }
                     }
                 }
@@ -2759,7 +2760,7 @@ public class DataSetTableService {
             }
         }
         if(CollectionUtils.isNotEmpty(repeat)){
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + ": " + String.valueOf(repeat));
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + "" + String.valueOf(repeat));
         }
     }
 
