@@ -18,6 +18,7 @@ public class AreaNode implements Serializable {
     private String level;
     private String name;
     private String pid;
+    private boolean custom = false;
     /**
      * 国家代码
      */

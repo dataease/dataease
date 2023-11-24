@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, PropType } from 'vue'
+import { ref, reactive } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import type {
@@ -10,16 +10,12 @@ import type {
 } from 'element-plus-secondary'
 import request from '@/config/axios'
 import { GeometryFrom } from './interface'
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
 const { t } = useI18n()
 const dialogVisible = ref(false)
 const loadingInstance = ref(null)
 const geoForm = ref<FormInstance>()
-const props = defineProps({
-  treeData: {
-    type: Array as PropType<unknown[]>,
-    default: () => []
-  }
-})
 const geoFile = ref()
 const fileName = ref()
 const state = reactive({
@@ -27,7 +23,8 @@ const state = reactive({
     pid: null,
     code: null,
     name: null
-  })
+  }),
+  treeData: []
 })
 const treeProps = {
   value: 'id',
@@ -60,6 +57,8 @@ const rule = reactive<FormRules>({
 })
 
 const edit = (pid?: string) => {
+  const key = 'de-area-tree'
+  state.treeData = wsCache.get(key)
   state.form.pid = pid
   state.form.code = null
   state.form.name = null
@@ -75,9 +74,10 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await formEl.validate((valid, fields) => {
     if (valid) {
       const param = { ...state.form }
+      const formData = buildFormData(geoFile.value, param)
       showLoading()
       request
-        .post({ url: '/sysParameter/map/save', data: param })
+        .post({ url: '/geometry/save', data: formData, headersType: 'multipart/form-data;' })
         .then(res => {
           if (!res.msg) {
             ElMessage.success(t('common.save_success'))
@@ -136,6 +136,14 @@ const uploadValidate = file => {
   }
   return true
 }
+const buildFormData = (file, param) => {
+  const formData = new FormData()
+  if (file) {
+    formData.append('file', file)
+  }
+  formData.append('request', new Blob([JSON.stringify(param)], { type: 'application/json' }))
+  return formData
+}
 defineExpose({
   edit
 })
@@ -163,7 +171,7 @@ defineExpose({
           node-key="id"
           v-model="state.form.pid"
           :props="treeProps"
-          :data="props.treeData"
+          :data="state.treeData"
           check-strictly
           :render-after-expand="false"
           :placeholder="t('common.please_select')"

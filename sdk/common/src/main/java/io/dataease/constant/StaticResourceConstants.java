@@ -16,8 +16,10 @@ public class StaticResourceConstants {
     public static String WORK_DIR = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "static-resource" + FILE_SEPARATOR;
 
     public static String MAP_DIR  = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "map";
+    public static String CUSTOM_MAP_DIR  = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "geo";
 
     public static String MAP_URL = "/map";
+    public static String GEO_URL = "/geo";
 
     /**
      * Upload prefix.
