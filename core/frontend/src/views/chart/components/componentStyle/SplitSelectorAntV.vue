@@ -80,7 +80,7 @@
           >
             <div
               slot="content"
-              v-html="$t('chart.radar_max_tip')"
+              v-html="$t('chart.radar_min_max_tip')"
             />
             <i
               class="el-icon-info"

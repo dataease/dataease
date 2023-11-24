@@ -1479,7 +1479,7 @@ export default {
     dimension_letter_space: '名称字间距',
     font_family: '字体',
     font_family_tip: '只有操作系统上已安装该字体才能生效',
-    radar_max_tip: '如果实际数据的最大值大于自定义的最大值，将以实际数据的最大值为准。',
+    radar_min_max_tip: '如果实际数据的最小值小于自定义的最小值，或者最大值大于自定义的最大值，将以实际数据为准。',
     letter_space: '字间距',
     font_shadow: '字体阴影',
     chart_area: '面积图',
