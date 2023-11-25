@@ -18,6 +18,7 @@ public class AuthConstant {
     public final static String USER_IMPORT_ERROR_KEY = "USER-IMPORT-ERROR-KEY";
 
     public final static String LINK_TOKEN_KEY = "X-DE-LINK-TOKEN";
+    public final static String ASK_TOKEN_KEY = "X-DE-ASK-TOKEN";
 
     public final static String DE_EXECUTE_VERSION = "X-DE-EXECUTE-VERSION";
 
