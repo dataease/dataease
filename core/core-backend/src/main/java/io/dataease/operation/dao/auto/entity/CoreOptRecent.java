@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-10-08
+ * @since 2023-11-26
  */
 @TableName("core_opt_recent")
 public class CoreOptRecent implements Serializable {
@@ -25,6 +25,11 @@ public class CoreOptRecent implements Serializable {
      * 资源ID
      */
     private Long resourceId;
+
+    /**
+     * 资源名称
+     */
+    private String resourceName;
 
     /**
      * 用户ID
@@ -60,6 +65,14 @@ public class CoreOptRecent implements Serializable {
 
     public void setResourceId(Long resourceId) {
         this.resourceId = resourceId;
+    }
+
+    public String getResourceName() {
+        return resourceName;
+    }
+
+    public void setResourceName(String resourceName) {
+        this.resourceName = resourceName;
     }
 
     public Long getUid() {
@@ -99,6 +112,7 @@ public class CoreOptRecent implements Serializable {
         return "CoreOptRecent{" +
         "id = " + id +
         ", resourceId = " + resourceId +
+        ", resourceName = " + resourceName +
         ", uid = " + uid +
         ", resourceType = " + resourceType +
         ", optType = " + optType +

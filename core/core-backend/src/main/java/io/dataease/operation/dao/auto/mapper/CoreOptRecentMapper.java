@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-10-08
+ * @since 2023-11-26
  */
 @Mapper
 public interface CoreOptRecentMapper extends BaseMapper<CoreOptRecent> {

@@ -20,7 +20,7 @@ CREATE TABLE `visualization_template`
 
 BEGIN;
 INSERT INTO `core_menu`
-VALUES (19, 0, 2, 'template-market', 'template-market', 4, NULL, '/template-market', 0, 1, 0);
+VALUES (19, 0, 2, 'template-market', 'template-market', 4, NULL, '/template-market', 0, 1, 1);
 INSERT INTO `core_menu`
 VALUES (20, 15, 2, 'template-setting', 'system/template-setting', 4, 'icon_template', '/template-setting', 0, 1, 1);
 COMMIT;
@@ -35,3 +35,8 @@ CREATE TABLE `visualization_template_extend_data` (
                                                       `copy_id` varchar(255) DEFAULT NULL,
                                                       PRIMARY KEY (`id`)
 );
+
+
+ALTER TABLE `core_opt_recent`
+    MODIFY COLUMN `resource_id` bigint NULL COMMENT '资源ID' AFTER `id`,
+    ADD COLUMN `resource_name` varchar(255) NULL COMMENT '资源名称' AFTER `resource_id`;

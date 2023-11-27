@@ -2,14 +2,24 @@
   <el-row style="width: 100%">
     <el-row style="display: table; width: 100%">
       <el-col style="float: left" :class="state.asideActive ? 'aside-active' : 'aside-inActive'">
-        <el-icon v-show="!state.asideActive" class="insert" @click="asideActiveChange(true)"
-          ><DArrowRight
-        /></el-icon>
-        <el-row v-show="state.asideActive" style="padding: 12px 12px 0">
+        <el-tooltip class="box-item" effect="dark" content="展开" placement="right">
+          <el-icon v-show="!state.asideActive" class="insert" @click="asideActiveChange(true)">
+            <Icon name="market-expand"></Icon>
+          </el-icon>
+        </el-tooltip>
+        <el-row v-show="state.asideActive" style="padding: 24px 12px 0">
           <el-row style="align-items: center">
-            <el-icon class="insert" @click="closePreview()"><Close /></el-icon>
-            <span class="main-title">{{ t('visualization.template_preview') }}</span>
-            <el-icon class="insert" @click="asideActiveChange(false)"><DArrowLeft /></el-icon>
+            <el-breadcrumb separator-icon="ArrowRight">
+              <el-breadcrumb-item class="custom-breadcrumb-item" @click="closePreview()">{{
+                t('visualization.template_preview')
+              }}</el-breadcrumb-item>
+              <el-breadcrumb-item>预览</el-breadcrumb-item>
+            </el-breadcrumb>
+            <el-tooltip class="box-item" effect="dark" content="收起" placement="right">
+              <el-icon class="insert-retract" @click="asideActiveChange(false)">
+                <Icon name="market-retract"></Icon>
+              </el-icon>
+            </el-tooltip>
           </el-row>
           <el-row class="margin-top16 search-area">
             <el-input
@@ -29,12 +39,17 @@
           </el-row>
           <el-row v-show="state.extFilterActive">
             <el-select
-              v-model="state.marketActiveTab"
+              v-model="state.templateType"
               class="margin-top16"
               size="small"
               placeholder="请选择"
             >
-              <el-option v-for="item in state.marketTabs" :key="item" :label="item" :value="item" />
+              <el-option
+                v-for="item in state.templateTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
             </el-select>
           </el-row>
           <el-divider />
@@ -45,20 +60,30 @@
           class="aside-list"
           :class="state.extFilterActive ? 'aside-list-filter-active' : ''"
         >
-          <template-market-preview-item
-            v-for="templateItem in state.currentMarketTemplateShowList"
-            v-show="templateItem.showFlag"
-            :key="templateItem.id"
-            :template="templateItem"
-            :base-url="state.baseUrl"
-            :active="active(templateItem)"
-            @previewTemplate="previewTemplate"
-          />
+          <el-collapse v-show="state.hasResult" v-model="activeCategories" class="market-collapse">
+            <el-collapse-item
+              themes="light"
+              v-for="(categoryTemplate, index) in state.marketTemplatePreviewShowList"
+              :name="categoryTemplate['categoryType']"
+              :key="index"
+              :title="categoryTemplate['categoryType']"
+            >
+              <template-market-preview-item
+                v-for="templateItem in categoryTemplate['contents']"
+                v-show="templateItem.showFlag"
+                :key="templateItem.id"
+                :template="templateItem"
+                :base-url="state.baseUrl"
+                :active="active(templateItem)"
+                @previewTemplate="previewTemplate"
+              />
+            </el-collapse-item>
+          </el-collapse>
           <el-row v-show="!state.hasResult" class="custom-position">
             <div style="text-align: center">
               <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"></Icon>
               <br />
-              <span>{{ t('commons.no_result') }}</span>
+              <span>没有找到相关模版</span>
             </div>
           </el-row>
         </el-row>
@@ -89,10 +114,11 @@
 </template>
 
 <script setup lang="ts">
-import { searchMarket, getCategories } from '@/api/templateMarket'
-import { onMounted, reactive, watch } from 'vue'
+import { searchMarketPreview } from '@/api/templateMarket'
+import { onMounted, reactive, watch, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import TemplateMarketPreviewItem from '@/views/template-market/component/TemplateMarketPreviewItem.vue'
+import { deepCopy } from '@/utils/utils'
 const { t } = useI18n()
 
 const props = defineProps({
@@ -103,6 +129,7 @@ const props = defineProps({
 })
 
 const emits = defineEmits(['templateApply', 'closeDialog', 'closePreview'])
+const activeCategories = ref([])
 
 const state = reactive({
   hasResult: true,
@@ -117,13 +144,29 @@ const state = reactive({
   curApplyTemplate: null,
   folderSelectShow: false,
   baseUrl: 'https://dataease.io/templates',
-  currentMarketTemplateShowList: [],
+  marketTemplatePreviewShowList: [],
+  categories: [],
   networkStatus: true,
-  curTemplate: null
+  curTemplate: null,
+  templateType: 'all',
+  templateTypeOptions: [
+    {
+      value: 'all',
+      label: '全部类型'
+    },
+    {
+      value: 'PANEL',
+      label: '仪表板'
+    },
+    {
+      value: 'SCREEN',
+      label: '大屏'
+    }
+  ]
 })
 
 watch(
-  () => state.marketActiveTab,
+  () => state.templateType,
   value => {
     initTemplateShow()
   }
@@ -139,39 +182,41 @@ watch(
 watch(
   () => props.previewId,
   value => {
-    state.currentMarketTemplateShowList.forEach(template => {
-      if (value === template.id) {
-        previewTemplate(template)
-      }
+    state.marketTemplatePreviewShowList.forEach(categoryTemplates => {
+      categoryTemplates.contents.forEach(template => {
+        if (props.previewId === template.id) {
+          previewTemplate(template)
+        }
+      })
     })
   }
 )
 
-const initMarketTemplate = async () => {
-  await searchMarket()
+const initMarketTemplate = () => {
+  searchMarketPreview()
     .then(rsp => {
       state.baseUrl = rsp.data.baseUrl
-      state.currentMarketTemplateShowList = rsp.data.contents
+      state.marketTemplatePreviewShowList = rsp.data.contents
       state.hasResult = true
+      state.categories = rsp.data.categories
+      activeCategories.value = deepCopy(state.categories)
       if (props.previewId) {
-        state.currentMarketTemplateShowList.forEach(template => {
-          if (props.previewId === template.id) {
-            previewTemplate(template)
-          }
+        state.marketTemplatePreviewShowList.forEach(categoryTemplates => {
+          categoryTemplates.contents.forEach(template => {
+            if (props.previewId === template.id) {
+              previewTemplate(template)
+            }
+          })
         })
       }
     })
     .catch(() => {
       state.networkStatus = false
     })
-  getCategories()
-    .then(rsp => {
-      state.marketTabs = rsp.data
-      state.marketActiveTab = state.marketTabs[0]
-    })
-    .catch(() => {
-      state.networkStatus = false
-    })
+}
+
+const getGroupTree = () => {
+  // do getGroupTree
 }
 
 const normalizer = node => {
@@ -195,26 +240,27 @@ const handleClick = item => {
 
 const initTemplateShow = () => {
   state.hasResult = false
-  state.currentMarketTemplateShowList.forEach(template => {
-    template.showFlag = templateShow(template)
-    if (template.showFlag) {
-      state.hasResult = true
-    }
+  state.marketTemplatePreviewShowList.forEach(categoryTemplates => {
+    categoryTemplates.contents.forEach(template => {
+      template.showFlag = templateShow(template)
+      if (template.showFlag) {
+        state.hasResult = true
+      }
+    })
   })
+  activeCategories.value = deepCopy(state.categories)
 }
 
 const templateShow = templateItem => {
-  let categoryMarch = false
+  let templateTypeMarch = false
   let searchMarch = false
-  templateItem.categories.forEach(category => {
-    if (category.name === state.marketActiveTab) {
-      categoryMarch = true
-    }
-  })
+  if (state.templateType === 'all' || templateItem.templateType === state.templateType) {
+    templateTypeMarch = true
+  }
   if (!state.searchText || templateItem.title.indexOf(state.searchText) > -1) {
     searchMarch = true
   }
-  return categoryMarch && searchMarch
+  return templateTypeMarch && searchMarch
 }
 
 const previewTemplate = template => {
@@ -248,11 +294,25 @@ onMounted(() => {
 </script>
 
 <style lang="less" scoped>
+.market-collapse {
+  width: 100%;
+  border: 0;
+  ::v-deep(.ed-collapse-item__content) {
+    padding: 8px 0;
+    border: 0;
+  }
+  ::v-deep(.ed-collapse-item__header) {
+    border: 0;
+  }
+  ::v-deep(.ed-collapse-item__wrap) {
+    border: 0;
+    background-color: rgba(245, 246, 247, 1);
+  }
+}
 .aside-list {
   padding: 0px 12px 12px 12px;
   width: 100%;
   height: calc(100vh - 200px);
-  overflow-x: hidden;
   overflow-y: auto;
 }
 
@@ -323,14 +383,13 @@ onMounted(() => {
   flex-flow: row nowrap;
   color: #646a73;
   font-weight: 400;
+  width: 100%;
 }
 
 .aside-active {
   width: 206px;
   height: calc(100vh - 56px);
-  overflow-x: hidden;
-  overflow-y: auto;
-  background-color: var(--ContentBG, #ffffff);
+  background-color: rgba(245, 246, 247, 1);
 }
 
 .aside-inActive {
@@ -340,6 +399,7 @@ onMounted(() => {
 
 .main-area-active {
   width: calc(100% - 206px) !important;
+  background: #ffffff;
 }
 
 .main-area {
@@ -397,8 +457,12 @@ onMounted(() => {
   }
 }
 
-.insert {
+.insert-retract {
+  position: absolute;
+  left: 176px;
+  top: 2px;
   display: inline-block;
+  font-size: 34px;
   font-weight: 400 !important;
   font-family: PingFang SC;
   line-height: 1;
@@ -416,12 +480,31 @@ onMounted(() => {
   &:active {
     color: #000;
     border-color: #3a8ee6;
-    background-color: red;
     outline: 0;
   }
 
   &:hover {
-    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6;
+  }
+}
+
+.insert {
+  font-size: 34px;
+  margin-top: 24px;
+  margin-left: -8px;
+  display: inline-block;
+  font-weight: 400 !important;
+  cursor: pointer;
+  color: #646a73;
+  transition: 0.1s;
+  &:active {
+    color: #000;
+    border-color: #3a8ee6;
+    outline: 0;
+  }
+
+  &:hover {
+    margin-left: -6px;
     color: #3a8ee6;
   }
 }
@@ -485,5 +568,12 @@ onMounted(() => {
 .search-area {
   width: 100%;
   position: relative;
+}
+
+.custom-breadcrumb-item {
+  cursor: pointer;
+  ::v-deep(.ed-breadcrumb__inner) {
+    color: rgba(100, 106, 115, 1);
+  }
 }
 </style>

@@ -9,7 +9,7 @@ public class OptConstants {
     public static final class OPT_TYPE {
         //新建
         public static final int NEW = 1;
-        //新建
+        //更新
         public static final int UPDATE = 2;
         //删除
         public static final int DELETE = 3;
@@ -26,6 +26,8 @@ public class OptConstants {
         public static final int DATASET = 4;
         //数据源
         public static final int DATASOURCE = 5;
+        //模版
+        public static final int TEMPLATE = 6;
     }
 
 }

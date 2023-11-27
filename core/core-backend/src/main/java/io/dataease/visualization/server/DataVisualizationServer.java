@@ -15,11 +15,13 @@ import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
+import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.CommonConstants;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataMapper;
@@ -79,6 +81,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private VisualizationTemplateExtendDataMapper templateExtendDataMapper;
 
+    @Resource
+    private CoreOptRecentManage coreOptRecentManage;
 
     @Override
     @XpackInteract(value = "dataVisualizationServer", original = true)
@@ -257,6 +261,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
             staticResource = templateFileInfo.getStaticResource();
             name = templateFileInfo.getName();
             dvType = templateFileInfo.getDvType();
+            // 模版市场记录
+            coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE,OptConstants.OPT_TYPE.NEW);
         }
         // 解析动态数据
         Map<String, String> dynamicDataMap = JsonUtil.parseObject(dynamicData, Map.class);

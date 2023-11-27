@@ -1,14 +1,18 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, shallowRef, computed } from 'vue'
+import { ref, shallowRef, computed, reactive, watch, nextTick } from 'vue'
 
-import imgtest from '@/assets/img/dataease-10000Star.jpg'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import ShortcutTable from './ShortcutTable.vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { useRouter } from 'vue-router'
+import { searchMarketRecommend } from '@/api/templateMarket'
+import TemplateBranchItem from '@/views/workbranch/TemplateBranchItem.vue'
+import { ElMessage } from 'element-plus-secondary'
+import { decompression } from '@/api/visualization/dataVisualization'
+import { useCache } from '@/hooks/web/useCache'
 const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
@@ -16,9 +20,8 @@ const requestStore = useRequestStoreWithOut()
 const { t } = useI18n()
 const busiDataMap = computed(() => interactiveStore.getData)
 const busiCountCardList = ref([])
-
-const showTemplate = ref(false)
-
+const { wsCache } = useCache()
+const { push } = useRouter()
 const router = useRouter()
 
 const quickCreationList = shallowRef([
@@ -45,11 +48,89 @@ const handleExpandFold = () => {
   expandFold.value = expandFold.value === 'expand' ? 'fold' : 'expand'
 }
 
-const tabBtnList = ['推荐仪表板', t('auth.screen'), '应用模版']
-const activeTabBtn = ref('推荐仪表板')
+const showTemplate = computed(() => {
+  return state.networkStatus && state.hasResult
+})
+
+const activeTabChange = value => {
+  activeTabBtn.value = value
+}
+
+const tabBtnList = [
+  {
+    name: '推荐仪表板',
+    value: 'PANEL'
+  },
+  {
+    name: t('auth.screen'),
+    value: 'SCREEN'
+  },
+  {
+    name: '应用模版',
+    value: 'APP'
+  }
+]
+const activeTabBtn = ref('PANEL')
 const typeList = quickCreationList.value.map(ele => ele.name)
 typeList.unshift('all_types')
 
+const state = reactive({
+  templateType: 'PANEL',
+  baseUrl: null,
+  marketTemplatePreviewShowList: [],
+  hasResult: false,
+  networkStatus: true,
+  loading: false,
+  dvCreateForm: {
+    resourceName: null,
+    name: null,
+    pid: null,
+    nodeType: 'panel',
+    templateUrl: null,
+    newFrom: 'new_market_template',
+    panelType: 'self',
+    panelStyle: {},
+    panelData: '[]'
+  }
+})
+
+watch(
+  () => activeTabBtn.value,
+  value => {
+    initTemplateShow()
+  }
+)
+
+const initMarketTemplate = async () => {
+  await searchMarketRecommend()
+    .then(rsp => {
+      state.baseUrl = rsp.data.baseUrl
+      state.marketTemplatePreviewShowList = rsp.data.contents
+      state.hasResult = true
+      initTemplateShow()
+    })
+    .catch(() => {
+      state.networkStatus = false
+    })
+}
+
+const initTemplateShow = () => {
+  state.hasResult = false
+  state.marketTemplatePreviewShowList.forEach(template => {
+    template.showFlag = templateShowCur(template)
+    if (template.showFlag) {
+      state.hasResult = true
+    }
+  })
+}
+
+const templateShowCur = templateItem => {
+  let templateTypeMarch = false
+  if (activeTabBtn.value === templateItem.templateType) {
+    templateTypeMarch = true
+  }
+  return templateTypeMarch
+}
 const fillCardInfo = () => {
   for (const key in busiDataMap.value) {
     if (key !== '3') {
@@ -99,7 +180,48 @@ const createDatasource = () => {
   const baseUrl = '#/data/datasource?opt=create'
   window.open(baseUrl, '_blank')
 }
+
+const templatePreview = previewId => {
+  wsCache.set(`template-preview-id`, previewId)
+  toTemplateMarket()
+}
+
+const templateApply = template => {
+  state.dvCreateForm.name = template.title
+  state.dvCreateForm.templateUrl = template.metas.theme_repo
+  state.dvCreateForm.resourceName = template.id
+  apply()
+}
+
+const apply = () => {
+  if (!state.dvCreateForm.templateUrl) {
+    ElMessage.warning('未获取模板下载链接请联系模板市场官方')
+    return false
+  }
+  state.loading = true
+  decompression(state.dvCreateForm)
+    .then(response => {
+      state.loading = false
+      const templateData = response.data
+      // do create
+      wsCache.set(`de-template-data`, JSON.stringify(templateData))
+      const baseUrl =
+        templateData.type === 'dataV'
+          ? '#/dvCanvas?opt=create&createType=template'
+          : '#/dashboard?opt=create&createType=template'
+      window.open(baseUrl, '_blank')
+    })
+    .catch(() => {
+      state.loading = false
+    })
+}
+
+const toTemplateMarket = () => {
+  push('/template-market/index')
+}
+
 fillCardInfo()
+initMarketTemplate()
 </script>
 
 <template>
@@ -161,11 +283,11 @@ fillCardInfo()
       </div>
     </div>
     <div class="template-market-dashboard">
-      <div v-if="showTemplate" class="template-market">
+      <div class="template-market">
         <div class="label">
           模版市场
           <div class="expand-all">
-            <button class="all flex-center">查看全部</button>
+            <button class="all flex-center" @click="toTemplateMarket">查看全部</button>
             <el-divider direction="vertical" />
             <button @click="handleExpandFold" class="expand flex-center">
               {{ t(`visualization.${expandFold}`) }}
@@ -175,37 +297,37 @@ fillCardInfo()
         <template v-if="expandFold === 'fold'">
           <div class="tab-btn">
             <div
-              @click="activeTabBtn = ele"
               v-for="ele in tabBtnList"
-              :key="ele"
-              :class="activeTabBtn === ele && 'active'"
+              :key="ele.value"
+              :class="activeTabBtn === ele.value && 'active'"
+              @click="activeTabChange(ele.value)"
               class="main-btn"
             >
-              {{ ele }}
+              {{ ele.name }}
             </div>
           </div>
-          <div class="template-list">
-            <div class="template">
-              <div class="photo">
-                <img :src="imgtest" alt="" />
-              </div>
-              <div class="apply">
-                <span title="电子银行业务分析" class="name ellipsis"> 电子银行业务分析 </span>
-                <el-button class="flex-center" secondary>{{ t('dataset.preview') }}</el-button>
-                <el-button class="flex-center" type="primary">{{ t('commons.apply') }}</el-button>
-              </div>
-            </div>
-            <div class="template">
-              <div class="photo">
-                <img :src="imgtest" alt="" />
-              </div>
-              <div class="apply">
-                <span title="电子银行业务分析" class="name ellipsis"> 电子银行业务分析 </span>
-                <el-button class="flex-center" secondary>{{ t('dataset.preview') }}</el-button>
-                <el-button class="flex-center" type="primary">{{ t('commons.apply') }}</el-button>
-              </div>
-            </div>
+          <div class="template-list" v-show="state.networkStatus && state.hasResult">
+            <template-branch-item
+              v-for="(template, index) in state.marketTemplatePreviewShowList"
+              v-show="template['showFlag']"
+              :key="index"
+              :template="template"
+              :base-url="state.baseUrl"
+              @templateApply="templateApply"
+              @templatePreview="templatePreview"
+            >
+            </template-branch-item>
           </div>
+          <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
+            <div style="text-align: center">
+              <Icon name="no_result" class="no-result"></Icon>
+              <br />
+              <span class="no-result-tips">没有找到相关模版</span>
+            </div>
+          </el-row>
+          <el-row v-show="!state.networkStatus" class="template-empty">
+            {{ t('visualization.market_network_tips') }}
+          </el-row>
         </template>
       </div>
       <shortcut-table :expand="expandFold === 'expand'" />
@@ -473,78 +595,25 @@ fillCardInfo()
       .template-list {
         display: flex;
         margin-left: -16px;
-        .template {
-          border: 1px solid #d9d9d9;
-          border-radius: 4px;
-          display: flex;
-          flex-wrap: wrap;
-          width: 181px;
-          height: 141px;
-          margin-left: 16px;
-          position: relative;
-
-          .photo {
-            padding: 4px;
-            padding-bottom: 0;
-            height: 101px;
-            img {
-              width: 100%;
-              height: 100%;
-              border-top-left-radius: 4px;
-              border-top-right-radius: 4px;
-            }
-          }
-
-          .apply {
-            padding: 8px 12px;
-            background: #fff;
-            border-top: 1px solid #d9d9d9;
-            position: absolute;
-            width: 100%;
-            left: 0;
-            bottom: 0;
-            height: 39px;
-            display: flex;
-            flex-wrap: wrap;
-            border-bottom-left-radius: 4px;
-            border-bottom-right-radius: 4px;
-            justify-content: space-between;
-
-            .ed-button {
-              min-width: 73px;
-              height: 28px;
-              display: none;
-              font-size: 12px;
-              line-height: 20px;
-              padding: 0;
-              margin-top: 8px;
-              & + .ed-button {
-                margin-left: 8px;
-              }
-            }
-            .name {
-              color: #1f2329;
-              font-family: PingFang SC;
-              font-size: 14px;
-              font-style: normal;
-              font-weight: 500;
-              line-height: 22px;
-              width: 100%;
-            }
-          }
-
-          &:hover {
-            box-shadow: 0px 6px 24px 0px rgba(31, 35, 41, 0.08);
-            .apply {
-              height: 73px;
-            }
-            .ed-button {
-              display: block;
-            }
-          }
-        }
       }
     }
   }
+}
+
+.template-empty {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background: rgba(239, 240, 241, 1);
+  color: rgba(100, 106, 115, 1);
+  min-height: 60px;
+}
+.no-result {
+  width: 74px;
+  height: 74px;
+}
+.no-result-tips {
+  font-size: 14px;
+  color: rgba(100, 106, 115, 1);
 }
 </style>
