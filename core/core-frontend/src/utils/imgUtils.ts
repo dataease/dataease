@@ -10,19 +10,24 @@ const { canvasStyleData, componentData, canvasViewInfo, canvasViewDataInfo, dvIn
   storeToRefs(dvMainStore)
 const basePath = import.meta.env.VITE_API_BASEPATH
 
+export function formatterUrl(url: string) {
+  return url.replace('//de2api', '/de2api')
+}
 export function imgUrlTrans(url) {
   if (url) {
     if (typeof url === 'string' && url.indexOf('static-resource') > -1) {
       const rawUrl = url
         ? (basePath.endsWith('/') ? basePath.substring(0, basePath.length - 1) : basePath) + url
         : null
-      return window.DataEaseBi
-        ? `${window.DataEaseBi.baseUrl}${
-            rawUrl.startsWith('/api') ? rawUrl.slice(5) : rawUrl
-          }`.replace('com//', 'com/')
-        : rawUrl
+      return formatterUrl(
+        window.DataEaseBi
+          ? `${window.DataEaseBi.baseUrl}${
+              rawUrl.startsWith('/api') ? rawUrl.slice(5) : rawUrl
+            }`.replace('com//', 'com/')
+          : rawUrl
+      )
     } else {
-      return url.replace('com//', 'com/')
+      return formatterUrl(url.replace('com//', 'com/'))
     }
   }
 }

@@ -7,7 +7,7 @@
     <div class="container-sys-param">
       <map-setting v-if="activeName === 'map'" />
       <basic-info v-if="activeName === 'basic'" />
-      <email-info v-if="activeName === 'email'" />
+      <!-- <email-info v-if="activeName === 'email'" /> -->
     </div>
   </div>
 </template>
@@ -17,12 +17,12 @@ import { ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import MapSetting from './map/MapSetting.vue'
 import BasicInfo from './basic/BasicInfo.vue'
-import EmailInfo from './email/EmailInfo.vue'
+/* import EmailInfo from './email/EmailInfo.vue' */
 const { t } = useI18n()
 
 const tabArray = [
   { label: '基础设置', name: 'basic' },
-  { label: '邮件设置', name: 'email' },
+  /* { label: '邮件设置', name: 'email' }, */
   { label: '地图设置', name: 'map' }
   /* {label: '引擎设置', name: 'engine'}, */
 ]

@@ -421,10 +421,8 @@ export const getGeoJsonFile = async (areaId: string): Promise<FeatureCollection>
   const mapStore = useMapStoreWithOut()
   let geoJson = mapStore.mapCache[areaId]
   if (!geoJson) {
-    const country = areaId.slice(0, 3)
-    geoJson = await getGeoJson(country, areaId).then(result => {
-      return result.data
-    })
+    const res = await getGeoJson(areaId)
+    geoJson = res.data
     mapStore.setMap({ id: areaId, geoJson })
   }
   return toRaw(geoJson)

@@ -26,17 +26,32 @@ VALUES (20, 15, 2, 'template-setting', 'system/template-setting', 4, 'icon_templ
 COMMIT;
 
 DROP TABLE IF EXISTS `visualization_template_extend_data`;
-CREATE TABLE `visualization_template_extend_data` (
-                                                      `id` bigint NOT NULL,
-                                                      `dv_id` bigint DEFAULT NULL,
-                                                      `view_id` bigint DEFAULT NULL,
-                                                      `view_details` longtext,
-                                                      `copy_from` varchar(255) DEFAULT NULL,
-                                                      `copy_id` varchar(255) DEFAULT NULL,
-                                                      PRIMARY KEY (`id`)
+CREATE TABLE `visualization_template_extend_data`
+(
+    `id`           bigint NOT NULL,
+    `dv_id`        bigint       DEFAULT NULL,
+    `view_id`      bigint       DEFAULT NULL,
+    `view_details` longtext,
+    `copy_from`    varchar(255) DEFAULT NULL,
+    `copy_id`      varchar(255) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 );
 
 
 ALTER TABLE `core_opt_recent`
     MODIFY COLUMN `resource_id` bigint NULL COMMENT '资源ID' AFTER `id`,
     ADD COLUMN `resource_name` varchar(255) NULL COMMENT '资源名称' AFTER `resource_id`;
+
+DROP TABLE IF EXISTS `core_area_custom`;
+CREATE TABLE `core_area_custom`
+(
+    `id`   varchar(255) NOT NULL,
+    `name` varchar(255) NOT NULL,
+    `pid`  varchar(255) NOT NULL,
+    PRIMARY KEY (`id`)
+);
+
+BEGIN;
+INSERT INTO `core_sys_setting` VALUES (1, 'basic.dsIntervalTime', '6', 'text', 2);
+INSERT INTO `core_sys_setting` VALUES (2, 'basic.dsExecuteTime', 'minute', 'text', 3);
+COMMIT;

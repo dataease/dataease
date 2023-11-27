@@ -517,7 +517,7 @@ initMarketTemplate()
   }
 
   .template-market-dashboard {
-    width: calc(100% - 384px);
+    width: calc(100% - 376px);
     height: 100%;
 
     .template-market {

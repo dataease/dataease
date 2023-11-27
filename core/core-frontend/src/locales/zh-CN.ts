@@ -2122,5 +2122,10 @@ export default {
     geometry: '地理信息',
     onlinemap: '在线地图',
     empty_desc: '请在左侧输入信息然后保存'
+  },
+  setting_basic: {
+    autoCreateUser: '禁止第三方自动创建用户',
+    dsIntervalTime: '数据源检测时间间隔',
+    dsExecuteTime: '数据源检测频率'
   }
 }
