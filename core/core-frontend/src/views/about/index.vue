@@ -21,6 +21,7 @@ const license: F2CLicense = reactive({
   remark: '',
   isv: ''
 })
+const tipsSuffix = ref('')
 const build = ref('')
 const isAdmin = ref(false)
 const fileList = reactive([])
@@ -88,11 +89,14 @@ const validateHandler = (param, success) => {
   validateApi(param).then(success)
 }
 const getLicense = result => {
+  if (result.status === 'valid') {
+    tipsSuffix.value = result.edition === 'Embedded' ? '套' : '个账号'
+  }
   return {
     status: result.status,
     corporation: result.license ? result.license.corporation : '',
     expired: result.license ? result.license.expired : '',
-    count: result.license ? result.license.count : '',
+    count: result.license ? result.license.count : 0,
     version: result.license ? result.license.version : '',
     edition: result.license ? result.license.edition : '',
     serialNo: result.license ? result.license.serialNo : '',
@@ -145,7 +149,9 @@ const update = (licKey: string) => {
       </div>
       <div class="item">
         <div class="label">{{ $t('about.auth_num') }}</div>
-        <div class="value">{{ license.count }}</div>
+        <div class="value">
+          {{ license.status === 'valid' ? `${license.count} ${tipsSuffix}` : '' }}
+        </div>
       </div>
       <div class="item">
         <div class="label">{{ $t('about.version') }}</div>

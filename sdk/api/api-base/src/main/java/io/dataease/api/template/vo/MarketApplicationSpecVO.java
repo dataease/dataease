@@ -24,6 +24,9 @@ public class MarketApplicationSpecVO {
 
     private String readmeName;
 
+    // 是否推荐
+    private String suggest;
+
     private List<MarketApplicationSpecScreenshotBaseVO> screenshots;
 
     private List<MarketApplicationSpecLinkVO> links;

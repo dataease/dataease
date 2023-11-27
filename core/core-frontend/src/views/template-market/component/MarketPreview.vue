@@ -147,12 +147,19 @@ watch(
   }
 )
 
-const initMarketTemplate = () => {
-  searchMarket()
+const initMarketTemplate = async () => {
+  await searchMarket()
     .then(rsp => {
       state.baseUrl = rsp.data.baseUrl
       state.currentMarketTemplateShowList = rsp.data.contents
       state.hasResult = true
+      if (props.previewId) {
+        state.currentMarketTemplateShowList.forEach(template => {
+          if (props.previewId === template.id) {
+            previewTemplate(template)
+          }
+        })
+      }
     })
     .catch(() => {
       state.networkStatus = false
@@ -165,17 +172,6 @@ const initMarketTemplate = () => {
     .catch(() => {
       state.networkStatus = false
     })
-  if (props.previewId) {
-    state.currentMarketTemplateShowList.forEach(template => {
-      if (props.previewId === template.id) {
-        previewTemplate(template)
-      }
-    })
-  }
-}
-
-const getGroupTree = () => {
-  // do getGroupTree
 }
 
 const normalizer = node => {
@@ -248,7 +244,6 @@ const active = template => {
 
 onMounted(() => {
   initMarketTemplate()
-  getGroupTree()
 })
 </script>
 

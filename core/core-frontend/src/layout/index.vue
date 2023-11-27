@@ -7,14 +7,17 @@ import Menu from './components/Menu.vue'
 import Main from './components/Main.vue'
 import { ElContainer } from 'element-plus-secondary'
 import { useRoute } from 'vue-router'
+import HeaderTemplateMarket from '@/layout/components/HeaderTemplateMarket.vue'
 const route = useRoute()
 const systemMenu = computed(() => route.path.includes('system'))
 const settingMenu = computed(() => route.path.includes('sys-setting'))
+const templateMarketMenu = computed(() => route.path.includes('template-market'))
 </script>
 
 <template>
   <div class="common-layout">
-    <HeaderSystem v-if="settingMenu"></HeaderSystem>
+    <header-template-market v-if="templateMarketMenu"></header-template-market>
+    <HeaderSystem v-else-if="settingMenu"></HeaderSystem>
     <Header v-else></Header>
     <el-container class="layout-container">
       <Sidebar v-if="systemMenu || settingMenu" class="layout-sidebar">

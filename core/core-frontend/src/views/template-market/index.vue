@@ -1,97 +1,130 @@
 <template>
-  <el-row class="outer-body" v-loading="state.loading">
-    <!--预览模式-->
-    <market-preview
+  <el-row
+    class="template-outer-body"
+    :class="{ 'template-outer-body-padding': !previewModel }"
+    v-loading="state.loading"
+  >
+    <market-preview-v2
       v-show="previewModel"
       :preview-id="state.templatePreviewId"
       @closePreview="closePreview"
       @templateApply="templateApply"
-    />
-    <!--列表模式-->
-    <el-row v-show="!previewModel" class="market-main">
-      <el-row>
-        <el-col :span="12">
-          <span class="title-left">{{ t('visualization.template_market') }}</span>
-        </el-col>
-        <el-col :span="12">
+    ></market-preview-v2>
+    <el-row v-show="!previewModel" class="main-container">
+      <el-row class="market-head">
+        <span>模版市场 </span>
+        <el-row class="head-right">
           <el-input
+            class="title-search"
             v-model="state.searchText"
-            prefix-icon="el-icon-search"
+            prefix-icon="Search"
             size="small"
-            class="title-right"
             :placeholder="t('visualization.enter_template_name_tips')"
             :clearable="true"
           />
-        </el-col>
+          <el-select
+            class="title-type"
+            v-model="state.templateType"
+            size="small"
+            placeholder="Select"
+          >
+            <el-option
+              v-for="item in state.templateTypeOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-row>
       </el-row>
-      <el-row class="custom-tabs-head">
-        <el-tabs v-model="state.marketActiveTab" @tab-click="handleClick">
-          <el-tab-pane
-            v-for="tabItem in state.marketTabs"
-            :key="tabItem"
-            :label="tabItem"
-            :name="tabItem"
+      <el-row class="template-area">
+        <div class="template-left">
+          <el-tree
+            menu
+            :data="state.marketTabs"
+            :props="state.treeProps"
+            node-key="label"
+            default-expand-all
+            highlight-current
+            :current-node-key="state.marketActiveTab"
+            @node-click="nodeClick"
           />
-        </el-tabs>
-      </el-row>
-      <el-row
-        v-show="state.networkStatus && state.hasResult"
-        id="template-main"
-        class="template-main"
-      >
-        <el-col
-          v-for="templateItem in state.currentMarketTemplateShowList"
-          v-show="templateItem.showFlag"
-          :key="templateItem.id"
-          style="padding: 24px 12px 0; text-align: center; flex: 0"
-          :style="{ width: state.templateSpan }"
-        >
-          <template-market-item
-            :key="'outer-' + templateItem.id"
-            :template="templateItem"
-            :base-url="state.baseUrl"
-            :width="state.templateCurWidth"
-            @templateApply="templateApply"
-            @templatePreview="templatePreview"
-          />
-        </el-col>
-      </el-row>
-      <el-row
-        v-show="state.networkStatus && !state.hasResult"
-        class="custom-position template-main"
-      >
-        <div style="text-align: center">
-          <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"></Icon>
-          <br />
-          <span>{{ t('commons.no_result') }}</span>
         </div>
-      </el-row>
-      <el-row v-show="!state.networkStatus" class="custom-position template-main">
-        {{ t('visualization.market_network_tips') }}
+        <div
+          v-show="state.networkStatus && state.hasResult"
+          id="template-show-area"
+          class="template-right"
+        >
+          <el-col
+            v-for="templateItem in state.currentMarketTemplateShowList"
+            v-show="templateItem.showFlag"
+            :key="templateItem.id"
+            style="padding: 24px 12px 0; text-align: center; flex: 0"
+            :style="{ width: state.templateSpan }"
+          >
+            <template-market-v2-item
+              :key="'outer-' + templateItem.id"
+              :template="templateItem"
+              :base-url="state.baseUrl"
+              :width="state.templateCurWidth"
+              @templateApply="templateApply"
+              @templatePreview="templatePreview"
+            />
+          </el-col>
+        </div>
+        <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
+          <div style="text-align: center">
+            <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"></Icon>
+            <br />
+            <span>没有找到相关模版</span>
+          </div>
+        </el-row>
+        <el-row v-show="!state.networkStatus" class="template-empty">
+          {{ t('visualization.market_network_tips') }}
+        </el-row>
       </el-row>
     </el-row>
   </el-row>
 </template>
 
 <script setup lang="ts">
-import { getCategories, searchMarket } from '@/api/templateMarket'
+import { getCategoriesObject, searchMarket } from '@/api/templateMarket'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { nextTick, reactive, watch, onMounted, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
-import MarketPreview from '@/views/template-market/component/MarketPreview.vue'
-import TemplateMarketItem from '@/views/template-market/component/TemplateMarketItem.vue'
 import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
+import TemplateMarketV2Item from '@/views/template-market/component/TemplateMarketV2Item.vue'
+import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
 const { t } = useI18n()
 const { wsCache } = useCache()
 
 const previewModel = ref(false)
 
 const state = reactive({
+  treeProps: {
+    value: 'label',
+    label: 'label'
+  },
+  templateType: 'all',
+  templateTypeOptions: [
+    {
+      value: 'all',
+      label: '全部类型'
+    },
+    {
+      value: 'PANEL',
+      label: '仪表板'
+    },
+    {
+      value: 'SCREEN',
+      label: '大屏'
+    }
+  ],
   loading: false,
   hasResult: true,
-  templateMiniWidth: 330,
+  templateMiniWidth: 270,
   templateCurWidth: 310,
   templateSpan: '25%',
   previewVisible: false,
@@ -100,6 +133,7 @@ const state = reactive({
   marketActiveTab: null,
   searchText: null,
   dvCreateForm: {
+    resourceName: null,
     name: null,
     pid: null,
     nodeType: 'panel',
@@ -134,25 +168,28 @@ const state = reactive({
 })
 
 watch(
-  () => state.marketActiveTab,
-  value => {
-    initTemplateShow()
-  }
-)
-
-watch(
   () => state.searchText,
   value => {
     initTemplateShow()
   }
 )
 
+watch(
+  () => state.templateType,
+  value => {
+    initTemplateShow()
+  }
+)
+const nodeClick = data => {
+  state.marketActiveTab = data.label
+  initTemplateShow()
+}
 const closePreview = () => {
   previewModel.value = false
 }
 
-const initMarketTemplate = () => {
-  searchMarket()
+const initMarketTemplate = async () => {
+  await searchMarket()
     .then(rsp => {
       state.baseUrl = rsp.data.baseUrl
       state.currentMarketTemplateShowList = rsp.data.contents
@@ -160,21 +197,28 @@ const initMarketTemplate = () => {
     .catch(() => {
       state.networkStatus = false
     })
-  getCategories()
+  getCategoriesObject()
     .then(rsp => {
       state.marketTabs = rsp.data
-      state.marketActiveTab = state.marketTabs[0]
+      state.marketActiveTab = state.marketTabs[0].label
+      initStyle()
+      initTemplateShow()
     })
     .catch(() => {
       state.networkStatus = false
     })
 }
 
-const getGroupTree = () => {
-  // do getGroupTree
-  // groupTree({ nodeType: 'folder' }).then(res => {
-  //   state.panelGroupList = res.data
-  // })
+const initStyle = () => {
+  nextTick(() => {
+    const tree = document.querySelector('.ed-tree')
+    // 创建横线元素
+    const line = document.createElement('hr')
+    line.classList.add('custom-line')
+
+    // 将横线元素插入到第一个选项后面
+    tree.firstElementChild.appendChild(line)
+  })
 }
 const normalizer = node => {
   // 去掉children=null的属性
@@ -187,6 +231,7 @@ const templateApply = template => {
   state.curApplyTemplate = template
   state.dvCreateForm.name = template.title
   state.dvCreateForm.templateUrl = template.metas.theme_repo
+  state.dvCreateForm.resourceName = template.id
   apply()
 }
 
@@ -231,30 +276,43 @@ const initTemplateShow = () => {
 const templateShow = templateItem => {
   let categoryMarch = false
   let searchMarch = false
-  templateItem.categories.forEach(category => {
-    if (category.name === state.marketActiveTab) {
+  let templateTypeMarch = false
+  if (state.marketActiveTab === '最近使用') {
+    if (templateItem.recentUseTime) {
       categoryMarch = true
     }
-  })
+  } else if (state.marketActiveTab === '推荐') {
+    if (templateItem.suggest === 'Y') {
+      categoryMarch = true
+    }
+  } else {
+    templateItem.categories.forEach(category => {
+      if (category.name === state.marketActiveTab) {
+        categoryMarch = true
+      }
+    })
+  }
+
   if (!state.searchText || templateItem.title.indexOf(state.searchText) > -1) {
     searchMarch = true
   }
-  return categoryMarch && searchMarch
+
+  if (state.templateType === 'all' || templateItem.templateType === state.templateType) {
+    templateTypeMarch = true
+  }
+  return categoryMarch && searchMarch && templateTypeMarch
 }
 
 const templatePreview = previewId => {
   state.templatePreviewId = previewId
   previewModel.value = true
 }
-const newPanel = () => {
-  // do newPanel
-}
 
 onMounted(() => {
+  previewInit()
   initMarketTemplate()
-  getGroupTree()
   const erd = elementResizeDetectorMaker()
-  const templateMainDom = document.getElementById('template-main')
+  const templateMainDom = document.getElementById('template-show-area')
   // 监听div变动事件
   if (templateMainDom) {
     erd.listenTo(templateMainDom, element => {
@@ -267,116 +325,86 @@ onMounted(() => {
     })
   }
 })
+
+const previewInit = () => {
+  const previewId = wsCache.get('template-preview-id')
+  if (previewId) {
+    templatePreview(previewId)
+    wsCache.delete('template-preview-id')
+  }
+}
 </script>
 
 <style lang="less" scoped>
-.custom-tabs-head {
-  display: inherit;
-  padding-bottom: 15px;
-  ::v-deep(.ed-tabs__item) {
-    font-weight: 400;
-    font-size: 14px;
-  }
-}
-
-.template-main {
-  text-align: center;
-  border-radius: 4px;
-  padding: 0 12px 24px 12px;
-  height: calc(100vh - 190px) !important;
-  overflow-x: hidden;
-  overflow-y: auto;
-  background-color: var(--ContentBG, #ffffff);
-}
-
-.market-main {
+.template-outer-body-padding {
   padding: 24px;
-  display: inherit;
 }
+.template-outer-body {
+  .main-container {
+    display: flex;
+    flex-wrap: nowrap;
+    flex-direction: column;
+    width: 100%;
+    height: 100%;
+    .market-head {
+      height: 56px;
+      background: #ffffff;
+      align-items: center;
+      padding: 12px 24px;
+      border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+      span {
+        font-size: 16px;
+        font-color: #1f2329;
+        font-weight: 500;
+      }
+      .head-right {
+        flex: 1;
+        justify-content: right;
+        .title-search {
+          width: 320px;
+        }
+        .title-type {
+          margin-left: 12px;
+          width: 104px;
+        }
+      }
+    }
+    .template-area {
+      height: calc(100vh - 135px);
+      .template-left {
+        padding: 8px;
+        width: 204px;
+        height: 100%;
+        overflow-y: auto;
+        background: #ffffff;
+      }
+      .template-right {
+        flex: 1;
+        display: inherit;
+        height: 100%;
+        background: rgba(239, 240, 241, 1);
+        overflow-y: auto;
+      }
 
-.title-left {
-  float: left;
-  font-size: 20px;
-  font-weight: 500;
-  line-height: 28px;
-  color: var(--TextPrimary, #1f2329);
-}
-
-.title-right {
-  float: right;
-  width: 320px;
-}
-
-.dialog-footer-self {
-  text-align: right;
-}
-
-.search-button-self {
-  text-align: left;
-  padding-left: 10px;
-}
-
-.topbar-icon-active {
-  cursor: pointer;
-  transition: 0.1s;
-  border-radius: 3px;
-  font-size: 22px;
-  background-color: rgb(245, 245, 245);
-
-  &:active {
-    color: #000;
-    border-color: #3a8ee6;
-    background-color: red;
-    outline: 0;
+      .template-empty {
+        flex: 1;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        background: rgba(239, 240, 241, 1);
+        overflow-y: auto;
+      }
+    }
   }
-
-  &:hover {
-    background-color: rgba(31, 35, 41, 0.1);
-    color: #3a8ee6;
-  }
 }
+</style>
 
-.custom-position {
-  height: 80vh;
-  flex: 1;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 14px;
-  flex-flow: row nowrap;
-  color: #646a73;
-  font-weight: 400;
-}
-
-.outer-body {
-  display: inherit;
-  width: 100%;
-  height: calc(100vh - 56px);
-  background-color: var(--MainBG, #f5f6f7);
-}
-
-.market-dialog-css {
-  ::v-deep(.ed-form-item__label) {
-    width: 100% !important;
-    text-align: left;
-  }
-
-  ::v-deep(.ed-form-item.is-required:not(.is-no-asterisk) > .ed-form-item__label:before) {
-    display: none;
-  }
-
-  ::v-deep(.ed-form-item.is-required:not(.is-no-asterisk) > .ed-form-item__label::after) {
-    content: '*';
-    color: #f54a45;
-    margin-left: 2px;
-  }
-
-  ::v-deep(.ed-form-item__content) {
-    margin-left: 0 !important;
-  }
-
-  ::v-deep(.vue-treeselect__input) {
-    vertical-align: middle;
-  }
+<style lang="less">
+.custom-line {
+  margin: 4px;
+  background: rgba(31, 35, 41, 0.15);
+  border: 0;
+  height: 1px;
 }
 </style>

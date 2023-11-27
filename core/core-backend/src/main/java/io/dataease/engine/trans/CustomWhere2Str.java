@@ -6,8 +6,8 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
-import io.dataease.engine.func.scalar.ScalarFunctions;
 import io.dataease.engine.utils.Utils;
+import org.apache.calcite.func.scalar.ScalarFunctions;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 

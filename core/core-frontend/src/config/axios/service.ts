@@ -130,7 +130,7 @@ service.interceptors.response.use(
       return response
     } else if (response.data.code === result_code || response.data.code === 50002) {
       return response.data
-    } else if (response.config.url.match(/^\/map\/\d{3}\/\d+\.json$/)) {
+    } else if (response.config.url.match(/^\/map|geo\/\d{3}\/\d+\.json$/)) {
       //   TODO 处理静态文件
       return response
     } else {

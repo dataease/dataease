@@ -17,6 +17,7 @@ import BasicEdit from './BasicEdit.vue'
 import request from '@/config/axios'
 import { SettingRecord } from '@/views/system/common/SettingTemplate'
 import { reactive } from 'vue'
+import { cloneDeep } from 'lodash-es'
 const editor = ref()
 const infoTemplate = ref()
 const tooltips = [
@@ -26,39 +27,25 @@ const tooltips = [
   }
 ]
 const state = reactive({
-  templateList: [
-    {
-      pkey: '禁止扫码创建用户',
-      pval: '未开启',
-      type: 'text',
-      sort: 1
-    },
-    {
-      pkey: '数据源检测时间间隔',
-      pval: '100',
-      type: 'text',
-      sort: 2
-    },
-    {
-      pkey: '数据源检测频率',
-      pval: 'minute',
-      type: 'text',
-      sort: 3
-    }
-  ] as SettingRecord[]
+  templateList: [] as SettingRecord[]
 })
-
+let originData = []
 const search = cb => {
   const url = '/sysParameter/basic/query'
+  originData = []
+  state.templateList = []
   request.get({ url }).then(res => {
+    originData = cloneDeep(res.data)
     const data = res.data
     for (let index = 0; index < data.length; index++) {
       const item = data[index]
-      if (index === 0) {
-        state.templateList[index].pval = item.pval === 'true' ? '开启' : '未开启'
+      if (item.pkey === 'basic.autoCreateUser') {
+        item.pval = item.pval === 'true' ? '开启' : '未开启'
       } else {
-        state.templateList[index].pval = item.pval
+        item.pval = item.pval
       }
+      item.pkey = 'setting_' + item.pkey
+      state.templateList.push(item)
     }
     cb && cb()
   })
@@ -68,14 +55,9 @@ const refresh = () => {
     infoTemplate?.value.init()
   })
 }
-search(null)
+refresh()
 
 const edit = () => {
-  const param = {
-    autoCreateUser: state.templateList[0].pval === '开启' ? 'true' : 'false',
-    dsIntervalTime: state.templateList[1].pval,
-    dsExecuteTime: state.templateList[2].pval
-  }
-  editor?.value.edit(param)
+  editor?.value.edit(cloneDeep(originData))
 }
 </script>
