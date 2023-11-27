@@ -201,7 +201,7 @@ public class DirectFieldService implements DataSetFieldService {
             createSQL = qp.createQuerySQL(tableName, permissionFields, !needSort, null, customFilter, rowPermissionsTree, deSortFields, 1000L, keyword);
             datasourceRequest.setQuery(createSQL);
         }
-
+        permissionFields = permissionFields.stream().filter(f -> fieldIds.contains(f.getId())).collect(Collectors.toList());
         int originSize = permissionFields.size();
         boolean existExtSortField = false;
         if (CollectionUtils.isNotEmpty(deSortFields)) {
