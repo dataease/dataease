@@ -48,3 +48,8 @@ CREATE TABLE `core_area_custom`
     `pid`  varchar(255) NOT NULL,
     PRIMARY KEY (`id`)
 );
+
+BEGIN;
+INSERT INTO `core_sys_setting` VALUES (1, 'basic.dsIntervalTime', '6', 'text', 2);
+INSERT INTO `core_sys_setting` VALUES (2, 'basic.dsExecuteTime', 'minute', 'text', 3);
+COMMIT;
