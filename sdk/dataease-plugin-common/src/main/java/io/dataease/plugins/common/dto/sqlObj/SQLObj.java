@@ -14,6 +14,7 @@ public class SQLObj {
     private String tableAlias;
 
     private String fieldName;
+    private String fieldOriginName;
     private String fieldAlias;
 
     private String groupField;

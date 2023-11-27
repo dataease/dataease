@@ -2,7 +2,6 @@ package io.dataease.service.dataset.impl.direct;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.util.ArrayUtil;
-import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.BaseTreeNode;
@@ -100,12 +99,6 @@ public class DirectFieldService implements DataSetFieldService {
         });
     }
 
-    private String formatTableByKeyword(String keyword, String originTable, List<DatasetTableField> fields, boolean useDataEaseName) {
-        if (StringUtils.isBlank(keyword)) return originTable;
-        List<String> fieldNames = fields.stream().map(f -> useDataEaseName ? f.getDataeaseName() : f.getOriginName()).collect(Collectors.toList());
-        String whereSql = fieldNames.stream().map(fieldName -> " " + fieldName + " like '%" + keyword + "%'").collect(Collectors.joining(" or "));
-        return "( select * from " + originTable + " where (" + whereSql + ") )";
-    }
 
     @Override
     public List<Object> fieldValues(List<String> fieldIds, DeSortDTO sortDTO, Long userId, Boolean userPermissions, Boolean needMapping, Boolean rowAndColumnMgm, String keyword) throws Exception {
@@ -176,41 +169,25 @@ public class DirectFieldService implements DataSetFieldService {
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.DB.toString())) {
                 datasourceRequest.setTable(dataTableInfoDTO.getTable());
-                String formatSql = formatTableByKeyword(keyword, dataTableInfoDTO.getTable(), permissionFields, false);
-                createSQL = qp.createQuerySQLWithLimit(formatSql, permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields, 1000L);
+                createSQL = qp.createQuerySQL(dataTableInfoDTO.getTable(), permissionFields, !needSort, ds, customFilter, rowPermissionsTree, deSortFields, 1000L, keyword);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.SQL.toString())) {
                 String sql = dataTableInfoDTO.getSql();
                 if (dataTableInfoDTO.isBase64Encryption()) {
                     sql = new String(java.util.Base64.getDecoder().decode(sql));
                 }
                 sql = dataSetTableService.handleVariableDefaultValue(sql, null, ds.getType(), false);
-                if (StringUtils.isNotBlank(keyword)) {
-                    sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields, false);
-                }
-                createSQL = qp.createQuerySQLAsTmpWithLimit(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L);
+                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L, keyword);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.CUSTOM.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 List<DataSetTableUnionDTO> listUnion = dataSetTableUnionService.listByTableId(dt.getList().get(0).getTableId());
                 String sql = dataSetTableService.getCustomSQLDatasource(dt, listUnion, ds);
-                if (StringUtils.isNotBlank(keyword)) {
-                    sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields, false);
-                }
-                createSQL = qp.createQuerySQLAsTmpWithLimit(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L);
+                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L, keyword);
             } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), DatasetType.UNION.toString())) {
                 DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
                 String sql = (String) dataSetTableService.getUnionSQLDatasource(dt, ds).get("sql");
-                if (StringUtils.isNotBlank(keyword)) {
-                    sql = formatTableByKeyword(keyword, " (" + sql + ") " + "inner_like_temp ", permissionFields, false);
-                }
-                createSQL = qp.createQuerySQLAsTmpWithLimit(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L);
+                createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, 1000L, keyword);
             }
-            if (StringUtils.equalsAny(ds.getType(), "ds_doris", "mysql")) {
-                Object[] args = new Object[]{createSQL, view};
-                createSQL = ReflectUtil.invoke(qp, "sqlLimit", args);
-                datasourceRequest.setQuery(createSQL);
-            } else {
-                datasourceRequest.setQuery(qp.createSQLPreview(createSQL, null));
-            }
+            datasourceRequest.setQuery(qp.createSQLPreview(createSQL, null));
 
         } else if (datasetTable.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
@@ -221,10 +198,7 @@ public class DirectFieldService implements DataSetFieldService {
             String tableName = "ds_" + datasetTable.getId().replaceAll("-", "_");
             datasourceRequest.setTable(tableName);
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-            String formatSql = formatTableByKeyword(keyword, tableName, permissionFields, true);
-            createSQL = qp.createQuerySQL(formatSql, permissionFields, !needSort, null, customFilter, rowPermissionsTree, deSortFields);
-            Object[] args = new Object[]{createSQL, view};
-            createSQL = ReflectUtil.invoke(qp, "sqlLimit", args);
+            createSQL = qp.createQuerySQL(tableName, permissionFields, !needSort, null, customFilter, rowPermissionsTree, deSortFields, 1000L, keyword);
             datasourceRequest.setQuery(createSQL);
         }
 
