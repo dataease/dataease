@@ -119,7 +119,7 @@ public class DirectFieldService implements DataSetFieldService {
         final List<String> allTableFieldIds = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
         boolean multi = fieldIds.stream().anyMatch(item -> !allTableFieldIds.contains(item));
         if (multi && needMapping) {
-            DEException.throwException("Cross multiple dataset is not supported");
+            DEException.throwException(Translator.get("i18n_dataset_cross_multiple"));
         }
 
         List<DatasetTableField> permissionFields = fields;
