@@ -51,11 +51,12 @@
               <el-row>
                 <el-tree
                   v-if="showDomType === 'tree'"
+                  ref="datasetTreeRef"
                   :default-expanded-keys="expandedArray"
                   node-key="id"
                   :data="tempTreeData || treeData"
                   :props="defaultProps"
-
+                  :filter-node-method="filterNode"
                   @node-click="handleNodeClick"
                 >
                   <span
@@ -573,11 +574,15 @@ export default {
     getTreeData(val) {
       if (val) {
         this.isTreeSearch = true
-        this.searchTree(val)
+        this.$refs.datasetTreeRef?.filter(val)
       } else {
         this.isTreeSearch = false
         this.treeNode(this.groupForm)
       }
+    },
+    filterNode(value, data) {
+      if (!value) return true
+      return data.label.indexOf(value) !== -1
     },
     searchTree(val) {
       this.expandedArray = []
