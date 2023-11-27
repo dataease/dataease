@@ -4,6 +4,7 @@ package io.dataease.provider.datasource;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
+import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
@@ -40,7 +41,7 @@ public class ApiProvider extends Provider {
     @Override
     public List<String[]> getData(DatasourceRequest datasourceRequest) throws Exception {
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout()<=0 ? 30 : apiDefinition.getApiQueryTimeout());
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 30 : apiDefinition.getApiQueryTimeout());
         return fetchResult(response, apiDefinition);
     }
 
@@ -68,7 +69,7 @@ public class ApiProvider extends Provider {
         List<String[]> dataList = new ArrayList<>();
         List<TableField> fieldList = new ArrayList<>();
         ApiDefinition apiDefinition = checkApiDefinition(datasourceRequest);
-        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout()<=0 ? 30 : apiDefinition.getApiQueryTimeout());
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 30 : apiDefinition.getApiQueryTimeout());
 
         fieldList = getTableFields(apiDefinition);
         result.put("fieldList", fieldList);
@@ -141,13 +142,13 @@ public class ApiProvider extends Provider {
 
         switch (apiDefinition.getMethod()) {
             case "GET":
-                List<String>  params = new ArrayList<>();
+                List<String> params = new ArrayList<>();
                 for (Map<String, String> argument : apiDefinition.getRequest().getArguments()) {
-                    if(StringUtils.isNotEmpty(argument.get("name")) && StringUtils.isNotEmpty(argument.get("value"))){
+                    if (StringUtils.isNotEmpty(argument.get("name")) && StringUtils.isNotEmpty(argument.get("value"))) {
                         params.add(argument.get("name") + "=" + URLEncoder.encode(argument.get("value")));
                     }
                 }
-                if(CollectionUtils.isNotEmpty(params)){
+                if (CollectionUtils.isNotEmpty(params)) {
                     apiDefinition.setUrl(apiDefinition.getUrl() + "?" + StringUtils.join(params, "&"));
                 }
                 response = HttpClientUtil.get(apiDefinition.getUrl().trim(), httpClientConfig);
@@ -167,7 +168,7 @@ public class ApiProvider extends Provider {
                 if (StringUtils.equalsAny(type, "Form_Data", "WWW_FORM")) {
                     if (apiDefinitionRequest.getBody().get("kvs") != null) {
                         Map<String, String> body = new HashMap<>();
-                        JSONObject bodyObj = JSONObject.parseObject(apiDefinitionRequest.getBody().toString());
+                        JSONObject bodyObj = JSONObject.parseObject(apiDefinitionRequest.getBody().toString(), Feature.IgnoreNotMatch);
                         JSONArray kvsArr = bodyObj.getJSONArray("kvs");
                         for (int i = 0; i < kvsArr.size(); i++) {
                             JSONObject kv = kvsArr.getJSONObject(i);
@@ -267,9 +268,12 @@ public class ApiProvider extends Provider {
                 handleStr(apiDefinition, o.toString(), fields, rootPath);
             }
         } else {
-            JSONObject jsonObject = JSONObject.parseObject(jsonStr);
+            JSONObject jsonObject = JSONObject.parseObject(jsonStr, Feature.IgnoreNotMatch);
             for (String s : jsonObject.keySet()) {
                 String value = jsonObject.getString(s);
+                if (StringUtils.isNotEmpty(value) &&  value.startsWith("{")) {
+                    value = JSONObject.toJSONString(jsonObject.getJSONObject(s), SerializerFeature.WriteMapNullValue);
+                }
                 if (StringUtils.isNotEmpty(value) && value.startsWith("[")) {
                     JSONObject o = new JSONObject();
                     try {
@@ -283,7 +287,7 @@ public class ApiProvider extends Provider {
 
                     } catch (Exception e) {
                         JSONArray array = new JSONArray();
-                        array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");
+                        array.add(StringUtils.isNotEmpty(value) ? value : "");
                         o.put("value", array);
                     }
                     o.put("jsonPath", rootPath + "." + String.format(path, s));
@@ -293,9 +297,9 @@ public class ApiProvider extends Provider {
                     }
                 } else if (StringUtils.isNotEmpty(value) && value.startsWith("{")) {
                     try {
-                        JSONObject.parseObject(jsonStr);
+                        JSONObject.parseObject(value, Feature.IgnoreNotMatch);
                         List<JSONObject> children = new ArrayList<>();
-                        handleStr(apiDefinition, jsonObject.getString(s), children, rootPath + "." + String.format(path, s));
+                        handleStr(apiDefinition, value, children, rootPath + "." + String.format(path, s));
                         JSONObject o = new JSONObject();
                         o.put("children", children);
                         o.put("childrenDataType", "OBJECT");
@@ -304,12 +308,13 @@ public class ApiProvider extends Provider {
                         if (!hasItem(apiDefinition, fields, o)) {
                             fields.add(o);
                         }
-                    }catch (Exception e){
+                    } catch (Exception e) {
+                        e.printStackTrace();
                         JSONObject o = new JSONObject();
                         o.put("jsonPath", rootPath + "." + String.format(path, s));
                         setProperty(apiDefinition, o, s);
                         JSONArray array = new JSONArray();
-                        array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");
+                        array.add(StringUtils.isNotEmpty(value) ? value : "");
                         o.put("value", array);
                         if (!hasItem(apiDefinition, fields, o)) {
                             fields.add(o);
@@ -320,7 +325,7 @@ public class ApiProvider extends Provider {
                     o.put("jsonPath", rootPath + "." + String.format(path, s));
                     setProperty(apiDefinition, o, s);
                     JSONArray array = new JSONArray();
-                    array.add(StringUtils.isNotEmpty(jsonObject.getString(s)) ? jsonObject.getString(s) : "");
+                    array.add(StringUtils.isNotEmpty(value) ? value : "");
                     o.put("value", array);
                     if (!hasItem(apiDefinition, fields, o)) {
                         fields.add(o);
@@ -376,9 +381,9 @@ public class ApiProvider extends Provider {
             }
             for (Object itemChild : itemChildren) {
                 boolean hasKey = false;
-                JSONObject itemChildObject = JSONObject.parseObject(itemChild.toString());
+                JSONObject itemChildObject = JSONObject.parseObject(itemChild.toString(), Feature.IgnoreNotMatch);
                 for (Object fieldChild : fieldChildren) {
-                    JSONObject fieldChildObject = JSONObject.parseObject(fieldChild.toString());
+                    JSONObject fieldChildObject = JSONObject.parseObject(fieldChild.toString(), Feature.IgnoreNotMatch);
                     if (itemChildObject.getString("jsonPath").equals(fieldChildObject.getString("jsonPath"))) {
                         mergeField(fieldChildObject, itemChildObject);
                         hasKey = true;
@@ -403,10 +408,10 @@ public class ApiProvider extends Provider {
 
             JSONArray fieldArrayChildren = new JSONArray();
             for (Object fieldChild : fieldChildren) {
-                JSONObject jsonObject = JSONObject.parseObject(fieldChild.toString());
+                JSONObject jsonObject = JSONObject.parseObject(fieldChild.toString(), Feature.IgnoreNotMatch);
                 JSONObject find = null;
                 for (Object itemChild : itemChildren) {
-                    JSONObject itemObject = JSONObject.parseObject(itemChild.toString());
+                    JSONObject itemObject = JSONObject.parseObject(itemChild.toString(), Feature.IgnoreNotMatch);
                     if (jsonObject.getString("jsonPath").equals(itemObject.getString("jsonPath"))) {
                         find = itemObject;
                     }
@@ -422,7 +427,7 @@ public class ApiProvider extends Provider {
 
     private List<String[]> fetchResult(String result, ApiDefinition apiDefinition) {
         List<String[]> dataList = new LinkedList<>();
-        if(apiDefinition.isUseJsonPath()){
+        if (apiDefinition.isUseJsonPath()) {
             List<LinkedHashMap> currentData = new ArrayList<>();
             Object object = JsonPath.read(result, apiDefinition.getJsonPath());
             if (object instanceof List) {
@@ -439,7 +444,7 @@ public class ApiProvider extends Provider {
                 }
                 dataList.add(row);
             }
-        }else {
+        } else {
             if (StringUtils.isNotEmpty(apiDefinition.getDataPath()) && CollectionUtils.isEmpty(apiDefinition.getJsonFields())) {
                 List<LinkedHashMap> currentData = new ArrayList<>();
                 Object object = JsonPath.read(result, apiDefinition.getDataPath());
