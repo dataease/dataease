@@ -3,6 +3,7 @@ package io.dataease.system.server;
 import io.dataease.api.system.SysParameterApi;
 import io.dataease.api.system.request.OnlineMapEditor;
 import io.dataease.api.system.vo.SettingItemVO;
+import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.SysParameterManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
@@ -36,11 +37,12 @@ public class SysParameterServer implements SysParameterApi {
     @Override
     public List<SettingItemVO> queryBasicSetting() {
         String key = "basic.";
-        return sysParameterManage.groupList(key);
+        List<CoreSysSetting> coreSysSettings = sysParameterManage.groupList(key);
+        return sysParameterManage.convert(coreSysSettings);
     }
 
     @Override
     public void saveBasicSetting(List<SettingItemVO> settingItemVOS) {
-        sysParameterManage.saveGroup(settingItemVOS, "basic.");
+        sysParameterManage.saveBasic(settingItemVOS);
     }
 }
