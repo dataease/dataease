@@ -36,9 +36,15 @@
             </div>
             <div class="de-tabs-right">
               <div v-if="state.currentTemplateLabel" class="active-template">
-                {{ state.currentTemplateLabel }}&nbsp;&nbsp;({{
-                  state.currentTemplateShowList.length
-                }})
+                <span v-show="!state.templateFilterText"
+                  >{{ state.currentTemplateLabel }}&nbsp;&nbsp;({{
+                    state.currentTemplateShowList.length
+                  }})</span
+                >
+                <span v-show="state.templateFilterText">
+                  <span style="color: #3370ff">{{ state.currentTemplateLabel }}&nbsp;&nbsp;</span>
+                  <span>的搜索结果&nbsp;{{ currentTemplateShowListComputed.length }}&nbsp;个</span>
+                </span>
               </div>
               <el-empty
                 v-if="!state.currentTemplateShowList.length"
@@ -47,7 +53,7 @@
               />
               <div v-show="state.currentTemplateId !== ''" id="template-box" class="template-box">
                 <de-template-item
-                  v-for="item in state.currentTemplateShowList"
+                  v-for="item in currentTemplateShowListComputed"
                   :key="item.id"
                   :width="state.templateCurWidth"
                   :model="item"
@@ -174,6 +180,13 @@ const state = reactive({
   }
 })
 
+const currentTemplateShowListComputed = computed(() => {
+  if (!state.templateFilterText) return [...state.currentTemplateShowList]
+  return state.currentTemplateShowList.filter(ele =>
+    ele['name']?.includes(state.templateFilterText)
+  )
+})
+
 const nameList = computed(() => {
   const { nodeType } = state.templateEditForm || {}
   if (nodeType === 'template') {
@@ -185,6 +198,18 @@ const nameList = computed(() => {
   }
   return []
 })
+
+const initStyle = () => {
+  nextTick(() => {
+    const tree = document.querySelector('.ed-tree')
+    // 创建横线元素
+    const line = document.createElement('hr')
+    line.classList.add('custom-line')
+
+    // 将横线元素插入到第一个选项后面
+    tree.firstElementChild.appendChild(line)
+  })
+}
 
 const nameRepeat = value => {
   if (!nameList.value) {
@@ -357,6 +382,7 @@ onMounted(() => {
       state.templateCurWidth = Math.trunc(offsetWidth / curSeparator) - 24 - curSeparator
     })
   })
+  initStyle()
 })
 </script>
 
