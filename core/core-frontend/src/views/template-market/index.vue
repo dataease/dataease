@@ -55,11 +55,21 @@
           id="template-show-area"
           class="template-right"
         >
+          <el-col class="main-head">
+            <div class="custom-split-line"></div>
+            <span v-show="!state.searchText" class="custom-category">{{
+              state.marketActiveTab
+            }}</span>
+            <span v-show="state.searchText" class="custom-search">{{ state.marketActiveTab }}</span>
+            <span v-if="state.searchText" class="custom-search-result"
+              >的搜索结果是{{ searchResultCount }}个</span
+            >
+          </el-col>
           <el-col
             v-for="templateItem in state.currentMarketTemplateShowList"
             v-show="templateItem.showFlag"
             :key="templateItem.id"
-            style="padding: 24px 12px 0; text-align: center; flex: 0"
+            style="float: left; padding: 24px 12px 0; text-align: center; flex: 0"
             :style="{ width: state.templateSpan }"
           >
             <template-market-v2-item
@@ -90,7 +100,7 @@
 <script setup lang="ts">
 import { getCategoriesObject, searchMarket } from '@/api/templateMarket'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { nextTick, reactive, watch, onMounted, ref } from 'vue'
+import { nextTick, reactive, watch, onMounted, ref, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
 import { decompression } from '@/api/visualization/dataVisualization'
@@ -180,6 +190,11 @@ watch(
     initTemplateShow()
   }
 )
+
+const searchResultCount = computed(
+  () => state.currentMarketTemplateShowList.filter(template => template.showFlag).length
+)
+
 const nodeClick = data => {
   state.marketActiveTab = data.label
   initTemplateShow()
@@ -317,10 +332,10 @@ onMounted(() => {
   if (templateMainDom) {
     erd.listenTo(templateMainDom, element => {
       nextTick(() => {
-        const curSeparator = Math.trunc(templateMainDom.offsetWidth / state.templateMiniWidth)
-        state.templateSpan =
-          100 / Math.trunc(templateMainDom.offsetWidth / state.templateMiniWidth) + '%'
-        state.templateCurWidth = Math.trunc(templateMainDom.offsetWidth / curSeparator) - 33
+        const offsetWidth = templateMainDom.offsetWidth - 26
+        const curSeparator = Math.trunc(offsetWidth / state.templateMiniWidth)
+        state.templateSpan = 100 / Math.trunc(offsetWidth / state.templateMiniWidth) + '%'
+        state.templateCurWidth = Math.trunc(offsetWidth / curSeparator) - 33
       })
     })
   }
@@ -380,10 +395,11 @@ const previewInit = () => {
       }
       .template-right {
         flex: 1;
-        display: inherit;
+        display: inline;
         height: 100%;
         background: rgba(239, 240, 241, 1);
         overflow-y: auto;
+        padding: 16px 12px;
       }
 
       .template-empty {
@@ -396,6 +412,41 @@ const previewInit = () => {
         overflow-y: auto;
       }
     }
+  }
+}
+
+.main-head {
+  width: 100%;
+  float: left;
+  height: 24px;
+  display: inline;
+  .custom-split-line {
+    margin: 4px 8px 0 12px;
+    width: 2px;
+    height: 16px;
+    background: rgba(51, 112, 255, 1);
+    float: left;
+  }
+  .custom-category {
+    float: left;
+    font-weight: 500;
+    font-size: 16px;
+    color: rgba(31, 35, 41, 1);
+  }
+  .custom-search {
+    float: left;
+    font-weight: 500;
+    font-size: 16px;
+    color: rgba(51, 112, 255, 1);
+    margin-right: 8px;
+  }
+
+  .custom-search-result {
+    float: left;
+    font-weight: 500;
+    font-size: 16px;
+    color: rgba(31, 35, 41, 1);
+    margin-right: 8px;
   }
 }
 </style>
