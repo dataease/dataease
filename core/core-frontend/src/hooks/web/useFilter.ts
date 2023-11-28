@@ -1,6 +1,6 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-
+import { getDynamicRange } from '@/custom-component/v-query/time-format'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData } = storeToRefs(dvMainStore)
 
@@ -91,6 +91,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             const {
               selectValue: value,
               defaultValueCheck,
+              timeType = 'fixed',
               defaultValue,
               parameters = [],
               parametersCheck = false,
@@ -99,13 +100,19 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayType,
               multiple
             } = item
-            selectValue = getValueByDefaultValueCheckOrFirstLoad(
-              defaultValueCheck,
-              defaultValue,
-              value,
-              firstLoad,
-              multiple
-            )
+            if (timeType === 'dynamic' && +displayType === 1 && firstLoad && !value?.length) {
+              selectValue = getDynamicRange(item)
+              item.defaultValue = new Date(selectValue[0])
+              item.selectValue = new Date(selectValue[0])
+            } else {
+              selectValue = getValueByDefaultValueCheckOrFirstLoad(
+                defaultValueCheck,
+                defaultValue,
+                value,
+                firstLoad,
+                multiple
+              )
+            }
             if (
               !!selectValue?.length ||
               Object.prototype.toString.call(selectValue) === '[object Date]'
