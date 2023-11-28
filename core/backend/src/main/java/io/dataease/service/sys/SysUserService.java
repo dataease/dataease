@@ -63,6 +63,10 @@ public class SysUserService {
     @Resource
     private AuthUserService authUserService;
 
+    public Long uidByAccount(String account) {
+        return extSysUserMapper.queryUserId(account);
+    }
+
 
     public List<SysUserGridResponse> query(UserGridRequest request) {
 
