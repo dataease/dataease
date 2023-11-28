@@ -530,7 +530,7 @@
               prop="apiQueryTimeout"
           >
             <el-input
-                v-model="apiItem.queryTimeout"
+                v-model="apiItem.apiQueryTimeout"
                 autocomplete="off"
                 type="number"
                 :min="0"
@@ -855,7 +855,7 @@ export default {
             acquireIncrement: 5,
             idleConnectionTestPeriod: 5,
             connectTimeout: 5,
-            queryTimeout: 30
+            apiQueryTimeout: 30
           },
           apiConfiguration: []
         }
@@ -998,6 +998,7 @@ export default {
         'apiQueryTimeout': [
           {
             required: true,
+            validator: this.isNumber,
             message: i18n.t('datasource.please_input_query_timeout'),
             trigger: 'blur'
           }
@@ -1022,7 +1023,7 @@ export default {
         name: '',
         url: '',
         method: 'GET',
-        queryTimeout: 30,
+        apiQueryTimeout: 30,
         request: {
           headers: [{}],
           arguments: [],
@@ -1040,7 +1041,7 @@ export default {
         url: '',
         method: 'GET',
         dataPath: '',
-        queryTimeout: 30,
+        apiQueryTimeout: 30,
         request: {
           headers: [],
           arguments: [],
@@ -1158,6 +1159,21 @@ export default {
       }
       callback()
     },
+      isNumber(rule, value, callback) {
+        console.log(value)
+        if (!value) {
+            callback(new Error(i18n.t('datasource.please_input_query_timeout')))
+            return
+        }
+        let isNumber = false
+        var reg = /^\d+$/;
+        isNumber =  reg.test(value);
+        if (!isNumber) {
+            callback(new Error(i18n.t('chart.value_error')))
+            return
+        }
+        callback()
+      },
     next() {
       if (this.active === 1) {
         let hasRepeatName = false

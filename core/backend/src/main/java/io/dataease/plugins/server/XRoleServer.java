@@ -17,7 +17,7 @@ import io.dataease.commons.utils.Pager;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.request.KeywordRequest;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.role.dto.request.RoleUserMappingRequest;
 import io.dataease.plugins.xpack.role.dto.request.RoleUserRequest;
 import io.dataease.plugins.xpack.role.dto.response.RoleUserItem;

@@ -226,6 +226,7 @@
               />
             </el-form-item>
             <el-form-item
+              v-if="chart.type && chart.type !== 'bidirectional-bar'"
               :label="$t('chart.axis_label_rotate')"
               class="form-item form-item-slider"
             >

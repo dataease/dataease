@@ -19,7 +19,7 @@ import io.dataease.controller.sys.request.LdapAddRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.ldap.dto.request.LdapValidateRequest;

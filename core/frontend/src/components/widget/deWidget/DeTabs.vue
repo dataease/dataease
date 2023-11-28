@@ -27,7 +27,7 @@
       <el-tab-pane
         v-for="(item, index) in element.options.tabList"
         :key="item.name+index"
-        :lazy="true"
+        :lazy="!isEdit"
         :name="item.name"
       >
         <span slot="label">

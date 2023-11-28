@@ -47,9 +47,9 @@ import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeObj;
+import io.dataease.plugins.common.util.ClassloaderResponsity;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
-import io.dataease.plugins.loader.ClassloaderResponsity;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.DDLProvider;
 import io.dataease.provider.ProviderFactory;
@@ -1116,6 +1116,19 @@ public class DataSetTableService {
     }
 
     private String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
+
+        List<SelectItem> selectItems = new ArrayList<>();
+        plainSelect.getSelectItems().forEach(selectItem -> {
+            System.out.println(selectItem);
+            System.out.println(selectItem instanceof PlainSelect);
+            System.out.println(selectItem instanceof SubSelect);
+
+            selectItems.add(selectItem);
+        });
+
+        plainSelect.addSelectItems(selectItems);
+
+
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem instanceof SubSelect) {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
@@ -2436,10 +2449,11 @@ public class DataSetTableService {
             });
             data = (isPreview && noModelDataListener.getData().size() > 1000 ? new ArrayList<>(data.subList(0, 1000)) : data);
             if (isPreview) {
-                for (List<String> datum : data) {
-                    for (int i = 0; i < datum.size(); i++) {
-                        if (i < fields.size()) {
-                            cellType(datum.get(i), i, fields.get(i));
+                for (int i = 0; i < data.size(); i++) {
+                    List<String> datum = data.get(i);
+                    for (int j = 0; j < datum.size(); j++) {
+                        if (j < fields.size()) {
+                            cellType(datum.get(j), i, fields.get(j));
                         }
                     }
                 }
@@ -2759,7 +2773,7 @@ public class DataSetTableService {
             }
         }
         if(CollectionUtils.isNotEmpty(repeat)){
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + ": " + String.valueOf(repeat));
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + "" + String.valueOf(repeat));
         }
     }
 
@@ -2865,9 +2879,8 @@ public class DataSetTableService {
 
                 visitBinaryExpression(likeExpression,
                         (likeExpression.isNot() ? " NOT" : "") + (likeExpression.isCaseInsensitive() ? " ILIKE " : " LIKE "));
-                String escape = likeExpression.getEscape();
-                if (escape != null) {
-                    buffer.append(" ESCAPE '").append(escape).append('\'');
+                if (likeExpression.getEscape() != null) {
+                    buffer.append(" ESCAPE '").append(likeExpression.getEscape()).append('\'');
                 }
             }
 

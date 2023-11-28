@@ -3,7 +3,8 @@ package io.dataease.service.message.service.strategy;
 
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
-import io.dataease.plugins.config.SpringContextUtil;
+
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.larksuite.service.LarksuiteXpackService;
 import io.dataease.service.message.service.SendService;
 import io.dataease.service.sys.SysUserService;

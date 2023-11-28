@@ -20,7 +20,7 @@ import io.dataease.commons.utils.Pager;
 import io.dataease.controller.sys.response.DeptNodeResponse;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.listener.util.CacheUtils;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.dept.dto.request.*;
 import io.dataease.plugins.xpack.dept.dto.response.DeptUserItemDTO;
 import io.dataease.plugins.xpack.dept.dto.response.XpackDeptTreeNode;

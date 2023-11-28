@@ -1103,7 +1103,7 @@ export default {
             for (let i = 0; i < this.variables.length; i++) {
               if (this.variables[i].variableName === name) {
                 obj = this.variables[i]
-                if (Object.prototype.hasOwnProperty.call(obj, 'defaultValueScope')) {
+                if (!Object.prototype.hasOwnProperty.call(obj, 'defaultValueScope')) {
                   obj.defaultValueScope = 'EDIT'
                 }
               }

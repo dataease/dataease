@@ -15,7 +15,7 @@ import io.dataease.job.sechedule.strategy.TaskHandler;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.dingtalk.dto.entity.DingtalkMsgResult;
 import io.dataease.plugins.xpack.dingtalk.service.DingtalkXpackService;
 import io.dataease.plugins.xpack.email.dto.request.XpackEmailTaskRequest;

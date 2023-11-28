@@ -522,6 +522,12 @@ export default {
         checkJumpStr = checkAllAxisStr
       } else if (chartDetails.type === 'table-info') {
         checkJumpStr = chartDetails.xaxis + chartDetails.drillFields
+      } else if (chartDetails.render === 'antv' && chartDetails.type === 'scatter') {
+        checkJumpStr = checkAllAxisStr
+        const xAxis = JSON.parse(chartDetails.xaxis)
+        if (xAxis && xAxis[0] && xAxis[0].groupType === 'q') {
+          checkJumpStr = checkJumpStr + chartDetails.extStack
+        }
       } else {
         checkJumpStr = checkAllAxisStr
       }

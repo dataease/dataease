@@ -41,6 +41,7 @@
         <ux-table-column
           type="index"
           :title="indexLabel"
+          :width="columnWidth"
         />
         <ux-table-column
           v-for="field in fields"
@@ -122,11 +123,6 @@ export default {
       default: function() {
         return {}
       }
-    },
-    showSummary: {
-      type: Boolean,
-      required: false,
-      default: true
     },
     enableScroll: {
       type: Boolean,
@@ -214,7 +210,8 @@ export default {
         left: '0px',
         top: '0px'
       },
-      pointParam: null
+      pointParam: null,
+      showSummary: true
     }
   },
   computed: {
@@ -298,13 +295,17 @@ export default {
         }
         this.fields = fields
         const attr = JSON.parse(this.chart.customAttr)
+        if (this.currentPage.pageSize < attr.size.tablePageSize) {
+          this.currentPage.page = 1
+        }
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
 
         // column width
         const containerWidth = this.$refs.tableContainer.offsetWidth
         const columnWidth = attr.size.tableColumnWidth ? attr.size.tableColumnWidth : this.columnWidth
-        if (columnWidth < (containerWidth / this.fields.length)) {
-          this.columnWidth = containerWidth / this.fields
+        const fieldsLength = attr.size.showIndex ? this.fields.length + 1 : this.fields.length
+        if (columnWidth < (containerWidth / fieldsLength)) {
+          this.columnWidth = containerWidth / fieldsLength
         } else {
           this.columnWidth = columnWidth
         }
@@ -330,7 +331,7 @@ export default {
         data = []
         this.resetPage()
       }
-      if (this.chart.data.detailFields?.length) {
+      if (this.chart.data?.detailFields?.length) {
         let result = []
         let groupRowIndex = 0
         data.forEach(item => {
@@ -362,8 +363,7 @@ export default {
         })
       }
 
-      this.$refs.plxTable.reloadData(data)
-      this.$nextTick(() => {
+      this.$refs.plxTable.reloadData(data).then(() => {
         this.initStyle()
       })
       window.addEventListener('resize', this.calcHeightDelay)
@@ -455,8 +455,10 @@ export default {
           }
           if (customAttr.size.showTableHeader === false) {
             this.showHeader = false
+            this.showSummary = false
           } else {
             this.showHeader = true
+            this.showSummary = this.chart.type === 'table-normal'
           }
 
           const autoBreakLine = customAttr.size.tableAutoBreakLine ? customAttr.size.tableAutoBreakLine : DEFAULT_SIZE.tableAutoBreakLine
@@ -481,6 +483,9 @@ export default {
         //     }
         //   }
         // }
+        if (customAttr.color.enableTableCrossBG) {
+          this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemSubBgColor, customAttr.color.alpha)
+        }
       }
       if (this.chart.customStyle) {
         const customStyle = JSON.parse(this.chart.customStyle)
@@ -500,16 +505,18 @@ export default {
       }
       // 修改footer合计样式
       const table = document.getElementsByClassName(this.chart.id)
-      for (let i = 0; i < table.length; i++) {
-        const s_table = table[i].getElementsByClassName('elx-table--footer')
-        let s = ''
-        for (const i in this.table_header_class) {
-          s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
+      this.$refs.plxTable.updateFooter().then(() => {
+        for (let i = 0; i < table.length; i++) {
+          const s_table = table[i].getElementsByClassName('elx-table--footer')
+          let s = ''
+          for (const i in this.table_header_class) {
+            s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
+          }
+          for (let i = 0; i < s_table.length; i++) {
+            s_table[i].setAttribute('style', s)
+          }
         }
-        for (let i = 0; i < s_table.length; i++) {
-          s_table[i].setAttribute('style', s)
-        }
-      }
+      })
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {

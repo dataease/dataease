@@ -465,17 +465,27 @@ const data = {
 
         for (let index = 0; index < state.componentData.length; index++) {
           const element = state.componentData[index]
-          if (!element.type || element.type !== 'view') continue
+          if (!element.type || (element.type !== 'view' && element.type !== 'custom')) continue
           const currentFilters = element.outerParamsFilters || [] // 外部参数信息
 
           // 外部参数 可能会包含多个参数
           Object.keys(params).forEach(function(sourceInfo) {
             // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
             let paramValue = params[sourceInfo]
+            let paramValueStr = params[sourceInfo]
             let operator = 'in'
             if (paramValue && !Array.isArray(paramValue)) {
               paramValue = [paramValue]
               operator = 'eq'
+            } else if (paramValue && Array.isArray(paramValue)) {
+              paramValueStr = ''
+              paramValue.forEach((innerValue, index) => {
+                if (index === 0) {
+                  paramValueStr = innerValue
+                } else {
+                  paramValueStr = paramValueStr + ',' + innerValue
+                }
+              })
             }
             // 获取所有目标联动信息
             const targetInfoList = trackInfo[sourceInfo] || []
@@ -483,7 +493,7 @@ const data = {
             targetInfoList.forEach(targetInfo => {
               const targetInfoArray = targetInfo.split('#')
               const targetViewId = targetInfoArray[0] // 目标视图
-              if (element.propValue.viewId === targetViewId) { // 如果目标视图 和 当前循环组件id相等 则进行条件增减
+              if (element.type === 'view' && element.propValue.viewId === targetViewId) { // 如果目标视图 和 当前循环组件id相等 则进行条件增减
                 const targetFieldId = targetInfoArray[1] // 目标视图列ID
                 const condition = new Condition('', targetFieldId, operator, paramValue, [targetViewId])
                 let j = currentFilters.length
@@ -498,8 +508,17 @@ const data = {
                 // !filterExist && vValid && currentFilters.push(condition)
                 currentFilters.push(condition)
               }
+              if (element.type === 'custom' && element.id === targetViewId) { // 过滤组件处理
+                if (element.component === 'de-number-range') {
+                  element.options.value = paramValue
+                } else {
+                  element.options.value = paramValueStr
+                }
+              }
             })
-            element.outerParamsFilters = currentFilters
+            if (element.type === 'view') {
+              element.outerParamsFilters = currentFilters
+            }
             state.componentData[index] = element
           })
         }

@@ -39,7 +39,7 @@ public class PrestoConstants extends SQLConstants {
 
     public static final String BRACKETS = "(%s)";
 
-    public static final String NAME = "pg";
+    public static final String NAME = "presto";
 
 
 }

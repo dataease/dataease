@@ -97,7 +97,8 @@ public class JdbcProvider extends DefaultJdbcProvider {
             }
             String schemaPattern = "%";
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.oracle.name())) {
-                schemaPattern = databaseMetaData.getUserName();
+                OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
+                schemaPattern = oracleConfiguration.getSchema();
             }
             ResultSet resultSet = databaseMetaData.getColumns(null, schemaPattern, tableNamePattern, "%");
             while (resultSet.next()) {

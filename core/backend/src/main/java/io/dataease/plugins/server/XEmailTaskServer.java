@@ -14,7 +14,7 @@ import io.dataease.commons.utils.*;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.email.dto.request.*;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskEntity;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskGridDTO;

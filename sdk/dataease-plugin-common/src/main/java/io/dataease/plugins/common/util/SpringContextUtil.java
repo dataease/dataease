@@ -1,4 +1,4 @@
-package io.dataease.plugins.config;
+package io.dataease.plugins.common.util;
 
 import org.springframework.beans.BeansException;
 import org.springframework.beans.factory.support.DefaultListableBeanFactory;

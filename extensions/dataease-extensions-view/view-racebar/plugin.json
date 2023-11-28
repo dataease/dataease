@@ -5,9 +5,9 @@
     "cost": 0,
     "category": "view",
     "descript": "ECharts 动态排序图插件",
-    "version": "1.18.10",
+    "version": "1.18.13",
     "creator": "DATAEASE",
     "moduleName": "view-racebar-backend",
-    "require": "1.18.10",
+    "require": "1.18.13",
     "dsType": ""
 }

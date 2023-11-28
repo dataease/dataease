@@ -2,7 +2,7 @@
   <div
     :style="getOutStyleDefault(config.style)"
     class="component component-outer"
-    :class="{'component-active': filterActive}"
+    :class="{'component-active': filterActive, 'user-view': config.component === 'user-view'}"
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
@@ -397,5 +397,12 @@ export default {
 
 .component-active {
   z-index: 1;
+}
+
+.fullscreen {
+  transform: translate(0);
+  .main_view {
+    z-index: 0;
+  }
 }
 </style>

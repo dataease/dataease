@@ -47,6 +47,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
@@ -96,6 +98,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
@@ -148,6 +152,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
@@ -245,6 +251,7 @@ export const TYPE_CONFIGS = [
     propertyInner: {
       'color-selector': [
         'quotaColor',
+        'quotaSuffixColor',
         'dimensionColor'
       ],
       'size-selector-ant-v': [
@@ -261,7 +268,13 @@ export const TYPE_CONFIGS = [
         'dimensionFontShadow',
         'spaceSplit',
         'hPosition',
-        'vPosition'
+        'vPosition',
+        'quotaSuffix',
+        'quotaSuffixFontSize',
+        'quotaSuffixFontFamily',
+        'quotaSuffixFontStyle',
+        'quotaSuffixLetterSpace',
+        'quotaSuffixFontShadow'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1589,7 +1602,6 @@ export const TYPE_CONFIGS = [
       'x-axis-selector-ant-v': [
         'show',
         'position',
-        'nameTextStyle',
         'splitLine',
         'axisForm',
         'axisLabel'
@@ -1976,6 +1988,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
@@ -2019,6 +2033,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'tableHeaderBgColor',
         'tableItemBgColor',
+        'enableTableCrossBG',
+        'tableItemSubBgColor',
         'tableHeaderFontColor',
         'tableFontColor',
         'tableBorderColor',
@@ -2113,6 +2129,7 @@ export const TYPE_CONFIGS = [
 
       'color-selector': [
         'quotaColor',
+        'quotaSuffixColor',
         'dimensionColor'
       ],
       'size-selector': [
@@ -2129,7 +2146,13 @@ export const TYPE_CONFIGS = [
         'dimensionFontShadow',
         'spaceSplit',
         'hPosition',
-        'vPosition'
+        'vPosition',
+        'quotaSuffix',
+        'quotaSuffixFontSize',
+        'quotaSuffixFontFamily',
+        'quotaSuffixFontStyle',
+        'quotaSuffixLetterSpace',
+        'quotaSuffixFontShadow'
       ],
       'title-selector': [
         'show',
@@ -3090,7 +3113,8 @@ export const TYPE_CONFIGS = [
         'axisLine',
         'axisLabel',
         'splitLine',
-        'splitArea'
+        'splitArea',
+        'axisValue'
       ],
       'title-selector': [
         'show',

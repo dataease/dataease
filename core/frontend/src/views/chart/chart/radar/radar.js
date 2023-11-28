@@ -31,6 +31,7 @@ export function baseRadarOption(chart_option, chart) {
   if (chart.data) {
     chart_option.title.text = chart.title
     const maxValues = []
+    const minValues = []
     for (let i = 0; i < chart.data.series.length; i++) {
       const y = chart.data.series[i]
       if (y.data.length === 0) {
@@ -63,10 +64,17 @@ export function baseRadarOption(chart_option, chart) {
       chart_option.series.push(d)
 
       maxValues.push(Math.max.apply(null, y.value))
+      minValues.push(Math.min.apply(null, y.value))
     }
-    const max = Math.max.apply(null, maxValues)
+    let max = Math.max.apply(null, maxValues)
+    let min = Math.min.apply(null, minValues)
+    const customStyle = JSON.parse(chart.customStyle)
+    if (customStyle?.split?.axisValue?.auto === false) {
+      min = Math.min(customStyle.split.axisValue.min, min)
+      max = Math.max(customStyle.split.axisValue.max, max)
+    }
     chart.data.x.forEach(function(ele) {
-      chart_option.radar.indicator.push({ name: ele, max: max })
+      chart_option.radar.indicator.push({ name: ele, min, max })
     })
   }
   componentStyle(chart_option, chart)

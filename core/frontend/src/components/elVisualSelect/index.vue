@@ -85,6 +85,10 @@ export default {
     clearable: {
       type: Boolean,
       default: true
+    },
+    flag: {
+      type: String,
+      require: true
     }
   },
   data() {
@@ -124,14 +128,14 @@ export default {
     },
     list() {
       this.resetList()
-      this.show = false
       this.$nextTick(() => {
-        this.show = true
         this.$nextTick(() => {
           this.init()
         })
       })
-    },
+    }
+    /*
+    模糊搜索改为后端检索，暂注释前端
     keyWord(val, old) {
       if (val === old) return
       const results = val ? this.vagueFilter(val, this.list) : null
@@ -141,6 +145,7 @@ export default {
         this.callback()
       })
     }
+    */
   },
   mounted() {
     this.resetList()
@@ -174,8 +179,10 @@ export default {
       this.$emit('handleShowNumber')
     },
     addScrollDiv(selectDom) {
+      const baseClass = `${this.classId}-creator`
       this.maxHeightDom = document.createElement('div')
       this.maxHeightDom.className = 'el-select-height'
+      this.maxHeightDom.classList.add(baseClass)
       selectDom.insertBefore(this.maxHeightDom, this.domList)
     },
     reCacularHeight() {
@@ -204,6 +211,12 @@ export default {
       }
       if (!this.list || !this.list.length) {
         this.customInputStyle()
+        return
+      }
+      const baseClass = `.${this.classId}-creator`
+      if (document.querySelector(baseClass)) {
+        this.customInputStyle()
+        this.reCacularHeight()
         return
       }
 

@@ -1,6 +1,5 @@
 package io.dataease.plugins.view.official.handler;
 
-import com.google.gson.Gson;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.util.ConstantsUtil;

@@ -108,7 +108,6 @@
     <table-normal
       v-else-if="tableShowFlag"
       :ref="element.propValue.id"
-      :show-summary="chart.type === 'table-normal'"
       :chart="chart"
       :track-menu="trackMenu"
       class="table-class"
@@ -375,17 +374,17 @@ export default {
   computed: {
     // 首次加载且非编辑状态新复制的视图，使用外部filter
     initLoad() {
-      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad && this.canvasId === 'canvas-main'
+      return !(this.isEdit && this.currentCanvasNewId.includes(this.element.id)) && this.isFirstLoad
     },
     scaleCoefficient() {
-      if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
+      if (this.terminal === 'pc' && (!this.mobileLayoutStatus || this.showPosition === 'preview-wait')) {
         return 1.1
       } else {
         return 4.5
       }
     },
     scaleCoefficientType() {
-      if (this.terminal === 'pc' && !this.mobileLayoutStatus) {
+      if (this.terminal === 'pc' && (!this.mobileLayoutStatus || this.showPosition === 'preview-wait')) {
         return 'pc'
       } else {
         return 'mobile'
@@ -423,7 +422,7 @@ export default {
     },
     filter() {
       const filter = {}
-      filter.filter = this.initLoad ? this.filters : this.cfilters
+      filter.filter = this.initLoad && this.cfilters?.length === 0 ? this.filters : this.cfilters
       filter.linkageFilters = this.element.linkageFilters
       filter.outerParamsFilters = this.element.outerParamsFilters
       filter.drill = this.drillClickDimensionList
@@ -776,7 +775,13 @@ export default {
     viewInCache(param) {
       this.view = param.view
       if (this.view && this.view.customAttr) {
-        this.currentPage.pageSize = parseInt(JSON.parse(this.view.customAttr).size.tablePageSize)
+        const curPageSize = this.currentPage.pageSize
+        const newPageSize = parseInt(JSON.parse(this.view.customAttr).size.tablePageSize)
+        // 分页小转大重置为第一页
+        if (curPageSize < newPageSize) {
+          this.currentPage.page = 1
+        }
+        this.currentPage.pageSize = newPageSize
       }
       param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
     },
@@ -825,11 +830,11 @@ export default {
         const filters = this.filter.filter
         const group = this.groupRequiredInvalid(filters)
         if (group.unReady?.length) {
-          this.view.unReadyMsg = '请先完成必填项过滤器！'
+          this.view && (this.view.unReadyMsg = '请先完成必填项过滤器！')
           this.getDataLoading = false
           return
         } else {
-          this.view.unReadyMsg = ''
+          this.view && (this.view.unReadyMsg = '')
         }
         if (this.getDataLoading || Vue.prototype.$currentHttpRequestList.get(`/chart/view/getData/${id}/${this.panelInfo.id}`)) {
           const url = `/chart/view/getData/${id}/${this.panelInfo.id}`
@@ -1062,7 +1067,15 @@ export default {
     jumpClick(param) {
       let dimension, jumpInfo, sourceInfo
       // 如果有名称name 获取和name匹配的dimension 否则倒序取最后一个能匹配的
-      if (param.name) {
+      if (param.scatterSpecial) {
+        param.scatterSpecialData.dimensionList.forEach(dimensionItem => {
+          if (param.scatterSpecialData.field === dimensionItem.value) {
+            dimension = dimensionItem
+            sourceInfo = param.viewId + '#' + dimension.id
+            jumpInfo = this.nowPanelJumpInfo[sourceInfo]
+          }
+        })
+      } else if (param.name) {
         param.dimensionList.forEach(dimensionItem => {
           if (dimensionItem.id === param.name || dimensionItem.value === param.name) {
             dimension = dimensionItem
@@ -1086,6 +1099,7 @@ export default {
           }
         }
       }
+
       if (jumpInfo) {
         param.sourcePanelId = this.panelInfo.id
         param.sourceViewId = param.viewId
@@ -1354,27 +1368,20 @@ export default {
     },
     getDataOnly(sourceResponseData, dataBroadcast) {
       if (this.isEdit) {
-        if ((this.filter.filter && this.filter.filter.length) || (this.filter.linkageFilters && this.filter.linkageFilters.length)) {
-          const requestInfo = {
-            filter: [],
-            drill: [],
-            queryFrom: 'panel'
+        if (((this.filter.filter && this.filter.filter.length) || (this.filter.linkageFilters && this.filter.linkageFilters.length)) &&
+          this.chart.render &&
+          this.chart.render === 'antv' &&
+          (this.chart.type.includes('bar') ||
+            this.chart.type.includes('line') ||
+            this.chart.type.includes('area') ||
+            this.chart.type.includes('pie') ||
+            this.chart.type === 'funnel' ||
+            this.chart.type === 'radar' ||
+            this.chart.type === 'scatter')) {
+          delete this.componentViewsData[this.chart.id]
+          if (dataBroadcast) {
+            bus.$emit('prop-change-data')
           }
-          // table-info明细表增加分页
-          if (this.view && this.view.customAttr) {
-            const attrSize = JSON.parse(this.view.customAttr).size
-            if (this.chart.type === 'table-info' && this.view.datasetMode === 0 && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
-              requestInfo.goPage = this.currentPage.page
-              requestInfo.pageSize = this.currentPage.pageSize
-            }
-          }
-          viewData(this.chart.id, this.panelInfo.id, requestInfo).then(response => {
-            this.componentViewsData[this.chart.id] = response.data
-            this.view = response.data
-            if (dataBroadcast) {
-              bus.$emit('prop-change-data')
-            }
-          })
         } else {
           this.componentViewsData[this.chart.id] = sourceResponseData
           if (dataBroadcast) {
@@ -1414,7 +1421,6 @@ export default {
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: #ece7e7;
 }
 
 .chart-error-message-class {

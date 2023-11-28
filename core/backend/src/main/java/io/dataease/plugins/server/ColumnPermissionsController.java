@@ -8,7 +8,7 @@ import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
 import io.dataease.i18n.Translator;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.dto.request.DataSetColumnPermissionsDTO;
 import io.dataease.plugins.xpack.auth.dto.request.DatasetColumnPermissions;
 import io.dataease.plugins.xpack.auth.service.ColumnPermissionService;

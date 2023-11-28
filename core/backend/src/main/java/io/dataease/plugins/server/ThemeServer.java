@@ -15,7 +15,7 @@ import org.springframework.web.bind.annotation.RestController;
 import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.i18n.Translator;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.theme.service.ThemeXpackService;
 
 @Api(tags = "xpack：系统主题")

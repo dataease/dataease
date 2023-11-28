@@ -20,10 +20,6 @@
             <el-input :placeholder="$t('enter_the_port')" v-model="form.configuration.port" autocomplete="off"/>
           </el-form-item>
 
-          <el-form-item :label="$t('dataBase')" prop="configuration.dataBase">
-            <el-input v-model="form.configuration.dataBase" autocomplete="off"/>
-          </el-form-item>
-
           <el-form-item :label="$t('username')" prop="configuration.username">
             <el-input :placeholder="$t('one_user_name')" v-model="form.configuration.username" autocomplete="off"/>
           </el-form-item>

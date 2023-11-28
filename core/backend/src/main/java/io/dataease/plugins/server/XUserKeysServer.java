@@ -3,7 +3,7 @@ package io.dataease.plugins.server;
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.AuthUtils;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.ukey.dto.request.XpackUkeyDto;
 import io.dataease.plugins.xpack.ukey.service.UkeyXpackService;
 import org.springframework.web.bind.annotation.*;

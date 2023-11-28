@@ -95,12 +95,12 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null);
+        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null, null, null);
     }
 
     @Override
     public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, null);
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, null, null, null);
     }
 
     private SQLObj buildSortField(DeSortField f, SQLObj tableObj, int index) {
@@ -155,13 +155,12 @@ public class MysqlQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
-        int originSize = fields.size();
         List<String> fieldList = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(sortFields)) {
             sortFields.forEach(item -> {
@@ -223,6 +222,7 @@ public class MysqlQueryProvider extends QueryProvider {
                     }
                 }
                 xFields.add(SQLObj.builder()
+                        .fieldOriginName(originField)
                         .fieldName(fieldName)
                         .fieldAlias(fieldAlias)
                         .build());
@@ -249,8 +249,12 @@ public class MysqlQueryProvider extends QueryProvider {
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (whereTrees != null) wheres.add(whereTrees);
-        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
+        if (StringUtils.isNotBlank(keyword)) {
+            String keyWhere = "("+transKeywordFilterList(tableObj, xFields, keyword)+")";
+            wheres.add(keyWhere);
+        }
+        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         String sql = st_sql.render();
         ST st = stg.getInstanceOf("previewSql");
         st.add("isGroup", false);
@@ -260,23 +264,22 @@ public class MysqlQueryProvider extends QueryProvider {
                 .build();
         st.add("table", tableSQL);
 
-        List<SQLObj> outFieldList = new ArrayList<>();
-        for (int i = 0; i < originSize; i++) {
-            SQLObj fieldObj = xFields.get(i);
-            String outFieldAlias = tableSQL.getTableAlias() + "." + fieldObj.getFieldAlias();
-            outFieldList.add(SQLObj.builder().fieldName(outFieldAlias).fieldAlias(fieldObj.getFieldAlias()).build());
-        }
-        st.add("groups", outFieldList);
         if (CollectionUtils.isNotEmpty(xOrders)) {
             st.add("orders", xOrders);
-            return st.render() + " LIMIT 0, 10000000";
+        }
+        if (ObjectUtils.isNotEmpty(limit)) {
+            ChartViewWithBLOBs view = new ChartViewWithBLOBs();
+            view.setResultMode("custom");
+            view.setResultCount(Integer.parseInt(limit.toString()));
+            return sqlLimit(st.render(), view);
         }
         return st.render();
     }
 
+
     @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, sortFields);
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, sortFields, limit, keyword);
     }
 
     @Override

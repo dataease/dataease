@@ -190,8 +190,10 @@ export default {
 
       this.myChart = new this.$chartmix(this.chartId, _params)
 
-      this.myChart.off('edge:click')
-      this.myChart.on('edge:click', this.antVAction)
+      this.myChart.off('point:click')
+      this.myChart.on('point:click', this.antVAction)
+      this.myChart.off('interval:click')
+      this.myChart.on('interval:click', this.antVAction)
 
       this.myChart.render();
 
@@ -342,6 +344,8 @@ export default {
           options: {
             data: _.map(t.data, (v) => {
               return {
+                quotaList: v.quotaList,
+                dimensionList: v.dimensionList,
                 key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
                 value: v.value,
                 i: _index,
@@ -401,6 +405,8 @@ export default {
           options: {
             data: _.map(t.data, (v) => {
               return {
+                quotaList: v.quotaList,
+                dimensionList: v.dimensionList,
                 key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
                 value: v.value,
                 i: _index,
@@ -641,32 +647,10 @@ export default {
             delete axis.maxLimit
             delete axis.tickCount
             const axisValue = a.axisValue
-            if (axisValue && !axisValue.auto) {
-              const yAxisSeriesMaxList = []
-              const maxList = []
-              chart.data.data.forEach(ele => {
-                maxList.push(ele.value)
-              })
-              yAxisSeriesMaxList.push(Math.max.apply(null, maxList))
-              if (yAxisSeriesMaxList.length > 0 && !isNaN(axisValue.max)) {
-                const max = Math.max.apply(null, yAxisSeriesMaxList)
-                if (max <= parseFloat(axisValue.max)) {
-                  axisValue.max && (axis.maxLimit = axis.max = parseFloat(axisValue.max))
-                }
-              }
 
-              const yAxisSeriesMinList = []
-              const minList = []
-              chart.data.data.forEach(ele => {
-                minList.push(ele.value)
-              })
-              yAxisSeriesMinList.push(Math.min.apply(null, minList))
-              if (yAxisSeriesMinList.length > 0 && !isNaN(axisValue.min)) {
-                const min = Math.min.apply(null, yAxisSeriesMinList)
-                if (min >= parseFloat(axisValue.min)) {
-                  axisValue.min && (axis.minLimit = axis.min = parseFloat(axisValue.min))
-                }
-              }
+            if (axisValue && !axisValue.auto) {
+              axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
+              axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
               axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
             }
 
