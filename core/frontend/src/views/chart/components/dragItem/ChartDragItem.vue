@@ -201,6 +201,16 @@
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
+
+          <el-dropdown-item
+            v-if="chart.type ==='scatter' && chart.render === 'antv'"
+            icon="el-icon-edit-outline"
+            divided
+            :command="beforeClickItem('rename')"
+          >
+            <span>{{ $t('chart.show_name_set') }}</span>
+          </el-dropdown-item>
+
           <el-dropdown-item
             icon="el-icon-delete"
             divided
@@ -215,7 +225,7 @@
 </template>
 
 <script>
-import { getItemType } from '@/views/chart/components/dragItem/utils'
+import { getItemType, getOriginFieldName } from '@/views/chart/components/dragItem/utils'
 import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldErrorTips'
 import bus from '@/utils/bus'
 
@@ -288,6 +298,9 @@ export default {
         return
       }
       switch (param.type) {
+        case 'rename':
+          this.showRename()
+          break
         case 'remove':
           this.removeItem()
           break
@@ -353,6 +366,12 @@ export default {
     },
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
+    },
+    showRename() {
+      this.item.index = this.index
+      this.item.renameType = 'extStack'
+      this.item.dsFieldName = getOriginFieldName(this.dimensionData, this.quotaData, this.item)
+      this.$emit('onNameEdit', this.item)
     }
   }
 }

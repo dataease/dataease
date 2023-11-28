@@ -939,6 +939,7 @@
                             @onItemChange="stackItemChange"
                             @onItemRemove="stackItemRemove"
                             @onItemCustomSort="stackItemCustomSort"
+                            @onNameEdit="showRename"
                           />
                         </transition-group>
                       </draggable>
@@ -3108,6 +3109,8 @@ export default {
             this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'dimensionExt') {
             this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'extStack') {
+            this.view.extStack[this.itemForm.index].name = this.itemForm.name
           }
           this.calcData(true)
           this.closeRename()
