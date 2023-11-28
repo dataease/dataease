@@ -878,12 +878,16 @@ export default {
     // 获取父元素大小
     getParentSize() {
       if (this.parent === true) {
-        const style = window.getComputedStyle(this.$el.parentNode, null)
-        const rect = this.$el.parentNode.getBoundingClientRect()
-        this.parentX = rect.x
-        this.parentY = rect.y
-        // 高度不设置上限100000 宽度增加左右 60px
-        return [Math.round(parseFloat(style.getPropertyValue('width'), 10)) + 6, 100000]
+        try {
+          const style = window.getComputedStyle(this.$el.parentNode, null)
+          const rect = this.$el.parentNode.getBoundingClientRect()
+          this.parentX = rect.x
+          this.parentY = rect.y
+          // 高度不设置上限100000 宽度增加左右 60px
+          return [Math.round(parseFloat(style.getPropertyValue('width'), 10)) + 6, 100000]
+        } catch (e) {
+          console.warn('custom:getParentSize')
+        }
       }
       if (typeof this.parent === 'string') {
         const parentNode = document.querySelector(this.parent)
