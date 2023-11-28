@@ -519,6 +519,14 @@ const data = {
                 } else {
                   element.options.value = paramValueStr
                 }
+                // 去掉动态时间
+                if (element.options.manualModify) {
+                  element.options.manualModify = false
+                }
+                // 去掉首选项
+                if (element.options?.attr?.selectFirst) {
+                  element.options.attr.selectFirst = false
+                }
               }
             })
             if (element.type === 'view') {
