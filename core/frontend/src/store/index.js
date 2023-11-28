@@ -509,7 +509,11 @@ const data = {
                 currentFilters.push(condition)
               }
               if (element.type === 'custom' && element.id === targetViewId) { // 过滤组件处理
-                element.options.value = paramValueStr
+                if (element.component === 'de-number-range') {
+                  element.options.value = paramValue
+                } else {
+                  element.options.value = paramValueStr
+                }
               }
             })
             if (element.type === 'view') {
