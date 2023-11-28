@@ -1,18 +1,5 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <div class="de-template-list">
-    <el-input
-      v-model="state.templateFilterText"
-      :placeholder="'搜索关键字'"
-      size="small"
-      class="de-input-search"
-      clearable
-    >
-      <template #prefix>
-        <el-icon>
-          <Icon name="de-search" />
-        </el-icon>
-      </template>
-    </el-input>
     <el-empty
       v-if="!templateListComputed.length && state.templateFilterText === ''"
       :image="NoneImage"

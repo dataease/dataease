@@ -1,88 +1,105 @@
 <template>
-  <div style="width: 100%; height: 100%">
-    <div class="de-template">
-      <div class="tabs-container flex-tabs">
-        <div class="de-tabs-left">
-          <de-template-list
-            ref="templateListRef"
-            :template-type="state.currentTemplateType"
-            :template-list="state.templateList"
-            @templateDelete="templateFolderDelete"
-            @templateEdit="templateEdit"
-            @showCurrentTemplate="showCurrentTemplate"
-            @templateImport="templateImport"
-            @showTemplateEditDialog="showTemplateEditDialog"
-          />
-        </div>
-        <div class="de-tabs-right">
-          <div v-if="state.currentTemplateLabel" class="active-template">
-            {{ state.currentTemplateLabel }}&nbsp;&nbsp;({{ state.currentTemplateShowList.length }})
-            <el-button
-              type="primary"
-              icon="Upload"
-              @click="templateImport(state.currentTemplateId)"
-            >
-              {{ t('visualization.import') }}
-            </el-button>
+  <div class="template-head">
+    <p class="router-title">模版管理</p>
+    <el-button style="float: right" type="primary" @click="templateImport(state.currentTemplateId)">
+      {{ t('visualization.import') }}
+    </el-button>
+    <el-input
+      v-model="state.templateFilterText"
+      :placeholder="'搜索关键字'"
+      class="template-search-class"
+      clearable
+    >
+      <template #prefix>
+        <el-icon>
+          <Icon name="de-search" />
+        </el-icon>
+      </template>
+    </el-input>
+  </div>
+  <div class="sys-setting-p">
+    <div class="container-sys-param">
+      <div style="width: 100%; height: 100%">
+        <div class="de-template">
+          <div class="tabs-container flex-tabs">
+            <div class="de-tabs-left">
+              <de-template-list
+                ref="templateListRef"
+                :template-type="state.currentTemplateType"
+                :template-list="state.templateList"
+                @templateDelete="templateFolderDelete"
+                @templateEdit="templateEdit"
+                @showCurrentTemplate="showCurrentTemplate"
+                @templateImport="templateImport"
+                @showTemplateEditDialog="showTemplateEditDialog"
+              />
+            </div>
+            <div class="de-tabs-right">
+              <div v-if="state.currentTemplateLabel" class="active-template">
+                {{ state.currentTemplateLabel }}&nbsp;&nbsp;({{
+                  state.currentTemplateShowList.length
+                }})
+              </div>
+              <el-empty
+                v-if="!state.currentTemplateShowList.length"
+                :image="NoneImage"
+                :description="'暂无模版'"
+              />
+              <div v-show="state.currentTemplateId !== ''" id="template-box" class="template-box">
+                <de-template-item
+                  v-for="item in state.currentTemplateShowList"
+                  :key="item.id"
+                  :width="state.templateCurWidth"
+                  :model="item"
+                  @command="key => handleCommand(key, item)"
+                />
+              </div>
+            </div>
           </div>
-          <el-empty
-            v-if="!state.currentTemplateShowList.length"
-            :image="NoneImage"
-            :description="'暂无模版'"
-          />
-          <div v-show="state.currentTemplateId !== ''" id="template-box" class="template-box">
-            <de-template-item
-              v-for="item in state.currentTemplateShowList"
-              :key="item.id"
-              :width="state.templateCurWidth"
-              :model="item"
-              @command="key => handleCommand(key, item)"
-            />
-          </div>
         </div>
+        <el-dialog
+          :title="state.dialogTitle"
+          v-model="state.editTemplate"
+          append-to-body
+          class="de-dialog-form"
+          width="600px"
+        >
+          <el-form
+            ref="templateEditFormRef"
+            class="de-form-item"
+            :model="state.templateEditForm"
+            :rules="state.templateEditFormRules"
+          >
+            <el-form-item :label="state.dialogTitleLabel" prop="name">
+              <el-input v-model="state.templateEditForm.name" />
+            </el-form-item>
+          </el-form>
+          <template #footer>
+            <div class="dialog-footer">
+              <el-button secondary @click="close()">{{ t('commons.cancel') }}</el-button>
+              <el-button type="primary" @click="saveTemplateEdit(state.templateEditForm)"
+                >{{ t('commons.confirm') }}
+              </el-button>
+            </div>
+          </template>
+        </el-dialog>
+        <!--导入templateDialog-->
+        <el-dialog
+          :title="state.templateDialog.title"
+          v-model="state.templateDialog.visible"
+          :show-close="true"
+          class="de-dialog-form"
+          width="600px"
+        >
+          <de-template-import
+            v-if="state.templateDialog.visible"
+            :pid="state.templateDialog.pid"
+            @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
+            @closeEditTemplateDialog="closeEditTemplateDialog"
+          />
+        </el-dialog>
       </div>
     </div>
-    <el-dialog
-      :title="state.dialogTitle"
-      v-model="state.editTemplate"
-      append-to-body
-      class="de-dialog-form"
-      width="600px"
-    >
-      <el-form
-        ref="templateEditFormRef"
-        class="de-form-item"
-        :model="state.templateEditForm"
-        :rules="state.templateEditFormRules"
-      >
-        <el-form-item :label="state.dialogTitleLabel" prop="name">
-          <el-input v-model="state.templateEditForm.name" />
-        </el-form-item>
-      </el-form>
-      <template #footer>
-        <div class="dialog-footer">
-          <el-button secondary @click="close()">{{ t('commons.cancel') }}</el-button>
-          <el-button type="primary" @click="saveTemplateEdit(state.templateEditForm)"
-            >{{ t('commons.confirm') }}
-          </el-button>
-        </div>
-      </template>
-    </el-dialog>
-    <!--导入templateDialog-->
-    <el-dialog
-      :title="state.templateDialog.title"
-      v-model="state.templateDialog.visible"
-      :show-close="true"
-      class="de-dialog-form"
-      width="600px"
-    >
-      <de-template-import
-        v-if="state.templateDialog.visible"
-        :pid="state.templateDialog.pid"
-        @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
-        @closeEditTemplateDialog="closeEditTemplateDialog"
-      />
-    </el-dialog>
   </div>
 </template>
 
@@ -118,6 +135,7 @@ const roleValidator = (rule, value, callback) => {
 }
 
 const state = reactive({
+  templateFilterText: '',
   showShare: false,
   currentTemplateShowList: [],
   noneImg: '@/assets/None.png',
@@ -145,8 +163,8 @@ const state = reactive({
   currentTemplateLabel: '',
   currentTemplateId: '',
   templateList: [],
-  templateMiniWidth: 286,
-  templateCurWidth: 286,
+  templateMiniWidth: 256,
+  templateCurWidth: 256,
   formType: '',
   originName: '',
   templateDialog: {
@@ -334,9 +352,9 @@ onMounted(() => {
   // 监听div变动事件
   erd.listenTo(templateMainDom, element => {
     nextTick(() => {
-      const curSeparator = Math.trunc(templateMainDom.offsetWidth / state.templateMiniWidth)
-      state.templateCurWidth =
-        Math.trunc(templateMainDom.offsetWidth / curSeparator) - 24 - curSeparator
+      const offsetWidth = templateMainDom.offsetWidth - 24
+      const curSeparator = Math.trunc(offsetWidth / state.templateMiniWidth)
+      state.templateCurWidth = Math.trunc(offsetWidth / curSeparator) - 24 - curSeparator
     })
   })
 })
@@ -364,9 +382,8 @@ onMounted(() => {
 
   .de-tabs-right {
     flex: 1;
-    background: #fff;
-    padding: 24px 0 24px 24px;
     overflow: hidden;
+    background: rgba(239, 240, 241, 1);
 
     .template-box {
       display: flex;
@@ -376,12 +393,12 @@ onMounted(() => {
       align-content: flex-start;
       height: calc(100% - 10px);
       width: 100%;
-      padding-bottom: 24px;
+      padding: 16px 0px 16px 24px;
     }
 
     .active-template {
-      margin: 4px 0 20px 0;
-      padding-right: 24px;
+      height: 56px;
+      padding: 0px 24px;
       font-family: 'PingFang SC';
       font-style: normal;
       font-weight: 500;
@@ -389,8 +406,45 @@ onMounted(() => {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      color: var(--deTextPrimary, #1f2329);
+      color: rgba(31, 35, 41, 1);
+      background: #fff;
+      border-bottom: 1px solid rgba(31, 35, 41, 0.15);
     }
   }
+}
+
+.router-title {
+  color: #1f2329;
+  font-feature-settings: 'clig' off, 'liga' off;
+  font-family: PingFang SC;
+  font-size: 20px;
+  font-style: normal;
+  font-weight: 500;
+  line-height: 28px;
+  float: left;
+}
+.sys-setting-p {
+  width: 100%;
+  background: #ffffff;
+  height: calc(100vh - 136px);
+  box-sizing: border-box;
+  margin-top: 12px;
+}
+.setting-auto-h {
+  height: auto !important;
+}
+
+.container-sys-param {
+  height: 100%;
+  overflow-y: auto;
+}
+
+.template-head {
+  height: 32px;
+}
+.template-search-class {
+  float: right;
+  width: 320px;
+  margin-right: 12px;
 }
 </style>
