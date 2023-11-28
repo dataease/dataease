@@ -9,12 +9,11 @@
         </el-tooltip>
         <el-row v-show="state.asideActive" style="padding: 24px 12px 0">
           <el-row style="align-items: center">
-            <el-breadcrumb separator-icon="ArrowRight">
-              <el-breadcrumb-item class="custom-breadcrumb-item" @click="closePreview()">{{
-                t('visualization.template_preview')
-              }}</el-breadcrumb-item>
-              <el-breadcrumb-item>预览</el-breadcrumb-item>
-            </el-breadcrumb>
+            <span class="custom-breadcrumb-item" @click="closePreview()">{{
+              t('visualization.template_preview')
+            }}</span>
+            <el-icon><ArrowRight /></el-icon> <span class="custom-breadcrumb-item-to">预览</span>
+
             <el-tooltip class="box-item" effect="dark" content="收起" placement="right">
               <el-icon class="insert-retract" @click="asideActiveChange(false)">
                 <Icon name="market-retract"></Icon>
@@ -571,9 +570,13 @@ onMounted(() => {
 }
 
 .custom-breadcrumb-item {
+  font-size: 14px;
   cursor: pointer;
-  ::v-deep(.ed-breadcrumb__inner) {
-    color: rgba(100, 106, 115, 1);
-  }
+  color: rgba(100, 106, 115, 1);
+}
+
+.custom-breadcrumb-item-to {
+  font-size: 14px;
+  color: rgba(31, 35, 41, 1);
 }
 </style>

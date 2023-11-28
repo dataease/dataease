@@ -26,7 +26,7 @@
             <slot>
               <el-dropdown-item command="rename">
                 <el-icon><EditPen /></el-icon>
-                {{ $t('chart.rename') }}
+                编辑
               </el-dropdown-item>
               <el-dropdown-item command="delete">
                 <el-icon><Delete /></el-icon>
@@ -90,6 +90,7 @@ const handleCommand = key => {
     border-bottom: 1px solid var(--deCardStrokeColor, #dee0e3);
     height: 144px;
     width: 100%;
+    padding: 4px 6px 0 4px;
     overflow: hidden;
 
     img {
@@ -105,7 +106,7 @@ const handleCommand = key => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 8px 12px 9px 12px;
+    padding: 4px 12px 9px 12px;
     box-sizing: border-box;
 
     .el-icon-more {

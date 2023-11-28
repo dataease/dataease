@@ -1,18 +1,5 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <div class="de-template-list">
-    <el-input
-      v-model="state.templateFilterText"
-      :placeholder="'搜索关键字'"
-      size="small"
-      class="de-input-search"
-      clearable
-    >
-      <template #prefix>
-        <el-icon>
-          <Icon name="de-search" />
-        </el-icon>
-      </template>
-    </el-input>
     <el-empty
       v-if="!templateListComputed.length && state.templateFilterText === ''"
       :image="NoneImage"
@@ -24,6 +11,16 @@
       :description="'没有找到相关内容'"
     />
     <ul>
+      <li
+        :class="[{ select: state.activeTemplate === '1' }]"
+        @click="nodeClick({ id: '1', label: '默认分类' })"
+      >
+        <el-icon class="de-icon-sense">
+          <Icon name="scene" />
+        </el-icon>
+        <span class="text-template-overflow" :title="'默认分类'">默认分类</span>
+      </li>
+      <hr class="custom-line" />
       <li
         v-for="ele in templateListComputed"
         :key="ele.name"
@@ -56,16 +53,13 @@
           </el-dropdown>
         </span>
       </li>
+      <li @click="add()">
+        <el-icon class="de-icon-sense">
+          <Plus />
+        </el-icon>
+        <span class="text-template-overflow">{{ t('visualization.add_category') }}</span>
+      </li>
     </ul>
-    <el-button
-      v-if="state.templateFilterText === ''"
-      style="width: 100%"
-      icon="el-icon-plus"
-      secondary
-      @click="add()"
-    >
-      {{ t('visualization.add_category') }}
-    </el-button>
   </div>
 </template>
 
@@ -105,8 +99,7 @@ const state = reactive({
 })
 
 const templateListComputed = computed(() => {
-  if (!state.templateFilterText) return [...props.templateList]
-  return props.templateList.filter(ele => ele['name']?.includes(state.templateFilterText))
+  return props.templateList.filter(ele => ele['id'] !== '1')
 })
 
 const clickMore = (type, data) => {
@@ -259,5 +252,12 @@ defineExpose({
 .sense {
   width: 20px;
   height: 20px;
+}
+
+.custom-line {
+  margin: 4px;
+  background: rgba(31, 35, 41, 0.15);
+  border: 0;
+  height: 1px;
 }
 </style>

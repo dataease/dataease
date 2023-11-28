@@ -18,7 +18,7 @@ CREATE TABLE `visualization_template` (
 
 BEGIN;
 INSERT INTO `core_menu`
-VALUES (19, 0, 2, 'template-market', 'template-market', 4, NULL, '/template-market', 0, 1, 1);
+VALUES (19, 0, 2, 'template-market', 'template-market', 4, NULL, '/template-market', 1, 1, 0);
 INSERT INTO `core_menu`
 VALUES (20, 15, 2, 'template-setting', 'system/template-setting', 4, 'icon_template', '/template-setting', 0, 1, 1);
 COMMIT;
