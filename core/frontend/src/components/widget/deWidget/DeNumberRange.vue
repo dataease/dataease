@@ -160,8 +160,10 @@ export default {
       this.form.min = null
       this.form.max = null
     },
-    resetDefaultValue(id) {
-      if (this.inDraw && this.manualModify && this.element.id === id) {
+    resetDefaultValue(ele) {
+      const id = ele.id
+      const eleVal = ele.options.value.toString()
+      if (this.inDraw && this.manualModify && this.element.id === id && this.defaultValueStr === eleVal) {
         if (!this.element.options.value) {
           this.form.min = null
           this.form.max = null

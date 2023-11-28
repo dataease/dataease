@@ -234,8 +234,10 @@ export default {
       this.value = this.element.options.attrs.multiple ? [] : null
       this.$refs.deSelectTree && this.$refs.deSelectTree.resetSelectAll && this.$refs.deSelectTree.resetSelectAll()
     },
-    resetDefaultValue(id) {
-      if (this.inDraw && this.manualModify && this.element.id === id) {
+    resetDefaultValue(ele) {
+      const id = ele.id
+      const eleVal = ele.options.value.toString()
+      if (this.inDraw && this.manualModify && this.element.id === id && this.value.toString() !== eleVal && this.defaultValueStr === eleVal) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
