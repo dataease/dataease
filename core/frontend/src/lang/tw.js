@@ -1578,7 +1578,7 @@ export default {
     gauge_axis_label: '刻度標籤',
     word_size_range: '字號區間',
     word_spacing: '文字間隔',
-    axis_multi_select_tip: '按住 Ctrl 鍵或者 Shift 鍵再點擊可多選'
+    axis_multi_select_tip: '按住 Ctrl/Cmd 鍵或者 Shift 鍵再點擊可多選'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
