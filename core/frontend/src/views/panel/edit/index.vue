@@ -1790,6 +1790,10 @@ export default {
   font-size: 14px;
 }
 
+.dialog-css ::v-deep .el-dialog__headerbtn {
+  z-index: 2;
+}
+
 .dialog-css ::v-deep .el-dialog__header {
   padding: 20px 20px 0;
 }
