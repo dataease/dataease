@@ -2546,7 +2546,7 @@ export default {
       if (equalsAny(view.type, 'chart-mix', 'bidirectional-bar')) {
         view.yaxisExt.forEach(function(ele) {
           if (!ele.chartType) {
-            ele.chartType = 'bar'
+            ele.chartType = view.type === 'chart-mix' ? 'line' : 'bar'
           }
           if (ele.chartId) {
             ele.summary = ''
