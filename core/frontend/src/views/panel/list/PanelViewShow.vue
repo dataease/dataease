@@ -499,6 +499,7 @@ export default {
     },
     fullscreen(newVal, oldVla) {
       // 刷新 进行重新渲染
+      this.$store.commit('setPreviewVisible', newVal)
       this.showMain = false
       this.$nextTick(() => {
         this.showMain = true
@@ -934,6 +935,13 @@ export default {
 .preview-icon-svg {
   color: inherit;
   margin-right: 5px;
+}
+
+.fullscreen {
+  transform: translate(0) !important;
+  .main_view {
+    z-index: 0;
+  }
 }
 
 .fullscreen-visual-selects {

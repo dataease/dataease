@@ -398,11 +398,4 @@ export default {
 .component-active {
   z-index: 1;
 }
-
-.fullscreen {
-  transform: translate(0);
-  .main_view {
-    z-index: 0;
-  }
-}
 </style>
