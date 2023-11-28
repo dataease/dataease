@@ -1116,14 +1116,6 @@ public class DataSetTableService {
     }
 
     private String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
-        List<SelectItem> selectItems = new ArrayList<>();
-        plainSelect.getSelectItems().forEach(selectItem -> {
-            selectItems.add(selectItem);
-        });
-
-        plainSelect.addSelectItems(selectItems);
-
-
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem instanceof SubSelect) {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
