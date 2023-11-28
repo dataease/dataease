@@ -418,8 +418,10 @@ export default {
         this.$refs.dateRef.hidePicker()
       }
     },
-    resetDefaultValue(id) {
-      if (this.inDraw && this.manualModify && this.element.id === id) {
+    resetDefaultValue(ele) {
+      const id = ele.id
+      const eleVal = ele.options.value.toString()
+      if (this.inDraw && this.manualModify && this.element.id === id && this.values.toString() !== eleVal && this.defaultValueStr === eleVal) {
         if (!this.element.options.attrs.default.isDynamic) {
           this.values = this.fillValueDerfault()
           this.dateChange(this.values)
