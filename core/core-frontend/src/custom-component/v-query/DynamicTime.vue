@@ -4,7 +4,7 @@ import { Calendar } from '@element-plus/icons-vue'
 import { type DatePickType } from 'element-plus-secondary'
 import {
   getThisYear,
-  getlastYear,
+  getLastYear,
   getThisMonth,
   getLastMonth,
   getToday,
@@ -15,6 +15,8 @@ import {
 } from './time-format'
 interface SelectConfig {
   timeType: string
+  defaultValue: string
+  selectValue: string
   relativeToCurrent: string
   defaultValueCheck: boolean
   id: string
@@ -30,6 +32,8 @@ const props = defineProps({
     type: Object as PropType<SelectConfig>,
     default: () => {
       return {
+        defaultValue: '',
+        selectValue: '',
         timeType: 'fixed',
         relativeToCurrent: 'custom',
         timeNum: 0,
@@ -52,6 +56,7 @@ const timeConfig = computed(() => {
     timeNum,
     relativeToCurrentType,
     around,
+    defaultValueCheck,
     arbitraryTime,
     timeGranularity
   } = config.value
@@ -60,6 +65,7 @@ const timeConfig = computed(() => {
     timeNum,
     relativeToCurrentType,
     around,
+    defaultValueCheck,
     arbitraryTime,
     timeGranularity
   }
@@ -76,6 +82,14 @@ watch(
 )
 
 watch(
+  () => selectValue.value,
+  val => {
+    config.value.defaultValue = val
+    config.value.selectValue = val
+  }
+)
+
+watch(
   () => config.value.id,
   () => {
     init()
@@ -88,13 +102,19 @@ const init = () => {
     timeNum,
     relativeToCurrentType,
     around,
+    defaultValueCheck,
     arbitraryTime,
     timeGranularity
   } = timeConfig.value
+  if (!defaultValueCheck) {
+    selectValue.value = null
+    return
+  }
   if (relativeToCurrent === 'custom') {
     selectValue.value = getCustomTime(
       timeNum,
       relativeToCurrentType,
+      timeGranularity,
       around,
       timeGranularity === 'datetime' ? arbitraryTime : null
     )
@@ -104,7 +124,7 @@ const init = () => {
         selectValue.value = getThisYear()
         break
       case 'lastYear':
-        selectValue.value = getlastYear()
+        selectValue.value = getLastYear()
         break
       case 'thisMonth':
         selectValue.value = getThisMonth()

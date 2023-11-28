@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch, unref } from 'vue'
+import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -421,15 +421,17 @@ const weightlessness = () => {
 }
 
 const parameterCompletion = () => {
-  curComponent.value = {
+  const attributes = {
     timeType: 'fixed',
     relativeToCurrent: 'custom',
     timeNum: 0,
     relativeToCurrentType: 'year',
     around: 'f',
-    arbitraryTime: new Date(),
-    ...unref(curComponent)
+    arbitraryTime: new Date()
   }
+  Object.entries(attributes).forEach(([key, val]) => {
+    !curComponent.value[key] && (curComponent.value[key] = val)
+  })
 }
 
 const handleCondition = item => {
@@ -520,6 +522,26 @@ const relativeToCurrentList = computed(() => {
       ]
       break
     case 'date':
+      list = [
+        {
+          label: '今天',
+          value: 'today'
+        },
+        {
+          label: '昨天',
+          value: 'yesterday'
+        },
+        {
+          label: '月初',
+          value: 'monthBeginning'
+        },
+        {
+          label: '年初',
+          value: 'yearBeginning'
+        }
+      ]
+      break
+    case 'datetime':
       list = [
         {
           label: '今天',
