@@ -90,7 +90,7 @@ const validateHandler = (param, success) => {
 }
 const getLicense = result => {
   if (result.status === 'valid') {
-    tipsSuffix.value = result.edition === 'Embedded' ? '套' : '个账号'
+    tipsSuffix.value = result?.license?.edition === 'Embedded' ? '套' : '个账号'
   }
   return {
     status: result.status,
