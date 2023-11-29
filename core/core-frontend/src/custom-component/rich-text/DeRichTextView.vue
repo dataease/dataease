@@ -58,7 +58,6 @@ import ChartError from '@/views/chart/components/views/components/ChartError.vue
 import { useEmitt } from '@/hooks/web/useEmitt'
 const snapshotStore = snapshotStoreWithOut()
 const errMsg = ref('')
-const curFields = ref([])
 const dvMainStore = dvMainStoreWithOut()
 const { canvasViewInfo } = storeToRefs(dvMainStore)
 const isError = ref(false)
@@ -371,7 +370,6 @@ const initCurFields = chartDetails => {
         yDataeaseNames.push(yItem.dataeaseName)
         yDataeaseNamesCfg[yItem.dataeaseName] = yItem.formatterCfg
       })
-      rowDataFormat(rowData, yDataeaseNames, yDataeaseNamesCfg)
     }
     for (const key in rowData) {
       dataRowSelect.value[nameIdMap[key]] = rowData[key]
@@ -386,15 +384,6 @@ const initCurFields = chartDetails => {
       eventBus.emit('initCurFields-' + element.value.id)
     })
   }
-}
-
-const rowDataFormat = (rowData, yDataeaseNames, yDataeaseNamesCfg) => {
-  console.log(
-    'rowData, yDataeaseNames, yDataeaseNamesCfg',
-    rowData,
-    yDataeaseNames,
-    yDataeaseNamesCfg
-  )
 }
 
 const renderChart = () => {

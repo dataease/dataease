@@ -1,6 +1,6 @@
 <template>
   <p class="router-title">{{ t('commons.system_parameter_setting') }}</p>
-  <el-tabs v-model="activeName" @tab-click="handleClick">
+  <el-tabs v-model="activeName">
     <el-tab-pane v-for="item in tabArray" :key="item.name" :label="item.label" :name="item.name" />
   </el-tabs>
   <div class="sys-setting-p" :class="{ 'setting-auto-h': activeName !== 'map' }">
@@ -27,9 +27,6 @@ const tabArray = [
   /* {label: '引擎设置', name: 'engine'}, */
 ]
 const activeName = ref('basic')
-const handleClick = (tab, event: Event) => {
-  console.log(tab, event)
-}
 </script>
 <style lang="less">
 .router-title {

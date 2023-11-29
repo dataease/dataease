@@ -89,8 +89,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         .catch(() => {
           closeLoading()
         })
-    } else {
-      console.log('error submit!', fields)
     }
   })
 }
