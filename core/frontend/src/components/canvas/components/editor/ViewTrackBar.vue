@@ -76,6 +76,9 @@ export default {
 
   .track-menu {
     border: #3a8ee6 1px solid;
+    position: absolute !important;
+    top: 0 !important;
+    left: 0 !important;
   }
 
 </style>
