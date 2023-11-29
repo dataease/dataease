@@ -30,6 +30,19 @@
      visualization_template.template_style, visualization_template.template_data, visualization_template.dynamic_data
   </sql>
 
+    <select id="findBaseTemplateList" resultMap="BaseResultMapDTO">
+        SELECT
+        <include refid="Base_Column_List" />
+        FROM
+        visualization_template
+        <where>
+            <if test="nodeType != null">
+                and visualization_template.node_type = #{nodeType}
+            </if>
+        </where>
+        order by visualization_template.create_time desc
+    </select>
+
     <select id="findTemplateList" resultMap="BaseResultMapDTO">
         SELECT
         <include refid="Base_Column_List" />

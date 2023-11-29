@@ -1,6 +1,6 @@
 <template>
   <div class="template-head">
-    <p class="router-title">模版管理</p>
+    <p class="router-title">模板管理</p>
     <el-button style="float: right" type="primary" @click="templateImport(state.currentTemplateId)">
       {{ t('visualization.import') }}
     </el-button>
@@ -49,7 +49,7 @@
               <el-empty
                 v-if="!state.currentTemplateShowList.length"
                 :image="NoneImage"
-                :description="'暂无模版'"
+                :description="'暂无模板'"
               />
               <div v-show="state.currentTemplateId !== ''" id="template-box" class="template-box">
                 <de-template-item
@@ -287,7 +287,7 @@ const showTemplateEditDialog = (type, templateInfo) => {
   state.formType = type
   if (type === 'edit') {
     state.templateEditForm = JSON.parse(JSON.stringify(templateInfo))
-    state.dialogTitle = state.templateEditForm['nodeType'] === 'folder' ? '编辑分类' : '编辑模版'
+    state.dialogTitle = state.templateEditForm['nodeType'] === 'folder' ? '编辑分类' : '编辑模板'
     state.originName = state.templateEditForm['label']
   } else {
     state.dialogTitle = t('visualization.add_category')
@@ -298,7 +298,7 @@ const showTemplateEditDialog = (type, templateInfo) => {
       level: 0
     }
   }
-  state.dialogTitleLabel = state.templateEditForm['nodeType'] === 'folder' ? '分类名称' : '模版名称'
+  state.dialogTitleLabel = state.templateEditForm['nodeType'] === 'folder' ? '分类名称' : '模板名称'
   state.editTemplate = true
 }
 

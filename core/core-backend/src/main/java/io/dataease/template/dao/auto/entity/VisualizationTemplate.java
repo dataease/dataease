@@ -37,7 +37,7 @@ public class VisualizationTemplate implements Serializable {
     private Integer level;
 
     /**
-     * 模版种类  dataV or dashboard 目录或者文件夹
+     * 模板种类  dataV or dashboard 目录或者文件夹
      */
     private String dvType;
 
@@ -62,7 +62,7 @@ public class VisualizationTemplate implements Serializable {
     private String snapshot;
 
     /**
-     * 模版类型 system 系统内置 self 用户自建 
+     * 模板类型 system 系统内置 self 用户自建 
      */
     private String templateType;
 

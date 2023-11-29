@@ -14,6 +14,10 @@ public class TemplateManageDTO extends VisualizationTemplateVO {
 
     private Integer childrenCount;
 
+    private String categoryName;
+
+    private Long recentUseTime;
+
     private List<TemplateManageDTO> children;
 
 

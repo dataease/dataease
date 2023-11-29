@@ -12,7 +12,7 @@ const backToMain = () => {
   <el-header class="header-flex system-header">
     <Icon className="logo" name="logo"></Icon>
     <el-divider direction="vertical" />
-    <span class="system">模版市场</span>
+    <span class="system">模板中心</span>
     <div class="operate-setting">
       <span @click="backToMain" class="work-bar flex-align-center">
         <el-icon>

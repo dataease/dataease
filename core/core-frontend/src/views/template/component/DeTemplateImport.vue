@@ -6,7 +6,7 @@
       :model="state.templateInfo"
       :rules="state.templateInfoRules"
     >
-      <el-form-item :label="'模版名称'" prop="name">
+      <el-form-item :label="'模板名称'" prop="name">
         <div class="flex-template">
           <el-input v-model="state.templateInfo.name" clearable size="small" />
           <el-button style="margin-left: 10px" class="el-icon-upload2" secondary @click="goFile">{{
