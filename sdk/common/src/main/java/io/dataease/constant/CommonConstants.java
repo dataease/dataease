@@ -79,4 +79,13 @@ public class CommonConstants {
         public static final String CHART = "dataset";
 
     }
+
+    public static final class TEMPLATE_SOURCE {
+        //模板市场
+        public static final String MARKET = "market";
+        //模板管理
+        public static final String MANAGE = "manage";
+        //公共
+        public static final String PUBLIC = "public";
+    }
 }

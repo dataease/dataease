@@ -242,6 +242,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
             dynamicData = visualizationTemplate.getDynamicData();
             name = visualizationTemplate.getName();
             dvType = visualizationTemplate.getDvType();
+            // 模板市场记录
+            coreOptRecentManage.saveOpt(request.getTemplateId(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE,OptConstants.OPT_TYPE.NEW);
         } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
             templateStyle = request.getCanvasStyleData();
             templateData = request.getComponentData();

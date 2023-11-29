@@ -98,7 +98,6 @@
             <el-button
               style="float: right"
               type="primary"
-              size="small"
               @click="templateApply(state.curTemplate)"
               >{{ t('visualization.apply_this_template') }}</el-button
             >
