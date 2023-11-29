@@ -48,6 +48,7 @@ const backToMain = () => {
   }
 
   .work-bar {
+    margin-right: 20px;
     color: rgba(255, 255, 255, 0.8);
     font-size: 14px;
     font-style: normal;

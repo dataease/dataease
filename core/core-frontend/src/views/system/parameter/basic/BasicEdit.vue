@@ -42,7 +42,7 @@ const buildSettingList = () => {
 const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(valid => {
     if (valid) {
       const param = buildSettingList()
       if (param.length < 2) {
@@ -62,8 +62,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         .catch(() => {
           closeLoading()
         })
-    } else {
-      console.log('error submit!', fields)
     }
   })
 }
@@ -95,7 +93,6 @@ const edit = list => {
     state.form[item['pkey']] = pval || state.form[item['pkey']]
     return item
   })
-  console.log(state.settingList)
   dialogVisible.value = true
 }
 defineExpose({

@@ -1,11 +1,13 @@
 package io.dataease.engine.utils;
 
+import java.util.Optional;
+
 /**
  * @Author Junjun
  */
 public class SQLUtils {
     public static String transKeyword(String value) {
-        return value.replaceAll("'", "\\\\'");
+        return Optional.ofNullable(value).orElse("").replaceAll("'", "\\\\'");
     }
 
     public static String buildOriginPreviewSql(String sql, int limit, int offset) {
