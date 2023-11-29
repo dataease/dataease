@@ -26,7 +26,7 @@ public class OptConstants {
         public static final int DATASET = 4;
         //数据源
         public static final int DATASOURCE = 5;
-        //模版
+        //模板
         public static final int TEMPLATE = 6;
     }
 

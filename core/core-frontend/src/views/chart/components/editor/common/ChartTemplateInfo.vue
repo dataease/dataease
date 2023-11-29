@@ -5,7 +5,7 @@
     <Icon class-name="item-icon" name="dv-up-arrow" />
     <div>
       <el-button style="opacity: 1 !important" type="warning" size="mini" round>
-        <span style="font-weight: bold; opacity: 1"> 当前为模版视图，请更换数据集...</span>
+        <span style="font-weight: bold; opacity: 1"> 当前为模板视图，请更换数据集...</span>
       </el-button>
     </div>
   </div>

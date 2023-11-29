@@ -66,7 +66,7 @@ public interface DataVisualizationApi {
     String findDvType(@PathVariable("dvId")Long dvId);
 
     /**
-     * 从模版解压可视化资源 模版来源包括 模版市场、内部模版管理
+     * 从模板解压可视化资源 模板来源包括 模板市场、内部模板管理
      *
      * @return
      */
@@ -74,7 +74,7 @@ public interface DataVisualizationApi {
     DataVisualizationVO decompression(@RequestBody DataVisualizationBaseRequest request) throws Exception;
 
     /**
-     * 从模版解压可视化资源 模版来源包括本地上传
+     * 从模板解压可视化资源 模板来源包括本地上传
      *
      * @return
      */

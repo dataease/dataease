@@ -1,7 +1,7 @@
 <template>
   <el-dialog
     class="create-dialog"
-    title="从模版新建"
+    title="从模板新建"
     v-model="state.dialogShow"
     width="700"
     :before-close="close"

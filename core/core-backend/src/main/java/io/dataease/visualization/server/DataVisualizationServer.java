@@ -11,7 +11,6 @@ import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
-import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
@@ -26,7 +25,7 @@ import io.dataease.template.dao.auto.entity.VisualizationTemplate;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataMapper;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
-import io.dataease.template.manage.TemplateMarketManage;
+import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
@@ -73,7 +72,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private VisualizationTemplateMapper templateMapper;
 
     @Resource
-    private TemplateMarketManage templateMarketManage;
+    private TemplateCenterManage templateCenterManage;
 
     @Resource
     private StaticResourceServer staticResourceServer;
@@ -251,7 +250,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             name = request.getName();
             dvType = request.getType();
         } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(newFrom)) {
-            TemplateManageFileDTO templateFileInfo = templateMarketManage.getTemplateFromMarket(request.getTemplateUrl());
+            TemplateManageFileDTO templateFileInfo = templateCenterManage.getTemplateFromMarket(request.getTemplateUrl());
             if (templateFileInfo == null) {
                 DEException.throwException("Can't find the template's info from market,please check");
             }
@@ -261,7 +260,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             staticResource = templateFileInfo.getStaticResource();
             name = templateFileInfo.getName();
             dvType = templateFileInfo.getDvType();
-            // 模版市场记录
+            // 模板市场记录
             coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE,OptConstants.OPT_TYPE.NEW);
         }
         // 解析动态数据
@@ -286,7 +285,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             extendDataInfo.put(newViewId, extendDataDTO);
             templateData = templateData.replaceAll(originViewId, newViewId.toString());
             canvasViewInfo.put(chartView.getId(), chartView);
-            //插入模版数据 此处预先插入减少数据交互量
+            //插入模板数据 此处预先插入减少数据交互量
             VisualizationTemplateExtendData extendData = new VisualizationTemplateExtendData();
             templateExtendDataMapper.insert(BeanUtils.copyBean(extendData, extendDataDTO));
         }

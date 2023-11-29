@@ -1,5 +1,6 @@
 package io.dataease.template.manage;
 
+import io.dataease.api.template.dto.TemplateManageDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.TemplateMarketDTO;
 import io.dataease.api.template.dto.TemplateMarketPreviewInfoDTO;
@@ -10,9 +11,11 @@ import io.dataease.api.template.vo.TemplateCategoryVO;
 import io.dataease.exception.DEException;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.system.manage.SysParameterManage;
+import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
 import io.dataease.utils.JsonUtil;
+import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -25,7 +28,7 @@ import java.util.stream.Collectors;
  * Author: wangjiahao
  */
 @Service
-public class TemplateMarketManage {
+public class TemplateCenterManage {
 
     private final static String POSTS_API = "/api/content/posts?page=0&size=2000";
 
@@ -39,6 +42,9 @@ public class TemplateMarketManage {
 
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
+
+    @Resource
+    private ExtVisualizationTemplateMapper templateManageMapper;
 
     /**
      * @param templateUrl template url
@@ -64,21 +70,44 @@ public class TemplateMarketManage {
         return HttpClientUtil.get(url, config);
     }
 
-     private MarketTemplateV2BaseResponse templateQuery(Map<String, String>  templateParams){
-         String result = marketGet(templateParams.get("template.url") + POSTS_API_V2, null);
-         MarketTemplateV2BaseResponse postsResult = JsonUtil.parseObject(result, MarketTemplateV2BaseResponse.class);
-         return postsResult;
-     }
+    private MarketTemplateV2BaseResponse templateQuery(Map<String, String> templateParams) {
+        String result = marketGet(templateParams.get("template.url") + POSTS_API_V2, null);
+        MarketTemplateV2BaseResponse postsResult = JsonUtil.parseObject(result, MarketTemplateV2BaseResponse.class);
+        return postsResult;
+    }
 
     public MarketBaseResponse searchTemplate() {
         try {
             Map<String, String> templateParams = sysParameterManage.groupVal("template.");
-            return baseResponseV2Trans(templateQuery(templateParams), templateParams.get("template.url"));
+            return baseResponseV2Trans(templateQuery(templateParams), searchTemplateFromManage(), templateParams.get("template.url"));
         } catch (Exception e) {
             DEException.throwException(e);
         }
         return null;
     }
+
+    private List<TemplateMarketDTO> searchTemplateFromManage() {
+        try {
+            List<TemplateManageDTO> manageResult = templateManageMapper.findBaseTemplateList("template");
+            List<TemplateManageDTO> categories = templateManageMapper.findBaseTemplateList("folder");
+            Map<String, String> categoryMap = categories.stream()
+                    .collect(Collectors.toMap(TemplateManageDTO::getId, TemplateManageDTO::getName));
+            return baseManage2MarketTrans(manageResult, categoryMap);
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+        return null;
+    }
+
+    private List<TemplateMarketDTO> baseManage2MarketTrans(List<TemplateManageDTO> manageResult, Map<String, String> categoryMap) {
+        List<TemplateMarketDTO> result = new ArrayList<>();
+        manageResult.stream().forEach(templateManageDTO -> {
+            templateManageDTO.setCategoryName(categoryMap.get(templateManageDTO.getPid()));
+            result.add(new TemplateMarketDTO(templateManageDTO));
+        });
+        return result;
+    }
+
 
     public MarketBaseResponse searchTemplateRecommend() {
         try {
@@ -93,7 +122,7 @@ public class TemplateMarketManage {
     public MarketPreviewBaseResponse searchTemplatePreview() {
         try {
             Map<String, String> templateParams = sysParameterManage.groupVal("template.");
-            return basePreviewResponseV2Trans(templateQuery(templateParams), templateParams.get("template.url"));
+            return basePreviewResponseV2Trans(templateQuery(templateParams), searchTemplateFromManage(), templateParams.get("template.url"));
         } catch (Exception e) {
             DEException.throwException(e);
         }
@@ -106,76 +135,57 @@ public class TemplateMarketManage {
         List<TemplateMarketDTO> contents = new ArrayList<>();
         v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
             MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
-            if("Y".equalsIgnoreCase(spec.getSuggest())){
-                contents.add(new TemplateMarketDTO(spec.getReadmeName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()),"Y"));
+            if ("Y".equalsIgnoreCase(spec.getSuggest())) {
+                contents.add(new TemplateMarketDTO(spec.getReadmeName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), "Y"));
             }
         });
         // 最近使用排序
         Collections.sort(contents);
-        return new MarketBaseResponse(url,contents);
+        return new MarketBaseResponse(url, contents);
     }
 
-    private MarketBaseResponse baseResponseV2Trans(MarketTemplateV2BaseResponse v2BaseResponse, String url) {
+    private MarketBaseResponse baseResponseV2Trans(MarketTemplateV2BaseResponse v2BaseResponse, List<TemplateMarketDTO> contents, String url) {
         Map<String, Long> useTime = coreOptRecentManage.findTemplateRecentUseTime();
         Map<String, String> categoriesMap = getCategoriesBaseV2();
-        List<TemplateMarketDTO> contents = new ArrayList<>();
         v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
             MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
-            contents.add(new TemplateMarketDTO(spec.getReadmeName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()),spec.getSuggest()));
+            contents.add(new TemplateMarketDTO(spec.getReadmeName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), spec.getSuggest()));
         });
         // 最近使用排序
         Collections.sort(contents);
-        return new MarketBaseResponse(url,contents);
+        return new MarketBaseResponse(url, contents);
     }
 
-    private MarketPreviewBaseResponse basePreviewResponseV2Trans(MarketTemplateV2BaseResponse v2BaseResponse, String url) {
+    private MarketPreviewBaseResponse basePreviewResponseV2Trans(MarketTemplateV2BaseResponse v2BaseResponse, List<TemplateMarketDTO> manageContents, String url) {
         Map<String, Long> useTime = coreOptRecentManage.findTemplateRecentUseTime();
-        Map<String, String> categoriesMap = getCategoriesBaseV2();
-        List<String> categories = new ArrayList<>();
+        List<MarketMetaDataVO> categoryVO = getCategoriesV2();
+        Map<String, String> categoriesMap = categoryVO.stream()
+                .collect(Collectors.toMap(MarketMetaDataVO::getSlug, MarketMetaDataVO::getLabel));
+        List<String> categories = categoryVO.stream().filter(node -> !"全部".equalsIgnoreCase(node.getLabel())).map(MarketMetaDataVO::getLabel)
+                .collect(Collectors.toList());
         List<TemplateMarketPreviewInfoDTO> result = new ArrayList<>();
-        categoriesMap.forEach((key,value)->{
-            if(!"全部".equalsIgnoreCase(value)){
-                categories.add(value);
+        categoriesMap.forEach((key, value) -> {
+            if (!"全部".equalsIgnoreCase(value)) {
                 List<TemplateMarketDTO> contents = new ArrayList<>();
                 v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
                     MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
-                    if(key.equalsIgnoreCase(spec.getLabel())){
-                        contents.add(new TemplateMarketDTO(spec.getReadmeName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()),spec.getSuggest()));
+                    if (key.equalsIgnoreCase(spec.getLabel())) {
+                        contents.add(new TemplateMarketDTO(spec.getReadmeName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), spec.getSuggest()));
+                    }
+                });
+                manageContents.stream().forEach(templateMarketDTO -> {
+                    if (value.equalsIgnoreCase(templateMarketDTO.getMainCategory())) {
+                        contents.add(templateMarketDTO);
                     }
                 });
                 Collections.sort(contents);
-                result.add(new TemplateMarketPreviewInfoDTO(value,contents));
+                result.add(new TemplateMarketPreviewInfoDTO(value, contents));
             }
         });
         // 最近使用排序
-        return new MarketPreviewBaseResponse(url,categories,result);
+        return new MarketPreviewBaseResponse(url, categories, result);
     }
 
-    public MarketBaseResponse searchTemplateV1() {
-        try {
-            Map<String, String> templateParams = sysParameterManage.groupVal("template.");
-            String result = marketGet(templateParams.get("template.url") + POSTS_API, templateParams.get("template.accessKey"));
-            MarketTemplateBaseResponse postsResult = JsonUtil.parseObject(result, MarketTemplateBaseResponse.class);
-            MarketBaseResponse response = new MarketBaseResponse(templateParams.get("template.url"), postsResult.getData().getContent());
-            return response;
-        } catch (Exception e) {
-            DEException.throwException(e);
-        }
-        return null;
-    }
-
-    public List<String> getCategoriesV1() {
-        Map<String, String> templateParams = sysParameterManage.groupVal("template.");
-        String resultStr = marketGet(templateParams.get("template.url") + CATEGORIES_API, templateParams.get("template.accessKey"));
-        MarketCategoryBaseResponse categoryBaseResponse = JsonUtil.parseObject(resultStr, MarketCategoryBaseResponse.class);
-        List<TemplateCategoryVO> categories = categoryBaseResponse.getData();
-        if (CollectionUtils.isNotEmpty(categories)) {
-            return categories.stream().filter(item -> !"应用系列".equals(item.getName())).sorted(Comparator.comparing(TemplateCategoryVO::getPriority)).map(TemplateCategoryVO::getName).collect(Collectors.toList());
-        } else {
-            return null;
-        }
-
-    }
 
     public List<String> getCategories() {
         return getCategoriesV2().stream().map(MarketMetaDataVO::getLabel)
@@ -196,10 +206,21 @@ public class TemplateMarketManage {
     }
 
     public List<MarketMetaDataVO> getCategoriesV2() {
-        Map<String, String> templateParams = sysParameterManage.groupVal("template.");
-        String resultStr = marketGet(templateParams.get("template.url") + TEMPLATE_META_DATA_URL, null);
-        MarketMetaDataBaseResponse metaData = JsonUtil.parseObject(resultStr, MarketMetaDataBaseResponse.class);
-        List<MarketMetaDataVO> categories = metaData.getLabels();
-        return categories;
+        List<MarketMetaDataVO> allCategories = new ArrayList<>();
+        List<TemplateManageDTO> manageCategories = templateManageMapper.findBaseTemplateList("folder");
+        List<MarketMetaDataVO> manageCategoriesTrans = manageCategories.stream()
+                .map(templateCategory -> new MarketMetaDataVO(templateCategory.getId(), templateCategory.getName()))
+                .collect(Collectors.toList());
+        try {
+            Map<String, String> templateParams = sysParameterManage.groupVal("template.");
+            String resultStr = marketGet(templateParams.get("template.url") + TEMPLATE_META_DATA_URL, null);
+            MarketMetaDataBaseResponse metaData = JsonUtil.parseObject(resultStr, MarketMetaDataBaseResponse.class);
+            allCategories.addAll(metaData.getLabels());
+        } catch (Exception e) {
+            LogUtil.error("模板市场分类获取错误", e);
+        }
+        allCategories.addAll(manageCategoriesTrans);
+        return allCategories;
+
     }
 }

@@ -128,7 +128,7 @@ watch(
                     >PDF</el-dropdown-item
                   >
                   <el-dropdown-item style="width: 118px" @click="downloadAsAppTemplate('template')"
-                    >模版</el-dropdown-item
+                    >模板</el-dropdown-item
                   >
                   <el-dropdown-item @click="download('img')">{{
                     t('chart.image')
