@@ -90,7 +90,13 @@ export const buildCanvasIdMap = panelItems => {
 const cacheCondition = (cb, obj) => {
   obj.cb = cb
 }
-export const buildViewKeyFilters = (panelItems, result) => {
+
+const crossCanvasFilter = (filterEle, viewId) => {
+  const filterCanvas = filterEle.canvasId
+  const canvasIdMap = buildCanvasIdMap(store.state.componentData)
+  return canvasIdMap[viewId] !== filterCanvas
+}
+export const buildViewKeyFilters = (panelItems, result, isEdit = false) => {
   if (!(panelItems && panelItems.length > 0)) {
     return result
   }
@@ -112,7 +118,7 @@ export const buildViewKeyFilters = (panelItems, result) => {
       // 进行过滤时 如果过滤组件在主画布 则条件适用于所有画布视图 否则需要过滤组件和视图在相同画布
       if (element.canvasId === 'canvas-main' || element.canvasId === canvasIdMap[viewId]) {
         const vidMatch = viewIdMatch(condition.viewIds, viewId)
-        if (vidMatch && selectFirst) {
+        if (vidMatch && selectFirst && !(crossCanvasFilter(element, viewId) && isEdit)) {
           const obj = {}
           const promise = new Promise(resolve => {
             cacheCondition(cbParam => {
@@ -139,10 +145,9 @@ export const buildViewKeyFilters = (panelItems, result) => {
   })
   return result
 }
-export const buildFilterMap = panelItems => {
+export const buildFilterMap = (panelItems, isEdit = false) => {
   let result = buildViewKeyMap(panelItems)
-
-  result = buildViewKeyFilters(panelItems, result)
+  result = buildViewKeyFilters(panelItems, result, isEdit)
   return result
 }
 
