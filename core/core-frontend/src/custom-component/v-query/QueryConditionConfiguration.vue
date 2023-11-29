@@ -11,6 +11,7 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { cloneDeep } from 'lodash-es'
 import Select from './Select.vue'
 import Time from './Time.vue'
+import DynamicTime from './DynamicTime.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import draggable from 'vuedraggable'
@@ -190,7 +191,7 @@ const setType = () => {
 const setTypeChange = () => {
   nextTick(() => {
     curComponent.value.field.id = ''
-    inputCom.value?.displayTypeChange()
+    inputCom.value?.displayTypeChange?.()
   })
 }
 
@@ -328,9 +329,14 @@ const confirmValueSource = () => {
   cancelValueSource()
 }
 
-const filterTypeCom = (displayType: string) => {
-  return ['1', '7'].includes(displayType) ? Time : Select
-}
+const filterTypeCom = computed(() => {
+  const { displayType, timeType = 'fixed' } = curComponent.value
+  return ['1', '7'].includes(displayType)
+    ? timeType === 'dynamic' && displayType === '1'
+      ? DynamicTime
+      : Time
+    : Select
+})
 
 const setCondition = (queryId: string) => {
   conditions.value = cloneDeep(props.queryElement.propValue) || []
@@ -414,6 +420,20 @@ const weightlessness = () => {
   valueSource.value = Array.from(new Set(valueSource.value))
 }
 
+const parameterCompletion = () => {
+  const attributes = {
+    timeType: 'fixed',
+    relativeToCurrent: 'custom',
+    timeNum: 0,
+    relativeToCurrentType: 'year',
+    around: 'f',
+    arbitraryTime: new Date()
+  }
+  Object.entries(attributes).forEach(([key, val]) => {
+    !curComponent.value[key] && (curComponent.value[key] = val)
+  })
+}
+
 const handleCondition = item => {
   if (activeConditionForRename.id) return
   activeCondition.value = item.id
@@ -442,7 +462,7 @@ const handleCondition = item => {
     valueSource.value.push('')
     valueSource.value.push('')
   }
-
+  parameterCompletion()
   nextTick(() => {
     curComponent.value.showError = showError.value
     curComponent.value.auto && (document.querySelector('.chart-field').scrollTop = 0)
@@ -472,6 +492,133 @@ const showError = computed(() => {
   }
   return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
 })
+
+const relativeToCurrentList = computed(() => {
+  let list = []
+  if (!curComponent.value) return list
+  switch (curComponent.value.timeGranularity) {
+    case 'year':
+      list = [
+        {
+          label: '今年',
+          value: 'thisYear'
+        },
+        {
+          label: '去年',
+          value: 'lastYear'
+        }
+      ]
+      break
+    case 'month':
+      list = [
+        {
+          label: '本月',
+          value: 'thisMonth'
+        },
+        {
+          label: '上月',
+          value: 'lastMonth'
+        }
+      ]
+      break
+    case 'date':
+      list = [
+        {
+          label: '今天',
+          value: 'today'
+        },
+        {
+          label: '昨天',
+          value: 'yesterday'
+        },
+        {
+          label: '月初',
+          value: 'monthBeginning'
+        },
+        {
+          label: '年初',
+          value: 'yearBeginning'
+        }
+      ]
+      break
+    case 'datetime':
+      list = [
+        {
+          label: '今天',
+          value: 'today'
+        },
+        {
+          label: '昨天',
+          value: 'yesterday'
+        },
+        {
+          label: '月初',
+          value: 'monthBeginning'
+        },
+        {
+          label: '年初',
+          value: 'yearBeginning'
+        }
+      ]
+      break
+
+    default:
+      break
+  }
+
+  return [
+    ...list,
+    {
+      label: '自定义',
+      value: 'custom'
+    }
+  ]
+})
+
+const dynamicTime = computed(() => {
+  return curComponent.value.timeType === 'dynamic' && curComponent.value.displayType === '1'
+})
+
+const relativeToCurrentTypeList = computed(() => {
+  if (!curComponent.value) return []
+  return [
+    {
+      label: '年',
+      value: 'year'
+    },
+    {
+      label: '月',
+      value: 'month'
+    },
+    {
+      label: '日',
+      value: 'date'
+    }
+  ].slice(0, ['year', 'month', 'date', 'datetime'].indexOf(curComponent.value.timeGranularity) + 1)
+})
+
+const timeGranularityChange = (val: string) => {
+  if (curComponent.value.timeType !== 'dynamic') return
+  if (
+    ['year', 'month', 'date', 'datetime'].indexOf(val) <
+    ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentType)
+  ) {
+    curComponent.value.relativeToCurrentType = 'year'
+  }
+  if (curComponent.value.relativeToCurrent !== 'custom') {
+    curComponent.value.relativeToCurrent = relativeToCurrentList.value[0]?.value
+  }
+}
+const aroundList = [
+  {
+    label: '前',
+    value: 'f'
+  },
+  {
+    label: '后',
+    value: 'b'
+  }
+]
 
 watch(
   () => showError.value,
@@ -764,7 +911,11 @@ defineExpose({
                 </el-select>
               </template>
               <template v-else>
-                <el-select placeholder="请选择时间粒度" v-model="curComponent.timeGranularity">
+                <el-select
+                  @change="timeGranularityChange"
+                  placeholder="请选择时间粒度"
+                  v-model="curComponent.timeGranularity"
+                >
                   <el-option label="年" value="year" />
                   <el-option label="年月" value="month" />
                   <el-option label="年月日" value="date" />
@@ -961,13 +1112,78 @@ defineExpose({
             <div class="label">
               <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
             </div>
-            <div v-if="curComponent.defaultValueCheck" class="parameters">
-              <component
-                :config="curComponent"
-                isConfig
-                ref="inputCom"
-                :is="filterTypeCom(curComponent.displayType)"
-              ></component>
+            <div
+              class="setting-content"
+              v-if="curComponent.defaultValueCheck && curComponent.displayType === '1'"
+            >
+              <div class="setting">
+                <el-radio-group v-model="curComponent.timeType">
+                  <el-radio label="fixed">固定时间</el-radio>
+                  <el-radio label="dynamic">动态时间</el-radio>
+                </el-radio-group>
+              </div>
+              <template v-if="dynamicTime">
+                <div class="setting">
+                  <div class="setting-label">相对当前</div>
+                  <div class="setting-value select">
+                    <el-select v-model="curComponent.relativeToCurrent">
+                      <el-option
+                        v-for="item in relativeToCurrentList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                  </div>
+                </div>
+                <div class="setting" v-if="curComponent.relativeToCurrent === 'custom'">
+                  <div
+                    class="setting-input"
+                    :class="curComponent.timeGranularity === 'datetime' && 'with-date'"
+                  >
+                    <el-input-number
+                      v-model="curComponent.timeNum"
+                      :min="0"
+                      controls-position="right"
+                    />
+                    <el-select v-model="curComponent.relativeToCurrentType">
+                      <el-option
+                        v-for="item in relativeToCurrentTypeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-select v-model="curComponent.around">
+                      <el-option
+                        v-for="item in aroundList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-time-picker
+                      v-if="curComponent.timeGranularity === 'datetime'"
+                      v-model="curComponent.arbitraryTime"
+                    />
+                  </div>
+                </div>
+              </template>
+            </div>
+            <div
+              v-if="curComponent.defaultValueCheck"
+              class="parameters"
+              :class="dynamicTime && 'setting'"
+            >
+              <div class="setting-label" v-if="dynamicTime">预览</div>
+              <div :class="dynamicTime ? 'setting-value' : 'w100'">
+                <component
+                  :config="curComponent"
+                  isConfig
+                  ref="inputCom"
+                  :is="filterTypeCom"
+                ></component>
+              </div>
             </div>
           </div>
         </div>
@@ -1200,6 +1416,11 @@ defineExpose({
           margin-bottom: 10.5px;
           flex-wrap: wrap;
 
+          .setting-content {
+            width: 100%;
+            padding-left: 24px;
+          }
+
           &.top-item {
             .label {
               margin-bottom: auto;
@@ -1226,6 +1447,10 @@ defineExpose({
 
           .parameters {
             margin-left: auto;
+
+            .w100 {
+              width: 100%;
+            }
             .ed-select,
             .ed-date-editor,
             .ed-date-editor--datetime .ed-input__wrapper,
@@ -1236,6 +1461,56 @@ defineExpose({
             .ed-date-editor {
               .ed-input__wrapper {
                 width: 100%;
+              }
+            }
+          }
+
+          .setting {
+            &.parameters {
+              width: 100%;
+              padding-left: 24px;
+              .ed-date-editor {
+                width: 325px !important;
+              }
+            }
+            margin-left: auto;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            .setting-label {
+              width: 80px;
+              margin-right: 8px;
+            }
+
+            .setting-value {
+              margin: 8px 0;
+              &.select {
+                .ed-select {
+                  width: 325px;
+                }
+              }
+            }
+
+            .setting-input {
+              display: flex;
+              padding-left: 86px;
+              justify-content: flex-end;
+              align-items: center;
+              & > div + div {
+                margin-left: 8px;
+              }
+
+              &.with-date {
+                .ed-input-number {
+                  width: 71px;
+                }
+                .ed-select {
+                  width: 62px;
+                }
+
+                .ed-date-editor.ed-input {
+                  width: 106px;
+                }
               }
             }
           }

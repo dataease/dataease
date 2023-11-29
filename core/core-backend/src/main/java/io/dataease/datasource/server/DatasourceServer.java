@@ -755,7 +755,7 @@ public class DatasourceServer implements DatasourceApi {
                         }
                     }
                 }
-                if (CollectionUtils.isEmpty(excelSheetDataList)) {
+                if (CollectionUtils.isEmpty(excelSheetDataList) || excelSheetDataList.size() != datasetTableDTOS.size()) {
                     DEException.throwException("上传文件与源文件不一致，请检查文件!");
                 }
                 excelFileData.setSheets(excelSheetDataList);

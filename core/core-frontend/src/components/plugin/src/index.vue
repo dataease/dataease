@@ -58,8 +58,7 @@ const loadComponent = () => {
       storeCacheProxy(byteArray)
       importProxy(byteArray)
     })
-    .catch(e => {
-      console.error(e)
+    .catch(() => {
       showNolic()
     })
     .finally(() => {

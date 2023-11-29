@@ -205,6 +205,12 @@ const infoFormat = (obj: ComponentInfo) => {
       name,
       deType
     },
+    timeType: 'fixed',
+    relativeToCurrent: 'custom',
+    timeNum: 0,
+    relativeToCurrentType: 'year',
+    around: 'f',
+    arbitraryTime: new Date(),
     auto: false,
     defaultValue: undefined,
     selectValue: undefined,

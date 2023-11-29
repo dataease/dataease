@@ -2,7 +2,7 @@
   <div class="info-template-container">
     <div class="info-template-header">
       <div class="info-template-title">
-        <span>基础设置</span>
+        <span>{{ curTitle }}</span>
       </div>
       <div>
         <el-button type="primary" @click="edit">{{ t('commons.edit') }}</el-button>
@@ -11,7 +11,7 @@
     <div class="info-template-content">
       <div class="info-content-item" v-for="item in settingList" :key="item.pkey">
         <div class="info-item-label">
-          <span>{{ item.pkey }}</span>
+          <span>{{ t(item.pkey) }}</span>
           <el-tooltip
             v-if="tooltipItem[item.pkey]"
             effect="dark"
@@ -33,6 +33,9 @@
               </el-icon>
             </el-tooltip>
           </div>
+          <span v-else-if="item.pkey.includes('basic.dsIntervalTime')">
+            <span>{{ item.pval + ' ' + executeTime + '执行一次' }}</span>
+          </span>
           <span v-else>{{ item.pval }}</span>
         </div>
       </div>
@@ -40,7 +43,7 @@
   </div>
 </template>
 <script lang="ts" setup>
-import { ref, defineProps, PropType } from 'vue'
+import { ref, defineProps, PropType, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { SettingRecord, ToolTipRecord } from './SettingTemplate'
 const { t } = useI18n()
@@ -52,89 +55,47 @@ const props = defineProps({
   labelTooltips: {
     type: Array as PropType<ToolTipRecord[]>,
     default: () => []
+  },
+  settingData: {
+    type: Array as PropType<SettingRecord[]>,
+    default: () => []
+  },
+  settingTitle: {
+    type: String,
+    default: '基础设置'
   }
 })
+const executeTime = ref('0分0秒')
+const curTitle = computed(() => {
+  return props.settingTitle
+})
+
+const loadList = () => {
+  settingList.value = []
+  if (props.settingData?.length) {
+    props.settingData.forEach(item => {
+      if (item.pkey.includes('basic.dsExecuteTime')) {
+        executeTime.value = getExecuteTime(item.pval)
+      } else {
+        settingList.value.push(item)
+      }
+    })
+  }
+}
+
+const getExecuteTime = val => {
+  const options = [
+    { value: 'minute', label: '分钟（执行时间：0秒）' },
+    { value: 'hour', label: '小时（执行时间：0分0秒）' }
+  ]
+  return options.filter(item => item.value === val)[0].label
+}
 
 const settingList = ref([] as SettingRecord[])
 
-const loadBasic = () => {
-  settingList.value.push({
-    pkey: '请求超时时间',
-    pval: '100',
-    type: 'text',
-    sort: 1
-  })
-  settingList.value.push({
-    pkey: '数据源检测时间间隔',
-    pval: '100',
-    type: 'text',
-    sort: 2
-  })
-  settingList.value.push({
-    pkey: '默认登录方式',
-    pval: '普通登录',
-    type: 'text',
-    sort: 3
-  })
-  settingList.value.push({
-    pkey: '默认密码',
-    pval: 'DataEase@123456',
-    type: 'pwd',
-    sort: 4
-  })
-}
-
-const loadEmail = () => {
-  settingList.value.push({
-    pkey: 'SMTP主机',
-    pval: 'smtp.exmail.qq.com',
-    type: 'text',
-    sort: 1
-  })
-  settingList.value.push({
-    pkey: 'SMTP端口',
-    pval: '465',
-    type: 'text',
-    sort: 2
-  })
-  settingList.value.push({
-    pkey: 'SMTP账户',
-    pval: 'test@fit2cloud.com',
-    type: 'text',
-    sort: 3
-  })
-  settingList.value.push({
-    pkey: 'SMTP密码',
-    pval: 'DataEase@123456',
-    type: 'pwd',
-    sort: 4
-  })
-  settingList.value.push({
-    pkey: '测试收件人',
-    pval: 'yawen.chen@fit2cloud.com',
-    type: 'pwd',
-    sort: 5
-  })
-  settingList.value.push({
-    pkey: 'SSL',
-    pval: '开启',
-    type: 'text',
-    sort: 6
-  })
-  settingList.value.push({
-    pkey: 'TSL',
-    pval: '未开启',
-    type: 'text',
-    sort: 7
-  })
-}
-
 const init = () => {
-  if (props.settingKey === 'basic') {
-    loadBasic()
-  }
-  if (props.settingKey === 'email') {
-    loadEmail()
+  if (props.settingData?.length) {
+    loadList()
   }
 }
 const pwdItem = ref({})
@@ -163,6 +124,9 @@ const emits = defineEmits(['edit'])
 const edit = () => {
   emits('edit')
 }
+defineExpose({
+  init
+})
 init()
 formatPwd()
 formatLabel()

@@ -1,10 +1,13 @@
 package io.dataease.api.system;
 
 import io.dataease.api.system.request.OnlineMapEditor;
+import io.dataease.api.system.vo.SettingItemVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
+
+import java.util.List;
 
 public interface SysParameterApi {
 
@@ -16,5 +19,11 @@ public interface SysParameterApi {
 
     @GetMapping("/queryOnlineMap")
     String queryOnlineMap();
+
+    @GetMapping("basic/query")
+    List<SettingItemVO> queryBasicSetting();
+
+    @PostMapping("/basic/save")
+    void saveBasicSetting(@RequestBody List<SettingItemVO> settingItemVOS);
 
 }

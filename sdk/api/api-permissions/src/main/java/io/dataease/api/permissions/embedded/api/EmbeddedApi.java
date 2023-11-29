@@ -27,4 +27,7 @@ public interface EmbeddedApi {
 
     @PostMapping("/reset")
     void reset(@RequestBody EmbeddedResetRequest request);
+
+    @GetMapping("/domainList")
+    List<String> domainList();
 }
