@@ -598,7 +598,6 @@ const relativeToCurrentTypeList = computed(() => {
 })
 
 const timeGranularityChange = (val: string) => {
-  if (curComponent.value.timeType !== 'dynamic') return
   if (
     ['year', 'month', 'date', 'datetime'].indexOf(val) <
     ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentType)
