@@ -1159,8 +1159,6 @@ export default {
       callback()
     },
       isNumber(rule, value, callback) {
-        console.log(value)
-        console.log(!value)
         if (!value) {
             callback(new Error(i18n.t('datasource.please_input_query_timeout')))
             return
@@ -1168,7 +1166,6 @@ export default {
         let isNumber = false
         var reg = /^\d+$/;
         isNumber =  reg.test(value);
-        console.log(!isNumber)
         if (!isNumber) {
             callback(new Error(i18n.t('datasource.please_input_query_timeout')))
             return

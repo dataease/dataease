@@ -1115,22 +1115,25 @@ public class DataSetTableService {
         }
     }
 
-    private void handleSelectItems(PlainSelect plainSelect, String dsType) throws Exception{
+    private void handleSelectItems(PlainSelect plainSelect, String dsType) throws Exception {
         List<SelectItem> selectItems = new ArrayList<>();
         for (SelectItem selectItem : plainSelect.getSelectItems()) {
-            SelectExpressionItem selectExpressionItem = (SelectExpressionItem) selectItem;
-            if (selectExpressionItem.getExpression() instanceof SubSelect) {
-                SubSelect subSelect = (SubSelect) selectExpressionItem.getExpression();
-                Select select = (Select) CCJSqlParserUtil.parse (removeVariables(subSelect.getSelectBody().toString(), dsType));
-                subSelect.setSelectBody(select.getSelectBody());
-                ((SelectExpressionItem) selectItem).setExpression(subSelect);
+            try {
+                SelectExpressionItem selectExpressionItem = (SelectExpressionItem) selectItem;
+                if (selectExpressionItem.getExpression() instanceof SubSelect) {
+                    SubSelect subSelect = (SubSelect) selectExpressionItem.getExpression();
+                    Select select = (Select) CCJSqlParserUtil.parse(removeVariables(subSelect.getSelectBody().toString(), dsType));
+                    subSelect.setSelectBody(select.getSelectBody());
+                    ((SelectExpressionItem) selectItem).setExpression(subSelect);
+                }
+            } catch (Exception e) {
             }
             selectItems.add(selectItem);
         }
         plainSelect.setSelectItems(selectItems);
     }
 
-    private void handleFromItems(PlainSelect plainSelect, String dsType) throws Exception{
+    private void handleFromItems(PlainSelect plainSelect, String dsType) throws Exception {
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem instanceof SubSelect) {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
@@ -1138,7 +1141,7 @@ public class DataSetTableService {
             Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
             subSelect.setSelectBody(subSelectTmp.getSelectBody());
             if (dsType.equals(DatasourceTypes.oracle.getType())) {
-                if(fromItem.getAlias() != null){
+                if (fromItem.getAlias() != null) {
                     subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
                 }
             } else {
@@ -1150,7 +1153,8 @@ public class DataSetTableService {
             plainSelect.setFromItem(subSelect);
         }
     }
-    private void handleJoins(PlainSelect plainSelect, String dsType) throws Exception{
+
+    private void handleJoins(PlainSelect plainSelect, String dsType) throws Exception {
         List<Join> joins = plainSelect.getJoins();
         if (joins != null) {
             List<Join> joinsList = new ArrayList<>();
@@ -1177,28 +1181,29 @@ public class DataSetTableService {
             plainSelect.setJoins(joinsList);
         }
     }
-   private String handleWhere(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception{
-       Expression expr = plainSelect.getWhere();
-       if (expr == null) {
-           return handleWith(plainSelect, statementSelect, dsType);
-       }
-       StringBuilder stringBuilder = new StringBuilder();
-       BinaryExpression binaryExpression = null;
-       try {
-           binaryExpression = (BinaryExpression) expr;
-       } catch (Exception e) {
-       }
-       if (binaryExpression != null) {
-           if (!(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && hasVariable(binaryExpression.getRightExpression().toString())) {
-               stringBuilder.append(SubstitutedSql);
-           } else {
-               expr.accept(getExpressionDeParser(stringBuilder));
-           }
-       } else {
-           expr.accept(getExpressionDeParser(stringBuilder));
-       }
-       plainSelect.setWhere(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
-       return handleWith(plainSelect, statementSelect, dsType);
+
+    private String handleWhere(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
+        Expression expr = plainSelect.getWhere();
+        if (expr == null) {
+            return handleWith(plainSelect, statementSelect, dsType);
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        BinaryExpression binaryExpression = null;
+        try {
+            binaryExpression = (BinaryExpression) expr;
+        } catch (Exception e) {
+        }
+        if (binaryExpression != null) {
+            if (!(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && hasVariable(binaryExpression.getRightExpression().toString())) {
+                stringBuilder.append(SubstitutedSql);
+            } else {
+                expr.accept(getExpressionDeParser(stringBuilder));
+            }
+        } else {
+            expr.accept(getExpressionDeParser(stringBuilder));
+        }
+        plainSelect.setWhere(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
+        return handleWith(plainSelect, statementSelect, dsType);
     }
 
     private String handleWith(PlainSelect plainSelect, Select select, String dsType) throws Exception {
@@ -1225,7 +1230,6 @@ public class DataSetTableService {
         handleJoins(plainSelect, dsType);
         return handleWhere(plainSelect, statementSelect, dsType);
     }
-
 
 
     public Map<String, Object> getDBPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
@@ -2783,13 +2787,13 @@ public class DataSetTableService {
             if (StringUtils.isEmpty(s)) {
                 throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
             }
-            if(hashSet.contains(s)){
+            if (hashSet.contains(s)) {
                 repeat.add(s);
-            }else {
+            } else {
                 hashSet.add(s);
             }
         }
-        if(CollectionUtils.isNotEmpty(repeat)){
+        if (CollectionUtils.isNotEmpty(repeat)) {
             DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + "" + String.valueOf(repeat));
         }
     }
