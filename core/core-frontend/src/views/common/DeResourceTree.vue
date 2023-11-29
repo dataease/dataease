@@ -450,17 +450,17 @@ defineExpose({
         @finish="resourceOptFinish"
         ref="resourceGroupOpt"
       />
-      <de-resource-create-opt
-        :cur-canvas-type="curCanvasType"
-        ref="resourceCreateOpt"
-        @finish="resourceCreateFinish"
-      >
-      </de-resource-create-opt>
-      <!--      <de-resource-create-opt-v2-->
+      <!--      <de-resource-create-opt-->
       <!--        :cur-canvas-type="curCanvasType"-->
       <!--        ref="resourceCreateOpt"-->
       <!--        @finish="resourceCreateFinish"-->
-      <!--      ></de-resource-create-opt-v2>-->
+      <!--      >-->
+      <!--      </de-resource-create-opt>-->
+      <de-resource-create-opt-v2
+        :cur-canvas-type="curCanvasType"
+        ref="resourceCreateOpt"
+        @finish="resourceCreateFinish"
+      ></de-resource-create-opt-v2>
     </el-scrollbar>
   </div>
 </template>

@@ -3,14 +3,47 @@
     class="template-outer-body"
     :class="{ 'template-outer-body-padding': outPaddingState }"
     v-loading="state.loading"
+    v-show="state.initReady"
   >
     <market-preview-v2
-      v-show="previewModel"
+      v-show="previewModel === 'marketPreview'"
       :preview-id="state.templatePreviewId"
       @closePreview="closePreview"
       @templateApply="templateApply"
     ></market-preview-v2>
-    <el-row v-show="!previewModel" class="main-container">
+    <el-row v-if="previewModel === 'createPreview'" class="main-container">
+      <el-row class="market-head">
+        <el-icon class="custom-back-icon hover-icon" @click="previewModel = 'full'"
+          ><ArrowLeft
+        /></el-icon>
+        <span>{{ state.curTemplate.title }} </span>
+        <el-row class="head-right">
+          <el-button :disabled="state.curTemplateIndex === 0" style="float: right" @click="preOne"
+            >上一个</el-button
+          >
+          <el-button
+            :disabled="state.curTemplateIndex === state.curTemplateShowFilter.length - 1"
+            style="float: right"
+            @click="nextOne"
+            >下一个</el-button
+          >
+          <el-button
+            style="float: right"
+            type="primary"
+            @click="templateApply(state.curTemplate)"
+            >{{ t('visualization.apply_this_template') }}</el-button
+          >
+          <el-divider class="custom-divider-line" direction="vertical" />
+          <el-icon class="custom-market-icon hover-icon" @click="close"><Close /></el-icon>
+        </el-row>
+      </el-row>
+      <el-row class="template-area">
+        <el-row class="img-main-create">
+          <img style="height: 100%" :src="curTemplateImg" alt="" />
+        </el-row>
+      </el-row>
+    </el-row>
+    <el-row v-show="previewModel === 'full'" class="main-container">
       <el-row class="market-head">
         <span>{{ title }} </span>
         <el-row class="head-right">
@@ -30,7 +63,7 @@
             />
           </el-select>
           <el-select
-            v-if="state.curPosition === 'branch'"
+            v-if="['branchCreate', 'branch'].includes(state.curPosition)"
             class="title-type"
             v-model="state.templateType"
             placeholder="Select"
@@ -42,11 +75,10 @@
               :value="item.value"
             />
           </el-select>
-          <el-divider
-            class="custom-divider-line"
-            v-if="state.curPosition === 'create'"
-            direction="vertical"
-          />
+          <template v-if="['branchCreate', 'create'].includes(state.curPosition)">
+            <el-divider class="custom-divider-line" direction="vertical" />
+            <el-icon class="custom-market-icon hover-icon" @click="close"><Close /></el-icon>
+          </template>
         </el-row>
       </el-row>
       <el-row class="template-area">
@@ -54,7 +86,7 @@
           <el-tree
             menu
             class="custom-market-tree"
-            :data="state.marketTabs"
+            :data="categoriesComputed"
             :props="state.treeProps"
             node-key="label"
             default-expand-all
@@ -90,6 +122,7 @@
               :template="templateItem"
               :base-url="state.baseUrl"
               :width="state.templateCurWidth"
+              :cur-position="state.curPosition"
               @templateApply="templateApply"
               @templatePreview="templatePreview"
             />
@@ -122,24 +155,59 @@ import { useCache } from '@/hooks/web/useCache'
 import TemplateMarketV2Item from '@/views/template-market/component/TemplateMarketV2Item.vue'
 import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
 import { propTypes } from '@/utils/propTypes'
+import { imgUrlTrans } from '@/utils/imgUtils'
 const { t } = useI18n()
 const { wsCache } = useCache()
 const route = useRoute()
 
-const previewModel = ref(false)
-const title = ref('模版市场')
+// full 正常展示 marketPreview 模板中心预览 createPreview 创建界面预览
+const previewModel = ref('full')
+const emits = defineEmits(['close'])
+
+const close = () => {
+  emits('close')
+}
+
+const title = computed(() => (state.curPosition === 'branch' ? '模板中心' : '使用模版新建'))
+
+const categoriesComputed = computed(() => {
+  if (state.templateSourceType === 'all') {
+    return state.marketTabs
+  } else {
+    return state.marketTabs.filter(
+      category => category.source === 'public' || category.source === state.templateSourceType
+    )
+  }
+})
+
+const curTemplateImg = computed(() => {
+  if (
+    state.curTemplate.thumbnail.indexOf('http') > -1 ||
+    state.curTemplate.thumbnail.indexOf('static-resource') > -1
+  ) {
+    return imgUrlTrans(state.curTemplate.thumbnail)
+  } else {
+    return imgUrlTrans(state.baseUrl + state.curTemplate.thumbnail)
+  }
+})
 
 const outPaddingState = computed(() => {
-  return state.curPosition === 'branch' && !previewModel.value
+  return state.curPosition === 'branch' && previewModel.value !== 'marketPreview'
 })
 
 const optInit = params => {
+  state.initReady = false
   state.curPosition = params.curPosition
   state.templateType = params.templateType
+  previewModel.value = 'full'
   state.pid = params.pid
+  nextTick(() => {
+    state.initReady = true
+  })
 }
 
 const state = reactive({
+  initReady: true,
   curPosition: 'branch',
   pid: null,
   treeProps: {
@@ -183,7 +251,7 @@ const state = reactive({
   templateSpan: '25%',
   previewVisible: false,
   templatePreviewId: '',
-  marketTabs: null,
+  marketTabs: [],
   marketActiveTab: null,
   searchText: null,
   dvCreateForm: {
@@ -203,6 +271,9 @@ const state = reactive({
   folderSelectShow: false,
   baseUrl: 'https://dataease.io/templates',
   currentMarketTemplateShowList: [],
+  curTemplateShowFilter: [],
+  curTemplateIndex: 0,
+  curTemplate: null,
   networkStatus: true,
   rule: {
     name: [
@@ -252,7 +323,7 @@ const nodeClick = data => {
   initTemplateShow()
 }
 const closePreview = () => {
-  previewModel.value = false
+  previewModel.value = 'full'
 }
 
 const initMarketTemplate = async () => {
@@ -294,6 +365,20 @@ const normalizer = node => {
   }
 }
 
+const preOne = () => {
+  if (state.curTemplateIndex > 0) {
+    state.curTemplateIndex--
+    state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
+  }
+}
+
+const nextOne = () => {
+  if (state.curTemplateIndex < state.curTemplateShowFilter.length - 1) {
+    state.curTemplateIndex++
+    state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
+  }
+}
+
 const templateApply = template => {
   state.curApplyTemplate = template
   state.dvCreateForm.name = template.title
@@ -305,7 +390,6 @@ const templateApply = template => {
     state.dvCreateForm.newFrom = 'new_inner_template'
     state.dvCreateForm.templateId = template.id
   }
-
   apply()
 }
 
@@ -317,6 +401,7 @@ const apply = () => {
   state.loading = true
   decompression(state.dvCreateForm)
     .then(response => {
+      state.curApplyTemplate.recentUseTime = Date.now()
       state.loading = false
       const templateData = response.data
       // do create
@@ -383,14 +468,19 @@ const templateShow = templateItem => {
 }
 
 const templatePreview = previewId => {
-  state.templatePreviewId = previewId
-  previewModel.value = true
+  if (state.curPosition === 'branch') {
+    // 模版中心模式
+    state.templatePreviewId = previewId
+    previewModel.value = 'marketPreview'
+  } else {
+    state.curTemplateShowFilter = state.currentMarketTemplateShowList.filter(ele => ele.showFlag)
+    state.curTemplateIndex = state.curTemplateShowFilter.findIndex(temp => temp.id === previewId)
+    state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
+    previewModel.value = 'createPreview'
+  }
 }
 
 onMounted(() => {
-  if (route.params.add === '1') {
-    title.value = '使用模版新建'
-  }
   previewInit()
   initMarketTemplate()
   const erd = elementResizeDetectorMaker()
@@ -522,7 +612,30 @@ defineExpose({
 }
 
 .custom-divider-line {
-  height: 30px;
+  height: 16px;
+  margin-top: 6px;
+}
+
+.custom-market-icon {
+  font-size: 20px;
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.custom-back-icon {
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.img-main-create {
+  display: inherit;
+  justify-content: center;
+  width: 100%;
+  background: #0f1114;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 100%;
 }
 </style>
 

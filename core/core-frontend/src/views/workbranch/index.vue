@@ -13,6 +13,7 @@ import TemplateBranchItem from '@/views/workbranch/TemplateBranchItem.vue'
 import { ElMessage } from 'element-plus-secondary'
 import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
+import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
@@ -23,6 +24,7 @@ const busiCountCardList = ref([])
 const { wsCache } = useCache()
 const { push } = useRouter()
 const router = useRouter()
+const resourceCreateOpt = ref(null)
 
 const quickCreationList = shallowRef([
   {
@@ -225,12 +227,11 @@ const toTemplateMarket = () => {
 }
 
 const toTemplateMarketAdd = () => {
-  push({
-    name: 'template-market',
-    params: {
-      add: '1'
-    }
-  })
+  const params = {
+    curPosition: 'branchCreate',
+    templateType: 'all'
+  }
+  resourceCreateOpt.value.optInit(params)
 }
 
 fillCardInfo()
@@ -351,6 +352,7 @@ initMarketTemplate()
       </div>
       <shortcut-table :expand="expandFold === 'expand'" />
     </div>
+    <de-resource-create-opt-v2 ref="resourceCreateOpt"></de-resource-create-opt-v2>
   </div>
 </template>
 
