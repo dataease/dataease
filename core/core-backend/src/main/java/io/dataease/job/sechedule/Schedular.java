@@ -18,9 +18,4 @@ public class Schedular {
         datasourceServer.updateStopJobStatus();
     }
 
-    @QuartzScheduled(cron = "0 0/30 * * * ?")
-    public void updateDatasourceStatus() {
-        datasourceServer.updateDatasourceStatus();
-    }
-
 }

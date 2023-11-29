@@ -2,6 +2,7 @@ package io.dataease.system.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.system.vo.SettingItemVO;
+import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.dao.auto.mapper.CoreSysSettingMapper;
@@ -31,6 +32,8 @@ public class SysParameterManage {
 
     @Resource
     private ExtCoreSysSettingMapper extCoreSysSettingMapper;
+    @Resource
+    private DatasourceServer datasourceServer;
 
     public String singleVal(String key) {
         QueryWrapper<CoreSysSetting> queryWrapper = new QueryWrapper<>();
@@ -100,6 +103,7 @@ public class SysParameterManage {
             return sysSetting;
         }).collect(Collectors.toList());
         extCoreSysSettingMapper.saveBatch(sysSettings);
+        datasourceServer.addJob(sysSettings);
     }
 
 
