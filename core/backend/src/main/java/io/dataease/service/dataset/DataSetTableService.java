@@ -1123,7 +1123,9 @@ public class DataSetTableService {
             Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
             subSelect.setSelectBody(subSelectTmp.getSelectBody());
             if (dsType.equals(DatasourceTypes.oracle.getType())) {
-                subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                if(fromItem.getAlias() != null){
+                    subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                }
             } else {
                 if (fromItem.getAlias() == null) {
                     throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
