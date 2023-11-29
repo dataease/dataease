@@ -82,7 +82,7 @@
             <div style="text-align: center">
               <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"></Icon>
               <br />
-              <span>没有找到相关模版</span>
+              <span>没有找到相关模板</span>
             </div>
           </el-row>
         </el-row>
@@ -105,7 +105,7 @@
           </div>
         </el-row>
         <el-row class="img-main">
-          <img style="height: 100%" :src="state.templatePreviewUrl" alt="" />
+          <img style="height: 100%" :src="imgUrlTrans(state.templatePreviewUrl)" alt="" />
         </el-row>
       </el-col>
     </el-row>
@@ -118,6 +118,8 @@ import { onMounted, reactive, watch, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import TemplateMarketPreviewItem from '@/views/template-market/component/TemplateMarketPreviewItem.vue'
 import { deepCopy } from '@/utils/utils'
+import { imgUrlTrans } from '@/utils/imgUtils'
+
 const { t } = useI18n()
 
 const props = defineProps({
@@ -264,7 +266,10 @@ const templateShow = templateItem => {
 
 const previewTemplate = template => {
   state.curTemplate = template
-  if (template.thumbnail.indexOf('http') > -1) {
+  if (
+    template.thumbnail.indexOf('http') > -1 ||
+    template.thumbnail.indexOf('static-resource') > -1
+  ) {
     state.templatePreviewUrl = template.thumbnail
   } else {
     state.templatePreviewUrl = state.baseUrl + template.thumbnail

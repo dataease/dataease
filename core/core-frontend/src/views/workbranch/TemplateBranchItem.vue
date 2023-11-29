@@ -43,7 +43,10 @@ const classBackground = computed(() => {
 })
 
 const thumbnailUrl = computed(() => {
-  if (props.template.thumbnail.indexOf('http') > -1) {
+  if (
+    props.template.thumbnail.indexOf('http') > -1 ||
+    props.template.thumbnail.indexOf('static-resource') > -1
+  ) {
     return props.template.thumbnail
   } else {
     return props.baseUrl + props.template.thumbnail

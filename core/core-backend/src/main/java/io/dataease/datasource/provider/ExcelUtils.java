@@ -351,7 +351,7 @@ public class ExcelUtils {
                 ReadCellData<?> cellData = headMap.get(key);
                 String value = cellData.getStringValue();
                 if (StringUtils.isEmpty(value)) {
-                    DEException.throwException(context.readSheetHolder().getSheetName() + ", 首行行中不允许有空单元格！");
+                    continue;
                 }
                 headerKey.add(key);
                 header.add(value);

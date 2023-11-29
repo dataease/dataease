@@ -49,7 +49,7 @@ public class ChartDataServer implements ChartDataApi {
     @Override
     public ChartViewDTO getData(ChartViewDTO chartViewDTO) throws Exception {
         try {
-            // 从模版数据获取
+            // 从模板数据获取
             if(CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(chartViewDTO.getDataFrom())){
                 return extendDataManage.getChartDataInfo(chartViewDTO.getId(),chartViewDTO);
             }else{

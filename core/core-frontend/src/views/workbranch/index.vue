@@ -70,7 +70,7 @@ const tabBtnList = [
     value: 'SCREEN'
   },
   {
-    name: '应用模版',
+    name: '应用模板',
     value: 'APP'
   }
 ]
@@ -304,7 +304,7 @@ initMarketTemplate()
     <div class="template-market-dashboard">
       <div class="template-market">
         <div class="label">
-          模版市场
+          模板中心
           <div class="expand-all">
             <button class="all flex-center" @click="toTemplateMarket">查看全部</button>
             <el-divider direction="vertical" />
@@ -341,7 +341,7 @@ initMarketTemplate()
             <div style="text-align: center">
               <Icon name="no_result" class="no-result"></Icon>
               <br />
-              <span class="no-result-tips">没有找到相关模版</span>
+              <span class="no-result-tips">没有找到相关模板</span>
             </div>
           </el-row>
           <el-row v-show="!state.networkStatus" class="template-empty">

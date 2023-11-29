@@ -67,7 +67,7 @@ onMounted(() => {
     dataInitState.value = false
     nextTick(() => {
       dvMainStore.createInit('dashboard', null, pid)
-      // 从模版新建
+      // 从模板新建
       if (createType === 'template') {
         const deTemplateDataStr = wsCache.get(`de-template-data`)
         const deTemplateData = JSON.parse(deTemplateDataStr)

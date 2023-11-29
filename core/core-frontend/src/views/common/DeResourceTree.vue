@@ -15,6 +15,7 @@ import router from '@/router'
 import { useI18n } from '@/hooks/web/useI18n'
 import _ from 'lodash'
 import DeResourceCreateOpt from '@/views/common/DeResourceCreateOpt.vue'
+import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 
@@ -112,7 +113,7 @@ state.resourceTypeList = [
     command: 'newLeaf'
   },
   {
-    label: '使用模版新建',
+    label: '使用模板新建',
     svgName: 'dv-use-template',
     command: 'newFromTemplate'
   },
@@ -251,9 +252,15 @@ const addOperation = (
       window.open(baseUrl, '_blank')
     }
   } else if (cmd === 'newFromTemplate') {
-    state.templateCreatePid = data?.id
-    // newFromTemplate
-    resourceCreateOpt.value.optInit()
+    // state.templateCreatePid = data?.id
+    // // newFromTemplate
+    // resourceCreateOpt.value.optInit()
+    const params = {
+      curPosition: 'create',
+      pid: data?.id,
+      templateType: curCanvasType.value === 'dataV' ? 'SCREEN' : 'PANEL'
+    }
+    resourceCreateOpt.value.optInit(params)
   } else {
     resourceGroupOpt.value.optInit(nodeType, data || {}, cmd, parentSelect)
   }
@@ -358,7 +365,7 @@ defineExpose({
                   <el-icon class="handle-icon">
                     <Icon name="dv-use-template"></Icon>
                   </el-icon>
-                  使用模版新建
+                  使用模板新建
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -449,6 +456,11 @@ defineExpose({
         @finish="resourceCreateFinish"
       >
       </de-resource-create-opt>
+      <!--      <de-resource-create-opt-v2-->
+      <!--        :cur-canvas-type="curCanvasType"-->
+      <!--        ref="resourceCreateOpt"-->
+      <!--        @finish="resourceCreateFinish"-->
+      <!--      ></de-resource-create-opt-v2>-->
     </el-scrollbar>
   </div>
 </template>

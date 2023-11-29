@@ -1,7 +1,7 @@
 <template>
   <el-row
     class="template-outer-body"
-    :class="{ 'template-outer-body-padding': !previewModel }"
+    :class="{ 'template-outer-body-padding': outPaddingState }"
     v-loading="state.loading"
   >
     <market-preview-v2
@@ -18,14 +18,21 @@
             class="title-search"
             v-model="state.searchText"
             prefix-icon="Search"
-            size="small"
             :placeholder="t('visualization.enter_template_name_tips')"
             :clearable="true"
           />
+          <el-select class="title-type" v-model="state.templateSourceType" placeholder="Select">
+            <el-option
+              v-for="item in state.templateSourceOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
           <el-select
+            v-if="state.curPosition === 'branch'"
             class="title-type"
             v-model="state.templateType"
-            size="small"
             placeholder="Select"
           >
             <el-option
@@ -35,12 +42,18 @@
               :value="item.value"
             />
           </el-select>
+          <el-divider
+            class="custom-divider-line"
+            v-if="state.curPosition === 'create'"
+            direction="vertical"
+          />
         </el-row>
       </el-row>
       <el-row class="template-area">
         <div class="template-left">
           <el-tree
             menu
+            class="custom-market-tree"
             :data="state.marketTabs"
             :props="state.treeProps"
             node-key="label"
@@ -86,7 +99,7 @@
           <div style="text-align: center">
             <Icon name="no_result" style="margin-bottom: 16px; font-size: 75px"></Icon>
             <br />
-            <span>没有找到相关模版</span>
+            <span>没有找到相关模板</span>
           </div>
         </el-row>
         <el-row v-show="!state.networkStatus" class="template-empty">
@@ -108,18 +121,47 @@ import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
 import TemplateMarketV2Item from '@/views/template-market/component/TemplateMarketV2Item.vue'
 import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
+import { propTypes } from '@/utils/propTypes'
 const { t } = useI18n()
 const { wsCache } = useCache()
 const route = useRoute()
 
 const previewModel = ref(false)
 const title = ref('模版市场')
+
+const outPaddingState = computed(() => {
+  return state.curPosition === 'branch' && !previewModel.value
+})
+
+const optInit = params => {
+  state.curPosition = params.curPosition
+  state.templateType = params.templateType
+  state.pid = params.pid
+}
+
 const state = reactive({
+  curPosition: 'branch',
+  pid: null,
   treeProps: {
     value: 'label',
     label: 'label'
   },
   templateType: 'all',
+  templateSourceType: 'all',
+  templateSourceOptions: [
+    {
+      value: 'all',
+      label: '全部来源'
+    },
+    {
+      value: 'market',
+      label: '模板市场'
+    },
+    {
+      value: 'manage',
+      label: '模板管理'
+    }
+  ],
   templateTypeOptions: [
     {
       value: 'all',
@@ -136,7 +178,7 @@ const state = reactive({
   ],
   loading: false,
   hasResult: true,
-  templateMiniWidth: 270,
+  templateMiniWidth: 250,
   templateCurWidth: 310,
   templateSpan: '25%',
   previewVisible: false,
@@ -151,6 +193,7 @@ const state = reactive({
     nodeType: 'panel',
     templateUrl: null,
     newFrom: 'new_market_template',
+    templateId: null,
     panelType: 'self',
     panelStyle: {},
     panelData: '[]'
@@ -193,6 +236,13 @@ watch(
   }
 )
 
+watch(
+  () => state.templateSourceType,
+  value => {
+    initTemplateShow()
+  }
+)
+
 const searchResultCount = computed(
   () => state.currentMarketTemplateShowList.filter(template => template.showFlag).length
 )
@@ -228,7 +278,7 @@ const initMarketTemplate = async () => {
 
 const initStyle = () => {
   nextTick(() => {
-    const tree = document.querySelector('.ed-tree')
+    const tree = document.querySelector('.custom-market-tree')
     // 创建横线元素
     const line = document.createElement('hr')
     line.classList.add('custom-line')
@@ -247,13 +297,20 @@ const normalizer = node => {
 const templateApply = template => {
   state.curApplyTemplate = template
   state.dvCreateForm.name = template.title
-  state.dvCreateForm.templateUrl = template.metas.theme_repo
-  state.dvCreateForm.resourceName = template.id
+  if (template.source === 'market') {
+    state.dvCreateForm.newFrom = 'new_market_template'
+    state.dvCreateForm.templateUrl = template.metas.theme_repo
+    state.dvCreateForm.resourceName = template.id
+  } else {
+    state.dvCreateForm.newFrom = 'new_inner_template'
+    state.dvCreateForm.templateId = template.id
+  }
+
   apply()
 }
 
 const apply = () => {
-  if (!state.dvCreateForm.templateUrl) {
+  if (state.dvCreateForm.newFrom === 'new_market_template' && !state.dvCreateForm.templateUrl) {
     ElMessage.warning('未获取模板下载链接请联系模板市场官方')
     return false
   }
@@ -294,6 +351,7 @@ const templateShow = templateItem => {
   let categoryMarch = false
   let searchMarch = false
   let templateTypeMarch = false
+  let templateSourceTypeMarch = false
   if (state.marketActiveTab === '最近使用') {
     if (templateItem.recentUseTime) {
       categoryMarch = true
@@ -317,7 +375,11 @@ const templateShow = templateItem => {
   if (state.templateType === 'all' || templateItem.templateType === state.templateType) {
     templateTypeMarch = true
   }
-  return categoryMarch && searchMarch && templateTypeMarch
+
+  if (state.templateSourceType === 'all' || templateItem.source === state.templateSourceType) {
+    templateSourceTypeMarch = true
+  }
+  return categoryMarch && searchMarch && templateTypeMarch && templateSourceTypeMarch
 }
 
 const templatePreview = previewId => {
@@ -353,6 +415,10 @@ const previewInit = () => {
     wsCache.delete('template-preview-id')
   }
 }
+
+defineExpose({
+  optInit
+})
 </script>
 
 <style lang="less" scoped>
@@ -453,6 +519,10 @@ const previewInit = () => {
     color: rgba(31, 35, 41, 1);
     margin-right: 8px;
   }
+}
+
+.custom-divider-line {
+  height: 30px;
 }
 </style>
 
