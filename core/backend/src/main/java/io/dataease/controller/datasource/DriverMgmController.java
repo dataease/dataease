@@ -34,7 +34,6 @@ public class DriverMgmController {
     @ApiOperation("驱动列表")
     @PostMapping("/list")
     public List<DriverDTO> listDeDriver() throws Exception{
-        checkPermission();
         return driverService.list();
     }
 
