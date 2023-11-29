@@ -38,7 +38,7 @@ const edit = () => {
 const emits = defineEmits(['saved'])
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(valid => {
     if (valid) {
       const param = { ...state.form }
       const method = null
@@ -56,8 +56,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
         .catch(() => {
           closeLoading()
         })
-    } else {
-      console.log('error submit!', fields)
     }
   })
 }

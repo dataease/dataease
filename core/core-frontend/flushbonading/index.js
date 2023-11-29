@@ -129,10 +129,8 @@ htmlStream.pipe(parserStream).on('finish', () => {
   document.documentElement.insertBefore(head, document.querySelector('head'))`
 
   fs.writeFile('../dist/demo.html', template, err => {
-    console.log('写入成功')
   })
 
   fs.writeFile(`../dist/js/div_import_${suffix}.js`, templateJs, err => {
-    console.log('写入成功templateJs')
   })
 })

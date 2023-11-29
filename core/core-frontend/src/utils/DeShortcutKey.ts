@@ -101,7 +101,6 @@ let isShiftDown = false
 // 全局监听按键操作并执行相应命令
 export function listenGlobalKeyDown() {
   window.onkeydown = e => {
-    console.log('e.keyCode-down=' + e.keyCode)
     if (!isInEditor || checkDialog()) return
     const { keyCode } = e
     if (positionMoveKey[keyCode] && curComponent.value) {
@@ -129,7 +128,6 @@ export function listenGlobalKeyDown() {
   }
 
   window.onkeyup = e => {
-    console.log('e.keyCode=' + e.keyCode)
     if (e.keyCode === ctrlKey || e.keyCode === commandKey) {
       isCtrlOrCommandDown = false
       composeStore.setIsCtrlOrCmdDownStatus(false)
