@@ -890,6 +890,7 @@ export default {
     request_timeout: 'Request timeout',
     message_retention_time: 'Message retention time',
     log_retention_time: 'Log retention time',
+    ds_sync_log_retention_time: 'Data sync log retention time',
     ds_check_time: 'Data source detection interval',
     test_mail_recipient: 'Used only as a test mail recipient',
     to_enable_tsl: 'If the SMTP port is 587, you usually need to enable TSL',
@@ -1585,7 +1586,7 @@ export default {
     gauge_axis_label: 'Axis Label',
     word_size_range: 'Word Size Range',
     word_spacing: 'Word Spacing',
-    axis_multi_select_tip: 'Hold down the Ctrl or Shift key and click to select more than one'
+    axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one'
   },
   dataset: {
     scope_edit: 'Effective only when editing',

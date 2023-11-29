@@ -888,6 +888,7 @@ export default {
     request_timeout: '请求超时时间',
     message_retention_time: '消息保留时间',
     log_retention_time: '日志保留时间',
+    ds_sync_log_retention_time: '数据同步日志保留时间',
     ds_check_time: '数据源检测时间间隔',
     test_mail_recipient: '仅用来作为测试邮件收件人',
     to_enable_tsl: '如果SMTP端口是587，通常需要启用TSL',
@@ -1577,7 +1578,7 @@ export default {
     gauge_axis_label: '刻度标签',
     word_size_range: '字号区间',
     word_spacing: '文字间隔',
-    axis_multi_select_tip: '按住 Ctrl 键或者 Shift 键再点击可多选'
+    axis_multi_select_tip: '按住 Ctrl/Cmd 键或者 Shift 键再点击可多选'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

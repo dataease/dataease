@@ -1269,7 +1269,7 @@ export default {
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
       this.$store.commit('setComponentFromList', this.currentFilterCom)
-      bus.$emit('reset-default-value', this.currentFilterCom.id)
+      bus.$emit('reset-default-value', this.currentFilterCom)
       this.closeFilter()
     },
     reFreshComponent(component) {
@@ -1788,6 +1788,10 @@ export default {
 
 .dialog-css ::v-deep .el-dialog__title {
   font-size: 14px;
+}
+
+.dialog-css ::v-deep .el-dialog__headerbtn {
+  z-index: 2;
 }
 
 .dialog-css ::v-deep .el-dialog__header {

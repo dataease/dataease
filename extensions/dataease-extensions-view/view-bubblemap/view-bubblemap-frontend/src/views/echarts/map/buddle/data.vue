@@ -353,7 +353,7 @@ export default {
     },
     dragCheckType(list, type) {
       if (list && list.length > 0) {
-        for (let i = 0; i < list.length; i++) {
+        for (let i = list.length - 1; i >= 0; i--) {
           if (list[i].groupType !== type) {
             list.splice(i, 1)
           }

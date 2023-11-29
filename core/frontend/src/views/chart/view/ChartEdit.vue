@@ -183,6 +183,7 @@
                             class="item-dimension father group-dimension"
                             @click.exact="singleSelect(index, dimensionData, selectedDimension, 'lastDimensionIndex')"
                             @click.ctrl="multiSelect(index, dimensionData, selectedDimension, 'lastDimensionIndex')"
+                            @click.meta="multiSelect(index, dimensionData, selectedDimension, 'lastDimensionIndex')"
                             @click.shift="rangeSelect(index, dimensionData, selectedDimension, 'lastDimensionIndex')"
                           >
                             <svg-icon
@@ -265,6 +266,7 @@
                             class="item-quota father group-quota"
                             @click.exact="singleSelect(index, quotaData, selectedQuota, 'lastQuotaIndex')"
                             @click.ctrl="multiSelect(index, quotaData, selectedQuota, 'lastQuotaIndex')"
+                            @click.meta="multiSelect(index, quotaData, selectedQuota, 'lastQuotaIndex')"
                             @click.shift="rangeSelect(index, quotaData, selectedQuota, 'lastQuotaIndex')"
                           >
                             <svg-icon
@@ -3240,7 +3242,7 @@ export default {
     // drag
     dragCheckType(list, type) {
       if (list && list.length > 0) {
-        for (let i = 0; i < list.length; i++) {
+        for (let i = list.length - 1; i >= 0; i--) {
           if (list[i].groupType !== type) {
             list.splice(i, 1)
           }
