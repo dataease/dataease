@@ -136,6 +136,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
     }
     if (item.type === 'custom') {
       item.options.manualModify = false
+      item.options.loaded = false
     }
     if (item.filters && item.filters.length > 0) {
       item.filters = []
