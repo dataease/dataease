@@ -445,6 +445,7 @@ export default {
     this.canvasId === 'canvas-main' && bus.$on('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
+    bus.$on('trigger-filter-loaded', this.triggerFilterLoaded)
     this.initPdfTemplate()
   },
   beforeDestroy() {
@@ -460,10 +461,15 @@ export default {
     this.canvasId === 'canvas-main' && bus.$off('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('trigger-reset-button', this.triggerResetButton)
+    bus.$off('trigger-filter-loaded', this.triggerFilterLoaded)
   },
   methods: {
-    filterLoaded(p) {
+    triggerFilterLoaded({ canvasIdStr, p }) {
+      canvasIdStr.includes(this.canvasId) || this.filterLoaded(p, canvasIdStr)
+    },
+    filterLoaded(p, canvasIdStr = '') {
       buildAfterFilterLoaded(this.filterMap, p)
+      bus.$emit('trigger-filter-loaded', { canvasIdStr: canvasIdStr + this.canvasId, p })
     },
     getWrapperChildRefs() {
       return this.$refs['viewWrapperChild']
