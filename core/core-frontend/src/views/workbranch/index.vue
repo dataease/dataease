@@ -27,19 +27,23 @@ const router = useRouter()
 const quickCreationList = shallowRef([
   {
     icon: 'icon_dashboard_outlined',
-    name: 'panel'
+    name: 'panel',
+    color: '#3370ff'
   },
   {
     icon: 'icon_operation-analysis_outlined',
-    name: 'screen'
+    name: 'screen',
+    color: '#00d6b9'
   },
   {
     icon: 'icon_app_outlined',
-    name: 'dataset'
+    name: 'dataset',
+    color: '#16c0ff'
   },
   {
     icon: 'icon_database_outlined',
-    name: 'datasource'
+    name: 'datasource',
+    color: '#7f3bf6'
   }
 ])
 
@@ -96,7 +100,7 @@ const state = reactive({
 
 watch(
   () => activeTabBtn.value,
-  value => {
+  () => {
     initTemplateShow()
   }
 )
@@ -220,6 +224,15 @@ const toTemplateMarket = () => {
   push('/template-market/index')
 }
 
+const toTemplateMarketAdd = () => {
+  push({
+    name: 'template-market',
+    params: {
+      add: '1'
+    }
+  })
+}
+
 fillCardInfo()
 initMarketTemplate()
 </script>
@@ -272,12 +285,18 @@ initMarketTemplate()
             >
               <div class="empty-tooltip-container" />
             </el-tooltip>
-            <el-icon class="main-color">
+            <el-icon class="main-color" :style="{ backgroundColor: ele.color }">
               <Icon :name="ele.icon" />
             </el-icon>
             <span class="name">
               {{ t(`auth.${ele.name}`) }}
             </span>
+          </div>
+          <div class="item item-quick" @click="toTemplateMarketAdd">
+            <el-icon class="main-color-quick">
+              <Icon name="icon_template_colorful" />
+            </el-icon>
+            <span class="name">使用模版新建</span>
           </div>
         </div>
       </div>
@@ -491,6 +510,14 @@ initMarketTemplate()
             font-style: normal;
             font-weight: 400;
             line-height: 22px;
+          }
+        }
+
+        .item-quick {
+          width: 100%;
+          .main-color-quick {
+            font-size: 32px;
+            margin-right: 12px;
           }
         }
         .quick-create-disabled {

@@ -12,7 +12,7 @@
     ></market-preview-v2>
     <el-row v-show="!previewModel" class="main-container">
       <el-row class="market-head">
-        <span>模板中心 </span>
+        <span>{{ title }} </span>
         <el-row class="head-right">
           <el-input
             class="title-search"
@@ -115,6 +115,7 @@ import { getCategoriesObject, searchMarket } from '@/api/templateMarket'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { nextTick, reactive, watch, onMounted, ref, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus-secondary'
 import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
@@ -123,8 +124,10 @@ import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.v
 import { propTypes } from '@/utils/propTypes'
 const { t } = useI18n()
 const { wsCache } = useCache()
+const route = useRoute()
 
 const previewModel = ref(false)
+const title = ref('模版市场')
 
 const outPaddingState = computed(() => {
   return state.curPosition === 'branch' && !previewModel.value
@@ -385,6 +388,9 @@ const templatePreview = previewId => {
 }
 
 onMounted(() => {
+  if (route.params.add === '1') {
+    title.value = '使用模版新建'
+  }
   previewInit()
   initMarketTemplate()
   const erd = elementResizeDetectorMaker()
