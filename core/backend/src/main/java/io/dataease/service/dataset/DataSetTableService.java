@@ -1659,7 +1659,7 @@ public class DataSetTableService {
             }
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
 
-            String[] array = fields.stream()
+            String[] array = fields.stream().filter(Objects::nonNull)
                     .map(f -> table + "." + f.getDataeaseName() + " AS "
                             + TableUtils.fieldName(tableId + "_" + f.getDataeaseName()))
                     .toArray(String[]::new);
