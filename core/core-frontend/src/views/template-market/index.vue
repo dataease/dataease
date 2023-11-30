@@ -526,7 +526,10 @@ const templatePreview = previewId => {
     state.templatePreviewId = previewId
     previewModel.value = 'marketPreview'
   } else {
-    state.curTemplateShowFilter = state.currentMarketTemplateShowList.filter(ele => ele.showFlag)
+    state.curTemplateShowFilter =
+      state.marketActiveTab === '推荐'
+        ? state.currentMarketTemplateShowList
+        : state.currentMarketTemplateShowList.filter(ele => ele.showFlag)
     state.curTemplateIndex = state.curTemplateShowFilter.findIndex(temp => temp.id === previewId)
     state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
     previewModel.value = 'createPreview'
