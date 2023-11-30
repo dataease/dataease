@@ -176,8 +176,16 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     const areaColors = [...colors, ...colors]
     let areaStyle
     if (customAttr.basicStyle.gradient) {
-      areaStyle = () => {
-        const ele = areaColors.shift()
+      const colorMap = new Map()
+      areaStyle = item => {
+        let ele
+        const key = `${item.field}-${item.category}`
+        if (colorMap.has(key)) {
+          ele = colorMap.get(key)
+        } else {
+          ele = areaColors.shift()
+          colorMap.set(key, ele)
+        }
         if (ele) {
           return {
             fill: setGradientColor(hexColorToRGBA(ele, alpha), true, 270)
