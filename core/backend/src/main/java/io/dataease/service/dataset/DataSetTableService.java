@@ -1659,9 +1659,18 @@ public class DataSetTableService {
             }
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
 
-            String[] array = fields.stream().filter(Objects::nonNull)
-                    .map(f -> table + "." + f.getDataeaseName() + " AS "
-                            + TableUtils.fieldName(tableId + "_" + f.getDataeaseName()))
+            String[] array = fields.stream()
+                    .map(f -> {
+                        String s = "";
+                        if (f == null) {
+                            DEException.throwException(
+                                    Translator.get("i18n_ds_error"));
+                        } else {
+                            s = table + "." + f.getDataeaseName() + " AS "
+                                    + TableUtils.fieldName(tableId + "_" + f.getDataeaseName());
+                        }
+                        return s;
+                    })
                     .toArray(String[]::new);
             checkedInfo.put(table, array);
             checkedFields.addAll(fields);
