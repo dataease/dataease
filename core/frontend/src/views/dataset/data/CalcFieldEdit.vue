@@ -535,7 +535,7 @@ export default {
     },
     setNameIdTrans(from, to, originName, name2Auto) {
       let name2Id = originName
-      const nameIdMap = [...this.dimensionData, ...this.quotaData].reduce(
+      const nameIdMap = [...this.tableFields.dimensionList, ...this.tableFields.quotaList].reduce(
         (pre, next) => {
           pre[next[from]] = next[to]
           return pre
