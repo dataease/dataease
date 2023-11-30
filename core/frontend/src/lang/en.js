@@ -1945,7 +1945,7 @@ export default {
     please_input_max_pool_size: 'Please enter the maximum number of connections',
     please_input_max_idle_time: 'Please enter the maximum idle (seconds)',
     please_input_acquire_increment: 'Please enter the growth number',
-    please_input_query_timeout: 'Please enter query timeout，no less then zero',
+    please_input_query_timeout: 'Please enter query timeout，Valid range [1 - 300]',
     please_input_connect_timeout: 'Please enter the connection timeout (seconds)',
     no_less_then_0: 'Parameters in advanced settings cannot be less than zero',
     port_no_less_then_0: 'Port cannot be less than zero',

@@ -1170,6 +1170,10 @@ export default {
             callback(new Error(i18n.t('datasource.please_input_query_timeout')))
             return
         }
+        if(value <= 0 ||  value > 300){
+            callback(new Error(i18n.t('datasource.please_input_query_timeout')))
+            return
+        }
         callback()
       },
     next() {

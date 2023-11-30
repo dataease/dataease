@@ -1937,7 +1937,7 @@ export default {
     please_input_max_pool_size: '請輸入最大連接數',
     please_input_max_idle_time: '請輸入最大空閑(秒)',
     please_input_acquire_increment: '請輸入增長數',
-    please_input_query_timeout: '請輸入查詢超時，不小于零',
+    please_input_query_timeout: '請輸入查詢超時，請填寫1-300正整數',
     please_input_connect_timeout: '請輸輸入連接超時(秒)',
     no_less_then_0: '高級設置中的參數不能小於零',
     port_no_less_then_0: '端口不能小於零',
