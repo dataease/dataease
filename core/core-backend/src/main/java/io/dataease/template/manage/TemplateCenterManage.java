@@ -1,6 +1,5 @@
 package io.dataease.template.manage;
 
-import com.mysql.cj.log.Log;
 import io.dataease.api.template.dto.TemplateManageDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.TemplateMarketDTO;
@@ -8,7 +7,6 @@ import io.dataease.api.template.dto.TemplateMarketPreviewInfoDTO;
 import io.dataease.api.template.response.*;
 import io.dataease.api.template.vo.MarketApplicationSpecVO;
 import io.dataease.api.template.vo.MarketMetaDataVO;
-import io.dataease.api.template.vo.TemplateCategoryVO;
 import io.dataease.constant.CommonConstants;
 import io.dataease.exception.DEException;
 import io.dataease.operation.manage.CoreOptRecentManage;
@@ -19,11 +17,11 @@ import io.dataease.utils.HttpClientUtil;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
-import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.*;
+import java.util.function.Function;
 import java.util.stream.Collectors;
 
 /**
@@ -89,6 +87,7 @@ public class TemplateCenterManage {
             return baseResponseV2Trans(templateQuery(templateParams), searchTemplateFromManage(), templateParams.get("template.url"));
         } catch (Exception e) {
             LogUtil.error(e);
+            e.printStackTrace();
         }
         return null;
     }
@@ -138,7 +137,9 @@ public class TemplateCenterManage {
 
     private MarketBaseResponse baseResponseV2TransRecommend(MarketTemplateV2BaseResponse v2BaseResponse, String url) {
         Map<String, Long> useTime = coreOptRecentManage.findTemplateRecentUseTime();
-        Map<String, String> categoriesMap = getCategoriesBaseV2();
+        List<MarketMetaDataVO> categoryVO = getCategoriesV2().stream().filter(node -> !"全部".equalsIgnoreCase(node.getLabel())).collect(Collectors.toList());
+        Map<String, String> categoriesMap = categoryVO.stream()
+                .collect(Collectors.toMap(MarketMetaDataVO::getSlug, MarketMetaDataVO::getLabel));
         List<TemplateMarketDTO> contents = new ArrayList<>();
         if (v2BaseResponse != null) {
             v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
@@ -150,25 +151,32 @@ public class TemplateCenterManage {
         }
         // 最近使用排序
         Collections.sort(contents);
-        return new MarketBaseResponse(url, contents);
+        return new MarketBaseResponse(url,categoryVO, contents);
     }
 
     private MarketBaseResponse baseResponseV2Trans(MarketTemplateV2BaseResponse v2BaseResponse, List<TemplateMarketDTO> contents, String url) {
         Map<String, Long> useTime = coreOptRecentManage.findTemplateRecentUseTime();
-        Map<String, String> categoriesMap = getCategoriesBaseV2();
+        List<MarketMetaDataVO> categoryVO = getCategoriesObject().stream().filter(node -> !"全部".equalsIgnoreCase(node.getLabel())).collect(Collectors.toList());
+        Map<String, String> categoriesMap = categoryVO.stream()
+                .collect(Collectors.toMap(MarketMetaDataVO::getValue, MarketMetaDataVO::getLabel));
+        List<String> activeCategoriesName = new ArrayList<>(Arrays.asList("最近使用","推荐"));
         contents.stream().forEach(templateMarketDTO -> {
             Long recentUseTime = useTime.get(templateMarketDTO.getId());
             templateMarketDTO.setRecentUseTime(recentUseTime == null ? 0 : recentUseTime);
+            activeCategoriesName.add(templateMarketDTO.getMainCategory());
         });
         if (v2BaseResponse != null) {
             v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
                 MarketApplicationSpecVO spec = marketTemplateV2ItemResult.getApplication().getSpec();
                 contents.add(new TemplateMarketDTO(spec.getReadmeName(), spec.getDisplayName(), spec.getScreenshots().get(0).getUrl(), spec.getLinks().get(0).getUrl(), categoriesMap.get(spec.getLabel()), spec.getTemplateType(), useTime.get(spec.getReadmeName()), spec.getSuggest()));
+               if(categoriesMap.get(spec.getLabel())!=null){
+                    activeCategoriesName.add(categoriesMap.get(spec.getLabel()));
+                }
             });
         }
         // 最近使用排序
         Collections.sort(contents);
-        return new MarketBaseResponse(url, contents);
+        return new MarketBaseResponse(url,categoryVO.stream().filter(node->activeCategoriesName.contains(node.getLabel())).collect(Collectors.toList()), contents);
     }
 
     private MarketPreviewBaseResponse basePreviewResponseV2Trans(MarketTemplateV2BaseResponse v2BaseResponse, List<TemplateMarketDTO> manageContents, String url) {
@@ -211,7 +219,7 @@ public class TemplateCenterManage {
 
     public List<MarketMetaDataVO> getCategoriesObject() {
         List<MarketMetaDataVO> result = getCategoriesV2();
-        result.add(0, new MarketMetaDataVO("recent", "最近使用", "public"));
+        result.add(0, new MarketMetaDataVO("recent", "最近使用", CommonConstants.TEMPLATE_SOURCE.PUBLIC));
         return result;
     }
 
@@ -232,12 +240,28 @@ public class TemplateCenterManage {
             String resultStr = marketGet(templateParams.get("template.url") + TEMPLATE_META_DATA_URL, null);
             MarketMetaDataBaseResponse metaData = JsonUtil.parseObject(resultStr, MarketMetaDataBaseResponse.class);
             allCategories.addAll(metaData.getLabels());
-            allCategories.add(0, new MarketMetaDataVO("suggest", "推荐"));
+            allCategories.add(0, new MarketMetaDataVO("suggest", "推荐",CommonConstants.TEMPLATE_SOURCE.PUBLIC));
         } catch (Exception e) {
             LogUtil.error("模板市场分类获取错误", e);
         }
-        allCategories.addAll(manageCategoriesTrans);
-        return allCategories;
 
+        return mergeAndDistinctByLabel(allCategories,manageCategoriesTrans);
+
+    }
+
+    private List<MarketMetaDataVO> mergeAndDistinctByLabel(List<MarketMetaDataVO> list1, List<MarketMetaDataVO> list2) {
+        List<MarketMetaDataVO> mergedList = new ArrayList<>(list1);
+        mergedList.addAll(list2);
+        Map<String, MarketMetaDataVO> marketMetaDataMap = mergedList.stream()
+                .collect(Collectors.toMap(
+                        MarketMetaDataVO::getLabel,
+                        Function.identity(),
+                        (existing, replacement) -> {
+                            existing.setSource(CommonConstants.TEMPLATE_SOURCE.PUBLIC);
+                            return existing;
+                        },
+                        LinkedHashMap::new
+                ));
+        return new ArrayList<>(marketMetaDataMap.values());
     }
 }

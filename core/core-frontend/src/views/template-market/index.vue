@@ -84,8 +84,10 @@
       <el-row class="template-area">
         <div class="template-left">
           <el-tree
+            v-if="state.treeShow"
             menu
             class="custom-market-tree"
+            v-model="state.marketActiveTab"
             :data="categoriesComputed"
             :props="state.treeProps"
             node-key="label"
@@ -100,33 +102,77 @@
           id="template-show-area"
           class="template-right"
         >
-          <el-col class="main-head">
-            <div class="custom-split-line"></div>
-            <span v-show="!state.searchText" class="custom-category">{{
-              state.marketActiveTab
-            }}</span>
-            <span v-show="state.searchText" class="custom-search">{{ state.marketActiveTab }}</span>
-            <span v-if="state.searchText" class="custom-search-result"
-              >的搜索结果是{{ searchResultCount }}个</span
+          <template v-if="state.marketActiveTab !== '推荐'">
+            <el-col class="main-head">
+              <div class="custom-split-line"></div>
+              <span v-show="!state.searchText" class="custom-category">{{
+                state.marketActiveTab
+              }}</span>
+              <span v-show="state.searchText" class="custom-search">{{
+                state.marketActiveTab
+              }}</span>
+              <span v-if="state.searchText" class="custom-search-result"
+                >的搜索结果是{{ searchResultCount }}个</span
+              >
+            </el-col>
+            <el-col
+              v-for="templateItem in state.currentMarketTemplateShowList"
+              v-show="templateItem.showFlag"
+              :key="templateItem.id"
+              style="float: left; padding: 24px 12px 0; text-align: center; flex: 0"
+              :style="{ width: state.templateSpan }"
             >
-          </el-col>
-          <el-col
-            v-for="templateItem in state.currentMarketTemplateShowList"
-            v-show="templateItem.showFlag"
-            :key="templateItem.id"
-            style="float: left; padding: 24px 12px 0; text-align: center; flex: 0"
-            :style="{ width: state.templateSpan }"
-          >
-            <template-market-v2-item
-              :key="'outer-' + templateItem.id"
-              :template="templateItem"
-              :base-url="state.baseUrl"
-              :width="state.templateCurWidth"
-              :cur-position="state.curPosition"
-              @templateApply="templateApply"
-              @templatePreview="templatePreview"
-            />
-          </el-col>
+              <template-market-v2-item
+                :key="'outer-' + templateItem.id"
+                :template="templateItem"
+                :base-url="state.baseUrl"
+                :width="state.templateCurWidth"
+                :cur-position="state.curPosition"
+                @templateApply="templateApply"
+                @templatePreview="templatePreview"
+              />
+            </el-col>
+          </template>
+
+          <template v-if="state.marketActiveTab === '推荐'">
+            <el-row
+              :key="'full-' + categoryItem.label"
+              style="display: inline; margin-bottom: 16px"
+              v-for="categoryItem in categoriesComputed.filter(
+                item => !['最近使用', '推荐'].includes(item.label)
+              )"
+            >
+              <el-col class="main-head">
+                <div class="custom-split-line"></div>
+                <span v-show="!state.searchText" class="custom-category">{{
+                  categoryItem.label
+                }}</span>
+                <span v-show="state.searchText" class="custom-search">{{
+                  categoryItem.label
+                }}</span>
+                <span v-if="state.searchText" class="custom-search-result"
+                  >的搜索结果是{{ fullTemplateShowList(categoryItem.label).length }}个</span
+                >
+              </el-col>
+              <el-col
+                v-for="templateItem in fullTemplateShowList(categoryItem.label)"
+                v-show="templateItem.showFlag"
+                :key="templateItem.id + categoryItem.label"
+                style="float: left; padding: 24px 12px 0; text-align: center; flex: 0"
+                :style="{ width: state.templateSpan }"
+              >
+                <template-market-v2-item
+                  :key="'outer-' + templateItem.id"
+                  :template="templateItem"
+                  :base-url="state.baseUrl"
+                  :width="state.templateCurWidth"
+                  :cur-position="state.curPosition"
+                  @templateApply="templateApply"
+                  @templatePreview="templatePreview"
+                />
+              </el-col>
+            </el-row>
+          </template>
         </div>
         <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
           <div style="text-align: center">
@@ -216,6 +262,7 @@ const state = reactive({
   },
   templateType: 'all',
   templateSourceType: 'all',
+  treeShow: true,
   templateSourceOptions: [
     {
       value: 'all',
@@ -310,7 +357,12 @@ watch(
 watch(
   () => state.templateSourceType,
   value => {
+    state.treeShow = false
     initTemplateShow()
+    nextTick(() => {
+      state.treeShow = true
+      initStyle()
+    })
   }
 )
 
@@ -331,13 +383,7 @@ const initMarketTemplate = async () => {
     .then(rsp => {
       state.baseUrl = rsp.data.baseUrl
       state.currentMarketTemplateShowList = rsp.data.contents
-    })
-    .catch(() => {
-      state.networkStatus = false
-    })
-  getCategoriesObject()
-    .then(rsp => {
-      state.marketTabs = rsp.data
+      state.marketTabs = rsp.data.categories
       state.marketActiveTab = state.marketTabs[0].label
       initStyle()
       initTemplateShow()
@@ -419,10 +465,10 @@ const apply = () => {
 const handleClick = item => {
   // do handleClick
 }
-const initTemplateShow = () => {
+const initTemplateShow = (activeTab = state.marketActiveTab) => {
   let tempHasResult = false
   state.currentMarketTemplateShowList.forEach(template => {
-    template.showFlag = templateShow(template)
+    template.showFlag = templateShow(template, activeTab)
     if (template.showFlag) {
       tempHasResult = true
     }
@@ -432,22 +478,29 @@ const initTemplateShow = () => {
   }
 }
 
-const templateShow = templateItem => {
+const fullTemplateShowList = curTab => {
+  state.currentMarketTemplateShowList.forEach(template => {
+    template.showFlag = templateShow(template, curTab)
+  })
+  return state.currentMarketTemplateShowList.filter(ele => ele.showFlag)
+}
+
+const templateShow = (templateItem, activeTab) => {
   let categoryMarch = false
   let searchMarch = false
   let templateTypeMarch = false
   let templateSourceTypeMarch = false
-  if (state.marketActiveTab === '最近使用') {
+  if (activeTab === '最近使用') {
     if (templateItem.recentUseTime) {
       categoryMarch = true
     }
-  } else if (state.marketActiveTab === '推荐') {
+  } else if (activeTab === '推荐') {
     if (templateItem.suggest === 'Y') {
       categoryMarch = true
     }
   } else {
     templateItem.categories.forEach(category => {
-      if (category.name === state.marketActiveTab) {
+      if (category.name === activeTab) {
         categoryMarch = true
       }
     })
@@ -560,7 +613,7 @@ defineExpose({
         height: 100%;
         background: rgba(239, 240, 241, 1);
         overflow-y: auto;
-        padding: 16px 12px;
+        padding: 0 12px 16px 12px;
       }
 
       .template-empty {
@@ -580,6 +633,7 @@ defineExpose({
   width: 100%;
   float: left;
   height: 24px;
+  margin-top: 16px;
   display: inline;
   .custom-split-line {
     margin: 4px 8px 0 12px;
