@@ -344,8 +344,10 @@ public class EsQueryProvider extends QueryProvider {
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == DeTypeConstants.DE_TIME) {
                     originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                 } else {
-                    if (y.getDeType() == 2 || y.getDeType() == 3) {
+                    if (y.getDeType() == 2) {
                         originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName()), "bigint");
+                    } else if (y.getDeType() == 3) {
+                        originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName()), "float");
                     } else {
                         originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
                     }

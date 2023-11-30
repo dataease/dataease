@@ -382,6 +382,8 @@ export default {
           componentId: this.element.id,
           val: (this.value && Array.isArray(this.value)) ? this.value.join(',') : this.value
         })
+        this.element.options.loaded = true
+        this.$store.commit('setComponentWithId', this.element)
       }
     },
     refreshLoad() {
