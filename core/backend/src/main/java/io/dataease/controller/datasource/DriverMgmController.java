@@ -56,7 +56,6 @@ public class DriverMgmController {
     @ApiOperation("驱动列表")
     @GetMapping("/list/{type}")
     public List<DriverDTO> listDeDriver(@PathVariable String type) throws Exception{
-        checkPermission();
         return listDeDriver().stream().filter(driverDTO -> driverDTO.getType().equalsIgnoreCase(type)).collect(Collectors.toList());
     }
 
