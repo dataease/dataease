@@ -7,6 +7,7 @@ import HeaderMenuItem from './HeaderMenuItem.vue'
 import { Icon } from '@/components/icon-custom'
 import { ElHeader, ElMenu } from 'element-plus-secondary'
 import SystemCfg from './SystemCfg.vue'
+import ToolboxCfg from './ToolboxCfg.vue'
 import { useRouter, useRoute } from 'vue-router'
 import TopDoc from '@/layout/components/TopDoc.vue'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
@@ -26,6 +27,7 @@ const permissionStore = usePermissionStore()
 
 const routers: any[] = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
 const showSystem = ref(false)
+const showToolbox = ref(false)
 const handleSelect = (index: string) => {
   // 自定义事件
   if (isExternal(index)) {
@@ -37,8 +39,12 @@ const handleSelect = (index: string) => {
 const initShowSystem = () => {
   showSystem.value = permissionStore.getRouters.some(route => route.path === '/system')
 }
+const initShowToolbox = () => {
+  showToolbox.value = permissionStore.getRouters.some(route => route.path === '/toolbox')
+}
 onMounted(() => {
   initShowSystem()
+  initShowToolbox()
 })
 </script>
 
@@ -56,6 +62,7 @@ onMounted(() => {
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
       <XpackComponent jsname="c3dpdGNoZXI=" />
+      <ToolboxCfg v-if="showToolbox" />
       <TopDoc />
       <SystemCfg v-if="showSystem" />
       <AccountOperator />
