@@ -116,10 +116,10 @@ service.interceptors.response.use(
     response: AxiosResponse<any> & { config: InternalAxiosRequestConfig & { loading?: boolean } }
   ) => {
     executeVersionHandler(response)
-    if (response.headers['x-de-refresh-token']) {
+    /* if (response.headers['x-de-refresh-token']) {
       wsCache.set('user.token', response.headers['x-de-refresh-token'])
       wsCache.set('user.exp', new Date().getTime() + 90000)
-    }
+    } */
     if (response.headers['x-de-link-token']) {
       linkStore.setLinkToken(response.headers['x-de-link-token'])
     }
