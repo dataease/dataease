@@ -118,9 +118,7 @@
           <el-row style="display: inline" v-if="state.marketActiveTab === '推荐'">
             <el-row
               style="display: inline; margin-bottom: 16px"
-              v-for="(categoryItem, index) in categoriesComputed.filter(
-                item => !['最近使用'].includes(item['label'])
-              )"
+              v-for="(categoryItem, index) in categoriesComputed"
               :key="index"
             >
               <category-template-v2
