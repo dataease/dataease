@@ -7,23 +7,28 @@ import Menu from './components/Menu.vue'
 import Main from './components/Main.vue'
 import { ElContainer } from 'element-plus-secondary'
 import { useRoute } from 'vue-router'
-import HeaderTemplateMarket from '@/layout/components/HeaderTemplateMarket.vue'
 const route = useRoute()
 const systemMenu = computed(() => route.path.includes('system'))
 const settingMenu = computed(() => route.path.includes('sys-setting'))
-const templateMarketMenu = computed(() => route.path.includes('template-market'))
+const marketMenu = computed(() => route.path.includes('template-market'))
+const toolboxMenu = computed(() => route.path.includes('toolbox'))
 </script>
 
 <template>
   <div class="common-layout">
-    <header-template-market v-if="templateMarketMenu"></header-template-market>
-    <HeaderSystem v-else-if="settingMenu"></HeaderSystem>
+    <HeaderSystem
+      v-if="settingMenu || marketMenu || toolboxMenu"
+      :title="toolboxMenu ? '工具箱' : marketMenu ? '模板中心' : ''"
+    />
     <Header v-else></Header>
     <el-container class="layout-container">
-      <Sidebar v-if="systemMenu || settingMenu" class="layout-sidebar">
+      <Sidebar v-if="systemMenu || settingMenu || toolboxMenu" class="layout-sidebar">
         <Menu style="height: 100%"></Menu>
       </Sidebar>
-      <Main class="layout-main" :class="{ 'with-sider': systemMenu || settingMenu }"></Main>
+      <Main
+        class="layout-main"
+        :class="{ 'with-sider': systemMenu || settingMenu || toolboxMenu }"
+      ></Main>
     </el-container>
   </div>
 </template>
