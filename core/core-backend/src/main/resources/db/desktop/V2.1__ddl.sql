@@ -37,3 +37,6 @@ CREATE TABLE `visualization_template_extend_data` (
 ALTER TABLE `core_opt_recent`
     MODIFY COLUMN `resource_id` bigint NULL COMMENT '资源ID' AFTER `id`,
     ADD COLUMN `resource_name` varchar(255) NULL COMMENT '资源名称' AFTER `resource_id`;
+
+INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (7, 'template.url', 'https://templates-de.fit2cloud.com', 'text', 0);
+INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (8, 'template.accessKey', 'dataease', 'text', 1);
