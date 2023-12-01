@@ -102,75 +102,39 @@
           id="template-show-area"
           class="template-right"
         >
-          <template v-if="state.marketActiveTab !== '推荐'">
-            <el-col class="main-head">
-              <div class="custom-split-line"></div>
-              <span v-show="!state.searchText" class="custom-category">{{
-                state.marketActiveTab
-              }}</span>
-              <span v-show="state.searchText" class="custom-search">{{
-                state.marketActiveTab
-              }}</span>
-              <span v-if="state.searchText" class="custom-search-result"
-                >的搜索结果是{{ searchResultCount }}个</span
-              >
-            </el-col>
-            <el-col
-              v-for="templateItem in state.currentMarketTemplateShowList"
-              v-show="templateItem.showFlag"
-              :key="templateItem.id"
-              style="float: left; padding: 24px 12px 0; text-align: center; flex: 0"
-              :style="{ width: state.templateSpan }"
-            >
-              <template-market-v2-item
-                :key="'outer-' + templateItem.id"
-                :template="templateItem"
-                :base-url="state.baseUrl"
-                :width="state.templateCurWidth"
-                :cur-position="state.curPosition"
-                @templateApply="templateApply"
-                @templatePreview="templatePreview"
-              />
-            </el-col>
-          </template>
+          <el-row style="display: inline" v-show="state.marketActiveTab !== '推荐'">
+            <category-template
+              :search-text="state.searchText"
+              :label="state.marketActiveTab"
+              :full-template-show-list="state.currentMarketTemplateShowList"
+              :template-span="state.templateSpan"
+              :base-url="state.baseUrl"
+              :template-cur-width="state.templateCurWidth"
+              :cur-position="state.curPosition"
+              @templateApply="templateApply"
+              @templatePreview="templatePreview"
+            ></category-template>
+          </el-row>
 
           <template v-if="state.marketActiveTab === '推荐'">
             <el-row
               :key="'full-' + categoryItem.label"
               style="display: inline; margin-bottom: 16px"
               v-for="categoryItem in categoriesComputed.filter(
-                item => !['最近使用', '推荐'].includes(item.label)
+                item => !['最近使用', '推荐'].includes(item['label'])
               )"
             >
-              <el-col class="main-head">
-                <div class="custom-split-line"></div>
-                <span v-show="!state.searchText" class="custom-category">{{
-                  categoryItem.label
-                }}</span>
-                <span v-show="state.searchText" class="custom-search">{{
-                  categoryItem.label
-                }}</span>
-                <span v-if="state.searchText" class="custom-search-result"
-                  >的搜索结果是{{ fullTemplateShowList(categoryItem.label).length }}个</span
-                >
-              </el-col>
-              <el-col
-                v-for="templateItem in fullTemplateShowList(categoryItem.label)"
-                v-show="templateItem.showFlag"
-                :key="templateItem.id + categoryItem.label"
-                style="float: left; padding: 24px 12px 0; text-align: center; flex: 0"
-                :style="{ width: state.templateSpan }"
-              >
-                <template-market-v2-item
-                  :key="'outer-' + templateItem.id"
-                  :template="templateItem"
-                  :base-url="state.baseUrl"
-                  :width="state.templateCurWidth"
-                  :cur-position="state.curPosition"
-                  @templateApply="templateApply"
-                  @templatePreview="templatePreview"
-                />
-              </el-col>
+              <categoery-template
+                :search-text="state.searchText"
+                :label="categoryItem.label"
+                :full-template-show-list="fullTemplateShowList(categoryItem.label)"
+                :template-span="state.templateSpan"
+                :base-url="state.baseUrl"
+                :template-cur-width="state.templateCurWidth"
+                :cur-position="state.curPosition"
+                @templateApply="templateApply"
+                @templatePreview="templatePreview"
+              ></categoery-template>
             </el-row>
           </template>
         </div>
@@ -198,13 +162,12 @@ import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus-secondary'
 import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
-import TemplateMarketV2Item from '@/views/template-market/component/TemplateMarketV2Item.vue'
 import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
-import { propTypes } from '@/utils/propTypes'
 import { imgUrlTrans } from '@/utils/imgUtils'
+import CategoryTemplate from '@/views/template-market/component/CategoryTemplate.vue'
+import { deepCopy } from '@/utils/utils'
 const { t } = useI18n()
 const { wsCache } = useCache()
-const route = useRoute()
 
 // full 正常展示 marketPreview 模板中心预览 createPreview 创建界面预览
 const previewModel = ref('full')
@@ -482,7 +445,7 @@ const fullTemplateShowList = curTab => {
   state.currentMarketTemplateShowList.forEach(template => {
     template.showFlag = templateShow(template, curTab)
   })
-  return state.currentMarketTemplateShowList.filter(ele => ele.showFlag)
+  return deepCopy(state.currentMarketTemplateShowList.filter(ele => ele.showFlag))
 }
 
 const templateShow = (templateItem, activeTab) => {
