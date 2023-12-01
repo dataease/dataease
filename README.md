@@ -8,10 +8,6 @@
   <a href="https://app.fossa.com/projects/git%2Bgithub.com%2F1dataease%2Fdataease?ref=badge_shield"><img src="https://app.fossa.com/api/projects/git%2Bgithub.com%2Fdataease%2Fdataease.svg?type=shield" alt="FOSSA Status"></a>  
 </p>
 
-|说明|
-|------------------|
-|此分支为 DataEase v1.18 版本的开发分支。|
-
 <hr/>
 
 ## 什么是 DataEase？
