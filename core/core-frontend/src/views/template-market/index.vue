@@ -103,7 +103,7 @@
           class="template-right"
         >
           <el-row style="display: inline" v-show="state.marketActiveTab !== '推荐'">
-            <category-template
+            <category-template-v2
               :search-text="state.searchText"
               :label="state.marketActiveTab"
               :full-template-show-list="state.currentMarketTemplateShowList"
@@ -113,18 +113,17 @@
               :cur-position="state.curPosition"
               @templateApply="templateApply"
               @templatePreview="templatePreview"
-            ></category-template>
+            ></category-template-v2>
           </el-row>
-
-          <template v-if="state.marketActiveTab === '推荐'">
+          <el-row style="display: inline" v-if="state.marketActiveTab === '推荐'">
             <el-row
-              :key="'full-' + categoryItem.label"
               style="display: inline; margin-bottom: 16px"
-              v-for="categoryItem in categoriesComputed.filter(
-                item => !['最近使用', '推荐'].includes(item['label'])
+              v-for="(categoryItem, index) in categoriesComputed.filter(
+                item => !['最近使用'].includes(item['label'])
               )"
+              :key="index"
             >
-              <categoery-template
+              <category-template-v2
                 :search-text="state.searchText"
                 :label="categoryItem.label"
                 :full-template-show-list="fullTemplateShowList(categoryItem.label)"
@@ -134,9 +133,9 @@
                 :cur-position="state.curPosition"
                 @templateApply="templateApply"
                 @templatePreview="templatePreview"
-              ></categoery-template>
+              ></category-template-v2>
             </el-row>
-          </template>
+          </el-row>
         </div>
         <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
           <div style="text-align: center">
@@ -154,18 +153,17 @@
 </template>
 
 <script setup lang="ts">
-import { getCategoriesObject, searchMarket } from '@/api/templateMarket'
+import { searchMarket } from '@/api/templateMarket'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { nextTick, reactive, watch, onMounted, ref, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus-secondary'
 import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
 import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
-import CategoryTemplate from '@/views/template-market/component/CategoryTemplate.vue'
 import { deepCopy } from '@/utils/utils'
+import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
 const { t } = useI18n()
 const { wsCache } = useCache()
 
@@ -178,42 +176,6 @@ const close = () => {
 }
 
 const title = computed(() => (state.curPosition === 'branch' ? '模板中心' : '使用模版新建'))
-
-const categoriesComputed = computed(() => {
-  if (state.templateSourceType === 'all') {
-    return state.marketTabs
-  } else {
-    return state.marketTabs.filter(
-      category => category.source === 'public' || category.source === state.templateSourceType
-    )
-  }
-})
-
-const curTemplateImg = computed(() => {
-  if (
-    state.curTemplate.thumbnail.indexOf('http') > -1 ||
-    state.curTemplate.thumbnail.indexOf('static-resource') > -1
-  ) {
-    return imgUrlTrans(state.curTemplate.thumbnail)
-  } else {
-    return imgUrlTrans(state.baseUrl + state.curTemplate.thumbnail)
-  }
-})
-
-const outPaddingState = computed(() => {
-  return state.curPosition === 'branch' && previewModel.value !== 'marketPreview'
-})
-
-const optInit = params => {
-  state.initReady = false
-  state.curPosition = params.curPosition
-  state.templateType = params.templateType
-  previewModel.value = 'full'
-  state.pid = params.pid
-  nextTick(() => {
-    state.initReady = true
-  })
-}
 
 const state = reactive({
   initReady: true,
@@ -303,6 +265,44 @@ const state = reactive({
   }
 })
 
+const categoriesComputed = computed(() => {
+  let result
+  if (state.templateSourceType === 'all') {
+    result = state.marketTabs
+  } else {
+    result = state.marketTabs.filter(
+      category => category.source === 'public' || category.source === state.templateSourceType
+    )
+  }
+  console.log('categoriesComputed=' + JSON.stringify(result))
+  return result
+})
+
+const curTemplateImg = computed(() => {
+  if (
+    state.curTemplate.thumbnail.indexOf('http') > -1 ||
+    state.curTemplate.thumbnail.indexOf('static-resource') > -1
+  ) {
+    return imgUrlTrans(state.curTemplate.thumbnail)
+  } else {
+    return imgUrlTrans(state.baseUrl + state.curTemplate.thumbnail)
+  }
+})
+
+const outPaddingState = computed(() => {
+  return state.curPosition === 'branch' && previewModel.value !== 'marketPreview'
+})
+
+const optInit = params => {
+  state.initReady = false
+  state.curPosition = params.curPosition
+  state.templateType = params.templateType
+  previewModel.value = 'full'
+  state.pid = params.pid
+  nextTick(() => {
+    state.initReady = true
+  })
+}
 watch(
   () => state.searchText,
   value => {
@@ -327,10 +327,6 @@ watch(
       initStyle()
     })
   }
-)
-
-const searchResultCount = computed(
-  () => state.currentMarketTemplateShowList.filter(template => template.showFlag).length
 )
 
 const nodeClick = data => {
@@ -445,7 +441,9 @@ const fullTemplateShowList = curTab => {
   state.currentMarketTemplateShowList.forEach(template => {
     template.showFlag = templateShow(template, curTab)
   })
-  return deepCopy(state.currentMarketTemplateShowList.filter(ele => ele.showFlag))
+  const result = deepCopy(state.currentMarketTemplateShowList.filter(ele => ele.showFlag))
+  console.log('curTab=' + curTab + '&fullTemplateShowList=' + JSON.stringify(result))
+  return result
 }
 
 const templateShow = (templateItem, activeTab) => {
