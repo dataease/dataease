@@ -273,7 +273,6 @@ const categoriesComputed = computed(() => {
       category => category.source === 'public' || category.source === state.templateSourceType
     )
   }
-  console.log('categoriesComputed=' + JSON.stringify(result))
   return result
 })
 
