@@ -83,6 +83,11 @@
         <value-type>java.lang.Integer</value-type>
     </cache>
 
+    <cache alias="user_echelon" uses-template="common-cache">
+        <key-type>java.lang.String</key-type>
+        <value-type>java.util.List</value-type>
+    </cache>
+
     <cache alias="role_busi_pers_interactive" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
