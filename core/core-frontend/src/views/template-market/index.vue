@@ -102,7 +102,7 @@
           id="template-show-area"
           class="template-right"
         >
-          <el-row style="display: inline" v-show="state.marketActiveTab !== '推荐'">
+          <el-row v-show="state.marketActiveTab !== '推荐'">
             <category-template-v2
               :search-text="state.searchText"
               :label="state.marketActiveTab"
@@ -115,16 +115,17 @@
               @templatePreview="templatePreview"
             ></category-template-v2>
           </el-row>
-          <el-row style="display: inline" v-if="state.marketActiveTab === '推荐'">
+          <el-row v-show="state.marketActiveTab === '推荐'">
             <el-row
-              style="display: inline; margin-bottom: 16px"
+              style="display: inline; width: 100%; margin-bottom: 16px"
               v-for="(categoryItem, index) in categoriesComputed"
               :key="index"
             >
               <category-template-v2
+                v-if="categoryItem.label !== '最近使用'"
                 :search-text="state.searchText"
                 :label="categoryItem.label"
-                :full-template-show-list="fullTemplateShowList(categoryItem.label)"
+                :full-template-show-list="state.currentMarketTemplateShowList"
                 :template-span="state.templateSpan"
                 :base-url="state.baseUrl"
                 :template-cur-width="state.templateCurWidth"
@@ -422,10 +423,10 @@ const apply = () => {
 const handleClick = item => {
   // do handleClick
 }
-const initTemplateShow = (activeTab = state.marketActiveTab) => {
+const initTemplateShow = () => {
   let tempHasResult = false
   state.currentMarketTemplateShowList.forEach(template => {
-    template.showFlag = templateShow(template, activeTab)
+    template.showFlag = templateShow(template)
     if (template.showFlag) {
       tempHasResult = true
     }
@@ -435,36 +436,10 @@ const initTemplateShow = (activeTab = state.marketActiveTab) => {
   }
 }
 
-const fullTemplateShowList = curTab => {
-  state.currentMarketTemplateShowList.forEach(template => {
-    template.showFlag = templateShow(template, curTab)
-  })
-  const result = deepCopy(state.currentMarketTemplateShowList.filter(ele => ele.showFlag))
-  console.log('curTab=' + curTab + '&fullTemplateShowList=' + JSON.stringify(result))
-  return result
-}
-
-const templateShow = (templateItem, activeTab) => {
-  let categoryMarch = false
+const templateShow = templateItem => {
   let searchMarch = false
   let templateTypeMarch = false
   let templateSourceTypeMarch = false
-  if (activeTab === '最近使用') {
-    if (templateItem.recentUseTime) {
-      categoryMarch = true
-    }
-  } else if (activeTab === '推荐') {
-    if (templateItem.suggest === 'Y') {
-      categoryMarch = true
-    }
-  } else {
-    templateItem.categories.forEach(category => {
-      if (category.name === activeTab) {
-        categoryMarch = true
-      }
-    })
-  }
-
   if (!state.searchText || templateItem.title.indexOf(state.searchText) > -1) {
     searchMarch = true
   }
@@ -476,7 +451,7 @@ const templateShow = (templateItem, activeTab) => {
   if (state.templateSourceType === 'all' || templateItem.source === state.templateSourceType) {
     templateSourceTypeMarch = true
   }
-  return categoryMarch && searchMarch && templateTypeMarch && templateSourceTypeMarch
+  return searchMarch && templateTypeMarch && templateSourceTypeMarch
 }
 
 const templatePreview = previewId => {
