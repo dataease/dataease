@@ -3,13 +3,11 @@
     <div class="custom-split-line"></div>
     <span v-show="!searchText" class="custom-category">{{ label }}</span>
     <span v-show="searchText" class="custom-search">{{ label }}</span>
-    <span v-if="searchText" class="custom-search-result"
-      >的搜索结果是{{ fullTemplateShowList.length }}个</span
-    >
+    <span v-if="searchText" class="custom-search-result">的搜索结果是{{ searchResult }}个</span>
   </el-col>
   <el-col
     v-for="(templateItem, index) in fullTemplateShowList"
-    v-show="templateItem.showFlag"
+    v-show="showFlagCheck(templateItem)"
     :key="templateItem.id + label"
     style="float: left; padding: 24px 12px 0; text-align: center; flex: 0"
     :style="{ width: templateSpan }"
@@ -28,6 +26,7 @@
 
 <script setup lang="ts">
 import TemplateMarketV2Item from '@/views/template-market/component/TemplateMarketV2Item.vue'
+import { computed } from 'vue'
 const emits = defineEmits(['templateApply', 'templatePreview'])
 
 const templateApply = params => {
@@ -36,6 +35,17 @@ const templateApply = params => {
 
 const templatePreview = params => {
   emits('templatePreview', params)
+}
+
+const searchResult = computed(
+  () => props.fullTemplateShowList.filter(item => showFlagCheck(item)).length
+)
+
+const showFlagCheck = template => {
+  if (!template.categoryNames) {
+    console.log('===templateTest' + JSON.stringify(template))
+  }
+  return template.showFlag && template.categoryNames?.includes(props.label)
 }
 
 const props = defineProps({

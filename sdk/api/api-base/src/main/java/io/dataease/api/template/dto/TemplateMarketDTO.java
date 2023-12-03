@@ -4,6 +4,8 @@ import io.dataease.api.template.vo.MarketCategoryVO;
 import io.dataease.api.template.vo.MarketMetasVO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
@@ -30,6 +32,8 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
     private String source = "market";
     private List<MarketCategoryVO> categories;
 
+    private List<String> categoryNames;
+
     private String mainCategory;
     private MarketMetasVO metas;
 
@@ -38,7 +42,8 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
         this.id = manageDTO.getId();
         this.title = manageDTO.getName();
         this.mainCategory = manageDTO.getCategoryName();
-        this.categories = Arrays.asList(new MarketCategoryVO(manageDTO.getCategoryName()), new MarketCategoryVO("全部"));
+        this.categories = Arrays.asList(new MarketCategoryVO(manageDTO.getCategoryName()));
+        this.categoryNames = Arrays.asList(manageDTO.getCategoryName());
         this.metas = new MarketMetasVO(manageDTO.getSnapshot());
         this.templateType = "dataV".equalsIgnoreCase("manageDTO.getTemplateType()") ? "SCREEN" : "PANEL";
         this.thumbnail = manageDTO.getSnapshot();
@@ -51,15 +56,20 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
     public TemplateMarketDTO(String id, String title, String themeRepo, String templateUrl, String categoryName, String templateType, Long recentUseTime, String suggest) {
         this.id = id;
         this.title = title;
-        this.categories = Arrays.asList(new MarketCategoryVO(categoryName), new MarketCategoryVO("全部"));
         this.metas = new MarketMetasVO(templateUrl);
         this.thumbnail = themeRepo;
         this.templateType = templateType;
+        this.categories = new ArrayList<>(Arrays.asList(new MarketCategoryVO(categoryName))) ;
+        this.categoryNames = new ArrayList<>(Arrays.asList(categoryName)) ;
         if (recentUseTime != null) {
             this.recentUseTime = recentUseTime;
+            this.categories.add(new MarketCategoryVO("最近使用"));
+            this.categoryNames.add("最近使用");
         }
         if ("Y".equalsIgnoreCase(suggest)) {
             this.suggest = "Y";
+            this.categories.add(new MarketCategoryVO("推荐"));
+            this.categoryNames.add("推荐");
         }
     }
 
