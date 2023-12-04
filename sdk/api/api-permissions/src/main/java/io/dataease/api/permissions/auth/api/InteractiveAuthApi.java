@@ -3,8 +3,10 @@ package io.dataease.api.permissions.auth.api;
 
 import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.api.permissions.auth.dto.*;
-import io.dataease.auth.vo.TokenVO;
+import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
+import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
+import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
+import io.dataease.api.permissions.auth.dto.BusiResourceMover;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.swagger.v3.oas.annotations.Operation;
@@ -57,9 +59,6 @@ public interface InteractiveAuthApi {
     @ApiOperationSupport(order = 6)
     @GetMapping("/resource/checkDel/{id}")
     boolean checkDel(@PathVariable("id") Long id);
-
-    @Operation(hidden = true)
-    TokenVO outAuthPlatformLogin(@RequestBody OutAuthPlatformLoginRequest request);
 
     @Operation(summary = "移动资源")
     @ApiOperationSupport(order = 7)
