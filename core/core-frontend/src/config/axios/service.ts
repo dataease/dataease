@@ -144,8 +144,7 @@ service.interceptors.response.use(
           showClose: true
         })
         if (response.data.code === 80001) {
-          // localStorage.clear()
-          localStorage.setItem('DE-GATEWAY-FLAG', response.data.msg)
+          localStorage.clear()
           let queryRedirectPath = '/workbranch/index'
           if (router.currentRoute.value.fullPath) {
             queryRedirectPath = router.currentRoute.value.fullPath as string
