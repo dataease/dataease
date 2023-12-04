@@ -4,7 +4,7 @@
       <img :src="imgUrlTrans(model.snapshot)" alt="" />
     </div>
     <div class="card-info">
-      <div style="display: flex; align-items: center">
+      <div style="display: flex; align-items: center; width: calc(100% - 24px)">
         <el-tooltip class="item" effect="dark" :content="dvTypeName" placement="top">
           <el-icon style="font-size: 18px" v-if="model.dvType === 'dashboard'">
             <Icon name="dv-dashboard-spine"></Icon>
