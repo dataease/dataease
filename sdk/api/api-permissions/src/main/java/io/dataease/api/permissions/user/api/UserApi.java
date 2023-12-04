@@ -9,6 +9,7 @@ import io.dataease.auth.DePermit;
 import io.dataease.auth.vo.TokenVO;
 import io.dataease.model.KeywordRequest;
 import io.dataease.request.BaseGridRequest;
+import io.swagger.v3.oas.annotations.Hidden;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -66,6 +67,7 @@ public interface UserApi {
     @PostMapping("/byCurOrg")
     List<UserItem> byCurOrg(@RequestBody KeywordRequest request);
 
+    @Hidden
     @GetMapping("/userCount")
     int userCount();
 
@@ -100,5 +102,7 @@ public interface UserApi {
     @PostMapping("/modifyPwd")
     void modifyPwd(@RequestBody ModifyPwdRequest request);
 
-
+    @Hidden
+    @GetMapping("/firstEchelon/{limit}")
+    List<Long> firstEchelon(@PathVariable("limit") Long limit);
 }

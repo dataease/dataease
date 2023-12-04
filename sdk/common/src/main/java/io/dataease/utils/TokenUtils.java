@@ -28,8 +28,7 @@ public class TokenUtils {
         if (StringUtils.length(token) < 100) {
             DEException.throwException("token is invalid");
         }
-        TokenUserBO tokenUserBO = userBOByToken(token);
-        return tokenUserBO;
+        return userBOByToken(token);
     }
 
     public static TokenUserBO validateLinkToken(String linkToken) {

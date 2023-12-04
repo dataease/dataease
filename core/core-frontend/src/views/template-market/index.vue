@@ -3,14 +3,47 @@
     class="template-outer-body"
     :class="{ 'template-outer-body-padding': outPaddingState }"
     v-loading="state.loading"
+    v-show="state.initReady"
   >
     <market-preview-v2
-      v-show="previewModel"
+      v-show="previewModel === 'marketPreview'"
       :preview-id="state.templatePreviewId"
       @closePreview="closePreview"
       @templateApply="templateApply"
     ></market-preview-v2>
-    <el-row v-show="!previewModel" class="main-container">
+    <el-row v-if="previewModel === 'createPreview'" class="main-container">
+      <el-row class="market-head">
+        <el-icon class="custom-back-icon hover-icon" @click="previewModel = 'full'"
+          ><ArrowLeft
+        /></el-icon>
+        <span>{{ state.curTemplate.title }} </span>
+        <el-row class="head-right">
+          <el-button :disabled="state.curTemplateIndex === 0" style="float: right" @click="preOne"
+            >上一个</el-button
+          >
+          <el-button
+            :disabled="state.curTemplateIndex === state.curTemplateShowFilter.length - 1"
+            style="float: right"
+            @click="nextOne"
+            >下一个</el-button
+          >
+          <el-button
+            style="float: right"
+            type="primary"
+            @click="templateApply(state.curTemplate)"
+            >{{ t('visualization.apply_this_template') }}</el-button
+          >
+          <el-divider class="custom-divider-line" direction="vertical" />
+          <el-icon class="custom-market-icon hover-icon" @click="close"><Close /></el-icon>
+        </el-row>
+      </el-row>
+      <el-row class="template-area">
+        <el-row class="img-main-create">
+          <img style="height: 100%" :src="curTemplateImg" alt="" />
+        </el-row>
+      </el-row>
+    </el-row>
+    <el-row v-show="previewModel === 'full'" class="main-container">
       <el-row class="market-head">
         <span>{{ title }} </span>
         <el-row class="head-right">
@@ -30,7 +63,7 @@
             />
           </el-select>
           <el-select
-            v-if="state.curPosition === 'branch'"
+            v-if="['branchCreate', 'branch'].includes(state.curPosition)"
             class="title-type"
             v-model="state.templateType"
             placeholder="Select"
@@ -42,19 +75,20 @@
               :value="item.value"
             />
           </el-select>
-          <el-divider
-            class="custom-divider-line"
-            v-if="state.curPosition === 'create'"
-            direction="vertical"
-          />
+          <template v-if="['branchCreate', 'create'].includes(state.curPosition)">
+            <el-divider class="custom-divider-line" direction="vertical" />
+            <el-icon class="custom-market-icon hover-icon" @click="close"><Close /></el-icon>
+          </template>
         </el-row>
       </el-row>
       <el-row class="template-area">
         <div class="template-left">
           <el-tree
+            v-if="state.treeShow"
             menu
             class="custom-market-tree"
-            :data="state.marketTabs"
+            v-model="state.marketActiveTab"
+            :data="categoriesComputed"
             :props="state.treeProps"
             node-key="label"
             default-expand-all
@@ -68,32 +102,39 @@
           id="template-show-area"
           class="template-right"
         >
-          <el-col class="main-head">
-            <div class="custom-split-line"></div>
-            <span v-show="!state.searchText" class="custom-category">{{
-              state.marketActiveTab
-            }}</span>
-            <span v-show="state.searchText" class="custom-search">{{ state.marketActiveTab }}</span>
-            <span v-if="state.searchText" class="custom-search-result"
-              >的搜索结果是{{ searchResultCount }}个</span
-            >
-          </el-col>
-          <el-col
-            v-for="templateItem in state.currentMarketTemplateShowList"
-            v-show="templateItem.showFlag"
-            :key="templateItem.id"
-            style="float: left; padding: 24px 12px 0; text-align: center; flex: 0"
-            :style="{ width: state.templateSpan }"
-          >
-            <template-market-v2-item
-              :key="'outer-' + templateItem.id"
-              :template="templateItem"
+          <el-row v-show="state.marketActiveTab !== '推荐'">
+            <category-template-v2
+              :search-text="state.searchText"
+              :label="state.marketActiveTab"
+              :full-template-show-list="state.currentMarketTemplateShowList"
+              :template-span="state.templateSpan"
               :base-url="state.baseUrl"
-              :width="state.templateCurWidth"
+              :template-cur-width="state.templateCurWidth"
+              :cur-position="state.curPosition"
               @templateApply="templateApply"
               @templatePreview="templatePreview"
-            />
-          </el-col>
+            ></category-template-v2>
+          </el-row>
+          <el-row v-show="state.marketActiveTab === '推荐'">
+            <el-row
+              style="display: inline; width: 100%; margin-bottom: 16px"
+              v-for="(categoryItem, index) in categoriesComputed"
+              :key="index"
+            >
+              <category-template-v2
+                v-if="categoryItem.label !== '最近使用'"
+                :search-text="state.searchText"
+                :label="categoryItem.label"
+                :full-template-show-list="state.currentMarketTemplateShowList"
+                :template-span="state.templateSpan"
+                :base-url="state.baseUrl"
+                :template-cur-width="state.templateCurWidth"
+                :cur-position="state.curPosition"
+                @templateApply="templateApply"
+                @templatePreview="templatePreview"
+              ></category-template-v2>
+            </el-row>
+          </el-row>
         </div>
         <el-row v-show="state.networkStatus && !state.hasResult" class="template-empty">
           <div style="text-align: center">
@@ -111,35 +152,32 @@
 </template>
 
 <script setup lang="ts">
-import { getCategoriesObject, searchMarket } from '@/api/templateMarket'
+import { searchMarket } from '@/api/templateMarket'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { nextTick, reactive, watch, onMounted, ref, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useRoute } from 'vue-router'
 import { ElMessage } from 'element-plus-secondary'
 import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
-import TemplateMarketV2Item from '@/views/template-market/component/TemplateMarketV2Item.vue'
 import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
-import { propTypes } from '@/utils/propTypes'
+import { imgUrlTrans } from '@/utils/imgUtils'
+import { deepCopy } from '@/utils/utils'
+import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
 const { t } = useI18n()
 const { wsCache } = useCache()
-const route = useRoute()
 
-const previewModel = ref(false)
-const title = ref('模版市场')
+// full 正常展示 marketPreview 模板中心预览 createPreview 创建界面预览
+const previewModel = ref('full')
+const emits = defineEmits(['close'])
 
-const outPaddingState = computed(() => {
-  return state.curPosition === 'branch' && !previewModel.value
-})
-
-const optInit = params => {
-  state.curPosition = params.curPosition
-  state.templateType = params.templateType
-  state.pid = params.pid
+const close = () => {
+  emits('close')
 }
 
+const title = computed(() => (state.curPosition === 'branch' ? '模板中心' : '使用模版新建'))
+
 const state = reactive({
+  initReady: true,
   curPosition: 'branch',
   pid: null,
   treeProps: {
@@ -148,6 +186,7 @@ const state = reactive({
   },
   templateType: 'all',
   templateSourceType: 'all',
+  treeShow: true,
   templateSourceOptions: [
     {
       value: 'all',
@@ -183,7 +222,7 @@ const state = reactive({
   templateSpan: '25%',
   previewVisible: false,
   templatePreviewId: '',
-  marketTabs: null,
+  marketTabs: [],
   marketActiveTab: null,
   searchText: null,
   dvCreateForm: {
@@ -203,6 +242,9 @@ const state = reactive({
   folderSelectShow: false,
   baseUrl: 'https://dataease.io/templates',
   currentMarketTemplateShowList: [],
+  curTemplateShowFilter: [],
+  curTemplateIndex: 0,
+  curTemplate: null,
   networkStatus: true,
   rule: {
     name: [
@@ -222,6 +264,44 @@ const state = reactive({
   }
 })
 
+const categoriesComputed = computed(() => {
+  let result
+  if (state.templateSourceType === 'all') {
+    result = state.marketTabs
+  } else {
+    result = state.marketTabs.filter(
+      category => category.source === 'public' || category.source === state.templateSourceType
+    )
+  }
+  console.log('categoriesComputed=' + JSON.stringify(result))
+  return result
+})
+
+const curTemplateImg = computed(() => {
+  if (
+    state.curTemplate.thumbnail.indexOf('http') > -1 ||
+    state.curTemplate.thumbnail.indexOf('static-resource') > -1
+  ) {
+    return imgUrlTrans(state.curTemplate.thumbnail)
+  } else {
+    return imgUrlTrans(state.baseUrl + state.curTemplate.thumbnail)
+  }
+})
+
+const outPaddingState = computed(() => {
+  return state.curPosition === 'branch' && previewModel.value !== 'marketPreview'
+})
+
+const optInit = params => {
+  state.initReady = false
+  state.curPosition = params.curPosition
+  state.templateType = params.templateType
+  previewModel.value = 'full'
+  state.pid = params.pid
+  nextTick(() => {
+    state.initReady = true
+  })
+}
 watch(
   () => state.searchText,
   value => {
@@ -239,12 +319,13 @@ watch(
 watch(
   () => state.templateSourceType,
   value => {
+    state.treeShow = false
     initTemplateShow()
+    nextTick(() => {
+      state.treeShow = true
+      initStyle()
+    })
   }
-)
-
-const searchResultCount = computed(
-  () => state.currentMarketTemplateShowList.filter(template => template.showFlag).length
 )
 
 const nodeClick = data => {
@@ -252,7 +333,7 @@ const nodeClick = data => {
   initTemplateShow()
 }
 const closePreview = () => {
-  previewModel.value = false
+  previewModel.value = 'full'
 }
 
 const initMarketTemplate = async () => {
@@ -260,13 +341,7 @@ const initMarketTemplate = async () => {
     .then(rsp => {
       state.baseUrl = rsp.data.baseUrl
       state.currentMarketTemplateShowList = rsp.data.contents
-    })
-    .catch(() => {
-      state.networkStatus = false
-    })
-  getCategoriesObject()
-    .then(rsp => {
-      state.marketTabs = rsp.data
+      state.marketTabs = rsp.data.categories
       state.marketActiveTab = state.marketTabs[0].label
       initStyle()
       initTemplateShow()
@@ -294,6 +369,20 @@ const normalizer = node => {
   }
 }
 
+const preOne = () => {
+  if (state.curTemplateIndex > 0) {
+    state.curTemplateIndex--
+    state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
+  }
+}
+
+const nextOne = () => {
+  if (state.curTemplateIndex < state.curTemplateShowFilter.length - 1) {
+    state.curTemplateIndex++
+    state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
+  }
+}
+
 const templateApply = template => {
   state.curApplyTemplate = template
   state.dvCreateForm.name = template.title
@@ -305,7 +394,6 @@ const templateApply = template => {
     state.dvCreateForm.newFrom = 'new_inner_template'
     state.dvCreateForm.templateId = template.id
   }
-
   apply()
 }
 
@@ -317,6 +405,7 @@ const apply = () => {
   state.loading = true
   decompression(state.dvCreateForm)
     .then(response => {
+      state.curApplyTemplate.recentUseTime = Date.now()
       state.loading = false
       const templateData = response.data
       // do create
@@ -348,26 +437,9 @@ const initTemplateShow = () => {
 }
 
 const templateShow = templateItem => {
-  let categoryMarch = false
   let searchMarch = false
   let templateTypeMarch = false
   let templateSourceTypeMarch = false
-  if (state.marketActiveTab === '最近使用') {
-    if (templateItem.recentUseTime) {
-      categoryMarch = true
-    }
-  } else if (state.marketActiveTab === '推荐') {
-    if (templateItem.suggest === 'Y') {
-      categoryMarch = true
-    }
-  } else {
-    templateItem.categories.forEach(category => {
-      if (category.name === state.marketActiveTab) {
-        categoryMarch = true
-      }
-    })
-  }
-
   if (!state.searchText || templateItem.title.indexOf(state.searchText) > -1) {
     searchMarch = true
   }
@@ -379,18 +451,26 @@ const templateShow = templateItem => {
   if (state.templateSourceType === 'all' || templateItem.source === state.templateSourceType) {
     templateSourceTypeMarch = true
   }
-  return categoryMarch && searchMarch && templateTypeMarch && templateSourceTypeMarch
+  return searchMarch && templateTypeMarch && templateSourceTypeMarch
 }
 
 const templatePreview = previewId => {
-  state.templatePreviewId = previewId
-  previewModel.value = true
+  if (state.curPosition === 'branch') {
+    // 模版中心模式
+    state.templatePreviewId = previewId
+    previewModel.value = 'marketPreview'
+  } else {
+    state.curTemplateShowFilter =
+      state.marketActiveTab === '推荐'
+        ? state.currentMarketTemplateShowList
+        : state.currentMarketTemplateShowList.filter(ele => ele.showFlag)
+    state.curTemplateIndex = state.curTemplateShowFilter.findIndex(temp => temp.id === previewId)
+    state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
+    previewModel.value = 'createPreview'
+  }
 }
 
 onMounted(() => {
-  if (route.params.add === '1') {
-    title.value = '使用模版新建'
-  }
   previewInit()
   initMarketTemplate()
   const erd = elementResizeDetectorMaker()
@@ -470,7 +550,7 @@ defineExpose({
         height: 100%;
         background: rgba(239, 240, 241, 1);
         overflow-y: auto;
-        padding: 16px 12px;
+        padding: 0 12px 16px 12px;
       }
 
       .template-empty {
@@ -490,6 +570,7 @@ defineExpose({
   width: 100%;
   float: left;
   height: 24px;
+  margin-top: 16px;
   display: inline;
   .custom-split-line {
     margin: 4px 8px 0 12px;
@@ -522,7 +603,30 @@ defineExpose({
 }
 
 .custom-divider-line {
-  height: 30px;
+  height: 16px;
+  margin-top: 6px;
+}
+
+.custom-market-icon {
+  font-size: 20px;
+  margin-top: 4px;
+  cursor: pointer;
+}
+
+.custom-back-icon {
+  font-size: 20px;
+  cursor: pointer;
+  margin-right: 8px;
+}
+
+.img-main-create {
+  display: inherit;
+  justify-content: center;
+  width: 100%;
+  background: #0f1114;
+  overflow-x: auto;
+  overflow-y: hidden;
+  height: 100%;
 }
 </style>
 

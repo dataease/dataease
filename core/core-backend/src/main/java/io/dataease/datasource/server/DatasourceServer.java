@@ -33,14 +33,20 @@ import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.job.sechedule.CheckDsStatusJob;
+import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.quartz.JobDataMap;
+import org.quartz.JobKey;
+import org.quartz.TriggerKey;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -85,7 +91,8 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private DatasetDataManage datasetDataManage;
 
-
+    @Resource
+    private ScheduleManager scheduleManager;
     @Resource
     private CoreUserManage coreUserManage;
 
@@ -260,7 +267,7 @@ public class DatasourceServer implements DatasourceApi {
                 try {
                     datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
                 } catch (Exception e) {
-                    DEException.throwException("Failed to create table " + datasourceRequest.getTable());
+                    DEException.throwException("Failed to create table " + datasourceRequest.getTable() + ", " + e.getMessage());
                 }
             }
             commonThreadPool.addTask(() -> {
@@ -402,7 +409,7 @@ public class DatasourceServer implements DatasourceApi {
                 try {
                     datasourceSyncManage.createEngineTable(toCreateTable, ApiUtils.getTableFields(datasourceRequest));
                 } catch (Exception e) {
-                    DEException.throwException("Failed to create table " + toCreateTable);
+                    DEException.throwException("Failed to create table " + toCreateTable + ", " + e.getMessage());
                 }
             }
             datasourceSyncManage.deleteSchedule(datasourceTaskServer.selectByDSId(dataSourceDTO.getId()));
@@ -418,7 +425,7 @@ public class DatasourceServer implements DatasourceApi {
                     try {
                         datasourceSyncManage.dropEngineTable(deleteTable);
                     } catch (Exception e) {
-                        DEException.throwException("Failed to drop table " + deleteTable);
+                        DEException.throwException("Failed to drop table " + deleteTable + ", " + e.getMessage());
                     }
                 }
                 for (String toCreateTable : toCreateTables) {
@@ -426,7 +433,7 @@ public class DatasourceServer implements DatasourceApi {
                     try {
                         datasourceSyncManage.createEngineTable(toCreateTable, ExcelUtils.getTableFields(datasourceRequest));
                     } catch (Exception e) {
-                        DEException.throwException("Failed to create table " + toCreateTable);
+                        DEException.throwException("Failed to create table " + toCreateTable + ", " + e.getMessage());
                     }
                 }
                 datasourceSyncManage.extractExcelData(requestDatasource, "all_scope");
@@ -603,6 +610,31 @@ public class DatasourceServer implements DatasourceApi {
     public DatasourceDTO validate(Long datasourceId) throws DEException {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         return validate(coreDatasource);
+    }
+
+    public void addJob(List<CoreSysSetting> sysSettings) {
+        String type = "minute";
+        String interval = "30";
+        for (CoreSysSetting sysSetting : sysSettings) {
+            if (sysSetting.getPkey().equalsIgnoreCase("basic.dsExecuteTime")) {
+                type = sysSetting.getPval();
+            }
+            if (sysSetting.getPkey().equalsIgnoreCase("basic.dsIntervalTime")) {
+                interval = sysSetting.getPval();
+            }
+        }
+        String cron = "";
+        switch (type) {
+            case "hour":
+                cron = "0 0 0/hour *  * ? *".replace("hour", interval.toString());
+                break;
+            default:
+                cron = "0 0/minute * *  * ? *".replace("minute", interval.toString());
+        }
+        scheduleManager.addOrUpdateCronJob(new JobKey("Datasource", "check_status"),
+                new TriggerKey("Datasource", "check_status"),
+                CheckDsStatusJob.class,
+                cron, new Date(System.currentTimeMillis()), null, new JobDataMap());
     }
 
     private DatasourceDTO validate(CoreDatasource coreDatasource) {

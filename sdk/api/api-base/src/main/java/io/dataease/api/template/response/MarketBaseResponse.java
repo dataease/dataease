@@ -1,6 +1,7 @@
 package io.dataease.api.template.response;
 
 import io.dataease.api.template.dto.TemplateMarketDTO;
+import io.dataease.api.template.vo.MarketMetaDataVO;
 import lombok.Data;
 
 import java.util.List;
@@ -13,16 +14,16 @@ import java.util.List;
 public class MarketBaseResponse {
     private String baseUrl;
 
+    List<MarketMetaDataVO> categories;
+
     private List<TemplateMarketDTO> contents;
 
     public MarketBaseResponse() {
     }
 
-    public MarketBaseResponse(String baseUrl, List<TemplateMarketDTO> contents) {
+    public MarketBaseResponse(String baseUrl, List<MarketMetaDataVO> categories, List<TemplateMarketDTO> contents) {
         this.baseUrl = baseUrl;
+        this.categories = categories;
         this.contents = contents;
     }
-
-
-
 }

@@ -5,7 +5,7 @@
   <parent>
     <artifactId>core</artifactId>
     <groupId>io.dataease</groupId>
-    <version>2.0.0</version>
+    <version>2.1.0</version>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -21,7 +21,7 @@
 
   <build>
     <plugins>
-      <plugin>
+      <!--<plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-clean-plugin</artifactId>
         <version>3.2.0</version>
@@ -38,13 +38,14 @@
             </fileset>
           </filesets>
         </configuration>
-      </plugin>
+      </plugin>-->
       <plugin>
         <groupId>com.github.eirslett</groupId>
         <artifactId>frontend-maven-plugin</artifactId>
         <version>${frontend-maven-plugin.version}</version>
         <executions>
-          <execution>
+          <!--首次打包需要放开-->
+          <!--<execution>
             <id>install node and npm</id>
             <goals>
               <goal>install-node-and-npm</goal>
@@ -53,9 +54,9 @@
               <nodeVersion>v16.15.0</nodeVersion>
               <npmVersion>8.5.5</npmVersion>
             </configuration>
-          </execution>
-
-          <execution>
+          </execution>-->
+          <!--前端组件有更新需要放开-->
+          <!--<execution>
             <id>npm install</id>
             <goals>
               <goal>npm</goal>
@@ -63,7 +64,7 @@
             <configuration>
               <arguments>install</arguments>
             </configuration>
-          </execution>
+          </execution>-->
 
           <execution>
             <id>npm run build</id>

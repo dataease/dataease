@@ -6,6 +6,8 @@ import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.server.DatasourceTaskServer;
 import io.dataease.datasource.server.EngineServer;
+import io.dataease.system.dao.auto.entity.CoreSysSetting;
+import io.dataease.system.manage.SysParameterManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
@@ -29,6 +31,8 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
     private CalciteProvider calciteProvider;
     @Resource
     private EngineServer engineServer;
+    @Resource
+    private SysParameterManage sysParameterManage;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
@@ -62,6 +66,14 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
                 e.printStackTrace();
             }
         }
+
+        try {
+            List<CoreSysSetting> coreSysSettings = sysParameterManage.groupList("basic.");
+            datasourceServer.addJob(coreSysSettings);
+        }catch (Exception e){
+            e.printStackTrace();
+        }
+
     }
 
 

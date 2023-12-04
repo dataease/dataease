@@ -1,6 +1,6 @@
 <template>
   <div class="info-template-container">
-    <div class="info-template-header">
+    <div v-if="!props.hideHead" class="info-template-header">
       <div class="info-template-title">
         <span>{{ curTitle }}</span>
       </div>
@@ -24,19 +24,50 @@
         <div class="info-item-content">
           <div class="info-item-pwd" v-if="item.type === 'pwd'">
             <span>{{ pwdItem[item.pkey]['hidden'] ? '********' : item.pval }}</span>
-            <el-tooltip effect="dark" content="新页面预览" placement="top">
-              <el-icon
-                class="hover-icon hover-icon-in-table switch-pwd-icon"
-                @click="switchPwd(item.pkey)"
-              >
-                <Icon :name="pwdItem[item.pkey]['hidden'] ? 'eye' : 'eye-open'"></Icon>
-              </el-icon>
+
+            <el-tooltip
+              v-if="props.copyList.includes(item.pkey)"
+              effect="dark"
+              :content="t('common.copy')"
+              placement="top"
+            >
+              <el-button text @click="copyVal(item.pval)" class="setting-tip-btn">
+                <template #icon>
+                  <Icon name="de-copy"></Icon>
+                </template>
+              </el-button>
+            </el-tooltip>
+
+            <el-tooltip
+              effect="dark"
+              :content="pwdItem[item.pkey]['hidden'] ? '点击隐藏' : '点击显示'"
+              placement="top"
+            >
+              <el-button text @click="switchPwd(item.pkey)" class="setting-tip-btn">
+                <template #icon>
+                  <Icon :name="pwdItem[item.pkey]['hidden'] ? 'eye' : 'eye-open'"></Icon>
+                </template>
+              </el-button>
             </el-tooltip>
           </div>
           <span v-else-if="item.pkey.includes('basic.dsIntervalTime')">
             <span>{{ item.pval + ' ' + executeTime + '执行一次' }}</span>
           </span>
-          <span v-else>{{ item.pval }}</span>
+          <span v-else>
+            <span>{{ item.pval }}</span>
+            <el-tooltip
+              v-if="props.copyList.includes(item.pkey)"
+              effect="dark"
+              :content="t('common.copy')"
+              placement="top"
+            >
+              <el-button text @click="copyVal(item.pval)" class="setting-tip-btn">
+                <template #icon>
+                  <Icon name="de-copy"></Icon>
+                </template>
+              </el-button>
+            </el-tooltip>
+          </span>
         </div>
       </div>
     </div>
@@ -46,6 +77,9 @@
 import { ref, defineProps, PropType, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { SettingRecord, ToolTipRecord } from './SettingTemplate'
+import useClipboard from 'vue-clipboard3'
+import { ElMessage } from 'element-plus-secondary'
+const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const props = defineProps({
   settingKey: {
@@ -63,13 +97,28 @@ const props = defineProps({
   settingTitle: {
     type: String,
     default: '基础设置'
+  },
+  hideHead: {
+    type: Boolean,
+    default: false
+  },
+  copyList: {
+    type: Array as PropType<string[]>,
+    default: () => []
   }
 })
 const executeTime = ref('0分0秒')
 const curTitle = computed(() => {
   return props.settingTitle
 })
-
+const copyVal = async val => {
+  try {
+    await toClipboard(val)
+    ElMessage.success(t('common.copy_success'))
+  } catch (e) {
+    ElMessage.warning(t('common.copy_unsupported'), e)
+  }
+}
 const loadList = () => {
   settingList.value = []
   if (props.settingData?.length) {
@@ -133,6 +182,11 @@ formatLabel()
 </script>
 
 <style lang="less" scope>
+.setting-tip-btn {
+  height: 22px !important;
+  line-height: 22px !important;
+  margin-left: 2px !important;
+}
 .info-template-container {
   padding: 24px;
   .info-template-header {

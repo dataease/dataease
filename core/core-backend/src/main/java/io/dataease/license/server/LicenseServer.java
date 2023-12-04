@@ -14,7 +14,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequestMapping("/license")
 public class LicenseServer implements LicenseApi {
 
-    private static final String product = "DataEase";
+    private static final String product = "DataEase v2";
     @Resource
     private CoreLicManage coreLicManage;
 

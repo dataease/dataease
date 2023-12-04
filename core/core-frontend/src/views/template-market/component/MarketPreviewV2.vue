@@ -23,7 +23,6 @@
           <el-row class="margin-top16 search-area">
             <el-input
               v-model="state.searchText"
-              size="small"
               prefix-icon="Search"
               class="title-name-search"
               :placeholder="t('visualization.enter_template_name_tips')"
@@ -37,14 +36,23 @@
             /></el-icon>
           </el-row>
           <el-row v-show="state.extFilterActive">
+            <el-select v-model="state.templateType" style="margin-top: 8px" placeholder="请选择">
+              <el-option
+                v-for="item in state.templateTypeOptions"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-select>
+          </el-row>
+          <el-row v-show="state.extFilterActive">
             <el-select
-              v-model="state.templateType"
-              class="margin-top16"
-              size="small"
+              v-model="state.templateSourceType"
+              style="margin-top: 8px"
               placeholder="请选择"
             >
               <el-option
-                v-for="item in state.templateTypeOptions"
+                v-for="item in state.templateSourceOptions"
                 :key="item.value"
                 :label="item.label"
                 :value="item.value"
@@ -63,9 +71,10 @@
             <el-collapse-item
               themes="light"
               v-for="(categoryTemplate, index) in state.marketTemplatePreviewShowList"
-              :name="categoryTemplate['categoryType']"
+              v-show="categoryTemplate['showFlag']"
+              :name="categoryTemplate['category'].label"
               :key="index"
-              :title="categoryTemplate['categoryType']"
+              :title="categoryTemplate['category'].label"
             >
               <template-market-preview-item
                 v-for="templateItem in categoryTemplate['contents']"
@@ -98,7 +107,6 @@
             <el-button
               style="float: right"
               type="primary"
-              size="small"
               @click="templateApply(state.curTemplate)"
               >{{ t('visualization.apply_this_template') }}</el-button
             >
@@ -126,6 +134,10 @@ const props = defineProps({
   previewId: {
     type: String,
     default: null
+  },
+  templateShowList: {
+    type: Array,
+    default: () => []
   }
 })
 
@@ -149,6 +161,21 @@ const state = reactive({
   categories: [],
   networkStatus: true,
   curTemplate: null,
+  templateSourceType: 'all',
+  templateSourceOptions: [
+    {
+      value: 'all',
+      label: '全部来源'
+    },
+    {
+      value: 'market',
+      label: '模板市场'
+    },
+    {
+      value: 'manage',
+      label: '模板管理'
+    }
+  ],
   templateType: 'all',
   templateTypeOptions: [
     {
@@ -190,6 +217,13 @@ watch(
         }
       })
     })
+  }
+)
+
+watch(
+  () => state.templateSourceType,
+  value => {
+    initTemplateShow()
   }
 )
 
@@ -242,6 +276,7 @@ const handleClick = item => {
 const initTemplateShow = () => {
   state.hasResult = false
   state.marketTemplatePreviewShowList.forEach(categoryTemplates => {
+    categoryTemplates.showFlag = categoryShow(categoryTemplates.category.source)
     categoryTemplates.contents.forEach(template => {
       template.showFlag = templateShow(template)
       if (template.showFlag) {
@@ -252,16 +287,28 @@ const initTemplateShow = () => {
   activeCategories.value = deepCopy(state.categories)
 }
 
+const categoryShow = sourceMatch => {
+  return (
+    state.templateSourceType === 'all' ||
+    sourceMatch === state.templateSourceType ||
+    sourceMatch === 'public'
+  )
+}
+
 const templateShow = templateItem => {
   let templateTypeMarch = false
   let searchMarch = false
+  let templateSourceTypeMarch = false
   if (state.templateType === 'all' || templateItem.templateType === state.templateType) {
     templateTypeMarch = true
   }
   if (!state.searchText || templateItem.title.indexOf(state.searchText) > -1) {
     searchMarch = true
   }
-  return templateTypeMarch && searchMarch
+  if (state.templateSourceType === 'all' || templateItem.source === state.templateSourceType) {
+    templateSourceTypeMarch = true
+  }
+  return templateTypeMarch && searchMarch && templateSourceTypeMarch
 }
 
 const previewTemplate = template => {

@@ -2,7 +2,11 @@
 import { ElHeader } from 'element-plus-secondary'
 import { useRouter } from 'vue-router'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
+import { propTypes } from '@/utils/propTypes'
 const { push } = useRouter()
+const props = defineProps({
+  title: propTypes.string.def('系统设置')
+})
 const backToMain = () => {
   push('/workbranch/index')
 }
@@ -12,7 +16,7 @@ const backToMain = () => {
   <el-header class="header-flex system-header">
     <Icon className="logo" name="logo"></Icon>
     <el-divider direction="vertical" />
-    <span class="system">系统设置</span>
+    <span class="system">{{ props.title || '系统设置' }}</span>
     <div class="operate-setting">
       <span @click="backToMain" class="work-bar flex-align-center">
         <el-icon>

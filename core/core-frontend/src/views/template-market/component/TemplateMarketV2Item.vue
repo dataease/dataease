@@ -2,7 +2,10 @@
   <div class="testcase-template">
     <div class="template-img" :style="classBackground" @click.stop="templateInnerPreview" />
     <el-row class="bottom-area"> </el-row>
-    <el-row class="bottom-area-show">
+    <el-row
+      class="bottom-area-show"
+      :class="{ 'create-area': ['branchCreate', 'create'].includes(props.curPosition) }"
+    >
       <el-row class="demonstration">
         {{ template.title }}
       </el-row>
@@ -32,6 +35,9 @@ const props = defineProps({
     default() {
       return {}
     }
+  },
+  curPosition: {
+    type: String
   },
   baseUrl: {
     type: String
@@ -129,5 +135,8 @@ const templateInnerPreview = e => {
   outline: solid 1px #4b8fdf;
   color: deepskyblue;
   cursor: pointer;
+}
+.create-area {
+  bottom: -38px !important;
 }
 </style>
