@@ -1082,7 +1082,7 @@ const calcEle = () => {
 
 const setCacheId = () => {
   nextTick(() => {
-    if (!cacheId || !!view.value.tableId) return
+    if (!cacheId || !!view.value.tableId || templateStatusShow.value) return
     view.value.tableId = cacheId as unknown as number
   })
 }
