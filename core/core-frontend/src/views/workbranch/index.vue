@@ -70,10 +70,6 @@ const tabBtnList = [
   {
     name: t('auth.screen'),
     value: 'SCREEN'
-  },
-  {
-    name: '应用模板',
-    value: 'APP'
   }
 ]
 const activeTabBtn = ref('PANEL')
