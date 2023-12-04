@@ -1,4 +1,4 @@
-import { deepCopy } from '@/utils/utils'
+import { cloneDeep } from 'lodash-es'
 import componentList, {
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT
@@ -17,12 +17,12 @@ const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasVie
 const snapshotStore = snapshotStoreWithOut()
 
 export function chartTransStr2Object(targetIn, copy) {
-  const target = copy === 'Y' ? deepCopy(targetIn) : targetIn
+  const target = copy === 'Y' ? cloneDeep(targetIn) : targetIn
   return target
 }
 
 export function chartTransObject2Str(targetIn, copy) {
-  const target = copy === 'Y' ? deepCopy(targetIn) : targetIn
+  const target = copy === 'Y' ? cloneDeep(targetIn) : targetIn
   return target
 }
 
@@ -37,7 +37,7 @@ export function findNewComponent(componentName, innerType) {
   let newComponent
   componentList.forEach(comp => {
     if (comp.component === componentName) {
-      newComponent = deepCopy(comp)
+      newComponent = cloneDeep(comp)
       newComponent.innerType = innerType
       if (newComponent.innerType === 'richText') {
         newComponent.propValue = {
@@ -45,9 +45,9 @@ export function findNewComponent(componentName, innerType) {
         }
       }
       if (dvMainStore.curOriginThemes === 'light') {
-        newComponent['commonBackground'] = deepCopy(COMMON_COMPONENT_BACKGROUND_LIGHT)
+        newComponent['commonBackground'] = cloneDeep(COMMON_COMPONENT_BACKGROUND_LIGHT)
       } else {
-        newComponent['commonBackground'] = deepCopy(COMMON_COMPONENT_BACKGROUND_DARK)
+        newComponent['commonBackground'] = cloneDeep(COMMON_COMPONENT_BACKGROUND_DARK)
       }
     }
   })
@@ -130,7 +130,7 @@ export function checkIsBatchOptView(viewId) {
 }
 
 export function canvasSave(callBack) {
-  const componentDataToSave = deepCopy(componentData.value)
+  const componentDataToSave = cloneDeep(componentData.value)
   componentDataToSave.forEach(item => {
     if (item.component === 'UserView') {
       item.linkageFilters = []
@@ -152,6 +152,7 @@ export function canvasSave(callBack) {
     canvasViewInfo: canvasViewInfo.value,
     ...dvInfo.value
   }
+
   const method = dvInfo.value.id ? updateCanvas : saveCanvas
   method(canvasInfo).then(res => {
     if (res && res.data) {

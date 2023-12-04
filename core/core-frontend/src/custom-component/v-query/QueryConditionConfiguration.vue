@@ -2,6 +2,7 @@
 import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
 import { ElMessage } from 'element-plus-secondary'
@@ -55,6 +56,7 @@ const activeConditionForRename = reactive({
   visible: false
 })
 const datasetMap = {}
+const snapshotStore = snapshotStoreWithOut()
 
 const dfsComponentData = () => {
   const isMain = componentData.value.some(ele => ele.id === queryElement.value.id)
@@ -308,6 +310,7 @@ const confirmClick = () => {
     )
   })
   queryElement.value.propValue = cloneDeep(conditions.value)
+  snapshotStore.recordSnapshotCache()
 }
 
 const cancelValueSource = () => {
