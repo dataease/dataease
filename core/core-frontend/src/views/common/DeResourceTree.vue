@@ -349,27 +349,29 @@ defineExpose({
             </el-icon>
           </el-tooltip>
 
-          <el-dropdown popper-class="menu-outer-dv_popper" trigger="click">
-            <el-icon class="custom-icon btn" @click.stop>
-              <Icon name="icon_file-add_outlined" />
-            </el-icon>
-            <template #dropdown>
-              <el-dropdown-menu>
-                <el-dropdown-item @click="addOperation('newLeaf', null, 'leaf', true)">
-                  <el-icon class="handle-icon">
-                    <Icon :name="dvSvgType"></Icon>
-                  </el-icon>
-                  空白新建
-                </el-dropdown-item>
-                <el-dropdown-item @click="addOperation('newFromTemplate', null, 'leaf', true)">
-                  <el-icon class="handle-icon">
-                    <Icon name="dv-use-template"></Icon>
-                  </el-icon>
-                  使用模板新建
-                </el-dropdown-item>
-              </el-dropdown-menu>
-            </template>
-          </el-dropdown>
+          <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
+            <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
+              <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
+                <Icon name="icon_file-add_outlined" />
+              </el-icon>
+              <template #dropdown>
+                <el-dropdown-menu>
+                  <el-dropdown-item @click="addOperation('newLeaf', null, 'leaf', true)">
+                    <el-icon class="handle-icon">
+                      <Icon :name="dvSvgType"></Icon>
+                    </el-icon>
+                    空白新建
+                  </el-dropdown-item>
+                  <el-dropdown-item @click="addOperation('newFromTemplate', null, 'leaf', true)">
+                    <el-icon class="handle-icon">
+                      <Icon name="dv-use-template"></Icon>
+                    </el-icon>
+                    使用模板新建
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </el-tooltip>
         </div>
       </div>
       <el-input
