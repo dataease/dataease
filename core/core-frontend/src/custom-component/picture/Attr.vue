@@ -5,7 +5,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount } from 'vue'
+import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
@@ -76,6 +76,14 @@ const init = () => {
     fileList.value = []
   }
 }
+
+watch(
+  () => curComponent.value.propValue.url,
+  () => {
+    init()
+  }
+)
+
 onMounted(() => {
   init()
   eventBus.on('uploadImg', goFile)
