@@ -143,6 +143,14 @@ service.interceptors.response.use(
           message: response.data.msg,
           showClose: true
         })
+        if (response.data.code === 80001) {
+          localStorage.clear()
+          let queryRedirectPath = '/workbranch/index'
+          if (router.currentRoute.value.fullPath) {
+            queryRedirectPath = router.currentRoute.value.fullPath as string
+          }
+          router.push(`/login?redirect=${queryRedirectPath}`)
+        }
       }
 
       return Promise.reject(response.data.msg)

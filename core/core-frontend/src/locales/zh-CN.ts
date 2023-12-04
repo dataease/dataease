@@ -2127,5 +2127,9 @@ export default {
     autoCreateUser: '第三方自动创建用户',
     dsIntervalTime: '数据源检测时间间隔',
     dsExecuteTime: '数据源检测频率'
+  },
+  template_manage: {
+    name_already_exists_type: '分类名称已存在',
+    the_same_category: '同一分类下，该模板名称已存在'
   }
 }

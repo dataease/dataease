@@ -82,7 +82,7 @@ const formRef = ref<FormInstance | undefined>()
 const duringLogin = ref(false)
 const handleLogin = () => {
   if (!formRef.value) return
-  formRef.value.validate((valid: boolean) => {
+  formRef.value.validate(async (valid: boolean) => {
     if (valid) {
       if (!checkUsername(state.loginForm.username) || !validatePwd(state.loginForm.password)) {
         ElMessage.error('用户名或密码错误')
@@ -90,6 +90,10 @@ const handleLogin = () => {
       }
       const name = state.loginForm.username.trim()
       const pwd = state.loginForm.password
+      if (!wsCache.get(appStore.getDekey)) {
+        const res = await queryDekey()
+        wsCache.set(appStore.getDekey, res.data)
+      }
       const param = { name: rsaEncryp(name), pwd: rsaEncryp(pwd) }
       duringLogin.value = true
       cleanPlatformFlag()

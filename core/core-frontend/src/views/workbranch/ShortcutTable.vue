@@ -308,6 +308,7 @@ const getEmptyDesc = (): string => {
                 jsname="c2hhcmUtaGFuZGxlcg=="
                 :weight="scope.row.weight"
                 :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
+                :resource-type="scope.row.type"
               />
             </template>
 

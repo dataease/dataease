@@ -42,9 +42,6 @@ const searchResult = computed(
 )
 
 const showFlagCheck = template => {
-  if (!template.categoryNames) {
-    console.log('===templateTest' + JSON.stringify(template))
-  }
   return template.showFlag && template.categoryNames?.includes(props.label)
 }
 
