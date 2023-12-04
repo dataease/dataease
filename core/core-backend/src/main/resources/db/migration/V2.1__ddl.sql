@@ -22,7 +22,9 @@ BEGIN;
 INSERT INTO `core_menu`
 VALUES (19, 0, 2, 'template-market', 'template-market', 4, NULL, '/template-market', 1, 1, 0);
 INSERT INTO `core_menu`
-VALUES (20, 15, 2, 'template-setting', 'system/template-setting', 4, 'icon_template', '/template-setting', 0, 1, 1);
+VALUES (30, 0, 1, 'toolbox', null, 7, 'icon_template', '/toolbox', 1, 1, 0);
+INSERT INTO `core_menu`
+VALUES (31, 30, 2, 'template-setting', 'toolbox/template-setting', 1, 'icon_template', '/template-setting', 0, 1, 1);
 COMMIT;
 
 DROP TABLE IF EXISTS `visualization_template_extend_data`;
@@ -52,8 +54,10 @@ CREATE TABLE `core_area_custom`
 );
 
 BEGIN;
-INSERT INTO `core_sys_setting` VALUES (1, 'basic.dsIntervalTime', '6', 'text', 2);
-INSERT INTO `core_sys_setting` VALUES (2, 'basic.dsExecuteTime', 'minute', 'text', 3);
+INSERT INTO `core_sys_setting`
+VALUES (1, 'basic.dsIntervalTime', '6', 'text', 2);
+INSERT INTO `core_sys_setting`
+VALUES (2, 'basic.dsExecuteTime', 'minute', 'text', 3);
 INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (7, 'template.url', 'https://templates-de.fit2cloud.com', 'text', 0);
 INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (8, 'template.accessKey', 'dataease', 'text', 1);
 COMMIT;

@@ -37,6 +37,7 @@ public class CorsInterceptor implements HandlerInterceptor {
 
 
     public void addOriginList() {
+        busiOriginList.clear();
         String className = "io.dataease.api.permissions.embedded.api.EmbeddedApi";
         String methodName = "domainList";
         if (ObjectUtils.isEmpty(aClass)) {
@@ -54,10 +55,8 @@ public class CorsInterceptor implements HandlerInterceptor {
             if (ObjectUtils.isNotEmpty(result)) {
                 List<String> list = (List<String>) result;
                 if (CollectionUtils.isNotEmpty(list)) {
-                    List<String> strings = list.stream().filter(item -> !busiOriginList.contains(item)).toList();
-                    busiOriginList.addAll(strings);
+                    busiOriginList.addAll(list.stream().distinct().toList());
                 }
-
             }
         }
     }

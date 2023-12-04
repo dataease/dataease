@@ -267,7 +267,7 @@ public class DatasourceServer implements DatasourceApi {
                 try {
                     datasourceSyncManage.createEngineTable(datasourceRequest.getTable(), tableFields);
                 } catch (Exception e) {
-                    DEException.throwException("Failed to create table " + datasourceRequest.getTable());
+                    DEException.throwException("Failed to create table " + datasourceRequest.getTable() + ", " + e.getMessage());
                 }
             }
             commonThreadPool.addTask(() -> {
@@ -409,7 +409,7 @@ public class DatasourceServer implements DatasourceApi {
                 try {
                     datasourceSyncManage.createEngineTable(toCreateTable, ApiUtils.getTableFields(datasourceRequest));
                 } catch (Exception e) {
-                    DEException.throwException("Failed to create table " + toCreateTable);
+                    DEException.throwException("Failed to create table " + toCreateTable + ", " + e.getMessage());
                 }
             }
             datasourceSyncManage.deleteSchedule(datasourceTaskServer.selectByDSId(dataSourceDTO.getId()));
@@ -425,7 +425,7 @@ public class DatasourceServer implements DatasourceApi {
                     try {
                         datasourceSyncManage.dropEngineTable(deleteTable);
                     } catch (Exception e) {
-                        DEException.throwException("Failed to drop table " + deleteTable);
+                        DEException.throwException("Failed to drop table " + deleteTable + ", " + e.getMessage());
                     }
                 }
                 for (String toCreateTable : toCreateTables) {
@@ -433,7 +433,7 @@ public class DatasourceServer implements DatasourceApi {
                     try {
                         datasourceSyncManage.createEngineTable(toCreateTable, ExcelUtils.getTableFields(datasourceRequest));
                     } catch (Exception e) {
-                        DEException.throwException("Failed to create table " + toCreateTable);
+                        DEException.throwException("Failed to create table " + toCreateTable + ", " + e.getMessage());
                     }
                 }
                 datasourceSyncManage.extractExcelData(requestDatasource, "all_scope");
