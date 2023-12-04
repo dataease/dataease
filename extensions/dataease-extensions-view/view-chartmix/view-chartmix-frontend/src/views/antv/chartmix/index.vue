@@ -6,23 +6,23 @@
                     @trackClick="trackClick"/>
 
     <span
-      v-if="chart.type && antVRenderStatus"
-      v-show="title_show"
-      ref="title"
-      :style="titleClass"
-      style="cursor: default;display: block;"
+        v-if="chart.type && antVRenderStatus"
+        v-show="title_show"
+        ref="title"
+        :style="titleClass"
+        style="cursor: default;display: block;"
     >
           <div style="padding:4px 4px 0;margin: 0;">
             <chart-title-update
-              :title-class="titleClass"
-              :chart-info="chartInfo"
-              :bus="bus"
-              :axios-request="axiosRequest"
+                :title-class="titleClass"
+                :chart-info="chartInfo"
+                :bus="bus"
+                :axios-request="axiosRequest"
             />
             <title-remark
-              v-if="remarkCfg.show"
-              style="text-shadow: none!important;margin-left: 4px;"
-              :remark-cfg="remarkCfg"
+                v-if="remarkCfg.show"
+                style="text-shadow: none!important;margin-left: 4px;"
+                :remark-cfg="remarkCfg"
             />
           </div>
         </span>
@@ -310,135 +310,54 @@ export default {
 
       const names = [];
 
-      let _data = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? _.map(_.filter(this.chart.data.data, (c, _index) => {
-        return _index < yaxisCount;
-      }), (t, _index) => {
+      const yChartData = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? _.map(_.filter(this.chart.data.data, (c, _index) => {
+            return _index < yaxisCount;
+          }), (t, _index) => {
+            names.push(t.name);
 
-        const _labelSetting = _.cloneDeep(labelSetting);
-        if (_labelSetting && yaxisList[_index].formatterCfg) {
-          _labelSetting.formatter = function (x) {
-            return valueFormatter(x.value, yaxisList[_index].formatterCfg);
-          }
-        }
-
-        names.push(t.name);
-
-        const _chartType = this.getChartType(yaxisList[_index].chartType);
-
-        if (_labelSetting) {
-          if (_chartType === "column") {
-            _labelSetting.position = labelPosition;
-          } else {
-            _labelSetting.position = undefined;
-          }
-        }
-
-        let color = colors && _index < colors.length ? hexColorToRGBA(colors[_index], alpha) : undefined;
-        if (color && gradient) {
-          color = setGradientColor(color, true, 270)
-        }
-
-        const setting = {
-          type: _chartType,
-          name: t.name,
-          options: {
-            data: _.map(t.data, (v) => {
+            return _.map(t.data, (v) => {
               return {
                 quotaList: v.quotaList,
                 dimensionList: v.dimensionList,
                 key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
                 value: v.value,
+                name: t.name,
                 i: _index,
                 t: 'yaxis'
               }
-            }),
-            xField: 'key',
-            yField: 'value',
-            meta: {
-              key: {
-                sync: true,
-              },
-              value: {
-                alias: t.name,
-              },
-            },
-            color: color,
-            label: _labelSetting,
-            xAxis: xAxis,
-            yAxis: yAxis,
+            });
           }
-        }
-        return this.setSizeSetting(setting);
-      }) : [];
+      ) : [];
 
-      let _dataExt = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? _.map(_.filter(this.chart.data.data, (c, _index) => {
-        return _index >= yaxisCount;
-      }), (t, _index) => {
+      const yData = [this.getYData(_.flatten(yChartData), labelSetting, labelPosition, yaxisList, colors, gradient, alpha, xAxis, yAxis, yaxisExtList.length)];
 
-        const _labelSetting = _.cloneDeep(labelSetting);
-        if (_labelSetting && yaxisExtList[_index].formatterCfg) {
-          _labelSetting.formatter = function (x) {
-            return valueFormatter(x.value, yaxisExtList[_index].formatterCfg);
-          }
-        }
+      const yExtChartData = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? _.map(_.filter(this.chart.data.data, (c, _index) => {
+            return _index >= yaxisCount;
+          }), (t, _index) => {
+            names.push(t.name);
 
-        names.push(t.name);
-
-        const _chartType = this.getChartType(yaxisExtList[_index].chartType);
-
-        if (_labelSetting) {
-          if (_chartType === "column") {
-            _labelSetting.position = labelPosition;
-          } else {
-            _labelSetting.position = undefined;
-          }
-        }
-
-        let color = colors && (yaxisCount + _index) < colors.length ? hexColorToRGBA(colors[yaxisCount + _index], alpha) : undefined;
-        if (color && gradient) {
-          color = setGradientColor(color, true, 270)
-        }
-
-        const setting = {
-          type: _chartType,
-          name: t.name,
-          options: {
-            data: _.map(t.data, (v) => {
+            return _.map(t.data, (v) => {
               return {
                 quotaList: v.quotaList,
                 dimensionList: v.dimensionList,
                 key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
                 value: v.value,
+                name: t.name,
                 i: _index,
                 t: 'yaxisExt'
               }
-            }),
-            xField: 'key',
-            yField: 'value',
-            meta: {
-              key: {
-                sync: true,
-              },
-              value: {
-                alias: t.name,
-              },
-            },
-            color: color,
-            label: _labelSetting,
-            xAxis: false,
-            yAxis: yAxisExt,
+            })
           }
-        }
-        return this.setSizeSetting(setting);
-      }) : [];
+      ) : [];
 
+      const yExtData = [this.getYExtData(_.flatten(yExtChartData), labelSetting, labelPosition, yaxisExtList, colors, gradient, alpha, xAxis, yAxisExt, yaxisCount)];
 
       const params = {
         tooltip: false,
         syncViewPadding: true,
         plots: [
-          ..._data,
-          ..._dataExt
+          ...yData,
+          ...yExtData
         ]
       };
 
@@ -489,7 +408,8 @@ export default {
 
       params.annotations = this.getAnalyse(this.chart);
 
-      params.legend = this.getLegend(this.chart);
+      //两个轴只能展示一个轴的图例，所以隐藏
+      //params.legend = this.getLegend(this.chart);
 
       return params;
     },
@@ -753,6 +673,116 @@ export default {
         return {position: 'right'}
       }
       return axis
+    },
+
+    getYData(data, labelSetting, labelPosition, yaxisList, colors, gradient, alpha, xAxis, yAxis, yaxisExtCount) {
+
+      const _labelSetting = _.cloneDeep(labelSetting);
+      if (_labelSetting) {
+        _labelSetting.formatter = function (x) {
+          for (let i = 0; i < yaxisList.length; i++) {
+            if (i === x.i && yaxisList[i].formatterCfg) {
+              return valueFormatter(x.value, yaxisList[i].formatterCfg);
+            }
+          }
+          return x.value;
+        }
+      }
+
+      const _chartType = this.getChartType(yaxisList && yaxisList.length > 0 ? yaxisList[0].chartType : undefined);
+
+      if (_labelSetting) {
+        if (_chartType === "column") {
+          _labelSetting.position = labelPosition;
+        } else {
+          _labelSetting.position = undefined;
+        }
+      }
+
+      const color = [];
+      for (let i = 0; i < yaxisList.length; i++) {
+        if (gradient) {
+          color.push(setGradientColor(hexColorToRGBA(colors[i % colors.length], alpha), true, 270))
+        } else {
+          color.push(hexColorToRGBA(colors[i % colors.length], alpha))
+        }
+      }
+
+      const setting = {
+        type: _chartType,
+        options: {
+          data: data,
+          xField: 'key',
+          yField: 'value',
+          seriesField: 'name',
+          colorField: 'name',
+          isGroup: true,
+          meta: {
+            key: {
+              sync: true,
+            },
+          },
+          color: color,
+          label: _labelSetting,
+          xAxis: yaxisList.length > 0 || yaxisExtCount === 0 ? xAxis : false,
+          yAxis: yAxis,
+        }
+      }
+      return this.setSizeSetting(setting);
+    },
+
+    getYExtData(data, labelSetting, labelPosition, yaxisExtList, colors, gradient, alpha, xAxis, yAxisExt, yaxisCount) {
+      const _labelSetting = _.cloneDeep(labelSetting);
+      if (_labelSetting) {
+        _labelSetting.formatter = function (x) {
+          for (let i = 0; i < yaxisExtList.length; i++) {
+            if (i === x.i && yaxisExtList[i].formatterCfg) {
+              return valueFormatter(x.value, yaxisExtList[i].formatterCfg);
+            }
+          }
+          return x.value;
+        }
+      }
+
+      const _chartType = this.getChartType(yaxisExtList && yaxisExtList.length > 0 ? yaxisExtList[0].chartType : undefined);
+
+      if (_labelSetting) {
+        if (_chartType === "column") {
+          _labelSetting.position = labelPosition;
+        } else {
+          _labelSetting.position = undefined;
+        }
+      }
+
+      const color = [];
+      for (let i = yaxisCount; i < yaxisExtList.length + yaxisCount; i++) {
+        if (gradient) {
+          color.push(setGradientColor(hexColorToRGBA(colors[i % colors.length], alpha), true, 270))
+        } else {
+          color.push(hexColorToRGBA(colors[i % colors.length], alpha))
+        }
+      }
+
+      const setting = {
+        type: _chartType,
+        options: {
+          data: data,
+          xField: 'key',
+          yField: 'value',
+          seriesField: 'name',
+          isGroup: true,
+          meta: {
+            key: {
+              sync: true,
+            },
+          },
+          color: color,
+          label: _labelSetting,
+          xAxis: yaxisCount > 0 || yaxisExtList.length === 0 ? false : xAxis,
+          yAxis: yAxisExt,
+        }
+      }
+      return this.setSizeSetting(setting);
     },
 
     setSizeSetting(setting) {
@@ -1044,7 +1074,7 @@ export default {
     },
     checkSelected(param) {
       return (this.linkageActiveParam.name === param.name || (this.linkageActiveParam.name === 'NO_DATA' && !param.name)) &&
-        (this.linkageActiveParam.category === param.category)
+          (this.linkageActiveParam.category === param.category)
     },
 
     trackClick(trackAction) {
