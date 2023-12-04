@@ -42,7 +42,7 @@ const { t } = useI18n()
 const creatDsFolder = ref()
 const router = useRouter()
 const { wsCache } = useCache()
-
+const dsLoading = ref(false)
 const state = reactive({
   datasourceTree: []
 })
@@ -394,21 +394,37 @@ const saveDS = () => {
           if (res) {
             ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
               () => {
-                save(request).then(res => {
-                  if (res !== undefined) {
-                    handleShowFinishPage({ id: res.id, name: res.name })
-                    ElMessage.success('保存数据源成功')
-                  }
-                })
+                if (dsLoading.value === true) {
+                  return
+                }
+                dsLoading.value = true
+                save(request)
+                  .then(res => {
+                    if (res !== undefined) {
+                      handleShowFinishPage({ id: res.id, name: res.name })
+                      ElMessage.success('保存数据源成功')
+                    }
+                  })
+                  .finally(() => {
+                    dsLoading.value = false
+                  })
               }
             )
           } else {
-            save(request).then(res => {
-              if (res !== undefined) {
-                handleShowFinishPage({ id: res.id, name: res.name })
-                ElMessage.success('保存数据源成功')
-              }
-            })
+            if (dsLoading.value === true) {
+              return
+            }
+            dsLoading.value = true
+            save(request)
+              .then(res => {
+                if (res !== undefined) {
+                  handleShowFinishPage({ id: res.id, name: res.name })
+                  ElMessage.success('保存数据源成功')
+                }
+              })
+              .finally(() => {
+                dsLoading.value = false
+              })
           }
         })
       } else {
@@ -609,7 +625,7 @@ defineExpose({
           </template>
         </el-tree>
       </div>
-      <div class="ds-editor" :class="editDs && 'edit-ds'">
+      <div class="ds-editor" :class="editDs && 'edit-ds'" v-loading="dsLoading">
         <div v-show="activeStep !== 0 && !editDs" class="ds-type-title">
           {{ typeTitle }}
         </div>
@@ -633,7 +649,7 @@ defineExpose({
           </template>
         </div>
       </div>
-      <div class="editor-footer">
+      <div class="editor-footer" v-loading="dsLoading">
         <el-button secondary @click="visible = false"> {{ t('common.cancel') }}</el-button>
         <el-button
           v-show="!(activeStep === 0 || (editDs && activeApiStep <= 1))"
