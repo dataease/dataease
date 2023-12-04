@@ -174,7 +174,7 @@ const close = () => {
   emits('close')
 }
 
-const title = computed(() => (state.curPosition === 'branch' ? '模板中心' : '使用模版新建'))
+const title = computed(() => (state.curPosition === 'branch' ? '模板中心' : '使用模板新建'))
 
 const state = reactive({
   initReady: true,
@@ -273,7 +273,6 @@ const categoriesComputed = computed(() => {
       category => category.source === 'public' || category.source === state.templateSourceType
     )
   }
-  console.log('categoriesComputed=' + JSON.stringify(result))
   return result
 })
 
@@ -456,7 +455,7 @@ const templateShow = templateItem => {
 
 const templatePreview = previewId => {
   if (state.curPosition === 'branch') {
-    // 模版中心模式
+    // 模板中心模式
     state.templatePreviewId = previewId
     previewModel.value = 'marketPreview'
   } else {

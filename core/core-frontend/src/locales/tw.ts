@@ -148,5 +148,9 @@ export default {
     minute_limit: '分鍾不能小於1，大於59',
     hour_limit: '小時不能小於1，大於23',
     day_limit: '天不能小於1，大於31'
+  },
+  template_manage: {
+    name_already_exists_type: '分类名称已存在',
+    the_same_category: '同一分类下，该模板名称已存在'
   }
 }

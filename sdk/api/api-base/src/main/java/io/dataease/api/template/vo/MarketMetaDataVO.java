@@ -16,7 +16,7 @@ public class MarketMetaDataVO {
     private String value;
     private String label;
 
-    // market 模板中心 manage 模版管理 public 公共
+    // market 模板中心 manage 模板管理 public 公共
     private String source = CommonConstants.TEMPLATE_SOURCE.MARKET;
 
     public MarketMetaDataVO(String value, String label) {

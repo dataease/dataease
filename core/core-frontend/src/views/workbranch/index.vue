@@ -297,7 +297,7 @@ initMarketTemplate()
             <el-icon class="main-color-quick">
               <Icon name="icon_template_colorful" />
             </el-icon>
-            <span class="name">使用模版新建</span>
+            <span class="name">使用模板新建</span>
           </div>
         </div>
       </div>
