@@ -524,8 +524,8 @@ const data = {
                   element.options.manualModify = false
                 }
                 // 去掉首选项
-                if (element.options?.attr?.selectFirst) {
-                  element.options.attr.selectFirst = false
+                if (element.options?.attrs?.selectFirst) {
+                  element.options.attrs.selectFirst = false
                 }
               }
             })
