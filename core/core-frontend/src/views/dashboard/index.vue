@@ -71,6 +71,7 @@ onMounted(() => {
       if (createType === 'template') {
         const deTemplateDataStr = wsCache.get(`de-template-data`)
         const deTemplateData = JSON.parse(deTemplateDataStr)
+        wsCache.delete('de-template-data')
         dvMainStore.setComponentData(JSON.parse(deTemplateData['componentData']))
         dvMainStore.setCanvasStyle(JSON.parse(deTemplateData['canvasStyleData']))
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
