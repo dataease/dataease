@@ -6,23 +6,23 @@
                     @trackClick="trackClick"/>
 
     <span
-        v-if="chart.type && antVRenderStatus"
-        v-show="title_show"
-        ref="title"
-        :style="titleClass"
-        style="cursor: default;display: block;"
+      v-if="chart.type && antVRenderStatus"
+      v-show="title_show"
+      ref="title"
+      :style="titleClass"
+      style="cursor: default;display: block;"
     >
           <div style="padding:4px 4px 0;margin: 0;">
             <chart-title-update
-                :title-class="titleClass"
-                :chart-info="chartInfo"
-                :bus="bus"
-                :axios-request="axiosRequest"
+              :title-class="titleClass"
+              :chart-info="chartInfo"
+              :bus="bus"
+              :axios-request="axiosRequest"
             />
             <title-remark
-                v-if="remarkCfg.show"
-                style="text-shadow: none!important;margin-left: 4px;"
-                :remark-cfg="remarkCfg"
+              v-if="remarkCfg.show"
+              style="text-shadow: none!important;margin-left: 4px;"
+              :remark-cfg="remarkCfg"
             />
           </div>
         </span>
@@ -43,7 +43,7 @@ import {
   getLineDash, DEFAULT_COLOR_CASE, formatterItem, DEFAULT_YAXIS_EXT_STYLE
 } from '../../../utils/map';
 import ChartTitleUpdate from '../../../components/views/ChartTitleUpdate';
-import _ from 'lodash';
+import {map, filter, join, flatten, cloneDeep} from 'lodash-es';
 import {clear} from 'size-sensor'
 import {valueFormatter} from '../../../utils/formatter'
 
@@ -310,47 +310,47 @@ export default {
 
       const names = [];
 
-      const yChartData = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? _.map(_.filter(this.chart.data.data, (c, _index) => {
-            return _index < yaxisCount;
-          }), (t, _index) => {
-            names.push(t.name);
+      const yChartData = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? map(filter(this.chart.data.data, (c, _index) => {
+          return _index < yaxisCount;
+        }), (t, _index) => {
+          names.push(t.name);
 
-            return _.map(t.data, (v) => {
-              return {
-                quotaList: v.quotaList,
-                dimensionList: v.dimensionList,
-                key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
-                value: v.value,
-                name: t.name,
-                i: _index,
-                t: 'yaxis'
-              }
-            });
-          }
+          return map(t.data, (v) => {
+            return {
+              quotaList: v.quotaList,
+              dimensionList: v.dimensionList,
+              key: join(map(v.dimensionList, (d) => d.value), "\n"),
+              value: v.value,
+              name: t.name,
+              i: _index,
+              t: 'yaxis'
+            }
+          });
+        }
       ) : [];
 
-      const yData = [this.getYData(_.flatten(yChartData), labelSetting, labelPosition, yaxisList, colors, gradient, alpha, xAxis, yAxis, yaxisExtList.length)];
+      const yData = [this.getYData(flatten(yChartData), labelSetting, labelPosition, yaxisList, colors, gradient, alpha, xAxis, yAxis, yaxisExtList.length)];
 
-      const yExtChartData = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? _.map(_.filter(this.chart.data.data, (c, _index) => {
-            return _index >= yaxisCount;
-          }), (t, _index) => {
-            names.push(t.name);
+      const yExtChartData = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? map(filter(this.chart.data.data, (c, _index) => {
+          return _index >= yaxisCount;
+        }), (t, _index) => {
+          names.push(t.name);
 
-            return _.map(t.data, (v) => {
-              return {
-                quotaList: v.quotaList,
-                dimensionList: v.dimensionList,
-                key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
-                value: v.value,
-                name: t.name,
-                i: _index,
-                t: 'yaxisExt'
-              }
-            })
-          }
+          return map(t.data, (v) => {
+            return {
+              quotaList: v.quotaList,
+              dimensionList: v.dimensionList,
+              key: join(map(v.dimensionList, (d) => d.value), "\n"),
+              value: v.value,
+              name: t.name,
+              i: _index,
+              t: 'yaxisExt'
+            }
+          })
+        }
       ) : [];
 
-      const yExtData = [this.getYExtData(_.flatten(yExtChartData), labelSetting, labelPosition, yaxisExtList, colors, gradient, alpha, xAxis, yAxisExt, yaxisCount)];
+      const yExtData = [this.getYExtData(flatten(yExtChartData), labelSetting, labelPosition, yaxisExtList, colors, gradient, alpha, xAxis, yAxisExt, yaxisCount)];
 
       const params = {
         tooltip: false,
@@ -390,7 +390,7 @@ export default {
                   item.value = valueFormatter(item.data.value, yaxisExtList[item.data.i].formatterCfg)
                 }
               })
-              return _.filter(originalItems, (item) => {
+              return filter(originalItems, (item) => {
                 const v = item.data.key;
                 if (item.title === v && item.title === item.value && item.name === "key" || !names.includes(item.name)) {
                   return false;
@@ -677,7 +677,7 @@ export default {
 
     getYData(data, labelSetting, labelPosition, yaxisList, colors, gradient, alpha, xAxis, yAxis, yaxisExtCount) {
 
-      const _labelSetting = _.cloneDeep(labelSetting);
+      const _labelSetting = cloneDeep(labelSetting);
       if (_labelSetting) {
         _labelSetting.formatter = function (x) {
           for (let i = 0; i < yaxisList.length; i++) {
@@ -732,7 +732,7 @@ export default {
     },
 
     getYExtData(data, labelSetting, labelPosition, yaxisExtList, colors, gradient, alpha, xAxis, yAxisExt, yaxisCount) {
-      const _labelSetting = _.cloneDeep(labelSetting);
+      const _labelSetting = cloneDeep(labelSetting);
       if (_labelSetting) {
         _labelSetting.formatter = function (x) {
           for (let i = 0; i < yaxisExtList.length; i++) {
@@ -1074,7 +1074,7 @@ export default {
     },
     checkSelected(param) {
       return (this.linkageActiveParam.name === param.name || (this.linkageActiveParam.name === 'NO_DATA' && !param.name)) &&
-          (this.linkageActiveParam.category === param.category)
+        (this.linkageActiveParam.category === param.category)
     },
 
     trackClick(trackAction) {

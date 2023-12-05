@@ -6,30 +6,30 @@
         <span>{{ $t('plugin_view_chartmix.source') }}</span>/<span>{{ $t('chart.dimension') }}</span>
       </span>
       <draggable
-          v-model="view.xaxis"
-          :move="onMove"
-          animation="300"
-          class="drag-block-style"
-          group="drag"
-          @add="addXaxis"
-          @update="calcData(true)"
+        v-model="view.xaxis"
+        :move="onMove"
+        animation="300"
+        class="drag-block-style"
+        group="drag"
+        @add="addXaxis"
+        @update="calcData(true)"
       >
         <transition-group class="draggable-group">
           <dimension-item
-              v-for="(item,index) in view.xaxis"
-              :key="index"
-              :bus="bus"
-              :chart="chart"
-              :dimension-data="dimension"
-              :index="0"
-              :item="item"
-              :param="param"
-              :quota-data="quotaData"
-              dimension-name="dimension"
-              @editItemFilter="showDimensionEditFilter"
-              @onDimensionItemChange="dimensionItemChange"
-              @onDimensionItemRemove="dimensionItemRemove"
-              @onNameEdit="showRename"
+            v-for="(item,index) in view.xaxis"
+            :key="index"
+            :bus="bus"
+            :chart="chart"
+            :dimension-data="dimension"
+            :index="0"
+            :item="item"
+            :param="param"
+            :quota-data="quotaData"
+            dimension-name="dimension"
+            @editItemFilter="showDimensionEditFilter"
+            @onDimensionItemChange="dimensionItemChange"
+            @onDimensionItemRemove="dimensionItemRemove"
+            @onNameEdit="showRename"
           />
         </transition-group>
       </draggable>
@@ -43,28 +43,28 @@
         <span>{{ $t('plugin_view_chartmix.mark_size') }}</span>/<span>{{ $t('chart.quota') }}</span>
       </span>
       <draggable
-          v-model="view.yaxis"
-          :move="onMove"
-          animation="300"
-          class="drag-block-style"
-          group="drag"
-          @add="addYaxis"
-          @update="calcData(true)"
+        v-model="view.yaxis"
+        :move="onMove"
+        animation="300"
+        class="drag-block-style"
+        group="drag"
+        @add="addYaxis"
+        @update="calcData(true)"
       >
         <transition-group class="draggable-group">
           <quota-item
-              v-for="(item,index) in view.yaxis"
-              :key="item.id"
-              :chart="chart"
-              :dimension-data="dimension"
-              :index="index"
-              :item="item" :param="param" :quota-data="quota"
-              @editItemCompare="showQuotaEditCompare"
-              @editItemFilter="showQuotaEditFilter"
-              @onNameEdit="showRename"
-              @onQuotaItemChange="quotaItemChange"
-              @onQuotaItemRemove="quotaItemRemove"
-              @valueFormatter="valueFormatter"
+            v-for="(item,index) in view.yaxis"
+            :key="item.id"
+            :chart="chart"
+            :dimension-data="dimension"
+            :index="index"
+            :item="item" :param="param" :quota-data="quota"
+            @editItemCompare="showQuotaEditCompare"
+            @editItemFilter="showQuotaEditFilter"
+            @onNameEdit="showRename"
+            @onQuotaItemChange="quotaItemChange"
+            @onQuotaItemRemove="quotaItemRemove"
+            @valueFormatter="valueFormatter"
           />
         </transition-group>
       </draggable>
@@ -78,28 +78,28 @@
         <span>{{ $t('plugin_view_chartmix.mark_size') }}</span>/<span>{{ $t('chart.quota') }}</span>
       </span>
       <draggable
-          v-model="view.yaxisExt"
-          :move="onMove"
-          animation="300"
-          class="drag-block-style"
-          group="drag"
-          @add="addYaxisExt"
-          @update="calcData(true)"
+        v-model="view.yaxisExt"
+        :move="onMove"
+        animation="300"
+        class="drag-block-style"
+        group="drag"
+        @add="addYaxisExt"
+        @update="calcData(true)"
       >
         <transition-group class="draggable-group">
           <quota-ext-item
-              v-for="(item,index) in view.yaxisExt"
-              :key="item.id"
-              :chart="chart"
-              :dimension-data="dimension"
-              :index="index"
-              :item="item" :param="param" :quota-data="quota"
-              @editItemCompare="showQuotaEditCompare"
-              @editItemFilter="showQuotaEditFilter"
-              @onNameEdit="showRename"
-              @onQuotaItemChange="quotaExtItemChange"
-              @onQuotaItemRemove="quotaItemRemove"
-              @valueFormatter="valueFormatter"
+            v-for="(item,index) in view.yaxisExt"
+            :key="item.id"
+            :chart="chart"
+            :dimension-data="dimension"
+            :index="index"
+            :item="item" :param="param" :quota-data="quota"
+            @editItemCompare="showQuotaEditCompare"
+            @editItemFilter="showQuotaEditFilter"
+            @onNameEdit="showRename"
+            @onQuotaItemChange="quotaExtItemChange"
+            @onQuotaItemRemove="quotaItemRemove"
+            @valueFormatter="valueFormatter"
           />
         </transition-group>
       </draggable>
@@ -114,27 +114,27 @@
       <span>{{ $t('chart.result_filter') }}</span>
 
       <draggable
-          v-model="view.customFilter"
-          :move="onMove"
-          animation="300"
-          class="theme-item-class"
-          group="drag"
-          style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
-          @add="addCustomFilter"
-          @update="calcData(true)"
+        v-model="view.customFilter"
+        :move="onMove"
+        animation="300"
+        class="theme-item-class"
+        group="drag"
+        style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
+        @add="addCustomFilter"
+        @update="calcData(true)"
       >
         <transition-group class="draggable-group">
           <filter-item
-              v-for="(item,index) in view.customFilter"
-              :key="item.id"
-              :bus="bus"
-              :dimension-data="dimension"
-              :index="index"
-              :item="item"
-              :param="param"
-              :quota-data="quota"
-              @editItemFilter="showEditFilter"
-              @onFilterItemRemove="filterItemRemove"
+            v-for="(item,index) in view.customFilter"
+            :key="item.id"
+            :bus="bus"
+            :dimension-data="dimension"
+            :index="index"
+            :item="item"
+            :param="param"
+            :quota-data="quota"
+            @editItemFilter="showEditFilter"
+            @onFilterItemRemove="filterItemRemove"
           />
         </transition-group>
       </draggable>
@@ -152,6 +152,7 @@ import QuotaItem from '../../../components/views/QuotaItem'
 import QuotaExtItem from '../../../components/views/QuotaExtItem'
 import FilterItem from '../../../components/views/FilterItem'
 import messages from '@/de-base/lang/messages'
+import {defaultTo} from "lodash-es"
 
 export default {
   props: {
@@ -174,6 +175,8 @@ export default {
   },
   data() {
     return {
+      yChartType: undefined,
+      yExtChartType: undefined,
       widgets: [],
       places: [],
       moveId: -1,
@@ -228,6 +231,17 @@ export default {
   },
   created() {
     this.$emit('on-add-languages', messages)
+  },
+  mounted() {
+    if (this.view.yaxis && this.view.yaxis[0]) {
+      this.yChartType = this.view.yaxis[0].chartType
+    }
+    if (this.view.yaxisExt && this.view.yaxisExt[0]) {
+      this.yExtChartType = this.view.yaxisExt[0].chartType
+    }
+    this.yChartType = defaultTo(this.yChartType, 'bar');
+    this.yExtChartType = defaultTo(this.yExtChartType, 'line');
+
   },
   watch: {
     /*listenLists: function(val) {
@@ -285,14 +299,8 @@ export default {
       this.dragMoveDuplicate(this.view.yaxis, e)
       this.dragCheckType(this.view.yaxis, 'q')
 
-      if (this.view.yaxis.length > 1) {
-        for (let i = 0; i < this.view.yaxis.length; i++) {
-          if (i === e.newDraggableIndex) {
-            continue
-          }
-          this.view.yaxis[e.newDraggableIndex].chartType = this.view.yaxis[i].chartType;
-          break
-        }
+      for (let i = 0; i < this.view.yaxis.length; i++) {
+        this.view.yaxis[i].chartType = this.yChartType
       }
 
       //if (this.view.yaxis.length <= 1) {
@@ -304,14 +312,8 @@ export default {
       this.dragMoveDuplicate(this.view.yaxisExt, e)
       this.dragCheckType(this.view.yaxisExt, 'q')
 
-      if (this.view.yaxisExt.length > 1) {
-        for (let i = 0; i < this.view.yaxisExt.length; i++) {
-          if (i === e.newDraggableIndex) {
-            continue
-          }
-          this.view.yaxisExt[e.newDraggableIndex].chartType = this.view.yaxisExt[i].chartType;
-          break
-        }
+      for (let i = 0; i < this.view.yaxisExt.length; i++) {
+        this.view.yaxisExt[i].chartType = this.yExtChartType;
       }
 
       //if (this.view.yaxisExt.length <= 1) {
@@ -360,14 +362,16 @@ export default {
     },
 
     quotaItemChange(item) {
+      this.yChartType = item.chartType;
       for (let i = 0; i < this.view.yaxis.length; i++) {
-        this.view.yaxis[i].chartType = item.chartType
+        this.view.yaxis[i].chartType = this.yChartType
       }
       this.calcData(true)
     },
     quotaExtItemChange(item) {
+      this.yExtChartType = item.chartType;
       for (let i = 0; i < this.view.yaxisExt.length; i++) {
-        this.view.yaxisExt[i].chartType = item.chartType
+        this.view.yaxisExt[i].chartType = this.yExtChartType
       }
       this.calcData(true)
     },
@@ -421,8 +425,8 @@ export default {
         newItems = groupDie ? this.selectedDimension : this.selectedQuota
       }
       const preIds = list
-          .filter((_, i) => i < e.newDraggableIndex || i >= e.newDraggableIndex + newItems.length)
-          .map(i => i.id)
+        .filter((_, i) => i < e.newDraggableIndex || i >= e.newDraggableIndex + newItems.length)
+        .map(i => i.id)
       // 倒序删除
       for (let i = e.newDraggableIndex + newItems.length - 1; i >= e.newDraggableIndex; i--) {
         if (preIds.includes(list[i].id)) {
