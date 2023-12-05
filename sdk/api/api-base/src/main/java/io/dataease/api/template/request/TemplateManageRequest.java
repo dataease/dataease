@@ -3,6 +3,8 @@ package io.dataease.api.template.request;
 import io.dataease.api.template.vo.VisualizationTemplateVO;
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * Author: wangjiahao
  * Date: 2021-03-05
@@ -21,7 +23,12 @@ public class TemplateManageRequest extends VisualizationTemplateVO {
 
     private String leafDvType;
 
+    private String categoryId;
+
+    private List<String> categories;
+
     public TemplateManageRequest() {
+
     }
 
     public TemplateManageRequest(String pid,String dvType) {

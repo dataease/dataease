@@ -7,6 +7,7 @@
         <result column="name" jdbcType="VARCHAR" property="name" />
         <result column="pid" jdbcType="VARCHAR" property="pid" />
         <result column="level" jdbcType="INTEGER" property="level" />
+        <result column="dv_type" jdbcType="VARCHAR" property="dvType" />
         <result column="node_type" jdbcType="VARCHAR" property="nodeType" />
         <result column="create_by" jdbcType="VARCHAR" property="createBy" />
         <result column="create_time" jdbcType="BIGINT" property="createTime" />
@@ -23,77 +24,68 @@
         <result column="childrenCount" jdbcType="VARCHAR" property="childrenCount"/>
     </resultMap>
 
+    <resultMap id="BaseResultMapCollectionDTO" type="io.dataease.api.template.dto.TemplateManageDTO"
+               extends="BaseResultMapDTO">
+        <collection property="categories" ofType="String">
+            <result column="category_id" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
     <sql id="Base_Column_List">
-    visualization_template.id, visualization_template.`name`, visualization_template.pid, visualization_template.`level`,visualization_template.`dv_type`, visualization_template.node_type, visualization_template.create_by, visualization_template.create_time, visualization_template.template_type, visualization_template.snapshot
+    vt.id, vt.`name`, vt.pid, vt.`level`,vt.`dv_type`, vt.node_type, vt.create_by, vt.create_time, vt.template_type, vt.snapshot
   </sql>
     <sql id="Blob_Column_List">
-     visualization_template.template_style, visualization_template.template_data, visualization_template.dynamic_data
+     ,vt.template_style, vt.template_data, vt.dynamic_data
   </sql>
 
-    <select id="findBaseTemplateList" resultMap="BaseResultMapDTO">
+    <select id="findBaseTemplateList" resultMap="BaseResultMapCollectionDTO">
         SELECT
-        <include refid="Base_Column_List" />
+            vt.id,
+            vt.`name`,
+            vt.pid,
+            vt.`level`,
+            vt.`dv_type`,
+            vt.node_type,
+            vt.create_by,
+            vt.create_time,
+            vt.template_type,
+            vt.SNAPSHOT,
+            vtcm.category_id
         FROM
-        visualization_template
-        <where>
-            <if test="nodeType != null">
-                and visualization_template.node_type = #{nodeType}
-            </if>
-        </where>
-        order by visualization_template.create_time desc
+            visualization_template vt
+                LEFT JOIN visualization_template_category_map vtcm ON vt.id = vtcm.template_id
+        ORDER BY
+            vt.create_time DESC
+    </select>
+
+    <select id="findCategories" resultMap="BaseResultMapDTO">
+        SELECT
+            id,
+            `name`,
+            `name` as lable,
+            pid,
+            `level`,
+            `dv_type`,
+            node_type,
+            create_by,
+            create_time,
+            template_type,
+            SNAPSHOT
+        FROM
+            visualization_template_category
+        order by visualization_template_category.create_time desc
     </select>
 
     <select id="findTemplateList" resultMap="BaseResultMapDTO">
         SELECT
         <include refid="Base_Column_List" />
-        ,
         <if test='withBlobs == "Y"'>
             <include refid="Blob_Column_List" />
-            ,
         </if>
-        visualization_template.NAME AS label,
-        ifnull(tempCountInfo.childrenCount,0) as childrenCount
         FROM
-        visualization_template
-        LEFT JOIN (
-        SELECT
-        pid,
-        count( 1 ) AS childrenCount
-        FROM
-        visualization_template
-        WHERE
-        pid IS NOT NULL
-        GROUP BY
-        pid
-        ) tempCountInfo ON visualization_template.id = tempCountInfo.pid
-        <where>
-            <if test="name != null">
-                and visualization_template.name like CONCAT('%', #{name},'%')
-            </if>
-            <if test="dvType != null">
-                and visualization_template.dv_type = #{dvType}
-            </if>
-            <if test="nodeType != null">
-                and visualization_template.node_type = #{nodeType}
-            </if>
-            <if test="templateType != null">
-                and visualization_template.template_type = #{templateType}
-            </if>
-            <if test="id != null">
-                and visualization_template.id = #{id}
-            </if>
-            <if test="pid != null">
-                and visualization_template.pid = #{pid}
-            </if>
-            <if test="level != null">
-                and visualization_template.level = #{level}
-            </if>
-        </where>
-        <if test="sort != null">
-            order by ${sort}
-        </if>
-        <if test="sort == null">
-            order by visualization_template.create_time desc
-        </if>
+        visualization_template vt
+        LEFT JOIN visualization_template_category_map vtcm on vt.id = vtcm.template_id
+        where vtcm.category_id=#{categoryId}
+        order by vt.create_time desc
     </select>
 </mapper>

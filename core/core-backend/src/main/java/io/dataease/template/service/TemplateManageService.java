@@ -8,6 +8,10 @@ import io.dataease.api.template.vo.VisualizationTemplateVO;
 import io.dataease.constant.CommonConstants;
 import io.dataease.exception.DEException;
 import io.dataease.template.dao.auto.entity.VisualizationTemplate;
+import io.dataease.template.dao.auto.entity.VisualizationTemplateCategory;
+import io.dataease.template.dao.auto.entity.VisualizationTemplateCategoryMap;
+import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryMapMapper;
+import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryMapper;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
 import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.utils.AuthUtils;
@@ -37,6 +41,11 @@ public class TemplateManageService implements TemplateManageApi {
 
     @Resource
     private VisualizationTemplateMapper templateMapper;
+
+    @Resource
+    private VisualizationTemplateCategoryMapper templateCategoryMapper;
+    @Resource
+    private VisualizationTemplateCategoryMapMapper categoryMapMapper;
     @Resource
     private ExtVisualizationTemplateMapper extTemplateMapper;
     @Resource
@@ -72,19 +81,6 @@ public class TemplateManageService implements TemplateManageApi {
             request.setId(UUID.randomUUID().toString());
             request.setCreateTime(System.currentTimeMillis());
             request.setCreateBy(AuthUtils.getUser().getUserId().toString());
-            //如果level 是0（第一级）指的是分类目录 设置父级为对应的templateType
-            if (request.getLevel() == 0) {
-                request.setPid(request.getTemplateType());
-                String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.INSERT, request.getName(), request.getPid(), null);
-                if (CommonConstants.CHECK_RESULT.EXIST_ALL.equals(nameCheckResult)) {
-                    DEException.throwException("名称已存在");
-                }
-            } else {//模板插入 相同文件夹同名的模板进行覆盖(先删除)
-                QueryWrapper<VisualizationTemplate> wrapper = new QueryWrapper<>();
-                wrapper.eq("pid",request.getPid());
-                wrapper.eq("name",request.getName());
-                templateMapper.delete(wrapper);
-            }
             if ("template".equals(request.getNodeType())) {
                 //Store static resource into the server
                 staticResourceServer.saveFilesToServe(request.getStaticResource());
@@ -92,18 +88,52 @@ public class TemplateManageService implements TemplateManageApi {
                 staticResourceServer.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
                 request.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
             }
+            //如果level 是0（第一级）指的是分类目录 设置父级为对应的templateType
+            if (request.getLevel() == 0) {
+                request.setPid(request.getTemplateType());
+                String nameCheckResult = this.categoryNameCheck(CommonConstants.OPT_TYPE.INSERT, request.getName(), null);
+                if (CommonConstants.CHECK_RESULT.EXIST_ALL.equals(nameCheckResult)) {
+                    DEException.throwException("名称已存在");
+                }
+                VisualizationTemplateCategory templateCategory = new VisualizationTemplateCategory();
+                BeanUtils.copyBean(templateCategory,request);
+                templateCategoryMapper.insert(templateCategory);
+            } else {//模板插入 同名的模板进行覆盖(先删除)
+                QueryWrapper<VisualizationTemplate> wrapper = new QueryWrapper<>();
+                wrapper.eq("name",request.getName());
+                templateMapper.delete(wrapper);
+                VisualizationTemplate template = new VisualizationTemplate();
+                BeanUtils.copyBean(template,request);
+                templateMapper.insert(template);
+                // 插入分类关系
+                request.getCategories().forEach(categoryId ->{
+                    VisualizationTemplateCategoryMap categoryMap = new VisualizationTemplateCategoryMap();
+                    categoryMap.setId(UUID.randomUUID().toString());
+                    categoryMap.setCategoryId(categoryId);
+                    categoryMap.setTemplateId(template.getId());
+                    categoryMapMapper.insert(categoryMap);
+                });
 
-            VisualizationTemplate template = new VisualizationTemplate();
-            BeanUtils.copyBean(template,request);
-            templateMapper.insert(template);
-        } else {
-            String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.UPDATE, request.getName(), request.getPid(), request.getId());
-            if (CommonConstants.CHECK_RESULT.EXIST_ALL.equals(nameCheckResult)) {
-                DEException.throwException("名称已存在");
             }
-            VisualizationTemplate template = new VisualizationTemplate();
-            BeanUtils.copyBean(template,request);
-            templateMapper.updateById(template);
+        } else {
+            if (request.getLevel() == 0) {
+                String nameCheckResult = this.categoryNameCheck(CommonConstants.OPT_TYPE.UPDATE, request.getName(), request.getId());
+                if (CommonConstants.CHECK_RESULT.EXIST_ALL.equals(nameCheckResult)) {
+                    DEException.throwException("名称已存在");
+                }
+                VisualizationTemplateCategory templateCategory = new VisualizationTemplateCategory();
+                BeanUtils.copyBean(templateCategory,request);
+                templateCategoryMapper.updateById(templateCategory);
+            }else{
+                String nameCheckResult = this.nameCheck(CommonConstants.OPT_TYPE.UPDATE, request.getName(), request.getId());
+                if (CommonConstants.CHECK_RESULT.EXIST_ALL.equals(nameCheckResult)) {
+                    DEException.throwException("名称已存在");
+                }
+                VisualizationTemplate template = new VisualizationTemplate();
+                BeanUtils.copyBean(template,request);
+                templateMapper.updateById(template);
+            }
+
         }
         TemplateManageDTO templateManageDTO = new TemplateManageDTO();
         BeanUtils.copyBean(templateManageDTO, request);
@@ -112,13 +142,11 @@ public class TemplateManageService implements TemplateManageApi {
     }
 
     //名称检查
-    public String nameCheck(String optType, String name, String pid, String id) {
+    public String nameCheck(String optType, String name,String id) {
         QueryWrapper<VisualizationTemplate> wrapper = new QueryWrapper<>();
         if (CommonConstants.OPT_TYPE.INSERT.equals(optType)) {
-            wrapper.eq("pid",pid);
             wrapper.eq("name",name);
         } else if (CommonConstants.OPT_TYPE.UPDATE.equals(optType)) {
-            wrapper.eq("pid",pid);
             wrapper.eq("name",name);
             wrapper.ne("id",id);
         }
@@ -129,15 +157,36 @@ public class TemplateManageService implements TemplateManageApi {
             return CommonConstants.CHECK_RESULT.EXIST_ALL;
         }
     }
+
+    //名称检查
+    public String categoryNameCheck(String optType, String name, String id) {
+        QueryWrapper<VisualizationTemplateCategory> wrapper = new QueryWrapper<>();
+        if (CommonConstants.OPT_TYPE.INSERT.equals(optType)) {
+            wrapper.eq("name",name);
+        } else if (CommonConstants.OPT_TYPE.UPDATE.equals(optType)) {
+            wrapper.eq("name",name);
+            wrapper.ne("id",id);
+        }
+        List<VisualizationTemplateCategory> templateList = templateCategoryMapper.selectList(wrapper);
+        if (CollectionUtils.isEmpty(templateList)) {
+            return CommonConstants.CHECK_RESULT.NONE;
+        } else {
+            return CommonConstants.CHECK_RESULT.EXIST_ALL;
+        }
+    }
     @Override
     public String nameCheck(TemplateManageRequest request) {
-        return nameCheck(request.getOptType(), request.getName(), request.getPid(), request.getId());
-
+        return nameCheck(request.getOptType(), request.getName(), request.getId());
     }
     @Override
     public void delete(String id) {
         Assert.notNull(id, "id cannot be null");
         templateMapper.deleteById(id);
+    }
+    @Override
+    public void deleteCategory(String id) {
+        Assert.notNull(id, "id cannot be null");
+        templateCategoryMapper.deleteById(id);
     }
     @Override
     public VisualizationTemplateVO findOne(String templateId) {
@@ -155,4 +204,8 @@ public class TemplateManageService implements TemplateManageApi {
         return extTemplateMapper.findTemplateList(request);
     }
 
+    @Override
+    public List<TemplateManageDTO> findCategories(TemplateManageRequest request) {
+        return extTemplateMapper.findCategories(request);
+    }
 }

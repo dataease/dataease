@@ -21,11 +21,11 @@ public class MybatisPlusGenerator {
     /**
      * 业务模块例如datasource,dataset,panel等
      */
-    private static final String busi = "operation";
+    private static final String busi = "template";
     /**
      * 这是要生成代码的表名称
      */
-    private static final String TABLE_NAME = "core_opt_recent";
+    private static final String TABLE_NAME = "visualization_template_category_map";
 
     /**
      * 下面两个配置基本上不用动

@@ -5,10 +5,11 @@
       class="de-form-item"
       :model="state.templateInfo"
       :rules="state.templateInfoRules"
+      label-position="top"
     >
       <el-form-item :label="'模板名称'" prop="name">
         <div class="flex-template">
-          <el-input v-model="state.templateInfo.name" clearable size="small" />
+          <el-input v-model="state.templateInfo.name" clearable />
           <el-button style="margin-left: 10px" class="el-icon-upload2" secondary @click="goFile">{{
             t('visualization.upload_template')
           }}</el-button>
@@ -22,8 +23,23 @@
           />
         </div>
       </el-form-item>
+      <el-row
+        v-show="!!state.importTemplateInfo.snapshot"
+        class="preview"
+        :style="classBackground"
+      />
+      <el-form-item :label="'选择分类'" prop="categories" style="margin-top: 16px">
+        <el-select v-model="state.templateInfo.categories" multiple style="width: 100%">
+          <el-option
+            v-for="option in templateCategories"
+            :key="option.id"
+            :label="option.name"
+            :value="option.id"
+          />
+        </el-select>
+      </el-form-item>
     </el-form>
-    <el-row class="preview" :style="classBackground" />
+    <el-row> </el-row>
     <el-row class="de-root-class">
       <el-button secondary @click="cancel()">{{ t('commons.cancel') }}</el-button>
       <el-button type="primary" @click="saveTemplate()">{{ t('commons.confirm') }}</el-button>
@@ -44,10 +60,15 @@ const props = defineProps({
   pid: {
     type: String,
     required: true
+  },
+  templateCategories: {
+    type: Array,
+    required: true
   }
 })
 
 const state = reactive({
+  categories: [],
   nameList: [],
   importTemplateInfo: {
     snapshot: ''
@@ -59,12 +80,20 @@ const state = reactive({
         message: t('commons.input_content'),
         trigger: 'change'
       }
+    ],
+    categories: [
+      {
+        required: true,
+        message: t('commons.input_content'),
+        trigger: 'change'
+      }
     ]
   },
   recover: false,
   templateInfo: {
     level: '1',
     pid: props.pid,
+    categories: [],
     dvType: 'dashboard',
     name: '',
     templateStyle: null,
@@ -103,26 +132,34 @@ const saveTemplate = () => {
     ElMessage.warning(t('chart.template_can_not_empty'))
     return false
   }
+
+  if (!state.templateInfo.categories.length) {
+    ElMessage.warning('请选择分类')
+    return false
+  }
+
   const nameCheckRequest = {
     pid: state.templateInfo.pid,
     name: state.templateInfo.name,
+    categories: state.templateInfo.categories,
     optType: 'insert'
   }
   nameCheck(nameCheckRequest).then(response => {
     if (response.data.indexOf('exist') > -1) {
-      const options = {
-        title: 'commons.prompt',
-        content: 'system_parameter_setting.to_overwrite_them',
-        type: 'primary',
-        cb: () =>
-          save(state.templateInfo).then(response => {
-            ElMessage.success('导入成功')
-            emits('refresh')
-            emits('closeEditTemplateDialog')
-          }),
-        confirmButtonText: t('template.override')
-      }
-      handlerConfirm(options)
+      ElMessage.warning(t('当前模版名称已经存在'))
+      // const options = {
+      //   title: 'commons.prompt',
+      //   content: 'system_parameter_setting.to_overwrite_them',
+      //   type: 'primary',
+      //   cb: () =>
+      //     save(state.templateInfo).then(response => {
+      //       ElMessage.success('导入成功')
+      //       emits('refresh')
+      //       emits('closeEditTemplateDialog')
+      //     }),
+      //   confirmButtonText: t('template.override')
+      // }
+      // handlerConfirm(options)
     } else {
       save(state.templateInfo).then(response => {
         ElMessage.success(t('导入成功'))
