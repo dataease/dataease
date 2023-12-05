@@ -157,7 +157,6 @@ watch(
 watch(
   () => config.value.field.id,
   val => {
-    console.log('init', 'config.value.field.id')
     if (!val) return
     debounceOptions(1)
   }
@@ -166,7 +165,6 @@ watch(
 watch(
   () => config.value.optionValueSource,
   val => {
-    console.log('init', 'config.value.optionValueSource')
     debounceOptions(val)
   }
 )
@@ -174,7 +172,6 @@ watch(
 watch(
   [() => config.value.checkedFields, () => config.value.checkedFieldsMap],
   () => {
-    console.log('init', 'config.value.optionValueSource')
     debounceOptions(config.value.optionValueSource)
   },
   {
@@ -185,13 +182,11 @@ watch(
 watch(
   () => config.value.valueSource,
   () => {
-    console.log('init', 'config.value.valueSource')
     config.value.optionValueSource === 2 && debounceOptions(2)
   }
 )
 
 const setOptions = (num: number) => {
-  console.log('init', 'setOptions', num, config.value.optionValueSource)
   if (num !== config.value.optionValueSource) return
   const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource } = config.value
   switch (optionValueSource) {
