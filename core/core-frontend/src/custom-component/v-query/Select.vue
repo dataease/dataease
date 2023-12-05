@@ -157,6 +157,7 @@ watch(
 watch(
   () => config.value.field.id,
   val => {
+    console.log('init')
     if (!val) return
     debounceOptions(1)
   }
