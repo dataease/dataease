@@ -388,7 +388,6 @@ const init = (queryId: string) => {
         return { ...datasetMap[ele.tableId], componentId: ele.id }
       })
       .filter(ele => !!ele)
-    return
   }
   getDsDetails([
     ...new Set(
