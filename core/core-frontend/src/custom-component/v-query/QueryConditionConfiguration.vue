@@ -389,13 +389,9 @@ const init = (queryId: string) => {
       })
       .filter(ele => !!ele)
   }
-  getDsDetails([
-    ...new Set(
-      datasetFieldList.value
-        .map(ele => ele.tableId)
-        .filter(ele => !datasetMapKeyList.includes(ele) && ele)
-    )
-  ])
+  const params = [...new Set(datasetFieldList.value.map(ele => ele.tableId).filter(ele => !!ele))]
+  if (!params.length) return
+  getDsDetails(params)
     .then(res => {
       res
         .filter(ele => !!ele)
