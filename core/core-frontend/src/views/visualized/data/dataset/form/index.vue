@@ -893,9 +893,9 @@ const resetAllfieldsUnionId = (arr, idMap) => {
   let strNodeList = JSON.stringify(toRaw(datasetDrag.value.nodeList)) as string
   let strAllfields = JSON.stringify(unref(allfields.value)) as string
   Object.entries(idMap).forEach(([key, value]) => {
-    strUnion = strUnion.replace(key, value as string)
-    strAllfields = strAllfields.replace(key, value as string)
-    strNodeList = strNodeList.replace(key, value as string)
+    strUnion = strUnion.replaceAll(key, value as string)
+    strAllfields = strAllfields.replaceAll(key, value as string)
+    strNodeList = strNodeList.replaceAll(key, value as string)
   })
   allfields.value = JSON.parse(strAllfields)
   datasetDrag.value.initState(JSON.parse(strNodeList))
