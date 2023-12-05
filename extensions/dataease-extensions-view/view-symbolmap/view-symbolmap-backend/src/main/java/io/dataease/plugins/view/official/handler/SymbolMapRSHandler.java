@@ -11,10 +11,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.math.BigDecimal;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
+import java.util.stream.Collectors;
 
 import javax.annotation.PostConstruct;
 
@@ -124,7 +122,7 @@ public class SymbolMapRSHandler implements PluginViewRSHandler<Map> {
                     ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
                     chartQuotaDTO.setId(curY.getId());
                     axisChartDataDTO.getQuotaList().add(chartQuotaDTO);
-                    axisChartDataDTO.getProperties().put(curY.getName(), row[i + step]);
+                    axisChartDataDTO.getProperties().put(curY.getName(), formatLabel(curY, row[i + step]));
                     axisChartDataDTO.setLongitude(dimensionList.get(0).getValue());
                     axisChartDataDTO.setLatitude(dimensionList.get(1).getValue());
                     if (StringUtils.equals(curY.getTypeField(), "yAxis") && !valueFilled) {
@@ -138,5 +136,14 @@ public class SymbolMapRSHandler implements PluginViewRSHandler<Map> {
         }
         map.put("data", datalist);
         return map;
+    }
+
+    private String formatLabel(PluginViewField field, String val) {
+        if (StringUtils.isBlank(val)) return val;
+        String typeField = field.getTypeField();
+        if (StringUtils.isNotBlank(typeField) && trans2Ykeys.contains(typeField)) {
+            return Arrays.stream(val.split(",")).distinct().collect(Collectors.joining(","));
+        }
+        return val;
     }
 }
