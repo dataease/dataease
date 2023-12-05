@@ -17,11 +17,17 @@ public interface TemplateManageApi {
     @PostMapping("/delete/{id}")
     void delete(@PathVariable String id);
 
+    @PostMapping("/deleteCategory/{id}")
+    void deleteCategory(@PathVariable String id);
+
     @GetMapping("/findOne/{templateId}")
     VisualizationTemplateVO findOne(@PathVariable String templateId) throws Exception;
 
     @PostMapping("/find")
     List<TemplateManageDTO> find(@RequestBody TemplateManageRequest request);
+
+    @PostMapping("/findCategories")
+    List<TemplateManageDTO> findCategories(@RequestBody TemplateManageRequest request);
 
     @PostMapping("/nameCheck")
     String nameCheck(@RequestBody TemplateManageRequest request);
