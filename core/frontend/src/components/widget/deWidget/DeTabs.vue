@@ -1,7 +1,7 @@
 <template>
   <div
     class="de-tabs-div"
-    :class="[headClass, headClassScroll]"
+    :class="headClass"
   >
     <div
       v-if="maskShow"
@@ -296,7 +296,7 @@ export default {
         'de-stream-media',
         'de-frame'
       ],
-      headClassScroll: 'head-class-scroll',
+      headClassScroll: '',
       activeTabName: null,
       tabIndex: 1,
       dialogVisible: false,
@@ -317,9 +317,9 @@ export default {
     },
     headClass() {
       if (this.tabsAreaScroll) {
-        return 'tab-head-left'
+        return `tab-head-left ${this.headClassScroll}`
       } else {
-        return 'tab-head-' + this.element.style.headPosition
+        return `tab-head-${this.element.style.headPosition} ${this.headClassScroll}`
       }
     },
     curCanvasScaleSelf() {
@@ -495,8 +495,8 @@ export default {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
-    setTabLayout: _.debounce(function() {
-      this.headClassScroll = !!this.$refs.deTabsConstom.$refs.tabsConstom.$refs.nav.scrollable && 'head-class-scroll'
+    setTabLayout: _.debounce(function () {
+      this.headClassScroll = !!this.$refs?.deTabsConstom?.$refs?.tabsConstom?.$refs?.nav?.scrollable ? 'head-class-scroll' : ''
     }, 100),
     calcTabLength() {
       this.$nextTick(() => {
