@@ -67,7 +67,8 @@ curl http://127.0.0.1:9180/apisix/admin/services/10 -X PUT -H "X-API-KEY: $DE_AP
         "X-DE-LINK-TOKEN",
         "X-EMBEDDED-TOKEN",
         "X-DE-ASK-TOKEN",
-        "Content-Type"
+        "Content-Type",
+        "Origin"
       ],
       "request_method": "POST",
       "upstream_headers": [
