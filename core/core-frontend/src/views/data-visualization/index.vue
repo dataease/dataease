@@ -201,6 +201,7 @@ onMounted(() => {
       // 从模板新建
       if (createType === 'template') {
         const deTemplateDataStr = wsCache.get(`de-template-data`)
+        wsCache.delete('de-template-data')
         const deTemplateData = JSON.parse(deTemplateDataStr)
         dvMainStore.setComponentData(JSON.parse(deTemplateData['componentData']))
         dvMainStore.setCanvasStyle(JSON.parse(deTemplateData['canvasStyleData']))
