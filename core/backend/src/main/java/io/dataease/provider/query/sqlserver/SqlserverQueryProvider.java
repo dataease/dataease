@@ -112,94 +112,15 @@ public class SqlserverQueryProvider extends QueryProvider {
         return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, sortFields, limit, keyword);
     }
 
-    /*@Override
-    public String createQuerySQLWithLimit(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
-        SQLObj tableObj = SQLObj.builder()
-                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
-                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
-                .build();
-        setSchema(tableObj, ds);
+    private boolean anyFieldExceed(List<DatasetTableField> fields) {
+        if (CollectionUtils.isEmpty(fields)) return false;
+        return fields.stream().anyMatch(field -> field.getDeExtractType().equals(DeTypeConstants.DE_STRING) && field.getSize() > 8000);
+    }
 
-        List<SQLObj> xFields = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(fields)) {
-            for (int i = 0; i < fields.size(); i++) {
-                DatasetTableField f = fields.get(i);
-                String originField;
-                if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
-                    // 解析origin name中有关联的字段生成sql表达式
-                    originField = calcFieldRegex(f.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 1) {
-                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
-                } else {
-                    originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
-                }
-                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
-                String fieldName;
-                // 处理横轴字段
-                if (f.getDeExtractType() == DeTypeConstants.DE_TIME) { // 时间 转为 数值
-                    if (f.getDeType() == DeTypeConstants.DE_INT || f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format(SqlServerSQLConstants.UNIX_TIMESTAMP, originField);
-                    } else {
-                        fieldName = originField;
-                    }
-                } else if (f.getDeExtractType() == DeTypeConstants.DE_STRING) {
-                    if (f.getDeType() == DeTypeConstants.DE_INT) {
-                        fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_INT_FORMAT, originField);
-                    } else if (f.getDeType() == DeTypeConstants.DE_FLOAT) {
-                        fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_FLOAT_FORMAT, originField);
-                    } else if (f.getDeType() == DeTypeConstants.DE_TIME) { //字符串转时间
-                        fieldName = String.format(SqlServerSQLConstants.STRING_TO_DATE, originField, StringUtils.isNotEmpty(f.getDateFormat()) ? f.getDateFormat() : SqlServerSQLConstants.DEFAULT_DATE_FORMAT);
-                    } else {
-                        fieldName = originField;
-                    }
-                } else {
-                    if (f.getDeType() == DeTypeConstants.DE_TIME) { // 数值转时间
-                        String cast = String.format(SqlServerSQLConstants.LONG_TO_DATE, originField + "/1000");
-                        fieldName = String.format(SqlServerSQLConstants.FROM_UNIXTIME, cast);
-                    } else if (f.getDeType() == DeTypeConstants.DE_INT) {
-                        fieldName = String.format(SqlServerSQLConstants.CONVERT, SqlServerSQLConstants.DEFAULT_INT_FORMAT, originField);
-                    } else {
-                        fieldName = originField;
-                    }
-                }
-                xFields.add(SQLObj.builder()
-                        .fieldName(fieldName)
-                        .fieldAlias(fieldAlias)
-                        .build());
-            }
-        }
-
-        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
-        ST st_sql = stg.getInstanceOf("previewSql");
-        st_sql.add("isGroup", isGroup);
-        if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
-        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
-        String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
-        // row permissions tree
-        String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
-        List<String> wheres = new ArrayList<>();
-        if (customWheres != null) wheres.add(customWheres);
-        if (whereTrees != null) wheres.add(whereTrees);
-        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
-        List<SQLObj> xOrders = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(sortFields)) {
-            int step = fields.size();
-            for (int i = step; i < (step + sortFields.size()); i++) {
-                DeSortField deSortField = sortFields.get(i - step);
-                SQLObj order = buildSortField(deSortField, tableObj, i);
-                xOrders.add(order);
-            }
-        }
-        if(limit != null){
-            SQLObj limitFiled = SQLObj.builder().limitFiled(" top " + limit + " ").build();
-            st_sql.add("limitFiled", limitFiled);
-        }
-        if (ObjectUtils.isNotEmpty(xOrders)) {
-            st_sql.add("orders", xOrders);
-        }
-        return st_sql.render();
-    }*/
-
+    private boolean anySortFieldExceed(List<DeSortField> fields) {
+        if (CollectionUtils.isEmpty(fields)) return false;
+        return fields.stream().anyMatch(field -> field.getDeExtractType().equals(DeTypeConstants.DE_STRING) && field.getSize() > 8000);
+    }
 
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
@@ -208,11 +129,46 @@ public class SqlserverQueryProvider extends QueryProvider {
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         setSchema(tableObj, ds);
+        List<String> exceedList = null;
+        if (anyFieldExceed(fields) || anySortFieldExceed(sortFields)) {
+            exceedList = new ArrayList<>();
+            List<DatasetTableField> calcFieldList = new ArrayList<>(fields);
+            if (CollectionUtils.isNotEmpty(sortFields)) {
+                calcFieldList.addAll(sortFields);
+            }
+            List<SQLObj> sqlObjList = new ArrayList<>();
+            sqlObjList.add(SQLObj.builder().fieldName("*").build());
+            for (DatasetTableField f : calcFieldList) {
+                boolean exceed = f.getDeExtractType().equals(DeTypeConstants.DE_STRING) && f.getSize() > 8000;
+                if (!exceedList.contains(f.getOriginName()) && exceed) {
+                    exceedList.add(f.getOriginName());
+                    String originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                    String newOriginName = f.getOriginName() + "_exceed";
+                    String format = String.format(SqlServerSQLConstants.TO_STRING, originField, newOriginName);
+                    sqlObjList.add(SQLObj.builder().fieldName(format).build());
+                }
+            }
+            STGroup tabStg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+            ST st_sql = tabStg.getInstanceOf("previewSql");
+            st_sql.add("isGroup", false);
+            st_sql.add("notUseAs", true);
+            st_sql.add("table", tableObj);
+            st_sql.add("groups", sqlObjList);
+            String render = st_sql.render();
+            tableObj = SQLObj.builder()
+                    .tableName(" (" + render + ") ")
+                    .tableAlias(String.format(TABLE_ALIAS_PREFIX, "_exceed"))
+                    .build();
+        }
+
 
         List<SQLObj> xFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableField f = fields.get(i);
+                if (CollectionUtils.isNotEmpty(exceedList) && exceedList.contains(f.getOriginName())) {
+                    f.setOriginName(f.getOriginName() + "_exceed");
+                }
                 String originField;
                 if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
@@ -280,6 +236,9 @@ public class SqlserverQueryProvider extends QueryProvider {
             int step = fields.size();
             for (int i = step; i < (step + sortFields.size()); i++) {
                 DeSortField deSortField = sortFields.get(i - step);
+                if (CollectionUtils.isNotEmpty(exceedList) && exceedList.contains(deSortField.getOriginName())) {
+                    deSortField.setOriginName(deSortField.getOriginName() + "_exceed");
+                }
                 SQLObj order = buildSortField(deSortField, tableObj, i);
                 xOrders.add(order);
             }
