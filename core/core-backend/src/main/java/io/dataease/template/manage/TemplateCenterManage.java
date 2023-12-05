@@ -11,6 +11,8 @@ import io.dataease.constant.CommonConstants;
 import io.dataease.exception.DEException;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.system.manage.SysParameterManage;
+import io.dataease.template.dao.auto.entity.VisualizationTemplateCategoryMap;
+import io.dataease.template.dao.auto.mapper.VisualizationTemplateCategoryMapMapper;
 import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
@@ -19,6 +21,7 @@ import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.function.Function;
@@ -39,6 +42,9 @@ public class TemplateCenterManage {
 
     @Resource
     private ExtVisualizationTemplateMapper templateManageMapper;
+
+    @Resource
+    private VisualizationTemplateCategoryMapMapper categoryMapMapper;
 
     /**
      * @param templateUrl template url
@@ -88,8 +94,8 @@ public class TemplateCenterManage {
 
     private List<TemplateMarketDTO> searchTemplateFromManage() {
         try {
-            List<TemplateManageDTO> manageResult = templateManageMapper.findBaseTemplateList("template");
-            List<TemplateManageDTO> categories = templateManageMapper.findBaseTemplateList("folder");
+            List<TemplateManageDTO> manageResult = templateManageMapper.findBaseTemplateList();
+            List<TemplateManageDTO> categories = templateManageMapper.findCategories(null);
             Map<String, String> categoryMap = categories.stream()
                     .collect(Collectors.toMap(TemplateManageDTO::getId, TemplateManageDTO::getName));
             return baseManage2MarketTrans(manageResult, categoryMap);
@@ -103,7 +109,12 @@ public class TemplateCenterManage {
         List<TemplateMarketDTO> result = new ArrayList<>();
         manageResult.stream().forEach(templateManageDTO -> {
             templateManageDTO.setCategoryName(categoryMap.get(templateManageDTO.getPid()));
-            result.add(new TemplateMarketDTO(templateManageDTO));
+            List<String> categories = templateManageDTO.getCategories();
+            if(!CollectionUtils.isEmpty(categories)){
+                List<String> categoryNames = categories.stream().map(categoryId ->categoryMap.get(categoryId)).collect(Collectors.toList());
+                templateManageDTO.setCategoryNames(categoryNames);
+                result.add(new TemplateMarketDTO(templateManageDTO));
+            }
         });
         return result;
     }
@@ -178,7 +189,7 @@ public class TemplateCenterManage {
         contents.stream().forEach(templateMarketDTO -> {
             Long recentUseTime = useTime.get(templateMarketDTO.getId());
             templateMarketDTO.setRecentUseTime(recentUseTime == null ? 0 : recentUseTime);
-            activeCategoriesName.add(templateMarketDTO.getMainCategory());
+            activeCategoriesName.addAll(templateMarketDTO.getCategoryNames());
         });
         if (v2BaseResponse != null) {
             v2BaseResponse.getItems().stream().forEach(marketTemplateV2ItemResult -> {
@@ -214,7 +225,7 @@ public class TemplateCenterManage {
 
     public List<MarketMetaDataVO> getCategoriesV2() {
         List<MarketMetaDataVO> allCategories = new ArrayList<>();
-        List<TemplateManageDTO> manageCategories = templateManageMapper.findBaseTemplateList("folder");
+        List<TemplateManageDTO> manageCategories = templateManageMapper.findCategories(null);
         List<MarketMetaDataVO> manageCategoriesTrans = manageCategories.stream()
                 .map(templateCategory -> new MarketMetaDataVO(templateCategory.getId(), templateCategory.getName(), CommonConstants.TEMPLATE_SOURCE.MANAGE))
                 .collect(Collectors.toList());

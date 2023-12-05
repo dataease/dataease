@@ -121,7 +121,7 @@ const initForm = type => {
       updateType: 'all_scope',
       syncRate: 'SIMPLE_CRON',
       simpleCronValue: '1',
-      simpleCronType: 'hour',
+      simpleCronType: 'minute',
       startTime: '',
       endTime: '',
       endLimit: '0',
@@ -363,6 +363,7 @@ const onRateChange = () => {
   }
   if (form.value.syncSetting.syncRate === 'SIMPLE_CRON') {
     form.value.syncSetting.cron = '0 0 0/1 *  * ? *'
+    form.value.syncSetting.simpleCronType = 'minute'
   }
   if (form.value.syncSetting.syncRate === 'CRON') {
     form.value.syncSetting.cron = '00 00 * ? * * *'

@@ -1,6 +1,11 @@
 <template>
   <div class="pic-main">
-    <img v-if="propValue['url']" :style="imageAdapter" :src="imgUrlTrans(propValue['url'])" />
+    <img
+      draggable="false"
+      v-if="propValue['url']"
+      :style="imageAdapter"
+      :src="imgUrlTrans(propValue['url'])"
+    />
     <div v-else class="pic-upload">
       <span
         ><el-button @click="uploadImg" text style="color: #646a73" icon="Plus"

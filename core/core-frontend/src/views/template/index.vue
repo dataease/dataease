@@ -4,6 +4,12 @@
     <el-button style="float: right" type="primary" @click="templateImport(state.currentTemplateId)">
       {{ t('visualization.import') }}
     </el-button>
+    <el-button
+      style="float: right; margin-right: 12px"
+      @click="showTemplateEditDialog('new', null)"
+    >
+      添加分类
+    </el-button>
     <el-input
       v-model="state.templateFilterText"
       :placeholder="'搜索关键字'"
@@ -26,8 +32,8 @@
               <de-template-list
                 ref="templateListRef"
                 :template-type="state.currentTemplateType"
-                :template-list="state.templateList"
-                @templateDelete="templateFolderDelete"
+                :template-list="state.templateCategories"
+                @categoryDelete="categoryDelete"
                 @templateEdit="templateEdit"
                 @showCurrentTemplate="showCurrentTemplate"
                 @templateImport="templateImport"
@@ -100,6 +106,7 @@
           <de-template-import
             v-if="state.templateDialog.visible"
             :pid="state.templateDialog.pid"
+            :template-categories="state.templateCategories"
             @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
             @closeEditTemplateDialog="closeEditTemplateDialog"
           />
@@ -110,7 +117,7 @@
 </template>
 
 <script lang="ts" setup>
-import { save, templateDelete, find } from '@/api/template'
+import { save, templateDelete, find, findCategories, deleteCategory } from '@/api/template'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -168,7 +175,7 @@ const state = reactive({
   dialogTitleLabel: '',
   currentTemplateLabel: '',
   currentTemplateId: '',
-  templateList: [],
+  templateCategories: [],
   templateMiniWidth: 256,
   templateCurWidth: 256,
   formType: '',
@@ -176,7 +183,8 @@ const state = reactive({
   templateDialog: {
     title: t('visualization.import_template'),
     visible: false,
-    pid: ''
+    pid: '',
+    categories: []
   }
 })
 
@@ -194,22 +202,10 @@ const nameList = computed(() => {
   }
 
   if (nodeType === 'folder') {
-    return state.templateList.map(ele => ele.label)
+    return state.templateCategories.map(ele => ele.label)
   }
   return []
 })
-
-const initStyle = () => {
-  nextTick(() => {
-    const tree = document.querySelector('.ed-tree')
-    // 创建横线元素
-    const line = document.createElement('hr')
-    line.classList.add('custom-line')
-
-    // 将横线元素插入到第一个选项后面
-    tree.firstElementChild.appendChild(line)
-  })
-}
 
 const nameRepeat = value => {
   if (!nameList.value) {
@@ -251,15 +247,15 @@ const showCurrentTemplate = (pid, label) => {
   state.currentTemplateId = pid
   state.currentTemplateLabel = label
   if (state.currentTemplateId) {
-    find({ pid: state.currentTemplateId }).then(response => {
+    find({ categoryId: state.currentTemplateId }).then(response => {
       state.currentTemplateShowList = response.data
     })
   }
 }
 
-const templateFolderDelete = id => {
+const categoryDelete = id => {
   if (id) {
-    templateDelete(id).then(response => {
+    deleteCategory(id).then(response => {
       ElMessage({
         message: t('commons.delete_success'),
         type: 'success',
@@ -306,16 +302,16 @@ const templateEdit = templateInfo => {
   showTemplateEditDialog('edit', templateInfo)
 }
 
+const categoryClick = params => {
+  // do
+  console.log('categoryClick=' + JSON.stringify(params))
+}
+
 const saveTemplateEdit = templateEditForm => {
   templateEditFormRef.value.validate(valid => {
     if (valid) {
       save(templateEditForm).then(response => {
         close()
-        // openMessageSuccess(
-        //   `system_parameter_setting.${
-        //     this.templateEditForm.id ? 'rename_succeeded' : 'added_successfully'
-        //   }`
-        // )
         getTree()
       })
     } else {
@@ -333,24 +329,24 @@ const getTree = () => {
       templateType: state.currentTemplateType,
       level: '0'
     }
-    find(request).then(res => {
-      state.templateList = res.data
+    findCategories(request).then(res => {
+      state.templateCategories = res.data
       showFirst()
     })
   })
 }
 const showFirst = () => {
   // 判断是否默认点击第一条
-  if (state.templateList && state.templateList.length > 0) {
+  if (state.templateCategories && state.templateCategories.length > 0) {
     let showFirst = true
-    state.templateList.forEach(template => {
+    state.templateCategories.forEach(template => {
       if (template.id === state.currentTemplateId) {
         showFirst = false
       }
     })
     if (showFirst) {
       nextTick().then(() => {
-        const [obj = {}] = state.templateList
+        const [obj = {}] = state.templateCategories
         templateListRef.value.nodeClick(obj)
       })
     } else {
@@ -382,7 +378,6 @@ onMounted(() => {
       state.templateCurWidth = Math.trunc(offsetWidth / curSeparator) - 24 - curSeparator
     })
   })
-  initStyle()
 })
 </script>
 
@@ -403,7 +398,7 @@ onMounted(() => {
     background: #fff;
     width: 269px;
     border-right: 1px solid rgba(31, 35, 41, 0.15);
-    padding: 24px;
+    padding: 12px 8px;
   }
 
   .de-tabs-right {
@@ -471,6 +466,5 @@ onMounted(() => {
 .template-search-class {
   float: right;
   width: 320px;
-  margin-right: 12px;
 }
 </style>

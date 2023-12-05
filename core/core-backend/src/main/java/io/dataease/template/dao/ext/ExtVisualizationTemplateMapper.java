@@ -12,6 +12,9 @@ import java.util.List;
 public interface ExtVisualizationTemplateMapper{
 
     List<TemplateManageDTO> findTemplateList(TemplateManageRequest request);
-    List<TemplateManageDTO> findBaseTemplateList(@Param("nodeType") String nodeType);
+
+    List<TemplateManageDTO> findCategories(TemplateManageRequest request);
+
+    List<TemplateManageDTO> findBaseTemplateList();
 
 }

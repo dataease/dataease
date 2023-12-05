@@ -19,7 +19,7 @@ import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import { findDragComponent, findNewComponent, initCanvasData } from '@/utils/canvasUtils'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
-import { listenGlobalKeyDown } from '@/utils/DeShortcutKey'
+import { listenGlobalKeyDown, releaseAttachKey } from '@/utils/DeShortcutKey'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -175,6 +175,7 @@ watch(
 )
 
 onMounted(() => {
+  window.addEventListener('blur', releaseAttachKey)
   if (editMode.value === 'edit') {
     window.addEventListener('storage', eventCheck)
   }
@@ -224,6 +225,7 @@ onMounted(() => {
 
 onUnmounted(() => {
   window.removeEventListener('storage', eventCheck)
+  window.removeEventListener('blur', releaseAttachKey)
 })
 
 const previewStatus = computed(() => editMode.value === 'preview')

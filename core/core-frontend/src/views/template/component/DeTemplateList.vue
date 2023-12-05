@@ -12,16 +12,6 @@
     />
     <ul>
       <li
-        :class="[{ select: state.activeTemplate === '1' }]"
-        @click="nodeClick({ id: '1', label: '默认分类' })"
-      >
-        <el-icon class="de-icon-sense">
-          <Icon name="scene" />
-        </el-icon>
-        <span class="text-template-overflow" :title="'默认分类'">默认分类</span>
-      </li>
-      <hr class="custom-line" />
-      <li
         v-for="ele in templateListComputed"
         :key="ele.name"
         :class="[{ select: state.activeTemplate === ele.id }]"
@@ -36,10 +26,6 @@
             <el-icon class="el-icon-more"><MoreFilled /></el-icon>
             <template #dropdown>
               <el-dropdown-menu class="de-template-dropdown">
-                <el-dropdown-item command="import">
-                  <el-icon><Upload /></el-icon>
-                  {{ t('visualization.import') }}
-                </el-dropdown-item>
                 <el-dropdown-item command="edit">
                   <el-icon><EditPen /></el-icon>
                   {{ t('visualization.rename') }}
@@ -53,12 +39,6 @@
           </el-dropdown>
         </span>
       </li>
-      <li @click="add()">
-        <el-icon class="de-icon-sense">
-          <Plus />
-        </el-icon>
-        <span class="text-template-overflow">{{ t('visualization.add_category') }}</span>
-      </li>
     </ul>
   </div>
 </template>
@@ -68,12 +48,13 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { computed, reactive } from 'vue'
 import NoneImage from '@/assets/none.png'
 import NothingImage from '@/assets/nothing.png'
+import { ElMessageBox } from 'element-plus-secondary'
 const { t } = useI18n()
 
 const emits = defineEmits([
   'showCurrentTemplate',
   'showTemplateEditDialog',
-  'templateDelete',
+  'categoryDelete',
   'templateEdit',
   'templateImport'
 ])
@@ -108,28 +89,30 @@ const clickMore = (type, data) => {
       templateEdit(data)
       break
     case 'delete':
-      templateDelete(data)
+      categoryDelete(data)
       break
     case 'import':
       templateImport(data)
       break
   }
 }
-const nodeClick = ({ id, label }) => {
+const nodeClick = ({ id, name }) => {
   state.activeTemplate = id
-  emits('showCurrentTemplate', id, label)
+  emits('showCurrentTemplate', id, name)
 }
 const add = () => {
   emits('showTemplateEditDialog', 'new')
 }
-const templateDelete = template => {
-  const options = {
-    title: 'system_parameter_setting.delete_this_category',
-    content: 'system_parameter_setting.also_be_deleted',
-    type: 'primary',
-    cb: () => emits('templateDelete', template.id)
-  }
-  handlerConfirm(options)
+const categoryDelete = template => {
+  ElMessageBox.confirm('确定删除该分类吗？', {
+    tip: '删除后,该分类下的所有模版也将删除。',
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    emits('categoryDelete', template.id)
+  })
 }
 const templateEdit = template => {
   emits('templateEdit', template)
@@ -153,10 +136,10 @@ defineExpose({
   position: relative;
 
   ul {
-    margin: 16px 0 20px 0;
+    margin: 0px 0 0 0;
     padding: 0;
     overflow-y: auto;
-    max-height: calc(100% - 90px);
+    max-height: 100%;
   }
 
   li {

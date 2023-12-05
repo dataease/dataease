@@ -142,6 +142,13 @@ export function listenGlobalKeyDown() {
   }
 }
 
+export function releaseAttachKey() {
+  isCtrlOrCommandDown = false
+  composeStore.setIsCtrlOrCmdDownStatus(false)
+  isShiftDown = false
+  composeStore.setIsShiftDownStatus(false)
+}
+
 //当前不支持同时ctrl + shift操作
 function releaseKeyCheck() {
   if (isCtrlOrCommandDown && isShiftDown) {

@@ -13,6 +13,12 @@ export function templateDelete(id) {
   })
 }
 
+export function deleteCategory(id) {
+  return request.post({
+    url: '/templateManage/deleteCategory/' + id
+  })
+}
+
 export function showTemplateList(data) {
   return request.post({
     url: '/templateManage/templateList',
@@ -29,6 +35,14 @@ export function findOne(id) {
 export function find(data) {
   return request.post({
     url: '/templateManage/find',
+    data: data,
+    loading: true
+  })
+}
+
+export function findCategories(data) {
+  return request.post({
+    url: '/templateManage/findCategories',
     data: data,
     loading: true
   })

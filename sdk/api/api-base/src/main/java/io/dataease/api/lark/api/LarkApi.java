@@ -21,5 +21,6 @@ public interface LarkApi {
 
     @PostMapping("/switchEnable")
     void switchEnable(@RequestBody LarkEnableEditor editor);
-
+    @PostMapping("/validate")
+    void validate(@RequestBody LarkSettingCreator creator);
 }

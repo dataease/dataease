@@ -8,6 +8,7 @@ import lombok.NoArgsConstructor;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Data
 @NoArgsConstructor
@@ -42,10 +43,10 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
         this.id = manageDTO.getId();
         this.title = manageDTO.getName();
         this.mainCategory = manageDTO.getCategoryName();
-        this.categories = Arrays.asList(new MarketCategoryVO(manageDTO.getCategoryName()));
-        this.categoryNames = Arrays.asList(manageDTO.getCategoryName());
+        this.categories = manageDTO.getCategoryNames().stream().map(category->new MarketCategoryVO(category)).collect(Collectors.toList());
+        this.categoryNames = manageDTO.getCategoryNames();
         this.metas = new MarketMetasVO(manageDTO.getSnapshot());
-        this.templateType = "dataV".equalsIgnoreCase("manageDTO.getTemplateType()") ? "SCREEN" : "PANEL";
+        this.templateType = "dataV".equalsIgnoreCase(manageDTO.getTemplateType()) ? "SCREEN" : "PANEL";
         this.thumbnail = manageDTO.getSnapshot();
         this.source = "manage";
         if (manageDTO.getRecentUseTime() != null) {
