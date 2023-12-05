@@ -97,7 +97,7 @@
             @editItemCompare="showQuotaEditCompare"
             @editItemFilter="showQuotaEditFilter"
             @onNameEdit="showRename"
-            @onQuotaItemChange="quotaItemChange"
+            @onQuotaItemChange="quotaExtItemChange"
             @onQuotaItemRemove="quotaItemRemove"
             @valueFormatter="valueFormatter"
           />
@@ -152,6 +152,7 @@ import QuotaItem from '../../../components/views/QuotaItem'
 import QuotaExtItem from '../../../components/views/QuotaExtItem'
 import FilterItem from '../../../components/views/FilterItem'
 import messages from '@/de-base/lang/messages'
+import {defaultTo} from "lodash-es"
 
 export default {
   props: {
@@ -174,6 +175,8 @@ export default {
   },
   data() {
     return {
+      yChartType: undefined,
+      yExtChartType: undefined,
       widgets: [],
       places: [],
       moveId: -1,
@@ -229,8 +232,19 @@ export default {
   created() {
     this.$emit('on-add-languages', messages)
   },
+  mounted() {
+    if (this.view.yaxis && this.view.yaxis[0]) {
+      this.yChartType = this.view.yaxis[0].chartType
+    }
+    if (this.view.yaxisExt && this.view.yaxisExt[0]) {
+      this.yExtChartType = this.view.yaxisExt[0].chartType
+    }
+    this.yChartType = defaultTo(this.yChartType, 'bar');
+    this.yExtChartType = defaultTo(this.yExtChartType, 'line');
+
+  },
   watch: {
-    listenLists: function(val) {
+    /*listenLists: function(val) {
       if (this.listenLists[0] <= 1 && this.listenLists[1] <= 1) {
         return
       }
@@ -243,7 +257,7 @@ export default {
         this.view.yaxisExt = [this.view.yaxisExt[0]]
       }
       this.calcData(true)
-    }
+    }*/
   },
   methods: {
     executeAxios(url, type, data, callBack) {
@@ -284,20 +298,29 @@ export default {
       this.multiAdd(e, this.view.yaxis)
       this.dragMoveDuplicate(this.view.yaxis, e)
       this.dragCheckType(this.view.yaxis, 'q')
-      if (this.view.yaxis.length <= 1) {
-        this.calcData(true)
+
+      for (let i = 0; i < this.view.yaxis.length; i++) {
+        this.view.yaxis[i].chartType = this.yChartType
       }
+
+      //if (this.view.yaxis.length <= 1) {
+      this.calcData(true)
+      //}
     },
     addYaxisExt(e) {
       this.multiAdd(e, this.view.yaxisExt)
       this.dragMoveDuplicate(this.view.yaxisExt, e)
       this.dragCheckType(this.view.yaxisExt, 'q')
-      if (this.view.yaxisExt.length <= 1) {
-        this.calcData(true)
+
+      for (let i = 0; i < this.view.yaxisExt.length; i++) {
+        this.view.yaxisExt[i].chartType = this.yExtChartType;
       }
+
+      //if (this.view.yaxisExt.length <= 1) {
+      this.calcData(true)
+      //}
     },
     calcData(cache) {
-      console.log(cache)
       //this.view.xaxis = [...this.source, ...this.target]
 
       this.$emit('plugin-call-back', {
@@ -339,6 +362,17 @@ export default {
     },
 
     quotaItemChange(item) {
+      this.yChartType = item.chartType;
+      for (let i = 0; i < this.view.yaxis.length; i++) {
+        this.view.yaxis[i].chartType = this.yChartType
+      }
+      this.calcData(true)
+    },
+    quotaExtItemChange(item) {
+      this.yExtChartType = item.chartType;
+      for (let i = 0; i < this.view.yaxisExt.length; i++) {
+        this.view.yaxisExt[i].chartType = this.yExtChartType
+      }
       this.calcData(true)
     },
     quotaItemRemove(item) {
@@ -391,8 +425,8 @@ export default {
         newItems = groupDie ? this.selectedDimension : this.selectedQuota
       }
       const preIds = list
-          .filter((_, i) => i < e.newDraggableIndex || i >= e.newDraggableIndex + newItems.length)
-          .map(i => i.id)
+        .filter((_, i) => i < e.newDraggableIndex || i >= e.newDraggableIndex + newItems.length)
+        .map(i => i.id)
       // 倒序删除
       for (let i = e.newDraggableIndex + newItems.length - 1; i >= e.newDraggableIndex; i--) {
         if (preIds.includes(list[i].id)) {
