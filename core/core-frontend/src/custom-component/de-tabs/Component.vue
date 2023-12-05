@@ -1,5 +1,10 @@
 <template>
-  <div style="width: 100%; height: 100%" :class="headClass" ref="tabComponentRef">
+  <div
+    v-if="state.tabShow"
+    style="width: 100%; height: 100%"
+    :class="headClass"
+    ref="tabComponentRef"
+  >
     <de-custom-tab
       v-model="editableTabsValue"
       @tab-add="addTab"
@@ -153,7 +158,8 @@ const state = reactive({
   activeTabName: '',
   curItem: {},
   textarea: '',
-  dialogVisible: false
+  dialogVisible: false,
+  tabShow: true
 })
 const tabsAreaScroll = ref(false)
 const editableTabsValue = ref(null)
@@ -214,6 +220,10 @@ function deleteCur(param) {
       const activeIndex =
         (len - 1 + element.value.propValue.length) % element.value.propValue.length
       editableTabsValue.value = element.value.propValue[activeIndex].name
+      state.tabShow = false
+      nextTick(() => {
+        state.tabShow = true
+      })
     }
   }
 }
