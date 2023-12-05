@@ -415,16 +415,16 @@ export default {
       deep: true
     },
     'tableFields': function() {
-      this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList)).filter(ele => ele.extField === 0)
-      this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList)).filter(ele => ele.extField === 0)
+      this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList))
+      this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList))
     },
     'searchField': function(val) {
       if (val && val !== '') {
-        this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList.filter(ele => ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0)))
-        this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList.filter(ele => ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()) && ele.extField === 0)))
+        this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList.filter(ele => ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))))
+        this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList.filter(ele => ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase()))))
       } else {
-        this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList)).filter(ele => ele.extField === 0)
-        this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList)).filter(ele => ele.extField === 0)
+        this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList))
+        this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList))
       }
     },
     'searchFunction': function(val) {
@@ -572,8 +572,8 @@ export default {
         this.tableFields.dimensionListData = JSON.parse(JSON.stringify(this.tableFields.dimensionList))
         this.tableFields.quotaListData = JSON.parse(JSON.stringify(this.tableFields.quotaList))
 
-        this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList)).filter(ele => ele.extField === 0)
-        this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList)).filter(ele => ele.extField === 0)
+        this.dimensionData = JSON.parse(JSON.stringify(this.tableFields.dimensionList))
+        this.quotaData = JSON.parse(JSON.stringify(this.tableFields.quotaList))
 
         this.initField()
       })
