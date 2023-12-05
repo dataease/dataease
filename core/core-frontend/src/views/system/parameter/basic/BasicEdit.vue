@@ -44,6 +44,20 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(valid => {
     if (valid) {
+      if (
+        state.form.dsExecuteTime === 'minute' &&
+        (Number(state.form.dsIntervalTime) < 1 || Number(state.form.dsIntervalTime) > 59)
+      ) {
+        ElMessage.error('分钟超出范围【1-59】')
+        return
+      }
+      if (
+        state.form.dsExecuteTime === 'hour' &&
+        (Number(state.form.dsIntervalTime) < 1 || Number(state.form.dsIntervalTime) > 23)
+      ) {
+        ElMessage.error('小时超出范围【1-23】')
+        return
+      }
       const param = buildSettingList()
       if (param.length < 2) {
         return
