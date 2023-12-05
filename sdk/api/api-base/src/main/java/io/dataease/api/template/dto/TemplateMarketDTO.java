@@ -46,11 +46,13 @@ public class TemplateMarketDTO implements Comparable<TemplateMarketDTO> {
         this.categories = manageDTO.getCategoryNames().stream().map(category->new MarketCategoryVO(category)).collect(Collectors.toList());
         this.categoryNames = manageDTO.getCategoryNames();
         this.metas = new MarketMetasVO(manageDTO.getSnapshot());
-        this.templateType = "dataV".equalsIgnoreCase(manageDTO.getTemplateType()) ? "SCREEN" : "PANEL";
+        this.templateType = "dataV".equalsIgnoreCase(manageDTO.getDvType()) ? "SCREEN" : "PANEL";
         this.thumbnail = manageDTO.getSnapshot();
         this.source = "manage";
         if (manageDTO.getRecentUseTime() != null) {
             this.recentUseTime = manageDTO.getRecentUseTime();
+            this.categories.add(new MarketCategoryVO("最近使用"));
+            this.categoryNames.add("最近使用");
         }
     }
 

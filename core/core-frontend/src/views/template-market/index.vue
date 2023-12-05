@@ -405,6 +405,7 @@ const apply = () => {
   decompression(state.dvCreateForm)
     .then(response => {
       state.curApplyTemplate.recentUseTime = Date.now()
+      state.curApplyTemplate.categoryNames.push('最近使用')
       state.loading = false
       const templateData = response.data
       // do create

@@ -20,6 +20,7 @@
 
     <resultMap id="BaseResultMapDTO" type="io.dataease.api.template.dto.TemplateManageDTO"
                extends="BaseResultMap">
+        <result column="recent_use_time" jdbcType="BIGINT" property="recentUseTime" />
         <result column="label" jdbcType="VARCHAR" property="label"/>
         <result column="childrenCount" jdbcType="VARCHAR" property="childrenCount"/>
     </resultMap>
@@ -50,10 +51,12 @@
             vt.create_time,
             vt.template_type,
             vt.SNAPSHOT,
-            vtcm.category_id
+            vtcm.category_id,
+            cor.time as 'recent_use_time'
         FROM
             visualization_template vt
                 LEFT JOIN visualization_template_category_map vtcm ON vt.id = vtcm.template_id
+                left JOIN core_opt_recent cor on cor.resource_type=6 and vt.id= cor.resource_name
         ORDER BY
             vt.create_time DESC
     </select>
