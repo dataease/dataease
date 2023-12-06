@@ -245,4 +245,4 @@ dectl start | tee -a ${CURRENT_DIR}/install.log
 dectl status 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
 echo -e "======================= 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-echo -e "系统登录信息如下:\n 用户名: admin\n 初始密码: dataease" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+echo -e "系统登录信息如下:\n 用户名: admin\n 初始密码: DataEase@123456" 2>&1 | tee -a ${CURRENT_DIR}/install.log
