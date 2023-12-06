@@ -251,7 +251,9 @@ const getEmptyDesc = (): string => {
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
           <template v-slot:default="scope">
             <div class="name-content">
-              <el-icon class="main-color"> <Icon :name="iconMap[scope.row.type]" /> </el-icon>
+              <el-icon :class="`main-color color-${scope.row.type}`">
+                <Icon :name="iconMap[scope.row.type]" />
+              </el-icon>
               <el-tooltip placement="top">
                 <template #content>{{ scope.row.name }}</template>
                 <span class="ellipsis" style="max-width: 250px">{{ scope.row.name }}</span>
@@ -392,7 +394,6 @@ const getEmptyDesc = (): string => {
       margin-right: 12px;
       border-radius: 4px;
       color: #fff;
-      background: #3370ff;
     }
     .name-star {
       font-size: 15px;
