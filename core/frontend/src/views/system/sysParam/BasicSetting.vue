@@ -47,7 +47,10 @@
             :content="$t('system_parameter_setting.front_time_out')"
             placement="top"
           >
-            <svg-icon class="tips" icon-class="icon_info_outlined" />
+            <svg-icon
+              class="tips"
+              icon-class="icon_info_outlined"
+            />
           </el-tooltip>
         </template>
         <el-input
@@ -78,6 +81,18 @@
           :placeholder="$t('system_parameter_setting.empty_msg')"
         ><template
           slot="append"
+        >{{ $t('components.day') }}</template></el-input>
+      </el-form-item>
+
+      <el-form-item
+          :label="$t('system_parameter_setting.ds_sync_log_retention_time')"
+          prop="logTimeOut"
+      >
+        <el-input
+            v-model="formInline.dsSyncLogTimeOut"
+            :placeholder="$t('system_parameter_setting.empty_msg')"
+        ><template
+            slot="append"
         >{{ $t('components.day') }}</template></el-input>
       </el-form-item>
 
@@ -281,6 +296,13 @@ export default {
             trigger: 'blur'
           }
         ],
+        dsSyncLogTimeOut: [
+          {
+            pattern: '^([1-9]|[1-9][0-9]|[1-2][0-9][0-9]|3[0-5][0-9]|36[0-5])$',
+            message: this.$t('system_parameter_setting.msg_error'),
+            trigger: 'blur'
+          }
+        ],
         limitTimes: [
 
           { validator: this.validateNumber, trigger: 'blur' }
@@ -398,6 +420,12 @@ export default {
         {
           paramKey: 'basic.logTimeOut',
           paramValue: this.formInline.logTimeOut,
+          type: 'text',
+          sort: 2
+        },
+        {
+          paramKey: 'basic.dsSyncLogTimeOut',
+          paramValue: this.formInline.dsSyncLogTimeOut,
           type: 'text',
           sort: 2
         },

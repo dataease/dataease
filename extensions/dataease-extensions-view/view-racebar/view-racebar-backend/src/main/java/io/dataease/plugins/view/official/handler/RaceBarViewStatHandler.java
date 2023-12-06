@@ -39,7 +39,6 @@ public class RaceBarViewStatHandler implements PluginViewStatHandler {
             PluginViewField pluginViewField = pluginViewParam.getPluginViewFields().get(i);
             if (StringUtils.equals(pluginViewField.getTypeField(), "xAxisExt")) {
                 pluginViewField.setTypeField("xAxis");
-                pluginViewField.setExtField(1);
             }
             String typeKey = pluginViewField.getTypeField();
             PluginSingleField pluginSingleField = baseService.buildField(dsType, pluginViewField, tableObj, i);

@@ -4,6 +4,7 @@ import { deepCopy } from '@/components/canvas/utils/utils'
 import { COMMON_BACKGROUND } from '@/components/canvas/customComponent/component-list'
 
 export const TAB_COMMON_STYLE = {
+  titleHide: false,
   headFontColor: '#000000',
   headFontActiveColor: '#000000',
   headBorderColor: '#ffffff',
@@ -75,6 +76,7 @@ export const CANVAS_STYLE = {
     showPageLine: false,
     proportion: null
   },
+  autoSizeAdaptor: true, // 组件内容大小自适应(自适应时会根据画布缩放比例对内容进行缩放，关闭则显示内部文本实际大小)
   refreshViewEnable: false, // 开启视图刷新（默认关闭）
   refreshViewLoading: true, // 仪表板视图loading提示
   refreshUnit: 'minute', // 仪表板刷新时间带外 默认 分钟

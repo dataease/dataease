@@ -307,9 +307,6 @@ export default {
             this.addGlobalImage()
 
             this.drawView()
-            this.myChart.on('click', ev => {
-              this.$emit('trigger-edit-click', ev.originEvent)
-            })
           })
         } else {
           this.loading = false
@@ -550,14 +547,17 @@ export default {
       },
 
       getMapTheme(chart) {
-        let theme = 'light'
+        let theme = 'normal'
         if (chart.customStyle) {
             const customStyle = JSON.parse(chart.customStyle)
             if (customStyle.baseMapStyle && customStyle.baseMapStyle.baseMapTheme) {
                 theme = customStyle.baseMapStyle.baseMapTheme
             }
         }
-        return theme
+        if (theme === 'light') {
+          theme = 'normal'
+        }
+        return `amap://styles/${theme}`
       },
 
 

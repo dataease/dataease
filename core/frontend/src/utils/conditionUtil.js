@@ -70,15 +70,38 @@ export const buildViewKeyMap = panelItems => {
   return result
 }
 
-export const buildViewKeyFilters = (panelItems, result) => {
+export const buildCanvasIdMap = panelItems => {
+  const result = {}
+  panelItems.forEach(element => {
+    if (element.type === 'view') {
+      result[element.propValue.viewId] = element.canvasId
+    }
+    if (element.type === 'de-tabs') {
+      element.options.tabList && element.options.tabList.forEach(tab => {
+        if (tab.content && tab.content.propValue && tab.content.propValue.viewId) {
+          result[tab.content.propValue.viewId] = element.id + '-' + tab.name
+        }
+      })
+    }
+  })
+  return result
+}
+
+const cacheCondition = (cb, obj) => {
+  obj.cb = cb
+}
+
+export const buildViewKeyFilters = (panelItems, result, isEdit = false) => {
   if (!(panelItems && panelItems.length > 0)) {
     return result
   }
   const buildItems = panelItems[0].canvasId === 'canvas-main' ? panelItems : store.state.componentData
+  const canvasIdMap = buildCanvasIdMap(buildItems)
   buildItems.forEach((element, index) => {
     if (element.type !== 'custom') {
       return true
     }
+    const selectFirst = element.serviceName === 'textSelectWidget' && element.options.attrs.selectFirst
 
     let param = null
     const widget = ApplicationContext.getService(element.serviceName)
@@ -87,25 +110,60 @@ export const buildViewKeyFilters = (panelItems, result) => {
     const vValid = valueValid(condition)
     const filterComponentId = condition.componentId
     Object.keys(result).forEach(viewId => {
-      const vidMatch = viewIdMatch(condition.viewIds, viewId)
-      const viewFilters = result[viewId]
-      let j = viewFilters.length
-      while (j--) {
-        const filter = viewFilters[j]
-        if (filter.componentId === filterComponentId) {
-          viewFilters.splice(j, 1)
+      // 进行过滤时 如果过滤组件在主画布 则条件适用于所有画布视图 否则需要过滤组件和视图在相同画布
+      if (element.canvasId === 'canvas-main' || element.canvasId === canvasIdMap[viewId]) {
+        const vidMatch = viewIdMatch(condition.viewIds, viewId)
+        if (vidMatch && selectFirst && !element.options.loaded) {
+          const obj = {}
+          const promise = new Promise(resolve => {
+            cacheCondition(cbParam => {
+              const newCondition = getCondition(element, cbParam)
+              resolve(newCondition)
+            }, obj)
+          })
+          promise.componentId = filterComponentId
+          promise.cacheObj = obj
+          result[viewId].push(promise)
+        } else {
+          const viewFilters = result[viewId]
+          let j = viewFilters.length
+          while (j--) {
+            const filter = viewFilters[j]
+            if (filter.componentId === filterComponentId) {
+              viewFilters.splice(j, 1)
+            }
+          }
+          vidMatch && vValid && viewFilters.push(condition)
         }
       }
-      vidMatch && vValid && viewFilters.push(condition)
     })
   })
   return result
 }
-export const buildFilterMap = panelItems => {
+export const buildFilterMap = (panelItems, isEdit = false) => {
   let result = buildViewKeyMap(panelItems)
-
-  result = buildViewKeyFilters(panelItems, result)
+  result = buildViewKeyFilters(panelItems, result, isEdit)
   return result
+}
+
+const getCondition = (element, p) => {
+  const widget = ApplicationContext.getService(element.serviceName)
+  const param = widget.getParam(element, p?.val)
+  const condition = formatCondition(param)
+  return condition
+}
+export const buildAfterFilterLoaded = (originMap, p) => {
+  const componentId = p.componentId
+  Object.keys(originMap).forEach(viewId => {
+    const conditions = originMap[viewId]
+    if (conditions?.length) {
+      conditions.forEach(condition => {
+        if (condition instanceof Promise && condition.componentId === componentId && condition.cacheObj?.cb) {
+          condition.cacheObj.cb(p)
+        }
+      })
+    }
+  })
 }
 
 export const fillElementsFilter = (panelItems, filterMap) => {

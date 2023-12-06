@@ -19,7 +19,7 @@ import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.service.panel.PanelGroupService;
 
 import java.io.File;

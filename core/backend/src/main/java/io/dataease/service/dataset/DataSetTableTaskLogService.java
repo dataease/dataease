@@ -1,6 +1,7 @@
 package io.dataease.service.dataset;
 
 import cn.hutool.core.date.DateUtil;
+import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.dataset.request.DataSetTaskInstanceGridRequest;
@@ -13,6 +14,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableTaskLog;
 import io.dataease.plugins.common.base.domain.DatasetTableTaskLogExample;
 import io.dataease.plugins.common.base.mapper.DatasetTableTaskLogMapper;
 import io.dataease.plugins.common.base.mapper.DatasetTableTaskMapper;
+import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.hssf.usermodel.HSSFCell;
@@ -29,6 +31,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.OutputStream;
 import java.net.URLEncoder;
+import java.util.Calendar;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -46,6 +49,8 @@ public class DataSetTableTaskLogService {
     private ExtDataSetTaskMapper extDataSetTaskMapper;
     @Resource
     private DatasetTableTaskMapper datasetTableTaskMapper;
+    @Resource
+    private SystemParameterService systemParameterService;
 
     public DatasetTableTaskLog save(DatasetTableTaskLog datasetTableTaskLog, Boolean hasTask) {
         if (hasTask && datasetTableTaskMapper.selectByPrimaryKey(datasetTableTaskLog.getTaskId()) == null) {
@@ -210,5 +215,23 @@ public class DataSetTableTaskLogService {
         return example;
     }
 
+    private static final String LOG_RETENTION = "30";
+
+    public void cleanLog() {
+        String value = systemParameterService.getValue(ParamConstants.BASIC.DS_SYNC_LOG_TIME_OUT.getValue());
+        value = StringUtils.isBlank(value) ? LOG_RETENTION : value;
+        int logRetention = Integer.parseInt(value);
+        Calendar instance = Calendar.getInstance();
+        Calendar startInstance = (Calendar) instance.clone();
+        startInstance.add(Calendar.DATE, -logRetention);
+        startInstance.set(Calendar.HOUR_OF_DAY, 0);
+        startInstance.set(Calendar.MINUTE, 0);
+        startInstance.set(Calendar.SECOND, 0);
+        startInstance.set(Calendar.MILLISECOND, -1);
+        long timeInMillis = startInstance.getTimeInMillis();
+        DatasetTableTaskLogExample example = new DatasetTableTaskLogExample();
+        example.createCriteria().andCreateTimeLessThan(timeInMillis);
+        datasetTableTaskLogMapper.deleteByExample(example);
+    }
 
 }

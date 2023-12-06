@@ -59,6 +59,7 @@
           :screen-shot="screenShot"
           :canvas-style-data="canvasStyleData"
           :show-position="showPosition"
+          @filter-loaded="filterLoaded"
         />
       </div>
     </div>
@@ -155,7 +156,7 @@ import eventBus from '@/components/canvas/utils/eventBus'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 import bus from '@/utils/bus'
-import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch } from '@/utils/conditionUtil'
+import { buildFilterMap, buildViewKeyMap, formatCondition, valueValid, viewIdMatch, buildAfterFilterLoaded } from '@/utils/conditionUtil'
 import { hasDataPermission } from '@/utils/permission'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
@@ -260,7 +261,9 @@ export default {
       ],
       needToChangeWidth: [
         'left',
-        'width',
+        'width'
+      ],
+      needToChangeInnerWidth: [
         'fontSize',
         'activeFontSize',
         'borderWidth',
@@ -370,6 +373,7 @@ export default {
       return this.componentDataShow || []
     },
     ...mapState([
+      'previewCanvasScale',
       'isClickComponent'
     ]),
 
@@ -441,6 +445,7 @@ export default {
     this.canvasId === 'canvas-main' && bus.$on('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
+    bus.$on('trigger-filter-loaded', this.triggerFilterLoaded)
     this.initPdfTemplate()
   },
   beforeDestroy() {
@@ -456,8 +461,18 @@ export default {
     this.canvasId === 'canvas-main' && bus.$off('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('trigger-reset-button', this.triggerResetButton)
+    bus.$off('trigger-filter-loaded', this.triggerFilterLoaded)
   },
   methods: {
+    triggerFilterLoaded({ canvasIdStr, panelId, p }) {
+      if (this.panelInfo.id === panelId && !canvasIdStr.includes(this.canvasId)) {
+        this.filterLoaded(p, canvasIdStr)
+      }
+    },
+    filterLoaded(p, canvasIdStr = '') {
+      buildAfterFilterLoaded(this.filterMap, p)
+      bus.$emit('trigger-filter-loaded', { canvasIdStr: (canvasIdStr + this.canvasId), panelId: this.panelInfo.id, p })
+    },
     getWrapperChildRefs() {
       return this.$refs['viewWrapperChild']
     },
@@ -586,7 +601,10 @@ export default {
         }
         param = wrapperChild.getCondition && wrapperChild.getCondition()
         const condition = formatCondition(param)
-        const vValid = valueValid(condition)
+        let vValid = valueValid(condition)
+        const required = element.options.attrs.required
+        condition.requiredInvalid = required && !vValid
+        vValid = vValid || required
         const filterComponentId = condition.componentId
         const conditionCanvasId = wrapperChild.getCanvasId && wrapperChild.getCanvasId()
         Object.keys(result).forEach(viewId => {
@@ -664,8 +682,8 @@ export default {
       }
       if (this.isMainCanvas()) {
         this.$store.commit('setPreviewCanvasScale', {
-          scaleWidth: (this.scaleWidth / 100),
-          scaleHeight: (this.scaleHeight / 100)
+          scaleWidth: this.canvasStyleData.autoSizeAdaptor ? (this.scaleWidth / 100) : 1,
+          scaleHeight: this.canvasStyleData.autoSizeAdaptor ? (this.scaleHeight / 100) : 1
         })
       }
       this.handleScaleChange()
@@ -681,6 +699,10 @@ export default {
     format(value, scale) {
       return value * scale / 100
     },
+
+    formatPoint(value, pointScale) {
+      return value * pointScale
+    },
     handleScaleChange() {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
@@ -690,10 +712,13 @@ export default {
               component.style[key] = this.format(component.style[key], this.scaleHeight)
             }
             if (this.needToChangeWidth.includes(key)) {
+              component.style[key] = this.format(component.style[key], this.scaleWidth)
+            }
+            if (this.needToChangeInnerWidth.includes(key)) {
               if ((key === 'fontSize' || key === 'activeFontSize') && (this.terminal === 'mobile' || ['custom', 'v-text'].includes(component.type))) {
                 // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
               } else {
-                component.style[key] = this.format(component.style[key], this.scaleWidth)
+                component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth)
               }
             }
           })

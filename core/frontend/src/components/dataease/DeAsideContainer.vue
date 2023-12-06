@@ -47,7 +47,7 @@ export default {
   data() {
     return {
       asideHidden: false,
-      currentWidth: '',
+      currentWidth: ''
     }
   },
   computed: {

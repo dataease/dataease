@@ -106,4 +106,8 @@
         from sys_user
         where user_id = 1
     </select>
+
+    <select id="queryUserId" resultType="java.lang.Long" parameterType="java.lang.String">
+        select user_id from sys_user where username = #{account}
+    </select>
 </mapper>

@@ -53,8 +53,8 @@
       <div class="sql-title">
         {{ $t('deDataset.data_preview') }}
         <span class="result-num">{{
-            `(${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')})`
-          }}</span>
+          `(${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')})`
+        }}</span>
         <span
           class="drag"
           @mousedown="mousedownDrag"
@@ -96,8 +96,8 @@
           secondary
           @click="closeSelectDs()"
         >{{
-            $t('dataset.cancel')
-          }}
+          $t('dataset.cancel')
+        }}
         </deBtn>
         <deBtn
           :disabled="!tempDs.id"
@@ -122,21 +122,21 @@
       size="840px"
       direction="rtl"
     >
-      <union-edit :union-param="unionParam"/>
+      <union-edit :union-param="unionParam" />
       <div class="de-foot">
         <deBtn
           secondary
           @click="closeEditUnion()"
         >{{
-            $t('dataset.cancel')
-          }}
+          $t('dataset.cancel')
+        }}
         </deBtn>
         <deBtn
           type="primary"
           @click="confirmEditUnion()"
         >{{
-            $t('dataset.confirm')
-          }}
+          $t('dataset.confirm')
+        }}
         </deBtn>
       </div>
     </el-drawer>
@@ -229,6 +229,7 @@ export default {
   },
   mounted() {
     this.initTableData()
+    this.$emit('setSaveDisabled', false)
   },
   methods: {
     mousedownDrag() {

@@ -43,7 +43,7 @@ import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.PageInfo;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
@@ -357,6 +357,15 @@ public class ChartViewService {
         }
         List<ChartViewFieldDTO> extStack = gson.fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
+        if (StringUtils.equalsIgnoreCase(view.getType(), "scatter") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+            xAxis.addAll(extStack);
+        }
+
+        if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+            List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+            }.getType());
+            extStack.addAll(xAxisExt);
+        }
         List<ChartViewFieldDTO> extBubble = gson.fromJson(view.getExtBubble(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<ChartFieldCustomFilterDTO>();
@@ -446,7 +455,7 @@ public class ChartViewService {
                 List<ChartViewFieldDTO> xAxisExtList = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
                 }.getType());
                 xAxisExtList.forEach((x) -> {
-                    x.setExtField(1);
+                    x.setBusiType("race-bar");
                 });
                 xAxis.addAll(xAxisExtList);
             } else {
@@ -640,6 +649,9 @@ public class ChartViewService {
             yAxis.addAll(sizeField);
         }
         List<ChartViewFieldDTO> extStack = gson.fromJson(view.getExtStack(), tokenType);
+        if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+            extStack.addAll(xAxisExt);
+        }
         List<ChartViewFieldDTO> extBubble = gson.fromJson(view.getExtBubble(), tokenType);
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = gson.fromJson(view.getCustomFilter(), filterTokenType);
         List<ChartViewFieldDTO> drill = gson.fromJson(view.getDrillFields(), tokenType);
@@ -939,6 +951,8 @@ public class ChartViewService {
                             if (!checkDrillExist(xAxis, extStack, nextDrillField.getId(), view)) {
                                 // get drill list first element's sort,then assign to nextDrillField
                                 nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
+                                nextDrillField.setDrill(true);
+
                                 if (isAntVScatterNumberXAxis) {
                                     extStack.add(nextDrillField);
                                 } else {
@@ -1021,7 +1035,7 @@ public class ChartViewService {
                 List<ChartViewFieldDTO> xAxisExtList = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
                 }.getType());
                 xAxisExtList.forEach((x) -> {
-                    x.setExtField(1);
+                    x.setBusiType("race-bar");
                 });
                 xAxis.addAll(xAxisExtList);
             }
@@ -1280,7 +1294,9 @@ public class ChartViewService {
                 String compareFieldId = compareCalc.getField();// 选中字段
                 // 计算指标对应的下标
                 int dataIndex = 0;// 数据字段下标
-                if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equals(xAxis.get(0).getGroupType(), "q") && StringUtils.equalsIgnoreCase(view.getRender(), "antv")) {
+                    dataIndex = extStack.size() + i;
+                } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                     dataIndex = xAxis.size() + extStack.size() + i;
                 } else {
                     dataIndex = xAxis.size() + i;
@@ -1363,6 +1379,9 @@ public class ChartViewService {
                         if (StringUtils.isEmpty(cValue)) {
                             continue;
                         }
+                        if (sum.equals(new BigDecimal(0))) {
+                            continue;
+                        }
                         item[dataIndex] = new BigDecimal(cValue)
                                 .divide(sum, 8, RoundingMode.HALF_UP)
                                 .toString();
@@ -1376,6 +1395,10 @@ public class ChartViewService {
         // 图表组件可再扩展
         Map<String, Object> mapChart = new HashMap<>();
         if (StringUtils.equalsIgnoreCase(view.getRender(), "echarts")) {
+            // reverse data
+            if (StringUtils.containsIgnoreCase(view.getType(), "horizontal")) {
+                Collections.reverse(data);
+            }
             if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 mapChart = ChartDataBuild.transStackChartData(xAxis, yAxis, view, data, extStack, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
@@ -1868,7 +1891,15 @@ public class ChartViewService {
                     getIndex = i;
                 }
             }
-            if (StringUtils.equalsIgnoreCase(fieldType, "extStack")) {
+            boolean skipAddIndex = false;
+            if (StringUtils.equalsIgnoreCase(fieldType, "extStack") && StringUtils.equalsIgnoreCase("antv", view.getRender()) && StringUtils.equalsIgnoreCase("scatter", view.getType())) {
+                List<ChartViewFieldDTO> xAxis = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                if (CollectionUtils.isNotEmpty(xAxis) && StringUtils.equalsIgnoreCase(xAxis.get(0).getGroupType(), "q")) {
+                    skipAddIndex = true;
+                }
+            }
+            if (StringUtils.equalsIgnoreCase(fieldType, "extStack") && !skipAddIndex) {
                 List<ChartViewFieldDTO> stack = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
                 }.getType());
                 index += stack.size();

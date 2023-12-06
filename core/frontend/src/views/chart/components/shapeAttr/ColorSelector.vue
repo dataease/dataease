@@ -175,6 +175,18 @@
             />
           </el-form-item>
           <el-form-item
+            v-show="showProperty('quotaSuffixColor')"
+            :label="$t('chart.quota_suffix_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.quotaSuffixColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('quotaSuffixColor')"
+            />
+          </el-form-item>
+          <el-form-item
             v-show="showProperty('dimensionColor')"
             :label="$t('chart.dimension_color')"
             class="form-item"
@@ -210,6 +222,28 @@
               class="color-picker-style"
               :predefine="predefineColors"
               @change="changeColorCase('tableItemBgColor')"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('enableTableCrossBG')"
+            :label="$t('chart.table_item_sub_enable')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="colorForm.enableTableCrossBG"
+              @change="changeColorCase('enableTableCrossBG')"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('tableItemSubBgColor') && colorForm.enableTableCrossBG"
+            :label="$t('chart.table_item_sub_bg')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="colorForm.tableItemSubBgColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeColorCase('tableItemSubBgColor')"
             />
           </el-form-item>
           <el-form-item
@@ -349,6 +383,7 @@ import { mapState } from 'vuex'
 import GradientColorSelector from '@/components/gradientColorSelector'
 import bus from '@/utils/bus'
 import { equalsAny } from '@/utils/StringUtils'
+import { viewData } from '@/api/panel/panel'
 
 export default {
   name: 'ColorSelector',
@@ -479,6 +514,9 @@ export default {
     }
   },
   computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
+    },
     checkMapLineGradient() {
       const chart = this.chart
       if (chart.type === 'flow-map') {
@@ -567,6 +605,7 @@ export default {
           this.colorForm.tableHeaderFontColor = this.colorForm.tableHeaderFontColor ? this.colorForm.tableHeaderFontColor : this.colorForm.tableFontColor
           this.$set(this.colorForm, 'gradient', this.colorForm.gradient || false)
           this.colorForm.tableScrollBarColor = this.colorForm.tableScrollBarColor ? this.colorForm.tableScrollBarColor : DEFAULT_COLOR_CASE.tableScrollBarColor
+          this.colorForm.quotaSuffixColor = this.colorForm.quotaSuffixColor ? this.colorForm.quotaSuffixColor :DEFAULT_COLOR_CASE.quotaSuffixColor
 
           this.colorForm.mapStyle = this.colorForm.mapStyle ? this.colorForm.mapStyle : DEFAULT_COLOR_CASE.mapStyle
           this.colorForm.mapLineGradient = this.colorForm.mapLineGradient ? this.colorForm.mapLineGradient : DEFAULT_COLOR_CASE.mapLineGradient
@@ -614,6 +653,17 @@ export default {
         if (this.componentViewsData[this.chart.id]) {
           const chart = JSON.parse(JSON.stringify(this.componentViewsData[this.chart.id]))
           this.colorForm.seriesColors = getColors(chart, this.colorForm.colors, reset)
+        } else {
+          const requestInfo = {
+            filter: [],
+            drill: [],
+            queryFrom: 'panel'
+          }
+          viewData(this.chart.id, this.panelInfo.id, requestInfo).then(response => {
+            this.componentViewsData[this.chart.id] = response.data
+            const chart = JSON.parse(JSON.stringify(this.componentViewsData[this.chart.id]))
+            this.colorForm.seriesColors = getColors(chart, this.colorForm.colors, reset)
+          })
         }
       }
     }
@@ -637,6 +687,13 @@ export default {
 }
 
 .form-item ::v-deep .el-form-item__label {
+  font-size: 12px;
+}
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
   font-size: 12px;
 }
 

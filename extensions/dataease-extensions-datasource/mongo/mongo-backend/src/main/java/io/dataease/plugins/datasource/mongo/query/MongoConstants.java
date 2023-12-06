@@ -42,7 +42,7 @@ public class MongoConstants extends SQLConstants {
 
     public static final String BRACKETS = "(%s)";
 
-    public static final String NAME = "mysql";
+    public static final String NAME = "mongobi";
 
     public static final String GROUP_CONCAT = "group_concat(%s)";
 

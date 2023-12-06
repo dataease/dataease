@@ -105,6 +105,16 @@ export default {
     }
   },
   watch: {
+    'form.min': function(val, old) {
+      if (!this.inDraw) {
+        this.$emit('widget-value-changed', val)
+      }
+    },
+    'form.max': function(val, old) {
+      if (!this.inDraw) {
+        this.$emit('widget-value-changed', val)
+      }
+    },
     'viewIds': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
       this.setCondition()
@@ -150,8 +160,10 @@ export default {
       this.form.min = null
       this.form.max = null
     },
-    resetDefaultValue(id) {
-      if (this.inDraw && this.manualModify && this.element.id === id) {
+    resetDefaultValue(ele) {
+      const id = ele.id
+      const eleVal = ele.options.value.toString()
+      if (this.inDraw && this.manualModify && this.element.id === id && this.defaultValueStr === eleVal) {
         if (!this.element.options.value) {
           this.form.min = null
           this.form.max = null
@@ -311,6 +323,7 @@ export default {
     width: calc(50% - 10px) !important;
     display: inline-block;
     padding: 0 5px;
+    margin-bottom: 0;
   }
 }
 </style>

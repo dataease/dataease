@@ -1,6 +1,8 @@
 package io.dataease.provider.engine.doris;
 
 import com.alibaba.fastjson.JSONArray;
+import io.dataease.commons.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
@@ -92,17 +94,16 @@ public class DorisQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null);
+        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null, null, null);
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(DorisConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
-        int originSize = fields.size();
         List<String> fieldList = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
         if (CollectionUtils.isNotEmpty(sortFields)) {
             sortFields.forEach(item -> {
@@ -168,6 +169,7 @@ public class DorisQueryProvider extends QueryProvider {
                     }
                 }
                 xFields.add(SQLObj.builder()
+                        .fieldOriginName(originField)
                         .fieldName(fieldName)
                         .fieldAlias(fieldAlias)
                         .build());
@@ -196,6 +198,10 @@ public class DorisQueryProvider extends QueryProvider {
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (whereTrees != null) wheres.add(whereTrees);
+        if (StringUtils.isNotBlank(keyword)) {
+            String keyWhere = "(" + transKeywordFilterList(tableObj, xFields, keyword) + ")";
+            wheres.add(keyWhere);
+        }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
         String sql = st_sql.render();
@@ -206,17 +212,11 @@ public class DorisQueryProvider extends QueryProvider {
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
         st.add("table", tableSQL);
-
-        List<SQLObj> outFieldList = new ArrayList<>();
-        for (int i = 0; i < originSize; i++) {
-            SQLObj fieldObj = xFields.get(i);
-            String outFieldAlias = tableSQL.getTableAlias() + "." + fieldObj.getFieldAlias();
-            outFieldList.add(SQLObj.builder().fieldName(outFieldAlias).fieldAlias(fieldObj.getFieldAlias()).build());
-        }
-        st.add("groups", outFieldList);
         if (CollectionUtils.isNotEmpty(xOrders)) {
             st.add("orders", xOrders);
-            return st.render() + " LIMIT 0, 10000000";
+        }
+        if (ObjectUtils.isNotEmpty(limit)) {
+            return st.render() + " LIMIT 0," + limit;
         }
         return st.render();
     }
@@ -268,8 +268,8 @@ public class DorisQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields) {
-        return createQuerySQL("(" + sql + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, sortFields);
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
+        return createQuerySQL("(" + sql + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, sortFields, limit, keyword);
     }
 
     @Override
@@ -1420,27 +1420,54 @@ public class DorisQueryProvider extends QueryProvider {
     }
 
     private String calcFieldRegex(String originField, SQLObj tableObj) {
-        originField = originField.replaceAll("[\\t\\n\\r]]", "");
-        // 正则提取[xxx]
-        String regex = "\\[(.*?)]";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(originField);
-        Set<String> ids = new HashSet<>();
-        while (matcher.find()) {
-            String id = matcher.group(1);
-            ids.add(id);
+        try {
+            int i = 0;
+            return buildCalcField(originField, tableObj, i);
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
-        if (CollectionUtils.isEmpty(ids)) {
+        return null;
+    }
+
+    private String buildCalcField(String originField, SQLObj tableObj, int i) throws Exception {
+        try {
+            i++;
+            if (i > 100) {
+                DEException.throwException(Translator.get("i18n_field_circular_error"));
+            }
+            originField = originField.replaceAll("[\\t\\n\\r]]", "");
+            // 正则提取[xxx]
+            String regex = "\\[(.*?)]";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(originField);
+            Set<String> ids = new HashSet<>();
+            while (matcher.find()) {
+                String id = matcher.group(1);
+                ids.add(id);
+            }
+            if (CollectionUtils.isEmpty(ids)) {
+                return originField;
+            }
+            DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+            datasetTableFieldExample.createCriteria().andIdIn(new ArrayList<>(ids));
+            List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+            for (DatasetTableField ele : calcFields) {
+                if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
+                    // 计算字段允许二次引用，这里递归查询完整引用链
+                    if (Objects.equals(ele.getExtField(), 0)) {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]",
+                                String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getDataeaseName()));
+                    } else {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
+                        originField = buildCalcField(originField, tableObj, i);
+                    }
+                }
+            }
             return originField;
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_field_circular_error"));
         }
-        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
-        datasetTableFieldExample.createCriteria().andIdIn(new ArrayList<>(ids));
-        List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
-        for (DatasetTableField ele : calcFields) {
-            originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(DorisConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getDataeaseName()));
-        }
-        return originField;
+        return null;
     }
 
     private String sqlLimit(String sql, ChartViewWithBLOBs view) {

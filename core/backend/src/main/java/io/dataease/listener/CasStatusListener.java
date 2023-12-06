@@ -1,6 +1,6 @@
 package io.dataease.listener;
 
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;

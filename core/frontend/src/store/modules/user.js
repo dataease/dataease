@@ -4,7 +4,6 @@ import { resetRouter } from '@/router'
 import { format } from '@/utils/formatUi'
 import { getLanguage } from '@/lang/index'
 import Cookies from 'js-cookie'
-import router from '@/router'
 import i18n from '@/lang'
 import { $alert, $confirm } from '@/utils/message'
 const getDefaultState = () => {
@@ -70,7 +69,7 @@ const mutations = {
   },
   SET_PASSWORD_MODIFIED: (state, passwordModified) => {
     state.passwordModified = passwordModified
-  },
+  }
 }
 
 const actions = {
@@ -84,8 +83,11 @@ const actions = {
         commit('SET_LOGIN_MSG', null)
         setToken(data.token)
         let passwordModified = true
-        if (data.hasOwnProperty('passwordModified')) {
+        if (Object.prototype.hasOwnProperty.call(data, 'passwordModified')) {
           passwordModified = data.passwordModified
+        }
+        if (Object.prototype.hasOwnProperty.call(data, 'defaultPwd')) {
+          localStorage.setItem('defaultPwd', data.defaultPwd)
         }
         commit('SET_PASSWORD_MODIFIED', passwordModified)
         localStorage.setItem('passwordModified', passwordModified)
@@ -110,8 +112,8 @@ const actions = {
           reject('Verification failed, please Login again.')
         }
         const historyUserId = localStorage.getItem('userId')
-        if(historyUserId && historyUserId !== data.userId+''){
-          const clearLocalStorage = [ 'panel-main-tree', 'panel-default-tree','chart-tree','dataset-tree']
+        if (historyUserId && historyUserId !== data.userId + '') {
+          const clearLocalStorage = ['panel-main-tree', 'panel-default-tree', 'chart-tree', 'dataset-tree']
           clearLocalStorage.forEach((item) => {
             localStorage.removeItem(item)
           })

@@ -86,6 +86,7 @@ export function panelInit(componentData, componentStyle) {
 
 export function panelDataPrepare(componentData, componentStyle, callback) {
   // style初始化
+  componentStyle.autoSizeAdaptor = (componentStyle.autoSizeAdaptor === undefined ? true : componentStyle.autoSizeAdaptor)
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)
   componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
   componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
@@ -135,6 +136,7 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
     }
     if (item.type === 'custom') {
       item.options.manualModify = false
+      item.options.loaded = false
     }
     if (item.filters && item.filters.length > 0) {
       item.filters = []
@@ -350,7 +352,7 @@ export function insertTreeNode(nodeInfo, tree) {
   if (!nodeInfo) {
     return
   }
-  if (nodeInfo.pid === 0 || nodeInfo.pid === '0') {
+  if (nodeInfo.pid === 0 || nodeInfo.pid === '0' || nodeInfo.pid === 'panel_list') {
     tree.push(nodeInfo)
     return
   }

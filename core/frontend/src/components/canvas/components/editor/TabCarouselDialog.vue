@@ -66,8 +66,8 @@ export default {
       }
     },
     onSubmit() {
-      this.curComponent.style.carouselEnable  = this.carouselEnable
-      this.curComponent.style.switchTime  = this.switchTime
+      this.curComponent.style.carouselEnable = this.carouselEnable
+      this.curComponent.style.switchTime = this.switchTime
       this.$store.commit('canvasChange')
       this.onClose()
     },

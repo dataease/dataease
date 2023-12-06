@@ -392,10 +392,10 @@ export default {
     tableFields: function() {
       this.dimensionData = JSON.parse(
         JSON.stringify(this.tableFields.dimensionList)
-      ).filter((ele) => ele.extField === 0)
+      )
       this.quotaData = JSON.parse(
         JSON.stringify(this.tableFields.quotaList)
-      ).filter((ele) => ele.extField === 0)
+      )
     },
     searchField: function(val) {
       if (val && val !== '') {
@@ -405,7 +405,7 @@ export default {
               (ele) =>
                 ele.name
                   .toLocaleLowerCase()
-                  .includes(val.toLocaleLowerCase()) && ele.extField === 0
+                  .includes(val.toLocaleLowerCase())
             )
           )
         )
@@ -415,17 +415,17 @@ export default {
               (ele) =>
                 ele.name
                   .toLocaleLowerCase()
-                  .includes(val.toLocaleLowerCase()) && ele.extField === 0
+                  .includes(val.toLocaleLowerCase())
             )
           )
         )
       } else {
         this.dimensionData = JSON.parse(
           JSON.stringify(this.tableFields.dimensionList)
-        ).filter((ele) => ele.extField === 0)
+        )
         this.quotaData = JSON.parse(
           JSON.stringify(this.tableFields.quotaList)
-        ).filter((ele) => ele.extField === 0)
+        )
       }
     },
     searchFunction: function(val) {
@@ -452,10 +452,10 @@ export default {
     this.initFunctions()
     this.dimensionData = JSON.parse(
       JSON.stringify(this.tableFields.dimensionList)
-    ).filter((ele) => ele.extField === 0)
+    )
     this.quotaData = JSON.parse(
       JSON.stringify(this.tableFields.quotaList)
-    ).filter((ele) => ele.extField === 0)
+    )
     this.initField()
   },
   methods: {
@@ -535,7 +535,7 @@ export default {
     },
     setNameIdTrans(from, to, originName, name2Auto) {
       let name2Id = originName
-      const nameIdMap = [...this.dimensionData, ...this.quotaData].reduce(
+      const nameIdMap = [...this.tableFields.dimensionList, ...this.tableFields.quotaList].reduce(
         (pre, next) => {
           pre[next[from]] = next[to]
           return pre

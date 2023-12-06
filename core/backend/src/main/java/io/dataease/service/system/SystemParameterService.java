@@ -12,7 +12,7 @@ import io.dataease.plugins.common.base.domain.FileMetadata;
 import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.plugins.common.base.domain.SystemParameterExample;
 import io.dataease.plugins.common.base.mapper.SystemParameterMapper;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.display.service.DisplayXpackService;
@@ -22,7 +22,6 @@ import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.CacheEvict;
 import org.springframework.context.annotation.Lazy;
 import org.springframework.stereotype.Service;
@@ -82,6 +81,9 @@ public class SystemParameterService {
                 }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.LOG_TIME_OUT.getValue())) {
                     result.setLogTimeOut(param.getParamValue());
+                }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DS_SYNC_LOG_TIME_OUT.getValue())) {
+                    result.setDsSyncLogTimeOut(param.getParamValue());
                 }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DEFAULT_LOGIN_TYPE.getValue())) {
                     String paramValue = param.getParamValue();

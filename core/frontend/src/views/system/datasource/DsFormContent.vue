@@ -71,8 +71,8 @@
           </el-form>
           <div class="de-row-rules">
             <span>{{
-                positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
-              }}</span>
+              positionCheck('appMarket') ? $t('app_template.datasource_info') : $t('datasource.basic_info')
+            }}</span>
           </div>
           <el-form
             ref="historyDsForm"
@@ -122,25 +122,25 @@
                   <span
                     v-if="
                       item.status !== 'Error' &&
-                      item.status !== 'Warning'
-                  "
+                        item.status !== 'Warning'
+                    "
                   >
-                  <svg-icon
-                    icon-class="db-de"
-                  />
-                </span>
+                    <svg-icon
+                      icon-class="db-de"
+                    />
+                  </span>
                   <span v-if="item.status === 'Error'">
-                  <svg-icon
-                    icon-class="de-ds-error"
-                    class="ds-icon-scene"
-                  />
-                </span>
+                    <svg-icon
+                      icon-class="de-ds-error"
+                      class="ds-icon-scene"
+                    />
+                  </span>
                   <span v-if="item.status === 'Warning'">
-                  <svg-icon
-                    icon-class="de-ds-warning"
-                    class="ds-icon-scene"
-                  />
-                </span>
+                    <svg-icon
+                      icon-class="de-ds-warning"
+                      class="ds-icon-scene"
+                    />
+                  </span>
                   <span>
                     {{ item.name }}
                   </span>
@@ -273,7 +273,7 @@
               formType === 'add'
                 ? true
                 : (hasDataPermission('manage', outerParams.panelPrivileges)
-                ||hasDataPermission('manage', outerParams.datasetPrivileges))
+                  ||hasDataPermission('manage', outerParams.datasetPrivileges))
             "
             @click="validaDatasource"
           >{{ $t('commons.validate') }}
@@ -840,16 +840,16 @@ export default {
     },
     saveAppMarketHistory() {
       this.$refs.historyDsForm.validate(valid => {
-          if (!valid) {
-            return false
-          }
-          const appApplyForm = {
-            ...this.attachForm,
-            ...this.historyDsForm
-          }
-          const method = this.formType === 'add' ? appApply : appEdit
-          this.appApplyMethod(method, appApplyForm)
+        if (!valid) {
+          return false
         }
+        const appApplyForm = {
+          ...this.attachForm,
+          ...this.historyDsForm
+        }
+        const method = this.formType === 'add' ? appApply : appEdit
+        this.appApplyMethod(method, appApplyForm)
+      }
       )
     },
     save() {
@@ -886,7 +886,7 @@ export default {
         this.tData.forEach((item) => {
           if (item.id === this.form.type) {
             item.children.forEach((child) => {
-              if (this.formType === 'modify' && child.id === this.form.id) {
+              if (child.id === this.form.id) {
                 return
               }
               const configuration = JSON.parse(child.configuration)
@@ -946,7 +946,7 @@ export default {
           this.tData.forEach((item) => {
             if (item.id === this.form.type) {
               item.children.forEach((child) => {
-                if (this.formType === 'modify' && child.id === this.form.id) {
+                if (child.id === this.form.id) {
                   return
                 }
                 const configuration = JSON.parse(child.configuration)
@@ -996,10 +996,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-            if (!valid) {
-              return false
-            }
+          if (!valid) {
+            return false
           }
+        }
         )
       }
       this.$refs.dsForm.validate((valid) => {
@@ -1116,7 +1116,7 @@ export default {
     },
     reloadStatus(statusMap = {}) {
       this.form.apiConfiguration.forEach(ele => {
-         ele.status = statusMap[ele.name] || ele.status
+        ele.status = statusMap[ele.name] || ele.status
       })
     },
     validaDatasource() {
@@ -1151,10 +1151,10 @@ export default {
       }
       if (this.positionCheck('appMarket')) {
         this.$refs.attachParamsForm.validate(valid => {
-            if (!valid) {
-              return false
-            }
+          if (!valid) {
+            return false
           }
+        }
         )
       }
       this.$refs.dsForm.validate((valid) => {

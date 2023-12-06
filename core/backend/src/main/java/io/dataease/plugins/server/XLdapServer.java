@@ -2,7 +2,7 @@ package io.dataease.plugins.server;
 
 
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
 import io.dataease.plugins.xpack.ldap.dto.response.LdapInfo;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;

@@ -1,6 +1,9 @@
 <template>
   <div class="de-dataset-form">
-    <div class="top" v-loading="loading">
+    <div
+      v-loading="saveDisabled"
+      class="top"
+    >
       <span class="name">
         <i
           class="el-icon-arrow-left"
@@ -41,7 +44,7 @@
         >{{ $t('deDataset.selected') }} {{ tableNum }}
           {{ ['excel'].includes(datasetType) ? $t('deDataset.table') : $t('deDataset.item') }}</span>
         <deBtn
-          :disabled="['db', 'excel', 'api', 'union'].includes(datasetType) && !tableNum"
+          :disabled="(['db', 'excel', 'api', 'union'].includes(datasetType) && !tableNum)"
           type="primary"
           @click="datasetSave"
         >{{
@@ -56,8 +59,8 @@
         :param="table"
         :origin-name="originName"
         :name-list="nameList"
+        @setSaveDisabled="(val) => (saveDisabled = val)"
         @setTableNum="(val) => (tableNum = val)"
-        @datasourceLoading="(val) => loading = val"
       />
     </div>
   </div>
@@ -79,8 +82,8 @@ export default {
   data() {
     return {
       originName: '',
+      saveDisabled: true,
       tableNum: 0,
-      loading: false,
       showInput: false,
       editType: '',
       selectDatasets: [],

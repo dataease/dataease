@@ -1,10 +1,13 @@
 <template>
-  <span>
+  <span
+    style="display: inline-block;"
+  >
     <el-popover
       placement="bottom"
       trigger="hover"
       width="300"
-      popper-class="remark-pop"
+      :append-to-body="!previewVisible"
+      :popper-class="previewVisible && 'remark-pop'"
       :visible-arrow="false"
     >
       <div
@@ -15,13 +18,15 @@
       <i
         slot="reference"
         class="el-icon-info"
-        style="cursor: pointer;color: gray;font-size: 12px;"
+        style="cursor: pointer;color: gray;font-size: 12px;position: relative;
+    z-index: 10;"
       />
     </el-popover>
   </span>
 </template>
 
 <script>
+import { mapState } from 'vuex'
 export default {
   name: 'TitleRemark',
   props: {
@@ -29,12 +34,17 @@ export default {
       type: Object,
       required: true
     }
+  },
+  computed: {
+    ...mapState(['previewVisible'])
   }
 }
 </script>
 
 <style scoped>
 .remark-style{
+  position: relative;
+  z-index: 10;
   min-height: 100px;
   max-height: 200px;
   overflow-y: auto;
@@ -69,11 +79,16 @@ export default {
   text-align: -webkit-match-parent!important;
 }
 </style>
-<style>
-.el-popover.remark-pop{
-  padding: 0;
-  border: none;
-  margin-top: 8px!important;
-  background: transparent;
+
+<style lang="scss">
+.remark-pop {
+  position: absolute !important;
+  left: 10% !important;
+}
+.title-is-right {
+  .remark-pop {
+    left: auto !important;
+    right: 20px;
+  }
 }
 </style>

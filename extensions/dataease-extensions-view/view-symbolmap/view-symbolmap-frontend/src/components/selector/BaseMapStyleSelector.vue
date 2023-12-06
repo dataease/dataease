@@ -9,7 +9,7 @@
                 <el-radio label="dark">{{$t('plugin_view_symbol_map.dark')}}</el-radio>
             </el-radio-group>
         </el-form-item>
-        
+
       </el-form>
     </el-col>
   </div>
@@ -83,6 +83,14 @@ export default {
 .form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 .el-select-dropdown__item{
   padding: 0 20px;
 }

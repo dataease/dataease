@@ -153,7 +153,6 @@ export const viewOptions = panelId => {
   })
 }
 
-
 export function getDatasourceRelationship(id) {
   return request({
     url: `/api/relation/datasource/${id}`,
@@ -162,7 +161,6 @@ export function getDatasourceRelationship(id) {
   })
 }
 
-
 export function getDatasetRelationship(id) {
   return request({
     url: `/api/relation/dataset/${id}`,
@@ -170,7 +168,6 @@ export function getDatasetRelationship(id) {
     loading: true
   })
 }
-
 
 export function getPanelRelationship(id) {
   return request({

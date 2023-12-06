@@ -47,6 +47,7 @@
             />
           </el-select>
         </el-form-item>
+        <el-divider />
         <el-form-item
           v-show="showProperty('lineStyle')"
           :label="$t('chart.axis_color')"
@@ -59,6 +60,50 @@
             @change="changeSplitStyle('axisLine')"
           />
         </el-form-item>
+        <el-divider v-show="showProperty('axisValue')" />
+        <el-form-item
+          v-show="showProperty('axisValue')"
+          :label="$t('chart.axis_value')"
+          class="form-item"
+        >
+          <el-radio-group
+            v-model="splitForm.axisValue.auto"
+            @change="changeSplitStyle('axisValue')"
+          >
+            <el-radio :label="true">{{ $t('chart.axis_auto') }}</el-radio>
+            <el-radio :label="false">{{ $t('commons.custom') }}</el-radio>
+          </el-radio-group>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            placement="bottom"
+          >
+            <div
+              slot="content"
+              v-html="$t('chart.radar_min_max_tip')"
+            />
+            <i
+              class="el-icon-info"
+              style="cursor: pointer;color: #606266;margin-left: 4px;"
+            />
+          </el-tooltip>
+        </el-form-item>
+        <div v-show="showProperty('axisValue') && !splitForm.axisValue.auto">
+          <el-form-item :label="$t('chart.axis_value_min')">
+            <el-input-number
+              v-model="splitForm.axisValue.min"
+              :max="splitForm.axisValue.max"
+              @change="changeSplitStyle('axisValue')"
+            />
+          </el-form-item>
+          <el-form-item :label="$t('chart.axis_value_max')">
+            <el-input-number
+              v-model="splitForm.axisValue.max"
+              :min="splitForm.axisValue.min"
+              @change="changeSplitStyle('axisValue')"
+            />
+          </el-form-item>
+        </div>
       </el-form>
     </el-col>
   </div>
@@ -117,6 +162,9 @@ export default {
         }
         if (customStyle.split) {
           this.splitForm = customStyle.split
+          if (this.splitForm.axisValue === undefined) {
+            this.splitForm.axisValue = JSON.parse(JSON.stringify(DEFAULT_SPLIT.axisValue))
+          }
         } else {
           this.splitForm = JSON.parse(JSON.stringify(DEFAULT_SPLIT))
         }
@@ -147,9 +195,9 @@ export default {
 </script>
 
 <style scoped>
-  .el-divider--horizontal {
-    margin: 10px 0
-  }
+.el-divider--horizontal {
+  margin: 10px 0
+}
 .shape-item{
   padding: 6px;
   border: none;
@@ -165,6 +213,14 @@ export default {
 .form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 .el-select-dropdown__item{
   padding: 0 20px;
 }

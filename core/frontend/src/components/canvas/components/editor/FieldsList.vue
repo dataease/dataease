@@ -1,5 +1,8 @@
 <template>
-  <div @mousedown="fieldsAreaDown" class="field-main">
+  <div
+    class="field-main"
+    @mousedown="fieldsAreaDown"
+  >
     <el-button
       v-for="(field) in fields"
       :key="field.id"

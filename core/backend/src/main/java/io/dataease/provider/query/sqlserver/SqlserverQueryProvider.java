@@ -2,6 +2,8 @@ package io.dataease.provider.query.sqlserver;
 
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
+import io.dataease.commons.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
@@ -97,7 +99,7 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null);
+        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null, null, null);
     }
 
     @Override
@@ -105,23 +107,68 @@ public class SqlserverQueryProvider extends QueryProvider {
         return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree);
     }
 
-    @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, sortFields);
+
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, sortFields, limit, keyword);
+    }
+
+    private boolean anyFieldExceed(List<DatasetTableField> fields) {
+        if (CollectionUtils.isEmpty(fields)) return false;
+        return fields.stream().anyMatch(field -> field.getDeExtractType().equals(DeTypeConstants.DE_STRING) && field.getSize() > 8000);
+    }
+
+    private boolean anySortFieldExceed(List<DeSortField> fields) {
+        if (CollectionUtils.isEmpty(fields)) return false;
+        return fields.stream().anyMatch(field -> field.getDeExtractType().equals(DeTypeConstants.DE_STRING) && field.getSize() > 8000);
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
                 .build();
         setSchema(tableObj, ds);
+        List<String> exceedList = null;
+        if (anyFieldExceed(fields) || anySortFieldExceed(sortFields)) {
+            exceedList = new ArrayList<>();
+            List<DatasetTableField> calcFieldList = new ArrayList<>(fields);
+            if (CollectionUtils.isNotEmpty(sortFields)) {
+                calcFieldList.addAll(sortFields);
+            }
+            List<SQLObj> sqlObjList = new ArrayList<>();
+            sqlObjList.add(SQLObj.builder().fieldName("*").build());
+            for (DatasetTableField f : calcFieldList) {
+                boolean exceed = f.getDeExtractType().equals(DeTypeConstants.DE_STRING) && f.getSize() > 8000;
+                if (!exceedList.contains(f.getOriginName()) && exceed) {
+                    exceedList.add(f.getOriginName());
+                    String originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), f.getOriginName());
+                    String newOriginName = f.getOriginName() + "_exceed";
+                    String format = String.format(SqlServerSQLConstants.TO_STRING, originField, newOriginName);
+                    sqlObjList.add(SQLObj.builder().fieldName(format).build());
+                }
+            }
+            STGroup tabStg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+            ST st_sql = tabStg.getInstanceOf("previewSql");
+            st_sql.add("isGroup", false);
+            st_sql.add("notUseAs", true);
+            st_sql.add("table", tableObj);
+            st_sql.add("groups", sqlObjList);
+            String render = st_sql.render();
+            tableObj = SQLObj.builder()
+                    .tableName(" (" + render + ") ")
+                    .tableAlias(String.format(TABLE_ALIAS_PREFIX, "_exceed"))
+                    .build();
+        }
+
 
         List<SQLObj> xFields = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 DatasetTableField f = fields.get(i);
+                if (CollectionUtils.isNotEmpty(exceedList) && exceedList.contains(f.getOriginName())) {
+                    f.setOriginName(f.getOriginName() + "_exceed");
+                }
                 String originField;
                 if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
@@ -161,6 +208,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                     }
                 }
                 xFields.add(SQLObj.builder()
+                        .fieldOriginName(originField)
                         .fieldName(fieldName)
                         .fieldAlias(fieldAlias)
                         .build());
@@ -178,16 +226,28 @@ public class SqlserverQueryProvider extends QueryProvider {
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (whereTrees != null) wheres.add(whereTrees);
+        if (StringUtils.isNotBlank(keyword)) {
+            String keyWhere = "(" + transKeywordFilterList(tableObj, xFields, keyword) + ")";
+            wheres.add(keyWhere);
+        }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(sortFields)) {
             int step = fields.size();
             for (int i = step; i < (step + sortFields.size()); i++) {
                 DeSortField deSortField = sortFields.get(i - step);
+                if (CollectionUtils.isNotEmpty(exceedList) && exceedList.contains(deSortField.getOriginName())) {
+                    deSortField.setOriginName(deSortField.getOriginName() + "_exceed");
+                }
                 SQLObj order = buildSortField(deSortField, tableObj, i);
                 xOrders.add(order);
             }
         }
+        if (ObjectUtils.isNotEmpty(limit)) {
+            SQLObj limitFiled = SQLObj.builder().limitFiled(" top " + limit + " ").build();
+            st_sql.add("limitFiled", limitFiled);
+        }
+
         if (ObjectUtils.isNotEmpty(xOrders)) {
             st_sql.add("orders", xOrders);
         }
@@ -1389,27 +1449,54 @@ public class SqlserverQueryProvider extends QueryProvider {
     }
 
     private String calcFieldRegex(String originField, SQLObj tableObj) {
-        originField = originField.replaceAll("[\\t\\n\\r]]", "");
-        // 正则提取[xxx]
-        String regex = "\\[(.*?)]";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(originField);
-        Set<String> ids = new HashSet<>();
-        while (matcher.find()) {
-            String id = matcher.group(1);
-            ids.add(id);
+        try {
+            int i = 0;
+            return buildCalcField(originField, tableObj, i);
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
-        if (CollectionUtils.isEmpty(ids)) {
+        return null;
+    }
+
+    private String buildCalcField(String originField, SQLObj tableObj, int i) throws Exception {
+        try {
+            i++;
+            if (i > 100) {
+                DEException.throwException(Translator.get("i18n_field_circular_error"));
+            }
+            originField = originField.replaceAll("[\\t\\n\\r]]", "");
+            // 正则提取[xxx]
+            String regex = "\\[(.*?)]";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(originField);
+            Set<String> ids = new HashSet<>();
+            while (matcher.find()) {
+                String id = matcher.group(1);
+                ids.add(id);
+            }
+            if (CollectionUtils.isEmpty(ids)) {
+                return originField;
+            }
+            DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+            datasetTableFieldExample.createCriteria().andIdIn(new ArrayList<>(ids));
+            List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+            for (DatasetTableField ele : calcFields) {
+                if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
+                    // 计算字段允许二次引用，这里递归查询完整引用链
+                    if (Objects.equals(ele.getExtField(), 0)) {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]",
+                                String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+                    } else {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
+                        originField = buildCalcField(originField, tableObj, i);
+                    }
+                }
+            }
             return originField;
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_field_circular_error"));
         }
-        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
-        datasetTableFieldExample.createCriteria().andIdIn(new ArrayList<>(ids));
-        List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
-        for (DatasetTableField ele : calcFields) {
-            originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
-        }
-        return originField;
+        return null;
     }
 
     @Override

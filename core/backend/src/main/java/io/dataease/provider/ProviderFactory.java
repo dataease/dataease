@@ -2,7 +2,7 @@ package io.dataease.provider;
 
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;

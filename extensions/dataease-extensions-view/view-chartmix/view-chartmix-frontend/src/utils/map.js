@@ -12,53 +12,14 @@ export const DEFAULT_COLOR_CASE = {
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
-  barWidth: 40,
-  barGap: 0.4,
+  barWidthPercent: 50,
   lineWidth: 2,
   lineType: 'solid',
-  lineSymbol: 'marker',
+  lineSymbol: 'circle',
   lineSymbolSize: 4,
   lineSmooth: true,
-  lineArea: false,
-  pieInnerRadius: 0,
-  pieOuterRadius: 80,
-  pieRoseType: 'radius',
-  pieRoseRadius: 5,
-  funnelWidth: 80,
-  radarShape: 'polygon',
-  radarSize: 80,
-  tableTitleFontSize: 12,
-  tableItemFontSize: 12,
-  tableTitleHeight: 36,
-  tableItemHeight: 36,
-  tablePageSize: '20',
-  tableColumnMode: 'custom',
-  tableColumnWidth: 100,
-  tableHeaderAlign: 'left',
-  tableItemAlign: 'right',
-  gaugeMin: 0,
-  gaugeMax: 100,
-  gaugeStartAngle: 225,
-  gaugeEndAngle: -45,
-  dimensionFontSize: 18,
-  quotaFontSize: 18,
-  spaceSplit: 10,
-  dimensionShow: true,
-  quotaShow: true,
-  scatterSymbol: 'marker',
+  scatterSymbol: 'circle',
   scatterSymbolSize: 15,
-  symbolOpacity: 5,
-  symbolStrokeWidth: 1,
-  treemapWidth: 80,
-  treemapHeight: 80,
-  liquidMax: 100,
-  liquidSize: 80,
-  liquidOutlineBorder: 4,
-  liquidOutlineDistance: 8,
-  liquidWaveLength: 128,
-  liquidWaveCount: 3,
-  liquidShape: 'circle',
-  tablePageMode: 'page'
 }
 export const COLOR_PANEL = [
   '#ff4500',
@@ -71,6 +32,27 @@ export const COLOR_PANEL = [
   '#999999',
   '#000000',
   '#FFFFFF'
+]
+
+export const CHART_FONT_FAMILY = [
+  { name: '微软雅黑', value: 'Microsoft YaHei' },
+  { name: '宋体', value: 'SimSun' },
+  { name: '黑体', value: 'SimHei' },
+  { name: '楷体', value: 'KaiTi' }
+]
+
+export const CHART_FONT_LETTER_SPACE = [
+  { name: '0px', value: '0' },
+  { name: '1px', value: '1' },
+  { name: '2px', value: '2' },
+  { name: '3px', value: '3' },
+  { name: '4px', value: '4' },
+  { name: '5px', value: '5' },
+  { name: '6px', value: '6' },
+  { name: '7px', value: '7' },
+  { name: '8px', value: '8' },
+  { name: '9px', value: '9' },
+  { name: '10px', value: '10' }
 ]
 
 export const DEFAULT_LABEL = {
@@ -406,9 +388,9 @@ export function hexColorToRGBA(hex, alpha) {
 }
 
 
-export const DEFAULT_YAXIS_EXT_STYLE = {
+export const DEFAULT_YAXIS_STYLE = {
   show: true,
-  position: 'right',
+  position: 'left',
   name: '',
   nameTextStyle: {
     color: '#333333',
@@ -420,6 +402,14 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     fontSize: '12',
     rotate: 0,
     formatter: '{value}'
+  },
+  axisLine: {
+    show: false,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
   },
   splitLine: {
     show: true,
@@ -435,6 +425,59 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
     max: null,
     split: null,
     splitCount: null
+  },
+  axisLabelFormatter: {
+    type: 'auto', // auto,value,percent
+    unit: 1, // 换算单位
+    suffix: '', // 单位后缀
+    decimalCount: 2, // 小数位数
+    thousandSeparator: true// 千分符
+  }
+}
+export const DEFAULT_YAXIS_EXT_STYLE = {
+  show: true,
+  position: 'right',
+  name: '',
+  nameTextStyle: {
+    color: '#333333',
+    fontSize: 12
+  },
+  axisLabel: {
+    show: true,
+    color: '#333333',
+    fontSize: '12',
+    rotate: 0,
+    formatter: '{value}'
+  },
+  axisLine: {
+    show: false,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
+  },
+  splitLine: {
+    show: true,
+    lineStyle: {
+      color: '#cccccc',
+      width: 1,
+      style: 'solid'
+    }
+  },
+  axisValue: {
+    auto: true,
+    min: null,
+    max: null,
+    split: null,
+    splitCount: null
+  },
+  axisLabelFormatter: {
+    type: 'auto', // auto,value,percent
+    unit: 1, // 换算单位
+    suffix: '', // 单位后缀
+    decimalCount: 2, // 小数位数
+    thousandSeparator: true// 千分符
   }
 }
 
@@ -493,53 +536,6 @@ export const DEFAULT_XAXIS_STYLE = {
   },
   splitLine: {
     show: false,
-    lineStyle: {
-      color: '#cccccc',
-      width: 1,
-      style: 'solid'
-    }
-  },
-  axisValue: {
-    auto: true,
-    min: null,
-    max: null,
-    split: null,
-    splitCount: null
-  },
-  axisLabelFormatter: {
-    type: 'auto', // auto,value,percent
-    unit: 1, // 换算单位
-    suffix: '', // 单位后缀
-    decimalCount: 2, // 小数位数
-    thousandSeparator: true// 千分符
-  }
-}
-
-export const DEFAULT_YAXIS_STYLE = {
-  show: true,
-  position: 'left',
-  name: '',
-  nameTextStyle: {
-    color: '#333333',
-    fontSize: 12
-  },
-  axisLabel: {
-    show: true,
-    color: '#333333',
-    fontSize: '12',
-    rotate: 0,
-    formatter: '{value}'
-  },
-  axisLine: {
-    show: false,
-    lineStyle: {
-      color: '#cccccc',
-      width: 1,
-      style: 'solid'
-    }
-  },
-  splitLine: {
-    show: true,
     lineStyle: {
       color: '#cccccc',
       width: 1,

@@ -15,7 +15,7 @@
             <el-color-picker v-model="labelForm.color" class="color-picker-style" :predefine="predefineColors" @change="changeLabelAttr" />
           </el-form-item>
           <el-form-item :label="$t('chart.label')" class="form-item">
-            <el-select v-model="values" :placeholder="$t('commons.please_select')" multiple collapse-tags @change="changeFields">
+            <el-select v-model="values" :placeholder="$t('commons.please_select')" class="de-label-selector" multiple collapse-tags @change="changeFields">
                 <el-option-group
                     v-for="group in fieldOptions"
                     :key="group.label"
@@ -222,6 +222,14 @@ export default {
 .form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 .el-select-dropdown__item{
   padding: 0 20px;
 }
@@ -240,5 +248,10 @@ export default {
   .color-picker-style{
     cursor: pointer;
     z-index: 1003;
+  }
+
+  .de-label-selector ::v-deep .el-select__tags-text {
+    max-width: 78px !important;
+    overflow-x: hidden !important;
   }
 </style>

@@ -1,6 +1,6 @@
 {
   "name": "dataease",
-  "version": "1.18.12",
+  "version": "1.18.13",
   "description": "dataease front",
   "private": true,
   "scripts": {
@@ -39,7 +39,7 @@
     "@antv/util": "^2.0.17",
     "@riophae/vue-treeselect": "0.4.0",
     "@tinymce/tinymce-vue": "^3.2.8",
-    "axios": "^0.21.3",
+    "axios": "^1.6.1",
     "core-js": "^2.6.5",
     "echarts": "^5.0.1",
     "element-resize-detector": "^1.2.3",
@@ -72,6 +72,7 @@
     "svgo": "1.2.2",
     "tinymce": "^5.8.2",
     "umy-ui": "^1.1.6",
+    "vant": "^2.13.2",
     "vue": "2.6.10",
     "vue-clipboard2": "0.3.1",
     "vue-codemirror": "^4.0.6",

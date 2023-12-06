@@ -50,7 +50,7 @@
       >
         <el-upload
           action=""
-          accept=".jpeg,.jpg,.png,.gif"
+          accept=".jpeg,.jpg,.png,.gif,.svg"
           class="avatar-uploader"
           list-type="picture-card"
           :http-request="upload"
@@ -231,6 +231,12 @@ export default {
 .form-item ::v-deep .el-form-item__label {
   font-size: 12px;
 }
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
 
 .el-select-dropdown__item {
   padding: 0 20px;
@@ -276,7 +282,6 @@ span {
   color: var(--TextPrimary, #1F2329) !important;
   line-height: 22px;
 }
-
 
 ::v-deep .el-slider__input {
   width: 40px;

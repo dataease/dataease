@@ -112,6 +112,7 @@ public interface ParamConstants {
         MSG_TIME_OUT("basic.msgTimeOut"),
 
         LOG_TIME_OUT("basic.logTimeOut"),
+        DS_SYNC_LOG_TIME_OUT("basic.dsSyncLogTimeOut"),
         DS_CHECK_INTERVAL("basic.dsCheckInterval"),
         DS_CHECK_INTERVAL_TYPE("basic.dsCheckIntervalType"),
         DEFAULT_LOGIN_TYPE("basic.loginType"),

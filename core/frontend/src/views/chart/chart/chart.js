@@ -1,4 +1,5 @@
 export const DEFAULT_TAB_COLOR_CASE_DARK = {
+  titleHide: false,
   headFontColor: '#FFFFFF',
   headFontActiveColor: '#FFFFFF',
   headBorderColor: '#131E42',
@@ -7,6 +8,7 @@ export const DEFAULT_TAB_COLOR_CASE_DARK = {
 }
 
 export const DEFAULT_TAB_COLOR_CASE_LIGHT = {
+  titleHide: false,
   headFontColor: '#OOOOOO',
   headFontActiveColor: '#OOOOOO',
   headBorderColor: '#OOOOOO',
@@ -20,6 +22,8 @@ export const DEFAULT_COLOR_CASE = {
   alpha: 100,
   tableHeaderBgColor: '#6D9A49',
   tableItemBgColor: '#FFFFFF',
+  enableTableCrossBG: false,
+  tableItemSubBgColor: '#dedede',
   tableHeaderFontColor: '#000000',
   tableFontColor: '#000000',
   tableStripe: true,
@@ -36,6 +40,7 @@ export const DEFAULT_COLOR_CASE = {
   mapLineGradient: false,
   mapLineSourceColor: '#146C94',
   mapLineTargetColor: '#576CBC',
+  quotaSuffixColor: '#5470c6'
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -44,6 +49,8 @@ export const DEFAULT_COLOR_CASE_DARK = {
   alpha: 100,
   tableHeaderBgColor: '#5470c6',
   tableItemBgColor: '#131E42',
+  enableTableCrossBG: false,
+  tableItemSubBgColor: '#1b2d60',
   tableFontColor: '#ffffff',
   tableStripe: true,
   dimensionColor: '#ffffff',
@@ -58,6 +65,7 @@ export const DEFAULT_COLOR_CASE_DARK = {
   mapLineGradient: false,
   mapLineSourceColor: '#2F58CD',
   mapLineTargetColor: '#3795BD',
+  quotaSuffixColor: '#5470c6'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -154,7 +162,15 @@ export const DEFAULT_SIZE = {
   mapLineAnimateInterval: 1,
   mapLineAnimateTrailLength: 1,
   wordSizeRange: [8, 32],
-  wordSpacing: 6
+  wordSpacing: 6,
+  showTableHeader: true,
+  quotaSuffix: '',
+  quotaSuffixFontSize: 12,
+  quotaSuffixFontFamily: 'Microsoft YaHei',
+  quotaSuffixFontIsItalic: false,
+  quotaSuffixFontIsBolder: false,
+  quotaSuffixLetterSpace: '0',
+  quotaSuffixFontShadow: false
 }
 export const DEFAULT_SUSPENSION = {
   show: true
@@ -468,6 +484,11 @@ export const DEFAULT_SPLIT = {
   },
   splitArea: {
     show: true
+  },
+  axisValue: {
+    auto: true,
+    min: 10,
+    max: 100
   }
 }
 export const DEFAULT_FUNCTION_CFG = {

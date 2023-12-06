@@ -1,7 +1,7 @@
 package io.dataease.commons.utils;
 
 import io.dataease.commons.constants.AuthConstants;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import org.springframework.core.env.Environment;
 import org.springframework.web.context.request.RequestContextHolder;
 import org.springframework.web.context.request.ServletRequestAttributes;

@@ -17,7 +17,7 @@
         style="border-bottom: 1px solid;border-bottom-color:#E6E6E6;"
       >
         <div style="height: 100%;">
-          <share-head/>
+          <share-head />
         </div>
       </el-row>
       <el-row
@@ -31,10 +31,13 @@
             :span="12"
             style="font-size: 14px;display: flex"
           >
-            <div :title="showName" style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px;max-width: 300px"><span
-              class="panel-name"
-            >
-              {{ panelInfo.name || '测试仪表板' }}</span>
+            <div
+              :title="showName"
+              style="text-overflow:ellipsis;overflow: hidden;white-space: nowrap;font-size: 14px;max-width: 300px"
+            ><span
+               class="panel-name"
+             >
+               {{ panelInfo.name || '测试仪表板' }}</span>
               <span
                 v-if="panelInfo.isDefault"
                 style="color: green;font-size: 12px"
@@ -49,41 +52,47 @@
                 v-if="!hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
                 style="margin-left: 9px"
               >
-              <el-tooltip :content="$t('panel.store')">
-                <i
-                  class="el-icon-star-off"
-                  @click="star"
-                />
-              </el-tooltip>
-            </span>
+                <el-tooltip :content="$t('panel.store')">
+                  <i
+                    class="el-icon-star-off"
+                    @click="star"
+                  />
+                </el-tooltip>
+              </span>
               <span
                 v-if="hasStar && panelInfo && showType !== 1&&panelInfo.status==='publish'"
                 style="margin-left: 9px"
               >
-              <el-tooltip :content="$t('commons.cancel') + $t('panel.store')">
-                <i
-                  class="el-icon-star-on"
-                  @click="unstar"
-                />
-              </el-tooltip>
-            </span>
+                <el-tooltip :content="$t('commons.cancel') + $t('panel.store')">
+                  <i
+                    class="el-icon-star-on"
+                    @click="unstar"
+                  />
+                </el-tooltip>
+              </span>
               <template v-if="panelInfo.creatorName">
                 <el-divider
                   style="margin: 0 16px;"
                   direction="vertical"
                 />
-                <span :title="panelInfo.creatorName" class="panel-create">
-                {{ $t('panel.create_by') + ':' + panelInfo.creatorName }}
-              </span>
+                <span
+                  :title="panelInfo.creatorName"
+                  class="panel-create"
+                >
+                  {{ $t('panel.create_by') + ':' + panelInfo.creatorName }}
+                </span>
               </template>
               <el-popover
                 placement="right-start"
                 width="400"
                 trigger="click"
               >
-                <panel-detail-info/>
-                <svg-icon slot="reference" style="margin-left: 4px;cursor: pointer;font-size: 14px;" class="icon-class"
-                          icon-class="icon_info_outlined"
+                <panel-detail-info />
+                <svg-icon
+                  slot="reference"
+                  style="margin-left: 4px;cursor: pointer;font-size: 14px;"
+                  class="icon-class"
+                  icon-class="icon_info_outlined"
                 />
               </el-popover>
             </div>
@@ -436,14 +445,14 @@ export default {
     }
   },
   computed: {
-    showName(){
+    showName() {
       let name = this.panelInfo.name || '测试仪表板'
-      if(this.panelInfo.isDefault){
-        name = name +'('+ this.$t('panel.default_panel_name') +':'+ this.panelInfo.defaultPanelName +')'
+      if (this.panelInfo.isDefault) {
+        name = name + '(' + this.$t('panel.default_panel_name') + ':' + this.panelInfo.defaultPanelName + ')'
       }
 
-      if(this.panelInfo.sourcePanelName){
-        name = name +'('+ this.$t('panel.source_panel_name') +':'+ this.panelInfo.sourcePanelName +')'
+      if (this.panelInfo.sourcePanelName) {
+        name = name + '(' + this.$t('panel.source_panel_name') + ':' + this.panelInfo.sourcePanelName + ')'
       }
       return name
     },
@@ -490,6 +499,7 @@ export default {
     },
     fullscreen(newVal, oldVla) {
       // 刷新 进行重新渲染
+      this.$store.commit('setPreviewVisible', newVal)
       this.showMain = false
       this.$nextTick(() => {
         this.showMain = true
@@ -927,18 +937,20 @@ export default {
   margin-right: 5px;
 }
 
+.fullscreen {
+  transform: translate(0) !important;
+  .main_view {
+    z-index: 0;
+  }
+}
+
 .fullscreen-visual-selects {
   .VisualSelects {
     top: inherit !important;
     left: inherit !important;
   }
-  .el-tree-select-popper {
-    left: 0 !important;
-    top: inherit !important;
-  }
 
-  .track-menu,
-  .coustom-date-picker {
+  .track-menu {
     left: inherit !important;
   }
 }

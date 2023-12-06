@@ -47,9 +47,9 @@ import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeObj;
+import io.dataease.plugins.common.util.ClassloaderResponsity;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
-import io.dataease.plugins.loader.ClassloaderResponsity;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.DDLProvider;
 import io.dataease.provider.ProviderFactory;
@@ -218,9 +218,7 @@ public class DataSetTableService {
                     excelSheetDataList.forEach(excelSheetData -> {
                         String[] fieldArray = excelSheetData.getFields().stream().map(TableField::getFieldName)
                                 .toArray(String[]::new);
-                        if (checkIsRepeat(fieldArray)) {
-                            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-                        }
+                        checkIsRepeat(fieldArray);
                         excelSheetData.setData(null);
                         excelSheetData.setJsonArray(null);
                     });
@@ -254,9 +252,7 @@ public class DataSetTableService {
                 for (ExcelSheetData sheet : datasetTable.getSheets()) {
                     String[] fieldArray = sheet.getFields().stream().map(TableField::getFieldName)
                             .toArray(String[]::new);
-                    if (checkIsRepeat(fieldArray)) {
-                        DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-                    }
+                    checkIsRepeat(fieldArray);
                 }
 
                 for (ExcelSheetData sheet : datasetTable.getSheets()) {
@@ -304,9 +300,7 @@ public class DataSetTableService {
             }
 
             String[] fieldArray = sheet.getFields().stream().map(TableField::getFieldName).toArray(String[]::new);
-            if (checkIsRepeat(fieldArray)) {
-                DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-            }
+            checkIsRepeat(fieldArray);
             sheet.setData(null);
             sheet.setJsonArray(null);
             excelSheetDataList.add(sheet);
@@ -1121,7 +1115,25 @@ public class DataSetTableService {
         }
     }
 
-    private String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
+    private void handleSelectItems(PlainSelect plainSelect, String dsType) throws Exception {
+        List<SelectItem> selectItems = new ArrayList<>();
+        for (SelectItem selectItem : plainSelect.getSelectItems()) {
+            try {
+                SelectExpressionItem selectExpressionItem = (SelectExpressionItem) selectItem;
+                if (selectExpressionItem.getExpression() instanceof SubSelect) {
+                    SubSelect subSelect = (SubSelect) selectExpressionItem.getExpression();
+                    Select select = (Select) CCJSqlParserUtil.parse(removeVariables(subSelect.getSelectBody().toString(), dsType));
+                    subSelect.setSelectBody(select.getSelectBody());
+                    ((SelectExpressionItem) selectItem).setExpression(subSelect);
+                }
+            } catch (Exception e) {
+            }
+            selectItems.add(selectItem);
+        }
+        plainSelect.setSelectItems(selectItems);
+    }
+
+    private void handleFromItems(PlainSelect plainSelect, String dsType) throws Exception {
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem instanceof SubSelect) {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
@@ -1129,7 +1141,9 @@ public class DataSetTableService {
             Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
             subSelect.setSelectBody(subSelectTmp.getSelectBody());
             if (dsType.equals(DatasourceTypes.oracle.getType())) {
-                subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                if (fromItem.getAlias() != null) {
+                    subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                }
             } else {
                 if (fromItem.getAlias() == null) {
                     throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
@@ -1138,6 +1152,9 @@ public class DataSetTableService {
             }
             plainSelect.setFromItem(subSelect);
         }
+    }
+
+    private void handleJoins(PlainSelect plainSelect, String dsType) throws Exception {
         List<Join> joins = plainSelect.getJoins();
         if (joins != null) {
             List<Join> joinsList = new ArrayList<>();
@@ -1163,6 +1180,9 @@ public class DataSetTableService {
             }
             plainSelect.setJoins(joinsList);
         }
+    }
+
+    private String handleWhere(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
         Expression expr = plainSelect.getWhere();
         if (expr == null) {
             return handleWith(plainSelect, statementSelect, dsType);
@@ -1204,6 +1224,14 @@ public class DataSetTableService {
         return builder.toString();
     }
 
+    private String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
+        handleSelectItems(plainSelect, dsType);
+        handleFromItems(plainSelect, dsType);
+        handleJoins(plainSelect, dsType);
+        return handleWhere(plainSelect, statementSelect, dsType);
+    }
+
+
     public Map<String, Object> getDBPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
         if (ds == null) {
@@ -1221,9 +1249,7 @@ public class DataSetTableService {
         List<String[]> data = result.get("dataList");
         List<TableField> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
-        if (checkIsRepeat(fieldArray)) {
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-        }
+        checkIsRepeat(fieldArray);
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
@@ -1305,9 +1331,7 @@ public class DataSetTableService {
         List<String[]> data = result.get("dataList");
         List<TableField> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
-        if (checkIsRepeat(fieldArray)) {
-            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat"));
-        }
+        checkIsRepeat(fieldArray);
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
@@ -1636,8 +1660,17 @@ public class DataSetTableService {
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
 
             String[] array = fields.stream()
-                    .map(f -> table + "." + f.getDataeaseName() + " AS "
-                            + TableUtils.fieldName(tableId + "_" + f.getDataeaseName()))
+                    .map(f -> {
+                        String s = "";
+                        if (f == null) {
+                            DEException.throwException(
+                                    Translator.get("i18n_ds_error"));
+                        } else {
+                            s = table + "." + f.getDataeaseName() + " AS "
+                                    + TableUtils.fieldName(tableId + "_" + f.getDataeaseName());
+                        }
+                        return s;
+                    })
                     .toArray(String[]::new);
             checkedInfo.put(table, array);
             checkedFields.addAll(fields);
@@ -2446,10 +2479,11 @@ public class DataSetTableService {
             });
             data = (isPreview && noModelDataListener.getData().size() > 1000 ? new ArrayList<>(data.subList(0, 1000)) : data);
             if (isPreview) {
-                for (List<String> datum : data) {
-                    for (int i = 0; i < datum.size(); i++) {
-                        if (i < fields.size()) {
-                            cellType(datum.get(i), i, fields.get(i));
+                for (int i = 0; i < data.size(); i++) {
+                    List<String> datum = data.get(i);
+                    for (int j = 0; j < datum.size(); j++) {
+                        if (j < fields.size()) {
+                            cellType(datum.get(j), i, fields.get(j));
                         }
                     }
                 }
@@ -2755,15 +2789,22 @@ public class DataSetTableService {
     /*
      * 判断数组中是否有重复的值
      */
-    public static boolean checkIsRepeat(String[] array) {
+    public static void checkIsRepeat(String[] array) {
         HashSet<String> hashSet = new HashSet<>();
+        HashSet<String> repeat = new HashSet<>();
         for (String s : array) {
             if (StringUtils.isEmpty(s)) {
                 throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
             }
-            hashSet.add(s);
+            if (hashSet.contains(s)) {
+                repeat.add(s);
+            } else {
+                hashSet.add(s);
+            }
         }
-        return hashSet.size() != array.length;
+        if (CollectionUtils.isNotEmpty(repeat)) {
+            DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + "" + String.valueOf(repeat));
+        }
     }
 
     public DatasetTable syncDatasetTableField(String id) throws Exception {
@@ -2868,9 +2909,8 @@ public class DataSetTableService {
 
                 visitBinaryExpression(likeExpression,
                         (likeExpression.isNot() ? " NOT" : "") + (likeExpression.isCaseInsensitive() ? " ILIKE " : " LIKE "));
-                String escape = likeExpression.getEscape();
-                if (escape != null) {
-                    buffer.append(" ESCAPE '").append(escape).append('\'');
+                if (likeExpression.getEscape() != null) {
+                    buffer.append(" ESCAPE '").append(likeExpression.getEscape()).append('\'');
                 }
             }
 

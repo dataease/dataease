@@ -4,7 +4,7 @@ import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
 import io.dataease.plugins.common.dto.PluginSysMenu;
 import io.dataease.plugins.common.service.PluginMenuService;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Component;

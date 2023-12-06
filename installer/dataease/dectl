@@ -57,20 +57,31 @@ function usage() {
 }
 function _healthcheck() {
    echo
-   for b in {1..30}
+   container_name=$(grep "container_name" $DE_BASE/dataease/docker-compose.yml | awk -F': ' '{print $2}')
+   sleep 1
+   if [ -z $(docker ps --filter "name=$container_name" -q) ];then
+      echo "未找到容器 $container_name。"
+      exit 1
+   fi
+
+   for b in {1..90}
    do
-      sleep 3
-      http_code=$(curl -sILw "%{http_code}\n" http://localhost:${DE_PORT} -o /dev/null)
-      if [[ $http_code == 000 ]];then
-         echo "DataEase 服务状态 : 正在启动"
-      elif [[ $http_code == 200 ]];then
-         echo "DataEase 服务状态 : 正常运行"
-         break;
+      sleep 1
+      read status healthy<<<$(docker inspect $container_name --format '{{.State.Status}} {{.State.Health.Status}}')
+      if [[ "$healthy" == "starting" ]];then
+         printf "\rDataEase 服务状态 : 正在启动 ... %3ds" $b
+      elif [[ "$status" == "running" ]] && [[ "$healthy" == "healthy" ]];then
+         printf "\rDataEase 服务状态 : 正常运行          "
+         echo
+         return;
       else
+         echo
          echo -e "DataEase 服务状态 : \033[31m无法访问\033[0m"
          exit 1
       fi
    done
+   echo
+   echo "【警告】服务在等待时间内未完全启动！请稍后使用 dectl status 检查服务运行状况。"
    echo
 }
 function status() {

@@ -105,11 +105,12 @@
                   <span class="el-dropdown-link">
                     <el-button
                       :title="$t('dataset.field_manage')"
-                      icon="el-icon-setting"
                       type="text"
                       size="mini"
                       style="float: right;width: 20px;margin-left: 4px;"
-                    />
+                    >
+                      <svg-icon icon-class="icon-setting" />
+                    </el-button>
                   </span>
                   <el-dropdown-menu slot="dropdown">
                     <el-dropdown-item
@@ -129,12 +130,13 @@
                 </el-dropdown>
                 <el-button
                   :title="$t('chart.change_ds')"
-                  icon="el-icon-refresh"
                   type="text"
                   size="mini"
                   style="float: right;width: 20px;margin-left: 4px;"
                   @click="changeDs"
-                />
+                >
+                  <svg-icon icon-class="icon_switch_outlined" />
+                </el-button>
               </div>
 
               <div
@@ -146,23 +148,43 @@
                   direction="vertical"
                 >
                   <template #top>
-                    <div class="padding-lr field-height">
+                    <div
+                      class="padding-lr field-height"
+                      :style="dimensionDragStyle"
+                    >
                       <span>{{ $t('chart.dimension') }}</span>
+                      <el-tooltip
+                        class="item"
+                        effect="dark"
+                        placement="bottom"
+                      >
+                        <span slot="content">{{ $t('chart.axis_multi_select_tip') }}</span>
+                        <i
+                          class="el-icon-info"
+                          style="cursor: pointer;color: #606266;margin-left: 4px; font-size: 12px"
+                        />
+                      </el-tooltip>
                       <draggable
                         v-if="table && hasDataPermission('use',table.privileges)"
                         v-model="dimensionData"
-                        :options="{group:{name: 'drag',pull:'clone'},sort: true}"
                         animation="300"
-                        :move="onMove"
                         class="drag-list"
+                        drag-class="drag-class"
+                        :options="{group:{name: 'drag',pull:'clone'},sort: true}"
+                        :move="onMove"
                         @add="moveToDimension"
                       >
                         <transition-group>
                           <span
-                            v-for="item in dimensionData"
+                            v-for="(item, index) in dimensionData"
                             :key="item.id"
-                            class="item-dimension father"
                             :title="item.name"
+                            :class="{ 'selected-item': selectedDimension.findIndex(i => i.id === item.id) !== -1 }"
+                            class="item-dimension father group-dimension"
+                            @click.exact="singleSelect(index, dimensionData, selectedDimension, 'lastDimensionIndex')"
+                            @click.ctrl="multiSelect(index, dimensionData, selectedDimension, 'lastDimensionIndex')"
+                            @click.meta="multiSelect(index, dimensionData, selectedDimension, 'lastDimensionIndex')"
+                            @click.shift="rangeSelect(index, dimensionData, selectedDimension, 'lastDimensionIndex')"
                           >
                             <svg-icon
                               v-if="item.deType === 0"
@@ -219,24 +241,33 @@
                     </div>
                   </template>
                   <template #bottom>
-                    <div class="padding-lr field-height">
+                    <div
+                      class="padding-lr field-height"
+                      :style="quotaDragStyle"
+                    >
                       <span>{{ $t('chart.quota') }}</span>
                       <draggable
                         v-if="table && hasDataPermission('use',table.privileges)"
                         v-model="quotaData"
                         :options="{group:{name: 'drag',pull:'clone'},sort: true}"
-                        animation="300"
                         :move="onMove"
+                        animation="300"
+                        drag-class="drag-class"
                         class="drag-list"
                         @add="moveToQuota"
                       >
                         <transition-group>
                           <span
-                            v-for="item in quotaData"
+                            v-for="(item, index) in quotaData"
                             v-show="chart.type && (chart.type !== 'table-info' || (chart.type === 'table-info' && item.id !=='count'))"
                             :key="item.id"
-                            class="item-quota father"
                             :title="item.name"
+                            :class="{ 'selected-item': selectedQuota.findIndex(i => i.id === item.id) !== -1 }"
+                            class="item-quota father group-quota"
+                            @click.exact="singleSelect(index, quotaData, selectedQuota, 'lastQuotaIndex')"
+                            @click.ctrl="multiSelect(index, quotaData, selectedQuota, 'lastQuotaIndex')"
+                            @click.meta="multiSelect(index, quotaData, selectedQuota, 'lastQuotaIndex')"
+                            @click.shift="rangeSelect(index, quotaData, selectedQuota, 'lastQuotaIndex')"
                           >
                             <svg-icon
                               v-if="item.deType === 0"
@@ -474,7 +505,7 @@
                   <plugin-com
                     v-if="view.isPlugin"
                     :component-name="view.type + '-data'"
-                    :obj="{view, param, chart, dimension, dimensionData, quota, quotaData}"
+                    :obj="obj"
                     :bus="bus"
                   />
                   <div v-else>
@@ -910,11 +941,73 @@
                             @onItemChange="stackItemChange"
                             @onItemRemove="stackItemRemove"
                             @onItemCustomSort="stackItemCustomSort"
+                            @onNameEdit="showRename"
                           />
                         </transition-group>
                       </draggable>
                       <div
                         v-if="!view.extStack || view.extStack.length === 0"
+                        class="drag-placeholder-style"
+                      >
+                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      </div>
+                    </el-row>
+                    <el-row
+                      v-if="view.type === 'scatter' && view.render === 'antv'"
+                      class="padding-lr"
+                    >
+                      <span class="data-area-label">
+                        <span>
+                          {{ $t('chart.chart_group') }}
+                        </span>
+                        /
+                        <span>{{ $t('chart.dimension') }}</span>
+                        <el-tooltip
+                          class="item"
+                          effect="dark"
+                          placement="bottom"
+                        >
+                          <div slot="content">
+                            {{ $t('chart.scatter_group_tip') }}
+                          </div>
+                          <i
+                            class="el-icon-info"
+                            style="cursor: pointer;color: #606266;"
+                          />
+                        </el-tooltip>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="clearData('xaxisExt')"
+                        />
+                      </span>
+                      <draggable
+                        v-model="view.xaxisExt"
+                        group="drag"
+                        animation="300"
+                        :move="onMove"
+                        class="drag-block-style"
+                        @add="addXaxisExt"
+                        @update="calcData(true)"
+                      >
+                        <transition-group class="draggable-group">
+                          <dimension-ext-item
+                            v-for="(item,index) in view.xaxisExt"
+                            :key="item.id"
+                            :param="param"
+                            :index="index"
+                            :item="item"
+                            :dimension-data="dimension"
+                            :quota-data="quota"
+                            :chart="chart"
+                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemRemove="dimensionItemRemove"
+                            @editItemFilter="showDimensionEditFilter"
+                            @onNameEdit="showRename"
+                          />
+                        </transition-group>
+                      </draggable>
+                      <div
+                        v-if="!view.xaxisExt || view.xaxisExt.length === 0"
                         class="drag-placeholder-style"
                       >
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
@@ -1967,10 +2060,27 @@ export default {
       fieldShow: false,
       tabActive: 'data',
       currentAreaCode: '',
-      showStackCustomSort: false
+      showStackCustomSort: false,
+      lastDimensionIndex: 0,
+      lastQuotaIndex: 0,
+      selectedDimension: [],
+      selectedQuota: []
     }
   },
   computed: {
+    obj() {
+      return {
+        view: this.view,
+        param: this.param,
+        chart: this.chart,
+        dimension: this.dimension,
+        dimensionData: this.dimensionData,
+        quota: this.quota,
+        quotaData: this.quotaData,
+        selectedDimension: this.selectedDimension,
+        selectedQuota: this.selectedQuota
+      }
+    },
     chartConfig() {
       const _this = this
       if (_this.chart && _this.chart.render) {
@@ -1998,15 +2108,15 @@ export default {
     },
     showCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table', 'liquid') && this.view.type !== 'race-bar' ||
-        equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map')
+        equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
     },
     showSeniorCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'table') ||
-        equalsAny(this.view.type, 'table-normal', 'table-info', 'map')
+        equalsAny(this.view.type, 'table-normal', 'table-info', 'map', 'text') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
     },
     showFunctionCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'table') ||
-        equalsAny(this.view.type, 'map')
+        equalsAny(this.view.type, 'map', 'text')
     },
     showScrollCfg() {
       return equalsAny(this.view.type, 'table-normal', 'table-info')
@@ -2017,7 +2127,7 @@ export default {
       }
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'liquid') ||
         equalsAny(this.view.type, 'text', 'label') ||
-        (this.view.render === 'antv' && this.view.type.includes('table'))
+        (this.view.render === 'antv' && this.view.type.includes('table')) || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
     },
     showAssistLineCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'mix')
@@ -2046,6 +2156,26 @@ export default {
       const isPlugin = this.isPlugin
       const id = this.chart.id
       return { type, render, isPlugin, id }
+    },
+    dimensionDragStyle() {
+      const style = {
+        '--dragDisplay': 'none'
+      }
+      if (this.selectedDimension.length > 1) {
+        style['--dragDisplay'] = 'inline-block'
+        style['--dragContent'] = `"+${this.selectedDimension.length}"`
+      }
+      return style
+    },
+    quotaDragStyle() {
+      const style = {
+        '--dragDisplay': 'none'
+      }
+      if (this.selectedQuota.length > 1) {
+        style['--dragDisplay'] = 'inline-block'
+        style['--dragContent'] = `"+${this.selectedQuota.length}"`
+      }
+      return style
     },
     ...mapState([
       'curComponent',
@@ -2084,31 +2214,44 @@ export default {
     },
     watchChartTypeChangeObj(newVal, oldVal) {
       this.view.isPlugin = newVal.isPlugin
-      if (newVal.id === oldVal.id && newVal.type !== oldVal.type && oldVal.type === 'table-info' && this.view.xaxis.length > 0) {
-        // 针对明细表切换为其他图表
-        this.$message({
-          showClose: true,
-          message: this.$t('chart.table_info_switch'),
-          type: 'warning'
-        })
-        this.view.xaxis = []
-      }
-      if (newVal.id === oldVal.id && newVal.type !== oldVal.type) {
-        this.view.senior.threshold = {}
-      }
       if (newVal.type === oldVal.type && newVal.render === oldVal.render && newVal.isPlugin === oldVal.isPlugin) {
         return
       }
-      if (newVal.render === 'antv' && newVal.type === 'chart-mix') {
-        // 针对antv组合图，清理自定义排序
-        this.view.xaxis.forEach(x => {
-          x.customSort = []
-          x.sort = 'none'
-        })
-      }
-      if (oldVal.id !== 'echart') {
-        this.setChartDefaultOptions()
-        this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
+      // 针对同一个图表，更改类型或者render时
+      if (newVal.id === oldVal.id) {
+        if (newVal.type !== oldVal.type && oldVal.type === 'table-info' && this.view.xaxis.length > 0) {
+          // 针对明细表切换为其他图表
+          this.$message({
+            showClose: true,
+            message: this.$t('chart.table_info_switch'),
+            type: 'warning'
+          })
+          this.view.xaxis = []
+        } else if (newVal.type === 'bidirectional-bar') {
+          if (this.view.customStyle && this.view.customStyle.xAxis && this.view.customStyle.xAxis.name) {
+            this.view.customStyle.xAxis.name = undefined
+          }
+        }
+        if (newVal.type !== oldVal.type) {
+          this.view.senior.threshold = {}
+        }
+        if (newVal.render === 'antv' && newVal.type === 'chart-mix') {
+          // 针对antv组合图，清理自定义排序
+          this.view.xaxis.forEach(x => {
+            x.customSort = []
+            x.sort = 'none'
+          })
+        }
+        if ((newVal.type !== 'scatter' || newVal.type === 'scatter' && newVal.render === 'echarts') && (oldVal.type === 'scatter' && oldVal.render === 'antv')) {
+          // 针对横轴内有指标的情况
+          if (this.view.xaxis && this.view.xaxis.length > 0 && this.view.xaxis[0] && this.view.xaxis[0].groupType === 'q') {
+            this.view.xaxis = []
+          }
+        }
+        if (newVal.type !== oldVal.type || newVal.render !== oldVal.render) {
+          this.setChartDefaultOptions()
+          this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
+        }
       }
     }
   },
@@ -2359,7 +2502,7 @@ export default {
         }
       })
       if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map', 'race-bar') ||
-        (view.render === 'antv' && view.type === 'line')) {
+        (view.render === 'antv' && (view.type === 'line' || view.type === 'scatter'))) {
         view.xaxisExt.forEach(function(ele) {
           if (!ele.dateStyle || ele.dateStyle === '') {
             ele.dateStyle = 'y_M_d'
@@ -2405,7 +2548,7 @@ export default {
       if (equalsAny(view.type, 'chart-mix', 'bidirectional-bar')) {
         view.yaxisExt.forEach(function(ele) {
           if (!ele.chartType) {
-            ele.chartType = 'bar'
+            ele.chartType = view.type === 'chart-mix' ? 'line' : 'bar'
           }
           if (ele.chartId) {
             ele.summary = ''
@@ -2689,13 +2832,11 @@ export default {
         this.view = {}
       }
     },
-
     // move回调方法
     onMove(e, originalEvent) {
       this.moveId = e.draggedContext.element.id
       return true
     },
-
     onCustomSort(item) {
       this.customSortField = this.view.xaxis[item.index]
       this.customSort()
@@ -2970,6 +3111,8 @@ export default {
             this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'dimensionExt') {
             this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'extStack') {
+            this.view.extStack[this.itemForm.index].name = this.itemForm.name
           }
           this.calcData(true)
           this.closeRename()
@@ -3099,7 +3242,7 @@ export default {
     // drag
     dragCheckType(list, type) {
       if (list && list.length > 0) {
-        for (let i = 0; i < list.length; i++) {
+        for (let i = list.length - 1; i >= 0; i--) {
           if (list[i].groupType !== type) {
             list.splice(i, 1)
           }
@@ -3110,37 +3253,51 @@ export default {
       if (mode === 'ds') {
         list.splice(e.newDraggableIndex, 1)
       } else {
-        const that = this
-        const dup = list.filter(function(m) {
-          return m.id === that.moveId
-        })
-        if (dup && dup.length > 1) {
-          list.splice(e.newDraggableIndex, 1)
+        let newItems = [list[e.newDraggableIndex]]
+        if (e.item.classList.contains('selected-item')) {
+          const groupDie = e.item.classList.contains('group-dimension')
+          newItems = groupDie ? this.selectedDimension : this.selectedQuota
+        }
+        const preIds = list
+          .filter((_, i) => i < e.newDraggableIndex || i >= e.newDraggableIndex + newItems.length)
+          .map(i => i.id)
+        // 倒序删除
+        for (let i = e.newDraggableIndex + newItems.length - 1; i >= e.newDraggableIndex; i--) {
+          if (preIds.includes(list[i].id)) {
+            list.splice(i, 1)
+          }
         }
       }
     },
     dragRemoveChartField(list, e) {
-      const that = this
-      const dup = list.filter(function(m) {
-        return m.id === that.moveId
-      })
-      if (dup && dup.length > 0) {
-        if (dup[0].chartId) {
-          list.splice(e.newDraggableIndex, 1)
+      for (let i = list.length - 1; i >= 0; i--) {
+        if (list[i].chartId) {
+          list.splice(i, 1)
         }
       }
     },
-    addXaxis(e) {
-      if (this.view.type !== 'table-info' && (this.view.type !== 'scatter' && this.view.render !== 'antv')) {
-        this.dragCheckType(this.view.xaxis, 'd')
+    multiAdd(e, itemList) {
+      // 只处理原始字段拖拽
+      if (!e.item.classList.contains('selected-item')) {
+        return
       }
+      const groupDie = e.item.classList.contains('group-dimension')
+      const sourceList = groupDie ? this.selectedDimension : this.selectedQuota
+      const multiAdd = sourceList.length > 1 && sourceList.findIndex(i => i.id === this.moveId) !== -1
+      if (multiAdd) {
+        const qdList = groupDie ? this.dimensionData : this.quotaData
+        const sourceIds = sourceList.map(i => i.id)
+        const sortedList = qdList.filter(i => sourceIds.includes(i.id))
+        itemList.splice(e.newIndex, 1, ...sortedList)
+      }
+    },
+    addXaxis(e) {
+      this.multiAdd(e, this.view.xaxis)
       this.dragMoveDuplicate(this.view.xaxis, e)
-      if (this.view.type === 'scatter' && this.view.render === 'antv') {
-        if (this.view.xaxis[0] && this.view.xaxis[0].groupType === 'q') {
-          this.view.xaxis = [this.view.xaxis[0]]
-        } else {
-          this.dragCheckType(this.view.xaxis, 'd')
-        }
+      if (this.view.type === 'scatter' && this.view.render === 'antv' && this.view.xaxis[0] && this.view.xaxis[0].groupType === 'q') {
+        this.view.xaxis = [this.view.xaxis[0]]
+      } else if (this.view.type !== 'table-info') {
+        this.dragCheckType(this.view.xaxis, 'd')
       }
       if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'label') && this.view.xaxis.length > 1) {
         this.view.xaxis = [this.view.xaxis[0]]
@@ -3148,26 +3305,29 @@ export default {
       this.calcData(true)
     },
     addXaxisExt(e) {
+      this.multiAdd(e, this.view.xaxisExt)
+      this.dragMoveDuplicate(this.view.xaxisExt, e)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxisExt, 'd')
       }
-      this.dragMoveDuplicate(this.view.xaxisExt, e)
-      if ((this.view.type === 'map' || this.view.type === 'word-cloud') && this.view.xaxisExt.length > 1) {
+      if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'scatter') && this.view.xaxisExt.length > 1) {
         this.view.xaxisExt = [this.view.xaxisExt[0]]
       }
       this.calcData(true)
     },
     addYaxis(e) {
-      this.dragCheckType(this.view.yaxis, 'q')
+      this.multiAdd(e, this.view.yaxis)
       this.dragMoveDuplicate(this.view.yaxis, e)
+      this.dragCheckType(this.view.yaxis, 'q')
       if ((equalsAny(this.view.type, 'waterfall', 'word-cloud', 'bidirectional-bar') || this.view.type.includes('group')) && this.view.yaxis.length > 1) {
         this.view.yaxis = [this.view.yaxis[0]]
       }
       this.calcData(true)
     },
     addYaxisExt(e) {
-      this.dragCheckType(this.view.yaxisExt, 'q')
+      this.multiAdd(e, this.view.yaxisExt)
       this.dragMoveDuplicate(this.view.yaxisExt, e)
+      this.dragCheckType(this.view.yaxisExt, 'q')
       if (equalsAny(this.view.type, 'map', 'bidirectional-bar') && this.view.yaxisExt.length > 1) {
         this.view.yaxisExt = [this.view.yaxisExt[0]]
       }
@@ -3182,6 +3342,8 @@ export default {
       this.calcData(true)
     },
     addCustomFilter(e) {
+      this.multiAdd(e, this.view.customFilter)
+      this.dragMoveDuplicate(this.view.customFilter, e)
       // 记录数等自动生成字段不做为过滤条件
       if (this.view.customFilter && this.view.customFilter.length > 0) {
         for (let i = 0; i < this.view.customFilter.length; i++) {
@@ -3191,7 +3353,6 @@ export default {
         }
       }
       this.view.customFilter[e.newDraggableIndex].filter = []
-      this.dragMoveDuplicate(this.view.customFilter, e)
       this.dragRemoveChartField(this.view.customFilter, e)
       this.calcData(true)
     },
@@ -3217,6 +3378,7 @@ export default {
       return resultNode
     },
     addStack(e) {
+      this.multiAdd(e, this.view.extStack)
       this.dragCheckType(this.view.extStack, 'd')
       if (this.view.extStack && this.view.extStack.length > 1) {
         this.view.extStack = [this.view.extStack[0]]
@@ -3243,13 +3405,15 @@ export default {
       this.calcData(true)
     },
     addDrill(e) {
-      this.dragCheckType(this.view.drillFields, 'd')
+      this.multiAdd(e, this.view.drillFields)
       this.dragMoveDuplicate(this.view.drillFields, e)
+      this.dragCheckType(this.view.drillFields, 'd')
       this.dragRemoveChartField(this.view.drillFields, e)
       this.calcData(true)
     },
 
     addBubble(e) {
+      this.multiAdd(e, this.view.extBubble)
       this.dragCheckType(this.view.extBubble, 'q')
       if (this.view.extBubble && this.view.extBubble.length > 1) {
         this.view.extBubble = [this.view.extBubble[0]]
@@ -3448,6 +3612,8 @@ export default {
         if (this.view?.senior?.functionCfg?.emptyDataStrategy === 'ignoreData') {
           this.view.senior.functionCfg.emptyDataStrategy = 'breakLine'
         }
+      } else if (type === 'label-normal') {
+        this.view.senior.functionCfg.emptyDataStrategy = 'breakLine'
       }
       // reset custom colors
       this.view.customAttr.color.seriesColors = []
@@ -3592,6 +3758,35 @@ export default {
     clearData(data) {
       this.view[data] = []
       this.calcData(true)
+    },
+    singleSelect(index, itemList, targetList, lastIndexProp) {
+      targetList.splice(0)
+      targetList.push(itemList[index])
+      this[lastIndexProp] = index
+    },
+    multiSelect(index, itemList, targetList, lastIndexProp) {
+      const item = itemList[index]
+      const curIndex = targetList.findIndex(i => i.id === item.id)
+      if (curIndex === -1) {
+        targetList.push(item)
+      } else {
+        targetList.splice(curIndex, 1)
+      }
+      this[lastIndexProp] = index
+    },
+    rangeSelect(index, itemList, targetList, lastIndexProp) {
+      targetList.splice(0)
+      let start, end
+      if (index > this[lastIndexProp]) {
+        start = this[lastIndexProp]
+        end = index
+      } else {
+        start = index
+        end = this[lastIndexProp]
+      }
+      for (let i = start; i <= end; i++) {
+        targetList.push(itemList[i])
+      }
     }
   }
 }
@@ -4069,5 +4264,23 @@ span {
 .el-input-refresh-loading {
   margin-left: 4px;
   font-size: 12px !important;
+}
+.selected-item.item-dimension {
+  color: #1890ff;
+  background: #e8f4ff;
+  border-color: #a3d3ff;
+}
+.selected-item.item-quota {
+  color: #67c23a;
+  background: #f0f9eb;
+  border-color: #b2d3a3;
+}
+
+.drag-class.selected-item::after {
+  color:inherit;
+  content: var(--dragContent);
+  display: var(--dragDisplay);
+  position: absolute;
+  right: 10px;
 }
 </style>

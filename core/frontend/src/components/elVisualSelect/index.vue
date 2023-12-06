@@ -7,14 +7,14 @@
     popper-class="VisualSelects coustom-de-select"
     no-match-text=" "
     reserve-keyword
-    clearable
+    :clearable="clearable"
     v-bind="$attrs"
     v-on="$listeners"
     @change="visualChange"
     @visible-change="popChange"
   >
     <p
-      v-if="startIndex === 0 && $attrs.multiple"
+      v-if="startIndex === 0 && $attrs.multiple && !itemDisabled"
       class="select-all"
     >
       <el-checkbox
@@ -22,7 +22,8 @@
         v-customStyle="customStyle"
         :indeterminate="isIndeterminate"
         @change="selectAllChange"
-      >{{ $t('dataset.check_all') }}
+      >
+        <span :style="{ color: `${isConfig ? '#1F2329' : customStyle.wordColor} !important`}">{{ $t('dataset.check_all') }}</span>
       </el-checkbox>
     </p>
     <el-option
@@ -31,6 +32,7 @@
       :label="item.text"
       :value="item.id"
       :class="setSelect(item.id)"
+      :disabled="itemDisabled"
     >
       <span :title="item.text">{{ item.text }}</span>
     </el-option>
@@ -39,7 +41,6 @@
 
 <script>
 import { handlerInputStyle } from '@/components/widget/deWidget/serviceNameFn.js'
-
 import { uuid } from 'vue-uuid'
 
 export default {
@@ -69,9 +70,25 @@ export default {
       type: [String, Number, Array],
       default: ''
     },
+    isConfig: {
+      type: Boolean,
+      default: false
+    },
     keyWord: {
       type: String,
       default: ''
+    },
+    itemDisabled: {
+      type: Boolean,
+      default: false
+    },
+    clearable: {
+      type: Boolean,
+      default: true
+    },
+    flag: {
+      type: String,
+      require: true
     }
   },
   data() {
@@ -111,14 +128,14 @@ export default {
     },
     list() {
       this.resetList()
-      this.show = false
       this.$nextTick(() => {
-        this.show = true
         this.$nextTick(() => {
           this.init()
         })
       })
-    },
+    }
+    /*
+    模糊搜索改为后端检索，暂注释前端
     keyWord(val, old) {
       if (val === old) return
       const results = val ? this.vagueFilter(val, this.list) : null
@@ -128,6 +145,7 @@ export default {
         this.callback()
       })
     }
+    */
   },
   mounted() {
     this.resetList()
@@ -161,8 +179,10 @@ export default {
       this.$emit('handleShowNumber')
     },
     addScrollDiv(selectDom) {
+      const baseClass = `${this.classId}-creator`
       this.maxHeightDom = document.createElement('div')
       this.maxHeightDom.className = 'el-select-height'
+      this.maxHeightDom.classList.add(baseClass)
       selectDom.insertBefore(this.maxHeightDom, this.domList)
     },
     reCacularHeight() {
@@ -181,7 +201,7 @@ export default {
       this.options = this.newList.slice(0, this.maxLength)
     },
     customInputStyle() {
-      if (!this.$parent.$parent.handlerInputStyle || !this.$refs.visualSelect) return
+      if (!this.$parent.$parent.handlerInputStyle || !this.$refs.visualSelect || this.isConfig) return
       handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-input__inner'), this.$parent.element.style)
       handlerInputStyle(this.$refs.visualSelect.$el.querySelector('.el-select__input'), { wordColor: this.$parent.element.style.wordColor })
     },
@@ -191,6 +211,12 @@ export default {
       }
       if (!this.list || !this.list.length) {
         this.customInputStyle()
+        return
+      }
+      const baseClass = `.${this.classId}-creator`
+      if (document.querySelector(baseClass)) {
+        this.customInputStyle()
+        this.reCacularHeight()
         return
       }
 

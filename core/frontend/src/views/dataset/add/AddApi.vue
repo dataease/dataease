@@ -9,7 +9,7 @@
       class="arrow-right"
       @click="showLeft = true"
     >
-      <i class="el-icon-d-arrow-right"/>
+      <i class="el-icon-d-arrow-right" />
     </p>
     <div
       v-show="showLeft"
@@ -172,8 +172,8 @@
           class="data"
         >
           <span class="result-num">{{
-              `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
-            }}</span>
+            `${$t('dataset.preview_show')} 1000 ${$t('dataset.preview_item')}`
+          }}</span>
           <div class="table-grid">
             <ux-grid
               ref="plxTable"
@@ -321,6 +321,7 @@ export default {
     this.initDataSource()
     window.addEventListener('resize', this.calHeight)
     this.calHeight()
+    this.$emit('setSaveDisabled', false)
   },
   activated() {
     this.initDataSource()

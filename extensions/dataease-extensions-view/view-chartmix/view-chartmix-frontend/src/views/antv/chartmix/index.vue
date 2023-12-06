@@ -33,18 +33,17 @@
 
 <script>
 import {Mix} from '@antv/g2plot'
-import {uuid, hexColorToRGBA} from '../../../utils/chartmix'
+import {uuid, hexColorToRGBA, setGradientColor} from '../../../utils/chartmix'
 import ViewTrackBar from '../../../components/views/ViewTrackBar'
 import {getRemark} from "../../../components/views/utils";
 import {
-  DEFAULT_TITLE_STYLE,
   DEFAULT_XAXIS_STYLE,
   DEFAULT_YAXIS_STYLE,
   transAxisPosition,
-  getLineDash
+  getLineDash, DEFAULT_COLOR_CASE, formatterItem, DEFAULT_YAXIS_EXT_STYLE
 } from '../../../utils/map';
 import ChartTitleUpdate from '../../../components/views/ChartTitleUpdate';
-import _ from 'lodash';
+import {map, filter, join, flatten, cloneDeep} from 'lodash-es';
 import {clear} from 'size-sensor'
 import {valueFormatter} from '../../../utils/formatter'
 
@@ -191,8 +190,10 @@ export default {
 
       this.myChart = new this.$chartmix(this.chartId, _params)
 
-      this.myChart.off('edge:click')
-      this.myChart.on('edge:click', this.antVAction)
+      this.myChart.off('point:click')
+      this.myChart.on('point:click', this.antVAction)
+      this.myChart.off('interval:click')
+      this.myChart.on('interval:click', this.antVAction)
 
       this.myChart.render();
 
@@ -276,7 +277,9 @@ export default {
       let yaxisCount = yaxisList.length;
 
       let customAttr = undefined;
+      let gradient = false;
       let colors = undefined;
+      let alpha = DEFAULT_COLOR_CASE.alpha;
       let labelSetting = undefined;
       let labelPosition = 'middle';
       if (this.chart.customAttr) {
@@ -284,6 +287,8 @@ export default {
         if (customAttr) {
           if (customAttr.color) {
             colors = customAttr.color.colors;
+            alpha = customAttr.color.alpha;
+            gradient = customAttr.color.gradient;
           }
           if (customAttr.label) {
             labelSetting = customAttr.label.show ? {
@@ -297,124 +302,62 @@ export default {
         }
       }
 
+      const xAxis = this.getXAxis(this.chart);
+
+      const yAxis = this.getYAxis(this.chart);
+
+      const yAxisExt = this.getYAxisExt(this.chart);
+
       const names = [];
 
-      let _data = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? _.map(_.filter(this.chart.data.data, (c, _index) => {
-        return _index < yaxisCount;
-      }), (t, _index) => {
+      const yChartData = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? map(filter(this.chart.data.data, (c, _index) => {
+          return _index < yaxisCount;
+        }), (t, _index) => {
+          names.push(t.name);
 
-        const _labelSetting = _.cloneDeep(labelSetting);
-        if (_labelSetting && yaxisList[_index].formatterCfg) {
-          _labelSetting.formatter = function (x) {
-            return valueFormatter(x.value, yaxisList[_index].formatterCfg);
-          }
+          return map(t.data, (v) => {
+            return {
+              quotaList: v.quotaList,
+              dimensionList: v.dimensionList,
+              key: join(map(v.dimensionList, (d) => d.value), "\n"),
+              value: v.value,
+              name: t.name,
+              i: _index,
+              t: 'yaxis'
+            }
+          });
         }
+      ) : [];
 
-        names.push(t.name);
+      const yData = [this.getYData(flatten(yChartData), labelSetting, labelPosition, yaxisList, colors, gradient, alpha, xAxis, yAxis, yaxisExtList.length)];
 
-        const _chartType = this.getChartType(yaxisList[_index].chartType);
+      const yExtChartData = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? map(filter(this.chart.data.data, (c, _index) => {
+          return _index >= yaxisCount;
+        }), (t, _index) => {
+          names.push(t.name);
 
-        if (_labelSetting) {
-          if (_chartType === "column") {
-            _labelSetting.position = labelPosition;
-          } else {
-            _labelSetting.position = undefined;
-          }
+          return map(t.data, (v) => {
+            return {
+              quotaList: v.quotaList,
+              dimensionList: v.dimensionList,
+              key: join(map(v.dimensionList, (d) => d.value), "\n"),
+              value: v.value,
+              name: t.name,
+              i: _index,
+              t: 'yaxisExt'
+            }
+          })
         }
+      ) : [];
 
-        return {
-          type: _chartType,
-          name: t.name,
-          options: {
-            data: _.map(t.data, (v) => {
-              return {
-                key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
-                value: v.value,
-                i: _index,
-                t: 'yaxis'
-              }
-            }),
-            xField: 'key',
-            yField: 'value',
-            meta: {
-              key: {
-                sync: true,
-              },
-              value: {
-                alias: t.name,
-              },
-            },
-            yAxis: {
-              position: 'left',
-            },
-            color: colors && _index < colors.length ? colors[_index] : undefined,
-            label: _labelSetting,
-          }
-        }
-      }) : [];
-
-      let _dataExt = this.chart.data && this.chart.data.data && this.chart.data.data.length > 0 ? _.map(_.filter(this.chart.data.data, (c, _index) => {
-        return _index >= yaxisCount;
-      }), (t, _index) => {
-
-        const _labelSetting = _.cloneDeep(labelSetting);
-        if (_labelSetting && yaxisExtList[_index].formatterCfg) {
-          _labelSetting.formatter = function (x) {
-            return valueFormatter(x.value, yaxisExtList[_index].formatterCfg);
-          }
-        }
-
-        names.push(t.name);
-
-
-        const _chartType = this.getChartType(yaxisExtList[_index].chartType);
-
-        if (_labelSetting) {
-          if (_chartType === "column") {
-            _labelSetting.position = labelPosition;
-          } else {
-            _labelSetting.position = undefined;
-          }
-        }
-
-        return {
-          type: _chartType,
-          name: t.name,
-          options: {
-            data: _.map(t.data, (v) => {
-              return {
-                key: _.join(_.map(v.dimensionList, (d) => d.value), "\n"),
-                value: v.value,
-                i: _index,
-                t: 'yaxisExt'
-              }
-            }),
-            xField: 'key',
-            yField: 'value',
-            meta: {
-              key: {
-                sync: true,
-              },
-              value: {
-                alias: t.name,
-              },
-            },
-            yAxis: {
-              position: 'right',
-            },
-            color: colors && (yaxisCount + _index) < colors.length ? colors[yaxisCount + _index] : undefined,
-            label: _labelSetting,
-          }
-        }
-      }) : [];
-
+      const yExtData = [this.getYExtData(flatten(yExtChartData), labelSetting, labelPosition, yaxisExtList, colors, gradient, alpha, xAxis, yAxisExt, yaxisCount)];
 
       const params = {
         tooltip: false,
         syncViewPadding: true,
         plots: [
-          ..._data,
-          ..._dataExt
+          ...yData,
+          ...yExtData
         ]
       };
 
@@ -447,7 +390,7 @@ export default {
                   item.value = valueFormatter(item.data.value, yaxisExtList[item.data.i].formatterCfg)
                 }
               })
-              return _.filter(originalItems, (item) => {
+              return filter(originalItems, (item) => {
                 const v = item.data.key;
                 if (item.title === v && item.title === item.value && item.name === "key" || !names.includes(item.name)) {
                   return false;
@@ -465,7 +408,416 @@ export default {
 
       params.annotations = this.getAnalyse(this.chart);
 
+      //两个轴只能展示一个轴的图例，所以隐藏
+      //params.legend = this.getLegend(this.chart);
+
       return params;
+    },
+
+    getXAxis(chart) {
+      let axis = {}
+      let customStyle
+      if (chart.customStyle) {
+        customStyle = JSON.parse(chart.customStyle)
+        // legend
+        if (customStyle.xAxis) {
+          const a = JSON.parse(JSON.stringify(customStyle.xAxis))
+          if (a.show) {
+            const title = (a.name && a.name !== '') ? {
+              text: a.name,
+              style: {
+                fill: a.nameTextStyle.color,
+                fontSize: parseInt(a.nameTextStyle.fontSize)
+              },
+              spacing: 8
+            } : null
+            const grid = a.splitLine.show ? {
+              line: {
+                style: {
+                  stroke: a.splitLine.lineStyle.color,
+                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                }
+              }
+            } : null
+            const axisCfg = a.axisLine ? a.axisLine : DEFAULT_XAXIS_STYLE.axisLine
+            const axisLine = axisCfg.show ? {
+              style: {
+                stroke: axisCfg.lineStyle.color,
+                lineWidth: parseInt(axisCfg.lineStyle.width)
+              }
+            } : null
+            const tickLine = axisCfg.show ? {
+              style: {
+                stroke: axisCfg.lineStyle.color
+              }
+            } : null
+            const rotate = parseInt(a.axisLabel.rotate)
+            const label = a.axisLabel.show ? {
+              rotate: rotate * Math.PI / 180,
+              style: {
+                textAlign: rotate > 20 ? 'start' : rotate < -20 ? 'end' : 'center',
+                fill: a.axisLabel.color,
+                fontSize: parseInt(a.axisLabel.fontSize)
+              },
+              formatter: function (value) {
+                if (chart.type.includes('horizontal')) {
+                  if (!a.axisLabelFormatter) {
+                    return valueFormatter(value, formatterItem)
+                  } else {
+                    return valueFormatter(value, a.axisLabelFormatter)
+                  }
+                } else {
+                  return value
+                }
+              }
+            } : null
+
+            axis = {
+              position: transAxisPosition(chart, a),
+              title: title,
+              grid: grid,
+              label: label,
+              line: axisLine,
+              tickLine: tickLine
+            }
+
+            // 轴值设置
+            delete axis.minLimit
+            delete axis.maxLimit
+            delete axis.tickCount
+          } else {
+            axis = false
+          }
+        }
+      }
+      return axis
+    },
+
+    getYAxis(chart) {
+      let axis = {}
+      let customStyle
+      if (chart.customStyle) {
+        customStyle = JSON.parse(chart.customStyle)
+        // legend
+        if (customStyle.yAxis) {
+          const a = JSON.parse(JSON.stringify(customStyle.yAxis))
+          if (a.show) {
+            const title = (a.name && a.name !== '') ? {
+              text: a.name,
+              style: {
+                fill: a.nameTextStyle.color,
+                fontSize: parseInt(a.nameTextStyle.fontSize)
+              },
+              spacing: 8
+            } : null
+            const grid = a.splitLine.show ? {
+              line: {
+                style: {
+                  stroke: a.splitLine.lineStyle.color,
+                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                }
+              }
+            } : null
+            const axisCfg = a.axisLine ? a.axisLine : DEFAULT_YAXIS_STYLE.axisLine
+            const axisLine = axisCfg.show ? {
+              style: {
+                stroke: axisCfg.lineStyle.color,
+                lineWidth: parseInt(axisCfg.lineStyle.width)
+              }
+            } : null
+            const tickLine = axisCfg.show ? {
+              style: {
+                stroke: axisCfg.lineStyle.color
+              }
+            } : null
+            const label = a.axisLabel.show ? {
+              rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
+              style: {
+                fill: a.axisLabel.color,
+                fontSize: parseInt(a.axisLabel.fontSize)
+              },
+              formatter: function (value) {
+                if (chart.type === 'waterfall') {
+                  return value
+                } else {
+                  if (!chart.type.includes('horizontal')) {
+                    if (!a.axisLabelFormatter) {
+                      return valueFormatter(value, formatterItem)
+                    } else {
+                      return valueFormatter(value, a.axisLabelFormatter)
+                    }
+                  } else {
+                    return value
+                  }
+                }
+              }
+            } : null
+
+            axis = {
+              position: 'left',
+              title: title,
+              grid: grid,
+              label: label,
+              line: axisLine,
+              tickLine: tickLine
+            }
+
+            // 轴值设置
+            delete axis.minLimit
+            delete axis.maxLimit
+            delete axis.tickCount
+            const axisValue = a.axisValue
+
+            if (axisValue && !axisValue.auto) {
+              axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
+              axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
+              axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
+            }
+
+          } else {
+            axis = false
+          }
+        }
+      } else {
+        return {position: 'left'}
+      }
+      return axis
+    },
+// yAxisExt
+    getYAxisExt(chart) {
+      let axis = {}
+      let customStyle
+      if (chart.customStyle) {
+        customStyle = JSON.parse(chart.customStyle)
+        // legend
+        if (customStyle.yAxisExt) {
+          const a = JSON.parse(JSON.stringify(customStyle.yAxisExt))
+          if (a.show) {
+            const title = (a.name && a.name !== '') ? {
+              text: a.name,
+              style: {
+                fill: a.nameTextStyle.color,
+                fontSize: parseInt(a.nameTextStyle.fontSize)
+              },
+              spacing: 8
+            } : null
+            const grid = a.splitLine.show ? {
+              line: {
+                style: {
+                  stroke: a.splitLine.lineStyle.color,
+                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                }
+              }
+            } : null
+            const axisCfg = a.axisLine ? a.axisLine : DEFAULT_YAXIS_EXT_STYLE.axisLine
+            const axisLine = axisCfg.show ? {
+              style: {
+                stroke: axisCfg.lineStyle.color,
+                lineWidth: parseInt(axisCfg.lineStyle.width)
+              }
+            } : null
+            const tickLine = axisCfg.show ? {
+              style: {
+                stroke: axisCfg.lineStyle.color
+              }
+            } : null
+            const label = a.axisLabel.show ? {
+              rotate: parseInt(a.axisLabel.rotate) * Math.PI / 180,
+              style: {
+                fill: a.axisLabel.color,
+                fontSize: parseInt(a.axisLabel.fontSize)
+              },
+              formatter: function (value) {
+                if (chart.type === 'waterfall') {
+                  return value
+                } else {
+                  if (!chart.type.includes('horizontal')) {
+                    if (!a.axisLabelFormatter) {
+                      return valueFormatter(value, formatterItem)
+                    } else {
+                      return valueFormatter(value, a.axisLabelFormatter)
+                    }
+                  } else {
+                    return value
+                  }
+                }
+              }
+            } : null
+
+            axis = {
+              position: 'right',
+              title: title,
+              grid: grid,
+              label: label,
+              line: axisLine,
+              tickLine: tickLine
+            }
+
+            // 轴值设置
+            delete axis.minLimit
+            delete axis.maxLimit
+            delete axis.tickCount
+            const axisValue = a.axisValue
+
+            if (axisValue && !axisValue.auto) {
+              axisValue.min && (axis.minLimit = parseFloat(axisValue.min))
+              axisValue.max && (axis.maxLimit = parseFloat(axisValue.max))
+              axisValue.splitCount && (axis.tickCount = parseFloat(axisValue.splitCount))
+            }
+
+          } else {
+            axis = false
+          }
+        }
+      } else {
+        return {position: 'right'}
+      }
+      return axis
+    },
+
+    getYData(data, labelSetting, labelPosition, yaxisList, colors, gradient, alpha, xAxis, yAxis, yaxisExtCount) {
+
+      const _labelSetting = cloneDeep(labelSetting);
+      if (_labelSetting) {
+        _labelSetting.formatter = function (x) {
+          for (let i = 0; i < yaxisList.length; i++) {
+            if (i === x.i && yaxisList[i].formatterCfg) {
+              return valueFormatter(x.value, yaxisList[i].formatterCfg);
+            }
+          }
+          return x.value;
+        }
+      }
+
+      const _chartType = this.getChartType(yaxisList && yaxisList.length > 0 ? yaxisList[0].chartType : undefined);
+
+      if (_labelSetting) {
+        if (_chartType === "column") {
+          _labelSetting.position = labelPosition;
+        } else {
+          _labelSetting.position = undefined;
+        }
+      }
+
+      const color = [];
+      for (let i = 0; i < yaxisList.length; i++) {
+        if (gradient) {
+          color.push(setGradientColor(hexColorToRGBA(colors[i % colors.length], alpha), true, 270))
+        } else {
+          color.push(hexColorToRGBA(colors[i % colors.length], alpha))
+        }
+      }
+
+      const setting = {
+        type: _chartType,
+        options: {
+          data: data,
+          xField: 'key',
+          yField: 'value',
+          seriesField: 'name',
+          colorField: 'name',
+          isGroup: true,
+          meta: {
+            key: {
+              sync: true,
+            },
+          },
+          color: color,
+          label: _labelSetting,
+          xAxis: yaxisList.length > 0 || yaxisExtCount === 0 ? xAxis : false,
+          yAxis: yAxis,
+        }
+      }
+      return this.setSizeSetting(setting);
+    },
+
+    getYExtData(data, labelSetting, labelPosition, yaxisExtList, colors, gradient, alpha, xAxis, yAxisExt, yaxisCount) {
+      const _labelSetting = cloneDeep(labelSetting);
+      if (_labelSetting) {
+        _labelSetting.formatter = function (x) {
+          for (let i = 0; i < yaxisExtList.length; i++) {
+            if (i === x.i && yaxisExtList[i].formatterCfg) {
+              return valueFormatter(x.value, yaxisExtList[i].formatterCfg);
+            }
+          }
+          return x.value;
+        }
+      }
+
+      const _chartType = this.getChartType(yaxisExtList && yaxisExtList.length > 0 ? yaxisExtList[0].chartType : undefined);
+
+      if (_labelSetting) {
+        if (_chartType === "column") {
+          _labelSetting.position = labelPosition;
+        } else {
+          _labelSetting.position = undefined;
+        }
+      }
+
+      const color = [];
+      for (let i = yaxisCount; i < yaxisExtList.length + yaxisCount; i++) {
+        if (gradient) {
+          color.push(setGradientColor(hexColorToRGBA(colors[i % colors.length], alpha), true, 270))
+        } else {
+          color.push(hexColorToRGBA(colors[i % colors.length], alpha))
+        }
+      }
+
+      const setting = {
+        type: _chartType,
+        options: {
+          data: data,
+          xField: 'key',
+          yField: 'value',
+          seriesField: 'name',
+          isGroup: true,
+          meta: {
+            key: {
+              sync: true,
+            },
+          },
+          color: color,
+          label: _labelSetting,
+          xAxis: yaxisCount > 0 || yaxisExtList.length === 0 ? false : xAxis,
+          yAxis: yAxisExt,
+        }
+      }
+      return this.setSizeSetting(setting);
+    },
+
+    setSizeSetting(setting) {
+      let customAttr = undefined;
+      if (this.chart.customAttr) {
+        customAttr = JSON.parse(this.chart.customAttr);
+      }
+      if (customAttr && customAttr.size) {
+        setting.options.columnWidthRatio = undefined;
+        setting.options.smooth = undefined;
+        setting.options.point = undefined;
+        setting.options.lineStyle = undefined;
+        setting.options.size = undefined;
+        setting.options.shape = undefined;
+
+        if (setting.type === 'column' && !customAttr.size.barDefault) {
+          setting.options.columnWidthRatio = customAttr.size.barWidthPercent / 100.0
+        }
+        if (setting.type === 'line') {
+          setting.options.smooth = customAttr.size.lineSmooth
+          setting.options.point = {
+            size: parseInt(customAttr.size.lineSymbolSize),
+            shape: customAttr.size.lineSymbol
+          }
+          setting.options.lineStyle = {
+            lineWidth: parseInt(customAttr.size.lineWidth)
+          }
+        }
+        if (setting.type === 'scatter') {
+          setting.options.size = parseInt(customAttr.size.scatterSymbolSize)
+          setting.options.shape = customAttr.size.scatterSymbol
+        }
+      }
+
+      return setting;
     },
 
     getAnalyse(chart) {
@@ -539,6 +891,102 @@ export default {
         }
       }
       return assistLine
+    },
+
+    getLegend(chart) {
+      let legend = {}
+      let customStyle
+      if (chart.customStyle) {
+        customStyle = JSON.parse(chart.customStyle)
+        // legend
+        if (customStyle.legend) {
+          const l = JSON.parse(JSON.stringify(customStyle.legend))
+          if (l.show) {
+            let offsetX, offsetY, position
+            const orient = l.orient
+            const legendSymbol = l.icon
+            // fix position
+            if (l.hPosition === 'center') {
+              position = l.vPosition === 'center' ? 'top' : l.vPosition
+            } else if (l.vPosition === 'center') {
+              position = l.hPosition === 'center' ? 'left' : l.hPosition
+            } else {
+              if (orient === 'horizontal') {
+                position = l.vPosition + '-' + l.hPosition
+              } else {
+                position = l.hPosition + '-' + l.vPosition
+              }
+            }
+            // fix offset
+            if (orient === 'horizontal') {
+              if (l.hPosition === 'left') {
+                offsetX = 16
+              } else if (l.hPosition === 'right') {
+                offsetX = -16
+              } else {
+                offsetX = 0
+              }
+              if (l.vPosition === 'top') {
+                offsetY = 0
+              } else if (l.vPosition === 'bottom') {
+                if (chart.drill) {
+                  offsetY = -16
+                } else {
+                  offsetY = -4
+                }
+              } else {
+                offsetY = 0
+              }
+            } else {
+              if (l.hPosition === 'left') {
+                offsetX = 10
+              } else if (l.hPosition === 'right') {
+                offsetX = -10
+              } else {
+                offsetX = 0
+              }
+              if (l.vPosition === 'top') {
+                offsetY = 0
+              } else if (l.vPosition === 'bottom') {
+                if (chart.drill) {
+                  offsetY = -22
+                } else {
+                  offsetY = -10
+                }
+              } else {
+                offsetY = 0
+              }
+            }
+
+            legend = {
+              layout: orient,
+              position: position,
+              offsetX: offsetX,
+              offsetY: offsetY,
+              marker: {
+                symbol: legendSymbol
+              },
+              radio: false, // 柱状图图例的聚焦功能，默认先关掉
+              itemName: {
+                formatter: (text, item, index) => {
+                  if (chart.type !== 'bidirectional-bar') {
+                    return text
+                  }
+                  const yaxis = JSON.parse(chart.yaxis)[0]
+                  const yaxisExt = JSON.parse(chart.yaxisExt)[0]
+                  if (index === 0) {
+                    return yaxis.name
+                  }
+                  return yaxisExt.name
+                }
+              }
+            }
+          } else {
+            legend = false
+          }
+        }
+      }
+      return legend
     },
 
     getSlider(chart) {

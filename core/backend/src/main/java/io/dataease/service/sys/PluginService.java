@@ -221,6 +221,10 @@ public class PluginService {
      * @return
      */
     public Boolean uninstall(Long pluginId) {
+       return uninstallForUpdate(pluginId, false);
+    }
+
+    public Boolean uninstallForUpdate(Long pluginId, boolean forUpdate) {
         MyPlugin myPlugin = myPluginMapper.selectByPrimaryKey(pluginId);
         if (ObjectUtils.isEmpty(myPlugin)) {
             String msg = "当前插件不存在";
@@ -232,7 +236,7 @@ public class PluginService {
         CacheUtils.removeAll(AuthConstants.USER_ROLE_CACHE_NAME);
         CacheUtils.removeAll(AuthConstants.USER_PERMISSION_CACHE_NAME);
 
-        if (myPlugin.getCategory().equalsIgnoreCase("datasource")) {
+        if (myPlugin.getCategory().equalsIgnoreCase("datasource") && !forUpdate) {
             if (CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))) {
                 DEException.throwException(Translator.get("i18n_plugin_not_allow_delete"));
             }

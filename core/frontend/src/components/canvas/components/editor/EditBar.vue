@@ -145,7 +145,7 @@
           :target="curComponent.hyperlinks.openMode "
           :href="curComponent.hyperlinks.content "
         >
-          <i class="icon iconfont icon-com-jump" />
+          <i class="icon iconfont icon-com-jump"/>
         </a>
       </span>
 
@@ -193,7 +193,7 @@
 </template>
 
 <script>
-import { mapState } from 'vuex'
+import {mapState} from 'vuex'
 import bus from '@/utils/bus'
 import SettingMenu from '@/components/canvas/components/editor/SettingMenu'
 import LinkageField from '@/components/canvas/components/editor/LinkageField'
@@ -202,13 +202,13 @@ import FieldsList from '@/components/canvas/components/editor/FieldsList'
 import LinkJumpSet from '@/views/panel/linkJumpSet'
 import Background from '@/views/background/index'
 import MapLayerController from '@/views/chart/components/map/MapLayerController'
-import { uploadFileResult } from '@/api/staticResource/staticResource'
+import {uploadFileResult} from '@/api/staticResource/staticResource'
 import eventBus from '@/components/canvas/utils/eventBus'
-import { hasDataPermission } from '@/utils/permission'
-import { exportExcelDownload } from '@/components/canvas/utils/utils'
+import {hasDataPermission} from '@/utils/permission'
+import {exportExcelDownload} from '@/components/canvas/utils/utils'
 
 export default {
-  components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField, MapLayerController },
+  components: {Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField, MapLayerController},
 
   props: {
     canvasId: {
@@ -467,7 +467,7 @@ export default {
       }
     },
     showViewDetails(openType = 'details') {
-      this.$emit('showViewDetails', { openType: openType })
+      this.$emit('showViewDetails', {openType: openType})
     },
     exportExcelDownload() {
       exportExcelDownload(this.chart)
@@ -574,6 +574,7 @@ export default {
 
 <style lang="scss" scoped>
 .bar-main {
+  line-height: 24px;
   position: absolute;
   float: right;
   z-index: 10;

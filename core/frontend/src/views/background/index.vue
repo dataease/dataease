@@ -51,12 +51,12 @@
         >
           <el-color-picker
             ref="colorPicker"
-            @change="colorChange"
             v-model="curComponent.commonBackground.color"
             :disabled="!curComponent.commonBackground.backgroundColorSelect"
             size="mini"
             class="color-picker-style"
             :predefine="predefineColors"
+            @change="colorChange"
           />
         </el-col>
         <el-col :span="3">
@@ -263,7 +263,7 @@ import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
 import { COMMON_BACKGROUND_NONE } from '@/components/canvas/customComponent/component-list'
-import {hexColorToRGBA} from "@/views/chart/chart/util";
+import { hexColorToRGBA } from '@/views/chart/chart/util'
 
 export default {
   name: 'Background',

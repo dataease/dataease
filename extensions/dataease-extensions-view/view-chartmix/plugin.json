@@ -5,7 +5,7 @@
     "cost": 0,
     "category": "view",
     "descript": "AntV G2Plot 组合图插件",
-    "version": "1.18.11",
+    "version": "1.18.13",
     "creator": "DATAEASE",
     "moduleName": "view-chartmix-backend",
     "require": "1.18.11",

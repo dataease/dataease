@@ -17,6 +17,7 @@ public class ApiDefinition {
     private List<DatasetTableFieldDTO> fields;
     private ApiDefinitionRequest request;
     private String dataPath;
+    private Integer apiQueryTimeout = 30;
     private String status;
     private List<Map<String,String>> data = new ArrayList<>();
     private List<JSONObject> jsonFields = new ArrayList<>();

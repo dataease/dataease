@@ -1,16 +1,25 @@
 <template>
   <div>
+    <el-row style="margin-bottom: 6px">
+      <el-col>
+        <el-input
+          v-model="searchText"
+          :placeholder="$t('commons.search')"
+          size="mini"
+        />
+      </el-col>
+    </el-row>
     <draggable
       v-model="sortList"
       group="drag"
       animation="300"
-      :move="onMove"
       class="drag-list"
+      :disabled="searchText"
       @update="onUpdate"
     >
       <transition-group class="draggable-group">
         <span
-          v-for="(item) in sortList"
+          v-for="(item, index) in filterList"
           :key="item"
           class="item-dimension"
           :title="item"
@@ -21,6 +30,15 @@
           />
           <span class="item-span">
             {{ item }}
+          </span>
+          <span
+            :title="$t('panel.to_top')"
+            @click="moveToTop(index, item)"
+          >
+            <svg-icon
+              icon-class="to-top"
+              class="item-icon to-top"
+            />
           </span>
         </span>
       </transition-group>
@@ -49,12 +67,19 @@ export default {
   },
   data() {
     return {
-      sortList: []
+      sortList: [],
+      searchText: ''
     }
   },
   computed: {
     panelInfo() {
       return this.$store.state.panel.panelInfo
+    },
+    filterList() {
+      if (!this.searchText) {
+        return this.sortList
+      }
+      return this.sortList.filter(item => item?.includes(this.searchText))
     }
   },
   watch: {
@@ -72,7 +97,13 @@ export default {
         this.onUpdate()
       })
     },
-    onMove() {
+    moveToTop(index, item) {
+      let targetIndex = index
+      if (this.searchText) {
+        targetIndex = this.sortList.findIndex(i => i === item)
+      }
+      const [target] = this.sortList.splice(targetIndex, 1)
+      this.sortList.unshift(target)
     },
     onUpdate() {
       this.$emit('onSortChange', this.sortList)
@@ -98,7 +129,10 @@ export default {
   display: flex;
   align-items: center;
 }
-
+.item-dimension .to-top {
+  display: none;
+  cursor: pointer;
+}
 .item-icon{
   cursor: move;
   margin: 0 2px;
@@ -128,6 +162,9 @@ export default {
   background: #e8f4ff;
   border-color: #a3d3ff;
   cursor: pointer;
+}
+.item-dimension:hover .to-top {
+  display: block;
 }
 
 .blackTheme .item-dimension:hover {

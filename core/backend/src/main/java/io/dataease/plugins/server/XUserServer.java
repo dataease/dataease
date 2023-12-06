@@ -2,7 +2,7 @@ package io.dataease.plugins.server;
 
 import io.dataease.commons.constants.AuthConstants;
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.user.service.UserXpackService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;

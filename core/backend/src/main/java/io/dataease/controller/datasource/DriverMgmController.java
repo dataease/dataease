@@ -3,7 +3,10 @@ package io.dataease.controller.datasource;
 
 import io.dataease.auth.annotation.DeLog;
 import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.exception.DEException;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.dto.DriverDTO;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DeDriver;
 import io.dataease.plugins.common.base.domain.DeDriverDetails;
 import io.dataease.service.datasource.DriverService;
@@ -45,6 +48,7 @@ public class DriverMgmController {
             value = "id"
     )
     public void delete(@RequestBody DeDriver deDriver) throws Exception{
+        checkPermission();
         driverService.delete(deDriver);
     }
 
@@ -66,6 +70,7 @@ public class DriverMgmController {
             value = "id"
     )
     public DeDriver save(@RequestBody DeDriver deDriver) throws Exception{
+        checkPermission();
         return driverService.save(deDriver);
     }
 
@@ -79,6 +84,7 @@ public class DriverMgmController {
             value = "id"
     )
     public DeDriver update(@RequestBody DeDriver deDriver) throws Exception{
+        checkPermission();
         return driverService.update(deDriver);
     }
 
@@ -86,6 +92,7 @@ public class DriverMgmController {
     @ApiOperation("驱动文件列表")
     @GetMapping("/listDriverDetails/{id}")
     public List<DeDriverDetails> listDriverDetails(@PathVariable String id) throws Exception{
+        checkPermission();
         return driverService.listDriverDetails(id);
     }
 
@@ -93,6 +100,7 @@ public class DriverMgmController {
     @ApiOperation("删除驱动文件")
     @PostMapping("/deleteDriverFile")
     public void deleteDriverFile(@RequestBody DeDriverDetails deDriverDetails) throws Exception{
+        checkPermission();
         driverService.deleteDriverFile(deDriverDetails.getId());
     }
 
@@ -104,9 +112,15 @@ public class DriverMgmController {
             @ApiImplicitParam(name = "id", value = "驱动D", required = true, dataType = "String")
     })
     public DeDriverDetails excelUpload(@RequestParam("id") String id, @RequestParam("file") MultipartFile file) throws Exception {
+        checkPermission();
         return driverService.saveJar(file, id);
     }
 
 
+    private void checkPermission()throws Exception{
+        if(!AuthUtils.getUser().getIsAdmin()){
+            DEException.throwException(Translator.get("I18N_NO_DRIVER_PERMISSION"));
+        }
+    }
 
 }

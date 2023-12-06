@@ -2,7 +2,9 @@ package io.dataease.provider.query.oracle;
 
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
+import io.dataease.commons.exception.DEException;
 import io.dataease.dto.datasource.OracleConfiguration;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
@@ -105,7 +107,7 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields) {
+    public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(OracleConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
@@ -126,6 +128,10 @@ public class OracleQueryProvider extends QueryProvider {
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
         if (whereTrees != null) wheres.add(whereTrees);
+        if (StringUtils.isNotBlank(keyword)) {
+            String keyWhere = "(" + transKeywordFilterList(tableObj, xFields, keyword) + ")";
+            wheres.add(keyWhere);
+        }
         if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
         List<SQLObj> xOrders = new ArrayList<>();
@@ -140,18 +146,24 @@ public class OracleQueryProvider extends QueryProvider {
         if (ObjectUtils.isNotEmpty(xOrders)) {
             st_sql.add("orders", xOrders);
         }
+        if (ObjectUtils.isNotEmpty(limit)) {
+            ChartViewWithBLOBs view = new ChartViewWithBLOBs();
+            view.setResultMode("custom");
+            view.setResultCount(Integer.parseInt(limit.toString()));
+            return sqlLimit(st_sql.render(), view);
+        }
         return st_sql.render();
     }
 
 
     @Override
     public String createQuerySQL(String table, List<DatasetTableField> fields, boolean isGroup, Datasource ds, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree) {
-        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null);
+        return createQuerySQL(table, fields, isGroup, ds, fieldCustomFilter, rowPermissionsTree, null, null, null);
     }
 
     @Override
-    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields) {
-        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, sortFields);
+    public String createQuerySQLAsTmp(String sql, List<DatasetTableField> fields, boolean isGroup, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> sortFields, Long limit, String keyword) {
+        return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, sortFields, limit, keyword);
     }
 
     public void setSchema(SQLObj tableObj, Datasource ds) {
@@ -253,6 +265,7 @@ public class OracleQueryProvider extends QueryProvider {
                     }
                 }
                 xFields.add(SQLObj.builder()
+                        .fieldOriginName(originField)
                         .fieldName(fieldName)
                         .fieldAlias(fieldAlias)
                         .build());
@@ -1506,27 +1519,54 @@ public class OracleQueryProvider extends QueryProvider {
     }
 
     private String calcFieldRegex(String originField, SQLObj tableObj) {
-        originField = originField.replaceAll("[\\t\\n\\r]]", "");
-        // 正则提取[xxx]
-        String regex = "\\[(.*?)]";
-        Pattern pattern = Pattern.compile(regex);
-        Matcher matcher = pattern.matcher(originField);
-        Set<String> ids = new HashSet<>();
-        while (matcher.find()) {
-            String id = matcher.group(1);
-            ids.add(id);
+        try {
+            int i = 0;
+            return buildCalcField(originField, tableObj, i);
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
-        if (CollectionUtils.isEmpty(ids)) {
+        return null;
+    }
+
+    private String buildCalcField(String originField, SQLObj tableObj, int i) throws Exception {
+        try {
+            i++;
+            if (i > 100) {
+                DEException.throwException(Translator.get("i18n_field_circular_error"));
+            }
+            originField = originField.replaceAll("[\\t\\n\\r]]", "");
+            // 正则提取[xxx]
+            String regex = "\\[(.*?)]";
+            Pattern pattern = Pattern.compile(regex);
+            Matcher matcher = pattern.matcher(originField);
+            Set<String> ids = new HashSet<>();
+            while (matcher.find()) {
+                String id = matcher.group(1);
+                ids.add(id);
+            }
+            if (CollectionUtils.isEmpty(ids)) {
+                return originField;
+            }
+            DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
+            datasetTableFieldExample.createCriteria().andIdIn(new ArrayList<>(ids));
+            List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
+            for (DatasetTableField ele : calcFields) {
+                if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
+                    // 计算字段允许二次引用，这里递归查询完整引用链
+                    if (Objects.equals(ele.getExtField(), 0)) {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]",
+                                String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
+                    } else {
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
+                        originField = buildCalcField(originField, tableObj, i);
+                    }
+                }
+            }
             return originField;
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_field_circular_error"));
         }
-        DatasetTableFieldExample datasetTableFieldExample = new DatasetTableFieldExample();
-        datasetTableFieldExample.createCriteria().andIdIn(new ArrayList<>(ids));
-        List<DatasetTableField> calcFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
-        for (DatasetTableField ele : calcFields) {
-            originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                    String.format(OracleConstants.KEYWORD_FIX, tableObj.getTableAlias(), ele.getOriginName()));
-        }
-        return originField;
+        return null;
     }
 
     private String sqlLimit(String sql, ChartViewWithBLOBs view) {

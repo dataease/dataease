@@ -134,7 +134,7 @@ public class RaceBarService extends ViewPluginService {
                 encode.put("x", i);
                 type = p.getType();
             } else if (StringUtils.equals(p.getTypeField(), "xAxis")) {
-                if (p.getExtField() == 1) {
+                if (StringUtils.equals(p.getBusiType(), "race-bar")) {
                     map.put("extIndex", i);
                 } else {
                     encode.put("y", i);

@@ -83,7 +83,16 @@
                   style="margin-right: 10px"
                   @select="panelNodeClick"
                   @input="inputVal"
-                />
+                >
+                  <label
+                    slot="option-label"
+                    slot-scope="{ node, labelClassName }"
+                    :class="labelClassName"
+                    :title="node.label"
+                  >
+                    {{ node.label }}
+                  </label>
+                </treeselect>
               </el-col>
             </el-row>
             <el-row style="margin-top: 10px;height: 30px">
@@ -302,7 +311,7 @@
                       clearable
                     />
                     <div class="field-height">
-                      <el-divider/>
+                      <el-divider />
                       <draggable
                         v-model="linkJumpInfoArray"
                         :options="{group:{name: 'drag',pull:'clone'},sort: true}"
@@ -513,6 +522,12 @@ export default {
         checkJumpStr = checkAllAxisStr
       } else if (chartDetails.type === 'table-info') {
         checkJumpStr = chartDetails.xaxis + chartDetails.drillFields
+      } else if (chartDetails.render === 'antv' && chartDetails.type === 'scatter') {
+        checkJumpStr = checkAllAxisStr
+        const xAxis = JSON.parse(chartDetails.xaxis)
+        if (xAxis && xAxis[0] && xAxis[0].groupType === 'q') {
+          checkJumpStr = checkJumpStr + chartDetails.extStack
+        }
       } else {
         checkJumpStr = checkAllAxisStr
       }

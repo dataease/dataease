@@ -14,6 +14,7 @@
     <span
       v-if="chart.type"
       v-show="title_show"
+      :class="titleIsRight"
       ref="title"
       :style="title_class"
       style="cursor: default;display: block;"
@@ -67,8 +68,8 @@
           >
             {{ $t('chart.total') }}
             <span>{{
-                (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
-              }}</span>
+              (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+            }}</span>
             {{ $t('chart.items') }}
           </span>
           <de-pagination
@@ -184,6 +185,9 @@ export default {
   },
 
   computed: {
+    titleIsRight() {
+      return this.title_class?.textAlign === 'right' && 'title-is-right'
+    },
     scale() {
       return this.previewCanvasScale.scalePointWidth
     },
@@ -240,7 +244,7 @@ export default {
   beforeDestroy() {
     clearInterval(this.scrollTimer)
     window.removeEventListener('resize', this.onResize)
-    this.myChart.destroy()
+    this.myChart?.destroy?.()
     this.myChart = null
   },
   methods: {
@@ -250,6 +254,9 @@ export default {
       if (this.chart.data && this.chart.data.fields) {
         this.fields = JSON.parse(JSON.stringify(this.chart.data.fields))
         const attr = JSON.parse(this.chart.customAttr)
+        if (this.currentPage.pageSize < attr.size.tablePageSize) {
+          this.currentPage.page = 1
+        }
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
         if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {

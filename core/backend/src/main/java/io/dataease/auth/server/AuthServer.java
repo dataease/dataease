@@ -19,7 +19,7 @@ import io.dataease.controller.sys.request.LdapAddRequest;
 import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
-import io.dataease.plugins.config.SpringContextUtil;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
 import io.dataease.plugins.xpack.ldap.dto.request.LdapValidateRequest;
@@ -196,6 +196,11 @@ public class AuthServer implements AuthApi {
             }
             if (user.getIsAdmin() && user.getPassword().equals("40b8893ea9ebc2d631c4bb42bb1e8996")) {
                 result.put("passwordModified", false);
+                result.put("defaultPwd", "dataease");
+            }
+            if (!user.getIsAdmin() && user.getPassword().equals("83d923c9f1d8fcaa46cae0ed2aaa81b5")) {
+                result.put("passwordModified", false);
+                result.put("defaultPwd", DEFAULT_PWD);
             }
         }
 

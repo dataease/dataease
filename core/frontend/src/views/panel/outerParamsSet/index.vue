@@ -65,7 +65,8 @@
               icon="el-icon-plus"
               round
               @click="addOuterParamsInfo"
-            >{{ $t('panel.add_param') }}</el-button>
+            >{{ $t('panel.add_param') }}
+            </el-button>
           </el-row>
         </el-col>
         <el-col
@@ -76,10 +77,10 @@
             <el-row class="top_border">
               <el-row style="margin-top: 10px">
                 <el-col :span="11">
-                  <div class="ellip">{{ $t('panel.link_view') }}</div>
+                  <div class="ellip">{{ $t('panel.link_component') }}</div>
                 </el-col>
                 <el-col :span="11">
-                  <div class="ellip">{{ $t('panel.link_view_field') }}</div>
+                  <div class="ellip">{{ $t('panel.link_component_field') }}</div>
                 </el-col>
               </el-row>
               <el-row style="height: 266px;overflow-y: auto">
@@ -129,6 +130,7 @@
                     <div class="select-filed">
                       <el-select
                         v-model="targetViewInfo.targetFieldId"
+                        :disabled="viewIdFieldArrayMap[targetViewInfo.targetViewId] && viewIdFieldArrayMap[targetViewInfo.targetViewId].length===1 && viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty'"
                         style="width: 100%"
                         size="mini"
                         :placeholder="$t('fu.search_bar.please_select')"
@@ -188,7 +190,8 @@
                   round
                   @click="addOuterParamsField"
                 >{{
-                  $t('panel.add_param_link_field') }}
+                  $t('panel.add_param_link_field')
+                }}
                 </el-button>
               </el-row>
 
@@ -224,12 +227,14 @@
       <el-button
         size="mini"
         @click="cancel()"
-      >{{ $t('commons.cancel') }}</el-button>
+      >{{ $t('commons.cancel') }}
+      </el-button>
       <el-button
         type="primary"
         size="mini"
         @click="save()"
-      >{{ $t('commons.confirm') }}</el-button>
+      >{{ $t('commons.confirm') }}
+      </el-button>
     </el-row>
   </el-row>
 </template>
@@ -279,7 +284,20 @@ export default {
         targetFieldId: null
       },
       currentLinkPanelViewArray: [],
-      viewIdFieldArrayMap: {}
+      viewIdFieldArrayMap: {},
+      widgetSubjectsTrans: {
+        timeYearWidget: '年份过滤组件',
+        timeMonthWidget: '年月过滤组件',
+        timeDateWidget: '日期过滤组件',
+        timeDateRangeWidget: '日期范围过滤组件',
+        textSelectWidget: '文本下拉过滤组件',
+        textSelectGridWidget: '文本列表过滤组件',
+        textInputWidget: '文本搜索过滤组件',
+        textSelectTreeWidget: '下拉树过滤组件',
+        numberSelectWidget: '数字下来过滤组件',
+        numberSelectGridWidget: '数字列表过滤组件',
+        numberRangeWidget: '数值区间过滤组件'
+      }
 
     }
   },
@@ -287,12 +305,11 @@ export default {
     panelInfo() {
       return this.$store.state.panel.panelInfo
     },
-    viewSelectedField(){
+    viewSelectedField() {
       const viewIds = []
-      this.outerParamsInfo.targetViewInfoList.forEach((targetViewInfo)=>{
+      this.outerParamsInfo.targetViewInfoList.forEach((targetViewInfo) => {
         viewIds.push(targetViewInfo.targetViewId)
       })
-      console.log('viewIds='+JSON.stringify(viewIds))
       return viewIds
     },
     ...mapState([
@@ -364,6 +381,17 @@ export default {
             this.viewIdFieldArrayMap[view.id] = view.tableFields
           })
         }
+        // 增加过滤组件匹配
+        this.componentData.forEach(componentItem => {
+          if (componentItem.type === 'custom') {
+            this.currentLinkPanelViewArray.push({
+              id: componentItem.id,
+              type: 'filter',
+              name: componentItem.options.attrs.title ? componentItem.options.attrs.title : this.widgetSubjectsTrans[componentItem.serviceName]
+            })
+            this.viewIdFieldArrayMap[componentItem.id] = [{ id: 'empty', name: this.$t('panel.filter_no_select') }]
+          }
+        })
       })
     },
     panelNodeClick(data, node) {
@@ -393,7 +421,12 @@ export default {
       }
     },
     viewInfoOnChange(targetViewInfo) {
-      targetViewInfo.targetFieldId = null
+      console.log('test1=' + this.viewIdFieldArrayMap[targetViewInfo.targetViewId])
+      if (this.viewIdFieldArrayMap[targetViewInfo.targetViewId] && this.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 && this.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty') {
+        targetViewInfo.targetFieldId = 'empty'
+      } else {
+        targetViewInfo.targetFieldId = null
+      }
     },
     sourceFieldCheckedChange(data) {
       if (data.checked) {
@@ -427,153 +460,153 @@ export default {
 
 <style scoped>
 
-  .my_table ::v-deep .el-table__row > td {
-    /* 去除表格线 */
-    border: none;
-    padding: 0 0;
-  }
+.my_table ::v-deep .el-table__row > td {
+  /* 去除表格线 */
+  border: none;
+  padding: 0 0;
+}
 
-  .my_table ::v-deep .el-table th.is-leaf {
-    /* 去除上边框 */
-    border: none;
-  }
+.my_table ::v-deep .el-table th.is-leaf {
+  /* 去除上边框 */
+  border: none;
+}
 
-  .my_table ::v-deep .el-table::before {
-    /* 去除下边框 */
-    height: 0;
-  }
+.my_table ::v-deep .el-table::before {
+  /* 去除下边框 */
+  height: 0;
+}
 
-  .root-class {
-    margin: 15px 0px 5px;
-    text-align: center;
-  }
+.root-class {
+  margin: 15px 0px 5px;
+  text-align: center;
+}
 
-  .preview {
-    margin-top: 5px;
-    border: 1px solid #E6E6E6;
-    height: 350px !important;
-    overflow: hidden;
-    background-size: 100% 100% !important;
-  }
+.preview {
+  margin-top: 5px;
+  border: 1px solid #E6E6E6;
+  height: 350px !important;
+  overflow: hidden;
+  background-size: 100% 100% !important;
+}
 
-  .preview-show {
-    border-left: 1px solid #E6E6E6;
-    height: 350px;
-    background-size: 100% 100% !important;
-  }
+.preview-show {
+  border-left: 1px solid #E6E6E6;
+  height: 350px;
+  background-size: 100% 100% !important;
+}
 
-  .slot-class {
-    color: white;
-  }
+.slot-class {
+  color: white;
+}
 
-  .bottom {
-    margin-top: 15px;
-    text-align: center;
-  }
+.bottom {
+  margin-top: 15px;
+  text-align: center;
+}
 
-  .ellip {
-    /*width: 100%;*/
-    margin-left: 10px;
-    margin-right: 10px;
-    overflow: hidden; /*超出部分隐藏*/
-    white-space: nowrap; /*不换行*/
-    text-overflow: ellipsis; /*超出部分文字以...显示*/
-    text-align: center;
-    background-color: #f7f8fa;
-    color: #3d4d66;
-    font-size: 12px;
-    line-height: 24px;
-    height: 24px;
-    border-radius: 3px;
-  }
+.ellip {
+  /*width: 100%;*/
+  margin-left: 10px;
+  margin-right: 10px;
+  overflow: hidden; /*超出部分隐藏*/
+  white-space: nowrap; /*不换行*/
+  text-overflow: ellipsis; /*超出部分文字以...显示*/
+  text-align: center;
+  background-color: #f7f8fa;
+  color: #3d4d66;
+  font-size: 12px;
+  line-height: 24px;
+  height: 24px;
+  border-radius: 3px;
+}
 
-  .select-filed {
-    /*width: 100%;*/
-    margin-left: 10px;
-    margin-right: 10px;
-    overflow: hidden; /*超出部分隐藏*/
-    white-space: nowrap; /*不换行*/
-    text-overflow: ellipsis; /*超出部分文字以...显示*/
-    color: #3d4d66;
-    font-size: 12px;
-    line-height: 35px;
-    height: 35px;
-    border-radius: 3px;
-  }
+.select-filed {
+  /*width: 100%;*/
+  margin-left: 10px;
+  margin-right: 10px;
+  overflow: hidden; /*超出部分隐藏*/
+  white-space: nowrap; /*不换行*/
+  text-overflow: ellipsis; /*超出部分文字以...显示*/
+  color: #3d4d66;
+  font-size: 12px;
+  line-height: 35px;
+  height: 35px;
+  border-radius: 3px;
+}
 
-  ::v-deep .el-popover {
-    height: 200px;
-    overflow: auto;
-  }
+::v-deep .el-popover {
+  height: 200px;
+  overflow: auto;
+}
 
-  .custom-position {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-    flex-flow: row nowrap;
-    color: #9ea6b2;
-  }
+.custom-position {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #9ea6b2;
+}
 
-  .tree-style {
-    padding: 10px 15px;
-    height: 100%;
-    overflow-y: auto;
-  }
+.tree-style {
+  padding: 10px 15px;
+  height: 100%;
+  overflow-y: auto;
+}
 
-  /deep/ .vue-treeselect__control {
-    height: 28px;
-  }
+/deep/ .vue-treeselect__control {
+  height: 28px;
+}
 
-  /deep/ .vue-treeselect__single-value {
-    color: #606266;
-    line-height: 28px !important;
-  }
+/deep/ .vue-treeselect__single-value {
+  color: #606266;
+  line-height: 28px !important;
+}
 
-  .custom-tree-node {
-    flex: 1;
-    display: flex;
-    align-items: center;
-    justify-content: space-between;
-    font-size: 14px;
-  }
+.custom-tree-node {
+  flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  font-size: 14px;
+}
 
-  .auth-span {
-    float: right;
-    width: 40px;
-    margin-right: 5px
-  }
+.auth-span {
+  float: right;
+  width: 40px;
+  margin-right: 5px
+}
 
-  .tree-head {
-    height: 30px;
-    line-height: 30px;
-    border-bottom: 1px solid var(--TableBorderColor, #e6e6e6);
-    background-color: var(--SiderBG, #f7f8fa);
-    font-size: 12px;
-    color: var(--TableColor, #3d4d66);
-  }
+.tree-head {
+  height: 30px;
+  line-height: 30px;
+  border-bottom: 1px solid var(--TableBorderColor, #e6e6e6);
+  background-color: var(--SiderBG, #f7f8fa);
+  font-size: 12px;
+  color: var(--TableColor, #3d4d66);
+}
 
-  .tree-content {
-    height: calc(100% - 70px);
-    overflow-y: auto;
-  }
+.tree-content {
+  height: calc(100% - 70px);
+  overflow-y: auto;
+}
 
-  .tree-bottom {
-    margin-top: 7px;
-    text-align: center;
-  }
+.tree-bottom {
+  margin-top: 7px;
+  text-align: center;
+}
 
-  /deep/ .vue-treeselect__placeholder {
-    line-height: 28px
-  }
+/deep/ .vue-treeselect__placeholder {
+  line-height: 28px
+}
 
-  /deep/ .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
-    background-color: #8dbbef !important;
-  }
+/deep/ .el-tree--highlight-current .el-tree-node.is-current > .el-tree-node__content {
+  background-color: #8dbbef !important;
+}
 
-  .tree-content ::v-deep .el-input__inner {
-    background: transparent;
-    border: 0px !important;
-  }
+.tree-content ::v-deep .el-input__inner {
+  background: transparent;
+  border: 0px !important;
+}
 </style>

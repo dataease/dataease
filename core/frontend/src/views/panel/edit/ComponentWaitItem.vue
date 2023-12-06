@@ -33,6 +33,7 @@
         :is-edit="false"
         :element="config"
         :h="outItemHeight"
+        :show-position="'preview-wait'"
         :canvas-style-data="canvasStyleData"
       />
 

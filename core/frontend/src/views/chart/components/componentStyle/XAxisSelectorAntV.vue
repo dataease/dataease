@@ -226,6 +226,7 @@
               />
             </el-form-item>
             <el-form-item
+              v-if="chart.type && chart.type !== 'bidirectional-bar'"
               :label="$t('chart.axis_label_rotate')"
               class="form-item form-item-slider"
             >
@@ -465,6 +466,14 @@ export default {
 .form-item ::v-deep .el-form-item__label{
   font-size: 12px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 .el-select-dropdown__item{
   padding: 0 20px;
 }

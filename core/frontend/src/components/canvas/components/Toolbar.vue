@@ -134,6 +134,16 @@
                 @change="showGridChange"
               />
             </el-dropdown-item>
+            <el-dropdown-item>
+              <span class="icon iconfont icon-adaptor icon16" />
+              <span class="text14 margin-left8">{{ $t('panel.auto_size_adaptor') }}</span>
+              <el-switch
+                v-model="canvasStyleData.autoSizeAdaptor"
+                :class="[{['grid-active']: canvasStyleData.autoSizeAdaptor},'margin-left8']"
+                size="mini"
+                @change="showSizeAdaptorSwitchChange"
+              />
+            </el-dropdown-item>
             <el-dropdown-item @click.native="openOuterParamsSet">
               <span class="icon iconfont icon-icon-quicksetting icon16" />
               <span class="text14 margin-left8">{{ $t('panel.params_setting') }}</span>
@@ -192,7 +202,7 @@
         @click="batchOption"
       ><span
         class="icon-font-margin"
-      >{{ batchOptStatus?$t('panel.cancel_batch_opt'):$t('panel.batch_opt') }}</span></span>
+      >{{ batchOptStatus ? $t('panel.cancel_batch_opt') : $t('panel.batch_opt') }}</span></span>
       <span style="float: right;margin-right: 24px">
         <el-button
           size="mini"
@@ -264,6 +274,7 @@ import { getPanelAllLinkageInfo, saveLinkage } from '@/api/panel/linkage'
 import bus from '@/utils/bus'
 import { queryPanelJumpInfo } from '@/api/panel/linkJump'
 import { inOtherPlatform } from '@/utils/index'
+
 export default {
   name: 'Toolbar',
   props: {
@@ -330,6 +341,7 @@ export default {
     eventBus.$on('checkAndSave', this.checkAndSave)
     eventBus.$on('clearCanvas', this.clearCanvas)
     bus.$on('onSubjectChange', this.editPanelInit)
+    bus.$on('editSave', this.mobileLayoutSave)
     this.scale = this.canvasStyleData.scale
     this.mobileLayoutInitStatus = this.mobileLayoutStatus
     this.showGridSwitch = this.canvasStyleData.aidedDesign.showGrid
@@ -337,6 +349,7 @@ export default {
     this.autoCache()
   },
   beforeDestroy() {
+    bus.$off('editSave', this.mobileLayoutSave)
     eventBus.$off('preview', this.preview)
     eventBus.$off('checkAndSave', this.checkAndSave)
     eventBus.$off('clearCanvas', this.clearCanvas)
@@ -623,6 +636,11 @@ export default {
       this.$store.commit('canvasChange')
       this.canvasStyleData.aidedDesign.showGrid = !this.canvasStyleData.aidedDesign.showGrid
     },
+    showSizeAdaptorSwitchChange() {
+      this.$store.commit('canvasChange')
+      // this.canvasStyleData.autoSizeAdaptor = !this.canvasStyleData.autoSizeAdaptor
+      eventBus.$emit('componentSizeAdaptorChange')
+    },
     showPageLineChange() {
       this.$store.commit('canvasChange')
       this.canvasStyleData.pdfPageLine.showPageLine = !this.canvasStyleData.pdfPageLine.showPageLine
@@ -636,13 +654,14 @@ export default {
     openMobileLayout(switchVal) {
       if (switchVal) {
         this.$store.commit('openMobileLayout')
+        bus.$emit('mobile-status-change', 'openMobileLayout', { componentData: this.componentData, panelInfo: this.panelInfo })
       } else {
         this.mobileLayoutSave()
       }
     },
     editSave() {
       if (this.mobileLayoutStatus) {
-        this.mobileLayoutSave()
+        bus.$emit('mobile-status-change', 'editSave')
       } else {
         this.saveLinkage()
       }
@@ -651,6 +670,9 @@ export default {
       this.$store.commit('setComponentData', JSON.parse(this.componentDataCache))
       this.$store.commit('setMobileLayoutStatus', false)
       this.$store.commit('openMobileLayout')
+      if (this.mobileLayoutStatus) {
+        bus.$emit('mobile-status-change', 'reset', JSON.parse(this.componentDataCache))
+      }
     },
     editCancel() {
       if (this.mobileLayoutStatus) {

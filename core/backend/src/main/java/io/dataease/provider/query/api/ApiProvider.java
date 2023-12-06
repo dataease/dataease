@@ -76,12 +76,12 @@ public class ApiProvider extends QueryProvider {
     }
 
     @Override
-    public String createQuerySQL(String s, List<DatasetTableField> list, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> list2) {
+    public String createQuerySQL(String s, List<DatasetTableField> list, boolean b, Datasource datasource, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> list2, Long limit, String keyword) {
         return null;
     }
 
     @Override
-    public String createQuerySQLAsTmp(String s, List<DatasetTableField> list, boolean b, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> list2) {
+    public String createQuerySQLAsTmp(String s, List<DatasetTableField> list, boolean b, List<ChartFieldCustomFilterDTO> list1, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<DeSortField> list2, Long limit, String keyword) {
         return null;
     }
 

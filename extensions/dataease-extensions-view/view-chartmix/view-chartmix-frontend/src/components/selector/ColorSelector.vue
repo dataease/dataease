@@ -53,18 +53,27 @@
           </el-popover>
         </el-form-item>
 
+        <el-form-item
+          :label="$t('chart.gradient')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="colorForm.gradient"
+            @change="changeColorCase"
+          />
+        </el-form-item>
 
-<!--        <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">
+        <el-form-item :label="$t('chart.not_alpha')" class="form-item form-item-slider">
           <el-slider v-model="colorForm.alpha" show-input :show-input-controls="false" input-size="mini"
                      @change="changeColorCase"/>
-        </el-form-item>-->
+        </el-form-item>
       </el-form>
     </el-col>
   </div>
 </template>
 
 <script>
-import {COLOR_PANEL, DEFAULT_COLOR_CASE} from '@/utils/map'
+import {COLOR_PANEL, DEFAULT_COLOR_CASE} from '../../utils/map'
 
 export default {
   name: 'ColorSelector',
@@ -264,6 +273,14 @@ export default {
 .form-item ::v-deep .el-form-item__label {
   font-size: 12px;
 }
+
+.form-item ::v-deep .el-checkbox__label {
+  font-size: 12px;
+}
+.form-item ::v-deep .el-radio__label {
+  font-size: 12px;
+}
+
 
 .el-select-dropdown__item {
   padding: 0 20px;

@@ -2,8 +2,8 @@ package io.dataease.listener;
 
 import io.dataease.plugins.common.base.domain.SysStartupJob;
 import io.dataease.plugins.common.base.mapper.SysStartupJobMapper;
-import io.dataease.plugins.config.SpringContextUtil;
-import io.dataease.plugins.loader.ClassloaderResponsity;
+import io.dataease.plugins.common.util.ClassloaderResponsity;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.auth.service.RowPermissionTreeService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

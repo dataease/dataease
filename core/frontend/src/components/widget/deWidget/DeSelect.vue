@@ -6,18 +6,22 @@
     v-model="value"
     :class-id="'visual-' + element.id + '-' + inDraw + '-' + inScreen"
     :collapse-tags="showNumber"
-    :clearable="!element.options.attrs.multiple"
+    :clearable="!element.options.attrs.multiple && (inDraw || !selectFirst)"
     :multiple="element.options.attrs.multiple"
     :placeholder="$t(element.options.attrs.placeholder) + placeholderSuffix"
     :popper-append-to-body="inScreen"
     :size="size"
-    :filterable="true"
+    :filterable="inDraw || !selectFirst"
     :filter-method="filterMethod"
+    :item-disabled="!inDraw && selectFirst"
     :key-word="keyWord"
     popper-class="coustom-de-select"
+    :class="{'disabled-close': !inDraw && selectFirst && element.options.attrs.multiple}"
     :list="data"
-    @resetKeyWords="filterMethod"
+    :flag="flag"
+    :is-config="isConfig"
     :custom-style="customStyle"
+    @resetKeyWords="filterMethod"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
@@ -30,6 +34,7 @@
       :style="{width:selectOptionWidth}"
       :label="item[element.options.attrs.label]"
       :value="item[element.options.attrs.value]"
+      :disabled="!inDraw && selectFirst"
     >
       <span
         :title="item[element.options.attrs.label]"
@@ -48,7 +53,7 @@ import { isSameVueObj, mergeCustomSortOption } from '@/utils'
 import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/deWidget/customInput'
 import { textSelectWidget } from '@/components/widget/deWidget/serviceNameFn.js'
-
+import { uuid } from 'vue-uuid'
 export default {
   components: { ElVisualSelect },
   mixins: [customInput],
@@ -65,6 +70,10 @@ export default {
     inDraw: {
       type: Boolean,
       default: true
+    },
+    isConfig: {
+      type: Boolean,
+      default: false
     },
     inScreen: {
       type: Boolean,
@@ -86,7 +95,10 @@ export default {
       data: [],
       onFocus: false,
       keyWord: '',
-      separator: ','
+      separator: ',',
+      timeMachine: null,
+      changeIndex: 0,
+      flag: uuid.v1()
     }
   },
   computed: {
@@ -128,12 +140,21 @@ export default {
     },
     isCustomSortWidget() {
       return this.element.serviceName === 'textSelectWidget'
+    },
+    selectFirst() {
+      return this.element.serviceName === 'textSelectWidget' && this.element.options.attrs.selectFirst
     }
   },
 
   watch: {
+    'value': function(val, old) {
+      if (!this.inDraw) {
+        this.$emit('widget-value-changed', val)
+      }
+    },
     'viewIds': function(value, old) {
       if (typeof value === 'undefined' || value === old) return
+      this.fillFirstValue()
       this.setCondition()
     },
     'defaultValueStr': function(value, old) {
@@ -159,11 +180,22 @@ export default {
       this.element.options.attrs.fieldId.length > 0 &&
       method(param).then(res => {
         this.data = this.optionData(res.data)
+
         this.clearDefault(this.data)
+        this.fillFirstValue()
         bus.$emit('valid-values-change', true)
       }).catch(e => {
         bus.$emit('valid-values-change', false)
       }) || (this.element.options.value = '')
+    },
+    'selectFirst': function(value, old) {
+      if (value === old) return
+      if (value) {
+        this.fillFirstValue()
+      } else {
+        this.value = ''
+        this.firstChange(this.value)
+      }
     },
     'element.options.attrs.multiple': function(value, old) {
       if (typeof old === 'undefined' || value === old) return
@@ -174,6 +206,7 @@ export default {
 
       this.show = false
       this.$nextTick(() => {
+        this.fillFirstValue()
         this.show = true
         this.handleCoustomStyle()
       })
@@ -190,6 +223,10 @@ export default {
       if (!token && linkToken) {
         method = linkMultFieldValues
       }
+      if (!this.element.options.attrs.fieldId) {
+        this.show = true
+        return
+      }
       const param = { fieldIds: this.element.options.attrs.fieldId.split(this.separator), sort: this.element.options.attrs.sort }
       if (this.panelInfo.proxy) {
         param.userId = this.panelInfo.proxy
@@ -199,12 +236,15 @@ export default {
       method(param).then(res => {
         this.data = this.optionData(res.data)
         this.$nextTick(() => {
+          this.fillFirstValue()
           this.show = true
           this.handleCoustomStyle()
         })
         bus.$emit('valid-values-change', true)
       }).catch(e => {
         bus.$emit('valid-values-change', false)
+      }).finally(() => {
+        this.show = true
       }) || (this.element.options.value = '')
     }
 
@@ -256,16 +296,64 @@ export default {
       this.value = this.element.options.attrs.multiple ? [] : null
       this.$refs.deSelect && this.$refs.deSelect.resetSelectAll && this.$refs.deSelect.resetSelectAll()
     },
+
+    searchWithKey(index) {
+      this.timeMachine = setTimeout(() => {
+        if (index === this.changeIndex) {
+          this.refreshOptions()
+        }
+        this.destroyTimeMachine()
+      }, 1500)
+    },
+    destroyTimeMachine() {
+      this.timeMachine && clearTimeout(this.timeMachine)
+      this.timeMachine = null
+    },
     filterMethod(key) {
+      if (key === this.keyWord) {
+        return
+      }
       this.keyWord = key
+      this.destroyTimeMachine()
+      this.changeIndex++
+      this.searchWithKey(this.changeIndex)
+    },
+    refreshOptions() {
+      // this.data = []
+      let method = multFieldValues
+      const token = this.$store.getters.token || getToken()
+      const linkToken = this.$store.getters.linkToken || getLinkToken()
+      if (!token && linkToken) {
+        method = linkMultFieldValues
+      }
+      if (!this.element.options.attrs.fieldId) {
+        return
+      }
+      const param = { fieldIds: this.element.options.attrs.fieldId.split(this.separator), sort: this.element.options.attrs.sort, keyword: this.keyWord }
+      if (this.panelInfo.proxy) {
+        param.userId = this.panelInfo.proxy
+      }
+      this.element.options.attrs.fieldId &&
+      this.element.options.attrs.fieldId.length > 0 &&
+      method(param).then(res => {
+        this.data = this.optionData(res.data)
+        this.flag = uuid.v1()
+      })
     },
     onScroll() {
       if (this.onFocus) {
         this.$refs.deSelect.$refs.visualSelect.blur()
       }
     },
-    resetDefaultValue(id) {
-      if (this.inDraw && this.manualModify && this.element.id === id) {
+    resetDefaultValue(ele) {
+      const id = ele.id
+      const eleVal = ele.options.value.toString()
+      if (this.inDraw && this.manualModify && this.element.id === id && this.value.toString() !== eleVal && this.defaultValueStr === eleVal) {
+        if (this.selectFirst) {
+          this.fillFirstValue()
+          this.firstChange(this.value)
+          return
+        }
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
@@ -274,22 +362,34 @@ export default {
       // this.onFocus = false
     },
     handleElTagStyle() {
+      if (this.isConfig) return
       setTimeout(() => {
         this.$refs['deSelect'] && this.$refs['deSelect'].$el && textSelectWidget(this.$refs['deSelect'].$el, this.element.style)
       }, 500)
     },
     initLoad() {
-      this.value = this.fillValueDerfault()
-      this.initOptions()
-      if (this.element.options.value) {
+      // this.value = this.fillValueDerfault()
+      this.initOptions(this.fillFirstSelected)
+      if (this.element.options.value && !this.selectFirst) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
+      }
+    },
+    fillFirstSelected() {
+      if (this.selectFirst && this.data?.length) {
+        this.fillFirstValue()
+        this.$emit('filter-loaded', {
+          componentId: this.element.id,
+          val: (this.value && Array.isArray(this.value)) ? this.value.join(',') : this.value
+        })
+        this.element.options.loaded = true
+        this.$store.commit('setComponentWithId', this.element)
       }
     },
     refreshLoad() {
       this.initOptions()
     },
-    initOptions() {
+    initOptions(cb) {
       this.data = []
       if (this.element.options.attrs.fieldId) {
         let method = multFieldValues
@@ -304,6 +404,7 @@ export default {
         }).then(res => {
           this.data = this.optionData(res.data)
           bus.$emit('valid-values-change', true)
+          cb && cb()
         }).catch(e => {
           bus.$emit('valid-values-change', false)
         })
@@ -329,6 +430,10 @@ export default {
       } else {
         this.element.options.manualModify = true
       }
+      this.setCondition()
+      this.handleShowNumber()
+    },
+    firstChange(value) {
       this.setCondition()
       this.handleShowNumber()
     },
@@ -371,6 +476,20 @@ export default {
       }
       return this.value.split(',')
     },
+    fillFirstValue() {
+      if (!this.selectFirst) {
+        return
+      }
+      const defaultV = this.data[0].id
+      if (this.element.options.attrs.multiple) {
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
+        this.value = defaultV.split(this.separator)
+      } else {
+        if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
+        this.value = defaultV.split(this.separator)[0]
+      }
+      this.firstChange(this.value)
+    },
     fillValueDerfault() {
       const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
       if (this.element.options.attrs.multiple) {
@@ -409,13 +528,15 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+  .disabled-close ::v-deep .el-icon-close {
+    display: none !important;
+  }
+</style>
 <style lang="scss">
 .coustom-de-select {
   background-color: var(--BgSelectColor, #FFFFFF) !important;
   border-color: var(--BrSelectColor, #E4E7ED) !important;
-  // .popper__arrow::after{
-  //   border-bottom-color: var(--BgSelectColor, #FFFFFF) !important;
-  // }
 
   .popper__arrow,
   .popper__arrow::after {

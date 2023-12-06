@@ -79,6 +79,18 @@ function handlerInputStyle(node, style) {
   })
 }
 
+const dateMap = {
+  year: 'year',
+  month: 'year-month',
+  date: 'date',
+  datetime: 'datetime',
+  datetimerange: 'datetime',
+  daterange: 'date'
+}
+
+const years = Array(60).fill(1).map((_, index) => `${index + 1980}`)
+const seconds = Array(60).fill(1).map((_, index) => index)
+
 export {
   attrsMap,
   styleAttrs,
@@ -87,5 +99,8 @@ export {
   textSelectGridWidget,
   textSelectTreeWidget,
   textSelectWidget,
-  handlerInputStyle
+  handlerInputStyle,
+  dateMap,
+  years,
+  seconds
 }

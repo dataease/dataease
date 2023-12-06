@@ -2,7 +2,7 @@
   <div
     :style="getOutStyleDefault(config.style)"
     class="component component-outer"
-    :class="{'component-active': filterActive}"
+    :class="{'component-active': filterActive, 'user-view': config.component === 'user-view'}"
     @click="handleClick"
     @mousedown="elementMouseDown"
   >
@@ -40,6 +40,7 @@
         :style="getComponentStyleDefault(config.style)"
         style="overflow: hidden"
         :out-style="config.style"
+        :terminal="terminal"
         :is-relation="isRelation"
         :element="config"
         :in-screen="inScreen"
@@ -47,6 +48,7 @@
         :h="config.style.height"
         :search-count="searchCount"
         :canvas-id="canvasId"
+        @filter-loaded="filterLoaded"
       />
       <component
         :is="config.component"
@@ -76,19 +78,19 @@
 </template>
 
 <script>
-import {getStyle} from '@/components/canvas/utils/style'
+import { getStyle } from '@/components/canvas/utils/style'
 import runAnimation from '@/components/canvas/utils/runAnimation'
-import {mixins} from '@/components/canvas/utils/events'
-import {mapState} from 'vuex'
+import { mixins } from '@/components/canvas/utils/events'
+import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
 import EditBar from '@/components/canvas/components/editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/editor/MobileCheckBar'
 import CloseBar from '@/components/canvas/components/editor/CloseBar'
-import {hexColorToRGBA} from '@/views/chart/chart/util'
-import {imgUrlTrans} from '@/components/canvas/utils/utils'
+import { hexColorToRGBA } from '@/views/chart/chart/util'
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
-  components: {CloseBar, MobileCheckBar, DeOutWidget, EditBar},
+  components: { CloseBar, MobileCheckBar, DeOutWidget, EditBar },
   mixins: [mixins],
   props: {
     canvasId: {
@@ -135,7 +137,7 @@ export default {
     canvasStyleData: {
       type: Object,
       required: false,
-      default: function () {
+      default: function() {
         return {}
       }
     },
@@ -163,7 +165,7 @@ export default {
     },
     chart() {
       if (this.config.propValue?.viewId) {
-        const viewInfo = this.panelViewDetailsInfo[this.config.propValue.viewId];
+        const viewInfo = this.panelViewDetailsInfo[this.config.propValue.viewId]
         return viewInfo ? JSON.parse(viewInfo) : null
       }
       return null
@@ -234,6 +236,9 @@ export default {
     runAnimation(this.$el, this.config.animations)
   },
   methods: {
+    filterLoaded(p) {
+      this.$emit('filter-loaded', p)
+    },
     getComponentId() {
       return this.config.id
     },
@@ -324,7 +329,7 @@ export default {
       e.stopPropagation()
       const _this = this
       setTimeout(() => {
-        _this.$store.commit('setCurComponent', {component: _this.config, index: _this.index})
+        _this.$store.commit('setCurComponent', { component: _this.config, index: _this.index })
       }, 200)
     },
     showViewDetails(params) {
@@ -382,15 +387,19 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 2;
   width: 100% !important;
   height: 100% !important;
 }
 
-.component-outer {
-  transform: translate(0);
-}
+// .component-outer {
+//   transform: none;
+// }
 
 .component-active {
   z-index: 1;
+}
+.user-view {
+  transform: translate(0);
 }
 </style>

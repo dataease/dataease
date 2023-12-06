@@ -15,7 +15,6 @@
 
 <script>
 import bus from '@/utils/bus'
-import { mapState } from 'vuex'
 export default {
 
   props: {
@@ -27,9 +26,9 @@ export default {
       type: Boolean,
       default: true
     },
-    canvasStyleData:{
+    canvasStyleData: {
       type: Object,
-      default: {}
+      default: () => {}
     },
     size: String
   },

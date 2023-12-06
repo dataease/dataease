@@ -174,7 +174,7 @@
                   />
                 </span>
                 <span v-if="data.nodeType === 'folder'">
-                  <svg-icon icon-class="scene"/>
+                  <svg-icon icon-class="scene" />
                 </span>
                 <span
                   :class="data.status"
@@ -211,7 +211,7 @@
                       <el-dropdown-item
                         :command="beforeClickEdit('folder', 'new', data, node)"
                       >
-                        <svg-icon icon-class="scene"/>
+                        <svg-icon icon-class="scene" />
                         <span style="margin-left: 5px">{{ $t('panel.groupAdd') }}</span>
                       </el-dropdown-item>
                       <el-dropdown-item
@@ -334,7 +334,7 @@
             :label="$t('commons.name')"
             prop="name"
           >
-            <el-input v-model="groupForm.name"/>
+            <el-input v-model="groupForm.name" />
           </el-form-item>
         </el-form>
         <div
@@ -345,8 +345,8 @@
             size="mini"
             @click="close()"
           >{{
-              $t('panel.cancel')
-            }}
+            $t('panel.cancel')
+          }}
           </el-button>
           <el-button
             type="primary"
@@ -422,8 +422,8 @@
             size="mini"
             @click="closeMoveGroup()"
           >{{
-              $t('dataset.cancel')
-            }}
+            $t('dataset.cancel')
+          }}
           </el-button>
           <el-button
             :disabled="groupMoveConfirmDisabled"
@@ -451,7 +451,6 @@ import {
   groupTree,
   initPanelData, panelMove,
   panelToTop,
-  panelUpdate,
   viewPanelLog
 } from '@/api/panel/panel'
 import { mapState } from 'vuex'
