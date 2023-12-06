@@ -389,8 +389,8 @@ const getEmptyDesc = (): string => {
       }
     }
     .main-color {
-      font-size: 21.33px;
-      padding: 5.33px;
+      font-size: 18px;
+      padding: 3px;
       margin-right: 12px;
       border-radius: 4px;
       color: #fff;
