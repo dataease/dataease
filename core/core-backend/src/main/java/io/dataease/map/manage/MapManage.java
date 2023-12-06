@@ -1,5 +1,7 @@
 package io.dataease.map.manage;
 
+import cn.hutool.core.collection.ListUtil;
+import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.map.dto.GeometryNodeCreator;
 import io.dataease.api.map.vo.AreaNode;
 import io.dataease.constant.StaticResourceConstants;
@@ -29,6 +31,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
+import java.util.stream.Stream;
 
 import static io.dataease.constant.CacheConstant.CommonCacheConstant.WORLD_MAP_CACHE;
 
@@ -147,10 +150,30 @@ public class MapManage {
         if (!StringUtils.startsWith(code, GEO_PREFIX)) {
             DEException.throwException("内置Geometry，禁止删除");
         }
-        coreAreaCustomMapper.deleteById(code);
-        File file = buildGeoFile(code);
-        if (file.exists()) {
-            file.delete();
+        CoreAreaCustom coreAreaCustom = coreAreaCustomMapper.selectById(code);
+        if (ObjectUtils.isEmpty(coreAreaCustom)) {
+            DEException.throwException("Geometry code 不存在！");
+        }
+        List<String> codeResultList = new ArrayList<>();
+        codeResultList.add(code);
+        childTreeIdList(ListUtil.of(code), codeResultList);
+        coreAreaCustomMapper.deleteBatchIds(codeResultList);
+        codeResultList.forEach(id -> {
+            File file = buildGeoFile(id);
+            if (file.exists()) {
+                file.delete();
+            }
+        });
+    }
+
+    public void childTreeIdList(List<String> pidList, List<String> resultList) {
+        QueryWrapper<CoreAreaCustom> queryWrapper = new QueryWrapper<>();
+        queryWrapper.in("pid", pidList);
+        List<CoreAreaCustom> coreAreaCustoms = coreAreaCustomMapper.selectList(queryWrapper);
+        if (CollectionUtils.isNotEmpty(coreAreaCustoms)) {
+            List<String> codeList = coreAreaCustoms.stream().map(CoreAreaCustom::getId).toList();
+            resultList.addAll(codeList);
+            childTreeIdList(codeList, resultList);
         }
     }
 

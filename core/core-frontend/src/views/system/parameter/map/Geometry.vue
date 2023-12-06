@@ -40,6 +40,7 @@
             <template #default="{ node, data }">
               <span class="custom-tree-node" :class="{ 'is-disabled': node.disabled || data.root }">
                 <span
+                  class="geo-name-span"
                   :title="data.name"
                   v-html="data.colorName && keyword ? data.colorName : data.name"
                 />
@@ -304,14 +305,19 @@ loadTreeData(true)
   padding-right: 4px;
   overflow: hidden;
   justify-content: space-between;
-
+  .geo-name-span {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
   .geo-operate-container {
     display: none;
   }
 
   &:hover {
     .geo-operate-container {
-      display: contents;
+      display: inline-flex;
+      padding-left: 4px;
     }
   }
 }
