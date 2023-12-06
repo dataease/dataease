@@ -1,6 +1,7 @@
 package io.dataease.map.manage;
 
 import cn.hutool.core.collection.ListUtil;
+import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.map.dto.GeometryNodeCreator;
 import io.dataease.api.map.vo.AreaNode;
@@ -110,6 +111,13 @@ public class MapManage {
     @CacheEvict(cacheNames = WORLD_MAP_CACHE, key = "'world_map'")
     @Transactional
     public void saveMapGeo(GeometryNodeCreator request, MultipartFile file) {
+        if (ObjectUtils.isEmpty(file) || file.isEmpty()) {
+            DEException.throwException("geometry file is require");
+        }
+        String suffix = FileUtil.getSuffix(file.getOriginalFilename());
+        if (!StringUtils.equalsIgnoreCase("json", suffix)) {
+            DEException.throwException("仅支持json格式文件");
+        }
         List<Area> areas = proxy().defaultArea();
         String code = getBusiGeoCode(request.getCode());
 
