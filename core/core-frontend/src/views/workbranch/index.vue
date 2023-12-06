@@ -58,6 +58,21 @@ const showTemplate = computed(() => {
   return state.networkStatus && state.hasResult
 })
 
+const createAuth = computed(() => {
+  return {
+    PANEL: havePanelAuth.value,
+    SCREEN: haveScreenAuth.value
+  }
+})
+
+const havePanelAuth = computed(() => {
+  return quickCreationList.value[0]['menuAuth'] && quickCreationList.value[0]['anyManage']
+})
+
+const haveScreenAuth = computed(() => {
+  return quickCreationList.value[1]['menuAuth'] && quickCreationList.value[1]['anyManage']
+})
+
 const activeTabChange = value => {
   activeTabBtn.value = value
 }
@@ -289,8 +304,23 @@ initMarketTemplate()
               {{ t(`auth.${ele.name}`) }}
             </span>
           </div>
-          <div class="item item-quick" @click="toTemplateMarketAdd">
-            <el-icon class="main-color-quick">
+          <div
+            class="item item-quick"
+            :class="{
+              'quick-create-disabled': !(havePanelAuth || haveScreenAuth)
+            }"
+            @click="toTemplateMarketAdd"
+          >
+            <el-tooltip
+              v-if="!(havePanelAuth || haveScreenAuth)"
+              class="box-item"
+              effect="dark"
+              content="缺少创建权限"
+              placement="top"
+            >
+              <div class="empty-tooltip-container-template" />
+            </el-tooltip>
+            <el-icon class="main-color-quick template-create">
               <Icon name="icon_template_colorful" />
             </el-icon>
             <span class="name">使用模板新建</span>
@@ -329,6 +359,7 @@ initMarketTemplate()
               :key="index"
               :template="template"
               :base-url="state.baseUrl"
+              :create-auth="createAuth"
               @templateApply="templateApply"
               @templatePreview="templatePreview"
             >
@@ -536,6 +567,15 @@ initMarketTemplate()
             height: 52px;
             margin-left: -16px;
           }
+          .empty-tooltip-container-template {
+            width: 300px;
+            position: absolute;
+            height: 52px;
+            margin-left: -16px;
+          }
+          .template-create {
+            opacity: 0.3;
+          }
         }
       }
     }
@@ -620,6 +660,7 @@ initMarketTemplate()
       .template-list {
         display: flex;
         margin-left: -16px;
+        overflow-x: auto;
       }
     }
   }

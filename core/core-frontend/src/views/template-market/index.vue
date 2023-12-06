@@ -8,6 +8,7 @@
     <market-preview-v2
       v-show="previewModel === 'marketPreview'"
       :preview-id="state.templatePreviewId"
+      :create-auth="createAuth"
       @closePreview="closePreview"
       @templateApply="templateApply"
     ></market-preview-v2>
@@ -111,6 +112,7 @@
               :base-url="state.baseUrl"
               :template-cur-width="state.templateCurWidth"
               :cur-position="state.curPosition"
+              :create-auth="createAuth"
               @templateApply="templateApply"
               @templatePreview="templatePreview"
             ></category-template-v2>
@@ -130,6 +132,7 @@
                 :base-url="state.baseUrl"
                 :template-cur-width="state.templateCurWidth"
                 :cur-position="state.curPosition"
+                :create-auth="createAuth"
                 @templateApply="templateApply"
                 @templatePreview="templatePreview"
               ></category-template-v2>
@@ -163,8 +166,11 @@ import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.v
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { deepCopy } from '@/utils/utils'
 import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const { t } = useI18n()
 const { wsCache } = useCache()
+
+const interactiveStore = interactiveStoreWithOut()
 
 // full 正常展示 marketPreview 模板中心预览 createPreview 创建界面预览
 const previewModel = ref('full')
@@ -261,6 +267,14 @@ const state = reactive({
         trigger: 'blur'
       }
     ]
+  }
+})
+
+const createAuth = computed(() => {
+  const authMap = interactiveStore.getData
+  return {
+    PANEL: authMap['0'].menuAuth && authMap['0'].anyManage,
+    SCREEN: authMap['1'].menuAuth && authMap['1'].anyManage
   }
 })
 

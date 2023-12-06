@@ -18,6 +18,7 @@
       :base-url="baseUrl"
       :width="templateCurWidth"
       :cur-position="curPosition"
+      :create-auth="createAuth"
       @templateApply="templateApply"
       @templatePreview="templatePreview"
     />
@@ -67,6 +68,15 @@ const props = defineProps({
   fullTemplateShowList: {
     type: Array,
     default: () => []
+  },
+  createAuth: {
+    type: Object,
+    default() {
+      return {
+        PANEL: false,
+        SCREEN: false
+      }
+    }
   }
 })
 </script>

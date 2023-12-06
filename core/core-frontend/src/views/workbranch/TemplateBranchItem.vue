@@ -3,8 +3,10 @@
     <div class="photo">
       <div class="img" :style="classBackground"></div>
     </div>
-    <div class="apply">
-      <span :title="template.title" class="name ellipsis"> {{ template.title }} </span>
+    <div class="apply" :class="{ 'fix-height': !createAuth[template.templateType] }">
+      <span :title="template.title" class="name ellipsis">
+        {{ template.title }}
+      </span>
       <el-button class="flex-center" secondary @click="templateInnerPreview">{{
         t('dataset.preview')
       }}</el-button>
@@ -28,6 +30,15 @@ const props = defineProps({
     type: Object,
     default() {
       return {}
+    }
+  },
+  createAuth: {
+    type: Object,
+    default() {
+      return {
+        PANEL: false,
+        SCREEN: false
+      }
     }
   },
   baseUrl: {
@@ -69,7 +80,7 @@ const templateInnerPreview = e => {
   border-radius: 4px;
   display: flex;
   flex-wrap: wrap;
-  width: 181px;
+  min-width: 181px;
   height: 141px;
   margin-left: 16px;
   position: relative;
@@ -135,5 +146,9 @@ const templateInnerPreview = e => {
       display: block;
     }
   }
+}
+
+.fix-height {
+  height: 39px !important;
 }
 </style>
