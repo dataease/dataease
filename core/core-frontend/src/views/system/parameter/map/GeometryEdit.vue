@@ -17,12 +17,12 @@ const dialogVisible = ref(false)
 const loadingInstance = ref(null)
 const geoForm = ref<FormInstance>()
 const geoFile = ref()
-const fileName = ref()
 const state = reactive({
   form: reactive<GeometryFrom>({
     pid: null,
     code: null,
-    name: null
+    name: null,
+    fileName: null
   }),
   treeData: []
 })
@@ -53,6 +53,13 @@ const rule = reactive<FormRules>({
       message: t('common.require'),
       trigger: 'blur'
     }
+  ],
+  fileName: [
+    {
+      required: true,
+      message: t('common.require'),
+      trigger: 'blur'
+    }
   ]
 })
 
@@ -63,7 +70,7 @@ const edit = (pid?: string) => {
   state.form.code = null
   state.form.name = null
   geoFile.value = null
-  fileName.value = null
+  state.form.fileName = null
   dialogVisible.value = true
 }
 
@@ -71,7 +78,7 @@ const emits = defineEmits(['saved'])
 
 const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
-  await formEl.validate((valid, fields) => {
+  await formEl.validate(valid => {
     if (valid) {
       const param = { ...state.form }
       const formData = buildFormData(geoFile.value, param)
@@ -96,7 +103,6 @@ const submitForm = async (formEl: FormInstance | undefined) => {
 const resetForm = (formEl: FormInstance | undefined) => {
   if (!formEl) return
   geoFile.value = null
-  fileName.value = null
   formEl.resetFields()
   dialogVisible.value = false
 }
@@ -119,7 +125,7 @@ const handleError = () => {
 }
 const setFile = (options: UploadRequestOptions) => {
   geoFile.value = options.file
-  fileName.value = options.file.name
+  state.form.fileName = options.file.name
 }
 const uploadValidate = file => {
   const suffix = file.name.substring(file.name.lastIndexOf('.') + 1)
@@ -185,7 +191,7 @@ defineExpose({
       </el-form-item>
 
       <div class="geo-label-mask" />
-      <el-form-item label="坐标文件">
+      <el-form-item label="坐标文件" prop="fileName">
         <el-upload
           class="upload-geo"
           action=""
@@ -196,14 +202,18 @@ defineExpose({
           :show-file-list="false"
           :http-request="setFile"
         >
-          <el-input :placeholder="t('userimport.placeholder')" readonly v-model="fileName">
+          <el-input
+            :placeholder="t('userimport.placeholder')"
+            readonly
+            v-model="state.form.fileName"
+          >
             <template #suffix>
               <el-icon>
                 <Icon name="icon_upload_outlined" />
               </el-icon>
             </template>
             <template #prefix>
-              <el-icon v-if="!!fileName">
+              <el-icon v-if="!!state.form.fileName">
                 <Icon name="de-json" />
               </el-icon>
             </template>
