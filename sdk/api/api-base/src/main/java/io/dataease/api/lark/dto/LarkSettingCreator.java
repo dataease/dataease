@@ -14,4 +14,6 @@ public class LarkSettingCreator implements Serializable {
     private String callBack;
 
     private Boolean enable;
+
+    private Boolean valid;
 }
