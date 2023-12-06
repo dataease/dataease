@@ -4,7 +4,11 @@
     <el-row class="bottom-area"> </el-row>
     <el-row
       class="bottom-area-show"
-      :class="{ 'create-area': ['branchCreate', 'create'].includes(props.curPosition) }"
+      :class="{
+        'create-area':
+          ['branchCreate', 'create'].includes(props.curPosition) ||
+          !createAuth[template.templateType]
+      }"
     >
       <el-row class="demonstration">
         {{ template.title }}
@@ -44,6 +48,15 @@ const props = defineProps({
   },
   width: {
     type: Number
+  },
+  createAuth: {
+    type: Object,
+    default() {
+      return {
+        PANEL: false,
+        SCREEN: false
+      }
+    }
   }
 })
 
@@ -137,6 +150,10 @@ const templateInnerPreview = e => {
   cursor: pointer;
 }
 .create-area {
+  bottom: -38px !important;
+}
+
+.fix-bottom {
   bottom: -38px !important;
 }
 </style>
