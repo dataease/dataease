@@ -371,9 +371,11 @@ public class DatasourceService {
         String datasourceStatus = null;
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
+            System.out.println(datasourceProvider.getClass());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
             datasourceStatus = datasourceProvider.checkStatus(datasourceRequest);
+            System.out.println(datasourceStatus);
             if (datasource.getType().equalsIgnoreCase("api")) {
                 List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {
                 }.getType());
@@ -398,6 +400,7 @@ public class DatasourceService {
 
             return ResultHolder.success("Success");
         } catch (Exception e) {
+            e.printStackTrace();
             datasourceStatus = "Error";
             return ResultHolder.error(Translator.get("I18N_DS_INVALID") + ": " + e.getMessage());
         } finally {
@@ -405,6 +408,7 @@ public class DatasourceService {
             record.setStatus(datasourceStatus);
             DatasourceExample example = new DatasourceExample();
             example.createCriteria().andIdEqualTo(datasource.getId());
+            System.out.println(new Gson().toJson(record));
             datasourceMapper.updateByExampleSelective(record, example);
         }
     }

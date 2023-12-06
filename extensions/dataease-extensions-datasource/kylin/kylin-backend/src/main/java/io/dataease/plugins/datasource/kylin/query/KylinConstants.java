@@ -9,7 +9,7 @@ public class KylinConstants extends SQLConstants {
 
     public static final String KEYWORD_FIX = "%s." + "%s";
 
-
+    public static final String ALIAS_FIX = "%s";
     public static final String CAST = "CAST(%s AS %s)";
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
