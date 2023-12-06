@@ -362,13 +362,14 @@ public class ExtractDataService {
 
             case add_scope: // 增量更新
                 try {
+                    if (datasetTable.getLastUpdateTime() == null || datasetTable.getLastUpdateTime() == 0) {
+                        throw new Exception("未进行全量同步");
+                    }
                     if (datasource.getType().equalsIgnoreCase(DatasourceTypes.api.name())) {
                         extractData(datasetTable, datasource, datasetTableFields, "incremental_add", null);
                     } else {
                         DatasetTableIncrementalConfig datasetTableIncrementalConfig = dataSetTableService.incrementalConfig(datasetTableId);
-                        if (datasetTable.getLastUpdateTime() == null || datasetTable.getLastUpdateTime() == 0) {
-                            throw new Exception("未进行全量同步");
-                        }
+
 
                         execTime = System.currentTimeMillis();
                         if (datasetTableIncrementalConfig != null && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd()) && StringUtils.isNotEmpty(datasetTableIncrementalConfig.getIncrementalAdd().replace(" ", ""))) {// 增量添加
