@@ -88,7 +88,8 @@ export default {
       }
 
       if (event.data.type === 'openMobileLayout') {
-        this.$store.commit('setComponentData', event.data.value)
+        this.$store.commit('setComponentData', event.data.value.componentData)
+        this.$store.dispatch('panel/setPanelInfo', event.data.value.panelInfo)
         this.$store.commit('openMobileLayout')
       }
     })

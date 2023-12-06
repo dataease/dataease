@@ -888,7 +888,7 @@ export default {
   methods: {
     handleLoad() {
       this.mobileLoading = false
-      this.mobileStatusChange('openMobileLayout', this.componentData)
+      this.mobileStatusChange('openMobileLayout', { componentData: this.componentData, panelInfo: this.panelInfo })
     },
     deleteComponentWithId(id) {
       for (let index = 0; index < this.pcComponentData.length; index++) {
