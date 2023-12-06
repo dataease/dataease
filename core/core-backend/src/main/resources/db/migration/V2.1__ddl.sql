@@ -87,6 +87,6 @@ INSERT INTO `core_sys_setting`
 VALUES (1, 'basic.dsIntervalTime', '6', 'text', 2);
 INSERT INTO `core_sys_setting`
 VALUES (2, 'basic.dsExecuteTime', 'minute', 'text', 3);
-INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (7, 'template.url', 'https://templates-de.fit2cloud.com', 'text', 0);
+INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (7, 'template.url', 'https://templates.dataease.cn', 'text', 0);
 INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (8, 'template.accessKey', 'dataease', 'text', 1);
 COMMIT;
