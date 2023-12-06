@@ -464,12 +464,14 @@ export default {
     bus.$off('trigger-filter-loaded', this.triggerFilterLoaded)
   },
   methods: {
-    triggerFilterLoaded({ canvasIdStr, p }) {
-      canvasIdStr.includes(this.canvasId) || this.filterLoaded(p, canvasIdStr)
+    triggerFilterLoaded({ canvasIdStr, panelId, p }) {
+      if (this.panelInfo.id === panelId && !canvasIdStr.includes(this.canvasId)) {
+        this.filterLoaded(p, canvasIdStr)
+      }
     },
     filterLoaded(p, canvasIdStr = '') {
       buildAfterFilterLoaded(this.filterMap, p)
-      bus.$emit('trigger-filter-loaded', { canvasIdStr: canvasIdStr + this.canvasId, p })
+      bus.$emit('trigger-filter-loaded', { canvasIdStr: (canvasIdStr + this.canvasId), panelId: this.panelInfo.id, p })
     },
     getWrapperChildRefs() {
       return this.$refs['viewWrapperChild']
