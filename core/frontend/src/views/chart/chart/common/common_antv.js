@@ -656,11 +656,16 @@ export function getXAxis(chart) {
           },
           spacing: 8
         } : null
+        const gridCfg = a.splitLine ? a.splitLine : DEFAULT_XAXIS_STYLE.splitLine
+        if (!gridCfg.dashStyle) {
+          gridCfg.dashStyle = DEFAULT_XAXIS_STYLE.splitLine.dashStyle
+        }
         const grid = a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
-              lineWidth: parseInt(a.splitLine.lineStyle.width)
+              lineWidth: parseInt(a.splitLine.lineStyle.width),
+              lineDash: gridCfg.enableDash ? [gridCfg.dashStyle.width, gridCfg.dashStyle.offset] : undefined
             }
           }
         } : null
@@ -771,11 +776,16 @@ export function getYAxis(chart) {
           },
           spacing: 8
         } : null
+        const gridCfg = a.splitLine ? a.splitLine : DEFAULT_YAXIS_STYLE.splitLine
+        if (!gridCfg.dashStyle) {
+          gridCfg.dashStyle = DEFAULT_YAXIS_STYLE.splitLine.dashStyle
+        }
         const grid = a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
-              lineWidth: parseInt(a.splitLine.lineStyle.width)
+              lineWidth: parseInt(a.splitLine.lineStyle.width),
+              lineDash: gridCfg.enableDash ? [gridCfg.dashStyle.width, gridCfg.dashStyle.offset] : undefined
             }
           }
         } : null
@@ -883,11 +893,16 @@ export function getYAxisExt(chart) {
           },
           spacing: 8
         } : null
+        const gridCfg = a.splitLine ? a.splitLine : DEFAULT_YAXIS_EXT_STYLE.splitLine
+        if (!gridCfg.dashStyle) {
+          gridCfg.dashStyle = DEFAULT_YAXIS_EXT_STYLE.splitLine.dashStyle
+        }
         const grid = a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
-              lineWidth: parseInt(a.splitLine.lineStyle.width)
+              lineWidth: parseInt(a.splitLine.lineStyle.width),
+              lineDash: gridCfg.enableDash ? [gridCfg.dashStyle.width, gridCfg.dashStyle.offset] : undefined
             }
           }
         } : null
