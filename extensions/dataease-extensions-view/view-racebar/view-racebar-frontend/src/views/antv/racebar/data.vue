@@ -319,9 +319,6 @@ export default {
     },
 
     calcData(cache) {
-      //console.log(cache)
-      //this.view.xaxis = [...this.source, ...this.target]
-
       this.$emit('plugin-call-back', {
         eventName: 'calc-data',
         eventParam: {

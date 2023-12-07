@@ -199,7 +199,6 @@ export default {
     },
     onMarginChange(val) {
       this.view.customStyle.margin = val
-      console.log(val)
       this.calcStyle()
     },
     onChangeBaseMapForm(val) {

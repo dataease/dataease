@@ -1160,7 +1160,6 @@ export default {
       callback()
     },
       isNumber(rule, value, callback) {
-        console.log(value)
         if (!value) {
             callback(new Error(i18n.t('datasource.please_input_query_timeout')))
             return

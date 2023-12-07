@@ -36,7 +36,7 @@
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
-          </el-dropdown-item>          
+          </el-dropdown-item>
           <el-dropdown-item v-show="item.deType === 1" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="dateStyle">
               <span class="el-dropdown-link inner-dropdown-menu">
@@ -154,7 +154,6 @@ export default {
       }
     },
     sort(param) {
-      // console.log(param)
       this.item.sort = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -164,7 +163,6 @@ export default {
       }
     },
     dateStyle(param) {
-      // console.log(param)
       this.item.dateStyle = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -174,7 +172,6 @@ export default {
       }
     },
     datePattern(param) {
-      // console.log(param)
       this.item.datePattern = param.type
       this.$emit('onDimensionItemChange', this.item)
     },

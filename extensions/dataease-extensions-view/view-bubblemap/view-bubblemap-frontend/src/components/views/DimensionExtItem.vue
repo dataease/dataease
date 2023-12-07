@@ -1,6 +1,6 @@
 <template>
   <span>
-    
+
     <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis" :type="tagType">
@@ -155,7 +155,6 @@ export default {
       }
     },
     sort(param) {
-      // console.log(param)
       this.item.sort = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
@@ -165,7 +164,6 @@ export default {
       }
     },
     dateStyle(param) {
-      // console.log(param)
       this.item.dateStyle = param.type
       this.$emit('onDimensionItemChange', this.item)
     },
