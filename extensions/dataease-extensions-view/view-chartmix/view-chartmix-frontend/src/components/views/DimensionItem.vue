@@ -336,7 +336,6 @@ export default {
       this.item.index = this.index
       this.item.renameType = 'dimension'
       this.item.dsFieldName = getOriginFieldName(this.dimensionData, this.quotaData, this.item)
-      console.log(this.item)
       this.$emit('onNameEdit', this.item)
     },
     removeItem() {

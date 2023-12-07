@@ -283,7 +283,6 @@ export function baseMapOption(chart_option, chart, mapData, terminal = 'pc') {
 
       }
     }
-    // console.log(chart_option);
     componentStyle(chart_option, chart)
     return chart_option
 }
@@ -408,12 +407,12 @@ export const getDefaultTemplate = (chart, type, feed , showKey) => {
         viewFields = JSON.parse(chart.viewFields)
     }
     const separator = feed ? '\n' : ' '
-    return viewFields.filter(field => field.busiType && field.busiType === type).map(field => {              
+    return viewFields.filter(field => field.busiType && field.busiType === type).map(field => {
         const fieldName = field.name
         let template = "${"+ field.name +"}"
         if(showKey) {
           template = fieldName + "：${"+ field.name +"}"
-        }              
+        }
         return template
     }).join(separator)
 }

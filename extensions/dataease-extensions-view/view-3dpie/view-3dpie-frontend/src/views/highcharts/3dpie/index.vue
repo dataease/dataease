@@ -71,7 +71,6 @@
     watch: {
       chart: {
         handler(newVal, oldVla) {
-            console.log('chart is change')
           this.preDraw()
         },
         deep: true
@@ -176,7 +175,6 @@
       chartResize() {
         // 指定图表的配置项和数据
         const chart = this.myChart
-        // console.log(chart)
         chart.reflow()
       },
 

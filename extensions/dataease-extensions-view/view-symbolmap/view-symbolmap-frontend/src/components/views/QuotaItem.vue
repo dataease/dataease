@@ -9,7 +9,7 @@
             <svg-icon v-if="item.deType === 1" icon-class="field_time" class="field-icon-time" />
             <svg-icon v-if="item.deType === 2 || item.deType === 3" icon-class="field_value" class="field-icon-value" />
             <svg-icon v-if="item.deType === 5" icon-class="field_location" class="field-icon-location" />
-            
+
             <svg-icon v-if="item.sort === 'asc'" icon-class="sort-asc" class-name="field-icon-sort" />
             <svg-icon v-if="item.sort === 'desc'" icon-class="sort-desc" class-name="field-icon-sort" />
           </span>
@@ -59,8 +59,8 @@
             </el-dropdown>
           </el-dropdown-item>
 
-          
-          
+
+
           <el-dropdown-item icon="el-icon-files" :command="beforeClickItem('filter')">
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
@@ -179,7 +179,6 @@ export default {
     },
 
     summary(param) {
-      // console.log(param)
       this.item.summary = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -190,7 +189,6 @@ export default {
     },
 
     switchChartType(param) {
-      // console.log(param)
       this.item.chartType = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -220,7 +218,6 @@ export default {
     },
 
     sort(param) {
-      // console.log(param)
       this.item.sort = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -250,7 +247,7 @@ export default {
       this.item.calcType = 'quota'
       this.$emit('editItemCompare', this.item)
     },
-    
+
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
     }
