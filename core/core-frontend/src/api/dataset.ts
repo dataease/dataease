@@ -154,6 +154,11 @@ export const getDsDetails = async (data): Promise<DatasetDetail[]> => {
     return res?.data
   })
 }
+export const getDsDetailsWithPerm = async (data): Promise<DatasetDetail[]> => {
+  return request.post({ url: '/datasetTree/detailWithPerm', data }).then(res => {
+    return res?.data
+  })
+}
 export const getSqlParams = async (data): Promise<ParamsDetail[]> => {
   return request.post({ url: '/datasetTree/getSqlParams', data }).then(res => {
     return res?.data
@@ -173,6 +178,10 @@ export const listFieldByDatasetGroup = (datasetId: number) =>
 
 export const multFieldValuesForPermissions = (data = {}) => {
   return request.post({ url: '/datasetField/multFieldValuesForPermissions', data })
+}
+
+export const listFieldsWithPermissions = (datasetId: number) => {
+  return request.get({ url: '/datasetField/listWithPermissions/' + datasetId })
 }
 
 export const saveRowPermission = (data = {}) => {

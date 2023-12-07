@@ -54,6 +54,11 @@ public class DatasetFieldServer implements DatasetTableApi {
     }
 
     @Override
+    public List<DatasetTableFieldDTO> listFieldsWithPermissions(Long id) {
+        return datasetTableFieldManage.listFieldsWithPermissions(id);
+    }
+
+    @Override
     public List<String> multFieldValuesForPermissions(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         return datasetDataManage.getFieldEnum(multFieldValuesRequest.getFieldIds());
     }

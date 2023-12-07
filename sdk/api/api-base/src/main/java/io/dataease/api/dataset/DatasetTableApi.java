@@ -3,6 +3,7 @@ package io.dataease.api.dataset;
 import io.dataease.api.dataset.dto.MultFieldValuesRequest;
 import io.dataease.api.dataset.engine.SQLFunctionDTO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -36,6 +37,9 @@ public interface DatasetTableApi {
 
     @PostMapping("listByDQ/{id}")
     Map<String, List<DatasetTableFieldDTO>> listByDQ(@PathVariable Long id);
+
+    @GetMapping ("listWithPermissions/{id}")
+    List<DatasetTableFieldDTO> listFieldsWithPermissions(@PathVariable Long id);
 
 
     @PostMapping("multFieldValuesForPermissions")
