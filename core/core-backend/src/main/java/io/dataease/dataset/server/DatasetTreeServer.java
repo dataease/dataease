@@ -77,4 +77,10 @@ public class DatasetTreeServer implements DatasetTreeApi {
     public List<SqlVariableDetails> getSqlParams(List<Long> ids) throws Exception {
         return datasetGroupManage.getSqlParams(ids);
     }
+
+    @Override
+    public List<DatasetTableDTO> detailWithPerm(List<Long> ids) throws Exception {
+        return datasetGroupManage.getDetailWithPerm(ids);
+    }
+
 }
