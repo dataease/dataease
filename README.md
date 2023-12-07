@@ -6,11 +6,6 @@
   <a href="https://github.com/dataease/dataease"><img src="https://img.shields.io/github/stars/dataease/dataease?color=%231890FF&style=flat-square" alt="Stars"></a>
 </p>
 
-|说明|
-|------------------|
-|此分支为 DataEase v2 版本的开发分支。DataEase v2 正在快速迭代中，如是在生产环境部署 DataEase，建议使用 v1.18.* 的最新稳定版本。|
-<hr/>
-
 ## 什么是 DataEase？
 
 DataEase 是开源的数据可视化分析工具，帮助用户快速分析数据并洞察业务趋势，从而实现业务的改进与优化。DataEase 支持丰富的数据源连接，能够通过拖拉拽方式快速制作图表，并可以方便的与他人分享。

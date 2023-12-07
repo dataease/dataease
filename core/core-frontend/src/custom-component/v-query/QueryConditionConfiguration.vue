@@ -7,7 +7,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
 import { ElMessage } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
-import { getDsDetails, getSqlParams } from '@/api/dataset'
+import { getDsDetailsWithPerm, getSqlParams, listFieldsWithPermissions } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
 import Select from './Select.vue'
@@ -391,7 +391,7 @@ const init = (queryId: string) => {
   }
   const params = [...new Set(datasetFieldList.value.map(ele => ele.tableId).filter(ele => !!ele))]
   if (!params.length) return
-  getDsDetails(params)
+  getDsDetailsWithPerm(params)
     .then(res => {
       res
         .filter(ele => !!ele)
@@ -438,7 +438,7 @@ const handleCondition = item => {
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
 
   multiple.value = curComponent.value.multiple
-  if (!curComponent.value.dataset.fields.length) {
+  if (!curComponent.value.dataset.fields.length && curComponent.value.dataset.id) {
     getOptions(curComponent.value.dataset.id, curComponent.value)
   }
   datasetFieldList.value.forEach(ele => {
@@ -468,12 +468,8 @@ const handleCondition = item => {
 }
 
 const getOptions = (id, component) => {
-  getDsDetails([id]).then(res => {
-    res.forEach(ele => {
-      if (!ele) return
-      const { dimensionList, quotaList } = ele.fields
-      component.dataset.fields = [...dimensionList, ...quotaList]
-    })
+  listFieldsWithPermissions(id).then(res => {
+    component.dataset.fields = res.data
   })
 }
 
@@ -840,8 +836,12 @@ defineExpose({
                   :key="ele.id"
                   :label="ele.name"
                   :value="ele.id"
+                  :disabled="ele.desensitized"
                 >
-                  <div class="flex-align-center icon">
+                  <div
+                    class="flex-align-center icon"
+                    :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
+                  >
                     <el-icon>
                       <Icon
                         :name="`field_${fieldType[ele.deType]}`"
@@ -990,8 +990,12 @@ defineExpose({
                       :key="ele.id"
                       :label="ele.name"
                       :value="ele.id"
+                      :disabled="ele.desensitized"
                     >
-                      <div class="flex-align-center icon">
+                      <div
+                        class="flex-align-center icon"
+                        :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
+                      >
                         <el-icon>
                           <Icon
                             :name="`field_${fieldType[ele.deType]}`"

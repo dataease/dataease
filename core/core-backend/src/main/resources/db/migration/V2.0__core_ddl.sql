@@ -3748,7 +3748,7 @@ CREATE TABLE QRTZ_JOB_DETAILS
     JOB_DATA          BLOB         NULL,
     PRIMARY KEY (SCHED_NAME, JOB_NAME, JOB_GROUP)
 );
-
+SET FOREIGN_KEY_CHECKS = 0;
 CREATE TABLE QRTZ_TRIGGERS
 (
     SCHED_NAME     VARCHAR(120) NOT NULL,
@@ -3827,9 +3827,7 @@ CREATE TABLE QRTZ_BLOB_TRIGGERS
     PRIMARY KEY (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP),
     FOREIGN KEY (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP)
         REFERENCES QRTZ_TRIGGERS (SCHED_NAME, TRIGGER_NAME, TRIGGER_GROUP)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+);
 
 CREATE TABLE QRTZ_CALENDARS
 (
@@ -3896,9 +3894,7 @@ CREATE TABLE `visualization_background`
     `base_url`       varchar(255) DEFAULT NULL,
     `url`            varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+);
 
 INSERT INTO `visualization_background` (`id`, `name`, `classification`, `content`, `remark`, `sort`, `upload_time`,
                                         `base_url`, `url`)
@@ -3947,11 +3943,7 @@ CREATE TABLE `visualization_background_image`
     `base_url`       varchar(255) DEFAULT NULL,
     `url`            varchar(255) DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
-
-
+);
 
 -- ----------------------------
 -- Table structure for visualization_subject
@@ -3959,7 +3951,7 @@ CREATE TABLE `visualization_background_image`
 DROP TABLE IF EXISTS `visualization_subject`;
 CREATE TABLE `visualization_subject`
 (
-    `id`          varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL,
+    `id`          varchar(50)                                                  NOT NULL,
     `name`        varchar(255)                                                          DEFAULT NULL COMMENT '主题名称',
     `type`        varchar(255)                                                          DEFAULT NULL COMMENT '主题类型 system 系统主题，self 自定义主题',
     `details`     longtext COMMENT '主题内容',
@@ -3973,11 +3965,7 @@ CREATE TABLE `visualization_subject`
     `delete_time` bigint                                                                DEFAULT NULL COMMENT '删除时间',
     `delete_by`   bigint                                                                DEFAULT NULL COMMENT '删除人',
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
-
-
+);
 commit;
 
 DROP TABLE IF EXISTS `core_dataset_table_sql_log`;
@@ -3991,9 +3979,7 @@ CREATE TABLE `core_dataset_table_sql_log`
     `sql`        longtext    NOT NULL COMMENT '详细信息',
     `status`     varchar(45)          DEFAULT NULL COMMENT '状态',
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE utf8mb4_0900_ai_ci;
+);
 
 
 INSERT INTO `visualization_subject` (`id`, `name`, `type`, `details`, `delete_flag`, `cover_url`, `create_num`,
@@ -4024,9 +4010,7 @@ CREATE TABLE `core_store`
     `resource_type` int    NOT NULL COMMENT '资源类型',
     `time`          bigint NOT NULL COMMENT '收藏时间',
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+);
 
 -- ----------------------------
 -- Table structure for xpack_share
@@ -4044,9 +4028,7 @@ CREATE TABLE `xpack_share`
     `oid`         bigint      NOT NULL COMMENT '组织ID',
     `type`        int         NOT NULL COMMENT '业务类型',
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+);
 
 -- ----------------------------
 -- Table structure for xpack_setting_authentication
@@ -4061,25 +4043,8 @@ CREATE TABLE `xpack_setting_authentication`
     `sync_time`      bigint       NOT NULL COMMENT '同步时间',
     `relational_ids` varchar(255) DEFAULT NULL COMMENT '相关的ID',
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+);
 
-/*
- Navicat Premium Data Transfer
-
- Source Server         : de2-qa-123.56.90.236
- Source Server Type    : MySQL
- Source Server Version : 80100
- Source Host           : 123.56.90.236:3306
- Source Schema         : dataease
-
- Target Server Type    : MySQL
- Target Server Version : 80100
- File Encoding         : 65001
-
- Date: 22/09/2023 00:30:08
-*/
 
 SET NAMES utf8mb4;
 SET FOREIGN_KEY_CHECKS = 0;
@@ -4093,14 +4058,12 @@ CREATE TABLE `visualization_link_jump`
     `id`             bigint NOT NULL,
     `source_dv_id`   bigint                                                         DEFAULT NULL COMMENT '源仪表板ID',
     `source_view_id` bigint                                                         DEFAULT NULL COMMENT '源视图ID',
-    `link_jump_info` varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '跳转信息',
+    `link_jump_info` varchar(4000)                                                  DEFAULT NULL COMMENT '跳转信息',
     `checked`        tinyint(1)                                                     DEFAULT NULL COMMENT '是否启用',
     `copy_from`      bigint                                                         DEFAULT NULL,
     `copy_id`        bigint                                                         DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+);
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_info
@@ -4110,19 +4073,17 @@ CREATE TABLE `visualization_link_jump_info`
 (
     `id`              bigint NOT NULL,
     `link_jump_id`    bigint                                                         DEFAULT NULL COMMENT 'link jump ID',
-    `link_type`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
-    `jump_type`       varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci  DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
+    `link_type`       varchar(255)                                                   DEFAULT NULL COMMENT '关联类型 inner 内部仪表板，outer 外部链接',
+    `jump_type`       varchar(255)                                                   DEFAULT NULL COMMENT '跳转类型 _blank 新开页面 _self 当前窗口',
     `target_dv_id`    bigint                                                         DEFAULT NULL COMMENT '关联仪表板ID',
     `source_field_id` bigint                                                         DEFAULT NULL COMMENT '字段ID',
-    `content`         varchar(4000) CHARACTER SET utf8mb4 COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '内容 linkType = outer时使用',
+    `content`         varchar(4000)                                                  DEFAULT NULL COMMENT '内容 linkType = outer时使用',
     `checked`         tinyint(1)                                                     DEFAULT NULL COMMENT '是否可用',
     `attach_params`   tinyint(1)                                                     DEFAULT NULL COMMENT '是否附加点击参数',
     `copy_from`       bigint                                                         DEFAULT NULL,
     `copy_id`         bigint                                                         DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+);
 
 -- ----------------------------
 -- Table structure for visualization_link_jump_target_view_info
@@ -4138,9 +4099,7 @@ CREATE TABLE `visualization_link_jump_target_view_info`
     `copy_from`              bigint DEFAULT NULL,
     `copy_id`                bigint DEFAULT NULL,
     PRIMARY KEY (`target_id`) USING BTREE
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+);
 
 -- ----------------------------
 -- Table structure for visualization_linkage
@@ -4160,9 +4119,7 @@ CREATE TABLE `visualization_linkage`
     `copy_from`      bigint        DEFAULT NULL,
     `copy_id`        bigint        DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
+);
 
 -- ----------------------------
 -- Table structure for visualization_linkage_field
@@ -4178,15 +4135,10 @@ CREATE TABLE `visualization_linkage_field`
     `copy_from`    bigint DEFAULT NULL,
     `copy_id`      bigint DEFAULT NULL,
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_0900_ai_ci;
-
-SET FOREIGN_KEY_CHECKS = 1;
+);
 
 ALTER TABLE `core_datasource`
     ADD COLUMN `update_by` bigint NULL COMMENT '变更人' AFTER `update_time`;
-
 
 DROP TABLE IF EXISTS `core_ds_finish_page`;
 CREATE TABLE `core_ds_finish_page`
@@ -4205,9 +4157,7 @@ CREATE TABLE `core_opt_recent`
     `opt_type`      int DEFAULT NULL COMMENT '1 新建 2 修改',
     `time`          bigint NOT NULL COMMENT '收藏时间',
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+);
 
 -- ----------------------------
 -- Table structure for core_sys_setting
@@ -4221,6 +4171,4 @@ CREATE TABLE `core_sys_setting`
     `type` varchar(255) NOT NULL COMMENT '类型',
     `sort` int          NOT NULL DEFAULT '0' COMMENT '顺序',
     PRIMARY KEY (`id`)
-) ENGINE = InnoDB
-  DEFAULT CHARSET = utf8mb4
-  COLLATE = utf8mb4_general_ci;
+);
