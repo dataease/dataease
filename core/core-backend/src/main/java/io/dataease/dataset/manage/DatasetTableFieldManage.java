@@ -193,12 +193,13 @@ public class DatasetTableFieldManage {
         List<DatasetTableFieldDTO> fields = selectByDatasetGroupId(id);
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         Long userId = AuthUtils.getUser() == null ? null : AuthUtils.getUser().getUserId();
-        return permissionManage
+        List<DatasetTableFieldDTO> tmp = permissionManage
                 .filterColumnPermissions(fields, desensitizationList, id, userId)
                 .stream()
-                .filter(o -> !desensitizationList.containsKey(o.getDataeaseName()))
                 .sorted(Comparator.comparing(DatasetTableFieldDTO::getGroupType))
                 .toList();
+        tmp.forEach(ele -> ele.setDesensitized(desensitizationList.containsKey(ele.getDataeaseName())));
+        return tmp;
     }
 
 

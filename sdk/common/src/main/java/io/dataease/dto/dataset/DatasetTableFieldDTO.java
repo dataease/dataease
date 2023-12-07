@@ -121,4 +121,9 @@ public class DatasetTableFieldDTO implements Serializable {
      * 字段short name
      */
     private String fieldShortName;
+
+    /**
+     * 是否脱敏
+     */
+    private Boolean desensitized;
 }

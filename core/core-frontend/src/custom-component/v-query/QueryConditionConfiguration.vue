@@ -836,8 +836,12 @@ defineExpose({
                   :key="ele.id"
                   :label="ele.name"
                   :value="ele.id"
+                  :disabled="ele.desensitized"
                 >
-                  <div class="flex-align-center icon">
+                  <div
+                    class="flex-align-center icon"
+                    :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
+                  >
                     <el-icon>
                       <Icon
                         :name="`field_${fieldType[ele.deType]}`"
@@ -986,8 +990,12 @@ defineExpose({
                       :key="ele.id"
                       :label="ele.name"
                       :value="ele.id"
+                      :disabled="ele.desensitized"
                     >
-                      <div class="flex-align-center icon">
+                      <div
+                        class="flex-align-center icon"
+                        :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
+                      >
                         <el-icon>
                           <Icon
                             :name="`field_${fieldType[ele.deType]}`"
