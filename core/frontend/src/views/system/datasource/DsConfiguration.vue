@@ -999,8 +999,7 @@ export default {
           {
             required: true,
             validator: this.isNumber,
-            message: i18n.t('datasource.please_input_query_timeout'),
-            trigger: 'blur'
+            trigger: ['blur', 'change']
           }
         ],
         dataPath: [
@@ -1168,7 +1167,11 @@ export default {
         var reg = /^\d+$/;
         isNumber =  reg.test(value);
         if (!isNumber) {
-            callback(new Error(i18n.t('chart.value_error')))
+            callback(new Error(i18n.t('datasource.please_input_query_timeout')))
+            return
+        }
+        if(value <= 0 ||  value > 300){
+            callback(new Error(i18n.t('datasource.please_input_query_timeout')))
             return
         }
         callback()

@@ -1115,20 +1115,25 @@ public class DataSetTableService {
         }
     }
 
-    private String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
-
+    private void handleSelectItems(PlainSelect plainSelect, String dsType) throws Exception {
         List<SelectItem> selectItems = new ArrayList<>();
-        plainSelect.getSelectItems().forEach(selectItem -> {
-            System.out.println(selectItem);
-            System.out.println(selectItem instanceof PlainSelect);
-            System.out.println(selectItem instanceof SubSelect);
-
+        for (SelectItem selectItem : plainSelect.getSelectItems()) {
+            try {
+                SelectExpressionItem selectExpressionItem = (SelectExpressionItem) selectItem;
+                if (selectExpressionItem.getExpression() instanceof SubSelect) {
+                    SubSelect subSelect = (SubSelect) selectExpressionItem.getExpression();
+                    Select select = (Select) CCJSqlParserUtil.parse(removeVariables(subSelect.getSelectBody().toString(), dsType));
+                    subSelect.setSelectBody(select.getSelectBody());
+                    ((SelectExpressionItem) selectItem).setExpression(subSelect);
+                }
+            } catch (Exception e) {
+            }
             selectItems.add(selectItem);
-        });
+        }
+        plainSelect.setSelectItems(selectItems);
+    }
 
-        plainSelect.addSelectItems(selectItems);
-
-
+    private void handleFromItems(PlainSelect plainSelect, String dsType) throws Exception {
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem instanceof SubSelect) {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
@@ -1136,7 +1141,9 @@ public class DataSetTableService {
             Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
             subSelect.setSelectBody(subSelectTmp.getSelectBody());
             if (dsType.equals(DatasourceTypes.oracle.getType())) {
-                subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                if (fromItem.getAlias() != null) {
+                    subSelect.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                }
             } else {
                 if (fromItem.getAlias() == null) {
                     throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
@@ -1145,6 +1152,9 @@ public class DataSetTableService {
             }
             plainSelect.setFromItem(subSelect);
         }
+    }
+
+    private void handleJoins(PlainSelect plainSelect, String dsType) throws Exception {
         List<Join> joins = plainSelect.getJoins();
         if (joins != null) {
             List<Join> joinsList = new ArrayList<>();
@@ -1170,6 +1180,9 @@ public class DataSetTableService {
             }
             plainSelect.setJoins(joinsList);
         }
+    }
+
+    private String handleWhere(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
         Expression expr = plainSelect.getWhere();
         if (expr == null) {
             return handleWith(plainSelect, statementSelect, dsType);
@@ -1210,6 +1223,14 @@ public class DataSetTableService {
         builder.append(" ").append(plainSelect);
         return builder.toString();
     }
+
+    private String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
+        handleSelectItems(plainSelect, dsType);
+        handleFromItems(plainSelect, dsType);
+        handleJoins(plainSelect, dsType);
+        return handleWhere(plainSelect, statementSelect, dsType);
+    }
+
 
     public Map<String, Object> getDBPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
         Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
@@ -1639,8 +1660,17 @@ public class DataSetTableService {
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
 
             String[] array = fields.stream()
-                    .map(f -> table + "." + f.getDataeaseName() + " AS "
-                            + TableUtils.fieldName(tableId + "_" + f.getDataeaseName()))
+                    .map(f -> {
+                        String s = "";
+                        if (f == null) {
+                            DEException.throwException(
+                                    Translator.get("i18n_ds_error"));
+                        } else {
+                            s = table + "." + f.getDataeaseName() + " AS "
+                                    + TableUtils.fieldName(tableId + "_" + f.getDataeaseName());
+                        }
+                        return s;
+                    })
                     .toArray(String[]::new);
             checkedInfo.put(table, array);
             checkedFields.addAll(fields);
@@ -2766,13 +2796,13 @@ public class DataSetTableService {
             if (StringUtils.isEmpty(s)) {
                 throw new RuntimeException(Translator.get("i18n_excel_empty_column"));
             }
-            if(hashSet.contains(s)){
+            if (hashSet.contains(s)) {
                 repeat.add(s);
-            }else {
+            } else {
                 hashSet.add(s);
             }
         }
-        if(CollectionUtils.isNotEmpty(repeat)){
+        if (CollectionUtils.isNotEmpty(repeat)) {
             DataEaseException.throwException(Translator.get("i18n_excel_field_repeat") + "" + String.valueOf(repeat));
         }
     }

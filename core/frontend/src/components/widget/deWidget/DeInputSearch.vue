@@ -99,8 +99,10 @@ export default {
     clearHandler() {
       this.value = null
     },
-    resetDefaultValue(id) {
-      if (this.inDraw && this.manualModify && this.element.id === id) {
+    resetDefaultValue(ele) {
+      const id = ele.id
+      const eleVal = ele.options.value.toString()
+      if (this.inDraw && this.manualModify && this.element.id === id && this.value.toString() !== eleVal && this.defaultValueStr === eleVal) {
         this.value = this.fillValueDerfault()
         this.search()
       }

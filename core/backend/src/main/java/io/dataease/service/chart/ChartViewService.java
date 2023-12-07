@@ -1379,6 +1379,9 @@ public class ChartViewService {
                         if (StringUtils.isEmpty(cValue)) {
                             continue;
                         }
+                        if (sum.equals(new BigDecimal(0))) {
+                            continue;
+                        }
                         item[dataIndex] = new BigDecimal(cValue)
                                 .divide(sum, 8, RoundingMode.HALF_UP)
                                 .toString();

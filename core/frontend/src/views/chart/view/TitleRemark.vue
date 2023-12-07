@@ -1,14 +1,13 @@
 <template>
   <span
-    style="display: inline-block;position: relative;
-    z-index: 10;"
+    style="display: inline-block;"
   >
     <el-popover
       placement="bottom"
       trigger="hover"
       width="300"
       :append-to-body="!previewVisible"
-      popper-class="remark-pop"
+      :popper-class="previewVisible && 'remark-pop'"
       :visible-arrow="false"
     >
       <div
@@ -19,7 +18,8 @@
       <i
         slot="reference"
         class="el-icon-info"
-        style="cursor: pointer;color: gray;font-size: 12px;"
+        style="cursor: pointer;color: gray;font-size: 12px;position: relative;
+    z-index: 10;"
       />
     </el-popover>
   </span>
@@ -43,6 +43,8 @@ export default {
 
 <style scoped>
 .remark-style{
+  position: relative;
+  z-index: 10;
   min-height: 100px;
   max-height: 200px;
   overflow-y: auto;
@@ -75,5 +77,18 @@ export default {
 ::v-deep li {
   display: list-item!important;
   text-align: -webkit-match-parent!important;
+}
+</style>
+
+<style lang="scss">
+.remark-pop {
+  position: absolute !important;
+  left: 10% !important;
+}
+.title-is-right {
+  .remark-pop {
+    left: auto !important;
+    right: 20px;
+  }
 }
 </style>

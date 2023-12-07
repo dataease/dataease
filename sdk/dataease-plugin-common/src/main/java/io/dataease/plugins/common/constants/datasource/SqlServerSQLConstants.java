@@ -47,4 +47,6 @@ public class SqlServerSQLConstants extends SQLConstants {
 
     public static final String DEFAULT_DATE_FORMAT = "120";
 
+    public static final String TO_STRING = "cast(%s as varchar(max)) as %s";
+
 }

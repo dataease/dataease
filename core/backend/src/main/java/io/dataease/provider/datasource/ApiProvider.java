@@ -6,6 +6,8 @@ import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.alibaba.fastjson.parser.Feature;
 import com.alibaba.fastjson.serializer.SerializerFeature;
+import com.fasterxml.jackson.databind.JsonNode;
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
@@ -239,7 +241,12 @@ public class ApiProvider extends Provider {
             String rootPath;
             if (response.startsWith("[")) {
                 rootPath = "$[*]";
-                JSONArray jsonArray = JSONObject.parseArray(response);
+                JsonNode jsonArray = null;
+                try {
+                    jsonArray = new ObjectMapper().readTree(response);
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
                 for (Object o : jsonArray) {
                     handleStr(apiDefinition, o.toString(), fields, rootPath);
                 }
