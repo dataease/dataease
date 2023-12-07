@@ -14,7 +14,7 @@ CREATE TABLE `visualization_template` (
                                           `template_data` longtext  COMMENT 'template 数据',
                                           `dynamic_data` longtext  COMMENT '预存数据',
                                           PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='模板表';
+) COMMENT='模板表';
 
 -- ----------------------------
 -- Table structure for visualization_template_category
@@ -32,7 +32,7 @@ CREATE TABLE `visualization_template_category` (
                                                    `snapshot` longtext  COMMENT '缩略图',
                                                    `template_type` varchar(255) DEFAULT NULL,
                                                    PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='模板表';
+) COMMENT='模板表';
 
 -- ----------------------------
 -- Table structure for visualization_template_category_map
@@ -43,7 +43,7 @@ CREATE TABLE `visualization_template_category_map` (
                                                        `category_id` varchar(255)  DEFAULT NULL COMMENT '名称',
                                                        `template_id` varchar(255)  DEFAULT NULL COMMENT '父级id',
                                                        PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci COMMENT='模板表';
+) COMMENT='模板表';
 
 -- ----------------------------
 -- Table structure for visualization_template_extend_data
@@ -57,7 +57,7 @@ CREATE TABLE `visualization_template_extend_data` (
                                                       `copy_from` varchar(255)  DEFAULT NULL,
                                                       `copy_id` varchar(255)  DEFAULT NULL,
                                                       PRIMARY KEY (`id`)
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+);
 
 BEGIN;
 INSERT INTO `core_menu`
