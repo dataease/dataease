@@ -128,6 +128,9 @@ export function getLabel(chart) {
           }
           if (l.position === 'outer') {
             label.type = 'spider'
+            label.layout = [
+              { type: 'limit-in-plot' }
+            ]
           }
         } else if (chart.type.includes('line') || chart.type.includes('area')) {
           label = {
