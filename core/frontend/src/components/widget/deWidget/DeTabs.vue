@@ -495,6 +495,16 @@ export default {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
+    triggerTabsFilterLoaded(p) {
+      if (!this.element.options.tabList.length) {
+        return
+      }
+      const item = this.element.options.tabList[0]
+      if (item.content && item.content.type === 'canvas' && (!this.isEdit || this.mobileLayoutStatus)) {
+        const targetRef = this.$refs['canvasTabRef-' + this.activeTabName]
+        targetRef?.length && targetRef[0].filterLoaded(p)
+      }
+    },
     setTabLayout: _.debounce(function() {
       this.headClassScroll = !!this.$refs?.deTabsConstom?.$refs?.tabsConstom?.$refs?.nav?.scrollable ? 'head-class-scroll' : ''
     }, 100),
