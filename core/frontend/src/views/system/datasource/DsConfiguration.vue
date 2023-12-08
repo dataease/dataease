@@ -526,14 +526,14 @@
           </el-form-item>
 
           <el-form-item
-              :label="$t('datasource.query_timeout')"
-              prop="apiQueryTimeout"
+            :label="$t('datasource.query_timeout')"
+            prop="apiQueryTimeout"
           >
             <el-input
-                v-model="apiItem.apiQueryTimeout"
-                autocomplete="off"
-                type="number"
-                :min="0"
+              v-model="apiItem.apiQueryTimeout"
+              autocomplete="off"
+              type="number"
+              :min="0"
             >
               <template slot="append">{{ $t('panel.second') }}</template>
             </el-input>
@@ -1158,24 +1158,24 @@ export default {
       }
       callback()
     },
-      isNumber(rule, value, callback) {
-        if (!value) {
-            callback(new Error(i18n.t('datasource.please_input_query_timeout')))
-            return
-        }
-        let isNumber = false
-        var reg = /^\d+$/;
-        isNumber =  reg.test(value);
-        if (!isNumber) {
-            callback(new Error(i18n.t('datasource.please_input_query_timeout')))
-            return
-        }
-        if(value <= 0 ||  value > 300){
-            callback(new Error(i18n.t('datasource.please_input_query_timeout')))
-            return
-        }
-        callback()
-      },
+    isNumber(rule, value, callback) {
+      if (!value) {
+        callback(new Error(i18n.t('datasource.please_input_query_timeout')))
+        return
+      }
+      let isNumber = false
+      var reg = /^\d+$/
+      isNumber = reg.test(value)
+      if (!isNumber) {
+        callback(new Error(i18n.t('datasource.please_input_query_timeout')))
+        return
+      }
+      if (value <= 0 || value > 300) {
+        callback(new Error(i18n.t('datasource.please_input_query_timeout')))
+        return
+      }
+      callback()
+    },
     next() {
       if (this.active === 1) {
         let hasRepeatName = false
