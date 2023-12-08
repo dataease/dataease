@@ -1025,10 +1025,13 @@ export default {
       const tableChart = deepCopy(this.chart)
       tableChart.customAttr = JSON.parse(this.chart.customAttr)
       tableChart.customStyle = JSON.parse(this.chart.customStyle)
-      tableChart.customAttr.color.tableHeaderBgColor = '#f8f8f9'
-      tableChart.customAttr.color.tableItemBgColor = '#ffffff'
-      tableChart.customAttr.color.tableHeaderFontColor = '#7c7e81'
-      tableChart.customAttr.color.tableFontColor = '#7c7e81'
+      if (!this.chart.type?.includes('table')) {
+        tableChart.customAttr.color.tableHeaderBgColor = '#f8f8f9'
+        tableChart.customAttr.color.tableItemBgColor = '#ffffff'
+        tableChart.customAttr.color.tableHeaderFontColor = '#7c7e81'
+        tableChart.customAttr.color.tableFontColor = '#7c7e81'
+        tableChart.customAttr.color.enableTableCrossBG = false
+      }
       tableChart.customAttr.color.tableStripe = true
       tableChart.customAttr.size.tablePageMode = 'pull'
       tableChart.customStyle.text.show = false
