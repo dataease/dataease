@@ -445,7 +445,6 @@ export default {
     this.canvasId === 'canvas-main' && bus.$on('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
-    bus.$on('trigger-filter-loaded', this.triggerFilterLoaded)
     this.initPdfTemplate()
   },
   beforeDestroy() {
@@ -461,17 +460,11 @@ export default {
     this.canvasId === 'canvas-main' && bus.$off('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('trigger-reset-button', this.triggerResetButton)
-    bus.$off('trigger-filter-loaded', this.triggerFilterLoaded)
   },
   methods: {
-    triggerFilterLoaded({ canvasIdStr, panelId, p }) {
-      if (this.panelInfo.id === panelId && !canvasIdStr.includes(this.canvasId)) {
-        this.filterLoaded(p, canvasIdStr)
-      }
-    },
-    filterLoaded(p, canvasIdStr = '') {
+    filterLoaded(p) {
       buildAfterFilterLoaded(this.filterMap, p)
-      bus.$emit('trigger-filter-loaded', { canvasIdStr: (canvasIdStr + this.canvasId), panelId: this.panelInfo.id, p })
+      this.getWrapperChildRefs().forEach(item => item.triggerFilterLoaded(p))
     },
     getWrapperChildRefs() {
       return this.$refs['viewWrapperChild']
@@ -576,7 +569,23 @@ export default {
 
       result.relationFilterIds = matchFilters.map(item => item.id)
 
+      let matchViewIds = []
+      matchFilters.forEach(item => {
+        if (!item.options.attrs.viewIds?.length) {
+          matchViewIds = null
+          return false
+        }
+        matchViewIds = matchViewIds.concat(item.options.attrs.viewIds)
+      })
+
       let viewKeyMap = buildViewKeyMap(panelItems)
+      if (matchViewIds) {
+        matchViewIds = [...new Set(matchViewIds)]
+        const keys = Object.keys(viewKeyMap).filter(key => !matchViewIds.includes(key))
+        keys.forEach(key => {
+          delete viewKeyMap[key]
+        })
+      }
       viewKeyMap = this.buildViewKeyFilters(matchFilters, viewKeyMap, isClear)
       result.filterMap = viewKeyMap
       return result
