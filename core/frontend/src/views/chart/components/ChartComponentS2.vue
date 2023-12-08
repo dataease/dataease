@@ -14,8 +14,8 @@
     <span
       v-if="chart.type"
       v-show="title_show"
-      :class="titleIsRight"
       ref="title"
+      :class="titleIsRight"
       :style="title_class"
       style="cursor: default;display: block;"
     >

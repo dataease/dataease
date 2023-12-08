@@ -495,7 +495,7 @@ export default {
     bus.$off('add-new-tab', this.addNewTab)
   },
   methods: {
-    setTabLayout: _.debounce(function () {
+    setTabLayout: _.debounce(function() {
       this.headClassScroll = !!this.$refs?.deTabsConstom?.$refs?.tabsConstom?.$refs?.nav?.scrollable ? 'head-class-scroll' : ''
     }, 100),
     calcTabLength() {
