@@ -146,7 +146,7 @@ export function getLabel(chart) {
           }
         } else if (chart.type.includes('bar')) {
           label = {
-            layout: [{ type: 'limit-in-canvas' }],
+            layout: [{ type: 'limit-in-plot' }],
             position: l.position
           }
         } else {
