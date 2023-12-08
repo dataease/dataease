@@ -23,7 +23,7 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
-        <h2.version>1.4.199</h2.version>
+        <h2.version>2.2.220</h2.version>
         <knife4j.version>4.1.0</knife4j.version>
         <calcite-core.version>1.35.1</calcite-core.version>
         <commons-dbcp2.version>2.6.0</commons-dbcp2.version>
