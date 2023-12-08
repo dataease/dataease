@@ -421,7 +421,6 @@ export default {
       }
     },
     viewInfoOnChange(targetViewInfo) {
-      console.log('test1=' + this.viewIdFieldArrayMap[targetViewInfo.targetViewId])
       if (this.viewIdFieldArrayMap[targetViewInfo.targetViewId] && this.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 && this.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty') {
         targetViewInfo.targetFieldId = 'empty'
       } else {

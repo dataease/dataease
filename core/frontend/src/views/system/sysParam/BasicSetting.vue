@@ -85,14 +85,14 @@
       </el-form-item>
 
       <el-form-item
-          :label="$t('system_parameter_setting.ds_sync_log_retention_time')"
-          prop="logTimeOut"
+        :label="$t('system_parameter_setting.ds_sync_log_retention_time')"
+        prop="logTimeOut"
       >
         <el-input
-            v-model="formInline.dsSyncLogTimeOut"
-            :placeholder="$t('system_parameter_setting.empty_msg')"
+          v-model="formInline.dsSyncLogTimeOut"
+          :placeholder="$t('system_parameter_setting.empty_msg')"
         ><template
-            slot="append"
+          slot="append"
         >{{ $t('components.day') }}</template></el-input>
       </el-form-item>
 

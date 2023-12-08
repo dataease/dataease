@@ -68,8 +68,9 @@
           @node-click="handleNodeClick"
           @check-change="handleCheckChange"
         >
-          <span class="custom-tree-node"
+          <span
             slot-scope="{ node, data}"
+            class="custom-tree-node"
             :title="data.excelLabel"
           >
             <span class="label">{{ data.excelLabel }}</span>
@@ -91,9 +92,10 @@
                 v-show="!data.sheet"
                 type="text"
                 size="mini"
-                @click="() => remove(node, data)">
-              {{ $t('dataset.delete') }}
-           </el-button>
+                @click="() => remove(node, data)"
+              >
+                {{ $t('dataset.delete') }}
+              </el-button>
             </span>
 
           </span>
@@ -475,10 +477,10 @@ export default {
       }
     },
     remove(node, data) {
-      const parent = node.parent;
-      const children = parent.data.children || parent.data;
-      const index = children.findIndex(d => d.id === data.id);
-      children.splice(index, 1);
+      const parent = node.parent
+      const children = parent.data.children || parent.data
+      const index = children.findIndex(d => d.id === data.id)
+      children.splice(index, 1)
     },
     save() {
       var validate = true

@@ -105,14 +105,13 @@ export const BASE_PIE = {
 
 let terminalType = 'pc'
 export function basePieOption(chart_option, chart, terminal = 'pc') {
-    console.log('apple......')
   terminalType = terminal
   let customAttr = {}
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.color) {
       chart_option.colors = customAttr.color.colors
-    }    
+    }
     // tooltip
     if (customAttr.tooltip) {
       const tooltip = JSON.parse(JSON.stringify(customAttr.tooltip))
@@ -125,7 +124,7 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
       formatter = formatter.replace('{a}', '{series.name}')
       formatter = formatter.replace('{b}', '{point.name}')
       formatter = formatter.replace('{c}', '{point.y}')
-      formatter = formatter.replace('{d', '{point.percentage')     
+      formatter = formatter.replace('{d', '{point.percentage')
       chart_option.tooltip.formatter = formatter
 
     }
@@ -145,10 +144,10 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
         dataLabels.format = formatter
 
         chart_option.plotOptions.pie.dataLabels = dataLabels
-  
+
       }
   }
-  
+
   // 处理data
   if (chart.data) {
     chart_option.title.text = chart.title
@@ -158,14 +157,14 @@ export function basePieOption(chart_option, chart, terminal = 'pc') {
       /*if (customAttr.size) {
         chart_option.series[0].radius = [customAttr.size.pieInnerRadius + '%', customAttr.size.pieOuterRadius + '%']
       }*/
-      
+
       const valueArr = chart.data.series[0].data
       for (let i = 0; i < valueArr.length; i++) {
 
         const y = valueArr[i]
         y.name = chart.data.x[i]
         y.y = y.value
-        
+
         chart_option.series[0].data.push(y)
       }
     }
@@ -180,7 +179,7 @@ export function componentStyle(chart_option, chart) {
     const customStyle = JSON.parse(chart.customStyle)
 
     if (customStyle.text) {
-      chart_option.title.text = customStyle.text.show ? chart.title : ''     
+      chart_option.title.text = customStyle.text.show ? chart.title : ''
       const style = chart_option.title.style ? chart_option.title.style : {}
       style.fontSize = customStyle.text.fontSize
       style.color = customStyle.text.color
@@ -190,20 +189,20 @@ export function componentStyle(chart_option, chart) {
       chart_option.title.align = customStyle.text.hPosition
       chart_option.title.verticalAlign = customStyle.text.vPosition
     }
-   
+
     if (customStyle.legend && chart_option.legend) {
       chart_option.plotOptions.pie.showInLegend = customStyle.legend.show
       // chart_option.legend.padding = padding
       chart_option.legend.layout = customStyle.legend.orient
       chart_option.legend.verticalAlign = customStyle.legend.vPosition
       chart_option.legend.align = customStyle.legend.hPosition
-      
+
       chart_option.legend.itemStyle = customStyle.legend.textStyle
 
     }
 
     if (customStyle.background) {
-        
+
       chart_option.chart.backgroundColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
   }
