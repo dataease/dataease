@@ -240,6 +240,9 @@ export default {
     }
   },
   methods: {
+    styleChange() {
+      this.$store.commit('canvasChange')
+    },
     openCustomSort() {
       this.showCustomSort = true
     },
@@ -251,6 +254,7 @@ export default {
       this.$nextTick(() => {
         this.showCustomSort = false
       })
+      this.styleChange()
     },
     positionAdjust() {
       bus.$emit('change_panel_right_draw', true)
