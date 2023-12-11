@@ -355,7 +355,7 @@ const initMarketTemplate = async () => {
       state.baseUrl = rsp.data.baseUrl
       state.currentMarketTemplateShowList = rsp.data.contents
       state.marketTabs = rsp.data.categories
-      state.marketActiveTab = state.marketTabs[0].label
+      state.marketActiveTab = state.marketTabs[1].label
       initStyle()
       initTemplateShow()
     })
