@@ -355,7 +355,7 @@ const initMarketTemplate = async () => {
       state.baseUrl = rsp.data.baseUrl
       state.currentMarketTemplateShowList = rsp.data.contents
       state.marketTabs = rsp.data.categories
-      state.marketActiveTab = state.marketTabs[0].label
+      state.marketActiveTab = state.marketTabs[1].label
       initStyle()
       initTemplateShow()
     })
@@ -428,7 +428,11 @@ const apply = () => {
         templateData.type === 'dataV'
           ? '#/dvCanvas?opt=create&createType=template'
           : '#/dashboard?opt=create&createType=template'
-      window.open(baseUrl, '_blank')
+      if (state.pid) {
+        window.open(baseUrl + `&pid=${state.pid}`, '_blank')
+      } else {
+        window.open(baseUrl, '_blank')
+      }
     })
     .catch(() => {
       state.loading = false
