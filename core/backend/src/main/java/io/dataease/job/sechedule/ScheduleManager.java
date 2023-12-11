@@ -425,4 +425,12 @@ public class ScheduleManager {
         scheduler.triggerJob(jobKey);
     }
 
+    public void pauseTrigger(TriggerKey triggerKey) throws SchedulerException {
+        scheduler.pauseTrigger(triggerKey);
+    }
+
+    public void resumeTrigger(TriggerKey triggerKey) throws SchedulerException {
+        scheduler.resumeTrigger(triggerKey);
+    }
+
 }
