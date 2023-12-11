@@ -428,7 +428,11 @@ const apply = () => {
         templateData.type === 'dataV'
           ? '#/dvCanvas?opt=create&createType=template'
           : '#/dashboard?opt=create&createType=template'
-      window.open(baseUrl, '_blank')
+      if (state.pid) {
+        window.open(baseUrl + `&pid=${state.pid}`, '_blank')
+      } else {
+        window.open(baseUrl, '_blank')
+      }
     })
     .catch(() => {
       state.loading = false
