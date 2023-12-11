@@ -434,6 +434,10 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        return originTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true);
+    }
+
+    public String originTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -488,7 +492,7 @@ public class SqlserverQueryProvider extends QueryProvider {
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
         orders.addAll(xOrders);
-        if (CollectionUtils.isEmpty(xOrders)) {
+        if (needOrder && CollectionUtils.isEmpty(xOrders)) {
             orders.add(SQLObj.builder()
                     .orderField(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
                     .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
@@ -519,9 +523,13 @@ public class SqlserverQueryProvider extends QueryProvider {
         return st.render();
     }
 
+    public String originSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
+        return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view, needOrder);
+    }
+
     @Override
     public String getSQLWithPage(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
-        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() +" ROW ONLY " : "");
+        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
         if (isTable) {
             return getSQLTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
         } else {
@@ -1531,5 +1539,14 @@ public class SqlserverQueryProvider extends QueryProvider {
                 "{\"dateformat\": \"112\", \"desc\": \"yyyymmdd\"},\n" +
                 "{\"dateformat\": \"120\", \"desc\": \"yyyy-mm-dd hh:mi:ss\"}\n" +
                 "]", Dateformat.class);
+    }
+
+    @Override
+    public String getResultCount(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        if (isTable) {
+            return "SELECT COUNT(*) AS count from (" + originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + ") COUNT_TEMP";
+        } else {
+            return "SELECT COUNT(*) AS count from (" + originSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + ") COUNT_TEMP";
+        }
     }
 }
