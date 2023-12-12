@@ -199,7 +199,7 @@ export default {
       if (this.$store.getters.uiInfo && this.$store.getters.uiInfo['ui.helpLink'] && this.$store.getters.uiInfo['ui.helpLink'].paramValue) {
         return this.$store.getters.uiInfo['ui.helpLink'].paramValue
       }
-      return 'https://dataease.io/docs/'
+      return 'https://dataease.io/docs/v1/'
     },
     /* topMenuColor() {
         return this.$store.getters.uiInfo.topMenuColor

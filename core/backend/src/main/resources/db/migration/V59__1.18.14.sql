@@ -1,0 +1,1 @@
+UPDATE `sys_user` set `enabled` = 0 where `user_id` = 2;

@@ -9,6 +9,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableTask;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobKey;
+import org.quartz.SchedulerException;
 import org.quartz.TriggerKey;
 import org.springframework.stereotype.Service;
 
@@ -83,5 +84,14 @@ public class ScheduleService {
         taskHandler.executeTask(scheduleManager, task);
     }
 
+    public void pauseTrigger(DatasetTableTask datasetTableTask) throws SchedulerException {
+        TriggerKey triggerKey = new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId());
+        scheduleManager.pauseTrigger(triggerKey);
+    }
+
+    public void resumeTrigger(DatasetTableTask datasetTableTask) throws SchedulerException {
+        TriggerKey triggerKey = new TriggerKey(datasetTableTask.getId(), datasetTableTask.getTableId());
+        scheduleManager.resumeTrigger(triggerKey);
+    }
 
 }
