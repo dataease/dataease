@@ -276,6 +276,7 @@ export default {
       mainWidth: '100%',
       mainHeight: '100%',
       searchCount: 0,
+      filterMapCache: {},
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
       terminal: 'pc',
       buttonFilterMap: null,
@@ -383,6 +384,21 @@ export default {
     },
     filterMap() {
       const result = buildFilterMap(this.componentData)
+      Object.keys(result).forEach(ele => {
+        if (this.filterMapCache[ele]?.length) {
+          result[ele].forEach(itx => {
+            const condition = this.filterMapCache[ele].find(item => item.componentId === itx.componentId && itx.cacheObj)
+            if (condition) {
+              itx.cacheObj = condition.cacheObj
+            }
+          })
+          if (!result[ele].length) {
+            result[ele] = this.filterMapCache[ele]
+          }
+        } else {
+          this.filterMapCache[ele] = result[ele]
+        }
+      })
       if (this.searchButtonInfo && this.searchButtonInfo.buttonExist && !this.searchButtonInfo.autoTrigger && this.searchButtonInfo.relationFilterIds) {
         for (const key in result) {
           if (Object.hasOwnProperty.call(result, key)) {
@@ -446,6 +462,7 @@ export default {
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
     this.initPdfTemplate()
+    bus.$on('filter-loaded-preview', this.filterLoaded)
   },
   beforeDestroy() {
     if (this.$refs[this.previewTempRefId]) {
@@ -454,16 +471,18 @@ export default {
     if (this.$refs[this.previewRefId]) {
       erd.uninstall(this.$refs[this.previewRefId])
     }
-    erd.uninstall(this.canvasMain)
-    erd.uninstall(this.tempCanvas)
+    this.canvasMain && erd.uninstall(this.canvasMain)
+    this.tempCanvas && erd.uninstall(this.tempCanvas)
     clearInterval(this.timer)
     this.canvasId === 'canvas-main' && bus.$off('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('trigger-reset-button', this.triggerResetButton)
+    bus.$off('filter-loaded-preview')
   },
   methods: {
     filterLoaded(p) {
       buildAfterFilterLoaded(this.filterMap, p)
+      this.filterMapCache = {}
       this.getWrapperChildRefs().forEach(item => item.triggerFilterLoaded(p))
     },
     getWrapperChildRefs() {
