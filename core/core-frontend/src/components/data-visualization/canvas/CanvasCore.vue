@@ -137,6 +137,11 @@ const props = defineProps({
     default() {
       return {}
     }
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
 
@@ -191,7 +196,7 @@ const curComponentId = computed(() => {
 const { emitter } = useEmitt()
 
 const curScale = computed(() => {
-  return canvasStyleData.value.scale
+  return canvasStyleData.value.scale / 100
 })
 
 const pointShadowShow = computed(() => {
@@ -1269,6 +1274,7 @@ defineExpose({
       v-for="(item, index) in componentData"
       v-show="item.isShow"
       :canvas-id="canvasId"
+      :scale="curScale"
       :key="item.id"
       :default-style="item.style"
       :style="getShapeItemShowStyle(item)"

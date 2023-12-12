@@ -164,6 +164,8 @@ const commonBackgroundSvgInner = computed(() => {
     return null
   }
 })
+
+const deepScale = computed(() => scale.value / 100)
 </script>
 
 <template>
@@ -210,7 +212,7 @@ const commonBackgroundSvgInner = computed(() => {
           :linkage="config?.linkage"
           :show-position="showPosition"
           :search-count="searchCount"
-          :scale="scale"
+          :scale="deepScale"
           :disabled="true"
         />
       </div>
