@@ -462,7 +462,6 @@ export default {
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
     this.initPdfTemplate()
-    bus.$on('filter-loaded-preview', this.filterLoaded)
   },
   beforeDestroy() {
     if (this.$refs[this.previewTempRefId]) {
@@ -477,7 +476,6 @@ export default {
     this.canvasId === 'canvas-main' && bus.$off('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('trigger-reset-button', this.triggerResetButton)
-    bus.$off('filter-loaded-preview')
   },
   methods: {
     filterLoaded(p) {
