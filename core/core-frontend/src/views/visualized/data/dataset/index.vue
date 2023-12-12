@@ -420,6 +420,23 @@ const defaultProps = {
   label: 'name'
 }
 
+const defaultTab = [
+  {
+    title: t('chart.data_preview'),
+    name: 'dataPreview'
+  },
+  {
+    title: '结构预览',
+    name: 'structPreview'
+  }
+]
+const tablePanes = ref([])
+const tablePaneList = computed(() => {
+  return nodeInfo.weight >= 7 ? [...defaultTab, ...tablePanes.value] : [...defaultTab]
+})
+const panelLoad = paneInfo => {
+  tablePanes.value = paneInfo
+}
 const datasetListTree = ref()
 
 watch(nickName, (val: string) => {
@@ -587,19 +604,17 @@ const getMenuList = (val: boolean) => {
           </div>
           <div class="tab-border">
             <el-tabs v-model="activeName" @tab-change="handleClick">
-              <el-tab-pane :label="t('chart.data_preview')" name="dataPreview"></el-tab-pane>
-              <el-tab-pane label="结构预览" name="structPreview"></el-tab-pane>
               <el-tab-pane
-                v-if="nodeInfo.weight >= 7"
-                :label="t('dataset.row_permissions')"
-                name="row"
-              ></el-tab-pane>
-              <el-tab-pane
-                v-if="nodeInfo.weight >= 7"
-                :label="t('dataset.column_permissions')"
-                name="column"
+                v-for="ele in tablePaneList"
+                :key="ele.name"
+                :label="ele.title"
+                :name="ele.name"
               ></el-tab-pane>
             </el-tabs>
+            <XpackComponent
+              jsname="L2NvbXBvbmVudC9yb3ctY29sLXBlcm1pc3Npb24vcGFuZS9pbmRleA=="
+              @loaded="panelLoad"
+            />
           </div>
         </div>
         <div class="dataset-table-info">
