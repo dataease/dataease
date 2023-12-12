@@ -1153,14 +1153,9 @@ export default {
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('refresh-button-info', this.refreshButtonInfo)
     bus.$off('trigger-reset-button', this.triggerResetButton)
-    bus.$off('filter-loaded-viewIds')
-  },
-  created() {
-    bus.$on('filter-loaded-viewIds', this.filterLoaded)
   },
   methods: {
     filterLoaded(p) {
-      console.log('filter-loaded-viewIds')
       buildAfterFilterLoaded(this.filterMap, p)
       this.filterMapCache = {}
     },
