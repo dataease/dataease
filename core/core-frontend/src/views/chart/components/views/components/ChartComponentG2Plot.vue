@@ -13,6 +13,7 @@ import { defaultsDeep, cloneDeep } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
+import { deepCopy } from '@/utils/utils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
@@ -34,7 +35,7 @@ const props = defineProps({
   scale: {
     type: Number,
     required: false,
-    default: 100
+    default: 1
   },
   terminal: {
     type: String,
@@ -113,11 +114,13 @@ const renderChart = async view => {
   curView = view
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
   // 与默认视图对象合并，方便增加配置项
-  const chart = { ...defaultsDeep(view, cloneDeep(BASE_VIEW_CONFIG)), data: chartData.value }
+  const chart = deepCopy({
+    ...defaultsDeep(view, cloneDeep(BASE_VIEW_CONFIG)),
+    data: chartData.value
+  })
   const chartView = chartViewManager.getChartView(view.render, view.type)
-  console.log('scale=' + scale.value)
-  recursionTransObj(customAttrTrans, chart.customAttr, scale.value / 100, terminal.value)
-  recursionTransObj(customStyleTrans, chart.customStyle, scale.value / 100, terminal.value)
+  recursionTransObj(customAttrTrans, chart.customAttr, scale.value, terminal.value)
+  recursionTransObj(customStyleTrans, chart.customStyle, scale.value, terminal.value)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
       renderL7Plot(chart, chartView as L7PlotChartView<any, any>)

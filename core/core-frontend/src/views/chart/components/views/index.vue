@@ -93,11 +93,11 @@ const props = defineProps({
   scale: {
     type: Number,
     required: false,
-    default: 100
+    default: 1
   }
 })
 const dynamicAreaId = ref('')
-const { view, showPosition, element, active, searchCount } = toRefs(props)
+const { view, showPosition, element, active, searchCount, scale } = toRefs(props)
 
 const titleShow = computed(
   () =>
@@ -201,6 +201,10 @@ watch(
   { deep: true }
 )
 
+watch([() => scale.value], () => {
+  initTitle()
+})
+
 watch([() => searchCount.value], () => {
   // 内部计时器启动 忽略外部计时器
   if (!innerRefreshTimer) {
@@ -214,6 +218,12 @@ watch([() => resultCount.value], () => {
 
 watch([() => resultMode.value], () => {
   queryData()
+})
+
+watch([() => scale.value], () => {
+  nextTick(() => {
+    chartComponent?.value?.renderChart(view.value)
+  })
 })
 
 watch([() => curComponent.value], () => {
@@ -233,7 +243,7 @@ const initTitle = () => {
     const customStyle = view.value.customStyle
     if (customStyle.text) {
       state.title_show = customStyle.text.show
-      state.title_class.fontSize = customStyle.text.fontSize + 'px'
+      state.title_class.fontSize = customStyle.text.fontSize * scale.value + 'px'
       state.title_class.color = customStyle.text.color
       state.title_class.textAlign = customStyle.text.hPosition
       state.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
@@ -634,6 +644,7 @@ const toolTip = computed(() => {
       />
       <chart-component-s2
         :view="view"
+        :scale="scale"
         :show-position="showPosition"
         v-else-if="showChartView(ChartLibraryType.S2)"
         ref="chartComponent"
