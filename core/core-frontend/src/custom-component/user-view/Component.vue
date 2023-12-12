@@ -77,6 +77,7 @@ const autoStyle = computed(() => {
 <template>
   <div class="bash-shape" :style="autoStyle">
     <chart
+      :scale="scale"
       :active="active"
       :view="view"
       :element="element"

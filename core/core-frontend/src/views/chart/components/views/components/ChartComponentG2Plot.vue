@@ -12,6 +12,7 @@ import { parseJson } from '@/views/chart/components/js/util'
 import { defaultsDeep, cloneDeep } from 'lodash-es'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
+import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
@@ -29,12 +30,21 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas'
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 100
+  },
+  terminal: {
+    type: String,
+    default: 'pc'
   }
 })
 
 const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
 
-const { view, showPosition } = toRefs(props)
+const { view, showPosition, scale, terminal } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
@@ -105,6 +115,9 @@ const renderChart = async view => {
   // 与默认视图对象合并，方便增加配置项
   const chart = { ...defaultsDeep(view, cloneDeep(BASE_VIEW_CONFIG)), data: chartData.value }
   const chartView = chartViewManager.getChartView(view.render, view.type)
+  console.log('scale=' + scale.value)
+  recursionTransObj(customAttrTrans, chart.customAttr, scale.value / 100, terminal.value)
+  recursionTransObj(customStyleTrans, chart.customStyle, scale.value / 100, terminal.value)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
       renderL7Plot(chart, chartView as L7PlotChartView<any, any>)

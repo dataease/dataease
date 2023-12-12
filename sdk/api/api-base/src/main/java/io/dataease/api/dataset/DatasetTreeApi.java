@@ -72,4 +72,7 @@ public interface DatasetTreeApi {
 
     @PostMapping("getSqlParams")
     List<SqlVariableDetails> getSqlParams(@RequestBody List<Long> ids) throws Exception;
+
+    @PostMapping("detailWithPerm")
+    List<DatasetTableDTO> detailWithPerm(@RequestBody List<Long> ids) throws Exception;
 }

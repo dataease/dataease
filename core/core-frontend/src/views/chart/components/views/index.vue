@@ -89,6 +89,11 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 100
   }
 })
 const dynamicAreaId = ref('')
@@ -617,6 +622,7 @@ const toolTip = computed(() => {
         :show-position="showPosition"
       />
       <chart-component-g2-plot
+        :scale="scale"
         :dynamic-area-id="dynamicAreaId"
         :view="view"
         :show-position="showPosition"

@@ -1,49 +1,49 @@
 DROP TABLE IF EXISTS `visualization_template`;
 CREATE TABLE `visualization_template` (
-                                          `id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主键',
-                                          `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '名称',
-                                          `pid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '父级id',
+                                          `id` varchar(50)  NOT NULL COMMENT '主键',
+                                          `name` varchar(255)  DEFAULT NULL COMMENT '名称',
+                                          `pid` varchar(255)  DEFAULT NULL COMMENT '父级id',
                                           `level` int DEFAULT NULL COMMENT '层级',
-                                          `dv_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '模版种类  dataV or dashboard 目录或者文件夹',
-                                          `node_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
-                                          `create_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
+                                          `dv_type` varchar(255)  DEFAULT NULL COMMENT '模版种类  dataV or dashboard 目录或者文件夹',
+                                          `node_type` varchar(255)  DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
+                                          `create_by` varchar(255)  DEFAULT NULL COMMENT '创建人',
                                           `create_time` bigint DEFAULT NULL COMMENT '创建时间',
-                                          `snapshot` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '缩略图',
-                                          `template_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '模版类型 system 系统内置 self 用户自建 ',
-                                          `template_style` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT 'template 样式',
-                                          `template_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT 'template 数据',
-                                          `dynamic_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '预存数据',
-                                          PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='模板表';
+                                          `snapshot` longtext  COMMENT '缩略图',
+                                          `template_type` varchar(255)  DEFAULT NULL COMMENT '模版类型 system 系统内置 self 用户自建 ',
+                                          `template_style` longtext  COMMENT 'template 样式',
+                                          `template_data` longtext  COMMENT 'template 数据',
+                                          `dynamic_data` longtext  COMMENT '预存数据',
+                                          PRIMARY KEY (`id`)
+) COMMENT='模板表';
 
 -- ----------------------------
 -- Table structure for visualization_template_category
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_template_category`;
 CREATE TABLE `visualization_template_category` (
-                                                   `id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主键',
-                                                   `name` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '名称',
-                                                   `pid` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '父级id',
+                                                   `id` varchar(50)  NOT NULL COMMENT '主键',
+                                                   `name` varchar(255)  DEFAULT NULL COMMENT '名称',
+                                                   `pid` varchar(255)  DEFAULT NULL COMMENT '父级id',
                                                    `level` int DEFAULT NULL COMMENT '层级',
-                                                   `dv_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '模版种类  dataV or dashboard 目录或者文件夹',
-                                                   `node_type` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
-                                                   `create_by` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '创建人',
+                                                   `dv_type` varchar(255)  DEFAULT NULL COMMENT '模版种类  dataV or dashboard 目录或者文件夹',
+                                                   `node_type` varchar(255)  DEFAULT NULL COMMENT '节点类型  folder or panel 目录或者文件夹',
+                                                   `create_by` varchar(255)  DEFAULT NULL COMMENT '创建人',
                                                    `create_time` bigint DEFAULT NULL COMMENT '创建时间',
-                                                   `snapshot` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci COMMENT '缩略图',
+                                                   `snapshot` longtext  COMMENT '缩略图',
                                                    `template_type` varchar(255) DEFAULT NULL,
-                                                   PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='模板表';
+                                                   PRIMARY KEY (`id`)
+) COMMENT='模板表';
 
 -- ----------------------------
 -- Table structure for visualization_template_category_map
 -- ----------------------------
 DROP TABLE IF EXISTS `visualization_template_category_map`;
 CREATE TABLE `visualization_template_category_map` (
-                                                       `id` varchar(50) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主键',
-                                                       `category_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '名称',
-                                                       `template_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL COMMENT '父级id',
-                                                       PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci COMMENT='模板表';
+                                                       `id` varchar(50)  NOT NULL COMMENT '主键',
+                                                       `category_id` varchar(255)  DEFAULT NULL COMMENT '名称',
+                                                       `template_id` varchar(255)  DEFAULT NULL COMMENT '父级id',
+                                                       PRIMARY KEY (`id`)
+) COMMENT='模板表';
 
 -- ----------------------------
 -- Table structure for visualization_template_extend_data
@@ -53,11 +53,11 @@ CREATE TABLE `visualization_template_extend_data` (
                                                       `id` bigint NOT NULL,
                                                       `dv_id` bigint DEFAULT NULL,
                                                       `view_id` bigint DEFAULT NULL,
-                                                      `view_details` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci,
-                                                      `copy_from` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-                                                      `copy_id` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci DEFAULT NULL,
-                                                      PRIMARY KEY (`id`) USING BTREE
-) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
+                                                      `view_details` longtext ,
+                                                      `copy_from` varchar(255)  DEFAULT NULL,
+                                                      `copy_id` varchar(255)  DEFAULT NULL,
+                                                      PRIMARY KEY (`id`)
+);
 
 BEGIN;
 INSERT INTO `core_menu`
@@ -87,6 +87,6 @@ INSERT INTO `core_sys_setting`
 VALUES (1, 'basic.dsIntervalTime', '6', 'text', 2);
 INSERT INTO `core_sys_setting`
 VALUES (2, 'basic.dsExecuteTime', 'minute', 'text', 3);
-INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (7, 'template.url', 'https://templates-de.fit2cloud.com', 'text', 0);
+INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (7, 'template.url', 'https://templates.dataease.cn', 'text', 0);
 INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (8, 'template.accessKey', 'dataease', 'text', 1);
 COMMIT;

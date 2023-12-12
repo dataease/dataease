@@ -101,12 +101,13 @@
         class="main-area"
         :class="state.asideActive ? 'main-area-active' : ''"
       >
-        <el-row>
-          <span v-if="state.curTemplate" class="template-title">{{ state.curTemplate.title }}</span>
+        <el-row v-if="state.curTemplate">
+          <span class="template-title">{{ state.curTemplate.title }}</span>
           <div style="flex: 1; text-align: right">
             <el-button
               style="float: right"
               type="primary"
+              :disabled="!createAuth[state.curTemplate?.templateType]"
               @click="templateApply(state.curTemplate)"
               >{{ t('visualization.apply_this_template') }}</el-button
             >
@@ -138,6 +139,15 @@ const props = defineProps({
   templateShowList: {
     type: Array,
     default: () => []
+  },
+  createAuth: {
+    type: Object,
+    default() {
+      return {
+        PANEL: false,
+        SCREEN: false
+      }
+    }
   }
 })
 
