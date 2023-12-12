@@ -84,11 +84,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
 -   [在线文档](https://dataease.io/docs/)
 -   [社区论坛](https://bbs.fit2cloud.com/c/de/6)
 
-**加入微信交流群**
-
-<img src="https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-helper.png" width="156" height="156"/>
-
-## DataEase 的技术栈
+## DataEase v1 的技术栈
 
 -   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)
 -   图库：[Apache ECharts](https://github.com/apache/echarts)、[AntV](https://antv.vision/zh)
