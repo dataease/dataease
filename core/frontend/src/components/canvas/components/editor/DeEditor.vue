@@ -886,6 +886,7 @@ export default {
         originWidth: 80, // 原始尺寸
         originHeight: 20
       },
+      filterMapCache: {},
       showDrag: true,
       vLine: [],
       hLine: [],
@@ -1026,6 +1027,18 @@ export default {
     },
     filterMap() {
       const result = buildFilterMap(this.componentData)
+      Object.keys(result).forEach(ele => {
+        if (this.filterMapCache[ele]?.length) {
+          result[ele].forEach(itx => {
+            const condition = this.filterMapCache[ele].find(item => item.componentId === itx.componentId && itx.cacheObj)
+            if (condition) {
+              itx.cacheObj = condition.cacheObj
+            }
+          })
+        } else {
+          this.filterMapCache[ele] = result[ele]
+        }
+      })
       if (this.searchButtonInfo && this.searchButtonInfo.buttonExist && !this.searchButtonInfo.autoTrigger && this.searchButtonInfo.relationFilterIds) {
         for (const key in result) {
           if (Object.hasOwnProperty.call(result, key)) {
@@ -1140,12 +1153,16 @@ export default {
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('refresh-button-info', this.refreshButtonInfo)
     bus.$off('trigger-reset-button', this.triggerResetButton)
+    bus.$off('filter-loaded-viewIds')
   },
   created() {
+    bus.$on('filter-loaded-viewIds', this.filterLoaded)
   },
   methods: {
     filterLoaded(p) {
+      console.log('filter-loaded-viewIds')
       buildAfterFilterLoaded(this.filterMap, p)
+      this.filterMapCache = {}
     },
     getWrapperChildRefs() {
       return this.$refs['wrapperChild']
