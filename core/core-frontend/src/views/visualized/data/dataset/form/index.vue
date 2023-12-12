@@ -1212,6 +1212,7 @@ const getDsIconName = data => {
             @change="dsChange"
             :placeholder="t('dataset.pls_slc_data_source')"
             class="ds-list"
+            filterable
             popper-class="tree-select-ds_popper"
             v-model="dataSource"
             node-key="id"
