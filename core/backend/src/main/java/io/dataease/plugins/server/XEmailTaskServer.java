@@ -207,7 +207,7 @@ public class XEmailTaskServer {
             String currentToken = ServletUtils.getToken();
             Future<?> future = priorityExecutor.submit(() -> {
                 try {
-                    return emailXpackService.print(url, currentToken, buildPixel(request.getPixel()));
+                    return emailXpackService.print(url, currentToken, buildPixel(request.getPixel()), request.getExtWaitTime());
                 } catch (Exception e) {
                     LogUtil.error(e.getMessage(), e);
                     DEException.throwException("预览失败，请联系管理员");
@@ -247,7 +247,7 @@ public class XEmailTaskServer {
         try {
             Future<?> future = priorityExecutor.submit(() -> {
                 try {
-                    return emailXpackService.print(url, token, buildPixel(request.getPixel()));
+                    return emailXpackService.print(url, token, buildPixel(request.getPixel()), request.getExtWaitTime());
                 } catch (Exception e) {
                     LogUtil.error(e.getMessage(), e);
                     DEException.throwException("预览失败，请联系管理员");

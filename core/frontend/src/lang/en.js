@@ -2776,7 +2776,9 @@ export default {
     range_all: 'All data',
     execute_now: 'Execute now',
     fire_now_success: 'Task executing',
-    larkgroups: 'Lark group'
+    larkgroups: 'Lark group',
+    ext_wait_time: 'Additional waiting time for dashboard loading (unit: seconds)',
+    wat_time_limit: 'The additional waiting time must be between [0 - 30]'
   },
   dynamic_time: {
     set_default: 'Set Default',

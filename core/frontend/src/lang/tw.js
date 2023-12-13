@@ -2768,7 +2768,9 @@ export default {
     range_all: '全部數據',
     execute_now: '立即執行',
     fire_now_success: '任務發起成功',
-    larkgroups: '飛書群'
+    larkgroups: '飛書群',
+    ext_wait_time: '加載儀表板額外等待時間(單位:秒)',
+    wat_time_limit: '額外等待時間必須在[0 - 30]'
   },
   dynamic_time: {
     set_default: '設置默認值',

@@ -2769,7 +2769,9 @@ export default {
     range_all: '全部数据',
     execute_now: '立即执行',
     fire_now_success: '任务发起成功',
-    larkgroups: '飞书群'
+    larkgroups: '飞书群',
+    ext_wait_time: '加载仪表板额外等待时间(单位:秒)',
+    wat_time_limit: '额外等待时间必须在[0 - 30]'
   },
   dynamic_time: {
     set_default: '设置默认值',
