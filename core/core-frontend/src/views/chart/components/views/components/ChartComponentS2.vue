@@ -10,7 +10,8 @@ import {
   shallowRef,
   ShallowRef,
   toRaw,
-  toRefs
+  toRefs,
+  watch
 } from 'vue'
 import { getData } from '@/api/chart'
 import chartViewManager from '@/views/chart/components/js/panel'
@@ -22,6 +23,8 @@ import { ElPagination } from 'element-plus-secondary'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { defaultsDeep, cloneDeep } from 'lodash-es'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
+import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
+import { deepCopy } from '@/utils/utils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
@@ -39,12 +42,21 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas'
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 1
+  },
+  terminal: {
+    type: String,
+    default: 'pc'
   }
 })
 
 const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
 
-const { view, showPosition } = toRefs(props)
+const { view, showPosition, scale, terminal } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
@@ -113,10 +125,14 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = {
+  const chart = deepCopy({
     ...defaultsDeep(viewInfo, cloneDeep(BASE_VIEW_CONFIG)),
     data: chartData.value
-  } as ChartObj
+  } as ChartObj)
+
+  recursionTransObj(customAttrTrans, chart.customAttr, scale.value, terminal.value)
+  recursionTransObj(customStyleTrans, chart.customStyle, scale.value, terminal.value)
+
   setupPage(chart, resetPageInfo)
   myChart?.destroy()
   const chartView = chartViewManager.getChartView(
@@ -157,7 +173,7 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
 }
 
-let scrollTimer
+let scrollTimer: number
 let scrollTop = 0
 const initScroll = () => {
   clearInterval(scrollTimer)
@@ -201,7 +217,7 @@ const showPage = computed(() => {
 
 const handleCurrentChange = pageNum => {
   let extReq = { goPage: pageNum }
-  if (chartExtRequest) {
+  if (chartExtRequest.value) {
     extReq = { ...extReq, ...chartExtRequest.value }
   }
   const chart = { ...view.value, chartExtRequest: extReq }
@@ -302,7 +318,7 @@ const resize = (width, height) => {
 }
 const preSize = [0, 0]
 const TOLERANCE = 1
-let resizeObserver
+let resizeObserver: ResizeObserver
 onMounted(() => {
   isDataEaseBi.value = !!window.DataEaseBi
   resizeObserver = new ResizeObserver(([entry] = []) => {

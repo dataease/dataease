@@ -204,10 +204,16 @@ const props = defineProps({
   canvasId: {
     type: String,
     default: 'canvas-main'
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
 
-const { element, defaultStyle, baseCellInfo, index, isTabMoveCheck, canvasId } = toRefs(props)
+const { element, defaultStyle, baseCellInfo, index, isTabMoveCheck, canvasId, scale } =
+  toRefs(props)
 const domId = ref('shape-id-' + element.value.id)
 const pointList = ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l']
 const pointList2 = ['r', 'l']
@@ -645,7 +651,7 @@ const componentBackgroundStyle = computed(() => {
       innerPadding,
       borderRadius
     } = element.value.commonBackground
-    const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
+    const style = { padding: innerPadding * scale.value + 'px', borderRadius: borderRadius + 'px' }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = backgroundColor
