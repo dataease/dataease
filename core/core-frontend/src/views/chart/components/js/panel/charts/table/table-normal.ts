@@ -5,6 +5,7 @@ import { formatterItem, valueFormatter } from '@/views/chart/components/js/forma
 import { getCurrentField } from '@/views/chart/components/js/panel/common/common_table'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
+import { isNumber } from 'lodash-es'
 
 const { t } = useI18n()
 /**
@@ -70,11 +71,14 @@ export class TableNormal extends S2ChartView<TableSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (f.formatterCfg) {
-            return valueFormatter(value, f.formatterCfg)
-          } else {
-            return valueFormatter(value, formatterItem)
+          if (f.groupType === 'd' || !isNumber(value)) {
+            return value
           }
+          let formatCfg = f.formatterCfg
+          if (!formatCfg) {
+            formatCfg = formatterItem
+          }
+          return valueFormatter(value, formatCfg)
         }
       })
     })
