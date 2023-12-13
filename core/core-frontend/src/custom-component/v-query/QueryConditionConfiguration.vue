@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { getCustomTime } from './time-format'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -13,6 +14,7 @@ import { cloneDeep } from 'lodash-es'
 import Select from './Select.vue'
 import Time from './Time.vue'
 import DynamicTime from './DynamicTime.vue'
+import DynamicTimeRange from './DynamicTimeRange.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import draggable from 'vuedraggable'
@@ -258,7 +260,44 @@ const validate = () => {
       return true
     }
 
-    if ([1, 7].includes(+ele.displayType)) {
+    if (+ele.displayType === 7) {
+      if (!ele.defaultValueCheck) {
+        return false
+      }
+      const {
+        timeNum,
+        relativeToCurrentType,
+        around,
+        arbitraryTime,
+        timeGranularity,
+        timeNumRange,
+        relativeToCurrentTypeRange,
+        aroundRange,
+        arbitraryTimeRange
+      } = ele
+
+      const startTime = getCustomTime(
+        timeNum,
+        relativeToCurrentType,
+        timeGranularity,
+        around,
+        arbitraryTime
+      )
+      const endTime = getCustomTime(
+        timeNumRange,
+        relativeToCurrentTypeRange,
+        timeGranularity,
+        aroundRange,
+        arbitraryTimeRange
+      )
+      if (+startTime > +endTime) {
+        ElMessage.error('结束时间必须大于开始时间!')
+        return true
+      }
+      return false
+    }
+
+    if ([1].includes(+ele.displayType)) {
       return false
     }
 
@@ -335,8 +374,10 @@ const confirmValueSource = () => {
 const filterTypeCom = computed(() => {
   const { displayType, timeType = 'fixed' } = curComponent.value
   return ['1', '7'].includes(displayType)
-    ? timeType === 'dynamic' && displayType === '1'
-      ? DynamicTime
+    ? timeType === 'dynamic'
+      ? displayType === '1'
+        ? DynamicTime
+        : DynamicTimeRange
       : Time
     : Select
 })
@@ -425,7 +466,11 @@ const parameterCompletion = () => {
     timeNum: 0,
     relativeToCurrentType: 'year',
     around: 'f',
-    arbitraryTime: new Date()
+    arbitraryTime: new Date(),
+    timeNumRange: 0,
+    relativeToCurrentTypeRange: 'year',
+    aroundRange: 'f',
+    arbitraryTimeRange: new Date()
   }
   Object.entries(attributes).forEach(([key, val]) => {
     !curComponent.value[key] && (curComponent.value[key] = val)
@@ -570,7 +615,7 @@ const relativeToCurrentList = computed(() => {
 })
 
 const dynamicTime = computed(() => {
-  return curComponent.value.timeType === 'dynamic' && curComponent.value.displayType === '1'
+  return curComponent.value.timeType === 'dynamic'
 })
 
 const relativeToCurrentTypeList = computed(() => {
@@ -1087,27 +1132,75 @@ defineExpose({
             <div class="label">
               <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
             </div>
-            <div v-if="curComponent.parametersCheck" class="parameters">
-              <el-select
-                popper-class="dataset-parameters"
-                value-key="id"
-                multiple
-                v-model="curComponent.parameters"
-                clearable
-              >
-                <el-option
-                  v-for="item in parametersFilter"
-                  :key="item.id"
-                  :label="item.variableName"
-                  :value="item"
+            <template v-if="curComponent.parametersCheck">
+              <div v-if="curComponent.displayType !== '7'" class="parameters">
+                <el-select
+                  popper-class="dataset-parameters"
+                  value-key="id"
+                  multiple
+                  v-model="curComponent.parameters"
+                  clearable
                 >
-                  <div class="variable-name ellipsis">{{ item.variableName }}</div>
-                  <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
-                    <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
-                  </el-tooltip>
-                </el-option>
-              </el-select>
-            </div>
+                  <el-option
+                    v-for="item in parametersFilter"
+                    :key="item.id"
+                    :label="item.variableName"
+                    :value="item"
+                  >
+                    <div class="variable-name ellipsis">{{ item.variableName }}</div>
+                    <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
+                      <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
+                    </el-tooltip>
+                  </el-option>
+                </el-select>
+              </div>
+              <div v-else class="parameters-range">
+                <div class="range-title">开始时间</div>
+                <div class="range-title">结束时间</div>
+                <div class="params-start">
+                  <el-select
+                    popper-class="dataset-parameters"
+                    value-key="id"
+                    multiple
+                    v-model="curComponent.parameters"
+                    clearable
+                  >
+                    <el-option
+                      v-for="item in parametersFilter"
+                      :key="item.id"
+                      :label="item.variableName"
+                      :value="item"
+                    >
+                      <div class="variable-name ellipsis">{{ item.variableName }}</div>
+                      <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
+                        <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
+                      </el-tooltip>
+                    </el-option>
+                  </el-select>
+                </div>
+                <div class="params-end">
+                  <el-select
+                    popper-class="dataset-parameters"
+                    value-key="id"
+                    multiple
+                    v-model="curComponent.parameters"
+                    clearable
+                  >
+                    <el-option
+                      v-for="item in parametersFilter"
+                      :key="item.id"
+                      :label="item.variableName"
+                      :value="item"
+                    >
+                      <div class="variable-name ellipsis">{{ item.variableName }}</div>
+                      <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
+                        <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
+                      </el-tooltip>
+                    </el-option>
+                  </el-select>
+                </div>
+              </div>
+            </template>
           </div>
           <div class="list-item">
             <div class="label">
@@ -1115,7 +1208,7 @@ defineExpose({
             </div>
             <div
               class="setting-content"
-              v-if="curComponent.defaultValueCheck && curComponent.displayType === '1'"
+              v-if="curComponent.defaultValueCheck && ['1', '7'].includes(curComponent.displayType)"
             >
               <div class="setting">
                 <el-radio-group v-model="curComponent.timeType">
@@ -1123,7 +1216,7 @@ defineExpose({
                   <el-radio label="dynamic">动态时间</el-radio>
                 </el-radio-group>
               </div>
-              <template v-if="dynamicTime">
+              <template v-if="dynamicTime && curComponent.displayType === '1'">
                 <div class="setting">
                   <div class="setting-label">相对当前</div>
                   <div class="setting-value select">
@@ -1167,6 +1260,62 @@ defineExpose({
                       v-if="curComponent.timeGranularity === 'datetime'"
                       v-model="curComponent.arbitraryTime"
                     />
+                  </div>
+                </div>
+              </template>
+              <template v-else-if="dynamicTime && curComponent.displayType === '7'">
+                <div class="setting">
+                  <div class="setting-label">开始时间</div>
+                  <div class="setting-input with-date range">
+                    <el-input-number
+                      v-model="curComponent.timeNum"
+                      :min="0"
+                      controls-position="right"
+                    />
+                    <el-select v-model="curComponent.relativeToCurrentType">
+                      <el-option
+                        v-for="item in relativeToCurrentTypeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-select v-model="curComponent.around">
+                      <el-option
+                        v-for="item in aroundList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-time-picker v-model="curComponent.arbitraryTime" />
+                  </div>
+                </div>
+                <div class="setting">
+                  <div class="setting-label">结束时间</div>
+                  <div class="setting-input with-date range">
+                    <el-input-number
+                      v-model="curComponent.timeNumRange"
+                      :min="0"
+                      controls-position="right"
+                    />
+                    <el-select v-model="curComponent.relativeToCurrentTypeRange">
+                      <el-option
+                        v-for="item in relativeToCurrentTypeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-select v-model="curComponent.aroundRange">
+                      <el-option
+                        v-for="item in aroundList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-time-picker v-model="curComponent.arbitraryTimeRange" />
                   </div>
                 </div>
               </template>
@@ -1465,8 +1614,38 @@ defineExpose({
               }
             }
           }
+          .parameters-range {
+            width: 100%;
+            padding-left: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            .range-title,
+            .params-start,
+            .params-end {
+              width: 50%;
+            }
+
+            .params-start,
+            .params-end {
+              margin-top: 8px;
+              .ed-select {
+                width: 100%;
+              }
+            }
+
+            .params-end {
+              padding-left: 4px;
+            }
+
+            .params-start {
+              padding-right: 4px;
+            }
+          }
 
           .setting {
+            &.setting {
+              margin-top: 8px;
+            }
             &.parameters {
               width: 100%;
               padding-left: 24px;
@@ -1497,6 +1676,9 @@ defineExpose({
               padding-left: 86px;
               justify-content: flex-end;
               align-items: center;
+              &.range {
+                padding-left: 0px;
+              }
               & > div + div {
                 margin-left: 8px;
               }
