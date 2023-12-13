@@ -10,7 +10,8 @@ import {
   shallowRef,
   ShallowRef,
   toRaw,
-  toRefs
+  toRefs,
+  watch
 } from 'vue'
 import { getData } from '@/api/chart'
 import chartViewManager from '@/views/chart/components/js/panel'
@@ -172,7 +173,7 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
 }
 
-let scrollTimer
+let scrollTimer: number
 let scrollTop = 0
 const initScroll = () => {
   clearInterval(scrollTimer)
@@ -216,7 +217,7 @@ const showPage = computed(() => {
 
 const handleCurrentChange = pageNum => {
   let extReq = { goPage: pageNum }
-  if (chartExtRequest) {
+  if (chartExtRequest.value) {
     extReq = { ...extReq, ...chartExtRequest.value }
   }
   const chart = { ...view.value, chartExtRequest: extReq }
@@ -317,7 +318,7 @@ const resize = (width, height) => {
 }
 const preSize = [0, 0]
 const TOLERANCE = 1
-let resizeObserver
+let resizeObserver: ResizeObserver
 onMounted(() => {
   isDataEaseBi.value = !!window.DataEaseBi
   resizeObserver = new ResizeObserver(([entry] = []) => {
