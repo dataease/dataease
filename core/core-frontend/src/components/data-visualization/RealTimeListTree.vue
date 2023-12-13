@@ -90,6 +90,10 @@ const setCurComponent = index => {
   dvMainStore.setCurComponent({ component: componentData.value[index], index })
 }
 
+const expandClick = component => {
+  component['expand'] = !component['expand']
+}
+
 let nameEdit = ref(false)
 let editComponentId = ref('')
 let inputName = ref('')
@@ -227,6 +231,24 @@ const handleContextMenu = e => {
                 }"
                 @click="onClick($event, transformIndex(index))"
               >
+                <div style="width: 22px; padding-left: 3px">
+                  <el-icon
+                    v-show="getComponent(index)?.component === 'Group'"
+                    class="component-expand"
+                    @click="expandClick(getComponent(index))"
+                  >
+                    <Icon
+                      v-show="getComponent(index)?.expand"
+                      name="dv-expand-down"
+                      class="expand-icon"
+                    ></Icon>
+                    <Icon
+                      v-show="!getComponent(index)?.expand"
+                      name="dv-expand-right"
+                      class="expand-icon"
+                    ></Icon>
+                  </el-icon>
+                </div>
                 <el-icon class="component-icon">
                   <Icon :name="getIconName(getComponent(index))"></Icon>
                 </el-icon>
@@ -314,6 +336,9 @@ const handleContextMenu = e => {
                   </template>
                 </el-dropdown>
               </div>
+              <div v-if="getComponent(index)?.component === 'Group' && getComponent(index)?.expand">
+                <real-time-group :component-data="getComponent(index).propValue"></real-time-group>
+              </div>
             </div>
           </template>
         </draggable>
@@ -351,7 +376,7 @@ const handleContextMenu = e => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 2px 0 22px;
+        padding: 0 2px 0 0px;
         user-select: none;
 
         .component-icon {
@@ -394,7 +419,7 @@ const handleContextMenu = e => {
             .component-base {
               opacity: 1;
             }
-            width: 70px !important;
+            width: 66px !important;
           }
         }
 
@@ -429,6 +454,26 @@ const handleContextMenu = e => {
 
 .real-time-component-list :deep(.ed-popper) {
   background: #303133 !important;
+}
+
+.component-expand {
+  cursor: pointer;
+  height: 16px !important;
+  width: 16px !important;
+  border-radius: 2px;
+  padding: 0 2px;
+
+  .expand-icon {
+    font-size: 10px;
+  }
+
+  &:hover {
+    background: rgba(235, 235, 235, 0.1);
+  }
+
+  &:active {
+    background: rgba(235, 235, 235, 0.1);
+  }
 }
 
 .component-base {
