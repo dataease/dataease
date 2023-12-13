@@ -181,7 +181,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             String reciUsers = emailTemplateDTO.getReciUsers();
             List<String> reciLists = null;
             if (StringUtils.isNotBlank(reciUsers)) {
-                String emailUsers = Arrays.stream(reciUsers.split(",")).map(userService::getUserByName).filter(tempUser -> StringUtils.isNotBlank(tempUser.getEmail())).map(SysUserEntity::getEmail).collect(Collectors.joining(","));
+                String emailUsers = Arrays.stream(reciUsers.split(",")).map(userService::getUserByName).filter(tempUser -> StringUtils.isNotBlank(tempUser.getEmail()) && 1 == tempUser.getEnabled()).map(SysUserEntity::getEmail).collect(Collectors.joining(","));
                 if (StringUtils.isNotBlank(emailUsers)) {
                     if (StringUtils.isNotBlank(recipients)) {
                         recipients += "," + emailUsers;
@@ -232,8 +232,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             }
 
             List<String> errorMsgs = new ArrayList<>();
-            for (int i = 0; i < channels.size(); i++) {
-                String channel = channels.get(i);
+            for (String channel : channels) {
                 switch (channel) {
                     case "email":
                         if (StringUtils.isNotBlank(recipients))
@@ -252,12 +251,11 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                             }
                         break;
                     case "wecom":
-                        if (SpringContextUtil.getBean(AuthUserService.class).supportWecom()) {
+                        if (SpringContextUtil.getBean(AuthUserService.class).supportWecom() && CollectionUtils.isNotEmpty(reciLists)) {
                             List<String> wecomUsers = new ArrayList<>();
-                            for (int j = 0; j < reciLists.size(); j++) {
-                                String reci = reciLists.get(j);
+                            for (String reci : reciLists) {
                                 SysUserEntity userBySub = userService.getUserByName(reci);
-                                if (ObjectUtils.isEmpty(userBySub)) continue;
+                                if (ObjectUtils.isEmpty(userBySub) || 1 != userBySub.getEnabled()) continue;
                                 Long userId = userBySub.getUserId();
                                 SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
                                 if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getWecomId()))
@@ -277,12 +275,11 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                         }
                         break;
                     case "dingtalk":
-                        if (SpringContextUtil.getBean(AuthUserService.class).supportDingtalk()) {
+                        if (SpringContextUtil.getBean(AuthUserService.class).supportDingtalk() && CollectionUtils.isNotEmpty(reciLists)) {
                             List<String> dingTalkUsers = new ArrayList<>();
-                            for (int j = 0; j < reciLists.size(); j++) {
-                                String reci = reciLists.get(j);
+                            for (String reci : reciLists) {
                                 SysUserEntity userBySub = userService.getUserByName(reci);
-                                if (ObjectUtils.isEmpty(userBySub)) continue;
+                                if (ObjectUtils.isEmpty(userBySub) || 1 != userBySub.getEnabled()) continue;
                                 Long userId = userBySub.getUserId();
                                 SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
                                 if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getDingtalkId()))
@@ -302,12 +299,11 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                         }
                         break;
                     case "lark":
-                        if (SpringContextUtil.getBean(AuthUserService.class).supportLark()) {
+                        if (SpringContextUtil.getBean(AuthUserService.class).supportLark() && CollectionUtils.isNotEmpty(reciLists)) {
                             List<String> larkUsers = new ArrayList<>();
-                            for (int j = 0; j < reciLists.size(); j++) {
-                                String reci = reciLists.get(j);
+                            for (String reci : reciLists) {
                                 SysUserEntity userBySub = userService.getUserByName(reci);
-                                if (ObjectUtils.isEmpty(userBySub)) continue;
+                                if (ObjectUtils.isEmpty(userBySub) || 1 != userBySub.getEnabled()) continue;
                                 Long userId = userBySub.getUserId();
                                 SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
                                 if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getLarkId()))
@@ -327,12 +323,11 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                         }
                         break;
                     case "larksuite":
-                        if (SpringContextUtil.getBean(AuthUserService.class).supportLarksuite()) {
+                        if (SpringContextUtil.getBean(AuthUserService.class).supportLarksuite() && CollectionUtils.isNotEmpty(reciLists)) {
                             List<String> larksuiteUsers = new ArrayList<>();
-                            for (int j = 0; j < reciLists.size(); j++) {
-                                String reci = reciLists.get(j);
+                            for (String reci : reciLists) {
                                 SysUserEntity userBySub = userService.getUserByName(reci);
-                                if (ObjectUtils.isEmpty(userBySub)) continue;
+                                if (ObjectUtils.isEmpty(userBySub) || 1 != userBySub.getEnabled()) continue;
                                 Long userId = userBySub.getUserId();
                                 SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);
                                 if (ObjectUtils.isEmpty(sysUserAssist) || StringUtils.isBlank(sysUserAssist.getLarksuiteId()))
