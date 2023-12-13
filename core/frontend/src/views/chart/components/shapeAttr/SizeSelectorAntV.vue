@@ -4,7 +4,7 @@
       <el-form
         ref="sizeFormBar"
         :model="sizeForm"
-        label-width="80px"
+        label-width="84px"
         size="mini"
       >
         <!--bar-begin-->
