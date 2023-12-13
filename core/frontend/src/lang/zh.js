@@ -2768,7 +2768,8 @@ export default {
     range_view: '展示数据',
     range_all: '全部数据',
     execute_now: '立即执行',
-    fire_now_success: '任务发起成功'
+    fire_now_success: '任务发起成功',
+    larkgroups: '飞书群'
   },
   dynamic_time: {
     set_default: '设置默认值',

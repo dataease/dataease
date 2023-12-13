@@ -215,6 +215,13 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                 files = viewExportExcel.export(panelId, viewIdList, proxy, justExportView, taskInstance.getTaskId().toString());
             }
 
+            List<String> groupList = null;
+            if (StringUtils.isNotBlank(emailTemplateDTO.getGroups())) {
+                String groups = emailTemplateDTO.getGroups();
+                groupList = Arrays.stream(groups.split(",")).collect(Collectors.toList());
+            }
+
+            byte[] bytes = null;
             List<String> channels = null;
             String recisetting = emailTemplateDTO.getRecisetting();
             if (StringUtils.isBlank(recisetting)) {
@@ -233,10 +240,10 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                             try {
                                 Integer panelFormat = emailTemplateDTO.getPanelFormat();
                                 if (ObjectUtils.isEmpty(panelFormat) || panelFormat == 0) {
-                                    byte[] bytes = emailXpackService.printData(url, token, xpackPixelEntity);
+                                    bytes = emailXpackService.printData(url, token, xpackPixelEntity);
                                     emailService.sendWithImageAndFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 } else {
-                                    byte[] bytes = emailXpackService.printPdf(url, token, xpackPixelEntity, false, true);
+                                    bytes = emailXpackService.printPdf(url, token, xpackPixelEntity, false, true);
                                     emailService.sendPdfWithFiles(recipients, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 }
 
@@ -260,7 +267,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
                             if (CollectionUtils.isNotEmpty(wecomUsers)) {
                                 WecomXpackService wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
-                                byte[] bytes = emailXpackService.printData(url, token, xpackPixelEntity);
+                                bytes = emailXpackService.printData(url, token, xpackPixelEntity);
                                 WecomMsgResult wecomMsgResult = wecomXpackService.pushOaMsg(wecomUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 if (wecomMsgResult.getErrcode() != 0) {
                                     errorMsgs.add("wecom: " + wecomMsgResult.getErrmsg());
@@ -285,7 +292,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
                             if (CollectionUtils.isNotEmpty(dingTalkUsers)) {
                                 DingtalkXpackService dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
-                                byte[] bytes = emailXpackService.printData(url, token, xpackPixelEntity);
+                                bytes = emailXpackService.printData(url, token, xpackPixelEntity);
                                 DingtalkMsgResult dingtalkMsgResult = dingtalkXpackService.pushOaMsg(dingTalkUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 if (dingtalkMsgResult.getErrcode() != 0) {
                                     errorMsgs.add("dingtalk: " + dingtalkMsgResult.getErrmsg());
@@ -310,7 +317,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
                             if (CollectionUtils.isNotEmpty(larkUsers)) {
                                 LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
-                                byte[] bytes = emailXpackService.printData(url, token, xpackPixelEntity);
+                                bytes = emailXpackService.printData(url, token, xpackPixelEntity);
                                 LarkMsgResult larkMsgResult = larkXpackService.pushOaMsg(larkUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 if (larkMsgResult.getCode() != 0) {
                                     errorMsgs.add("lark: " + larkMsgResult.getMsg());
@@ -335,7 +342,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
 
                             if (CollectionUtils.isNotEmpty(larksuiteUsers)) {
                                 LarksuiteXpackService larksuiteXpackService = SpringContextUtil.getBean(LarksuiteXpackService.class);
-                                byte[] bytes = emailXpackService.printData(url, token, xpackPixelEntity);
+                                bytes = emailXpackService.printData(url, token, xpackPixelEntity);
                                 LarksuiteMsgResult larksuiteMsgResult = larksuiteXpackService.pushOaMsg(larksuiteUsers, emailTemplateDTO.getTitle(), contentStr, bytes, files);
                                 if (larksuiteMsgResult.getCode() != 0) {
                                     errorMsgs.add("larksuite: " + larksuiteMsgResult.getMsg());
@@ -347,6 +354,20 @@ public class EmailTaskHandler extends TaskHandler implements Job {
                     default:
                         break;
                 }
+            }
+
+            if (SpringContextUtil.getBean(AuthUserService.class).supportLark() && CollectionUtils.isNotEmpty(groupList)) {
+                LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
+                if (ObjectUtils.isEmpty(bytes)) {
+                    bytes = emailXpackService.printData(url, token, xpackPixelEntity);
+                }
+                List<LarkMsgResult> larkMsgResultList = larkXpackService.pushChatOaMsg(groupList, emailTemplateDTO.getTitle(), contentStr, bytes, files);
+                larkMsgResultList.forEach(larkMsgResult -> {
+                    if (larkMsgResult.getCode() != 0) {
+                        LogUtil.error(larkMsgResult.getMsg());
+                        errorMsgs.add("lark: " + larkMsgResult.getMsg());
+                    }
+                });
             }
             if (CollectionUtils.isNotEmpty(errorMsgs)) {
                 String msg = errorMsgs.stream().collect(Collectors.joining(" \n "));

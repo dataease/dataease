@@ -2,12 +2,12 @@ package io.dataease.plugins.xpack.lark.service;
 
 import io.dataease.plugins.common.service.PluginComponentService;
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
+import io.dataease.plugins.xpack.lark.dto.entity.LarkGroupResult;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkMsgResult;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkQrResult;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkUserInfo;
 import io.dataease.plugins.xpack.lark.dto.response.LarkAppUserResult;
 import io.dataease.plugins.xpack.lark.dto.response.LarkInfo;
-
 
 import java.io.File;
 import java.util.List;
@@ -33,4 +33,8 @@ public abstract class LarkXpackService extends PluginComponentService {
     public abstract LarkMsgResult pushMsg(List<String> userIds, String message);
 
     public abstract LarkMsgResult pushOaMsg(List<String> userIds, String title, String content, byte[] bytes, List<File> files);
+
+    public abstract List<LarkMsgResult> pushChatOaMsg(List<String> groupList, String title, String content, byte[] bytes, List<File> files);
+
+    public abstract LarkGroupResult getGroup();
 }

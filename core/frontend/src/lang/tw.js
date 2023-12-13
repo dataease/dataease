@@ -2767,7 +2767,8 @@ export default {
     range_view: '展示數據',
     range_all: '全部數據',
     execute_now: '立即執行',
-    fire_now_success: '任務發起成功'
+    fire_now_success: '任務發起成功',
+    larkgroups: '飛書群'
   },
   dynamic_time: {
     set_default: '設置默認值',

@@ -35,4 +35,6 @@ public class XpackEmailTemplateDTO implements Serializable {
 
     private Boolean status;
 
+    private String groups;
+
 }
