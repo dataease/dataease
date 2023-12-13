@@ -5,12 +5,13 @@ import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElRow } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
-import { computed, nextTick, ref } from 'vue'
+import { computed, nextTick, ref, toRefs } from 'vue'
 import draggable from 'vuedraggable'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
+import { propTypes } from '@/utils/propTypes'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -23,7 +24,11 @@ const { areaData, isCtrlOrCmdDown, isShiftDown, laterIndex } = storeToRefs(compo
 
 const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
 
-const componentData = computed(() => dvMainStore.componentData)
+const props = defineProps({
+  componentData: []
+})
+
+const { componentData } = toRefs(props)
 
 const getComponent = index => {
   return componentData.value[componentData.value.length - 1 - index]
@@ -312,7 +317,6 @@ const handleContextMenu = e => {
             </div>
           </template>
         </draggable>
-        <el-row style="width: 100%; height: 150px"></el-row>
       </div>
     </el-row>
     <Teleport v-if="editComponentId && nameEdit" :to="editComponentId">
@@ -346,7 +350,7 @@ const handleContextMenu = e => {
         align-items: center;
         justify-content: flex-start;
         font-size: 12px;
-        padding: 0 2px 0 22px;
+        padding: 0 2px 0 44px;
         user-select: none;
 
         .component-icon {
