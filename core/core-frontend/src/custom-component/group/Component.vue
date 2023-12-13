@@ -1,10 +1,13 @@
 <script setup lang="ts">
-import { toRefs } from 'vue'
+import { toRefs, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import CanvasGroup from '@/custom-component/common/CanvasGroup.vue'
+import { deepCopy } from '@/utils/utils'
+import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasViewInfo, canvasStyleData } = storeToRefs(dvMainStore)
+const sourceCanvasStyle = deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK)
 
 const props = defineProps({
   propValue: {
@@ -41,7 +44,12 @@ const props = defineProps({
   }
 })
 
-const { propValue, dvInfo, searchCount } = toRefs(props)
+const { propValue, dvInfo, searchCount, element } = toRefs(props)
+const customCanvasStyle = computed(() => {
+  const result = sourceCanvasStyle
+  result.scale = canvasStyleData.value.scale
+  return sourceCanvasStyle
+})
 </script>
 
 <template>
@@ -52,7 +60,7 @@ const { propValue, dvInfo, searchCount } = toRefs(props)
         :dv-info="dvInfo"
         :show-position="showPosition"
         :canvas-id="'group-' + element.id"
-        :canvas-style-data="canvasStyleData"
+        :canvas-style-data="customCanvasStyle"
         :canvas-view-info="canvasViewInfo"
         :is-edit="isEdit"
         :element="element"
