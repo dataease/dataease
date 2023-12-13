@@ -50,7 +50,7 @@ function getCustomTime(
   timeType: string,
   timeGranularity: string,
   around: string,
-  arbitraryTime?: string
+  arbitraryTime?: Date
 ) {
   const date = new Date()
   const num = around === 'f' ? -timeNum : timeNum
@@ -80,7 +80,7 @@ function getCustomTime(
   if (!!arbitraryTime) {
     const time = new Date(arbitraryTime)
     time.setFullYear(resultYear)
-    time.setMonth(resultMonth)
+    time.setMonth(resultMonth - 1)
     time.setDate(resultDate)
     return time
   }

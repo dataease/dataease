@@ -1,6 +1,6 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { getDynamicRange } from '@/custom-component/v-query/time-format'
+import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData } = storeToRefs(dvMainStore)
 
@@ -100,10 +100,46 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayType,
               multiple
             } = item
-            if (timeType === 'dynamic' && +displayType === 1 && firstLoad && !value?.length) {
-              selectValue = getDynamicRange(item)
-              item.defaultValue = new Date(selectValue[0])
-              item.selectValue = new Date(selectValue[0])
+            if (
+              timeType === 'dynamic' &&
+              [1, 7].includes(+displayType) &&
+              firstLoad &&
+              !value?.length
+            ) {
+              if (+displayType === 1) {
+                selectValue = getDynamicRange(item)
+                item.defaultValue = new Date(selectValue[0])
+                item.selectValue = new Date(selectValue[0])
+              } else {
+                const {
+                  timeNum,
+                  relativeToCurrentType,
+                  around,
+                  arbitraryTime,
+                  timeGranularity,
+                  timeNumRange,
+                  relativeToCurrentTypeRange,
+                  aroundRange,
+                  arbitraryTimeRange
+                } = ele
+
+                const startTime = getCustomTime(
+                  timeNum,
+                  relativeToCurrentType,
+                  timeGranularity,
+                  around,
+                  arbitraryTime
+                )
+                const endTime = getCustomTime(
+                  timeNumRange,
+                  relativeToCurrentTypeRange,
+                  timeGranularity,
+                  aroundRange,
+                  arbitraryTimeRange
+                )
+                item.defaultValue = [startTime, endTime]
+                item.selectValue = [startTime, endTime]
+              }
             } else {
               selectValue = getValueByDefaultValueCheckOrFirstLoad(
                 defaultValueCheck,
