@@ -2775,7 +2775,8 @@ export default {
     range_view: 'Displayed data',
     range_all: 'All data',
     execute_now: 'Execute now',
-    fire_now_success: 'Task executing'
+    fire_now_success: 'Task executing',
+    larkgroups: 'Lark group'
   },
   dynamic_time: {
     set_default: 'Set Default',

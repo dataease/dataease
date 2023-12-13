@@ -14,9 +14,9 @@ import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
 import io.dataease.plugins.common.util.SpringContextUtil;
-
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkAppUserEntity;
+import io.dataease.plugins.xpack.lark.dto.entity.LarkGroupResult;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkQrResult;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkUserInfo;
 import io.dataease.plugins.xpack.lark.dto.response.LarkAppUserResult;
@@ -239,5 +239,13 @@ public class XLarkServer {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    @ResponseBody
+    @GetMapping("/group")
+    public LarkGroupResult group() {
+        LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
+        return larkXpackService.getGroup();
     }
 }
