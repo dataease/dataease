@@ -25,6 +25,7 @@ import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithSc
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
+import RealTimeListTree from '@/components/data-visualization/RealTimeListTree.vue'
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
@@ -253,7 +254,7 @@ eventBus.on('handleNew', handleNew)
         id="dv-main-left-sidebar"
         :class="{ 'preview-aside': previewStatus }"
       >
-        <RealTimeComponentList />
+        <real-time-list-tree />
       </dv-sidebar>
       <!-- 中间画布 -->
       <main id="dv-main-center" class="center" ref="canvasCenterRef">
