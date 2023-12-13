@@ -1115,6 +1115,13 @@ public class DataSetTableService {
         }
     }
 
+    private String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
+        handleSelectItems(plainSelect, dsType);
+        handleFromItems(plainSelect, dsType);
+        handleJoins(plainSelect, dsType);
+        return handleWhere(plainSelect, statementSelect, dsType);
+    }
+
     private void handleSelectItems(PlainSelect plainSelect, String dsType) throws Exception {
         List<SelectItem> selectItems = new ArrayList<>();
         for (SelectItem selectItem : plainSelect.getSelectItems()) {
@@ -1135,6 +1142,7 @@ public class DataSetTableService {
 
     private void handleFromItems(PlainSelect plainSelect, String dsType) throws Exception {
         FromItem fromItem = plainSelect.getFromItem();
+
         if (fromItem instanceof SubSelect) {
             SelectBody selectBody = ((SubSelect) fromItem).getSelectBody();
             SubSelect subSelect = new SubSelect();
@@ -1152,6 +1160,50 @@ public class DataSetTableService {
             }
             plainSelect.setFromItem(subSelect);
         }
+        if (fromItem instanceof SubJoin) {
+            SubJoin subJoin =  (SubJoin) fromItem;
+            if (subJoin.getLeft() instanceof SubSelect) {
+                SelectBody selectBody = ((SubSelect) subJoin.getLeft()).getSelectBody();
+                SubSelect subSelect = new SubSelect();
+                Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
+                PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
+                subSelect.setSelectBody(subPlainSelect);
+                if (dsType.equals(DatasourceTypes.oracle.getType())) {
+                    subSelect.setAlias(new Alias(subJoin.getLeft().getAlias().toString(), false));
+                } else {
+                    if (subJoin.getLeft().getAlias() == null) {
+                        throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                    }
+                    subSelect.setAlias(new Alias(subJoin.getLeft().getAlias().toString(), false));
+                }
+                subJoin.setLeft(subSelect);
+            }
+            List<Join> joinsList = new ArrayList<>();
+            for (Join join : subJoin.getJoinList()) {
+                FromItem rightItem = join.getRightItem();
+                if (rightItem instanceof SubSelect) {
+                    SelectBody selectBody = ((SubSelect) rightItem).getSelectBody();
+                    SubSelect subSelect = new SubSelect();
+                    Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
+                    PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
+                    subSelect.setSelectBody(subPlainSelect);
+                    if (dsType.equals(DatasourceTypes.oracle.getType())) {
+                        subSelect.setAlias(new Alias(rightItem.getAlias().toString(), false));
+                    } else {
+                        if (rightItem.getAlias() == null) {
+                            throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                        }
+                        subSelect.setAlias(new Alias(rightItem.getAlias().toString(), false));
+                    }
+                    join.setRightItem(subSelect);
+                }
+                joinsList.add(join);
+                subJoin.setJoinList(joinsList);
+
+            }
+            plainSelect.setFromItem(fromItem);
+        }
+
     }
 
     private void handleJoins(PlainSelect plainSelect, String dsType) throws Exception {
@@ -1224,12 +1276,6 @@ public class DataSetTableService {
         return builder.toString();
     }
 
-    private String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
-        handleSelectItems(plainSelect, dsType);
-        handleFromItems(plainSelect, dsType);
-        handleJoins(plainSelect, dsType);
-        return handleWhere(plainSelect, statementSelect, dsType);
-    }
 
 
     public Map<String, Object> getDBPreview(DataSetTableRequest dataSetTableRequest) throws Exception {
