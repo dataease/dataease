@@ -3,7 +3,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
-import { ElCol, ElIcon, ElRow } from 'element-plus-secondary'
+import { ElIcon, ElRow } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
 import { computed, nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
@@ -11,7 +11,6 @@ import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
-import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -19,11 +18,13 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
 const composeStore = composeStoreWithOut()
-const contextmenuStore = contextmenuStoreWithOut()
 
 const { areaData, isCtrlOrCmdDown, isShiftDown, laterIndex } = storeToRefs(composeStore)
 
-const { componentData, curComponent, curComponentIndex, canvasViewInfo } = storeToRefs(dvMainStore)
+const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
+
+const componentData = computed(() => dvMainStore.componentData)
+
 const getComponent = index => {
   return componentData.value[componentData.value.length - 1 - index]
 }
@@ -87,24 +88,6 @@ const onClick = (e, index) => {
   setCurComponent(index)
   composeStore.setLaterIndex(index)
 }
-const deleteComponent = (number: number) => {
-  setTimeout(() => {
-    dvMainStore.deleteComponentById(curComponent.value.id)
-    snapshotStore.recordSnapshotCache('renderChart')
-  })
-}
-const upComponent = (number: number) => {
-  setTimeout(() => {
-    layerStore.upComponent()
-    snapshotStore.recordSnapshotCache()
-  })
-}
-const downComponent = (number: number) => {
-  setTimeout(() => {
-    layerStore.downComponent()
-    snapshotStore.recordSnapshotCache('realTime-downComponent')
-  })
-}
 const setCurComponent = index => {
   dvMainStore.setCurComponent({ component: componentData.value[index], index })
 }
@@ -113,7 +96,9 @@ let nameEdit = ref(false)
 let editComponentId = ref('')
 let inputName = ref('')
 let nameInput = ref(null)
+let curEditComponent = null
 const editComponentName = item => {
+  curEditComponent = curComponent.value
   editComponentId.value = `#component-label-${item.id}`
   nameEdit.value = true
   inputName.value = item.name
@@ -126,15 +111,12 @@ const closeEditComponentName = () => {
   if (!inputName.value || !inputName.value.trim()) {
     return
   }
-  if (inputName.value.trim() === curComponent.value.name) {
+  if (inputName.value.trim() === curEditComponent.name) {
     return
   }
-  curComponent.value.name = inputName.value
+  curEditComponent.name = inputName.value
   inputName.value = ''
-}
-
-const toggleComponentVisible = () => {
-  // do toggleComponentVisible
+  curEditComponent = null
 }
 
 const lock = () => {
@@ -198,9 +180,6 @@ const menuAsideClose = (param, index) => {
     }, 200)
   }
 }
-const rename = item => {
-  editComponentName(item)
-}
 
 const handleContextMenu = e => {
   e.preventDefault()
@@ -248,12 +227,15 @@ const handleContextMenu = e => {
                   areaData.components.includes(getComponent(index))
               }"
               @click="onClick($event, transformIndex(index))"
-              @dblclick="editComponentName(getComponent(index))"
             >
               <el-icon class="component-icon">
                 <Icon :name="getIconName(getComponent(index))"></Icon>
               </el-icon>
-              <span :id="`component-label-${getComponent(index)?.id}`" class="component-label">
+              <span
+                :id="`component-label-${getComponent(index)?.id}`"
+                class="component-label"
+                @dblclick="editComponentName(getComponent(index))"
+              >
                 {{ getComponent(index)?.name }}
               </span>
               <div
@@ -293,7 +275,7 @@ const handleContextMenu = e => {
                   trigger="click"
                   placement="bottom-start"
                   effect="dark"
-                  hide-timeout="0"
+                  :hide-timeout="0"
                 >
                   <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
                     <el-icon class="component-base">
@@ -313,7 +295,7 @@ const handleContextMenu = e => {
                 trigger="contextmenu"
                 placement="bottom-start"
                 effect="dark"
-                hide-timeout="0"
+                :hide-timeout="0"
               >
                 <compose-show
                   :show-border="false"
