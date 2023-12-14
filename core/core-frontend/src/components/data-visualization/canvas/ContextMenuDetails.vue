@@ -9,6 +9,7 @@ import { storeToRefs } from 'pinia'
 import { computed, toRefs } from 'vue'
 import { ElDivider } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
+import { getCurInfo } from '@/store/modules/data-visualization/common'
 const dvMainStore = dvMainStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
@@ -52,7 +53,8 @@ const menuOpt = optName => {
 }
 
 const cut = () => {
-  copyStore.cut()
+  const curInfo = getCurInfo()
+  copyStore.cut(curInfo.componentData)
   menuOpt('cut')
 }
 
@@ -85,7 +87,8 @@ const paste = () => {
 
 const deleteComponent = () => {
   if (curComponent.value) {
-    dvMainStore.deleteComponentById(curComponent.value?.id)
+    const curInfo = getCurInfo()
+    dvMainStore.deleteComponentById(curComponent.value?.id, curInfo.componentData)
   } else if (areaData.value.components.length) {
     areaData.value.components.forEach(component => {
       dvMainStore.deleteComponentById(component.id)

@@ -67,6 +67,12 @@ const shiftDataPush = curClickIndex => {
 }
 
 const onClick = (e, index) => {
+  setCurComponent(index)
+  //其他情况点击清理选择区域
+  areaData.value.components.splice(0, areaData.value.components.length)
+}
+
+const onClickBack = (e, index) => {
   // 初始化点击是 laterIndex=0
   if (!curComponent.value) {
     composeStore.setLaterIndex(null)
