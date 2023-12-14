@@ -45,7 +45,7 @@ import { baseLiquid } from '@/views/chart/chart/liquid/liquid'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
-import { baseBarOptionAntV, hBaseBarOptionAntV, baseBidirectionalBarOptionAntV } from '@/views/chart/chart/bar/bar_antv'
+import { baseBarOptionAntV, hBaseBarOptionAntV, baseBidirectionalBarOptionAntV, timeRangeBarOptionAntV } from '@/views/chart/chart/bar/bar_antv'
 import { baseAreaOptionAntV, baseLineOptionAntV } from '@/views/chart/chart/line/line_antv'
 import { basePieOptionAntV, basePieRoseOptionAntV } from '@/views/chart/chart/pie/pie_antv'
 import { baseScatterOptionAntV } from '@/views/chart/chart/scatter/scatter_antv'
@@ -273,6 +273,8 @@ export default {
         this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, true, false)
       } else if (equalsAny(chart.type, 'bar-stack-horizontal', 'percentage-bar-stack-horizontal')) {
         this.myChart = hBaseBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction, false, true)
+      } else if (equalsAny(chart.type, 'bar-time-range')) {
+        this.myChart = timeRangeBarOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'line') {
         this.myChart = baseLineOptionAntV(this.myChart, this.chartId, chart, this.antVAction)
       } else if (chart.type === 'area') {
@@ -389,8 +391,12 @@ export default {
         }
         return
       }
-      const quotaList = this.pointParam.data.quotaList
-      quotaList[0]['value'] = this.pointParam.data.value
+      let quotaList = this.pointParam.data.quotaList
+      if (this.chart.type === 'bar-time-range') {
+        quotaList = this.pointParam.data.dimensionList
+      } else {
+        quotaList[0]['value'] = this.pointParam.data.value
+      }
       const linkageParam = {
         option: 'linkage',
         name: this.pointParam.data.name,

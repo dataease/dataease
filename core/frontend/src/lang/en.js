@@ -1184,6 +1184,7 @@ export default {
     chart_bar_stack: 'Stack Bar',
     chart_percentage_bar_stack: 'Percentage Stack Bar',
     chart_bar_horizontal: 'Horizontal Bar',
+    chart_bar_time_range: 'Time Bar',
     chart_bar_stack_horizontal: 'Stack Horizontal Bar',
     chart_percentage_bar_stack_horizontal: 'Horizontal Percentage Stack Bar',
     chart_bidirectional_bar: 'Bidirectional Bar',

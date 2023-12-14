@@ -11,6 +11,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1280,6 +1281,120 @@ public class ChartDataBuild {
             map.put("data", dataList);
             return map;
         }
+    }
+
+    private static String getDateFormat(String dateStyle, String datePattern) {
+        String split;
+        if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+            split = "/";
+        } else {
+            split = "-";
+        }
+        switch (dateStyle) {
+            case "y":
+                return "yyyy";
+            case "y_M":
+                return "yyyy" + split + "MM";
+            case "y_M_d":
+                return "yyyy" + split + "MM" + split + "dd";
+            case "H_m_s":
+                return "HH:mm:ss";
+            case "y_M_d_H":
+                return "yyyy" + split + "MM" + split + "dd" + " HH";
+            case "y_M_d_H_m":
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm";
+            case "y_M_d_H_m_s":
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm:ss";
+            default:
+                return "yyyy-MM-dd HH:mm:ss";
+        }
+    }
+
+    public static Map<String, Object> transTimeBarDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> extStack, List<String[]> data, ChartViewWithBLOBs view, boolean isDrill) {
+
+        Map<String, Object> map = new HashMap<>();
+        if (CollectionUtils.isEmpty(xAxisBase) || CollectionUtils.isEmpty(xAxisExt) || xAxisExt.size() < 2) {
+            map.put("data", new ArrayList<>());
+            return map;
+        }
+        if (xAxisExt.stream().filter(ext -> !ext.isDrill()).count() != 2) {
+            map.put("data", new ArrayList<>());
+            return map;
+        }
+
+        List<Date> dates = new ArrayList<>();
+
+        ChartViewFieldDTO xAxis1 = xAxis.get(xAxisBase.size());
+        SimpleDateFormat sdf = new SimpleDateFormat(getDateFormat(xAxis1.getDateStyle(), xAxis1.getDatePattern()));
+
+        List<Object> dataList = new ArrayList<>();
+        for (int i1 = 0; i1 < data.size(); i1++) {
+            String[] row = data.get(i1);
+
+            StringBuilder xField = new StringBuilder();
+            if (isDrill) {
+                xField.append(row[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxisBase.size(); i++) {
+                    if (i == xAxisBase.size() - 1) {
+                        xField.append(row[i]);
+                    } else {
+                        xField.append(row[i]).append("\n");
+                    }
+                }
+            }
+            Map<String, Object> obj = new HashMap<>();
+            obj.put("field", xField.toString());
+            obj.put("category", xField.toString());
+
+            List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+
+            for (int j = 0; j < xAxis.size(); j++) {
+                ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                chartDimensionDTO.setId(xAxis.get(j).getId());
+                chartDimensionDTO.setValue(row[j]);
+                dimensionList.add(chartDimensionDTO);
+            }
+
+            obj.put("dimensionList", dimensionList);
+
+            List<String> values = new ArrayList<>();
+
+            if (row[xAxisBase.size()] == null || row[xAxisBase.size() + 1] == null) {
+                continue;
+            }
+
+            values.add(row[xAxisBase.size()]);
+            values.add(row[xAxisBase.size() + 1]);
+            obj.put("values", values);
+
+
+            try {
+                Date date = sdf.parse(row[xAxisBase.size()]);
+                if (date != null) {
+                    dates.add(date);
+                }
+            } catch (Exception ignore) {
+            }
+            try {
+                Date date = sdf.parse(row[xAxisBase.size() + 1]);
+                if (date != null) {
+                    dates.add(date);
+                }
+            } catch (Exception ignore) {
+            }
+
+            dataList.add(obj);
+        }
+
+        map.put("minTime", sdf.format(dates.stream().min(Date::compareTo).orElse(null)));
+
+
+        map.put("maxTime", sdf.format(dates.stream().max(Date::compareTo).orElse(null)));
+
+        map.put("data", dataList);
+        return map;
+
     }
 
     public static Map<String, Object> transBidirectionalBarData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {

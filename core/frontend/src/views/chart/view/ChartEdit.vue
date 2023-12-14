@@ -687,7 +687,8 @@
                       v-if="view.type === 'bar-group'
                         || view.type === 'bar-group-stack'
                         || (view.render === 'antv' && view.type === 'line')
-                        || view.type === 'flow-map'"
+                        || view.type === 'flow-map'
+                        || view.type === 'bar-time-range'"
                       class="padding-lr"
                     >
                       <span class="data-area-label">
@@ -755,7 +756,7 @@
                     </el-row>
                     <!--yaxis-->
                     <el-row
-                      v-if="!equalsAny(view.type , 'table-info', 'label', 'flow-map')"
+                      v-if="!equalsAny(view.type , 'table-info', 'label', 'flow-map', 'bar-time-range')"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -2122,7 +2123,7 @@ export default {
       return equalsAny(this.view.type, 'table-normal', 'table-info')
     },
     showAnalyseCfg() {
-      if (this.view.type === 'bidirectional-bar') {
+      if (this.view.type === 'bidirectional-bar' || this.view.type === 'bar-time-range') {
         return false
       }
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'liquid') ||
@@ -2502,7 +2503,7 @@ export default {
         }
       })
       if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map', 'race-bar') ||
-        (view.render === 'antv' && (view.type === 'line' || view.type === 'scatter'))) {
+        (view.render === 'antv' && (view.type === 'line' || view.type === 'scatter' || view.type === 'bar-time-range'))) {
         view.xaxisExt.forEach(function(ele) {
           if (!ele.dateStyle || ele.dateStyle === '') {
             ele.dateStyle = 'y_M_d'
@@ -3309,6 +3310,19 @@ export default {
       this.dragMoveDuplicate(this.view.xaxisExt, e)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxisExt, 'd')
+      }
+      if (this.view.type === 'bar-time-range') {
+        // 针对时间条形图，需要限定类型为时间类型
+        if (this.view.xaxisExt && this.view.xaxisExt.length > 0) {
+          for (let i = this.view.xaxisExt.length - 1; i >= 0; i--) {
+            if (this.view.xaxisExt[i].deType !== 1) {
+              this.view.xaxisExt.splice(i, 1)
+            }
+          }
+        }
+        if (this.view.xaxisExt.length > 2) {
+          this.view.xaxisExt = [this.view.xaxisExt[0], this.view.xaxisExt[1]]
+        }
       }
       if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'scatter') && this.view.xaxisExt.length > 1) {
         this.view.xaxisExt = [this.view.xaxisExt[0]]

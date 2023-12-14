@@ -1182,6 +1182,7 @@ export default {
     chart_bar_stack: '堆疊柱狀圖',
     chart_percentage_bar_stack: '百分比柱狀圖',
     chart_bar_horizontal: '橫嚮柱狀圖',
+    chart_bar_time_range: '時間條形圖',
     chart_bar_stack_horizontal: '橫嚮堆疊柱狀圖',
     chart_percentage_bar_stack_horizontal: '橫嚮百分比柱狀圖',
     chart_bidirectional_bar: '對稱柱狀圖',
