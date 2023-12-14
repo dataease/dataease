@@ -198,23 +198,48 @@ export function getCanvasStyle(canvasStyleData) {
   return style
 }
 
+// export function createGroupStyle(groupComponent) {
+//   const parentStyle = groupComponent.style
+//   groupComponent.propValue.forEach(component => {
+//     component.style.left = component.style.left - parentStyle.left
+//     component.style.top = component.style.top - parentStyle.top
+//   })
+// }
+
 export function createGroupStyle(groupComponent) {
   const parentStyle = groupComponent.style
   groupComponent.propValue.forEach(component => {
-    // component.groupStyle 的 top left 是相对于 group 组件的位置
-    // 如果已存在 component.groupStyle，说明已经计算过一次了。不需要再次计算
-    if (!Object.keys(component.groupStyle).length) {
-      const style = { ...component.style }
-      if (component.component.startsWith('SVG')) {
-        component.groupStyle = getSVGStyle(style)
-      } else {
-        component.groupStyle = getStyle(style)
-      }
+    // 分组计算逻辑
+    // 1.groupStyle记录left top width height 在出现分组缩放的时候进行等比例变更（缩放来源有两种a.整个大屏的缩放 b.分组尺寸的调整）
+    // 2.component 内部进行位移或者尺寸的变更 要同步到这个比例中
+    const style = { ...component.style }
+    component.groupStyle.left = (style.left - parentStyle.left) / parentStyle.width
+    component.groupStyle.top = (style.top - parentStyle.top) / parentStyle.height
+    component.groupStyle.width = style.width / parentStyle.width
+    component.groupStyle.height = style.height / parentStyle.height
 
-      component.groupStyle.left = toPercent((style.left - parentStyle.left) / parentStyle.width)
-      component.groupStyle.top = toPercent((style.top - parentStyle.top) / parentStyle.height)
-      component.groupStyle.width = toPercent(style.width / parentStyle.width)
-      component.groupStyle.height = toPercent(style.height / parentStyle.height)
-    }
+    component.style.left = component.style.left - parentStyle.left
+    component.style.top = component.style.top - parentStyle.top
   })
+}
+
+export function groupSizeStyleAdaptor(groupComponent) {
+  const parentStyle = groupComponent.style
+  groupComponent.propValue.forEach(component => {
+    // 分组还原逻辑
+    // 当发上分组缩放是，要将内部组件按照比例转换
+    const styleScale = { ...component.groupStyle }
+    component.style.left = parentStyle.width * styleScale.left
+    component.style.top = parentStyle.height * styleScale.top
+    component.style.width = parentStyle.width * styleScale.width
+    component.style.height = parentStyle.height * styleScale.height
+  })
+}
+
+export function groupStyleRevert(innerComponent, parentStyle) {
+  const innerStyle = { ...innerComponent.style }
+  innerComponent.groupStyle.left = innerStyle.left / parentStyle.width
+  innerComponent.groupStyle.top = innerStyle.top / parentStyle.height
+  innerComponent.groupStyle.width = innerStyle.width / parentStyle.width
+  innerComponent.groupStyle.height = innerStyle.height / parentStyle.height
 }

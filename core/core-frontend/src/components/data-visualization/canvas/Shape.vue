@@ -92,6 +92,8 @@ import Icon from '@/components/icon-custom/src/Icon.vue'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
+import { groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
+import { isGroupCanvas, isMainCanvas } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -424,9 +426,10 @@ const handleMouseDownOnShape = e => {
     const left = curX - startX + startLeft
     pos['top'] = top
     pos['left'] = left
-    // 非主画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px)
+    // 非主画布非分组画布的情况 需要检测是否从Tab中移除组件(向左移除30px 或者向右移除30px)
     if (
-      canvasId.value !== 'canvas-main' &&
+      !isMainCanvas(canvasId.value) &&
+      !isGroupCanvas(canvasId.value) &&
       (left < -30 || left + componentWidth - canvasWidth > 30)
     ) {
       contentDisplay.value = false
@@ -442,7 +445,8 @@ const handleMouseDownOnShape = e => {
       dvMainStore.setTabMoveOutComponentId(null)
       contentDisplay.value = true
     }
-    tabMoveInCheck()
+    // 仪表板进行Tab碰撞检查
+    dashboardActive.value && tabMoveInCheck()
     // 仪表板模式 会造成移动现象 当检测组件正在碰撞有效区内或者移入有效区内 则周边组件不进行移动
     if (
       dashboardActive.value &&
@@ -573,7 +577,17 @@ const handleMouseDownOnPoint = (point, e) => {
     //Temp dataV坐标偏移
     offsetDataVAdaptor(style, point)
     dvMainStore.setShapeStyle(style)
+    // 矩阵逻辑 如果当前是仪表板（矩阵模式）则要进行矩阵重排
     dashboardActive.value && emit('onResizing', moveEvent)
+    //如果当前组件是Group分组 则要进行内部组件深度计算
+    element.value.component === 'Group' && groupSizeStyleAdaptor(element.value)
+    //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
+    if (isGroupCanvas(canvasId.value)) {
+      groupStyleRevert(element.value, {
+        width: parentNode.value.offsetWidth,
+        height: parentNode.value.offsetHeight
+      })
+    }
   }
 
   const up = () => {
