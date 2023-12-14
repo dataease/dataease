@@ -236,7 +236,7 @@ const backToDatasourceList = () => {
 }
 const continueCreating = () => {
   showFinishPage.value = false
-  init(null)
+  init(null, pid.value)
 }
 
 const handleShowFinishPage = ({ id, name }) => {
