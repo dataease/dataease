@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import eventBus from '@/utils/eventBus'
+import { ElMessage } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
@@ -207,6 +208,7 @@ const infoFormat = (obj: ComponentInfo) => {
     },
     timeType: 'fixed',
     relativeToCurrent: 'custom',
+    required: false,
     timeNum: 0,
     relativeToCurrentType: 'year',
     around: 'f',
@@ -342,7 +344,20 @@ const addCriteriaConfig = () => {
 }
 
 const queryData = () => {
+  let requiredName = ''
   const emitterList = (element.value.propValue || []).reduce((pre, next) => {
+    if (next.required) {
+      if (!next.defaultValueCheck) {
+        requiredName = next.name
+      }
+
+      if (
+        (Array.isArray(next.selectValue) && !next.selectValue.length) ||
+        (next.selectValue !== 0 && !next.selectValue)
+      ) {
+        requiredName = next.name
+      }
+    }
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
@@ -350,6 +365,10 @@ const queryData = () => {
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])
+  if (!!requiredName) {
+    ElMessage.error(`【${requiredName}】查询条件是必填项，请设置选项值后，再进行查询！`)
+    return
+  }
   if (!emitterList.length) return
 
   emitterList.forEach(ele => {
@@ -408,6 +427,7 @@ const opacityStyle = computed(() => {
                   <el-tooltip effect="dark" :content="ele.name" placement="top">
                     {{ ele.name }}
                   </el-tooltip>
+                  <span v-if="ele.required" class="required">*</span>
                 </div>
               </div>
               <div class="label-wrapper-tooltip" v-if="showPosition !== 'preview'">
@@ -542,6 +562,7 @@ const opacityStyle = computed(() => {
           overflow: hidden;
         }
         .label-wrapper-text {
+          position: relative;
           cursor: pointer;
           flex: 0 1 auto;
           max-width: 100%;
@@ -554,6 +575,13 @@ const opacityStyle = computed(() => {
           font-style: normal;
           font-weight: 400;
           line-height: 22px;
+
+          .required {
+            font-size: 14px;
+            color: #f54a45;
+            margin-left: 3px;
+            line-height: 22px;
+          }
         }
         .label-wrapper-tooltip {
           align-items: center;
