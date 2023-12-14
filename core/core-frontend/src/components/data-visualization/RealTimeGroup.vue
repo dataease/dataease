@@ -365,7 +365,7 @@ const handleContextMenu = e => {
           font-size: 12px;
           margin-left: 10px;
           position: relative;
-          min-width: 65px;
+          min-width: 43px;
           white-space: nowrap;
           overflow: hidden;
           text-overflow: ellipsis;

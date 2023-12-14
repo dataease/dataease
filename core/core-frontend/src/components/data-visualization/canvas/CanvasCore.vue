@@ -1203,6 +1203,14 @@ const linkageSetOpen = item => {
   })
 }
 
+const contextMenuShow = computed(() => {
+  if (curComponent.value) {
+    return curComponent.value.canvasId === canvasId.value
+  } else {
+    return isMainCanvas(canvasId.value)
+  }
+})
+
 const markLineShow = computed(() => isMainCanvas(canvasId.value))
 
 onMounted(() => {
@@ -1333,7 +1341,7 @@ defineExpose({
       />
     </Shape>
     <!-- 右击菜单 -->
-    <ContextMenu show-position="canvasCore" />
+    <ContextMenu v-if="contextMenuShow" show-position="canvasCore" />
     <!-- 标线 -->
     <MarkLine v-if="markLineShow" />
     <!-- 选中区域 -->

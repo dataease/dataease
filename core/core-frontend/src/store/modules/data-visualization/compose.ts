@@ -84,8 +84,12 @@ export const composeStore = defineStore('compose', {
         }
       })
 
+      const newId = generateID()
+      components.forEach(component => {
+        component.canvasId = 'Group-' + newId
+      })
       const groupComponent = {
-        id: generateID(),
+        id: newId,
         component: 'Group',
         name: '组合',
         label: '组合',
