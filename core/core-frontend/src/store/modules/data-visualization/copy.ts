@@ -18,7 +18,8 @@ const {
   curMultiplexingComponents,
   dvInfo,
   pcMatrixCount,
-  canvasStyleData
+  canvasStyleData,
+  componentData
 } = storeToRefs(dvMainStore)
 const { menuTop, menuLeft } = storeToRefs(contextmenuStore)
 
@@ -119,10 +120,10 @@ export const copyStore = defineStore('copy', {
       }, moveTime)
       snapshotStore.recordSnapshotCache()
     },
-    cut() {
+    cut(curComponentData = componentData.value) {
       if (curComponent.value) {
         this.copyDataInfo([curComponent.value])
-        dvMainStore.deleteComponentById(curComponent.value.id)
+        dvMainStore.deleteComponentById(curComponent.value.id, curComponentData)
       } else if (composeStore.areaData.components.length) {
         this.copyDataInfo(composeStore.areaData.components)
         composeStore.areaData.components.forEach(component => {

@@ -3,43 +3,60 @@ import { store } from '../../index'
 import { dvMainStoreWithOut } from './dvMain'
 import { swap } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { getCurInfo } from '@/store/modules/data-visualization/common'
 
 const dvMainStore = dvMainStoreWithOut()
-const { componentData, curComponentIndex, curComponent } = storeToRefs(dvMainStore)
+const { curComponentIndex, curComponent } = storeToRefs(dvMainStore)
 
 export const layerStore = defineStore('layer', {
   actions: {
     upComponent() {
-      // 上移图层 index，表示元素在数组中越往后
-      if (curComponentIndex.value < componentData.value.length - 1) {
-        swap(componentData.value, curComponentIndex.value, curComponentIndex.value + 1)
-        curComponentIndex.value = curComponentIndex.value + 1
+      const curInfo = getCurInfo()
+      if (curInfo) {
+        const { index, componentData } = curInfo
+        // 上移图层 index，表示元素在数组中越往后
+        if (index < componentData.length - 1) {
+          swap(componentData, index, index + 1)
+          curComponentIndex.value = index + 1
+        }
       }
     },
 
     downComponent() {
-      // 下移图层 index，表示元素在数组中越往前
-      if (curComponentIndex.value > 0) {
-        swap(componentData.value, curComponentIndex.value, curComponentIndex.value - 1)
-        curComponentIndex.value = curComponentIndex.value - 1
+      const curInfo = getCurInfo()
+      if (curInfo) {
+        const { index, componentData } = curInfo
+        // 下移图层 index，表示元素在数组中越往前
+        if (index > 0) {
+          swap(componentData, index, index - 1)
+          curComponentIndex.value = index - 1
+        }
       }
     },
 
     topComponent() {
       // 置顶
-      if (curComponentIndex.value < componentData.value.length - 1) {
-        componentData.value.splice(curComponentIndex.value, 1)
-        componentData.value.push(curComponent.value)
-        curComponentIndex.value = componentData.value.length - 1
+      const curInfo = getCurInfo()
+      if (curInfo) {
+        const { index, componentData } = curInfo
+        if (index < componentData.length - 1) {
+          componentData.splice(curComponentIndex.value, 1)
+          componentData.push(curComponent.value)
+          curComponentIndex.value = componentData.length - 1
+        }
       }
     },
 
     bottomComponent() {
       // 置底
-      if (curComponentIndex.value > 0) {
-        componentData.value.splice(curComponentIndex.value, 1)
-        componentData.value.unshift(curComponent.value)
-        curComponentIndex.value = 0
+      const curInfo = getCurInfo()
+      if (curInfo) {
+        const { index, componentData } = curInfo
+        if (index > 0) {
+          componentData.splice(index, 1)
+          componentData.unshift(curComponent.value)
+          curComponentIndex.value = 0
+        }
       }
     },
 
