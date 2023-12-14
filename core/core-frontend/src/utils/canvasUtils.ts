@@ -205,6 +205,10 @@ export function isSameCanvas(item, canvasId) {
   return item.canvasId === canvasId
 }
 
+export function isGroupCanvas(canvasId) {
+  return canvasId && canvasId.includes('Group')
+}
+
 export function findComponentIndexById(componentId, componentDataMatch = componentData.value) {
   let indexResult = -1
   componentDataMatch.forEach((component, index) => {

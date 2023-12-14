@@ -304,7 +304,6 @@ const templateEdit = templateInfo => {
 
 const categoryClick = params => {
   // do
-  console.log('categoryClick=' + JSON.stringify(params))
 }
 
 const saveTemplateEdit = templateEditForm => {

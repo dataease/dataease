@@ -18,13 +18,29 @@ export function changeComponentsSizeWithScale(scale) {
     Object.keys(component.style).forEach(key => {
       if (needToChangeAttrs.includes(key)) {
         if (key === 'fontSize' && component.style[key] === '') return
-
         // 根据原来的比例获取样式原来的尺寸
         // 再用原来的尺寸 * 现在的比例得出新的尺寸
         component.style[key] = format(
           getOriginStyle(component.style[key], canvasStyleData.value.scale),
           scale
         )
+        // 如果是分组组件 则要进行分组内部组件groupStyle进行深度计算
+        // 计算逻辑 Group 中样式 * groupComponent.groupStyle[sonKey].
+        if (component.component === 'Group') {
+          try {
+            component.propValue.forEach(groupComponent => {
+              Object.keys(groupComponent.style).forEach(sonKey => {
+                if (groupComponent.groupStyle[sonKey]) {
+                  groupComponent.style[sonKey] =
+                    component.style[sonKey] * groupComponent.groupStyle[sonKey]
+                }
+              })
+            })
+          } catch (e) {
+            // 旧Group适配
+            console.error('group adaptor error:' + e)
+          }
+        }
       }
     })
   })

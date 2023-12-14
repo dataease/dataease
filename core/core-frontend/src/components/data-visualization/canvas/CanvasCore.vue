@@ -23,7 +23,13 @@ import { storeToRefs } from 'pinia'
 import findComponent from '@/utils/components'
 import _ from 'lodash'
 import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
-import { canvasSave, findDragComponent, isMainCanvas, isSameCanvas } from '@/utils/canvasUtils'
+import {
+  canvasSave,
+  findDragComponent,
+  isGroupCanvas,
+  isMainCanvas,
+  isSameCanvas
+} from '@/utils/canvasUtils'
 import { guid } from '@/views/visualized/data/dataset/form/util'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
@@ -464,17 +470,18 @@ const getTextareaHeight = (element, text) => {
 }
 
 const editStyle = computed(() => {
-  if (dashboardActive.value) {
+  if (dashboardActive.value || isGroupCanvas(canvasId.value)) {
     return {
       width: '100%',
       height: '100%'
     }
   } else {
-    return {
+    const result = {
       ...getCanvasStyle(canvasStyleData.value),
-      width: changeStyleWithScale(canvasStyleData.value['width']) + 'px',
-      height: changeStyleWithScale(canvasStyleData.value['height']) + 'px'
+      width: changeStyleWithScale(canvasStyleData.value.width) + 'px',
+      height: changeStyleWithScale(canvasStyleData.value.height) + 'px'
     }
+    return result
   }
 })
 
