@@ -4,6 +4,7 @@ import { parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
+import { isNumber } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -70,17 +71,14 @@ export class TableInfo extends S2ChartView<TableSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (f.groupType === 'd') {
+          if (f.groupType === 'd' || !isNumber(value)) {
             return value
-          } else {
-            if (f.formatterCfg) {
-              const v = valueFormatter(value, f.formatterCfg)
-              return v.includes('NaN') ? value : v
-            } else {
-              const v = valueFormatter(value, formatterItem)
-              return v.includes('NaN') ? value : v
-            }
           }
+          let formatCfg = f.formatterCfg
+          if (!formatCfg) {
+            formatCfg = formatterItem
+          }
+          return valueFormatter(value, formatCfg)
         }
       })
     })

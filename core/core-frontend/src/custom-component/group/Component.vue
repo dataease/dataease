@@ -2,9 +2,9 @@
 import { toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
+import CanvasGroup from '@/custom-component/common/CanvasGroup.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { canvasViewInfo } = storeToRefs(dvMainStore)
+const { canvasViewInfo, canvasStyleData } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   propValue: {
@@ -33,6 +33,11 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 0
+  },
+  isEdit: {
+    type: Boolean,
+    required: false,
+    default: false
   }
 })
 
@@ -42,18 +47,17 @@ const { propValue, dvInfo, searchCount } = toRefs(props)
 <template>
   <div class="group">
     <div>
-      <component-wrapper
-        v-for="(item, index) in propValue"
-        :id="'component' + item.id"
-        :view-info="canvasViewInfo[item.id]"
-        :key="index"
-        :config="item"
-        :index="index"
+      <canvas-group
+        :component-data="propValue"
         :dv-info="dvInfo"
-        :style="item.groupStyle"
         :show-position="showPosition"
-        :search-count="searchCount"
-      />
+        :canvas-id="'group-' + element.id"
+        :canvas-style-data="canvasStyleData"
+        :canvas-view-info="canvasViewInfo"
+        :is-edit="isEdit"
+        :element="element"
+      >
+      </canvas-group>
     </div>
   </div>
 </template>

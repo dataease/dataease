@@ -95,6 +95,11 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
     const canvasDataResult = JSON.parse(canvasInfo.componentData)
     const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
     const canvasViewInfoPreview = canvasInfo.canvasViewInfo
+    canvasDataResult.forEach(componentItem => {
+      if (componentItem.component === 'Group') {
+        componentItem.expand = componentItem.expand || false
+      }
+    })
     const curPreviewGap =
       dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
         ? canvasStyleResult['dashboard'].gapSize

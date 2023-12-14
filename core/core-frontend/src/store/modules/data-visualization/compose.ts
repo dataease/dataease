@@ -90,6 +90,7 @@ export const composeStore = defineStore('compose', {
         name: '组合',
         label: '组合',
         icon: 'group',
+        expand: false,
         commonBackground: {
           ...deepCopy(COMMON_COMPONENT_BACKGROUND_MAP[curOriginThemes.value]),
           backgroundColorSelect: false,
