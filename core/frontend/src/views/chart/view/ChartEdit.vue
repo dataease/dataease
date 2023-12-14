@@ -693,7 +693,8 @@
                     >
                       <span class="data-area-label">
                         <span>
-                          <span v-if="view.type !=='flow-map'">{{ $t('chart.chart_group') }}</span>
+                          <span v-if="view.type === 'bar-time-range'">{{ $t('chart.chart_bar_time') }}</span>
+                          <span v-else-if="view.type !== 'flow-map'">{{ $t('chart.chart_group') }}</span>
                           <span v-else-if="view.type === 'flow-map'">{{ $t('chart.end_point') }}</span>
                           <span
                             v-show="view.type !== 'line'"
@@ -709,7 +710,12 @@
                           placement="bottom"
                         >
                           <div slot="content">
-                            {{ $t('chart.sub_dimension_tip') }}
+                            <template v-if="view.type === 'bar-time-range'">
+                              {{ $t('chart.time_bar_tip') }}
+                            </template>
+                            <template v-else>
+                              {{ $t('chart.sub_dimension_tip') }}
+                            </template>
                           </div>
                           <i
                             class="el-icon-info"
