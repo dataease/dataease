@@ -10,6 +10,8 @@ public interface ExtAuthService {
 
     Set<Long> userIdsByRD(AuthURD request);
 
+    Set<String> userNamesByRD(AuthURD request);
+
     AuthURD resourceTarget(String resourceId);
 
     List<AuthItem> dataSourceIdByUser(Long userId);
