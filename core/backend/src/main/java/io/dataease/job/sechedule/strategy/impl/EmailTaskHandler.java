@@ -157,6 +157,11 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         emailXpackService.saveInstance(taskInstance);
     }
 
+    private void formatReci(XpackEmailTemplateDTO emailTemplateDTO) {
+        String roleList = emailTemplateDTO.getRoleList();
+        String orgList = emailTemplateDTO.getOrgList();
+    }
+
     @Async("priorityExecutor")
     public void sendReport(GlobalTaskInstance taskInstance, SysUserEntity user, Boolean isTempTask) {
 
@@ -177,6 +182,7 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             token = tokenByUser(user);
             XpackPixelEntity xpackPixelEntity = buildPixel(emailTemplateDTO);
             // 下面继续执行发送邮件的
+            formatReci(emailTemplateDTO);
             String recipients = emailTemplateDTO.getRecipients();
             String reciUsers = emailTemplateDTO.getReciUsers();
             Integer extWaitTime = emailTemplateDTO.getExtWaitTime();

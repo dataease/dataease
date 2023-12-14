@@ -39,4 +39,8 @@ public class XpackEmailTemplateDTO implements Serializable {
 
     private Integer extWaitTime = 0;
 
+    private String roleList;
+
+    private String orgList;
+
 }
