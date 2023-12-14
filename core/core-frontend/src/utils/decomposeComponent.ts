@@ -4,4 +4,5 @@ export default function decomposeComponent(component, editorRect, parentStyle) {
   component.style.left = component.style.left + parentStyle.left
   component.style.top = component.style.top + parentStyle.top
   component.groupStyle = {}
+  component.canvasId = 'canvas-main'
 }

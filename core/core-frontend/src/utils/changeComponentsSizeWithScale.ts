@@ -2,6 +2,7 @@ import { deepCopy } from './utils'
 import { divide, multiply } from 'mathjs'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { groupSizeStyleAdaptor } from '@/utils/style'
 
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, curComponentIndex, canvasStyleData } = storeToRefs(dvMainStore)
@@ -28,14 +29,7 @@ export function changeComponentsSizeWithScale(scale) {
         // 计算逻辑 Group 中样式 * groupComponent.groupStyle[sonKey].
         if (component.component === 'Group') {
           try {
-            component.propValue.forEach(groupComponent => {
-              Object.keys(groupComponent.style).forEach(sonKey => {
-                if (groupComponent.groupStyle[sonKey]) {
-                  groupComponent.style[sonKey] =
-                    component.style[sonKey] * groupComponent.groupStyle[sonKey]
-                }
-              })
-            })
+            groupSizeStyleAdaptor(component)
           } catch (e) {
             // 旧Group适配
             console.error('group adaptor error:' + e)
