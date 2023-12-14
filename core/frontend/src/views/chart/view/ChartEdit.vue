@@ -746,7 +746,7 @@
                             :dimension-data="dimension"
                             :quota-data="quota"
                             :chart="chart"
-                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemChange="dimensionExtItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
                             @onNameEdit="showRename"
@@ -2850,6 +2850,16 @@ export default {
     },
 
     dimensionItemChange(item) {
+      this.calcData(true)
+    },
+
+    dimensionExtItemChange(item) {
+      if (this.view.type === 'bar-time-range') {
+        this.view.xaxisExt.forEach(ext => {
+          ext.dateStyle = item.dateStyle
+          ext.datePattern = item.datePattern
+        })
+      }
       this.calcData(true)
     },
 
