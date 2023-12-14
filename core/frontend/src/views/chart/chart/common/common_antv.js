@@ -422,7 +422,7 @@ export function getTooltip(chart) {
                   res = valueFormatter(param.value, formatterItem)
                 }
               }
-            } else if (includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') && !chart.type.includes('group')) {
+            } else if (includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') && !chart.type.includes('group') && chart.type !== 'bar-time-range') {
               obj = { name: param.category, value: param.value }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
@@ -470,6 +470,9 @@ export function getTooltip(chart) {
                   res = valueFormatter(param.value, formatterItem)
                 }
               }
+            } else if (chart.type === 'bar-time-range') {
+              obj = { values: param.values, name: param.category }
+              res = param.values[0] + ' - ' + param.values[1]
             } else {
               res = param.value
             }
@@ -724,7 +727,7 @@ export function getXAxis(chart) {
         delete axis.maxLimit
         delete axis.tickCount
         const axisValue = a.axisValue
-        if (chart.type.includes('horizontal')) {
+        if (chart.type.includes('horizontal') || chart.type === 'bar-time-range') {
           if (axisValue && !axisValue.auto) {
             const yAxisSeriesMaxList = []
             const maxList = []
@@ -814,7 +817,7 @@ export function getYAxis(chart) {
             if (chart.type === 'waterfall') {
               return value
             } else {
-              if (!chart.type.includes('horizontal')) {
+              if (!(chart.type.includes('horizontal') || chart.type === 'bar-time-range')) {
                 if (!a.axisLabelFormatter) {
                   return valueFormatter(value, formatterItem)
                 } else {
@@ -841,7 +844,7 @@ export function getYAxis(chart) {
         delete axis.maxLimit
         delete axis.tickCount
         const axisValue = a.axisValue
-        if (!chart.type.includes('horizontal')) {
+        if (!chart.type.includes('horizontal') || chart.type === 'bar-time-range') {
           if (axisValue && !axisValue.auto) {
             const yAxisSeriesMaxList = []
             const maxList = []
