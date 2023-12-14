@@ -41,32 +41,40 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
 
-const { propValue, dvInfo, searchCount, element } = toRefs(props)
+const { propValue, dvInfo, searchCount, element, scale } = toRefs(props)
 const customCanvasStyle = computed(() => {
   const result = sourceCanvasStyle
   result.scale = canvasStyleData.value.scale
-  return sourceCanvasStyle
+  result.width = (element.value.style.width * 100) / result.scale
+  result.height = (element.value.style.height * 100) / result.scale
+
+  // result.width = element.value.style.width
+  // result.height = element.value.style.height
+  return result
 })
 </script>
 
 <template>
   <div class="group">
-    <div>
-      <canvas-group
-        :component-data="propValue"
-        :dv-info="dvInfo"
-        :show-position="showPosition"
-        :canvas-id="'group-' + element.id"
-        :canvas-style-data="customCanvasStyle"
-        :canvas-view-info="canvasViewInfo"
-        :is-edit="isEdit"
-        :element="element"
-      >
-      </canvas-group>
-    </div>
+    <canvas-group
+      :component-data="propValue"
+      :dv-info="dvInfo"
+      :show-position="showPosition"
+      :canvas-id="'Group-' + element.id"
+      :canvas-style-data="customCanvasStyle"
+      :canvas-view-info="canvasViewInfo"
+      :is-edit="isEdit"
+      :element="element"
+    >
+    </canvas-group>
   </div>
 </template>
 

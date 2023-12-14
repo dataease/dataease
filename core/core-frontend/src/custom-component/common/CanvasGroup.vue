@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
-import DeCanvas from '@/views/canvas/DeCanvas.vue'
+import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 
 const props = defineProps({
   canvasStyleData: {
@@ -53,14 +53,15 @@ const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, 
 </script>
 
 <template>
-  <de-canvas
+  <canvas-core
     v-if="isEdit"
+    class="canvas-area-shadow"
     ref="canvasGroup"
     :component-data="componentData"
     :canvas-style-data="canvasStyleData"
     :canvas-view-info="canvasViewInfo"
     :canvas-id="canvasId"
-  ></de-canvas>
+  ></canvas-core>
   <de-preview
     v-else
     :ref="'dashboardPreview'"
