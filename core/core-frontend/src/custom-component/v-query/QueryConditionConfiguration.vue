@@ -260,6 +260,21 @@ const validate = () => {
       return true
     }
 
+    if (ele.required) {
+      if (!ele.defaultValueCheck) {
+        ElMessage.error('查询条件为必填项,默认值不能为空')
+        return true
+      }
+
+      if (
+        (Array.isArray(ele.defaultValue) && !ele.defaultValue.length) ||
+        (ele.defaultValue !== 0 && !ele.defaultValue)
+      ) {
+        ElMessage.error('查询条件为必填项,默认值不能为空')
+        return true
+      }
+    }
+
     if (+ele.displayType === 7) {
       if (!ele.defaultValueCheck) {
         return false
@@ -462,6 +477,7 @@ const weightlessness = () => {
 const parameterCompletion = () => {
   const attributes = {
     timeType: 'fixed',
+    required: false,
     relativeToCurrent: 'custom',
     timeNum: 0,
     relativeToCurrentType: 'year',
@@ -905,7 +921,14 @@ defineExpose({
       </div>
       <div class="condition-configuration">
         <div class="mask condition" v-if="curComponent.auto"></div>
-        <div class="title">查询条件配置</div>
+        <div class="title flex-align-center">
+          查询条件配置
+          <el-checkbox
+            :disabled="curComponent.auto"
+            v-model="curComponent.required"
+            label="必填项"
+          />
+        </div>
         <div v-show="showConfiguration && !showTypeError" class="configuration-list">
           <div class="list-item">
             <div class="label">展示类型</div>
@@ -1457,7 +1480,6 @@ defineExpose({
     }
 
     .chart-field {
-      border-right: 1px solid #dee0e3;
       height: calc(100% - 16px);
       padding: 0 16px 16px 16px;
       width: 474px;
@@ -1529,6 +1551,7 @@ defineExpose({
 
     .condition-configuration {
       padding: 16px;
+      border-left: 1px solid #dee0e3;
       width: 467px;
       position: relative;
       .mask {
@@ -1548,6 +1571,17 @@ defineExpose({
         border-radius: 2px;
         background: rgba(31, 35, 41, 0.1);
         margin-left: 8px;
+      }
+
+      .flex-align-center {
+        position: sticky;
+        top: 0;
+        justify-content: space-between;
+        background: #fff;
+        z-index: 5;
+        .ed-checkbox {
+          height: 20px;
+        }
       }
       .title {
         margin-bottom: 16px;
