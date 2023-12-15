@@ -2046,6 +2046,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    required_tips: 'Cannot be empty!',
     filter_no_select: 'Filter components do not need to be selected',
     first_item: 'First item',
     forbidden_copy: 'Forbidden copy',

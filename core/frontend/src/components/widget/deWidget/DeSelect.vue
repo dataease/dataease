@@ -8,7 +8,7 @@
     :collapse-tags="showNumber"
     :clearable="!element.options.attrs.multiple && (inDraw || !selectFirst)"
     :multiple="element.options.attrs.multiple"
-    :placeholder="$t(element.options.attrs.placeholder) + placeholderSuffix"
+    :placeholder="showRequiredTips ? $t('panel.required_tips') : ($t(element.options.attrs.placeholder) + placeholderSuffix)"
     :popper-append-to-body="inScreen"
     :size="size"
     :filterable="inDraw || !selectFirst"
@@ -16,7 +16,7 @@
     :item-disabled="!inDraw && selectFirst"
     :key-word="keyWord"
     popper-class="coustom-de-select"
-    :class="{'disabled-close': !inDraw && selectFirst && element.options.attrs.multiple}"
+    :class="{'disabled-close': !inDraw && selectFirst && element.options.attrs.multiple, 'show-required-tips': showRequiredTips}"
     :list="data"
     :flag="flag"
     :is-config="isConfig"
@@ -143,6 +143,9 @@ export default {
     },
     selectFirst() {
       return this.element.serviceName === 'textSelectWidget' && this.element.options.attrs.selectFirst
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && !this.value
     }
   },
 
@@ -531,6 +534,15 @@ export default {
 <style lang="scss" scoped>
   .disabled-close ::v-deep .el-icon-close {
     display: none !important;
+  }
+  .show-required-tips ::v-deep .el-input__inner {
+    border-color: #ff0000 !important;
+  }
+  .show-required-tips ::v-deep .el-input__inner::placeholder {
+    color: #ff0000 !important;
+  }
+  .show-required-tips ::v-deep i {
+    color: #ff0000 !important;
   }
 </style>
 <style lang="scss">

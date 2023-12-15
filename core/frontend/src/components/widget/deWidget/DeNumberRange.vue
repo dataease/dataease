@@ -7,7 +7,10 @@
     style="width: 100%;"
     :rules="rules"
   >
-    <div class="de-number-range-container">
+    <div
+      class="de-number-range-container"
+      :class="{'show-required-tips': showRequiredTips}"
+    >
       <el-form-item
         prop="min"
         style="padding-left: 0px;"
@@ -15,7 +18,7 @@
         <el-input
           ref="de-number-range-min"
           v-model="form.min"
-          :placeholder="$t(element.options.attrs.placeholder_min)"
+          :placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.placeholder_min)"
           :size="size"
           @input="inputChange"
           @change="handleMinChange"
@@ -29,7 +32,7 @@
         <el-input
           ref="de-number-range-max"
           v-model="form.max"
-          :placeholder="$t(element.options.attrs.placeholder_max)"
+          :placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.placeholder_max)"
           :size="size"
           @input="inputChange"
           @change="handleMaxChange"
@@ -102,6 +105,9 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && !this.form.min && !this.form.max
     }
   },
   watch: {
@@ -316,6 +322,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.show-required-tips ::v-deep .el-input__inner {
+  border-color: #ff0000 !important;
+}
+.show-required-tips ::v-deep .el-input__inner::placeholder {
+  color: #ff0000 !important;
+}
+.show-required-tips ::v-deep i {
+  color: #ff0000 !important;
+}
 .de-number-range-container {
   display: inline;
   max-height: 40px;

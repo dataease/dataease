@@ -4,6 +4,7 @@
     v-if="element.options!== null && element.options.attrs!==null && show"
     ref="deSelectTree"
     v-model="value"
+    :class="{'show-required-tips': showRequiredTips}"
     popover-class="test-class-wrap"
     :data="data"
     :select-params="selectParams"
@@ -69,7 +70,7 @@ export default {
       value: this.isSingle ? '' : [],
       selectParams: {
         clearable: true,
-        placeholder: this.$t(this.element.options.attrs.placeholder)
+        placeholder: this.showRequiredTips ? this.$t('panel.required_tips') : this.$t(this.element.options.attrs.placeholder)
       },
       treeParams: {
         showParent: true,
@@ -118,6 +119,9 @@ export default {
     customStyle() {
       const { brColor, wordColor, innerBgColor } = this.element.style
       return { brColor, wordColor, innerBgColor }
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && (!this.value || !this.value.length)
     }
   },
 
@@ -414,6 +418,17 @@ export default {
 }
 </script>
 
+<style lang="scss" scoped>
+.show-required-tips ::v-deep .el-input__inner {
+  border-color: #ff0000 !important;
+}
+.show-required-tips ::v-deep .el-input__inner::placeholder {
+  color: #ff0000 !important;
+}
+.show-required-tips ::v-deep i {
+  color: #ff0000 !important;
+}
+</style>
 <style lang="scss">
 .test-class-wrap {
   background: var(--BgSelectTreeColor, #FFFFFF) !important;
