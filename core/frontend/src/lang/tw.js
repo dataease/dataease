@@ -2038,6 +2038,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    required_tips: '必填項不能爲空！',
     filter_no_select: '過濾組件無需選擇',
     first_item: '首項',
     forbidden_copy: '當前組件不允許復製',

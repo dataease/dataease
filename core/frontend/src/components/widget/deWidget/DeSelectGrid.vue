@@ -4,11 +4,14 @@
     v-if="element.options!== null && element.options.attrs!==null && show"
     class="de-select-grid-class"
   >
-    <div class="de-select-grid-search">
+    <div
+      class="de-select-grid-search"
+      :class="{'show-required-tips': showRequiredTips}"
+    >
       <el-input
         ref="de-select-grid"
         v-model="keyWord"
-        :placeholder="$t('deinputsearch.placeholder')"
+        :placeholder="showRequiredTips ? $t('panel.required_tips') : $t('deinputsearch.placeholder')"
         :size="size"
         prefix-icon="el-icon-search"
         clearable
@@ -149,6 +152,9 @@ export default {
     },
     isCustomSortWidget() {
       return this.element.serviceName === 'textSelectGridWidget'
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && (!this.value || !this.value.length)
     }
   },
   watch: {
@@ -448,6 +454,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.show-required-tips ::v-deep .el-input__inner {
+  border-color: #ff0000 !important;
+}
+.show-required-tips ::v-deep .el-input__inner::placeholder {
+  color: #ff0000 !important;
+}
+.show-required-tips ::v-deep i {
+  color: #ff0000 !important;
+}
 .de-select-grid-search {
   ::v-deep input {
     border-radius: 0px;

@@ -5,9 +5,10 @@
     ref="de-input-search"
     v-model="value"
     resize="vertical"
-    :placeholder="$t(element.options.attrs.placeholder)"
+    :placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.placeholder)"
     :size="size"
     class="de-range-tag"
+    :class="{'show-required-tips': showRequiredTips}"
     @input="valueChange"
     @keypress.enter.native="search"
     @dblclick="setEdit"
@@ -63,6 +64,9 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && !this.value
     }
   },
   watch: {
@@ -146,10 +150,14 @@ export default {
 }
 </script>
 
-<style lang="scss">
-// .de-range-tag {
-//   input::placeholder {
-//     color: var(--CustomColor, #909399) !important;
-//   }
-// }
+<style lang="scss" scoped>
+.show-required-tips ::v-deep .el-input__inner {
+  border-color: #ff0000 !important;
+}
+.show-required-tips ::v-deep .el-input__inner::placeholder {
+  color: #ff0000 !important;
+}
+.show-required-tips ::v-deep i {
+  color: #ff0000 !important;
+}
 </style>
