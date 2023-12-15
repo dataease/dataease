@@ -7,7 +7,7 @@
   >
     <licbar />
     <topbar
-      v-if="!fullHeightFlag && finishLoad"
+      v-if="!fullHeightFlag"
       :show-tips="showTips"
     />
 
@@ -83,7 +83,6 @@ export default {
     return {
       componentName: 'PanelMain',
       showTips: false,
-      finishLoad: false,
       buttonDisable: false,
       sideWidth: ''
     }
@@ -125,12 +124,7 @@ export default {
     }
   },
   beforeCreate() {
-    needModifyPwd().then(res => {
-      this.showTips = res.success && res.data
-      this.finishLoad = true
-    }).catch(e => {
-      this.finishLoad = true
-    })
+    this.showTips = false
   },
   mounted() {
     document.addEventListener('click', this.bodyClick)
