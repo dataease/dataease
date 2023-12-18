@@ -24,6 +24,7 @@ extend-exclude = [
     "core/frontend/src/views/chart/components/table/TableNormal.vue",
     "core/backend/src/main/java/io/dataease/ext/ExtSysUserMapper.xml",
     "core/backend/src/main/java/io/dataease/ext/AuthMapper.xml",
+    "core/backend/src/main/java/io/dataease/ext/ExtAuthMapper.xml",
     "installer/dataease/templates/be.conf"
 ]
 
