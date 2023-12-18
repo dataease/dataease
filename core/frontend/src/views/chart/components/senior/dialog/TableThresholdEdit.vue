@@ -117,7 +117,7 @@
               v-show="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
               v-model="item.value"
               class="value-item"
-              style="margin-left: 10px; padding-right: 10px"
+              style="padding-left: 10px"
               :placeholder="$t('chart.drag_block_label_value')"
               size="mini"
               clearable
