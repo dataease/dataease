@@ -1,7 +1,6 @@
 package io.dataease.provider.query.mysql;
 
 import com.alibaba.fastjson.JSONArray;
-import io.dataease.commons.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
@@ -18,6 +17,7 @@ import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.datasource.DeSortField;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
@@ -411,20 +411,20 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view), view);
+        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false), view);
     }
 
     @Override
     public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
         String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + "," + pageInfo.getPageSize() : "");
         if (isTable) {
-            return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + limit;
         } else {
-            return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + limit;
         }
     }
 
-    private String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+    public String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MySQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -478,6 +478,13 @@ public class MysqlQueryProvider extends QueryProvider {
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
         orders.addAll(xOrders);
+        if (needOrder && CollectionUtils.isEmpty(xOrders)) {
+            orders.add(SQLObj.builder()
+                    .orderField(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                    .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                    .orderDirection("ASC")
+                    .build());
+        }
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
@@ -1210,7 +1217,7 @@ public class MysqlQueryProvider extends QueryProvider {
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null;
     }
 
-    private String sqlFix(String sql) {
+    public String sqlFix(String sql) {
         sql = sql.trim();
         if (sql.lastIndexOf(";") == (sql.length() - 1)) {
             sql = sql.substring(0, sql.length() - 1);
@@ -1432,7 +1439,7 @@ public class MysqlQueryProvider extends QueryProvider {
             int i = 0;
             return buildCalcField(originField, tableObj, i);
         } catch (Exception e) {
-            DEException.throwException(Translator.get("i18n_field_circular_ref"));
+            DataEaseException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
@@ -1441,7 +1448,7 @@ public class MysqlQueryProvider extends QueryProvider {
         try {
             i++;
             if (i > 100) {
-                DEException.throwException(Translator.get("i18n_field_circular_error"));
+                DataEaseException.throwException(Translator.get("i18n_field_circular_error"));
             }
             originField = originField.replaceAll("[\\t\\n\\r]]", "");
             // 正则提取[xxx]
@@ -1473,7 +1480,7 @@ public class MysqlQueryProvider extends QueryProvider {
             }
             return originField;
         } catch (Exception e) {
-            DEException.throwException(Translator.get("i18n_field_circular_error"));
+            DataEaseException.throwException(Translator.get("i18n_field_circular_error"));
         }
         return null;
     }

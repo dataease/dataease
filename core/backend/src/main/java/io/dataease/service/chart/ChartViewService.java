@@ -9,7 +9,6 @@ import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.JdbcConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -21,7 +20,6 @@ import io.dataease.dto.chart.*;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.dto.dataset.DataTableInfoDTO;
-import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtChartGroupMapper;
 import io.dataease.ext.ExtChartViewMapper;
 import io.dataease.ext.ExtPanelGroupExtendDataMapper;
@@ -40,6 +38,7 @@ import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
@@ -1566,7 +1565,7 @@ public class ChartViewService {
         Map<String, ViewPluginService> beanMap = SpringContextUtil.getApplicationContext().getBeansOfType(ViewPluginService.class);
 
         if (beanMap.keySet().size() == 0) {
-            DEException.throwException("没有此插件");
+            DataEaseException.throwException("没有此插件");
 
         }
         ViewPluginService viewPluginService = null;
@@ -1576,7 +1575,7 @@ public class ChartViewService {
                 return viewPluginService;
             }
         }
-        if (null == viewPluginService) DEException.throwException("没有此插件");
+        if (null == viewPluginService) DataEaseException.throwException("没有此插件");
         return viewPluginService;
     }
 
@@ -2082,7 +2081,7 @@ public class ChartViewService {
             if (ObjectUtils.isNotEmpty(datasetTableField)) {
                 if (datasetTableField.getDeType() == 0 || datasetTableField.getDeType() == 1 || datasetTableField.getDeType() == 5) {
                     if (!StringUtils.containsIgnoreCase(summary, "count")) {
-                        DEException.throwException(Translator.get("i18n_gauge_field_change"));
+                        DataEaseException.throwException(Translator.get("i18n_gauge_field_change"));
                     }
                 }
                 ChartViewFieldDTO dto = new ChartViewFieldDTO();
@@ -2090,7 +2089,7 @@ public class ChartViewService {
                 dto.setSummary(summary);
                 return dto;
             } else {
-                DEException.throwException(Translator.get("i18n_gauge_field_delete"));
+                DataEaseException.throwException(Translator.get("i18n_gauge_field_delete"));
             }
         }
         return null;

@@ -1,8 +1,8 @@
 package io.dataease.job.sechedule;
 
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.quartz.*;
 import org.springframework.stereotype.Component;
 

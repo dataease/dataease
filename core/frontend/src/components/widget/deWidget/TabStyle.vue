@@ -14,7 +14,7 @@
         label="选项卡标题"
         prop="titleShow"
       >
-        <el-checkbox v-model="styleInfo.titleHide">隐藏</el-checkbox>
+        <el-checkbox v-model="styleInfo.titleHide" @change="styleChange">隐藏</el-checkbox>
       </el-form-item>
       <template v-if="!styleInfo.titleHide">
         <el-form-item

@@ -46,6 +46,7 @@ public class MongoService extends DatasourceService {
         dataSourceType.setAliasPrefix("");
         dataSourceType.setAliasSuffix("");
         dataSourceType.setDatabaseClassification(DatabaseClassification.OLTP);
+        dataSourceType.setSurpportVersions("3,4,5");
         return dataSourceType;
     }
 

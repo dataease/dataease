@@ -2,10 +2,10 @@ package io.dataease.service.panel;
 
 import com.google.gson.Gson;
 import io.dataease.dto.chart.ChartViewDTO;
-import io.dataease.exception.DataEaseException;
 import io.dataease.plugins.common.base.domain.PanelGroupExtendData;
 import io.dataease.plugins.common.base.domain.PanelGroupExtendDataExample;
 import io.dataease.plugins.common.base.mapper.PanelGroupExtendDataMapper;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.collections.CollectionUtils;
 import org.springframework.stereotype.Service;
 

@@ -1,7 +1,6 @@
 package io.dataease.provider.query.hive;
 
 import com.alibaba.fastjson.JSONArray;
-import io.dataease.commons.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
@@ -16,6 +15,7 @@ import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.datasource.DeSortField;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
@@ -1340,7 +1340,7 @@ public class HiveQueryProvider extends QueryProvider {
             int i = 0;
             return buildCalcField(originField, tableObj, i);
         } catch (Exception e) {
-            DEException.throwException(Translator.get("i18n_field_circular_ref"));
+            DataEaseException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
@@ -1349,7 +1349,7 @@ public class HiveQueryProvider extends QueryProvider {
         try {
             i++;
             if (i > 100) {
-                DEException.throwException(Translator.get("i18n_field_circular_error"));
+                DataEaseException.throwException(Translator.get("i18n_field_circular_error"));
             }
             originField = originField.replaceAll("[\\t\\n\\r]]", "");
             // 正则提取[xxx]
@@ -1381,7 +1381,7 @@ public class HiveQueryProvider extends QueryProvider {
             }
             return originField;
         } catch (Exception e) {
-            DEException.throwException(Translator.get("i18n_field_circular_error"));
+            DataEaseException.throwException(Translator.get("i18n_field_circular_error"));
         }
         return null;
     }

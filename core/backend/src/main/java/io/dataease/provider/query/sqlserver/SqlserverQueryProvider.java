@@ -2,7 +2,6 @@ package io.dataease.provider.query.sqlserver;
 
 import com.alibaba.fastjson.JSONArray;
 import com.google.gson.Gson;
-import io.dataease.commons.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
@@ -17,11 +16,13 @@ import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.datasource.DeSortField;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
 import io.dataease.plugins.datasource.entity.Dateformat;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
+import io.dataease.plugins.datasource.entity.PageInfo;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.datasource.query.Utils;
 import org.apache.commons.collections4.CollectionUtils;
@@ -433,6 +434,10 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+        return originTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true);
+    }
+
+    public String originTableInfo(String table, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -487,6 +492,13 @@ public class SqlserverQueryProvider extends QueryProvider {
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
         orders.addAll(xOrders);
+        if (needOrder && CollectionUtils.isEmpty(xOrders)) {
+            orders.add(SQLObj.builder()
+                    .orderField(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                    .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                    .orderDirection("ASC")
+                    .build());
+        }
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
@@ -509,6 +521,20 @@ public class SqlserverQueryProvider extends QueryProvider {
             st.add("limitFiled", limitFiled);
         }
         return st.render();
+    }
+
+    public String originSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
+        return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view, needOrder);
+    }
+
+    @Override
+    public String getSQLWithPage(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
+        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
+        if (isTable) {
+            return getSQLTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+        } else {
+            return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+        }
     }
 
     @Override
@@ -1453,7 +1479,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             int i = 0;
             return buildCalcField(originField, tableObj, i);
         } catch (Exception e) {
-            DEException.throwException(Translator.get("i18n_field_circular_ref"));
+            DataEaseException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
@@ -1462,7 +1488,7 @@ public class SqlserverQueryProvider extends QueryProvider {
         try {
             i++;
             if (i > 100) {
-                DEException.throwException(Translator.get("i18n_field_circular_error"));
+                DataEaseException.throwException(Translator.get("i18n_field_circular_error"));
             }
             originField = originField.replaceAll("[\\t\\n\\r]]", "");
             // 正则提取[xxx]
@@ -1494,7 +1520,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             }
             return originField;
         } catch (Exception e) {
-            DEException.throwException(Translator.get("i18n_field_circular_error"));
+            DataEaseException.throwException(Translator.get("i18n_field_circular_error"));
         }
         return null;
     }
@@ -1515,7 +1541,12 @@ public class SqlserverQueryProvider extends QueryProvider {
                 "]", Dateformat.class);
     }
 
+    @Override
     public String getResultCount(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return null;
+        if (isTable) {
+            return "SELECT COUNT(*) AS count from (" + originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + ") COUNT_TEMP";
+        } else {
+            return "SELECT COUNT(*) AS count from (" + originSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + ") COUNT_TEMP";
+        }
     }
 }

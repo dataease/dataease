@@ -4,13 +4,13 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
-import io.dataease.commons.exception.DEException;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.response.ChartViewField4Type;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewField;
 import io.dataease.plugins.common.base.domain.DatasetTable;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.service.chart.ChartViewFieldService;
 import io.dataease.service.dataset.DataSetTableService;
 import io.swagger.annotations.Api;
@@ -48,7 +48,7 @@ public class ChartViewFieldController {
             BeanUtils.copyProperties(chartViewField, datasetTableField);
             dataSetTableService.getPreviewData(dataSetTableRequest, 1, 1, Collections.singletonList(datasetTableField), null);
         } catch (Exception e) {
-            DEException.throwException(Translator.get("i18n_calc_field_error"));
+            DataEaseException.throwException(Translator.get("i18n_calc_field_error"));
         }
         return chartViewFieldService.save(chartViewField);
     }
