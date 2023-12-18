@@ -41,8 +41,15 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
-const { componentData, curComponent, isClickComponent, canvasStyleData, canvasViewInfo, editMode } =
-  storeToRefs(dvMainStore)
+const {
+  componentData,
+  curComponent,
+  isClickComponent,
+  canvasStyleData,
+  canvasViewInfo,
+  editMode,
+  dvInfo
+} = storeToRefs(dvMainStore)
 const { editorMap } = storeToRefs(composeStore)
 const canvasOut = ref(null)
 const canvasInner = ref(null)
@@ -186,6 +193,9 @@ onMounted(() => {
     state.canvasInitStatus = false
     initCanvasData(dvId, 'dataV', function () {
       state.canvasInitStatus = true
+      if (dvInfo.value && opt === 'copy') {
+        dvInfo.value.dataState = 'prepare'
+      }
       // afterInit
       nextTick(() => {
         dvMainStore.setDataPrepareState(true)
