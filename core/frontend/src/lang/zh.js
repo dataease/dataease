@@ -1872,7 +1872,9 @@ export default {
     show_info: '驱动信息',
     file_name: '文件名',
     version: '版本',
-    please_set_driverClass: '请指定驱动类'
+    please_set_driverClass: '请指定驱动类',
+    please_set_surpportVersions: '请输入支持的数据库大版本',
+    surpportVersions: '支持版本'
   },
   datasource: {
     data_source_configuration: '数据源配置',

@@ -4,10 +4,12 @@ import com.google.gson.Gson;
 import io.dataease.plugins.common.base.domain.DeDriver;
 import io.dataease.plugins.common.base.mapper.DeDriverMapper;
 import io.dataease.plugins.common.constants.DatasourceTypes;
+import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
@@ -17,10 +19,7 @@ import org.springframework.stereotype.Component;
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
 import java.sql.*;
-import java.util.ArrayList;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Properties;
+import java.util.*;
 
 
 @Component()
@@ -77,15 +76,22 @@ public class DmDsProvider extends DefaultJdbcProvider {
         }
 
         Connection conn;
+        String surpportVersions = null;
         String driverClassName;
         ExtendedJdbcClassLoader jdbcClassLoader;
         if (isDefaultClassLoader(customDriver)) {
             driverClassName = defaultDriver;
             jdbcClassLoader = extendedJdbcClassLoader;
+            for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
+                if(value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())){
+                    surpportVersions = value.getSurpportVersions();
+                }
+            }
         } else {
             if (deDriver == null) {
                 deDriver = deDriverMapper.selectByPrimaryKey(customDriver);
             }
+            surpportVersions = deDriver.getSurpportVersions();
             driverClassName = deDriver.getDriverClass();
             jdbcClassLoader = getCustomJdbcClassLoader(deDriver);
         }
@@ -100,6 +106,11 @@ public class DmDsProvider extends DefaultJdbcProvider {
             throw e;
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        if(StringUtils.isNotEmpty(surpportVersions) && surpportVersions.split(",").length > 0){
+            if(! Arrays.asList(surpportVersions.split(",")).contains(String.valueOf(conn.getMetaData().getDatabaseMajorVersion()))){
+                DataEaseException.throwException("当前驱动不支持此版本!");
+            };
         }
         return conn;
     }

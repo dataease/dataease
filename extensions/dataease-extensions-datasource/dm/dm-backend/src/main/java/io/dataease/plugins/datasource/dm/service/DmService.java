@@ -47,6 +47,7 @@ public class DmService extends DatasourceService {
         dataSourceType.setAliasPrefix("\"");
         dataSourceType.setAliasSuffix("\"");
         dataSourceType.setDatabaseClassification(DatabaseClassification.OLTP);
+        dataSourceType.setSurpportVersions("8");
         return dataSourceType;
     }
 

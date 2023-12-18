@@ -10,7 +10,7 @@ import io.dataease.dto.panel.PanelTemplateFileDTO;
 import io.dataease.dto.templateMarket.MarketBaseResponse;
 import io.dataease.dto.templateMarket.TemplateCategory;
 import io.dataease.dto.templateMarket.TemplateMarketDTO;
-import io.dataease.exception.DataEaseException;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;

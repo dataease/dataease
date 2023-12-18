@@ -3,8 +3,7 @@ package io.dataease.commons.utils;
 import static io.dataease.commons.constants.StaticResourceConstants.*;
 
 import cn.hutool.core.codec.Base64Encoder;
-import io.dataease.exception.DataEaseException;
-import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;

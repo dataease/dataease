@@ -16,15 +16,21 @@ public interface DeDriverMapper {
 
     int insertSelective(DeDriver record);
 
+    List<DeDriver> selectByExampleWithBLOBs(DeDriverExample example);
+
     List<DeDriver> selectByExample(DeDriverExample example);
 
     DeDriver selectByPrimaryKey(String id);
 
     int updateByExampleSelective(@Param("record") DeDriver record, @Param("example") DeDriverExample example);
 
+    int updateByExampleWithBLOBs(@Param("record") DeDriver record, @Param("example") DeDriverExample example);
+
     int updateByExample(@Param("record") DeDriver record, @Param("example") DeDriverExample example);
 
     int updateByPrimaryKeySelective(DeDriver record);
+
+    int updateByPrimaryKeyWithBLOBs(DeDriver record);
 
     int updateByPrimaryKey(DeDriver record);
 }

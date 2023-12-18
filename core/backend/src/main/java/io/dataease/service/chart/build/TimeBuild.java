@@ -1,8 +1,8 @@
 package io.dataease.service.chart.build;
 
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.chart.FilterParamTO;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.service.chart.FilterBuildTemplate;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -160,7 +160,7 @@ public abstract class TimeBuild extends FilterBuildTemplate {
             Method setMethod = instance.getClass().getMethod("set", int.class, int.class);
             setMethod.invoke(instance, fieldFlag, value);
         } catch (Exception e) {
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
             LogUtil.error(e.getMessage(), e);
         }
     }

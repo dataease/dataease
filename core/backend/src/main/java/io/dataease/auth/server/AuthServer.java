@@ -13,12 +13,11 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.sys.request.LdapAddRequest;
-import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.util.PluginUtils;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
@@ -328,7 +327,7 @@ public class AuthServer implements AuthApi {
                     oidcXpackService.logout(idToken);
                 } catch (Exception e) {
                     LogUtil.error(e.getMessage(), e);
-                    DEException.throwException("oidc_logout_error");
+                    DataEaseException.throwException("oidc_logout_error");
                 }
             }
         }
@@ -349,7 +348,7 @@ public class AuthServer implements AuthApi {
                 result = casXpackService.logout();
             } catch (Exception e) {
                 LogUtil.error(e.getMessage(), e);
-                DEException.throwException("cas_logout_error");
+                DataEaseException.throwException("cas_logout_error");
             }
         }
         try {

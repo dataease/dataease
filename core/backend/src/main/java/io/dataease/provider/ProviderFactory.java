@@ -34,6 +34,7 @@ public class ProviderFactory implements ApplicationContextAware {
                 dataSourceType.setKeywordPrefix(d.getKeywordPrefix());
                 dataSourceType.setAliasSuffix(d.getAliasSuffix());
                 dataSourceType.setAliasPrefix(d.getAliasPrefix());
+                dataSourceType.setSurpportVersions(d.getSurpportVersions());
                 beanFactory.registerSingleton(d.getType(), dataSourceType);
             }
         }
