@@ -49,6 +49,7 @@
         :style="getPointStyle(item)"
         @mousedown="handleMouseDownOnPoint(item, $event)"
       ></div>
+      <div class="shape-shadow" v-show="batchOptStatus" @mousedown="batchSelected"></div>
       <template v-if="boardMoveActive">
         <div
           v-show="!element.editing"
@@ -517,6 +518,15 @@ const selectCurComponent = e => {
   }
 }
 
+const batchSelected = e => {
+  if (dvMainStore.batchOptStatus) {
+    componentEditBarRef.value.batchOptCheckOut()
+    e.stopPropagation()
+    e.preventDefault()
+    return
+  }
+}
+
 const handleMouseDownOnPoint = (point, e) => {
   dashboardActive.value && emit('onStartResize', e)
   dvMainStore.setInEditorStatus(true)
@@ -831,6 +841,15 @@ onMounted(() => {
 <style lang="less" scoped>
 .shape {
   position: absolute;
+}
+
+.shape-shadow {
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  position: absolute;
+  background-size: 100% 100% !important;
 }
 
 .shape-inner {
