@@ -286,3 +286,29 @@ export function filterEmptyFolderTree(nodes) {
     }
   })
 }
+
+export function findParentIdByChildIdRecursive(tree, targetChildId) {
+  function findParentId(node, targetChildId) {
+    if (node.type === 'folder' && node.children) {
+      for (const childNode of node.children) {
+        if (childNode.id === targetChildId) {
+          return node.id // 找到匹配的子节点，返回其父节点的 ID
+        }
+        const parentId = findParentId(childNode, targetChildId)
+        if (parentId !== null) {
+          return parentId // 在子节点中找到匹配的父节点
+        }
+      }
+    }
+    return null // 没有找到匹配的子节点
+  }
+
+  for (const node of tree) {
+    const parentId = findParentId(node, targetChildId)
+    if (parentId !== null) {
+      return parentId // 在整个树中找到匹配的父节点
+    }
+  }
+
+  return null // 没有找到匹配的子节点
+}
