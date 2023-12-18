@@ -228,7 +228,7 @@ export function groupSizeStyleAdaptor(groupComponent) {
   groupComponent.propValue.forEach(component => {
     // 分组还原逻辑
     // 当发上分组缩放是，要将内部组件按照比例转换
-    const styleScale = { ...component.groupStyle }
+    const styleScale = component.groupStyle
     component.style.left = parentStyle.width * styleScale.left
     component.style.top = parentStyle.height * styleScale.top
     component.style.width = parentStyle.width * styleScale.width

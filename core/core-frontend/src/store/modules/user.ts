@@ -85,6 +85,9 @@ export const userStore = defineStore('user', {
       this.oid = oid
     },
     setLanguage(language: string) {
+      if (!language || language === 'zh_CN') {
+        language = 'zh-CN'
+      }
       wsCache.set('user.language', language)
       this.language = language
       locale.setLang(language)

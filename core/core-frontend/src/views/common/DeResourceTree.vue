@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { onMounted, reactive, ref, toRefs, watch, nextTick, computed } from 'vue'
-import { deleteLogic } from '@/api/visualization/dataVisualization'
+import { copyResource, deleteLogic, ResourceOrFolder } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox, ElScrollbar } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
@@ -17,6 +17,7 @@ import _ from 'lodash'
 import DeResourceCreateOpt from '@/views/common/DeResourceCreateOpt.vue'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
+import { findParentIdByChildIdRecursive } from '@/utils/canvasUtils'
 const { wsCache } = useCache()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -232,7 +233,21 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   } else if (cmd === 'edit') {
     resourceEdit(data.id)
   } else {
-    resourceGroupOpt.value.optInit(nodeType, data, cmd, ['copy'].includes(cmd))
+    const targetPid = findParentIdByChildIdRecursive(state.resourceTree, data.id)
+    const params: ResourceOrFolder = {
+      nodeType: nodeType as 'folder' | 'leaf',
+      name: data.name + '-copy',
+      type: curCanvasType.value,
+      id: data.id,
+      pid: targetPid || '0'
+    }
+    copyResource(params).then(data => {
+      const baseUrl =
+        curCanvasType.value === 'dataV'
+          ? '#/dvCanvas?opt=copy&dvId='
+          : '#/dashboard?opt=copy&resourceId='
+      window.open(baseUrl + data.data, '_blank')
+    })
   }
 }
 

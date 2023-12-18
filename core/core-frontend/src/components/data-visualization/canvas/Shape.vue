@@ -454,6 +454,17 @@ const handleMouseDownOnShape = e => {
     ) {
       emit('onDragging', e)
     }
+
+    //如果当前组件是Group分组 则要进行内部组件深度计算
+    element.value.component === 'Group' && groupSizeStyleAdaptor(element.value)
+    //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
+    if (isGroupCanvas(canvasId.value)) {
+      groupStyleRevert(element.value, {
+        width: parentNode.value.offsetWidth,
+        height: parentNode.value.offsetHeight
+      })
+    }
+
     // 防止首次组件在tab旁边无法触发矩阵移动
     if (isFirst) {
       isFirst = false

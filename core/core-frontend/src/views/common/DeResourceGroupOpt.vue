@@ -276,7 +276,9 @@ const saveResource = () => {
             ElMessage.success('保存成功')
             if (cmd.value === 'copy') {
               const baseUrl =
-                curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
+                curCanvasType.value === 'dataV'
+                  ? '#/dvCanvas?opt=copy&dvId='
+                  : '#/dashboard?opt=copy&resourceId='
               window.open(baseUrl + data.data, '_blank')
             }
           })
