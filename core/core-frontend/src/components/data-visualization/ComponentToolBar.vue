@@ -82,6 +82,8 @@ onUnmounted(() => {
   <el-row class="custom-main">
     <div class="scale-area">
       <el-input
+        @keydown.stop
+        @keyup.stop
         type="number"
         size="small"
         effect="dark"
