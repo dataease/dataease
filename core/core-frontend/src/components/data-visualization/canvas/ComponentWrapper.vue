@@ -214,6 +214,7 @@ const deepScale = computed(() => scale.value / 100)
           :search-count="searchCount"
           :scale="deepScale"
           :disabled="true"
+          :is-edit="false"
         />
       </div>
     </div>
