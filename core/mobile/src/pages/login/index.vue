@@ -159,12 +159,17 @@
         const param = getUrlParams(url)
         if (param?.detoken) {
           if(param.detoken.endsWith('#/'))
-          param.detoken = param.detoken.substr(0, param.detoken.length - 2)
+            param.detoken = param.detoken.substr(0, param.detoken.length - 2)
+
+          const redirect = window.location.href.split('?')[0]
           setToken(param.detoken)
           getInfo().then(res => {
             setUserInfo(res.data)
-            const redirect = window.location.href.split('?')[0]
-           
+            window.location.href = redirect
+          }).catch(() => {
+            setToken(null)
+            localStorage.removeItem('Authorization')
+            window.cookieStore.delete('Authorization')
             window.location.href = redirect
           })
           return true
