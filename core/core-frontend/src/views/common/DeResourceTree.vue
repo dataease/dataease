@@ -244,9 +244,9 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
     copyResource(params).then(data => {
       const baseUrl =
         curCanvasType.value === 'dataV'
-          ? '#/dvCanvas?opt=copy&dvId='
-          : '#/dashboard?opt=copy&resourceId='
-      window.open(baseUrl + data.data, '_blank')
+          ? `#/dvCanvas?opt=copy&pid=${params.pid}&dvId=${data.data}`
+          : `#/dashboard?opt=copy&pid=${params.pid}&resourceId=${data.data}`
+      window.open(baseUrl, '_blank')
     })
   }
 }

@@ -56,6 +56,7 @@ public class CoreVisualizationManage {
         }
         QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("delete_flag", false);
+        queryWrapper.ne("pid",-1);
         queryWrapper.eq(ObjectUtils.isNotEmpty(request.getLeaf()), "node_type", ObjectUtils.isNotEmpty(request.getLeaf()) && request.getLeaf() ? "leaf" : "folder");
         queryWrapper.eq("type", request.getBusiFlag());
         queryWrapper.orderByDesc("create_time");
@@ -108,6 +109,10 @@ public class CoreVisualizationManage {
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public Long innerSave(DataVisualizationInfo visualizationInfo) {
+        return preInnerSave(visualizationInfo);
+    }
+
+    public Long preInnerSave(DataVisualizationInfo visualizationInfo){
         if (visualizationInfo.getId() == null) {
             Long id = IDUtils.snowID();
             visualizationInfo.setId(id);

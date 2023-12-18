@@ -122,18 +122,24 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
-
-        // 检查当前节点的pid是否一致如果不一致 需要调用move 接口(预存 可能会出现pid =-1的情况)
-        if (request.getPid() != -1) {
-            QueryWrapper<DataVisualizationInfo> queryWrapper = new QueryWrapper<>();
-            queryWrapper.eq("pid", request.getPid());
-            queryWrapper.eq("id", dvId);
-            if (!visualizationInfoMapper.exists(queryWrapper)) {
-                request.setMoveFromUpdate(true);
-                coreVisualizationManage.move(request);
+        if(DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())){
+            // 复制更新 新建权限插入
+            visualizationInfoMapper.deleteById(dvId);
+            visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
+            coreVisualizationManage.innerSave(visualizationInfo);
+        }else{
+            // 检查当前节点的pid是否一致如果不一致 需要调用move 接口(预存 可能会出现pid =-1的情况)
+            if (request.getPid() != -1) {
+                QueryWrapper<DataVisualizationInfo> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("pid", request.getPid());
+                queryWrapper.eq("id", dvId);
+                if (!visualizationInfoMapper.exists(queryWrapper)) {
+                    request.setMoveFromUpdate(true);
+                    coreVisualizationManage.move(request);
+                }
             }
+            coreVisualizationManage.innerEdit(visualizationInfo);
         }
-        coreVisualizationManage.innerEdit(visualizationInfo);
         //保存视图信
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
     }
@@ -214,8 +220,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
         extDataVisualizationMapper.copyLinkJump(copyId);
         extDataVisualizationMapper.copyLinkJumpInfo(copyId);
         extDataVisualizationMapper.copyLinkJumpTargetInfo(copyId);
-
-        coreVisualizationManage.innerSave(newDv);
+        DataVisualizationInfo visualizationInfoTarget = new DataVisualizationInfo();
+        BeanUtils.copyBean(visualizationInfoTarget,newDv);
+        visualizationInfoTarget.setPid(-1L);
+        coreVisualizationManage.preInnerSave(visualizationInfoTarget);
         return String.valueOf(newDvId);
     }
 
@@ -321,6 +329,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         wrapper.eq("delete_flag", 0);
         wrapper.eq("pid", request.getPid());
+        wrapper.ne("pid", -1);
         wrapper.eq("name", request.getName().trim());
         wrapper.eq("node_type", request.getNodeType());
         wrapper.eq("type", request.getType());
