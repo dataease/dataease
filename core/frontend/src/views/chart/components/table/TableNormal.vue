@@ -42,15 +42,18 @@
           type="index"
           :title="indexLabel"
           :width="columnWidth"
+          :resizable="true"
+          :fixed="getFixed(-1)"
         />
         <ux-table-column
-          v-for="field in fields"
+          v-for="(field, index) in fields"
           :key="field.name"
           :field="field.child ? '' : field.dataeaseName"
           :resizable="true"
           :sortable="(!mergeCells || !mergeCells.length) && (!field.child || !field.child.length)"
           :title="field.name"
           :width="columnWidth"
+          :fixed="getFixed(index)"
         >
           <ux-table-column
             v-for="item in field.child"
@@ -728,6 +731,14 @@ export default {
         default:
           break
       }
+    },
+    getFixed(index) {
+      const size = JSON.parse(this.chart.customAttr).size
+      const { showIndex, tableColumnFreezeHead } = size
+      if (showIndex) {
+        return index < tableColumnFreezeHead - 1 ? 'left' : ''
+      }
+      return index < tableColumnFreezeHead ? 'left' : ''
     }
   }
 }

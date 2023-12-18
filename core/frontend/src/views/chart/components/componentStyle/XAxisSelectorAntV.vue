@@ -28,13 +28,17 @@
               size="mini"
               @change="changeXAxisStyle('position')"
             >
-              <div v-if="chart.type !== 'bidirectional-bar'">
-                <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
-                <el-radio-button label="bottom">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
-              </div>
-              <div v-else-if="chart.type === 'bidirectional-bar'">
+              <div v-if="chart.type === 'bidirectional-bar'">
                 <el-radio-button label="top">{{ $t('chart.text_pos_left') }}</el-radio-button>
                 <el-radio-button label="bottom">{{ $t('chart.text_pos_center') }}</el-radio-button>
+              </div>
+              <div v-else-if="chart.type === 'bar-time-range'">
+                <el-radio-button label="bottom">{{ $t('chart.text_pos_left') }}</el-radio-button>
+                <el-radio-button label="top">{{ $t('chart.text_pos_right') }}</el-radio-button>
+              </div>
+              <div v-else>
+                <el-radio-button label="top">{{ $t('chart.text_pos_top') }}</el-radio-button>
+                <el-radio-button label="bottom">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
               </div>
             </el-radio-group>
           </el-form-item>
@@ -266,7 +270,7 @@
               />
             </el-form-item>
             <el-form-item
-              v-if="chart.type && chart.type !== 'bidirectional-bar'"
+              v-if="chart.type && chart.type !== 'bidirectional-bar' && chart.type !== 'bar-time-range'"
               :label="$t('chart.axis_label_rotate')"
               class="form-item form-item-slider"
             >

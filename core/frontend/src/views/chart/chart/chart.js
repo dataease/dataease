@@ -170,7 +170,9 @@ export const DEFAULT_SIZE = {
   quotaSuffixFontIsItalic: false,
   quotaSuffixFontIsBolder: false,
   quotaSuffixLetterSpace: '0',
-  quotaSuffixFontShadow: false
+  quotaSuffixFontShadow: false,
+  tableColumnFreezeHead: 0,
+  tableColumnFreezeTail: 0
 }
 export const DEFAULT_SUSPENSION = {
   show: true

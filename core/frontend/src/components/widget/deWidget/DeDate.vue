@@ -5,11 +5,12 @@
       ref="dateRef"
       v-model="values"
       :popper-class="'coustom-date-picker' + ' ' + extPoperClass"
+      :class="{'show-required-tips': showRequiredTips}"
       :type="componentType"
       :range-separator="$t(element.options.attrs.rangeSeparator)"
-      :start-placeholder="$t(element.options.attrs.startPlaceholder)"
-      :end-placeholder="$t(element.options.attrs.endPlaceholder)"
-      :placeholder="$t(element.options.attrs.placeholder)"
+      :start-placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.startPlaceholder)"
+      :end-placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.endPlaceholder)"
+      :placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.placeholder)"
       :append-to-body="inScreen"
       value-format="timestamp"
       :format="labelFormat"
@@ -218,6 +219,9 @@ export default {
         return ['00:00:00', '23:59:59']
       }
       return null
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && (!this.values || this.values.length === 0)
     },
     ...mapState([
       'canvasStyleData',
@@ -516,7 +520,31 @@ export default {
 }
 
 </script>
+<style lang="scss" scoped>
+.show-required-tips {
+  border-color: #ff0000 !important;
+  ::v-deep .el-input__inner {
+    color: #ff0000 !important;
+  }
+  ::v-deep input::placeholder {
+    color: #ff0000 !important;
+  }
+  ::v-deep i {
+    color: #ff0000 !important;
+  }
+}
+.show-required-tips ::v-deep .el-input__inner, input {
+  border-color: #ff0000 !important;
+}
 
+.show-required-tips ::v-deep .el-input__inner, input::placeholder {
+  color: #ff0000 !important;
+}
+.show-required-tips ::v-deep i {
+  color: #ff0000 !important;
+}
+
+</style>
 <style lang="scss">
 .date-picker-vant {
   position: relative;

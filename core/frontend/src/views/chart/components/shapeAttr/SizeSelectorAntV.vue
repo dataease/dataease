@@ -4,7 +4,7 @@
       <el-form
         ref="sizeFormBar"
         :model="sizeForm"
-        label-width="80px"
+        label-width="84px"
         size="mini"
       >
         <!--bar-begin-->
@@ -294,6 +294,21 @@
             input-size="mini"
             @change="changeBarSizeCase('tableColumnWidth')"
           />
+        </el-form-item>
+        <el-form-item
+          v-if="showProperty('tableColumnFreeze')"
+          :label="$t('chart.table_column_freeze')"
+          class="form-item"
+        >
+          <span>{{ $t('dynamic_time.before') }} </span>
+          <el-input-number
+            v-model="sizeForm.tableColumnFreezeHead"
+            :min="0"
+            :max="100"
+            :step-strictly="true"
+            @change="changeBarSizeCase('tableColumnFreezeHead')"
+          />
+          <span> {{ $t('chart.column') }}</span>
         </el-form-item>
         <el-form-item
           v-if="showProperty('showIndex')"
@@ -1680,6 +1695,8 @@ export default {
           this.sizeForm.tableItemAlign = this.sizeForm.tableItemAlign ? this.sizeForm.tableItemAlign : DEFAULT_SIZE.tableItemAlign
           this.sizeForm.tableRowTooltip = this.sizeForm.tableRowTooltip ?? DEFAULT_SIZE.tableRowTooltip
           this.sizeForm.tableColTooltip = this.sizeForm.tableColTooltip ?? DEFAULT_SIZE.tableColTooltip
+          this.sizeForm.tableColumnFreezeHead = this.sizeForm.tableColumnFreezeHead ?? DEFAULT_SIZE.tableColumnFreezeHead
+          this.sizeForm.tableColumnFreezeTail = this.sizeForm.tableColumnFreezeTail ?? DEFAULT_SIZE.tableColumnFreezeTail
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
           this.sizeForm.showTableHeader = this.sizeForm.showTableHeader !== false

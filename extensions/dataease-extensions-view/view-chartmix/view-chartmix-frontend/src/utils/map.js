@@ -549,6 +549,11 @@ export const DEFAULT_XAXIS_STYLE = {
       color: '#cccccc',
       width: 1,
       style: 'solid'
+    },
+    enableDash: false,
+    dashStyle: {
+      width: 4,
+      offset: 5
     }
   },
   axisValue: {

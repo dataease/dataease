@@ -71,6 +71,10 @@ public class AuthUtils {
         return userIds;
     }
 
+    public static Set<String> accountByURD(AuthURD request) {
+        return extAuthService.userNamesByRD(request);
+    }
+
     public static List<String> parentResources(String resourceId, String type) {
         return extAuthService.parentResource(resourceId, type);
     }

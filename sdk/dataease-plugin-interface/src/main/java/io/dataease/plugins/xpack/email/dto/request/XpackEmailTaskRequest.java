@@ -32,4 +32,12 @@ public class XpackEmailTaskRequest extends XpackTaskCreateRequest {
     private String conditions;
 
     private String viewDataRange = "view";
+
+    private String groups;
+
+    private Integer extWaitTime = 0;
+
+    private String roleList;
+
+    private String orgList;
 }

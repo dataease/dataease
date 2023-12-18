@@ -44,6 +44,21 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     }
 
     @Override
+    public Set<String> userNamesByRD(AuthURD request) {
+        Set<String> result = new HashSet<>();
+        List<Long> roleIds = request.getRoleIds();
+        List<Long> deptIds = request.getDeptIds();
+        if (!CollectionUtils.isEmpty(roleIds)) {
+            result.addAll(extAuthMapper.queryUserNameWithRoleIds(roleIds));
+        }
+        if (!CollectionUtils.isEmpty(deptIds)) {
+            result.addAll(extAuthMapper.queryUserNameWithDeptIds(deptIds));
+        }
+
+        return result;
+    }
+
+    @Override
     public AuthURD resourceTarget(String resourceId) {
         AuthURD authURD = new AuthURD();
 

@@ -63,6 +63,7 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnMode',
+        'tableColumnFreeze',
         'showIndex',
         'indexLabel',
         'tableColTooltip',
@@ -119,7 +120,8 @@ export const TYPE_CONFIGS = [
         'showIndex',
         'indexLabel',
         'tableColTooltip',
-        'showTableHeader'
+        'showTableHeader',
+        'tableColumnFreeze'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1103,6 +1105,85 @@ export const TYPE_CONFIGS = [
   {
     render: 'antv',
     category: 'chart.chart_type_compare',
+    value: 'bar-time-range',
+    title: 'chart.chart_bar_time_range',
+    icon: 'bar-time-range',
+    properties: [
+      'color-selector',
+
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'colorPanel',
+        'customColor',
+        'gradient',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'barDefault',
+        'barGap'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position-h'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder',
+        'remarkShow',
+        'fontFamily',
+        'letterSpace',
+        'fontShadow'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
+  },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_compare',
     value: 'bar-stack-horizontal',
     title: 'chart.chart_bar_stack_horizontal',
     icon: 'bar-stack-horizontal',
@@ -2002,6 +2083,7 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnWidth',
+        'tableColumnFreeze',
         'showIndex',
         'indexLabel',
         'tableAutoBreakLine',
@@ -2051,6 +2133,7 @@ export const TYPE_CONFIGS = [
         'tableColumnWidth',
         'showIndex',
         'indexLabel',
+        'tableColumnFreeze',
         'tableAutoBreakLine',
         'showTableHeader'
       ],
@@ -3517,7 +3600,7 @@ export function getColors(chart, colors, reset) {
         }
       }
     }
-  } else if ((includesAny(chart.type, 'bar', 'radar', 'area')) && !chart.type.includes('group')) {
+  } else if ((includesAny(chart.type, 'bar', 'radar', 'area')) && !chart.type.includes('group') && chart.type !== 'bar-time-range') {
     if (Object.prototype.toString.call(chart.yaxis) === '[object Array]') {
       series = JSON.parse(JSON.stringify(chart.yaxis))
     } else {
