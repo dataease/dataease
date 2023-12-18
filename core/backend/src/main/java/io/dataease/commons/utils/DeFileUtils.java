@@ -1,6 +1,6 @@
 package io.dataease.commons.utils;
 
-import io.dataease.commons.exception.DEException;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -47,11 +47,11 @@ public class DeFileUtils {
     public static void validateFile(MultipartFile file) {
         String name = getFileNameNoEx(file.getOriginalFilename());
         if (StringUtils.contains(name, "./")) {
-            DEException.throwException("file path invalid");
+            DataEaseException.throwException("file path invalid");
         }
         String suffix = getExtensionName(file.getOriginalFilename());
         if (!StringUtils.equalsIgnoreCase(suffix, "zip")) {
-            DEException.throwException("please upload valid zip file");
+            DataEaseException.throwException("please upload valid zip file");
         }
     }
     /**

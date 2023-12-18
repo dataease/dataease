@@ -137,7 +137,7 @@
             <el-option
               v-for="item in driverList"
               :key="item.id"
-              :label="item.name"
+              :label="item.nameAlias"
               :value="item.id"
               :disabled="!item.driverClass"
             />
@@ -760,7 +760,6 @@ export default {
           if (this.datasourceType.isJdbc) {
             listDriverByType(this.datasourceType.type).then(res => {
               this.driverList = []
-              this.driverList.push({ id: 'default', name: 'Default', driverClass: 'Default' })
               this.driverList = this.driverList.concat(res.data)
             })
           }

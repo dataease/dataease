@@ -9,7 +9,6 @@ import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.RedisConstants;
 import io.dataease.commons.constants.SysAuthConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
@@ -39,6 +38,7 @@ import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
@@ -371,11 +371,9 @@ public class DatasourceService {
         String datasourceStatus = null;
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
-            System.out.println(datasourceProvider.getClass());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
             datasourceStatus = datasourceProvider.checkStatus(datasourceRequest);
-            System.out.println(datasourceStatus);
             if (datasource.getType().equalsIgnoreCase("api")) {
                 List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {
                 }.getType());
@@ -499,7 +497,7 @@ public class DatasourceService {
             criteria.andIdNotEqualTo(id);
         }
         if (CollectionUtils.isNotEmpty(datasourceMapper.selectByExample(example))) {
-            DEException.throwException(Translator.get("i18n_ds_name_exists"));
+            DataEaseException.throwException(Translator.get("i18n_ds_name_exists"));
         }
     }
 

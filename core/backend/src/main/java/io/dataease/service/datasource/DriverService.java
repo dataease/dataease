@@ -47,7 +47,7 @@ public class DriverService {
 
     public List<DriverDTO> list() throws Exception {
         List<DriverDTO> driverDTOS = new ArrayList<>();
-        deDriverMapper.selectByExample(null).forEach(deDriver -> {
+        deDriverMapper.selectByExampleWithBLOBs(null).forEach(deDriver -> {
             DriverDTO driverDTO = new DriverDTO();
             BeanUtils.copyBean(driverDTO, deDriver);
             datasourceService.types().forEach(dataSourceType -> {
@@ -81,10 +81,9 @@ public class DriverService {
         }
         DeDriverExample example = new DeDriverExample();
         example.createCriteria().andNameEqualTo(deDriver.getName());
-        if(CollectionUtil.isNotEmpty(deDriverMapper.selectByExample(example))){
+        if(CollectionUtil.isNotEmpty(deDriverMapper.selectByExampleWithBLOBs(example))){
             throw new RuntimeException(Translator.get("I18N_DRIVER_REPEAT_NAME"));
         }
-
         deDriver.setCreateTime(System.currentTimeMillis());
         deDriver.setId(UUID.randomUUID().toString());
         deDriverMapper.insert(deDriver);
@@ -92,7 +91,7 @@ public class DriverService {
     }
 
     public DeDriver update(DeDriver deDriver) {
-        deDriverMapper.updateByPrimaryKey(deDriver);
+        deDriverMapper.updateByPrimaryKeyWithBLOBs(deDriver);
         return deDriver;
     }
 

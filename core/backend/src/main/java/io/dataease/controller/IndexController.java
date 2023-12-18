@@ -1,10 +1,10 @@
 package io.dataease.controller;
 
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.service.panel.PanelLinkService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -74,7 +74,7 @@ public class IndexController {
             response.sendRedirect(url);
         } catch (IOException e) {
             LogUtil.error(e.getMessage());
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -90,7 +90,7 @@ public class IndexController {
             response.sendRedirect(url);
         } catch (IOException e) {
             LogUtil.error(e.getMessage());
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
     }
 

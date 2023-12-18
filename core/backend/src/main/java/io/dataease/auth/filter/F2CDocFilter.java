@@ -1,7 +1,6 @@
 package io.dataease.auth.filter;
 
 import cn.hutool.core.util.ArrayUtil;
-import com.auth0.jwt.algorithms.Algorithm;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
@@ -10,8 +9,6 @@ import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.exception.DataEaseException;
-import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.filter.AccessControlFilter;

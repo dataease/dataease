@@ -3,7 +3,7 @@ package io.dataease.controller.sys;
 import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
 import io.dataease.controller.ResultHolder;
-import io.dataease.exception.DataEaseException;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;

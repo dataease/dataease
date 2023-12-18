@@ -4,7 +4,6 @@ import cn.hutool.core.io.FileUtil;
 import cn.hutool.core.util.ZipUtil;
 import com.google.gson.Gson;
 import io.dataease.commons.constants.AuthConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.DeFileUtils;
 import io.dataease.commons.utils.IPUtils;
@@ -15,6 +14,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.plugins.common.base.mapper.MyPluginMapper;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.KeywordRequest;
 import io.dataease.plugins.config.LoadjarUtil;
 import io.dataease.plugins.entity.PluginOperate;
@@ -90,7 +90,7 @@ public class PluginService {
             DeFileUtils.deleteFile(folder);
             // 需要删除文件
             LogUtil.error(e.getMessage(), e);
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
         //3.解析plugin.json 失败则 直接返回错误 删除文件
         File folderFile = new File(folder);
@@ -100,14 +100,14 @@ public class PluginService {
             DeFileUtils.deleteFile(folder);
             String msg = "缺少插件描述文件【plugin.json】";
             LogUtil.error(msg);
-            DEException.throwException(msg);
+            DataEaseException.throwException(msg);
         }
         MyPluginDTO myPlugin = formatJsonFile(jsonFiles[0]);
 
         if (!versionMatch(myPlugin.getRequire())) {
             String msg = "当前插件要求系统版本最低为：" + myPlugin.getRequire();
             LogUtil.error(msg);
-            DEException.throwException(msg);
+            DataEaseException.throwException(msg);
         }
         //4.加载jar包 失败则 直接返回错误 删除文件
         File[] jarFiles = folderFile.listFiles(this::isPluginJar);
@@ -116,13 +116,13 @@ public class PluginService {
             DeFileUtils.deleteFile(folder);
             String msg = "缺少插件jar文件";
             LogUtil.error(msg);
-            DEException.throwException(msg);
+            DataEaseException.throwException(msg);
         }
 
         if (pluginExist(myPlugin)) {
             String msg = "插件【" + myPlugin.getName() + "】已存在，请先卸载";
             LogUtil.error(msg);
-            DEException.throwException(msg);
+            DataEaseException.throwException(msg);
         }
         String targetDir = null;
         try {
@@ -144,7 +144,7 @@ public class PluginService {
                 deleteJarFile(myPlugin);
             }
             LogUtil.error(e.getMessage(), e);
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         } finally {
             DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);
@@ -229,7 +229,7 @@ public class PluginService {
         if (ObjectUtils.isEmpty(myPlugin)) {
             String msg = "当前插件不存在";
             LogUtil.error(msg);
-            DEException.throwException(msg);
+            DataEaseException.throwException(msg);
         }
         myPlugin = deleteJarFile(myPlugin);
         CacheUtils.removeAll(AuthConstants.USER_CACHE_NAME);
@@ -238,7 +238,7 @@ public class PluginService {
 
         if (myPlugin.getCategory().equalsIgnoreCase("datasource") && !forUpdate) {
             if (CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))) {
-                DEException.throwException(Translator.get("i18n_plugin_not_allow_delete"));
+                DataEaseException.throwException(Translator.get("i18n_plugin_not_allow_delete"));
             }
             loadjarUtil.deleteModule(myPlugin.getModuleName() + "-" + myPlugin.getVersion());
         }
@@ -254,7 +254,7 @@ public class PluginService {
 
         if (myPlugin.getCategory().equalsIgnoreCase("datasource")) {
             if (CollectionUtils.isNotEmpty(datasourceService.selectByType(myPlugin.getDsType()))) {
-                DEException.throwException(Translator.get("i18n_plugin_not_allow_delete"));
+                DataEaseException.throwException(Translator.get("i18n_plugin_not_allow_delete"));
             }
             loadjarUtil.deleteModule(myPlugin.getModuleName() + "-" + myPlugin.getVersion());
         }
