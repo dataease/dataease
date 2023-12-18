@@ -1353,7 +1353,7 @@ export default {
     export_filter: '筛选条件',
     pls_input_filename: '请输入文件名称',
     calc_tips: {
-      tip1: '表达式语法请遵循该数据源对应的数据库语法。',
+      tip1: '表达式语法请遵循calcite语法。',
       tip2: '数据集中不支持聚合运算。',
       tip3: '引用字段以 "[" 开始， "]" 结束',
       tip4: '请勿修改引用内容，否则将引用失败',
