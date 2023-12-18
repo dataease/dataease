@@ -193,13 +193,18 @@ onMounted(() => {
     state.canvasInitStatus = false
     initCanvasData(dvId, 'dataV', function () {
       state.canvasInitStatus = true
-      if (dvInfo.value && opt === 'copy') {
-        dvInfo.value.dataState = 'prepare'
-      }
       // afterInit
       nextTick(() => {
         dvMainStore.setDataPrepareState(true)
         snapshotStore.recordSnapshotCache('renderChart')
+        if (dvInfo.value && opt === 'copy') {
+          dvInfo.value.dataState = 'prepare'
+          dvInfo.value.optType = 'copy'
+          dvInfo.value.pid = pid
+          setTimeout(() => {
+            snapshotStore.recordSnapshotCache('renderChart')
+          }, 1500)
+        }
       })
     })
   } else if (opt && opt === 'create') {

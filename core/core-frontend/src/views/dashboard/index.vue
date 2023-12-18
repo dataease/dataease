@@ -28,8 +28,15 @@ const eventCheck = e => {
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
-const { componentData, curComponent, canvasStyleData, canvasViewInfo, editMode, batchOptStatus } =
-  storeToRefs(dvMainStore)
+const {
+  componentData,
+  curComponent,
+  canvasStyleData,
+  canvasViewInfo,
+  editMode,
+  batchOptStatus,
+  dvInfo
+} = storeToRefs(dvMainStore)
 const dataInitState = ref(false)
 
 const state = reactive({
@@ -62,6 +69,14 @@ onMounted(() => {
     dataInitState.value = false
     initCanvasData(resourceId, 'dashboard', function () {
       dataInitState.value = true
+      if (dvInfo.value && opt === 'copy') {
+        dvInfo.value.dataState = 'prepare'
+        dvInfo.value.optType = 'copy'
+        dvInfo.value.pid = pid
+        setTimeout(() => {
+          snapshotStore.recordSnapshotCache()
+        }, 1500)
+      }
     })
   } else if (opt && opt === 'create') {
     dataInitState.value = false

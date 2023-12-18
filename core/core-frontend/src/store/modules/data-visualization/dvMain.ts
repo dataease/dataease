@@ -52,6 +52,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       // 大屏基础信息
       dvInfo: {
         dataState: null,
+        optType: null,
         id: null,
         name: null,
         pid: null,
@@ -845,6 +846,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     resetDvInfo() {
       this.dvInfo = {
         dataState: null,
+        optType: null,
         id: null,
         name: null,
         pid: null,
@@ -871,6 +873,7 @@ export const dvMainStore = defineStore('dataVisualization', {
     updateDvInfoId(newId) {
       if (this.dvInfo) {
         this.dvInfo.dataState = 'ready'
+        this.dvInfo.optType = null
         this.dvInfo.id = newId
       }
     },
@@ -878,6 +881,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       const optName = dvType === 'dashboard' ? '新建仪表板' : '新建数据大屏'
       this.dvInfo = {
         dataState: 'prepare',
+        optType: null,
         id: resourceId,
         name: optName,
         pid: pid,
@@ -899,6 +903,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.componentData = []
       this.dvInfo = {
         dataState: null,
+        optType: null,
         id: null,
         name: null,
         pid: null,
