@@ -162,8 +162,10 @@ export default {
     },
     'defaultValueStr': function(value, old) {
       if (value === old) return
-      this.value = this.fillValueDerfault()
-      this.changeValue(value)
+      this.$nextTick(() => {
+        this.value = this.fillValueDerfault()
+        this.changeValue(value)
+      })
     },
     'element.options.attrs.fieldId': function(value, old) {
       if (value === null || typeof value === 'undefined' || value === old) return
