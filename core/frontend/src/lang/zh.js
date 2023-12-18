@@ -1182,6 +1182,7 @@ export default {
     chart_bar_stack: '堆叠柱状图',
     chart_percentage_bar_stack: '百分比柱状图',
     chart_bar_horizontal: '横向柱状图',
+    chart_bar_time_range: '时间条形图',
     chart_bar_stack_horizontal: '横向堆叠柱状图',
     chart_percentage_bar_stack_horizontal: '横向百分比柱状图',
     chart_bidirectional_bar: '对称柱状图',
@@ -1491,6 +1492,7 @@ export default {
     dynamic: '动态值',
     gauge_size_field_delete: '动态值中字段发生变更，请重新编辑',
     chart_group: '子类别',
+    chart_bar_time: '起止时间',
     chart_bar_group: '分组柱状图',
     chart_bar_group_stack: '分组堆叠柱状图',
     field_dynamic: '动态值',
@@ -1518,6 +1520,7 @@ export default {
     set_zero: '置为0',
     ignore_data: '隐藏空值',
     sub_dimension_tip: '该字段为必填项，且不应使用类别轴中的字段，若无需该字段，请选择基础图表进行展示，否则展示效果不理想。',
+    time_bar_tip: '该字段为必填项，且需要两个时间类型字段',
     drill_dimension_tip: '钻取字段仅支持数据集中的字段',
     table_scroll_tip: '明细表仅在分页模式为"下拉"时生效。',
     table_threshold_tip: '提示：请勿重复选择字段，若同一字段重复配置，则只有最后的字段配置生效',
@@ -2036,6 +2039,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    required_tips: '必填项不能为空！',
     filter_no_select: '过滤组件无需选择',
     first_item: '首项',
     forbidden_copy: '当前组件不允许复制',

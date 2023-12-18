@@ -1184,6 +1184,7 @@ export default {
     chart_bar_stack: 'Stack Bar',
     chart_percentage_bar_stack: 'Percentage Stack Bar',
     chart_bar_horizontal: 'Horizontal Bar',
+    chart_bar_time_range: 'Time Bar',
     chart_bar_stack_horizontal: 'Stack Horizontal Bar',
     chart_percentage_bar_stack_horizontal: 'Horizontal Percentage Stack Bar',
     chart_bidirectional_bar: 'Bidirectional Bar',
@@ -1494,6 +1495,7 @@ export default {
     dynamic: 'Dynamic',
     gauge_size_field_delete: 'Dynamic field changed，please edit again',
     chart_group: 'Sub Type',
+    chart_bar_time: 'Times',
     chart_bar_group: 'Bar Group',
     chart_bar_group_stack: 'Group Stack Bar',
     field_dynamic: 'Dynamic',
@@ -1521,6 +1523,7 @@ export default {
     set_zero: 'Set Zero',
     ignore_data: 'Hide Data',
     sub_dimension_tip: 'This field is required, and cannot be included in the type axis, you should choose non-group chart if you don\'t need it, or you will get unexpected chart.',
+    time_bar_tip: 'This field is required, and axis type must be time',
     drill_dimension_tip: 'Only fields in the dataset can be drilled',
     table_scroll_tip: 'The detail table is only effective when the pagination mode is "Drop-down".',
     table_threshold_tip: 'Tip: Do not select fields repeatedly. If the same field is configured repeatedly, only the last field will take effect.',
@@ -2043,6 +2046,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    required_tips: 'Cannot be empty!',
     filter_no_select: 'Filter components do not need to be selected',
     first_item: 'First item',
     forbidden_copy: 'Forbidden copy',

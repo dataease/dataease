@@ -11,8 +11,10 @@ import java.util.List;
 public interface ExtAuthMapper {
 
     List<Long> queryUserIdWithRoleIds(@Param("roleIds") List<Long> roleIds);
+    List<String> queryUserNameWithRoleIds(@Param("roleIds") List<Long> roleIds);
 
     List<Long> queryUserIdWithDeptIds(@Param("deptIds") List<Long> deptIds);
+    List<String> queryUserNameWithDeptIds(@Param("deptIds") List<Long> deptIds);
 
     List<SysAuth> queryByResource(@Param("resourceId") String resourceId);
 

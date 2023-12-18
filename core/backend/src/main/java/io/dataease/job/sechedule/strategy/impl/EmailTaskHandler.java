@@ -6,6 +6,7 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.impl.AuthUserServiceImpl;
 import io.dataease.auth.util.JWTUtils;
+import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.*;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.chart.ViewOption;
@@ -45,10 +46,7 @@ import org.springframework.web.util.HtmlUtils;
 
 import javax.annotation.Resource;
 import java.io.File;
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service("emailTaskHandler")
@@ -157,6 +155,27 @@ public class EmailTaskHandler extends TaskHandler implements Job {
         emailXpackService.saveInstance(taskInstance);
     }
 
+    private void formatReci(XpackEmailTemplateDTO emailTemplateDTO) {
+        String reciUsers = emailTemplateDTO.getReciUsers();
+        String roleList = emailTemplateDTO.getRoleList();
+        String orgList = emailTemplateDTO.getOrgList();
+        AuthURD authURD = new AuthURD();
+        if (StringUtils.isNotBlank(roleList)) {
+            authURD.setRoleIds(Arrays.stream(roleList.split(",")).map(Long::parseLong).collect(Collectors.toList()));
+        }
+        if (StringUtils.isNotBlank(orgList)) {
+            authURD.setDeptIds(Arrays.stream(orgList.split(",")).map(Long::parseLong).collect(Collectors.toList()));
+        }
+        Set<String> accountSet = AuthUtils.accountByURD(authURD);
+        if (accountSet == null) accountSet = new HashSet<>();
+        if (StringUtils.isNotBlank(reciUsers)) {
+            accountSet.addAll(Arrays.stream(reciUsers.split(",")).collect(Collectors.toSet()));
+        }
+        if (CollectionUtils.isNotEmpty(accountSet)) {
+            emailTemplateDTO.setReciUsers(String.join(",", accountSet));
+        }
+    }
+
     @Async("priorityExecutor")
     public void sendReport(GlobalTaskInstance taskInstance, SysUserEntity user, Boolean isTempTask) {
 
@@ -177,6 +196,9 @@ public class EmailTaskHandler extends TaskHandler implements Job {
             token = tokenByUser(user);
             XpackPixelEntity xpackPixelEntity = buildPixel(emailTemplateDTO);
             // 下面继续执行发送邮件的
+            if (StringUtils.isNotBlank(emailTemplateDTO.getRoleList()) || StringUtils.isNotBlank(emailTemplateDTO.getOrgList()))
+                formatReci(emailTemplateDTO);
+            LogUtil.info(String.format("recipients list is [%s]", emailTemplateDTO.getReciUsers()));
             String recipients = emailTemplateDTO.getRecipients();
             String reciUsers = emailTemplateDTO.getReciUsers();
             Integer extWaitTime = emailTemplateDTO.getExtWaitTime();

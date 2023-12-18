@@ -1182,6 +1182,7 @@ export default {
     chart_bar_stack: '堆疊柱狀圖',
     chart_percentage_bar_stack: '百分比柱狀圖',
     chart_bar_horizontal: '橫嚮柱狀圖',
+    chart_bar_time_range: '時間條形圖',
     chart_bar_stack_horizontal: '橫嚮堆疊柱狀圖',
     chart_percentage_bar_stack_horizontal: '橫嚮百分比柱狀圖',
     chart_bidirectional_bar: '對稱柱狀圖',
@@ -1491,6 +1492,7 @@ export default {
     dynamic: '動態值',
     gauge_size_field_delete: '動態值中字段發生變更，請重新編輯',
     chart_group: '子類別',
+    chart_bar_time: '起止時間',
     chart_bar_group: '分組柱狀圖',
     chart_bar_group_stack: '分組堆疊柱狀圖',
     field_dynamic: '動態值',
@@ -1518,6 +1520,7 @@ export default {
     ignore_data: '隱藏空值',
     empty_data_field_ctrl: '字段設置',
     sub_dimension_tip: '該字段為必填項，且不應使用類別軸中的字段，若無需該字段，請選擇基礎圖表進行展示，否則展示效果不理想',
+    time_bar_tip: '該字段為必填項，且需要兩個時間類型字段',
     drill_dimension_tip: '鑽取字段僅支持數據集中的字段',
     table_scroll_tip: '明細表僅在分頁模式為"下拉"時生效。',
     table_threshold_tip: '提示：請勿重複選擇字段，若同一字段重複配置，則只有最後的字段配置生效。',
@@ -2035,6 +2038,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    required_tips: '必填項不能爲空！',
     filter_no_select: '過濾組件無需選擇',
     first_item: '首項',
     forbidden_copy: '當前組件不允許復製',

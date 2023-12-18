@@ -28,10 +28,21 @@
         class="condition-content"
         :class="{'condition-content-default' : !(element.options.attrs.showTitle && element.options.attrs.title)}"
       >
+
+        <div
+          v-if="element.options.attrs.required"
+          class="widget-required-symbol"
+        >
+          <span>*</span>
+        </div>
+
         <div
           class="condition-content-container"
           :class="{'widget-required' : element.options.attrs.required}"
         >
+          <!-- <div class="required-msg-container">
+            <span>必填项不能为空</span>
+          </div> -->
           <div class="first-element">
             <div
               :class="element.component === 'de-select-grid' ? 'first-element-grid-container': ''"
@@ -58,12 +69,7 @@
           </div>
 
         </div>
-        <div
-          v-if="element.options.attrs.required"
-          class="widget-required-symbol"
-        >
-          <span>*</span>
-        </div>
+
       </div>
     </div>
   </div>
@@ -281,13 +287,13 @@ export default {
   width: 100%;
   .widget-required {
     width: calc(100% - 12px) !important;
-    float: left !important;
+    float: right !important;
   }
   .widget-required-symbol {
     color: #f54a45;
     height: 40px;
     line-height: 40px;
-    float: right;
+    float: left;
     width: 12px;
   }
 }

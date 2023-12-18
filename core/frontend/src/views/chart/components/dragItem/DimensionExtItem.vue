@@ -119,11 +119,18 @@
                 >{{ $t('chart.y_W') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{ $t('chart.y_M_d') }}</el-dropdown-item>
                 <el-dropdown-item
+                  v-if="!hideSpecial"
                   :command="beforeDateStyle('H_m_s')"
                   divided
                 >{{ $t('chart.H_m_s') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeDateStyle('y_M_d_H')">{{ $t('chart.y_M_d_H') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m')">{{ $t('chart.y_M_d_H_m') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-if="!hideSpecial"
+                  :command="beforeDateStyle('y_M_d_H')"
+                >{{ $t('chart.y_M_d_H') }}</el-dropdown-item>
+                <el-dropdown-item
+                  :command="beforeDateStyle('y_M_d_H_m')"
+                  :divided="hideSpecial"
+                >{{ $t('chart.y_M_d_H_m') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m_s')">{{ $t('chart.y_M_d_H_m_s') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
@@ -208,6 +215,11 @@ export default {
     return {
       tagType: getItemType(this.dimensionData, this.quotaData, this.item),
       showDateExt: false
+    }
+  },
+  computed: {
+    hideSpecial() {
+      return this.chart.type === 'bar-time-range'
     }
   },
   watch: {
@@ -299,10 +311,10 @@ export default {
     },
     getDateExtStatus() {
       if (this.chart) {
-        this.showDateExt = this.chart.datasourceType === 'mysql' ||
+        this.showDateExt = (this.chart.datasourceType === 'mysql' ||
           this.chart.datasourceType === 'ds_doris' ||
           this.chart.datasourceType === 'StarRocks' ||
-          this.chart.datasetMode === 1
+          this.chart.datasetMode === 1) && this.chart.type !== 'bar-time-range'
       } else {
         this.showDateExt = false
       }

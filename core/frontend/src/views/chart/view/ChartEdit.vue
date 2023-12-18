@@ -687,12 +687,14 @@
                       v-if="view.type === 'bar-group'
                         || view.type === 'bar-group-stack'
                         || (view.render === 'antv' && view.type === 'line')
-                        || view.type === 'flow-map'"
+                        || view.type === 'flow-map'
+                        || view.type === 'bar-time-range'"
                       class="padding-lr"
                     >
                       <span class="data-area-label">
                         <span>
-                          <span v-if="view.type !=='flow-map'">{{ $t('chart.chart_group') }}</span>
+                          <span v-if="view.type === 'bar-time-range'">{{ $t('chart.chart_bar_time') }}</span>
+                          <span v-else-if="view.type !== 'flow-map'">{{ $t('chart.chart_group') }}</span>
                           <span v-else-if="view.type === 'flow-map'">{{ $t('chart.end_point') }}</span>
                           <span
                             v-show="view.type !== 'line'"
@@ -708,7 +710,12 @@
                           placement="bottom"
                         >
                           <div slot="content">
-                            {{ $t('chart.sub_dimension_tip') }}
+                            <template v-if="view.type === 'bar-time-range'">
+                              {{ $t('chart.time_bar_tip') }}
+                            </template>
+                            <template v-else>
+                              {{ $t('chart.sub_dimension_tip') }}
+                            </template>
                           </div>
                           <i
                             class="el-icon-info"
@@ -739,7 +746,7 @@
                             :dimension-data="dimension"
                             :quota-data="quota"
                             :chart="chart"
-                            @onDimensionItemChange="dimensionItemChange"
+                            @onDimensionItemChange="dimensionExtItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
                             @editItemFilter="showDimensionEditFilter"
                             @onNameEdit="showRename"
@@ -755,7 +762,7 @@
                     </el-row>
                     <!--yaxis-->
                     <el-row
-                      v-if="!equalsAny(view.type , 'table-info', 'label', 'flow-map')"
+                      v-if="!equalsAny(view.type , 'table-info', 'label', 'flow-map', 'bar-time-range')"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -2122,7 +2129,7 @@ export default {
       return equalsAny(this.view.type, 'table-normal', 'table-info')
     },
     showAnalyseCfg() {
-      if (this.view.type === 'bidirectional-bar') {
+      if (this.view.type === 'bidirectional-bar' || this.view.type === 'bar-time-range') {
         return false
       }
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'liquid') ||
@@ -2502,7 +2509,7 @@ export default {
         }
       })
       if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map', 'race-bar') ||
-        (view.render === 'antv' && (view.type === 'line' || view.type === 'scatter'))) {
+        (view.render === 'antv' && (view.type === 'line' || view.type === 'scatter' || view.type === 'bar-time-range'))) {
         view.xaxisExt.forEach(function(ele) {
           if (!ele.dateStyle || ele.dateStyle === '') {
             ele.dateStyle = 'y_M_d'
@@ -2843,6 +2850,16 @@ export default {
     },
 
     dimensionItemChange(item) {
+      this.calcData(true)
+    },
+
+    dimensionExtItemChange(item) {
+      if (this.view.type === 'bar-time-range') {
+        this.view.xaxisExt.forEach(ext => {
+          ext.dateStyle = item.dateStyle
+          ext.datePattern = item.datePattern
+        })
+      }
       this.calcData(true)
     },
 
@@ -3309,6 +3326,19 @@ export default {
       this.dragMoveDuplicate(this.view.xaxisExt, e)
       if (this.view.type !== 'table-info') {
         this.dragCheckType(this.view.xaxisExt, 'd')
+      }
+      if (this.view.type === 'bar-time-range') {
+        // 针对时间条形图，需要限定类型为时间类型
+        if (this.view.xaxisExt && this.view.xaxisExt.length > 0) {
+          for (let i = this.view.xaxisExt.length - 1; i >= 0; i--) {
+            if (this.view.xaxisExt[i].deType !== 1) {
+              this.view.xaxisExt.splice(i, 1)
+            }
+          }
+        }
+        if (this.view.xaxisExt.length > 2) {
+          this.view.xaxisExt = [this.view.xaxisExt[0], this.view.xaxisExt[1]]
+        }
       }
       if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'scatter') && this.view.xaxisExt.length > 1) {
         this.view.xaxisExt = [this.view.xaxisExt[0]]

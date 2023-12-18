@@ -830,7 +830,6 @@ export default {
         const filters = this.filter.filter
         const group = this.groupRequiredInvalid(filters)
         if (group.unReady?.length) {
-          this.view && (this.view.unReadyMsg = '请先完成必填项过滤器！')
           this.getDataLoading = false
           return
         } else {
