@@ -173,7 +173,7 @@
                     <div class="select-filed">
                       <el-select
                         v-model="targetViewInfo.targetFieldId"
-                        :disabled="viewIdFieldArrayMap[targetViewInfo.targetViewId]&&viewIdFieldArrayMap[targetViewInfo.targetViewId].length===1 && viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 0"
+                        :disabled="targetViewInfo.targetFieldId === 'empty'"
                         filterable
                         style="width: 100%"
                         size="mini"
@@ -389,7 +389,7 @@
 <script>
 import { queryPanelJumpInfo, queryWithViewId, updateJumpSet } from '@/api/panel/linkJump'
 import { groupTree } from '@/api/panel/panel'
-import { detailList } from '@/api/panel/panelView'
+import {detailList, getComponentInfo} from '@/api/panel/panelView'
 import { mapState } from 'vuex'
 
 import draggable from 'vuedraggable'
@@ -627,16 +627,16 @@ export default {
     },
     // 获取当前视图字段 关联仪表板的视图信息列表
     getPanelViewList(panelId) {
-      detailList(panelId).then(rsp => {
+      getComponentInfo(panelId).then(rsp => {
         this.viewIdFieldArrayMap = {}
-        this.currentLinkPanelViewArray = rsp.data
+        this.currentLinkPanelViewArray = rsp.data.panelViewTables
         if (this.currentLinkPanelViewArray) {
           this.currentLinkPanelViewArray.forEach(view => {
             this.viewIdFieldArrayMap[view.id] = view.tableFields
           })
         }
         // 增加过滤组件匹配
-        this.componentData.forEach(componentItem => {
+        JSON.parse(rsp.data.bashComponentData).forEach(componentItem => {
           if (componentItem.type === 'custom') {
             this.currentLinkPanelViewArray.push({
               id: componentItem.id,
@@ -676,7 +676,11 @@ export default {
       }
     },
     viewInfoOnChange(targetViewInfo) {
-      targetViewInfo.targetFieldId = null
+      if (this.viewIdFieldArrayMap[targetViewInfo.targetViewId] && this.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 && this.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty') {
+        targetViewInfo.targetFieldId = 'empty'
+      } else {
+        targetViewInfo.targetFieldId = null
+      }
     },
     sourceFieldCheckedChange(data) {
       if (data.checked) {
