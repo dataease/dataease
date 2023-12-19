@@ -1274,7 +1274,7 @@ public class ExtractDataService {
         String excelCompletion = "";
 
         for (DatasetTableField datasetTableField : datasetTableFields) {
-            if (datasetTableField.getDeExtractType().equals(DeTypeConstants.DE_BINARY)) {
+            if (datasetTableField.getDeExtractType().equals(DeTypeConstants.DE_BINARY) || datasetTableField.getType().equalsIgnoreCase("blob")) {
                 handleBinaryTypeCode.append("\n").append(handleBinaryType.replace("FIELD", datasetTableField.getDataeaseName()));
             }
         }

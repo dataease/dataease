@@ -428,7 +428,6 @@ public class OracleQueryProvider extends QueryProvider {
         chartViewFieldDTO.setOriginName("ROWNUM");
         xAxis.add(chartViewFieldDTO);
 
-
         List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>();
         for (ChartFieldCustomFilterDTO chartFieldCustomFilterDTO : OrgFieldCustomFilter) {
             fieldCustomFilter.add(chartFieldCustomFilterDTO);
@@ -440,17 +439,28 @@ public class OracleQueryProvider extends QueryProvider {
         chartFieldCustomFilterDTO.setField(datasetTableField);
 
         List<ChartCustomFilterItemDTO> filterItemDTOS = new ArrayList<>();
-        ChartCustomFilterItemDTO itemDTO = new ChartCustomFilterItemDTO();
-        itemDTO.setTerm("le");
-        itemDTO.setValue(String.valueOf(pageInfo.getGoPage() * pageInfo.getPageSize()));
-        filterItemDTOS.add(itemDTO);
+        if (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) {
+            ChartCustomFilterItemDTO itemDTO = new ChartCustomFilterItemDTO();
+            itemDTO.setTerm("le");
+            itemDTO.setValue(String.valueOf(pageInfo.getGoPage() * pageInfo.getPageSize()));
+            filterItemDTOS.add(itemDTO);
+        }
         chartFieldCustomFilterDTO.setFilter(filterItemDTOS);
         fieldCustomFilter.add(chartFieldCustomFilterDTO);
 
         if (isTable) {
-            return "SELECT * FROM (" + sqlFix(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+            if (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) {
+                return "SELECT * FROM (" + sqlFix(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+            } else {
+                return "SELECT * FROM (" + sqlFix(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP ";
+            }
+
         } else {
-            return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+            if (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) {
+                return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
+            } else {
+                return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view)) + ") DE_RESULT_TMP ";
+            }
         }
     }
 
