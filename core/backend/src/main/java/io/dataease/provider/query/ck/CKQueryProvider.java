@@ -62,6 +62,9 @@ public class CKQueryProvider extends QueryProvider {
         if (field.indexOf("DATETIME64") > -1) {
             field = "DATETIME64";
         }
+        if (field.indexOf("DECIMAL") > -1) {
+            field = "DECIMAL";
+        }
         switch (field) {
             case "STRING":
             case "VARCHAR":
