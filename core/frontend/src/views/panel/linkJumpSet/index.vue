@@ -173,6 +173,7 @@
                     <div class="select-filed">
                       <el-select
                         v-model="targetViewInfo.targetFieldId"
+                        :disabled="viewIdFieldArrayMap[targetViewInfo.targetViewId]&&viewIdFieldArrayMap[targetViewInfo.targetViewId].length===1 && viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 0"
                         filterable
                         style="width: 100%"
                         size="mini"
@@ -476,6 +477,19 @@ export default {
         hintOptions: { // 自定义提示选项
           completeSingle: false // 当匹配只有一项的时候是否自动补全
         }
+      },
+      widgetSubjectsTrans: {
+        timeYearWidget: '年份过滤组件',
+        timeMonthWidget: '年月过滤组件',
+        timeDateWidget: '日期过滤组件',
+        timeDateRangeWidget: '日期范围过滤组件',
+        textSelectWidget: '文本下拉过滤组件',
+        textSelectGridWidget: '文本列表过滤组件',
+        textInputWidget: '文本搜索过滤组件',
+        textSelectTreeWidget: '下拉树过滤组件',
+        numberSelectWidget: '数字下来过滤组件',
+        numberSelectGridWidget: '数字列表过滤组件',
+        numberRangeWidget: '数值区间过滤组件'
       }
     }
   },
@@ -621,6 +635,17 @@ export default {
             this.viewIdFieldArrayMap[view.id] = view.tableFields
           })
         }
+        // 增加过滤组件匹配
+        this.componentData.forEach(componentItem => {
+          if (componentItem.type === 'custom') {
+            this.currentLinkPanelViewArray.push({
+              id: componentItem.id,
+              type: 'filter',
+              name: componentItem.options.attrs.title ? componentItem.options.attrs.title : this.widgetSubjectsTrans[componentItem.serviceName]
+            })
+            this.viewIdFieldArrayMap[componentItem.id] = [{ id: 'empty', name: this.$t('panel.filter_no_select') }]
+          }
+        })
       })
     },
     panelNodeClick(data, node) {
