@@ -878,52 +878,59 @@ export default {
           this.element.filters = this.filters?.length ? JSON.parse(JSON.stringify(this.filters)) : []
         }
         method(id, this.panelInfo.id, requestInfo).then(response => {
-          // 将视图传入echart组件
-          if (response.success) {
-            this.chart = response.data
-            this.view = response.data
-            if (this.chart.type.includes('table')) {
-              this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
+          try {
+            // 将视图传入echart组件
+            if (response.success) {
+              this.chart = response.data
+              this.view = response.data
+              if (this.chart.type.includes('table')) {
+                this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
+              }
+              this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
+              this.$emit('fill-chart-2-parent', this.chart)
+              this.getDataOnly(response.data, dataBroadcast)
+              this.chart['position'] = this.inTab ? 'tab' : 'panel'
+              // 记录当前数据
+              this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
+              if (this.element.needAdaptor) {
+                const customStyleObj = JSON.parse(this.chart.customStyle)
+                const customAttrObj = JSON.parse(this.chart.customAttr)
+                adaptCurTheme(customStyleObj, customAttrObj)
+                this.chart.customStyle = JSON.stringify(customStyleObj)
+                this.chart.customAttr = JSON.stringify(customAttrObj)
+                viewEditSave(this.panelInfo.id, {
+                  id: this.chart.id,
+                  customStyle: this.chart.customStyle,
+                  customAttr: this.chart.customAttr
+                })
+                this.$store.commit('adaptorStatusDisable', this.element.id)
+              }
+              this.sourceCustomAttrStr = this.chart.customAttr
+              this.sourceCustomStyleStr = this.chart.customStyle
+              this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
+              if (!response.data.drill) {
+                this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+                this.resetDrill()
+              }
+              this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
+              this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
+              this.requestStatus = 'merging'
+              this.mergeScale()
+              this.initCurFields(this.chart)
+              this.requestStatus = 'success'
+              this.httpRequest.status = true
+            } else {
+              console.error('err3-' + JSON.stringify(response))
+              this.requestStatus = 'error'
+              this.message = response.message
             }
-            this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
-            this.$emit('fill-chart-2-parent', this.chart)
-            this.getDataOnly(response.data, dataBroadcast)
-            this.chart['position'] = this.inTab ? 'tab' : 'panel'
-            // 记录当前数据
-            this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
-            if (this.element.needAdaptor) {
-              const customStyleObj = JSON.parse(this.chart.customStyle)
-              const customAttrObj = JSON.parse(this.chart.customAttr)
-              adaptCurTheme(customStyleObj, customAttrObj)
-              this.chart.customStyle = JSON.stringify(customStyleObj)
-              this.chart.customAttr = JSON.stringify(customAttrObj)
-              viewEditSave(this.panelInfo.id, {
-                id: this.chart.id,
-                customStyle: this.chart.customStyle,
-                customAttr: this.chart.customAttr
-              })
-              this.$store.commit('adaptorStatusDisable', this.element.id)
-            }
-            this.sourceCustomAttrStr = this.chart.customAttr
-            this.sourceCustomStyleStr = this.chart.customStyle
-            this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
-            if (!response.data.drill) {
-              this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
-              this.resetDrill()
-            }
-            this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
-            this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
-            this.requestStatus = 'merging'
-            this.mergeScale()
-            this.initCurFields(this.chart)
-            this.requestStatus = 'success'
-            this.httpRequest.status = true
-          } else {
+          } catch (e) {
             console.error('err2-' + JSON.stringify(response))
             this.requestStatus = 'error'
-            this.message = response.message
+            this.message = e.message
           }
           this.isFirstLoad = false
+
           return true
         }).catch(err => {
           console.error('err-' + err)
@@ -946,6 +953,7 @@ export default {
           this.isFirstLoad = false
           return true
         }).finally(() => {
+          console.log('finally')
           this.getDataLoading = false
         })
       }
