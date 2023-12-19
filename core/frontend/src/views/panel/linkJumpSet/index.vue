@@ -134,6 +134,7 @@
                     <div class="select-filed">
                       <el-select
                         v-model="targetViewInfo.targetViewId"
+                        filterable
                         style="width: 100%"
                         size="mini"
                         :placeholder="$t('fu.search_bar.please_select')"
@@ -172,6 +173,8 @@
                     <div class="select-filed">
                       <el-select
                         v-model="targetViewInfo.targetFieldId"
+                        :disabled="targetViewInfo.targetFieldId === 'empty'"
+                        filterable
                         style="width: 100%"
                         size="mini"
                         :placeholder="$t('fu.search_bar.please_select')"
@@ -386,7 +389,7 @@
 <script>
 import { queryPanelJumpInfo, queryWithViewId, updateJumpSet } from '@/api/panel/linkJump'
 import { groupTree } from '@/api/panel/panel'
-import { detailList } from '@/api/panel/panelView'
+import {detailList, getComponentInfo} from '@/api/panel/panelView'
 import { mapState } from 'vuex'
 
 import draggable from 'vuedraggable'
@@ -474,6 +477,19 @@ export default {
         hintOptions: { // 自定义提示选项
           completeSingle: false // 当匹配只有一项的时候是否自动补全
         }
+      },
+      widgetSubjectsTrans: {
+        timeYearWidget: '年份过滤组件',
+        timeMonthWidget: '年月过滤组件',
+        timeDateWidget: '日期过滤组件',
+        timeDateRangeWidget: '日期范围过滤组件',
+        textSelectWidget: '文本下拉过滤组件',
+        textSelectGridWidget: '文本列表过滤组件',
+        textInputWidget: '文本搜索过滤组件',
+        textSelectTreeWidget: '下拉树过滤组件',
+        numberSelectWidget: '数字下来过滤组件',
+        numberSelectGridWidget: '数字列表过滤组件',
+        numberRangeWidget: '数值区间过滤组件'
       }
     }
   },
@@ -611,14 +627,25 @@ export default {
     },
     // 获取当前视图字段 关联仪表板的视图信息列表
     getPanelViewList(panelId) {
-      detailList(panelId).then(rsp => {
+      getComponentInfo(panelId).then(rsp => {
         this.viewIdFieldArrayMap = {}
-        this.currentLinkPanelViewArray = rsp.data
+        this.currentLinkPanelViewArray = rsp.data.panelViewTables
         if (this.currentLinkPanelViewArray) {
           this.currentLinkPanelViewArray.forEach(view => {
             this.viewIdFieldArrayMap[view.id] = view.tableFields
           })
         }
+        // 增加过滤组件匹配
+        JSON.parse(rsp.data.bashComponentData).forEach(componentItem => {
+          if (componentItem.type === 'custom') {
+            this.currentLinkPanelViewArray.push({
+              id: componentItem.id,
+              type: 'filter',
+              name: componentItem.options.attrs.title ? componentItem.options.attrs.title : this.widgetSubjectsTrans[componentItem.serviceName]
+            })
+            this.viewIdFieldArrayMap[componentItem.id] = [{ id: 'empty', name: this.$t('panel.filter_no_select') }]
+          }
+        })
       })
     },
     panelNodeClick(data, node) {
@@ -649,7 +676,11 @@ export default {
       }
     },
     viewInfoOnChange(targetViewInfo) {
-      targetViewInfo.targetFieldId = null
+      if (this.viewIdFieldArrayMap[targetViewInfo.targetViewId] && this.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 && this.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === 'empty') {
+        targetViewInfo.targetFieldId = 'empty'
+      } else {
+        targetViewInfo.targetFieldId = null
+      }
     },
     sourceFieldCheckedChange(data) {
       if (data.checked) {

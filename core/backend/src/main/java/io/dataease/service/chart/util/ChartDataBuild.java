@@ -1333,7 +1333,7 @@ public class ChartDataBuild {
 
             StringBuilder xField = new StringBuilder();
             if (isDrill) {
-                xField.append(row[xAxis.size() - 1]);
+                xField.append(row[xAxis.size() - 1 - 2]); // 由于起止时间字段是放到最后的yField里去查询的，所以要再减两个
             } else {
                 for (int i = 0; i < xAxisBase.size(); i++) {
                     if (i == xAxisBase.size() - 1) {
@@ -1360,24 +1360,25 @@ public class ChartDataBuild {
 
             List<String> values = new ArrayList<>();
 
-            if (row[xAxisBase.size()] == null || row[xAxisBase.size() + 1] == null) {
+            // 由于起止时间字段是放到最后的yField里去查询的，所以拿倒数两个
+            if (row[xAxis.size() - 1] == null || row[xAxis.size() - 2] == null) {
                 continue;
             }
 
-            values.add(row[xAxisBase.size()]);
-            values.add(row[xAxisBase.size() + 1]);
+            values.add(row[xAxis.size() - 2]);
+            values.add(row[xAxis.size() - 1]);
             obj.put("values", values);
 
 
             try {
-                Date date = sdf.parse(row[xAxisBase.size()]);
+                Date date = sdf.parse(row[xAxis.size() - 2]);
                 if (date != null) {
                     dates.add(date);
                 }
             } catch (Exception ignore) {
             }
             try {
-                Date date = sdf.parse(row[xAxisBase.size() + 1]);
+                Date date = sdf.parse(row[xAxis.size() - 1]);
                 if (date != null) {
                     dates.add(date);
                 }

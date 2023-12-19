@@ -3330,7 +3330,10 @@ export default {
       if (this.view.type === 'bar-time-range') {
         // 针对时间条形图，需要限定类型为时间类型
         if (this.view.xaxisExt && this.view.xaxisExt.length > 0) {
+          const baseXaxisExt = this.view.xaxisExt[0]
           for (let i = this.view.xaxisExt.length - 1; i >= 0; i--) {
+            this.view.xaxisExt[i].dateStyle = baseXaxisExt.dateStyle
+            this.view.xaxisExt[i].datePattern = baseXaxisExt.datePattern
             if (this.view.xaxisExt[i].deType !== 1) {
               this.view.xaxisExt.splice(i, 1)
             }

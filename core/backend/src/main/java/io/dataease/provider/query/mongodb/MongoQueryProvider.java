@@ -688,6 +688,121 @@ public class MongoQueryProvider extends QueryProvider {
     }
 
     @Override
+    public String getSQLRangeBar(String table, List<ChartViewFieldDTO> baseXAxis, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, Datasource ds, ChartViewWithBLOBs view) {
+        SQLObj tableObj = SQLObj.builder()
+                .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(MongoConstants.KEYWORD_TABLE, table))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
+                .build();
+        List<SQLObj> xFields = new ArrayList<>();
+        List<SQLObj> xOrders = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(xAxis)) {
+            for (int i = 0; i < xAxis.size(); i++) {
+                ChartViewFieldDTO x = xAxis.get(i);
+                String originField;
+                if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_INT) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(x.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_TIME) {
+                    originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                } else {
+                    originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                }
+                String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
+                // 处理横轴字段
+                xFields.add(getXFields(x, originField, fieldAlias));
+                // 处理横轴排序
+                if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
+                    xOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(x.getSort())
+                            .build());
+                }
+            }
+        }
+        List<SQLObj> yFields = new ArrayList<>();
+        List<String> yWheres = new ArrayList<>();
+        List<SQLObj> yOrders = new ArrayList<>();
+        if (CollectionUtils.isNotEmpty(yAxis)) {
+            for (int i = 0; i < yAxis.size(); i++) {
+                ChartViewFieldDTO y = yAxis.get(i);
+                String originField;
+                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == DeTypeConstants.DE_INT) {
+                    // 解析origin name中有关联的字段生成sql表达式
+                    originField = calcFieldRegex(y.getOriginName(), tableObj);
+                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == DeTypeConstants.DE_TIME) {
+                    originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                } else {
+                    originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
+                }
+                String fieldAlias = String.format(MongoConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i));
+                // 处理纵轴字段
+                yFields.add(getYFields(y, originField, fieldAlias));
+                // 处理纵轴过滤
+                yWheres.add(getYWheres(y, originField, fieldAlias));
+                // 处理纵轴排序
+                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
+                    yOrders.add(SQLObj.builder()
+                            .orderField(originField)
+                            .orderAlias(fieldAlias)
+                            .orderDirection(y.getSort())
+                            .build());
+                }
+            }
+        }
+        // 处理视图中字段过滤
+        String customWheres = transCustomFilterList(tableObj, fieldCustomFilter);
+        // 处理仪表板字段过滤
+        String extWheres = transExtFilterList(tableObj, extFilterRequestList);
+        // row permissions tree
+        String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
+        // 构建sql所有参数
+        List<SQLObj> fields = new ArrayList<>();
+        fields.addAll(xFields);
+        fields.addAll(yFields);
+        List<String> wheres = new ArrayList<>();
+        if (customWheres != null) wheres.add(customWheres);
+        if (extWheres != null) wheres.add(extWheres);
+        if (whereTrees != null) wheres.add(whereTrees);
+        List<SQLObj> groups = new ArrayList<>();
+        groups.addAll(xFields);
+        // 外层再次套sql
+        List<SQLObj> orders = new ArrayList<>();
+        orders.addAll(xOrders);
+        orders.addAll(yOrders);
+        List<String> aggWheres = new ArrayList<>();
+        aggWheres.addAll(yWheres.stream().filter(ObjectUtils::isNotEmpty).collect(Collectors.toList()));
+
+        STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
+        ST st_sql = stg.getInstanceOf("querySql");
+        if (CollectionUtils.isNotEmpty(xFields)) {
+            st_sql.add("groups", xFields);
+            st_sql.add("notUseAs", true);
+        }
+        if (CollectionUtils.isNotEmpty(yFields)) {
+            st_sql.add("aggregators", yFields);
+        }
+        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
+        String sql = st_sql.render();
+
+        ST st = stg.getInstanceOf("querySql");
+        SQLObj tableSQL = SQLObj.builder()
+                .tableName(String.format(MongoConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
+                .build();
+        if (CollectionUtils.isNotEmpty(aggWheres)) st.add("filters", aggWheres);
+        if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
+        if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
+        return sqlLimit(st.render(), view);
+    }
+
+    @Override
+    public String getSQLAsTmpRangeBar(String table, List<ChartViewFieldDTO> baseXAxis, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<ChartFieldCustomFilterDTO> fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, List<ChartViewFieldDTO> extStack, ChartViewWithBLOBs view) {
+        return  getSQLRangeBar("(" + table + ")", baseXAxis, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, extStack, null, view);
+    }
+
+    @Override
     public String searchTable(String table) {
         return "SELECT table_name FROM information_schema.TABLES WHERE table_name ='" + table + "'";
     }
