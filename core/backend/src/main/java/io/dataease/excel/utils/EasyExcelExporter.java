@@ -4,7 +4,8 @@ import com.alibaba.excel.EasyExcel;
 import com.alibaba.excel.write.metadata.style.WriteCellStyle;
 import com.alibaba.excel.write.style.HorizontalCellStyleStrategy;
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.exception.DataEaseException;
+import io.dataease.plugins.common.exception.DataEaseException;
+
 import javax.servlet.http.HttpServletResponse;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;

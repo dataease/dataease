@@ -3,10 +3,12 @@ package io.dataease.plugins.datasource.mongo.provider;
 import com.google.gson.Gson;
 import io.dataease.plugins.common.base.domain.DeDriver;
 import io.dataease.plugins.common.base.mapper.DeDriverMapper;
+import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.mongo.query.MongoConstants;
 import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
@@ -15,9 +17,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import javax.annotation.Resource;
-import java.lang.reflect.Method;
 import java.sql.*;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Properties;
 
@@ -53,18 +55,24 @@ public class MongobiDsProvider extends DefaultJdbcProvider {
                 props.setProperty("password", mongoConfig.getPassword());
             }
         }
-
+        String surpportVersions = null;
         Connection conn;
         String driverClassName ;
         ExtendedJdbcClassLoader jdbcClassLoader;
         if(isDefaultClassLoader(customDriver)){
             driverClassName = defaultDriver;
             jdbcClassLoader = extendedJdbcClassLoader;
+            for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
+                if(value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())){
+                    surpportVersions = value.getSurpportVersions();
+                }
+            }
         }else {
             if(deDriver == null){
                 deDriver = deDriverMapper.selectByPrimaryKey(customDriver);
             }
             driverClassName = deDriver.getDriverClass();
+            surpportVersions = deDriver.getSurpportVersions();
             jdbcClassLoader = getCustomJdbcClassLoader(deDriver);
         }
 
@@ -78,6 +86,11 @@ public class MongobiDsProvider extends DefaultJdbcProvider {
             throw e;
         }finally {
             Thread.currentThread().setContextClassLoader(classLoader);
+        }
+        if(StringUtils.isNotEmpty(surpportVersions) && surpportVersions.split(",").length > 0){
+            if(! Arrays.asList(surpportVersions.split(",")).contains(String.valueOf(conn.getMetaData().getDatabaseMajorVersion()))){
+                DataEaseException.throwException("当前驱动不支持此版本!");
+            };
         }
         return conn;
     }

@@ -1,8 +1,8 @@
 package io.dataease.commons.filter;
 
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.holder.ThreadLocalContextHolder;
 import io.dataease.commons.wrapper.XssAndSqlHttpServletRequestWrapper;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.web.context.request.RequestContextHolder;
@@ -54,7 +54,7 @@ public class SqlFilter implements Filter {
                         response.setCharacterEncoding("UTF-8");
                         response.setContentType("application/json;charset=UTF-8");
                         String msg = ThreadLocalContextHolder.getData().toString();
-                        DEException.throwException(msg);
+                        DataEaseException.throwException(msg);
                         return;
                     }
                 }
@@ -63,7 +63,7 @@ public class SqlFilter implements Filter {
                 response.setCharacterEncoding("UTF-8");
                 response.setContentType("application/json;charset=UTF-8");
                 String msg = ThreadLocalContextHolder.getData().toString();
-                DEException.throwException(msg);
+                DataEaseException.throwException(msg);
                 return;
             }
             chain.doFilter(xssRequest, response);

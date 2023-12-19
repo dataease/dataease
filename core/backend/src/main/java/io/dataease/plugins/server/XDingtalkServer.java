@@ -5,13 +5,12 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
-import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.dingtalk.dto.response.DingQrResult;
 import io.dataease.plugins.xpack.dingtalk.dto.response.DingUserEntity;
@@ -87,19 +86,19 @@ public class XDingtalkServer {
         try {
             Map<String, DingtalkXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((DingtalkXpackService.class));
             if (beansOfType.keySet().size() == 0) {
-                DEException.throwException("缺少钉钉插件");
+                DataEaseException.throwException("缺少钉钉插件");
             }
             dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
             Boolean isOpen = dingtalkXpackService.isOpen();
             if (!isOpen) {
-                DEException.throwException("未开启钉钉");
+                DataEaseException.throwException("未开启钉钉");
             }
             DingUserEntity dingUserEntity = withoutLogin ? dingtalkXpackService.userInfoWithoutLogin(code) : dingtalkXpackService.userInfo(code);
             String username = dingUserEntity.getUserid();
             SysUserEntity sysUserEntity = authUserService.getUserByDingtalkId(username);
             if (null == sysUserEntity) {
                 if (authUserService.checkScanCreateLimit())
-                    DEException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
+                    DataEaseException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
                 String email = StringUtils.isNotBlank(dingUserEntity.getOrg_email()) ? dingUserEntity.getOrg_email() : StringUtils.isNotBlank(dingUserEntity.getEmail()) ? dingUserEntity.getEmail() : (username + "@dingtalk.work");
                 sysUserService.validateExistUser(username, dingUserEntity.getName(), email);
                 sysUserService.saveDingtalkCUser(dingUserEntity, email);
@@ -162,7 +161,7 @@ public class XDingtalkServer {
             response.sendRedirect(url);
         } catch (IOException e) {
             LogUtil.error(e.getMessage(), e);
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -188,7 +187,7 @@ public class XDingtalkServer {
             }
             Boolean isOpen = authUserService.supportDingtalk();
             if (!isOpen) {
-                DEException.throwException("未开启钉钉");
+                DataEaseException.throwException("未开启钉钉");
             }
             dingtalkXpackService = SpringContextUtil.getBean(DingtalkXpackService.class);
             DingUserEntity dingUserEntity = dingtalkXpackService.userInfo(code);

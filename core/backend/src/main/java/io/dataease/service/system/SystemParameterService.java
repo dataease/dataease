@@ -1,17 +1,17 @@
 package io.dataease.service.system;
 
 import io.dataease.commons.constants.ParamConstants;
-import io.dataease.commons.exception.DEException;
+;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.SystemParameterDTO;
-import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtSystemParameterMapper;
 import io.dataease.plugins.common.base.domain.FileMetadata;
 import io.dataease.plugins.common.base.domain.SystemParameter;
 import io.dataease.plugins.common.base.domain.SystemParameterExample;
 import io.dataease.plugins.common.base.mapper.SystemParameterMapper;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.cas.dto.CasSaveResult;
 import io.dataease.plugins.xpack.cas.service.CasXpackService;
@@ -196,9 +196,9 @@ public class SystemParameterService {
     @Transactional
     public void resetCas() {
         Map<String, CasXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((CasXpackService.class));
-        if (beansOfType.keySet().size() == 0) DEException.throwException("当前未启用CAS");
+        if (beansOfType.keySet().size() == 0) DataEaseException.throwException("当前未启用CAS");
         CasXpackService casXpackService = SpringContextUtil.getBean(CasXpackService.class);
-        if (ObjectUtils.isEmpty(casXpackService)) DEException.throwException("当前未启用CAS");
+        if (ObjectUtils.isEmpty(casXpackService)) DataEaseException.throwException("当前未启用CAS");
 
         String loginTypePk = "basic.loginType";
         SystemParameter loginTypeParameter = systemParameterMapper.selectByPrimaryKey(loginTypePk);
@@ -345,7 +345,7 @@ public class SystemParameterService {
                             // It's an image (only BMP, GIF, JPG and PNG are recognized).
                             ImageIO.read(input).toString();
                         } catch (Exception e) {
-                            DEException.throwException("Uploaded images do not meet the image format requirements");
+                            DataEaseException.throwException("Uploaded images do not meet the image format requirements");
                             return;
                         }
                     }

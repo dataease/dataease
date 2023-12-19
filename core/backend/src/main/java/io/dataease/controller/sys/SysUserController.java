@@ -12,7 +12,6 @@ import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -21,11 +20,11 @@ import io.dataease.controller.sys.request.*;
 import io.dataease.controller.sys.response.AuthBindDTO;
 import io.dataease.controller.sys.response.RoleUserItem;
 import io.dataease.controller.sys.response.SysUserGridResponse;
-import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysRole;
 import io.dataease.plugins.common.base.domain.SysUser;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.KeywordRequest;
 import io.dataease.service.sys.SysRoleService;
 import io.dataease.service.sys.SysUserService;
@@ -72,7 +71,7 @@ public class SysUserController {
     public Long transAccount(@RequestBody TransAccountRequest request) {
         String account = request.getAccount();
         if (StringUtils.isBlank(account)) {
-            DEException.throwException("account can not be null");
+            DataEaseException.throwException("account can not be null");
         }
         return sysUserService.uidByAccount(account);
     }
@@ -297,7 +296,7 @@ public class SysUserController {
 
         Boolean valid = StringUtils.equals(WECOM, type) || StringUtils.equals(DINGTALK, type) || StringUtils.equals(LARK, type) || StringUtils.equals(LARKSUITE, type);
         if (!valid) {
-            DEException.throwException("only [wecom, dingtalk, lark, larksuite] is valid");
+            DataEaseException.throwException("only [wecom, dingtalk, lark, larksuite] is valid");
         }
         Long userId = AuthUtils.getUser().getUserId();
         SysUserAssist sysUserAssist = sysUserService.assistInfo(userId);

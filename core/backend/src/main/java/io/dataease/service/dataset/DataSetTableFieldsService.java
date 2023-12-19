@@ -1,11 +1,11 @@
 package io.dataease.service.dataset;
 
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.DatasetTableFieldExample;
 import io.dataease.plugins.common.base.mapper.DatasetTableFieldMapper;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -58,7 +58,7 @@ public class DataSetTableFieldsService {
             }
             List<DatasetTableField> datasetTableFields = datasetTableFieldMapper.selectByExample(datasetTableFieldExample);
             if (CollectionUtils.isNotEmpty(datasetTableFields)) {
-                DEException.throwException(Translator.get("i18n_field_name_repeat"));
+                DataEaseException.throwException(Translator.get("i18n_field_name_repeat"));
             }
         }
     }
