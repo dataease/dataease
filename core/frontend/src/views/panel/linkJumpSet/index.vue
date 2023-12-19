@@ -134,6 +134,7 @@
                     <div class="select-filed">
                       <el-select
                         v-model="targetViewInfo.targetViewId"
+                        filterable
                         style="width: 100%"
                         size="mini"
                         :placeholder="$t('fu.search_bar.please_select')"
@@ -172,6 +173,7 @@
                     <div class="select-filed">
                       <el-select
                         v-model="targetViewInfo.targetFieldId"
+                        filterable
                         style="width: 100%"
                         size="mini"
                         :placeholder="$t('fu.search_bar.please_select')"
