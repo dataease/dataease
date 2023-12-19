@@ -15,9 +15,9 @@ import io.dataease.plugins.common.base.domain.DatasetTable;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.constants.DatasetType;
-import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.datasource.DeSortField;
 import io.dataease.plugins.common.exception.DataEaseException;
+import io.dataease.plugins.common.request.chart.filter.FilterTreeObj;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.datasource.provider.Provider;
@@ -122,7 +122,7 @@ public class DirectFieldService implements DataSetFieldService {
         }
 
         List<DatasetTableField> permissionFields = fields;
-        List<ChartFieldCustomFilterDTO> customFilter = new ArrayList<>();
+        FilterTreeObj customFilter = new FilterTreeObj();
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
         if (userPermissions) {
             //列权限

@@ -1102,7 +1102,10 @@
                           class="el-icon-arrow-down el-icon-delete data-area-clear"
                         />
                       </span>
-                      <div class="tree-btn" @click="openTreeFilter">
+                      <div
+                        class="tree-btn"
+                        @click="openTreeFilter"
+                      >
                         <svg-icon
                           class="svg-background"
                           icon-class="icon-filter_outlined"
@@ -1816,7 +1819,10 @@
         @onEditClose="closeChartCalcField"
       />
     </el-dialog>
-    <FilterTree @filter-data="changeFilterData" ref="filterTree"></FilterTree>
+    <FilterTree
+      ref="filterTree"
+      @filter-data="changeFilterData"
+    />
   </el-row>
 </template>
 
@@ -1993,7 +1999,7 @@ export default {
           assistLine: [],
           threshold: DEFAULT_THRESHOLD
         },
-        customFilter: [],
+        customFilter: {},
         render: 'antv',
         isPlugin: false
       },
@@ -2631,11 +2637,11 @@ export default {
         view.type === 'table-pivot') {
         view.drillFields = []
       }
-      view.customFilter.forEach(function(ele) {
-        if (ele && !ele.filter) {
-          ele.filter = []
-        }
-      })
+      // view.customFilter.forEach(function(ele) {
+      //   if (ele && !ele.filter) {
+      //     ele.filter = []
+      //   }
+      // })
       this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
