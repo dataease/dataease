@@ -229,7 +229,7 @@ def get_releases(page):
       releases=[ x["name"] for x in json.loads(releases) if x["prerelease"] == False ]
    except Exception as e:
       print(str(e))
-      print("获取Release信息失败，请检查服务器到 %s 的网络连接是否正常" % (server_url))
+      print("Failed to obtain Release information, please check the network.")
       exit(1)
    else:
       for release in releases:
@@ -244,10 +244,10 @@ while (page <= 3):
    page += 1
 
 if latest_release == None or latest_release == "":
-   print("未获取到最新版本，请稍候重试")
+   print("Failed to obtain latest version, please try again.")
    exit(1)
 else:
-   print("最新版本为 %s" % (latest_release))
+   print("latest version is %s" % (latest_release))
 
 # 记录最新版本号
 os.popen("echo "+latest_release+" > /tmp/de_latest_release")
@@ -294,7 +294,7 @@ EOF
       exit 1
    fi
 
-   cd ${installer_file%.*}
+   cd ${installer_file%.tar.gz}
    /bin/bash install.sh
 
    cd ..
