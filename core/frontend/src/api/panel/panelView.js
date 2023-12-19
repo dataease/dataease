@@ -7,3 +7,11 @@ export function detailList(panelId) {
     loading: false
   })
 }
+
+export function getComponentInfo(panelId) {
+  return request({
+    url: '/panel/view/getComponentInfo/' + panelId,
+    method: 'get',
+    loading: false
+  })
+}

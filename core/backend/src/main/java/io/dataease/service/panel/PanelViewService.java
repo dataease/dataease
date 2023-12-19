@@ -2,6 +2,7 @@ package io.dataease.service.panel;
 import com.google.gson.JsonArray;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import io.dataease.dto.panel.PanelComponentDTO;
 import io.dataease.ext.ExtChartViewMapper;
 import io.dataease.ext.ExtPanelGroupMapper;
 import io.dataease.ext.ExtPanelViewMapper;
@@ -15,6 +16,7 @@ import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.plugins.common.base.domain.PanelView;
 import io.dataease.plugins.common.base.domain.PanelViewExample;
+import io.dataease.plugins.common.base.mapper.PanelGroupMapper;
 import io.dataease.plugins.common.base.mapper.PanelViewMapper;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -44,6 +46,9 @@ public class PanelViewService {
 
     @Resource
     private ExtChartViewMapper extChartViewMapper;
+
+    @Resource
+    private PanelGroupMapper panelGroupMapper;
 
     private final static String SCENE_TYPE = "scene";
 
@@ -150,6 +155,11 @@ public class PanelViewService {
 
     public List<PanelViewTableDTO> detailList(String panelId) {
         return extPanelViewMapper.getPanelViewDetails(panelId);
+    }
+
+    public PanelComponentDTO getComponentInfo(String panelId){
+        PanelGroupWithBLOBs panelGroup = panelGroupMapper.selectByPrimaryKey(panelId);
+        return new PanelComponentDTO(panelGroup.getPanelData(),detailList(panelId));
     }
 
     public List<PanelView> findPanelViews(String copyId) {
