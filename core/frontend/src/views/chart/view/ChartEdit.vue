@@ -1095,36 +1095,19 @@
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span>{{ $t('chart.result_filter') }}</span>
-                      <draggable
-                        v-model="view.customFilter"
-                        group="drag"
-                        animation="300"
-                        :move="onMove"
-                        class="theme-item-class"
-                        style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
-                        @add="addCustomFilter"
-                        @update="calcData(true)"
-                      >
-                        <transition-group class="draggable-group">
-                          <filter-item
-                            v-for="(item,index) in view.customFilter"
-                            :key="item.id"
-                            :param="param"
-                            :index="index"
-                            :item="item"
-                            :dimension-data="dimension"
-                            :quota-data="quota"
-                            @onFilterItemRemove="filterItemRemove"
-                            @editItemFilter="showEditFilter"
-                          />
-                        </transition-group>
-                      </draggable>
-                      <div
-                        v-if="!view.customFilter || view.customFilter.length === 0"
-                        class="drag-placeholder-style"
-                      >
-                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                      <span class="data-area-label">
+                        <span>{{ $t('chart.result_filter') }}</span>
+                        <span class="setting">已设置</span>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                        />
+                      </span>
+                      <div class="tree-btn" @click="openTreeFilter">
+                        <svg-icon
+                          class="svg-background"
+                          icon-class="icon-filter_outlined"
+                        />
+                        <span>过滤</span>
                       </div>
                     </el-row>
                     <el-row
@@ -1833,6 +1816,7 @@
         @onEditClose="closeChartCalcField"
       />
     </el-dialog>
+    <FilterTree @filter-data="changeFilterData" ref="filterTree"></FilterTree>
   </el-row>
 </template>
 
@@ -1888,7 +1872,7 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/dragItem/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { mapState } from 'vuex'
-
+import FilterTree from './FilterTree.vue'
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import MapMapping from '@/views/chart/components/senior/MapMapping'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
@@ -1924,6 +1908,7 @@ export default {
     ChartComponentG2,
     QuotaExtItem,
     FilterItem,
+    FilterTree,
     FieldEdit,
     TableSelector,
     ResultFilterEditor,
@@ -1941,6 +1926,11 @@ export default {
     PluginCom,
     MapMapping,
     MarkMapDataEditor
+  },
+  provide() {
+    return {
+      filedList: () => this.filedList
+    }
   },
   props: {
     param: {
@@ -2075,6 +2065,9 @@ export default {
     }
   },
   computed: {
+    filedList() {
+      return [...this.dimension, ...this.quota]
+    },
     obj() {
       return {
         view: this.view,
@@ -2298,6 +2291,13 @@ export default {
   },
 
   methods: {
+    changeFilterData(customFilter) {
+      this.view.customFilter = customFilter
+      this.calcData(true)
+    },
+    openTreeFilter() {
+      this.$refs.filterTree.init(this.view.customFilter)
+    },
     includesAny,
     equalsAny,
     setTitle(title, id) {
@@ -4274,7 +4274,29 @@ span {
   position: relative;
   width: 100%;
   display: inline-block;
+  .setting {
+    padding: 0px 4px 0px 4px;
+    border-radius: 2px;
+    background-color: #1F23291A;
+    color: #646A73;
+    position: absolute;
+    top: 1px;
+    right: 23px;
+    z-index: 1;
+  }
 }
+
+.tree-btn {
+    width: 100%;
+    background: #fff;
+    height: 28px;
+    border-radius: 4px;
+    border: 1px solid #BBBFC4;
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    justify-content: center;
+  }
 
 .data-area-clear {
   position: absolute;
