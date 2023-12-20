@@ -52,7 +52,14 @@ public class ChartViewOldDataMergeService {
         for (ChartViewWithBLOBs view : chartViewWithBLOBs) {
             Type filterTokenType = new TypeToken<List<ChartFieldCustomFilterDTO>>() {
             }.getType();
-            List<ChartFieldCustomFilterDTO> fieldCustomFilter = gson.fromJson(view.getCustomFilter(), filterTokenType);
+            List<ChartFieldCustomFilterDTO> fieldCustomFilter;
+            // 尝试将历史数据转成list，如果转换出现异常，则忽略该视图继续执行下一个
+            try {
+                fieldCustomFilter = gson.fromJson(view.getCustomFilter(), filterTokenType);
+            } catch (Exception e) {
+                continue;
+            }
+
             if (CollectionUtils.isEmpty(fieldCustomFilter)) {
                 // 将 '[]' 转换成 '{}'
                 view.setCustomFilter("{}");
@@ -71,18 +78,17 @@ public class ChartViewOldDataMergeService {
                         tree.getItems().add(item);
                     } else {
                         List<ChartCustomFilterItemDTO> filter = filterDTO.getFilter();
-                        if (CollectionUtils.isEmpty(filter)) {
-                            continue;
-                        }
-                        for (ChartCustomFilterItemDTO f : filter) {
-                            FilterTreeItem item = new FilterTreeItem();
-                            item.setType("item");
-                            item.setFieldId(filterDTO.getId());
-                            item.setFilterType(filterDTO.getFilterType());
-                            item.setTerm(f.getTerm());
-                            item.setValue(f.getValue());
-                            item.setEnumValue(new ArrayList<>());
-                            tree.getItems().add(item);
+                        if (CollectionUtils.isNotEmpty(filter)) {
+                            for (ChartCustomFilterItemDTO f : filter) {
+                                FilterTreeItem item = new FilterTreeItem();
+                                item.setType("item");
+                                item.setFieldId(filterDTO.getId());
+                                item.setFilterType(filterDTO.getFilterType());
+                                item.setTerm(f.getTerm());
+                                item.setValue(f.getValue());
+                                item.setEnumValue(new ArrayList<>());
+                                tree.getItems().add(item);
+                            }
                         }
                     }
                 } else {
@@ -97,38 +103,37 @@ public class ChartViewOldDataMergeService {
                             tree.getItems().add(item);
                         } else {
                             List<ChartCustomFilterItemDTO> filter = dto.getFilter();
-                            if (CollectionUtils.isEmpty(filter)) {
-                                continue;
-                            }
-                            if (filter.size() == 1) {
-                                ChartCustomFilterItemDTO f = filter.get(0);
-                                FilterTreeItem item = new FilterTreeItem();
-                                item.setType("item");
-                                item.setFieldId(dto.getId());
-                                item.setFilterType(dto.getFilterType());
-                                item.setTerm(f.getTerm());
-                                item.setValue(f.getValue());
-                                item.setEnumValue(new ArrayList<>());
-                                tree.getItems().add(item);
-                            } else {
-                                FilterTreeItem item = new FilterTreeItem();
-                                item.setType("tree");
-                                item.setEnumValue(new ArrayList<>());
-                                FilterTreeObj subTree = new FilterTreeObj();
-                                subTree.setLogic(dto.getLogic());
-                                subTree.setItems(new ArrayList<>());
-                                for (ChartCustomFilterItemDTO f : filter) {
-                                    FilterTreeItem itemTree = new FilterTreeItem();
-                                    itemTree.setType("item");
-                                    itemTree.setFieldId(dto.getId());
-                                    itemTree.setFilterType(dto.getFilterType());
-                                    itemTree.setTerm(f.getTerm());
-                                    itemTree.setValue(f.getValue());
-                                    itemTree.setEnumValue(new ArrayList<>());
-                                    subTree.getItems().add(itemTree);
+                            if (CollectionUtils.isNotEmpty(filter)) {
+                                if (filter.size() == 1) {
+                                    ChartCustomFilterItemDTO f = filter.get(0);
+                                    FilterTreeItem item = new FilterTreeItem();
+                                    item.setType("item");
+                                    item.setFieldId(dto.getId());
+                                    item.setFilterType(dto.getFilterType());
+                                    item.setTerm(f.getTerm());
+                                    item.setValue(f.getValue());
+                                    item.setEnumValue(new ArrayList<>());
+                                    tree.getItems().add(item);
+                                } else {
+                                    FilterTreeItem item = new FilterTreeItem();
+                                    item.setType("tree");
+                                    item.setEnumValue(new ArrayList<>());
+                                    FilterTreeObj subTree = new FilterTreeObj();
+                                    subTree.setLogic(dto.getLogic());
+                                    subTree.setItems(new ArrayList<>());
+                                    for (ChartCustomFilterItemDTO f : filter) {
+                                        FilterTreeItem itemTree = new FilterTreeItem();
+                                        itemTree.setType("item");
+                                        itemTree.setFieldId(dto.getId());
+                                        itemTree.setFilterType(dto.getFilterType());
+                                        itemTree.setTerm(f.getTerm());
+                                        itemTree.setValue(f.getValue());
+                                        itemTree.setEnumValue(new ArrayList<>());
+                                        subTree.getItems().add(itemTree);
+                                    }
+                                    item.setSubTree(subTree);
+                                    tree.getItems().add(item);
                                 }
-                                item.setSubTree(subTree);
-                                tree.getItems().add(item);
                             }
                         }
                     }
@@ -160,7 +165,15 @@ public class ChartViewOldDataMergeService {
         for (ChartViewCacheWithBLOBs view : chartViewWithBLOBs) {
             Type filterTokenType = new TypeToken<List<ChartFieldCustomFilterDTO>>() {
             }.getType();
-            List<ChartFieldCustomFilterDTO> fieldCustomFilter = gson.fromJson(view.getCustomFilter(), filterTokenType);
+
+            List<ChartFieldCustomFilterDTO> fieldCustomFilter;
+            // 尝试将历史数据转成list，如果转换出现异常，则忽略该视图继续执行下一个
+            try {
+                fieldCustomFilter = gson.fromJson(view.getCustomFilter(), filterTokenType);
+            } catch (Exception e) {
+                continue;
+            }
+
             if (CollectionUtils.isEmpty(fieldCustomFilter)) {
                 // 将 '[]' 转换成 '{}'
                 view.setCustomFilter("{}");
@@ -179,18 +192,17 @@ public class ChartViewOldDataMergeService {
                         tree.getItems().add(item);
                     } else {
                         List<ChartCustomFilterItemDTO> filter = filterDTO.getFilter();
-                        if (CollectionUtils.isEmpty(filter)) {
-                            continue;
-                        }
-                        for (ChartCustomFilterItemDTO f : filter) {
-                            FilterTreeItem item = new FilterTreeItem();
-                            item.setType("item");
-                            item.setFieldId(filterDTO.getId());
-                            item.setFilterType(filterDTO.getFilterType());
-                            item.setTerm(f.getTerm());
-                            item.setValue(f.getValue());
-                            item.setEnumValue(new ArrayList<>());
-                            tree.getItems().add(item);
+                        if (CollectionUtils.isNotEmpty(filter)) {
+                            for (ChartCustomFilterItemDTO f : filter) {
+                                FilterTreeItem item = new FilterTreeItem();
+                                item.setType("item");
+                                item.setFieldId(filterDTO.getId());
+                                item.setFilterType(filterDTO.getFilterType());
+                                item.setTerm(f.getTerm());
+                                item.setValue(f.getValue());
+                                item.setEnumValue(new ArrayList<>());
+                                tree.getItems().add(item);
+                            }
                         }
                     }
                 } else {
@@ -205,38 +217,37 @@ public class ChartViewOldDataMergeService {
                             tree.getItems().add(item);
                         } else {
                             List<ChartCustomFilterItemDTO> filter = dto.getFilter();
-                            if (CollectionUtils.isEmpty(filter)) {
-                                continue;
-                            }
-                            if (filter.size() == 1) {
-                                ChartCustomFilterItemDTO f = filter.get(0);
-                                FilterTreeItem item = new FilterTreeItem();
-                                item.setType("item");
-                                item.setFieldId(dto.getId());
-                                item.setFilterType(dto.getFilterType());
-                                item.setTerm(f.getTerm());
-                                item.setValue(f.getValue());
-                                item.setEnumValue(new ArrayList<>());
-                                tree.getItems().add(item);
-                            } else {
-                                FilterTreeItem item = new FilterTreeItem();
-                                item.setType("tree");
-                                item.setEnumValue(new ArrayList<>());
-                                FilterTreeObj subTree = new FilterTreeObj();
-                                subTree.setLogic(dto.getLogic());
-                                subTree.setItems(new ArrayList<>());
-                                for (ChartCustomFilterItemDTO f : filter) {
-                                    FilterTreeItem itemTree = new FilterTreeItem();
-                                    itemTree.setType("item");
-                                    itemTree.setFieldId(dto.getId());
-                                    itemTree.setFilterType(dto.getFilterType());
-                                    itemTree.setTerm(f.getTerm());
-                                    itemTree.setValue(f.getValue());
-                                    itemTree.setEnumValue(new ArrayList<>());
-                                    subTree.getItems().add(itemTree);
+                            if (CollectionUtils.isNotEmpty(filter)) {
+                                if (filter.size() == 1) {
+                                    ChartCustomFilterItemDTO f = filter.get(0);
+                                    FilterTreeItem item = new FilterTreeItem();
+                                    item.setType("item");
+                                    item.setFieldId(dto.getId());
+                                    item.setFilterType(dto.getFilterType());
+                                    item.setTerm(f.getTerm());
+                                    item.setValue(f.getValue());
+                                    item.setEnumValue(new ArrayList<>());
+                                    tree.getItems().add(item);
+                                } else {
+                                    FilterTreeItem item = new FilterTreeItem();
+                                    item.setType("tree");
+                                    item.setEnumValue(new ArrayList<>());
+                                    FilterTreeObj subTree = new FilterTreeObj();
+                                    subTree.setLogic(dto.getLogic());
+                                    subTree.setItems(new ArrayList<>());
+                                    for (ChartCustomFilterItemDTO f : filter) {
+                                        FilterTreeItem itemTree = new FilterTreeItem();
+                                        itemTree.setType("item");
+                                        itemTree.setFieldId(dto.getId());
+                                        itemTree.setFilterType(dto.getFilterType());
+                                        itemTree.setTerm(f.getTerm());
+                                        itemTree.setValue(f.getValue());
+                                        itemTree.setEnumValue(new ArrayList<>());
+                                        subTree.getItems().add(itemTree);
+                                    }
+                                    item.setSubTree(subTree);
+                                    tree.getItems().add(item);
                                 }
-                                item.setSubTree(subTree);
-                                tree.getItems().add(item);
                             }
                         }
                     }
