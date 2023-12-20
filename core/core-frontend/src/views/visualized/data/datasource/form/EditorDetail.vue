@@ -125,7 +125,7 @@ const initForm = type => {
       startTime: '',
       endTime: '',
       endLimit: '0',
-      cron: '0 0 0/1 *  * ? *'
+      cron: '0 0/1 * * * ? *'
     }
   }
   if (type === 'oracle') {
@@ -362,7 +362,7 @@ const onRateChange = () => {
     form.value.syncSetting.cron = ''
   }
   if (form.value.syncSetting.syncRate === 'SIMPLE_CRON') {
-    form.value.syncSetting.cron = '0 0 0/1 *  * ? *'
+    form.value.syncSetting.cron = '0 0/1 * * * ? *'
     form.value.syncSetting.simpleCronType = 'minute'
   }
   if (form.value.syncSetting.syncRate === 'CRON') {

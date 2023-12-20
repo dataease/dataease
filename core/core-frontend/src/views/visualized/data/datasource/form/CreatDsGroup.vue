@@ -257,6 +257,9 @@ const saveDataset = () => {
       if (cmd.value === 'move' && !checkPid(params.pid)) {
         return
       }
+      if (loading.value) {
+        return
+      }
       loading.value = true
       if (request) {
         let options = {
