@@ -195,7 +195,7 @@
                 <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
                 <el-dropdown-item
-                  v-show="!item.chartId"
+                  v-show="showCustomSort"
                   :command="beforeSort('custom_sort')"
                 >{{ $t('chart.custom_sort') }}...</el-dropdown-item>
               </el-dropdown-menu>
@@ -228,6 +228,7 @@
 import { getItemType, getOriginFieldName } from '@/views/chart/components/dragItem/utils'
 import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldErrorTips'
 import bus from '@/utils/bus'
+import { equalsAny } from '@/utils/StringUtils'
 
 export default {
   name: 'ChartDragItem',
@@ -273,6 +274,10 @@ export default {
         this.chart.datasourceType === 'ds_doris' ||
         this.chart.datasourceType === 'StarRocks' ||
         this.chart.datasetMode === 1
+    },
+    showCustomSort() {
+      return !equalsAny(this.chart.type, 'scatter') &&
+        !this.item.chartId
     }
   },
   watch: {

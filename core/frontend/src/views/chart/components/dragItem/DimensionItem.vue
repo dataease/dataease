@@ -90,9 +90,11 @@
                 <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
                 <el-dropdown-item
-                  v-show="!item.chartId && (item.deType === 0 || item.deType === 5)"
+                  v-show="showCustomSort"
                   :command="beforeSort('custom_sort')"
-                >{{ $t('chart.custom_sort') }}...</el-dropdown-item>
+                >
+                  {{ $t('chart.custom_sort') }}...
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -191,6 +193,7 @@ import { getItemType, getOriginFieldName } from '@/views/chart/components/dragIt
 import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldErrorTips'
 import bus from '@/utils/bus'
 import { formatterItem } from '@/views/chart/chart/formatter'
+import { equalsAny } from '@/utils/StringUtils'
 
 export default {
   name: 'DimensionItem',
@@ -226,6 +229,13 @@ export default {
       tagType: 'success',
       formatterItem: formatterItem,
       showDateExt: false
+    }
+  },
+  computed: {
+    showCustomSort() {
+      return !equalsAny(this.chart.type, 'scatter') &&
+        !this.item.chartId &&
+        (this.item.deType === 0 || this.item.deType === 5)
     }
   },
   watch: {
