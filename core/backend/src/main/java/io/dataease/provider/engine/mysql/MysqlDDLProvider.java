@@ -71,7 +71,7 @@ public class MysqlDDLProvider extends DDLProviderImpl {
     }
 
     @Override
-    public String createTableSql(String tableName, List<DatasetTableField> datasetTableFields, Datasource engine) {
+    public String createTableSql(String tableName, List<DatasetTableField> datasetTableFields, Datasource engine, String version) {
         String dorisTableColumnSql = createDorisTableColumnSql(datasetTableFields);
         return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql);
     }

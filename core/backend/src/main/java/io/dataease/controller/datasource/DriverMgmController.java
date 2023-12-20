@@ -11,6 +11,7 @@ import io.dataease.plugins.common.base.domain.DeDriverDetails;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.util.SpringContextUtil;
+import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.datasource.DriverService;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
@@ -32,6 +33,8 @@ public class DriverMgmController {
 
     @Resource
     private DriverService driverService;
+    @Resource
+    private DatasourceService datasourceService;
 
     @RequiresPermissions("datasource:read")
     @ApiOperation("驱动列表")
@@ -64,7 +67,7 @@ public class DriverMgmController {
         driverDTO.setId("default");
         driverDTO.setName("default");
         driverDTO.setDriverClass("default");
-        SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values().forEach(dataSourceType -> {
+        datasourceService.types().forEach(dataSourceType -> {
             if (dataSourceType.getType().equalsIgnoreCase(type)) {
                 driverDTO.setSurpportVersions(dataSourceType.getSurpportVersions());
             }
