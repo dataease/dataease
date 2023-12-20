@@ -246,7 +246,7 @@ export default {
 .info-tab {
   width: 100%;
   padding: 0 4px;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   box-sizing: border-box;
 
   .title-type {
@@ -261,7 +261,7 @@ export default {
     border-bottom: 1px solid rgba(31, 35, 41, 0.15);
     margin-bottom: 12px;
     .info-item {
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-weight: 400;
       margin: 6px 0 12px 0;
     }

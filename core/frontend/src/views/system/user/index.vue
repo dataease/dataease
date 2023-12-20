@@ -688,7 +688,7 @@ export default {
   flex-wrap: wrap;
 
   .tips {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;
@@ -706,7 +706,7 @@ export default {
 
     .pwd,
     .btn-text {
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
@@ -729,7 +729,7 @@ export default {
     .btn {
       border-radius: 4px;
       padding: 4px 12px 4px 12px;
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-weight: 400;
       line-height: 20px;
@@ -752,7 +752,7 @@ export default {
 
   .title,
   .el-checkbox {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     padding: 5px 0;

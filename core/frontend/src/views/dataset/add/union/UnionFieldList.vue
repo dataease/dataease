@@ -154,7 +154,7 @@ export default {
 .field-block-style {
   height: 100%;
   width: 100%;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   .field-block-head {
     height: 46px;
     display: flex;

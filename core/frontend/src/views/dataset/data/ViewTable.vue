@@ -559,7 +559,7 @@ export default {
 
   .de-dataset-name {
     display: flex;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     align-items: center;
     margin-bottom: 20px;
 

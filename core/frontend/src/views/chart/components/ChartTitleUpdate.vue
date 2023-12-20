@@ -407,7 +407,7 @@ export default {
 .chart-input-title {
   word-break: break-word;
   font: 12px / 1.231 -apple-system, BlinkMacSystemFont, 'Helvetica Neue', Arial,
-    'Microsoft YaHei', 'PingFang SC', sans-serif, 'Segoe UI Symbol';
+    'Microsoft YaHei', 'AlibabaPuHuiTi', sans-serif, 'Segoe UI Symbol';
   overflow: visible;
   margin: 0;
   padding: 0;

@@ -127,7 +127,7 @@ export default {
     Segoe UI,
     Arial,
     Roboto,
-    "PingFang SC",
+    "AlibabaPuHuiTi",
     "miui",
     "Hiragino Sans GB",
     "Microsoft Yahei",
