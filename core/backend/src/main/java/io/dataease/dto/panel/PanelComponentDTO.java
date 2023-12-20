@@ -13,14 +13,14 @@ import java.util.List;
  * Description:
  */
 @Data
-public class PanelViewTableDTO extends ChartViewWithBLOBs {
-    @ApiModelProperty("仪表板ID")
-    private String panelId;
+public class PanelComponentDTO {
 
-    @ApiModelProperty("仪表板数据")
-    private String basePanelData;
+    private String bashComponentData;
 
-    private List<DatasetTableField> tableFields;
+    private List<PanelViewTableDTO> panelViewTables;
 
-
+    public PanelComponentDTO(String bashComponentData, List<PanelViewTableDTO> panelViewTables) {
+        this.bashComponentData = bashComponentData;
+        this.panelViewTables = panelViewTables;
+    }
 }

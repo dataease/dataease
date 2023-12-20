@@ -2231,6 +2231,7 @@ export default {
     export_to_app: '導出爲應用',
     preview: '預覽',
     fullscreen_preview: '全屏預覽',
+    fullscreen_exit: '退出全屏',
     new_tab_preview: '新Tab頁預覽',
     select_panel_from_left: '請從左側選擇儀表闆',
     template_name: '模闆名稱',

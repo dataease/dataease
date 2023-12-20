@@ -122,13 +122,6 @@
                 src="@/assets/wizard_wechat-official.jpeg"
               >
             </div>
-            <div class="contact_wechat_group">
-              <div class="contact_title_qr">{{ $t('wizard.technical_group') }}</div>
-              <img
-                class="contact_wechat_group_img"
-                src="../../assets/wizard_wechat-group.png"
-              >
-            </div>
           </div>
         </el-row>
 
