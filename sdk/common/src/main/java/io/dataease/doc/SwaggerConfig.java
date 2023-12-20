@@ -70,14 +70,25 @@ public class SwaggerConfig {
     }
 
     @Bean
+    public GroupedOpenApi basicSettingApi() {
+        String[] packageArray = {
+                "io.dataease.system",
+                "io.dataease.map",
+        };
+        return GroupedOpenApi.builder().group("5-xpackpermission").displayName("系统设置").packagesToScan(packageArray).build();
+    }
+
+    @Bean
     public GroupedOpenApi baseXpackApi() {
-        return GroupedOpenApi.builder().group("5-xpackbase").displayName("基础xpack").packagesToScan("io.dataease.xpack.base").build();
+        return GroupedOpenApi.builder().group("6-xpackbase").displayName("基础xpack").packagesToScan("io.dataease.xpack.base").build();
     }
 
     @Bean
     public GroupedOpenApi systemApi() {
-        return GroupedOpenApi.builder().group("6-xpackpermission").displayName("权限相关xpack").packagesToScan("io.dataease.xpack.permissions").build();
+        return GroupedOpenApi.builder().group("7-xpackpermission").displayName("权限相关xpack").packagesToScan("io.dataease.xpack.permissions").build();
     }
+
+
 
 
 }
