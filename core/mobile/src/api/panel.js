@@ -66,7 +66,7 @@ export function starStatus(panelId) {
     return request({
       url: '/api/store/status/' + panelId,
       method: 'post',
-      loading: true
+      loading: false
     })
 }
 
@@ -74,7 +74,7 @@ export function viewPanelLog(data) {
   return request({
     url: 'panel/group/viewLog',
     method: 'post',
-    loading: true,
+    loading: false,
     data
   })
 }
