@@ -71,6 +71,7 @@ public class ViewExportExcel {
 
         Map<String, ChartExtRequest> result = new HashMap<>();
         Map<String, List<ChartExtFilterRequest>> panelFilters = justView ? FilterBuildTemplate.buildFilters(components) : FilterBuildTemplate.buildEmpty(components);
+        List<String> tableInfoViewIds = findTableInfoViewIds(components);
         for (Map.Entry<String, List<ChartExtFilterRequest>> entry : panelFilters.entrySet()) {
             List<ChartExtFilterRequest> chartExtFilterRequests = entry.getValue();
             ChartExtRequest chartExtRequest = new ChartExtRequest();
@@ -78,9 +79,24 @@ public class ViewExportExcel {
             chartExtRequest.setFilter(chartExtFilterRequests);
             chartExtRequest.setResultCount((int) resultCount);
             chartExtRequest.setResultMode(resultMode);
+            if(tableInfoViewIds.contains(entry.getKey())){
+                chartExtRequest.setGoPage(1L);
+                chartExtRequest.setPageSize(1000000L);
+                chartExtRequest.setExcelExportFlag(true);
+            }
             result.put(entry.getKey(), chartExtRequest);
         }
         return result;
+    }
+
+    private List<String> findTableInfoViewIds(List<Map<String, Object>> components) {
+        List<String> tableInfoViewIds = new ArrayList<>();
+        components.forEach(element -> {
+            if (StringUtils.equals(element.get("type").toString(), "view") && StringUtils.equals(((Map<String, Object>) element.get("propValue")).get("innerType").toString(), "table-info")) {
+                tableInfoViewIds.add(((Map<String, Object>) element.get("propValue")).get("viewId").toString());
+            }
+        });
+        return tableInfoViewIds;
     }
 
     private ExcelSheetModel viewFiles(String viewId, ChartExtRequest request) {
