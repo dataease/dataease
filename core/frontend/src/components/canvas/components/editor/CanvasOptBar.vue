@@ -1,6 +1,7 @@
 <template>
 
   <div
+    id="fullscreenElement"
     :class="containerClass"
   >
 
@@ -36,6 +37,15 @@
             style="width: 12px;height: 12px"
             icon-class="link-down"
           />{{ $t('panel.down') }}</span></el-button>
+        <el-button
+          id="fullscreenElement"
+          size="mini"
+          @click="toggleFullscreen"
+        >
+          <span><svg-icon
+            style="width: 12px;height: 12px"
+            :icon-class="fullscreenState?'public_fullscreen_exit':'public_fullscreen'"
+          />{{ fullscreenState?$t('panel.fullscreen_exit'): $t('panel.fullscreen_preview') }}</span></el-button>
       </el-button-group>
     </div>
 
@@ -66,7 +76,8 @@ export default {
   },
   data() {
     return {
-
+      fullscreenElement: null,
+      fullscreenState: false
     }
   },
   computed: {
@@ -99,7 +110,37 @@ export default {
       'componentData'
     ])
   },
+
+  mounted() {
+    this.fullscreenElement = document.getElementById('fullscreenElement')
+    document.addEventListener('fullscreenchange', this.handleFullscreenChange)
+  },
+  beforeDestroy() {
+    // 在组件销毁前移除事件监听器
+    document.removeEventListener('fullscreenchange', this.handleFullscreenChange)
+  },
   methods: {
+    handleFullscreenChange() {
+      // 在全屏状态变化时触发此方法
+      if (document.fullscreenElement) {
+        this.fullscreenState = true
+      } else {
+        this.fullscreenState = false
+      }
+    },
+    toggleFullscreen() {
+      if (!document.fullscreenElement) {
+        // 如果当前不是全屏状态，则启动全屏
+        document.documentElement.requestFullscreen().catch(error => {
+          console.error('Request fullscreen failed:', error)
+        })
+      } else {
+        // 如果当前是全屏状态，则退出全屏
+        document.exitFullscreen().catch(error => {
+          console.error('Exit fullscreen failed:', error)
+        })
+      }
+    },
     clearAllLinkage() {
       this.$store.commit('clearPanelLinkageInfo')
       bus.$emit('clear_panel_linkage', { viewId: 'all' })
