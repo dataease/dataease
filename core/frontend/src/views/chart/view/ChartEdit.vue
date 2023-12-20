@@ -1097,13 +1097,15 @@
                     >
                       <span class="data-area-label">
                         <span>{{ $t('chart.result_filter') }}</span>
-                        <span class="setting">已设置</span>
+                        <span v-if="!!view.customFilter.logic" class="setting">已设置</span>
                         <i
+                          @click="deleteTreeFilter"
                           class="el-icon-arrow-down el-icon-delete data-area-clear"
                         />
                       </span>
                       <div
                         class="tree-btn"
+                        :class="!!view.customFilter.logic && 'active'"
                         @click="openTreeFilter"
                       >
                         <svg-icon
@@ -1877,6 +1879,7 @@ import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/dragItem/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import _ from 'lodash'
 import { mapState } from 'vuex'
 import FilterTree from './FilterTree.vue'
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
@@ -2298,11 +2301,14 @@ export default {
 
   methods: {
     changeFilterData(customFilter) {
-      this.view.customFilter = customFilter
+      this.view.customFilter = _.cloneDeep(customFilter)
       this.calcData(true)
     },
     openTreeFilter() {
-      this.$refs.filterTree.init(this.view.customFilter)
+      this.$refs.filterTree.init(_.cloneDeep(this.view.customFilter))
+    },
+    deleteTreeFilter() {
+      this.changeFilterData({})
     },
     includesAny,
     equalsAny,
@@ -4295,13 +4301,20 @@ span {
 .tree-btn {
     width: 100%;
     background: #fff;
-    height: 28px;
+    height: 32px;
     border-radius: 4px;
-    border: 1px solid #BBBFC4;
+    border: 1px solid #DCDFE6;
     display: flex;
+    color: #CCCCCC;
     align-items: center;
     cursor: pointer;
     justify-content: center;
+    font-size: 12px;
+
+    &.active {
+      color: #3370FF;
+      border-color: #3370FF;
+    }
   }
 
 .data-area-clear {

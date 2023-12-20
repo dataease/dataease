@@ -32,6 +32,7 @@
 import rowAuth from '@/views/dataset/data/components/rowAuth.vue'
 export default {
   name: 'FilterTree',
+  inject: ['filedList'],
   components: {
     rowAuth
   },
@@ -39,6 +40,16 @@ export default {
         return {
             dialogVisible: false,
         }
+  },
+  computed: {
+    computedFiledList() {
+      return this.filedList().reduce((pre, next) => {
+        if (next.id !== 'count') {
+          pre[next.id] = next
+        }
+          return pre
+        }, {})
+      }
     },
     methods: {
         closeFilter() {
@@ -54,15 +65,39 @@ export default {
               })
               return
             }
+            this.dfsTreeDelete(items)
             this.$emit('filter-data', { logic, items })
             this.dialogVisible = false
-        },
-        init(tree) {
-          this.dialogVisible = true
-          this.$nextTick(() => {
-            this.$refs.rowAuth.init(tree || {})
-            })
-        }
+      },
+      dfsTreeDelete(arr) {
+        arr.forEach((ele) => {
+          if (ele?.subTree?.items?.length) {
+            this.dfsTreeDelete(ele.subTree.items)
+          } else {
+            if (ele.field) {
+               this.$delete(ele, 'field')
+            }
+          }
+        })
+      },
+      dfsTree(arr) {
+        arr.forEach((ele) => {
+          if (ele?.subTree?.items?.length) {
+            this.dfsTree(ele.subTree.items)
+          } else {
+            if (this.computedFiledList[ele.fieldId]) {
+              ele.field = this.computedFiledList[ele.fieldId]
+            }
+          }
+        })
+      },
+      init(tree) {
+        this.dialogVisible = true
+        this.$nextTick(() => {
+          this.dfsTree(tree.items || [])
+          this.$refs.rowAuth.init(tree || {})
+        })
+      }
     }
 }
 </script>
