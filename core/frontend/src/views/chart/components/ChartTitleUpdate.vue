@@ -280,11 +280,6 @@ export default {
       ) {
         view.drillFields = []
       }
-      // view.customFilter.forEach(function(ele) {
-      //   if (ele && !ele.filter) {
-      //     ele.filter = []
-      //   }
-      // })
       view.xaxis = JSON.stringify(view.xaxis)
       view.viewFields = JSON.stringify(view.viewFields)
       view.xaxisExt = JSON.stringify(view.xaxisExt)
