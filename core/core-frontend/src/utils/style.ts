@@ -198,14 +198,6 @@ export function getCanvasStyle(canvasStyleData) {
   return style
 }
 
-// export function createGroupStyle(groupComponent) {
-//   const parentStyle = groupComponent.style
-//   groupComponent.propValue.forEach(component => {
-//     component.style.left = component.style.left - parentStyle.left
-//     component.style.top = component.style.top - parentStyle.top
-//   })
-// }
-
 export function createGroupStyle(groupComponent) {
   const parentStyle = groupComponent.style
   groupComponent.propValue.forEach(component => {

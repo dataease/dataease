@@ -289,7 +289,7 @@ export function filterEmptyFolderTree(nodes) {
 
 export function findParentIdByChildIdRecursive(tree, targetChildId) {
   function findParentId(node, targetChildId) {
-    if (node.type === 'folder' && node.children) {
+    if (node.children) {
       for (const childNode of node.children) {
         if (childNode.id === targetChildId) {
           return node.id // 找到匹配的子节点，返回其父节点的 ID

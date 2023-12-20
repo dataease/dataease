@@ -1185,9 +1185,7 @@ const userViewEnlargeOpen = (opt, item) => {
 }
 
 const initSnapshotTimer = () => {
-  console.log('check1==')
   snapshotTimer.value = setInterval(() => {
-    console.log('check2==')
     snapshotStore.snapshotCatchToStore()
   }, 1000)
 }

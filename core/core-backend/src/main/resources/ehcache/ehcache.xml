@@ -10,26 +10,6 @@
 
     <persistence directory="/opt/dataease2.0/cache" />
 
-    <!--<cache alias="AlertsConfig" uses-template="heap-cache"/>
-    <cache alias="Alerts" uses-template="alerts-template"/>
-
-    <cache-template name="heap-cache">
-        <resources>
-            <heap unit="entries">1</heap>
-            <offheap unit="MB">1</offheap>
-            <disk persistent="true" unit="MB">100</disk>
-        </resources>
-    </cache-template>
-
-
-    <cache-template name="alerts-template">
-        <resources>
-            <heap unit="entries">1</heap>
-            <offheap unit="MB">1</offheap>
-            <disk persistent="true" unit="MB">100</disk>
-        </resources>
-    </cache-template>-->
-
     <cache-template name="common-cache">
         <expiry>
             <none/>
@@ -138,14 +118,6 @@
     <cache alias="core_menu_cache" uses-template="common-cache">
         <key-type>java.lang.String</key-type>
         <value-type>java.util.List</value-type>
-        <!--<expiry>
-            <none/>
-        </expiry>
-        <resources>
-            <heap unit="entries">20</heap>
-            <offheap unit="MB">2</offheap>
-            <disk unit="MB" persistent="true">5</disk>
-        </resources>-->
     </cache>
 
 </config>

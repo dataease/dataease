@@ -8,7 +8,7 @@
     <de-custom-tab
       v-model="editableTabsValue"
       @tab-add="addTab"
-      :addable="isEdit"
+      :addable="isEditMode"
       :font-color="fontColor"
       :active-color="activeColor"
       :border-color="noBorderColor"
@@ -25,7 +25,7 @@
         <template #label>
           <span :style="titleStyle(tabItem.name)">{{ tabItem.title }}</span>
           <el-dropdown
-            v-if="dropdownShow"
+            v-if="isEditMode"
             style="line-height: 4 !important"
             trigger="click"
             @command="handleCommand"
@@ -118,7 +118,7 @@ import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
-const { tabMoveInActiveId, bashMatrixInfo } = storeToRefs(dvMainStore)
+const { tabMoveInActiveId, bashMatrixInfo, editMode } = storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
 
 const props = defineProps({
@@ -167,6 +167,8 @@ const editableTabsValue = ref(null)
 // 无边框
 const noBorderColor = ref('none')
 let currentInstance
+
+const isEditMode = computed(() => editMode.value === 'edit' && isEdit.value)
 
 const calcTabLength = () => {
   setTimeout(() => {

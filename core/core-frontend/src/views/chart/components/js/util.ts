@@ -165,17 +165,6 @@ export function getColors(chart, colors, reset) {
   } else {
     if (chart.data) {
       const data = chart.data.data
-      // data 的维度值，需要根据自定义顺序排序
-      // let customSortData
-      // if (Object.prototype.toString.call(chart.customSort) === '[object Array]') {
-      //   customSortData = JSON.parse(JSON.stringify(chart.customSort))
-      // } else {
-      //   customSortData = JSON.parse(chart.customSort)
-      // }
-      // if (customSortData && customSortData.length > 0) {
-      //   data = customSort(customSortData, data)
-      // }
-
       for (let i = 0; i < data.length; i++) {
         const s = data[i]
         seriesColors.push({

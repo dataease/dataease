@@ -85,7 +85,6 @@ watch(
       </el-popover>
     </div>
     <div class="canvas-opt-button">
-      <!--      <el-button type="primary" @click="download()">导出</el-button>-->
       <el-button @click="preview()">
         <template #icon>
           <icon name="icon_pc_outlined"></icon>

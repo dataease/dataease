@@ -14,8 +14,6 @@ public class WhitelistUtils {
             "/dekey",
             "/index.html",
             "/model",
-            "/deApi",
-            "/demo.html",
             "/swagger-resources",
             "/doc.html",
             "/panel.html",
@@ -31,7 +29,6 @@ public class WhitelistUtils {
         return WHITE_PATH.contains(requestURI)
                 || StringUtils.endsWithAny(requestURI, ".ico", "js", ".css", "svg", "png", "jpg", "js.map")
                 || StringUtils.startsWithAny(requestURI, "data:image")
-                || StringUtils.startsWithAny(requestURI, "/v3/")
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
                 || StringUtils.startsWithAny(requestURI, "/static-resource/")
                 || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
