@@ -22,12 +22,6 @@ spring:
       port: 6379
       password: 123456
       database: 0
-  swagger-ui:
-    path: /swagger-ui.html
-    tags-sorter: alpha
-    operations-sorter: alpha
-  api-docs:
-    path: /v3/api-docs
   jackson:
     parser:
       allow-numeric-leading-zeros: true
@@ -52,11 +46,19 @@ quartz:
 
 dataease:
   version: '@project.version@'
-  origin-list: localhost:8081,127.0.0.1:8081,https://de2.fit2cloud.com,http://localhost:8080
   apisix-api:
     domain: http://192.168.0.121:9180
     key: edd1c9f034335f136f87ad84b625c8f1
 
+# springdoc-openapi项目配置
+springdoc:
+  swagger-ui:
+    path: /swagger-ui.html
+    tags-sorter: alpha
+    #operations-sorter: alpha
+  api-docs:
+    path: /v3/api-docs
+# knife4j的增强配置，不需要增强可以不配
 knife4j:
   enable: true
   setting:

@@ -22,7 +22,7 @@ import java.util.List;
 import static io.dataease.constant.AuthResourceEnum.ROLE;
 
 @Tag(name = "角色")
-@ApiSupport(order = 3, author = "fit2cloud-someone")
+@ApiSupport(order = 887, author = "fit2cloud-someone")
 @DeApiPath(value = "/role", rt = ROLE)
 public interface RoleApi {
 

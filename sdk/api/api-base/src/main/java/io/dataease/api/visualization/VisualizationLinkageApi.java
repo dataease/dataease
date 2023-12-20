@@ -1,7 +1,9 @@
 package io.dataease.api.visualization;
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.commons.BaseRspModel;
 import io.dataease.api.visualization.request.VisualizationLinkageRequest;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +16,9 @@ import java.util.Map;
  * @author : WangJiaHao
  * @date : 2023/7/13
  */
+
+@Tag(name = "可视化管理:链接")
+@ApiSupport(order = 996)
 public interface VisualizationLinkageApi {
 
 

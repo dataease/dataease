@@ -16,7 +16,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @Tag(name = "API Key")
-@ApiSupport(order = 7, author = "fit2cloud-someone")
+@ApiSupport(order = 884, author = "fit2cloud-someone")
 public interface ApiKeyApi {
 
     @Operation(summary = "生成")

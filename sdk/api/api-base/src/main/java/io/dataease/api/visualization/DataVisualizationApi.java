@@ -2,6 +2,7 @@ package io.dataease.api.visualization;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
@@ -10,6 +11,7 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -17,6 +19,8 @@ import java.util.List;
 
 import static io.dataease.constant.AuthResourceEnum.PANEL;
 
+@Tag(name = "可视化管理:基础")
+@ApiSupport(order = 999)
 @DeApiPath(value = "/dataVisualization", rt = PANEL)
 public interface DataVisualizationApi {
     /**
