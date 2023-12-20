@@ -2240,6 +2240,7 @@ export default {
     export_to_app: 'Export to App',
     preview: 'Preview',
     fullscreen_preview: 'Fullscreen Preview',
+    fullscreen_exit: 'Fullscreen Exit',
     new_tab_preview: 'New Tab Preview',
     select_panel_from_left: 'Please select Dashboard from left',
     template_nale: 'Template name',
