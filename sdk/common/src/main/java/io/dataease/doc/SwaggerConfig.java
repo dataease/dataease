@@ -54,7 +54,11 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi systemApi() {
-        return GroupedOpenApi.builder().group("系统管理").packagesToScan("io.dataease.xpack.permissions.auth").build();
+        return GroupedOpenApi.builder().group("权限相关xpack").packagesToScan("io.dataease.xpack.permissions").build();
+    }
+    @Bean
+    public GroupedOpenApi baseXpackApi() {
+        return GroupedOpenApi.builder().group("基础xpack").packagesToScan("io.dataease.xpack.base").build();
     }
     @Bean
     public GroupedOpenApi visualizationApi() {

@@ -9,6 +9,7 @@ import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.api.permissions.auth.dto.BusiResourceMover;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -20,7 +21,7 @@ import java.util.List;
 
 @Tag(name = "内部资源交互")
 @ApiSupport(order = 998)
-// @Hidden
+@Hidden
 public interface InteractiveAuthApi {
 
     @Operation(summary = "查询菜单ID")
