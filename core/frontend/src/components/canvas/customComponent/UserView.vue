@@ -953,7 +953,6 @@ export default {
           this.isFirstLoad = false
           return true
         }).finally(() => {
-          console.log('finally')
           this.getDataLoading = false
         })
       }
