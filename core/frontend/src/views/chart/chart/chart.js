@@ -927,7 +927,7 @@ export const BASE_CHART_STRING = {
     yAxis: DEFAULT_YAXIS_STYLE,
     yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   }),
-  customFilter: '[]'
+  customFilter: '{}'
 }
 
 export const BASE_CHART = {
@@ -950,7 +950,7 @@ export const BASE_CHART = {
     yAxis: DEFAULT_YAXIS_STYLE,
     yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   },
-  customFilter: []
+  customFilter: {}
 }
 
 export const BASE_MAP = {
