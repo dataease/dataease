@@ -7,7 +7,6 @@
     <div class="container-sys-param">
       <map-setting v-if="activeName === 'map'" />
       <basic-info v-if="activeName === 'basic'" />
-      <!-- <email-info v-if="activeName === 'email'" /> -->
     </div>
   </div>
 </template>

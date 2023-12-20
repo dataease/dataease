@@ -411,7 +411,6 @@ onMounted(() => {
           >
             <tabs-group themes="light" :dv-model="dvModel"></tabs-group>
           </component-group>
-          <!--        <component-button :show-split-line="true" icon-name="dv-tab" title="Tab"></component-button>-->
           <component-button-label
             icon-name="icon_copy_filled"
             title="复用"

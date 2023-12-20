@@ -218,14 +218,14 @@
                 </resources>
             </build>
         </profile>
-        <!-- 分布式版(企业版/saas版) -->
+        <!-- 分布式版(企业版) -->
         <profile>
             <id>distributed</id>
             <properties>
                 <profiles.active>distributed</profiles.active>
             </properties>
             <dependencies>
-                <!-- 分布式版(企业版/saas版) 引入分布式组件 -->
+                <!-- 分布式版(企业版) 引入分布式组件 -->
                 <dependency>
                     <groupId>io.dataease</groupId>
                     <artifactId>distributed</artifactId>
@@ -239,7 +239,7 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <configuration>
                             <excludes>
-                                <!-- 分布式版(企业版/saas版) 需要排除权限替补实现 否则就会出现多个权限实现 报错 -->
+                                <!-- 分布式版(企业版) 需要排除权限替补实现 否则就会出现多个权限实现 报错 -->
                                 <exclude>io/dataease/substitute/**</exclude>
                             </excludes>
                         </configuration>
@@ -269,9 +269,6 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<configuration>
-                    <mainClass>io.dataease.CoreApplication</mainClass>
-                </configuration>-->
                 <executions>
                     <execution>
                         <goals>

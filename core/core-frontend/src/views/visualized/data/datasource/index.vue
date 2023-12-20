@@ -990,7 +990,6 @@ const getMenuList = (val: boolean) => {
               </el-row>
               <template v-if="!['Excel', 'API'].includes(nodeInfo.type)">
                 <el-row :gutter="24">
-                  <!-- <el-col :span="12">
                   <BaseInfoItem label="驱动">驱动</BaseInfoItem>
                 </el-col> -->
                   <el-col :span="12">

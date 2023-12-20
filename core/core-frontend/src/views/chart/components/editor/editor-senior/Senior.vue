@@ -264,22 +264,6 @@ onMounted(() => {
                   <span class="set-text-info" :class="{ 'set-text-info-dark': themes === 'dark' }">
                     已设置
                   </span>
-
-                  <!--                  <el-button
-                    class="circle-button font14"
-                    :title="t('chart.delete')"
-                    :class="'label-' + props.themes"
-                    text
-                    size="small"
-                    :style="{ width: '24px', marginLeft: '6px' }"
-                    @click="linkageSetOpen"
-                  >
-                    <template #icon>
-                      <el-icon size="14px">
-                        <Icon name="icon_delete-trash_outlined" />
-                      </el-icon>
-                    </template>
-                  </el-button>-->
                 </template>
                 <el-button
                   class="circle-button font14"
