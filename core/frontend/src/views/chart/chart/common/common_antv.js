@@ -344,6 +344,9 @@ export function getTooltip(chart) {
 
         // tooltip value formatter
         if (chart.type && chart.type !== 'waterfall') {
+          if (chart.type === 'bar-group-stack') {
+            tooltip.fields = []
+          }
           tooltip.formatter = function(param) {
             let res = param.value
 
@@ -455,7 +458,7 @@ export function getTooltip(chart) {
               } else {
                 let name = ''
                 if (param.group) {
-                  name = param.name + '-'
+                  name = param.group + '-'
                 }
                 if (param.category) {
                   name += param.category

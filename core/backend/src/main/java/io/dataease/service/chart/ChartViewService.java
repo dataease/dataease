@@ -57,6 +57,7 @@ import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.panel.PanelGroupExtendDataService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -344,7 +345,9 @@ public class ChartViewService {
         }
         List<ChartViewFieldDTO> xAxis = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType());
-        if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot") || StringUtils.equalsIgnoreCase(view.getType(), "bar-time-range")) {
+        if (StringUtils.equalsAnyIgnoreCase(view.getType(), "table-pivot", "bar-time-range")
+                || StringUtils.containsIgnoreCase(view.getType(), "group")
+                || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))) {
             List<ChartViewFieldDTO> xAxisExt = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
             }.getType());
             xAxis.addAll(xAxisExt);
@@ -402,7 +405,7 @@ public class ChartViewService {
 
         switch (view.getType()) {
             case "label":
-                xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                xAxis = xAxis.stream().filter(item -> !desensitizationList.containsKey(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 yAxis = new ArrayList<>();
                 if (CollectionUtils.isEmpty(xAxis)) {
                     return new ArrayList<String[]>();
@@ -412,7 +415,7 @@ public class ChartViewService {
             case "gauge":
             case "liquid":
                 xAxis = new ArrayList<>();
-                yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> !desensitizationList.containsKey(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 if (CollectionUtils.isEmpty(yAxis)) {
                     return new ArrayList<String[]>();
                 }
@@ -429,8 +432,8 @@ public class ChartViewService {
                 yAxis = yAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 break;
             default:
-                xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                xAxis = xAxis.stream().filter(item -> !desensitizationList.containsKey(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                yAxis = yAxis.stream().filter(item -> !desensitizationList.containsKey(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         }
 
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
@@ -1913,17 +1916,29 @@ public class ChartViewService {
         ChartViewDTO view = getOne(id, requestList.getQueryFrom());
         List<String[]> sqlData = sqlData(view, requestList, cache, fieldId);
         List<ChartViewFieldDTO> fieldList = new ArrayList<>();
-        if (StringUtils.equalsIgnoreCase(fieldType, "xAxis")) {
-            fieldList = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
-            }.getType());
-        } else if (StringUtils.equalsIgnoreCase(fieldType, "extStack")) {
-            fieldList = gson.fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
-            }.getType());
+        switch (fieldType) {
+            case "xaxis": {
+                fieldList = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                break;
+            }
+            case "extStack": {
+                fieldList = gson.fromJson(view.getExtStack(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                break;
+            }
+            case "xaxisExt": {
+                fieldList = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                break;
+            }
+            default:
+                return Collections.emptyList();
         }
         DatasetTableField field = dataSetTableFieldsService.get(fieldId);
 
         List<String> res = new ArrayList<>();
-        if (ObjectUtils.isNotEmpty(field) && fieldList.size() > 0) {
+        if (ObjectUtils.isNotEmpty(field) && !fieldList.isEmpty()) {
             // 找到对应维度
             ChartViewFieldDTO chartViewFieldDTO = null;
             int index = 0;
@@ -1947,10 +1962,22 @@ public class ChartViewService {
                 }
             }
             if (StringUtils.equalsIgnoreCase(fieldType, "extStack") && !skipAddIndex) {
-                List<ChartViewFieldDTO> stack = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+                List<ChartViewFieldDTO> xaxis = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
                 }.getType());
-                index += stack.size();
-                getIndex += stack.size();
+                index += xaxis.size();
+                getIndex += xaxis.size();
+                if (StringUtils.containsIgnoreCase(view.getType(), "group")) {
+                    List<ChartViewFieldDTO> ext = gson.fromJson(view.getXAxisExt(), new TypeToken<List<ChartViewFieldDTO>>() {
+                    }.getType());
+                    index += ext.size();
+                    getIndex += ext.size();
+                }
+            }
+            if (StringUtils.equalsIgnoreCase(fieldType, "xaxisExt") && !skipAddIndex) {
+                List<ChartViewFieldDTO> xaxis = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
+                }.getType());
+                index += xaxis.size();
+                getIndex += xaxis.size();
             }
             List<String[]> sortResult = resultCustomSort(fieldList, sqlData);
             if (ObjectUtils.isNotEmpty(chartViewFieldDTO) && (getIndex >= index)) {

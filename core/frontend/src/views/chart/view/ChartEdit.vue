@@ -568,6 +568,7 @@
                             :chart="chart"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
+                            @onItemCustomSort="item => onCustomSort(item, 'xaxisExt')"
                             @editItemFilter="showDimensionEditFilter"
                             @onNameEdit="showRename"
                           />
@@ -670,7 +671,7 @@
                               @editItemFilter="showDimensionEditFilter"
                               @onNameEdit="showRename"
                               @valueFormatter="valueFormatter"
-                              @onCustomSort="onCustomSort"
+                              @onCustomSort="item => onCustomSort(item, 'xaxis')"
                             />
                           </template>
                         </transition-group>
@@ -748,6 +749,7 @@
                             :chart="chart"
                             @onDimensionItemChange="dimensionExtItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
+                            @onItemCustomSort="item => onCustomSort(item, 'xaxisExt')"
                             @editItemFilter="showDimensionEditFilter"
                             @onNameEdit="showRename"
                           />
@@ -947,7 +949,7 @@
                             :quota-data="quota"
                             @onItemChange="stackItemChange"
                             @onItemRemove="stackItemRemove"
-                            @onItemCustomSort="stackItemCustomSort"
+                            @onItemCustomSort="item => onCustomSort(item, 'extStack')"
                             @onNameEdit="showRename"
                           />
                         </transition-group>
@@ -1748,7 +1750,7 @@
     >
       <custom-sort-edit
         :chart="chart"
-        field-type="xAxis"
+        :field-type="customSortFieldType"
         :field="customSortField"
         @onSortChange="customSortChange"
       />
@@ -1765,40 +1767,6 @@
           type="primary"
           size="mini"
           @click="saveCustomSort"
-        >{{ $t('chart.confirm') }}
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <!--extStack自定义排序-->
-    <el-dialog
-      v-if="showStackCustomSort"
-      v-dialogDrag
-      :title="$t('chart.custom_sort')"
-      :visible="showStackCustomSort"
-      :show-close="false"
-      width="500px"
-      class="dialog-css"
-    >
-      <custom-sort-edit
-        :chart="chart"
-        field-type="extStack"
-        :field="customSortField"
-        @onSortChange="customSortChange"
-      />
-      <div
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          size="mini"
-          @click="closeStackCustomSort"
-        >{{ $t('chart.cancel') }}
-        </el-button>
-        <el-button
-          type="primary"
-          size="mini"
-          @click="saveStackCustomSort"
         >{{ $t('chart.confirm') }}
         </el-button>
       </div>
@@ -2068,7 +2036,8 @@ export default {
       lastDimensionIndex: 0,
       lastQuotaIndex: 0,
       selectedDimension: [],
-      selectedQuota: []
+      selectedQuota: [],
+      customSortFieldType: 'xaxis'
     }
   },
   computed: {
@@ -2849,9 +2818,10 @@ export default {
       this.moveId = e.draggedContext.element.id
       return true
     },
-    onCustomSort(item) {
-      this.customSortField = this.view.xaxis[item.index]
-      this.customSort()
+    onCustomSort(item, axis) {
+      this.customSortFieldType = axis
+      this.customSortField = this.view[axis][item.index]
+      this.showCustomSort = true
     },
 
     dimensionItemChange(item) {
@@ -3373,11 +3343,6 @@ export default {
       this.view.extStack.splice(item.index, 1)
       this.calcData(true)
     },
-    stackItemCustomSort(item) {
-      this.customSortField = this.view.extStack[item.index]
-      this.stackCustomSort()
-    },
-
     drillItemChange(item) {
       this.calcData(true)
     },
@@ -3629,9 +3594,6 @@ export default {
       this.closeValueFormatter()
     },
 
-    customSort() {
-      this.showCustomSort = true
-    },
     customSortChange(val) {
       this.customSortList = val
     },
@@ -3641,7 +3603,7 @@ export default {
       this.customSortList = []
     },
     saveCustomSort() {
-      this.view.xaxis.forEach(ele => {
+      this.view[this.customSortFieldType].forEach(ele => {
         if (ele.id === this.customSortField.id) {
           ele.sort = 'custom_sort'
           ele.customSort = this.customSortList
@@ -3650,24 +3612,6 @@ export default {
       this.closeCustomSort()
       this.calcData(true)
     },
-
-    stackCustomSort() {
-      this.showStackCustomSort = true
-    },
-    closeStackCustomSort() {
-      this.showStackCustomSort = false
-    },
-    saveStackCustomSort() {
-      this.view.extStack.forEach(ele => {
-        if (ele.id === this.customSortField.id) {
-          ele.sort = 'custom_sort'
-          ele.customSort = this.customSortList
-        }
-      })
-      this.closeStackCustomSort()
-      this.calcData(true)
-    },
-
     fieldEdit(param) {
       switch (param.type) {
         case 'ds':
