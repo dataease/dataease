@@ -24,7 +24,7 @@ import static io.dataease.constant.AuthResourceEnum.ORG;
 import static io.dataease.constant.AuthResourceEnum.ROLE;
 
 @Tag(name = "组织")
-@ApiSupport(order = 4, author = "fit2cloud-someone")
+@ApiSupport(order = 886, author = "fit2cloud-someone")
 @DeApiPath(value = "/org", rt = ORG)
 public interface OrgApi {
 

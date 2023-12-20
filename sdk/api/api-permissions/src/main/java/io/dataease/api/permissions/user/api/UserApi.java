@@ -25,7 +25,7 @@ import static io.dataease.constant.AuthResourceEnum.USER;
 
 
 @Tag(name = "用户")
-@ApiSupport(order = 2, author = "fit2cloud-someone")
+@ApiSupport(order = 888, author = "fit2cloud-someone")
 @DeApiPath(value = "/user", rt = USER)
 public interface UserApi {
 

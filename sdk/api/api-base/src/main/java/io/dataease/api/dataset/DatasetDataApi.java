@@ -1,9 +1,11 @@
 package io.dataease.api.dataset;
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
@@ -13,6 +15,8 @@ import java.util.Map;
 /**
  * @Author Junjun
  */
+@Tag(name = "数据集管理:数据")
+@ApiSupport(order = 978)
 public interface DatasetDataApi {
     @PostMapping("previewData")
     Map<String, Object> previewData(@RequestBody DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception;

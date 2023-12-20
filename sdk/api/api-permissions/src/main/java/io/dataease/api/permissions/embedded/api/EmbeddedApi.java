@@ -18,7 +18,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @Tag(name = "嵌入式")
-@ApiSupport(order = 6, author = "fit2cloud-someone")
+@ApiSupport(order = 883, author = "fit2cloud-someone")
 public interface EmbeddedApi {
 
     @Operation(summary = "查询")

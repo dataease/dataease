@@ -1,5 +1,6 @@
 package io.dataease.api.dataset;
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.dataset.dto.DatasetNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.SqlVariableDetails;
@@ -9,6 +10,7 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -17,7 +19,8 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 import static io.dataease.constant.AuthResourceEnum.DATASET;
-
+@Tag(name = "数据集管理:树")
+@ApiSupport(order = 979)
 @DeApiPath(value = "/datasetTree", rt = DATASET)
 public interface DatasetTreeApi {
 

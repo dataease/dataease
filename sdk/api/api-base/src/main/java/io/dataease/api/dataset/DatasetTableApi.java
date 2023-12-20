@@ -1,8 +1,10 @@
 package io.dataease.api.dataset;
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.dataset.dto.MultFieldValuesRequest;
 import io.dataease.api.dataset.engine.SQLFunctionDTO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -14,6 +16,8 @@ import java.util.Map;
 /**
  * @Author Junjun
  */
+@Tag(name = "数据集管理:表")
+@ApiSupport(order = 977)
 public interface DatasetTableApi {
 
     /**

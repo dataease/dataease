@@ -1,5 +1,6 @@
 package io.dataease.api.lark.api;
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.lark.dto.LarkEnableEditor;
 import io.dataease.api.lark.dto.LarkTokenRequest;
 import io.dataease.api.lark.vo.LarkInfoVO;
@@ -11,6 +12,7 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 
 @Tag(name = "飞书设置")
+@ApiSupport(order = 898)
 public interface LarkApi {
 
     @Operation(summary = "查询飞书信息")
