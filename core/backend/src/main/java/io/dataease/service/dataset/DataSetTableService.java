@@ -2169,7 +2169,7 @@ public class DataSetTableService {
                     datasetTableField.setType(field.getFieldType());
                     datasetTableField.setSize(field.getFieldSize());
                     datasetTableField.setAccuracy(field.getAccuracy());
-                    if (ObjectUtils.isEmpty(ds)) {
+                    if (StringUtils.isEmpty(datasetTable.getDataSourceId())) {
                         datasetTableField.setDeExtractType(transFieldType(field.getFieldType()));
                     } else {
                         Integer fieldType = qp.transFieldType(field.getFieldType());
@@ -2185,7 +2185,7 @@ public class DataSetTableService {
                         datasetTableField.setDataeaseName(TableUtils.columnName(field.getFieldName()));
                     }
                     datasetTableField.setType(field.getFieldType());
-                    if (ObjectUtils.isEmpty(ds)) {
+                    if (StringUtils.isEmpty(datasetTable.getDataSourceId())) {
                         datasetTableField.setDeType(transFieldType(field.getFieldType()));
                         datasetTableField.setDeExtractType(transFieldType(field.getFieldType()));
                     } else {

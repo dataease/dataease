@@ -646,7 +646,7 @@ public class ExtractDataService {
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(engine);
-        datasourceRequest.setQuery("mysql> SELECT VERSION();");
+        datasourceRequest.setQuery("SELECT VERSION()");
         String version = jdbcProvider.getData(datasourceRequest).get(0)[0];
         DDLProvider ddlProvider = ProviderFactory.getDDLProvider(engine.getType());
         datasourceRequest.setQuery(ddlProvider.createTableSql(tableName, datasetTableFields, engine, version));
