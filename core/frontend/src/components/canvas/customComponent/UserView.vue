@@ -367,7 +367,9 @@ export default {
         show: 0
       },
       view: {},
-      cancelTime: null
+      cancelTime: null,
+      // 外部查询按钮是否已经触发 用来检查画布中如果存在查询按钮 是否被首次点击过 默认true
+      searchButtonReady: true
     }
   },
 
@@ -422,7 +424,7 @@ export default {
     },
     filter() {
       const filter = {}
-      filter.filter = this.initLoad && this.cfilters?.length === 0 ? this.filters : this.cfilters
+      filter.filter = (this.initLoad && this.cfilters?.length === 0) || !this.searchButtonReady ? this.filters : this.cfilters
       filter.linkageFilters = this.element.linkageFilters
       filter.outerParamsFilters = this.element.outerParamsFilters
       filter.drill = this.drillClickDimensionList
@@ -585,7 +587,13 @@ export default {
   },
   mounted() {
     bus.$on('tab-canvas-change', this.tabSwitch)
+    bus.$on('trigger-search-button', this.triggerSearchButton)
     this.bindPluginEvent()
+    this.$nextTick(() => {
+      if (this.filters && this.filters.length > 0) {
+        this.searchButtonReady = false
+      }
+    })
   },
 
   beforeDestroy() {
@@ -624,6 +632,9 @@ export default {
     }
   },
   methods: {
+    triggerSearchButton() {
+      this.searchButtonReady = true
+    },
     groupFilter(filters) {
       const result = {
         ready: [],
