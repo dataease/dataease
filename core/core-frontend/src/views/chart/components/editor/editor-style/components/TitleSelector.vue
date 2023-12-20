@@ -479,7 +479,7 @@ watch(
 }
 .remark-label {
   color: var(--N600, #646a73);
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 12px;
   font-style: normal;
   font-weight: 400;

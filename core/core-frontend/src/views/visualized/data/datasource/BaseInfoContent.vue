@@ -36,7 +36,7 @@ defineExpose({
 
   .update-records-time {
     color: #646a73;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -52,7 +52,7 @@ defineExpose({
 
   .name {
     color: #1f2329;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 16px;
     font-style: normal;
     font-weight: 500;

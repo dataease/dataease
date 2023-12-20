@@ -139,7 +139,7 @@ defineExpose({
     }
 
     .pwd {
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
@@ -158,7 +158,7 @@ defineExpose({
       padding: 0 20px;
       color: #1f2329;
       text-align: center;
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-style: normal;
       font-weight: 400;

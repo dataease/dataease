@@ -498,7 +498,7 @@ initFunction()
       & > :nth-child(2) {
         margin: 0 -0.67px 0 2px;
         color: #f54a45;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-style: normal;
         font-weight: 400;

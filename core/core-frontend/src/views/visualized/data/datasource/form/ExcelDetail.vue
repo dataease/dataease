@@ -550,7 +550,7 @@ defineExpose({
 
     .upload-tip {
       color: #8f959e;
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-style: normal;
       font-weight: 400;

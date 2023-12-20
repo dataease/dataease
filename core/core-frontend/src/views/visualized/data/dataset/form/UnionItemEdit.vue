@@ -171,7 +171,7 @@ init()
 <style lang="less" scoped>
 .union-container {
   height: 275px;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
 }
 .union-header {
   display: flex;
@@ -217,7 +217,7 @@ init()
   display: flex;
   align-items: center;
   font-size: 14px;
-  font-family: 'PingFang SC';
+  font-family: 'AlibabaPuHuiTi';
   font-style: normal;
   font-weight: 400;
   margin: 20px 0 8px 0;

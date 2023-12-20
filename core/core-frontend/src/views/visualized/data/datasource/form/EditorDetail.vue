@@ -973,7 +973,7 @@ defineExpose({
   }
 
   .de-expand {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
@@ -1024,7 +1024,7 @@ defineExpose({
       width: 100%;
       display: flex;
       align-items: center;
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
@@ -1044,7 +1044,7 @@ defineExpose({
         position: relative;
         color: #1f2329;
         font-weight: 400;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-style: normal;
         line-height: 22px;
@@ -1096,7 +1096,7 @@ defineExpose({
   border-radius: 4px;
   margin: 0 0 16px 16px;
   padding: 16px;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   cursor: pointer;
 
   &:hover {
@@ -1173,7 +1173,7 @@ defineExpose({
   }
 
   .tips {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;

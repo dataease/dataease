@@ -390,7 +390,7 @@ span {
 }
 
 .label-dark {
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-style: normal;
   font-weight: 400;
   line-height: 20px;

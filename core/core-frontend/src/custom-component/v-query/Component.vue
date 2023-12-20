@@ -495,7 +495,7 @@ const opacityStyle = computed(() => {
       justify-content: center;
       color: #646a73;
       text-align: center;
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 16px;
       font-style: normal;
       font-weight: 400;
@@ -511,7 +511,7 @@ const opacityStyle = computed(() => {
   .title {
     color: #1f2329;
     font-feature-settings: 'clig' off, 'liga' off;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
@@ -570,7 +570,7 @@ const opacityStyle = computed(() => {
           text-overflow: ellipsis;
           white-space: nowrap;
           color: #1f2329;
-          font-family: PingFang SC;
+          font-family: AlibabaPuHuiTi;
           font-size: 14px;
           font-style: normal;
           font-weight: 400;

@@ -2233,7 +2233,7 @@ const onRefreshChange = val => {
         height: 35px;
         line-height: 35px;
         color: #3370ff;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 12px;
         font-style: normal;
         font-weight: 500;
@@ -3097,7 +3097,7 @@ span {
   margin-bottom: 16px !important;
 
   .text {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -3106,7 +3106,7 @@ span {
     --ed-input-height: 32px;
 
     :deep(.ed-input__inner) {
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
@@ -3117,7 +3117,7 @@ span {
   :deep(.ed-form-item__label) {
     color: #1f2329;
 
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-style: normal;
     font-weight: 400;

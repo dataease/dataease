@@ -90,7 +90,7 @@ const handleCheckAllChange = (val: CheckboxValueType) => {
 
   .title,
   .ed-checkbox {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     padding: 5px 0;

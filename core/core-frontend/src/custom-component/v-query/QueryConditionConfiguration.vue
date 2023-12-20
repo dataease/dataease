@@ -1379,7 +1379,7 @@ defineExpose({
 
 <style lang="less">
 .dataset-parameters {
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-style: normal;
   font-weight: 400;
   .ed-select-dropdown__item {
@@ -1411,7 +1411,7 @@ defineExpose({
   }
   .container {
     font-size: 14px;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     width: 1152px;
     height: 454px;
     border-radius: 4px;
@@ -1432,7 +1432,7 @@ defineExpose({
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-style: normal;
         font-weight: 500;
@@ -1499,7 +1499,7 @@ defineExpose({
       }
 
       .title {
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-style: normal;
         font-weight: 500;
@@ -1563,7 +1563,7 @@ defineExpose({
         color: #646a73;
         height: 16px;
         padding: 0px 4px;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 10px;
         font-style: normal;
         font-weight: 500;
@@ -1585,7 +1585,7 @@ defineExpose({
       }
       .title {
         margin-bottom: 16px;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-style: normal;
         font-weight: 500;

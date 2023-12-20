@@ -17,7 +17,7 @@ defineProps({
 <style lang="less">
 .base-info-item {
   margin-top: 16px;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

@@ -258,7 +258,7 @@ const handleCheckedFieldsChange = (value: string[]) => {
 
 <style lang="less">
 .jump-linkage {
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
 
   .chart-dataset-name {

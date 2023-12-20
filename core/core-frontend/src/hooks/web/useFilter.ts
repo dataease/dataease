@@ -100,12 +100,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayType,
               multiple
             } = item
-            if (
-              timeType === 'dynamic' &&
-              [1, 7].includes(+displayType) &&
-              firstLoad &&
-              !value?.length
-            ) {
+            if (timeType === 'dynamic' && [1, 7].includes(+displayType) && firstLoad) {
               if (+displayType === 1) {
                 selectValue = getDynamicRange(item)
                 item.defaultValue = new Date(selectValue[0])

@@ -145,7 +145,7 @@ watch(
 .field-block-style {
   height: 100%;
   width: 100%;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   .field-block-body {
     height: 327px;
     overflow-y: auto;

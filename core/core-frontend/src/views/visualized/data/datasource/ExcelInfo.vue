@@ -42,7 +42,7 @@ const del = () => {
   }
 
   .info {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-style: normal;
     font-weight: 400;
     width: 80%;

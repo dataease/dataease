@@ -132,7 +132,7 @@ const handleCommand = key => {
 
   .de-model-text {
     margin-left: 8px;
-    font-family: 'PingFang SC';
+    font-family: 'AlibabaPuHuiTi';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
