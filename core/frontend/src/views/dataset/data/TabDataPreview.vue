@@ -187,7 +187,7 @@ export default {
 <style lang="scss" scoped>
 .table-count {
   color: var(--deTextSecondary, #606266);
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
@@ -200,7 +200,7 @@ export default {
 <style lang="scss">
 .de-set-count {
   padding: 20px 24px;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-weight: 400;
   color: var(--deTextPrimary, #1f2329);

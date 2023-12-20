@@ -1169,7 +1169,7 @@ export default {
   width: 232px;
   cursor: pointer;
   margin: 0;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-weight: 400;
   color: var(--deTextSecondary, #646a73);

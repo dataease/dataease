@@ -867,7 +867,7 @@ export default {
   line-height: 56px;
 
   .panel-name {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
@@ -882,7 +882,7 @@ export default {
   }
 
   .panel-create {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;

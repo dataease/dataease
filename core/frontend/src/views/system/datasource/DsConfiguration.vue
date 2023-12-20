@@ -1451,7 +1451,7 @@ export default {
     min-width: 48px !important;
   }
   .tips {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;
@@ -1470,7 +1470,7 @@ export default {
   }
 }
 .de-expand {
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
@@ -1486,7 +1486,7 @@ export default {
   .el-drawer__header {
     padding: 16px 24px;
     margin: 0;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
@@ -1514,7 +1514,7 @@ export default {
     display: flex;
     align-items: center;
     position: relative;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;
@@ -1565,7 +1565,7 @@ export default {
     }
     .el-step__icon.is-text {
       border: none;
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-weight: 400;
       color: #fff;
       width: 28px;
@@ -1578,7 +1578,7 @@ export default {
       }
     }
     .el-step__title {
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-weight: 500;
       line-height: 22px;
@@ -1621,7 +1621,7 @@ export default {
   .btn {
     border-radius: 4px;
     padding: 5px 26px 5px 26px;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     line-height: 20px;
@@ -1697,7 +1697,7 @@ export default {
   border-radius: 4px;
   margin-bottom: 12px;
   padding: 20px 16px;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   .name {
     font-size: 16px;
     font-weight: 500;

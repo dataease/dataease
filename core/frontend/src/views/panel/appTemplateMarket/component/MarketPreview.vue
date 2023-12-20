@@ -392,7 +392,7 @@ export default {
 .insert-filter {
   display: inline-block;
   font-weight: 400 !important;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
@@ -421,7 +421,7 @@ export default {
 .insert {
   display: inline-block;
   font-weight: 400 !important;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;

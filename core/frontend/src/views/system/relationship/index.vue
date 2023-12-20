@@ -580,7 +580,7 @@ export default {
   }
 
   .route-title {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 20px;
     font-weight: 500;
     line-height: 28px;

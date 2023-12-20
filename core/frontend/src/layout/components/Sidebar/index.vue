@@ -98,7 +98,7 @@ export default {
   align-items: center;
   justify-content: center;
   //styleName: 中文/桌面端/正文 14 22 Regular;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-weight: 400;
   color: var(--SiderTextColor, #646a73);

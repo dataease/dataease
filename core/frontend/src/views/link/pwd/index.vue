@@ -138,7 +138,7 @@ export default {
         -o-user-select: none;
         user-select: none;
         color: #3d4d66;
-        font: normal 12px Helvetica Neue,Arial,PingFang SC,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Heiti,黑体,sans-serif;
+        font: normal 12px Helvetica Neue,Arial,AlibabaPuHuiTi,Hiragino Sans GB,Microsoft YaHei,微软雅黑,Heiti,黑体,sans-serif;
         -webkit-font-smoothing: antialiased;
         -moz-osx-font-smoothing: grayscale;
         text-decoration: none;
