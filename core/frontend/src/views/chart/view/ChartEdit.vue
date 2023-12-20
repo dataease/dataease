@@ -1097,36 +1097,24 @@
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span>{{ $t('chart.result_filter') }}</span>
-                      <draggable
-                        v-model="view.customFilter"
-                        group="drag"
-                        animation="300"
-                        :move="onMove"
-                        class="theme-item-class"
-                        style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
-                        @add="addCustomFilter"
-                        @update="calcData(true)"
-                      >
-                        <transition-group class="draggable-group">
-                          <filter-item
-                            v-for="(item,index) in view.customFilter"
-                            :key="item.id"
-                            :param="param"
-                            :index="index"
-                            :item="item"
-                            :dimension-data="dimension"
-                            :quota-data="quota"
-                            @onFilterItemRemove="filterItemRemove"
-                            @editItemFilter="showEditFilter"
-                          />
-                        </transition-group>
-                      </draggable>
+                      <span class="data-area-label">
+                        <span>{{ $t('chart.result_filter') }}</span>
+                        <span v-if="!!view.customFilter.logic" class="setting">已设置</span>
+                        <i
+                          @click="deleteTreeFilter"
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                        />
+                      </span>
                       <div
-                        v-if="!view.customFilter || view.customFilter.length === 0"
-                        class="drag-placeholder-style"
+                        class="tree-btn"
+                        :class="!!view.customFilter.logic && 'active'"
+                        @click="openTreeFilter"
                       >
-                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                        <svg-icon
+                          class="svg-background"
+                          icon-class="icon-filter_outlined"
+                        />
+                        <span>过滤</span>
                       </div>
                     </el-row>
                     <el-row
@@ -1801,6 +1789,10 @@
         @onEditClose="closeChartCalcField"
       />
     </el-dialog>
+    <FilterTree
+      ref="filterTree"
+      @filter-data="changeFilterData"
+    />
   </el-row>
 </template>
 
@@ -1816,7 +1808,6 @@ import {
 } from '@/api/chart/chart'
 import DimensionItem from '../components/dragItem/DimensionItem'
 import QuotaItem from '../components/dragItem/QuotaItem'
-import FilterItem from '../components/dragItem/FilterItem'
 import ChartDragItem from '../components/dragItem/ChartDragItem'
 import DrillItem from '../components/dragItem/DrillItem'
 import ResultFilterEditor from '../components/filter/ResultFilterEditor'
@@ -1855,8 +1846,9 @@ import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/dragItem/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import _ from 'lodash'
 import { mapState } from 'vuex'
-
+import FilterTree from './FilterTree.vue'
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import MapMapping from '@/views/chart/components/senior/MapMapping'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
@@ -1891,7 +1883,7 @@ export default {
     ChartType,
     ChartComponentG2,
     QuotaExtItem,
-    FilterItem,
+    FilterTree,
     FieldEdit,
     TableSelector,
     ResultFilterEditor,
@@ -1909,6 +1901,11 @@ export default {
     PluginCom,
     MapMapping,
     MarkMapDataEditor
+  },
+  provide() {
+    return {
+      filedList: () => this.filedList
+    }
   },
   props: {
     param: {
@@ -1971,7 +1968,7 @@ export default {
           assistLine: [],
           threshold: DEFAULT_THRESHOLD
         },
-        customFilter: [],
+        customFilter: {},
         render: 'antv',
         isPlugin: false
       },
@@ -2044,6 +2041,9 @@ export default {
     }
   },
   computed: {
+    filedList() {
+      return [...this.dimension, ...this.quota]
+    },
     obj() {
       return {
         view: this.view,
@@ -2256,7 +2256,7 @@ export default {
     bus.$off('show-rename', this.showRename)
     bus.$off('show-quota-edit-filter', this.showQuotaEditFilter)
     bus.$off('show-quota-edit-compare', this.showQuotaEditCompare)
-    bus.$off('show-edit-filter', this.showEditFilter)
+    bus.$off('show-edit-filter', this.openTreeFilter)
     bus.$off('show-edit-formatter', this.valueFormatter)
     bus.$off('calc-data', this.calcData)
     bus.$off('plugins-calc-style', this.calcStyle)
@@ -2267,6 +2267,16 @@ export default {
   },
 
   methods: {
+    changeFilterData(customFilter) {
+      this.view.customFilter = _.cloneDeep(customFilter)
+      this.calcData(true)
+    },
+    openTreeFilter() {
+      this.$refs.filterTree.init(_.cloneDeep(this.view.customFilter))
+    },
+    deleteTreeFilter() {
+      this.changeFilterData({})
+    },
     includesAny,
     equalsAny,
     setTitle(title, id) {
@@ -2336,7 +2346,7 @@ export default {
       bus.$on('show-rename', this.showRename)
       bus.$on('show-quota-edit-filter', this.showQuotaEditFilter)
       bus.$on('show-quota-edit-compare', this.showQuotaEditCompare)
-      bus.$on('show-edit-filter', this.showEditFilter)
+      bus.$on('show-edit-filter', this.openTreeFilter)
       bus.$on('show-edit-formatter', this.valueFormatter)
       bus.$on('calc-data', this.calcData)
       bus.$on('plugins-calc-style', this.calcStyle)
@@ -2600,11 +2610,6 @@ export default {
         view.type === 'table-pivot') {
         view.drillFields = []
       }
-      view.customFilter.forEach(function(ele) {
-        if (ele && !ele.filter) {
-          ele.filter = []
-        }
-      })
       this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
@@ -3026,63 +3031,6 @@ export default {
       this.closeQuotaFilter()
     },
 
-    filterItemRemove(item) {
-      this.view.customFilter.splice(item.index, 1)
-      this.calcData(true)
-    },
-    showEditFilter(item) {
-      this.filterItem = JSON.parse(JSON.stringify(item))
-      this.chartForFilter = JSON.parse(JSON.stringify(this.view))
-      if (!this.filterItem.logic) {
-        this.filterItem.logic = 'and'
-      }
-      if (!this.filterItem.filterType) {
-        this.filterItem.filterType = 'logic'
-      }
-      if (!this.filterItem.enumCheckField) {
-        this.filterItem.enumCheckField = []
-      }
-      this.resultFilterEdit = true
-    },
-    closeResultFilter() {
-      this.resultFilterEdit = false
-    },
-    saveResultFilter() {
-      if (((this.filterItem.deType === 0 || this.filterItem.deType === 5) && this.filterItem.filterType !== 'enum') ||
-        this.filterItem.deType === 1 ||
-        this.filterItem.deType === 2 ||
-        this.filterItem.deType === 3) {
-        for (let i = 0; i < this.filterItem.filter.length; i++) {
-          const f = this.filterItem.filter[i]
-          if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
-            this.$message({
-              message: this.$t('chart.filter_value_can_null'),
-              type: 'error',
-              showClose: true
-            })
-            return
-          }
-          if (this.filterItem.deType === 2 || this.filterItem.deType === 3) {
-            if (isNaN(f.value)) {
-              this.$message({
-                message: this.$t('chart.filter_value_can_not_str'),
-                type: 'error',
-                showClose: true
-              })
-              return
-            }
-          }
-        }
-      }
-
-      this.view.customFilter[this.filterItem.index].filter = this.filterItem.filter
-      this.view.customFilter[this.filterItem.index].logic = this.filterItem.logic
-      this.view.customFilter[this.filterItem.index].filterType = this.filterItem.filterType
-      this.view.customFilter[this.filterItem.index].enumCheckField = this.filterItem.enumCheckField
-      this.calcData(true)
-      this.closeResultFilter()
-    },
-
     showRename(val) {
       this.itemForm = JSON.parse(JSON.stringify(val))
       this.renameItem = true
@@ -3300,7 +3248,10 @@ export default {
       if (this.view.type === 'bar-time-range') {
         // 针对时间条形图，需要限定类型为时间类型
         if (this.view.xaxisExt && this.view.xaxisExt.length > 0) {
+          const baseXaxisExt = this.view.xaxisExt[0]
           for (let i = this.view.xaxisExt.length - 1; i >= 0; i--) {
+            this.view.xaxisExt[i].dateStyle = baseXaxisExt.dateStyle
+            this.view.xaxisExt[i].datePattern = baseXaxisExt.datePattern
             if (this.view.xaxisExt[i].deType !== 1) {
               this.view.xaxisExt.splice(i, 1)
             }
@@ -4215,7 +4166,36 @@ span {
   position: relative;
   width: 100%;
   display: inline-block;
+  .setting {
+    padding: 0px 4px 0px 4px;
+    border-radius: 2px;
+    background-color: #1F23291A;
+    color: #646A73;
+    position: absolute;
+    top: 1px;
+    right: 23px;
+    z-index: 1;
+  }
 }
+
+.tree-btn {
+    width: 100%;
+    background: #fff;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #DCDFE6;
+    display: flex;
+    color: #CCCCCC;
+    align-items: center;
+    cursor: pointer;
+    justify-content: center;
+    font-size: 12px;
+
+    &.active {
+      color: #3370FF;
+      border-color: #3370FF;
+    }
+  }
 
 .data-area-clear {
   position: absolute;

@@ -1872,7 +1872,9 @@ export default {
     show_info: '驱动信息',
     file_name: '文件名',
     version: '版本',
-    please_set_driverClass: '请指定驱动类'
+    please_set_driverClass: '请指定驱动类',
+    please_set_surpportVersions: '请输入支持的数据库大版本',
+    surpportVersions: '支持版本'
   },
   datasource: {
     data_source_configuration: '数据源配置',
@@ -2232,6 +2234,7 @@ export default {
     export_to_app: '导出为应用',
     preview: '预览',
     fullscreen_preview: '全屏预览',
+    fullscreen_exit: '退出全屏',
     new_tab_preview: '新Tab页预览',
     select_panel_from_left: '请从左侧选择仪表板',
     template_nale: '模板名称',

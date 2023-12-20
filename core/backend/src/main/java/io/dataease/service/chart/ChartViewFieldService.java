@@ -1,11 +1,11 @@
 package io.dataease.service.chart;
 
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewField;
 import io.dataease.plugins.common.base.domain.ChartViewFieldExample;
 import io.dataease.plugins.common.base.mapper.ChartViewFieldMapper;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -79,7 +79,7 @@ public class ChartViewFieldService {
             }
             List<ChartViewField> datasetTableFields = chartViewFieldMapper.selectByExample(chartViewFieldExample);
             if (CollectionUtils.isNotEmpty(datasetTableFields)) {
-                DEException.throwException(Translator.get("i18n_field_name_repeat"));
+                DataEaseException.throwException(Translator.get("i18n_field_name_repeat"));
             }
         }
     }

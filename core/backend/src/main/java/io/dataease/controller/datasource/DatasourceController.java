@@ -19,10 +19,6 @@ import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.datasource.DBTableDTO;
 import io.dataease.plugins.common.base.domain.Datasource;
-import io.dataease.plugins.common.base.domain.DatasourceExample;
-import io.dataease.plugins.common.dto.datasource.DataSourceType;
-import io.dataease.plugins.datasource.provider.Provider;
-import io.dataease.provider.ProviderFactory;
 import io.dataease.service.datasource.DatasourceService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -36,7 +32,6 @@ import javax.annotation.Resource;
 import java.util.Collection;
 import java.util.List;
 import java.util.Map;
-import java.util.UUID;
 import java.util.stream.Collectors;
 
 @Api(tags = "数据源：数据源管理")

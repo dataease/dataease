@@ -1,9 +1,9 @@
 package io.dataease.commons.license;
 
 import com.google.gson.Gson;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.plugins.common.base.domain.License;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
@@ -103,10 +103,10 @@ public class DefaultLicenseService {
     public License readLicense() {
         License license = innerLicenseService.getLicense(LICENSE_ID);
         if (license == null) {
-            DEException.throwException("i18n_no_license_record");
+            DataEaseException.throwException("i18n_no_license_record");
         }
         if (StringUtils.isBlank(license.getLicense())) {
-            DEException.throwException("i18n_license_is_empty");
+            DataEaseException.throwException("i18n_license_is_empty");
         }
         return license;
     }
@@ -114,7 +114,7 @@ public class DefaultLicenseService {
     // 创建或更新License
     private void writeLicense(String licenseKey, F2CLicenseResponse response) {
         if (StringUtils.isBlank(licenseKey)) {
-            DEException.throwException("i18n_license_is_empty");
+            DataEaseException.throwException("i18n_license_is_empty");
         }
         License license = new License();
         license.setId(LICENSE_ID);

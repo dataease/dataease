@@ -16,7 +16,6 @@ import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.*;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.dataset.request.DataSetTaskInstanceGridRequest;
@@ -30,7 +29,6 @@ import io.dataease.dto.dataset.*;
 import io.dataease.dto.dataset.union.UnionDTO;
 import io.dataease.dto.dataset.union.UnionItemDTO;
 import io.dataease.dto.dataset.union.UnionParamDTO;
-import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtDataSetGroupMapper;
 import io.dataease.ext.ExtDataSetTableMapper;
 import io.dataease.ext.UtilMapper;
@@ -44,6 +42,7 @@ import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
 import io.dataease.plugins.common.dto.datasource.TableField;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeObj;
@@ -643,7 +642,7 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
 
                 try {
@@ -653,7 +652,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             } else {
                 // check doris table
@@ -680,7 +679,7 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
@@ -688,7 +687,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             }
 
@@ -722,7 +721,7 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setPageable(false);
@@ -731,7 +730,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             } else {
                 // check doris table
@@ -751,7 +750,7 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
@@ -759,7 +758,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "excel")) {
@@ -780,7 +779,7 @@ public class DataSetTableService {
                 data.addAll(jdbcProvider.getData(datasourceRequest));
             } catch (Exception e) {
                 logger.error(e.getMessage());
-                DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
             }
             try {
                 datasourceRequest.setQuery(qp.createQueryTableWithLimit(table, fields,
@@ -788,7 +787,7 @@ public class DataSetTableService {
                 dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
             } catch (Exception e) {
                 logger.error(e.getMessage());
-                DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
             }
             DataSetTaskInstanceGridRequest request = new DataSetTaskInstanceGridRequest();
             request.setTableId(List.of(dataSetTableRequest.getId()));
@@ -818,7 +817,7 @@ public class DataSetTableService {
                     sql = getCustomSQLDatasource(dt, list, ds);
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
@@ -834,7 +833,7 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setPageable(false);
@@ -843,7 +842,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             } else {
                 Datasource ds = engineService.getDeEngine();
@@ -859,7 +858,7 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
 
                 try {
@@ -868,14 +867,14 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             }
         } else if (StringUtils.equalsIgnoreCase(datasetTable.getType(), "union")) {
             if (datasetTable.getMode() == 0) {
                 Datasource ds = datasourceMapper.selectByPrimaryKey(dataSetTableRequest.getDataSourceId());
                 if (ObjectUtils.isEmpty(ds)) {
-                    DEException.throwException(Translator.get("i18n_datasource_delete"));
+                    DataEaseException.throwException(Translator.get("i18n_datasource_delete"));
                 }
                 Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -888,7 +887,7 @@ public class DataSetTableService {
                     sql = (String) getUnionSQLDatasource(dt, ds).get("sql");
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(
@@ -904,7 +903,7 @@ public class DataSetTableService {
                     data.addAll(datasourceProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
                 try {
                     datasourceRequest.setPageable(false);
@@ -913,7 +912,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(datasourceProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             } else {
                 Datasource ds = engineService.getDeEngine();
@@ -929,7 +928,7 @@ public class DataSetTableService {
                     data.addAll(jdbcProvider.getData(datasourceRequest));
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
 
                 try {
@@ -938,7 +937,7 @@ public class DataSetTableService {
                     dataSetPreviewPage.setTotal(jdbcProvider.getData(datasourceRequest).size());
                 } catch (Exception e) {
                     logger.error(e.getMessage());
-                    DEException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
+                    DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
             }
         }
@@ -1559,7 +1558,7 @@ public class DataSetTableService {
                         DatasetTableField sourceField = dataSetTableFieldsService.get(dto.getSourceTableFieldId());
                         DatasetTableField targetField = dataSetTableFieldsService.get(dto.getTargetTableFieldId());
                         if (ObjectUtils.isEmpty(sourceField) || ObjectUtils.isEmpty(targetField)) {
-                            DEException.throwException(Translator.get("i18n_dataset_field_delete"));
+                            DataEaseException.throwException(Translator.get("i18n_dataset_field_delete"));
                         }
 
                         join.append(convertUnionTypeToSQL(dto.getSourceUnionRelation()))
@@ -1627,7 +1626,7 @@ public class DataSetTableService {
                         DatasetTableField sourceField = dataSetTableFieldsService.get(dto.getSourceTableFieldId());
                         DatasetTableField targetField = dataSetTableFieldsService.get(dto.getTargetTableFieldId());
                         if (ObjectUtils.isEmpty(sourceField) || ObjectUtils.isEmpty(targetField)) {
-                            DEException.throwException(Translator.get("i18n_dataset_field_delete"));
+                            DataEaseException.throwException(Translator.get("i18n_dataset_field_delete"));
                         }
                         DatasetTable sourceTable = datasetTableMapper.selectByPrimaryKey(dto.getSourceTableId());
                         String sourceTableName = new Gson().fromJson(sourceTable.getInfo(), DataTableInfoDTO.class)
@@ -1692,14 +1691,14 @@ public class DataSetTableService {
             String table = TableUtils.tableName(tableId);
             DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(tableId);
             if (ObjectUtils.isEmpty(datasetTable)) {
-                DEException.throwException(
+                DataEaseException.throwException(
                         Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
             }
             CurrentUserDto user = AuthUtils.getUser();
             if (user != null && !user.getIsAdmin()) {
                 DataSetTableDTO withPermission = getWithPermission(datasetTable.getId(), user.getUserId());
                 if (ObjectUtils.isEmpty(withPermission.getPrivileges()) || !withPermission.getPrivileges().contains("use")) {
-                    DEException.throwException(
+                    DataEaseException.throwException(
                             Translator.get("i18n_dataset_no_permission") + String.format(":table name [%s]", withPermission.getName()));
                 }
             }
@@ -1709,7 +1708,7 @@ public class DataSetTableService {
                     .map(f -> {
                         String s = "";
                         if (f == null) {
-                            DEException.throwException(
+                            DataEaseException.throwException(
                                     Translator.get("i18n_ds_error"));
                         } else {
                             s = table + "." + f.getDataeaseName() + " AS "
@@ -1743,7 +1742,7 @@ public class DataSetTableService {
                 DatasetTableField pField = dataSetTableFieldsService.get(u.getParentField().getId());
                 DatasetTableField cField = dataSetTableFieldsService.get(u.getCurrentField().getId());
                 if (ObjectUtils.isEmpty(pField) || ObjectUtils.isEmpty(cField)) {
-                    DEException.throwException(Translator.get("i18n_dataset_field_delete"));
+                    DataEaseException.throwException(Translator.get("i18n_dataset_field_delete"));
                 }
                 DatasetTable parentTable = datasetTableMapper.selectByPrimaryKey(pField.getTableId());
                 DatasetTable currentTable = datasetTableMapper.selectByPrimaryKey(cField.getTableId());
@@ -1769,7 +1768,7 @@ public class DataSetTableService {
                 }
             }
             if (StringUtils.isEmpty(f)) {
-                DEException.throwException(Translator.get("i18n_union_ds_no_checked"));
+                DataEaseException.throwException(Translator.get("i18n_union_ds_no_checked"));
             }
             sql = MessageFormat.format("SELECT {0} FROM {1}", f,
                     TableUtils.tableName(union.get(0).getCurrentDs().getId())) + join.toString();
@@ -1797,7 +1796,7 @@ public class DataSetTableService {
             String table = TableUtils.tableName(tableId);
             DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(tableId);
             if (ObjectUtils.isEmpty(datasetTable)) {
-                DEException.throwException(
+                DataEaseException.throwException(
                         Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
             }
             List<DatasetTableField> fields = dataSetTableFieldsService.getListByIdsEach(unionDTO.getCurrentDsField());
@@ -1832,7 +1831,7 @@ public class DataSetTableService {
         if (StringUtils.isNotEmpty(schema) && (StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.db2.getType()) ||
                 StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.sqlServer.getType()) ||
                 StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.oracle.getType()) ||
-                StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.kingbase.getType()) ||
+                StringUtils.equalsIgnoreCase(ds.getType(), "kingbase") ||
                 StringUtils.equalsIgnoreCase(ds.getType(), DatasourceTypes.pg.getType()))) {
             joinPrefix = String.format(keyword, schema) + ".";
         }
@@ -1852,14 +1851,14 @@ public class DataSetTableService {
             String table = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();
             String tableId = unionDTO.getCurrentDs().getId();
             if (ObjectUtils.isEmpty(datasetTable)) {
-                DEException.throwException(
+                DataEaseException.throwException(
                         Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
             }
             CurrentUserDto user = AuthUtils.getUser();
             if (user != null && !user.getIsAdmin()) {
                 DataSetTableDTO withPermission = getWithPermission(datasetTable.getId(), user.getUserId());
                 if (ObjectUtils.isEmpty(withPermission.getPrivileges()) || !withPermission.getPrivileges().contains("use")) {
-                    DEException.throwException(
+                    DataEaseException.throwException(
                             Translator.get("i18n_dataset_no_permission") + String.format(":table name [%s]", withPermission.getName()));
                 }
             }
@@ -1894,7 +1893,7 @@ public class DataSetTableService {
                 DatasetTableField pField = dataSetTableFieldsService.get(u.getParentField().getId());
                 DatasetTableField cField = dataSetTableFieldsService.get(u.getCurrentField().getId());
                 if (ObjectUtils.isEmpty(pField) || ObjectUtils.isEmpty(cField)) {
-                    DEException.throwException(Translator.get("i18n_dataset_field_delete"));
+                    DataEaseException.throwException(Translator.get("i18n_dataset_field_delete"));
                 }
                 DatasetTable parentTable = datasetTableMapper.selectByPrimaryKey(pField.getTableId());
                 String parentTableName = new Gson().fromJson(parentTable.getInfo(), DataTableInfoDTO.class).getTable();
@@ -1923,7 +1922,7 @@ public class DataSetTableService {
                 }
             }
             if (StringUtils.isEmpty(f)) {
-                DEException.throwException(Translator.get("i18n_union_ds_no_checked"));
+                DataEaseException.throwException(Translator.get("i18n_union_ds_no_checked"));
             }
             sql = MessageFormat.format("SELECT {0} FROM {1}", f, joinPrefix + String.format(keyword, tableName)) + join.toString();
         } else {
@@ -1957,7 +1956,7 @@ public class DataSetTableService {
             DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(unionDTO.getCurrentDs().getId());
             String tableId = unionDTO.getCurrentDs().getId();
             if (ObjectUtils.isEmpty(datasetTable)) {
-                DEException.throwException(
+                DataEaseException.throwException(
                         Translator.get("i18n_custom_ds_delete") + String.format(":table id [%s]", tableId));
             }
             String table = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable();

@@ -5,13 +5,12 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
-import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkQrResult;
@@ -88,12 +87,12 @@ public class XLarksuiteServer {
         try {
             Map<String, LarksuiteXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LarksuiteXpackService.class));
             if (beansOfType.keySet().size() == 0) {
-                DEException.throwException("缺少国际飞书插件");
+                DataEaseException.throwException("缺少国际飞书插件");
             }
             larksuiteXpackService = SpringContextUtil.getBean(LarksuiteXpackService.class);
             Boolean isOpen = larksuiteXpackService.isOpen();
             if (!isOpen) {
-                DEException.throwException("未开启国际飞书");
+                DataEaseException.throwException("未开启国际飞书");
             }
             LarksuiteUserResult larksuiteUserResult = larksuiteXpackService.userInfo(code, state, false);
             UserData larkUserInfo = larksuiteUserResult.getData();
@@ -101,7 +100,7 @@ public class XLarksuiteServer {
             SysUserEntity sysUserEntity = authUserService.getUserByLarksuiteId(username);
             if (null == sysUserEntity) {
                 if (authUserService.checkScanCreateLimit())
-                    DEException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
+                    DataEaseException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
                 String email = StringUtils.isNotBlank(larkUserInfo.getEmail()) ? larkUserInfo.getEmail() : (username + "@larksuite.work");
                 sysUserService.validateExistUser(username, larkUserInfo.getName(), email);
                 sysUserService.saveLarksuiteCUser(larkUserInfo, email);
@@ -148,7 +147,7 @@ public class XLarksuiteServer {
             response.sendRedirect(url);
         } catch (IOException e) {
             LogUtil.error(e.getMessage(), e);
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -173,7 +172,7 @@ public class XLarksuiteServer {
 
             Boolean isOpen = authUserService.supportLarksuite();
             if (!isOpen) {
-                DEException.throwException("未开启国际飞书");
+                DataEaseException.throwException("未开启国际飞书");
             }
             larksuiteXpackService = SpringContextUtil.getBean(LarksuiteXpackService.class);
             LarksuiteUserResult larksuiteUserResult = larksuiteXpackService.userInfo(code, state, true);

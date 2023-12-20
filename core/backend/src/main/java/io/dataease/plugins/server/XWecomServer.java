@@ -6,13 +6,12 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
-import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
 
@@ -98,12 +97,12 @@ public class XWecomServer {
         try {
             Map<String, WecomXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((WecomXpackService.class));
             if (beansOfType.keySet().size() == 0) {
-                DEException.throwException("缺少企业微信插件");
+                DataEaseException.throwException("缺少企业微信插件");
             }
             wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);
             Boolean isOpen = wecomXpackService.isOpen();
             if (!isOpen) {
-                DEException.throwException("未开启企业微信");
+                DataEaseException.throwException("未开启企业微信");
             }
             WecomAuthResult authResult = wecomXpackService.auth(code);
 
@@ -113,7 +112,7 @@ public class XWecomServer {
             SysUserEntity sysUserEntity = authUserService.getUserByWecomId(userId);
             if (null == sysUserEntity) {
                 if (authUserService.checkScanCreateLimit())
-                    DEException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
+                    DataEaseException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
                 Object emailObj = ObjectUtils.isEmpty(userMap.get("biz_mail")) ? userMap.get("email") : userMap.get("biz_mail");
                 String email = ObjectUtils.isEmpty(emailObj) ? (userId + "@wecom.work") : emailObj.toString();
                 sysUserService.validateExistUser(userId, userMap.get("name").toString(), email);
@@ -170,7 +169,7 @@ public class XWecomServer {
             response.sendRedirect(url);
         } catch (IOException e) {
             LogUtil.error(e.getMessage(), e);
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -196,7 +195,7 @@ public class XWecomServer {
 
             Boolean supportWecom = authUserService.supportWecom();
             if (!supportWecom) {
-                DEException.throwException("未开启企业微信");
+                DataEaseException.throwException("未开启企业微信");
                 return;
             }
             wecomXpackService = SpringContextUtil.getBean(WecomXpackService.class);

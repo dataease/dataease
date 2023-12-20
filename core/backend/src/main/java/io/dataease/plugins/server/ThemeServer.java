@@ -2,6 +2,7 @@ package io.dataease.plugins.server;
 
 import java.util.List;
 
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.xpack.theme.dto.*;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -12,7 +13,6 @@ import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.util.SpringContextUtil;
@@ -49,11 +49,11 @@ public class ThemeServer {
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             if (ObjectUtils.isNotEmpty(e.getMessage()) && e.getMessage().indexOf("theme_name_repeat") != -1) {
-                DEException.throwException(Translator.get("theme_name_repeat"));
+                DataEaseException.throwException(Translator.get("theme_name_repeat"));
             } else if (ObjectUtils.isNotEmpty(e.getMessage()) && e.getMessage().indexOf("theme_name_empty") != -1) {
-                DEException.throwException(Translator.get("theme_name_empty"));
+                DataEaseException.throwException(Translator.get("theme_name_empty"));
             } else {
-                DEException.throwException(e);
+                DataEaseException.throwException(e);
             }
         }
 
@@ -71,11 +71,11 @@ public class ThemeServer {
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
             if (ObjectUtils.isNotEmpty(e.getMessage()) && e.getMessage().indexOf("theme_name_repeat") != -1) {
-                DEException.throwException(Translator.get("theme_name_repeat"));
+                DataEaseException.throwException(Translator.get("theme_name_repeat"));
             } else if (ObjectUtils.isNotEmpty(e.getMessage()) && e.getMessage().indexOf("theme_name_empty") != -1) {
-                DEException.throwException(Translator.get("theme_name_empty"));
+                DataEaseException.throwException(Translator.get("theme_name_empty"));
             } else {
-                DEException.throwException(e);
+                DataEaseException.throwException(e);
             }
         }
 

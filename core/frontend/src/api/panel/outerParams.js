@@ -20,6 +20,6 @@ export function getOuterParamsInfo(panelId) {
   return request({
     url: '/outerParams/getOuterParamsInfo/' + panelId,
     method: 'get',
-    loading: true
+    loading: false
   })
 }

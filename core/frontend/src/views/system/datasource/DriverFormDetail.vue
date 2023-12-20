@@ -29,6 +29,16 @@
           autocomplete="off"
         />
       </el-form-item>
+      <el-form-item
+          :label="$t('driver.surpportVersions')"
+          prop="surpportVersions"
+      >
+        <el-input
+            v-model="driverForm.surpportVersions"
+            style="width: 600px"
+            autocomplete="off"
+        />
+      </el-form-item>
     </el-form>
     <el-upload
       :action="baseUrl + 'driver/file/upload'"
@@ -174,6 +184,13 @@ export default {
           {
             required: true,
             message: i18n.t('driver.please_set_driverClass'),
+            trigger: 'blur'
+          }
+        ],
+        surpportVersions: [
+          {
+            required: true,
+            message: i18n.t('driver.please_set_surpportVersions'),
             trigger: 'blur'
           }
         ]

@@ -21,6 +21,7 @@ public class DataSourceType {
     private String keywordSuffix = "";
     private String aliasPrefix = "";
     private String aliasSuffix = "";
+    private String surpportVersions = null;
 
     public DataSourceType(String type, String name, boolean isPlugin, String extraParams, DatasourceCalculationMode calculationMode, boolean isJdbc) {
         this.type = type;

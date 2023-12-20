@@ -14,3 +14,9 @@ ALTER TABLE `sys_task_email`
 
 ALTER TABLE `sys_task_email`
     MODIFY COLUMN `reci_users` longtext NULL COMMENT '接收人账号' AFTER `conditions`;
+
+ALTER TABLE de_driver ADD COLUMN `surpport_versions` LONGTEXT NULL AFTER `desc`;
+
+BEGIN;
+INSERT INTO `sys_startup_job` VALUES ('chartFilterMerge', 'chartFilterMerge', 'ready');
+COMMIT;

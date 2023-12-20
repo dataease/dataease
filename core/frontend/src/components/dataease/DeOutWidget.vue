@@ -45,6 +45,7 @@
           </div> -->
           <div class="first-element">
             <div
+              v-clickoutside="lostFocus"
               :class="element.component === 'de-select-grid' ? 'first-element-grid-container': ''"
               :style="deSelectGridBg"
               class="first-element-container"
@@ -77,10 +78,14 @@
 
 <script>
 import inputStyleMixin from '@/components/widget/deWidget/inputStyleMixin'
+import clickoutside from 'element-ui/src/utils/clickoutside.js'
 import { mapState } from 'vuex'
 
 export default {
   name: 'DeOutWidget',
+  directives: {
+    clickoutside
+  },
   mixins: [inputStyleMixin],
   props: {
     canvasId: {
@@ -196,6 +201,9 @@ export default {
     this.$set(this.element.style, 'innerBgColor', innerBgColor || '')
   },
   methods: {
+    lostFocus() {
+      this.$refs['deOutWidget'].onScroll?.()
+    },
     filterLoaded(p) {
       this.$emit('filter-loaded', p)
     },

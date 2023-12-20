@@ -1,6 +1,7 @@
 package io.dataease.service.chart;
 
 import com.google.gson.internal.LinkedTreeMap;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 
 import io.dataease.auth.annotation.DePermissionProxy;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.excel.ExcelSheetModel;
 import io.dataease.commons.utils.ExcelUtils;
 import io.dataease.commons.utils.LogUtil;
@@ -91,7 +91,7 @@ public class ViewExportExcel {
             chartViewDTO = chartViewService.getData(viewId, request);
         } catch (Exception e) {
             LogUtil.error(e.getMessage());
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
         String title = Optional.ofNullable(chartViewDTO.getTitle()).orElse(chartViewDTO.getName());
         Map<String, Object> chart = chartViewDTO.getData();
