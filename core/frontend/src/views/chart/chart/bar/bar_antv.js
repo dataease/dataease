@@ -275,8 +275,13 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
   // data
   const data = _.cloneDeep(chart.data.data)
 
+  const isDate = !!chart.data.isDate
+
   const minTime = chart.data.minTime
   const maxTime = chart.data.maxTime
+
+  const minNumber = chart.data.min
+  const maxNumber = chart.data.max
 
   // config
   const slider = getSlider(chart)
@@ -297,13 +302,6 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
     slider: slider,
     annotations: analyse,
     isRange: true,
-    meta: {
-      values: {
-        type: 'time',
-        min: minTime,
-        max: maxTime
-      }
-    },
     brush: {
       enabled: true,
       isStartEnable: (context) => {
@@ -340,6 +338,24 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
       }
     ]
   }
+
+  if (isDate) {
+    options.meta = {
+      values: {
+        type: 'time',
+        min: minTime,
+        max: maxTime
+      }
+    }
+  } else {
+    options.meta = {
+      values: {
+        min: minNumber,
+        max: maxNumber
+      }
+    }
+  }
+
   // size
   let customAttr = {}
   if (chart.customAttr) {

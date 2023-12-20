@@ -703,7 +703,8 @@
                           >*</span>
                         </span>
                         /
-                        <span>{{ $t('chart.dimension') }}</span>
+                        <span v-if="view.type !== 'bar-time-range'">{{ $t('chart.dimension') }}</span>
+                        <span v-else>{{ $t('chart.dimension_or_quota') }}</span>
                         <el-tooltip
                           v-show="view.type !== 'line'"
                           class="item"
@@ -738,21 +739,39 @@
                         @update="calcData(true)"
                       >
                         <transition-group class="draggable-group">
-                          <dimension-ext-item
-                            v-for="(item,index) in view.xaxisExt"
-                            :key="item.id"
-                            :param="param"
-                            :index="index"
-                            :item="item"
-                            :dimension-data="dimension"
-                            :quota-data="quota"
-                            :chart="chart"
-                            @onDimensionItemChange="dimensionExtItemChange"
-                            @onDimensionItemRemove="dimensionItemRemove"
-                            @onItemCustomSort="item => onCustomSort(item, 'xaxisExt')"
-                            @editItemFilter="showDimensionEditFilter"
-                            @onNameEdit="showRename"
-                          />
+                          <template v-for="(item,index) in view.xaxisExt">
+                            <dimension-ext-item
+                              v-if="item.groupType === 'd'"
+                              :key="item.id"
+                              :param="param"
+                              :index="index"
+                              :item="item"
+                              :dimension-data="dimension"
+                              :quota-data="quota"
+                              :chart="chart"
+                              @onDimensionItemChange="dimensionExtItemChange"
+                              @onDimensionItemRemove="dimensionItemExtRemove"
+                              @onItemCustomSort="item => onCustomSort(item, 'xaxisExt')"
+                              @editItemFilter="showDimensionEditFilter"
+                              @onNameEdit="showRename"
+                            />
+                            <quota-item
+                              v-else-if="item.groupType === 'q'"
+                              :key="item.id"
+                              :param="param"
+                              :index="index"
+                              :item="item"
+                              :chart="chart"
+                              :dimension-data="dimension"
+                              :quota-data="quota"
+                              @onQuotaItemChange="dimensionExtItemChange"
+                              @onQuotaItemRemove="dimensionItemExtRemove"
+                              @editItemFilter="showQuotaEditFilter"
+                              @onNameEdit="showRename"
+                              @editItemCompare="showQuotaEditCompare"
+                              @valueFormatter="valueFormatter"
+                            />
+                          </template>
                         </transition-group>
                       </draggable>
                       <div
@@ -1099,10 +1118,13 @@
                     >
                       <span class="data-area-label">
                         <span>{{ $t('chart.result_filter') }}</span>
-                        <span v-if="!!view.customFilter.logic" class="setting">已设置</span>
+                        <span
+                          v-if="!!view.customFilter.logic"
+                          class="setting"
+                        >已设置</span>
                         <i
-                          @click="deleteTreeFilter"
                           class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="deleteTreeFilter"
                         />
                       </span>
                       <div
@@ -2224,6 +2246,10 @@ export default {
             this.view.xaxis = []
           }
         }
+        if (newVal.type !== oldVal.type && (newVal.type === 'bar-time-range' || oldVal.type === 'bar-time-range')) {
+          this.view.xaxisExt = []
+          this.view.yaxis = []
+        }
         if (newVal.type !== oldVal.type || newVal.render !== oldVal.render) {
           this.setChartDefaultOptions()
           this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
@@ -2501,6 +2527,21 @@ export default {
           }
           if (!ele.filter) {
             ele.filter = []
+          }
+
+          if (ele.chartId) {
+            ele.summary = ''
+          } else {
+            if (!ele.summary || ele.summary === '') {
+              if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+                ele.summary = 'count'
+              } else {
+                ele.summary = 'sum'
+              }
+            }
+          }
+          if (!ele.compareCalc) {
+            ele.compareCalc = compareItem
           }
         })
       }
@@ -2846,6 +2887,11 @@ export default {
       }
       this.calcData(true)
     },
+    dimensionItemExtRemove(item) {
+      this.view.xaxisExt.splice(item.index, 1)
+
+      this.calcData(true)
+    },
 
     quotaItemChange(item) {
       this.calcData(true)
@@ -3017,7 +3063,7 @@ export default {
           return
         }
       }
-      if (this.quotaItem.filterType === 'quota') {
+      if (this.quotaItem.filterType === 'quota' && this.chart.type !== 'bar-time-range') {
         this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
         this.view.yaxis[this.quotaItem.index].logic = this.quotaItem.logic
       } else if (this.quotaItem.filterType === 'quotaExt') {
@@ -3026,6 +3072,9 @@ export default {
       } else if (this.quotaItem.filterType === 'dimension') {
         this.view.xaxis[this.quotaItem.index].filter = this.quotaItem.filter
         this.view.xaxis[this.quotaItem.index].logic = this.quotaItem.logic
+      } else if (this.chart.type === 'bar-time-range') {
+        this.view.xaxisExt[this.quotaItem.index].filter = this.quotaItem.filter
+        this.view.xaxisExt[this.quotaItem.index].logic = this.quotaItem.logic
       }
       this.calcData(true)
       this.closeQuotaFilter()
@@ -3038,13 +3087,13 @@ export default {
     saveRename() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
-          if (this.itemForm.renameType === 'quota') {
+          if (this.itemForm.renameType === 'quota' && this.chart.type !== 'bar-time-range') {
             this.view.yaxis[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'dimension') {
             this.view.xaxis[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'quotaExt') {
             this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
-          } else if (this.itemForm.renameType === 'dimensionExt') {
+          } else if (this.itemForm.renameType === 'dimensionExt' || this.chart.type === 'bar-time-range') {
             this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'extStack') {
             this.view.extStack[this.itemForm.index].name = this.itemForm.name
@@ -3242,19 +3291,21 @@ export default {
     addXaxisExt(e) {
       this.multiAdd(e, this.view.xaxisExt)
       this.dragMoveDuplicate(this.view.xaxisExt, e)
-      if (this.view.type !== 'table-info') {
+
+      if (this.view.type !== 'table-info' && this.view.type !== 'bar-time-range') {
         this.dragCheckType(this.view.xaxisExt, 'd')
       }
       if (this.view.type === 'bar-time-range') {
-        // 针对时间条形图，需要限定类型为时间类型
         if (this.view.xaxisExt && this.view.xaxisExt.length > 0) {
           const baseXaxisExt = this.view.xaxisExt[0]
           for (let i = this.view.xaxisExt.length - 1; i >= 0; i--) {
+            // 针对时间条形图，需要限定类型为时间类型
+            if (baseXaxisExt.groupType !== this.view.xaxisExt[i].groupType || baseXaxisExt.groupType === 'd' && this.view.xaxisExt[i].deType !== 1) {
+              this.view.xaxisExt.splice(i, 1)
+              continue
+            }
             this.view.xaxisExt[i].dateStyle = baseXaxisExt.dateStyle
             this.view.xaxisExt[i].datePattern = baseXaxisExt.datePattern
-            if (this.view.xaxisExt[i].deType !== 1) {
-              this.view.xaxisExt.splice(i, 1)
-            }
           }
         }
         if (this.view.xaxisExt.length > 2) {
@@ -3583,12 +3634,14 @@ export default {
         return
       }
       // 更新指标
-      if (this.valueFormatterItem.formatterType === 'quota') {
+      if (this.valueFormatterItem.formatterType === 'quota' && this.chart.type !== 'bar-time-range') {
         this.view.yaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
       } else if (this.valueFormatterItem.formatterType === 'quotaExt') {
         this.view.yaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
       } else if (this.valueFormatterItem.formatterType === 'dimension') {
         this.view.xaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      } else if (this.chart.type === 'bar-time-range') {
+        this.view.xaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
       }
       this.calcData(true)
       this.closeValueFormatter()

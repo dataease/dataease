@@ -1,6 +1,7 @@
 package io.dataease.service.chart.util;
 
 import cn.hutool.core.util.ArrayUtil;
+import io.dataease.controller.request.chart.ChartDrillRequest;
 import io.dataease.dto.chart.*;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -1310,7 +1311,7 @@ public class ChartDataBuild {
         }
     }
 
-    public static Map<String, Object> transTimeBarDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> extStack, List<String[]> data, ChartViewWithBLOBs view, boolean isDrill) {
+    public static Map<String, Object> transTimeBarDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> extStack, List<String[]> data, ChartViewWithBLOBs view, boolean isDrill, List<ChartDrillRequest> drillRequestList) {
 
         Map<String, Object> map = new HashMap<>();
         if (CollectionUtils.isEmpty(xAxisBase) || CollectionUtils.isEmpty(xAxisExt) || xAxisExt.size() < 2) {
@@ -1323,9 +1324,17 @@ public class ChartDataBuild {
         }
 
         List<Date> dates = new ArrayList<>();
+        List<BigDecimal> numbers = new ArrayList<>();
 
         ChartViewFieldDTO xAxis1 = xAxis.get(xAxisBase.size());
-        SimpleDateFormat sdf = new SimpleDateFormat(getDateFormat(xAxis1.getDateStyle(), xAxis1.getDatePattern()));
+        boolean isDate = true;
+        if (StringUtils.equalsIgnoreCase(xAxis1.getGroupType(), "q")) {
+            isDate = false;
+        }
+        SimpleDateFormat sdf = null;
+        if (isDate) {
+            sdf = new SimpleDateFormat(getDateFormat(xAxis1.getDateStyle(), xAxis1.getDatePattern()));
+        }
 
         List<Object> dataList = new ArrayList<>();
         for (int i1 = 0; i1 < data.size(); i1++) {
@@ -1350,49 +1359,67 @@ public class ChartDataBuild {
             List<ChartDimensionDTO> dimensionList = new ArrayList<>();
 
             for (int j = 0; j < xAxis.size(); j++) {
+                if (j == xAxisBase.size() || j == xAxisBase.size() + 1) {
+                    continue;
+                }
+                int index = j;
+                if (j > xAxisBase.size() + 1) {
+                    index = j - 2;
+                }
                 ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
                 chartDimensionDTO.setId(xAxis.get(j).getId());
-                chartDimensionDTO.setValue(row[j]);
+                chartDimensionDTO.setValue(row[index]);
                 dimensionList.add(chartDimensionDTO);
             }
 
             obj.put("dimensionList", dimensionList);
 
-            List<String> values = new ArrayList<>();
+            List<Object> values = new ArrayList<>();
 
             // 由于起止时间字段是放到最后的yField里去查询的，所以拿倒数两个
             if (row[xAxis.size() - 1] == null || row[xAxis.size() - 2] == null) {
                 continue;
             }
 
-            values.add(row[xAxis.size() - 2]);
-            values.add(row[xAxis.size() - 1]);
-            obj.put("values", values);
-
-
-            try {
-                Date date = sdf.parse(row[xAxis.size() - 2]);
-                if (date != null) {
-                    dates.add(date);
+            if (isDate) {
+                values.add(row[xAxis.size() - 2]);
+                values.add(row[xAxis.size() - 1]);
+                obj.put("values", values);
+                try {
+                    Date date = sdf.parse(row[xAxis.size() - 2]);
+                    if (date != null) {
+                        dates.add(date);
+                    }
+                } catch (Exception ignore) {
                 }
-            } catch (Exception ignore) {
-            }
-            try {
-                Date date = sdf.parse(row[xAxis.size() - 1]);
-                if (date != null) {
-                    dates.add(date);
+                try {
+                    Date date = sdf.parse(row[xAxis.size() - 1]);
+                    if (date != null) {
+                        dates.add(date);
+                    }
+                } catch (Exception ignore) {
                 }
-            } catch (Exception ignore) {
+            } else {
+                values.add(new BigDecimal(row[xAxis.size() - 2]));
+                values.add(new BigDecimal(row[xAxis.size() - 1]));
+                obj.put("values", values);
+
+                numbers.add(new BigDecimal(row[xAxis.size() - 2]));
+                numbers.add(new BigDecimal(row[xAxis.size() - 1]));
             }
 
             dataList.add(obj);
         }
 
-        map.put("minTime", sdf.format(dates.stream().min(Date::compareTo).orElse(null)));
+        if (isDate) {
+            map.put("minTime", sdf.format(dates.stream().min(Date::compareTo).orElse(null)));
+            map.put("maxTime", sdf.format(dates.stream().max(Date::compareTo).orElse(null)));
+        } else {
+            map.put("min", numbers.stream().min(BigDecimal::compareTo).orElse(null));
+            map.put("max", numbers.stream().max(BigDecimal::compareTo).orElse(null));
+        }
 
-
-        map.put("maxTime", sdf.format(dates.stream().max(Date::compareTo).orElse(null)));
-
+        map.put("isDate", isDate);
         map.put("data", dataList);
         return map;
 

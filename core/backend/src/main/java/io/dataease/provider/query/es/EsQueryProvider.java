@@ -775,11 +775,44 @@ public class EsQueryProvider extends QueryProvider {
 
         List<SQLObj> yFields = new ArrayList<>(); // 要把两个时间字段放进y里面
         List<String> yWheres = new ArrayList<>();
+        List<SQLObj> yOrders = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
                 String originField;
+
+                if (StringUtils.equalsIgnoreCase(x.getGroupType(), "q")) {
+                    if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_INT) {
+                        // 解析origin name中有关联的字段生成sql表达式
+                        originField = calcFieldRegex(x.getOriginName(), tableObj);
+                    } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_TIME) {
+                        originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    } else {
+                        if (x.getDeType() == 2) {
+                            originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "bigint");
+                        } else if (x.getDeType() == 3) {
+                            originField = String.format(EsSqlLConstants.CAST, String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName()), "float");
+                        } else {
+                            originField = String.format(EsSqlLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                        }
+                    }
+                    String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
+                    // 处理纵轴字段
+                    yFields.add(getYFields(x, originField, fieldAlias));
+                    // 处理纵轴过滤
+                    yWheres.add(getYWheres(x, originField, fieldAlias));
+                    // 处理纵轴排序
+                    if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
+                        yOrders.add(SQLObj.builder()
+                                .orderField(originField)
+                                .orderAlias(fieldAlias)
+                                .orderDirection(x.getSort())
+                                .build());
+                    }
+                    continue;
+                }
+
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_INT) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
@@ -821,8 +854,6 @@ public class EsQueryProvider extends QueryProvider {
                 }
             }
         }
-
-        List<SQLObj> yOrders = new ArrayList<>();
 
         // 处理视图中字段过滤
         String customWheres = transChartFilterTrees(tableObj, fieldCustomFilter);
