@@ -1840,7 +1840,6 @@ import {
 } from '@/api/chart/chart'
 import DimensionItem from '../components/dragItem/DimensionItem'
 import QuotaItem from '../components/dragItem/QuotaItem'
-import FilterItem from '../components/dragItem/FilterItem'
 import ChartDragItem from '../components/dragItem/ChartDragItem'
 import DrillItem from '../components/dragItem/DrillItem'
 import ResultFilterEditor from '../components/filter/ResultFilterEditor'
@@ -1916,7 +1915,6 @@ export default {
     ChartType,
     ChartComponentG2,
     QuotaExtItem,
-    FilterItem,
     FilterTree,
     FieldEdit,
     TableSelector,
@@ -2289,7 +2287,7 @@ export default {
     bus.$off('show-rename', this.showRename)
     bus.$off('show-quota-edit-filter', this.showQuotaEditFilter)
     bus.$off('show-quota-edit-compare', this.showQuotaEditCompare)
-    bus.$off('show-edit-filter', this.showEditFilter)
+    bus.$off('show-edit-filter', this.openTreeFilter)
     bus.$off('show-edit-formatter', this.valueFormatter)
     bus.$off('calc-data', this.calcData)
     bus.$off('plugins-calc-style', this.calcStyle)
@@ -2379,7 +2377,7 @@ export default {
       bus.$on('show-rename', this.showRename)
       bus.$on('show-quota-edit-filter', this.showQuotaEditFilter)
       bus.$on('show-quota-edit-compare', this.showQuotaEditCompare)
-      bus.$on('show-edit-filter', this.showEditFilter)
+      bus.$on('show-edit-filter', this.openTreeFilter)
       bus.$on('show-edit-formatter', this.valueFormatter)
       bus.$on('calc-data', this.calcData)
       bus.$on('plugins-calc-style', this.calcStyle)
@@ -2643,11 +2641,6 @@ export default {
         view.type === 'table-pivot') {
         view.drillFields = []
       }
-      // view.customFilter.forEach(function(ele) {
-      //   if (ele && !ele.filter) {
-      //     ele.filter = []
-      //   }
-      // })
       this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
@@ -3066,63 +3059,6 @@ export default {
       }
       this.calcData(true)
       this.closeQuotaFilter()
-    },
-
-    filterItemRemove(item) {
-      this.view.customFilter.splice(item.index, 1)
-      this.calcData(true)
-    },
-    showEditFilter(item) {
-      this.filterItem = JSON.parse(JSON.stringify(item))
-      this.chartForFilter = JSON.parse(JSON.stringify(this.view))
-      if (!this.filterItem.logic) {
-        this.filterItem.logic = 'and'
-      }
-      if (!this.filterItem.filterType) {
-        this.filterItem.filterType = 'logic'
-      }
-      if (!this.filterItem.enumCheckField) {
-        this.filterItem.enumCheckField = []
-      }
-      this.resultFilterEdit = true
-    },
-    closeResultFilter() {
-      this.resultFilterEdit = false
-    },
-    saveResultFilter() {
-      if (((this.filterItem.deType === 0 || this.filterItem.deType === 5) && this.filterItem.filterType !== 'enum') ||
-        this.filterItem.deType === 1 ||
-        this.filterItem.deType === 2 ||
-        this.filterItem.deType === 3) {
-        for (let i = 0; i < this.filterItem.filter.length; i++) {
-          const f = this.filterItem.filter[i]
-          if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
-            this.$message({
-              message: this.$t('chart.filter_value_can_null'),
-              type: 'error',
-              showClose: true
-            })
-            return
-          }
-          if (this.filterItem.deType === 2 || this.filterItem.deType === 3) {
-            if (isNaN(f.value)) {
-              this.$message({
-                message: this.$t('chart.filter_value_can_not_str'),
-                type: 'error',
-                showClose: true
-              })
-              return
-            }
-          }
-        }
-      }
-
-      this.view.customFilter[this.filterItem.index].filter = this.filterItem.filter
-      this.view.customFilter[this.filterItem.index].logic = this.filterItem.logic
-      this.view.customFilter[this.filterItem.index].filterType = this.filterItem.filterType
-      this.view.customFilter[this.filterItem.index].enumCheckField = this.filterItem.enumCheckField
-      this.calcData(true)
-      this.closeResultFilter()
     },
 
     showRename(val) {
