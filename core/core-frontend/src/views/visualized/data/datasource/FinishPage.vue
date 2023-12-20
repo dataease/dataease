@@ -87,7 +87,7 @@ const handleChange = (val: boolean) => {
     flex-direction: column;
     align-items: center;
     padding-top: 83px;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-style: normal;
     font-weight: 400;
 
@@ -136,7 +136,7 @@ const handleChange = (val: boolean) => {
         }
 
         .info {
-          font-family: PingFang SC;
+          font-family: AlibabaPuHuiTi;
           font-style: normal;
           font-weight: 400;
           .name {

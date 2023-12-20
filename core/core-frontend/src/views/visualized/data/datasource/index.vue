@@ -1462,7 +1462,7 @@ const getMenuList = (val: boolean) => {
     border-radius: 4px;
     margin: 0 0 16px 16px;
     padding: 16px;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     .name {
       font-size: 16px;
       font-weight: 500;
@@ -1524,7 +1524,7 @@ const getMenuList = (val: boolean) => {
   }
 
   .de-expand {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
@@ -1580,7 +1580,7 @@ const getMenuList = (val: boolean) => {
         width: 100%;
         display: flex;
         align-items: center;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 16px;
         font-weight: 500;
 
@@ -1706,7 +1706,7 @@ const getMenuList = (val: boolean) => {
 
   .table-value,
   .table-name {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     margin: 0;

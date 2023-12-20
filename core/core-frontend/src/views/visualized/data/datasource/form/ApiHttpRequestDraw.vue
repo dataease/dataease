@@ -739,7 +739,7 @@ defineExpose({
     cursor: pointer;
     .name {
       color: #1f2329;
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 16px;
       font-style: normal;
       font-weight: 500;

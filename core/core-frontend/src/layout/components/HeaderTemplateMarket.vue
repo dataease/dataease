@@ -28,7 +28,7 @@ const backToMain = () => {
 
 <style lang="less" scoped>
 .system-header {
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
 
   .logo {
     width: 134px;

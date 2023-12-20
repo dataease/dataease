@@ -8,6 +8,10 @@ const DashboardEditor = defineAsyncComponent(() => import('@/views/dashboard/ind
 
 const Dashboard = defineAsyncComponent(() => import('./DashboardPreview.vue'))
 const ViewWrapper = defineAsyncComponent(() => import('./ViewWrapper.vue'))
+const Dataset = defineAsyncComponent(() => import('@/views/visualized/data/dataset/index.vue'))
+const Datasource = defineAsyncComponent(
+  () => import('@/views/visualized/data/datasource/index.vue')
+)
 const props = defineProps({
   componentName: propTypes.string.def('DashboardEditor')
 })
@@ -17,7 +21,9 @@ const componentMap = {
   DashboardEditor,
   VisualizationEditor,
   ViewWrapper,
-  Dashboard
+  Dashboard,
+  Dataset,
+  Datasource
 }
 
 currentComponent.value = componentMap[props.componentName]

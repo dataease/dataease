@@ -859,7 +859,7 @@ defineExpose({
 
   color: var(--neutral-900, #1f2329);
   /* 中文/桌面端/正文 14 22 Regular */
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

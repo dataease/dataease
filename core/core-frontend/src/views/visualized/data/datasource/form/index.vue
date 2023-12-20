@@ -817,7 +817,7 @@ defineExpose({
       .title {
         display: flex;
         justify-content: space-between;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-weight: 500;
         color: var(--TextPrimary, #1f2329);
@@ -872,7 +872,7 @@ defineExpose({
         width: 100%;
         padding: 16px 24px;
         color: #1f2329;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 16px;
         font-style: normal;
         font-weight: 500;

@@ -858,7 +858,7 @@ const mousedownDrag = () => {
     height: 100%;
     width: 240px;
     float: left;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     border-right: 1px solid rgba(31, 35, 41, 0.15);
 
     .list-item_primary {
@@ -960,7 +960,7 @@ const mousedownDrag = () => {
     float: right;
     height: calc(100vh - 156px);
     .sql-result {
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       overflow-y: auto;
       box-sizing: border-box;
@@ -1122,7 +1122,7 @@ const mousedownDrag = () => {
 .sql-tips {
   color: #646a73;
   text-align: center;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-style: normal;
   font-weight: 400;
@@ -1146,7 +1146,7 @@ const mousedownDrag = () => {
       .num {
         margin-left: auto;
         color: #646a73;
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-style: normal;
         font-weight: 400;
@@ -1235,7 +1235,7 @@ const mousedownDrag = () => {
     background: #e1eaff;
     position: relative;
     padding: 9px 0 9px 40px;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
 

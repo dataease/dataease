@@ -66,7 +66,7 @@ defineExpose({
 
   > :nth-child(1) {
     color: var(--deTextSecondary, #1f2329);
-    font-family: 'PingFang SC';
+    font-family: 'AlibabaPuHuiTi';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;

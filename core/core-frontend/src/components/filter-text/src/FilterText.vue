@@ -71,7 +71,7 @@ watch(
   display: flex;
   align-items: center;
   margin: 17px 0;
-  font-family: 'PingFang SC';
+  font-family: 'AlibabaPuHuiTi';
   font-weight: 400;
 
   .sum {

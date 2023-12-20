@@ -359,7 +359,7 @@ const handleTabClick = () => {
       position: sticky;
       top: 0;
       height: 32px;
-      font-family: 'PingFang SC';
+      font-family: 'AlibabaPuHuiTi';
       font-style: normal;
       font-weight: 500;
       font-size: 14px;

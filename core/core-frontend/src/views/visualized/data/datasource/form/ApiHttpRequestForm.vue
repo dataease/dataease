@@ -213,7 +213,7 @@ const emits = defineEmits(['changeId'])
     min-height: 200px;
 
     :deep(.ed-tabs__item) {
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-style: normal;
       font-weight: 400;

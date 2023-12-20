@@ -159,7 +159,7 @@ defineExpose({
   width: 50%;
 
   & > p {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 500;
     margin: 0;
