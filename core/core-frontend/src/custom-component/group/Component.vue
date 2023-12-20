@@ -55,9 +55,6 @@ const customCanvasStyle = computed(() => {
   result.scale = canvasStyleData.value.scale
   result.width = (element.value.style.width * 100) / result.scale
   result.height = (element.value.style.height * 100) / result.scale
-
-  // result.width = element.value.style.width
-  // result.height = element.value.style.height
   return result
 })
 </script>
