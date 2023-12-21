@@ -16,15 +16,16 @@
         slot="footer"
         class="dialog-footer"
       >
-        <el-button
+        <de-btn
+          secondary
           @click="closeFilter"
         >{{ $t('chart.cancel') }}
-        </el-button>
-        <el-button
+        </de-btn>
+        <de-btn
           type="primary"
           @click="changeFilter"
         >{{ $t('chart.confirm') }}
-        </el-button>
+        </de-btn>
       </div>
     </el-dialog>
 </template>
@@ -105,13 +106,13 @@ export default {
 <style lang="scss">
 .filter-tree-cont {
   .tree-cont {
-      height: 200px;
+      min-height: 67px;
       width: 100%;
       padding: 16px;
       border-radius: 4px;
       border: 1px solid var(--deBorderBase, #DCDFE6);
       overflow: auto;
-  
+      max-height: 500px;
       .content {
         height: 100%;
         width: 100%;

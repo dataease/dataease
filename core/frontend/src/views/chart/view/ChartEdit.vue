@@ -2064,7 +2064,7 @@ export default {
   },
   computed: {
     filedList() {
-      return [...this.dimension, ...this.quota]
+      return [...this.dimension, ...this.quota].filter(ele => ele.id !== 'count')
     },
     obj() {
       return {

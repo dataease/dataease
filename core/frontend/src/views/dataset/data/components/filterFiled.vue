@@ -350,8 +350,8 @@ export default {
       }
       this.showTextArea = true
     },
-    filterTypeChange() {
-      this.item.term = ''
+    filterTypeChange(val) {
+      this.item.term = val === 'logic' ? 'eq' : ''
       this.item.value = ''
       this.initEnumOptions()
     },
@@ -389,7 +389,7 @@ export default {
         filterType: 'logic',
         enumValue: '',
         value: '',
-        term: ''
+        term: 'eq'
       })
       this.filterListInit(deType)
       this.checklist = []
