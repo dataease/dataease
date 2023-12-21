@@ -180,7 +180,7 @@ export default {
       }
     }
   },
-  components: { DimensionItem, QuotaItem, FilterItem, DrillItem },
+  components: { DimensionItem, QuotaItem, FilterItem, DrillItem, FilterTree },
   data() {
     return {
       widgets: [],
