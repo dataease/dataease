@@ -367,6 +367,9 @@ export default {
           if (!this.axisForm.axisLine) {
             this.axisForm.axisLine = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.axisLine))
           }
+          if (this.axisForm.splitLine.enableDash === undefined) {
+            this.axisForm.splitLine.enableDash = DEFAULT_XAXIS_STYLE.splitLine.enableDash
+          }
           if (!this.axisForm.splitLine.dashStyle) {
             this.axisForm.splitLine.dashStyle = JSON.parse(JSON.stringify(DEFAULT_XAXIS_STYLE.splitLine.dashStyle))
           }
