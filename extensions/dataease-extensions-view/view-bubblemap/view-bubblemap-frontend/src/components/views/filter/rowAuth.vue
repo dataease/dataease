@@ -70,11 +70,11 @@ export default {
     },
     submit() {
       this.errorMessage = '';
-      this.$emit('save', {
+      return {
         logic: this.logic,
         items: this.dfsSubmit(this.relationList),
-        errorMessage: this.errorMessage,
-      })
+        errorMessage: this.errorMessage
+      }
     },
     errorDetected({ enumValue, deType, filterType, term, value }) {
       if (filterType === "logic") {
