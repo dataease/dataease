@@ -136,6 +136,9 @@ export default {
               } else if (node.indeterminate_number_map[key] > 0) {
                 node.check_all_map[key] = false
                 node.indeterminate_map[key] = true
+              } else {
+                node.check_all_map[key] = false
+                node.indeterminate_map[key] = false
               }
             }
           }
