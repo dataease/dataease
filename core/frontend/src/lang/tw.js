@@ -1386,7 +1386,7 @@ export default {
     column: '列',
     table_config: '表格配置',
     table_column_width_config: '列寬調整',
-    table_column_freeze: '列凍結',
+    table_freeze: '表格凍結',
     table_column_adapt: '自適應',
     table_column_custom: '自定義',
     chart_table_pivot: '透視表',
