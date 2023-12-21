@@ -4,7 +4,6 @@ target=$2
 
 DE_BASE=/opt
 DE_RUNNING_BASE=${DE_BASE}/dataease2.0
-DE_PORT=8100
 need_init_apisix=false
 compose_files="-f docker-compose.yml"
 compose_cmd="docker-compose"
