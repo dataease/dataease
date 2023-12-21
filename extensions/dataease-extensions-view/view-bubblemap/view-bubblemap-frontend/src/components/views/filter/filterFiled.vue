@@ -303,7 +303,6 @@ export default {
   created() {
     this.initNameEnumName();
     this.filterListInit(this.item.deType)
-    this.sysParamsIlnJudge(this.item.term)
   },
   methods: {
     confirm() {
