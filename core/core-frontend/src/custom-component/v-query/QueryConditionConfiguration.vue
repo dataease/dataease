@@ -478,6 +478,8 @@ const parameterCompletion = () => {
   const attributes = {
     timeType: 'fixed',
     required: false,
+    parametersStart: null,
+    parametersEnd: null,
     relativeToCurrent: 'custom',
     timeNum: 0,
     relativeToCurrentType: 'year',
@@ -1184,8 +1186,7 @@ defineExpose({
                   <el-select
                     popper-class="dataset-parameters"
                     value-key="id"
-                    multiple
-                    v-model="curComponent.parameters"
+                    v-model="curComponent.parametersStart"
                     clearable
                   >
                     <el-option
@@ -1205,8 +1206,7 @@ defineExpose({
                   <el-select
                     popper-class="dataset-parameters"
                     value-key="id"
-                    multiple
-                    v-model="curComponent.parameters"
+                    v-model="curComponent.parametersEnd"
                     clearable
                   >
                     <el-option

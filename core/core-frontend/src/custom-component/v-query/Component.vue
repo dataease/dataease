@@ -212,6 +212,8 @@ const infoFormat = (obj: ComponentInfo) => {
     timeNum: 0,
     relativeToCurrentType: 'year',
     around: 'f',
+    parametersStart: null,
+    parametersEnd: null,
     arbitraryTime: new Date(),
     timeNumRange: 0,
     relativeToCurrentTypeRange: 'year',

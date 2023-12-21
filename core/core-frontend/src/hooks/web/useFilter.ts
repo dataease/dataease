@@ -90,6 +90,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             let selectValue = ''
             const {
               selectValue: value,
+              parametersStart,
+              parametersEnd,
               defaultValueCheck,
               timeType = 'fixed',
               defaultValue,
@@ -154,7 +156,16 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 fieldId: item.checkedFieldsMap[curComponentId],
                 operator: [1, 7].includes(+displayType) ? 'between' : multiple ? 'in' : 'eq',
                 value: values,
-                parameters: parametersCheck ? parameters : [],
+                parameters: parametersCheck
+                  ? +displayType === 7
+                    ? [
+                        parametersStart,
+                        parametersEnd?.id
+                          ? { ...parametersEnd, id: `${parametersEnd.id}_START_END_SPLIT` }
+                          : parametersEnd
+                      ]
+                    : parameters
+                  : [],
                 isTree
               })
             }
