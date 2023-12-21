@@ -118,18 +118,17 @@
     </select>
 
     <delete id="deleteCategoryMapByTemplate">
-        delete from visualization_template_category_map tcm where tcm.template_id in (
-        select id from visualization_template vt
+        delete from visualization_template_category_map tcm
         <where>
             <if test="templateName">
-                and vt.name = #{templateName}
-            </if>
-            <if test="templateId">
-                and vt.template_id = #{templateId}
+                tcm.template_id in (
+                select id from visualization_template vt where vt.name = #{templateName})
             </if>
 
+            <if test="templateId">
+                and tcm.template_id = #{templateId}
+            </if>
         </where>
-        )
     </delete>
 
     <select id="findTemplateCategories" resultType="String">

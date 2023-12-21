@@ -62,9 +62,21 @@
                   v-for="item in currentTemplateShowListComputed"
                   :key="item.id"
                   :width="state.templateCurWidth"
+                  :batch-state="batchState > 0"
                   :model="item"
                   @command="key => handleCommand(key, item)"
                 />
+              </div>
+              <div v-show="batchState" class="batch-opt-area">
+                <el-button @click="batchUpdate" type="danger" plain style="margin-left: 24px"
+                  >修改分类</el-button
+                >
+                <el-button @click="batchDelete" type="danger" plain>批量删除</el-button>
+                <span style="margin-left: 24px; font-size: 14px">已选 {{ batchState }} 项</span>
+                <el-button @click="batchFullSelect" style="margin-left: 16px" text
+                  >全选 {{ currentTemplateShowListComputed.length }} 项</el-button
+                >
+                <el-button @click="batchClear" text>清空</el-button>
               </div>
             </div>
           </div>
@@ -152,6 +164,7 @@ const roleValidator = (rule, value, callback) => {
 }
 
 const state = reactive({
+  batchOptList: [],
   templateFilterText: '',
   showShare: false,
   currentTemplateShowList: [],
@@ -192,6 +205,30 @@ const state = reactive({
     pid: '',
     categories: []
   }
+})
+
+const batchUpdate = () => {
+  // do
+}
+
+const batchDelete = () => {
+  // do
+}
+
+const batchFullSelect = () => {
+  currentTemplateShowListComputed.value.forEach(item => {
+    item.checked = true
+  })
+}
+
+const batchClear = () => {
+  currentTemplateShowListComputed.value.forEach(item => {
+    item.checked = false
+  })
+}
+
+const batchState = computed(() => {
+  return currentTemplateShowListComputed.value.filter(ele => ele.checked).length
 })
 
 const currentTemplateShowListComputed = computed(() => {
@@ -436,7 +473,7 @@ onMounted(() => {
     flex: 1;
     overflow: hidden;
     background: rgba(239, 240, 241, 1);
-
+    position: relative;
     .template-box {
       display: flex;
       flex-wrap: wrap;
@@ -461,6 +498,15 @@ onMounted(() => {
       color: rgba(31, 35, 41, 1);
       background: #fff;
       border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+    }
+    .batch-opt-area {
+      background-color: #ffffff;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      height: 48px;
+      width: 100%;
+      bottom: 0;
     }
   }
 }
