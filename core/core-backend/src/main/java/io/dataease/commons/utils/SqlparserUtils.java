@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
+import static io.dataease.chart.manage.ChartDataManage.START_END_SEPARATOR;
 import static org.apache.calcite.sql.SqlKind.*;
 
 public class SqlparserUtils {
@@ -166,7 +167,11 @@ public class SqlparserUtils {
             return "'" + String.join("','", sqlVariableDetails.getValue()) + "'";
         } else if (sqlVariableDetails.getOperator().equals("between")) {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat(sqlVariableDetails.getType().size() > 1 ? (String) sqlVariableDetails.getType().get(1).replace("DD", "dd") : "YYYY");
-            return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(0))));
+            if (StringUtils.endsWith(sqlVariableDetails.getId(), START_END_SEPARATOR)) {
+                return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(1))));
+            } else {
+                return simpleDateFormat.format(new Date(Long.parseLong((String) sqlVariableDetails.getValue().get(0))));
+            }
         } else {
             return (String) sqlVariableDetails.getValue().get(0);
         }
