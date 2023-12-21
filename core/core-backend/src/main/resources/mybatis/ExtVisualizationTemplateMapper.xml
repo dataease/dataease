@@ -3,24 +3,24 @@
 <mapper namespace="io.dataease.template.dao.ext.ExtVisualizationTemplateMapper">
 
     <resultMap id="BaseResultMap" type="io.dataease.api.template.vo.VisualizationTemplateVO">
-        <id column="id" jdbcType="VARCHAR" property="id" />
-        <result column="name" jdbcType="VARCHAR" property="name" />
-        <result column="pid" jdbcType="VARCHAR" property="pid" />
-        <result column="level" jdbcType="INTEGER" property="level" />
-        <result column="dv_type" jdbcType="VARCHAR" property="dvType" />
-        <result column="node_type" jdbcType="VARCHAR" property="nodeType" />
-        <result column="create_by" jdbcType="VARCHAR" property="createBy" />
-        <result column="create_time" jdbcType="BIGINT" property="createTime" />
-        <result column="template_type" jdbcType="VARCHAR" property="templateType" />
-        <result column="snapshot" jdbcType="LONGVARCHAR" property="snapshot" />
-        <result column="template_style" jdbcType="LONGVARCHAR" property="templateStyle" />
-        <result column="template_data" jdbcType="LONGVARCHAR" property="templateData" />
-        <result column="dynamic_data" jdbcType="LONGVARCHAR" property="dynamicData" />
+        <id column="id" jdbcType="VARCHAR" property="id"/>
+        <result column="name" jdbcType="VARCHAR" property="name"/>
+        <result column="pid" jdbcType="VARCHAR" property="pid"/>
+        <result column="level" jdbcType="INTEGER" property="level"/>
+        <result column="dv_type" jdbcType="VARCHAR" property="dvType"/>
+        <result column="node_type" jdbcType="VARCHAR" property="nodeType"/>
+        <result column="create_by" jdbcType="VARCHAR" property="createBy"/>
+        <result column="create_time" jdbcType="BIGINT" property="createTime"/>
+        <result column="template_type" jdbcType="VARCHAR" property="templateType"/>
+        <result column="snapshot" jdbcType="LONGVARCHAR" property="snapshot"/>
+        <result column="template_style" jdbcType="LONGVARCHAR" property="templateStyle"/>
+        <result column="template_data" jdbcType="LONGVARCHAR" property="templateData"/>
+        <result column="dynamic_data" jdbcType="LONGVARCHAR" property="dynamicData"/>
     </resultMap>
 
     <resultMap id="BaseResultMapDTO" type="io.dataease.api.template.dto.TemplateManageDTO"
                extends="BaseResultMap">
-        <result column="recent_use_time" jdbcType="BIGINT" property="recentUseTime" />
+        <result column="recent_use_time" jdbcType="BIGINT" property="recentUseTime"/>
         <result column="label" jdbcType="VARCHAR" property="label"/>
         <result column="childrenCount" jdbcType="VARCHAR" property="childrenCount"/>
     </resultMap>
@@ -33,62 +33,108 @@
     </resultMap>
 
     <sql id="Base_Column_List">
-    vt.id, vt.`name`, vt.pid, vt.`level`,vt.`dv_type`, vt.node_type, vt.create_by, vt.create_time, vt.template_type, vt.snapshot
-  </sql>
+        vt
+        .
+        id
+        , vt.`name`, vt.pid, vt.`level`,vt.`dv_type`, vt.node_type, vt.create_by, vt.create_time, vt.template_type, vt.snapshot
+    </sql>
     <sql id="Blob_Column_List">
-     ,vt.template_style, vt.template_data, vt.dynamic_data
-  </sql>
+        ,vt.template_style, vt.template_data, vt.dynamic_data
+    </sql>
 
     <select id="findBaseTemplateList" resultMap="BaseResultMapCollectionDTO">
-        SELECT
-            vt.id,
-            vt.`name`,
-            vt.pid,
-            vt.`level`,
-            vt.`dv_type`,
-            vt.node_type,
-            vt.create_by,
-            vt.create_time,
-            vt.template_type,
-            vt.SNAPSHOT,
-            vtcm.category_id,
-            cor.time as 'recent_use_time'
-        FROM
-            visualization_template vt
-                LEFT JOIN visualization_template_category_map vtcm ON vt.id = vtcm.template_id
-                left JOIN core_opt_recent cor on cor.resource_type=6 and vt.id= cor.resource_name
-        ORDER BY
-            vt.create_time DESC
+        SELECT vt.id,
+               vt.`name`,
+               vt.pid,
+               vt.`level`,
+               vt.`dv_type`,
+               vt.node_type,
+               vt.create_by,
+               vt.create_time,
+               vt.template_type,
+               vt.SNAPSHOT,
+               vtcm.category_id,
+               cor.time as 'recent_use_time'
+        FROM visualization_template vt
+                 LEFT JOIN visualization_template_category_map vtcm ON vt.id = vtcm.template_id
+                 left JOIN core_opt_recent cor on cor.resource_type = 6 and vt.id = cor.resource_name
+        ORDER BY vt.create_time DESC
     </select>
 
     <select id="findCategories" resultMap="BaseResultMapDTO">
-        SELECT
-            id,
-            `name`,
-            `name` as lable,
-            pid,
-            `level`,
-            `dv_type`,
-            node_type,
-            create_by,
-            create_time,
-            template_type,
-            SNAPSHOT
-        FROM
-            visualization_template_category
+        SELECT id,
+               `name`,
+               `name` as lable,
+               pid,
+               `level`,
+               `dv_type`,
+               node_type,
+               create_by,
+               create_time,
+               template_type,
+               SNAPSHOT
+        FROM visualization_template_category
         order by visualization_template_category.create_time desc
     </select>
 
     <select id="findTemplateList" resultMap="BaseResultMapDTO">
         SELECT
-        <include refid="Base_Column_List" />
+        <include refid="Base_Column_List"/>
         <if test='withBlobs == "Y"'>
-            <include refid="Blob_Column_List" />
+            <include refid="Blob_Column_List"/>
         </if>
         FROM
         visualization_template vt
         LEFT JOIN visualization_template_category_map vtcm on vt.id = vtcm.template_id
         where vtcm.category_id=#{categoryId}
         order by vt.create_time desc
+    </select>
+
+    <select id="checkCategoryMap" resultType="Long">
+        SELECT count(1)
+        FROM visualization_template_category_map cm
+        WHERE cm.category_id = #{categoryId}
+    </select>
+
+    <select id="checkRepeatTemplateId" resultType="Long">
+        SELECT count(1)
+        FROM visualization_template_category_map cm
+        where cm.category_id != #{categoryId}
+          and cm.template_id =#{templateId}
+    </select>
+
+    <select id="checkCategoryTemplateName" resultType="Long">
+        SELECT
+        count(1)
+        FROM
+        visualization_template vt
+        LEFT JOIN visualization_template_category_map vtcm ON vt.id = vtcm.template_id
+        WHERE
+        vt.NAME = #{templateName}
+        AND vtcm.category_id IN
+        <foreach collection="categories" item="categoryId" index="index" open="(" close=")" separator=",">
+            #{categoryId}
+        </foreach>
+    </select>
+
+    <delete id="deleteCategoryMapByTemplate">
+        delete from visualization_template_category_map tcm where tcm.template_id in (
+        select id from visualization_template vt
+        <where>
+            <if test="templateName">
+                and vt.name = #{templateName}
+            </if>
+            <if test="templateId">
+                and vt.template_id = #{templateId}
+            </if>
+
+        </where>
+        )
+    </delete>
+
+    <select id="findTemplateCategories" resultType="String">
+        select category_id
+        from visualization_template_category_map
+        where template_id = #{templateId}
     </select>
 </mapper>
