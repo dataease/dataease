@@ -111,6 +111,10 @@ const parametersFilter = computed(() => {
     if (curComponent.value.displayType === '2') {
       return [2, 3].includes(ele.deType)
     }
+
+    if (curComponent.value.displayType === '7') {
+      return [1, 7].includes(ele.deType)
+    }
     return ele.deType === +curComponent.value.displayType
   })
 })
