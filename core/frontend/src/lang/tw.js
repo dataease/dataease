@@ -1522,7 +1522,7 @@ export default {
     ignore_data: '隱藏空值',
     empty_data_field_ctrl: '字段設置',
     sub_dimension_tip: '該字段為必填項，且不應使用類別軸中的字段，若無需該字段，請選擇基礎圖表進行展示，否則展示效果不理想',
-    time_bar_tip: '該字段為必填項，且需要兩個指標或者時間類型緯度字段',
+    time_bar_tip: '該字段為必填項，且需要兩個指標或者時間類型維度字段',
     drill_dimension_tip: '鑽取字段僅支持數據集中的字段',
     table_scroll_tip: '明細表僅在分頁模式為"下拉"時生效。',
     table_threshold_tip: '提示：請勿重複選擇字段，若同一字段重複配置，則只有最後的字段配置生效。',
