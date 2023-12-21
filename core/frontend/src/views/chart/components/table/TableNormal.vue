@@ -239,7 +239,11 @@ export default {
     tableStyle() {
       return {
         width: '100%',
-        '--scroll-bar-color': this.scrollBarColor
+        '--scroll-bar-color': this.scrollBarColor,
+        '--footer-font-color': this.table_header_class.color,
+        '--footer-bg-color': this.table_header_class.background,
+        '--footer-font-size': this.table_header_class.fontSize,
+        '--footer-height': this.table_header_class.height
       }
     },
     ...mapState([
@@ -441,16 +445,14 @@ export default {
           this.table_item_class.fontSize = customAttr.size.tableItemFontSize + 'px'
           this.table_header_class.height = customAttr.size.tableTitleHeight + 'px'
           this.table_item_class.height = customAttr.size.tableItemHeight + 'px'
-
           const visibleColumn = this.$refs.plxTable.getTableColumn().fullColumn
           for (let i = 0, column = visibleColumn[i]; i < visibleColumn.length; i++) {
-            // 有变更才刷新
             if (column.type === 'index' && column.visible !== customAttr.size.showIndex) {
               column.visible = customAttr.size.showIndex
-              this.$refs.plxTable.refreshColumn()
               break
             }
           }
+          this.$refs.plxTable.refreshColumn()
           if (!customAttr.size.indexLabel) {
             this.indexLabel = ' '
           } else {
@@ -506,20 +508,6 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
-      // 修改footer合计样式
-      const table = document.getElementsByClassName(this.chart.id)
-      this.$refs.plxTable.updateFooter().then(() => {
-        for (let i = 0; i < table.length; i++) {
-          const s_table = table[i].getElementsByClassName('elx-table--footer')
-          let s = ''
-          for (const i in this.table_header_class) {
-            s += (i === 'fontSize' ? 'font-size' : i) + ':' + this.table_header_class[i] + ';'
-          }
-          for (let i = 0; i < s_table.length; i++) {
-            s_table[i].setAttribute('style', s)
-          }
-        }
-      })
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {
@@ -827,6 +815,12 @@ export default {
     overflow: var(--overflow, 'hidden');
     text-overflow: var(--text-overflow, 'ellipsis');
     white-space: var(--white-space, 'nowrap');
+  }
+  ::v-deep .elx-table--footer {
+    color: var(--footer-font-color);
+    background: var(--footer-bg-color);
+    font-size: var(--footer-font-size);
+    height: var(--footer-height);
   }
 }
 
