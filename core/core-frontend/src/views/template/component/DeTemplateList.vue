@@ -105,7 +105,7 @@ const add = () => {
 }
 const categoryDelete = template => {
   ElMessageBox.confirm('确定删除该分类吗？', {
-    tip: '删除后,该分类下的所有模版也将删除。',
+    tip: '',
     confirmButtonType: 'danger',
     type: 'warning',
     autofocus: false,

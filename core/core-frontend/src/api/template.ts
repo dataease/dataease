@@ -7,9 +7,9 @@ export function save(data) {
     loading: true
   })
 }
-export function templateDelete(id) {
+export function templateDelete(id, categoryId) {
   return request.post({
-    url: '/templateManage/delete/' + id
+    url: '/templateManage/delete/' + id + '/' + categoryId
   })
 }
 
@@ -51,6 +51,13 @@ export function findCategories(data) {
 export function nameCheck(data) {
   return request.post({
     url: '/templateManage/nameCheck',
+    data: data
+  })
+}
+
+export function categoryTemplateNameCheck(data) {
+  return request.post({
+    url: '/templateManage/categoryTemplateNameCheck',
     data: data
   })
 }

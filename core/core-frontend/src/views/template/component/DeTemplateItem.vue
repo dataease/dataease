@@ -5,15 +5,6 @@
     </div>
     <div class="card-info">
       <div style="display: flex; align-items: center; width: calc(100% - 24px)">
-        <el-tooltip class="item" effect="dark" :content="dvTypeName" placement="top">
-          <el-icon style="font-size: 18px" v-if="model.dvType === 'dashboard'">
-            <Icon name="dv-dashboard-spine"></Icon>
-          </el-icon>
-          <el-icon class="icon-screen-new" style="font-size: 18px" v-else>
-            <Icon name="icon_operation-analysis_outlined"></Icon>
-          </el-icon>
-        </el-tooltip>
-
         <el-tooltip class="item" effect="dark" :content="model.name" placement="top">
           <span class="de-model-text">{{ model.name }}</span>
         </el-tooltip>
@@ -24,7 +15,7 @@
         <template #dropdown>
           <el-dropdown-menu class="de-card-dropdown">
             <slot>
-              <el-dropdown-item command="rename">
+              <el-dropdown-item command="templateEdit">
                 <el-icon><EditPen /></el-icon>
                 编辑
               </el-dropdown-item>
@@ -106,7 +97,7 @@ const handleCommand = key => {
     display: flex;
     align-items: center;
     justify-content: space-between;
-    padding: 4px 12px 9px 12px;
+    padding: 4px 12px 9px 0px;
     box-sizing: border-box;
 
     .el-icon-more {

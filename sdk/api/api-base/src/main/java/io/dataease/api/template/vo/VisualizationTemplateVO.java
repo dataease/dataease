@@ -2,6 +2,8 @@ package io.dataease.api.template.vo;
 
 import lombok.Data;
 
+import java.util.List;
+
 /**
  * @author : WangJiaHao
  * @date : 2023/11/7 13:22
@@ -73,4 +75,9 @@ public class VisualizationTemplateVO {
      * 预存数据
      */
     private String dynamicData;
+
+    /**
+     * 分类
+     */
+    private List<String> categories;
 }
