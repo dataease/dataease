@@ -18,6 +18,8 @@ public class TemplateManageDTO extends VisualizationTemplateVO {
 
     private Long recentUseTime;
 
+    private Boolean checked = false;
+
     private List<TemplateManageDTO> children;
 
     private List<String> categories;

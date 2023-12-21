@@ -161,7 +161,7 @@ const editTemplate = () => {
   // 全局名称校验
   nameCheck(nameCheckRequest).then(response => {
     save(state.templateInfo).then(response => {
-      ElMessage.success(t('导入成功'))
+      ElMessage.success(t('编辑成功'))
       emits('refresh')
       emits('closeEditTemplateDialog')
     })

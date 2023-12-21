@@ -1,5 +1,10 @@
 <template>
-  <div :style="classBackground" class="de-card-model">
+  <div
+    :style="classBackground"
+    class="de-card-model"
+    :class="{ 'de-card-model-active': batchState, 'de-card-model-checked': model.checked }"
+  >
+    <el-checkbox class="custom-item-checkbox" v-model="model.checked" />
     <div class="card-img-model" :style="classImg">
       <img :src="imgUrlTrans(model.snapshot)" alt="" />
     </div>
@@ -33,7 +38,7 @@
 
 <script setup lang="ts">
 import { imgUrlTrans } from '@/utils/imgUtils'
-import { computed } from 'vue'
+import { computed, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const emits = defineEmits(['command'])
@@ -44,8 +49,13 @@ const props = defineProps({
   },
   width: {
     type: Number
+  },
+  batchState: {
+    type: Boolean
   }
 })
+
+const { model, width, batchState } = toRefs(props)
 
 const dvTypeName = computed(() => {
   return props.model.dvType === 'dashboard' ? '仪表板' : '数据大屏'
@@ -70,13 +80,28 @@ const handleCommand = key => {
 </script>
 
 <style lang="less">
+.de-card-model-checked {
+  border: 1px solid #3370ff !important;
+}
+.de-card-model-active {
+  .custom-item-checkbox {
+    display: inline !important;
+  }
+}
 .de-card-model {
   box-sizing: border-box;
+  position: relative;
   background: #ffffff;
-  border: 1px solid var(--deCardStrokeColor, #dee0e3);
+  border: 1px solid #dee0e3;
   border-radius: 4px;
   margin: 0 24px 25px 0;
   overflow: hidden;
+  .custom-item-checkbox {
+    position: absolute;
+    display: none;
+    right: 8px;
+    top: 8px;
+  }
   .card-img-model {
     border-bottom: 1px solid var(--deCardStrokeColor, #dee0e3);
     height: 144px;
@@ -135,6 +160,12 @@ const handleCommand = key => {
     white-space: nowrap;
     overflow: hidden;
     margin-right: 10px;
+  }
+}
+
+.de-card-model:hover {
+  .custom-item-checkbox {
+    display: inline;
   }
 }
 
