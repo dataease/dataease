@@ -34,7 +34,7 @@
 </template>
 
 <script>
-import rowAuthTree from "./rowauthtree.vue";
+import rowAuthTree from "./rowTeeAuth.vue";
 
 export default {
   name: "RowAuth",
