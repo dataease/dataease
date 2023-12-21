@@ -1,5 +1,6 @@
 package io.dataease.api.xpack.settings;
 
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.xpack.settings.request.XpackAuthenticationEditor;
 import io.dataease.api.xpack.settings.vo.XpackAuthenticationStatusVO;
 import io.dataease.api.xpack.settings.vo.XpackAuthenticationVO;
@@ -12,6 +13,7 @@ import org.springframework.web.bind.annotation.RequestBody;
 import java.util.List;
 
 @Tag(name = "认证设置")
+@ApiSupport(order = 899)
 public interface XpackAuthenticationApi {
 
     @Operation(summary = "同步")

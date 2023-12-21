@@ -1,6 +1,7 @@
 package io.dataease.api.ds;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.*;
 import io.dataease.auth.DeApiPath;
@@ -8,6 +9,7 @@ import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -16,7 +18,8 @@ import java.util.Map;
 
 import static io.dataease.constant.AuthResourceEnum.DATASOURCE;
 
-
+@Tag(name = "数据源管理:基础")
+@ApiSupport(order = 969)
 @DeApiPath(value = "/datasource", rt = DATASOURCE)
 public interface DatasourceApi {
     /**

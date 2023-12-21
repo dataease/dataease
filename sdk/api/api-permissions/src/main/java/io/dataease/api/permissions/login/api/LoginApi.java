@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RequestBody;
  * oidc登录：回调请求头部X-Userinfo中获取用户 根据用户信息(没有就新建用户)再换取token
  */
 @Tag(name = "登录")
-@ApiSupport(order = 1, author = "fit2cloud-someone")
+@ApiSupport(order = 889, author = "fit2cloud-someone")
 public interface LoginApi {
     /**
      * 本地登录

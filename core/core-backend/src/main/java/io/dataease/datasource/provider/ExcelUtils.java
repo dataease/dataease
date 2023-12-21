@@ -302,6 +302,9 @@ public class ExcelUtils {
             sdf.parse(value);
             return "DATETIME";
         } catch (Exception e1) {
+            if(value.length()> 19){
+                return "TEXT";
+            }
             try {
                 Double d = Double.valueOf(value);
                 double eps = 1e-10;
