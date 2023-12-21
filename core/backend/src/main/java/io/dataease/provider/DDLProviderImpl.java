@@ -30,7 +30,7 @@ public class DDLProviderImpl extends DDLProvider {
     }
 
     @Override
-    public String createTableSql(String name, List<DatasetTableField> datasetTableFields, Datasource engine) {
+    public String createTableSql(String name, List<DatasetTableField> datasetTableFields, Datasource engine, String version) {
         return null;
     }
 

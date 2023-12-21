@@ -697,10 +697,41 @@ public class MongoQueryProvider extends QueryProvider {
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
+
+        List<SQLObj> yFields = new ArrayList<>(); // 要把两个时间字段放进y里面
+        List<String> yWheres = new ArrayList<>();
+        List<SQLObj> yOrders = new ArrayList<>();
+
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
                 String originField;
+
+                if (StringUtils.equalsIgnoreCase(x.getGroupType(), "q")) {
+                    if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_INT) {
+                        // 解析origin name中有关联的字段生成sql表达式
+                        originField = calcFieldRegex(x.getOriginName(), tableObj);
+                    } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_TIME) {
+                        originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    } else {
+                        originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
+                    String fieldAlias = String.format(MongoConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i));
+                    // 处理纵轴字段
+                    yFields.add(getYFields(x, originField, fieldAlias));
+                    // 处理纵轴过滤
+                    yWheres.add(getYWheres(x, originField, fieldAlias));
+                    // 处理纵轴排序
+                    if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
+                        yOrders.add(SQLObj.builder()
+                                .orderField(originField)
+                                .orderAlias(fieldAlias)
+                                .orderDirection(x.getSort())
+                                .build());
+                    }
+                    continue;
+                }
+
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == DeTypeConstants.DE_INT) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
@@ -710,8 +741,23 @@ public class MongoQueryProvider extends QueryProvider {
                     originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, i);
-                // 处理横轴字段
-                xFields.add(getXFields(x, originField, fieldAlias));
+
+                if (i == baseXAxis.size()) {// 起止时间
+                    String fieldName = String.format(MongoConstants.AGG_FIELD, "min", originField);
+                    yFields.add(getXFields(x, fieldName, fieldAlias));
+
+                    yWheres.add(getYWheres(x, originField, fieldAlias));
+
+                } else if (i == baseXAxis.size() + 1) {
+                    String fieldName = String.format(MongoConstants.AGG_FIELD, "max", originField);
+
+                    yFields.add(getXFields(x, fieldName, fieldAlias));
+
+                    yWheres.add(getYWheres(x, originField, fieldAlias));
+                } else {
+                    // 处理横轴字段
+                    xFields.add(getXFields(x, originField, fieldAlias));
+                }
                 // 处理横轴排序
                 if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
                     xOrders.add(SQLObj.builder()
@@ -722,36 +768,7 @@ public class MongoQueryProvider extends QueryProvider {
                 }
             }
         }
-        List<SQLObj> yFields = new ArrayList<>();
-        List<String> yWheres = new ArrayList<>();
-        List<SQLObj> yOrders = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(yAxis)) {
-            for (int i = 0; i < yAxis.size(); i++) {
-                ChartViewFieldDTO y = yAxis.get(i);
-                String originField;
-                if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == DeTypeConstants.DE_INT) {
-                    // 解析origin name中有关联的字段生成sql表达式
-                    originField = calcFieldRegex(y.getOriginName(), tableObj);
-                } else if (ObjectUtils.isNotEmpty(y.getExtField()) && y.getExtField() == DeTypeConstants.DE_TIME) {
-                    originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
-                } else {
-                    originField = String.format(MongoConstants.KEYWORD_FIX, tableObj.getTableAlias(), y.getOriginName());
-                }
-                String fieldAlias = String.format(MongoConstants.ALIAS_FIX, String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i));
-                // 处理纵轴字段
-                yFields.add(getYFields(y, originField, fieldAlias));
-                // 处理纵轴过滤
-                yWheres.add(getYWheres(y, originField, fieldAlias));
-                // 处理纵轴排序
-                if (StringUtils.isNotEmpty(y.getSort()) && Utils.joinSort(y.getSort())) {
-                    yOrders.add(SQLObj.builder()
-                            .orderField(originField)
-                            .orderAlias(fieldAlias)
-                            .orderDirection(y.getSort())
-                            .build());
-                }
-            }
-        }
+
         // 处理视图中字段过滤
         String customWheres = transChartFilterTrees(tableObj, fieldCustomFilter);
         // 处理仪表板字段过滤

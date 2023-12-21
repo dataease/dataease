@@ -98,10 +98,9 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
   if (s2Options.showSeriesNumber) {
     s2Options.colCell = (node) => {
       if (node.colIndex === 0) {
-        if (!customAttr.size.indexLabel) {
+        node.label = customAttr.size.indexLabel
+        if (!customAttr.size.indexLabel || customAttr.size.showTableHeader === false) {
           node.label = ' '
-        } else {
-          node.label = customAttr.size.indexLabel
         }
       }
     }
@@ -118,6 +117,11 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
     s2Options.interaction = {
       resize: {
         colCellVertical: false
+      }
+    }
+    s2Options.colCell = (node) => {
+      if (node.colIndex === 0) {
+        node.label = ' '
       }
     }
   }

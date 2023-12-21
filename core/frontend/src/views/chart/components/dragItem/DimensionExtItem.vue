@@ -84,6 +84,12 @@
                 <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
+                <el-dropdown-item
+                  v-show="showCustomSort"
+                  :command="beforeSort('custom_sort')"
+                >
+                  {{ $t('chart.custom_sort') }}...
+                </el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -181,6 +187,7 @@
 import { getItemType, getOriginFieldName } from '@/views/chart/components/dragItem/utils'
 import FieldErrorTips from '@/views/chart/components/dragItem/components/FieldErrorTips'
 import bus from '@/utils/bus'
+import { equalsAny } from '@/utils/StringUtils'
 
 export default {
   name: 'DimensionExtItem',
@@ -220,6 +227,10 @@ export default {
   computed: {
     hideSpecial() {
       return this.chart.type === 'bar-time-range'
+    },
+    showCustomSort() {
+      return !equalsAny(this.chart.type, 'bar-time-range', 'scatter') &&
+        !this.item.chartId
     }
   },
   watch: {
@@ -265,8 +276,18 @@ export default {
       }
     },
     sort(param) {
-      this.item.sort = param.type
-      this.$emit('onDimensionItemChange', this.item)
+      if (param.type === 'custom_sort') {
+        const item = {
+          index: this.index,
+          sort: param.type
+        }
+        this.$emit('onItemCustomSort', item)
+      } else {
+        this.item.index = this.index
+        this.item.sort = param.type
+        this.item.customSort = []
+        this.$emit('onDimensionItemChange', this.item)
+      }
     },
     beforeSort(type) {
       return {
