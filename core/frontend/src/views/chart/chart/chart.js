@@ -172,7 +172,8 @@ export const DEFAULT_SIZE = {
   quotaSuffixLetterSpace: '0',
   quotaSuffixFontShadow: false,
   tableColumnFreezeHead: 0,
-  tableColumnFreezeTail: 0
+  tableColumnFreezeTail: 0,
+  tableRowFreezeHead: 0
 }
 export const DEFAULT_SUSPENSION = {
   show: true

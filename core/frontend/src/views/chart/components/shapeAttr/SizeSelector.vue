@@ -330,8 +330,8 @@
           />
         </el-form-item>
         <el-form-item
-          v-if="showProperty('tableColumnFreeze')"
-          :label="$t('chart.table_column_freeze')"
+          v-if="showProperty('tableFreeze')"
+          :label="$t('chart.table_freeze')"
           class="form-item"
         >
           <span>{{ $t('dynamic_time.before') }} </span>

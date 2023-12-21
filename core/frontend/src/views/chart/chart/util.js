@@ -63,7 +63,7 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnMode',
-        'tableColumnFreeze',
+        'tableFreeze',
         'showIndex',
         'indexLabel',
         'tableColTooltip',
@@ -121,7 +121,7 @@ export const TYPE_CONFIGS = [
         'indexLabel',
         'tableColTooltip',
         'showTableHeader',
-        'tableColumnFreeze'
+        'tableFreeze'
       ],
       'title-selector-ant-v': [
         'show',
@@ -2083,7 +2083,7 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnWidth',
-        'tableColumnFreeze',
+        'tableFreeze',
         'showIndex',
         'indexLabel',
         'tableAutoBreakLine',
@@ -2133,7 +2133,7 @@ export const TYPE_CONFIGS = [
         'tableColumnWidth',
         'showIndex',
         'indexLabel',
-        'tableColumnFreeze',
+        'tableFreeze',
         'tableAutoBreakLine',
         'showTableHeader'
       ],
