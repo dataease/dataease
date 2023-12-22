@@ -238,6 +238,7 @@ export default {
         data: data,
         callBack: callBack
       }
+      console.log('url, type, data, callBack', param);
       this.$emit('execute-axios', param)
       if (process.env.NODE_ENV === 'development') {
         execute(param).then(res => {
