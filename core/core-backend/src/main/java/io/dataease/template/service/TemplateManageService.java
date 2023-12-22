@@ -17,7 +17,6 @@ import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.visualization.server.StaticResourceServer;
-import io.dataease.xpack.base.settings.dao.entity.BaseSetting;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
