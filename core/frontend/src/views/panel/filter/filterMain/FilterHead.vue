@@ -33,7 +33,12 @@
                   />
                 </v-flex>
 
-                <span solt="footer">{{ $t('panel.drag_here') }}</span>
+                <span slot="footer">{{ $t('panel.drag_here') }}</span>
+                <i
+                  v-show="element.options.attrs.dragItems.length"
+                  class="el-icon-error clr-btn"
+                  @click="clearItems"
+                />
               </draggable>
             </el-row>
           </div>
@@ -96,7 +101,10 @@ export default {
     },
     end2(e) {
     },
-
+    clearItems() {
+      this.element.options.attrs.dragItems.splice(0)
+      this.element.options.attrs.sort = null
+    },
     closeItem(tag) {
       const index = tag.index
       this.element.options.attrs.dragItems.splice(index, 1)
@@ -191,5 +199,12 @@ export default {
 .blackTheme .theme-drag {
   background-color: var(--MainBG, #fff);
 }
-
+.clr-btn {
+  cursor: pointer;
+  position: absolute;
+  right: 10px;
+  &:hover {
+    color: #3370ff;
+  }
+}
 </style>
