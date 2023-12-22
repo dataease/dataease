@@ -528,7 +528,7 @@ public class ChartViewService {
                 } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
                     List<ChartViewFieldDTO> xAxisBase = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
                     }.getType());
-                    datasourceRequest.setQuery(qp.getSQLAsTmpRangeBar(dataTableInfoDTO.getTable(), xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpRangeBar(sql, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view));
 
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
@@ -548,7 +548,7 @@ public class ChartViewService {
                 } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
                     List<ChartViewFieldDTO> xAxisBase = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
                     }.getType());
-                    datasourceRequest.setQuery(qp.getSQLAsTmpRangeBar(dataTableInfoDTO.getTable(), xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpRangeBar(sql, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view));
 
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
@@ -569,7 +569,7 @@ public class ChartViewService {
                 } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
                     List<ChartViewFieldDTO> xAxisBase = gson.fromJson(view.getXAxis(), new TypeToken<List<ChartViewFieldDTO>>() {
                     }.getType());
-                    datasourceRequest.setQuery(qp.getSQLAsTmpRangeBar(dataTableInfoDTO.getTable(), xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view));
+                    datasourceRequest.setQuery(qp.getSQLAsTmpRangeBar(sql, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view));
 
                 } else {
                     datasourceRequest.setQuery(qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view));
@@ -1161,7 +1161,7 @@ public class ChartViewService {
                     totalPageSql = qp.getResultCount(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
                 } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
 
-                    querySql = qp.getSQLAsTmpRangeBar(dataTableInfoDTO.getTable(), xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view);
+                    querySql = qp.getSQLAsTmpRangeBar(sql, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view);
 
                 } else {
                     querySql = qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view);
@@ -1188,7 +1188,7 @@ public class ChartViewService {
                     querySql = qp.getSQLWithPage(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
                     totalPageSql = qp.getResultCount(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
                 } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
-                    querySql = qp.getSQLAsTmpRangeBar(dataTableInfoDTO.getTable(), xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view);
+                    querySql = qp.getSQLAsTmpRangeBar(sql, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view);
 
                 } else {
                     querySql = qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view);
@@ -1216,7 +1216,7 @@ public class ChartViewService {
                     totalPageSql = qp.getResultCount(false, sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
                 } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
 
-                    querySql = qp.getSQLAsTmpRangeBar(dataTableInfoDTO.getTable(), xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view);
+                    querySql = qp.getSQLAsTmpRangeBar(sql, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, view);
 
                 } else {
                     querySql = qp.getSQLAsTmp(sql, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, view);
