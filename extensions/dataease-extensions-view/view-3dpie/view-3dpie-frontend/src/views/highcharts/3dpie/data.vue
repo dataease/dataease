@@ -133,7 +133,7 @@
     </el-row>
     <FilterTree
       ref="filterTree"
-      @filter-data="changeFilterData"
+     @filter-data="changeFilterData"    @execute-axios="executeAxios"                               
     />
   </div>
 </template>
