@@ -473,6 +473,14 @@ export default {
         border-color: #3370FF;
       }
     }
+    .data-area-clear {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      color: rgb(135, 141, 159);
+      cursor: pointer;
+      z-index: 1;
+    }
 }
 
 .itxst {
