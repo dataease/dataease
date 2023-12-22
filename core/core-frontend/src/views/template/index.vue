@@ -71,7 +71,7 @@
                 <el-button @click="batchUpdate" type="danger" plain style="margin-left: 24px"
                   >修改分类</el-button
                 >
-                <el-button @click="batchDelete" type="danger" plain>批量删除</el-button>
+                <el-button @click="batchPreDelete" type="danger" plain>批量删除</el-button>
                 <span style="margin-left: 24px; font-size: 14px">已选 {{ batchState }} 项</span>
                 <el-button @click="batchFullSelect" style="margin-left: 16px" text
                   >全选 {{ currentTemplateShowListComputed.length }} 项</el-button
@@ -127,13 +127,58 @@
             @closeEditTemplateDialog="closeEditTemplateDialog"
           />
         </el-dialog>
+
+        <!--导入templateDialog-->
+        <el-dialog
+          :title="state.templateDialog.title"
+          v-model="state.templateDialog.visible"
+          :show-close="true"
+          :destroy-on-close="true"
+          class="de-dialog-form"
+          width="600px"
+        >
+          <de-template-import
+            v-if="state.templateDialog.visible"
+            :pid="state.templateDialog.pid"
+            :template-id="state.templateDialog.templateId"
+            :opt-type="state.templateDialog.optType"
+            :template-categories="state.templateCategories"
+            @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
+            @closeEditTemplateDialog="closeEditTemplateDialog"
+          />
+        </el-dialog>
+
+        <!--导入templateDialog-->
+        <el-dialog
+          :title="'修改分类'"
+          v-model="state.batchOptDialogShow"
+          :show-close="true"
+          :destroy-on-close="true"
+          class="de-dialog-form"
+          width="600px"
+        >
+          <de-category-change
+            v-if="state.batchOptDialogShow"
+            :template-ids="batchTemplateIds"
+            :template-categories="state.templateCategories"
+            @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
+            @closeBatchEditTemplateDialog="closeBatchOptDialog"
+          ></de-category-change>
+        </el-dialog>
       </div>
     </div>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { save, templateDelete, find, findCategories, deleteCategory } from '@/api/template'
+import {
+  save,
+  templateDelete,
+  find,
+  findCategories,
+  deleteCategory,
+  batchDelete
+} from '@/api/template'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -145,6 +190,7 @@ const templateListRef = ref(null)
 import NoneImage from '@/assets/none.png'
 import DeTemplateImport from '@/views/template/component/DeTemplateImport.vue'
 import DeTemplateItem from '@/views/template/component/DeTemplateItem.vue'
+import DeCategoryChange from '@/views/template/component/DeCategoryChange.vue'
 
 const roleValidator = (rule, value, callback) => {
   if (nameRepeat(value)) {
@@ -164,6 +210,7 @@ const roleValidator = (rule, value, callback) => {
 }
 
 const state = reactive({
+  batchOptDialogShow: false,
   batchOptList: [],
   templateFilterText: '',
   showShare: false,
@@ -208,11 +255,24 @@ const state = reactive({
 })
 
 const batchUpdate = () => {
-  // do
+  state.batchOptDialogShow = true
 }
 
-const batchDelete = () => {
-  // do
+const batchPreDelete = () => {
+  ElMessageBox.confirm(`确定删除${batchState.value}个模板吗？`, {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    const params = {
+      templateIds: batchTemplateIds.value,
+      categories: [state.currentTemplateId]
+    }
+    batchDelete(params).then(rsp => {
+      showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)
+    })
+  })
 }
 
 const batchFullSelect = () => {
@@ -229,6 +289,10 @@ const batchClear = () => {
 
 const batchState = computed(() => {
   return currentTemplateShowListComputed.value.filter(ele => ele.checked).length
+})
+
+const batchTemplateIds = computed(() => {
+  return currentTemplateShowListComputed.value.filter(ele => ele.checked).map(item => item.id)
 })
 
 const currentTemplateShowListComputed = computed(() => {
@@ -421,6 +485,10 @@ const showFirst = () => {
   } else {
     state.currentTemplateShowList = []
   }
+}
+
+const closeBatchOptDialog = () => {
+  state.batchOptDialogShow = false
 }
 
 const closeEditTemplateDialog = () => {

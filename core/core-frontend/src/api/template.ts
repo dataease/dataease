@@ -61,3 +61,17 @@ export function categoryTemplateNameCheck(data) {
     data: data
   })
 }
+
+export function batchDelete(data) {
+  return request.post({
+    url: '/templateManage/batchDelete',
+    data: data
+  })
+}
+
+export function batchUpdate(data) {
+  return request.post({
+    url: '/templateManage/batchUpdate',
+    data: data
+  })
+}
