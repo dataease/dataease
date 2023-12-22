@@ -34,6 +34,7 @@ import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
+import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.exception.DataEaseException;
@@ -57,7 +58,6 @@ import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.panel.PanelGroupExtendDataService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.collections4.ListUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -124,6 +124,8 @@ public class ChartViewService {
     private DatasetTableFieldMapper datasetTableFieldMapper;
     @Resource
     private ChartFilterTreeService chartFilterTreeService;
+    @Resource
+    private ChartViewOldDataMergeService chartViewOldDataMergeService;
 
     private static final Logger logger = LoggerFactory.getLogger(ChartViewService.class);
 
@@ -285,6 +287,9 @@ public class ChartViewService {
             if (result == null) {
                 DataEaseException.throwException(Translator.get("i18n_chart_delete"));
             }
+            // trans chart filter
+            tranChartFilter(result);
+
             DatasetTable datasetTable = dataSetTableService.get(result.getTableId());
             if (ObjectUtils.isNotEmpty(datasetTable)) {
                 result.setDatasetMode(datasetTable.getMode());
@@ -2338,5 +2343,27 @@ public class ChartViewService {
             }
         }
         return list;
+    }
+
+    public void tranChartFilter(ChartViewDTO view) {
+        Type filterTokenType = new TypeToken<List<ChartFieldCustomFilterDTO>>() {
+        }.getType();
+
+        List<ChartFieldCustomFilterDTO> fieldCustomFilter;
+        // 尝试将历史数据转成list，如果转换出现异常，则忽略该视图继续执行下一个
+        try {
+            fieldCustomFilter = gson.fromJson(view.getCustomFilter(), filterTokenType);
+        } catch (Exception e) {
+            return;
+        }
+
+        if (CollectionUtils.isEmpty(fieldCustomFilter)) {
+            // 将 '[]' 转换成 '{}'
+            view.setCustomFilter("{}");
+        } else {
+            // array -> tree
+            FilterTreeObj tree = chartViewOldDataMergeService.transArr2Obj(fieldCustomFilter);
+            view.setCustomFilter(gson.toJson(tree));
+        }
     }
 }
