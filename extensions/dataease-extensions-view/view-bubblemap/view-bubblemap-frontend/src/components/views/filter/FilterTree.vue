@@ -56,13 +56,7 @@ export default {
         closeFilter() {
             this.dialogVisible = false
         },executeAxios(url, type, data, callBack) {
-      const param = {
-        url: url,
-        type: type,
-        data: data,
-        callBack: callBack,
-      };
-      this.$emit("execute-axios", param);
+      this.$emit("execute-axios", url, type, data, callBack);
     },
         changeFilter() {
             const { logic, items, errorMessage } = this.$refs.rowAuth.submit()
