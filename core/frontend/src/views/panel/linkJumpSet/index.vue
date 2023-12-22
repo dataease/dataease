@@ -389,7 +389,7 @@
 <script>
 import { queryPanelJumpInfo, queryWithViewId, updateJumpSet } from '@/api/panel/linkJump'
 import { groupTree } from '@/api/panel/panel'
-import {detailList, getComponentInfo} from '@/api/panel/panelView'
+import { getComponentInfo } from '@/api/panel/panelView'
 import { mapState } from 'vuex'
 
 import draggable from 'vuedraggable'
@@ -544,6 +544,9 @@ export default {
         if (xAxis && xAxis[0] && xAxis[0].groupType === 'q') {
           checkJumpStr = checkJumpStr + chartDetails.extStack
         }
+      } else if (chartDetails.type === 'bar-time-range') {
+        checkAllAxisStr = chartDetails.xaxis + chartDetails.drillFields
+        checkJumpStr = checkAllAxisStr
       } else {
         checkJumpStr = checkAllAxisStr
       }
