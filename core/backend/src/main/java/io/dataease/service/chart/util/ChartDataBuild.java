@@ -1412,8 +1412,14 @@ public class ChartDataBuild {
         }
 
         if (isDate) {
-            map.put("minTime", sdf.format(dates.stream().min(Date::compareTo).orElse(null)));
-            map.put("maxTime", sdf.format(dates.stream().max(Date::compareTo).orElse(null)));
+            Date minDate = dates.stream().min(Date::compareTo).orElse(null);
+            if (minDate != null) {
+                map.put("minTime", sdf.format(minDate));
+            }
+            Date maxDate = dates.stream().max(Date::compareTo).orElse(null);
+            if (maxDate != null) {
+                map.put("maxTime", sdf.format(maxDate));
+            }
         } else {
             map.put("min", numbers.stream().min(BigDecimal::compareTo).orElse(null));
             map.put("max", numbers.stream().max(BigDecimal::compareTo).orElse(null));
