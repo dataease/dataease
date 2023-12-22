@@ -359,7 +359,7 @@
             <el-radio :label="false">{{ $t('commons.no') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <div v-if="showProperty('showTableHeader') && sizeForm.showTableHeader">
+        <div v-if="(showProperty('showTableHeader') && sizeForm.showTableHeader) || chart.type === 'table-pivot'">
           <el-form-item
             v-if="showProperty('tableTitleFontSize')"
             :label="$t('chart.table_title_fontsize')"
