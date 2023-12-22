@@ -123,6 +123,7 @@
             :template-id="state.templateDialog.templateId"
             :opt-type="state.templateDialog.optType"
             :template-categories="state.templateCategories"
+            @addCategoryInfo="showTemplateEditDialog('new', null)"
             @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
             @closeEditTemplateDialog="closeEditTemplateDialog"
           />
@@ -426,7 +427,6 @@ const showTemplateEditDialog = (type, templateInfo) => {
 }
 
 const templateEdit = templateInfo => {
-  console.log('templateInfo' + JSON.stringify(templateInfo))
   state.templateDialog.visible = true
   state.templateDialog.title = '编辑模版'
   state.templateDialog.optType = 'update'
