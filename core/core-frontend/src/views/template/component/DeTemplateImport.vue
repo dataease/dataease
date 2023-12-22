@@ -32,6 +32,16 @@
             :label="option.name"
             :value="option.id"
           />
+          <div class="custom-option-line"></div>
+          <div>
+            <el-button
+              @click="doAddCategory"
+              icon="Plus"
+              text
+              style="width: 100%; justify-content: flex-start"
+              >添加分类</el-button
+            >
+          </div>
         </el-select>
       </el-form-item>
     </el-form>
@@ -49,7 +59,7 @@ import { computed, onMounted, reactive, ref } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-const emits = defineEmits(['closeEditTemplateDialog', 'refresh'])
+const emits = defineEmits(['closeEditTemplateDialog', 'refresh', 'addCategoryInfo'])
 const { t } = useI18n()
 const filesRef = ref(null)
 const props = defineProps({
@@ -224,6 +234,10 @@ const goFile = () => {
   filesRef.value.click()
 }
 
+const doAddCategory = () => {
+  emits('addCategoryInfo')
+}
+
 onMounted(() => {
   // showCurrentTemplate(props.pid)
 })
@@ -231,7 +245,6 @@ onMounted(() => {
 if (props.templateId) {
   findOne(props.templateId).then(rsp => {
     state.templateInfo = rsp.data
-    console.log('test=' + JSON.stringify(state.templateInfo))
   })
 }
 </script>
@@ -280,5 +293,12 @@ if (props.templateId) {
     margin-right: 2px;
     flex: 1;
   }
+}
+
+.custom-option-line {
+  width: calc(100% -8px);
+  margin: 4px;
+  height: 1px;
+  background-color: rgba(31, 35, 41, 0.15);
 }
 </style>
