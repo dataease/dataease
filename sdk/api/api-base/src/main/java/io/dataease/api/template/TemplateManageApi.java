@@ -1,6 +1,7 @@
 package io.dataease.api.template;
 
 import io.dataease.api.template.dto.TemplateManageDTO;
+import io.dataease.api.template.request.TemplateManageBatchRequest;
 import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.api.template.vo.VisualizationTemplateVO;
 import org.springframework.web.bind.annotation.*;
@@ -34,5 +35,11 @@ public interface TemplateManageApi {
 
     @PostMapping("/categoryTemplateNameCheck")
     String categoryTemplateNameCheck(@RequestBody TemplateManageRequest request);
+
+    @PostMapping("/batchUpdate")
+    void batchUpdate(@RequestBody TemplateManageBatchRequest request);
+
+    @PostMapping("/batchDelete")
+    void batchDelete(@RequestBody TemplateManageBatchRequest request);
 
 }

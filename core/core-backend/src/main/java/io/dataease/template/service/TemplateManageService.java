@@ -3,6 +3,7 @@ package io.dataease.template.service;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.template.TemplateManageApi;
 import io.dataease.api.template.dto.TemplateManageDTO;
+import io.dataease.api.template.request.TemplateManageBatchRequest;
 import io.dataease.api.template.request.TemplateManageRequest;
 import io.dataease.api.template.vo.VisualizationTemplateVO;
 import io.dataease.constant.CommonConstants;
@@ -262,4 +263,39 @@ public class TemplateManageService implements TemplateManageApi {
     public List<TemplateManageDTO> findCategories(TemplateManageRequest request) {
         return extTemplateMapper.findCategories(request);
     }
+    @Override
+    public void batchUpdate(TemplateManageBatchRequest request) {
+        request.getTemplateIds().forEach(templateId ->{
+            // 分类映射删除
+            extTemplateMapper.deleteCategoryMapByTemplate(null,templateId);
+            // 插入分类关系
+            request.getCategories().forEach(categoryId -> {
+                VisualizationTemplateCategoryMap categoryMap = new VisualizationTemplateCategoryMap();
+                categoryMap.setId(UUID.randomUUID().toString());
+                categoryMap.setCategoryId(categoryId);
+                categoryMap.setTemplateId(templateId);
+                categoryMapMapper.insert(categoryMap);
+            });
+        });
+    }
+
+    @Override
+    public void batchDelete(TemplateManageBatchRequest request) {
+        request.getTemplateIds().forEach(templateId ->{
+            request.getCategories().forEach(categoryId -> {
+                QueryWrapper<VisualizationTemplateCategoryMap> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("template_id", templateId);
+                queryWrapper.eq("category_id", categoryId);
+                categoryMapMapper.delete(queryWrapper);
+                // 如何是最后一个 则实际模版需要删除
+                Long result = extTemplateMapper.checkRepeatTemplateId(categoryId, templateId);
+                if (result == 0) {
+                    templateMapper.deleteById(templateId);
+                }
+            });
+
+        });
+    }
 }
+
+
