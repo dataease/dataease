@@ -9,7 +9,7 @@
     >
     <div class="tree-cont">
             <div class="content">
-              <rowAuth ref="rowAuth" />
+              <rowAuth @execute-axios="executeAxios" ref="rowAuth"></rowAuth>
             </div>
           </div>
           <div
@@ -55,7 +55,15 @@ export default {
     methods: {
         closeFilter() {
             this.dialogVisible = false
-        },
+        },executeAxios(url, type, data, callBack) {
+      const param = {
+        url: url,
+        type: type,
+        data: data,
+        callBack: callBack,
+      };
+      this.$emit("execute-axios", param);
+    },
         changeFilter() {
             const { logic, items, errorMessage } = this.$refs.rowAuth.submit()
             if (errorMessage) {
