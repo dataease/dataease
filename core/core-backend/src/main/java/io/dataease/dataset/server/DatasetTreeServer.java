@@ -7,7 +7,10 @@ import io.dataease.api.dataset.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.commons.constants.OptConstants;
+import io.dataease.constant.LogOT;
+import io.dataease.constant.LogST;
 import io.dataease.dataset.manage.DatasetGroupManage;
+import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import jakarta.annotation.Resource;
@@ -23,16 +26,19 @@ public class DatasetTreeServer implements DatasetTreeApi {
     private DatasetGroupManage datasetGroupManage;
 
 
+    @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
     @Override
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetNodeDTO) throws Exception {
         return datasetGroupManage.save(datasetNodeDTO, false);
     }
 
+    @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO rename(DatasetGroupInfoDTO dto) throws Exception {
         return datasetGroupManage.save(dto, true);
     }
 
+    @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASET)
     @Override
     public DatasetNodeDTO create(DatasetGroupInfoDTO dto) throws Exception {
         return datasetGroupManage.save(dto, false);
