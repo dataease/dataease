@@ -554,6 +554,7 @@ onMounted(() => {
           <el-checkbox
             :disabled="!formatterEditable"
             v-model="curSeriesFormatter.show"
+            :effect="themes"
             size="small"
             label="quota"
             @change="changeTooltipAttr('seriesTooltipFormatter', true)"
