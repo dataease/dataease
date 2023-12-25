@@ -2781,7 +2781,7 @@ export default {
     fire_now_success: '任务发起成功',
     larkgroups: '飞书群',
     ext_wait_time: '加载仪表板额外等待时间(单位:秒)',
-    wat_time_limit: '额外等待时间必须在[0 - 30]'
+    wat_time_limit: '额外等待时间必须是[0 - 30]之间整数'
   },
   dynamic_time: {
     set_default: '设置默认值',
