@@ -62,9 +62,21 @@
                   v-for="item in currentTemplateShowListComputed"
                   :key="item.id"
                   :width="state.templateCurWidth"
+                  :batch-state="batchState > 0"
                   :model="item"
                   @command="key => handleCommand(key, item)"
                 />
+              </div>
+              <div v-show="batchState" class="batch-opt-area">
+                <el-button @click="batchUpdate" type="danger" plain style="margin-left: 24px"
+                  >修改分类</el-button
+                >
+                <el-button @click="batchPreDelete" type="danger" plain>批量删除</el-button>
+                <span style="margin-left: 24px; font-size: 14px">已选 {{ batchState }} 项</span>
+                <el-button @click="batchFullSelect" style="margin-left: 16px" text
+                  >全选 {{ currentTemplateShowListComputed.length }} 项</el-button
+                >
+                <el-button @click="batchClear" text>清空</el-button>
               </div>
             </div>
           </div>
@@ -74,16 +86,17 @@
           v-model="state.editTemplate"
           append-to-body
           class="de-dialog-form"
-          width="600px"
+          width="420px"
         >
           <el-form
             ref="templateEditFormRef"
+            label-position="top"
             class="de-form-item"
             :model="state.templateEditForm"
             :rules="state.templateEditFormRules"
           >
             <el-form-item :label="state.dialogTitleLabel" prop="name">
-              <el-input v-model="state.templateEditForm.name" />
+              <el-input :placeholder="'请输入分类名称'" v-model="state.templateEditForm.name" />
             </el-form-item>
           </el-form>
           <template #footer>
@@ -100,16 +113,58 @@
           :title="state.templateDialog.title"
           v-model="state.templateDialog.visible"
           :show-close="true"
+          :destroy-on-close="true"
           class="de-dialog-form"
           width="600px"
         >
           <de-template-import
             v-if="state.templateDialog.visible"
             :pid="state.templateDialog.pid"
+            :template-id="state.templateDialog.templateId"
+            :opt-type="state.templateDialog.optType"
+            :template-categories="state.templateCategories"
+            @addCategoryInfo="showTemplateEditDialog('new', null)"
+            @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
+            @closeEditTemplateDialog="closeEditTemplateDialog"
+          />
+        </el-dialog>
+
+        <!--导入templateDialog-->
+        <el-dialog
+          :title="state.templateDialog.title"
+          v-model="state.templateDialog.visible"
+          :show-close="true"
+          :destroy-on-close="true"
+          class="de-dialog-form"
+          width="600px"
+        >
+          <de-template-import
+            v-if="state.templateDialog.visible"
+            :pid="state.templateDialog.pid"
+            :template-id="state.templateDialog.templateId"
+            :opt-type="state.templateDialog.optType"
             :template-categories="state.templateCategories"
             @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
             @closeEditTemplateDialog="closeEditTemplateDialog"
           />
+        </el-dialog>
+
+        <!--导入templateDialog-->
+        <el-dialog
+          :title="'修改分类'"
+          v-model="state.batchOptDialogShow"
+          :show-close="true"
+          :destroy-on-close="true"
+          class="de-dialog-form"
+          width="600px"
+        >
+          <de-category-change
+            v-if="state.batchOptDialogShow"
+            :template-ids="batchTemplateIds"
+            :template-categories="state.templateCategories"
+            @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
+            @closeBatchEditTemplateDialog="closeBatchOptDialog"
+          ></de-category-change>
         </el-dialog>
       </div>
     </div>
@@ -117,11 +172,18 @@
 </template>
 
 <script lang="ts" setup>
-import { save, templateDelete, find, findCategories, deleteCategory } from '@/api/template'
+import {
+  save,
+  templateDelete,
+  find,
+  findCategories,
+  deleteCategory,
+  batchDelete
+} from '@/api/template'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { computed, nextTick, onMounted, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import DeTemplateList from '@/views/template/component/DeTemplateList.vue'
 const { t } = useI18n()
 const templateEditFormRef = ref(null)
@@ -129,6 +191,7 @@ const templateListRef = ref(null)
 import NoneImage from '@/assets/none.png'
 import DeTemplateImport from '@/views/template/component/DeTemplateImport.vue'
 import DeTemplateItem from '@/views/template/component/DeTemplateItem.vue'
+import DeCategoryChange from '@/views/template/component/DeCategoryChange.vue'
 
 const roleValidator = (rule, value, callback) => {
   if (nameRepeat(value)) {
@@ -148,6 +211,8 @@ const roleValidator = (rule, value, callback) => {
 }
 
 const state = reactive({
+  batchOptDialogShow: false,
+  batchOptList: [],
   templateFilterText: '',
   showShare: false,
   currentTemplateShowList: [],
@@ -183,9 +248,52 @@ const state = reactive({
   templateDialog: {
     title: t('visualization.import_template'),
     visible: false,
+    templateId: null,
+    optType: 'insert',
     pid: '',
     categories: []
   }
+})
+
+const batchUpdate = () => {
+  state.batchOptDialogShow = true
+}
+
+const batchPreDelete = () => {
+  ElMessageBox.confirm(`确定删除${batchState.value}个模板吗？`, {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    const params = {
+      templateIds: batchTemplateIds.value,
+      categories: [state.currentTemplateId]
+    }
+    batchDelete(params).then(rsp => {
+      showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)
+    })
+  })
+}
+
+const batchFullSelect = () => {
+  currentTemplateShowListComputed.value.forEach(item => {
+    item.checked = true
+  })
+}
+
+const batchClear = () => {
+  currentTemplateShowListComputed.value.forEach(item => {
+    item.checked = false
+  })
+}
+
+const batchState = computed(() => {
+  return currentTemplateShowListComputed.value.filter(ele => ele.checked).length
+})
+
+const batchTemplateIds = computed(() => {
+  return currentTemplateShowListComputed.value.filter(ele => ele.checked).map(item => item.id)
 })
 
 const currentTemplateShowListComputed = computed(() => {
@@ -220,7 +328,7 @@ const nameRepeat = value => {
 
 const handleCommand = (key, data) => {
   switch (key) {
-    case 'rename':
+    case 'templateEdit':
       templateEdit(data)
       break
     case 'delete':
@@ -256,24 +364,44 @@ const showCurrentTemplate = (pid, label) => {
 const categoryDelete = id => {
   if (id) {
     deleteCategory(id).then(response => {
-      ElMessage({
-        message: t('commons.delete_success'),
-        type: 'success',
-        showClose: true
-      })
-      getTree()
+      if (response.data === 'success') {
+        ElMessage({
+          message: t('commons.delete_success'),
+          type: 'success',
+          showClose: true
+        })
+        getTree()
+      } else {
+        ElMessageBox.confirm('无法删除分类？', {
+          tip: '请移除该分类下所有模版再进行删除分类操作',
+          confirmButtonText: '知道了',
+          confirmButtonType: 'default',
+          showCancelButton: false,
+          type: 'warning',
+          autofocus: false,
+          showClose: false
+        })
+      }
     })
   }
 }
 const templateDeleteInfo = id => {
   if (id) {
-    templateDelete(id).then(response => {
-      ElMessage({
-        message: t('commons.delete_success'),
-        type: 'success',
-        showClose: true
+    ElMessageBox.confirm('确定删除该模版吗？', {
+      tip: '',
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      templateDelete(id, state.currentTemplateId).then(response => {
+        ElMessage({
+          message: t('commons.delete_success'),
+          type: 'success',
+          showClose: true
+        })
+        showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)
       })
-      showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)
     })
   }
 }
@@ -283,7 +411,7 @@ const showTemplateEditDialog = (type, templateInfo) => {
   state.formType = type
   if (type === 'edit') {
     state.templateEditForm = JSON.parse(JSON.stringify(templateInfo))
-    state.dialogTitle = state.templateEditForm['nodeType'] === 'folder' ? '编辑分类' : '编辑模板'
+    state.dialogTitle = state.templateEditForm['nodeType'] === 'folder' ? '重命名' : '编辑模板'
     state.originName = state.templateEditForm['label']
   } else {
     state.dialogTitle = t('visualization.add_category')
@@ -299,7 +427,10 @@ const showTemplateEditDialog = (type, templateInfo) => {
 }
 
 const templateEdit = templateInfo => {
-  showTemplateEditDialog('edit', templateInfo)
+  state.templateDialog.visible = true
+  state.templateDialog.title = '编辑模版'
+  state.templateDialog.optType = 'update'
+  state.templateDialog.templateId = templateInfo.id
 }
 
 const categoryClick = params => {
@@ -356,12 +487,18 @@ const showFirst = () => {
   }
 }
 
+const closeBatchOptDialog = () => {
+  state.batchOptDialogShow = false
+}
+
 const closeEditTemplateDialog = () => {
   state.templateDialog.visible = false
 }
 
 const templateImport = pid => {
   state.templateDialog.visible = true
+  state.templateDialog.templateId = null
+  state.templateDialog.optType = 'insert'
   state.templateDialog.pid = pid
 }
 
@@ -404,7 +541,7 @@ onMounted(() => {
     flex: 1;
     overflow: hidden;
     background: rgba(239, 240, 241, 1);
-
+    position: relative;
     .template-box {
       display: flex;
       flex-wrap: wrap;
@@ -429,6 +566,15 @@ onMounted(() => {
       color: rgba(31, 35, 41, 1);
       background: #fff;
       border-bottom: 1px solid rgba(31, 35, 41, 0.15);
+    }
+    .batch-opt-area {
+      background-color: #ffffff;
+      position: absolute;
+      display: flex;
+      align-items: center;
+      height: 48px;
+      width: 100%;
+      bottom: 0;
     }
   }
 }

@@ -23,11 +23,7 @@
           />
         </div>
       </el-form-item>
-      <el-row
-        v-show="!!state.importTemplateInfo.snapshot"
-        class="preview"
-        :style="classBackground"
-      />
+      <el-row v-show="!!state.templateInfo.snapshot" class="preview" :style="classBackground" />
       <el-form-item :label="'选择分类'" prop="categories" style="margin-top: 16px">
         <el-select v-model="state.templateInfo.categories" multiple style="width: 100%">
           <el-option
@@ -36,6 +32,16 @@
             :label="option.name"
             :value="option.id"
           />
+          <div class="custom-option-line"></div>
+          <div>
+            <el-button
+              @click="doAddCategory"
+              icon="Plus"
+              text
+              style="width: 100%; justify-content: flex-start"
+              >添加分类</el-button
+            >
+          </div>
         </el-select>
       </el-form-item>
     </el-form>
@@ -48,12 +54,12 @@
 </template>
 
 <script lang="ts" setup>
-import { save, nameCheck, find } from '@/api/template'
+import { save, nameCheck, find, findOne, categoryTemplateNameCheck } from '@/api/template'
 import { computed, onMounted, reactive, ref } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
-const emits = defineEmits(['closeEditTemplateDialog', 'refresh'])
+const emits = defineEmits(['closeEditTemplateDialog', 'refresh', 'addCategoryInfo'])
 const { t } = useI18n()
 const filesRef = ref(null)
 const props = defineProps({
@@ -64,6 +70,15 @@ const props = defineProps({
   templateCategories: {
     type: Array,
     required: true
+  },
+  optType: {
+    type: String,
+    required: true,
+    default: 'insert'
+  },
+  templateId: {
+    type: String,
+    required: false
   }
 })
 
@@ -105,9 +120,9 @@ const state = reactive({
 })
 
 const classBackground = computed(() => {
-  if (state.importTemplateInfo.snapshot) {
+  if (state.templateInfo.snapshot) {
     return {
-      background: `url(${imgUrlTrans(state.importTemplateInfo.snapshot)}) no-repeat`
+      background: `url(${imgUrlTrans(state.templateInfo.snapshot)}) no-repeat`
     }
   } else {
     return {}
@@ -119,6 +134,7 @@ const showCurrentTemplate = pid => {
     state.nameList = response.data
   })
 }
+
 const cancel = () => {
   emits('closeEditTemplateDialog')
 }
@@ -138,40 +154,63 @@ const saveTemplate = () => {
     return false
   }
 
+  if (props.optType === 'insert') {
+    importTemplate()
+  } else {
+    editTemplate()
+  }
+}
+
+const editTemplate = () => {
   const nameCheckRequest = {
     pid: state.templateInfo.pid,
     name: state.templateInfo.name,
     categories: state.templateInfo.categories,
-    optType: 'insert'
+    optType: props.optType
   }
+  // 全局名称校验
   nameCheck(nameCheckRequest).then(response => {
-    if (response.data.indexOf('exist') > -1) {
-      ElMessage.warning(t('当前模版名称已经存在'))
-      // const options = {
-      //   title: 'commons.prompt',
-      //   content: 'system_parameter_setting.to_overwrite_them',
-      //   type: 'primary',
-      //   cb: () =>
-      //     save(state.templateInfo).then(response => {
-      //       ElMessage.success('导入成功')
-      //       emits('refresh')
-      //       emits('closeEditTemplateDialog')
-      //     }),
-      //   confirmButtonText: t('template.override')
-      // }
-      // handlerConfirm(options)
-    } else {
-      save(state.templateInfo).then(response => {
-        ElMessage.success(t('导入成功'))
-        emits('refresh')
-        emits('closeEditTemplateDialog')
-      })
-    }
+    save(state.templateInfo).then(response => {
+      ElMessage.success(t('编辑成功'))
+      emits('refresh')
+      emits('closeEditTemplateDialog')
+    })
   })
 }
 
-const handlerConfirm = option => {
-  // do handlerConfirm
+const importTemplate = () => {
+  const nameCheckRequest = {
+    pid: state.templateInfo.pid,
+    name: state.templateInfo.name,
+    categories: state.templateInfo.categories,
+    optType: props.optType
+  }
+  categoryTemplateNameCheck(nameCheckRequest).then(response => {
+    if (response.data.indexOf('exist') > -1) {
+      ElMessageBox.confirm('提示？', {
+        tip: '当前分类存在相同模版名称，是否覆盖？',
+        confirmButtonType: 'danger',
+        type: 'warning',
+        autofocus: false,
+        showClose: false
+      }).then(() => {
+        save(state.templateInfo).then(response => {
+          ElMessage.success(t('覆盖成功'))
+          emits('refresh')
+          emits('closeEditTemplateDialog')
+        })
+      })
+    } else {
+      // 全局名称校验
+      nameCheck(nameCheckRequest).then(response => {
+        save(state.templateInfo).then(response => {
+          ElMessage.success(t('导入成功'))
+          emits('refresh')
+          emits('closeEditTemplateDialog')
+        })
+      })
+    }
+  })
 }
 
 const handleFileChange = e => {
@@ -195,9 +234,19 @@ const goFile = () => {
   filesRef.value.click()
 }
 
+const doAddCategory = () => {
+  emits('addCategoryInfo')
+}
+
 onMounted(() => {
-  showCurrentTemplate(props.pid)
+  // showCurrentTemplate(props.pid)
 })
+
+if (props.templateId) {
+  findOne(props.templateId).then(rsp => {
+    state.templateInfo = rsp.data
+  })
+}
 </script>
 
 <style scoped lang="less">
@@ -244,5 +293,12 @@ onMounted(() => {
     margin-right: 2px;
     flex: 1;
   }
+}
+
+.custom-option-line {
+  width: calc(100% -8px);
+  margin: 4px;
+  height: 1px;
+  background-color: rgba(31, 35, 41, 0.15);
 }
 </style>

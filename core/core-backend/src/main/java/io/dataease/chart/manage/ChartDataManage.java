@@ -67,6 +67,8 @@ public class ChartDataManage {
     @Resource
     private CorePermissionManage corePermissionManage;
 
+    public static final String START_END_SEPARATOR = "_START_END_SPLIT";
+
     private static Logger logger = LoggerFactory.getLogger(ChartDataManage.class);
 
     public ChartViewDTO calcData(ChartViewDTO view) throws Exception {
@@ -246,7 +248,8 @@ public class ChartDataManage {
                 List<SqlVariableDetails> sqlVariables = datasetGroupManage.getSqlParams(Arrays.asList(view.getTableId()));
                 if (CollectionUtil.isNotEmpty(sqlVariables)) {
                     for (SqlVariableDetails parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
-                        if (sqlVariables.stream().map(SqlVariableDetails::getId).collect(Collectors.toList()).contains(parameter.getId())) {
+                        String parameterId = StringUtils.endsWith(parameter.getId(), START_END_SEPARATOR) ? parameter.getId().split(START_END_SEPARATOR)[0] : parameter.getId();
+                        if (sqlVariables.stream().map(SqlVariableDetails::getId).collect(Collectors.toList()).contains(parameterId)) {
                             hasParameters = true;
                         }
                     }

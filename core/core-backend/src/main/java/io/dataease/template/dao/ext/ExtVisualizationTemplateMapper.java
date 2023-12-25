@@ -17,4 +17,14 @@ public interface ExtVisualizationTemplateMapper{
 
     List<TemplateManageDTO> findBaseTemplateList();
 
+    Long checkCategoryMap(@Param("categoryId") String categoryId);
+
+    Long checkRepeatTemplateId(@Param("categoryId") String categoryId, @Param("templateId") String templateId);
+
+    void deleteCategoryMapByTemplate(@Param("templateName") String templateName, @Param("templateId") String templateId);
+
+    Long checkCategoryTemplateName(@Param("templateName") String templateName,@Param("categories") List<String> categories);
+
+    List<String> findTemplateCategories(@Param("templateId") String templateId);
+
 }

@@ -96,6 +96,22 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/custom-component/rich-text/DeRichTextView.vue')
+  },
+  {
+    path: '/modify-pwd',
+    name: 'modify-pwd',
+    hidden: true,
+    meta: {},
+    component: () => import('@/layout/index.vue'),
+    children: [
+      {
+        path: 'index',
+        name: 'mpi',
+        hidden: true,
+        component: () => import('@/views/system/modify-pwd/index.vue'),
+        meta: { hidden: true }
+      }
+    ]
   }
 ]
 
