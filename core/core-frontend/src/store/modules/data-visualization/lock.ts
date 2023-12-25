@@ -9,10 +9,20 @@ export const lockStore = defineStore('lock', {
   actions: {
     lock() {
       curComponent.value.isLock = true
+      if (curComponent.value.component === 'Group') {
+        curComponent.value.propValue.forEach(component => {
+          component.isLock = true
+        })
+      }
     },
 
     unlock() {
       curComponent.value.isLock = false
+      if (curComponent.value.component === 'Group') {
+        curComponent.value.propValue.forEach(component => {
+          component.isLock = false
+        })
+      }
     }
   }
 })
