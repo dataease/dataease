@@ -433,7 +433,9 @@ export default {
 .test-class-wrap {
   background: var(--BgSelectTreeColor, #FFFFFF) !important;
   border-color: var(--BrSelectTreeColor, #E4E7ED) !important;
-
+  .el-tree__empty-text {
+    position: relative !important;
+  }
   .popper__arrow,
   .popper__arrow::after {
     display: none !important;
@@ -471,5 +473,6 @@ export default {
       border-left: none;
     }
   }
+  
 }
 </style>
