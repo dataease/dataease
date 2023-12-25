@@ -24,7 +24,7 @@
     </el-input>
   </div>
   <div class="sys-setting-p">
-    <div class="container-sys-param">
+    <div class="container-sys-param" v-show="state.templateCategories.length">
       <div style="width: 100%; height: 100%">
         <div class="de-template">
           <div class="tabs-container flex-tabs">
@@ -52,11 +52,24 @@
                   <span>的搜索结果&nbsp;{{ currentTemplateShowListComputed.length }}&nbsp;个</span>
                 </span>
               </div>
-              <el-empty
-                v-if="!state.currentTemplateShowList.length"
-                :image="NoneImage"
-                :description="'暂无模板'"
-              />
+              <el-row
+                style="height: 100%"
+                v-if="!state.currentTemplateShowList.length && !state.templateFilterText"
+                class="custom-position"
+              >
+                <Icon style="width: 125px; height: 125px" name="dv-empty" />
+                <span style="margin-top: 8px; font-size: 14px"> 暂无模版 </span>
+              </el-row>
+
+              <el-row
+                style="height: 100%"
+                v-if="!state.currentTemplateShowList.length && state.templateFilterText"
+                class="custom-position"
+              >
+                <Icon style="width: 125px; height: 125px" name="dv-nothing" />
+                <span style="margin-top: 8px; font-size: 14px"> 没有找到相关模版 </span>
+              </el-row>
+
               <div v-show="state.currentTemplateId !== ''" id="template-box" class="template-box">
                 <de-template-item
                   v-for="item in currentTemplateShowListComputed"
@@ -81,93 +94,113 @@
             </div>
           </div>
         </div>
-        <el-dialog
-          :title="state.dialogTitle"
-          v-model="state.editTemplate"
-          append-to-body
-          class="de-dialog-form"
-          width="420px"
-        >
-          <el-form
-            ref="templateEditFormRef"
-            label-position="top"
-            class="de-form-item"
-            :model="state.templateEditForm"
-            :rules="state.templateEditFormRules"
-          >
-            <el-form-item :label="state.dialogTitleLabel" prop="name">
-              <el-input :placeholder="'请输入分类名称'" v-model="state.templateEditForm.name" />
-            </el-form-item>
-          </el-form>
-          <template #footer>
-            <div class="dialog-footer">
-              <el-button secondary @click="close()">{{ t('commons.cancel') }}</el-button>
-              <el-button type="primary" @click="saveTemplateEdit(state.templateEditForm)"
-                >{{ t('commons.confirm') }}
-              </el-button>
-            </div>
-          </template>
-        </el-dialog>
-        <!--导入templateDialog-->
-        <el-dialog
-          :title="state.templateDialog.title"
-          v-model="state.templateDialog.visible"
-          :show-close="true"
-          :destroy-on-close="true"
-          class="de-dialog-form"
-          width="600px"
-        >
-          <de-template-import
-            v-if="state.templateDialog.visible"
-            :pid="state.templateDialog.pid"
-            :template-id="state.templateDialog.templateId"
-            :opt-type="state.templateDialog.optType"
-            :template-categories="state.templateCategories"
-            @doTest="closeEditTemplateDialog"
-            @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
-            @closeEditTemplateDialog="closeEditTemplateDialog"
-          />
-        </el-dialog>
-
-        <!--导入templateDialog-->
-        <el-dialog
-          :title="state.templateDialog.title"
-          v-model="state.templateDialog.visible"
-          :show-close="true"
-          :destroy-on-close="true"
-          class="de-dialog-form"
-          width="600px"
-        >
-          <de-template-import
-            v-if="state.templateDialog.visible"
-            :pid="state.templateDialog.pid"
-            :template-id="state.templateDialog.templateId"
-            :opt-type="state.templateDialog.optType"
-            :template-categories="state.templateCategories"
-            @refresh="importRefresh"
-            @closeEditTemplateDialog="closeEditTemplateDialog"
-          />
-        </el-dialog>
-
-        <!--导入templateDialog-->
-        <el-dialog
-          :title="'修改分类'"
-          v-model="state.batchOptDialogShow"
-          :show-close="true"
-          :destroy-on-close="true"
-          class="de-dialog-form"
-          width="600px"
-        >
-          <de-category-change
-            v-if="state.batchOptDialogShow"
-            :template-ids="batchTemplateIds"
-            :template-categories="state.templateCategories"
-            @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
-            @closeBatchEditTemplateDialog="closeBatchOptDialog"
-          ></de-category-change>
-        </el-dialog>
       </div>
     </div>
+    <div class="container-sys-param" v-show="!state.templateCategories.length">
+      <el-row style="height: 100%" class="custom-position">
+        <Icon style="width: 125px; height: 125px" name="dv-empty" />
+        <span style="margin-top: 8px; font-size: 14px">
+          <el-button
+            style="float: right"
+            type="primary"
+            @click="templateImport(state.currentTemplateId)"
+          >
+            {{ t('visualization.import') }}
+          </el-button>
+          <el-button
+            style="float: right; margin-right: 12px"
+            @click="showTemplateEditDialog('new', null)"
+          >
+            添加分类
+          </el-button>
+        </span>
+      </el-row>
+    </div>
+    <el-dialog
+      :title="state.dialogTitle"
+      v-model="state.editTemplate"
+      append-to-body
+      class="de-dialog-form"
+      width="420px"
+    >
+      <el-form
+        ref="templateEditFormRef"
+        label-position="top"
+        class="de-form-item"
+        :model="state.templateEditForm"
+        :rules="state.templateEditFormRules"
+      >
+        <el-form-item :label="state.dialogTitleLabel" prop="name">
+          <el-input :placeholder="'请输入分类名称'" v-model="state.templateEditForm.name" />
+        </el-form-item>
+      </el-form>
+      <template #footer>
+        <div class="dialog-footer">
+          <el-button secondary @click="close()">{{ t('commons.cancel') }}</el-button>
+          <el-button type="primary" @click="saveTemplateEdit(state.templateEditForm)"
+            >{{ t('commons.confirm') }}
+          </el-button>
+        </div>
+      </template>
+    </el-dialog>
+    <!--导入templateDialog-->
+    <el-dialog
+      :title="state.templateDialog.title"
+      v-model="state.templateDialog.visible"
+      :show-close="true"
+      :destroy-on-close="true"
+      class="de-dialog-form"
+      width="600px"
+    >
+      <de-template-import
+        v-if="state.templateDialog.visible"
+        :pid="state.templateDialog.pid"
+        :template-id="state.templateDialog.templateId"
+        :opt-type="state.templateDialog.optType"
+        :template-categories="state.templateCategories"
+        @doTest="closeEditTemplateDialog"
+        @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
+        @closeEditTemplateDialog="closeEditTemplateDialog"
+      />
+    </el-dialog>
+
+    <!--导入templateDialog-->
+    <el-dialog
+      :title="state.templateDialog.title"
+      v-model="state.templateDialog.visible"
+      :show-close="true"
+      :destroy-on-close="true"
+      class="de-dialog-form"
+      width="600px"
+    >
+      <de-template-import
+        v-if="state.templateDialog.visible"
+        :pid="state.templateDialog.pid"
+        :template-id="state.templateDialog.templateId"
+        :opt-type="state.templateDialog.optType"
+        :template-categories="state.templateCategories"
+        @refresh="importRefresh"
+        @closeEditTemplateDialog="closeEditTemplateDialog"
+      />
+    </el-dialog>
+
+    <!--导入templateDialog-->
+    <el-dialog
+      :title="'修改分类'"
+      v-model="state.batchOptDialogShow"
+      :show-close="true"
+      :destroy-on-close="true"
+      class="de-dialog-form"
+      width="600px"
+    >
+      <de-category-change
+        v-if="state.batchOptDialogShow"
+        :template-ids="batchTemplateIds"
+        :template-categories="state.templateCategories"
+        @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
+        @closeBatchEditTemplateDialog="closeBatchOptDialog"
+      ></de-category-change>
+    </el-dialog>
   </div>
 </template>
 
@@ -188,6 +221,7 @@ import DeTemplateList from '@/views/template/component/DeTemplateList.vue'
 const { t } = useI18n()
 const templateEditFormRef = ref(null)
 const templateListRef = ref(null)
+import NoneTemplate from '@/assets/svg/dv-empty.svg'
 import NoneImage from '@/assets/none.png'
 import DeTemplateImport from '@/views/template/component/DeTemplateImport.vue'
 import DeTemplateItem from '@/views/template/component/DeTemplateItem.vue'
@@ -619,5 +653,24 @@ onMounted(() => {
 .template-search-class {
   float: right;
   width: 320px;
+}
+
+.custom-position {
+  overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 14px;
+  flex-flow: row nowrap;
+  color: #9ea6b2;
+  flex-direction: column;
+  span {
+    line-height: 22px;
+    color: #646a73;
+  }
+}
+
+.ed-empty__image img {
+  width: 126px;
 }
 </style>
