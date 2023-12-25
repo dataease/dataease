@@ -123,7 +123,7 @@
             :template-id="state.templateDialog.templateId"
             :opt-type="state.templateDialog.optType"
             :template-categories="state.templateCategories"
-            @addCategoryInfo="showTemplateEditDialog('new', null)"
+            @doTest="closeEditTemplateDialog"
             @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
             @closeEditTemplateDialog="closeEditTemplateDialog"
           />
@@ -144,7 +144,7 @@
             :template-id="state.templateDialog.templateId"
             :opt-type="state.templateDialog.optType"
             :template-categories="state.templateCategories"
-            @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
+            @refresh="importRefresh"
             @closeEditTemplateDialog="closeEditTemplateDialog"
           />
         </el-dialog>
@@ -349,6 +349,14 @@ const templateDeleteConfirm = template => {
 
 const handleClick = (tab, event) => {
   getTree()
+}
+
+const importRefresh = params => {
+  if (params.optType === 'refresh') {
+    showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)
+  } else {
+    showTemplateEditDialog('new', null)
+  }
 }
 
 const showCurrentTemplate = (pid, label) => {
