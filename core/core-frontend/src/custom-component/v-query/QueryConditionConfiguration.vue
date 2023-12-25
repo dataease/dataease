@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { addQueryCriteriaConfig } from './options'
 import { getCustomTime } from './time-format'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -32,10 +33,6 @@ interface DatasetField {
 }
 
 const props = defineProps({
-  addQueryCriteriaConfig: {
-    type: Function,
-    default: () => ({})
-  },
   queryElement: {
     type: Object,
     default() {
@@ -406,10 +403,6 @@ const setCondition = (queryId: string) => {
   init(queryId)
 }
 
-const setConditionInit = (queryId: string) => {
-  init(queryId)
-}
-
 const setConditionOut = () => {
   conditions.value = cloneDeep(props.queryElement.propValue) || []
   addQueryCriteria()
@@ -744,7 +737,7 @@ const renameInputBlur = () => {
 }
 
 const addQueryCriteria = () => {
-  conditions.value.push(props.addQueryCriteriaConfig())
+  conditions.value.push(addQueryCriteriaConfig())
 }
 
 const addCriteriaConfig = () => {
@@ -754,7 +747,6 @@ const addCriteriaConfig = () => {
 
 defineExpose({
   setCondition,
-  setConditionInit,
   addCriteriaConfig,
   setConditionOut
 })
