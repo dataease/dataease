@@ -109,7 +109,7 @@ const handleDrop = e => {
     component.style.left = e.clientX - rectInfo.x
     component.id = guid()
     changeComponentSizeWithScale(component)
-    dvMainStore.addComponent({ component: component, index: 0 })
+    dvMainStore.addComponent({ component: component, index: undefined })
     adaptCurThemeCommonStyle(component)
     snapshotStore.recordSnapshotCache('renderChart', component.id)
   }
