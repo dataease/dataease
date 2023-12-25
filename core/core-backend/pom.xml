@@ -124,9 +124,14 @@
                                 <phase>generate-resources</phase>
                                 <configuration>
                                     <target>
-                                        <move todir="src/main/resources/static">
+                                        <copy todir="src/main/resources/static">
                                             <fileset dir="../core-frontend/dist">
                                                 <include name="**"/>
+                                            </fileset>
+                                        </copy>
+                                        <move todir="src/main/resources/static/dev2-front">
+                                            <fileset dir="src/main/resources/static">
+                                                <exclude name="*.html"/>
                                             </fileset>
                                         </move>
                                     </target>
