@@ -65,8 +65,6 @@ public class ExtWhere2Str {
                         }
                         if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                             String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
-                            // 此处获取标准格式的日期
-                            whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, date_format);
                         }
                         if (field.getDeExtractType() == 1) {
                             // 此处获取标准格式的日期
