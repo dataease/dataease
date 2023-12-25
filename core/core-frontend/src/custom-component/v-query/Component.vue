@@ -4,6 +4,7 @@ import { ElMessage } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
+import { infoFormat } from './options'
 import {
   onBeforeUnmount,
   reactive,
@@ -16,7 +17,6 @@ import {
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
-import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { comInfo } from './com-info'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -192,55 +192,6 @@ const dragover = () => {
   // do
 }
 
-const infoFormat = (obj: ComponentInfo) => {
-  const { id, name, deType, type, datasetId } = obj
-  return {
-    id: guid(),
-    name,
-    showError: true,
-    timeGranularity: 'date',
-    timeGranularityMultiple: 'datetimerange',
-    field: {
-      id,
-      type,
-      name,
-      deType
-    },
-    timeType: 'fixed',
-    relativeToCurrent: 'custom',
-    required: false,
-    timeNum: 0,
-    relativeToCurrentType: 'year',
-    around: 'f',
-    parametersStart: null,
-    parametersEnd: null,
-    arbitraryTime: new Date(),
-    timeNumRange: 0,
-    relativeToCurrentTypeRange: 'year',
-    aroundRange: 'f',
-    arbitraryTimeRange: new Date(),
-    auto: false,
-    defaultValue: undefined,
-    selectValue: undefined,
-    optionValueSource: 0,
-    valueSource: [],
-    dataset: {
-      id: datasetId,
-      name: '',
-      fields: []
-    },
-    visible: true,
-    defaultValueCheck: false,
-    multiple: false,
-    displayType: '0',
-    checkedFields: [],
-    parameters: [],
-    parametersCheck: false,
-    parametersList: [],
-    checkedFieldsMap: {}
-  }
-}
-
 const drop = e => {
   const componentInfo: ComponentInfo = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
   if (!componentInfo.id) return
@@ -268,34 +219,9 @@ const editeQueryConfig = (queryId: string) => {
   queryConfig.value.setCondition(queryId)
 }
 
-const addQueryCriteria = () => {
-  const componentInfo: ComponentInfo = {
-    id: '',
-    name: '未命名',
-    deType: 0,
-    type: 'VARCHAR',
-    datasetId: ''
-  }
-  list.value.push(infoFormat(componentInfo))
-  element.value.propValue = [...list.value]
-  snapshotStore.recordSnapshotCache()
-  editeQueryConfig(list.value[list.value.length - 1].id)
-}
-
-const addQueryCriteriaConfig = () => {
-  const componentInfo: ComponentInfo = {
-    id: '',
-    name: '未命名',
-    deType: 0,
-    type: 'VARCHAR',
-    datasetId: ''
-  }
-  return infoFormat(componentInfo)
-}
-
 const editQueryCriteria = () => {
   if (!list.value.length) {
-    addQueryCriteria()
+    addCriteriaConfigOut()
     return
   }
   editeQueryConfig(list.value[0].id)
@@ -340,10 +266,6 @@ const clearData = () => {
 const listVisible = computed(() => {
   return list.value.filter(itx => itx.visible)
 })
-
-const addCriteriaConfig = () => {
-  queryConfig.value.setConditionInit(queryConfig.value.addCriteriaConfig())
-}
 
 const queryData = () => {
   let requiredName = ''
@@ -415,7 +337,7 @@ const opacityStyle = computed(() => {
       <div v-if="!listVisible.length" class="no-list-label flex-align-center">
         <div class="container flex-align-center">
           将右侧的字段拖拽到这里 或 点击
-          <el-button :disabled="showPosition === 'preview'" @click="addCriteriaConfig" text>
+          <el-button :disabled="showPosition === 'preview'" @click="addCriteriaConfigOut" text>
             添加查询条件
           </el-button>
         </div>
@@ -471,7 +393,6 @@ const opacityStyle = computed(() => {
   </div>
   <Teleport to="body">
     <QueryConditionConfiguration
-      :add-query-criteria-config="addQueryCriteriaConfig"
       :query-element="element"
       ref="queryConfig"
     ></QueryConditionConfiguration>
