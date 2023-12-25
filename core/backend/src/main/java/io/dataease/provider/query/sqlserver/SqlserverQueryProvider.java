@@ -533,9 +533,11 @@ public class SqlserverQueryProvider extends QueryProvider {
     public String getSQLWithPage(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
         String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
         if (isTable) {
-            return getSQLTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            String s = getSQLTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view);
+            return "SELECT * FROM (" + s + ") tmp " + limit;
         } else {
-            return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            String s = getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view);
+            return "SELECT * FROM (" + s + ") tmp " + limit;
         }
     }
 
@@ -1477,7 +1479,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null &&  request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
+                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null && request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
                     whereValue = "(" + value.stream().map(str -> {
                         return "N" + "'" + str + "'";
                     }).collect(Collectors.joining(",")) + ")";
@@ -1499,7 +1501,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
             } else {
 
-                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null &&  request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
+                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null && request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                 } else {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value.get(0));
