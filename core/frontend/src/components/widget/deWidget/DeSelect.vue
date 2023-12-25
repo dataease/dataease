@@ -98,7 +98,8 @@ export default {
       separator: ',',
       timeMachine: null,
       changeIndex: 0,
-      flag: uuid.v1()
+      flag: uuid.v1(),
+      hasDestroy: false
     }
   },
   computed: {
@@ -274,6 +275,7 @@ export default {
   beforeDestroy() {
     bus.$off('onScroll', this.onScroll)
     bus.$off('reset-default-value', this.resetDefaultValue)
+    this.hasDestroy = true
   },
   methods: {
     selectOnScroll() {
@@ -384,6 +386,9 @@ export default {
       }
     },
     fillFirstSelected() {
+      if (this.hasDestroy) {
+        return
+      }
       if (this.selectFirst && this.data?.length) {
         this.fillFirstValue()
         this.$emit('filter-loaded', {
