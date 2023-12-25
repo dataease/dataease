@@ -542,18 +542,17 @@ export default {
     },
     // 监听外部的样式变化 （非实时性要求）
     'hw': {
-      handler(newVal, oldVla) {
-        if (newVal !== oldVla && this.$refs[this.element.propValue.id]) {
+      handler(newVal, oldVal) {
+        if (!newVal) {
+          return
+        }
+        if (this.requestStatus === 'waiting') {
+          return
+        }
+        if (newVal !== oldVal && this.$refs[this.element.propValue.id]) {
           this.resizeChart()
         }
-      },
-      deep: true
-    },
-    // 监听外部的样式变化 （非实时性要求）
-    outStyle: {
-      handler(newVal, oldVla) {
-      },
-      deep: true
+      }
     },
     // 监听外部计时器变化
     searchCount: function(val1) {
@@ -655,7 +654,7 @@ export default {
     equalsAny,
     tabSwitch(tabCanvasId) {
       if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
-        this.$refs[this.element.propValue.id].chartResize()
+        // do nothing
       }
     },
     // 编辑状态下 不启动刷新
@@ -786,9 +785,10 @@ export default {
       param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
     },
     clearPanelLinkage(param) {
+      console.log('clear linkage')
       if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
         try {
-          this.$refs[this.element.propValue.id]?.reDrawView?.()
+          // do nothing
         } catch (e) {
           console.error('reDrawView-error：', this.element.propValue.id)
         }
@@ -842,9 +842,7 @@ export default {
           this.getDataLoading = false
           this.getData(id, cache, dataBroadcast)
           clearTimeout(this.cancelTime)
-          this.cancelTime = setTimeout(() => {
-            this.requestStatus = 'waiting'
-          }, 0)
+          this.requestStatus = 'waiting'
           return
         }
         this.requestStatus = 'waiting'
