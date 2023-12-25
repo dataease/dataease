@@ -205,6 +205,10 @@ const curScale = computed(() => {
   return canvasStyleData.value.scale / 100
 })
 
+const curBaseScale = computed(() => {
+  return dvMainStore.canvasStyleData.scale / 100
+})
+
 const pointShadowShow = computed(() => {
   return (
     canvasId.value === 'canvas-main' &&
@@ -1314,7 +1318,7 @@ defineExpose({
         :id="'component' + item.id"
         :active="item.id === curComponentId"
         :dv-type="dvInfo.type"
-        :scale="curScale"
+        :scale="curBaseScale"
         :style="getComponentStyle(item.style)"
         :prop-value="item.propValue"
         :is-edit="true"

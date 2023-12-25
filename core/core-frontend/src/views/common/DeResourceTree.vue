@@ -232,7 +232,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
     })
   } else if (cmd === 'edit') {
     resourceEdit(data.id)
-  } else {
+  } else if (cmd === 'copy') {
     const targetPid = findParentIdByChildIdRecursive(state.resourceTree, data.id)
     const params: ResourceOrFolder = {
       nodeType: nodeType as 'folder' | 'leaf',
@@ -248,6 +248,8 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
           : `#/dashboard?opt=copy&pid=${params.pid}&resourceId=${data.data}`
       window.open(baseUrl, '_blank')
     })
+  } else {
+    resourceGroupOpt.value.optInit(nodeType, data, cmd, ['copy'].includes(cmd))
   }
 }
 
