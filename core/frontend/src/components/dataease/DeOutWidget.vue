@@ -202,7 +202,7 @@ export default {
   },
   methods: {
     lostFocus() {
-      this.$refs['deOutWidget'].onScroll?.()
+      this.$refs['deOutWidget'].selectOnScroll?.()
     },
     filterLoaded(p) {
       this.$emit('filter-loaded', p)

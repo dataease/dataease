@@ -276,6 +276,9 @@ export default {
     bus.$off('reset-default-value', this.resetDefaultValue)
   },
   methods: {
+    selectOnScroll() {
+      this.onScroll()
+    },
     clearDefault(optionList) {
       const emptyOption = !optionList?.length
 
