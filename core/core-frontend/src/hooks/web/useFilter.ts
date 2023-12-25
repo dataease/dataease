@@ -102,6 +102,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayType,
               multiple
             } = item
+
             if (timeType === 'dynamic' && [1, 7].includes(+displayType) && firstLoad) {
               if (+displayType === 1) {
                 selectValue = getDynamicRange(item)
@@ -118,7 +119,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                   relativeToCurrentTypeRange,
                   aroundRange,
                   arbitraryTimeRange
-                } = ele
+                } = item
 
                 const startTime = getCustomTime(
                   timeNum,
@@ -134,6 +135,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                   aroundRange,
                   arbitraryTimeRange
                 )
+
                 item.defaultValue = [startTime, endTime]
                 item.selectValue = [startTime, endTime]
               }
