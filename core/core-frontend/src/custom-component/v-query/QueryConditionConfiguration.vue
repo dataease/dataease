@@ -1627,6 +1627,7 @@ defineExpose({
 
           .parameters {
             margin-left: auto;
+            margin-top: 8px;
 
             .w100 {
               width: 100%;
