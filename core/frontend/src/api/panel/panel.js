@@ -166,6 +166,7 @@ export function delGroup(groupId) {
 }
 
 export function initPanelData(panelId, useCache = false, callback) {
+  store.commit('resetLastValidFilters')
   const queryMethod = useCache ? findUserCacheRequest : findOne
   // 加载视图数据
   queryMethod(panelId).then(response => {

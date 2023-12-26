@@ -5,6 +5,7 @@ import { $error } from '@/utils/message'
 import i18n from '@/lang'
 
 export function proxyInitPanelData(panelId, proxy, callback) {
+  store.commit('resetLastValidFilters')
   // 加载视图数据
   findOne(panelId, proxy).then(response => {
     if (response.data) {

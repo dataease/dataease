@@ -156,7 +156,8 @@ const data = {
     previewComponentData: [],
     currentCanvasNewId: [],
     lastViewRequestInfo: {},
-    multiplexingStyleAdapt: true // 复用样式跟随主题
+    multiplexingStyleAdapt: true, // 复用样式跟随主题
+    lastValidFilters: {}
   },
   mutations: {
     ...animation.mutations,
@@ -562,6 +563,9 @@ const data = {
       state.componentData.push(component)
     },
     deleteComponentWithId(state, id) {
+      if (state.lastValidFilters && state.lastValidFilters[id]) {
+        delete state.lastValidFilters[id]
+      }
       for (let index = 0; index < state.componentData.length; index++) {
         const element = state.componentData[index]
         if (element.id && element.id === id) {
@@ -819,6 +823,7 @@ const data = {
       state.changeProperties[propertyInfo.custom][propertyInfo.property] = propertyInfo.value
     },
     initCanvasBase(state) {
+      this.commit('resetLastValidFilters')
       this.commit('setCurComponent', { component: null, index: null })
       this.commit('clearLinkageSettingInfo', false)
       this.commit('resetViewEditInfo')
@@ -889,6 +894,10 @@ const data = {
         for (let index = 0; index < state.componentData.length; index++) {
           const element = state.componentData[index]
           if (element.canvasId && element.canvasId.includes(canvasId)) {
+            const cid = state.componentData[index]
+            if (state.lastValidFilters && state.lastValidFilters[cid]) {
+              delete state.lastValidFilters[cid]
+            }
             state.componentData.splice(index, 1)
           }
         }
@@ -913,6 +922,12 @@ const data = {
     },
     setMultiplexingStyleAdapt(state, value) {
       state.multiplexingStyleAdapt = value
+    },
+    setLastValidFilters(state, data) {
+      state.lastValidFilters[data.componentId] = data
+    },
+    resetLastValidFilters(state) {
+      state.lastValidFilters = {}
     }
   },
   modules: {
