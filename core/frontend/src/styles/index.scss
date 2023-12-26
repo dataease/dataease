@@ -7,7 +7,7 @@
 } */
 @font-face {
   font-family: 'AlibabaPuHuiTi';
-  src: url('../../static/fonts/AlibabaPuHuiTi.otf');
+  src: url('../../static/fonts/AlibabaPuHuiTi.otf') format('opentype');
   font-weight: normal;
   font-style: normal;
 }
@@ -32,7 +32,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: AlibabaPuHuiTi, Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, FangSong, SimHei, STHeiti, STKaiti, STSong, STFangsong sans-serif;
+  font-family: AlibabaPuHuiTi, Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, FangSong, SimHei, STHeiti, STKaiti, STSong, STFangsong sans-serif !important;
 }
 
 label {
