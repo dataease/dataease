@@ -107,7 +107,7 @@ public class ExtWhere2Str {
                         if (request.getDatasetTableField().getDeExtractType() == 2
                                 || request.getDatasetTableField().getDeExtractType() == 3
                                 || request.getDatasetTableField().getDeExtractType() == 4) {
-                            whereValue = String.format(SQLConstants.WHERE_CALUE_BETWEEN, value.get(0), value.get(1));
+                            whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, value.get(0), value.get(1));
                         } else {
                             whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                             whereValue = String.format(SQLConstants.WHERE_BETWEEN, Long.parseLong(value.get(0)), Long.parseLong(value.get(1)));

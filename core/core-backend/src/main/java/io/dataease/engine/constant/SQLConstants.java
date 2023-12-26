@@ -87,7 +87,7 @@ public class SQLConstants {
 
     public static final String WHERE_BETWEEN = "'%s' AND '%s'";
 
-    public static final String WHERE_CALUE_BETWEEN = "%s AND %s";
+    public static final String WHERE_VALUE_BETWEEN = "%s AND %s";
 
     public static final String BRACKETS = "(%s)";
 
