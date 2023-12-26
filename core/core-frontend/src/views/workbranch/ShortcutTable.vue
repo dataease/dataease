@@ -274,7 +274,7 @@ const getEmptyDesc = (): string => {
         <el-table-column
           v-for="item in state.tableColumn"
           :key="item.label"
-          prop="name"
+          :prop="item.field"
           show-overflow-tooltip
           :sortable="item.type === 'time'"
           :label="item.label"
