@@ -172,7 +172,7 @@ const editTemplate = () => {
   nameCheck(nameCheckRequest).then(response => {
     save(state.templateInfo).then(response => {
       ElMessage.success(t('编辑成功'))
-      emits('refresh')
+      emits('refresh', { optType: 'refresh' })
       emits('closeEditTemplateDialog')
     })
   })
@@ -196,7 +196,7 @@ const importTemplate = () => {
       }).then(() => {
         save(state.templateInfo).then(response => {
           ElMessage.success(t('覆盖成功'))
-          emits('refresh')
+          emits('refresh', { optType: 'refresh' })
           emits('closeEditTemplateDialog')
         })
       })
@@ -205,7 +205,7 @@ const importTemplate = () => {
       nameCheck(nameCheckRequest).then(response => {
         save(state.templateInfo).then(response => {
           ElMessage.success(t('导入成功'))
-          emits('refresh')
+          emits('refresh', { optType: 'refresh' })
           emits('closeEditTemplateDialog')
         })
       })
@@ -235,7 +235,7 @@ const goFile = () => {
 }
 
 const doAddCategory = () => {
-  emits('addCategoryInfo')
+  emits('refresh', { optType: 'addCategory' })
 }
 
 onMounted(() => {

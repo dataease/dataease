@@ -64,9 +64,7 @@ public class ExtWhere2Str {
                             whereName = String.format(SQLConstants.DE_CAST_DATE_FORMAT, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : field.getDateFormat(), date_format);
                         }
                         if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
-                            String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
-                            // 此处获取标准格式的日期
-                            whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, date_format);
+                            whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
                         }
                         if (field.getDeExtractType() == 1) {
                             // 此处获取标准格式的日期
@@ -109,7 +107,7 @@ public class ExtWhere2Str {
                         if (request.getDatasetTableField().getDeExtractType() == 2
                                 || request.getDatasetTableField().getDeExtractType() == 3
                                 || request.getDatasetTableField().getDeExtractType() == 4) {
-                            whereValue = String.format(SQLConstants.WHERE_BETWEEN, value.get(0), value.get(1));
+                            whereValue = String.format(SQLConstants.WHERE_CALUE_BETWEEN, value.get(0), value.get(1));
                         } else {
                             whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                             whereValue = String.format(SQLConstants.WHERE_BETWEEN, Long.parseLong(value.get(0)), Long.parseLong(value.get(1)));
