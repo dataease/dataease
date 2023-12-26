@@ -344,6 +344,10 @@ const getEmptyDesc = (): string => {
 
   .select-type-list {
     width: 104px;
+    :deep(.ed-input__wrapper) {
+      padding-left: 11px;
+      padding-right: 11px;
+    }
   }
 
   &.expand {
@@ -407,5 +411,11 @@ const getEmptyDesc = (): string => {
     margin-top: 0px;
     line-height: 20px !important;
   }
+}
+</style>
+<style lang="less">
+.menu-panel-select_popper {
+  width: 140px;
+  background: #fff;
 }
 </style>
