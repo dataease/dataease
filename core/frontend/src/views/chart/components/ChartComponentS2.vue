@@ -396,7 +396,8 @@ export default {
           const { width: chartWidth, height: chartHeight } = this.myChart.options
           if (width !== chartWidth || height !== chartHeight) {
             this.myChart?.changeSheetSize(width, height)
-            if (chartWidth || chartHeight) {
+            // 大小变化或者tab变化重新渲染
+            if (chartWidth || chartHeight || !(chartHeight || chartWidth)) {
               this.myChart.render()
             }
             this.initScroll()

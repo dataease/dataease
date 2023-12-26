@@ -655,6 +655,7 @@ export default {
     tabSwitch(tabCanvasId) {
       if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
         // do nothing
+        this.$refs[this.element.propValue.id].chartResize()
       }
     },
     // 编辑状态下 不启动刷新
