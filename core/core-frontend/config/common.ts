@@ -21,7 +21,7 @@ export function pathResolve(dir: string) {
   return resolve(root, '.', dir)
 }
 export default {
-  base: '/dev2-front',
+  base: './',
   plugins: [
     Vue(),
     VueJsx(),
