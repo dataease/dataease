@@ -146,7 +146,6 @@ const createFilter = (queryString: string) => {
                 :placeholder="valueText"
                 value-key="name"
                 highlight-first-item
-                @select="change"
               />
             </el-col>
 
