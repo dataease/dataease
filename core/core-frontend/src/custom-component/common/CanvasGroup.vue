@@ -61,6 +61,7 @@ const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, 
     :canvas-style-data="canvasStyleData"
     :canvas-view-info="canvasViewInfo"
     :canvas-id="canvasId"
+    :canvas-active="element['canvasActive']"
   ></canvas-core>
   <de-preview
     v-else

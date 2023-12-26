@@ -96,6 +96,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
     const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
     const canvasViewInfoPreview = canvasInfo.canvasViewInfo
     canvasDataResult.forEach(componentItem => {
+      componentItem['canvasActive'] = false
       if (componentItem.component === 'Group') {
         componentItem.expand = componentItem.expand || false
       }

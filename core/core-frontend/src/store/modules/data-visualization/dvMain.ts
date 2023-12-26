@@ -210,6 +210,15 @@ export const dvMainStore = defineStore('dataVisualization', {
     setCurComponent({ component, index }) {
       if (!component && this.curComponent) {
         this.curComponent['editing'] = false
+        this.curComponent['canvasActive'] = false
+        // 如果当前组件不在主画布中 对应的分组的canvasActive 也要设置为false
+        if (this.curComponent.canvasId !== 'canvas-main') {
+          this.componentData.forEach(componentItem => {
+            if (this.curComponent.canvasId.includes(componentItem.id)) {
+              componentItem['canvasActive'] = false
+            }
+          })
+        }
       }
       if (component) {
         // Is the current component in editing status
