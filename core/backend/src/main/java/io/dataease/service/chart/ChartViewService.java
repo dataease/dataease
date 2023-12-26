@@ -1503,7 +1503,7 @@ public class ChartViewService {
         if (CollectionUtils.isNotEmpty(detailData)) {
             mapTableNormal = ChartDataBuild.transTableNormalWithDetail(xAxis, yAxis, data, detailFieldList, detailData, desensitizationList);
         } else {
-            if (StringUtils.equalsIgnoreCase(view.getType(), "bar-time-range") && !drillRequestList.isEmpty() && !xAxisExt.isEmpty()) { // 针对区间条形图，还需要给xAxis排个序, 把xAxisExt放到最后
+            if (StringUtils.equalsIgnoreCase(view.getType(), "bar-time-range") && CollectionUtils.isNotEmpty(drillRequestList) && CollectionUtils.isNotEmpty(xAxisExt)) { // 针对区间条形图，还需要给xAxis排个序, 把xAxisExt放到最后
                 int count = 0;
                 for (int i = xAxis.size() - drillRequestList.size() - 1; i >= 0; i--) {
                     xAxis.remove(i);
