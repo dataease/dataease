@@ -102,7 +102,7 @@ public class TemplateManageService implements TemplateManageApi {
             } else {//模板插入 同名的模板进行覆盖(先删除)
                 // 分类映射删除
                 extTemplateMapper.deleteCategoryMapByTemplate(request.getName(),null);
-                // 模版删除
+                // 模板删除
                 QueryWrapper<VisualizationTemplate> wrapper = new QueryWrapper<>();
                 wrapper.eq("name", request.getName());
                 templateMapper.delete(wrapper);
@@ -157,7 +157,7 @@ public class TemplateManageService implements TemplateManageApi {
         return templateManageDTO;
     }
 
-    //模版名称检查
+    //模板名称检查
     public String nameCheck(String optType, String name, String id) {
         QueryWrapper<VisualizationTemplate> wrapper = new QueryWrapper<>();
         if (CommonConstants.OPT_TYPE.INSERT.equals(optType)) {
@@ -174,7 +174,7 @@ public class TemplateManageService implements TemplateManageApi {
         }
     }
 
-    //分类下模版名称检查
+    //分类下模板名称检查
     @Override
     public String categoryTemplateNameCheck(TemplateManageRequest request) {
         Long result = extTemplateMapper.checkCategoryTemplateName(request.getName(), request.getCategories());
@@ -215,7 +215,7 @@ public class TemplateManageService implements TemplateManageApi {
         queryWrapper.eq("template_id", id);
         queryWrapper.eq("category_id", categoryId);
         categoryMapMapper.delete(queryWrapper);
-        // 如何是最后一个 则实际模版需要删除
+        // 如何是最后一个 则实际模板需要删除
         Long result = extTemplateMapper.checkRepeatTemplateId(categoryId, id);
         if (result == 0) {
             templateMapper.deleteById(id);
@@ -225,7 +225,7 @@ public class TemplateManageService implements TemplateManageApi {
     @Override
     public String deleteCategory(String id) {
         Assert.notNull(id, "id cannot be null");
-        // 该分类下是否有其他分类公用的模版
+        // 该分类下是否有其他分类公用的模板
 
         Long checkResult = extTemplateMapper.checkCategoryMap(id);
         if (checkResult == 0) {
@@ -287,7 +287,7 @@ public class TemplateManageService implements TemplateManageApi {
                 queryWrapper.eq("template_id", templateId);
                 queryWrapper.eq("category_id", categoryId);
                 categoryMapMapper.delete(queryWrapper);
-                // 如何是最后一个 则实际模版需要删除
+                // 如何是最后一个 则实际模板需要删除
                 Long result = extTemplateMapper.checkRepeatTemplateId(categoryId, templateId);
                 if (result == 0) {
                     templateMapper.deleteById(templateId);
