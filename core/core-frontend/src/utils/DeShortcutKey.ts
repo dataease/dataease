@@ -109,11 +109,11 @@ export function listenGlobalKeyDown() {
     } else if (keyCode === shiftKey) {
       isShiftDown = true
       composeStore.setIsShiftDownStatus(true)
-      releaseKeyCheck()
+      releaseKeyCheck('shift')
     } else if (keyCode === ctrlKey || keyCode === commandKey) {
       isCtrlOrCommandDown = true
       composeStore.setIsCtrlOrCmdDownStatus(true)
-      releaseKeyCheck()
+      releaseKeyCheck('ctrl')
     } else if ((keyCode == deleteKey || keyCode == macDeleteKey) && curComponent.value) {
       deleteComponent()
     } else if (isCtrlOrCommandDown) {
@@ -125,6 +125,7 @@ export function listenGlobalKeyDown() {
         lockMap[keyCode]()
       }
     }
+    console.log('1111=isCtrlOrCommandDown' + isCtrlOrCommandDown + ';isShiftDown=' + isShiftDown)
   }
 
   window.onkeyup = e => {
@@ -150,11 +151,12 @@ export function releaseAttachKey() {
 }
 
 //当前不支持同时ctrl + shift操作
-function releaseKeyCheck() {
-  if (isCtrlOrCommandDown && isShiftDown) {
+function releaseKeyCheck(keyType) {
+  if (keyType === 'shift' && isCtrlOrCommandDown) {
     isCtrlOrCommandDown = false
     composeStore.setIsCtrlOrCmdDownStatus(false)
-    isShiftDown = true
+  } else if (keyType === 'ctrl' && isShiftDown) {
+    isShiftDown = false
     composeStore.setIsShiftDownStatus(false)
   }
 }
