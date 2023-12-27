@@ -150,10 +150,6 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   initScroll()
 }
 
-const pageColor = computed(() => {
-  const text = view.value?.customStyle?.text
-  return text.color ?? 'white'
-})
 const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   const customAttr = chart.customAttr
   if (chart.type !== 'table-info' || customAttr.basicStyle.tablePageMode !== 'page') {
@@ -360,13 +356,12 @@ onBeforeUnmount(() => {
       <div style="height: 100%" :id="containerId"></div>
     </div>
     <div class="table-page-info" v-if="showPage && !isError">
-      <div :style="{ color: pageColor }">共{{ state.pageInfo.total }}条</div>
+      <div>共{{ state.pageInfo.total }}条</div>
       <el-pagination
         class="table-page-content"
         layout="prev, pager, next"
         v-model:page-size="state.pageInfo.pageSize"
         v-model:current-page="state.pageInfo.currentPage"
-        :style="{ color: pageColor }"
         :pager-count="5"
         :total="state.pageInfo.total"
         @update:current-page="handleCurrentChange"
@@ -397,14 +392,16 @@ onBeforeUnmount(() => {
   display: flex;
   width: 100%;
   justify-content: space-between;
+  color: grey;
   :deep(.table-page-content) {
-    button {
-      color: inherit;
+    button,
+    button[disabled] {
+      color: grey;
       background: transparent !important;
     }
     ul li {
       &:not(.is-active) {
-        color: inherit;
+        color: grey;
       }
       background: transparent !important;
     }
