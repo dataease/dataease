@@ -91,6 +91,7 @@ export const composeStore = defineStore('compose', {
       const groupComponent = {
         id: newId,
         component: 'Group',
+        canvasActive: false,
         name: '组合',
         label: '组合',
         icon: 'group',

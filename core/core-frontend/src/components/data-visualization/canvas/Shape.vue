@@ -1,5 +1,5 @@
 <template>
-  <div class="shape" ref="shapeInnerRef" :id="domId">
+  <div class="shape" ref="shapeInnerRef" :id="domId" @dblclick="handleDbClick">
     <div
       class="shape-outer"
       v-show="contentDisplay"
@@ -212,11 +212,24 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 1
+  },
+  canvasActive: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 })
 
-const { element, defaultStyle, baseCellInfo, index, isTabMoveCheck, canvasId, scale } =
-  toRefs(props)
+const {
+  element,
+  defaultStyle,
+  baseCellInfo,
+  index,
+  isTabMoveCheck,
+  canvasId,
+  scale,
+  canvasActive
+} = toRefs(props)
 const domId = ref('shape-id-' + element.value.id)
 const pointList = ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l']
 const pointList2 = ['r', 'l']
@@ -345,6 +358,9 @@ const getCursor = () => {
 }
 
 const handleBoardMouseDownOnShape = e => {
+  if (!canvasActive.value) {
+    return
+  }
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
   handleMouseDownOnShape(e)
 }
@@ -354,8 +370,18 @@ const areaDataPush = component => {
     areaData.value.components.push(component)
   }
 }
+const handleDbClick = e => {
+  console.log('111=0' + element.value.canvasId)
+  if (element.value.canvasId !== 'canvas-main') {
+    console.log('111=1' + canvasActive.value)
+    dvMainStore.setCurComponent({ component: element.value, index: index.value })
+  }
+}
 
 const handleInnerMouseDownOnShape = e => {
+  if (!canvasActive.value) {
+    return
+  }
   if (dvMainStore.batchOptStatus) {
     componentEditBarRef.value.batchOptCheckOut()
     e.stopPropagation()
@@ -510,6 +536,9 @@ const handleMouseDownOnShape = e => {
 }
 
 const selectCurComponent = e => {
+  if (!canvasActive.value) {
+    return
+  }
   // 阻止向父组件冒泡
   if (dvInfo.value.type === 'dataV') {
     e.stopPropagation()
@@ -528,6 +557,9 @@ const batchSelected = e => {
 }
 
 const handleMouseDownOnPoint = (point, e) => {
+  if (!canvasActive.value) {
+    return
+  }
   dashboardActive.value && emit('onStartResize', e)
   dvMainStore.setInEditorStatus(true)
   dvMainStore.setClickComponentStatus(true)

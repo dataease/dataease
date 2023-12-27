@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import RealTimeComponentList from '@/components/data-visualization/RealTimeComponentList.vue'
 import CanvasAttr from '@/components/data-visualization/CanvasAttr.vue'
 import { computed, watch, onMounted, reactive, ref, nextTick, onUnmounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

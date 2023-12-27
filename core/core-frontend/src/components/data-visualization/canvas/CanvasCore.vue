@@ -148,6 +148,11 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 1
+  },
+  canvasActive: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 })
 
@@ -1301,6 +1306,7 @@ defineExpose({
       :index="index"
       :class="{ lock: item.isLock && editMode === 'edit' }"
       :base-cell-info="baseCellInfo"
+      :canvas-active="canvasActive"
       @onStartResize="onStartResize($event, item, index)"
       @onStartMove="onStartMove($event, item, index)"
       @onMouseUp="onMouseUp($event, item, index)"
@@ -1327,6 +1333,7 @@ defineExpose({
         :request="item.request"
         @input="handleInput"
         :dv-info="dvInfo"
+        :canvas-active="canvasActive"
       />
 
       <component
@@ -1342,6 +1349,8 @@ defineExpose({
         :canvas-style-data="canvasStyleData"
         :canvas-view-info="canvasViewInfo"
         :dv-info="dvInfo"
+        :active="item.id === curComponentId"
+        :canvas-active="canvasActive"
       />
     </Shape>
     <!-- 右击菜单 -->
