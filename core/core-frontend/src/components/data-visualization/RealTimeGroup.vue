@@ -37,7 +37,7 @@ const transformIndex = index => {
   return componentData.value.length - 1 - index
 }
 const areaDataPush = component => {
-  if (component && !component.isLock && component.isShow) {
+  if (component && !component.isLock && component.isShow && component.canvasId === 'canvas-main') {
     areaData.value.components.push(component)
   }
 }
