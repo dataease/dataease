@@ -501,7 +501,16 @@ export default {
       if (!this.selectFirst) {
         return
       }
-      const defaultV = this.data[0].id
+      let defaultV = this.data[0].id
+      if (this.inDraw) {
+        let lastFilters = null
+        if (this.$store.state.lastValidFilters) {
+          lastFilters = this.$store.state.lastValidFilters[this.element.id]
+          if (lastFilters) {
+            defaultV = lastFilters.val === null ? '' : lastFilters.val.toString()
+          }
+        }
+      }
       if (this.element.options.attrs.multiple) {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
         this.value = defaultV.split(this.separator)
