@@ -9,9 +9,9 @@
     >
       <el-form-item :label="'模板名称'" prop="name">
         <div class="flex-template">
-          <el-input v-model="state.templateInfo.name" placeholder="请输入模版名称" clearable />
+          <el-input v-model="state.templateInfo.name" placeholder="请输入模板名称" clearable />
           <el-button style="margin-left: 10px" icon="Upload" secondary @click="goFile"
-            >导入模版</el-button
+            >导入模板</el-button
           >
           <input
             id="input"
@@ -197,7 +197,7 @@ const importTemplate = () => {
   categoryTemplateNameCheck(nameCheckRequest).then(response => {
     if (response.data.indexOf('exist') > -1) {
       ElMessageBox.confirm('提示', {
-        tip: '当前分类存在相同模版名称，是否覆盖？',
+        tip: '当前分类存在相同模板名称，是否覆盖？',
         confirmButtonType: 'danger',
         type: 'warning',
         autofocus: false,

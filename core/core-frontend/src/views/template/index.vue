@@ -57,7 +57,7 @@
                 class="custom-position"
               >
                 <Icon style="width: 125px; height: 125px" name="dv-empty" />
-                <span style="margin-top: 8px; font-size: 14px"> 暂无模版 </span>
+                <span style="margin-top: 8px; font-size: 14px"> 暂无模板 </span>
               </el-row>
 
               <el-row
@@ -66,7 +66,7 @@
                 class="custom-position"
               >
                 <Icon style="width: 125px; height: 125px" name="dv-nothing" />
-                <span style="margin-top: 8px; font-size: 14px"> 没有找到相关模版 </span>
+                <span style="margin-top: 8px; font-size: 14px"> 没有找到相关模板 </span>
               </el-row>
 
               <div v-show="state.currentTemplateId !== ''" id="template-box" class="template-box">
@@ -398,7 +398,7 @@ const categoryDelete = id => {
         getTree()
       } else {
         ElMessageBox.confirm('无法删除分类', {
-          tip: '请先移除该分类下所有模版再进行删除分类操作',
+          tip: '请先移除该分类下所有模板再进行删除分类操作',
           confirmButtonText: '知道了',
           confirmButtonType: 'default',
           showCancelButton: false,
@@ -412,7 +412,7 @@ const categoryDelete = id => {
 }
 const templateDeleteInfo = id => {
   if (id) {
-    ElMessageBox.confirm('确定删除该模版吗？', {
+    ElMessageBox.confirm('确定删除该模板吗？', {
       tip: '',
       confirmButtonType: 'danger',
       type: 'warning',
@@ -458,7 +458,7 @@ const categoryEdit = templateInfo => {
 
 const templateEdit = templateInfo => {
   state.templateDialog.visible = true
-  state.templateDialog.title = '编辑模版'
+  state.templateDialog.title = '编辑模板'
   state.templateDialog.optType = 'update'
   state.templateDialog.templateId = templateInfo.id
 }
@@ -532,7 +532,7 @@ const closeEditTemplateDialog = () => {
 
 const templateImport = pid => {
   state.templateDialog.visible = true
-  state.templateDialog.title = '导入模版'
+  state.templateDialog.title = '导入模板'
   state.templateDialog.templateId = null
   state.templateDialog.optType = 'insert'
   state.templateDialog.pid = pid

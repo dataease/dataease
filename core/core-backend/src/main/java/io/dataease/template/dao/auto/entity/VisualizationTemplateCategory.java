@@ -37,7 +37,7 @@ public class VisualizationTemplateCategory implements Serializable {
     private Integer level;
 
     /**
-     * 模版种类  dataV or dashboard 目录或者文件夹
+     * 模板种类  dataV or dashboard 目录或者文件夹
      */
     private String dvType;
 
