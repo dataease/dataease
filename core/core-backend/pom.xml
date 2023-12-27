@@ -263,15 +263,15 @@
                     <include>**/*.xlsx</include>
                 </includes>
                 <excludes>
-                    <exclude>static</exclude>
+                    <exclude>static/**/*.*</exclude>
                 </excludes>
             </resource>
             <resource>
                 <directory>src/main/resources</directory>
-                <includes>
-                    <include>static</include>
-                </includes>
                 <filtering>false</filtering>
+                <includes>
+                    <include>static/**/*.*</include>
+                </includes>
             </resource>
         </resources>
         <!-- springboot打包插件 -->
