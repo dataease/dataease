@@ -30,7 +30,7 @@ const transformIndex = index => {
   return componentData.value.length - 1 - index
 }
 const areaDataPush = component => {
-  if (component && !component.isLock && component.isShow) {
+  if (component && !component.isLock && component.isShow && component.canvasId === 'canvas-main') {
     areaData.value.components.push(component)
   }
 }
@@ -65,12 +65,6 @@ const onClick = (e, index) => {
     composeStore.setLaterIndex(null)
   }
   // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
-  console.log(
-    'isCtrlOrCmdDown=' +
-      isCtrlOrCmdDown.value +
-      ';all=' +
-      !!(isCtrlOrCmdDown.value && !areaData.value.components.includes(componentData.value[index]))
-  )
   if (isCtrlOrCmdDown.value && !areaData.value.components.includes(componentData.value[index])) {
     areaDataPush(componentData.value[index])
     if (curComponent.value && curComponent.value.id !== componentData.value[index].id) {
