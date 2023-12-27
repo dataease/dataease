@@ -116,6 +116,7 @@ import EditBar from '@/components/canvas/components/editor/EditBar'
 import MobileCheckBar from '@/components/canvas/components/editor/MobileCheckBar'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { imgUrlTrans } from '@/components/canvas/utils/utils'
+import bus from '@/utils/bus'
 
 let eventsFor = events.mouse
 
@@ -717,6 +718,7 @@ export default {
     active(val) {
       this.enabled = val
       if (val) {
+        bus.$emit('select-pop-change', this.element.id)
         this.$emit('activated')
       } else {
         this.$emit('deactivated')
