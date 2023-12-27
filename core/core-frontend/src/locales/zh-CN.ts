@@ -631,7 +631,7 @@ export default {
     belong_group: '所属分组',
     select_group: '选择分组',
     name_can_not_empty: '名称不能为空',
-    template_can_not_empty: '请选择仪表版',
+    template_can_not_empty: '请导入模版',
     custom_count: '记录数',
     table_title_fontsize: '表头字体大小',
     table_item_fontsize: '表格字体大小',

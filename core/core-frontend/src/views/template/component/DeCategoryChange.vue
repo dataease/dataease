@@ -8,7 +8,12 @@
       label-position="top"
     >
       <el-form-item :label="'选择分类'" prop="categories" style="margin-top: 16px">
-        <el-select v-model="state.templateInfo.categories" multiple style="width: 100%">
+        <el-select
+          v-model="state.templateInfo.categories"
+          placeholder="可多选"
+          multiple
+          style="width: 100%"
+        >
           <el-option
             v-for="option in templateCategories"
             :key="option.id"
@@ -30,6 +35,7 @@
 import { onMounted, reactive, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { batchUpdate } from '@/api/template'
+import { ElMessage } from 'element-plus-secondary'
 const emits = defineEmits(['closeBatchEditTemplateDialog', 'refresh'])
 const { t } = useI18n()
 const props = defineProps({
@@ -52,7 +58,7 @@ const state = reactive({
     categories: [
       {
         required: true,
-        message: t('commons.input_content'),
+        message: '请选择分类',
         trigger: 'change'
       }
     ]
@@ -72,7 +78,16 @@ const saveChange = () => {
     templateIds: props.templateIds,
     categories: state.templateInfo.categories
   }
+  if (!state.templateInfo.categories.length) {
+    ElMessage.warning('请选择分类')
+    return false
+  }
   batchUpdate(params).then(rsp => {
+    ElMessage({
+      message: '修改成功',
+      type: 'success',
+      showClose: true
+    })
     emits('refresh')
     emits('closeBatchEditTemplateDialog')
   })
