@@ -55,7 +55,7 @@ const emits = defineEmits([
   'showCurrentTemplate',
   'showTemplateEditDialog',
   'categoryDelete',
-  'templateEdit',
+  'categoryEdit',
   'templateImport'
 ])
 
@@ -86,7 +86,7 @@ const templateListComputed = computed(() => {
 const clickMore = (type, data) => {
   switch (type) {
     case 'edit':
-      templateEdit(data)
+      categoryEdit(data)
       break
     case 'delete':
       categoryDelete(data)
@@ -114,8 +114,8 @@ const categoryDelete = template => {
     emits('categoryDelete', template.id)
   })
 }
-const templateEdit = template => {
-  emits('templateEdit', template)
+const categoryEdit = template => {
+  emits('categoryEdit', template)
 }
 const templateImport = template => {
   emits('templateImport', template.id)
