@@ -217,7 +217,7 @@ init()
   display: flex;
   align-items: center;
   font-size: 14px;
-  font-family: '' 阿里巴巴普惠体 3 55 Regular L3 '';
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   font-style: normal;
   font-weight: 400;
   margin: 20px 0 8px 0;
