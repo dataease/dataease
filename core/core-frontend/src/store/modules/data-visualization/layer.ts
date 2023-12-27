@@ -1,7 +1,7 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { store } from '../../index'
 import { dvMainStoreWithOut } from './dvMain'
-import { swap } from '@/utils/utils'
+import { _$, swap } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getCurInfo } from '@/store/modules/data-visualization/common'
 
@@ -70,7 +70,15 @@ export const layerStore = defineStore('layer', {
       // 显示
       if (curComponent && curComponent.value) {
         curComponent.value.isShow = true
-        if (curComponent.value.innerType.indexOf('table') !== -1) {
+        if (curComponent.value.component == 'Group') {
+          curComponent.value.propValue.forEach(item => {
+            if (item.innerType?.indexOf('table') !== -1) {
+              setTimeout(() => {
+                useEmitt().emitter.emit('renderChart-' + item.id)
+              }, 400)
+            }
+          })
+        } else if (curComponent.value?.innerType?.indexOf('table') !== -1) {
           setTimeout(() => {
             useEmitt().emitter.emit('renderChart-' + curComponent.value.id)
           }, 400)
