@@ -367,9 +367,7 @@ export default {
         show: 0
       },
       view: {},
-      cancelTime: null,
-      // 外部查询按钮是否已经触发 用来检查画布中如果存在查询按钮 是否被首次点击过 默认true
-      searchButtonReady: true
+      cancelTime: null
     }
   },
 
@@ -424,7 +422,7 @@ export default {
     },
     filter() {
       const filter = {}
-      filter.filter = (this.initLoad && this.cfilters?.length === 0) || !this.searchButtonReady ? this.filters : this.cfilters
+      filter.filter = this.initLoad && this.cfilters?.length === 0 ? this.filters : this.cfilters
       filter.linkageFilters = this.element.linkageFilters
       filter.outerParamsFilters = this.element.outerParamsFilters
       filter.drill = this.drillClickDimensionList
@@ -544,18 +542,17 @@ export default {
     },
     // 监听外部的样式变化 （非实时性要求）
     'hw': {
-      handler(newVal, oldVla) {
-        if (newVal !== oldVla && this.$refs[this.element.propValue.id]) {
+      handler(newVal, oldVal) {
+        if (!newVal) {
+          return
+        }
+        if (this.requestStatus === 'waiting') {
+          return
+        }
+        if (newVal !== oldVal && this.$refs[this.element.propValue.id]) {
           this.resizeChart()
         }
-      },
-      deep: true
-    },
-    // 监听外部的样式变化 （非实时性要求）
-    outStyle: {
-      handler(newVal, oldVla) {
-      },
-      deep: true
+      }
     },
     // 监听外部计时器变化
     searchCount: function(val1) {
@@ -587,13 +584,7 @@ export default {
   },
   mounted() {
     bus.$on('tab-canvas-change', this.tabSwitch)
-    bus.$on('trigger-search-button', this.triggerSearchButton)
     this.bindPluginEvent()
-    this.$nextTick(() => {
-      if (this.filters && this.filters.length > 0) {
-        this.searchButtonReady = false
-      }
-    })
   },
 
   beforeDestroy() {
@@ -632,9 +623,6 @@ export default {
     }
   },
   methods: {
-    triggerSearchButton() {
-      this.searchButtonReady = true
-    },
     groupFilter(filters) {
       const result = {
         ready: [],
@@ -666,6 +654,7 @@ export default {
     equalsAny,
     tabSwitch(tabCanvasId) {
       if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
+        // do nothing
         this.$refs[this.element.propValue.id].chartResize()
       }
     },
@@ -797,9 +786,10 @@ export default {
       param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
     },
     clearPanelLinkage(param) {
+      console.log('clear linkage')
       if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
         try {
-          this.$refs[this.element.propValue.id]?.reDrawView?.()
+          // do nothing
         } catch (e) {
           console.error('reDrawView-error：', this.element.propValue.id)
         }
@@ -853,9 +843,7 @@ export default {
           this.getDataLoading = false
           this.getData(id, cache, dataBroadcast)
           clearTimeout(this.cancelTime)
-          this.cancelTime = setTimeout(() => {
-            this.requestStatus = 'waiting'
-          }, 0)
+          this.requestStatus = 'waiting'
           return
         }
         this.requestStatus = 'waiting'

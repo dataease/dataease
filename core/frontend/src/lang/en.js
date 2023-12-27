@@ -1594,7 +1594,8 @@ export default {
     gauge_axis_label: 'Axis Label',
     word_size_range: 'Word Size Range',
     word_spacing: 'Word Spacing',
-    axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one'
+    axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one',
+    needs_to_be_integer: 'Needs to be an integer'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
@@ -2785,7 +2786,7 @@ export default {
     fire_now_success: 'Task executing',
     larkgroups: 'Lark group',
     ext_wait_time: 'Additional waiting time for dashboard loading (unit: seconds)',
-    wat_time_limit: 'The additional waiting time must be between [0 - 30]'
+    wat_time_limit: 'The additional waiting time must be an integer between [0 - 30]'
   },
   dynamic_time: {
     set_default: 'Set Default',

@@ -1782,6 +1782,11 @@ export default {
         this.$message.error(this.$t('chart.max_more_than_mix'))
         return
       }
+      const reg = /^\d+$/m
+      if (!reg.test(this.sizeForm.tableRowFreezeHead) || !reg.test(this.sizeForm.tableColumnFreezeHead)) {
+        this.$message.error(this.$t('chart.table_freeze') + this.$t('chart.needs_to_be_integer'))
+        return
+      }
       this.$emit('onSizeChange', this.sizeForm)
     },
     showProperty(property) {

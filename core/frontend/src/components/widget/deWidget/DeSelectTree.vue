@@ -313,6 +313,12 @@ export default {
         this.element.options.manualModify = false
       } else {
         this.element.options.manualModify = true
+        if (!this.showRequiredTips) {
+          this.$store.commit('setLastValidFilters', {
+            componentId: this.element.id,
+            val: (this.value && Array.isArray(this.value)) ? this.value.join(',') : this.value
+          })
+        }
       }
       this.setCondition()
     },
@@ -331,6 +337,9 @@ export default {
     },
 
     setCondition() {
+      if (this.showRequiredTips) {
+        return
+      }
       const param = this.getCondition()
       !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
     },
@@ -370,7 +379,16 @@ export default {
     },
 
     fillValueDerfault() {
-      const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      let defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      if (this.inDraw) {
+        let lastFilters = null
+        if (this.$store.state.lastValidFilters) {
+          lastFilters = this.$store.state.lastValidFilters[this.element.id]
+          if (lastFilters) {
+            defaultV = lastFilters.val === null ? '' : lastFilters.val.toString()
+          }
+        }
+      }
       if (this.element.options.attrs.multiple) {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
         return defaultV.split(',')
@@ -433,7 +451,9 @@ export default {
 .test-class-wrap {
   background: var(--BgSelectTreeColor, #FFFFFF) !important;
   border-color: var(--BrSelectTreeColor, #E4E7ED) !important;
-
+  .el-tree__empty-text {
+    position: relative !important;
+  }
   .popper__arrow,
   .popper__arrow::after {
     display: none !important;
@@ -471,5 +491,6 @@ export default {
       border-left: none;
     }
   }
+  
 }
 </style>

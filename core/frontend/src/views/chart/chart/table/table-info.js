@@ -121,9 +121,7 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
       }
     }
     s2Options.colCell = (node) => {
-      if (node.colIndex === 0) {
-        node.label = ' '
-      }
+      node.label = ' '
     }
   }
 
@@ -312,9 +310,7 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
       }
     }
     s2Options.colCell = (node) => {
-      if (node.colIndex === 0) {
-        node.label = ' '
-      }
+      node.label = ' '
     }
   }
 

@@ -436,10 +436,10 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return originTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true);
+        return originTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, true);
     }
 
-    public String originTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
+    public String originTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder, boolean needResultCount) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -518,7 +518,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 .build();
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom") && needResultCount) {
             SQLObj limitFiled = SQLObj.builder().limitFiled("top " + view.getResultCount() + " ").build();
             st.add("limitFiled", limitFiled);
         }
@@ -526,16 +526,17 @@ public class SqlserverQueryProvider extends QueryProvider {
     }
 
     public String originSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
-        return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view, needOrder);
+        return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view, needOrder, true);
     }
 
     @Override
     public String getSQLWithPage(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
-        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
+        boolean isPage = (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null);
+        String limit = (isPage ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
         if (isTable) {
-            return getSQLTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            return originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
         } else {
-            return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
         }
     }
 
@@ -1477,7 +1478,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null &&  request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
+                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null && request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
                     whereValue = "(" + value.stream().map(str -> {
                         return "N" + "'" + str + "'";
                     }).collect(Collectors.joining(",")) + ")";
@@ -1499,7 +1500,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
             } else {
 
-                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null &&  request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
+                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null && request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                 } else {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value.get(0));
@@ -1765,7 +1766,7 @@ public class SqlserverQueryProvider extends QueryProvider {
     @Override
     public String getResultCount(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         if (isTable) {
-            return "SELECT COUNT(*) AS count from (" + originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + ") COUNT_TEMP";
+            return "SELECT COUNT(*) AS count from (" + originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false, true) + ") COUNT_TEMP";
         } else {
             return "SELECT COUNT(*) AS count from (" + originSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + ") COUNT_TEMP";
         }

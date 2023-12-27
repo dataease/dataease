@@ -1269,6 +1269,7 @@ export default {
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
       this.$store.commit('setComponentFromList', this.currentFilterCom)
+      this.$store.commit('delLastValidFilterWithId', this.currentFilterCom.id)
       bus.$emit('reset-default-value', this.currentFilterCom)
       this.closeFilter()
     },

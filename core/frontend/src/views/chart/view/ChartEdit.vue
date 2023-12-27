@@ -2436,6 +2436,7 @@ export default {
       }
     },
     resetChangeTable() {
+      this.view.customFilter = {}
       const compareData = {}
       this.dimensionData.forEach(deimension => {
         compareData[deimension.originName] = deimension
@@ -2443,7 +2444,7 @@ export default {
       this.quotaData.forEach(quota => {
         compareData[quota.originName] = quota
       })
-      const compareCols = ['xaxis', 'xaxisExt', 'yaxis', 'yaxisExt', 'customFilter', 'extStack', 'extBubble', 'drillFields']
+      const compareCols = ['xaxis', 'xaxisExt', 'yaxis', 'yaxisExt', 'extStack', 'extBubble', 'drillFields']
       this.viewFieldChange(compareData, compareCols)
     },
     viewFieldChange(compareData, compareCols) {

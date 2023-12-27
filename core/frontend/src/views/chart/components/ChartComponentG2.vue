@@ -127,8 +127,8 @@ export default {
       remarkCfg: {
         show: false,
         content: ''
-      }
-
+      },
+      resizeTimer: null
     }
   },
 
@@ -156,17 +156,9 @@ export default {
     chart: {
       handler(newVal, oldVla) {
         this.initTitle()
-        this.calcHeightDelay()
-        new Promise((resolve) => {
-          resolve()
-        }).then(() => {
-          this.drawView()
-        })
+        this.calcHeightRightNow(this.drawView)
       },
       deep: true
-    },
-    resize() {
-      this.drawEcharts()
     }
   },
   beforeDestroy() {
@@ -192,7 +184,7 @@ export default {
     for (const key in this.pointParam) {
       this.$delete(this.pointParam, key)
     }
-    window.removeEventListener('resize', this.calcHeightDelay)
+    window.removeEventListener('resize', this.chartResize)
     this.myChart = null
   },
   mounted() {
@@ -238,13 +230,8 @@ export default {
     },
     preDraw() {
       this.initTitle()
-      this.calcHeightDelay()
-      new Promise((resolve) => {
-        resolve()
-      }).then(() => {
-        this.drawView()
-      })
-      window.addEventListener('resize', this.calcHeightDelay)
+      this.calcHeightRightNow(this.drawView)
+      window.addEventListener('resize', this.chartResize)
     },
     async drawView() {
       const chart = JSON.parse(JSON.stringify(this.chart))
@@ -380,7 +367,10 @@ export default {
       }
     },
     chartResize() {
-      this.calcHeightDelay()
+      this.resizeTimer && clearTimeout(this.resizeTimer)
+      this.resizeTimer = setTimeout(() => {
+        this.calcHeightRightNow()
+      }, 100)
     },
     trackClick(trackAction) {
       const param = this.pointParam
@@ -470,21 +460,18 @@ export default {
       this.initRemark()
     },
 
-    calcHeightRightNow() {
+    calcHeightRightNow(callback) {
       this.$nextTick(() => {
         if (this.$refs.chartContainer) {
-          const currentHeight = this.$refs.chartContainer.offsetHeight
+          const { offsetHeight } = this.$refs.chartContainer
+          let titleHeight = 0
           if (this.$refs.title) {
-            const titleHeight = this.$refs.title.offsetHeight
-            this.chartHeight = (currentHeight - titleHeight) + 'px'
+            titleHeight = this.$refs.title.offsetHeight
           }
+          this.chartHeight = (offsetHeight - titleHeight) + 'px'
+          this.$nextTick(() => callback?.())
         }
       })
-    },
-    calcHeightDelay() {
-      setTimeout(() => {
-        this.calcHeightRightNow()
-      }, 100)
     },
     initRemark() {
       this.remarkCfg = getRemark(this.chart)

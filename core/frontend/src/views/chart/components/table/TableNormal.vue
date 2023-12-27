@@ -214,7 +214,8 @@ export default {
         top: '0px'
       },
       pointParam: null,
-      showSummary: true
+      showSummary: true,
+      resizeTimer: null
     }
   },
   computed: {
@@ -425,7 +426,8 @@ export default {
       })
     },
     calcHeightDelay() {
-      setTimeout(() => {
+      this.resizeTimer && clearTimeout(this.resizeTimer)
+      this.resizeTimer = setTimeout(() => {
         this.calcHeightRightNow()
       }, 100)
     },
@@ -478,16 +480,6 @@ export default {
           }
         }
         this.table_item_class_stripe = JSON.parse(JSON.stringify(this.table_item_class))
-        // 暂不支持斑马纹
-        // if (customAttr.color.tableStripe) {
-        //   // this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemBgColor, customAttr.color.alpha - 40)
-        //   if (this.chart.customStyle) {
-        //     const customStyle = JSON.parse(this.chart.customStyle)
-        //     if (customStyle.background) {
-        //       this.table_item_class_stripe.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
-        //     }
-        //   }
-        // }
         if (customAttr.color.enableTableCrossBG) {
           this.table_item_class_stripe.background = hexColorToRGBA(customAttr.color.tableItemSubBgColor, customAttr.color.alpha)
         }
@@ -607,12 +599,6 @@ export default {
       const scrollContainer = document.getElementsByClassName(this.chart.id)[0].getElementsByClassName('elx-table--body-wrapper')[0]
 
       this.scrollTop = 0
-      setTimeout(() => {
-        scrollContainer.scrollTo({
-          top: this.scrollTop,
-          behavior: this.scrollTop === 0 ? 'instant' : 'smooth'
-        })
-      }, 0)
 
       if (senior && senior.scrollCfg && senior.scrollCfg.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
         let rowHeight = customAttr.size.tableItemHeight
@@ -631,10 +617,15 @@ export default {
             top = rowHeight * senior.scrollCfg.row
           }
 
-          if (scrollContainer.clientHeight + scrollContainer.scrollTop < scrollContainer.scrollHeight) {
+          const { clientHeight, scrollTop, scrollHeight } = scrollContainer
+
+          if (clientHeight + scrollTop < scrollHeight) {
             this.scrollTop += top
           } else {
             this.scrollTop = 0
+          }
+          if (!clientHeight) {
+            return
           }
           scrollContainer.scrollTo({
             top: this.scrollTop,

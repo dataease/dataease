@@ -183,8 +183,13 @@ public class PgQueryProvider extends QueryProvider {
         String whereTrees = transFilterTrees(tableObj, rowPermissionsTree);
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
-        if (StringUtils.isNotBlank(keyword)) {
-            String keyWhere = "(" + transKeywordFilterList(tableObj, xFields, keyword) + ")";
+        if (StringUtils.isNotBlank(keyword) && CollectionUtils.isNotEmpty(xFields)) {
+            List<SQLObj> formatFields = xFields.stream().peek(f -> {
+                String fieldOriginName = f.getFieldOriginName();
+                String format = String.format(PgConstants.CAST, fieldOriginName, "VARCHAR");
+                f.setFieldOriginName(format);
+            }).collect(Collectors.toList());
+            String keyWhere = "(" + transKeywordFilterList(tableObj, formatFields, keyword) + ")";
             wheres.add(keyWhere);
         }
         if (whereTrees != null) wheres.add(whereTrees);

@@ -91,6 +91,7 @@ public class DirectFieldService implements DataSetFieldService {
 
         return CollectionUtil.sort(list, (v1, v2) -> {
             Collator instance = Collator.getInstance(Locale.CHINESE);
+            if (ObjectUtils.isEmpty(v1) || ObjectUtils.isEmpty(v2)) return 0;
             if (StringUtils.equals("desc", sortStr)) {
                 return instance.compare(v2, v1);
             }

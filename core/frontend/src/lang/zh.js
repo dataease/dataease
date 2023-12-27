@@ -1586,7 +1586,8 @@ export default {
     gauge_axis_label: '刻度标签',
     word_size_range: '字号区间',
     word_spacing: '文字间隔',
-    axis_multi_select_tip: '按住 Ctrl/Cmd 键或者 Shift 键再点击可多选'
+    axis_multi_select_tip: '按住 Ctrl/Cmd 键或者 Shift 键再点击可多选',
+    needs_to_be_integer: '需要为整数'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
@@ -2780,7 +2781,7 @@ export default {
     fire_now_success: '任务发起成功',
     larkgroups: '飞书群',
     ext_wait_time: '加载仪表板额外等待时间(单位:秒)',
-    wat_time_limit: '额外等待时间必须在[0 - 30]'
+    wat_time_limit: '额外等待时间必须是[0 - 30]之间整数'
   },
   dynamic_time: {
     set_default: '设置默认值',
