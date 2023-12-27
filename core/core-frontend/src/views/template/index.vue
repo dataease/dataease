@@ -392,8 +392,8 @@ const categoryDelete = id => {
         })
         getTree()
       } else {
-        ElMessageBox.confirm('无法删除分类？', {
-          tip: '请移除该分类下所有模版再进行删除分类操作',
+        ElMessageBox.confirm('无法删除分类', {
+          tip: '请先移除该分类下所有模版再进行删除分类操作',
           confirmButtonText: '知道了',
           confirmButtonType: 'default',
           showCancelButton: false,
@@ -411,6 +411,7 @@ const templateDeleteInfo = id => {
       tip: '',
       confirmButtonType: 'danger',
       type: 'warning',
+      confirmButtonText: t('common.delete'),
       autofocus: false,
       showClose: false
     }).then(() => {
@@ -466,6 +467,11 @@ const saveTemplateEdit = templateEditForm => {
     if (valid) {
       save({ ...templateEditForm }).then(response => {
         state.currentTemplateLabel = templateEditForm.name
+        ElMessage({
+          message: '添加成功',
+          type: 'success',
+          showClose: true
+        })
         getTree()
         close()
       })
@@ -521,6 +527,7 @@ const closeEditTemplateDialog = () => {
 
 const templateImport = pid => {
   state.templateDialog.visible = true
+  state.templateDialog.title = '导入模版'
   state.templateDialog.templateId = null
   state.templateDialog.optType = 'insert'
   state.templateDialog.pid = pid
