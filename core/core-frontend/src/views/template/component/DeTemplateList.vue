@@ -105,8 +105,9 @@ const add = () => {
 }
 const categoryDelete = template => {
   ElMessageBox.confirm('确定删除该分类吗？', {
-    tip: '',
+    tip: '删除后不可恢复，是否继续？',
     confirmButtonType: 'danger',
+    confirmButtonText: t('common.delete'),
     type: 'warning',
     autofocus: false,
     showClose: false

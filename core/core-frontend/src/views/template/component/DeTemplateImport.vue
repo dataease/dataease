@@ -9,10 +9,10 @@
     >
       <el-form-item :label="'模板名称'" prop="name">
         <div class="flex-template">
-          <el-input v-model="state.templateInfo.name" clearable />
-          <el-button style="margin-left: 10px" class="el-icon-upload2" secondary @click="goFile">{{
-            t('visualization.upload_template')
-          }}</el-button>
+          <el-input v-model="state.templateInfo.name" placeholder="请输入模版名称" clearable />
+          <el-button style="margin-left: 10px" icon="Upload" secondary @click="goFile"
+            >导入模版</el-button
+          >
           <input
             id="input"
             ref="filesRef"
@@ -25,13 +25,22 @@
       </el-form-item>
       <el-row v-show="!!state.templateInfo.snapshot" class="preview" :style="classBackground" />
       <el-form-item :label="'选择分类'" prop="categories" style="margin-top: 16px">
-        <el-select v-model="state.templateInfo.categories" multiple style="width: 100%">
+        <el-select
+          v-model="state.templateInfo.categories"
+          multiple
+          placeholder="可多选"
+          style="width: 100%"
+          :popper-class="templateCategories.length ? '' : 'custom-category-empty'"
+        >
           <el-option
             v-for="option in templateCategories"
             :key="option.id"
             :label="option.name"
             :value="option.id"
           />
+          <div class="custom-dropdown__empty">
+            <span>暂无可选分类</span>
+          </div>
           <div class="custom-option-line"></div>
           <div>
             <el-button
@@ -187,7 +196,7 @@ const importTemplate = () => {
   }
   categoryTemplateNameCheck(nameCheckRequest).then(response => {
     if (response.data.indexOf('exist') > -1) {
-      ElMessageBox.confirm('提示？', {
+      ElMessageBox.confirm('提示', {
         tip: '当前分类存在相同模版名称，是否覆盖？',
         confirmButtonType: 'danger',
         type: 'warning',
@@ -300,5 +309,26 @@ if (props.templateId) {
   margin: 4px;
   height: 1px;
   background-color: rgba(31, 35, 41, 0.15);
+}
+
+.custom-category-empty {
+  .ed-scrollbar {
+    display: inherit !important;
+  }
+
+  .custom-dropdown__empty {
+    display: inherit !important;
+  }
+
+  .ed-select-dropdown__empty {
+    display: none !important;
+  }
+}
+
+.custom-dropdown__empty {
+  display: none;
+  margin-left: 12px;
+  font-size: 14px;
+  color: rgba(143, 149, 158, 1);
 }
 </style>
