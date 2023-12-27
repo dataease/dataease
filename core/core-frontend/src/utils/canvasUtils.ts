@@ -141,8 +141,14 @@ export function canvasSave(callBack) {
     if (item.component === 'UserView') {
       item.linkageFilters = []
     } else if (item.component === 'Group') {
+      const groupStyle = item.style
       item.propValue.forEach(groupItem => {
         groupItem.linkageFilters = []
+        // 计算groupStyle
+        groupItem.groupStyle.left = groupItem.style.left / groupStyle.width
+        groupItem.groupStyle.top = groupItem.style.top / groupStyle.height
+        groupItem.groupStyle.width = groupItem.style.width / groupStyle.width
+        groupItem.groupStyle.height = groupItem.style.height / groupStyle.height
       })
     } else if (item.component === 'DeTabs') {
       item.propValue.forEach(tabItem => {
