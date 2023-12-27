@@ -17,9 +17,6 @@
         :class="[{ select: state.activeTemplate === ele.id }]"
         @click="nodeClick(ele)"
       >
-        <el-icon class="de-icon-sense">
-          <Icon name="scene" />
-        </el-icon>
         <span class="text-template-overflow" :title="ele.name">{{ ele.name }}</span>
         <span class="more" @click.stop>
           <el-dropdown trigger="click" size="small" @command="type => clickMore(type, ele)">
