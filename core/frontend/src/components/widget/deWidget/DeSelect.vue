@@ -267,17 +267,21 @@ export default {
 
   mounted() {
     bus.$on('onScroll', this.onScroll)
+    bus.$on('select-pop-change', this.popChange)
     if (this.inDraw) {
       bus.$on('reset-default-value', this.resetDefaultValue)
     }
   },
   beforeDestroy() {
+    bus.$off('select-pop-change', this.popChange)
     bus.$off('onScroll', this.onScroll)
     bus.$off('reset-default-value', this.resetDefaultValue)
   },
   methods: {
-    selectOnScroll() {
-      this.onScroll()
+    popChange(id) {
+      if (id !== this.element.id) {
+        this.onScroll()
+      }
     },
     clearDefault(optionList) {
       const emptyOption = !optionList?.length
