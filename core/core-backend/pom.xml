@@ -137,18 +137,7 @@
                             </execution>
                         </executions>
                     </plugin>
-
                 </plugins>
-
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <filtering>true</filtering>
-                        <includes>
-                            <include>static/**</include>
-                        </includes>
-                    </resource>
-                </resources>
             </build>
         </profile>
 
@@ -207,15 +196,6 @@
                         </executions>
                     </plugin>
                 </plugins>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <filtering>true</filtering>
-                        <includes>
-                            <include>static/**</include>
-                        </includes>
-                    </resource>
-                </resources>
             </build>
         </profile>
         <!-- 分布式版(企业版) -->
