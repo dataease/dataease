@@ -371,9 +371,7 @@ const areaDataPush = component => {
   }
 }
 const handleDbClick = e => {
-  console.log('111=0' + element.value.canvasId)
   if (element.value.canvasId !== 'canvas-main') {
-    console.log('111=1' + canvasActive.value)
     dvMainStore.setCurComponent({ component: element.value, index: index.value })
   }
 }

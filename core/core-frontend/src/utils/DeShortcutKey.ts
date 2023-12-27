@@ -125,7 +125,6 @@ export function listenGlobalKeyDown() {
         lockMap[keyCode]()
       }
     }
-    console.log('1111=isCtrlOrCommandDown' + isCtrlOrCommandDown + ';isShiftDown=' + isShiftDown)
   }
 
   window.onkeyup = e => {

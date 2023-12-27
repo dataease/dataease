@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
-import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
+import GroupPreview from '@/custom-component/group/GroupPreview.vue'
 
 const props = defineProps({
   canvasStyleData: {
@@ -63,16 +63,15 @@ const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, 
     :canvas-id="canvasId"
     :canvas-active="element['canvasActive']"
   ></canvas-core>
-  <de-preview
+  <group-preview
     v-else
     :ref="'dashboardPreview'"
     :dv-info="dvInfo"
-    :component-data="componentData"
-    :canvas-style-data="canvasStyleData"
-    :canvas-view-info="canvasViewInfo"
-    :canvas-id="canvasId"
+    :element="element"
+    :search-count="searchCount"
+    :prop-value="element.propValue"
     :show-position="showPosition"
-  ></de-preview>
+  ></group-preview>
 </template>
 
 <style lang="less" scoped></style>
