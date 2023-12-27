@@ -529,6 +529,7 @@ const handleMouseDownOnShape = e => {
       eventBus.emit('onTabMoveOut-' + tabMoveOutComponentId.value, deepCopy(element.value))
       dvMainStore.setTabMoveOutComponentId(null)
     }
+    handleGroupComponent()
   }
 
   document.addEventListener('mousemove', move)
@@ -648,6 +649,7 @@ const handleMouseDownOnPoint = (point, e) => {
     document.removeEventListener('mousemove', move)
     document.removeEventListener('mouseup', up)
     needSave && snapshotStore.recordSnapshotCache('shape-handleMouseDownOnPoint-up')
+    handleGroupComponent()
   }
 
   document.addEventListener('mousemove', move)
@@ -845,6 +847,12 @@ const htmlToImage = () => {
   setTimeout(() => {
     downloadCanvas('img', componentInnerRef.value, '图表')
   }, 200)
+}
+
+const handleGroupComponent = () => {
+  if (element.value.canvasId.includes('Group')) {
+    composeStore.updateGroupBorder()
+  }
 }
 
 onMounted(() => {
