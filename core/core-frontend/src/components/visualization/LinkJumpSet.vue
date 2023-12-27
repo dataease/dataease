@@ -859,7 +859,7 @@ defineExpose({
 
   color: var(--neutral-900, #1f2329);
   /* 中文/桌面端/正文 14 22 Regular */
-  font-family: AlibabaPuHuiTi;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   font-size: 14px;
   font-style: normal;
   font-weight: 400;

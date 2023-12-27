@@ -407,7 +407,7 @@ onMounted(() => {
     text-align: center;
     margin-top: 8px;
     color: #646a73;
-    font-family: AlibabaPuHuiTi;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -445,7 +445,7 @@ onMounted(() => {
 
   :deep(.ed-divider__text) {
     color: #8f959e;
-    font-family: AlibabaPuHuiTi;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 12px;
     font-style: normal;
     font-weight: 400;

@@ -36,7 +36,7 @@ const { t } = useI18n()
 
 <style lang="less" scoped>
 .info-card {
-  font-family: 'AlibabaPuHuiTi';
+  font-family: '' 阿里巴巴普惠体 3 55 Regular L3 '';
   font-style: normal;
   padding-left: 4px;
   font-weight: 400;
