@@ -52,6 +52,9 @@ export const composeStore = defineStore('compose', {
     setAreaData(data) {
       this.areaData = data
     },
+    updateGroupBorder() {
+      // do updateGroupBorder
+    },
 
     compose: function (canvasId = 'canvas-main') {
       const editor = this.editorMap[canvasId]
