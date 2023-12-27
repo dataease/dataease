@@ -302,6 +302,9 @@ public class ExcelUtils {
             sdf.parse(value);
             return "DATETIME";
         } catch (Exception e1) {
+            if(value.length()> 19){
+                return "TEXT";
+            }
             try {
                 Double d = Double.valueOf(value);
                 double eps = 1e-10;
@@ -413,15 +416,15 @@ public class ExcelUtils {
                 }
                 List<String[]> data = new ArrayList<>(noModelDataListener.getData());
                 if (isPreview) {
-                    if (data.size() > 100) {
-                        data = data.subList(0, 100);
-                    }
                     for (int i = 0; i < data.size(); i++) {
                         for (int j = 0; j < data.get(i).length; j++) {
                             if (j < fields.size()) {
                                 cellType(data.get(i)[j], i, fields.get(j));
                             }
                         }
+                    }
+                    if (data.size() > 100) {
+                        data = data.subList(0, 100);
                     }
                 }
 
@@ -468,6 +471,9 @@ public class ExcelUtils {
                             cellType(data.get(i)[j], i, fields.get(j));
                         }
                     }
+                }
+                if (data.size() > 100) {
+                    data = data.subList(0, 100);
                 }
             }
             for (int i = 0; i < fields.size(); i++) {

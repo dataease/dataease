@@ -257,6 +257,9 @@ const saveDataset = () => {
       if (cmd.value === 'move' && !checkPid(params.pid)) {
         return
       }
+      if (loading.value) {
+        return
+      }
       loading.value = true
       if (request) {
         let options = {
@@ -432,7 +435,7 @@ const emits = defineEmits(['finish', 'handleShowFinishPage'])
       margin-bottom: 8px;
     }
     span {
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;

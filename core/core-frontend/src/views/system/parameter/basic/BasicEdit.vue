@@ -44,6 +44,20 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate(valid => {
     if (valid) {
+      if (
+        state.form.dsExecuteTime === 'minute' &&
+        (Number(state.form.dsIntervalTime) < 1 || Number(state.form.dsIntervalTime) > 59)
+      ) {
+        ElMessage.error('分钟超出范围【1-59】')
+        return
+      }
+      if (
+        state.form.dsExecuteTime === 'hour' &&
+        (Number(state.form.dsIntervalTime) < 1 || Number(state.form.dsIntervalTime) > 23)
+      ) {
+        ElMessage.error('小时超出范围【1-23】')
+        return
+      }
       const param = buildSettingList()
       if (param.length < 2) {
         return
@@ -153,34 +167,6 @@ defineExpose({
         </div>
         <div v-else />
       </el-form-item>
-      <!-- <el-form-item label="禁止扫码创建用户" prop="autoCreateUser">
-        <el-switch v-model="state.form.autoCreateUser" />
-      </el-form-item> -->
-
-      <!-- <el-form-item label="数据源检测时间间隔" prop="dsIntervalTime">
-        <div class="ds-task-form-inline">
-          <span>每</span>
-          <el-input-number
-            v-model="state.form.dsIntervalTime"
-            autocomplete="off"
-            step-strictly
-            class="text-left"
-            :min="1"
-            :placeholder="t('common.inputText')"
-            controls-position="right"
-            type="number"
-          />
-          <el-select v-model="state.form.dsExecuteTime">
-            <el-option
-              v-for="item in options"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
-            />
-          </el-select>
-          <span class="ds-span">执行一次</span>
-        </div>
-      </el-form-item> -->
     </el-form>
     <template #footer>
       <span class="dialog-footer">

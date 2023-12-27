@@ -171,11 +171,11 @@ const update = (licKey: string) => {
       </div>
       <div class="item">
         <div class="label">{{ $t('about.serial_no') }}</div>
-        <div class="value">{{ license.serialNo }}</div>
+        <div class="value">{{ license.serialNo || '-' }}</div>
       </div>
       <div class="item">
         <div class="label">{{ $t('about.remark') }}</div>
-        <div class="value ellipsis">{{ license.remark }}</div>
+        <div class="value ellipsis">{{ license.remark || '-' }}</div>
       </div>
 
       <div v-if="isAdmin" style="margin-top: 24px" class="lic_rooter">
@@ -220,7 +220,7 @@ const update = (licKey: string) => {
     margin-top: -7px;
 
     .item {
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 16px;
       font-style: normal;
       font-weight: 400;

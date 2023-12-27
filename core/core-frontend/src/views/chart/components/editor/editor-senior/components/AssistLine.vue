@@ -318,7 +318,7 @@ span {
 }
 
 .label-dark {
-  font-family: PingFang SC;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   font-style: normal;
   font-weight: 400;
   line-height: 20px;

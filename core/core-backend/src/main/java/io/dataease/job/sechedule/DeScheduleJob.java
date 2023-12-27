@@ -18,7 +18,7 @@ public abstract class DeScheduleJob implements Job {
         this.expression = jobDataMap.getString("expression");
         this.taskId = jobDataMap.getLong("taskId");
         this.updateType = jobDataMap.getString("updateType");
-        LogUtil.info(jobKey.getGroup() + " Running: " + datasetTableId);
+        LogUtil.info(jobKey.getName() + " Running: " + datasetTableId);
         LogUtil.info("CronExpression: " + expression);
         businessExecute(context);
     }

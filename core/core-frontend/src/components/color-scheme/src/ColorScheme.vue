@@ -187,7 +187,7 @@ const resetCustomColor = () => {
   .custom-title {
     justify-content: space-between;
     color: #646a73;
-    font-family: PingFang SC;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 12px;
     font-style: normal;
     font-weight: 400;

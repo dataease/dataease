@@ -15,6 +15,7 @@ export interface Field {
   extField: number
   checked: boolean
   fieldShortName: string
+  desensitized: boolean
 }
 
 export interface ComponentInfo {

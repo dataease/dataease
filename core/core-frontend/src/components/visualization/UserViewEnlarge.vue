@@ -103,10 +103,6 @@ const downloadViewDetails = () => {
   const chart = { ...viewInfo.value, chartExtRequest, data: viewDataInfo }
   exportExcelDownload(chart)
 }
-//
-// const htmlToImage = () => {
-//   downloadCanvas('img', viewContainer.value, viewInfo.value.title)
-// }
 
 const htmlToImage = () => {
   toPng(viewContainer.value)

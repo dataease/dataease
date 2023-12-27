@@ -1,6 +1,9 @@
 package io.dataease.dataset.manage;
 
+import cn.hutool.core.collection.CollUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.chart.dto.ColumnPermissionItem;
+import io.dataease.auth.bo.TokenUserBO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
@@ -9,6 +12,7 @@ import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
@@ -18,9 +22,7 @@ import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.LinkedHashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 /**
@@ -186,6 +188,20 @@ public class DatasetTableFieldManage {
         map.put("quotaList", quotaList);
         return map;
     }
+
+    public List<DatasetTableFieldDTO> listFieldsWithPermissions(Long id) {
+        List<DatasetTableFieldDTO> fields = selectByDatasetGroupId(id);
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        Long userId = AuthUtils.getUser() == null ? null : AuthUtils.getUser().getUserId();
+        List<DatasetTableFieldDTO> tmp = permissionManage
+                .filterColumnPermissions(fields, desensitizationList, id, userId)
+                .stream()
+                .sorted(Comparator.comparing(DatasetTableFieldDTO::getGroupType))
+                .toList();
+        tmp.forEach(ele -> ele.setDesensitized(desensitizationList.containsKey(ele.getDataeaseName())));
+        return tmp;
+    }
+
 
     public List<DatasetTableFieldDTO> transDTO(List<CoreDatasetTableField> list) {
         return list.stream().map(ele -> {

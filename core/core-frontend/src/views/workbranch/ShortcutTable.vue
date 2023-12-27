@@ -251,7 +251,9 @@ const getEmptyDesc = (): string => {
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
           <template v-slot:default="scope">
             <div class="name-content">
-              <el-icon class="main-color"> <Icon :name="iconMap[scope.row.type]" /> </el-icon>
+              <el-icon :class="`main-color color-${scope.row.type}`">
+                <Icon :name="iconMap[scope.row.type]" />
+              </el-icon>
               <el-tooltip placement="top">
                 <template #content>{{ scope.row.name }}</template>
                 <span class="ellipsis" style="max-width: 250px">{{ scope.row.name }}</span>
@@ -272,7 +274,7 @@ const getEmptyDesc = (): string => {
         <el-table-column
           v-for="item in state.tableColumn"
           :key="item.label"
-          prop="name"
+          :prop="item.field"
           show-overflow-tooltip
           :sortable="item.type === 'time'"
           :label="item.label"
@@ -342,6 +344,10 @@ const getEmptyDesc = (): string => {
 
   .select-type-list {
     width: 104px;
+    :deep(.ed-input__wrapper) {
+      padding-left: 11px;
+      padding-right: 11px;
+    }
   }
 
   &.expand {
@@ -387,12 +393,11 @@ const getEmptyDesc = (): string => {
       }
     }
     .main-color {
-      font-size: 21.33px;
-      padding: 5.33px;
+      font-size: 18px;
+      padding: 3px;
       margin-right: 12px;
       border-radius: 4px;
       color: #fff;
-      background: #3370ff;
     }
     .name-star {
       font-size: 15px;
@@ -406,5 +411,11 @@ const getEmptyDesc = (): string => {
     margin-top: 0px;
     line-height: 20px !important;
   }
+}
+</style>
+<style lang="less">
+.menu-panel-select_popper {
+  width: 140px;
+  background: #fff;
 }
 </style>

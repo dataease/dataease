@@ -498,4 +498,26 @@ public class DatasetGroupManage {
             geFullName(parent.getPid(), fullName);
         }
     }
+
+    public List<DatasetTableDTO> getDetailWithPerm(List<Long> ids) {
+        var result = new ArrayList<DatasetTableDTO>();
+        if (CollectionUtil.isNotEmpty(ids)) {
+            var dsList = coreDatasetGroupMapper.selectBatchIds(ids);
+            if (CollectionUtil.isNotEmpty(dsList)) {
+                dsList.forEach(ds -> {
+                    DatasetTableDTO dto = new DatasetTableDTO();
+                    BeanUtils.copyBean(dto, ds);
+                    var fields  = datasetTableFieldManage.listFieldsWithPermissions(ds.getId());
+                    List<DatasetTableFieldDTO> dimensionList = fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).toList();
+                    List<DatasetTableFieldDTO> quotaList = fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).toList();
+                    Map<String, List<DatasetTableFieldDTO>> map = new LinkedHashMap<>();
+                    map.put("dimensionList", dimensionList);
+                    map.put("quotaList", quotaList);
+                    dto.setFields(map);
+                    result.add(dto);
+                });
+            }
+        }
+        return result;
+    }
 }

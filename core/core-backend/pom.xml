@@ -124,11 +124,11 @@
                                 <phase>generate-resources</phase>
                                 <configuration>
                                     <target>
-                                        <move todir="src/main/resources/static">
+                                        <copy todir="src/main/resources/static">
                                             <fileset dir="../core-frontend/dist">
                                                 <include name="**"/>
                                             </fileset>
-                                        </move>
+                                        </copy>
                                     </target>
                                 </configuration>
                                 <goals>
@@ -137,18 +137,7 @@
                             </execution>
                         </executions>
                     </plugin>
-
                 </plugins>
-
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <filtering>true</filtering>
-                        <includes>
-                            <include>static/**</include>
-                        </includes>
-                    </resource>
-                </resources>
             </build>
         </profile>
 
@@ -207,25 +196,16 @@
                         </executions>
                     </plugin>
                 </plugins>
-                <resources>
-                    <resource>
-                        <directory>src/main/resources</directory>
-                        <filtering>true</filtering>
-                        <includes>
-                            <include>static/**</include>
-                        </includes>
-                    </resource>
-                </resources>
             </build>
         </profile>
-        <!-- 分布式版(企业版/saas版) -->
+        <!-- 分布式版(企业版) -->
         <profile>
             <id>distributed</id>
             <properties>
                 <profiles.active>distributed</profiles.active>
             </properties>
             <dependencies>
-                <!-- 分布式版(企业版/saas版) 引入分布式组件 -->
+                <!-- 分布式版(企业版) 引入分布式组件 -->
                 <dependency>
                     <groupId>io.dataease</groupId>
                     <artifactId>distributed</artifactId>
@@ -239,7 +219,7 @@
                         <artifactId>maven-compiler-plugin</artifactId>
                         <configuration>
                             <excludes>
-                                <!-- 分布式版(企业版/saas版) 需要排除权限替补实现 否则就会出现多个权限实现 报错 -->
+                                <!-- 分布式版(企业版) 需要排除权限替补实现 否则就会出现多个权限实现 报错 -->
                                 <exclude>io/dataease/substitute/**</exclude>
                             </excludes>
                         </configuration>
@@ -262,16 +242,30 @@
                     <include>**/*.sql</include>
                     <include>**/*.xlsx</include>
                 </includes>
+                <excludes>
+                    <exclude>static/**/*.*</exclude>
+                </excludes>
+            </resource>
+            <resource>
+                <directory>src/main/resources</directory>
+                <filtering>false</filtering>
+                <includes>
+                    <include>static/**/*.*</include>
+                </includes>
             </resource>
         </resources>
         <!-- springboot打包插件 -->
         <plugins>
             <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-surefire-plugin</artifactId>
+                <configuration>
+                    <skip>true</skip>
+                </configuration>
+            </plugin>
+            <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
-                <!--<configuration>
-                    <mainClass>io.dataease.CoreApplication</mainClass>
-                </configuration>-->
                 <executions>
                     <execution>
                         <goals>

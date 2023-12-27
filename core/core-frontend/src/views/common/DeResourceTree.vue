@@ -374,7 +374,7 @@ defineExpose({
               <template #dropdown>
                 <el-dropdown-menu>
                   <el-dropdown-item @click="addOperation('newLeaf', null, 'leaf', true)">
-                    <el-icon class="handle-icon">
+                    <el-icon :class="`handle-icon color-${curCanvasType}`">
                       <Icon :name="dvSvgType"></Icon>
                     </el-icon>
                     空白新建
@@ -427,7 +427,7 @@ defineExpose({
             <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
               <Icon name="dv-dashboard-spine"></Icon>
             </el-icon>
-            <el-icon class="icon-screen-new" style="font-size: 18px" v-else>
+            <el-icon class="icon-screen-new color-dataV" style="font-size: 18px" v-else>
               <Icon name="icon_operation-analysis_outlined"></Icon>
             </el-icon>
             <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
@@ -579,7 +579,6 @@ defineExpose({
   }
 
   .icon-screen-new {
-    background: #3370ff;
     border-radius: 4px;
     color: #fff;
     padding: 3px;

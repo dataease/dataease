@@ -14,10 +14,10 @@
         {{ template.title }}
       </el-row>
       <el-row class="template-button">
-        <el-button size="mini" style="width: 100px" @click="templateInnerPreview">{{
+        <el-button size="mini" style="width: calc(50% - 18px)" @click="templateInnerPreview">{{
           t('visualization.preview')
         }}</el-button>
-        <el-button size="mini" style="width: 100px" type="primary" @click="apply">{{
+        <el-button size="mini" style="width: calc(50% - 18px)" type="primary" @click="apply">{{
           t('visualization.apply')
         }}</el-button>
       </el-row>

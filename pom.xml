@@ -23,8 +23,8 @@
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
-        <h2.version>1.4.199</h2.version>
-        <knife4j.version>4.1.0</knife4j.version>
+        <h2.version>2.2.220</h2.version>
+        <knife4j.version>4.4.0</knife4j.version>
         <calcite-core.version>1.35.1</calcite-core.version>
         <commons-dbcp2.version>2.6.0</commons-dbcp2.version>
         <antlr.version>3.5.2</antlr.version>
@@ -33,11 +33,13 @@
         <maven.antrun.version>3.1.0</maven.antrun.version>
         <hutool.version>5.8.16</hutool.version>
         <ehcache.version>3.10.8</ehcache.version>
-        <bcprov.version>1.72</bcprov.version>
+        <bcprov.version>1.74</bcprov.version>
         <junit.version>4.13.2</junit.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
         <easyexcel.version>3.3.2</easyexcel.version>
+        <maven.surefire.version>3.1.2</maven.surefire.version>
+        <maven.clean.version>3.2.0</maven.clean.version>
     </properties>
 
     <dependencyManagement>
@@ -151,6 +153,16 @@
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-antrun-plugin</artifactId>
                     <version>${maven.antrun.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-surefire-plugin</artifactId>
+                    <version>${maven.surefire.version}</version>
+                </plugin>
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-clean-plugin</artifactId>
+                    <version>${maven.clean.version}</version>
                 </plugin>
             </plugins>
         </pluginManagement>

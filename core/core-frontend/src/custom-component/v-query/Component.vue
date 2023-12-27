@@ -1,8 +1,10 @@
 <script lang="ts" setup>
 import eventBus from '@/utils/eventBus'
+import { ElMessage } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import QueryConditionConfiguration from './QueryConditionConfiguration.vue'
 import type { ComponentInfo } from '@/api/chart'
+import { infoFormat } from './options'
 import {
   onBeforeUnmount,
   reactive,
@@ -15,7 +17,6 @@ import {
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
-import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { comInfo } from './com-info'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -191,48 +192,6 @@ const dragover = () => {
   // do
 }
 
-const infoFormat = (obj: ComponentInfo) => {
-  const { id, name, deType, type, datasetId } = obj
-  return {
-    id: guid(),
-    name,
-    showError: true,
-    timeGranularity: 'date',
-    timeGranularityMultiple: 'datetimerange',
-    field: {
-      id,
-      type,
-      name,
-      deType
-    },
-    timeType: 'fixed',
-    relativeToCurrent: 'custom',
-    timeNum: 0,
-    relativeToCurrentType: 'year',
-    around: 'f',
-    arbitraryTime: new Date(),
-    auto: false,
-    defaultValue: undefined,
-    selectValue: undefined,
-    optionValueSource: 0,
-    valueSource: [],
-    dataset: {
-      id: datasetId,
-      name: '',
-      fields: []
-    },
-    visible: true,
-    defaultValueCheck: false,
-    multiple: false,
-    displayType: '0',
-    checkedFields: [],
-    parameters: [],
-    parametersCheck: false,
-    parametersList: [],
-    checkedFieldsMap: {}
-  }
-}
-
 const drop = e => {
   const componentInfo: ComponentInfo = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
   if (!componentInfo.id) return
@@ -260,34 +219,9 @@ const editeQueryConfig = (queryId: string) => {
   queryConfig.value.setCondition(queryId)
 }
 
-const addQueryCriteria = () => {
-  const componentInfo: ComponentInfo = {
-    id: '',
-    name: '未命名',
-    deType: 0,
-    type: 'VARCHAR',
-    datasetId: ''
-  }
-  list.value.push(infoFormat(componentInfo))
-  element.value.propValue = [...list.value]
-  snapshotStore.recordSnapshotCache()
-  editeQueryConfig(list.value[list.value.length - 1].id)
-}
-
-const addQueryCriteriaConfig = () => {
-  const componentInfo: ComponentInfo = {
-    id: '',
-    name: '未命名',
-    deType: 0,
-    type: 'VARCHAR',
-    datasetId: ''
-  }
-  return infoFormat(componentInfo)
-}
-
 const editQueryCriteria = () => {
   if (!list.value.length) {
-    addQueryCriteria()
+    addCriteriaConfigOut()
     return
   }
   editeQueryConfig(list.value[0].id)
@@ -333,12 +267,21 @@ const listVisible = computed(() => {
   return list.value.filter(itx => itx.visible)
 })
 
-const addCriteriaConfig = () => {
-  queryConfig.value.setConditionInit(queryConfig.value.addCriteriaConfig())
-}
-
 const queryData = () => {
+  let requiredName = ''
   const emitterList = (element.value.propValue || []).reduce((pre, next) => {
+    if (next.required) {
+      if (!next.defaultValueCheck) {
+        requiredName = next.name
+      }
+
+      if (
+        (Array.isArray(next.selectValue) && !next.selectValue.length) ||
+        (next.selectValue !== 0 && !next.selectValue)
+      ) {
+        requiredName = next.name
+      }
+    }
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
@@ -346,6 +289,10 @@ const queryData = () => {
     pre = [...new Set([...keyList, ...pre])]
     return pre
   }, [])
+  if (!!requiredName) {
+    ElMessage.error(`【${requiredName}】查询条件是必填项，请设置选项值后，再进行查询！`)
+    return
+  }
   if (!emitterList.length) return
 
   emitterList.forEach(ele => {
@@ -390,7 +337,7 @@ const opacityStyle = computed(() => {
       <div v-if="!listVisible.length" class="no-list-label flex-align-center">
         <div class="container flex-align-center">
           将右侧的字段拖拽到这里 或 点击
-          <el-button :disabled="showPosition === 'preview'" @click="addCriteriaConfig" text>
+          <el-button :disabled="showPosition === 'preview'" @click="addCriteriaConfigOut" text>
             添加查询条件
           </el-button>
         </div>
@@ -404,6 +351,7 @@ const opacityStyle = computed(() => {
                   <el-tooltip effect="dark" :content="ele.name" placement="top">
                     {{ ele.name }}
                   </el-tooltip>
+                  <span v-if="ele.required" class="required">*</span>
                 </div>
               </div>
               <div class="label-wrapper-tooltip" v-if="showPosition !== 'preview'">
@@ -445,7 +393,6 @@ const opacityStyle = computed(() => {
   </div>
   <Teleport to="body">
     <QueryConditionConfiguration
-      :add-query-criteria-config="addQueryCriteriaConfig"
       :query-element="element"
       ref="queryConfig"
     ></QueryConditionConfiguration>
@@ -471,7 +418,7 @@ const opacityStyle = computed(() => {
       justify-content: center;
       color: #646a73;
       text-align: center;
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 16px;
       font-style: normal;
       font-weight: 400;
@@ -487,7 +434,7 @@ const opacityStyle = computed(() => {
   .title {
     color: #1f2329;
     font-feature-settings: 'clig' off, 'liga' off;
-    font-family: PingFang SC;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
@@ -538,6 +485,7 @@ const opacityStyle = computed(() => {
           overflow: hidden;
         }
         .label-wrapper-text {
+          position: relative;
           cursor: pointer;
           flex: 0 1 auto;
           max-width: 100%;
@@ -545,11 +493,18 @@ const opacityStyle = computed(() => {
           text-overflow: ellipsis;
           white-space: nowrap;
           color: #1f2329;
-          font-family: PingFang SC;
+          font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
           font-size: 14px;
           font-style: normal;
           font-weight: 400;
           line-height: 22px;
+
+          .required {
+            font-size: 14px;
+            color: #f54a45;
+            margin-left: 3px;
+            line-height: 22px;
+          }
         }
         .label-wrapper-tooltip {
           align-items: center;

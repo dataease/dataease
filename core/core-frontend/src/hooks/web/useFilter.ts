@@ -1,6 +1,6 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { getDynamicRange } from '@/custom-component/v-query/time-format'
+import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-format'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData } = storeToRefs(dvMainStore)
 
@@ -90,6 +90,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             let selectValue = ''
             const {
               selectValue: value,
+              parametersStart,
+              parametersEnd,
               defaultValueCheck,
               timeType = 'fixed',
               defaultValue,
@@ -100,10 +102,43 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayType,
               multiple
             } = item
-            if (timeType === 'dynamic' && +displayType === 1 && firstLoad && !value?.length) {
-              selectValue = getDynamicRange(item)
-              item.defaultValue = new Date(selectValue[0])
-              item.selectValue = new Date(selectValue[0])
+
+            if (timeType === 'dynamic' && [1, 7].includes(+displayType) && firstLoad) {
+              if (+displayType === 1) {
+                selectValue = getDynamicRange(item)
+                item.defaultValue = new Date(selectValue[0])
+                item.selectValue = new Date(selectValue[0])
+              } else {
+                const {
+                  timeNum,
+                  relativeToCurrentType,
+                  around,
+                  arbitraryTime,
+                  timeGranularity,
+                  timeNumRange,
+                  relativeToCurrentTypeRange,
+                  aroundRange,
+                  arbitraryTimeRange
+                } = item
+
+                const startTime = getCustomTime(
+                  timeNum,
+                  relativeToCurrentType,
+                  timeGranularity,
+                  around,
+                  arbitraryTime
+                )
+                const endTime = getCustomTime(
+                  timeNumRange,
+                  relativeToCurrentTypeRange,
+                  timeGranularity,
+                  aroundRange,
+                  arbitraryTimeRange
+                )
+
+                item.defaultValue = [startTime, endTime]
+                item.selectValue = [startTime, endTime]
+              }
             } else {
               selectValue = getValueByDefaultValueCheckOrFirstLoad(
                 defaultValueCheck,
@@ -123,7 +158,16 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 fieldId: item.checkedFieldsMap[curComponentId],
                 operator: [1, 7].includes(+displayType) ? 'between' : multiple ? 'in' : 'eq',
                 value: values,
-                parameters: parametersCheck ? parameters : [],
+                parameters: parametersCheck
+                  ? +displayType === 7
+                    ? [
+                        parametersStart,
+                        parametersEnd?.id
+                          ? { ...parametersEnd, id: `${parametersEnd.id}_START_END_SPLIT` }
+                          : parametersEnd
+                      ]
+                    : parameters
+                  : [],
                 isTree
               })
             }

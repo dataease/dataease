@@ -19,23 +19,18 @@ public class SwaggerConfig {
     @Value("${dataease.version}")
     private String version;
 
-    /*@Bean
+    @Bean
     public GlobalOpenApiCustomizer orderGlobalOpenApiCustomizer() {
         return openApi -> {
-
-            if (openApi.getTags() != null) {
+            if (openApi.getTags()!=null){
                 openApi.getTags().forEach(tag -> {
-                    Map<String, Object> map = new HashMap<>();
-                    map.put("x-order", RandomUtil.randomInt(0, 100));
+                    Map<String,Object> map=new HashMap<>();
+                    map.put("x-order", RandomUtil.randomInt(0,100));
                     tag.setExtensions(map);
                 });
             }
-            if (openApi.getPaths() != null) {
-                openApi.addExtension("x-test123", "333");
-                openApi.getPaths().addExtension("x-abb", RandomUtil.randomInt(1, 100));
-            }
         };
-    }*/
+    }
 
     @Bean
     public OpenAPI customOpenAPI() {
@@ -52,24 +47,48 @@ public class SwaggerConfig {
                         .version(version));
     }
 
-    @Bean
-    public GroupedOpenApi systemApi() {
-        return GroupedOpenApi.builder().group("系统管理").packagesToScan("io.dataease.xpack.permissions.auth").build();
-    }
+
+
     @Bean
     public GroupedOpenApi visualizationApi() {
-        return GroupedOpenApi.builder().group("可视化管理").packagesToScan("io.dataease.visualization").build();
+        return GroupedOpenApi.builder().group("1-visualization").displayName("可视化管理").packagesToScan("io.dataease.visualization").build();
     }
+
     @Bean
     public GroupedOpenApi chartApi() {
-        return GroupedOpenApi.builder().group("视图管理").packagesToScan("io.dataease.chart").build();
+        return GroupedOpenApi.builder().group("2-view").displayName("视图管理").packagesToScan("io.dataease.chart").build();
     }
+
     @Bean
     public GroupedOpenApi datasetApi() {
-        return GroupedOpenApi.builder().group("数据集管理").packagesToScan("io.dataease.dataset").build();
+        return GroupedOpenApi.builder().group("3-dataset").displayName("数据集管理").packagesToScan("io.dataease.dataset").build();
     }
+
     @Bean
     public GroupedOpenApi dsApi() {
-        return GroupedOpenApi.builder().group("数据源管理").packagesToScan("io.dataease.datasource").build();
+        return GroupedOpenApi.builder().group("4-datasource").displayName("数据源管理").packagesToScan("io.dataease.datasource").build();
     }
+
+    @Bean
+    public GroupedOpenApi basicSettingApi() {
+        String[] packageArray = {
+                "io.dataease.system",
+                "io.dataease.map",
+        };
+        return GroupedOpenApi.builder().group("5-xpackpermission").displayName("系统设置").packagesToScan(packageArray).build();
+    }
+
+    @Bean
+    public GroupedOpenApi baseXpackApi() {
+        return GroupedOpenApi.builder().group("6-xpackbase").displayName("基础xpack").packagesToScan("io.dataease.xpack.base").build();
+    }
+
+    @Bean
+    public GroupedOpenApi systemApi() {
+        return GroupedOpenApi.builder().group("7-xpackpermission").displayName("权限相关xpack").packagesToScan("io.dataease.xpack.permissions").build();
+    }
+
+
+
+
 }

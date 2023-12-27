@@ -553,7 +553,7 @@ const emits = defineEmits(['update:item', 'del'])
   }
 
   .bottom-line {
-    font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei, sans-serif;
     font-variant: tabular-nums;
     font-feature-settings: 'tnum';
     word-wrap: break-word;
@@ -601,7 +601,7 @@ const emits = defineEmits(['update:item', 'del'])
     border-radius: 0;
     box-shadow: none;
     height: 26px;
-    font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei, sans-serif;
     word-wrap: break-word;
     text-align: left;
     color: rgba(0, 0, 0, 0.65);
@@ -714,8 +714,8 @@ const emits = defineEmits(['update:item', 'del'])
   }
 
   .ed-input {
-    font-family: Alibaba-PuHuiTi-Regular, Helvetica Neue, Helvetica, Arial, PingFang SC,
-      Hiragino Sans GB, Microsoft YaHei, sans-serif;
+    font-family: Alibaba-PuHuiTi-Regular, Helvetica Neue, Helvetica, Arial,
+      '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei, sans-serif;
     box-sizing: border-box;
     margin: 0;
     color: rgba(0, 0, 0, 0.65);
@@ -748,7 +748,7 @@ const emits = defineEmits(['update:item', 'del'])
     box-shadow: none;
     border: 1px solid rgba(0, 0, 0, 0.05);
     .mod-left {
-      font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei, sans-serif;
       color: rgba(0, 0, 0, 0.65);
       font-size: 12px;
       vertical-align: top;
@@ -794,7 +794,7 @@ const emits = defineEmits(['update:item', 'del'])
       border-left: 1px solid hsla(0, 0%, 59%, 0.1);
     }
     .autochecker-list {
-      font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei, sans-serif;
       color: rgba(0, 0, 0, 0.65);
       box-sizing: border-box;
       width: 100%;
@@ -839,7 +839,8 @@ const emits = defineEmits(['update:item', 'del'])
         }
 
         label {
-          font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+          font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei,
+            sans-serif;
           font-size: 12px;
           direction: ltr;
           color: #333;

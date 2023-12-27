@@ -10,6 +10,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import AboutPage from '@/views/about/index.vue'
 import LangSelector from './LangSelector.vue'
 import router from '@/router'
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 
@@ -27,6 +29,16 @@ const logout = async () => {
 }
 
 const linkLoaded = items => {
+  items.forEach(item => linkList.value.push(item))
+  linkList.value.sort(compare('id'))
+}
+const xpackLinkLoaded = items => {
+  let len = linkList.value.length
+  while (len--) {
+    if (linkList.value[len]?.id === 2 && linkList.value[len]?.link === '/modify-pwd/index') {
+      linkList.value.splice(len, 1)
+    }
+  }
   items.forEach(item => linkList.value.push(item))
   linkList.value.sort(compare('id'))
 }
@@ -68,6 +80,10 @@ const openPopover = () => {
 
 if (uid.value === '1') {
   linkLoaded([{ id: 4, link: '/sys-setting/parameter', label: t('commons.system_setting') }])
+  const desktop = wsCache.get('app.desktop')
+  if (!desktop) {
+    linkLoaded([{ id: 2, link: '/modify-pwd/index', label: t('user.change_password') }])
+  }
 }
 </script>
 
@@ -138,7 +154,7 @@ if (uid.value === '1') {
   </el-popover>
 
   <AboutPage />
-  <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" @loaded="linkLoaded" />
+  <XpackComponent jsname="dWNlbnRlci1oYW5kbGVy" @loaded="xpackLinkLoaded" />
 </template>
 
 <style lang="less">

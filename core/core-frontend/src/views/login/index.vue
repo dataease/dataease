@@ -15,7 +15,6 @@ import { XpackComponent } from '@/components/plugin'
 import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import PreheatImage from '@/assets/preheat.png'
 import { isLarkPlatform } from '@/utils/utils'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
@@ -145,16 +144,6 @@ const cleanPlatformFlag = () => {
 }
 
 const preheat = ref(true)
-const svg = `
-        <path class="path" d="
-          M 30 15
-          L 28 17
-          M 25.61 25.61
-          A 15 15, 0, 0, 1, 15 30
-          A 15 15, 0, 1, 1, 27.99 7.5
-          L 15 15
-        " style="stroke-width: 4px; fill: rgba(0, 0, 0, 0)"/>
-      `
 const showLoginErrorMsg = () => {
   if (!loginErrorMsg.value) {
     return
@@ -209,13 +198,9 @@ onMounted(() => {
     ref="loginContainer"
     class="preheat-container"
     v-loading="true"
-    element-loading-text="Loading..."
-    :element-loading-spinner="svg"
-    element-loading-svg-view-box="-10, -10, 50, 50"
-    element-loading-background="rgba(122, 122, 122, 0.8)"
-  >
-    <el-image class="preheat-image" fit="cover" :src="PreheatImage" />
-  </div>
+    element-loading-text="登录中..."
+    element-loading-background="#F5F6F7"
+  />
   <div v-show="contentShow" class="login-background" v-loading="duringLogin">
     <div class="login-container" ref="loginContainer">
       <div class="login-image-content" v-loading="!axiosFinished" v-if="showLoginImage">
@@ -354,10 +339,6 @@ onMounted(() => {
   background: #000;
   position: absolute;
   z-index: 100;
-  .preheat-image {
-    width: 98%;
-    height: 98%;
-  }
 }
 .login-background {
   background-color: #f5f7fa;
@@ -426,7 +407,7 @@ onMounted(() => {
     text-align: center;
     margin-top: 8px;
     color: #646a73;
-    font-family: PingFang SC;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -464,7 +445,7 @@ onMounted(() => {
 
   :deep(.ed-divider__text) {
     color: #8f959e;
-    font-family: PingFang SC;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 12px;
     font-style: normal;
     font-weight: 400;

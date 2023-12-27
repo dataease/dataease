@@ -492,7 +492,7 @@ onMounted(() => {
 .insert-filter {
   display: inline-block;
   font-weight: 400 !important;
-  font-family: PingFang SC;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;
@@ -525,7 +525,7 @@ onMounted(() => {
   display: inline-block;
   font-size: 34px;
   font-weight: 400 !important;
-  font-family: PingFang SC;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   line-height: 1;
   white-space: nowrap;
   cursor: pointer;

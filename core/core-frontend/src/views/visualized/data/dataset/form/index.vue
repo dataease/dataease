@@ -893,9 +893,9 @@ const resetAllfieldsUnionId = (arr, idMap) => {
   let strNodeList = JSON.stringify(toRaw(datasetDrag.value.nodeList)) as string
   let strAllfields = JSON.stringify(unref(allfields.value)) as string
   Object.entries(idMap).forEach(([key, value]) => {
-    strUnion = strUnion.replace(key, value as string)
-    strAllfields = strAllfields.replace(key, value as string)
-    strNodeList = strNodeList.replace(key, value as string)
+    strUnion = strUnion.replaceAll(key, value as string)
+    strAllfields = strAllfields.replaceAll(key, value as string)
+    strNodeList = strNodeList.replaceAll(key, value as string)
   })
   allfields.value = JSON.parse(strAllfields)
   datasetDrag.value.initState(JSON.parse(strNodeList))
@@ -1212,6 +1212,7 @@ const getDsIconName = data => {
             @change="dsChange"
             :placeholder="t('dataset.pls_slc_data_source')"
             class="ds-list"
+            filterable
             popper-class="tree-select-ds_popper"
             v-model="dataSource"
             node-key="id"
@@ -1871,7 +1872,7 @@ const getDsIconName = data => {
 
     .name {
       color: #fff;
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 16px;
       font-weight: 400;
       display: flex;
@@ -1967,7 +1968,7 @@ const getDsIconName = data => {
       width: 240px;
       padding-bottom: 16px;
 
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       border-right: 1px solid rgba(31, 35, 41, 0.15);
 
       .select-ds {
@@ -2040,7 +2041,7 @@ const getDsIconName = data => {
     .drag-right {
       height: calc(100vh - 56px);
       .sql-result {
-        font-family: PingFang SC;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         overflow-y: auto;
         box-sizing: border-box;
@@ -2166,7 +2167,7 @@ const getDsIconName = data => {
                 margin: 1px;
                 top: 1px;
                 height: 49px;
-                font-family: 'PingFang SC';
+                font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
                 font-style: normal;
                 font-weight: 500;
                 font-size: 14px;

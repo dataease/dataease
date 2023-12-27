@@ -952,7 +952,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
 .union-item-drawer {
   .ed-drawer__header {
     height: 82px;
-    font-family: 'PingFang SC';
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
 
     .ed-drawer__close-btn {
       top: 26px;
@@ -983,7 +983,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   width: 100%;
   border: 1px solid #dee0e3;
   border-radius: 4px;
-  font-family: PingFang SC;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   font-size: 14px;
   font-weight: 400;
   color: #1f2329;
@@ -1103,7 +1103,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   }
 
   p {
-    font-family: 'PingFang SC';
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;

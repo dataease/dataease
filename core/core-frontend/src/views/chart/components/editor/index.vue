@@ -187,13 +187,6 @@ const getFields = (id, chartId) => {
     state.quotaData = []
   }
 }
-watch(
-  [() => state.searchField],
-  newVal => {
-    fieldFilter(newVal[0])
-  },
-  { deep: true }
-)
 
 const chartStyleShow = computed(() => {
   return view.value.type !== 'richText'
@@ -263,37 +256,37 @@ const queryList = computed(() => {
 })
 
 const quotaData = computed(() => {
+  let result = JSON.parse(JSON.stringify(state.quota))
   if (view.value?.type === 'table-info') {
-    return state.quota?.filter(item => item.id !== '-1')
+    result = result?.filter(item => item.id !== '-1')
   }
-  return state.quota
+  if (state.searchField) {
+    result = result.filter(item =>
+      item.name.toLowerCase().includes(state.searchField.toLowerCase())
+    )
+  }
+  return result
 })
-provide('quotaData', quotaData)
+const dimensionData = computed(() => {
+  let result = JSON.parse(JSON.stringify(state.dimensionData))
+  if (state.searchField) {
+    result = result.filter(item =>
+      item.name.toLowerCase().includes(state.searchField.toLowerCase())
+    )
+  }
+  return result
+})
+const realQuota = computed(() => {
+  let result = JSON.parse(JSON.stringify(state.quota))
+  if (view.value?.type === 'table-info') {
+    result = result?.filter(item => item.id !== '-1')
+  }
+  return result
+})
+provide('quotaData', realQuota)
 
 const startToMove = (e, item) => {
   e.dataTransfer.setData('dimension', JSON.stringify({ ...item, datasetId: view.value.tableId }))
-}
-
-const fieldFilter = val => {
-  if (val && val !== '') {
-    state.dimensionData = JSON.parse(
-      JSON.stringify(
-        state.dimension.filter(ele => {
-          return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
-        })
-      )
-    )
-    state.quotaData = JSON.parse(
-      JSON.stringify(
-        state.quota.filter(ele => {
-          return ele.name.toLocaleLowerCase().includes(val.toLocaleLowerCase())
-        })
-      )
-    )
-  } else {
-    state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
-    state.quotaData = JSON.parse(JSON.stringify(state.quota))
-  }
 }
 
 const dimensionItemChange = () => {
@@ -1853,7 +1846,7 @@ const onRefreshChange = val => {
                 <label>{{ t('chart.dimension') }}</label>
                 <el-scrollbar class="drag-list">
                   <draggable
-                    :list="state.dimensionData"
+                    :list="dimensionData"
                     :group="dsFieldDragOptions.group"
                     :move="onMove"
                     item-key="id"
@@ -2233,7 +2226,7 @@ const onRefreshChange = val => {
         height: 35px;
         line-height: 35px;
         color: #3370ff;
-        font-family: PingFang SC;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 12px;
         font-style: normal;
         font-weight: 500;
@@ -3097,7 +3090,7 @@ span {
   margin-bottom: 16px !important;
 
   .text {
-    font-family: PingFang SC;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     font-style: normal;
     font-weight: 400;
@@ -3106,7 +3099,7 @@ span {
     --ed-input-height: 32px;
 
     :deep(.ed-input__inner) {
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
@@ -3117,7 +3110,7 @@ span {
   :deep(.ed-form-item__label) {
     color: #1f2329;
 
-    font-family: PingFang SC;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     font-style: normal;
     font-weight: 400;

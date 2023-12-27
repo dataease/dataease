@@ -61,7 +61,7 @@ cd $DE_RUN_BASE
 env | grep DE_ >.env
 
 mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
-mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data}
+mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo}
 mkdir -p ${DE_RUN_BASE}/apisix/logs
 chmod 777 ${DE_RUN_BASE}/apisix/logs ${DE_RUN_BASE}/data/etcd_data
 
@@ -185,9 +185,6 @@ if [[ -d images ]]; then
       docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
    done
 else
-   log "拉取镜像"
-   cd ${DE_RUN_BASE} && docker-compose $compose_files pull 2>&1
-
    DEVERSION=$(cat ${CURRENT_DIR}/dataease/templates/version)
    curl -sfL https://resource.fit2cloud.com/installation-log.sh | sh -s de ${INSTALL_TYPE} ${DEVERSION}
    cd -
@@ -244,5 +241,9 @@ log "启动服务"
 dectl start | tee -a ${CURRENT_DIR}/install.log
 dectl status 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
+access_port=$DE_PORT
+if [[ $DE_INSTALL_MODE != "community" ]];then
+   access_port=9080
+fi
 echo -e "======================= 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-echo -e "系统登录信息如下:\n 用户名: admin\n 初始密码: dataease" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+echo -e "系统登录信息如下:\n 访问地址: http://服务器IP:$access_port\n 用户名: admin\n 初始密码: DataEase@123456" 2>&1 | tee -a ${CURRENT_DIR}/install.log

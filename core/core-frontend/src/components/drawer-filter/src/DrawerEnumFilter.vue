@@ -57,7 +57,7 @@ defineExpose({
 
   > :nth-child(1) {
     color: var(--deTextSecondary, #1f2329);
-    font-family: 'PingFang SC';
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
@@ -71,7 +71,7 @@ defineExpose({
 
     .item,
     .more {
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       white-space: nowrap;
       font-size: 14px;
       font-weight: 400;

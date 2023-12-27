@@ -1,12 +1,12 @@
 :root {
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, \5fae\8f6f\96c5\9ed1, Arial, sans-serif;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Helvetica Neue, Helvetica, '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei,
+    \5fae\8f6f\96c5\9ed1, Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
   color-scheme: light dark;
 
   font-synthesis: none;
-  // text-rendering: optimizeLegibility;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   -webkit-text-size-adjust: 100%;
@@ -54,7 +54,6 @@ body {
   white-space: nowrap;
 }
 
-
 .list-item_primary {
   height: 40px;
   border-radius: 4px;
@@ -70,7 +69,7 @@ body {
   .label {
     width: 85%;
     font-size: 14px;
-    .ellipsis
+    .ellipsis;
   }
 
   &:not(.active):hover {
@@ -79,7 +78,7 @@ body {
 
   &.active {
     background: rgba(51, 112, 255, 0.1);
-    color: #3370FF;
+    color: #3370ff;
   }
 }
 
@@ -101,7 +100,7 @@ body {
 }
 
 .title-form_primary {
-  font-family: 'PingFang SC';
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   font-style: normal;
   font-weight: 500;
   font-size: 14px;
@@ -130,28 +129,28 @@ body {
   background-color: #f5f6f7 !important;
 
   .ed-table-v2__header-cell {
-    background-color: transparent
+    background-color: transparent;
   }
 }
 
 .field-icon-text {
-  color: #3370FF;
+  color: #3370ff;
 }
 
 .field-icon-time {
-  color: #3370FF;
+  color: #3370ff;
 }
 
 .field-icon-value {
-  color: #04B49C;
+  color: #04b49c;
 }
 
 .field-icon-location {
-  color: #3370FF;
+  color: #3370ff;
 }
 
 .field-icon-red {
-  color: #F54A45;
+  color: #f54a45;
 }
 
 .field-icon-sort {
@@ -161,14 +160,12 @@ body {
 }
 
 .field-icon-dimension {
-  color: #3370FF;
+  color: #3370ff;
 }
 
 .field-icon-quota {
-  color: #04B49C;
+  color: #04b49c;
 }
-
-
 
 .hover-icon {
   cursor: pointer;
@@ -176,9 +173,9 @@ body {
   width: 24px !important;
   font-size: 16px !important;
   border-radius: 4px;
-  color: #646A73 !important;
+  color: #646a73 !important;
 
-  &[aria-expanded="true"] {
+  &[aria-expanded='true'] {
     background: rgba(31, 35, 41, 0.1);
   }
 
@@ -198,25 +195,24 @@ body {
 }
 
 .hover-icon-in-table {
-  color: #3370FF !important;
-  &[aria-expanded="true"] {
-    background: rgba(51,112,255,.1);
+  color: #3370ff !important;
+  &[aria-expanded='true'] {
+    background: rgba(51, 112, 255, 0.1);
   }
   &:hover {
-    background: rgba(51,112,255,.1);
+    background: rgba(51, 112, 255, 0.1);
   }
 }
 
-
 .custom-popover-dark {
-  min-width: 50px!important;
+  min-width: 50px !important;
   background: @side-content-background !important;
   padding: 0px 4px 0 4px !important;
   border: 1px solid @side-outline-border-color !important;
 }
 
 .custom-popover-light {
-  min-width: 50px!important;
+  min-width: 50px !important;
   background: @side-content-background-light !important;
   padding: 0px 4px 0 4px !important;
   border: 1px solid @side-outline-border-color-light !important;
@@ -235,7 +231,7 @@ body {
   border-radius: 4px;
 
   &:hover {
-    background: rgba(235, 235, 235, 0.10);
+    background: rgba(235, 235, 235, 0.1);
   }
 
   &:active {
@@ -281,7 +277,7 @@ body {
 }
 
 .primary-color {
-  color: var(--ed-color-primary, #3370FF);
+  color: var(--ed-color-primary, #3370ff);
 }
 
 // .ed-drawer__footer {
@@ -297,7 +293,6 @@ body {
 .ed-tree-node.is-current>.ed-tree-node__content:not(.is-menu):after {
   display: none;
 }
-
 
 .create-dialog {
   .ed-form-item {
@@ -323,7 +318,6 @@ em {
   text-align: left !important;
 }
 
-
 .cell {
   .is-text {
     .ed-icon {
@@ -337,28 +331,28 @@ em {
   max-height: 100vh;
   overflow-y: auto;
   background: none !important;
-  .ed-dialog__header{
+  .ed-dialog__header {
     padding: 0px;
-    .ed-dialog__headerbtn{
+    .ed-dialog__headerbtn {
       .ed-icon {
         font-size: 24px;
         color: white;
       }
-      background: rgba(31, 35, 41, 0.90);
+      background: rgba(31, 35, 41, 0.9);
       height: 48px;
       width: 48px;
-      top:24px;
+      top: 24px;
       right: 24px;
       padding: 12px;
       border-radius: 50%;
       &:hover {
-        background: #646A73;
+        background: #646a73;
       }
     }
   }
-  .ed-dialog__body{
+  .ed-dialog__body {
     padding: 0px;
-    background-color: #1F232999;
+    background-color: #1f232999;
   }
 }
 
@@ -366,4 +360,32 @@ em {
   margin-right: 9px;
   width: 16px !important;
   height: 12px !important;
+}
+
+.color-panel {
+  background: #3370ff;
+}
+
+.color-dashboard {
+  background: #3370ff;
+}
+
+.color-screen {
+  background: rgb(0, 214, 185);
+}
+
+.color-dataV {
+  background: rgb(0, 214, 185);
+}
+
+.color-dataset {
+  background: rgb(22, 192, 255);
+}
+
+.color-datasource {
+  background: rgb(127, 59, 246);
+}
+
+.ed-table {
+  --ed-table-row-hover-bg-color: #e8e9e9 !important;
 }

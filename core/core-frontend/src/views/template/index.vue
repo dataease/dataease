@@ -592,7 +592,7 @@ onMounted(() => {
     .active-template {
       height: 56px;
       padding: 0px 24px;
-      font-family: 'PingFang SC';
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-style: normal;
       font-weight: 500;
       font-size: 16px;
@@ -618,7 +618,7 @@ onMounted(() => {
 .router-title {
   color: #1f2329;
   font-feature-settings: 'clig' off, 'liga' off;
-  font-family: PingFang SC;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   font-size: 20px;
   font-style: normal;
   font-weight: 500;

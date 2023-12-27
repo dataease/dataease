@@ -182,7 +182,7 @@ watch(
 watch(
   () => config.value.valueSource,
   () => {
-    debounceOptions(2)
+    config.value.optionValueSource === 2 && debounceOptions(2)
   }
 )
 

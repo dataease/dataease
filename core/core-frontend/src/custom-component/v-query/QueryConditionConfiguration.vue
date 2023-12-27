@@ -1,18 +1,21 @@
 <script lang="ts" setup>
 import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
+import { addQueryCriteriaConfig } from './options'
+import { getCustomTime } from './time-format'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
 import { ElMessage } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
-import { getDsDetails, getSqlParams } from '@/api/dataset'
+import { getDsDetailsWithPerm, getSqlParams, listFieldsWithPermissions } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
 import Select from './Select.vue'
 import Time from './Time.vue'
 import DynamicTime from './DynamicTime.vue'
+import DynamicTimeRange from './DynamicTimeRange.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import draggable from 'vuedraggable'
@@ -30,10 +33,6 @@ interface DatasetField {
 }
 
 const props = defineProps({
-  addQueryCriteriaConfig: {
-    type: Function,
-    default: () => ({})
-  },
   queryElement: {
     type: Object,
     default() {
@@ -108,6 +107,10 @@ const parametersFilter = computed(() => {
   return parameters.value.filter(ele => {
     if (curComponent.value.displayType === '2') {
       return [2, 3].includes(ele.deType)
+    }
+
+    if (curComponent.value.displayType === '7') {
+      return [1, 7].includes(ele.deType)
     }
     return ele.deType === +curComponent.value.displayType
   })
@@ -258,7 +261,59 @@ const validate = () => {
       return true
     }
 
-    if ([1, 7].includes(+ele.displayType)) {
+    if (ele.required) {
+      if (!ele.defaultValueCheck) {
+        ElMessage.error('查询条件为必填项,默认值不能为空')
+        return true
+      }
+
+      if (
+        (Array.isArray(ele.defaultValue) && !ele.defaultValue.length) ||
+        (ele.defaultValue !== 0 && !ele.defaultValue)
+      ) {
+        ElMessage.error('查询条件为必填项,默认值不能为空')
+        return true
+      }
+    }
+
+    if (+ele.displayType === 7) {
+      if (!ele.defaultValueCheck) {
+        return false
+      }
+      const {
+        timeNum,
+        relativeToCurrentType,
+        around,
+        arbitraryTime,
+        timeGranularity,
+        timeNumRange,
+        relativeToCurrentTypeRange,
+        aroundRange,
+        arbitraryTimeRange
+      } = ele
+
+      const startTime = getCustomTime(
+        timeNum,
+        relativeToCurrentType,
+        timeGranularity,
+        around,
+        arbitraryTime
+      )
+      const endTime = getCustomTime(
+        timeNumRange,
+        relativeToCurrentTypeRange,
+        timeGranularity,
+        aroundRange,
+        arbitraryTimeRange
+      )
+      if (+startTime > +endTime) {
+        ElMessage.error('结束时间必须大于开始时间!')
+        return true
+      }
+      return false
+    }
+
+    if ([1].includes(+ele.displayType)) {
       return false
     }
 
@@ -335,18 +390,16 @@ const confirmValueSource = () => {
 const filterTypeCom = computed(() => {
   const { displayType, timeType = 'fixed' } = curComponent.value
   return ['1', '7'].includes(displayType)
-    ? timeType === 'dynamic' && displayType === '1'
-      ? DynamicTime
+    ? timeType === 'dynamic'
+      ? displayType === '1'
+        ? DynamicTime
+        : DynamicTimeRange
       : Time
     : Select
 })
 
 const setCondition = (queryId: string) => {
   conditions.value = cloneDeep(props.queryElement.propValue) || []
-  init(queryId)
-}
-
-const setConditionInit = (queryId: string) => {
   init(queryId)
 }
 
@@ -388,15 +441,10 @@ const init = (queryId: string) => {
         return { ...datasetMap[ele.tableId], componentId: ele.id }
       })
       .filter(ele => !!ele)
-    return
   }
-  getDsDetails([
-    ...new Set(
-      datasetFieldList.value
-        .map(ele => ele.tableId)
-        .filter(ele => !datasetMapKeyList.includes(ele) && ele)
-    )
-  ])
+  const params = [...new Set(datasetFieldList.value.map(ele => ele.tableId).filter(ele => !!ele))]
+  if (!params.length) return
+  getDsDetailsWithPerm(params)
     .then(res => {
       res
         .filter(ele => !!ele)
@@ -426,11 +474,18 @@ const weightlessness = () => {
 const parameterCompletion = () => {
   const attributes = {
     timeType: 'fixed',
+    required: false,
+    parametersStart: null,
+    parametersEnd: null,
     relativeToCurrent: 'custom',
     timeNum: 0,
     relativeToCurrentType: 'year',
     around: 'f',
-    arbitraryTime: new Date()
+    arbitraryTime: new Date(),
+    timeNumRange: 0,
+    relativeToCurrentTypeRange: 'year',
+    aroundRange: 'f',
+    arbitraryTimeRange: new Date()
   }
   Object.entries(attributes).forEach(([key, val]) => {
     !curComponent.value[key] && (curComponent.value[key] = val)
@@ -443,7 +498,7 @@ const handleCondition = item => {
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
 
   multiple.value = curComponent.value.multiple
-  if (!curComponent.value.dataset.fields.length) {
+  if (!curComponent.value.dataset.fields.length && curComponent.value.dataset.id) {
     getOptions(curComponent.value.dataset.id, curComponent.value)
   }
   datasetFieldList.value.forEach(ele => {
@@ -473,12 +528,8 @@ const handleCondition = item => {
 }
 
 const getOptions = (id, component) => {
-  getDsDetails([id]).then(res => {
-    res.forEach(ele => {
-      if (!ele) return
-      const { dimensionList, quotaList } = ele.fields
-      component.dataset.fields = [...dimensionList, ...quotaList]
-    })
+  listFieldsWithPermissions(id).then(res => {
+    component.dataset.fields = res.data
   })
 }
 
@@ -579,7 +630,7 @@ const relativeToCurrentList = computed(() => {
 })
 
 const dynamicTime = computed(() => {
-  return curComponent.value.timeType === 'dynamic' && curComponent.value.displayType === '1'
+  return curComponent.value.timeType === 'dynamic'
 })
 
 const relativeToCurrentTypeList = computed(() => {
@@ -686,7 +737,7 @@ const renameInputBlur = () => {
 }
 
 const addQueryCriteria = () => {
-  conditions.value.push(props.addQueryCriteriaConfig())
+  conditions.value.push(addQueryCriteriaConfig())
 }
 
 const addCriteriaConfig = () => {
@@ -696,7 +747,6 @@ const addCriteriaConfig = () => {
 
 defineExpose({
   setCondition,
-  setConditionInit,
   addCriteriaConfig,
   setConditionOut
 })
@@ -845,8 +895,12 @@ defineExpose({
                   :key="ele.id"
                   :label="ele.name"
                   :value="ele.id"
+                  :disabled="ele.desensitized"
                 >
-                  <div class="flex-align-center icon">
+                  <div
+                    class="flex-align-center icon"
+                    :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
+                  >
                     <el-icon>
                       <Icon
                         :name="`field_${fieldType[ele.deType]}`"
@@ -865,7 +919,14 @@ defineExpose({
       </div>
       <div class="condition-configuration">
         <div class="mask condition" v-if="curComponent.auto"></div>
-        <div class="title">查询条件配置</div>
+        <div class="title flex-align-center">
+          查询条件配置
+          <el-checkbox
+            :disabled="curComponent.auto"
+            v-model="curComponent.required"
+            label="必填项"
+          />
+        </div>
         <div v-show="showConfiguration && !showTypeError" class="configuration-list">
           <div class="list-item">
             <div class="label">展示类型</div>
@@ -995,8 +1056,12 @@ defineExpose({
                       :key="ele.id"
                       :label="ele.name"
                       :value="ele.id"
+                      :disabled="ele.desensitized"
                     >
-                      <div class="flex-align-center icon">
+                      <div
+                        class="flex-align-center icon"
+                        :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
+                      >
                         <el-icon>
                           <Icon
                             :name="`field_${fieldType[ele.deType]}`"
@@ -1088,27 +1153,73 @@ defineExpose({
             <div class="label">
               <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
             </div>
-            <div v-if="curComponent.parametersCheck" class="parameters">
-              <el-select
-                popper-class="dataset-parameters"
-                value-key="id"
-                multiple
-                v-model="curComponent.parameters"
-                clearable
-              >
-                <el-option
-                  v-for="item in parametersFilter"
-                  :key="item.id"
-                  :label="item.variableName"
-                  :value="item"
+            <template v-if="curComponent.parametersCheck">
+              <div v-if="curComponent.displayType !== '7'" class="parameters">
+                <el-select
+                  popper-class="dataset-parameters"
+                  value-key="id"
+                  multiple
+                  v-model="curComponent.parameters"
+                  clearable
                 >
-                  <div class="variable-name ellipsis">{{ item.variableName }}</div>
-                  <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
-                    <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
-                  </el-tooltip>
-                </el-option>
-              </el-select>
-            </div>
+                  <el-option
+                    v-for="item in parametersFilter"
+                    :key="item.id"
+                    :label="item.variableName"
+                    :value="item"
+                  >
+                    <div class="variable-name ellipsis">{{ item.variableName }}</div>
+                    <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
+                      <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
+                    </el-tooltip>
+                  </el-option>
+                </el-select>
+              </div>
+              <div v-else class="parameters-range">
+                <div class="range-title">开始时间</div>
+                <div class="range-title">结束时间</div>
+                <div class="params-start">
+                  <el-select
+                    popper-class="dataset-parameters"
+                    value-key="id"
+                    v-model="curComponent.parametersStart"
+                    clearable
+                  >
+                    <el-option
+                      v-for="item in parametersFilter"
+                      :key="item.id"
+                      :label="item.variableName"
+                      :value="item"
+                    >
+                      <div class="variable-name ellipsis">{{ item.variableName }}</div>
+                      <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
+                        <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
+                      </el-tooltip>
+                    </el-option>
+                  </el-select>
+                </div>
+                <div class="params-end">
+                  <el-select
+                    popper-class="dataset-parameters"
+                    value-key="id"
+                    v-model="curComponent.parametersEnd"
+                    clearable
+                  >
+                    <el-option
+                      v-for="item in parametersFilter"
+                      :key="item.id"
+                      :label="item.variableName"
+                      :value="item"
+                    >
+                      <div class="variable-name ellipsis">{{ item.variableName }}</div>
+                      <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
+                        <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
+                      </el-tooltip>
+                    </el-option>
+                  </el-select>
+                </div>
+              </div>
+            </template>
           </div>
           <div class="list-item">
             <div class="label">
@@ -1116,7 +1227,7 @@ defineExpose({
             </div>
             <div
               class="setting-content"
-              v-if="curComponent.defaultValueCheck && curComponent.displayType === '1'"
+              v-if="curComponent.defaultValueCheck && ['1', '7'].includes(curComponent.displayType)"
             >
               <div class="setting">
                 <el-radio-group v-model="curComponent.timeType">
@@ -1124,7 +1235,7 @@ defineExpose({
                   <el-radio label="dynamic">动态时间</el-radio>
                 </el-radio-group>
               </div>
-              <template v-if="dynamicTime">
+              <template v-if="dynamicTime && curComponent.displayType === '1'">
                 <div class="setting">
                   <div class="setting-label">相对当前</div>
                   <div class="setting-value select">
@@ -1171,6 +1282,62 @@ defineExpose({
                   </div>
                 </div>
               </template>
+              <template v-else-if="dynamicTime && curComponent.displayType === '7'">
+                <div class="setting">
+                  <div class="setting-label">开始时间</div>
+                  <div class="setting-input with-date range">
+                    <el-input-number
+                      v-model="curComponent.timeNum"
+                      :min="0"
+                      controls-position="right"
+                    />
+                    <el-select v-model="curComponent.relativeToCurrentType">
+                      <el-option
+                        v-for="item in relativeToCurrentTypeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-select v-model="curComponent.around">
+                      <el-option
+                        v-for="item in aroundList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-time-picker v-model="curComponent.arbitraryTime" />
+                  </div>
+                </div>
+                <div class="setting">
+                  <div class="setting-label">结束时间</div>
+                  <div class="setting-input with-date range">
+                    <el-input-number
+                      v-model="curComponent.timeNumRange"
+                      :min="0"
+                      controls-position="right"
+                    />
+                    <el-select v-model="curComponent.relativeToCurrentTypeRange">
+                      <el-option
+                        v-for="item in relativeToCurrentTypeList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-select v-model="curComponent.aroundRange">
+                      <el-option
+                        v-for="item in aroundList"
+                        :key="item.value"
+                        :label="item.label"
+                        :value="item.value"
+                      />
+                    </el-select>
+                    <el-time-picker v-model="curComponent.arbitraryTimeRange" />
+                  </div>
+                </div>
+              </template>
             </div>
             <div
               v-if="curComponent.defaultValueCheck"
@@ -1208,7 +1375,7 @@ defineExpose({
 
 <style lang="less">
 .dataset-parameters {
-  font-family: PingFang SC;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   font-style: normal;
   font-weight: 400;
   .ed-select-dropdown__item {
@@ -1240,7 +1407,7 @@ defineExpose({
   }
   .container {
     font-size: 14px;
-    font-family: PingFang SC;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     width: 1152px;
     height: 454px;
     border-radius: 4px;
@@ -1261,7 +1428,7 @@ defineExpose({
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-family: PingFang SC;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         font-style: normal;
         font-weight: 500;
@@ -1309,7 +1476,6 @@ defineExpose({
     }
 
     .chart-field {
-      border-right: 1px solid #dee0e3;
       height: calc(100% - 16px);
       padding: 0 16px 16px 16px;
       width: 474px;
@@ -1329,7 +1495,7 @@ defineExpose({
       }
 
       .title {
-        font-family: PingFang SC;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         font-style: normal;
         font-weight: 500;
@@ -1381,6 +1547,7 @@ defineExpose({
 
     .condition-configuration {
       padding: 16px;
+      border-left: 1px solid #dee0e3;
       width: 467px;
       position: relative;
       .mask {
@@ -1392,7 +1559,7 @@ defineExpose({
         color: #646a73;
         height: 16px;
         padding: 0px 4px;
-        font-family: PingFang SC;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 10px;
         font-style: normal;
         font-weight: 500;
@@ -1401,9 +1568,20 @@ defineExpose({
         background: rgba(31, 35, 41, 0.1);
         margin-left: 8px;
       }
+
+      .flex-align-center {
+        position: sticky;
+        top: 0;
+        justify-content: space-between;
+        background: #fff;
+        z-index: 5;
+        .ed-checkbox {
+          height: 20px;
+        }
+      }
       .title {
         margin-bottom: 16px;
-        font-family: PingFang SC;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         font-style: normal;
         font-weight: 500;
@@ -1449,6 +1627,7 @@ defineExpose({
 
           .parameters {
             margin-left: auto;
+            margin-top: 8px;
 
             .w100 {
               width: 100%;
@@ -1466,8 +1645,38 @@ defineExpose({
               }
             }
           }
+          .parameters-range {
+            width: 100%;
+            padding-left: 24px;
+            display: flex;
+            flex-wrap: wrap;
+            .range-title,
+            .params-start,
+            .params-end {
+              width: 50%;
+            }
+
+            .params-start,
+            .params-end {
+              margin-top: 8px;
+              .ed-select {
+                width: 100%;
+              }
+            }
+
+            .params-end {
+              padding-left: 4px;
+            }
+
+            .params-start {
+              padding-right: 4px;
+            }
+          }
 
           .setting {
+            &.setting {
+              margin-top: 8px;
+            }
             &.parameters {
               width: 100%;
               padding-left: 24px;
@@ -1498,6 +1707,9 @@ defineExpose({
               padding-left: 86px;
               justify-content: flex-end;
               align-items: center;
+              &.range {
+                padding-left: 0px;
+              }
               & > div + div {
                 margin-left: 8px;
               }

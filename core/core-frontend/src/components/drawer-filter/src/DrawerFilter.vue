@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { propTypes } from '@/utils/propTypes'
-import { ElSelect, ElPopover, ElOption, ElIcon } from 'element-plus-secondary'
-import { computed, reactive, nextTick, ref } from 'vue'
-import { Icon } from '@/components/icon-custom'
+import { ElSelect, ElOption } from 'element-plus-secondary'
+import { computed, reactive } from 'vue'
 
 const props = defineProps({
   optionList: propTypes.arrayOf(
@@ -15,28 +14,19 @@ const props = defineProps({
 })
 
 const state = reactive({
-  currentStatus: [],
   activeStatus: []
 })
+const emits = defineEmits(['filter-change'])
 
-const elPopoverU = ref(null)
-const more = ref(null)
-
-const statusChange = (id: string | number) => {
-  state.activeStatus = state.activeStatus.filter(ele => ele.id !== id)
-}
 const selectStatus = ids => {
-  const [item] = ids
-  state.activeStatus.push(item)
-  state.currentStatus = []
-  nextTick(() => {
-    elPopoverU.value?.hide()
-    more.value?.click()
-  })
+  emits(
+    'filter-change',
+    ids.map(item => item.label)
+  )
 }
 
 const optionListNotSelect = computed(() => {
-  return props.optionList.filter(ele => !state.activeStatus.map(t => t.id).includes(ele.id))
+  return [...props.optionList]
 })
 const clear = () => {
   state.activeStatus = []
@@ -50,48 +40,22 @@ defineExpose({
   <div class="filter">
     <span>{{ title }}</span>
     <div class="filter-item">
-      <span
-        v-for="ele in state.activeStatus"
-        :key="ele.id"
-        class="item active"
-        @click="statusChange(ele.id)"
-        >{{ $t(ele.name) }}</span
+      <el-select
+        :teleported="false"
+        style="width: 100%"
+        v-model="state.activeStatus"
+        value-key="id"
+        filterable
+        multiple
+        @change="selectStatus"
       >
-      <slot v-if="!!optionListNotSelect.length">
-        <el-popover
-          :show-arrow="false"
-          ref="elPopoverU"
-          placement="bottom"
-          popper-class="filter-popper"
-          width="200"
-          trigger="click"
-        >
-          <el-select
-            :teleported="false"
-            style="width: 100%"
-            v-model="state.currentStatus"
-            value-key="id"
-            filterable
-            multiple
-            @change="selectStatus"
-          >
-            <el-option
-              v-for="item in optionListNotSelect"
-              :key="item.name"
-              :label="item.name"
-              :value="item"
-            />
-          </el-select>
-          <template #reference>
-            <span ref="more" class="more">
-              <el-icon>
-                <Icon name="icon_add_outlined"> </Icon>
-              </el-icon>
-              更多
-            </span>
-          </template>
-        </el-popover>
-      </slot>
+        <el-option
+          v-for="item in optionListNotSelect"
+          :key="item.name"
+          :label="item.name"
+          :value="item"
+        />
+      </el-select>
     </div>
   </div>
 </template>
@@ -102,7 +66,7 @@ defineExpose({
 
   > :nth-child(1) {
     color: var(--deTextSecondary, #1f2329);
-    font-family: 'PingFang SC';
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
@@ -113,45 +77,6 @@ defineExpose({
 
   .filter-item {
     flex: 1;
-
-    .item,
-    .more {
-      font-family: PingFang SC;
-      white-space: nowrap;
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 24px;
-      margin-right: 12px;
-      text-align: center;
-      padding: 1px 6px;
-      background: var(--deTextPrimary5, #f5f6f7);
-      color: var(--deTextPrimary, #1f2329);
-      border-radius: 2px;
-      cursor: pointer;
-      display: inline-block;
-      margin-bottom: 12px;
-    }
-
-    .active,
-    .more:hover {
-      background: var(--primary10, rgba(51, 112, 255, 0.1));
-      color: var(--primaryselect, #0c296e);
-    }
-
-    .more {
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      i {
-        margin-right: 5px;
-      }
-    }
   }
-}
-</style>
-<style lang="less">
-.filter-popper {
-  padding: 0 !important;
-  background: #fff !important;
 }
 </style>

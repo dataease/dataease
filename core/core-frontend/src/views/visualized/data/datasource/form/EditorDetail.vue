@@ -121,11 +121,11 @@ const initForm = type => {
       updateType: 'all_scope',
       syncRate: 'SIMPLE_CRON',
       simpleCronValue: '1',
-      simpleCronType: 'hour',
+      simpleCronType: 'minute',
       startTime: '',
       endTime: '',
       endLimit: '0',
-      cron: '0 0 0/1 *  * ? *'
+      cron: '0 0/1 * * * ? *'
     }
   }
   if (type === 'oracle') {
@@ -362,7 +362,8 @@ const onRateChange = () => {
     form.value.syncSetting.cron = ''
   }
   if (form.value.syncSetting.syncRate === 'SIMPLE_CRON') {
-    form.value.syncSetting.cron = '0 0 0/1 *  * ? *'
+    form.value.syncSetting.cron = '0 0/1 * * * ? *'
+    form.value.syncSetting.simpleCronType = 'minute'
   }
   if (form.value.syncSetting.syncRate === 'CRON') {
     form.value.syncSetting.cron = '00 00 * ? * * *'
@@ -972,7 +973,7 @@ defineExpose({
   }
 
   .de-expand {
-    font-family: PingFang SC;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
@@ -1023,7 +1024,7 @@ defineExpose({
       width: 100%;
       display: flex;
       align-items: center;
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 14px;
       font-style: normal;
       font-weight: 400;
@@ -1043,7 +1044,7 @@ defineExpose({
         position: relative;
         color: #1f2329;
         font-weight: 400;
-        font-family: PingFang SC;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         font-style: normal;
         line-height: 22px;
@@ -1095,7 +1096,7 @@ defineExpose({
   border-radius: 4px;
   margin: 0 0 16px 16px;
   padding: 16px;
-  font-family: PingFang SC;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   cursor: pointer;
 
   &:hover {
@@ -1172,7 +1173,7 @@ defineExpose({
   }
 
   .tips {
-    font-family: PingFang SC;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;

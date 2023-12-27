@@ -270,8 +270,8 @@ const initTitle = () => {
   }
 }
 
-const drillJump = index => {
-  state.drillClickDimensionList = state.drillClickDimensionList.slice(0, index)
+const drillJump = (index: number) => {
+  state.drillClickDimensionList.splice(index)
   view.value.chartExtRequest = filter()
   calcData(view.value)
 }
