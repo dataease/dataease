@@ -92,6 +92,7 @@ router.beforeEach(async(to, from, next) => routeBefore(() => {
       const hasGetUserInfo = store.getters.name
       if (hasGetUserInfo || to.path.indexOf('/previewScreenShot/') > -1 || to.path.indexOf('/preview/') > -1 || to.path.indexOf('/delink') > -1 || to.path.indexOf('/nolic') > -1) {
         next()
+        if (to.path.indexOf('/task-ds-form') > -1) return
         store.dispatch('permission/setCurrentPath', to.path)
         let route = store.getters.permission_routes.find(
           item => item.path === '/' + to.path.split('/')[1]
