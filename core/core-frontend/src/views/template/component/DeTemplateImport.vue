@@ -103,6 +103,11 @@ const state = reactive({
         required: true,
         message: t('commons.input_content'),
         trigger: 'change'
+      },
+      {
+        max: 50,
+        message: t('commons.char_can_not_more_50'),
+        trigger: 'change'
       }
     ],
     categories: [
@@ -151,6 +156,10 @@ const cancel = () => {
 const saveTemplate = () => {
   if (!state.templateInfo.name) {
     ElMessage.warning(t('chart.name_can_not_empty'))
+    return false
+  }
+  if (state.templateInfo.name.length > 50) {
+    ElMessage.warning(t('commons.char_can_not_more_50'))
     return false
   }
   if (!state.templateInfo.templateData) {
@@ -278,7 +287,7 @@ if (props.templateId) {
   justify-content: flex-end;
 }
 .preview {
-  margin-top: -12px;
+  margin-top: -5px;
   border: 1px solid #e6e6e6;
   height: 300px !important;
   overflow: auto;
