@@ -62,7 +62,7 @@
 
               <el-row
                 style="height: 100%"
-                v-if="!state.currentTemplateShowList.length && state.templateFilterText"
+                v-if="!currentTemplateShowListComputed.length && state.templateFilterText"
                 class="custom-position"
               >
                 <Icon style="width: 125px; height: 125px" name="dv-nothing" />
