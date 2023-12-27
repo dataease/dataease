@@ -220,7 +220,7 @@ const update = (licKey: string) => {
     margin-top: -7px;
 
     .item {
-      font-family: AlibabaPuHuiTi;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 16px;
       font-style: normal;
       font-weight: 400;

@@ -1375,7 +1375,7 @@ defineExpose({
 
 <style lang="less">
 .dataset-parameters {
-  font-family: AlibabaPuHuiTi;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   font-style: normal;
   font-weight: 400;
   .ed-select-dropdown__item {
@@ -1407,7 +1407,7 @@ defineExpose({
   }
   .container {
     font-size: 14px;
-    font-family: AlibabaPuHuiTi;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     width: 1152px;
     height: 454px;
     border-radius: 4px;
@@ -1428,7 +1428,7 @@ defineExpose({
         display: flex;
         align-items: center;
         justify-content: space-between;
-        font-family: AlibabaPuHuiTi;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         font-style: normal;
         font-weight: 500;
@@ -1495,7 +1495,7 @@ defineExpose({
       }
 
       .title {
-        font-family: AlibabaPuHuiTi;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         font-style: normal;
         font-weight: 500;
@@ -1559,7 +1559,7 @@ defineExpose({
         color: #646a73;
         height: 16px;
         padding: 0px 4px;
-        font-family: AlibabaPuHuiTi;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 10px;
         font-style: normal;
         font-weight: 500;
@@ -1581,7 +1581,7 @@ defineExpose({
       }
       .title {
         margin-bottom: 16px;
-        font-family: AlibabaPuHuiTi;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         font-style: normal;
         font-weight: 500;

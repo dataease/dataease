@@ -159,7 +159,7 @@ defineExpose({
   width: 50%;
 
   & > p {
-    font-family: AlibabaPuHuiTi;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     font-weight: 500;
     margin: 0;

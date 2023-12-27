@@ -817,7 +817,7 @@ defineExpose({
       .title {
         display: flex;
         justify-content: space-between;
-        font-family: AlibabaPuHuiTi;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         font-weight: 500;
         color: var(--TextPrimary, #1f2329);
@@ -872,7 +872,7 @@ defineExpose({
         width: 100%;
         padding: 16px 24px;
         color: #1f2329;
-        font-family: AlibabaPuHuiTi;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 16px;
         font-style: normal;
         font-weight: 500;

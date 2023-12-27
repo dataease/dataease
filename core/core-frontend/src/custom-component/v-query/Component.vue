@@ -418,7 +418,7 @@ const opacityStyle = computed(() => {
       justify-content: center;
       color: #646a73;
       text-align: center;
-      font-family: AlibabaPuHuiTi;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 16px;
       font-style: normal;
       font-weight: 400;
@@ -434,7 +434,7 @@ const opacityStyle = computed(() => {
   .title {
     color: #1f2329;
     font-feature-settings: 'clig' off, 'liga' off;
-    font-family: AlibabaPuHuiTi;
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     font-style: normal;
     font-weight: 500;
@@ -493,7 +493,7 @@ const opacityStyle = computed(() => {
           text-overflow: ellipsis;
           white-space: nowrap;
           color: #1f2329;
-          font-family: AlibabaPuHuiTi;
+          font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
           font-size: 14px;
           font-style: normal;
           font-weight: 400;
