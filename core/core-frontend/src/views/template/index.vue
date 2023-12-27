@@ -283,6 +283,11 @@ const batchPreDelete = () => {
       categories: [state.currentTemplateId]
     }
     batchDelete(params).then(rsp => {
+      ElMessage({
+        message: t('commons.delete_success'),
+        type: 'success',
+        showClose: true
+      })
       showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)
     })
   })
