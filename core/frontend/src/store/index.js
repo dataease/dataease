@@ -928,6 +928,11 @@ const data = {
     },
     resetLastValidFilters(state) {
       state.lastValidFilters = {}
+    },
+    delLastValidFilterWithId(state, id) {
+      if (state.lastValidFilters[id]) {
+        delete state.lastValidFilters[id]
+      }
     }
   },
   modules: {
