@@ -34,9 +34,8 @@
                 :template-type="state.currentTemplateType"
                 :template-list="state.templateCategories"
                 @categoryDelete="categoryDelete"
-                @templateEdit="templateEdit"
+                @categoryEdit="categoryEdit"
                 @showCurrentTemplate="showCurrentTemplate"
-                @templateImport="templateImport"
                 @showTemplateEditDialog="showTemplateEditDialog"
               />
             </div>
@@ -143,27 +142,6 @@
         </div>
       </template>
     </el-dialog>
-    <!--导入templateDialog-->
-    <el-dialog
-      :title="state.templateDialog.title"
-      v-model="state.templateDialog.visible"
-      :show-close="true"
-      :destroy-on-close="true"
-      class="de-dialog-form"
-      width="600px"
-    >
-      <de-template-import
-        v-if="state.templateDialog.visible"
-        :pid="state.templateDialog.pid"
-        :template-id="state.templateDialog.templateId"
-        :opt-type="state.templateDialog.optType"
-        :template-categories="state.templateCategories"
-        @doTest="closeEditTemplateDialog"
-        @refresh="showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)"
-        @closeEditTemplateDialog="closeEditTemplateDialog"
-      />
-    </el-dialog>
-
     <!--导入templateDialog-->
     <el-dialog
       :title="state.templateDialog.title"
@@ -468,6 +446,10 @@ const showTemplateEditDialog = (type, templateInfo) => {
   state.editTemplate = true
 }
 
+const categoryEdit = templateInfo => {
+  showTemplateEditDialog('edit', templateInfo)
+}
+
 const templateEdit = templateInfo => {
   state.templateDialog.visible = true
   state.templateDialog.title = '编辑模版'
@@ -482,9 +464,10 @@ const categoryClick = params => {
 const saveTemplateEdit = templateEditForm => {
   templateEditFormRef.value.validate(valid => {
     if (valid) {
-      save(templateEditForm).then(response => {
-        close()
+      save({ ...templateEditForm }).then(response => {
+        state.currentTemplateLabel = templateEditForm.name
         getTree()
+        close()
       })
     } else {
       return false
@@ -492,7 +475,6 @@ const saveTemplateEdit = templateEditForm => {
   })
 }
 const close = () => {
-  templateEditFormRef.value.resetFields()
   state.editTemplate = false
 }
 const getTree = () => {
