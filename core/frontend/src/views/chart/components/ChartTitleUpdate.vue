@@ -6,7 +6,7 @@
   >
     <input
       ref="chartTitle"
-      v-model="chartTitleUpdate"
+      v-model.trim="chartTitleUpdate"
       type="text"
       :style="inputStyle"
       class="chart-input-title"

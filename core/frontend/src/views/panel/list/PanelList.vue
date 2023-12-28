@@ -334,7 +334,7 @@
             :label="$t('commons.name')"
             prop="name"
           >
-            <el-input v-model="groupForm.name" />
+            <el-input v-model.trim="groupForm.name" />
           </el-form-item>
         </el-form>
         <div
