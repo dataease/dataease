@@ -11,6 +11,7 @@ import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { getViewConfig } from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { toPercent } from '@/utils/translate'
 const dvMainStore = dvMainStoreWithOut()
 const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasViewInfo } =
   storeToRefs(dvMainStore)
@@ -145,10 +146,10 @@ export function canvasSave(callBack) {
       item.propValue.forEach(groupItem => {
         groupItem.linkageFilters = []
         // 计算groupStyle
-        groupItem.groupStyle.left = groupItem.style.left / groupStyle.width
-        groupItem.groupStyle.top = groupItem.style.top / groupStyle.height
-        groupItem.groupStyle.width = groupItem.style.width / groupStyle.width
-        groupItem.groupStyle.height = groupItem.style.height / groupStyle.height
+        groupItem.groupStyle.left = toPercent(groupItem.style.left / groupStyle.width)
+        groupItem.groupStyle.top = toPercent(groupItem.style.top / groupStyle.height)
+        groupItem.groupStyle.width = toPercent(groupItem.style.width / groupStyle.width)
+        groupItem.groupStyle.height = toPercent(groupItem.style.height / groupStyle.height)
       })
     } else if (item.component === 'DeTabs') {
       item.propValue.forEach(tabItem => {
