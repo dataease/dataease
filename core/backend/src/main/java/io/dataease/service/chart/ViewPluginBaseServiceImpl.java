@@ -84,14 +84,14 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
     @Override
     public String customWhere(String dsType, PluginFilterTreeObj obj, PluginViewSQL pluginViewSQL) {
-        logger.info("customWhere", gson.toJson(obj));
+        logger.info("customWhere:" + gson.toJson(obj));
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
         String methodName = "transChartFilterTrees";
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
         FilterTreeObj filters = gson.fromJson(gson.toJson(obj), FilterTreeObj.class);
         Object o;
         if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
-            logger.info("customWhereString", o);
+            logger.info("customWhereString:" + o);
             return (String) o;
         }
         return null;
