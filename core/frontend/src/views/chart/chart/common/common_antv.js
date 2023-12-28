@@ -1068,44 +1068,46 @@ export function getAnalyse(chart) {
       const lines = fixedLines.concat(dynamicLines)
 
       lines.forEach(ele => {
-        const value = parseFloat(ele.value)
-        const content = ele.name + ' : ' + valueFormatter(value, axisFormatterCfg)
-        assistLine.push({
-          type: 'line',
-          start: ['start', value],
-          end: ['end', value],
-          style: {
-            stroke: ele.color,
-            lineDash: getLineDash(ele.lineType)
+        if (ele) {
+          const value = parseFloat(ele.value)
+          const content = ele.name + ' : ' + valueFormatter(value, axisFormatterCfg)
+          assistLine.push({
+            type: 'line',
+            start: ['start', value],
+            end: ['end', value],
+            style: {
+              stroke: ele.color,
+              lineDash: getLineDash(ele.lineType)
+            }
+          })
+          if (!chart.type.includes('horizontal')) {
+            assistLine.push({
+              type: 'text',
+              position: [yAxisPosition === 'left' ? 'start' : 'end', value],
+              content: content,
+              offsetY: -2,
+              offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
+              style: {
+                textBaseline: 'bottom',
+                fill: ele.color,
+                fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
+              }
+            })
+          } else {
+            assistLine.push({
+              type: 'text',
+              position: [xAxisPosition === 'left' ? 'start' : 'end', value],
+              content: content,
+              offsetY: xAxisPosition === 'left' ? -2 : -10 * (content.length - 2),
+              offsetX: 2,
+              rotate: Math.PI / 2,
+              style: {
+                textBaseline: 'bottom',
+                fill: ele.color,
+                fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
+              }
+            })
           }
-        })
-        if (!chart.type.includes('horizontal')) {
-          assistLine.push({
-            type: 'text',
-            position: [yAxisPosition === 'left' ? 'start' : 'end', value],
-            content: content,
-            offsetY: -2,
-            offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
-            style: {
-              textBaseline: 'bottom',
-              fill: ele.color,
-              fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
-            }
-          })
-        } else {
-          assistLine.push({
-            type: 'text',
-            position: [xAxisPosition === 'left' ? 'start' : 'end', value],
-            content: content,
-            offsetY: xAxisPosition === 'left' ? -2 : -10 * (content.length - 2),
-            offsetX: 2,
-            rotate: Math.PI / 2,
-            style: {
-              textBaseline: 'bottom',
-              fill: ele.color,
-              fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
-            }
-          })
         }
       })
     }
