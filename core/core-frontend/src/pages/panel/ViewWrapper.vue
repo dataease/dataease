@@ -29,7 +29,8 @@ onBeforeMount(() => {
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
 
-      viewInfo.value = canvasViewInfoPreview[window.DataEaseBi.chartId] = (
+      viewInfo.value = canvasViewInfoPreview[window.DataEaseBi.chartId]
+      ;(
         (canvasDataResult as unknown as Array<{
           id: string
           component: string
