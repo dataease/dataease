@@ -63,7 +63,7 @@ const typeChange = item => {
 }
 
 const remove = (index: number) => {
-  if (isDisable(index)) return
+  if (isDisable()) return
   // 移除整行输入控件及内容
   parameters.value.splice(index, 1)
 }
@@ -77,8 +77,8 @@ const change = () => {
     })
   )
 }
-const isDisable = (index: number) => {
-  return parameters.value.length - 1 === index
+const isDisable = () => {
+  return parameters.value.length === 1
 }
 const querySearch = (queryString, cb) => {
   const results = queryString
@@ -169,7 +169,7 @@ const createFilter = (queryString: string) => {
             </el-col>
 
             <el-col :span="1">
-              <el-button text :disabled="isDisable(index) || isReadOnly" @click="remove(index)">
+              <el-button text :disabled="isDisable() || isReadOnly" @click="remove(index)">
                 <template #icon>
                   <Icon name="icon_delete-trash_outlined"></Icon>
                 </template>
