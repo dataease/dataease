@@ -90,10 +90,10 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
         FilterTreeObj filters = gson.fromJson(gson.toJson(obj), FilterTreeObj.class);
         logger.info("filters:" + gson.toJson(filters));
-        Object o1 = execProviderMethod(queryProvider, methodName, sqlObj, filters);
+        Object o1 = execProviderSuperMethod(queryProvider, methodName, sqlObj, filters);
         logger.info("o1:" + (String) o1);
         Object o;
-        if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
+        if ((o = execProviderSuperMethod(queryProvider, methodName, sqlObj, filters)) != null) {
             logger.info("customWhereString:" + o);
             return (String) o;
         }
@@ -227,6 +227,18 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
             SQLObj sqlObj = (SQLObj) execResult;
             PluginViewSQL result = PluginViewSQL.builder().build();
             return BeanUtils.copyBean(result, sqlObj);
+        }
+        return null;
+    }
+
+    private Object execProviderSuperMethod(QueryProvider queryProvider, String methodName, Object... args) {
+        Method[] declaredMethods = queryProvider.getClass().getMethods();
+        for (int i = 0; i < declaredMethods.length; i++) {
+            Method method = declaredMethods[i];
+            if (StringUtils.equals(method.getName(), methodName)) {
+                method.setAccessible(true);
+                return ReflectUtil.invoke(queryProvider, method, args);
+            }
         }
         return null;
     }
