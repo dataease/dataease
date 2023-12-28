@@ -568,11 +568,25 @@ function onTitleChange() {
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
+
+const marginBottom = computed<string | 0>(() => {
+  if (titleShow.value || trackMenu.value.length > 0 || state.title_remark.show) {
+    return 8 * scale.value + 'px'
+  }
+  return 0
+})
+
+const iconSize = computed<string>(() => {
+  return 16 * scale.value + 'px'
+})
 </script>
 
 <template>
   <div class="chart-area" v-loading="loadingFlag">
-    <div class="title-container" :style="{ 'justify-content': titleAlign }">
+    <div
+      class="title-container"
+      :style="{ 'justify-content': titleAlign, 'margin-bottom': marginBottom }"
+    >
       <template v-if="!titleEditStatus">
         <p v-if="titleShow" :style="state.title_class" @dblclick="changeEditTitle">
           {{ view.title }}
@@ -599,22 +613,22 @@ const toolTip = computed(() => {
           <template #content>
             <div style="white-space: pre-wrap" v-html="state.title_remark.remark"></div>
           </template>
-          <el-icon size="16px" class="inner-icon">
+          <el-icon :size="iconSize" class="inner-icon">
             <Icon name="icon_info_outlined" />
           </el-icon>
         </el-tooltip>
         <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
-          <el-icon size="16px" class="inner-icon">
+          <el-icon :size="iconSize" class="inner-icon">
             <Icon name="icon_link-record_outlined" />
           </el-icon>
         </el-tooltip>
         <el-tooltip :effect="toolTip" placement="top" content="已设置跳转" v-if="hasJumpIcon">
-          <el-icon size="16px" class="inner-icon">
+          <el-icon :size="iconSize" class="inner-icon">
             <Icon name="icon_viewinchat_outlined" />
           </el-icon>
         </el-tooltip>
         <el-tooltip :effect="toolTip" placement="top" content="已设置下钻" v-if="hasDrillIcon">
-          <el-icon size="16px" class="inner-icon">
+          <el-icon :size="iconSize" class="inner-icon">
             <Icon name="icon_drilling_outlined" />
           </el-icon>
         </el-tooltip>
