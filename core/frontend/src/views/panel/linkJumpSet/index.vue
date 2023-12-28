@@ -119,10 +119,10 @@
             >
               <el-row style="margin-top: 10px">
                 <el-col :span="11">
-                  <div class="ellip">{{ $t('panel.link_view') }}</div>
+                  <div class="ellip">{{ $t('panel.link_component') }}</div>
                 </el-col>
                 <el-col :span="11">
-                  <div class="ellip">{{ $t('panel.link_view_field') }}</div>
+                  <div class="ellip">{{ $t('panel.link_component_field') }}</div>
                 </el-col>
               </el-row>
               <el-row style="height: 180px;overflow-y: auto">
