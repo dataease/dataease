@@ -478,6 +478,17 @@ export default {
           completeSingle: false // 当匹配只有一项的时候是否自动补全
         }
       },
+      widgetSubjectsFilter: {
+        timeYearWidget: '年份过滤组件',
+        timeMonthWidget: '年月过滤组件',
+        timeDateWidget: '日期过滤组件',
+        textSelectWidget: '文本下拉过滤组件',
+        textSelectGridWidget: '文本列表过滤组件',
+        textInputWidget: '文本搜索过滤组件',
+        textSelectTreeWidget: '下拉树过滤组件',
+        numberSelectWidget: '数字下拉过滤组件',
+        numberSelectGridWidget: '数字列表过滤组件',
+      },
       widgetSubjectsTrans: {
         timeYearWidget: '年份过滤组件',
         timeMonthWidget: '年月过滤组件',
@@ -487,7 +498,7 @@ export default {
         textSelectGridWidget: '文本列表过滤组件',
         textInputWidget: '文本搜索过滤组件',
         textSelectTreeWidget: '下拉树过滤组件',
-        numberSelectWidget: '数字下来过滤组件',
+        numberSelectWidget: '数字下拉过滤组件',
         numberSelectGridWidget: '数字列表过滤组件',
         numberRangeWidget: '数值区间过滤组件'
       }
@@ -640,7 +651,7 @@ export default {
         }
         // 增加过滤组件匹配
         JSON.parse(rsp.data.bashComponentData).forEach(componentItem => {
-          if (componentItem.type === 'custom') {
+          if (componentItem.type === 'custom' && this.widgetSubjectsFilter.includes(componentItem.serviceName)) {
             this.currentLinkPanelViewArray.push({
               id: componentItem.id,
               type: 'filter',

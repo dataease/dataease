@@ -296,7 +296,7 @@ export default {
         textSelectGridWidget: '文本列表过滤组件',
         textInputWidget: '文本搜索过滤组件',
         textSelectTreeWidget: '下拉树过滤组件',
-        numberSelectWidget: '数字下来过滤组件',
+        numberSelectWidget: '数字下拉过滤组件',
         numberSelectGridWidget: '数字列表过滤组件',
         numberRangeWidget: '数值区间过滤组件'
       }
