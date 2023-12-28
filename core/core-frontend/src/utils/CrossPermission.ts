@@ -1,12 +1,15 @@
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 
-export const check = (data, id?: string) => {
+export const check = (data, id?: string, weight?: number) => {
+  if (!weight) {
+    weight = 1
+  }
   if (!id) {
     ElMessage.error('资源ID不能为空')
     return false
   }
   const node = getNode(data, id)
-  if (!node) {
+  if (!node || node < weight) {
     showMsg('无权访问当前资源，是否离开当前页面？系统将不保存您所做的更改', id)
     return false
   }

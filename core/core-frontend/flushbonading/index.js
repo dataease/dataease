@@ -114,7 +114,8 @@ htmlStream.pipe(parserStream).on('finish', () => {
     let element = document.createElement(name)
     Object.entries(obj).forEach(([key, value]) => {
       if (['href', 'src'].includes(key)) {
-        element[key] = \`\${preUrl}\${value}\`
+        const relativeVal = value.startsWith('./') ? value.substr(1) : value
+        element[key] = \`\${preUrl}\${relativeVal}\`
       } else {
         element.setAttribute(key, value || '')
       }
