@@ -1,7 +1,11 @@
 <script lang="ts" setup>
 import { ref, reactive, onBeforeMount, nextTick } from 'vue'
 import { initCanvasData } from '@/utils/canvasUtils'
-
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { check } from '@/utils/CrossPermission'
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache()
+const interactiveStore = interactiveStoreWithOut()
 const dashboardPreview = ref(null)
 const state = reactive({
   canvasDataPreview: null,
@@ -10,8 +14,20 @@ const state = reactive({
   dvInfo: null,
   curPreviewGap: 0
 })
-
-onBeforeMount(() => {
+const checkPer = async resourceId => {
+  if (!window.DataEaseBi || !resourceId) {
+    return true
+  }
+  const request = { busiFlag: window.DataEaseBi.busiFlag }
+  await interactiveStore.setInteractive(request)
+  const key = window.DataEaseBi.busiFlag === 'dataV' ? 'screen-weight' : 'panel-weight'
+  return check(wsCache.get(key), resourceId, 1)
+}
+onBeforeMount(async () => {
+  const checkResult = await checkPer(window.DataEaseBi.dvId)
+  if (!checkResult) {
+    return
+  }
   initCanvasData(
     window.DataEaseBi.dvId,
     window.DataEaseBi.busiFlag,

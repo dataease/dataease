@@ -47,7 +47,7 @@ export const interactiveStore = defineStore('interactive', {
   actions: {
     async setInteractive(param: BusiTreeRequest) {
       const flag = busiFlagMap.findIndex(item => item === param.busiFlag)
-      if (!hasMenuAuth(flag)) {
+      if (!hasMenuAuth(flag) && !window.DataEaseBi) {
         const tempData: InnerInteractive = {
           rootManage: false,
           anyManage: false,

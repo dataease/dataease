@@ -25,12 +25,14 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
 import RealTimeListTree from '@/components/data-visualization/RealTimeListTree.vue'
+import { interactiveStoreWithOut } from '@/store/modules/interactive'
+const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
     const { dvId, opt } = window.DataEaseBi || router.currentRoute.value.query
     if (!(opt && opt === 'create')) {
-      check(wsCache.get('screen-weight'), dvId)
+      check(wsCache.get('screen-weight'), dvId, 4)
     }
   }
 }
@@ -180,14 +182,25 @@ watch(
     }
   }
 )
-
-onMounted(() => {
+const checkPer = async resourceId => {
+  if (!window.DataEaseBi || !resourceId) {
+    return true
+  }
+  const request = { busiFlag: 'dataV' }
+  await interactiveStore.setInteractive(request)
+  return check(wsCache.get('screen-weight'), resourceId, 4)
+}
+onMounted(async () => {
   window.addEventListener('blur', releaseAttachKey)
   if (editMode.value === 'edit') {
     window.addEventListener('storage', eventCheck)
   }
-  initDataset()
   const { dvId, opt, pid, createType } = window.DataEaseBi || router.currentRoute.value.query
+  const checkResult = await checkPer(dvId)
+  if (!checkResult) {
+    return
+  }
+  initDataset()
   if (dvId) {
     state.canvasInitStatus = false
     initCanvasData(dvId, 'dataV', function () {
