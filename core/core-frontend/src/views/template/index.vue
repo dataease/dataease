@@ -47,7 +47,7 @@
                   }})</span
                 >
                 <span v-show="state.templateFilterText">
-                  <span style="color: #3370ff">{{ state.currentTemplateLabel }}&nbsp;&nbsp;</span>
+                  <span style="color: #3370ff">{{ state.templateFilterText }}&nbsp;&nbsp;</span>
                   <span>的搜索结果&nbsp;{{ currentTemplateShowListComputed.length }}&nbsp;个</span>
                 </span>
               </div>
