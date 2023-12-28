@@ -460,6 +460,10 @@ export default {
       position: absolute;
       top: 1px;
       right: 23px;
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 14px;
+      height: 16px;
       z-index: 1;
     }
   }

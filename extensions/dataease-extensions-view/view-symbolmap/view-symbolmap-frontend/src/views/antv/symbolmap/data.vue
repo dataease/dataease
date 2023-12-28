@@ -432,6 +432,10 @@ export default {
       top: 1px;
       right: 23px;
       z-index: 1;
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 14px;
+      height: 16px;
     }
   }
 
