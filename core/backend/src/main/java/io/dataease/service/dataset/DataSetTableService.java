@@ -1245,7 +1245,8 @@ public class DataSetTableService {
         } catch (Exception e) {
         }
         if (binaryExpression != null) {
-            if (!(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && hasVariable(binaryExpression.getRightExpression().toString())) {
+            boolean hasSubBinaryExpression = binaryExpression instanceof AndExpression || binaryExpression instanceof OrExpression;
+            if (!hasSubBinaryExpression &&!(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && hasVariable(binaryExpression.getRightExpression().toString())) {
                 stringBuilder.append(SubstitutedSql);
             } else {
                 expr.accept(getExpressionDeParser(stringBuilder));
@@ -2169,7 +2170,7 @@ public class DataSetTableService {
                     datasetTableField.setType(field.getFieldType());
                     datasetTableField.setSize(field.getFieldSize());
                     datasetTableField.setAccuracy(field.getAccuracy());
-                    if (ObjectUtils.isEmpty(ds)) {
+                    if (StringUtils.isEmpty(datasetTable.getDataSourceId())) {
                         datasetTableField.setDeExtractType(transFieldType(field.getFieldType()));
                     } else {
                         Integer fieldType = qp.transFieldType(field.getFieldType());
@@ -2185,7 +2186,7 @@ public class DataSetTableService {
                         datasetTableField.setDataeaseName(TableUtils.columnName(field.getFieldName()));
                     }
                     datasetTableField.setType(field.getFieldType());
-                    if (ObjectUtils.isEmpty(ds)) {
+                    if (StringUtils.isEmpty(datasetTable.getDataSourceId())) {
                         datasetTableField.setDeType(transFieldType(field.getFieldType()));
                         datasetTableField.setDeExtractType(transFieldType(field.getFieldType()));
                     } else {
@@ -2980,6 +2981,16 @@ public class DataSetTableService {
                 }
                 if (inExpression.getRightExpression() != null) {
                     getBuffer().append(" ( ");
+                    if (inExpression.getRightExpression() instanceof SubSelect) {
+                       try {
+                           SubSelect subSelect = (SubSelect) inExpression.getRightExpression();
+                           Select select = (Select) CCJSqlParserUtil.parse(removeVariables(subSelect.getSelectBody().toString(), ""));
+                           subSelect.setSelectBody(select.getSelectBody());
+                           inExpression.setRightExpression(subSelect);
+                       }catch (Exception e){
+                           e.printStackTrace();
+                       }
+                    }
                     inExpression.getRightExpression().accept(this);
                     getBuffer().append(" )");
                 }
