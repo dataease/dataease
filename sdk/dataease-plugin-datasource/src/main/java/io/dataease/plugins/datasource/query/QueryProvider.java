@@ -21,8 +21,6 @@ import io.dataease.plugins.datasource.entity.PageInfo;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
@@ -35,10 +33,6 @@ import java.util.stream.Collectors;
  * @Date 2021/5/17 2:42 下午
  */
 public abstract class QueryProvider {
-    private static final Logger logger = LoggerFactory.getLogger(QueryProvider.class);
-
-    private static Gson gson = new Gson();
-
     public abstract Integer transFieldType(String field);
 
     public abstract String createSQLPreview(String sql, String orderBy);
@@ -176,7 +170,6 @@ public abstract class QueryProvider {
     }
 
     public String transChartFilterTrees(SQLObj tableObj, FilterTreeObj tree) {
-        logger.info("trans begin:" + tree);
         List<String> res = new ArrayList<>();
         // permission trees
         // 解析每个tree，然后多个tree之间用and拼接
@@ -188,7 +181,6 @@ public abstract class QueryProvider {
         if (StringUtils.isNotEmpty(treeExp)) {
             res.add(treeExp);
         }
-        logger.info("trans end:" + gson.toJson(res));
         return CollectionUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null;
     }
 
