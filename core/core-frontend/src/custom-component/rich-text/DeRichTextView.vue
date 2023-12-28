@@ -2,7 +2,6 @@
   <div
     class="rich-main-class"
     :class="{ 'edit-model': canEdit }"
-    :style="autoStyle"
     @keydown.stop
     @keyup.stop
     @dblclick="setEdit"
@@ -139,16 +138,6 @@ const init = ref({
 
 const editStatus = computed(() => {
   return editMode.value === 'edit'
-})
-
-const autoStyle = computed(() => {
-  return {
-    height: 100 / scale.value + '%!important',
-    width: 100 / scale.value + '%!important',
-    left: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
-    top: 50 * (1 - 1 / scale.value) + '%',
-    transform: 'scale(' + scale.value + ')'
-  }
 })
 
 watch(

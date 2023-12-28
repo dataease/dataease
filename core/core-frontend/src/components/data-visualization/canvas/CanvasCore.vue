@@ -207,11 +207,19 @@ const curComponentId = computed(() => {
 const { emitter } = useEmitt()
 
 const curScale = computed(() => {
-  return canvasStyleData.value.scale / 100
+  if (dashboardActive.value) {
+    return (canvasStyleData.value.scale * 1.5) / 100
+  } else {
+    return canvasStyleData.value.scale / 100
+  }
 })
 
 const curBaseScale = computed(() => {
-  return dvMainStore.canvasStyleData.scale / 100
+  if (dashboardActive.value) {
+    return (dvMainStore.canvasStyleData.scale * 1.5) / 100
+  } else {
+    return dvMainStore.canvasStyleData.scale / 100
+  }
 })
 
 const pointShadowShow = computed(() => {
@@ -1340,6 +1348,7 @@ defineExpose({
         v-else
         :is="findComponent(item.component)"
         :id="'component' + item.id"
+        :scale="curBaseScale"
         class="component"
         :is-edit="true"
         :style="getComponentStyle(item.style)"

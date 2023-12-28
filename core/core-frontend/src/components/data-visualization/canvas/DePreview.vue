@@ -126,6 +126,7 @@ const restore = () => {
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
+        scaleWidth.value = scaleWidth.value * 1.5
       } else {
         changeRefComponentsSizeWithScale(
           componentData.value,

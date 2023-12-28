@@ -341,6 +341,22 @@ onBeforeUnmount(() => {
   resizeObserver?.disconnect()
   clearInterval(scrollTimer)
 })
+
+const autoStyle = computed(() => {
+  return {
+    height: 100 / scale.value + '%!important',
+    width: 100 / scale.value + '%!important',
+    left: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
+    top: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
+    transform: 'scale(' + scale.value + ')'
+  }
+})
+
+const autoHeightStyle = computed(() => {
+  return {
+    height: 20 * scale.value + 8 + 'px'
+  }
+})
 </script>
 
 <template>
@@ -355,18 +371,20 @@ onBeforeUnmount(() => {
     <div v-if="!isError" class="canvas-content">
       <div style="height: 100%" :id="containerId"></div>
     </div>
-    <div class="table-page-info" v-if="showPage && !isError">
-      <div>共{{ state.pageInfo.total }}条</div>
-      <el-pagination
-        class="table-page-content"
-        layout="prev, pager, next"
-        v-model:page-size="state.pageInfo.pageSize"
-        v-model:current-page="state.pageInfo.currentPage"
-        :pager-count="5"
-        :total="state.pageInfo.total"
-        @update:current-page="handleCurrentChange"
-      />
-    </div>
+    <el-row :style="autoHeightStyle" v-if="showPage && !isError">
+      <div :style="autoStyle" class="table-page-info">
+        <div>共{{ state.pageInfo.total }}条</div>
+        <el-pagination
+          class="table-page-content"
+          layout="prev, pager, next"
+          v-model:page-size="state.pageInfo.pageSize"
+          v-model:current-page="state.pageInfo.currentPage"
+          :pager-count="5"
+          :total="state.pageInfo.total"
+          @update:current-page="handleCurrentChange"
+        />
+      </div>
+    </el-row>
     <chart-error v-if="isError" :err-msg="errMsg" />
   </div>
 </template>
@@ -387,6 +405,7 @@ onBeforeUnmount(() => {
   }
 }
 .table-page-info {
+  position: relative;
   margin: 4px;
   height: 20px;
   display: flex;

@@ -43,9 +43,14 @@ const props = defineProps({
     type: String,
     required: true,
     default: ''
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
-const { element, view } = toRefs(props)
+const { element, view, scale } = toRefs(props)
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -311,17 +316,21 @@ const labelStyle = computed(() => {
     color: customStyle.labelColor || '#1f2329'
   } as CSSProperties
 })
-const opacityStyle = computed(() => {
-  return element.value?.style?.opacity
-    ? ({
-        opacity: element.value.style.opacity
-      } as CSSProperties)
-    : {}
+const autoStyle = computed(() => {
+  return {
+    position: 'absolute',
+    height: 100 / scale.value + '%!important',
+    width: 100 / scale.value + '%!important',
+    left: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
+    top: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
+    transform: 'scale(' + scale.value + ')',
+    opacity: element.value?.style?.opacity || 1
+  } as CSSProperties
 })
 </script>
 
 <template>
-  <div class="v-query-container" :style="opacityStyle">
+  <div class="v-query-container" :style="autoStyle">
     <p v-if="customStyle.titleShow" class="title" :style="titleStyle">
       {{ customStyle.title }}
     </p>
