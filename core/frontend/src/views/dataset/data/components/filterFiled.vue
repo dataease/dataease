@@ -350,8 +350,8 @@ export default {
       }
       this.showTextArea = true
     },
-    filterTypeChange() {
-      this.item.term = ''
+    filterTypeChange(val) {
+      this.item.term = val === 'logic' ? 'eq' : ''
       this.item.value = ''
       this.initEnumOptions()
     },
@@ -389,7 +389,7 @@ export default {
         filterType: 'logic',
         enumValue: '',
         value: '',
-        term: ''
+        term: 'eq'
       })
       this.filterListInit(deType)
       this.checklist = []
@@ -537,7 +537,7 @@ export default {
   }
 
   .de-bottom-line {
-    font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+    font-family: AlibabaPuHuiTi, Hiragino Sans GB, Microsoft YaHei, sans-serif;
     font-variant: tabular-nums;
     font-feature-settings: "tnum";
     word-wrap: break-word;
@@ -590,7 +590,7 @@ export default {
     border-radius: 0;
     height: 26px;
 
-    font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+    font-family: AlibabaPuHuiTi, Hiragino Sans GB, Microsoft YaHei, sans-serif;
     word-wrap: break-word;
     text-align: left;
     color: rgba(0, 0, 0, 0.65);
@@ -631,7 +631,7 @@ export default {
     padding: 0;
     li {
       font-family: Alibaba-PuHuiTi-Regular, Helvetica Neue, Helvetica, Arial,
-        PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+        AlibabaPuHuiTi, Hiragino Sans GB, Microsoft YaHei, sans-serif;
       font-variant: tabular-nums;
       font-feature-settings: "tnum";
       list-style: none;
@@ -698,7 +698,7 @@ export default {
 
   .el-input {
     font-family: Alibaba-PuHuiTi-Regular, Helvetica Neue, Helvetica, Arial,
-      PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+      AlibabaPuHuiTi, Hiragino Sans GB, Microsoft YaHei, sans-serif;
     box-sizing: border-box;
     margin: 0;
     color: rgba(0, 0, 0, 0.65);
@@ -729,7 +729,7 @@ export default {
     box-shadow: none;
     border: 1px solid rgba(0, 0, 0, 0.05);
     .mod-left {
-      font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+      font-family: AlibabaPuHuiTi, Hiragino Sans GB, Microsoft YaHei, sans-serif;
       color: rgba(0, 0, 0, 0.65);
       font-size: 12px;
       vertical-align: top;
@@ -775,7 +775,7 @@ export default {
       border-left: 1px solid hsla(0, 0%, 59%, 0.1);
     }
     .autochecker-list {
-      font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+      font-family: AlibabaPuHuiTi, Hiragino Sans GB, Microsoft YaHei, sans-serif;
       color: rgba(0, 0, 0, 0.65);
       box-sizing: border-box;
       width: 100%;
@@ -820,7 +820,7 @@ export default {
         }
 
         label {
-          font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei,
+          font-family: AlibabaPuHuiTi, Hiragino Sans GB, Microsoft YaHei,
             sans-serif;
           font-size: 12px;
           direction: ltr;

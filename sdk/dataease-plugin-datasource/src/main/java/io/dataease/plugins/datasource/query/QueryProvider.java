@@ -33,7 +33,6 @@ import java.util.stream.Collectors;
  * @Date 2021/5/17 2:42 下午
  */
 public abstract class QueryProvider {
-
     public abstract Integer transFieldType(String field);
 
     public abstract String createSQLPreview(String sql, String orderBy);

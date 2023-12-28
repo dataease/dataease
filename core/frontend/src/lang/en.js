@@ -1184,7 +1184,7 @@ export default {
     chart_bar_stack: 'Stack Bar',
     chart_percentage_bar_stack: 'Percentage Stack Bar',
     chart_bar_horizontal: 'Horizontal Bar',
-    chart_bar_time_range: 'Time Bar',
+    chart_bar_time_range: 'Range Bar',
     chart_bar_stack_horizontal: 'Stack Horizontal Bar',
     chart_percentage_bar_stack_horizontal: 'Horizontal Percentage Stack Bar',
     chart_bidirectional_bar: 'Bidirectional Bar',
@@ -1386,9 +1386,9 @@ export default {
     filter_value_can_not_str: 'Value type can not input string',
     enum_value_can_not_null: 'Enum Value can not empty.',
     column: 'Column',
+    table_freeze: 'Table Freeze',
     table_config: 'Table Config',
     table_column_width_config: 'Column Width',
-    table_column_freeze: 'Column Freeze',
     table_column_adapt: 'Adapt',
     table_column_custom: 'Custom',
     chart_table_pivot: 'Pivot Table',
@@ -1497,7 +1497,7 @@ export default {
     dynamic: 'Dynamic',
     gauge_size_field_delete: 'Dynamic field changed，please edit again',
     chart_group: 'Sub Type',
-    chart_bar_time: 'Times',
+    chart_bar_time: 'Range',
     chart_bar_group: 'Bar Group',
     chart_bar_group_stack: 'Group Stack Bar',
     field_dynamic: 'Dynamic',
@@ -1525,7 +1525,7 @@ export default {
     set_zero: 'Set Zero',
     ignore_data: 'Hide Data',
     sub_dimension_tip: 'This field is required, and cannot be included in the type axis, you should choose non-group chart if you don\'t need it, or you will get unexpected chart.',
-    time_bar_tip: 'This field is required, and axis type must be time',
+    time_bar_tip: 'This field is required, and need two time dimensions or two quotas',
     drill_dimension_tip: 'Only fields in the dataset can be drilled',
     table_scroll_tip: 'The detail table is only effective when the pagination mode is "Drop-down".',
     table_threshold_tip: 'Tip: Do not select fields repeatedly. If the same field is configured repeatedly, only the last field will take effect.',
@@ -1594,7 +1594,8 @@ export default {
     gauge_axis_label: 'Axis Label',
     word_size_range: 'Word Size Range',
     word_spacing: 'Word Spacing',
-    axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one'
+    axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one',
+    needs_to_be_integer: 'Needs to be an integer'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
@@ -2785,7 +2786,7 @@ export default {
     fire_now_success: 'Task executing',
     larkgroups: 'Lark group',
     ext_wait_time: 'Additional waiting time for dashboard loading (unit: seconds)',
-    wat_time_limit: 'The additional waiting time must be between [0 - 30]'
+    wat_time_limit: 'The additional waiting time must be an integer between [0 - 30]'
   },
   dynamic_time: {
     set_default: 'Set Default',

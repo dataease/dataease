@@ -587,14 +587,14 @@ export default {
       result.relationFilterIds = matchFilters.map(item => item.id)
 
       let matchViewIds = []
-      matchFilters.forEach(item => {
+      for (let index = 0; index < matchFilters.length; index++) {
+        const item = matchFilters[index]
         if (!item.options.attrs.viewIds?.length) {
           matchViewIds = null
-          return false
+          break
         }
         matchViewIds = matchViewIds.concat(item.options.attrs.viewIds)
-      })
-
+      }
       let viewKeyMap = buildViewKeyMap(panelItems)
       if (matchViewIds) {
         matchViewIds = [...new Set(matchViewIds)]
@@ -708,8 +708,8 @@ export default {
       }
       if (this.isMainCanvas()) {
         this.$store.commit('setPreviewCanvasScale', {
-          scaleWidth: this.canvasStyleData.autoSizeAdaptor ? (this.scaleWidth / 100) : 1,
-          scaleHeight: this.canvasStyleData.autoSizeAdaptor ? (this.scaleHeight / 100) : 1
+          scaleWidth: (this.canvasStyleData.autoSizeAdaptor || this.terminal === 'mobile') ? (this.scaleWidth / 100) : 1,
+          scaleHeight: (this.canvasStyleData.autoSizeAdaptor || this.terminal === 'mobile') ? (this.scaleHeight / 100) : 1
         })
       }
       this.handleScaleChange()

@@ -30,6 +30,8 @@ import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -55,6 +57,8 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
     @Resource
     private ChartViewService chartViewService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ViewPluginBaseServiceImpl.class);
 
 
     @Override
@@ -85,7 +89,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
         FilterTreeObj filters = gson.fromJson(gson.toJson(obj), FilterTreeObj.class);
         Object o;
-        if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
+        if ((o = execProviderSuperMethod(queryProvider, methodName, sqlObj, filters)) != null) {
             return (String) o;
         }
         return null;
@@ -218,6 +222,18 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
             SQLObj sqlObj = (SQLObj) execResult;
             PluginViewSQL result = PluginViewSQL.builder().build();
             return BeanUtils.copyBean(result, sqlObj);
+        }
+        return null;
+    }
+
+    private Object execProviderSuperMethod(QueryProvider queryProvider, String methodName, Object... args) {
+        Method[] declaredMethods = queryProvider.getClass().getMethods();
+        for (int i = 0; i < declaredMethods.length; i++) {
+            Method method = declaredMethods[i];
+            if (StringUtils.equals(method.getName(), methodName)) {
+                method.setAccessible(true);
+                return ReflectUtil.invoke(queryProvider, method, args);
+            }
         }
         return null;
     }

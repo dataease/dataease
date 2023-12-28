@@ -278,7 +278,7 @@ export default {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 16px;
       font-weight: 500;
       line-height: 24px;

@@ -142,7 +142,7 @@ public class SymbolMapRSHandler implements PluginViewRSHandler<Map> {
         if (StringUtils.isBlank(val)) return val;
         String typeField = field.getTypeField();
         if (StringUtils.isNotBlank(typeField) && trans2Ykeys.contains(typeField)) {
-            return Arrays.stream(val.split(",")).distinct().collect(Collectors.joining(","));
+            return Arrays.stream(val.split(",")).map(StringUtils::trim).distinct().collect(Collectors.joining(","));
         }
         return val;
     }

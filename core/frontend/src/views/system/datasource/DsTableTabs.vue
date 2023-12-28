@@ -195,7 +195,7 @@ export default {
 .ds-table-drawer {
   .table-value,
   .table-name {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     margin: 0;
@@ -220,7 +220,7 @@ export default {
   }
 
   .table-name-top {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;

@@ -26,7 +26,7 @@
             class="form-item"
           >
             <el-input
-              v-model="titleForm.title"
+              v-model.trim="titleForm.title"
               size="mini"
               :placeholder="$t('chart.title')"
               clearable

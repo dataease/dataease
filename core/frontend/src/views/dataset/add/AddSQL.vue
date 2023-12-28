@@ -1193,7 +1193,7 @@ export default {
     background: #e1eaff;
     position: relative;
     padding: 9px 0 9px 40px;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
 
@@ -1233,7 +1233,7 @@ export default {
       border-left: 1px solid var(--deCardStrokeColor, #dee0e3);
 
       .no-select-datasource {
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         color: var(--deTextPrimary, #1f2329);
         font-weight: 400;
@@ -1243,7 +1243,7 @@ export default {
       }
 
       .table-database-name {
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 16px;
         font-weight: 500;
         color: var(--deTextPrimary, #1f2329);
@@ -1346,7 +1346,7 @@ export default {
   }
 
   .sql-result {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     overflow-y: auto;
     box-sizing: border-box;
@@ -1396,7 +1396,7 @@ export default {
 
       .el-empty__bottom,
       .el-empty__description p {
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-weight: 400;
         margin-top: 0;

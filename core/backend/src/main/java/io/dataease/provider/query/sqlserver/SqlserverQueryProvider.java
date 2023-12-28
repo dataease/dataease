@@ -436,10 +436,10 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return originTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true);
+        return originTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, true);
     }
 
-    public String originTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
+    public String originTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder, boolean needResultCount) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -518,7 +518,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 .build();
         if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+        if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom") && needResultCount) {
             SQLObj limitFiled = SQLObj.builder().limitFiled("top " + view.getResultCount() + " ").build();
             st.add("limitFiled", limitFiled);
         }
@@ -526,16 +526,17 @@ public class SqlserverQueryProvider extends QueryProvider {
     }
 
     public String originSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
-        return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view, needOrder);
+        return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view, needOrder, true);
     }
 
     @Override
     public String getSQLWithPage(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
-        String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
+        boolean isPage = (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null);
+        String limit = (isPage ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
         if (isTable) {
-            return getSQLTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            return originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
         } else {
-            return getSQLTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
         }
     }
 
@@ -838,11 +839,38 @@ public class SqlserverQueryProvider extends QueryProvider {
 
         List<SQLObj> yFields = new ArrayList<>(); // 要把两个时间字段放进y里面
         List<String> yWheres = new ArrayList<>();
+        List<SQLObj> yOrders = new ArrayList<>();
 
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
                 String originField;
+
+                if (StringUtils.equalsIgnoreCase(x.getGroupType(), "q")) {
+                    if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
+                        // 解析origin name中有关联的字段生成sql表达式
+                        originField = calcFieldRegex(x.getOriginName(), tableObj);
+                    } else if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 1) {
+                        originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    } else {
+                        originField = String.format(SqlServerSQLConstants.KEYWORD_FIX, tableObj.getTableAlias(), x.getOriginName());
+                    }
+                    String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
+                    // 处理纵轴字段
+                    yFields.add(getYFields(x, originField, fieldAlias));
+                    // 处理纵轴过滤
+                    yWheres.add(getYWheres(x, originField, fieldAlias));
+                    // 处理纵轴排序
+                    if (StringUtils.isNotEmpty(x.getSort()) && Utils.joinSort(x.getSort())) {
+                        yOrders.add(SQLObj.builder()
+                                .orderField(originField)
+                                .orderAlias(fieldAlias)
+                                .orderDirection(x.getSort())
+                                .build());
+                    }
+                    continue;
+                }
+
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && x.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
                     originField = calcFieldRegex(x.getOriginName(), tableObj);
@@ -880,7 +908,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
             }
         }
-        List<SQLObj> yOrders = new ArrayList<>();
+
 
         // 处理视图中字段过滤
         String customWheres = transChartFilterTrees(tableObj, fieldCustomFilter);
@@ -1450,7 +1478,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null &&  request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
+                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null && request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
                     whereValue = "(" + value.stream().map(str -> {
                         return "N" + "'" + str + "'";
                     }).collect(Collectors.joining(",")) + ")";
@@ -1472,7 +1500,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 }
             } else {
 
-                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null &&  request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
+                if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null && request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                 } else {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value.get(0));
@@ -1738,7 +1766,7 @@ public class SqlserverQueryProvider extends QueryProvider {
     @Override
     public String getResultCount(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         if (isTable) {
-            return "SELECT COUNT(*) AS count from (" + originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + ") COUNT_TEMP";
+            return "SELECT COUNT(*) AS count from (" + originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false, true) + ") COUNT_TEMP";
         } else {
             return "SELECT COUNT(*) AS count from (" + originSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + ") COUNT_TEMP";
         }

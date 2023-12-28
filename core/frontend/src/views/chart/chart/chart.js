@@ -172,7 +172,8 @@ export const DEFAULT_SIZE = {
   quotaSuffixLetterSpace: '0',
   quotaSuffixFontShadow: false,
   tableColumnFreezeHead: 0,
-  tableColumnFreezeTail: 0
+  tableColumnFreezeTail: 0,
+  tableRowFreezeHead: 0
 }
 export const DEFAULT_SUSPENSION = {
   show: true
@@ -927,7 +928,7 @@ export const BASE_CHART_STRING = {
     yAxis: DEFAULT_YAXIS_STYLE,
     yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   }),
-  customFilter: '[]'
+  customFilter: '{}'
 }
 
 export const BASE_CHART = {
@@ -950,7 +951,7 @@ export const BASE_CHART = {
     yAxis: DEFAULT_YAXIS_STYLE,
     yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   },
-  customFilter: []
+  customFilter: {}
 }
 
 export const BASE_MAP = {

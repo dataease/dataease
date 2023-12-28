@@ -152,7 +152,7 @@ export default {
     z-index: 10;
 
     .operate-title {
-      font-family: PingFang SC, Hiragino Sans GB, Microsoft YaHei, sans-serif;
+      font-family: AlibabaPuHuiTi, Hiragino Sans GB, Microsoft YaHei, sans-serif;
       word-wrap: break-word;
       box-sizing: border-box;
       color: rgba(0, 0, 0, 0.65);

@@ -235,6 +235,9 @@ export default {
             this.customColor = this.colorForm.colors[0]
             this.colorIndex = 0
           }
+          if(this.colorForm.gradient === undefined){
+            this.colorForm.gradient = false
+          }
 
         }
       }

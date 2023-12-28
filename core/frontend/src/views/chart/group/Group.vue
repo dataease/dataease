@@ -1046,7 +1046,7 @@ export default {
       view.yaxis = JSON.stringify([])
       view.yaxisExt = JSON.stringify([])
       view.extStack = JSON.stringify([])
-      view.customFilter = JSON.stringify([])
+      view.customFilter = JSON.stringify({})
       view.drillFields = JSON.stringify([])
       view.extBubble = JSON.stringify([])
       view.viewFields = JSON.stringify([])

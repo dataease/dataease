@@ -92,16 +92,16 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
     showSeriesNumber: customAttr.size.showIndex,
     style: getSize(chart),
     conditions: getConditions(chart),
-    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0
+    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
+    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
     s2Options.colCell = (node) => {
       if (node.colIndex === 0) {
-        if (!customAttr.size.indexLabel) {
+        node.label = customAttr.size.indexLabel
+        if (!customAttr.size.indexLabel || customAttr.size.showTableHeader === false) {
           node.label = ' '
-        } else {
-          node.label = customAttr.size.indexLabel
         }
       }
     }
@@ -119,6 +119,9 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
       resize: {
         colCellVertical: false
       }
+    }
+    s2Options.colCell = (node) => {
+      node.label = ' '
     }
   }
 
@@ -281,16 +284,16 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
     showSeriesNumber: customAttr.size.showIndex,
     style: getSize(chart),
     conditions: getConditions(chart),
-    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0
+    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
+    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
     s2Options.colCell = (node) => {
       if (node.colIndex === 0) {
-        if (!customAttr.size.indexLabel) {
+        node.label = customAttr.size.indexLabel
+        if (!customAttr.size.indexLabel || customAttr.size.showTableHeader === false) {
           node.label = ' '
-        } else {
-          node.label = customAttr.size.indexLabel
         }
       }
     }
@@ -305,6 +308,9 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
       resize: {
         colCellVertical: false
       }
+    }
+    s2Options.colCell = (node) => {
+      node.label = ' '
     }
   }
 

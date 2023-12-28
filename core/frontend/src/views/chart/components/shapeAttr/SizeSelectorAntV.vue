@@ -296,8 +296,8 @@
           />
         </el-form-item>
         <el-form-item
-          v-if="showProperty('tableColumnFreeze')"
-          :label="$t('chart.table_column_freeze')"
+          v-if="showProperty('tableFreeze')"
+          :label="$t('chart.table_freeze')"
           class="form-item"
         >
           <span>{{ $t('dynamic_time.before') }} </span>
@@ -309,6 +309,16 @@
             @change="changeBarSizeCase('tableColumnFreezeHead')"
           />
           <span> {{ $t('chart.column') }}</span>
+          <div style="margin: 5px 0" />
+          <span>{{ $t('dynamic_time.before') }} </span>
+          <el-input-number
+            v-model="sizeForm.tableRowFreezeHead"
+            :min="0"
+            :max="1000"
+            :step-strictly="true"
+            @change="changeBarSizeCase('tableRowFreezeHead')"
+          />
+          <span> {{ $t('deDataset.row') }}</span>
         </el-form-item>
         <el-form-item
           v-if="showProperty('showIndex')"
@@ -349,7 +359,7 @@
             <el-radio :label="false">{{ $t('commons.no') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <div v-if="showProperty('showTableHeader') && sizeForm.showTableHeader">
+        <div v-if="(showProperty('showTableHeader') && sizeForm.showTableHeader) || chart.type === 'table-pivot'">
           <el-form-item
             v-if="showProperty('tableTitleFontSize')"
             :label="$t('chart.table_title_fontsize')"
@@ -1697,6 +1707,7 @@ export default {
           this.sizeForm.tableColTooltip = this.sizeForm.tableColTooltip ?? DEFAULT_SIZE.tableColTooltip
           this.sizeForm.tableColumnFreezeHead = this.sizeForm.tableColumnFreezeHead ?? DEFAULT_SIZE.tableColumnFreezeHead
           this.sizeForm.tableColumnFreezeTail = this.sizeForm.tableColumnFreezeTail ?? DEFAULT_SIZE.tableColumnFreezeTail
+          this.sizeForm.tableRowFreezeHead = this.sizeForm.tableRowFreezeHead ?? DEFAULT_SIZE.tableRowFreezeHead
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
           this.sizeForm.showTableHeader = this.sizeForm.showTableHeader !== false
@@ -1769,6 +1780,11 @@ export default {
       this.sizeForm['modifyName'] = modifyName
       if (this.sizeForm.gaugeMax <= this.sizeForm.gaugeMin) {
         this.$message.error(this.$t('chart.max_more_than_mix'))
+        return
+      }
+      const reg = /^\d+$/m
+      if (!reg.test(this.sizeForm.tableRowFreezeHead) || !reg.test(this.sizeForm.tableColumnFreezeHead)) {
+        this.$message.error(this.$t('chart.table_freeze') + this.$t('chart.needs_to_be_integer'))
         return
       }
       this.$emit('onSizeChange', this.sizeForm)

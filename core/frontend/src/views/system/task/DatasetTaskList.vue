@@ -741,7 +741,7 @@ export default {
 
   .title,
   .el-checkbox {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     padding: 5px 0;

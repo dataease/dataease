@@ -1,7 +1,7 @@
 .vjs-custom-skin > .video-js {
   width: 100%;
   background-color: rgba(0, 0, 0, 0);
-  font-family: "PingFang SC","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei","微软雅黑",sans-serif;
+  font-family: "AlibabaPuHuiTi","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei","微软雅黑",sans-serif;
 }
 
 .vjs-custom-skin > .video-js .vjs-menu-button-inline.vjs-slider-active,.vjs-custom-skin > .video-js .vjs-menu-button-inline:focus,.vjs-custom-skin > .video-js .vjs-menu-button-inline:hover,.video-js.vjs-no-flex .vjs-menu-button-inline {
@@ -108,7 +108,7 @@
   padding: 0;
   line-height: 2em;
   font-size: 1.1em;
-  font-family: "PingFang SC","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei","微软雅黑",sans-serif;
+  font-family: "AlibabaPuHuiTi","Helvetica Neue","Hiragino Sans GB","Segoe UI","Microsoft YaHei","微软雅黑",sans-serif;
 }
 
 .vjs-custom-skin > .video-js .vjs-time-tooltip,

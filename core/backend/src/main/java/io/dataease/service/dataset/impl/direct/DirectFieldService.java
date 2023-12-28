@@ -91,6 +91,7 @@ public class DirectFieldService implements DataSetFieldService {
 
         return CollectionUtil.sort(list, (v1, v2) -> {
             Collator instance = Collator.getInstance(Locale.CHINESE);
+            if (ObjectUtils.isEmpty(v1) || ObjectUtils.isEmpty(v2)) return 0;
             if (StringUtils.equals("desc", sortStr)) {
                 return instance.compare(v2, v1);
             }
@@ -152,7 +153,7 @@ public class DirectFieldService implements DataSetFieldService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         Provider datasourceProvider = null;
         String createSQL = null;
-        Long calcLimit = needMapping ? null : 1000L;
+        Long calcLimit = needMapping ? null : 100000L;
         if (datasetTable.getMode() == 0) {// 直连
             if (StringUtils.isEmpty(datasetTable.getDataSourceId())) return null;
             Datasource ds = datasourceService.get(datasetTable.getDataSourceId());
@@ -184,7 +185,8 @@ public class DirectFieldService implements DataSetFieldService {
                 String sql = (String) dataSetTableService.getUnionSQLDatasource(dt, ds).get("sql");
                 createSQL = qp.createQuerySQLAsTmp(sql, permissionFields, !needSort, customFilter, rowPermissionsTree, deSortFields, calcLimit, keyword);
             }
-            datasourceRequest.setQuery(needMapping ? createSQL : qp.createSQLPreview(createSQL, null));
+            // datasourceRequest.setQuery(needMapping ? createSQL : qp.createSQLPreview(createSQL, null));
+            datasourceRequest.setQuery(createSQL);
 
         } else if (datasetTable.getMode() == 1) {// 抽取
             // 连接doris，构建doris数据源查询
@@ -219,7 +221,7 @@ public class DirectFieldService implements DataSetFieldService {
         assert datasourceProvider != null;
         List<String[]> rows = datasourceProvider.getData(datasourceRequest);
         if (!needMapping) {
-            return rows.stream().map(row -> row[0]).distinct().collect(Collectors.toList());
+            return rows.stream().map(row -> row[0]).distinct().limit(1000L).collect(Collectors.toList());
         }
         Set<String> pkSet = new HashSet<>();
         if (CollectionUtils.isNotEmpty(rows) && existExtSortField && originSize > 0) {

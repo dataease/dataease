@@ -5,7 +5,12 @@
   @import './theme/dark.scss';
   @import "~element-ui/packages/theme-chalk/src/index";
 } */
-
+@font-face {
+  font-family: 'AlibabaPuHuiTi';
+  src: url('../../static/fonts/AlibabaPuHuiTi-3-55-RegularL3.woff2') format('woff2');
+  font-weight: normal;
+  font-style: normal;
+}
 
 
 @import '~normalize.css/normalize.css';
@@ -27,7 +32,7 @@ body {
   -moz-osx-font-smoothing: grayscale;
   -webkit-font-smoothing: antialiased;
   text-rendering: optimizeLegibility;
-  font-family: Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, FangSong, SimHei, STHeiti, STKaiti, STSong, STFangsong sans-serif;
+  font-family: AlibabaPuHuiTi, Helvetica Neue, Helvetica, PingFang SC, Hiragino Sans GB, Microsoft YaHei, Arial, FangSong, SimHei, STHeiti, STKaiti, STSong, STFangsong sans-serif !important;
 }
 
 label {
@@ -895,7 +900,7 @@ div:focus {
   box-shadow: 0px 4px 8px 0px #1f23291a;
 
   span {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 500;
     line-height: 22px;
@@ -954,7 +959,7 @@ div:focus {
   }
 
   .el-pagination__total {
-    font-family: "PingFang SC";
+    font-family: "AlibabaPuHuiTi";
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
@@ -1020,7 +1025,7 @@ div:focus {
   }
 
   .el-textarea .el-input__count {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 12px;
     font-weight: 400;
     color: #8F959E;
@@ -1080,7 +1085,7 @@ div:focus {
 
   .el-message-box__message {
     //styleName: 中文/桌面端/四级标题 16 24 Medium;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
@@ -1097,7 +1102,7 @@ div:focus {
     height: 32px;
     width: 80px;
     border-radius: 4px;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
@@ -1123,7 +1128,7 @@ div:focus {
 
     .use-html {
       //styleName: 中文/桌面端/正文 14 22 Regular;
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
@@ -1232,7 +1237,7 @@ div:focus {
   .el-drawer__header {
     padding: 16px 24px;
     margin: 0;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;
@@ -1281,7 +1286,7 @@ div:focus {
 
     > :nth-child(1) {
       color: var(--deTextSecondary, #1f2329);
-      font-family: "PingFang SC";
+      font-family: "AlibabaPuHuiTi";
       font-style: normal;
       font-weight: 400;
       font-size: 14px;
@@ -1295,7 +1300,7 @@ div:focus {
 
       .item,
       .more {
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         white-space: nowrap;
         font-size: 14px;
         font-weight: 400;
@@ -1360,7 +1365,7 @@ div:focus {
   display: flex;
   align-items: center;
   position: relative;
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-weight: 500;
   line-height: 22px;
@@ -1510,7 +1515,7 @@ div:focus {
 }
 
 .de-text-btn {
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
@@ -1582,7 +1587,7 @@ div:focus {
   display: flex;
   align-items: center;
   margin: 17px 0;
-  font-family: "PingFang SC";
+  font-family: "AlibabaPuHuiTi";
   font-weight: 400;
 
   .sum {
@@ -1734,7 +1739,7 @@ div:focus {
   top: 0;
   z-index: 15;
   .title {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 16px;
     font-weight: 500;
     line-height: 24px;

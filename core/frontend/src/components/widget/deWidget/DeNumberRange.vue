@@ -127,7 +127,7 @@ export default {
     },
     'defaultvalues': function(value, old) {
       if (value === old) return
-      const values = this.element.options.value
+      const values = this.fillValueDerfault()
       this.form.min = values[0]
       if (values.length > 1) {
         this.form.max = values[1]
@@ -145,7 +145,7 @@ export default {
   },
   created() {
     if (this.element.options.value && this.element.options.value.length > 0) {
-      const values = this.element.options.value
+      const values = this.fillValueDerfault()
       this.form.min = values[0]
       if (values.length > 1) {
         this.form.max = values[1]
@@ -174,13 +174,12 @@ export default {
           this.form.min = null
           this.form.max = null
         } else {
-          const values = this.element.options.value
+          const values = this.fillValueDerfault()
           this.form.min = values[0]
           if (values.length > 1) {
             this.form.max = values[1]
           }
         }
-
         this.search()
       }
     },
@@ -251,7 +250,13 @@ export default {
           if (!valid) {
             return false
           }
-
+          if (!this.showRequiredTips) {
+            const values = [this.form.min, this.form.max]
+            this.$store.commit('setLastValidFilters', {
+              componentId: this.element.id,
+              val: (values && Array.isArray(values)) ? values.join(',') : values
+            })
+          }
           this.setCondition()
         })
       })
@@ -283,6 +288,9 @@ export default {
       return param
     },
     setCondition() {
+      if (this.showRequiredTips) {
+        return
+      }
       const param = this.getCondition()
 
       if (this.form.min && this.form.max) {
@@ -316,6 +324,20 @@ export default {
       } else {
         this.element.options.manualModify = true
       }
+    },
+    fillValueDerfault() {
+      let defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      if (this.inDraw) {
+        let lastFilters = null
+        if (this.$store.state.lastValidFilters) {
+          lastFilters = this.$store.state.lastValidFilters[this.element.id]
+          if (lastFilters) {
+            defaultV = lastFilters.val === null ? '' : lastFilters.val.toString()
+          }
+        }
+      }
+      if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
+      return defaultV.split(',')
     }
   }
 }
