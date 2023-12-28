@@ -1,6 +1,7 @@
 package io.dataease.provider.engine.mysql;
 
 import com.alibaba.fastjson.JSONArray;
+import com.google.gson.Gson;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
@@ -30,6 +31,8 @@ import io.dataease.plugins.datasource.query.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
@@ -53,6 +56,10 @@ import static io.dataease.plugins.common.constants.datasource.SQLConstants.TABLE
 public class MysqlQueryProvider extends QueryProvider {
     @Resource
     private DatasetTableFieldMapper datasetTableFieldMapper;
+
+    private static Gson gson = new Gson();
+
+    private static final Logger logger = LoggerFactory.getLogger(MysqlQueryProvider.class);
 
     @Override
     public Integer transFieldType(String field) {
@@ -1042,6 +1049,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
     @Override
     public String transTreeItem(SQLObj tableObj, FilterTreeItem item) {
+        logger.info("trans item:" + gson.toJson(item));
         String res = null;
         DatasetTableField field = item.getField();
         if (ObjectUtils.isEmpty(field)) {
@@ -1112,6 +1120,7 @@ public class MysqlQueryProvider extends QueryProvider {
                     .build();
             res = build.getWhereField() + " " + build.getWhereTermAndValue();
         }
+        logger.info("trans item result:" + res);
         return res;
     }
 
