@@ -29,10 +29,29 @@ onBeforeMount(() => {
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
 
-      viewInfo.value = canvasViewInfoPreview[window.DataEaseBi.chartId]
-      config.value = ((canvasDataResult as unknown as Array<{ id: string }>) || []).find(
-        ele => ele.id === window.DataEaseBi.chartId
-      )
+      viewInfo.value = canvasViewInfoPreview[window.DataEaseBi.chartId] = (
+        (canvasDataResult as unknown as Array<{
+          id: string
+          component: string
+          propValue: Array<{ id: string }>
+        }>) || []
+      ).some(ele => {
+        if (ele.id === window.DataEaseBi.chartId) {
+          config.value = ele
+          return true
+        }
+
+        if (ele.component === 'Group') {
+          return (ele.propValue || []).some(itx => {
+            if (itx.id === window.DataEaseBi.chartId) {
+              config.value = itx
+              return true
+            }
+            return false
+          })
+        }
+        return false
+      })
     }
   )
 })
