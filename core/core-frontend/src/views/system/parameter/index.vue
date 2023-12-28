@@ -39,7 +39,6 @@ const activeName = ref('basic')
 }
 .sys-setting-p {
   width: 100%;
-  background: var(--ContentBG, #ffffff);
   height: calc(100vh - 176px);
   box-sizing: border-box;
   margin-top: 12px;
@@ -50,7 +49,9 @@ const activeName = ref('basic')
 
 .container-sys-param {
   height: 100%;
-  overflow-y: auto;
+  overflow: hidden;
+  background: var(--ContentBG, #ffffff);
+  border-radius: 4px;
 }
 </style>
 <style lang="less" scoped></style>

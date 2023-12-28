@@ -92,7 +92,7 @@ const reset = () => {
 }
 
 const showLoading = () => {
-  loadingInstance.value = ElLoading.service({ target: '.basic-info-drawer' })
+  loadingInstance.value = ElLoading.service({ target: '.basic-param-drawer' })
 }
 const closeLoading = () => {
   loadingInstance.value?.close()
@@ -118,7 +118,7 @@ defineExpose({
   <el-drawer
     title="基础设置"
     v-model="dialogVisible"
-    custom-class="basic-info-drawer"
+    custom-class="basic-param-drawer"
     size="600px"
     direction="rtl"
   >
@@ -178,8 +178,31 @@ defineExpose({
     </template>
   </el-drawer>
 </template>
-
+<style lang="less">
+.basic-param-drawer {
+  .ed-drawer__footer {
+    height: 64px !important;
+    padding: 16px 24px !important;
+    .dialog-footer {
+      height: 32px;
+      line-height: 32px;
+    }
+  }
+  .ed-form-item__label {
+    line-height: 22px !important;
+    height: 22px !important;
+  }
+}
+</style>
 <style scoped lang="less">
+.basic-param-drawer {
+  .ed-form-item {
+    margin-bottom: 16px;
+  }
+  .is-error {
+    margin-bottom: 40px !important;
+  }
+}
 .setting-hidden-item {
   display: none !important;
 }
