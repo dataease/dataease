@@ -1080,7 +1080,7 @@ public class ChartViewService {
             fieldMap.put("xAxis", xAxis);
             fieldMap.put("yAxis", yAxis);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
-            logger.info("PluginViewParam", gson.toJson(pluginViewParam));
+            logger.info("PluginViewParam:" + gson.toJson(pluginViewParam));
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
                 return emptyChartViewDTO(view);
@@ -1612,7 +1612,7 @@ public class ChartViewService {
 
 
         PluginFilterTreeObj fieldFilters = gson.fromJson(gson.toJson(customFilters), PluginFilterTreeObj.class);
-        logger.info("PluginFilterTreeObj", gson.toJson(fieldFilters));
+        logger.info("PluginFilterTreeObj:" + gson.toJson(fieldFilters));
         List<PluginChartExtFilter> panelFilters = extFilters.stream().map(filter -> gson.fromJson(gson.toJson(filter), PluginChartExtFilter.class)).collect(Collectors.toList());
 
         List<PluginViewField> pluginViewFields = fieldMap.entrySet().stream().flatMap(entry -> entry.getValue().stream().map(field -> {
