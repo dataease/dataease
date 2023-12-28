@@ -2980,6 +2980,16 @@ public class DataSetTableService {
                 }
                 if (inExpression.getRightExpression() != null) {
                     getBuffer().append(" ( ");
+                    if (inExpression.getRightExpression() instanceof SubSelect) {
+                       try {
+                           SubSelect subSelect = (SubSelect) inExpression.getRightExpression();
+                           Select select = (Select) CCJSqlParserUtil.parse(removeVariables(subSelect.getSelectBody().toString(), ""));
+                           subSelect.setSelectBody(select.getSelectBody());
+                           inExpression.setRightExpression(subSelect);
+                       }catch (Exception e){
+                           e.printStackTrace();
+                       }
+                    }
                     inExpression.getRightExpression().accept(this);
                     getBuffer().append(" )");
                 }
