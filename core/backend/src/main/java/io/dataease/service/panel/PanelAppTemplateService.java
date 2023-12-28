@@ -5,6 +5,7 @@ import io.dataease.commons.constants.CommonConstants;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.controller.datasource.request.UpdataDsRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
@@ -418,6 +419,7 @@ public class PanelAppTemplateService {
         for (int i = 0; i < updateDatasourceList.size(); i++) {
             UpdataDsRequest updataDsRequest = new UpdataDsRequest();
             BeanUtils.copyBean(updataDsRequest, updateDatasourceList.get(i));
+            updataDsRequest.setConfiguration(CodingUtil.base64Decoding(updataDsRequest.getConfiguration()));
             datasourceService.updateDatasource(updataDsRequest);
 
         }
