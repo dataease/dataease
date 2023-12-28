@@ -88,7 +88,6 @@ public class DatasetGroupManage {
                 CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(datasetGroupInfoDTO.getId());
                 datasetGroupInfoDTO.setPid(coreDatasetGroup.getPid());
             }
-            checkName(datasetGroupInfoDTO);
             datasetGroupInfoDTO.setUpdateBy(AuthUtils.getUser().getUserId() + "");
             datasetGroupInfoDTO.setLastUpdateTime(System.currentTimeMillis());
             if (StringUtils.equalsIgnoreCase(datasetGroupInfoDTO.getNodeType(), leafType)) {
