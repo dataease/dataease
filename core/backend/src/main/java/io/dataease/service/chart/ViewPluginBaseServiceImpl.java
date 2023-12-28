@@ -30,6 +30,8 @@ import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
@@ -56,6 +58,8 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
     @Resource
     private ChartViewService chartViewService;
 
+    private static final Logger logger = LoggerFactory.getLogger(ViewPluginBaseServiceImpl.class);
+
 
     @Override
     public PluginSingleField buildField(String dsType, PluginViewField pluginViewField, PluginViewSQL tableObj, int index) {
@@ -80,12 +84,14 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
     @Override
     public String customWhere(String dsType, PluginFilterTreeObj obj, PluginViewSQL pluginViewSQL) {
+        logger.info("customWhere", gson.toJson(obj));
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
         String methodName = "transChartFilterTrees";
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
         FilterTreeObj filters = gson.fromJson(gson.toJson(obj), FilterTreeObj.class);
         Object o;
         if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
+            logger.info("customWhereString", o);
             return (String) o;
         }
         return null;
