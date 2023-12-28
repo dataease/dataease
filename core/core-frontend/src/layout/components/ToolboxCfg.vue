@@ -1,24 +1,83 @@
 <script lang="ts" setup>
+import { ref, onMounted } from 'vue'
 import { useRouter } from 'vue-router'
+import TopDocCard from '@/layout/components/TopDocCard.vue'
 const { push, resolve } = useRouter()
-const redirectUser = () => {
+
+const showToolbox = ref(true)
+
+const cardInfoList = ref([] as unknown[])
+
+const loadInfoList = () => {
   const toolboxMenu = resolve('/toolbox')
-  const kidPath = toolboxMenu.matched[0].children[0].path
-  push(`${toolboxMenu.path}/${kidPath}`)
+  if (!toolboxMenu) {
+    showToolbox.value = false
+    return
+  }
+  const children = toolboxMenu.matched[0].children
+  if (!children?.length) {
+    showToolbox.value = false
+    return
+  }
+  children.forEach(item => {
+    const temp = {
+      name: item.meta.title,
+      rName: item.name,
+      path: item.path,
+      icon: 'toolbox-' + item.meta.icon
+    }
+    cardInfoList.value.push(temp)
+  })
 }
+
+const toRouter = item => {
+  console.log(item)
+  push({ name: item.rName })
+}
+onMounted(() => {
+  loadInfoList()
+})
 </script>
 
 <template>
-  <el-tooltip class="box-item" effect="dark" content="工具箱" placement="top">
-    <div class="sys-setting">
-      <el-icon @click="redirectUser">
-        <Icon class="icon-setting" name="sys-tools" />
-      </el-icon>
-    </div>
-  </el-tooltip>
+  <el-popover
+    :show-arrow="false"
+    popper-class="toolbox-top-popover"
+    placement="bottom-end"
+    width="112"
+    trigger="hover"
+  >
+    <top-doc-card
+      :span="12"
+      v-for="(item, index) in cardInfoList"
+      :key="index"
+      :card-info="item"
+      @click="toRouter(item)"
+    ></top-doc-card>
+    <template #reference>
+      <div class="sys-setting" :class="{ 'hidden-toolbox': !showToolbox }">
+        <el-icon>
+          <Icon name="sys-tools" />
+        </el-icon>
+      </div>
+    </template>
+  </el-popover>
 </template>
 
+<style lang="less">
+.toolbox-top-popover {
+  height: 82px;
+  min-width: 112px !important;
+  padding: 16px !important;
+  .doc-card {
+    margin: auto !important;
+  }
+}
+</style>
 <style lang="less" scoped>
+.hidden-toolbox {
+  display: none !important;
+}
 .sys-setting {
   margin: 0 0 0 10px;
   padding: 5px;
