@@ -45,15 +45,15 @@ onBeforeMount(() => {
 })
 
 const remove = (index: number) => {
-  if (isDisable(index)) return
+  if (isDisable()) return
   // 移除整行输入控件及内容
   items.value.splice(index, 1)
 }
 const change = () => {
   items.value.push(new KeyValue({ enable: true }))
 }
-const isDisable = (index: number) => {
-  return items.value.length - 1 === index
+const isDisable = () => {
+  return items.value.length === 1
 }
 const querySearch = (queryString, cb) => {
   const results = queryString
@@ -128,7 +128,7 @@ const createFilter = (queryString: string) => {
             </el-col>
 
             <el-col :span="1">
-              <el-button text :disabled="isDisable(index)" @click="remove(index)">
+              <el-button text :disabled="isDisable()" @click="remove(index)">
                 <template #icon>
                   <Icon name="icon_delete-trash_outlined"></Icon>
                 </template>
