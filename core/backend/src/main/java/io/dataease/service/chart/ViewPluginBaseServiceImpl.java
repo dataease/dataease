@@ -89,6 +89,9 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         String methodName = "transChartFilterTrees";
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
         FilterTreeObj filters = gson.fromJson(gson.toJson(obj), FilterTreeObj.class);
+        logger.info("filters:" + gson.toJson(filters));
+        Object o1 = execProviderMethod(queryProvider, methodName, sqlObj, filters);
+        logger.info("o1:" + (String) o1);
         Object o;
         if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
             logger.info("customWhereString:" + o);
