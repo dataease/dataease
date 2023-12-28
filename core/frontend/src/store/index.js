@@ -282,7 +282,7 @@ const data = {
         state.componentData.push(component)
         state.currentCanvasNewId.push(component.id)
       }
-      this.commit('setCurComponent', { component: component, index: index || state.componentData.length - 1 })
+      this.commit('setCurComponent', { component: component, index: index === undefined ? state.componentData.length - 1 : index })
     },
     removeViewFilter(state, componentId) {
       state.componentData = state.componentData.map(item => {
