@@ -25,7 +25,7 @@ const cardInfoList = [
     popper-class="top-popover"
     placement="bottom-end"
     width="208"
-    trigger="click"
+    trigger="hover"
   >
     <el-row>
       <top-doc-card
