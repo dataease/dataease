@@ -16,7 +16,9 @@ const props = defineProps({
 const { cardInfo } = toRefs(props)
 
 const openBlank = () => {
-  window.open(cardInfo.value.url)
+  if (cardInfo.value.url) {
+    window.open(cardInfo.value.url)
+  }
 }
 </script>
 
