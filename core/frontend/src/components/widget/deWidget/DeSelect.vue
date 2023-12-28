@@ -362,14 +362,16 @@ export default {
     resetDefaultValue(ele) {
       const id = ele.id
       const eleVal = ele.options.value.toString()
-      if (this.inDraw && this.manualModify && this.element.id === id && this.value.toString() !== eleVal && this.defaultValueStr === eleVal) {
+      if (this.inDraw && this.manualModify && this.element.id === id) {
         if (this.selectFirst) {
           this.fillFirstValue()
           this.firstChange(this.value)
           return
         }
-        this.value = this.fillValueDerfault()
-        this.changeValue(this.value)
+        if (this.value.toString() !== eleVal && this.defaultValueStr === eleVal) {
+          this.value = this.fillValueDerfault()
+          this.changeValue(this.value)
+        }
       }
     },
     onBlur() {
