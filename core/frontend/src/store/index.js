@@ -452,7 +452,11 @@ const data = {
               currentFilters.push(condition)
             }
             if (element.type === 'custom' && element.id === targetViewId) { // 过滤组件处理
-              element.options.value = [dimension.value]
+              if (['de-select-tree'].includes(element.component)) {
+                element.options.value = dimension.value
+              } else {
+                element.options.value = [dimension.value]
+              }
               // 去掉动态时间
               if (element.options.manualModify) {
                 element.options.manualModify = false
@@ -486,10 +490,20 @@ const data = {
           Object.keys(params).forEach(function(sourceInfo) {
             // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
             let paramValue = params[sourceInfo]
+            let paramValueStr = params[sourceInfo]
             let operator = 'in'
             if (paramValue && !Array.isArray(paramValue)) {
               paramValue = [paramValue]
               operator = 'eq'
+            } else if (paramValue && Array.isArray(paramValue)) {
+              paramValueStr = ''
+              paramValue.forEach((innerValue, index) => {
+                if (index === 0) {
+                  paramValueStr = innerValue
+                } else {
+                  paramValueStr = paramValueStr + ',' + innerValue
+                }
+              })
             }
             // 获取所有目标联动信息
             const targetInfoList = trackInfo[sourceInfo] || []
@@ -513,7 +527,11 @@ const data = {
                 currentFilters.push(condition)
               }
               if (element.type === 'custom' && element.id === targetViewId) { // 过滤组件处理
-                element.options.value = paramValue
+                if (['de-select-tree'].includes(element.component)) {
+                  element.options.value = paramValueStr
+                } else {
+                  element.options.value = paramValue
+                }
                 // 去掉动态时间
                 if (element.options.manualModify) {
                   element.options.manualModify = false
