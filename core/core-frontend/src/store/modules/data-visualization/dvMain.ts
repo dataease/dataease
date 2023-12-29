@@ -883,7 +883,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       if (this.dvInfo) {
         this.dvInfo.dataState = 'ready'
         this.dvInfo.optType = null
-        this.dvInfo.id = newId
+        if (newId) {
+          this.dvInfo.id = newId
+        }
       }
     },
     createInit(dvType, resourceId?, pid?) {

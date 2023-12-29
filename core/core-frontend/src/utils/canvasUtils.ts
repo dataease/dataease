@@ -168,9 +168,7 @@ export function canvasSave(callBack) {
 
   const method = dvInfo.value.id ? updateCanvas : saveCanvas
   method(canvasInfo).then(res => {
-    if (res && res.data) {
-      dvMainStore.updateDvInfoId(res.data)
-    }
+    dvMainStore.updateDvInfoId(res.data)
     snapshotStore.resetStyleChangeTimes()
     callBack(res)
   })
