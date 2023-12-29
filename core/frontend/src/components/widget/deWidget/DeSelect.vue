@@ -164,8 +164,10 @@ export default {
     'defaultValueStr': function(value, old) {
       if (value === old) return
       this.$nextTick(() => {
-        this.value = this.fillValueDerfault()
-        this.changeValue(value)
+        if (!this.selectFirst) {
+          this.value = this.fillValueDerfault()
+          this.changeValue(value)
+        }
       })
     },
     'element.options.attrs.fieldId': function(value, old) {
@@ -363,8 +365,8 @@ export default {
       const id = ele.id
       const eleVal = ele.options.value.toString()
       if (this.inDraw && this.manualModify && this.element.id === id) {
-        if (this.selectFirst) {
-          this.fillFirstValue()
+        if (ele.options.attrs.selectFirst) {
+          this.fillFirstValue(true)
           this.firstChange(this.value)
           return
         }
@@ -503,8 +505,8 @@ export default {
       }
       return this.value.split(',')
     },
-    fillFirstValue() {
-      if (!this.selectFirst) {
+    fillFirstValue(isSelectFirst) {
+      if (!this.selectFirst && !isSelectFirst) {
         return
       }
       let defaultV = this.data[0].id

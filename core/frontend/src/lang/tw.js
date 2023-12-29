@@ -1112,6 +1112,7 @@ export default {
     desc: '降序',
     sort: '排序',
     filter: '過濾',
+    is_set: '已設定',
     none: '無',
     background: '背景',
     border: '邊角',
