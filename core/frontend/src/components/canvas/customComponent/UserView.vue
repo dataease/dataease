@@ -827,6 +827,9 @@ export default {
       }
     },
     getData(id, cache = true, dataBroadcast = false) {
+      if (this.requestStatus === 'waiting') {
+        return
+      }
       if (id) {
         const filters = this.filter.filter
         const group = this.groupRequiredInvalid(filters)
@@ -933,6 +936,12 @@ export default {
           return true
         }).catch(err => {
           console.error('err-' + err)
+          // 还没有构内部刷新
+          if (!this.innerRefreshTimer) {
+            setTimeout(() => {
+              this.getData(this.element.propValue.viewId)
+            }, 5000)
+          }
           this.requestStatus = 'error'
           if (err.message && err.message.indexOf('timeout') > -1) {
             this.message = this.$t('panel.timeout_refresh')
