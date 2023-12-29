@@ -88,7 +88,7 @@ class TextSelectGridServiceImpl extends WidgetService {
     if (!val) {
       value = this.fillValueDerfault(element)
     } else {
-      value = [val]
+      value = Array.isArray(val) ? val : val.split(',')
     }
     const param = {
       component: element,
