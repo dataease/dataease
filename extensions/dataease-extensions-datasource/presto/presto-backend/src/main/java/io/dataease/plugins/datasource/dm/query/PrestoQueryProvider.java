@@ -985,8 +985,11 @@ public class PrestoQueryProvider extends QueryProvider {
             if (field.getDeExtractType() == 1) {
                 whereName = String.format(PrestoConstants.UNIX_TIMESTAMP, originName);
             }
-            if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+            if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
                 whereName = originName;
+            }
+            if (field.getDeExtractType() == 4) {
+                whereName = String.format(PrestoConstants.CAST, originName, "bigint");
             }
         } else {
             whereName = originName;
@@ -1185,8 +1188,11 @@ public class PrestoQueryProvider extends QueryProvider {
                 if (field.getDeExtractType() == 1) {
                     whereName = String.format(PrestoConstants.UNIX_TIMESTAMP, originName);
                 }
-                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
                     whereName = originName;
+                }
+                if (field.getDeExtractType() == 4) {
+                    whereName = String.format(PrestoConstants.CAST, originName, "bigint");
                 }
             } else {
                 whereName = originName;
@@ -1284,8 +1290,11 @@ public class PrestoQueryProvider extends QueryProvider {
                     if (field.getDeExtractType() == 1) {
                         whereName = String.format(PrestoConstants.UNIX_TIMESTAMP, originName);
                     }
-                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
+                    if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3) {
                         whereName = originName;
+                    }
+                    if (field.getDeExtractType() == 4) {
+                        whereName = String.format(PrestoConstants.CAST, originName, "bigint");
                     }
                 } else {
                     whereName = originName;
