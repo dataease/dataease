@@ -933,6 +933,12 @@ export default {
           return true
         }).catch(err => {
           console.error('err-' + err)
+          // 还没有构内部刷新
+          if (!this.innerRefreshTimer ) {
+            setTimeout(() => {
+              this.getData(this.element.propValue.viewId)
+            }, 5000)
+          }
           this.requestStatus = 'error'
           if (err.message && err.message.indexOf('timeout') > -1) {
             this.message = this.$t('panel.timeout_refresh')
