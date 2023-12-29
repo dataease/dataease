@@ -14,7 +14,7 @@
     </modules>
 
     <properties>
-        <revision>2.2.0</revision>
+        <revision>2.1.0</revision>
         <dataease.version>${revision}</dataease.version>
         <!-- -->
         <java.version>17</java.version>
@@ -41,6 +41,7 @@
         <httpcore.version>4.4.16</httpcore.version>
         <easyexcel.version>3.3.3</easyexcel.version>
         <!-- -->
+        <maven-pmd-plugin.version>3.21.2</maven-pmd-plugin.version>
         <maven.antrun.version>3.1.0</maven.antrun.version>
         <maven-compiler-plugin.version>3.12.1</maven-compiler-plugin.version>
         <maven.surefire.version>3.2.3</maven.surefire.version>
@@ -174,6 +175,28 @@
             </plugins>
         </pluginManagement>
         <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-pmd-plugin</artifactId>
+                <version>${maven-pmd-plugin.version}</version>
+                <configuration>
+                    <analysisCache>true</analysisCache>
+                    <failOnViolation>false</failOnViolation>
+                    <printFailingErrors>true</printFailingErrors>
+                    <linkXRef>true</linkXRef>
+                    <targetJdk>${java.version}</targetJdk>
+                    <excludeRoots>
+                        <excludeRoot>${project.build.directory}/generated-sources</excludeRoot>
+                    </excludeRoots>
+                </configuration>
+                <executions>
+                    <execution>
+                        <goals>
+                            <goal>check</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>flatten-maven-plugin</artifactId>
