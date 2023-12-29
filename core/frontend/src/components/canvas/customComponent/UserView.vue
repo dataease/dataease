@@ -827,6 +827,9 @@ export default {
       }
     },
     getData(id, cache = true, dataBroadcast = false) {
+      if (this.requestStatus === 'waiting') {
+        return
+      }
       if (id) {
         const filters = this.filter.filter
         const group = this.groupRequiredInvalid(filters)
@@ -934,7 +937,7 @@ export default {
         }).catch(err => {
           console.error('err-' + err)
           // 还没有构内部刷新
-          if (!this.innerRefreshTimer ) {
+          if (!this.innerRefreshTimer) {
             setTimeout(() => {
               this.getData(this.element.propValue.viewId)
             }, 5000)
