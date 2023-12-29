@@ -119,7 +119,7 @@
           <span
             v-if="!!view.customFilter.logic"
             class="setting"
-          >已设置</span>
+          >{{ $t('chart.is_set') }}</span>
           <i
             class="el-icon-arrow-down el-icon-delete data-area-clear"
             @click="deleteTreeFilter"
@@ -134,7 +134,7 @@
             class="svg-background"
             icon-class="icon-filter_outlined"
           />
-          <span>过滤</span>
+          <span>{{ $t('chart.filter') }}</span>
         </div>
     </el-row>
     <FilterTree
