@@ -5,7 +5,8 @@
     <parent>
         <artifactId>core</artifactId>
         <groupId>io.dataease</groupId>
-        <version>2.2.0</version>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -181,11 +182,11 @@
                                 <phase>generate-resources</phase>
                                 <configuration>
                                     <target>
-                                        <move todir="src/main/resources/static">
+                                        <copy todir="src/main/resources/static">
                                             <fileset dir="../core-frontend/dist">
                                                 <include name="**"/>
                                             </fileset>
-                                        </move>
+                                        </copy>
                                     </target>
                                 </configuration>
                                 <goals>

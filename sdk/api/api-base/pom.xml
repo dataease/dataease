@@ -5,15 +5,11 @@
     <parent>
         <artifactId>api</artifactId>
         <groupId>io.dataease</groupId>
-        <version>2.2.0</version>
+        <version>${revision}</version>
+        <relativePath>../pom.xml</relativePath>
     </parent>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>api-base</artifactId>
-
-    <properties>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
-    </properties>
 
 </project>

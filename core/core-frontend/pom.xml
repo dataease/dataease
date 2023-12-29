@@ -5,7 +5,8 @@
   <parent>
     <artifactId>core</artifactId>
     <groupId>io.dataease</groupId>
-    <version>2.2.0</version>
+    <version>${revision}</version>
+    <relativePath>../pom.xml</relativePath>
   </parent>
   <modelVersion>4.0.0</modelVersion>
 
@@ -16,7 +17,11 @@
   <properties>
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <project.reporting.outputEncoding>UTF-8</project.reporting.outputEncoding>
-    <frontend-maven-plugin.version>1.9.1</frontend-maven-plugin.version>
+    <frontend-maven-plugin.version>1.15.0</frontend-maven-plugin.version>
+    <build.node.version>v16.15.0</build.node.version>
+    <build.npm.version>8.5.5</build.npm.version>
+    <frontend-maven-plugin.nodeDownloadRoot>https://registry.npmmirror.com/-/binary/node/</frontend-maven-plugin.nodeDownloadRoot>
+    <frontend-maven-plugin.npmDownloadRoot>https://registry.npmmirror.com/npm/-/</frontend-maven-plugin.npmDownloadRoot>
   </properties>
 
   <build>
@@ -38,18 +43,20 @@
         <version>${frontend-maven-plugin.version}</version>
         <executions>
           <!--首次打包需要放开-->
-          <!--<execution>
+          <execution>
             <id>install node and npm</id>
             <goals>
               <goal>install-node-and-npm</goal>
             </goals>
             <configuration>
-              <nodeVersion>v16.15.0</nodeVersion>
-              <npmVersion>8.5.5</npmVersion>
+              <nodeVersion>${build.node.version}</nodeVersion>
+              <npmVersion>${build.npm.version}</npmVersion>
+              <nodeDownloadRoot>${frontend-maven-plugin.nodeDownloadRoot}</nodeDownloadRoot>
+              <npmDownloadRoot>${frontend-maven-plugin.npmDownloadRoot}</npmDownloadRoot>
             </configuration>
-          </execution>-->
+          </execution>
           <!--前端组件有更新需要放开-->
-          <!--<execution>
+          <execution>
             <id>npm install</id>
             <goals>
               <goal>npm</goal>
@@ -57,8 +64,7 @@
             <configuration>
               <arguments>install</arguments>
             </configuration>
-          </execution>-->
-
+          </execution>
           <execution>
             <id>npm run build</id>
             <goals>
