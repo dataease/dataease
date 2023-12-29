@@ -66,9 +66,11 @@
             )
         </if>
         ) logInfo
-        <if test="applyTime != null and applyTime.length > 1">
-            and (apply_time between #{applyTime.[0]} and #{applyTime.[1]}
-        </if>
+        <where>
+            <if test="applyTime != null and applyTime.length > 1">
+                and (logInfo.apply_time between #{applyTime.[0]} and #{applyTime.[1]})
+            </if>
+        </where>
 
         <choose>
             <when test="orders!=null and orders.size > 0">
