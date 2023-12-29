@@ -267,7 +267,7 @@ const hexToRgba = (hex, opacity) => {
 }
 
 export function seniorCfg(chart_option, chart) {
-  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix') || chart.type.includes('scatter'))) {
     const senior = JSON.parse(chart.senior)
     if (senior.functionCfg) {
       if (senior.functionCfg.sliderShow) {
