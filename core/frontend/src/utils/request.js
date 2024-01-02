@@ -105,7 +105,7 @@ service.interceptors.response.use(response => {
   return response.data
 }, error => {
   const config = error.response && error.response.config || error.config
-  const headers = error.response && error.response.headers || error.response || config.headers
+  const headers = error.response && error.response.headers || error.response || config && config.headers
   config.loading && tryHideLoading(store.getters.currentPath)
 
   let msg = ''

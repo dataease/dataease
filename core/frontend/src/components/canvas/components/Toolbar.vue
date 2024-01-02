@@ -372,6 +372,7 @@ export default {
       // 关闭页面清理缓存
       this.$store.commit('initCanvasBase')
       this.$store.commit('setInEditorStatus', false)
+      this.$store.commit('setComponentData', [])
       this.$emit('close-left-panel')
       removePanelCache(this.panelInfo.id)
       this.$nextTick(() => {
