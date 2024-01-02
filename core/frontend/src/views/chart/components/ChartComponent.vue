@@ -145,7 +145,8 @@ export default {
         'line-stack',
         'scatter'
       ],
-      resizeTimer: null
+      resizeTimer: null,
+      renderTimer: null
     }
   },
 
@@ -499,7 +500,11 @@ export default {
       // 指定图表的配置项和数据
       const chart = this.myChart
       this.setBackGroundBorder()
-      setTimeout(chart.setOption(option, true), 500)
+      this.renderTimer && clearTimeout(this.renderTimer)
+      this.renderTimer = setTimeout(() => {
+        chart.clear()
+        chart.setOption(option, true)
+      }, 500)
       window.removeEventListener('resize', chart.resize)
     },
     setBackGroundBorder() {
