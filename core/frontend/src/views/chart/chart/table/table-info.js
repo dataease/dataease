@@ -1,8 +1,20 @@
-import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE } from '@antv/s2'
+import { TableSheet, BaseEvent, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { handleTableEmptyStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
+
+class RowHoverInteraction extends BaseEvent {
+  bindEvents() {
+    this.spreadsheet.on(S2Event.ROW_CELL_HOVER, (event) => {
+      this.spreadsheet.tooltip.show({
+        position: { x: 0, y: 0 },
+        content: '...'
+      })
+    })
+  }
+}
+
 export function baseTableInfo(s2, container, chart, action, tableData, pageInfo) {
   const containerDom = document.getElementById(container)
 
@@ -138,7 +150,9 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
   if (size.tableColTooltip?.show) {
     s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event))
   }
-
+  if (size.tableCellTooltip?.show) {
+    s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event))
+  }
   // theme
   const customTheme = getCustomTheme(chart)
   s2.setThemeCfg({ theme: customTheme })
@@ -326,6 +340,9 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
   const size = customAttr.size
   if (size.tableColTooltip?.show) {
     s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event))
+  }
+  if (size.tableCellTooltip?.show) {
+    s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event))
   }
   // theme
   const customTheme = getCustomTheme(chart)
@@ -523,6 +540,9 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
   }
   if (size?.tableColTooltip?.show) {
     s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event, fieldMap))
+  }
+  if (size.tableCellTooltip?.show) {
+    s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event))
   }
   // theme
   const customTheme = getCustomTheme(chart)
@@ -779,6 +799,18 @@ function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) 
     }
   }
   return color
+}
+
+function showTooltipValue(s2Instance, event) {
+  const cell = s2Instance.getCell(event.target)
+  const content = cell.actualText
+  s2Instance.showTooltip({
+    position: {
+      x: event.clientX,
+      y: event.clientY
+    },
+    content
+  })
 }
 
 function showTooltip(s2Instance, event, fieldMap) {

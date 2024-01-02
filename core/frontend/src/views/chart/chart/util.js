@@ -67,6 +67,7 @@ export const TYPE_CONFIGS = [
         'showIndex',
         'indexLabel',
         'tableColTooltip',
+        'tableCellTooltip',
         'showTableHeader'
       ],
       'title-selector-ant-v': [
@@ -120,6 +121,7 @@ export const TYPE_CONFIGS = [
         'showIndex',
         'indexLabel',
         'tableColTooltip',
+        'tableCellTooltip',
         'showTableHeader',
         'tableFreeze'
       ],
@@ -171,7 +173,8 @@ export const TYPE_CONFIGS = [
         'tableItemHeight',
         'tableColumnMode',
         'tableRowTooltip',
-        'tableColTooltip'
+        'tableColTooltip',
+        'tableCellTooltip'
       ],
       'total-cfg': [
         'row',
