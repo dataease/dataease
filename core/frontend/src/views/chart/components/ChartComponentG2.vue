@@ -12,7 +12,7 @@
       @trackClick="trackClick"
     />
     <span
-      v-if="chart.type && antVRenderStatus"
+      v-if="chart.type"
       v-show="title_show"
       ref="title"
       :class="titleIsRight"
@@ -235,8 +235,6 @@ export default {
     },
     async drawView() {
       const chart = JSON.parse(JSON.stringify(this.chart))
-      // type
-      // if (chart.data) {
       this.antVRenderStatus = true
       if (!chart.data || (!chart.data.data && !chart.data.series)) {
         chart.data = {
