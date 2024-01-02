@@ -1045,7 +1045,10 @@ export default {
         tableChart.customAttr.color.tableHeaderFontColor = '#7c7e81'
         tableChart.customAttr.color.tableFontColor = '#7c7e81'
         tableChart.customAttr.color.enableTableCrossBG = false
+        tableChart.customAttr.size.showTableHeader = true
       }
+      tableChart.customAttr.size.tableColumnFreezeHead = 0
+      tableChart.customAttr.size.tableRowFreezeHead = 0
       tableChart.customAttr.color.tableStripe = true
       tableChart.customAttr.size.tablePageMode = 'pull'
       tableChart.customStyle.text.show = false

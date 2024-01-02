@@ -1121,7 +1121,7 @@
                         <span
                           v-if="!!view.customFilter.logic"
                           class="setting"
-                        >已设置</span>
+                        >{{ $t('chart.is_set') }}</span>
                         <i
                           class="el-icon-arrow-down el-icon-delete data-area-clear"
                           @click="deleteTreeFilter"
@@ -1136,7 +1136,7 @@
                           class="svg-background"
                           icon-class="icon-filter_outlined"
                         />
-                        <span>过滤</span>
+                        <span>{{ $t('chart.filter') }}</span>
                       </div>
                     </el-row>
                     <el-row
@@ -2106,7 +2106,8 @@ export default {
     },
     showCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table', 'liquid') && this.view.type !== 'race-bar' ||
-        equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
+        equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix') ||
+       this.view.type === 'scatter'
     },
     showSeniorCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'table') ||
@@ -2125,10 +2126,11 @@ export default {
       }
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'liquid') ||
         equalsAny(this.view.type, 'text', 'label') ||
-        (this.view.render === 'antv' && this.view.type.includes('table')) || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
+        (this.view.render === 'antv' && this.view.type.includes('table')) || this.view.render === 'echarts' && includesAny(this.view.type, 'mix') ||
+         this.view.type === 'scatter'
     },
     showAssistLineCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix')
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix') || this.view.type === 'scatter'
     },
     showThresholdCfg() {
       if (this.view.type === 'bidirectional-bar') {

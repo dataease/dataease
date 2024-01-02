@@ -1043,7 +1043,7 @@ export function getSlider(chart) {
 export function getAnalyse(chart) {
   let senior = {}
   const assistLine = []
-  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix') || chart.type.includes('area'))) {
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix') || chart.type.includes('area') || chart.type.includes('scatter'))) {
     senior = JSON.parse(chart.senior)
     if (senior.assistLine && senior.assistLine.length > 0) {
       const customStyle = JSON.parse(chart.customStyle)

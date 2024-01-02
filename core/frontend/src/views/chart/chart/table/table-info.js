@@ -576,7 +576,12 @@ function getConditions(chart) {
       if (customAttr.color) {
         const c = JSON.parse(JSON.stringify(customAttr.color))
         valueColor = c.tableFontColor
-        valueBgColor = hexColorToRGBA(c.tableItemBgColor, c.alpha)
+        const enableTableCrossBG = c.enableTableCrossBG
+        if (!enableTableCrossBG) {
+          valueBgColor = hexColorToRGBA(c.tableItemBgColor, c.alpha)
+        } else {
+          valueBgColor = null
+        }
       }
     }
 
@@ -594,9 +599,12 @@ function getConditions(chart) {
       res.background.push({
         field: field.field.dataeaseName,
         mapping(value, rowData) {
-          return {
-            fill: mappingColor(value, valueBgColor, field, 'backgroundColor', filedValueMap, rowData)
+          const fill = mappingColor(value, valueBgColor, field, 'backgroundColor', filedValueMap, rowData)
+          if (fill) {
+            return { fill }
           }
+          // 返回 null 会使用主题中的背景色
+          return null
         }
       })
     }

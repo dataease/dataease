@@ -1111,6 +1111,7 @@ export default {
     desc: '降序',
     sort: '排序',
     filter: '过滤',
+    is_set: '已设置',
     none: '无',
     background: '背景',
     border: '边角',

@@ -170,7 +170,7 @@ class TimeDateServiceImpl extends WidgetService {
   getParam(element, val) {
     let timeArr = []
     if (val) {
-      let value = [val]
+      let value = Array.isArray(val) ? val : val.split(',')
       value = this.formatFilterValue(value)
       timeArr = this.formatValues(value, element)
     } else if (element.options.attrs.default && element.options.attrs.default.isDynamic) {
