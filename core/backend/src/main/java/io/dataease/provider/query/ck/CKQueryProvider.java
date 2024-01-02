@@ -96,6 +96,7 @@ public class CKQueryProvider extends QueryProvider {
                 return 3;// 浮点
             case "BIT":
             case "TINYINT":
+            case "BOOL":
                 return 4;// 布尔
             default:
                 return 0;
