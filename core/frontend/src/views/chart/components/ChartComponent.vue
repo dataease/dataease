@@ -548,7 +548,8 @@ export default {
         name: this.pointParam.data.name,
         viewId: this.chart.id,
         dimensionList: this.pointParam.data.dimensionList,
-        quotaList: quotaList
+        quotaList: quotaList,
+        names: this.pointParam.data.name.split('\n')
       }
       jumpParam.quotaList[0]['value'] = this.pointParam.data.value
       switch (trackAction) {

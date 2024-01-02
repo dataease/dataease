@@ -403,7 +403,8 @@ export default {
         dimensionList: this.pointParam.data.dimensionList,
         quotaList: quotaList,
         category: this.pointParam.data.category,
-        group: this.pointParam.data.group
+        group: this.pointParam.data.group,
+        names: this.pointParam.data.name.split('\n')
       }
 
       if (this.chart.type === 'scatter' && this.chart.render === 'antv') {
