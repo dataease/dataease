@@ -3533,9 +3533,11 @@ export function getColors(chart, colors, reset) {
     if (chart.data) {
       const data = chart.data.data
       const stackData = []
-      for (let i = 0; i < data.length; i++) {
-        const s = data[i]
-        stackData.push(s.category)
+      if (data?.length) {
+        for (let i = 0; i < data.length; i++) {
+          const s = data[i]
+          stackData.push(s.category)
+        }
       }
       const sArr = stackData.filter(function(item, index, stackData) {
         return stackData.indexOf(item, 0) === index
