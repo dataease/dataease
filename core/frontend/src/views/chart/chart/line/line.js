@@ -56,7 +56,7 @@ export function baseLineOption(chart_option, chart) {
         y.label = customAttr.label
       }
       y.type = 'line'
-      chart_option.legend.data.push(y.name)
+      chart_option.legend.data.push(y.name ?? 'null')
       chart_option.series.push(y)
     }
   }
