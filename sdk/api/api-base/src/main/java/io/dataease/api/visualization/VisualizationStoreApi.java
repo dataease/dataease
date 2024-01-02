@@ -4,6 +4,7 @@ import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.visualization.request.VisualizationStoreRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.VisualizationStoreVO;
+import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -17,10 +18,13 @@ import java.util.List;
 public interface VisualizationStoreApi {
 
     @PostMapping("/execute")
+    @Operation(summary = "变更收藏信息")
     void execute(@RequestBody VisualizationStoreRequest request);
 
     @PostMapping("/query")
+    @Operation(summary = "查询收藏资源信息")
     List<VisualizationStoreVO> query(@RequestBody VisualizationWorkbranchQueryRequest request);
     @GetMapping("/favorited/{id}")
+    @Operation(summary = "收藏")
     boolean favorited(@PathVariable("id") Long id);
 }
