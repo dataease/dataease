@@ -72,7 +72,7 @@ class NumberRangeServiceImpl extends WidgetService {
     if (val === null || val === '' || typeof val === 'undefined') {
       values = element.options.value
     } else {
-      values = Array.isArray(val) ? val : val.split(',')
+      values = Array.isArray(val) ? val : typeof val === 'string' ? val.split(',') : [val]
     }
     if (values && values.length > 0) {
       const min = values[0]

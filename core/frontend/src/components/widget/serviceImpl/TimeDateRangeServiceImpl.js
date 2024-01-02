@@ -313,7 +313,7 @@ class TimeDateRangeServiceImpl extends WidgetService {
   getParam(element, val) {
     let timeArr = []
     if (val) {
-      let value = Array.isArray(val) ? val : val.split(',')
+      let value = Array.isArray(val) ? val : typeof val === 'string' ? val.split(',') : [val]
       value = this.formatFilterValue(value)
       timeArr = this.formatValues(value, element)
     } else if (element.options.attrs.default && element.options.attrs.default.isDynamic) {

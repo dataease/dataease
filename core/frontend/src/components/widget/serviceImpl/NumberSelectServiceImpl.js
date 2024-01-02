@@ -89,7 +89,7 @@ class NumberSelectServiceImpl extends WidgetService {
     if (val === null || val === '' || typeof val === 'undefined') {
       value = this.fillValueDerfault(element)
     } else {
-      value = Array.isArray(val) ? val : val.split(',')
+      value = Array.isArray(val) ? val : typeof val === 'string' ? val.split(',') : [val]
     }
     const param = {
       component: element,
