@@ -2114,7 +2114,8 @@ export default {
         equalsAny(this.view.type, 'table-normal', 'table-info', 'map', 'text') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
     },
     showFunctionCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'table') ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix') ||
+        (this.view.render === 'antv' && this.view.type.includes('table')) ||
         equalsAny(this.view.type, 'map', 'text')
     },
     showScrollCfg() {
