@@ -2361,6 +2361,10 @@ const getDsIconName = data => {
   .ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after {
     display: none !important;
   }
+
+  .flex-align-center {
+    padding-right: 15px;
+  }
 }
 .calc-field-edit-dialog {
   .ed-dialog__footer {
