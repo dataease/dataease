@@ -937,10 +937,10 @@ export default {
         }).catch(err => {
           console.error('err-' + err)
           // 还没有构内部刷新
-          if (!this.innerRefreshTimer) {
+          if (!this.innerRefreshTimer && this.editMode === 'preview') {
             setTimeout(() => {
               this.getData(this.element.propValue.viewId)
-            }, 5000)
+            }, 120000)
           }
           this.requestStatus = 'error'
           if (err.message && err.message.indexOf('timeout') > -1) {
