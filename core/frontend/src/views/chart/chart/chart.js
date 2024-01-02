@@ -100,6 +100,9 @@ export const DEFAULT_SIZE = {
   tableColTooltip: {
     show: false
   },
+  tableCellTooltip: {
+    show: false
+  },
   gaugeMinType: 'fix', // fix or dynamic
   gaugeMinField: {
     id: '',

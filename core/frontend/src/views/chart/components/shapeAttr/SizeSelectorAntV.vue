@@ -335,6 +335,17 @@
           </el-radio-group>
         </el-form-item>
         <el-form-item
+          v-if="showProperty('tableCellTooltip')"
+          :label="$t('chart.table_cell_tooltip')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.tableCellTooltip.show"
+            @change="changeBarSizeCase('tableCellTooltip')"
+          />
+        </el-form-item>
+
+        <el-form-item
           v-if="showProperty('indexLabel') && sizeForm.showIndex"
           :label="$t('chart.table_index_desc')"
           class="form-item"
@@ -1705,6 +1716,7 @@ export default {
           this.sizeForm.tableItemAlign = this.sizeForm.tableItemAlign ? this.sizeForm.tableItemAlign : DEFAULT_SIZE.tableItemAlign
           this.sizeForm.tableRowTooltip = this.sizeForm.tableRowTooltip ?? DEFAULT_SIZE.tableRowTooltip
           this.sizeForm.tableColTooltip = this.sizeForm.tableColTooltip ?? DEFAULT_SIZE.tableColTooltip
+          this.sizeForm.tableCellTooltip = this.sizeForm.tableCellTooltip ?? DEFAULT_SIZE.tableCellTooltip
           this.sizeForm.tableColumnFreezeHead = this.sizeForm.tableColumnFreezeHead ?? DEFAULT_SIZE.tableColumnFreezeHead
           this.sizeForm.tableColumnFreezeTail = this.sizeForm.tableColumnFreezeTail ?? DEFAULT_SIZE.tableColumnFreezeTail
           this.sizeForm.tableRowFreezeHead = this.sizeForm.tableRowFreezeHead ?? DEFAULT_SIZE.tableRowFreezeHead

@@ -1515,6 +1515,7 @@ export default {
     table_index_desc: 'Index Header Name',
     table_row_tooltip: 'Row Tooltip',
     table_col_tooltip: 'Column Tooltip',
+    table_cell_tooltip: 'Cell Tooltip',
     total_sort: 'Total Sort',
     total_sort_none: 'None',
     total_sort_asc: 'ASC',
