@@ -422,10 +422,19 @@ export default {
         this.$refs.dateRef.hidePicker()
       }
     },
+    textSame(str1, str2) {
+      if (str1 === null && str2 === null) {
+        return true
+      }
+      if (str1 !== null && str2 !== null && typeof str1 !== 'undefined' && typeof str2 !== 'undefined') {
+        return str1.toString() === str2.toString()
+      }
+      return false
+    },
     resetDefaultValue(ele) {
       const id = ele.id
       const eleVal = ele.options.value.toString()
-      if (this.inDraw && this.manualModify && this.element.id === id && this.values.toString() !== eleVal && this.defaultValueStr === eleVal) {
+      if (this.inDraw && this.manualModify && this.element.id === id && !this.textSame(this.values, eleVal) && this.textSame(this.defaultValueStr, eleVal)) {
         if (!this.element.options.attrs.default.isDynamic) {
           this.values = this.fillValueDerfault()
           this.dateChange(this.values)
