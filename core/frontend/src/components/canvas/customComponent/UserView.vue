@@ -1109,7 +1109,8 @@ export default {
             jumpInfo = this.nowPanelJumpInfo[sourceInfo]
           }
         })
-      } else {
+      }
+      if (!jumpInfo) {
         for (let i = param.dimensionList.length - 1; i >= 0; i--) {
           dimension = param.dimensionList[i]
           sourceInfo = param.viewId + '#' + dimension.id
