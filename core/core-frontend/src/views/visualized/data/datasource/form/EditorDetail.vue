@@ -64,7 +64,7 @@ const defaultRule = {
     },
     {
       min: 2,
-      max: 25,
+      max: 64,
       message: t('datasource.input_limit_2_25', [2, 64]),
       trigger: 'blur'
     }
