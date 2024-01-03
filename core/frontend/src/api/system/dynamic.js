@@ -4,7 +4,7 @@ export function get(url) {
   return request({
     url: url,
     method: 'get',
-    loading: true
+    loading: false
   })
 }
 

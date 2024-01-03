@@ -321,7 +321,6 @@ export function baseMapOption(chart_option, chart, mapData, terminal = 'pc') {
 
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
 }

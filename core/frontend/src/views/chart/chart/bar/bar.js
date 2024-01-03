@@ -49,7 +49,7 @@ export function baseBarOption(chart_option, chart, activeParam) {
       y.type = 'bar'
       y.selectedMode = true
       y.select = BASE_ECHARTS_SELECT
-      chart_option.legend.data.push(y.name)
+      chart_option.legend.data.push(y.name ?? 'null')
       chart_option.series.push(y)
     }
   }
@@ -117,7 +117,7 @@ export function horizontalBarOption(chart_option, chart) {
       y.type = 'bar'
       y.selectedMode = true
       y.select = BASE_ECHARTS_SELECT
-      chart_option.legend.data.push(y.name)
+      chart_option.legend.data.push(y.name ?? 'null')
       chart_option.series.push(y)
     }
   }

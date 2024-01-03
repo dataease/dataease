@@ -1111,6 +1111,7 @@ export default {
     desc: '降序',
     sort: '排序',
     filter: '过滤',
+    is_set: '已设置',
     none: '无',
     background: '背景',
     border: '边角',
@@ -1182,6 +1183,7 @@ export default {
     chart_bar_stack: '堆叠柱状图',
     chart_percentage_bar_stack: '百分比柱状图',
     chart_bar_horizontal: '横向柱状图',
+    chart_bar_time_range: '区间条形图',
     chart_bar_stack_horizontal: '横向堆叠柱状图',
     chart_percentage_bar_stack_horizontal: '横向百分比柱状图',
     chart_bidirectional_bar: '对称柱状图',
@@ -1219,6 +1221,9 @@ export default {
     axis_width: '轴线宽度',
     axis_type: '轴线类型',
     grid_show: '网格线显示',
+    dash_show: '虚线显示',
+    dash_width: '虚线宽度',
+    dash_offset: '虚线间距',
     grid_color: '网格线颜色',
     grid_width: '网格线宽度',
     grid_type: '网格线类型',
@@ -1379,6 +1384,8 @@ export default {
     filter_type: '过滤方式',
     filter_value_can_not_str: '数值类型字段过滤值不能包含文本',
     enum_value_can_not_null: '字段枚举值不能为空',
+    column: '列',
+    table_freeze: '表格冻结',
     table_config: '表格配置',
     table_column_width_config: '列宽调整',
     table_column_adapt: '自适应',
@@ -1488,6 +1495,7 @@ export default {
     dynamic: '动态值',
     gauge_size_field_delete: '动态值中字段发生变更，请重新编辑',
     chart_group: '子类别',
+    chart_bar_time: '区间范围',
     chart_bar_group: '分组柱状图',
     chart_bar_group_stack: '分组堆叠柱状图',
     field_dynamic: '动态值',
@@ -1504,6 +1512,7 @@ export default {
     table_index_desc: '表头名称',
     table_row_tooltip: '行头提示',
     table_col_tooltip: '列头提示',
+    table_cell_tooltip: '单元格提示',
     total_sort: '总计排序',
     total_sort_none: '无',
     total_sort_asc: '升序',
@@ -1515,6 +1524,7 @@ export default {
     set_zero: '置为0',
     ignore_data: '隐藏空值',
     sub_dimension_tip: '该字段为必填项，且不应使用类别轴中的字段，若无需该字段，请选择基础图表进行展示，否则展示效果不理想。',
+    time_bar_tip: '该字段为必填项，且需要两个指标或者时间类型维度字段',
     drill_dimension_tip: '钻取字段仅支持数据集中的字段',
     table_scroll_tip: '明细表仅在分页模式为"下拉"时生效。',
     table_threshold_tip: '提示：请勿重复选择字段，若同一字段重复配置，则只有最后的字段配置生效',
@@ -1578,7 +1588,8 @@ export default {
     gauge_axis_label: '刻度标签',
     word_size_range: '字号区间',
     word_spacing: '文字间隔',
-    axis_multi_select_tip: '按住 Ctrl/Cmd 键或者 Shift 键再点击可多选'
+    axis_multi_select_tip: '按住 Ctrl/Cmd 键或者 Shift 键再点击可多选',
+    needs_to_be_integer: '需要为整数'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
@@ -1864,7 +1875,9 @@ export default {
     show_info: '驱动信息',
     file_name: '文件名',
     version: '版本',
-    please_set_driverClass: '请指定驱动类'
+    please_set_driverClass: '请指定驱动类',
+    please_set_surpportVersions: '请输入支持的数据库大版本',
+    surpportVersions: '支持版本'
   },
   datasource: {
     data_source_configuration: '数据源配置',
@@ -2033,6 +2046,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    required_tips: '必填项不能为空！',
     filter_no_select: '过滤组件无需选择',
     first_item: '首项',
     forbidden_copy: '当前组件不允许复制',
@@ -2223,6 +2237,7 @@ export default {
     export_to_app: '导出为应用',
     preview: '预览',
     fullscreen_preview: '全屏预览',
+    fullscreen_exit: '退出全屏',
     new_tab_preview: '新Tab页预览',
     select_panel_from_left: '请从左侧选择仪表板',
     template_nale: '模板名称',
@@ -2765,7 +2780,10 @@ export default {
     range_view: '展示数据',
     range_all: '全部数据',
     execute_now: '立即执行',
-    fire_now_success: '任务发起成功'
+    fire_now_success: '任务发起成功',
+    larkgroups: '飞书群',
+    ext_wait_time: '加载仪表板额外等待时间(单位:秒)',
+    wat_time_limit: '额外等待时间必须是[0 - 30]之间整数'
   },
   dynamic_time: {
     set_default: '设置默认值',

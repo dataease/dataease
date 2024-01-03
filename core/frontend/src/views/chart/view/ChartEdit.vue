@@ -568,6 +568,7 @@
                             :chart="chart"
                             @onDimensionItemChange="dimensionItemChange"
                             @onDimensionItemRemove="dimensionItemRemove"
+                            @onItemCustomSort="item => onCustomSort(item, 'xaxisExt')"
                             @editItemFilter="showDimensionEditFilter"
                             @onNameEdit="showRename"
                           />
@@ -670,7 +671,7 @@
                               @editItemFilter="showDimensionEditFilter"
                               @onNameEdit="showRename"
                               @valueFormatter="valueFormatter"
-                              @onCustomSort="onCustomSort"
+                              @onCustomSort="item => onCustomSort(item, 'xaxis')"
                             />
                           </template>
                         </transition-group>
@@ -687,12 +688,14 @@
                       v-if="view.type === 'bar-group'
                         || view.type === 'bar-group-stack'
                         || (view.render === 'antv' && view.type === 'line')
-                        || view.type === 'flow-map'"
+                        || view.type === 'flow-map'
+                        || view.type === 'bar-time-range'"
                       class="padding-lr"
                     >
                       <span class="data-area-label">
                         <span>
-                          <span v-if="view.type !=='flow-map'">{{ $t('chart.chart_group') }}</span>
+                          <span v-if="view.type === 'bar-time-range'">{{ $t('chart.chart_bar_time') }}</span>
+                          <span v-else-if="view.type !== 'flow-map'">{{ $t('chart.chart_group') }}</span>
                           <span v-else-if="view.type === 'flow-map'">{{ $t('chart.end_point') }}</span>
                           <span
                             v-show="view.type !== 'line'"
@@ -700,7 +703,8 @@
                           >*</span>
                         </span>
                         /
-                        <span>{{ $t('chart.dimension') }}</span>
+                        <span v-if="view.type !== 'bar-time-range'">{{ $t('chart.dimension') }}</span>
+                        <span v-else>{{ $t('chart.dimension_or_quota') }}</span>
                         <el-tooltip
                           v-show="view.type !== 'line'"
                           class="item"
@@ -708,7 +712,12 @@
                           placement="bottom"
                         >
                           <div slot="content">
-                            {{ $t('chart.sub_dimension_tip') }}
+                            <template v-if="view.type === 'bar-time-range'">
+                              {{ $t('chart.time_bar_tip') }}
+                            </template>
+                            <template v-else>
+                              {{ $t('chart.sub_dimension_tip') }}
+                            </template>
                           </div>
                           <i
                             class="el-icon-info"
@@ -730,20 +739,39 @@
                         @update="calcData(true)"
                       >
                         <transition-group class="draggable-group">
-                          <dimension-ext-item
-                            v-for="(item,index) in view.xaxisExt"
-                            :key="item.id"
-                            :param="param"
-                            :index="index"
-                            :item="item"
-                            :dimension-data="dimension"
-                            :quota-data="quota"
-                            :chart="chart"
-                            @onDimensionItemChange="dimensionItemChange"
-                            @onDimensionItemRemove="dimensionItemRemove"
-                            @editItemFilter="showDimensionEditFilter"
-                            @onNameEdit="showRename"
-                          />
+                          <template v-for="(item,index) in view.xaxisExt">
+                            <dimension-ext-item
+                              v-if="item.groupType === 'd'"
+                              :key="item.id"
+                              :param="param"
+                              :index="index"
+                              :item="item"
+                              :dimension-data="dimension"
+                              :quota-data="quota"
+                              :chart="chart"
+                              @onDimensionItemChange="dimensionExtItemChange"
+                              @onDimensionItemRemove="dimensionItemExtRemove"
+                              @onItemCustomSort="item => onCustomSort(item, 'xaxisExt')"
+                              @editItemFilter="showDimensionEditFilter"
+                              @onNameEdit="showRename"
+                            />
+                            <quota-item
+                              v-else-if="item.groupType === 'q'"
+                              :key="item.id"
+                              :param="param"
+                              :index="index"
+                              :item="item"
+                              :chart="chart"
+                              :dimension-data="dimension"
+                              :quota-data="quota"
+                              @onQuotaItemChange="dimensionExtItemChange"
+                              @onQuotaItemRemove="dimensionItemExtRemove"
+                              @editItemFilter="showQuotaEditFilter"
+                              @onNameEdit="showRename"
+                              @editItemCompare="showQuotaEditCompare"
+                              @valueFormatter="valueFormatter"
+                            />
+                          </template>
                         </transition-group>
                       </draggable>
                       <div
@@ -755,7 +783,7 @@
                     </el-row>
                     <!--yaxis-->
                     <el-row
-                      v-if="!equalsAny(view.type , 'table-info', 'label', 'flow-map')"
+                      v-if="!equalsAny(view.type , 'table-info', 'label', 'flow-map', 'bar-time-range')"
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
@@ -940,7 +968,7 @@
                             :quota-data="quota"
                             @onItemChange="stackItemChange"
                             @onItemRemove="stackItemRemove"
-                            @onItemCustomSort="stackItemCustomSort"
+                            @onItemCustomSort="item => onCustomSort(item, 'extStack')"
                             @onNameEdit="showRename"
                           />
                         </transition-group>
@@ -1088,36 +1116,27 @@
                       class="padding-lr"
                       style="margin-top: 6px;"
                     >
-                      <span>{{ $t('chart.result_filter') }}</span>
-                      <draggable
-                        v-model="view.customFilter"
-                        group="drag"
-                        animation="300"
-                        :move="onMove"
-                        class="theme-item-class"
-                        style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
-                        @add="addCustomFilter"
-                        @update="calcData(true)"
-                      >
-                        <transition-group class="draggable-group">
-                          <filter-item
-                            v-for="(item,index) in view.customFilter"
-                            :key="item.id"
-                            :param="param"
-                            :index="index"
-                            :item="item"
-                            :dimension-data="dimension"
-                            :quota-data="quota"
-                            @onFilterItemRemove="filterItemRemove"
-                            @editItemFilter="showEditFilter"
-                          />
-                        </transition-group>
-                      </draggable>
+                      <span class="data-area-label">
+                        <span>{{ $t('chart.result_filter') }}</span>
+                        <span
+                          v-if="!!view.customFilter.logic"
+                          class="setting"
+                        >{{ $t('chart.is_set') }}</span>
+                        <i
+                          class="el-icon-arrow-down el-icon-delete data-area-clear"
+                          @click="deleteTreeFilter"
+                        />
+                      </span>
                       <div
-                        v-if="!view.customFilter || view.customFilter.length === 0"
-                        class="drag-placeholder-style"
+                        class="tree-btn"
+                        :class="!!view.customFilter.logic && 'active'"
+                        @click="openTreeFilter"
                       >
-                        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+                        <svg-icon
+                          class="svg-background"
+                          icon-class="icon-filter_outlined"
+                        />
+                        <span>{{ $t('chart.filter') }}</span>
                       </div>
                     </el-row>
                     <el-row
@@ -1753,7 +1772,7 @@
     >
       <custom-sort-edit
         :chart="chart"
-        field-type="xAxis"
+        :field-type="customSortFieldType"
         :field="customSortField"
         @onSortChange="customSortChange"
       />
@@ -1770,40 +1789,6 @@
           type="primary"
           size="mini"
           @click="saveCustomSort"
-        >{{ $t('chart.confirm') }}
-        </el-button>
-      </div>
-    </el-dialog>
-
-    <!--extStack自定义排序-->
-    <el-dialog
-      v-if="showStackCustomSort"
-      v-dialogDrag
-      :title="$t('chart.custom_sort')"
-      :visible="showStackCustomSort"
-      :show-close="false"
-      width="500px"
-      class="dialog-css"
-    >
-      <custom-sort-edit
-        :chart="chart"
-        field-type="extStack"
-        :field="customSortField"
-        @onSortChange="customSortChange"
-      />
-      <div
-        slot="footer"
-        class="dialog-footer"
-      >
-        <el-button
-          size="mini"
-          @click="closeStackCustomSort"
-        >{{ $t('chart.cancel') }}
-        </el-button>
-        <el-button
-          type="primary"
-          size="mini"
-          @click="saveStackCustomSort"
         >{{ $t('chart.confirm') }}
         </el-button>
       </div>
@@ -1826,6 +1811,10 @@
         @onEditClose="closeChartCalcField"
       />
     </el-dialog>
+    <FilterTree
+      ref="filterTree"
+      @filter-data="changeFilterData"
+    />
   </el-row>
 </template>
 
@@ -1841,7 +1830,6 @@ import {
 } from '@/api/chart/chart'
 import DimensionItem from '../components/dragItem/DimensionItem'
 import QuotaItem from '../components/dragItem/QuotaItem'
-import FilterItem from '../components/dragItem/FilterItem'
 import ChartDragItem from '../components/dragItem/ChartDragItem'
 import DrillItem from '../components/dragItem/DrillItem'
 import ResultFilterEditor from '../components/filter/ResultFilterEditor'
@@ -1880,8 +1868,9 @@ import { compareItem } from '@/views/chart/chart/compare'
 import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import DimensionExtItem from '@/views/chart/components/dragItem/DimensionExtItem'
 import PluginCom from '@/views/system/plugin/PluginCom'
+import _ from 'lodash'
 import { mapState } from 'vuex'
-
+import FilterTree from './FilterTree.vue'
 import FunctionCfg from '@/views/chart/components/senior/FunctionCfg'
 import MapMapping from '@/views/chart/components/senior/MapMapping'
 import AssistLine from '@/views/chart/components/senior/AssistLine'
@@ -1916,7 +1905,7 @@ export default {
     ChartType,
     ChartComponentG2,
     QuotaExtItem,
-    FilterItem,
+    FilterTree,
     FieldEdit,
     TableSelector,
     ResultFilterEditor,
@@ -1934,6 +1923,11 @@ export default {
     PluginCom,
     MapMapping,
     MarkMapDataEditor
+  },
+  provide() {
+    return {
+      filedList: () => this.filedList
+    }
   },
   props: {
     param: {
@@ -1996,7 +1990,7 @@ export default {
           assistLine: [],
           threshold: DEFAULT_THRESHOLD
         },
-        customFilter: [],
+        customFilter: {},
         render: 'antv',
         isPlugin: false
       },
@@ -2064,10 +2058,14 @@ export default {
       lastDimensionIndex: 0,
       lastQuotaIndex: 0,
       selectedDimension: [],
-      selectedQuota: []
+      selectedQuota: [],
+      customSortFieldType: 'xaxis'
     }
   },
   computed: {
+    filedList() {
+      return [...this.dimension, ...this.quota].filter(ele => ele.id !== 'count')
+    },
     obj() {
       return {
         view: this.view,
@@ -2108,29 +2106,32 @@ export default {
     },
     showCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'table', 'liquid') && this.view.type !== 'race-bar' ||
-        equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
+        equalsAny(this.view.type, 'text', 'label', 'map', 'buddle-map') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix') ||
+       this.view.type === 'scatter'
     },
     showSeniorCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'table') ||
         equalsAny(this.view.type, 'table-normal', 'table-info', 'map', 'text') || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
     },
     showFunctionCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix', 'table') ||
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix') ||
+        (this.view.render === 'antv' && this.view.type.includes('table')) ||
         equalsAny(this.view.type, 'map', 'text')
     },
     showScrollCfg() {
       return equalsAny(this.view.type, 'table-normal', 'table-info')
     },
     showAnalyseCfg() {
-      if (this.view.type === 'bidirectional-bar') {
+      if (this.view.type === 'bidirectional-bar' || this.view.type === 'bar-time-range') {
         return false
       }
       return includesAny(this.view.type, 'bar', 'line', 'area', 'gauge', 'liquid') ||
         equalsAny(this.view.type, 'text', 'label') ||
-        (this.view.render === 'antv' && this.view.type.includes('table')) || this.view.render === 'echarts' && includesAny(this.view.type, 'mix')
+        (this.view.render === 'antv' && this.view.type.includes('table')) || this.view.render === 'echarts' && includesAny(this.view.type, 'mix') ||
+         this.view.type === 'scatter'
     },
     showAssistLineCfg() {
-      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix')
+      return includesAny(this.view.type, 'bar', 'line', 'area', 'mix') || this.view.type === 'scatter'
     },
     showThresholdCfg() {
       if (this.view.type === 'bidirectional-bar') {
@@ -2248,6 +2249,10 @@ export default {
             this.view.xaxis = []
           }
         }
+        if (newVal.type !== oldVal.type && (newVal.type === 'bar-time-range' || oldVal.type === 'bar-time-range')) {
+          this.view.xaxisExt = []
+          this.view.yaxis = []
+        }
         if (newVal.type !== oldVal.type || newVal.render !== oldVal.render) {
           this.setChartDefaultOptions()
           this.calcData(true, 'chart', true, newVal.type !== oldVal.type, newVal.render !== oldVal.render)
@@ -2280,7 +2285,7 @@ export default {
     bus.$off('show-rename', this.showRename)
     bus.$off('show-quota-edit-filter', this.showQuotaEditFilter)
     bus.$off('show-quota-edit-compare', this.showQuotaEditCompare)
-    bus.$off('show-edit-filter', this.showEditFilter)
+    bus.$off('show-edit-filter', this.openTreeFilter)
     bus.$off('show-edit-formatter', this.valueFormatter)
     bus.$off('calc-data', this.calcData)
     bus.$off('plugins-calc-style', this.calcStyle)
@@ -2291,6 +2296,16 @@ export default {
   },
 
   methods: {
+    changeFilterData(customFilter) {
+      this.view.customFilter = _.cloneDeep(customFilter)
+      this.calcData(true)
+    },
+    openTreeFilter() {
+      this.$refs.filterTree.init(_.cloneDeep(this.view.customFilter))
+    },
+    deleteTreeFilter() {
+      this.changeFilterData({})
+    },
     includesAny,
     equalsAny,
     setTitle(title, id) {
@@ -2360,7 +2375,7 @@ export default {
       bus.$on('show-rename', this.showRename)
       bus.$on('show-quota-edit-filter', this.showQuotaEditFilter)
       bus.$on('show-quota-edit-compare', this.showQuotaEditCompare)
-      bus.$on('show-edit-filter', this.showEditFilter)
+      bus.$on('show-edit-filter', this.openTreeFilter)
       bus.$on('show-edit-formatter', this.valueFormatter)
       bus.$on('calc-data', this.calcData)
       bus.$on('plugins-calc-style', this.calcStyle)
@@ -2424,6 +2439,7 @@ export default {
       }
     },
     resetChangeTable() {
+      this.view.customFilter = {}
       const compareData = {}
       this.dimensionData.forEach(deimension => {
         compareData[deimension.originName] = deimension
@@ -2431,7 +2447,7 @@ export default {
       this.quotaData.forEach(quota => {
         compareData[quota.originName] = quota
       })
-      const compareCols = ['xaxis', 'xaxisExt', 'yaxis', 'yaxisExt', 'customFilter', 'extStack', 'extBubble', 'drillFields']
+      const compareCols = ['xaxis', 'xaxisExt', 'yaxis', 'yaxisExt', 'extStack', 'extBubble', 'drillFields']
       this.viewFieldChange(compareData, compareCols)
     },
     viewFieldChange(compareData, compareCols) {
@@ -2502,7 +2518,7 @@ export default {
         }
       })
       if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map', 'race-bar') ||
-        (view.render === 'antv' && (view.type === 'line' || view.type === 'scatter'))) {
+        (view.render === 'antv' && (view.type === 'line' || view.type === 'scatter' || view.type === 'bar-time-range'))) {
         view.xaxisExt.forEach(function(ele) {
           if (!ele.dateStyle || ele.dateStyle === '') {
             ele.dateStyle = 'y_M_d'
@@ -2515,6 +2531,21 @@ export default {
           }
           if (!ele.filter) {
             ele.filter = []
+          }
+
+          if (ele.chartId) {
+            ele.summary = ''
+          } else {
+            if (!ele.summary || ele.summary === '') {
+              if (ele.id === 'count' || ele.deType === 0 || ele.deType === 1) {
+                ele.summary = 'count'
+              } else {
+                ele.summary = 'sum'
+              }
+            }
+          }
+          if (!ele.compareCalc) {
+            ele.compareCalc = compareItem
           }
         })
       }
@@ -2624,11 +2655,6 @@ export default {
         view.type === 'table-pivot') {
         view.drillFields = []
       }
-      view.customFilter.forEach(function(ele) {
-        if (ele && !ele.filter) {
-          ele.filter = []
-        }
-      })
       this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
@@ -2837,12 +2863,23 @@ export default {
       this.moveId = e.draggedContext.element.id
       return true
     },
-    onCustomSort(item) {
-      this.customSortField = this.view.xaxis[item.index]
-      this.customSort()
+    onCustomSort(item, axis) {
+      this.customSortFieldType = axis
+      this.customSortField = this.view[axis][item.index]
+      this.showCustomSort = true
     },
 
     dimensionItemChange(item) {
+      this.calcData(true)
+    },
+
+    dimensionExtItemChange(item) {
+      if (this.view.type === 'bar-time-range') {
+        this.view.xaxisExt.forEach(ext => {
+          ext.dateStyle = item.dateStyle
+          ext.datePattern = item.datePattern
+        })
+      }
       this.calcData(true)
     },
 
@@ -2852,6 +2889,11 @@ export default {
       } else if (item.removeType === 'dimensionExt') {
         this.view.xaxisExt.splice(item.index, 1)
       }
+      this.calcData(true)
+    },
+    dimensionItemExtRemove(item) {
+      this.view.xaxisExt.splice(item.index, 1)
+
       this.calcData(true)
     },
 
@@ -3025,7 +3067,7 @@ export default {
           return
         }
       }
-      if (this.quotaItem.filterType === 'quota') {
+      if (this.quotaItem.filterType === 'quota' && this.chart.type !== 'bar-time-range') {
         this.view.yaxis[this.quotaItem.index].filter = this.quotaItem.filter
         this.view.yaxis[this.quotaItem.index].logic = this.quotaItem.logic
       } else if (this.quotaItem.filterType === 'quotaExt') {
@@ -3034,66 +3076,12 @@ export default {
       } else if (this.quotaItem.filterType === 'dimension') {
         this.view.xaxis[this.quotaItem.index].filter = this.quotaItem.filter
         this.view.xaxis[this.quotaItem.index].logic = this.quotaItem.logic
+      } else if (this.chart.type === 'bar-time-range') {
+        this.view.xaxisExt[this.quotaItem.index].filter = this.quotaItem.filter
+        this.view.xaxisExt[this.quotaItem.index].logic = this.quotaItem.logic
       }
       this.calcData(true)
       this.closeQuotaFilter()
-    },
-
-    filterItemRemove(item) {
-      this.view.customFilter.splice(item.index, 1)
-      this.calcData(true)
-    },
-    showEditFilter(item) {
-      this.filterItem = JSON.parse(JSON.stringify(item))
-      this.chartForFilter = JSON.parse(JSON.stringify(this.view))
-      if (!this.filterItem.logic) {
-        this.filterItem.logic = 'and'
-      }
-      if (!this.filterItem.filterType) {
-        this.filterItem.filterType = 'logic'
-      }
-      if (!this.filterItem.enumCheckField) {
-        this.filterItem.enumCheckField = []
-      }
-      this.resultFilterEdit = true
-    },
-    closeResultFilter() {
-      this.resultFilterEdit = false
-    },
-    saveResultFilter() {
-      if (((this.filterItem.deType === 0 || this.filterItem.deType === 5) && this.filterItem.filterType !== 'enum') ||
-        this.filterItem.deType === 1 ||
-        this.filterItem.deType === 2 ||
-        this.filterItem.deType === 3) {
-        for (let i = 0; i < this.filterItem.filter.length; i++) {
-          const f = this.filterItem.filter[i]
-          if (!f.term.includes('null') && !f.term.includes('empty') && (!f.value || f.value === '')) {
-            this.$message({
-              message: this.$t('chart.filter_value_can_null'),
-              type: 'error',
-              showClose: true
-            })
-            return
-          }
-          if (this.filterItem.deType === 2 || this.filterItem.deType === 3) {
-            if (isNaN(f.value)) {
-              this.$message({
-                message: this.$t('chart.filter_value_can_not_str'),
-                type: 'error',
-                showClose: true
-              })
-              return
-            }
-          }
-        }
-      }
-
-      this.view.customFilter[this.filterItem.index].filter = this.filterItem.filter
-      this.view.customFilter[this.filterItem.index].logic = this.filterItem.logic
-      this.view.customFilter[this.filterItem.index].filterType = this.filterItem.filterType
-      this.view.customFilter[this.filterItem.index].enumCheckField = this.filterItem.enumCheckField
-      this.calcData(true)
-      this.closeResultFilter()
     },
 
     showRename(val) {
@@ -3103,13 +3091,13 @@ export default {
     saveRename() {
       this.$refs['itemForm'].validate((valid) => {
         if (valid) {
-          if (this.itemForm.renameType === 'quota') {
+          if (this.itemForm.renameType === 'quota' && this.chart.type !== 'bar-time-range') {
             this.view.yaxis[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'dimension') {
             this.view.xaxis[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'quotaExt') {
             this.view.yaxisExt[this.itemForm.index].name = this.itemForm.name
-          } else if (this.itemForm.renameType === 'dimensionExt') {
+          } else if (this.itemForm.renameType === 'dimensionExt' || this.chart.type === 'bar-time-range') {
             this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'extStack') {
             this.view.extStack[this.itemForm.index].name = this.itemForm.name
@@ -3307,8 +3295,26 @@ export default {
     addXaxisExt(e) {
       this.multiAdd(e, this.view.xaxisExt)
       this.dragMoveDuplicate(this.view.xaxisExt, e)
-      if (this.view.type !== 'table-info') {
+
+      if (this.view.type !== 'table-info' && this.view.type !== 'bar-time-range') {
         this.dragCheckType(this.view.xaxisExt, 'd')
+      }
+      if (this.view.type === 'bar-time-range') {
+        if (this.view.xaxisExt && this.view.xaxisExt.length > 0) {
+          const baseXaxisExt = this.view.xaxisExt[0]
+          for (let i = this.view.xaxisExt.length - 1; i >= 0; i--) {
+            // 针对时间条形图，需要限定类型为时间类型
+            if (baseXaxisExt.groupType !== this.view.xaxisExt[i].groupType || baseXaxisExt.groupType === 'd' && this.view.xaxisExt[i].deType !== 1) {
+              this.view.xaxisExt.splice(i, 1)
+              continue
+            }
+            this.view.xaxisExt[i].dateStyle = baseXaxisExt.dateStyle
+            this.view.xaxisExt[i].datePattern = baseXaxisExt.datePattern
+          }
+        }
+        if (this.view.xaxisExt.length > 2) {
+          this.view.xaxisExt = [this.view.xaxisExt[0], this.view.xaxisExt[1]]
+        }
       }
       if ((this.view.type === 'map' || this.view.type === 'word-cloud' || this.view.type === 'scatter') && this.view.xaxisExt.length > 1) {
         this.view.xaxisExt = [this.view.xaxisExt[0]]
@@ -3392,11 +3398,6 @@ export default {
       this.view.extStack.splice(item.index, 1)
       this.calcData(true)
     },
-    stackItemCustomSort(item) {
-      this.customSortField = this.view.extStack[item.index]
-      this.stackCustomSort()
-    },
-
     drillItemChange(item) {
       this.calcData(true)
     },
@@ -3637,20 +3638,19 @@ export default {
         return
       }
       // 更新指标
-      if (this.valueFormatterItem.formatterType === 'quota') {
+      if (this.valueFormatterItem.formatterType === 'quota' && this.chart.type !== 'bar-time-range') {
         this.view.yaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
       } else if (this.valueFormatterItem.formatterType === 'quotaExt') {
         this.view.yaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
       } else if (this.valueFormatterItem.formatterType === 'dimension') {
         this.view.xaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      } else if (this.chart.type === 'bar-time-range') {
+        this.view.xaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
       }
       this.calcData(true)
       this.closeValueFormatter()
     },
 
-    customSort() {
-      this.showCustomSort = true
-    },
     customSortChange(val) {
       this.customSortList = val
     },
@@ -3660,7 +3660,7 @@ export default {
       this.customSortList = []
     },
     saveCustomSort() {
-      this.view.xaxis.forEach(ele => {
+      this.view[this.customSortFieldType].forEach(ele => {
         if (ele.id === this.customSortField.id) {
           ele.sort = 'custom_sort'
           ele.customSort = this.customSortList
@@ -3669,24 +3669,6 @@ export default {
       this.closeCustomSort()
       this.calcData(true)
     },
-
-    stackCustomSort() {
-      this.showStackCustomSort = true
-    },
-    closeStackCustomSort() {
-      this.showStackCustomSort = false
-    },
-    saveStackCustomSort() {
-      this.view.extStack.forEach(ele => {
-        if (ele.id === this.customSortField.id) {
-          ele.sort = 'custom_sort'
-          ele.customSort = this.customSortList
-        }
-      })
-      this.closeStackCustomSort()
-      this.calcData(true)
-    },
-
     fieldEdit(param) {
       switch (param.type) {
         case 'ds':
@@ -4241,7 +4223,40 @@ span {
   position: relative;
   width: 100%;
   display: inline-block;
+  .setting {
+    padding: 0px 4px 0px 4px;
+    border-radius: 2px;
+    background-color: #1F23291A;
+    color: #646A73;
+    position: absolute;
+    top: 1px;
+    right: 23px;
+    z-index: 1;
+    font-size: 10px;
+    font-weight: 500;
+    line-height: 14px;
+    height: 16px;
+  }
 }
+
+.tree-btn {
+    width: 100%;
+    background: #fff;
+    height: 32px;
+    border-radius: 4px;
+    border: 1px solid #DCDFE6;
+    display: flex;
+    color: #CCCCCC;
+    align-items: center;
+    cursor: pointer;
+    justify-content: center;
+    font-size: 12px;
+
+    &.active {
+      color: #3370FF;
+      border-color: #3370FF;
+    }
+  }
 
 .data-area-clear {
   position: absolute;

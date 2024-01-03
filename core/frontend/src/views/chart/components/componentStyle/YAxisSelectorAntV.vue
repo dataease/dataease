@@ -28,13 +28,17 @@
               size="mini"
               @change="changeYAxisStyle('position')"
             >
-              <div v-if="chart.type !== 'bidirectional-bar'">
-                <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
-                <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
-              </div>
-              <div v-else-if="chart.type === 'bidirectional-bar'">
+              <div v-if="chart.type === 'bidirectional-bar' ">
                 <el-radio-button label="right">{{ $t('chart.text_pos_top') }}</el-radio-button>
                 <el-radio-button label="left">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
+              </div>
+              <div v-else-if="chart.type === 'bar-time-range'">
+                <el-radio-button label="left">{{ $t('chart.text_pos_top') }}</el-radio-button>
+                <el-radio-button label="right">{{ $t('chart.text_pos_bottom') }}</el-radio-button>
+              </div>
+              <div v-else>
+                <el-radio-button label="left">{{ $t('chart.text_pos_left') }}</el-radio-button>
+                <el-radio-button label="right">{{ $t('chart.text_pos_right') }}</el-radio-button>
               </div>
             </el-radio-group>
           </el-form-item>
@@ -198,6 +202,45 @@
                 @change="changeYAxisStyle('splitLine')"
               />
             </el-form-item>
+            <el-form-item
+              :label="$t('chart.dash_show')"
+              class="form-item"
+            >
+              <el-checkbox
+                v-model="axisForm.splitLine.enableDash"
+                @change="changeYAxisStyle('splitLine')"
+              >{{ $t('chart.dash_show') }}</el-checkbox>
+            </el-form-item>
+            <template v-if="axisForm.splitLine.enableDash">
+              <el-form-item
+                :label="$t('chart.dash_width')"
+                class="form-item form-item-slider"
+              >
+                <el-slider
+                  v-model="axisForm.splitLine.dashStyle.width"
+                  :min="1"
+                  :max="10"
+                  show-input
+                  :show-input-controls="false"
+                  input-size="mini"
+                  @change="changeYAxisStyle('splitLine')"
+                />
+              </el-form-item>
+              <el-form-item
+                :label="$t('chart.dash_offset')"
+                class="form-item form-item-slider"
+              >
+                <el-slider
+                  v-model="axisForm.splitLine.dashStyle.offset"
+                  :min="1"
+                  :max="10"
+                  show-input
+                  :show-input-controls="false"
+                  input-size="mini"
+                  @change="changeYAxisStyle('splitLine')"
+                />
+              </el-form-item>
+            </template>
           </span>
           <el-divider v-if="showProperty('axisLabel')" />
           <el-form-item
@@ -254,7 +297,7 @@
               </el-select>
             </el-form-item>
 
-            <span v-show="chart.type && !chart.type.includes('horizontal') && chart.type !== 'waterfall'">
+            <span v-show="chart.type && !(chart.type.includes('horizontal') || chart.type === 'bar-time-range') && chart.type !== 'waterfall'">
               <el-form-item
                 :label="$t('chart.value_formatter_type')"
                 class="form-item"
@@ -407,6 +450,12 @@ export default {
           }
           if (!this.axisForm.axisLine) {
             this.axisForm.axisLine = JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE.axisLine))
+          }
+          if (this.axisForm.splitLine.enableDash === undefined) {
+            this.axisForm.splitLine.enableDash = DEFAULT_YAXIS_STYLE.splitLine.enableDash
+          }
+          if (!this.axisForm.splitLine.dashStyle) {
+            this.axisForm.splitLine.dashStyle = JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE.splitLine.dashStyle))
           }
         }
       }

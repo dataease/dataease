@@ -4,11 +4,14 @@
     v-if="element.options!== null && element.options.attrs!==null && show"
     class="de-select-grid-class"
   >
-    <div class="de-select-grid-search">
+    <div
+      class="de-select-grid-search"
+      :class="{'show-required-tips': showRequiredTips}"
+    >
       <el-input
         ref="de-select-grid"
         v-model="keyWord"
-        :placeholder="$t('deinputsearch.placeholder')"
+        :placeholder="showRequiredTips ? $t('panel.required_tips') : $t('deinputsearch.placeholder')"
         :size="size"
         prefix-icon="el-icon-search"
         clearable
@@ -149,6 +152,9 @@ export default {
     },
     isCustomSortWidget() {
       return this.element.serviceName === 'textSelectGridWidget'
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && (!this.value || !this.value.length)
     }
   },
   watch: {
@@ -375,6 +381,12 @@ export default {
         this.element.options.manualModify = false
       } else {
         this.element.options.manualModify = true
+        if (!this.showRequiredTips) {
+          this.$store.commit('setLastValidFilters', {
+            componentId: this.element.id,
+            val: (this.value && Array.isArray(this.value)) ? this.value.join(',') : this.value
+          })
+        }
       }
       this.setCondition()
     },
@@ -388,6 +400,9 @@ export default {
       return param
     },
     setCondition() {
+      if (this.showRequiredTips) {
+        return
+      }
       const param = this.getCondition()
       !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
     },
@@ -397,7 +412,16 @@ export default {
       return this.value.split(',')
     },
     fillValueDerfault() {
-      const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      let defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      if (this.inDraw) {
+        let lastFilters = null
+        if (this.$store.state.lastValidFilters) {
+          lastFilters = this.$store.state.lastValidFilters[this.element.id]
+          if (lastFilters) {
+            defaultV = lastFilters.val === null ? '' : lastFilters.val.toString()
+          }
+        }
+      }
       if (this.element.options.attrs.multiple) {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') {
           return []
@@ -448,6 +472,16 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+
+.show-required-tips ::v-deep .el-input__inner {
+  border-color: #ff0000 !important;
+}
+.show-required-tips ::v-deep .el-input__inner::placeholder {
+  color: #ff0000 !important;
+}
+.show-required-tips ::v-deep i {
+  color: #ff0000 !important;
+}
 .de-select-grid-search {
   ::v-deep input {
     border-radius: 0px;

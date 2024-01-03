@@ -24,6 +24,7 @@ import {
 } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import store from "@/store";
 export default {
   components: { DeCanvas, CanvasOptBar },
   data() {
@@ -35,7 +36,7 @@ export default {
   computed: {
     ...mapState(['canvasStyleData', 'mobileLayoutStatus', 'componentData']),
     mainCanvasComponentData() {
-      return getNowCanvasComponentData(this.canvasId)
+      return this.componentData.filter(item => item.canvasId === 'canvas-main')
     },
     mobileCanvasStyle() {
       let style
@@ -127,7 +128,7 @@ export default {
     Segoe UI,
     Arial,
     Roboto,
-    "PingFang SC",
+    "AlibabaPuHuiTi",
     "miui",
     "Hiragino Sans GB",
     "Microsoft Yahei",

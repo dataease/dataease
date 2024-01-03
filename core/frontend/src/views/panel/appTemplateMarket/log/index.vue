@@ -420,11 +420,13 @@ export default {
         return
       }
       const param = {
-        orders: formatOrders(this.orderConditions),
-        conditions: [...this.cacheCondition]
+        orders: formatOrders(this.orderConditions)
+      }
+      if (this.cacheCondition && this.cacheCondition.length > 0) {
+        param['applyTime'] = this.cacheCondition[0].value
       }
       if (this.nickName) {
-        param.keyWord = this.nickName
+        param.keyword = this.nickName
       }
       if (this.appTemplateId) {
         param.conditions.push({

@@ -75,10 +75,12 @@ echo -e "*******************************************************\n" 2>&1 | tee -
 
 if [[ -f $dataease_conf ]]; then
    DE_LOGIN_TIMEOUT=$(prop $dataease_conf dataease.login_timeout)
+   DE_INIT_PASSWORD=$(prop $dataease_conf dataease.init_password)
    DE_MYSQL_PARAMS=$(grep -P "^\s*[^#]?spring.datasource.url=.*$" $dataease_conf | cut -d'=' --complement -f1 | awk -F'?' '{print $2}')
 fi
 export DE_MYSQL_PARAMS
 export DE_LOGIN_TIMEOUT=$([[ -z $DE_LOGIN_TIMEOUT ]] && echo -n 480 || echo -n $DE_LOGIN_TIMEOUT)
+export DE_INIT_PASSWORD=$([[ -z $DE_INIT_PASSWORD ]] && echo -n DataEase123456 || echo -n $DE_INIT_PASSWORD)
 
 if [[ -f $dataease_conf ]] && [[ ! ${DE_EXTERNAL_DORIS} ]]; then
    export DE_DORIS_DB=$(prop $dataease_conf doris.db)

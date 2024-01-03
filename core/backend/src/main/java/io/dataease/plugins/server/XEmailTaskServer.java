@@ -7,13 +7,13 @@ import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DeRateLimiter;
 import io.dataease.auth.annotation.SqlInjectValidator;
 import io.dataease.auth.api.dto.CurrentUserDto;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.excel.ExcelSheetModel;
 import io.dataease.commons.pool.PriorityThreadPoolExecutor;
 import io.dataease.commons.utils.*;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.email.dto.request.*;
 import io.dataease.plugins.xpack.email.dto.response.XpackTaskEntity;
@@ -172,7 +172,7 @@ public class XEmailTaskServer {
                     return emailXpackService.printPdf(url, currentToken, buildPixel(request.getPixel()), request.isShowPageNo(), false);
                 } catch (Exception e) {
                     LogUtil.error(e.getMessage(), e);
-                    DEException.throwException("预览失败，请联系管理员");
+                    DataEaseException.throwException("预览失败，请联系管理员");
                 }
                 return null;
             }, 0);
@@ -191,7 +191,7 @@ public class XEmailTaskServer {
             }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DEException.throwException("预览失败，请联系管理员");
+            DataEaseException.throwException("预览失败，请联系管理员");
         }
 
         return null;
@@ -207,10 +207,10 @@ public class XEmailTaskServer {
             String currentToken = ServletUtils.getToken();
             Future<?> future = priorityExecutor.submit(() -> {
                 try {
-                    return emailXpackService.print(url, currentToken, buildPixel(request.getPixel()));
+                    return emailXpackService.print(url, currentToken, buildPixel(request.getPixel()), request.getExtWaitTime());
                 } catch (Exception e) {
                     LogUtil.error(e.getMessage(), e);
-                    DEException.throwException("预览失败，请联系管理员");
+                    DataEaseException.throwException("预览失败，请联系管理员");
                 }
                 return null;
             }, 0);
@@ -229,7 +229,7 @@ public class XEmailTaskServer {
             }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DEException.throwException("预览失败，请联系管理员");
+            DataEaseException.throwException("预览失败，请联系管理员");
         }
 
         return null;
@@ -247,10 +247,10 @@ public class XEmailTaskServer {
         try {
             Future<?> future = priorityExecutor.submit(() -> {
                 try {
-                    return emailXpackService.print(url, token, buildPixel(request.getPixel()));
+                    return emailXpackService.print(url, token, buildPixel(request.getPixel()), request.getExtWaitTime());
                 } catch (Exception e) {
                     LogUtil.error(e.getMessage(), e);
-                    DEException.throwException("预览失败，请联系管理员");
+                    DataEaseException.throwException("预览失败，请联系管理员");
                 }
                 return null;
             }, 0);
@@ -268,7 +268,7 @@ public class XEmailTaskServer {
             }
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e);
-            DEException.throwException("预览失败，请联系管理员");
+            DataEaseException.throwException("预览失败，请联系管理员");
         }
         return null;
 
@@ -285,7 +285,7 @@ public class XEmailTaskServer {
             emailXpackService.delete(taskId);
         } catch (Exception e) {
             LogUtil.error(e);
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -302,7 +302,7 @@ public class XEmailTaskServer {
             emailXpackService.batchDel(taskIds);
         } catch (Exception e) {
             LogUtil.error(e);
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
     }
 

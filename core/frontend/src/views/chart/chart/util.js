@@ -63,9 +63,11 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnMode',
+        'tableFreeze',
         'showIndex',
         'indexLabel',
         'tableColTooltip',
+        'tableCellTooltip',
         'showTableHeader'
       ],
       'title-selector-ant-v': [
@@ -119,7 +121,9 @@ export const TYPE_CONFIGS = [
         'showIndex',
         'indexLabel',
         'tableColTooltip',
-        'showTableHeader'
+        'tableCellTooltip',
+        'showTableHeader',
+        'tableFreeze'
       ],
       'title-selector-ant-v': [
         'show',
@@ -169,7 +173,8 @@ export const TYPE_CONFIGS = [
         'tableItemHeight',
         'tableColumnMode',
         'tableRowTooltip',
-        'tableColTooltip'
+        'tableColTooltip',
+        'tableCellTooltip'
       ],
       'total-cfg': [
         'row',
@@ -1064,6 +1069,85 @@ export const TYPE_CONFIGS = [
         'name',
         'nameTextStyle',
         'axisValue',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'y-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
+        'splitLine',
+        'axisForm',
+        'axisLabel'
+      ],
+      'title-selector-ant-v': [
+        'show',
+        'title',
+        'fontSize',
+        'color',
+        'hPosition',
+        'isItalic',
+        'isBolder',
+        'remarkShow',
+        'fontFamily',
+        'letterSpace',
+        'fontShadow'
+      ],
+      'legend-selector-ant-v': [
+        'show',
+        'icon',
+        'orient',
+        'textStyle',
+        'hPosition',
+        'vPosition'
+      ]
+    }
+  },
+  {
+    render: 'antv',
+    category: 'chart.chart_type_compare',
+    value: 'bar-time-range',
+    title: 'chart.chart_bar_time_range',
+    icon: 'bar-time-range',
+    properties: [
+      'color-selector',
+
+      'label-selector-ant-v',
+      'tooltip-selector-ant-v',
+      'x-axis-selector-ant-v',
+      'y-axis-selector-ant-v',
+      'title-selector-ant-v',
+      'legend-selector-ant-v'
+    ],
+    propertyInner: {
+      'color-selector': [
+        'value',
+        'colorPanel',
+        'customColor',
+        'gradient',
+        'alpha'
+      ],
+      'size-selector-ant-v': [
+        'barDefault',
+        'barGap'
+      ],
+      'label-selector-ant-v': [
+        'show',
+        'fontSize',
+        'color',
+        'position-h'
+      ],
+      'tooltip-selector-ant-v': [
+        'show',
+        'textStyle'
+      ],
+      'x-axis-selector-ant-v': [
+        'show',
+        'position',
+        'name',
+        'nameTextStyle',
         'splitLine',
         'axisForm',
         'axisLabel'
@@ -2002,6 +2086,7 @@ export const TYPE_CONFIGS = [
         'tableTitleHeight',
         'tableItemHeight',
         'tableColumnWidth',
+        'tableFreeze',
         'showIndex',
         'indexLabel',
         'tableAutoBreakLine',
@@ -2051,6 +2136,7 @@ export const TYPE_CONFIGS = [
         'tableColumnWidth',
         'showIndex',
         'indexLabel',
+        'tableFreeze',
         'tableAutoBreakLine',
         'showTableHeader'
       ],
@@ -3447,9 +3533,11 @@ export function getColors(chart, colors, reset) {
     if (chart.data) {
       const data = chart.data.data
       const stackData = []
-      for (let i = 0; i < data.length; i++) {
-        const s = data[i]
-        stackData.push(s.category)
+      if (data?.length) {
+        for (let i = 0; i < data.length; i++) {
+          const s = data[i]
+          stackData.push(s.category)
+        }
       }
       const sArr = stackData.filter(function(item, index, stackData) {
         return stackData.indexOf(item, 0) === index
@@ -3517,7 +3605,7 @@ export function getColors(chart, colors, reset) {
         }
       }
     }
-  } else if ((includesAny(chart.type, 'bar', 'radar', 'area')) && !chart.type.includes('group')) {
+  } else if ((includesAny(chart.type, 'bar', 'radar', 'area')) && !chart.type.includes('group') && chart.type !== 'bar-time-range') {
     if (Object.prototype.toString.call(chart.yaxis) === '[object Array]') {
       series = JSON.parse(JSON.stringify(chart.yaxis))
     } else {

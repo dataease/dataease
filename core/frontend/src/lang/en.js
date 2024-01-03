@@ -1112,6 +1112,7 @@ export default {
     desc: 'Descending Order',
     sort: 'Sort',
     filter: 'Filter',
+    is_set: 'Is Set',
     none: 'None',
     background: 'Background',
 
@@ -1184,6 +1185,7 @@ export default {
     chart_bar_stack: 'Stack Bar',
     chart_percentage_bar_stack: 'Percentage Stack Bar',
     chart_bar_horizontal: 'Horizontal Bar',
+    chart_bar_time_range: 'Range Bar',
     chart_bar_stack_horizontal: 'Stack Horizontal Bar',
     chart_percentage_bar_stack_horizontal: 'Horizontal Percentage Stack Bar',
     chart_bidirectional_bar: 'Bidirectional Bar',
@@ -1221,6 +1223,9 @@ export default {
     axis_width: 'Axis Width',
     axis_type: 'Axis Type',
     grid_show: 'Grid Show',
+    dash_show: 'Dash Show',
+    dash_width: 'Dash Width',
+    dash_offset: 'Dash Offset',
     grid_color: 'Grid Color',
     grid_width: 'Grid Width',
     grid_type: 'Grid Type',
@@ -1381,6 +1386,8 @@ export default {
     filter_type: 'Filter Type',
     filter_value_can_not_str: 'Value type can not input string',
     enum_value_can_not_null: 'Enum Value can not empty.',
+    column: 'Column',
+    table_freeze: 'Table Freeze',
     table_config: 'Table Config',
     table_column_width_config: 'Column Width',
     table_column_adapt: 'Adapt',
@@ -1491,6 +1498,7 @@ export default {
     dynamic: 'Dynamic',
     gauge_size_field_delete: 'Dynamic field changed，please edit again',
     chart_group: 'Sub Type',
+    chart_bar_time: 'Range',
     chart_bar_group: 'Bar Group',
     chart_bar_group_stack: 'Group Stack Bar',
     field_dynamic: 'Dynamic',
@@ -1507,6 +1515,7 @@ export default {
     table_index_desc: 'Index Header Name',
     table_row_tooltip: 'Row Tooltip',
     table_col_tooltip: 'Column Tooltip',
+    table_cell_tooltip: 'Cell Tooltip',
     total_sort: 'Total Sort',
     total_sort_none: 'None',
     total_sort_asc: 'ASC',
@@ -1518,6 +1527,7 @@ export default {
     set_zero: 'Set Zero',
     ignore_data: 'Hide Data',
     sub_dimension_tip: 'This field is required, and cannot be included in the type axis, you should choose non-group chart if you don\'t need it, or you will get unexpected chart.',
+    time_bar_tip: 'This field is required, and need two time dimensions or two quotas',
     drill_dimension_tip: 'Only fields in the dataset can be drilled',
     table_scroll_tip: 'The detail table is only effective when the pagination mode is "Drop-down".',
     table_threshold_tip: 'Tip: Do not select fields repeatedly. If the same field is configured repeatedly, only the last field will take effect.',
@@ -1586,7 +1596,8 @@ export default {
     gauge_axis_label: 'Axis Label',
     word_size_range: 'Word Size Range',
     word_spacing: 'Word Spacing',
-    axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one'
+    axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one',
+    needs_to_be_integer: 'Needs to be an integer'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
@@ -2040,6 +2051,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    required_tips: 'Cannot be empty!',
     filter_no_select: 'Filter components do not need to be selected',
     first_item: 'First item',
     forbidden_copy: 'Forbidden copy',
@@ -2231,6 +2243,7 @@ export default {
     export_to_app: 'Export to App',
     preview: 'Preview',
     fullscreen_preview: 'Fullscreen Preview',
+    fullscreen_exit: 'Fullscreen Exit',
     new_tab_preview: 'New Tab Preview',
     select_panel_from_left: 'Please select Dashboard from left',
     template_nale: 'Template name',
@@ -2772,7 +2785,10 @@ export default {
     range_view: 'Displayed data',
     range_all: 'All data',
     execute_now: 'Execute now',
-    fire_now_success: 'Task executing'
+    fire_now_success: 'Task executing',
+    larkgroups: 'Lark group',
+    ext_wait_time: 'Additional waiting time for dashboard loading (unit: seconds)',
+    wat_time_limit: 'The additional waiting time must be an integer between [0 - 30]'
   },
   dynamic_time: {
     set_default: 'Set Default',

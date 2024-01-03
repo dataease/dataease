@@ -17,6 +17,9 @@ public class PanelViewTableDTO extends ChartViewWithBLOBs {
     @ApiModelProperty("仪表板ID")
     private String panelId;
 
+    @ApiModelProperty("仪表板数据")
+    private String basePanelData;
+
     private List<DatasetTableField> tableFields;
 
 

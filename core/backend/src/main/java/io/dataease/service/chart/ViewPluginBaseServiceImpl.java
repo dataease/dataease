@@ -13,27 +13,32 @@ import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
-import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldFilterDTO;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
+import io.dataease.plugins.common.request.chart.filter.FilterTreeObj;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.util.BeanUtils;
 import io.dataease.plugins.common.util.ConstantsUtil;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.view.entity.*;
+import io.dataease.plugins.view.entity.filter.PluginFilterTreeObj;
 import io.dataease.plugins.view.service.ViewPluginBaseService;
 import io.dataease.provider.ProviderFactory;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
-import java.util.*;
+import java.util.List;
+import java.util.Map;
+import java.util.Optional;
 import java.util.stream.Collectors;
 
 import static io.dataease.plugins.common.constants.datasource.SQLConstants.TABLE_ALIAS_PREFIX;
@@ -52,6 +57,8 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
     @Resource
     private ChartViewService chartViewService;
+
+    private static final Logger logger = LoggerFactory.getLogger(ViewPluginBaseServiceImpl.class);
 
 
     @Override
@@ -76,13 +83,13 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
     }
 
     @Override
-    public String customWhere(String dsType, List<PluginChartFieldCustomFilter> list, PluginViewSQL pluginViewSQL) {
+    public String customWhere(String dsType, PluginFilterTreeObj obj, PluginViewSQL pluginViewSQL) {
         QueryProvider queryProvider = ProviderFactory.getQueryProvider(dsType);
-        String methodName = "transCustomFilterList";
+        String methodName = "transChartFilterTrees";
         SQLObj sqlObj = BeanUtils.copyBean(SQLObj.builder().build(), pluginViewSQL);
-        List<ChartFieldCustomFilterDTO> filters = list.stream().map(item -> gson.fromJson(gson.toJson(item), ChartFieldCustomFilterDTO.class)).collect(Collectors.toList());
+        FilterTreeObj filters = gson.fromJson(gson.toJson(obj), FilterTreeObj.class);
         Object o;
-        if ((o = execProviderMethod(queryProvider, methodName, sqlObj, filters)) != null) {
+        if ((o = execProviderSuperMethod(queryProvider, methodName, sqlObj, filters)) != null) {
             return (String) o;
         }
         return null;
@@ -215,6 +222,18 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
             SQLObj sqlObj = (SQLObj) execResult;
             PluginViewSQL result = PluginViewSQL.builder().build();
             return BeanUtils.copyBean(result, sqlObj);
+        }
+        return null;
+    }
+
+    private Object execProviderSuperMethod(QueryProvider queryProvider, String methodName, Object... args) {
+        Method[] declaredMethods = queryProvider.getClass().getMethods();
+        for (int i = 0; i < declaredMethods.length; i++) {
+            Method method = declaredMethods[i];
+            if (StringUtils.equals(method.getName(), methodName)) {
+                method.setAccessible(true);
+                return ReflectUtil.invoke(queryProvider, method, args);
+            }
         }
         return null;
     }

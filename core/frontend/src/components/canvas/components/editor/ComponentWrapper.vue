@@ -236,6 +236,11 @@ export default {
     runAnimation(this.$el, this.config.animations)
   },
   methods: {
+    triggerFilterLoaded(p) {
+      if (this.config.type === 'de-tabs') {
+        this.$refs.wrapperChild?.triggerTabsFilterLoaded(p)
+      }
+    },
     filterLoaded(p) {
       this.$emit('filter-loaded', p)
     },
@@ -387,7 +392,6 @@ export default {
   position: absolute;
   top: 0;
   left: 0;
-  z-index: 2;
   width: 100% !important;
   height: 100% !important;
 }

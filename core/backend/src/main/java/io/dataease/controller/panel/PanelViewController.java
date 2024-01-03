@@ -1,6 +1,7 @@
 package io.dataease.controller.panel;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.dto.panel.PanelComponentDTO;
 import io.dataease.dto.panel.PanelViewTableDTO;
 import io.dataease.service.panel.PanelViewService;
 import io.swagger.annotations.Api;
@@ -28,5 +29,11 @@ public class PanelViewController {
     @GetMapping("/detailList/{panelId}")
     public List<PanelViewTableDTO> detailList(@PathVariable String panelId) throws Exception {
         return panelViewService.detailList(panelId);
+    }
+
+    @ApiOperation("组件信息")
+    @GetMapping("/getComponentInfo/{panelId}")
+    public PanelComponentDTO getComponentInfo(@PathVariable String panelId) throws Exception {
+        return panelViewService.getComponentInfo(panelId);
     }
 }

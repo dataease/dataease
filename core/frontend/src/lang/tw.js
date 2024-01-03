@@ -1112,6 +1112,7 @@ export default {
     desc: '降序',
     sort: '排序',
     filter: '過濾',
+    is_set: '已設定',
     none: '無',
     background: '背景',
     border: '邊角',
@@ -1182,6 +1183,7 @@ export default {
     chart_bar_stack: '堆疊柱狀圖',
     chart_percentage_bar_stack: '百分比柱狀圖',
     chart_bar_horizontal: '橫嚮柱狀圖',
+    chart_bar_time_range: '區間條形圖',
     chart_bar_stack_horizontal: '橫嚮堆疊柱狀圖',
     chart_percentage_bar_stack_horizontal: '橫嚮百分比柱狀圖',
     chart_bidirectional_bar: '對稱柱狀圖',
@@ -1219,6 +1221,9 @@ export default {
     axis_width: '軸線寬度',
     axis_type: '軸線類型',
     grid_show: '網格線顯示',
+    dash_show: '虛線顯示',
+    dash_width: '虛線寬度',
+    dash_offset: '虛線間距',
     grid_color: '網格線顏色',
     grid_width: '網格線寬度',
     grid_type: '網格線類型',
@@ -1379,8 +1384,10 @@ export default {
     filter_type: '過濾方式',
     filter_value_can_not_str: '數值類型字段過濾值不能包含文本',
     enum_value_can_not_null: '字段枚舉值不能為空',
+    column: '列',
     table_config: '表格配置',
     table_column_width_config: '列寬調整',
+    table_freeze: '表格凍結',
     table_column_adapt: '自適應',
     table_column_custom: '自定義',
     chart_table_pivot: '透視表',
@@ -1488,6 +1495,7 @@ export default {
     dynamic: '動態值',
     gauge_size_field_delete: '動態值中字段發生變更，請重新編輯',
     chart_group: '子類別',
+    chart_bar_time: '區間范圍',
     chart_bar_group: '分組柱狀圖',
     chart_bar_group_stack: '分組堆疊柱狀圖',
     field_dynamic: '動態值',
@@ -1504,6 +1512,7 @@ export default {
     table_index_desc: '表頭名稱',
     table_row_tooltip: '行頭提示',
     table_col_tooltip: '列頭提示',
+    table_cell_tooltip: '單元格提示',
     total_sort: '總計排序',
     total_sort_none: '無',
     total_sort_asc: '升序',
@@ -1515,6 +1524,7 @@ export default {
     ignore_data: '隱藏空值',
     empty_data_field_ctrl: '字段設置',
     sub_dimension_tip: '該字段為必填項，且不應使用類別軸中的字段，若無需該字段，請選擇基礎圖表進行展示，否則展示效果不理想',
+    time_bar_tip: '該字段為必填項，且需要兩個指標或者時間類型維度字段',
     drill_dimension_tip: '鑽取字段僅支持數據集中的字段',
     table_scroll_tip: '明細表僅在分頁模式為"下拉"時生效。',
     table_threshold_tip: '提示：請勿重複選擇字段，若同一字段重複配置，則只有最後的字段配置生效。',
@@ -1578,7 +1588,8 @@ export default {
     gauge_axis_label: '刻度標籤',
     word_size_range: '字號區間',
     word_spacing: '文字間隔',
-    axis_multi_select_tip: '按住 Ctrl/Cmd 鍵或者 Shift 鍵再點擊可多選'
+    axis_multi_select_tip: '按住 Ctrl/Cmd 鍵或者 Shift 鍵再點擊可多選',
+    needs_to_be_integer: '需要為整數'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
@@ -2032,6 +2043,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    required_tips: '必填項不能爲空！',
     filter_no_select: '過濾組件無需選擇',
     first_item: '首項',
     forbidden_copy: '當前組件不允許復製',
@@ -2222,6 +2234,7 @@ export default {
     export_to_app: '導出爲應用',
     preview: '預覽',
     fullscreen_preview: '全屏預覽',
+    fullscreen_exit: '退出全屏',
     new_tab_preview: '新Tab頁預覽',
     select_panel_from_left: '請從左側選擇儀表闆',
     template_name: '模闆名稱',
@@ -2764,7 +2777,10 @@ export default {
     range_view: '展示數據',
     range_all: '全部數據',
     execute_now: '立即執行',
-    fire_now_success: '任務發起成功'
+    fire_now_success: '任務發起成功',
+    larkgroups: '飛書群',
+    ext_wait_time: '加載儀表板額外等待時間(單位:秒)',
+    wat_time_limit: '額外等待時間必須是[0 - 30]之間整數'
   },
   dynamic_time: {
     set_default: '設置默認值',

@@ -8,7 +8,7 @@
     :collapse-tags="showNumber"
     :clearable="!element.options.attrs.multiple && (inDraw || !selectFirst)"
     :multiple="element.options.attrs.multiple"
-    :placeholder="$t(element.options.attrs.placeholder) + placeholderSuffix"
+    :placeholder="showRequiredTips ? $t('panel.required_tips') : ($t(element.options.attrs.placeholder) + placeholderSuffix)"
     :popper-append-to-body="inScreen"
     :size="size"
     :filterable="inDraw || !selectFirst"
@@ -16,7 +16,7 @@
     :item-disabled="!inDraw && selectFirst"
     :key-word="keyWord"
     popper-class="coustom-de-select"
-    :class="{'disabled-close': !inDraw && selectFirst && element.options.attrs.multiple}"
+    :class="{'disabled-close': !inDraw && selectFirst && element.options.attrs.multiple, 'show-required-tips': showRequiredTips}"
     :list="data"
     :flag="flag"
     :is-config="isConfig"
@@ -98,7 +98,8 @@ export default {
       separator: ',',
       timeMachine: null,
       changeIndex: 0,
-      flag: uuid.v1()
+      flag: uuid.v1(),
+      hasDestroy: false
     }
   },
   computed: {
@@ -143,6 +144,9 @@ export default {
     },
     selectFirst() {
       return this.element.serviceName === 'textSelectWidget' && this.element.options.attrs.selectFirst
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && (!this.value || this.value.length === 0)
     }
   },
 
@@ -159,8 +163,12 @@ export default {
     },
     'defaultValueStr': function(value, old) {
       if (value === old) return
-      this.value = this.fillValueDerfault()
-      this.changeValue(value)
+      this.$nextTick(() => {
+        if (!this.selectFirst) {
+          this.value = this.fillValueDerfault()
+          this.changeValue(value)
+        }
+      })
     },
     'element.options.attrs.fieldId': function(value, old) {
       if (value === null || typeof value === 'undefined' || value === old) return
@@ -262,15 +270,23 @@ export default {
 
   mounted() {
     bus.$on('onScroll', this.onScroll)
+    bus.$on('select-pop-change', this.popChange)
     if (this.inDraw) {
       bus.$on('reset-default-value', this.resetDefaultValue)
     }
   },
   beforeDestroy() {
+    bus.$off('select-pop-change', this.popChange)
     bus.$off('onScroll', this.onScroll)
     bus.$off('reset-default-value', this.resetDefaultValue)
+    this.hasDestroy = true
   },
   methods: {
+    popChange(id) {
+      if (id !== this.element.id) {
+        this.onScroll()
+      }
+    },
     clearDefault(optionList) {
       const emptyOption = !optionList?.length
 
@@ -348,14 +364,16 @@ export default {
     resetDefaultValue(ele) {
       const id = ele.id
       const eleVal = ele.options.value.toString()
-      if (this.inDraw && this.manualModify && this.element.id === id && this.value.toString() !== eleVal && this.defaultValueStr === eleVal) {
-        if (this.selectFirst) {
-          this.fillFirstValue()
+      if (this.inDraw && this.manualModify && this.element.id === id) {
+        if (ele.options.attrs.selectFirst) {
+          this.fillFirstValue(true)
           this.firstChange(this.value)
           return
         }
-        this.value = this.fillValueDerfault()
-        this.changeValue(this.value)
+        if (this.value.toString() !== eleVal && this.defaultValueStr === eleVal) {
+          this.value = this.fillValueDerfault()
+          this.changeValue(this.value)
+        }
       }
     },
     onBlur() {
@@ -368,7 +386,6 @@ export default {
       }, 500)
     },
     initLoad() {
-      // this.value = this.fillValueDerfault()
       this.initOptions(this.fillFirstSelected)
       if (this.element.options.value && !this.selectFirst) {
         this.value = this.fillValueDerfault()
@@ -376,6 +393,9 @@ export default {
       }
     },
     fillFirstSelected() {
+      if (this.hasDestroy) {
+        return
+      }
       if (this.selectFirst && this.data?.length) {
         this.fillFirstValue()
         this.$emit('filter-loaded', {
@@ -429,6 +449,12 @@ export default {
         this.element.options.manualModify = false
       } else {
         this.element.options.manualModify = true
+        if (!this.showRequiredTips) {
+          this.$store.commit('setLastValidFilters', {
+            componentId: this.element.id,
+            val: (this.value && Array.isArray(this.value)) ? this.value.join(',') : this.value
+          })
+        }
       }
       this.setCondition()
       this.handleShowNumber()
@@ -465,6 +491,9 @@ export default {
       return param
     },
     setCondition() {
+      if (this.showRequiredTips) {
+        return
+      }
       const param = this.getCondition()
       !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
     },
@@ -476,11 +505,20 @@ export default {
       }
       return this.value.split(',')
     },
-    fillFirstValue() {
-      if (!this.selectFirst) {
+    fillFirstValue(isSelectFirst) {
+      if (!this.selectFirst && !isSelectFirst) {
         return
       }
-      const defaultV = this.data[0].id
+      let defaultV = this.data[0].id
+      if (this.inDraw) {
+        let lastFilters = null
+        if (this.$store.state.lastValidFilters) {
+          lastFilters = this.$store.state.lastValidFilters[this.element.id]
+          if (lastFilters) {
+            defaultV = lastFilters.val === null ? '' : lastFilters.val.toString()
+          }
+        }
+      }
       if (this.element.options.attrs.multiple) {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
         this.value = defaultV.split(this.separator)
@@ -491,7 +529,17 @@ export default {
       this.firstChange(this.value)
     },
     fillValueDerfault() {
-      const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      let defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      if (this.inDraw) {
+        let lastFilters = null
+        if (this.$store.state.lastValidFilters) {
+          lastFilters = this.$store.state.lastValidFilters[this.element.id]
+          if (lastFilters) {
+            defaultV = lastFilters.val === null ? '' : lastFilters.val.toString()
+          }
+        }
+      }
+
       if (this.element.options.attrs.multiple) {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
         return defaultV.split(this.separator)
@@ -531,6 +579,15 @@ export default {
 <style lang="scss" scoped>
   .disabled-close ::v-deep .el-icon-close {
     display: none !important;
+  }
+  .show-required-tips ::v-deep .el-input__inner {
+    border-color: #ff0000 !important;
+  }
+  .show-required-tips ::v-deep .el-input__inner::placeholder {
+    color: #ff0000 !important;
+  }
+  .show-required-tips ::v-deep i {
+    color: #ff0000 !important;
   }
 </style>
 <style lang="scss">

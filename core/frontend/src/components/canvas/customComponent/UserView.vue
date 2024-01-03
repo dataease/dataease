@@ -542,18 +542,17 @@ export default {
     },
     // 监听外部的样式变化 （非实时性要求）
     'hw': {
-      handler(newVal, oldVla) {
-        if (newVal !== oldVla && this.$refs[this.element.propValue.id]) {
+      handler(newVal, oldVal) {
+        if (!newVal) {
+          return
+        }
+        if (this.requestStatus === 'waiting') {
+          return
+        }
+        if (newVal !== oldVal && this.$refs[this.element.propValue.id]) {
           this.resizeChart()
         }
-      },
-      deep: true
-    },
-    // 监听外部的样式变化 （非实时性要求）
-    outStyle: {
-      handler(newVal, oldVla) {
-      },
-      deep: true
+      }
     },
     // 监听外部计时器变化
     searchCount: function(val1) {
@@ -655,6 +654,7 @@ export default {
     equalsAny,
     tabSwitch(tabCanvasId) {
       if (this.charViewS2ShowFlag && tabCanvasId === this.canvasId && this.$refs[this.element.propValue.id]) {
+        // do nothing
         this.$refs[this.element.propValue.id].chartResize()
       }
     },
@@ -786,9 +786,10 @@ export default {
       param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
     },
     clearPanelLinkage(param) {
+      console.log('clear linkage')
       if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
         try {
-          this.$refs[this.element.propValue.id]?.reDrawView?.()
+          // do nothing
         } catch (e) {
           console.error('reDrawView-error：', this.element.propValue.id)
         }
@@ -826,11 +827,13 @@ export default {
       }
     },
     getData(id, cache = true, dataBroadcast = false) {
+      if (this.requestStatus === 'waiting') {
+        return
+      }
       if (id) {
         const filters = this.filter.filter
         const group = this.groupRequiredInvalid(filters)
         if (group.unReady?.length) {
-          this.view && (this.view.unReadyMsg = '请先完成必填项过滤器！')
           this.getDataLoading = false
           return
         } else {
@@ -843,9 +846,7 @@ export default {
           this.getDataLoading = false
           this.getData(id, cache, dataBroadcast)
           clearTimeout(this.cancelTime)
-          this.cancelTime = setTimeout(() => {
-            this.requestStatus = 'waiting'
-          }, 0)
+          this.requestStatus = 'waiting'
           return
         }
         this.requestStatus = 'waiting'
@@ -879,55 +880,68 @@ export default {
           this.element.filters = this.filters?.length ? JSON.parse(JSON.stringify(this.filters)) : []
         }
         method(id, this.panelInfo.id, requestInfo).then(response => {
-          // 将视图传入echart组件
-          if (response.success) {
-            this.chart = response.data
-            this.view = response.data
-            if (this.chart.type.includes('table')) {
-              this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
+          try {
+            // 将视图传入echart组件
+            if (response.success) {
+              this.chart = response.data
+              this.view = response.data
+              if (this.chart.type.includes('table')) {
+                this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
+              }
+              this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
+              this.$emit('fill-chart-2-parent', this.chart)
+              this.getDataOnly(response.data, dataBroadcast)
+              this.chart['position'] = this.inTab ? 'tab' : 'panel'
+              // 记录当前数据
+              this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
+              if (this.element.needAdaptor) {
+                const customStyleObj = JSON.parse(this.chart.customStyle)
+                const customAttrObj = JSON.parse(this.chart.customAttr)
+                adaptCurTheme(customStyleObj, customAttrObj)
+                this.chart.customStyle = JSON.stringify(customStyleObj)
+                this.chart.customAttr = JSON.stringify(customAttrObj)
+                viewEditSave(this.panelInfo.id, {
+                  id: this.chart.id,
+                  customStyle: this.chart.customStyle,
+                  customAttr: this.chart.customAttr
+                })
+                this.$store.commit('adaptorStatusDisable', this.element.id)
+              }
+              this.sourceCustomAttrStr = this.chart.customAttr
+              this.sourceCustomStyleStr = this.chart.customStyle
+              this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
+              if (!response.data.drill) {
+                this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
+                this.resetDrill()
+              }
+              this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
+              this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
+              this.requestStatus = 'merging'
+              this.mergeScale()
+              this.initCurFields(this.chart)
+              this.requestStatus = 'success'
+              this.httpRequest.status = true
+            } else {
+              console.error('err3-' + JSON.stringify(response))
+              this.requestStatus = 'error'
+              this.message = response.message
             }
-            this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
-            this.$emit('fill-chart-2-parent', this.chart)
-            this.getDataOnly(response.data, dataBroadcast)
-            this.chart['position'] = this.inTab ? 'tab' : 'panel'
-            // 记录当前数据
-            this.panelViewDetailsInfo[id] = JSON.stringify(this.chart)
-            if (this.element.needAdaptor) {
-              const customStyleObj = JSON.parse(this.chart.customStyle)
-              const customAttrObj = JSON.parse(this.chart.customAttr)
-              adaptCurTheme(customStyleObj, customAttrObj)
-              this.chart.customStyle = JSON.stringify(customStyleObj)
-              this.chart.customAttr = JSON.stringify(customAttrObj)
-              viewEditSave(this.panelInfo.id, {
-                id: this.chart.id,
-                customStyle: this.chart.customStyle,
-                customAttr: this.chart.customAttr
-              })
-              this.$store.commit('adaptorStatusDisable', this.element.id)
-            }
-            this.sourceCustomAttrStr = this.chart.customAttr
-            this.sourceCustomStyleStr = this.chart.customStyle
-            this.chart.drillFields = this.chart.drillFields ? JSON.parse(this.chart.drillFields) : []
-            if (!response.data.drill) {
-              this.drillClickDimensionList.splice(this.drillClickDimensionList.length - 1, 1)
-              this.resetDrill()
-            }
-            this.drillFilters = JSON.parse(JSON.stringify(response.data.drillFilters ? response.data.drillFilters : []))
-            this.drillFields = JSON.parse(JSON.stringify(response.data.drillFields))
-            this.requestStatus = 'merging'
-            this.mergeScale()
-            this.initCurFields(this.chart)
-            this.requestStatus = 'success'
-            this.httpRequest.status = true
-          } else {
+          } catch (e) {
             console.error('err2-' + JSON.stringify(response))
             this.requestStatus = 'error'
-            this.message = response.message
+            this.message = e.message
           }
           this.isFirstLoad = false
+
           return true
         }).catch(err => {
           console.error('err-' + err)
+          // 还没有构内部刷新
+          if (!this.innerRefreshTimer && this.editMode === 'preview') {
+            setTimeout(() => {
+              this.getData(this.element.propValue.viewId)
+            }, 120000)
+          }
           this.requestStatus = 'error'
           if (err.message && err.message.indexOf('timeout') > -1) {
             this.message = this.$t('panel.timeout_refresh')
@@ -1025,10 +1039,16 @@ export default {
       const tableChart = deepCopy(this.chart)
       tableChart.customAttr = JSON.parse(this.chart.customAttr)
       tableChart.customStyle = JSON.parse(this.chart.customStyle)
-      tableChart.customAttr.color.tableHeaderBgColor = '#f8f8f9'
-      tableChart.customAttr.color.tableItemBgColor = '#ffffff'
-      tableChart.customAttr.color.tableHeaderFontColor = '#7c7e81'
-      tableChart.customAttr.color.tableFontColor = '#7c7e81'
+      if (!this.chart.type?.includes('table')) {
+        tableChart.customAttr.color.tableHeaderBgColor = '#f8f8f9'
+        tableChart.customAttr.color.tableItemBgColor = '#ffffff'
+        tableChart.customAttr.color.tableHeaderFontColor = '#7c7e81'
+        tableChart.customAttr.color.tableFontColor = '#7c7e81'
+        tableChart.customAttr.color.enableTableCrossBG = false
+        tableChart.customAttr.size.showTableHeader = true
+      }
+      tableChart.customAttr.size.tableColumnFreezeHead = 0
+      tableChart.customAttr.size.tableRowFreezeHead = 0
       tableChart.customAttr.color.tableStripe = true
       tableChart.customAttr.size.tablePageMode = 'pull'
       tableChart.customStyle.text.show = false
@@ -1089,7 +1109,8 @@ export default {
             jumpInfo = this.nowPanelJumpInfo[sourceInfo]
           }
         })
-      } else {
+      }
+      if (!jumpInfo) {
         for (let i = param.dimensionList.length - 1; i >= 0; i--) {
           dimension = param.dimensionList[i]
           sourceInfo = param.viewId + '#' + dimension.id

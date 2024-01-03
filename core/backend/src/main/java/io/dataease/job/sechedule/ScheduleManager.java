@@ -1,8 +1,8 @@
 package io.dataease.job.sechedule;
 
 import io.dataease.commons.utils.LogUtil;
-import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.quartz.*;
 import org.springframework.stereotype.Component;
 
@@ -423,6 +423,14 @@ public class ScheduleManager {
 
     public void fireNow(JobKey jobKey) throws SchedulerException {
         scheduler.triggerJob(jobKey);
+    }
+
+    public void pauseTrigger(TriggerKey triggerKey) throws SchedulerException {
+        scheduler.pauseTrigger(triggerKey);
+    }
+
+    public void resumeTrigger(TriggerKey triggerKey) throws SchedulerException {
+        scheduler.resumeTrigger(triggerKey);
     }
 
 }

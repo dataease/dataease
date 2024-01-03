@@ -276,6 +276,7 @@ export default {
       mainWidth: '100%',
       mainHeight: '100%',
       searchCount: 0,
+      filterMapCache: {},
       // 布局展示 1.pc pc端布局 2.mobile 移动端布局
       terminal: 'pc',
       buttonFilterMap: null,
@@ -383,6 +384,21 @@ export default {
     },
     filterMap() {
       const result = buildFilterMap(this.componentData)
+      Object.keys(result).forEach(ele => {
+        if (this.filterMapCache[ele]?.length) {
+          result[ele].forEach(itx => {
+            const condition = this.filterMapCache[ele].find(item => item.componentId === itx.componentId && itx.cacheObj)
+            if (condition) {
+              itx.cacheObj = condition.cacheObj
+            }
+          })
+          if (!result[ele].length) {
+            result[ele] = this.filterMapCache[ele]
+          }
+        } else {
+          this.filterMapCache[ele] = result[ele]
+        }
+      })
       if (this.searchButtonInfo && this.searchButtonInfo.buttonExist && !this.searchButtonInfo.autoTrigger && this.searchButtonInfo.relationFilterIds) {
         for (const key in result) {
           if (Object.hasOwnProperty.call(result, key)) {
@@ -445,7 +461,6 @@ export default {
     this.canvasId === 'canvas-main' && bus.$on('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
-    bus.$on('trigger-filter-loaded', this.triggerFilterLoaded)
     this.initPdfTemplate()
   },
   beforeDestroy() {
@@ -455,23 +470,18 @@ export default {
     if (this.$refs[this.previewRefId]) {
       erd.uninstall(this.$refs[this.previewRefId])
     }
-    erd.uninstall(this.canvasMain)
-    erd.uninstall(this.tempCanvas)
+    this.canvasMain && erd.uninstall(this.canvasMain)
+    this.tempCanvas && erd.uninstall(this.tempCanvas)
     clearInterval(this.timer)
     this.canvasId === 'canvas-main' && bus.$off('pcChartDetailsDialog', this.openChartDetailsDialog)
     bus.$off('trigger-search-button', this.triggerSearchButton)
     bus.$off('trigger-reset-button', this.triggerResetButton)
-    bus.$off('trigger-filter-loaded', this.triggerFilterLoaded)
   },
   methods: {
-    triggerFilterLoaded({ canvasIdStr, panelId, p }) {
-      if (this.panelInfo.id === panelId && !canvasIdStr.includes(this.canvasId)) {
-        this.filterLoaded(p, canvasIdStr)
-      }
-    },
-    filterLoaded(p, canvasIdStr = '') {
+    filterLoaded(p) {
       buildAfterFilterLoaded(this.filterMap, p)
-      bus.$emit('trigger-filter-loaded', { canvasIdStr: (canvasIdStr + this.canvasId), panelId: this.panelInfo.id, p })
+      this.filterMapCache = {}
+      this.getWrapperChildRefs().forEach(item => item.triggerFilterLoaded(p))
     },
     getWrapperChildRefs() {
       return this.$refs['viewWrapperChild']
@@ -576,7 +586,23 @@ export default {
 
       result.relationFilterIds = matchFilters.map(item => item.id)
 
+      let matchViewIds = []
+      for (let index = 0; index < matchFilters.length; index++) {
+        const item = matchFilters[index]
+        if (!item.options.attrs.viewIds?.length) {
+          matchViewIds = null
+          break
+        }
+        matchViewIds = matchViewIds.concat(item.options.attrs.viewIds)
+      }
       let viewKeyMap = buildViewKeyMap(panelItems)
+      if (matchViewIds) {
+        matchViewIds = [...new Set(matchViewIds)]
+        const keys = Object.keys(viewKeyMap).filter(key => !matchViewIds.includes(key))
+        keys.forEach(key => {
+          delete viewKeyMap[key]
+        })
+      }
       viewKeyMap = this.buildViewKeyFilters(matchFilters, viewKeyMap, isClear)
       result.filterMap = viewKeyMap
       return result
@@ -682,8 +708,8 @@ export default {
       }
       if (this.isMainCanvas()) {
         this.$store.commit('setPreviewCanvasScale', {
-          scaleWidth: this.canvasStyleData.autoSizeAdaptor ? (this.scaleWidth / 100) : 1,
-          scaleHeight: this.canvasStyleData.autoSizeAdaptor ? (this.scaleHeight / 100) : 1
+          scaleWidth: (this.canvasStyleData.autoSizeAdaptor || this.terminal === 'mobile') ? (this.scaleWidth / 100) : 1,
+          scaleHeight: (this.canvasStyleData.autoSizeAdaptor || this.terminal === 'mobile') ? (this.scaleHeight / 100) : 1
         })
       }
       this.handleScaleChange()

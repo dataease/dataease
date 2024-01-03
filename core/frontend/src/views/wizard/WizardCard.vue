@@ -64,7 +64,7 @@ export default {
     box-shadow: 0px 6px 24px rgba(31, 35, 41, 0.25)
   }
   .card_head{
-    font-family: 'PingFang SC';
+    font-family: 'AlibabaPuHuiTi';
     font-style: normal;
     font-weight: 500;
     font-size: 20px;
@@ -72,7 +72,7 @@ export default {
     width: 200px;
   }
   .card_content{
-    font-family: 'PingFang SC';
+    font-family: 'AlibabaPuHuiTi';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
@@ -84,7 +84,7 @@ export default {
     overflow-y: auto;
   }
   .card_bottom{
-    font-family: 'PingFang SC';
+    font-family: 'AlibabaPuHuiTi';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;

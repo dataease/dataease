@@ -11,7 +11,7 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.entity.TokenInfo.TokenInfoBuilder;
 import io.dataease.commons.model.OnlineUserModel;
 import io.dataease.commons.utils.*;
-import io.dataease.exception.DataEaseException;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;

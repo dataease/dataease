@@ -60,6 +60,7 @@ public class ChartMixViewStatHandler implements PluginViewStatHandler {
 
         // 处理视图中字段过滤
         String customWheres = baseService.customWhere(dsType, pluginViewParam.getPluginChartFieldCustomFilters(), tableObj);
+
         // 处理仪表板字段过滤
         String panelWheres = baseService.panelWhere(dsType, pluginViewParam.getPluginChartExtFilters(), tableObj);
         // 构建sql所有参数

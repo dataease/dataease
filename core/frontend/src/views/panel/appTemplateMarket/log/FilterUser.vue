@@ -92,7 +92,7 @@ export default {
           max = +max + 24 * 3600 * 1000
         }
         conditions.push({
-          field: 'apply_time',
+          field: 'applyTime',
           operator: 'between',
           value: [+min, +max]
         })

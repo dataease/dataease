@@ -40,7 +40,7 @@ public abstract class EmailXpackService extends PluginMenuService {
 
     public abstract GlobalTaskInstance instanceForm(Long instanceId);
 
-    public abstract byte[] print(String url, String token, XpackPixelEntity XpackPixelEntity) throws Exception;
+    public abstract byte[] print(String url, String token, XpackPixelEntity XpackPixelEntity, Integer extWaitTime) throws Exception;
 
     public abstract byte[] printPdf(String url, String token, XpackPixelEntity XpackPixelEntity, boolean showPageNo, boolean picture2pdf) throws Exception;
 
@@ -48,7 +48,7 @@ public abstract class EmailXpackService extends PluginMenuService {
 
     public abstract XpackEmailTemplateDTO emailTemplate(Long taskId);
 
-    public abstract byte[] printData(String url, String token, XpackPixelEntity XpackPixelEntity) throws Exception;
+    public abstract byte[] printData(String url, String token, XpackPixelEntity XpackPixelEntity, Integer extWaitTime) throws Exception;
 
     public abstract void batchDel(List<Long> taskIds);
 

@@ -5,18 +5,17 @@ import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.ServletUtils;
-import io.dataease.exception.DataEaseException;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.util.SpringContextUtil;
-
 import io.dataease.plugins.xpack.display.dto.response.SysSettingDto;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkAppUserEntity;
+import io.dataease.plugins.xpack.lark.dto.entity.LarkGroupResult;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkQrResult;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkUserInfo;
 import io.dataease.plugins.xpack.lark.dto.response.LarkAppUserResult;
@@ -104,12 +103,12 @@ public class XLarkServer {
         try {
             Map<String, LarkXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LarkXpackService.class));
             if (beansOfType.keySet().size() == 0) {
-                DEException.throwException("缺少飞书插件");
+                DataEaseException.throwException("缺少飞书插件");
             }
             larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
             Boolean isOpen = larkXpackService.isOpen();
             if (!isOpen) {
-                DEException.throwException("未开启飞书");
+                DataEaseException.throwException("未开启飞书");
             }
             LarkUserInfo larkUserInfo = null;
             if (withoutLogin) {
@@ -123,7 +122,7 @@ public class XLarkServer {
             SysUserEntity sysUserEntity = authUserService.getUserByLarkId(username);
             if (null == sysUserEntity) {
                 if (authUserService.checkScanCreateLimit())
-                    DEException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
+                    DataEaseException.throwException(Translator.get("I18N_PROHIBIT_SCANNING_TO_CREATE_USER"));
                 String email = StringUtils.isNotBlank(larkUserInfo.getEmail()) ? larkUserInfo.getEmail() : (username + "@lark.work");
                 sysUserService.validateExistUser(username, larkUserInfo.getName(), email);
                 sysUserService.saveLarkCUser(larkUserInfo, email);
@@ -180,7 +179,7 @@ public class XLarkServer {
             response.sendRedirect(url);
         } catch (IOException e) {
             LogUtil.error(e.getMessage(), e);
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
     }
 
@@ -205,7 +204,7 @@ public class XLarkServer {
 
             Boolean isOpen = authUserService.supportLark();
             if (!isOpen) {
-                DEException.throwException("未开启飞书");
+                DataEaseException.throwException("未开启飞书");
             }
             larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
             LarkUserInfo larkUserInfo = larkXpackService.userInfo(code, state, true);
@@ -239,5 +238,13 @@ public class XLarkServer {
                 e.printStackTrace();
             }
         }
+    }
+
+
+    @ResponseBody
+    @GetMapping("/group")
+    public LarkGroupResult group() {
+        LarkXpackService larkXpackService = SpringContextUtil.getBean(LarkXpackService.class);
+        return larkXpackService.getGroup();
     }
 }

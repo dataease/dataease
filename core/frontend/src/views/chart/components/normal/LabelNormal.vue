@@ -255,7 +255,6 @@ export default {
             let flag = false
             const t = senior.threshold.labelThreshold[i]
             const tv = parseFloat(t.value)
-            console.log(t)
             if (t.term === 'eq') {
               if (value === tv) {
                 if (!setBg) {

@@ -136,6 +136,9 @@ export default {
               } else if (node.indeterminate_number_map[key] > 0) {
                 node.check_all_map[key] = false
                 node.indeterminate_map[key] = true
+              } else {
+                node.check_all_map[key] = false
+                node.indeterminate_map[key] = false
               }
             }
           }
@@ -269,7 +272,7 @@ export default {
   background-color: var(--SiderBG, #f7f8fa);
   font-size: 12px;
   color: var(--TableColor, #3d4d66);
-  font-family: PingFang SC;
+  font-family: AlibabaPuHuiTi;
   font-size: 14px;
   font-weight: 500;
   padding: 0 12px

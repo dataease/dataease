@@ -154,7 +154,7 @@
           </el-dropdown-item>
 
           <!--同比/环比等快速计算-->
-          <el-dropdown-item v-show="!item.chartId && chart.type !== 'table-info'">
+          <el-dropdown-item v-show="!item.chartId && chart.type !== 'table-info' && chart.type !== 'bar-time-range'">
             <el-dropdown
               placement="right-start"
               size="mini"
@@ -212,7 +212,7 @@
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
           <el-dropdown-item
-            v-if="chart.render === 'antv' && chart.type !== 'gauge' && chart.type !== 'liquid'"
+            v-if="chart.render === 'antv' && chart.type !== 'gauge' && chart.type !== 'liquid' && chart.type !== 'bar-time-range'"
             icon="el-icon-notebook-2"
             divided
             :command="beforeClickItem('formatter')"

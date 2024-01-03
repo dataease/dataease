@@ -1207,7 +1207,7 @@ export default {
       justify-content: space-between;
       padding-bottom: 9px;
       &:nth-child(1) {
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-weight: 400;
         color: var(--deTextPrimary, #1f2329);

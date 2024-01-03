@@ -100,6 +100,9 @@ export const DEFAULT_SIZE = {
   tableColTooltip: {
     show: false
   },
+  tableCellTooltip: {
+    show: false
+  },
   gaugeMinType: 'fix', // fix or dynamic
   gaugeMinField: {
     id: '',
@@ -170,7 +173,10 @@ export const DEFAULT_SIZE = {
   quotaSuffixFontIsItalic: false,
   quotaSuffixFontIsBolder: false,
   quotaSuffixLetterSpace: '0',
-  quotaSuffixFontShadow: false
+  quotaSuffixFontShadow: false,
+  tableColumnFreezeHead: 0,
+  tableColumnFreezeTail: 0,
+  tableRowFreezeHead: 0
 }
 export const DEFAULT_SUSPENSION = {
   show: true
@@ -328,6 +334,11 @@ export const DEFAULT_XAXIS_STYLE = {
       color: '#cccccc',
       width: 1,
       style: 'solid'
+    },
+    enableDash: false,
+    dashStyle: {
+      width: 4,
+      offset: 5
     }
   },
   axisValue: {
@@ -374,6 +385,11 @@ export const DEFAULT_YAXIS_STYLE = {
       color: '#cccccc',
       width: 1,
       style: 'solid'
+    },
+    enableDash: false,
+    dashStyle: {
+      width: 4,
+      offset: 5
     }
   },
   axisValue: {
@@ -420,6 +436,11 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
       color: '#cccccc',
       width: 1,
       style: 'solid'
+    },
+    enableDash: false,
+    dashStyle: {
+      width: 4,
+      offset: 5
     }
   },
   axisValue: {
@@ -910,7 +931,7 @@ export const BASE_CHART_STRING = {
     yAxis: DEFAULT_YAXIS_STYLE,
     yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   }),
-  customFilter: '[]'
+  customFilter: '{}'
 }
 
 export const BASE_CHART = {
@@ -933,7 +954,7 @@ export const BASE_CHART = {
     yAxis: DEFAULT_YAXIS_STYLE,
     yAxisExt: DEFAULT_YAXIS_EXT_STYLE
   },
-  customFilter: []
+  customFilter: {}
 }
 
 export const BASE_MAP = {
@@ -1195,7 +1216,7 @@ export const CHART_FONT_LETTER_SPACE = [
   { name: '10px', value: '10' }
 ]
 
-export const NOT_SUPPORT_PAGE_DATASET = ['kylin', 'sqlServer', 'es', 'presto', 'ds_doris', 'StarRocks', 'impala']
+export const NOT_SUPPORT_PAGE_DATASET = ['kylin', 'es', 'presto', 'StarRocks']
 
 export const SUPPORT_Y_M = ['y', 'y_M', 'y_M_d']
 

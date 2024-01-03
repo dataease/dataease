@@ -86,8 +86,13 @@ class TextSelectTreeServiceImpl extends WidgetService {
     })
   }
 
-  getParam(element) {
-    const value = this.fillValueDerfault(element)
+  getParam(element, val) {
+    let value = null
+    if (!val) {
+      value = this.fillValueDerfault(element)
+    } else {
+      value = Array.isArray(val) ? val : val.split(',')
+    }
     const param = {
       component: element,
       value: !value ? [] : Array.isArray(value) ? value : value.toString().split(','),

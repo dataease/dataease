@@ -7,7 +7,10 @@
     style="width: 100%;"
     :rules="rules"
   >
-    <div class="de-number-range-container">
+    <div
+      class="de-number-range-container"
+      :class="{'show-required-tips': showRequiredTips}"
+    >
       <el-form-item
         prop="min"
         style="padding-left: 0px;"
@@ -15,7 +18,7 @@
         <el-input
           ref="de-number-range-min"
           v-model="form.min"
-          :placeholder="$t(element.options.attrs.placeholder_min)"
+          :placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.placeholder_min)"
           :size="size"
           @input="inputChange"
           @change="handleMinChange"
@@ -29,7 +32,7 @@
         <el-input
           ref="de-number-range-max"
           v-model="form.max"
-          :placeholder="$t(element.options.attrs.placeholder_max)"
+          :placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.placeholder_max)"
           :size="size"
           @input="inputChange"
           @change="handleMaxChange"
@@ -102,6 +105,9 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && !this.form.min && !this.form.max
     }
   },
   watch: {
@@ -121,7 +127,7 @@ export default {
     },
     'defaultvalues': function(value, old) {
       if (value === old) return
-      const values = this.element.options.value
+      const values = this.fillValueDerfault()
       this.form.min = values[0]
       if (values.length > 1) {
         this.form.max = values[1]
@@ -139,7 +145,7 @@ export default {
   },
   created() {
     if (this.element.options.value && this.element.options.value.length > 0) {
-      const values = this.element.options.value
+      const values = this.fillValueDerfault()
       this.form.min = values[0]
       if (values.length > 1) {
         this.form.max = values[1]
@@ -168,13 +174,12 @@ export default {
           this.form.min = null
           this.form.max = null
         } else {
-          const values = this.element.options.value
+          const values = this.fillValueDerfault()
           this.form.min = values[0]
           if (values.length > 1) {
             this.form.max = values[1]
           }
         }
-
         this.search()
       }
     },
@@ -245,7 +250,13 @@ export default {
           if (!valid) {
             return false
           }
-
+          if (!this.showRequiredTips) {
+            const values = [this.form.min, this.form.max]
+            this.$store.commit('setLastValidFilters', {
+              componentId: this.element.id,
+              val: (values && Array.isArray(values)) ? values.join(',') : values
+            })
+          }
           this.setCondition()
         })
       })
@@ -277,6 +288,9 @@ export default {
       return param
     },
     setCondition() {
+      if (this.showRequiredTips) {
+        return
+      }
       const param = this.getCondition()
 
       if (this.form.min && this.form.max) {
@@ -310,12 +324,36 @@ export default {
       } else {
         this.element.options.manualModify = true
       }
+    },
+    fillValueDerfault() {
+      let defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      if (this.inDraw) {
+        let lastFilters = null
+        if (this.$store.state.lastValidFilters) {
+          lastFilters = this.$store.state.lastValidFilters[this.element.id]
+          if (lastFilters) {
+            defaultV = lastFilters.val === null ? '' : lastFilters.val.toString()
+          }
+        }
+      }
+      if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return []
+      return defaultV.split(',')
     }
   }
 }
 </script>
 
 <style lang="scss" scoped>
+
+.show-required-tips ::v-deep .el-input__inner {
+  border-color: #ff0000 !important;
+}
+.show-required-tips ::v-deep .el-input__inner::placeholder {
+  color: #ff0000 !important;
+}
+.show-required-tips ::v-deep i {
+  color: #ff0000 !important;
+}
 .de-number-range-container {
   display: inline;
   max-height: 40px;

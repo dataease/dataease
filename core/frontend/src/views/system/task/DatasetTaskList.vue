@@ -129,6 +129,7 @@
         @selection-change="handleSelectionChange"
         @size-change="handleSizeChange"
         @current-change="handleCurrentChange"
+        @sort-change="sortChange"
       >
         <el-table-column
           type="selection"
@@ -214,6 +215,7 @@
         <el-table-column
           key="nextExecTime"
           prop="nextExecTime"
+          sortable="custom"
           min-width="178"
           :label="$t('dataset.task.next_exec_time')"
         >
@@ -342,7 +344,7 @@
 
 <script>
 import { columnOptions } from './options'
-import { formatOrders } from '@/utils/index'
+import {addOrder, formatOrders} from '@/utils/index'
 import { datasetTaskList, post } from '@/api/dataset/dataset'
 import { hasDataPermission } from '@/utils/permission'
 import GridTable from '@/components/gridTable/index.vue'
@@ -493,9 +495,18 @@ export default {
       this.paginationConfig.pageSize = pageSize
       this.search()
     },
+    sortChange({ column, prop, order }) {
+      this.orderConditions = [];
+      if (!order) {
+        this.search(true);
+        return;
+      }
+      addOrder({ field: prop, value: order }, this.orderConditions);
+      this.search(true);
+    },
     handleCurrentChange(currentPage) {
       this.paginationConfig.currentPage = currentPage
-      this.search()
+      this.search(true)
     },
     initSearch() {
       this.handleCurrentChange(1)
@@ -730,7 +741,7 @@ export default {
 
   .title,
   .el-checkbox {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     font-size: 14px;
     font-weight: 400;
     padding: 5px 0;

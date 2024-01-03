@@ -267,7 +267,7 @@ const hexToRgba = (hex, opacity) => {
 }
 
 export function seniorCfg(chart_option, chart) {
-  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix'))) {
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix') || chart.type.includes('scatter'))) {
     const senior = JSON.parse(chart.senior)
     if (senior.functionCfg) {
       if (senior.functionCfg.sliderShow) {
@@ -340,50 +340,52 @@ export function seniorCfg(chart_option, chart) {
         const lines = fixedLines.concat(dynamicLines)
 
         lines.forEach(ele => {
-          if (chart.type.includes('horizontal')) {
-            chart_option.series[0].markLine.data.push({
-              symbol: 'none',
-              xAxis: parseFloat(ele.value),
-              name: ele.name,
-              lineStyle: {
-                color: ele.color,
-                type: ele.lineType
-              },
-              label: {
-                show: true,
-                color: ele.color,
-                fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10,
-                position: xAxis.position === 'bottom' ? 'insideStartTop' : 'insideEndTop',
-                formatter: function(param) {
-                  return ele.name + ' : ' + valueFormatter(param.value, axisFormatterCfg)
+          if (ele) {
+            if (chart.type.includes('horizontal')) {
+              chart_option.series[0].markLine.data.push({
+                symbol: 'none',
+                xAxis: parseFloat(ele.value),
+                name: ele.name,
+                lineStyle: {
+                  color: ele.color,
+                  type: ele.lineType
+                },
+                label: {
+                  show: true,
+                  color: ele.color,
+                  fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10,
+                  position: xAxis.position === 'bottom' ? 'insideStartTop' : 'insideEndTop',
+                  formatter: function(param) {
+                    return ele.name + ' : ' + valueFormatter(param.value, axisFormatterCfg)
+                  }
+                },
+                tooltip: {
+                  show: false
                 }
-              },
-              tooltip: {
-                show: false
-              }
-            })
-          } else {
-            chart_option.series[0].markLine.data.push({
-              symbol: 'none',
-              yAxis: parseFloat(ele.value),
-              name: ele.name,
-              lineStyle: {
-                color: ele.color,
-                type: ele.lineType
-              },
-              label: {
-                show: true,
-                color: ele.color,
-                fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10,
-                position: yAxis.position === 'left' ? 'insideStartTop' : 'insideEndTop',
-                formatter: function(param) {
-                  return ele.name + ' : ' + valueFormatter(param.value, axisFormatterCfg)
+              })
+            } else {
+              chart_option.series[0].markLine.data.push({
+                symbol: 'none',
+                yAxis: parseFloat(ele.value),
+                name: ele.name,
+                lineStyle: {
+                  color: ele.color,
+                  type: ele.lineType
+                },
+                label: {
+                  show: true,
+                  color: ele.color,
+                  fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10,
+                  position: yAxis.position === 'left' ? 'insideStartTop' : 'insideEndTop',
+                  formatter: function(param) {
+                    return ele.name + ' : ' + valueFormatter(param.value, axisFormatterCfg)
+                  }
+                },
+                tooltip: {
+                  show: false
                 }
-              },
-              tooltip: {
-                show: false
-              }
-            })
+              })
+            }
           }
         })
       }

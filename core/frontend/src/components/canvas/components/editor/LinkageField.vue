@@ -24,6 +24,7 @@
             <el-select
               v-model="itemLinkage.sourceField"
               size="mini"
+              filterable
               placeholder="请选择"
             >
               <el-option
@@ -63,6 +64,7 @@
           <div class="select-filed">
             <el-select
               v-model="itemLinkage.targetField"
+              filterable
               size="mini"
               placeholder="请选择"
             >

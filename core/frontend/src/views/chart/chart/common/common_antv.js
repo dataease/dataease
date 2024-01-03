@@ -128,6 +128,9 @@ export function getLabel(chart) {
           }
           if (l.position === 'outer') {
             label.type = 'spider'
+            label.layout = [
+              { type: 'limit-in-plot' }
+            ]
           }
         } else if (chart.type.includes('line') || chart.type.includes('area')) {
           label = {
@@ -143,7 +146,7 @@ export function getLabel(chart) {
           }
         } else if (chart.type.includes('bar')) {
           label = {
-            layout: [{ type: 'limit-in-canvas' }],
+            layout: [{ type: 'limit-in-plot' }],
             position: l.position
           }
         } else {
@@ -341,6 +344,9 @@ export function getTooltip(chart) {
 
         // tooltip value formatter
         if (chart.type && chart.type !== 'waterfall') {
+          if (chart.type === 'bar-group-stack') {
+            tooltip.fields = []
+          }
           tooltip.formatter = function(param) {
             let res = param.value
 
@@ -419,7 +425,7 @@ export function getTooltip(chart) {
                   res = valueFormatter(param.value, formatterItem)
                 }
               }
-            } else if (includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') && !chart.type.includes('group')) {
+            } else if (includesAny(chart.type, 'bar', 'scatter', 'radar', 'area') && !chart.type.includes('group') && chart.type !== 'bar-time-range') {
               obj = { name: param.category, value: param.value }
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
@@ -452,7 +458,7 @@ export function getTooltip(chart) {
               } else {
                 let name = ''
                 if (param.group) {
-                  name = param.name + '-'
+                  name = param.group + '-'
                 }
                 if (param.category) {
                   name += param.category
@@ -467,6 +473,9 @@ export function getTooltip(chart) {
                   res = valueFormatter(param.value, formatterItem)
                 }
               }
+            } else if (chart.type === 'bar-time-range') {
+              obj = { values: param.values, name: param.category }
+              res = param.values[0] + ' - ' + param.values[1]
             } else {
               res = param.value
             }
@@ -656,11 +665,16 @@ export function getXAxis(chart) {
           },
           spacing: 8
         } : null
+        const gridCfg = a.splitLine ? a.splitLine : DEFAULT_XAXIS_STYLE.splitLine
+        if (!gridCfg.dashStyle) {
+          gridCfg.dashStyle = DEFAULT_XAXIS_STYLE.splitLine.dashStyle
+        }
         const grid = a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
-              lineWidth: parseInt(a.splitLine.lineStyle.width)
+              lineWidth: parseInt(a.splitLine.lineStyle.width),
+              lineDash: gridCfg.enableDash ? [gridCfg.dashStyle.width, gridCfg.dashStyle.offset] : undefined
             }
           }
         } : null
@@ -716,7 +730,7 @@ export function getXAxis(chart) {
         delete axis.maxLimit
         delete axis.tickCount
         const axisValue = a.axisValue
-        if (chart.type.includes('horizontal')) {
+        if (chart.type.includes('horizontal') || chart.type === 'bar-time-range') {
           if (axisValue && !axisValue.auto) {
             const yAxisSeriesMaxList = []
             const maxList = []
@@ -771,11 +785,16 @@ export function getYAxis(chart) {
           },
           spacing: 8
         } : null
+        const gridCfg = a.splitLine ? a.splitLine : DEFAULT_YAXIS_STYLE.splitLine
+        if (!gridCfg.dashStyle) {
+          gridCfg.dashStyle = DEFAULT_YAXIS_STYLE.splitLine.dashStyle
+        }
         const grid = a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
-              lineWidth: parseInt(a.splitLine.lineStyle.width)
+              lineWidth: parseInt(a.splitLine.lineStyle.width),
+              lineDash: gridCfg.enableDash ? [gridCfg.dashStyle.width, gridCfg.dashStyle.offset] : undefined
             }
           }
         } : null
@@ -801,7 +820,7 @@ export function getYAxis(chart) {
             if (chart.type === 'waterfall') {
               return value
             } else {
-              if (!chart.type.includes('horizontal')) {
+              if (!(chart.type.includes('horizontal') || chart.type === 'bar-time-range')) {
                 if (!a.axisLabelFormatter) {
                   return valueFormatter(value, formatterItem)
                 } else {
@@ -828,7 +847,7 @@ export function getYAxis(chart) {
         delete axis.maxLimit
         delete axis.tickCount
         const axisValue = a.axisValue
-        if (!chart.type.includes('horizontal')) {
+        if (!chart.type.includes('horizontal') || chart.type === 'bar-time-range') {
           if (axisValue && !axisValue.auto) {
             const yAxisSeriesMaxList = []
             const maxList = []
@@ -883,11 +902,16 @@ export function getYAxisExt(chart) {
           },
           spacing: 8
         } : null
+        const gridCfg = a.splitLine ? a.splitLine : DEFAULT_YAXIS_EXT_STYLE.splitLine
+        if (!gridCfg.dashStyle) {
+          gridCfg.dashStyle = DEFAULT_YAXIS_EXT_STYLE.splitLine.dashStyle
+        }
         const grid = a.splitLine.show ? {
           line: {
             style: {
               stroke: a.splitLine.lineStyle.color,
-              lineWidth: parseInt(a.splitLine.lineStyle.width)
+              lineWidth: parseInt(a.splitLine.lineStyle.width),
+              lineDash: gridCfg.enableDash ? [gridCfg.dashStyle.width, gridCfg.dashStyle.offset] : undefined
             }
           }
         } : null
@@ -1019,7 +1043,7 @@ export function getSlider(chart) {
 export function getAnalyse(chart) {
   let senior = {}
   const assistLine = []
-  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix') || chart.type.includes('area'))) {
+  if (chart.senior && chart.type && (chart.type.includes('bar') || chart.type.includes('line') || chart.type.includes('mix') || chart.type.includes('area') || chart.type.includes('scatter'))) {
     senior = JSON.parse(chart.senior)
     if (senior.assistLine && senior.assistLine.length > 0) {
       const customStyle = JSON.parse(chart.customStyle)
@@ -1044,44 +1068,46 @@ export function getAnalyse(chart) {
       const lines = fixedLines.concat(dynamicLines)
 
       lines.forEach(ele => {
-        const value = parseFloat(ele.value)
-        const content = ele.name + ' : ' + valueFormatter(value, axisFormatterCfg)
-        assistLine.push({
-          type: 'line',
-          start: ['start', value],
-          end: ['end', value],
-          style: {
-            stroke: ele.color,
-            lineDash: getLineDash(ele.lineType)
+        if (ele) {
+          const value = parseFloat(ele.value)
+          const content = ele.name + ' : ' + valueFormatter(value, axisFormatterCfg)
+          assistLine.push({
+            type: 'line',
+            start: ['start', value],
+            end: ['end', value],
+            style: {
+              stroke: ele.color,
+              lineDash: getLineDash(ele.lineType)
+            }
+          })
+          if (!chart.type.includes('horizontal')) {
+            assistLine.push({
+              type: 'text',
+              position: [yAxisPosition === 'left' ? 'start' : 'end', value],
+              content: content,
+              offsetY: -2,
+              offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
+              style: {
+                textBaseline: 'bottom',
+                fill: ele.color,
+                fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
+              }
+            })
+          } else {
+            assistLine.push({
+              type: 'text',
+              position: [xAxisPosition === 'left' ? 'start' : 'end', value],
+              content: content,
+              offsetY: xAxisPosition === 'left' ? -2 : -10 * (content.length - 2),
+              offsetX: 2,
+              rotate: Math.PI / 2,
+              style: {
+                textBaseline: 'bottom',
+                fill: ele.color,
+                fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
+              }
+            })
           }
-        })
-        if (!chart.type.includes('horizontal')) {
-          assistLine.push({
-            type: 'text',
-            position: [yAxisPosition === 'left' ? 'start' : 'end', value],
-            content: content,
-            offsetY: -2,
-            offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
-            style: {
-              textBaseline: 'bottom',
-              fill: ele.color,
-              fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
-            }
-          })
-        } else {
-          assistLine.push({
-            type: 'text',
-            position: [xAxisPosition === 'left' ? 'start' : 'end', value],
-            content: content,
-            offsetY: xAxisPosition === 'left' ? -2 : -10 * (content.length - 2),
-            offsetX: 2,
-            rotate: Math.PI / 2,
-            style: {
-              textBaseline: 'bottom',
-              fill: ele.color,
-              fontSize: ele.fontSize ? parseInt(ele.fontSize) : 10
-            }
-          })
         }
       })
     }

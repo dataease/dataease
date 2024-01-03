@@ -59,6 +59,7 @@ public class KingbaseService extends DatasourceService {
         dataSourceType.setAliasPrefix("\"");
         dataSourceType.setAliasSuffix("\"");
         dataSourceType.setDatabaseClassification(DatabaseClassification.OLTP);
+        dataSourceType.setSurpportVersions("12");
         return dataSourceType;
     }
 

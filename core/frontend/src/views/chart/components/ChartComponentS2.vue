@@ -14,8 +14,8 @@
     <span
       v-if="chart.type"
       v-show="title_show"
-      :class="titleIsRight"
       ref="title"
+      :class="titleIsRight"
       :style="title_class"
       style="cursor: default;display: block;"
     >
@@ -34,7 +34,7 @@
     <div
       ref="tableContainer"
       style="width: 100%;overflow: hidden;"
-      :style="{background:container_bg_class.background}"
+      :style="{background:container_bg_class.background, height: chartHeight}"
     >
       <div
         v-if="chart.type === 'table-normal'"
@@ -180,7 +180,8 @@ export default {
       totalStyle: {
         color: '#606266'
       },
-      not_support_page_dataset: NOT_SUPPORT_PAGE_DATASET
+      not_support_page_dataset: NOT_SUPPORT_PAGE_DATASET,
+      resizeTimer: null
     }
   },
 
@@ -225,17 +226,9 @@ export default {
       handler(newVal, oldVla) {
         this.initData()
         this.initTitle()
-        this.calcHeightDelay()
-        new Promise((resolve) => {
-          resolve()
-        }).then(() => {
-          this.drawView()
-        })
+        this.calcHeightRightNow(this.drawView)
       },
       deep: true
-    },
-    resize() {
-      this.drawEcharts()
     }
   },
   mounted() {
@@ -243,7 +236,7 @@ export default {
   },
   beforeDestroy() {
     clearInterval(this.scrollTimer)
-    window.removeEventListener('resize', this.onResize)
+    window.removeEventListener('resize', this.chartResize)
     this.myChart?.destroy?.()
     this.myChart = null
   },
@@ -282,18 +275,10 @@ export default {
       this.tableData = data
     },
     preDraw() {
-      this.onResize()
-      window.addEventListener('resize', this.onResize)
-    },
-    onResize() {
       this.initData()
       this.initTitle()
-      this.calcHeightDelay()
-      new Promise((resolve) => {
-        resolve()
-      }).then(() => {
-        this.drawView()
-      })
+      this.calcHeightRightNow(this.drawView)
+      window.addEventListener('resize', this.chartResize)
     },
     drawView() {
       const chart = this.chart
@@ -403,14 +388,22 @@ export default {
       }
     },
     chartResize() {
-      this.initData()
-      this.initTitle()
-      this.calcHeightDelay()
-      new Promise((resolve) => {
-        resolve()
-      }).then(() => {
-        this.drawView()
-      })
+      this.resizeTimer && clearTimeout(this.resizeTimer)
+      this.resizeTimer = setTimeout(() => {
+        this.initData()
+        this.initTitle()
+        this.calcHeightRightNow((width, height) => {
+          const { width: chartWidth, height: chartHeight } = this.myChart.options
+          if (width !== chartWidth || height !== chartHeight) {
+            this.myChart?.changeSheetSize(width, height)
+            // 大小变化或者tab变化重新渲染
+            if (chartWidth || chartHeight || !(chartHeight || chartWidth)) {
+              this.myChart.render()
+            }
+            this.initScroll()
+          }
+        })
+      }, 100)
     },
     trackClick(trackAction) {
       const param = this.pointParam
@@ -483,23 +476,18 @@ export default {
       this.initRemark()
     },
 
-    calcHeightRightNow() {
+    calcHeightRightNow(callback) {
       this.$nextTick(() => {
         if (this.$refs.chartContainer) {
-          const currentHeight = this.$refs.chartContainer.offsetHeight
+          const { offsetWidth, offsetHeight } = this.$refs.chartContainer
+          let titleHeight = 0
           if (this.$refs.title) {
-            const titleHeight = this.$refs.title.offsetHeight
-            this.chartHeight = (currentHeight - titleHeight) + 'px'
-            this.$refs.tableContainer.style.height = this.chartHeight
+            titleHeight = this.$refs.title.offsetHeight
           }
+          this.chartHeight = (offsetHeight - titleHeight) + 'px'
+          this.$nextTick(() => callback?.(offsetWidth, offsetHeight - titleHeight))
         }
       })
-    },
-    calcHeightDelay() {
-      this.calcHeightRightNow()
-      setTimeout(() => {
-        this.calcHeightRightNow()
-      }, 100)
     },
     pageChange(val) {
       this.currentPage.pageSize = val
@@ -536,23 +524,28 @@ export default {
       const senior = JSON.parse(this.chart.senior)
 
       this.scrollTop = 0
-      this.myChart.store.set('scrollY', this.scrollTop)
-      this.myChart.render()
 
       if (senior && senior.scrollCfg && senior.scrollCfg.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
         const rowHeight = customAttr.size.tableItemHeight
         const headerHeight = customAttr.size.tableTitleHeight
 
         this.scrollTimer = setInterval(() => {
+          const offsetHeight = document.getElementById(this.chartId).offsetHeight
           const top = rowHeight * senior.scrollCfg.row
-          const dom = document.getElementById(this.chartId)
-          if ((dom.offsetHeight - headerHeight + this.scrollTop) < rowHeight * this.chart.data.tableRow.length) {
+          if ((offsetHeight - headerHeight + this.scrollTop) < rowHeight * this.chart.data.tableRow.length) {
             this.scrollTop += top
           } else {
             this.scrollTop = 0
           }
-          this.myChart.store.set('scrollY', this.scrollTop)
-          this.myChart.render()
+          if (!offsetHeight) {
+            return
+          }
+          this.myChart.facet.scrollWithAnimation({
+            offsetY: {
+              value: this.scrollTop,
+              animate: false
+            }
+          })
         }, senior.scrollCfg.interval)
       }
     },

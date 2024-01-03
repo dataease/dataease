@@ -3,12 +3,11 @@ package io.dataease.service.staticResource;
 import cn.hutool.core.codec.Base64Decoder;
 import cn.hutool.core.collection.CollectionUtil;
 import com.google.gson.Gson;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.FileUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.StaticResourceUtils;
 import io.dataease.controller.request.resource.StaticResourceRequest;
-import io.dataease.exception.DataEaseException;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
@@ -16,7 +15,6 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.imageio.ImageIO;
-import java.awt.image.BufferedImage;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -42,7 +40,7 @@ public class StaticResourceService {
         Assert.notNull(file, "Multipart file must not be null");
         try {
             if (!isImage(file)) {
-                DEException.throwException("Multipart file must be image");
+                DataEaseException.throwException("Multipart file must be image");
             }
             String originName = file.getOriginalFilename();
             String newFileName = fileId + originName.substring(originName.lastIndexOf("."), originName.length());

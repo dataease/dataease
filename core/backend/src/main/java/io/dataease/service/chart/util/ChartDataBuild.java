@@ -1,6 +1,7 @@
 package io.dataease.service.chart.util;
 
 import cn.hutool.core.util.ArrayUtil;
+import io.dataease.controller.request.chart.ChartDrillRequest;
 import io.dataease.dto.chart.*;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
@@ -11,6 +12,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1280,6 +1282,153 @@ public class ChartDataBuild {
             map.put("data", dataList);
             return map;
         }
+    }
+
+    private static String getDateFormat(String dateStyle, String datePattern) {
+        String split;
+        if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+            split = "/";
+        } else {
+            split = "-";
+        }
+        switch (dateStyle) {
+            case "y":
+                return "yyyy";
+            case "y_M":
+                return "yyyy" + split + "MM";
+            case "y_M_d":
+                return "yyyy" + split + "MM" + split + "dd";
+            case "H_m_s":
+                return "HH:mm:ss";
+            case "y_M_d_H":
+                return "yyyy" + split + "MM" + split + "dd" + " HH";
+            case "y_M_d_H_m":
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm";
+            case "y_M_d_H_m_s":
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm:ss";
+            default:
+                return "yyyy-MM-dd HH:mm:ss";
+        }
+    }
+
+    public static Map<String, Object> transTimeBarDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, List<ChartViewFieldDTO> extStack, List<String[]> data, ChartViewWithBLOBs view, boolean isDrill, List<ChartDrillRequest> drillRequestList) {
+
+        Map<String, Object> map = new HashMap<>();
+        if (CollectionUtils.isEmpty(xAxisBase) || CollectionUtils.isEmpty(xAxisExt) || xAxisExt.size() < 2) {
+            map.put("data", new ArrayList<>());
+            return map;
+        }
+        if (xAxisExt.stream().filter(ext -> !ext.isDrill()).count() != 2) {
+            map.put("data", new ArrayList<>());
+            return map;
+        }
+
+        List<Date> dates = new ArrayList<>();
+        List<BigDecimal> numbers = new ArrayList<>();
+
+        ChartViewFieldDTO xAxis1 = xAxis.get(xAxisBase.size());
+        boolean isDate = true;
+        if (StringUtils.equalsIgnoreCase(xAxis1.getGroupType(), "q")) {
+            isDate = false;
+        }
+        SimpleDateFormat sdf = null;
+        if (isDate) {
+            sdf = new SimpleDateFormat(getDateFormat(xAxis1.getDateStyle(), xAxis1.getDatePattern()));
+        }
+
+        List<Object> dataList = new ArrayList<>();
+        for (int i1 = 0; i1 < data.size(); i1++) {
+            String[] row = data.get(i1);
+
+            StringBuilder xField = new StringBuilder();
+            if (isDrill) {
+                xField.append(row[xAxis.size() - 1 - 2]); // 由于起止时间字段是放到最后的yField里去查询的，所以要再减两个
+            } else {
+                for (int i = 0; i < xAxisBase.size(); i++) {
+                    if (i == xAxisBase.size() - 1) {
+                        xField.append(row[i]);
+                    } else {
+                        xField.append(row[i]).append("\n");
+                    }
+                }
+            }
+            Map<String, Object> obj = new HashMap<>();
+            obj.put("field", xField.toString());
+            obj.put("category", xField.toString());
+
+            List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+
+            for (int j = 0; j < xAxis.size(); j++) {
+                if (j == xAxisBase.size() || j == xAxisBase.size() + 1) {
+                    continue;
+                }
+                int index = j;
+                if (j > xAxisBase.size() + 1) {
+                    index = j - 2;
+                }
+                ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                chartDimensionDTO.setId(xAxis.get(j).getId());
+                chartDimensionDTO.setValue(row[index]);
+                dimensionList.add(chartDimensionDTO);
+            }
+
+            obj.put("dimensionList", dimensionList);
+
+            List<Object> values = new ArrayList<>();
+
+            // 由于起止时间字段是放到最后的yField里去查询的，所以拿倒数两个
+            if (row[xAxis.size() - 1] == null || row[xAxis.size() - 2] == null) {
+                continue;
+            }
+
+            if (isDate) {
+                values.add(row[xAxis.size() - 2]);
+                values.add(row[xAxis.size() - 1]);
+                obj.put("values", values);
+                try {
+                    Date date = sdf.parse(row[xAxis.size() - 2]);
+                    if (date != null) {
+                        dates.add(date);
+                    }
+                } catch (Exception ignore) {
+                }
+                try {
+                    Date date = sdf.parse(row[xAxis.size() - 1]);
+                    if (date != null) {
+                        dates.add(date);
+                    }
+                } catch (Exception ignore) {
+                }
+            } else {
+                values.add(new BigDecimal(row[xAxis.size() - 2]));
+                values.add(new BigDecimal(row[xAxis.size() - 1]));
+                obj.put("values", values);
+
+                numbers.add(new BigDecimal(row[xAxis.size() - 2]));
+                numbers.add(new BigDecimal(row[xAxis.size() - 1]));
+            }
+
+            dataList.add(obj);
+        }
+
+        if (isDate) {
+            Date minDate = dates.stream().min(Date::compareTo).orElse(null);
+            if (minDate != null) {
+                map.put("minTime", sdf.format(minDate));
+            }
+            Date maxDate = dates.stream().max(Date::compareTo).orElse(null);
+            if (maxDate != null) {
+                map.put("maxTime", sdf.format(maxDate));
+            }
+        } else {
+            map.put("min", numbers.stream().min(BigDecimal::compareTo).orElse(null));
+            map.put("max", numbers.stream().max(BigDecimal::compareTo).orElse(null));
+        }
+
+        map.put("isDate", isDate);
+        map.put("data", dataList);
+        return map;
+
     }
 
     public static Map<String, Object> transBidirectionalBarData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {

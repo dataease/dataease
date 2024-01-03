@@ -96,6 +96,7 @@ export const buildViewKeyFilters = (panelItems, result, isEdit = false) => {
     return result
   }
   const buildItems = panelItems[0].canvasId === 'canvas-main' ? panelItems : store.state.componentData
+  const lastValidFilters = store.state.lastValidFilters
   const canvasIdMap = buildCanvasIdMap(buildItems)
   buildItems.forEach((element, index) => {
     if (element.type !== 'custom') {
@@ -105,15 +106,22 @@ export const buildViewKeyFilters = (panelItems, result, isEdit = false) => {
 
     let param = null
     const widget = ApplicationContext.getService(element.serviceName)
-    param = widget.getParam(element)
+    let lastFilter = null
+    if (lastValidFilters) {
+      lastFilter = lastValidFilters[element.id]
+    }
+    param = widget.getParam(element, lastFilter?.val)
     const condition = formatCondition(param)
-    const vValid = valueValid(condition)
+    let vValid = valueValid(condition)
+    if (lastFilter && !lastFilter.val) {
+      vValid = false
+    }
     const filterComponentId = condition.componentId
     Object.keys(result).forEach(viewId => {
       // 进行过滤时 如果过滤组件在主画布 则条件适用于所有画布视图 否则需要过滤组件和视图在相同画布
       if (element.canvasId === 'canvas-main' || element.canvasId === canvasIdMap[viewId]) {
         const vidMatch = viewIdMatch(condition.viewIds, viewId)
-        if (vidMatch && selectFirst && !element.options.loaded) {
+        if (vidMatch && selectFirst && !element.options.loaded && !lastFilter) {
           const obj = {}
           const promise = new Promise(resolve => {
             cacheCondition(cbParam => {

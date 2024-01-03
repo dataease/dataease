@@ -372,6 +372,7 @@ export default {
       // 关闭页面清理缓存
       this.$store.commit('initCanvasBase')
       this.$store.commit('setInEditorStatus', false)
+      this.$store.commit('setComponentData', [])
       this.$emit('close-left-panel')
       removePanelCache(this.panelInfo.id)
       this.$nextTick(() => {
@@ -735,7 +736,7 @@ export default {
     display: inline-block;
     font-weight: 400 !important;
     font-size: 16px;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     line-height: 1;
     white-space: nowrap;
     cursor: pointer;

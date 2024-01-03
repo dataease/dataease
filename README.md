@@ -84,11 +84,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
 -   [在线文档](https://dataease.io/docs/)
 -   [社区论坛](https://bbs.fit2cloud.com/c/de/6)
 
-**加入微信交流群**
-
-<img src="https://dataease.oss-cn-hangzhou.aliyuncs.com/img/wechat-helper.png" width="156" height="156"/>
-
-## DataEase 的技术栈
+## DataEase v1 的技术栈
 
 -   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)
 -   图库：[Apache ECharts](https://github.com/apache/echarts)、[AntV](https://antv.vision/zh)
@@ -107,7 +103,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
 
 ## License
 
-Copyright (c) 2014-2023 [FIT2CLOUD 飞致云](https://fit2cloud.com/), All rights reserved.
+Copyright (c) 2014-2024 [FIT2CLOUD 飞致云](https://fit2cloud.com/), All rights reserved.
 
 Licensed under The GNU General Public License version 3 (GPLv3)  (the "License"); you may not use this file except in compliance with the License. You may obtain a copy of the License at
 

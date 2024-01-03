@@ -278,7 +278,7 @@ export default {
     box-shadow: 0 2px 2px 0 rgb(0 0 0 / 10%);
 
     .name {
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 16px;
       font-weight: 500;
       display: flex;
@@ -299,7 +299,7 @@ export default {
     }
     .oprate {
       .table-num {
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-weight: 400;
         margin-right: 16px;

@@ -4,7 +4,7 @@
       <el-form
         ref="sizeFormBar"
         :model="sizeForm"
-        label-width="80px"
+        label-width="84px"
         size="mini"
       >
         <!--bar-begin-->
@@ -328,6 +328,21 @@
             input-size="mini"
             @change="changeBarSizeCase('tableColumnWidth')"
           />
+        </el-form-item>
+        <el-form-item
+          v-if="showProperty('tableFreeze')"
+          :label="$t('chart.table_freeze')"
+          class="form-item"
+        >
+          <span>{{ $t('dynamic_time.before') }} </span>
+          <el-input-number
+            v-model="sizeForm.tableColumnFreezeHead"
+            :min="0"
+            :max="100"
+            :step-strictly="true"
+            @change="changeBarSizeCase('tableColumnFreezeHead')"
+          />
+          <span> {{ $t('chart.column') }}</span>
         </el-form-item>
         <el-form-item
           v-if="showProperty('tableAutoBreakLine')"
@@ -1236,6 +1251,8 @@ export default {
           this.sizeForm.liquidOutlineDistance = (this.sizeForm.liquidOutlineDistance || this.sizeForm.liquidOutlineDistance === 0) ? this.sizeForm.liquidOutlineDistance : DEFAULT_SIZE.liquidOutlineDistance
           this.sizeForm.liquidWaveLength = this.sizeForm.liquidWaveLength ? this.sizeForm.liquidWaveLength : DEFAULT_SIZE.liquidWaveLength
           this.sizeForm.liquidWaveCount = this.sizeForm.liquidWaveCount ? this.sizeForm.liquidWaveCount : DEFAULT_SIZE.liquidWaveCount
+          this.sizeForm.tableColumnFreezeHead = this.sizeForm.tableColumnFreezeHead ?? DEFAULT_SIZE.tableColumnFreezeHead
+          this.sizeForm.tableColumnFreezeTail = this.sizeForm.tableColumnFreezeTail ?? DEFAULT_SIZE.tableColumnFreezeTail
 
           this.sizeForm.tablePageMode = this.sizeForm.tablePageMode ? this.sizeForm.tablePageMode : DEFAULT_SIZE.tablePageMode
           this.sizeForm.tablePageSize = this.sizeForm.tablePageSize ? this.sizeForm.tablePageSize : DEFAULT_SIZE.tablePageSize
@@ -1288,6 +1305,11 @@ export default {
       this.sizeForm['modifyName'] = modifyName
       if (this.sizeForm.gaugeMax <= this.sizeForm.gaugeMin) {
         this.$message.error(this.$t('chart.max_more_than_mix'))
+        return
+      }
+      const reg = /^\d+$/m
+      if (!reg.test(this.sizeForm.tableColumnFreezeHead)) {
+        this.$message.error(this.$t('chart.table_freeze') + this.$t('chart.needs_to_be_integer'))
         return
       }
       this.$emit('onSizeChange', this.sizeForm)

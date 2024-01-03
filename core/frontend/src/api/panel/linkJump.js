@@ -26,7 +26,7 @@ export function queryTargetPanelJumpInfo(requestInfo) {
     url: '/linkJump/queryTargetPanelJumpInfo',
     method: 'post',
     data: requestInfo,
-    loading: true
+    loading: false
   })
 }
 

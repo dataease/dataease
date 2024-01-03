@@ -1,6 +1,7 @@
 package io.dataease.service.chart;
 
 import com.google.gson.internal.LinkedTreeMap;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -9,7 +10,6 @@ import org.springframework.stereotype.Service;
 import com.google.gson.Gson;
 
 import io.dataease.auth.annotation.DePermissionProxy;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.model.excel.ExcelSheetModel;
 import io.dataease.commons.utils.ExcelUtils;
 import io.dataease.commons.utils.LogUtil;
@@ -71,6 +71,7 @@ public class ViewExportExcel {
 
         Map<String, ChartExtRequest> result = new HashMap<>();
         Map<String, List<ChartExtFilterRequest>> panelFilters = justView ? FilterBuildTemplate.buildFilters(components) : FilterBuildTemplate.buildEmpty(components);
+        List<String> tableInfoViewIds = findTableInfoViewIds(components);
         for (Map.Entry<String, List<ChartExtFilterRequest>> entry : panelFilters.entrySet()) {
             List<ChartExtFilterRequest> chartExtFilterRequests = entry.getValue();
             ChartExtRequest chartExtRequest = new ChartExtRequest();
@@ -78,9 +79,24 @@ public class ViewExportExcel {
             chartExtRequest.setFilter(chartExtFilterRequests);
             chartExtRequest.setResultCount((int) resultCount);
             chartExtRequest.setResultMode(resultMode);
+            if(tableInfoViewIds.contains(entry.getKey())){
+                chartExtRequest.setGoPage(1L);
+                chartExtRequest.setPageSize(1000000L);
+                chartExtRequest.setExcelExportFlag(true);
+            }
             result.put(entry.getKey(), chartExtRequest);
         }
         return result;
+    }
+
+    private List<String> findTableInfoViewIds(List<Map<String, Object>> components) {
+        List<String> tableInfoViewIds = new ArrayList<>();
+        components.forEach(element -> {
+            if (StringUtils.equals(element.get("type").toString(), "view") && StringUtils.equals(((Map<String, Object>) element.get("propValue")).get("innerType").toString(), "table-info")) {
+                tableInfoViewIds.add(((Map<String, Object>) element.get("propValue")).get("viewId").toString());
+            }
+        });
+        return tableInfoViewIds;
     }
 
     private ExcelSheetModel viewFiles(String viewId, ChartExtRequest request) {
@@ -91,7 +107,7 @@ public class ViewExportExcel {
             chartViewDTO = chartViewService.getData(viewId, request);
         } catch (Exception e) {
             LogUtil.error(e.getMessage());
-            DEException.throwException(e);
+            DataEaseException.throwException(e);
         }
         String title = Optional.ofNullable(chartViewDTO.getTitle()).orElse(chartViewDTO.getName());
         Map<String, Object> chart = chartViewDTO.getData();

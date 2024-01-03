@@ -12,5 +12,7 @@ public class XpackEmailViewRequest implements Serializable{
     private String content;
 
     private String pixel;
+
+    private Integer extWaitTime = 0;
     
 }

@@ -4,7 +4,7 @@
       <el-form
         ref="sizeFormBar"
         :model="sizeForm"
-        label-width="80px"
+        label-width="84px"
         size="mini"
       >
         <!--bar-begin-->
@@ -296,6 +296,31 @@
           />
         </el-form-item>
         <el-form-item
+          v-if="showProperty('tableFreeze')"
+          :label="$t('chart.table_freeze')"
+          class="form-item"
+        >
+          <span>{{ $t('dynamic_time.before') }} </span>
+          <el-input-number
+            v-model="sizeForm.tableColumnFreezeHead"
+            :min="0"
+            :max="100"
+            :step-strictly="true"
+            @change="changeBarSizeCase('tableColumnFreezeHead')"
+          />
+          <span> {{ $t('chart.column') }}</span>
+          <div style="margin: 5px 0" />
+          <span>{{ $t('dynamic_time.before') }} </span>
+          <el-input-number
+            v-model="sizeForm.tableRowFreezeHead"
+            :min="0"
+            :max="1000"
+            :step-strictly="true"
+            @change="changeBarSizeCase('tableRowFreezeHead')"
+          />
+          <span> {{ $t('deDataset.row') }}</span>
+        </el-form-item>
+        <el-form-item
           v-if="showProperty('showIndex')"
           :label="$t('chart.table_show_index')"
           class="form-item"
@@ -309,6 +334,17 @@
             <el-radio :label="false">{{ $t('panel.no') }}</el-radio>
           </el-radio-group>
         </el-form-item>
+        <el-form-item
+          v-if="showProperty('tableCellTooltip')"
+          :label="$t('chart.table_cell_tooltip')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.tableCellTooltip.show"
+            @change="changeBarSizeCase('tableCellTooltip')"
+          />
+        </el-form-item>
+
         <el-form-item
           v-if="showProperty('indexLabel') && sizeForm.showIndex"
           :label="$t('chart.table_index_desc')"
@@ -334,7 +370,7 @@
             <el-radio :label="false">{{ $t('commons.no') }}</el-radio>
           </el-radio-group>
         </el-form-item>
-        <div v-if="showProperty('showTableHeader') && sizeForm.showTableHeader">
+        <div v-if="(showProperty('showTableHeader') && sizeForm.showTableHeader) || chart.type === 'table-pivot'">
           <el-form-item
             v-if="showProperty('tableTitleFontSize')"
             :label="$t('chart.table_title_fontsize')"
@@ -1680,6 +1716,10 @@ export default {
           this.sizeForm.tableItemAlign = this.sizeForm.tableItemAlign ? this.sizeForm.tableItemAlign : DEFAULT_SIZE.tableItemAlign
           this.sizeForm.tableRowTooltip = this.sizeForm.tableRowTooltip ?? DEFAULT_SIZE.tableRowTooltip
           this.sizeForm.tableColTooltip = this.sizeForm.tableColTooltip ?? DEFAULT_SIZE.tableColTooltip
+          this.sizeForm.tableCellTooltip = this.sizeForm.tableCellTooltip ?? DEFAULT_SIZE.tableCellTooltip
+          this.sizeForm.tableColumnFreezeHead = this.sizeForm.tableColumnFreezeHead ?? DEFAULT_SIZE.tableColumnFreezeHead
+          this.sizeForm.tableColumnFreezeTail = this.sizeForm.tableColumnFreezeTail ?? DEFAULT_SIZE.tableColumnFreezeTail
+          this.sizeForm.tableRowFreezeHead = this.sizeForm.tableRowFreezeHead ?? DEFAULT_SIZE.tableRowFreezeHead
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
           this.sizeForm.showTableHeader = this.sizeForm.showTableHeader !== false
@@ -1752,6 +1792,11 @@ export default {
       this.sizeForm['modifyName'] = modifyName
       if (this.sizeForm.gaugeMax <= this.sizeForm.gaugeMin) {
         this.$message.error(this.$t('chart.max_more_than_mix'))
+        return
+      }
+      const reg = /^\d+$/m
+      if (!reg.test(this.sizeForm.tableRowFreezeHead) || !reg.test(this.sizeForm.tableColumnFreezeHead)) {
+        this.$message.error(this.$t('chart.table_freeze') + this.$t('chart.needs_to_be_integer'))
         return
       }
       this.$emit('onSizeChange', this.sizeForm)

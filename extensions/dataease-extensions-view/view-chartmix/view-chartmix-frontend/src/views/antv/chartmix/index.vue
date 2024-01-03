@@ -390,13 +390,23 @@ export default {
                   item.value = valueFormatter(item.data.value, yaxisExtList[item.data.i].formatterCfg)
                 }
               })
-              return filter(originalItems, (item) => {
-                const v = item.data.key;
-                if (item.title === v && item.title === item.value && item.name === "key" || !names.includes(item.name)) {
-                  return false;
+
+              // 由于只会触发一个scatter，所以针对scatter的进行一次过滤，只保留一个scatter的值
+              let hasScatter = false;
+
+              const list = filter(originalItems, (item) => {
+                if (item.data.chartType === 'scatter') {
+                  if (!hasScatter) {
+                    hasScatter = true;
+                    item.name = item.data.name;
+                  } else {
+                    return false;
+                  }
                 }
+
                 return true;
               })
+              return list;
 
             }
           } : false;
@@ -431,11 +441,16 @@ export default {
               },
               spacing: 8
             } : null
+            const gridCfg = a.splitLine ? a.splitLine : DEFAULT_XAXIS_STYLE.splitLine
+            if (!gridCfg.dashStyle) {
+              gridCfg.dashStyle = DEFAULT_XAXIS_STYLE.splitLine.dashStyle
+            }
             const grid = a.splitLine.show ? {
               line: {
                 style: {
                   stroke: a.splitLine.lineStyle.color,
-                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                  lineWidth: parseInt(a.splitLine.lineStyle.width),
+                  lineDash: gridCfg.enableDash ? [gridCfg.dashStyle.width, gridCfg.dashStyle.offset] : undefined
                 }
               }
             } : null
@@ -510,11 +525,16 @@ export default {
               },
               spacing: 8
             } : null
+            const gridCfg = a.splitLine ? a.splitLine : DEFAULT_YAXIS_STYLE.splitLine
+            if (!gridCfg.dashStyle) {
+              gridCfg.dashStyle = DEFAULT_YAXIS_STYLE.splitLine.dashStyle
+            }
             const grid = a.splitLine.show ? {
               line: {
                 style: {
                   stroke: a.splitLine.lineStyle.color,
-                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                  lineWidth: parseInt(a.splitLine.lineStyle.width),
+                  lineDash: gridCfg.enableDash ? [gridCfg.dashStyle.width, gridCfg.dashStyle.offset] : undefined
                 }
               }
             } : null
@@ -601,11 +621,16 @@ export default {
               },
               spacing: 8
             } : null
+            const gridCfg = a.splitLine ? a.splitLine : DEFAULT_YAXIS_EXT_STYLE.splitLine
+            if (!gridCfg.dashStyle) {
+              gridCfg.dashStyle = DEFAULT_YAXIS_EXT_STYLE.splitLine.dashStyle
+            }
             const grid = a.splitLine.show ? {
               line: {
                 style: {
                   stroke: a.splitLine.lineStyle.color,
-                  lineWidth: parseInt(a.splitLine.lineStyle.width)
+                  lineWidth: parseInt(a.splitLine.lineStyle.width),
+                  lineDash: gridCfg.enableDash ? [gridCfg.dashStyle.width, gridCfg.dashStyle.offset] : undefined
                 }
               }
             } : null
@@ -711,12 +736,15 @@ export default {
       const setting = {
         type: _chartType,
         options: {
-          data: data,
+          data: map(data, (d) => {
+            d.chartType = _chartType
+            return d
+          }),
           xField: 'key',
           yField: 'value',
           seriesField: 'name',
           colorField: 'name',
-          isGroup: true,
+          isGroup: _chartType === "column" ? true : undefined,
           meta: {
             key: {
               sync: true,
@@ -766,11 +794,15 @@ export default {
       const setting = {
         type: _chartType,
         options: {
-          data: data,
+          data: map(data, (d) => {
+            d.chartType = _chartType
+            return d
+          }),
           xField: 'key',
           yField: 'value',
           seriesField: 'name',
-          isGroup: true,
+          colorField: 'name',
+          isGroup: _chartType === "column" ? true : undefined,
           meta: {
             key: {
               sync: true,

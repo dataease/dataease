@@ -9,7 +9,6 @@ import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.dataset.ExcelSheetData;
 import io.dataease.dto.datasource.*;
-import io.dataease.exception.DataEaseException;
 import io.dataease.ext.ExtChartViewMapper;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
@@ -17,6 +16,7 @@ import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.dto.datasource.TableField;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.Provider;
@@ -646,8 +646,10 @@ public class ExtractDataService {
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(engine);
+        datasourceRequest.setQuery("SELECT VERSION()");
+        String version = jdbcProvider.getData(datasourceRequest).get(0)[0];
         DDLProvider ddlProvider = ProviderFactory.getDDLProvider(engine.getType());
-        datasourceRequest.setQuery(ddlProvider.createTableSql(tableName, datasetTableFields, engine));
+        datasourceRequest.setQuery(ddlProvider.createTableSql(tableName, datasetTableFields, engine, version));
         jdbcProvider.exec(datasourceRequest);
     }
 
@@ -1274,7 +1276,7 @@ public class ExtractDataService {
         String excelCompletion = "";
 
         for (DatasetTableField datasetTableField : datasetTableFields) {
-            if (datasetTableField.getDeExtractType().equals(DeTypeConstants.DE_BINARY)) {
+            if (datasetTableField.getDeExtractType().equals(DeTypeConstants.DE_BINARY) || datasetTableField.getType().equalsIgnoreCase("blob")) {
                 handleBinaryTypeCode.append("\n").append(handleBinaryType.replace("FIELD", datasetTableField.getDataeaseName()));
             }
         }

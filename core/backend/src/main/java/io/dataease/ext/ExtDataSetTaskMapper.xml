@@ -87,7 +87,7 @@
         qrtz_triggers.NEXT_FIRE_TIME
         FROM dataset_table_task
         left join dataset_table on dataset_table.id=dataset_table_task.table_id
-        left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME
+        left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME and qrtz_triggers.TRIGGER_STATE != 'PAUSED'
         where 1=1
         <if test="rate != null and rate.size() > 0">
             and dataset_table_task.rate in
@@ -122,7 +122,18 @@
         <if test="keyword != null">
             and dataset_table_task.name like concat('%', #{keyword}, '%')
         </if>
-        order by dataset_table_task.create_time desc
+        <choose>
+            <when test="orders!=null and orders.size > 0">
+                order by
+                <foreach collection="orders" item="item" open='' separator=',' close=''>
+                    ${item}
+                </foreach>
+            </when>
+            <otherwise>
+                order by dataset_table_task.create_time desc
+            </otherwise>
+        </choose>
+
     </select>
 
     <select id="userTaskList" resultMap="TaskResult" parameterType="io.dataease.controller.dataset.request.DatasetTaskGridRequest">
@@ -130,8 +141,7 @@
         `privileges`,dataset_table_task.* , qrtz_triggers.NEXT_FIRE_TIME
         FROM dataset_table_task
         left join dataset_table on dataset_table.id=dataset_table_task.table_id
-        left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME
-
+        left join qrtz_triggers on dataset_table_task.id=qrtz_triggers.TRIGGER_NAME and qrtz_triggers.TRIGGER_STATE != 'PAUSED'
         where 1=1
         <if test="rate != null and rate.size() > 0">
             and dataset_table_task.rate in
@@ -166,7 +176,17 @@
         <if test="keyword != null">
             and dataset_table_task.name like concat('%', #{keyword}, '%')
         </if>
-        order by dataset_table_task.create_time desc
+        <choose>
+            <when test="orders!=null and orders.size > 0">
+                order by
+                <foreach collection="orders" item="item" open='' separator=',' close=''>
+                    ${item}
+                </foreach>
+            </when>
+            <otherwise>
+                order by dataset_table_task.create_time desc
+            </otherwise>
+        </choose>
     </select>
 
 

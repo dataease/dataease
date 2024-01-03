@@ -16,9 +16,28 @@
         </foreach>
     </select>
 
+    <select id="queryUserNameWithRoleIds" resultType="java.lang.String" >
+        select su.username
+        from sys_user su
+        left join sys_users_roles sur on sur.user_id = su.user_id
+        where sur.role_id in
+        <foreach collection="roleIds" item="roleId" open='(' separator=',' close=')'>
+            #{roleId}
+        </foreach>
+    </select>
+
 
     <select id="queryUserIdWithDeptIds" resultType="java.lang.Long" >
         select user_id
+        from sys_user
+        where dept_id in
+        <foreach collection="deptIds" item="deptId" open='(' separator=',' close=')'>
+            #{deptId}
+        </foreach>
+    </select>
+
+    <select id="queryUserNameWithDeptIds" resultType="java.lang.String" >
+        select username
         from sys_user
         where dept_id in
         <foreach collection="deptIds" item="deptId" open='(' separator=',' close=')'>

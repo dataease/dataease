@@ -67,9 +67,14 @@ class NumberRangeServiceImpl extends WidgetService {
     })
   }
 
-  getParam(element) {
-    if (element.options.value && element.options.value.length > 0) {
-      const values = element.options.value
+  getParam(element, val) {
+    let values = null
+    if (val === null || val === '' || typeof val === 'undefined') {
+      values = element.options.value
+    } else {
+      values = Array.isArray(val) ? val : typeof val === 'string' ? val.split(',') : [val]
+    }
+    if (values && values.length > 0) {
       const min = values[0]
       let max = null
       if (values.length > 1) {

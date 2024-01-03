@@ -2,7 +2,6 @@ package io.dataease.map.service;
 
 import cn.hutool.core.collection.CollectionUtil;
 import cn.hutool.core.io.FileUtil;
-import io.dataease.commons.exception.DEException;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.listener.util.CacheUtils;
 import io.dataease.map.dto.entity.AreaEntity;
@@ -10,6 +9,7 @@ import io.dataease.map.dto.request.MapNodeRequest;
 import io.dataease.map.utils.MapUtils;
 import io.dataease.plugins.common.base.domain.AreaMappingGlobal;
 import io.dataease.plugins.common.base.domain.AreaMappingGlobalExample;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.cache.annotation.Cacheable;
@@ -199,10 +199,10 @@ public class MapService {
         long size = file.getSize();
         String name = file.getOriginalFilename();
         if (size / 1024 / 1024 > 30) {
-            DEException.throwException("large file that exceed 30M is not supported");
+            DataEaseException.throwException("large file that exceed 30M is not supported");
         }
         if (!StringUtils.endsWith(name, ".json")) {
-            DEException.throwException("only json file supported");
+            DataEaseException.throwException("only json file supported");
         }
     }
     @Transactional
@@ -231,11 +231,11 @@ public class MapService {
         }else if (plevel == 4) {
             example.createCriteria().andCityCodeEqualTo(pCode).andCountyCodeEqualTo(code);
         } else {
-            DEException.throwException("只支持3级行政区");
+            DataEaseException.throwException("只支持3级行政区");
         }
         List<AreaMappingGlobal> lists = MapUtils.selectByExample(example);
         if (CollectionUtil.isNotEmpty(lists)) {
-            DEException.throwException("区域代码已存在");
+            DataEaseException.throwException("区域代码已存在");
         }
 
         example.clear();
@@ -314,7 +314,7 @@ public class MapService {
                 MapUtils.addNode(node);
             }
         } else {
-            DEException.throwException("只支持3级行政区");
+            DataEaseException.throwException("只支持3级行政区");
         }
         uploadMapFile(file, code);
         CacheUtils.removeAll("sys_map_areas_global");

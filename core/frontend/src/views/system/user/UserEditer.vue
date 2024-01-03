@@ -608,7 +608,7 @@ export default {
 
     .pwd,
     .btn-text {
-      font-family: PingFang SC;
+      font-family: AlibabaPuHuiTi;
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;

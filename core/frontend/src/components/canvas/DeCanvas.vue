@@ -175,7 +175,9 @@ export default {
       outStyle: {
         width: null,
         height: null
-      }
+      },
+      resizeObserver: null,
+      resizerTimer: null
     }
   },
   computed: {
@@ -239,18 +241,18 @@ export default {
   created() {
   },
   mounted() {
-    const _this = this
-    // 监听div变动事件
-    const erd = elementResizeDetectorMaker()
-    erd.listenTo(document.getElementById(this.canvasDomId), element => {
-      _this.$nextTick(() => {
-        _this.restore()
-      })
+    this.resizeObserver = new ResizeObserver(() => {
+      this.resizerTimer && clearTimeout(this.resizerTimer)
+      this.resizerTimer = setTimeout(() => {
+        this.$nextTick(this.restore)
+      }, 500)
     })
+    this.resizeObserver.observe(document.getElementById(this.canvasDomId))
   },
   beforeDestroy() {
     bus.$off('component-dialog-edit', this.editDialog)
     bus.$off('button-dialog-edit', this.editButtonDialog)
+    this.resizeObserver?.disconnect()
   },
   methods: {
     getWrapperChildRefs() {
@@ -509,6 +511,7 @@ export default {
       this.$store.commit('setComponentWithId', this.currentFilterCom)
       this.$store.commit('recordSnapshot', 'sureFilter')
       this.$store.commit('setCurComponent', { component: this.currentFilterCom, index: this.curComponentIndex })
+      this.$store.commit('delLastValidFilterWithId', this.currentFilterCom.id)
       bus.$emit('reset-default-value', this.currentFilterCom)
       this.closeFilter()
     },

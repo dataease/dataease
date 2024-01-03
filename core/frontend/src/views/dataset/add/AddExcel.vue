@@ -68,8 +68,9 @@
           @node-click="handleNodeClick"
           @check-change="handleCheckChange"
         >
-          <span class="custom-tree-node"
+          <span
             slot-scope="{ node, data}"
+            class="custom-tree-node"
             :title="data.excelLabel"
           >
             <span class="label">{{ data.excelLabel }}</span>
@@ -91,9 +92,10 @@
                 v-show="!data.sheet"
                 type="text"
                 size="mini"
-                @click="() => remove(node, data)">
-              {{ $t('dataset.delete') }}
-           </el-button>
+                @click="() => remove(node, data)"
+              >
+                {{ $t('dataset.delete') }}
+              </el-button>
             </span>
 
           </span>
@@ -475,10 +477,10 @@ export default {
       }
     },
     remove(node, data) {
-      const parent = node.parent;
-      const children = parent.data.children || parent.data;
-      const index = children.findIndex(d => d.id === data.id);
-      children.splice(index, 1);
+      const parent = node.parent
+      const children = parent.data.children || parent.data
+      const index = children.findIndex(d => d.id === data.id)
+      children.splice(index, 1)
     },
     save() {
       var validate = true
@@ -678,7 +680,7 @@ export default {
     height: 100%;
     width: 240px;
     padding: 16px 12px;
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     border-right: 1px solid rgba(31, 35, 41, 0.15);
 
     .select-ds {
@@ -747,7 +749,7 @@ export default {
   }
 
   .table-detail {
-    font-family: PingFang SC;
+    font-family: AlibabaPuHuiTi;
     flex: 1;
     overflow-x: auto;
 
@@ -778,7 +780,7 @@ export default {
       overflow-y: auto;
 
       .result-num {
-        font-family: PingFang SC;
+        font-family: AlibabaPuHuiTi;
         font-size: 14px;
         font-weight: 400;
         color: var(--deTextSecondary, #646a73);

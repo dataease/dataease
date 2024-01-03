@@ -4,7 +4,7 @@ import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.constants.AuthConstants;
-import io.dataease.commons.exception.DEException;
+
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
@@ -18,6 +18,7 @@ import io.dataease.plugins.common.base.mapper.SysUserAssistMapper;
 import io.dataease.plugins.common.base.mapper.SysUserMapper;
 import io.dataease.plugins.common.base.mapper.SysUsersRolesMapper;
 import io.dataease.plugins.common.entity.XpackLdapUserEntity;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.xpack.dingtalk.dto.response.DingUserEntity;
 import io.dataease.plugins.xpack.lark.dto.entity.LarkUserInfo;
 import io.dataease.plugins.xpack.larksuite.dto.entity.UserData;
@@ -389,17 +390,17 @@ public class SysUserService {
 
         if (ObjectUtils.isEmpty(user)) {
             String msg = "I18N_USER_DONOT_EXIST";
-            DEException.throwException(Translator.get(msg));
+            DataEaseException.throwException(Translator.get(msg));
         }
         if (!StringUtils.equals(CodingUtil.md5(request.getPassword()), user.getPassword())) {
             String msg = "I18N_USER_SOURCE_PWD_ERROR";
-            DEException.throwException(Translator.get(msg));
+            DataEaseException.throwException(Translator.get(msg));
         }
         SysUser sysUser = new SysUser();
         sysUser.setUserId(user.getUserId());
         if (!request.getNewPassword().matches("^(?=.*[a-z])(?=.*[A-Z])(?=.*\\d).{8,30}$")) {
             String msg = "I18N_USER_PWD_FORMAT_ERROR";
-            DEException.throwException(Translator.get(msg));
+            DataEaseException.throwException(Translator.get(msg));
         }
         sysUser.setPassword(CodingUtil.md5(request.getNewPassword()));
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
@@ -445,7 +446,7 @@ public class SysUserService {
     @Transactional
     public int delete(Long userId) {
         if (userId.equals(1L)) {
-            DEException.throwException(Translator.get("I18n_del_admin_tips"));
+            DataEaseException.throwException(Translator.get("I18n_del_admin_tips"));
         }
         extAuthService.clearUserResource(userId);
         deleteUserRoles(userId);

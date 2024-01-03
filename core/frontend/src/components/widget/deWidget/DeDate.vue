@@ -5,11 +5,12 @@
       ref="dateRef"
       v-model="values"
       :popper-class="'coustom-date-picker' + ' ' + extPoperClass"
+      :class="{'show-required-tips': showRequiredTips}"
       :type="componentType"
       :range-separator="$t(element.options.attrs.rangeSeparator)"
-      :start-placeholder="$t(element.options.attrs.startPlaceholder)"
-      :end-placeholder="$t(element.options.attrs.endPlaceholder)"
-      :placeholder="$t(element.options.attrs.placeholder)"
+      :start-placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.startPlaceholder)"
+      :end-placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.endPlaceholder)"
+      :placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.placeholder)"
       :append-to-body="inScreen"
       value-format="timestamp"
       :format="labelFormat"
@@ -219,6 +220,9 @@ export default {
       }
       return null
     },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && (!this.values || this.values.length === 0)
+    },
     ...mapState([
       'canvasStyleData',
       'mobileStatus'
@@ -418,10 +422,19 @@ export default {
         this.$refs.dateRef.hidePicker()
       }
     },
+    textSame(str1, str2) {
+      if (str1 === null && str2 === null) {
+        return true
+      }
+      if (str1 !== null && str2 !== null && typeof str1 !== 'undefined' && typeof str2 !== 'undefined') {
+        return str1.toString() === str2.toString()
+      }
+      return false
+    },
     resetDefaultValue(ele) {
       const id = ele.id
       const eleVal = ele.options.value.toString()
-      if (this.inDraw && this.manualModify && this.element.id === id && this.values.toString() !== eleVal && this.defaultValueStr === eleVal) {
+      if (this.inDraw && this.manualModify && this.element.id === id && !this.textSame(this.values, eleVal) && this.textSame(this.defaultValueStr, eleVal)) {
         if (!this.element.options.attrs.default.isDynamic) {
           this.values = this.fillValueDerfault()
           this.dateChange(this.values)
@@ -455,6 +468,9 @@ export default {
       return param
     },
     setCondition() {
+      if (this.showRequiredTips) {
+        return
+      }
       const param = this.getCondition()
       !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
     },
@@ -468,6 +484,12 @@ export default {
         this.element.options.manualModify = false
       } else {
         this.element.options.manualModify = true
+        if (!this.showRequiredTips) {
+          this.$store.commit('setLastValidFilters', {
+            componentId: this.element.id,
+            val: (this.values && Array.isArray(this.values)) ? this.values.join(',') : this.values
+          })
+        }
       }
       this.setCondition()
     },
@@ -497,7 +519,16 @@ export default {
       }
     },
     fillValueDerfault() {
-      const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      let defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      if (this.inDraw) {
+        let lastFilters = null
+        if (this.$store.state.lastValidFilters) {
+          lastFilters = this.$store.state.lastValidFilters[this.element.id]
+          if (lastFilters) {
+            defaultV = (lastFilters.val === null || typeof lastFilters.val === 'undefined') ? '' : lastFilters.val.toString()
+          }
+        }
+      }
       if (this.element.options.attrs.type === 'daterange') {
         if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV ===
           '[object Object]') {
@@ -516,7 +547,31 @@ export default {
 }
 
 </script>
+<style lang="scss" scoped>
+.show-required-tips {
+  border-color: #ff0000 !important;
+  ::v-deep .el-input__inner {
+    color: #ff0000 !important;
+  }
+  ::v-deep input::placeholder {
+    color: #ff0000 !important;
+  }
+  ::v-deep i {
+    color: #ff0000 !important;
+  }
+}
+.show-required-tips ::v-deep .el-input__inner, input {
+  border-color: #ff0000 !important;
+}
 
+.show-required-tips ::v-deep .el-input__inner, input::placeholder {
+  color: #ff0000 !important;
+}
+.show-required-tips ::v-deep i {
+  color: #ff0000 !important;
+}
+
+</style>
 <style lang="scss">
 .date-picker-vant {
   position: relative;

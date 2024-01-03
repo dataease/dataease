@@ -1,5 +1,5 @@
 <template>
-  <span>   
+  <span>
     <el-dropdown  trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis" :type="tagType">
@@ -213,7 +213,6 @@ export default {
     },
 
     summary(param) {
-      // console.log(param)
       this.item.summary = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -224,7 +223,6 @@ export default {
     },
 
     switchChartType(param) {
-      // console.log(param)
       this.item.chartType = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -254,7 +252,6 @@ export default {
     },
 
     sort(param) {
-      // console.log(param)
       this.item.sort = param.type
       this.$emit('onQuotaItemChange', this.item)
     },
@@ -284,7 +281,7 @@ export default {
       this.item.calcType = 'quota'
       this.$emit('editItemCompare', this.item)
     },
-    
+
     getItemTagType() {
       this.tagType = getItemType(this.dimensionData, this.quotaData, this.item)
     }

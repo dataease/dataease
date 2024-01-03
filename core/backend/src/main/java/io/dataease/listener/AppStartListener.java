@@ -1,5 +1,6 @@
 package io.dataease.listener;
 
+import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.dataset.DataSetTaskDTO;
 import io.dataease.plugins.common.base.domain.DatasetTableTask;
@@ -41,6 +42,9 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
                         }
                     } else {
                         scheduleService.addSchedule(task);
+                    }
+                    if(task.getStatus().equalsIgnoreCase(TaskStatus.Pending.name())){
+                        scheduleService.pauseTrigger(task);
                     }
                 }
             } catch (Exception e) {

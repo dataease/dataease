@@ -117,13 +117,16 @@
               v-show="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
               v-model="item.value"
               class="value-item"
-              style="margin-left: 10px;"
+              style="padding-left: 10px"
               :placeholder="$t('chart.drag_block_label_value')"
               size="mini"
               clearable
               @change="changeThreshold"
             />
-            <span v-if="item.term === 'between'">
+            <span
+              v-if="item.term === 'between'"
+              class="flex-between"
+            >
               <el-input
                 v-model="item.min"
                 class="item-long-between"
@@ -147,7 +150,10 @@
             v-if="item.field === '1'"
             :span="12"
           >
-            <span v-show="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'">
+            <span
+              v-show="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
+              class="flex-between"
+            >
               <el-select
                 v-model="item.targetField.fieldId"
                 size="mini"
@@ -205,7 +211,10 @@
               </el-select>
             </span>
 
-            <span v-if="item.term === 'between'">
+            <span
+              v-if="item.term === 'between'"
+              class="flex-between"
+            >
               <el-select
                 v-model="item.minField.fieldId"
                 size="mini"
@@ -786,5 +795,10 @@ span {
 .tip {
   color: #F56C6C;
   font-size: 12px;
+}
+.flex-between {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
 }
 </style>

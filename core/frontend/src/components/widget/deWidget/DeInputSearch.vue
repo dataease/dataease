@@ -5,9 +5,10 @@
     ref="de-input-search"
     v-model="value"
     resize="vertical"
-    :placeholder="$t(element.options.attrs.placeholder)"
+    :placeholder="showRequiredTips ? $t('panel.required_tips') : $t(element.options.attrs.placeholder)"
     :size="size"
     class="de-range-tag"
+    :class="{'show-required-tips': showRequiredTips}"
     @input="valueChange"
     @keypress.enter.native="search"
     @dblclick="setEdit"
@@ -63,6 +64,9 @@ export default {
     },
     manualModify() {
       return !!this.element.options.manualModify
+    },
+    showRequiredTips() {
+      return this.inDraw && this.element.options.attrs.required && !this.value
     }
   },
   watch: {
@@ -110,6 +114,11 @@ export default {
     search() {
       if (!this.inDraw) {
         this.element.options.value = this.value
+      } else if (!this.showRequiredTips) {
+        this.$store.commit('setLastValidFilters', {
+          componentId: this.element.id,
+          val: (this.value && Array.isArray(this.value)) ? this.value.join(',') : this.value
+        })
       }
       this.setCondition()
     },
@@ -123,6 +132,9 @@ export default {
       return param
     },
     setCondition() {
+      if (this.showRequiredTips) {
+        return
+      }
       const param = this.getCondition()
       !this.isRelation && this.inDraw && this.$store.commit('addViewFilter', param)
     },
@@ -138,7 +150,16 @@ export default {
       }
     },
     fillValueDerfault() {
-      const defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      let defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
+      if (this.inDraw) {
+        let lastFilters = null
+        if (this.$store.state.lastValidFilters) {
+          lastFilters = this.$store.state.lastValidFilters[this.element.id]
+          if (lastFilters) {
+            defaultV = lastFilters.val === null ? '' : lastFilters.val.toString()
+          }
+        }
+      }
       if (defaultV === null || typeof defaultV === 'undefined' || defaultV === '' || defaultV === '[object Object]') return null
       return defaultV.split(',')[0]
     }
@@ -146,10 +167,14 @@ export default {
 }
 </script>
 
-<style lang="scss">
-// .de-range-tag {
-//   input::placeholder {
-//     color: var(--CustomColor, #909399) !important;
-//   }
-// }
+<style lang="scss" scoped>
+.show-required-tips ::v-deep .el-input__inner {
+  border-color: #ff0000 !important;
+}
+.show-required-tips ::v-deep .el-input__inner::placeholder {
+  color: #ff0000 !important;
+}
+.show-required-tips ::v-deep i {
+  color: #ff0000 !important;
+}
 </style>

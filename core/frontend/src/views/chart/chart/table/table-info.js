@@ -1,8 +1,20 @@
-import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE } from '@antv/s2'
+import { TableSheet, BaseEvent, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { handleTableEmptyStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
+
+class RowHoverInteraction extends BaseEvent {
+  bindEvents() {
+    this.spreadsheet.on(S2Event.ROW_CELL_HOVER, (event) => {
+      this.spreadsheet.tooltip.show({
+        position: { x: 0, y: 0 },
+        content: '...'
+      })
+    })
+  }
+}
+
 export function baseTableInfo(s2, container, chart, action, tableData, pageInfo) {
   const containerDom = document.getElementById(container)
 
@@ -91,16 +103,17 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
     height: containerDom.offsetHeight,
     showSeriesNumber: customAttr.size.showIndex,
     style: getSize(chart),
-    conditions: getConditions(chart)
+    conditions: getConditions(chart),
+    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
+    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
     s2Options.colCell = (node) => {
       if (node.colIndex === 0) {
-        if (!customAttr.size.indexLabel) {
+        node.label = customAttr.size.indexLabel
+        if (!customAttr.size.indexLabel || customAttr.size.showTableHeader === false) {
           node.label = ' '
-        } else {
-          node.label = customAttr.size.indexLabel
         }
       }
     }
@@ -119,6 +132,9 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
         colCellVertical: false
       }
     }
+    s2Options.colCell = (node) => {
+      node.label = ' '
+    }
   }
 
   // 开始渲染
@@ -134,7 +150,9 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
   if (size.tableColTooltip?.show) {
     s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event))
   }
-
+  if (size.tableCellTooltip?.show) {
+    s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event))
+  }
   // theme
   const customTheme = getCustomTheme(chart)
   s2.setThemeCfg({ theme: customTheme })
@@ -279,19 +297,19 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
     height: containerDom.offsetHeight,
     showSeriesNumber: customAttr.size.showIndex,
     style: getSize(chart),
-    conditions: getConditions(chart)
+    conditions: getConditions(chart),
+    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
+    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
     s2Options.colCell = (node) => {
       if (node.colIndex === 0) {
-        if (!customAttr.size.indexLabel) {
+        node.label = customAttr.size.indexLabel
+        if (!customAttr.size.indexLabel || customAttr.size.showTableHeader === false) {
           node.label = ' '
-        } else {
-          node.label = customAttr.size.indexLabel
         }
       }
-      return node.belongsCell
     }
     s2Options.dataCell = (viewMeta) => {
       return new DataCell(viewMeta, viewMeta?.spreadsheet)
@@ -304,6 +322,9 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
       resize: {
         colCellVertical: false
       }
+    }
+    s2Options.colCell = (node) => {
+      node.label = ' '
     }
   }
 
@@ -319,6 +340,9 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
   const size = customAttr.size
   if (size.tableColTooltip?.show) {
     s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event))
+  }
+  if (size.tableCellTooltip?.show) {
+    s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event))
   }
   // theme
   const customTheme = getCustomTheme(chart)
@@ -517,6 +541,9 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
   if (size?.tableColTooltip?.show) {
     s2.on(S2Event.COL_CELL_HOVER, event => showTooltip(s2, event, fieldMap))
   }
+  if (size.tableCellTooltip?.show) {
+    s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event))
+  }
   // theme
   const customTheme = getCustomTheme(chart)
   s2.setThemeCfg({ theme: customTheme })
@@ -569,7 +596,12 @@ function getConditions(chart) {
       if (customAttr.color) {
         const c = JSON.parse(JSON.stringify(customAttr.color))
         valueColor = c.tableFontColor
-        valueBgColor = hexColorToRGBA(c.tableItemBgColor, c.alpha)
+        const enableTableCrossBG = c.enableTableCrossBG
+        if (!enableTableCrossBG) {
+          valueBgColor = hexColorToRGBA(c.tableItemBgColor, c.alpha)
+        } else {
+          valueBgColor = null
+        }
       }
     }
 
@@ -587,9 +619,12 @@ function getConditions(chart) {
       res.background.push({
         field: field.field.dataeaseName,
         mapping(value, rowData) {
-          return {
-            fill: mappingColor(value, valueBgColor, field, 'backgroundColor', filedValueMap, rowData)
+          const fill = mappingColor(value, valueBgColor, field, 'backgroundColor', filedValueMap, rowData)
+          if (fill) {
+            return { fill }
           }
+          // 返回 null 会使用主题中的背景色
+          return null
         }
       })
     }
@@ -764,6 +799,18 @@ function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) 
     }
   }
   return color
+}
+
+function showTooltipValue(s2Instance, event) {
+  const cell = s2Instance.getCell(event.target)
+  const content = cell.actualText
+  s2Instance.showTooltip({
+    position: {
+      x: event.clientX,
+      y: event.clientY
+    },
+    content
+  })
 }
 
 function showTooltip(s2Instance, event, fieldMap) {

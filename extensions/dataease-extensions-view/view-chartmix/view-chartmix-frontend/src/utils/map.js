@@ -303,7 +303,6 @@ export function baseMapOption(chart_option, chart, mapData, terminal = 'pc') {
 
     }
   }
-  // console.log(chart_option);
   componentStyle(chart_option, chart)
   return chart_option
 }
@@ -417,6 +416,11 @@ export const DEFAULT_YAXIS_STYLE = {
       color: '#cccccc',
       width: 1,
       style: 'solid'
+    },
+    enableDash: false,
+    dashStyle: {
+      width: 4,
+      offset: 5
     }
   },
   axisValue: {
@@ -463,6 +467,11 @@ export const DEFAULT_YAXIS_EXT_STYLE = {
       color: '#cccccc',
       width: 1,
       style: 'solid'
+    },
+    enableDash: false,
+    dashStyle: {
+      width: 4,
+      offset: 5
     }
   },
   axisValue: {
@@ -540,6 +549,11 @@ export const DEFAULT_XAXIS_STYLE = {
       color: '#cccccc',
       width: 1,
       style: 'solid'
+    },
+    enableDash: false,
+    dashStyle: {
+      width: 4,
+      offset: 5
     }
   },
   axisValue: {

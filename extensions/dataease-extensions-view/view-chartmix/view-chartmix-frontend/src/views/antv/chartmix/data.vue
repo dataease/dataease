@@ -111,37 +111,33 @@
 
     <!-- 结果过滤器 -->
     <el-row class="padding-lr" style="margin-top: 6px;">
-      <span>{{ $t('chart.result_filter') }}</span>
-
-      <draggable
-        v-model="view.customFilter"
-        :move="onMove"
-        animation="300"
-        class="theme-item-class"
-        group="drag"
-        style="padding:2px 0 0 0;width:100%;min-height: 32px;border-radius: 4px;border: 1px solid #DCDFE6;overflow-x: auto;display: flex;align-items: center;background-color: white;"
-        @add="addCustomFilter"
-        @update="calcData(true)"
-      >
-        <transition-group class="draggable-group">
-          <filter-item
-            v-for="(item,index) in view.customFilter"
-            :key="item.id"
-            :bus="bus"
-            :dimension-data="dimension"
-            :index="index"
-            :item="item"
-            :param="param"
-            :quota-data="quota"
-            @editItemFilter="showEditFilter"
-            @onFilterItemRemove="filterItemRemove"
+      <span class="data-area-label">
+          <span>{{ $t('chart.result_filter') }}</span>
+          <span
+            v-if="!!view.customFilter.logic"
+            class="setting"
+          >{{ $t('chart.is_set') }}</span>
+          <i
+            class="el-icon-arrow-down el-icon-delete data-area-clear"
+            @click="deleteTreeFilter"
           />
-        </transition-group>
-      </draggable>
-      <div v-if="!view.customFilter || view.customFilter.length === 0" class="drag-placeholder-style">
-        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
-      </div>
+        </span>
+        <div
+          class="tree-btn"
+          :class="!!view.customFilter.logic && 'active'"
+          @click="openTreeFilter"
+        >
+          <svg-icon
+            class="svg-background"
+            icon-class="icon-filter_outlined"
+          />
+          <span>{{ $t('chart.filter') }}</span>
+        </div>
     </el-row>
+    <FilterTree
+      ref="filterTree"
+     @filter-data="changeFilterData"    @execute-axios="executeAxios"                               
+    />
 
   </div>
 </template>
@@ -153,8 +149,14 @@ import QuotaExtItem from '../../../components/views/QuotaExtItem'
 import FilterItem from '../../../components/views/FilterItem'
 import messages from '@/de-base/lang/messages'
 import {defaultTo} from "lodash-es"
+import FilterTree from '@/components/views/filter/FilterTree.vue'
 
 export default {
+  provide() {
+    return {
+      filedList: () => this.filedList
+    }
+  },
   props: {
     obj: {
       type: Object,
@@ -171,7 +173,8 @@ export default {
     DimensionItem,
     QuotaItem,
     QuotaExtItem,
-    FilterItem
+    FilterItem,
+    FilterTree
   },
   data() {
     return {
@@ -194,6 +197,9 @@ export default {
     }
   },
   computed: {
+    filedList() {
+      return [...this.dimension, ...this.quota].filter(ele => ele.id !== 'count')
+    },
     param() {
       return this.obj.param
     },
@@ -260,6 +266,16 @@ export default {
     }*/
   },
   methods: {
+    changeFilterData(customFilter) {
+      this.view.customFilter =JSON.parse(JSON.stringify(customFilter))
+      this.calcData(true)
+    },
+    openTreeFilter() {
+      this.$refs.filterTree.init(JSON.parse(JSON.stringify(this.view.customFilter)))
+    },
+    deleteTreeFilter() {
+      this.changeFilterData({})
+    },
     executeAxios(url, type, data, callBack) {
       const param = {
         url: url,
@@ -321,8 +337,6 @@ export default {
       //}
     },
     calcData(cache) {
-      //this.view.xaxis = [...this.source, ...this.target]
-
       this.$emit('plugin-call-back', {
         eventName: 'calc-data',
         eventParam: {
@@ -465,6 +479,53 @@ export default {
 <style lang="scss" scoped>
 .padding-lr {
   padding: 0 6px;
+  .data-area-label {
+    text-align: left;
+    position: relative;
+    width: 100%;
+    display: inline-block;
+    .setting {
+      padding: 0px 4px 0px 4px;
+      border-radius: 2px;
+      background-color: #1F23291A;
+      color: #646A73;
+      position: absolute;
+      top: 1px;
+      right: 23px;
+      z-index: 1;
+      font-size: 10px;
+      font-weight: 500;
+      line-height: 14px;
+      height: 16px;
+    }
+  }
+
+  .tree-btn {
+      width: 100%;
+      background: #fff;
+      height: 32px;
+      border-radius: 4px;
+      border: 1px solid #DCDFE6;
+      display: flex;
+      color: #CCCCCC;
+      align-items: center;
+      cursor: pointer;
+      justify-content: center;
+      font-size: 12px;
+
+      &.active {
+        color: #3370FF;
+        border-color: #3370FF;
+      }
+    }
+    .data-area-clear {
+      position: absolute;
+      top: 4px;
+      right: 6px;
+      color: rgb(135, 141, 159);
+      cursor: pointer;
+      z-index: 1;
+    }
 }
 
 .itxst {

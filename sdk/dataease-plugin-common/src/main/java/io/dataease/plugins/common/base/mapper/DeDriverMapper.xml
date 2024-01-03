@@ -9,6 +9,9 @@
     <result column="driver_class" jdbcType="VARCHAR" property="driverClass" />
     <result column="desc" jdbcType="VARCHAR" property="desc" />
   </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.DeDriver">
+    <result column="surpport_versions" jdbcType="LONGVARCHAR" property="surpportVersions" />
+  </resultMap>
   <sql id="Example_Where_Clause">
     <where>
       <foreach collection="oredCriteria" item="criteria" separator="or">
@@ -70,6 +73,25 @@
   <sql id="Base_Column_List">
     id, `name`, create_time, `type`, driver_class, `desc`
   </sql>
+  <sql id="Blob_Column_List">
+    surpport_versions
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.DeDriverExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from de_driver
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
   <select id="selectByExample" parameterType="io.dataease.plugins.common.base.domain.DeDriverExample" resultMap="BaseResultMap">
     select
     <if test="distinct">
@@ -84,9 +106,11 @@
       order by ${orderByClause}
     </if>
   </select>
-  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="BaseResultMap">
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
     select 
     <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
     from de_driver
     where id = #{id,jdbcType=VARCHAR}
   </select>
@@ -102,11 +126,11 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.DeDriver">
     insert into de_driver (id, `name`, create_time, 
-      `type`, driver_class, `desc`
-      )
+      `type`, driver_class, `desc`, 
+      surpport_versions)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, 
-      #{type,jdbcType=VARCHAR}, #{driverClass,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}
-      )
+      #{type,jdbcType=VARCHAR}, #{driverClass,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
+      #{surpportVersions,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.DeDriver">
     insert into de_driver
@@ -129,6 +153,9 @@
       <if test="desc != null">
         `desc`,
       </if>
+      <if test="surpportVersions != null">
+        surpport_versions,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -148,6 +175,9 @@
       </if>
       <if test="desc != null">
         #{desc,jdbcType=VARCHAR},
+      </if>
+      <if test="surpportVersions != null">
+        #{surpportVersions,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -178,7 +208,23 @@
       <if test="record.desc != null">
         `desc` = #{record.desc,jdbcType=VARCHAR},
       </if>
+      <if test="record.surpportVersions != null">
+        surpport_versions = #{record.surpportVersions,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update de_driver
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=BIGINT},
+      `type` = #{record.type,jdbcType=VARCHAR},
+      driver_class = #{record.driverClass,jdbcType=VARCHAR},
+      `desc` = #{record.desc,jdbcType=VARCHAR},
+      surpport_versions = #{record.surpportVersions,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -213,7 +259,20 @@
       <if test="desc != null">
         `desc` = #{desc,jdbcType=VARCHAR},
       </if>
+      <if test="surpportVersions != null">
+        surpport_versions = #{surpportVersions,jdbcType=LONGVARCHAR},
+      </if>
     </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.DeDriver">
+    update de_driver
+    set `name` = #{name,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=BIGINT},
+      `type` = #{type,jdbcType=VARCHAR},
+      driver_class = #{driverClass,jdbcType=VARCHAR},
+      `desc` = #{desc,jdbcType=VARCHAR},
+      surpport_versions = #{surpportVersions,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.plugins.common.base.domain.DeDriver">

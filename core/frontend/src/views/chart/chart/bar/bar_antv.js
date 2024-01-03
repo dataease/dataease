@@ -262,6 +262,146 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
   return plot
 }
 
+export function timeRangeBarOptionAntV(plot, container, chart, action) {
+  // theme
+  const theme = getTheme(chart)
+  // attr
+  const label = getLabel(chart)
+  const tooltip = getTooltip(chart)
+  // style
+  const legend = getLegend(chart)
+  const yAxis = getXAxis(chart)
+  const xAxis = getYAxis(chart)
+  // data
+  const data = _.cloneDeep(chart.data.data)
+
+  const isDate = !!chart.data.isDate
+
+  const minTime = chart.data.minTime
+  const maxTime = chart.data.maxTime
+
+  const minNumber = chart.data.min
+  const maxNumber = chart.data.max
+
+  // config
+  const slider = getSlider(chart)
+  const analyse = getAnalyse(chart)
+  // options
+  const options = {
+    theme: theme,
+    data: data,
+    xField: 'values',
+    yField: 'field',
+    seriesField: 'category',
+    appendPadding: getPadding(chart),
+    label: label,
+    tooltip: tooltip,
+    legend: legend,
+    xAxis: xAxis,
+    yAxis: yAxis,
+    slider: slider,
+    annotations: analyse,
+    isRange: true,
+    brush: {
+      enabled: true,
+      isStartEnable: (context) => {
+        // 按住 shift 键，才能开启交互
+        if (context.event.gEvent.originalEvent?.shiftKey) {
+          return true
+        }
+        return false
+      }
+    },
+    interactions: [
+      {
+        type: 'legend-active', cfg: {
+          start: [{ trigger: 'legend-item:mouseenter', action: ['element-active:reset'] }],
+          end: [{ trigger: 'legend-item:mouseleave', action: ['element-active:reset'] }]
+        }
+      },
+      {
+        type: 'legend-filter', cfg: {
+          start: [{ trigger: 'legend-item:click', action: ['list-unchecked:toggle', 'data-filter:filter', 'element-active:reset', 'element-highlight:reset'] }]
+        }
+      },
+      {
+        type: 'tooltip', cfg: {
+          start: [{ trigger: 'interval:mousemove', action: 'tooltip:show' }],
+          end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
+        }
+      },
+      {
+        type: 'active-region', cfg: {
+          start: [{ trigger: 'interval:mousemove', action: 'active-region:show' }],
+          end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
+        }
+      }
+    ]
+  }
+
+  if (isDate) {
+    options.meta = {
+      values: {
+        type: 'time',
+        min: minTime,
+        max: maxTime
+      }
+    }
+  } else {
+    options.meta = {
+      values: {
+        min: minNumber,
+        max: maxNumber
+      }
+    }
+  }
+
+  // size
+  let customAttr = {}
+  if (chart.customAttr) {
+    customAttr = JSON.parse(chart.customAttr)
+    if (customAttr.size) {
+      const s = JSON.parse(JSON.stringify(customAttr.size))
+      if (s.barDefault) {
+        delete options.marginRatio
+      } else {
+        options.marginRatio = s.barGap
+      }
+    }
+  }
+
+  delete options.isGroup
+  delete options.isStack
+
+  options.isPercent = chart.type.includes('percentage')
+  // custom color
+  options.color = antVCustomColor(chart)
+  if (customAttr.color.gradient) {
+    options.color = options.color.map((ele) => {
+      return setGradientColor(ele, customAttr.color.gradient)
+    })
+  }
+  // 处理空值
+  if (chart.senior) {
+    let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy
+    if (!emptyDataStrategy) {
+      emptyDataStrategy = 'breakLine'
+    }
+    handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
+  }
+
+  // 开始渲染
+  if (plot) {
+    plot.destroy()
+  }
+  plot = new Bar(container, options)
+
+  plot.off('interval:click')
+  plot.on('interval:click', action)
+
+  return plot
+}
+
 export function baseBidirectionalBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
   // theme
   const theme = getTheme(chart)
