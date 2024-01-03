@@ -211,7 +211,14 @@ const next = () => {
 }
 
 const complete = (params, successCb, finallyCb) => {
-  excel.value.saveExcelDs(params, successCb, finallyCb)
+  excel.value.saveExcelDs(
+    params,
+    () => {
+      pid.value = params.pid
+      successCb()
+    },
+    finallyCb
+  )
   return
 }
 
@@ -239,24 +246,29 @@ const continueCreating = () => {
   init(null, pid.value)
 }
 
-const handleShowFinishPage = ({ id, name }) => {
-  isShowFinishPage().then(res => {
-    if (editDs.value || !res.data) {
-      emits('refresh')
-      visible.value = false
-      return
-    } else {
-      showFinishPage.value = true
-      Object.assign(dsInfo, { id, name })
-    }
-  })
+const handleShowFinishPage = ({ id, name, pid }) => {
+  isShowFinishPage()
+    .then(res => {
+      if (editDs.value || !res.data) {
+        emits('refresh')
+        visible.value = false
+        return
+      } else {
+        showFinishPage.value = true
+        Object.assign(dsInfo, { id, name })
+      }
+    })
+    .finally(() => {
+      pid.value = pid
+    })
 }
 
 emitter.on('showFinishPage', handleShowFinishPage)
 
 const prev = () => {
   if (currentDsType.value === 'API' && activeApiStep.value === 2) {
-    activeApiStep.value = activeStep.value = 1
+    activeApiStep.value = 1
+    activeStep.value = 1
     return
   }
 

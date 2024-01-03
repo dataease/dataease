@@ -31,7 +31,6 @@ const loadInfoList = () => {
 }
 
 const toRouter = item => {
-  console.log(item)
   push({ name: item.rName })
 }
 onMounted(() => {

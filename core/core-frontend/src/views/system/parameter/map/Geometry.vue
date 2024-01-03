@@ -128,7 +128,7 @@ const selectedData = ref(null)
 const handleNodeClick = async (data: Tree) => {
   selectedData.value = data
   const geoJson = cloneDeep(await getGeoJsonFile(data['id']))
-  selectedData.value['geoJson'] = geoJson
+  selectedData.value['geoJson'] = JSON.stringify(geoJson)
   const pid = data['pid']
   if (pid) {
     const parent = areaTreeRef.value.getNode(pid)

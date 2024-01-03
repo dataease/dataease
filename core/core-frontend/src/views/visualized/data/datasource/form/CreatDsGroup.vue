@@ -107,7 +107,10 @@ const showAll = ref(true)
 const datasource = ref()
 const loading = ref(false)
 const createDataset = ref(false)
-const filterMethod = (value, data) => data.name.includes(value)
+const filterMethod = (value, data) => {
+  if (!data) return false
+  data.name.includes(value)
+}
 const resetForm = () => {
   createDataset.value = false
 }
@@ -277,7 +280,7 @@ const saveDataset = () => {
                   .then(res => {
                     if (res !== undefined) {
                       wsCache.set('ds-new-success', true)
-                      emits('handleShowFinishPage', res)
+                      emits('handleShowFinishPage', { ...res, pid: params.pid })
                       ElMessage.success('保存数据源成功')
                       successCb()
                     }
@@ -292,7 +295,7 @@ const saveDataset = () => {
               .then(res => {
                 if (res !== undefined) {
                   wsCache.set('ds-new-success', true)
-                  emits('handleShowFinishPage', res)
+                  emits('handleShowFinishPage', { ...res, pid: params.pid })
                   ElMessage.success('保存数据源成功')
                   successCb()
                 }

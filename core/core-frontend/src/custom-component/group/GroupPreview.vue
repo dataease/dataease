@@ -3,6 +3,7 @@ import { toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
+import { toPercent } from '@/utils/translate'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasViewInfo } = storeToRefs(dvMainStore)
 
@@ -37,6 +38,15 @@ const props = defineProps({
 })
 
 const { propValue, dvInfo, searchCount } = toRefs(props)
+
+const customGroupStyle = item => {
+  return {
+    width: toPercent(item.groupStyle.width),
+    height: toPercent(item.groupStyle.height),
+    top: toPercent(item.groupStyle.top),
+    left: toPercent(item.groupStyle.left)
+  }
+}
 </script>
 
 <template>
@@ -50,7 +60,7 @@ const { propValue, dvInfo, searchCount } = toRefs(props)
         :config="item"
         :index="index"
         :dv-info="dvInfo"
-        :style="item.groupStyle"
+        :style="customGroupStyle(item)"
         :show-position="showPosition"
         :search-count="searchCount"
       />
