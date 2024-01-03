@@ -267,9 +267,6 @@ public class ExcelUtils {
             int num = 1;
             String line;
             while ((line = reader.readLine()) != null) {
-                if (isPreview && num > 1000) {
-                    break;
-                }
                 String str;
                 line += ",";
                 Pattern pCells = Pattern.compile("(\"[^\"]*(\"{2})*[^\"]*\")*[^,]*,");
