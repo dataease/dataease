@@ -36,4 +36,7 @@ public class UserFormVO implements Serializable {
 
     @Schema(description = "电话")
     private String phone;
+
+    @Schema(description = "IP")
+    private String ip;
 }
