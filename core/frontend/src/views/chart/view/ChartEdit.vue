@@ -2145,8 +2145,7 @@ export default {
       return this.view.type &&
         !(this.view.type.includes('table') && this.view.render === 'echarts') &&
         !includesAny(this.view.type, 'text', 'gauge') &&
-        !equalsAny(this.view.type, 'liquid', 'bidirectional-bar',
-          'word-cloud', 'table-pivot', 'label', 'richTextView', 'flow-map')
+        !equalsAny(this.view.type, 'liquid', 'bidirectional-bar', 'table-pivot', 'label', 'richTextView', 'flow-map')
     },
     isPlugin() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
