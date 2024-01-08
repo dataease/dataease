@@ -6,6 +6,7 @@ import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { storeToRefs } from 'pinia'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
@@ -41,6 +42,9 @@ const hasTreeData = computed(() => {
 const rootManage = computed(() => {
   return resourceTreeRef.value?.rootManage
 })
+const appStore = useAppStoreWithOut()
+
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 function createNew() {
   resourceTreeRef.value?.createNewObject()
@@ -173,7 +177,7 @@ onBeforeMount(() => {
       </template>
       <template v-else>
         <empty-background description="暂无数据大屏" img-type="none">
-          <el-button v-if="rootManage" @click="createNew" type="primary">
+          <el-button v-if="rootManage && !isDataEaseBi" @click="createNew" type="primary">
             <template #icon>
               <Icon name="icon_add_outlined" />
             </template>

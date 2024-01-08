@@ -9,6 +9,7 @@ interface AppState {
   title: string
   dekey: string
   desktop: boolean
+  isDataEaseBi: boolean
 }
 
 export const useAppStore = defineStore('app', {
@@ -18,6 +19,7 @@ export const useAppStore = defineStore('app', {
       pageLoading: false, // 路由跳转loading
       title: 'DataEase',
       dekey: 'DataEaseKey',
+      isDataEaseBi: false,
       desktop: false
     }
   },
@@ -31,7 +33,9 @@ export const useAppStore = defineStore('app', {
     getTitle(): string {
       return this.title
     },
-
+    getIsDataEaseBi(): boolean {
+      return this.isDataEaseBi
+    },
     getDekey(): string {
       return this.dekey
     },
@@ -48,6 +52,9 @@ export const useAppStore = defineStore('app', {
     },
     setSize(size: boolean) {
       this.size = size
+    },
+    setIsDataEaseBi(isDataEaseBi: boolean) {
+      this.isDataEaseBi = isDataEaseBi
     },
     setPageLoading(pageLoading: boolean) {
       this.pageLoading = pageLoading

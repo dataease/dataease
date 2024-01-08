@@ -7,7 +7,7 @@ import { defineConfig, mergeConfig } from 'vite'
 
 export default defineConfig(({mode}) => {
   if (mode === 'dev') {
-    return mergeConfig(common , {...dev, ...pages})
+    return mergeConfig(common , mergeConfig(dev, pages))
   }
 
   if (mode === 'lib') {

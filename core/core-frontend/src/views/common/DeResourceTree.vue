@@ -7,6 +7,7 @@ import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { storeToRefs } from 'pinia'
 import DvHandleMore from '@/components/handle-more/src/DvHandleMore.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
@@ -21,6 +22,7 @@ import { findParentIdByChildIdRecursive } from '@/utils/canvasUtils'
 const { wsCache } = useCache()
 
 const dvMainStore = dvMainStoreWithOut()
+const appStore = useAppStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
@@ -53,34 +55,6 @@ const resourceCreateOpt = ref()
 const returnMounted = ref(false)
 const state = reactive({
   resourceTree: [] as BusiTreeNode[],
-  menuList: [
-    {
-      label: '编辑',
-      command: 'edit',
-      svgName: 'dv-edit'
-    },
-    {
-      label: '复制',
-      command: 'copy',
-      svgName: 'dv-copy-dark'
-    },
-    {
-      label: '移动到',
-      command: 'move',
-      svgName: 'dv-move'
-    },
-    {
-      label: '重命名',
-      command: 'rename',
-      svgName: 'dv-rename'
-    },
-    {
-      label: '删除',
-      command: 'delete',
-      svgName: 'dv-delete',
-      divided: true
-    }
-  ],
   folderMenuList: [
     {
       label: '移动到',
@@ -99,7 +73,6 @@ const state = reactive({
       divided: true
     }
   ],
-  resourceTypeList: [],
   templateCreatePid: 0
 })
 
@@ -107,24 +80,76 @@ const dvSvgType = computed(() =>
   curCanvasType.value === 'dashboard' ? 'dv-dashboard-spine' : 'dv-screen-spine'
 )
 
-state.resourceTypeList = [
-  {
-    label: '空白新建',
-    svgName: dvSvgType.value,
-    command: 'newLeaf'
-  },
-  {
-    label: '使用模板新建',
-    svgName: 'dv-use-template',
-    command: 'newFromTemplate'
-  },
-  {
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+
+const resourceTypeList = computed(() => {
+  const list = [
+    {
+      label: '空白新建',
+      svgName: dvSvgType.value,
+      command: 'newLeaf'
+    },
+    {
+      label: '使用模板新建',
+      svgName: 'dv-use-template',
+      command: 'newFromTemplate'
+    }
+  ]
+
+  const del = {
     label: '新建文件夹',
     divided: true,
     svgName: 'dv-folder',
     command: 'newFolder'
   }
-]
+
+  if (isDataEaseBi.value) {
+    del.divided = false
+    return [del]
+  }
+
+  return [...list, del]
+})
+
+const menuList = computed(() => {
+  const list = [
+    {
+      label: '移动到',
+      command: 'move',
+      svgName: 'dv-move'
+    },
+    {
+      label: '重命名',
+      command: 'rename',
+      svgName: 'dv-rename'
+    },
+    {
+      label: '删除',
+      command: 'delete',
+      svgName: 'dv-delete',
+      divided: true
+    }
+  ]
+
+  const edit = [
+    {
+      label: '编辑',
+      command: 'edit',
+      svgName: 'dv-edit'
+    },
+    {
+      label: '复制',
+      command: 'copy',
+      svgName: 'dv-copy-dark'
+    }
+  ]
+
+  if (isDataEaseBi.value) {
+    return list
+  }
+
+  return [...list, ...edit]
+})
 
 const { dvId } = window.DataEaseBi || router.currentRoute.value.query
 if (dvId) {
@@ -359,14 +384,19 @@ defineExpose({
           <el-tooltip content="新建文件夹" placement="top" effect="dark">
             <el-icon
               class="custom-icon btn"
-              style="margin-right: 20px"
+              :style="{ marginRight: isDataEaseBi ? 0 : '20px' }"
               @click="addOperation('newFolder', null, 'folder')"
             >
               <Icon name="dv-new-folder" />
             </el-icon>
           </el-tooltip>
 
-          <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
+          <el-tooltip
+            v-if="!isDataEaseBi"
+            :content="newResourceLabel"
+            placement="top"
+            effect="dark"
+          >
             <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
               <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
                 <Icon name="icon_file-add_outlined" />
@@ -438,7 +468,7 @@ defineExpose({
             >
               <el-icon
                 v-on:click.stop
-                v-if="data.leaf"
+                v-if="data.leaf && !isDataEaseBi"
                 class="hover-icon"
                 @click="resourceEdit(data.id)"
               >
@@ -448,7 +478,7 @@ defineExpose({
                 @handle-command="
                   cmd => addOperation(cmd, data, cmd === 'newFolder' ? 'folder' : 'leaf')
                 "
-                :menu-list="state.resourceTypeList"
+                :menu-list="resourceTypeList"
                 icon-name="icon_add_outlined"
                 placement="bottom-start"
                 v-if="!data.leaf"
@@ -458,7 +488,7 @@ defineExpose({
                 :node="data"
                 :any-manage="anyManage"
                 :resource-type="curCanvasType"
-                :menu-list="data.leaf ? state.menuList : state.folderMenuList"
+                :menu-list="data.leaf ? menuList : state.folderMenuList"
               ></dv-handle-more>
             </div>
           </span>
