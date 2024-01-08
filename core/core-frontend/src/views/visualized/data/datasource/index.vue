@@ -17,6 +17,7 @@ import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import dayjs from 'dayjs'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import {
   getTableField,
   listDatasourceTables,
@@ -67,6 +68,7 @@ export interface Node {
 
 const { t } = useI18n()
 const router = useRouter()
+const appStore = useAppStoreWithOut()
 const state = reactive({
   datasourceTree: [] as BusiTreeNode[],
   dsTableData: [],
@@ -85,6 +87,7 @@ const recordState = reactive({
     total: 0
   }
 })
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const createDataset = (tableName?: string) => {
   router.push({
@@ -134,19 +137,26 @@ const typeMap = dsTypes.reduce((pre, next) => {
   return pre
 }, {})
 
-const datasetTypeList = [
-  {
-    label: '新建数据源',
-    svgName: 'icon_dataset',
-    command: 'datasource'
-  },
-  {
-    label: '新建文件夹',
-    divided: true,
-    svgName: 'dv-folder',
-    command: 'folder'
+const datasetTypeList = computed(() => {
+  const list = [
+    {
+      label: '新建数据源',
+      svgName: 'icon_dataset',
+      command: 'datasource'
+    },
+    {
+      label: '新建文件夹',
+      divided: true,
+      svgName: 'dv-folder',
+      command: 'folder'
+    }
+  ]
+  if (isDataEaseBi.value) {
+    list.shift()
+    list[0].divided = false
   }
-]
+  return list
+})
 
 const dsTableDataLoading = ref(false)
 const selectDataset = row => {
@@ -652,7 +662,7 @@ onMounted(() => {
 })
 
 const getMenuList = (val: boolean) => {
-  return !val
+  return !val || isDataEaseBi.value
     ? menuList
     : [
         {
@@ -675,13 +685,18 @@ const getMenuList = (val: boolean) => {
               <el-tooltip effect="dark" content="新建文件夹" placement="top">
                 <el-icon
                   class="custom-icon btn"
-                  style="margin-right: 20px"
+                  :style="{ marginRight: isDataEaseBi ? 0 : '20px' }"
                   @click="handleDatasourceTree('folder')"
                 >
                   <Icon name="dv-new-folder" />
                 </el-icon>
               </el-tooltip>
-              <el-tooltip effect="dark" :content="t('datasource.create')" placement="top">
+              <el-tooltip
+                v-if="!isDataEaseBi"
+                effect="dark"
+                :content="t('datasource.create')"
+                placement="top"
+              >
                 <el-icon class="custom-icon btn" @click="createDatasource">
                   <Icon name="icon_file-add_outlined" />
                 </el-icon>
@@ -739,7 +754,7 @@ const getMenuList = (val: boolean) => {
                   <el-icon
                     class="hover-icon"
                     @click.stop="handleEdit(data)"
-                    v-else-if="data.type !== 'Excel'"
+                    v-else-if="data.type !== 'Excel' && !isDataEaseBi"
                   >
                     <icon name="icon_edit_outlined"></icon>
                   </el-icon>
@@ -757,10 +772,14 @@ const getMenuList = (val: boolean) => {
       </div>
     </el-aside>
 
-    <div class="datasource-content">
+    <div class="datasource-content" :class="isDataEaseBi && 'h100'">
       <template v-if="!state.datasourceTree.length">
         <empty-background description="暂无数据源" img-type="none">
-          <el-button v-if="rootManage" @click="() => createDatasource()" type="primary">
+          <el-button
+            v-if="rootManage && !isDataEaseBi"
+            @click="() => createDatasource()"
+            type="primary"
+          >
             <template #icon>
               <Icon name="icon_add_outlined"></Icon>
             </template>
@@ -792,7 +811,7 @@ const getMenuList = (val: boolean) => {
                 :creator="infoList.creator"
               ></dataset-detail>
             </el-popover>
-            <div class="right-btn flex-align-center">
+            <div class="right-btn flex-align-center" v-if="!isDataEaseBi">
               <el-button secondary @click="createDataset(null)" v-permission="['dataset']">
                 <template #icon>
                   <Icon name="icon_dataset_outlined"></Icon>
@@ -938,7 +957,12 @@ const getMenuList = (val: boolean) => {
                 width="108"
               >
                 <template #default="scope">
-                  <el-tooltip effect="dark" content="新建数据集" placement="top">
+                  <el-tooltip
+                    v-if="!isDataEaseBi"
+                    effect="dark"
+                    content="新建数据集"
+                    placement="top"
+                  >
                     <el-button
                       @click.stop="createDataset(scope.row.name)"
                       text
@@ -1541,6 +1565,13 @@ const getMenuList = (val: boolean) => {
     height: calc(100vh - 56px);
     overflow: auto;
     position: relative;
+    &.h100 {
+      height: 100%;
+
+      .datasource-table {
+        height: calc(100% - 140px);
+      }
+    }
   }
 
   .datasource-list {
