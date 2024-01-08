@@ -2,7 +2,7 @@
 import { getCanvasStyle, getShapeItemStyle } from '@/utils/style'
 import ComponentWrapper from './ComponentWrapper.vue'
 import { changeStyleWithScale } from '@/utils/translate'
-import { computed, nextTick, onMounted, ref, toRefs, watch, onBeforeUnmount } from 'vue'
+import { computed, nextTick, ref, toRefs, watch, onBeforeUnmount, onMounted } from 'vue'
 import { changeRefComponentsSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -10,6 +10,8 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import { isMainCanvas } from '@/utils/canvasUtils'
+import { activeWatermark } from '@/components/watermark/watermark'
+import { userLoginInfo } from '@/api/user'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent } = storeToRefs(dvMainStore)
 
@@ -68,6 +70,7 @@ const cellHeight = ref(10)
 const userViewEnlargeRef = ref(null)
 const searchCount = ref(0)
 const refreshTimer = ref(null)
+const userInfo = ref(null)
 
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
@@ -172,6 +175,33 @@ const initRefreshTimer = () => {
   }
 }
 
+const initWatermark = () => {
+  if (dvInfo.value.watermarkInfo) {
+    nextTick(() => {
+      if (userInfo.value) {
+        activeWatermark(
+          dvInfo.value.watermarkInfo.settingContent,
+          userInfo.value,
+          'canvasInfo-main',
+          canvasId.value,
+          dvInfo.value.watermarkOpen
+        )
+      } else {
+        userLoginInfo().then(res => {
+          userInfo.value = res.data
+          activeWatermark(
+            dvInfo.value.watermarkInfo.settingContent,
+            userInfo.value,
+            'canvasInfo-main',
+            canvasId.value,
+            dvInfo.value.watermarkOpen
+          )
+        })
+      }
+    })
+  }
+}
+
 onMounted(() => {
   initRefreshTimer()
   restore()
@@ -180,6 +210,7 @@ onMounted(() => {
   erd.listenTo(document.getElementById(domId), () => {
     restore()
   })
+  initWatermark()
 })
 
 onBeforeUnmount(() => {
