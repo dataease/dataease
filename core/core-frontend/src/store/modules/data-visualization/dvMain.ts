@@ -861,7 +861,8 @@ export const dvMainStore = defineStore('dataVisualization', {
         pid: null,
         status: null,
         selfWatermarkStatus: null,
-        type: null
+        type: null,
+        watermarkInfo: null
       }
     },
     setViewDataDetails(viewId, dataInfo) {

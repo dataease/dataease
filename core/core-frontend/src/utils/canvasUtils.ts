@@ -11,7 +11,6 @@ import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { getViewConfig } from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { toPercent } from '@/utils/translate'
 const dvMainStore = dvMainStoreWithOut()
 const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasViewInfo } =
   storeToRefs(dvMainStore)
@@ -81,18 +80,25 @@ export function commonHandleDragEnd(e, dvModel) {
 export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   findById(dvId, busiFlag).then(res => {
     const canvasInfo = res.data
+    const watermarkInfo = {
+      ...canvasInfo.watermarkInfo,
+      settingContent: JSON.parse(canvasInfo.watermarkInfo.settingContent)
+    }
+
     const dvInfo = {
       id: canvasInfo.id,
       name: canvasInfo.name,
       pid: canvasInfo.pid,
       status: canvasInfo.status,
-      selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
+      watermarkOpen: canvasInfo.selfWatermarkStatus,
       type: canvasInfo.type,
       creatorName: canvasInfo.creatorName,
       updateName: canvasInfo.updateName,
       createTime: canvasInfo.createTime,
-      updateTime: canvasInfo.updateTime
+      updateTime: canvasInfo.updateTime,
+      watermarkInfo: watermarkInfo
     }
+
     const canvasDataResult = JSON.parse(canvasInfo.componentData)
     const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
     const canvasViewInfoPreview = canvasInfo.canvasViewInfo
@@ -157,7 +163,8 @@ export function canvasSave(callBack) {
     canvasStyleData: JSON.stringify(canvasStyleData.value),
     componentData: JSON.stringify(componentDataToSave),
     canvasViewInfo: canvasViewInfo.value,
-    ...dvInfo.value
+    ...dvInfo.value,
+    watermarkInfo: null
   }
 
   const method = dvInfo.value.id ? updateCanvas : saveCanvas
