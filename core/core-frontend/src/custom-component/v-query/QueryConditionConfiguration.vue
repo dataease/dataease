@@ -1696,6 +1696,7 @@ defineExpose({
             .setting-value {
               margin: 8px 0;
               &.select {
+                margin-top: 0;
                 .ed-select {
                   width: 325px;
                 }
