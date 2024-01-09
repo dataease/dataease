@@ -129,6 +129,11 @@ public class DataVisualizationVO implements Serializable {
      */
     private Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
 
+    /**
+     * 水印信息
+     */
+    private VisualizationWatermarkVO watermarkInfo;
+
     public DataVisualizationVO(Long id, String name, String type, String canvasStyleData, String componentData, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo) {
         this.id = id;
         this.name = name;

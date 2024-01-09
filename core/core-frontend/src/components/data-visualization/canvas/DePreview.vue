@@ -11,7 +11,7 @@ import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import { isMainCanvas } from '@/utils/canvasUtils'
 import { activeWatermark } from '@/components/watermark/watermark'
-import { userLoginInfo } from '@/api/user'
+import { personInfoApi } from '@/api/user'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent } = storeToRefs(dvMainStore)
 
@@ -49,6 +49,10 @@ const props = defineProps({
   downloadStatus: {
     type: Boolean,
     default: false
+  },
+  userId: {
+    type: String,
+    require: false
   }
 })
 
@@ -60,7 +64,8 @@ const {
   canvasViewInfo,
   showPosition,
   previewActive,
-  downloadStatus
+  downloadStatus,
+  userId
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
@@ -175,30 +180,29 @@ const initRefreshTimer = () => {
   }
 }
 
-const initWatermark = () => {
-  if (dvInfo.value.watermarkInfo) {
-    nextTick(() => {
-      if (userInfo.value) {
+const initWatermark = (waterDomId = 'preview-canvas-main') => {
+  if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
+    if (userInfo.value) {
+      activeWatermark(
+        dvInfo.value.watermarkInfo.settingContent,
+        userInfo.value,
+        waterDomId,
+        canvasId.value,
+        dvInfo.value.watermarkOpen
+      )
+    } else {
+      const method = personInfoApi
+      method().then(res => {
+        userInfo.value = res.data
         activeWatermark(
           dvInfo.value.watermarkInfo.settingContent,
           userInfo.value,
-          'canvasInfo-main',
+          waterDomId,
           canvasId.value,
           dvInfo.value.watermarkOpen
         )
-      } else {
-        userLoginInfo().then(res => {
-          userInfo.value = res.data
-          activeWatermark(
-            dvInfo.value.watermarkInfo.settingContent,
-            userInfo.value,
-            'canvasInfo-main',
-            canvasId.value,
-            dvInfo.value.watermarkOpen
-          )
-        })
-      }
-    })
+      })
+    }
   }
 }
 

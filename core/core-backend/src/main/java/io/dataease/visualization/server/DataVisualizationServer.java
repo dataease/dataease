@@ -10,6 +10,7 @@ import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
+import io.dataease.api.visualization.vo.VisualizationWatermarkVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
@@ -31,7 +32,9 @@ import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
+import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
 import jakarta.annotation.Resource;
@@ -83,6 +86,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private CoreOptRecentManage coreOptRecentManage;
 
+    @Resource
+    private VisualizationWatermarkMapper watermarkMapper;
+
     @Override
     @XpackInteract(value = "dataVisualizationServer", original = true)
     public DataVisualizationVO findById(Long dvId, String busiFlag) {
@@ -94,6 +100,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
                 result.setCanvasViewInfo(viewInfo);
             }
+            VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
+            VisualizationWatermarkVO watermarkVO = new VisualizationWatermarkVO();
+            BeanUtils.copyBean(watermarkVO,watermark);
+            result.setWatermarkInfo(watermarkVO);
             return result;
         } else {
             DEException.throwException("资源不存在或已经被删除...");
