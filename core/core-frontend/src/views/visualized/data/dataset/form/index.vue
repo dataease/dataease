@@ -634,7 +634,7 @@ const tabChange = val => {
 
 const addComplete = () => {
   state.nodeNameList = [...datasetDrag.value.nodeNameList]
-  if (!state.nodeNameList) {
+  if (!state.nodeNameList?.length) {
     columns.value = []
     tableData.value = []
   }
@@ -1280,14 +1280,14 @@ const getDsIconName = data => {
             <div
               :class="[
                 {
-                  'not-allow': state.nodeNameList.includes(ele.tableName)
+                  'not-allow': state.nodeNameList.includes(`${ele.tableName}${dataSource}`)
                 }
               ]"
               class="list-item_primary"
               :title="ele.name"
               @dragstart="$event => dragstart($event, ele)"
               @dragend="maskShow = false"
-              :draggable="!state.nodeNameList.includes(ele.tableName)"
+              :draggable="!state.nodeNameList.includes(`${ele.tableName}${dataSource}`)"
               @click="setActiveName(ele)"
             >
               <el-icon class="icon-color">
