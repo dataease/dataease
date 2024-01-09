@@ -73,43 +73,34 @@
           v-model="checkTableList"
           size="small"
         >
-          <el-tooltip
-            v-for="t in tableData"
-            :key="t.name"
-            :disabled="t.enableCheck"
-            effect="dark"
-            :content="$t('dataset.table_already_add_to') + ': ' + t.datasetPath"
-            placement="right"
+          <div
+            :class="[
+              { active: activeName === t.name, 'not-allow': !t.enableCheck }
+            ]"
+            class="item"
+            :title="t.name"
+            @click="setActiveName(t)"
           >
-            <div
-              :class="[
-                { active: activeName === t.name, 'not-allow': !t.enableCheck }
-              ]"
-              class="item"
-              :title="t.name"
-              @click="setActiveName(t)"
+            <svg-icon
+              v-if="!t.enableCheck"
+              icon-class="Checkbox"
+              style="margin-right: 8px"
+            />
+            <el-checkbox
+              v-else
+              :label="t.name"
+            />
+            <span class="label">{{ showTableNameWithComment(t) }}</span>
+            <span
+              v-if="t.nameExist"
+              class="error-name-exist"
             >
               <svg-icon
-                v-if="!t.enableCheck"
-                icon-class="Checkbox"
-                style="margin-right: 8px"
+                icon-class="exclamationmark"
+                class="ds-icon-scene"
               />
-              <el-checkbox
-                v-else
-                :label="t.name"
-              />
-              <span class="label">{{ showTableNameWithComment(t) }}</span>
-              <span
-                v-if="t.nameExist"
-                class="error-name-exist"
-              >
-                <svg-icon
-                  icon-class="exclamationmark"
-                  class="ds-icon-scene"
-                />
-              </span>
-            </div>
-          </el-tooltip>
+            </span>
+          </div>
         </el-checkbox-group>
       </div>
     </div>
