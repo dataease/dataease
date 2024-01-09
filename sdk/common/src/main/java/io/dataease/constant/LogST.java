@@ -1,5 +1,7 @@
 package io.dataease.constant;
 
+import java.util.Arrays;
+
 public enum LogST {
     PANEL(1, "SOURCE_TYPE_PANEL"),
     SCREEN(2, "SOURCE_TYPE_SCREEN"),
@@ -29,6 +31,10 @@ public enum LogST {
     LogST(Integer value, String name) {
         this.value = value;
         this.name = name;
+    }
+
+    public static LogST fromValue(Integer value) {
+        return Arrays.stream(values()).filter(v -> v.value.equals(value)).findFirst().get();
     }
 
     LogST() {

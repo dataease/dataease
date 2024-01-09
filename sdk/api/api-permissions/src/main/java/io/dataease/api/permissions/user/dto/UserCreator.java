@@ -1,5 +1,6 @@
 package io.dataease.api.permissions.user.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -27,4 +28,7 @@ public class UserCreator implements Serializable {
     private List<Long> roleIds;
     @Schema(description = "状态", requiredMode = Schema.RequiredMode.REQUIRED)
     private Boolean enable;
+    @Schema(hidden = true)
+    @JsonIgnore
+    private Long uid;
 }

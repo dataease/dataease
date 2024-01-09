@@ -1,5 +1,7 @@
 package io.dataease.constant;
 
+import java.util.Arrays;
+
 public enum LogOT {
     CREATE(1, "OPERATE_TYPE_CREATE"),
     MODIFY(2, "OPERATE_TYPE_MODIFY"),
@@ -21,6 +23,10 @@ public enum LogOT {
     LogOT(Integer value, String name) {
         this.value = value;
         this.name = name;
+    }
+
+    public static LogOT fromValue(Integer value) {
+        return Arrays.stream(values()).filter(v -> v.value.equals(value)).findFirst().get();
     }
 
     public Integer getValue() {
