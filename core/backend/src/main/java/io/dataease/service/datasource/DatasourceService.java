@@ -51,7 +51,6 @@ import io.dataease.service.message.DeMsgutil;
 import io.dataease.service.sys.SysAuthService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -431,11 +430,7 @@ public class DatasourceService {
         }
 
         List<TableDesc> tables = datasourceProvider.getTables(datasourceRequest);
-
-        // 获取当前数据源下的db、api类型数据集
-        DatasetTableExample datasetTableExample = new DatasetTableExample();
-        datasetTableExample.createCriteria().andTypeIn(Arrays.asList(DatasetType.DB.name(), DatasetType.API.name())).andDataSourceIdEqualTo(ds.getId());
-        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(datasetTableExample);
+        // 构造table节点
         List<DBTableDTO> list = new ArrayList<>();
         for (TableDesc tableDesc : tables) {
             DBTableDTO dbTableDTO = new DBTableDTO();
@@ -444,22 +439,6 @@ public class DatasourceService {
             dbTableDTO.setRemark(tableDesc.getRemark());
             dbTableDTO.setEnableCheck(true);
             dbTableDTO.setDatasetPath(null);
-            for (DatasetTable datasetTable : datasetTables) {
-                DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
-                if (StringUtils.equals(tableDesc.getName(), dataTableInfoDTO.getTable())) {
-                    dbTableDTO.setEnableCheck(false);
-                    List<DatasetGroup> parents = dataSetGroupService.getParents(datasetTable.getSceneId());
-                    StringBuilder stringBuilder = new StringBuilder();
-                    parents.forEach(ele -> {
-                        if (ObjectUtils.isNotEmpty(ele)) {
-                            stringBuilder.append(ele.getName()).append("/");
-                        }
-                    });
-                    stringBuilder.append(datasetTable.getName());
-                    dbTableDTO.setDatasetPath(stringBuilder.toString());
-                    break;
-                }
-            }
             list.add(dbTableDTO);
         }
         return list;
