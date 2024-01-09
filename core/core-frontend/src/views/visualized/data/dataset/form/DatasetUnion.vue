@@ -95,8 +95,8 @@ const dfsNodeList = computed(() => {
 })
 
 const dfsNodeNameList = (list, arr) => {
-  return list.forEach(ele => {
-    arr.push(ele.tableName)
+  list.forEach(ele => {
+    arr.push(`${ele.tableName}${ele.datasourceId}`)
     if (ele.children?.length) {
       dfsNodeNameList(ele.children, arr)
     }
