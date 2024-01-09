@@ -35,4 +35,12 @@ public class CommonBeanFactory implements ApplicationContextAware {
     public static ApplicationContext getApplicationContext() {
         return context;
     }
+
+    public static <T> T proxy(Class<T> className) {
+        try {
+            return context != null && className != null ? context.getBean(className) : null;
+        } catch (BeansException e) {
+            return null;
+        }
+    }
 }

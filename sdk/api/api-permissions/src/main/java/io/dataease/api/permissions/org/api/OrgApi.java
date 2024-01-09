@@ -5,6 +5,7 @@ import io.dataease.api.permissions.org.dto.OrgCreator;
 import io.dataease.api.permissions.org.dto.OrgEditor;
 import io.dataease.api.permissions.org.dto.OrgRequest;
 import io.dataease.api.permissions.org.vo.MountedVO;
+import io.dataease.api.permissions.org.vo.OrgDetailVO;
 import io.dataease.api.permissions.org.vo.OrgPageVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
@@ -56,4 +57,8 @@ public interface OrgApi {
     @Operation(summary = "", hidden = true)
     @GetMapping("/resourceExist/{oid}")
     boolean resourceExist(@PathVariable("oid") Long oid);
+
+    @Operation(hidden = true)
+    @GetMapping("/detail/{oid}")
+    OrgDetailVO detail(@PathVariable("oid") Long oid);
 }

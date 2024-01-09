@@ -7,6 +7,7 @@ import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.api.permissions.auth.dto.BusiResourceCreator;
 import io.dataease.api.permissions.auth.dto.BusiResourceEditor;
 import io.dataease.api.permissions.auth.dto.BusiResourceMover;
+import io.dataease.api.permissions.auth.vo.ResourceNodeVO;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.swagger.v3.oas.annotations.Hidden;
@@ -70,5 +71,8 @@ public interface InteractiveAuthApi {
     @ApiOperationSupport(order = 8)
     @PostMapping("/checkAuth")
     void checkAuth(@RequestBody BusiPerCheckDTO checkDTO);
+
+    @GetMapping("/query2Root/{id}/{flag}")
+    List<ResourceNodeVO> query2Root(@PathVariable("id") Long id, @PathVariable("flag") Integer flag);
 
 }

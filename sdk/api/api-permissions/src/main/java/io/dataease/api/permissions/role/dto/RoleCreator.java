@@ -1,5 +1,6 @@
 package io.dataease.api.permissions.role.dto;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -17,6 +18,9 @@ public class RoleCreator implements Serializable {
     private Integer typeCode;
     @Schema(description = "描述", hidden = true)
     private String desc;
+    @JsonIgnore
+    @Schema(hidden = true)
+    private Long rid;
 
 
 }
