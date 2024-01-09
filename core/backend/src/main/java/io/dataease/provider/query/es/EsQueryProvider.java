@@ -1342,7 +1342,7 @@ public class EsQueryProvider extends QueryProvider {
                         whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, cast, format);
                     }
                     if (field.getDeExtractType() == 1) {
-                        whereName = String.format(EsSqlLConstants.DATETIME_FORMAT, originName, format);
+                        whereName = originName;
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

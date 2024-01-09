@@ -639,8 +639,6 @@ public class ChartViewService {
         }
         Type tokenType = new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType();
-//        Type filterTokenType = new TypeToken<List<ChartFieldCustomFilterDTO>>() {
-//        }.getType();
 
         List<ChartViewFieldDTO> viewFields = gson.fromJson(view.getViewFields(), tokenType);
         final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
@@ -709,7 +707,6 @@ public class ChartViewService {
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
         dataeaseNames.add("*");
-//        fieldCustomFilter = fieldCustomFilter.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
         extStack = extStack.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
         extBubble = extBubble.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
         drill = drill.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
@@ -717,9 +714,6 @@ public class ChartViewService {
         //行权限
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionsTreeService.getRowPermissionsTree(fields, table, chartExtRequest.getUser());
 
-        /*for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
-            ele.setField(dataSetTableFieldsService.get(ele.getId()));
-        }*/
         chartFilterTreeService.searchFieldAndSet(fieldCustomFilter);
 
         if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
@@ -1043,17 +1037,6 @@ public class ChartViewService {
             assistFields = getAssistFields(dynamicAssistFields, yAxis, xAxis);
         }
 
-        // 处理过滤条件中的单引号
-        /*fieldCustomFilter = fieldCustomFilter.stream().peek(ele -> {
-            if (CollectionUtils.isNotEmpty(ele.getEnumCheckField())) {
-                List<String> collect = ele.getEnumCheckField().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
-                ele.setEnumCheckField(collect);
-            }
-            if (CollectionUtils.isNotEmpty(ele.getFilter())) {
-                List<ChartCustomFilterItemDTO> collect = ele.getFilter().stream().peek(f -> f.setValue(SQLUtils.transKeyword(f.getValue()))).collect(Collectors.toList());
-                ele.setFilter(collect);
-            }
-        }).collect(Collectors.toList());*/
         fieldCustomFilter = chartFilterTreeService.charReplace(fieldCustomFilter);
 
         extFilterList = extFilterList.stream().peek(ele -> {

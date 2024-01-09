@@ -1340,7 +1340,7 @@ public class DorisQueryProvider extends QueryProvider {
 
                 if (field.getDeType() == 1) {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
-                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
+                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                         String date = String.format(MySQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
                         if (field.getType().equalsIgnoreCase("YEAR") || StringUtils.equalsIgnoreCase(field.getDateFormat(), "%Y")) {
                             date = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + date + ",'-01-01')", "%Y-01-01");
@@ -1350,6 +1350,16 @@ public class DorisQueryProvider extends QueryProvider {
                         } else {
                             whereName = String.format(MySQLConstants.DATE_FORMAT, date, format);
                         }
+                    }
+                    if (field.getDeExtractType() == 1) {
+                        String date = String.format(MySQLConstants.STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MysqlConstants.DEFAULT_DATE_FORMAT);
+                        if (field.getType().equalsIgnoreCase("YEAR") || StringUtils.equalsIgnoreCase(field.getDateFormat(), "%Y")) {
+                            date = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + date + ",'-01-01')", "%Y-01-01");
+                            whereName = String.format(MySQLConstants.DATE_FORMAT, date, format);
+                        }else {
+                            whereName = originName;
+                        }
+
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         if (request.getOperator().equals("between")) {

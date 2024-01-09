@@ -1330,7 +1330,7 @@ public class MysqlQueryProvider extends QueryProvider {
 
                 if (field.getDeType() == 1) {
                     String format = transDateFormat(request.getDateStyle(), request.getDatePattern());
-                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5 || field.getDeExtractType() == 1) {
+                    if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                         String date;
                         if (field.getType().equalsIgnoreCase("YEAR") || StringUtils.equalsIgnoreCase(field.getDateFormat(), "%Y")) {
                             date = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originName + ",'-01-01')", StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MySQLConstants.DEFAULT_DATE_FORMAT);
@@ -1349,6 +1349,21 @@ public class MysqlQueryProvider extends QueryProvider {
                             }
                         }
 
+                    }
+                    if (field.getDeExtractType() == 1) {
+                        String date;
+                        if (field.getType().equalsIgnoreCase("YEAR") || StringUtils.equalsIgnoreCase(field.getDateFormat(), "%Y")) {
+                            date = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + originName + ",'-01-01')", StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : MySQLConstants.DEFAULT_DATE_FORMAT);
+                        } else {
+                            date = originName;
+                        }
+                        if (StringUtils.equalsIgnoreCase(request.getDateStyle(), "y_Q")) {
+                            whereName = String.format(format,
+                                    String.format(MySQLConstants.DATE_FORMAT, originName, "%Y"),
+                                    String.format(MySQLConstants.QUARTER, String.format(MySQLConstants.DATE_FORMAT, originName, MySQLConstants.DEFAULT_DATE_FORMAT)));
+                        } else {
+                            whereName = date;
+                        }
                     }
                     if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                         if (request.getOperator().equals("between")) {
