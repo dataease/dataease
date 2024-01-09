@@ -74,6 +74,8 @@
           size="small"
         >
           <div
+            v-for="t in tableData"
+            :key="t.name"
             :class="[
               { active: activeName === t.name, 'not-allow': !t.enableCheck }
             ]"
