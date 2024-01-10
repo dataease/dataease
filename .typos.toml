@@ -3,6 +3,6 @@ ser = "ser"
 Referer = "Referer"
 Encryp = "Encryp"
 OT = "OT"
-Whereas = "Whereas"
+Wheres = "Wheres"
 [files]
 extend-exclude = ["mapFiles/**"]
