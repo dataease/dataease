@@ -11,11 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
-import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.entity.Status;
 import io.dataease.plugins.datasource.provider.Provider;
 import com.jayway.jsonpath.JsonPath;
 import io.dataease.commons.utils.HttpClientConfig;
@@ -23,14 +23,9 @@ import io.dataease.commons.utils.HttpClientUtil;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.request.datasource.ApiDefinitionRequest;
 
-import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
-
 import org.springframework.stereotype.Service;
-
-
-import javax.annotation.Resource;
 import java.net.URLEncoder;
 import java.util.*;
 import java.util.stream.Collectors;
@@ -104,6 +99,13 @@ public class ApiProvider extends Provider {
             }
         }
         return tableFields;
+    }
+
+    @Override
+    public Status checkDsStatus(DatasourceRequest datasourceRequest) throws Exception {
+        Status status =  new Status();
+        status.setStatus(checkStatus(datasourceRequest));
+        return status;
     }
 
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {

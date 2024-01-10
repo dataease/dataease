@@ -1487,11 +1487,7 @@ public class OracleQueryProvider extends QueryProvider {
                         }
                     }
                     if (field.getDeExtractType() == 1) {
-                        if (!request.getOperator().equals("between")) {
-                            whereName = String.format(OracleConstants.TO_CHAR, originName, format);
-                        } else {
-                            whereName = originName;
-                        }
+                        whereName = originName;
                     }
 
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {

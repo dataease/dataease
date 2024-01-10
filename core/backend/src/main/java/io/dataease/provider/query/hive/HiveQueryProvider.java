@@ -1299,12 +1299,7 @@ public class HiveQueryProvider extends QueryProvider {
                         whereName = String.format(HiveConstants.FROM_UNIXTIME, cast, format);
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                        if (request.getOperator().equals("between")) {
-                            whereName = originName;
-                        } else {
-                            whereName = String.format(HiveConstants.DATE_FORMAT, originName, format);
-                        }
-
+                        whereName = originName;
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

@@ -18,6 +18,7 @@ import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
+import io.dataease.plugins.datasource.entity.Status;
 import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
 import io.dataease.plugins.datasource.query.QueryProvider;
@@ -370,6 +371,22 @@ public class JdbcProvider extends DefaultJdbcProvider {
     }
 
     @Override
+    public Status checkDsStatus(DatasourceRequest datasourceRequest) throws Exception {
+        Status status = new Status();
+        String queryStr = getTablesSql(datasourceRequest);
+        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+        int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
+        try (Connection con = getConnection(datasourceRequest); Statement statement = getStatement(con, queryTimeout); ResultSet resultSet = statement.executeQuery(queryStr)) {
+            status.setVersion(String.valueOf(con.getMetaData().getDatabaseMajorVersion()));
+        } catch (Exception e) {
+            LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName(), e);
+            DataEaseException.throwException(e.getMessage());
+        }
+        status.setStatus("Success");
+        return status;
+    }
+
+    @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
         JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
@@ -377,7 +394,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         try (Connection con = getConnection(datasourceRequest); Statement statement = getStatement(con, queryTimeout); ResultSet resultSet = statement.executeQuery(queryStr)) {
         } catch (Exception e) {
             LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName(), e);
-            io.dataease.plugins.common.exception.DataEaseException.throwException(e.getMessage());
+            DataEaseException.throwException(e.getMessage());
         }
         return "Success";
     }

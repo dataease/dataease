@@ -1339,12 +1339,7 @@ public class PgQueryProvider extends QueryProvider {
                         }
                     }
                     if (field.getDeExtractType() == 1) {
-                        if (request.getOperator().equals("between")) {
-                            whereName = originName;
-                        } else {
-                            whereName = String.format(PgConstants.DATE_FORMAT, originName, format);
-                        }
-
+                        whereName = originName;
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

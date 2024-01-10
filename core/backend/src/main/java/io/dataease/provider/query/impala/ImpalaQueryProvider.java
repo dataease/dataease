@@ -1314,11 +1314,7 @@ public class ImpalaQueryProvider extends QueryProvider {
                         }
                     }
                     if (field.getDeExtractType() == DeTypeConstants.DE_TIME) {
-                        if (request.getOperator().equals("between")) {
-                            whereName = originName;
-                        } else {
-                            whereName = String.format(ImpalaConstants.DATE_FORMAT, originName, format);
-                        }
+                        whereName = originName;
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {

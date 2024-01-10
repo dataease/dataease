@@ -12,6 +12,7 @@ import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
+import io.dataease.plugins.datasource.entity.Status;
 import org.apache.commons.lang3.StringUtils;
 
 import javax.annotation.PostConstruct;
@@ -135,6 +136,13 @@ public abstract class DefaultJdbcProvider extends Provider {
             }
         }
         return tables;
+    }
+
+    @Override
+    public Status checkDsStatus(DatasourceRequest datasourceRequest) throws Exception {
+        Status status = new Status();
+        status.setStatus(checkStatus(datasourceRequest));
+        return status;
     }
 
     @Override

@@ -368,7 +368,7 @@ export default {
       this.showParams = true
       this.isRangeParamWidget = this.widget.isRangeParamWidget && this.widget.isRangeParamWidget()
     }
-    if ('textInputWidget,timeYearWidget,timeMonthWidget,timeDateWidget,textSelectWidget,numberSelectWidget'.indexOf(this.widget.name) !== -1) {
+    if ('textInputWidget,timeYearWidget,timeMonthWidget,timeDateWidget,textSelectWidget,numberSelectWidget,numberSelectGridWidget,textSelectGridWidget'.indexOf(this.widget.name) !== -1) {
       this.showParams = true
     }
   },
