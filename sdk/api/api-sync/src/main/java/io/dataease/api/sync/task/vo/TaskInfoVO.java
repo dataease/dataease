@@ -1,7 +1,7 @@
 package io.dataease.api.sync.task.vo;
 
-import io.dataease.api.sync.datasource.vo.model.Source;
-import io.dataease.api.sync.datasource.vo.model.Target;
+import io.dataease.api.sync.task.dto.Source;
+import io.dataease.api.sync.task.dto.Target;
 import lombok.Data;
 
 import java.time.LocalDateTime;
@@ -112,6 +112,7 @@ public class TaskInfoVO {
      * fail失败
      */
     private String lastExecuteStatus;
+    private Long incrementValue;
 
     // 以下为日志信息
     private String logId;

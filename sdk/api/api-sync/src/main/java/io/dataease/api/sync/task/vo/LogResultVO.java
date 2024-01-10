@@ -2,6 +2,7 @@ package io.dataease.api.sync.task.vo;
 
 import lombok.Data;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
 import lombok.Setter;
 
 import java.io.Serial;
@@ -14,7 +15,8 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-public class LogResultVO {
+@NoArgsConstructor
+public class LogResultVO implements Serializable{
 
     /**
      * 日志开始行号

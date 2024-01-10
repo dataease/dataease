@@ -1,7 +1,9 @@
-package io.dataease.api.sync.datasource.vo.model;
+package io.dataease.api.sync.task.dto;
 
 import io.dataease.api.sync.datasource.dto.SyncDatasourceDTO;
 import lombok.Data;
+
+import java.util.List;
 
 
 /**
@@ -16,4 +18,6 @@ public class Source {
     private SyncDatasourceDTO datasource;
     private String datasourceId;
     private String tableExtract;
+    private List<TableField> fieldList;
+    private String incrementField;
 }

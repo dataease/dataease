@@ -1,16 +1,18 @@
 package io.dataease.api.sync.datasource.api;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.dataease.api.sync.datasource.dto.DBTableDTO;
 import io.dataease.api.sync.datasource.dto.GetDatasourceRequest;
 import io.dataease.api.sync.datasource.dto.SyncDatasourceDTO;
 import io.dataease.api.sync.datasource.vo.SyncDatasourceVO;
-import io.dataease.api.sync.datasource.vo.model.DBTableDTO;
-import io.dataease.api.sync.datasource.vo.model.SyncDatasourceConfiguration;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.exception.DEException;
 import io.dataease.request.BaseGridRequest;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
+import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.RequestBody;
 
 import java.util.List;
 import java.util.Map;
@@ -42,7 +44,7 @@ public interface SyncDatasourceApi {
     void delete(@PathVariable("datasourceId") String datasourceId) throws DEException;
 
     @GetMapping("/types")
-    List<SyncDatasourceConfiguration.DatasourceType> datasourceTypes() throws DEException;
+    Object datasourceTypes() throws DEException;
 
     @PostMapping("/validate")
     String validate(@RequestBody SyncDatasourceDTO dataSourceDTO) throws DEException;

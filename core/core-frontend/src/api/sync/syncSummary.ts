@@ -1,15 +1,5 @@
 import request from '@/config/axios'
 
-export interface IChartData {
-  executeDateList: []
-  executeDateRunningList: []
-  executeDateSuccessList: []
-  executeDateFailList: []
-  successCount: 0
-  failCount: 0
-  runningCount: 0
-}
-
 interface IResourceCount {
   jobCount: number
   datasourceCount: number
@@ -17,10 +7,14 @@ interface IResourceCount {
 }
 
 export const getResourceCount = () => {
-  return request.get<IResourceCount>({
-    url: 'sync/summary/resourceCount',
-    method: 'get'
-  })
+  return request
+    .get({
+      url: 'sync/summary/resourceCount',
+      method: 'get'
+    })
+    .then(res => {
+      return res.data as IResourceCount
+    })
 }
 
 export const getJobLogLienChartInfo = () => {

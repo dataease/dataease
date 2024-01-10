@@ -1,4 +1,4 @@
-package io.dataease.api.sync.datasource.vo.model;
+package io.dataease.api.sync.datasource.dto;
 
 import lombok.Getter;
 import lombok.Setter;

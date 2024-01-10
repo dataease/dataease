@@ -42,6 +42,6 @@ export const batchDelApi = (ids: string[]) => {
 /**
  * 获取源数据库字段集合以及目标数据库数据类型集合
  */
-export const getFieldListApi = (data: IGetDatasourceReq, loading?: Ref<boolean>) => {
-  return request.post({ url: `/sync/datasource/fields`, data, loading })
+export const getFieldListApi = data => {
+  return request.post({ url: `/sync/datasource/fields`, data })
 }

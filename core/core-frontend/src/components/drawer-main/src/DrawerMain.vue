@@ -14,7 +14,8 @@ const props = defineProps({
       type: propTypes.string,
       field: propTypes.string,
       option: propTypes.array,
-      title: propTypes.string
+      title: propTypes.string,
+      property: propTypes.shape({})
     })
   ),
   title: propTypes.string
@@ -126,7 +127,8 @@ defineExpose({
         :ref="el => (myRefs[index] = el)"
         v-if="component.type === 'time'"
         :title="component.title"
-        @filter-change="v => filterChange(v, component.field, 'eq')"
+        :property="component.property"
+        @filter-change="v => filterChange(v, component.field, component.operator)"
       />
     </div>
 

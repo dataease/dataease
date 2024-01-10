@@ -1,4 +1,5 @@
 import request from '@/config/axios'
+
 export interface IGetTaskInfoReq {
   id?: string
   name?: string
@@ -7,10 +8,12 @@ export interface IGetTaskInfoReq {
 export interface ITaskInfoInsertReq {
   [key: string]: any
 }
+
 export interface ISchedulerOption {
   interval: number
   unit: string
 }
+
 export interface ISource {
   type: string
   query: string
@@ -18,9 +21,11 @@ export interface ISource {
   datasourceId: string
   tableExtract: string
   dsTableList?: IDsTable[]
-  dsList?: IDatasourceRes[]
+  dsList?: []
   fieldList?: ITableField[]
   targetFieldTypeList?: string[]
+  incrementCheckbox?: string
+  incrementField?: string
 }
 
 export interface ITableField {
@@ -98,7 +103,7 @@ export interface ITarget {
   tableName: string
   datasourceId: string
   targetProperty: string
-  dsList?: IDatasourceRes[]
+  dsList?: []
   multipleSelection?: ITableField[]
   property: ITargetProperty
 }
@@ -126,7 +131,7 @@ export class ITaskInfoRes {
 
   target: ITarget
 
-  status: boolean
+  status: string
   startTime: string
   stopTime: string
 
@@ -135,16 +140,15 @@ export class ITaskInfoRes {
     name: string,
     schedulerType: string,
     schedulerConf: string,
-    schedulerUnit: string,
     taskKey: string,
     desc: string,
     executorTimeout: number,
     executorFailRetryCount: number,
     source: ISource,
     target: ITarget,
-    status: boolean,
+    status: string,
     startTime: string,
-    endTime: string,
+    stopTime: string,
     schedulerOption: ISchedulerOption
   ) {
     this.id = id
@@ -159,7 +163,7 @@ export class ITaskInfoRes {
     this.target = target
     this.status = status
     this.startTime = startTime
-    this.endTime = endTime
+    this.stopTime = stopTime
     this.schedulerOption = schedulerOption
   }
 }
@@ -175,50 +179,46 @@ export interface IDsTable {
   enableCheck: string
   datasetPath: string
 }
-export const getDatasourceListByTypeApi = (type: string, loading?: Ref<boolean>) => {
-  return request.get({ url: `/sync/datasource/list/${type}`, loading: loading })
+
+export const getDatasourceListByTypeApi = (type: string) => {
+  return request.get({ url: `/sync/datasource/list/${type}` })
 }
-export const getTaskInfoListApi = (
-  current: number,
-  size: number,
-  data: IGetTaskInfoReq,
-  loading?: Ref<boolean>
-) => {
-  return request.post({ url: `/sync/task/pager/${current}/${size}`, data: data, loading: loading })
+export const getTaskInfoListApi = (current: number, size: number, data) => {
+  return request.post({ url: `/sync/task/pager/${current}/${size}`, data: data })
 }
 
-export const executeOneApi = (id: string, loading?: Ref<boolean>) => {
-  return request.get({ url: `/sync/task/execute/${id}`, loading: loading })
+export const executeOneApi = (id: string) => {
+  return request.get({ url: `/sync/task/execute/${id}` })
 }
 
-export const startTaskApi = (id: string, loading?: Ref<boolean>) => {
-  return request.get({ url: `/sync/task/start/${id}`, loading: loading })
+export const startTaskApi = (id: string) => {
+  return request.get({ url: `/sync/task/start/${id}` })
 }
 
-export const stopTaskApi = (id: string, loading?: Ref<boolean>) => {
-  return request.get({ url: `/sync/task/stop/${id}`, loading: loading })
+export const stopTaskApi = (id: string) => {
+  return request.get({ url: `/sync/task/stop/${id}` })
 }
 
-export const addApi = (data: ITaskInfoInsertReq, loading?: Ref<boolean>) => {
-  return request.post({ url: `/sync/task/add`, data: data, loading: loading })
+export const addApi = (data: ITaskInfoInsertReq) => {
+  return request.post({ url: `/sync/task/add`, data: data })
 }
 
 export const removeApi = (taskId: string) => {
   return request.delete({ url: `/sync/task/remove/${taskId}` })
 }
 
-export const batchRemoveApi = (taskIds: string[], loading?: Ref<boolean>) => {
-  return request.post({ url: `/sync/task/batch/del`, data: taskIds, loading: loading })
+export const batchRemoveApi = (taskIds: string[]) => {
+  return request.post({ url: `/sync/task/batch/del`, data: taskIds })
 }
 
-export const modifyApi = (data: ITaskInfoUpdateReq, loading?: Ref<boolean>) => {
-  return request.post({ url: `/sync/task/update`, data: data, loading: loading })
+export const modifyApi = (data: ITaskInfoUpdateReq) => {
+  return request.post({ url: `/sync/task/update`, data: data })
 }
 
-export const findTaskInfoByIdApi = (taskId: string, loading?: Ref<boolean>) => {
-  return request.get({ url: `/sync/task/get/${taskId}`, loading: loading })
+export const findTaskInfoByIdApi = (taskId: string) => {
+  return request.get({ url: `/sync/task/get/${taskId}` })
 }
 
-export const getDatasourceTableListApi = (dsId: string, loading?: Ref<boolean>) => {
-  return request.get({ url: `/sync/datasource/table/list/${dsId}`, loading: loading })
+export const getDatasourceTableListApi = (dsId: string) => {
+  return request.get({ url: `/sync/datasource/table/list/${dsId}` })
 }

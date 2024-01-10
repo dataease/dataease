@@ -2150,7 +2150,9 @@ export default {
     update_time: '更新时间',
     operation: '操作',
     edit: '编辑',
-    delete: '删除'
+    delete: '删除',
+    confirm_batch_delete_target_ds: '确定删除{0}个目标数据源吗？',
+    confirm_batch_delete_source_ds: '确定删除{0}个源数据源吗？'
   },
   sync_task: {
     title: '任务管理',

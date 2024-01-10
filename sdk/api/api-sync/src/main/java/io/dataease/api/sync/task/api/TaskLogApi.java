@@ -19,7 +19,7 @@ public interface TaskLogApi {
     IPage<TaskLogVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
 
     @GetMapping("/detail/{logId}/{fromLineNum}")
-    Object logDetail(@PathVariable("logId") String logId, @PathVariable("fromLineNum") int fromLineNum);
+    LogResultVO logDetail(@PathVariable("logId") String logId, @PathVariable("fromLineNum") int fromLineNum);
 
     @PostMapping("/save")
     void saveLog(@RequestBody TaskLogVO logDetail);

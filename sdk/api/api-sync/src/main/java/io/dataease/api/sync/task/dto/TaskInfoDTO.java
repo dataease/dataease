@@ -1,7 +1,5 @@
 package io.dataease.api.sync.task.dto;
 
-import io.dataease.api.sync.datasource.vo.model.Source;
-import io.dataease.api.sync.datasource.vo.model.Target;
 import lombok.Data;
 
 import java.time.LocalDateTime;
