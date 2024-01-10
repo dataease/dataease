@@ -553,8 +553,8 @@ public class DatasourceService {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
             Status status = datasourceProvider.checkDsStatus(datasourceRequest);
-            datasource.setStatus(status.getStatus());
-            datasource.setVersion(status.getVersion());
+            record.setStatus(status.getStatus());
+            record.setVersion(status.getVersion());
             datasourceMapper.updateByExampleSelective(record, example);
         } catch (Exception e) {
             Datasource temp = datasourceMapper.selectByPrimaryKey(datasource.getId());
