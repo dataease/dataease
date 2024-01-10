@@ -6,6 +6,7 @@ import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
+import io.dataease.plugins.datasource.entity.Status;
 
 import java.beans.PropertyVetoException;
 import java.sql.Connection;
@@ -20,6 +21,8 @@ public abstract class Provider {
     abstract public List<TableDesc> getTables(DatasourceRequest datasourceRequest) throws Exception ;
 
     abstract public String checkStatus(DatasourceRequest datasourceRequest) throws Exception ;
+
+    abstract public Status checkDsStatus(DatasourceRequest datasourceRequest) throws Exception ;
 
     public List<String[]> fetchResult(DatasourceRequest datasourceRequest) throws Exception {
         return null;

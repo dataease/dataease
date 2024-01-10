@@ -14,6 +14,7 @@ import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
+import io.dataease.plugins.datasource.entity.Status;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.provider.query.es.EsQueryProvider;
 import org.apache.commons.codec.binary.Base64;
@@ -181,7 +182,7 @@ public class EsProvider extends Provider {
         }
 
         for (String[] row : esResponse.getRows()) {
-            if(!row[1].equalsIgnoreCase("STRUCT") && !row[2].equalsIgnoreCase("unsupported")){
+            if (!row[1].equalsIgnoreCase("STRUCT") && !row[2].equalsIgnoreCase("unsupported")) {
                 TableField field = new TableField();
                 field.setFieldName(row[0]);
                 field.setRemarks(row[0]);
@@ -249,6 +250,13 @@ public class EsProvider extends Provider {
     @Override
     public List<String> getSchema(DatasourceRequest datasourceRequest) throws Exception {
         return new ArrayList<>();
+    }
+
+    @Override
+    public Status checkDsStatus(DatasourceRequest datasourceRequest) throws Exception {
+        Status status = new Status();
+        status.setStatus(checkStatus(datasourceRequest));
+        return status;
     }
 
 

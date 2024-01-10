@@ -23,6 +23,8 @@ public class Datasource implements Serializable {
     private String createBy;
     @ApiModelProperty("状态")
     private String status;
+    @ApiModelProperty("版本")
+    private String version;
     @ApiModelProperty(value = "配置详情", required = true)
     private String configuration;
 

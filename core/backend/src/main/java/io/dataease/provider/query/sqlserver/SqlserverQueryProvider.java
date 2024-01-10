@@ -529,14 +529,21 @@ public class SqlserverQueryProvider extends QueryProvider {
         return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view, needOrder, true);
     }
 
-    @Override
     public String getSQLWithPage(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
-        boolean isPage = (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null);
-        String limit = (isPage ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
-        if (isTable) {
-            return originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
+        if (Integer.valueOf(ds.getVersion()) < 11) {
+            if (isTable) {
+                return getSQLTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view);
+            } else {
+                return getSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view);
+            }
         } else {
-            return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
+            boolean isPage = (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null);
+            String limit = (isPage ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
+            if (isTable) {
+                return originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
+            } else {
+                return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
+            }
         }
     }
 
