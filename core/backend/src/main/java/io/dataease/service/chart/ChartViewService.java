@@ -294,7 +294,7 @@ public class ChartViewService {
             if (ObjectUtils.isNotEmpty(datasetTable)) {
                 result.setDatasetMode(datasetTable.getMode());
                 Datasource datasource = datasourceService.get(datasetTable.getDataSourceId());
-                result.setDatasourceType(datasource != null ? datasource.getType() : null);
+                buildDsType(datasource, result);
             }
             return result;
         } catch (Exception e) {
@@ -322,7 +322,7 @@ public class ChartViewService {
             if (ObjectUtils.isNotEmpty(datasetTable)) {
                 view.setDatasetMode(datasetTable.getMode());
                 Datasource datasource = datasourceService.get(datasetTable.getDataSourceId());
-                view.setDatasourceType(datasource != null ? datasource.getType() : null);
+                buildDsType(datasource, view);
             }
             // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
             if (CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
@@ -2347,6 +2347,26 @@ public class ChartViewService {
             // array -> tree
             FilterTreeObj tree = chartViewOldDataMergeService.transArr2Obj(fieldCustomFilter);
             view.setCustomFilter(gson.toJson(tree));
+        }
+    }
+
+    public void buildDsType(Datasource datasource, ChartViewDTO result) {
+        if (datasource != null) {
+            if (StringUtils.equalsIgnoreCase(datasource.getType(), "sqlServer")) {
+                if (datasource.getVersion() == null) {
+                    result.setDatasourceType(datasource.getType());
+                } else {
+                    if (Integer.parseInt(datasource.getVersion()) < 11) {
+                        result.setDatasourceType(datasource.getType() + "_all");
+                    } else {
+                        result.setDatasourceType(datasource.getType());
+                    }
+                }
+            } else {
+                result.setDatasourceType(datasource.getType());
+            }
+        } else {
+            result.setDatasourceType(null);
         }
     }
 }
