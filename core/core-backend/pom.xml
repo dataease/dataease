@@ -5,7 +5,7 @@
     <parent>
         <artifactId>core</artifactId>
         <groupId>io.dataease</groupId>
-        <version>2.2.0</version>
+        <version>${dataease.version}</version>
     </parent>
 
     <modelVersion>4.0.0</modelVersion>
@@ -16,12 +16,12 @@
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>api-base</artifactId>
-            <version>${project.version}</version>
+            <version>${dataease.version}</version>
         </dependency>
         <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>api-permissions</artifactId>
-            <version>${project.version}</version>
+            <version>${dataease.version}</version>
         </dependency>
         <dependency>
             <groupId>com.mysql</groupId>
