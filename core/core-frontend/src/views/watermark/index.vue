@@ -113,6 +113,7 @@ import { ElMessage } from 'element-plus-secondary/es'
 import { personInfoApi } from '@/api/user'
 import { getNow, watermark } from '@/components/watermark/watermark'
 import { useI18n } from '@/hooks/web/useI18n'
+import ParamsTips from '@/views/watermark/ParamsTips.vue'
 const { t } = useI18n()
 
 const state = reactive({

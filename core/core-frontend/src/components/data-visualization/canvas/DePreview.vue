@@ -188,7 +188,8 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
         userInfo.value,
         waterDomId,
         canvasId.value,
-        dvInfo.value.watermarkOpen
+        dvInfo.value.selfWatermarkStatus,
+        scaleWidth.value / 100
       )
     } else {
       const method = personInfoApi
@@ -199,7 +200,8 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
           userInfo.value,
           waterDomId,
           canvasId.value,
-          dvInfo.value.watermarkOpen
+          dvInfo.value.selfWatermarkStatus,
+          scaleWidth.value / 100
         )
       })
     }
@@ -213,8 +215,8 @@ onMounted(() => {
   const erd = elementResizeDetectorMaker()
   erd.listenTo(document.getElementById(domId), () => {
     restore()
+    initWatermark()
   })
-  initWatermark()
 })
 
 onBeforeUnmount(() => {

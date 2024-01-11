@@ -86,7 +86,7 @@ const resourceCreate = (pid, name) => {
     pid: pid,
     type: curCanvasType.value,
     status: 1,
-    selfWatermarkStatus: 0
+    selfWatermarkStatus: true
   }
   const canvasStyleDataNew =
     curCanvasType.value === 'dashboard'

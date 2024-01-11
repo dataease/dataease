@@ -74,7 +74,7 @@ public class DataVisualizationVO implements Serializable {
     /**
      * 是否单独打开水印 0-关闭 1-开启
      */
-    private Integer selfWatermarkStatus;
+    private Boolean selfWatermarkStatus;
 
     /**
      * 排序

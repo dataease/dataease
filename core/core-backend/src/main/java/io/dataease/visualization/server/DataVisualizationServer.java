@@ -117,6 +117,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
         visualizationInfo.setNodeType(request.getNodeType() == null ? DataVisualizationConstants.NODE_TYPE.LEAF : request.getNodeType());
+        if(request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()){
+            visualizationInfo.setSelfWatermarkStatus(1);
+        }else{
+            visualizationInfo.setSelfWatermarkStatus(0);
+        }
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
         //保存视图信
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), newDvId, request.getCanvasViewInfo());
@@ -132,6 +137,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
+        if(request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()){
+            visualizationInfo.setSelfWatermarkStatus(1);
+        }else{
+            visualizationInfo.setSelfWatermarkStatus(0);
+        }
         if(DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())){
             // 复制更新 新建权限插入
             visualizationInfoMapper.deleteById(dvId);
