@@ -638,16 +638,26 @@ const onChange = file => {
   fileList = file
 }
 
+const replaceLoading = ref(false)
+const addLoading = ref(false)
+
 const uploadExcel = editType => {
   const formData = new FormData()
   formData.append('file', fileList.raw)
   formData.append('type', '')
   formData.append('editType', editType)
   formData.append('id', (nodeInfo.id || 0) as string)
-  return uploadFile(formData).then(res => {
-    nodeInfo.editType = editType
-    datasourceEditor.value.init(nodeInfo, nodeInfo.id, res)
-  })
+  replaceLoading.value = editType === 0
+  addLoading.value = editType === 1
+  return uploadFile(formData)
+    .then(res => {
+      nodeInfo.editType = editType
+      datasourceEditor.value.init(nodeInfo, nodeInfo.id, res)
+    })
+    .finally(() => {
+      replaceLoading.value = false
+      addLoading.value = false
+    })
 }
 const activeName = ref('table')
 const defaultProps = {
@@ -839,7 +849,7 @@ const getMenuList = (val: boolean) => {
                   name="file"
                 >
                   <template #trigger>
-                    <el-button class="replace-excel" type="primary">
+                    <el-button v-loading="replaceLoading" class="replace-excel" type="primary">
                       <template #icon>
                         <Icon name="icon_edit_outlined"></Icon>
                       </template>
@@ -860,7 +870,7 @@ const getMenuList = (val: boolean) => {
                   name="file"
                 >
                   <template #trigger>
-                    <el-button type="primary">
+                    <el-button v-loading="addLoading" type="primary">
                       <template #icon>
                         <Icon name="icon_new-item_outlined"></Icon>
                       </template>
