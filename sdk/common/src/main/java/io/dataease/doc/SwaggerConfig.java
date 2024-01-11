@@ -1,9 +1,9 @@
 package io.dataease.doc;
 
-import cn.hutool.core.util.RandomUtil;
 import io.swagger.v3.oas.models.OpenAPI;
 import io.swagger.v3.oas.models.info.Contact;
 import io.swagger.v3.oas.models.info.Info;
+import org.apache.commons.lang3.RandomUtils;
 import org.springdoc.core.customizers.GlobalOpenApiCustomizer;
 import org.springdoc.core.models.GroupedOpenApi;
 import org.springframework.beans.factory.annotation.Value;
@@ -22,10 +22,10 @@ public class SwaggerConfig {
     @Bean
     public GlobalOpenApiCustomizer orderGlobalOpenApiCustomizer() {
         return openApi -> {
-            if (openApi.getTags()!=null){
+            if (openApi.getTags() != null) {
                 openApi.getTags().forEach(tag -> {
-                    Map<String,Object> map=new HashMap<>();
-                    map.put("x-order", RandomUtil.randomInt(0,100));
+                    Map<String, Object> map = new HashMap<>();
+                    map.put("x-order", RandomUtils.nextInt(0, 100));
                     tag.setExtensions(map);
                 });
             }
@@ -46,7 +46,6 @@ public class SwaggerConfig {
                         .contact(contact)
                         .version(version));
     }
-
 
 
     @Bean
@@ -87,8 +86,6 @@ public class SwaggerConfig {
     public GroupedOpenApi systemApi() {
         return GroupedOpenApi.builder().group("7-xpackpermission").displayName("权限相关xpack").packagesToScan("io.dataease.xpack.permissions").build();
     }
-
-
 
 
 }

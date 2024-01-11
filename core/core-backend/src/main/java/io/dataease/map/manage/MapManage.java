@@ -1,7 +1,5 @@
 package io.dataease.map.manage;
 
-import cn.hutool.core.collection.ListUtil;
-import cn.hutool.core.io.FileUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.map.dto.GeometryNodeCreator;
 import io.dataease.api.map.vo.AreaNode;
@@ -14,6 +12,7 @@ import io.dataease.map.dao.ext.entity.CoreAreaCustom;
 import io.dataease.map.dao.ext.mapper.CoreAreaCustomMapper;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.FileUtils;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
@@ -32,7 +31,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 import static io.dataease.constant.CacheConstant.CommonCacheConstant.WORLD_MAP_CACHE;
 
@@ -114,7 +112,8 @@ public class MapManage {
         if (ObjectUtils.isEmpty(file) || file.isEmpty()) {
             DEException.throwException("geometry file is require");
         }
-        String suffix = FileUtil.getSuffix(file.getOriginalFilename());
+
+        String suffix = FileUtils.getExtensionName(file.getOriginalFilename());
         if (!StringUtils.equalsIgnoreCase("json", suffix)) {
             DEException.throwException("仅支持json格式文件");
         }
@@ -164,7 +163,7 @@ public class MapManage {
         }
         List<String> codeResultList = new ArrayList<>();
         codeResultList.add(code);
-        childTreeIdList(ListUtil.of(code), codeResultList);
+        childTreeIdList(List.of(code), codeResultList);
         coreAreaCustomMapper.deleteBatchIds(codeResultList);
         codeResultList.forEach(id -> {
             File file = buildGeoFile(id);

@@ -1,6 +1,5 @@
 package io.dataease.dataset.manage;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
@@ -32,6 +31,7 @@ import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -211,7 +211,7 @@ public class DatasetGroupManage {
         List<DataSetNodeBO> nodes = new ArrayList<>();
         if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
         List<DataSetNodeBO> bos = pos.stream().map(this::convert).toList();
-        if (CollectionUtil.isNotEmpty(bos)) {
+        if (CollectionUtils.isNotEmpty(bos)) {
             nodes.addAll(bos);
         }
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
@@ -449,10 +449,11 @@ public class DatasetGroupManage {
             for (CoreDatasetTable datasetTable : datasetTables) {
                 if (StringUtils.isNotEmpty(datasetTable.getSqlVariableDetails())) {
                     List<SqlVariableDetails> defaultsSqlVariableDetails = JsonUtil.parseList(datasetTable.getSqlVariableDetails(), listTypeReference);
-                    if (CollectionUtil.isNotEmpty(defaultsSqlVariableDetails)) {
+                    if (CollectionUtils.isNotEmpty(defaultsSqlVariableDetails)) {
                         List<String> fullName = new ArrayList<>();
                         geFullName(id, fullName);
-                        List<String> finalFullName = CollectionUtil.reverse(fullName);
+                        Collections.reverse(fullName);
+                        List<String> finalFullName = fullName;
                         defaultsSqlVariableDetails.forEach(sqlVariableDetails -> {
                             sqlVariableDetails.setDatasetGroupId(id);
                             sqlVariableDetails.setDatasetTableId(datasetTable.getId());
@@ -500,13 +501,13 @@ public class DatasetGroupManage {
 
     public List<DatasetTableDTO> getDetailWithPerm(List<Long> ids) {
         var result = new ArrayList<DatasetTableDTO>();
-        if (CollectionUtil.isNotEmpty(ids)) {
+        if (CollectionUtils.isNotEmpty(ids)) {
             var dsList = coreDatasetGroupMapper.selectBatchIds(ids);
-            if (CollectionUtil.isNotEmpty(dsList)) {
+            if (CollectionUtils.isNotEmpty(dsList)) {
                 dsList.forEach(ds -> {
                     DatasetTableDTO dto = new DatasetTableDTO();
                     BeanUtils.copyBean(dto, ds);
-                    var fields  = datasetTableFieldManage.listFieldsWithPermissions(ds.getId());
+                    var fields = datasetTableFieldManage.listFieldsWithPermissions(ds.getId());
                     List<DatasetTableFieldDTO> dimensionList = fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).toList();
                     List<DatasetTableFieldDTO> quotaList = fields.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).toList();
                     Map<String, List<DatasetTableFieldDTO>> map = new LinkedHashMap<>();

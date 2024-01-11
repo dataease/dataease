@@ -1,6 +1,5 @@
 package io.dataease.visualization.manage;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -24,6 +23,7 @@ import io.dataease.visualization.dao.ext.po.VisualizationNodePO;
 import io.dataease.visualization.dao.ext.po.VisualizationResourcePO;
 import io.dataease.visualization.dto.VisualizationNodeBO;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -56,12 +56,12 @@ public class CoreVisualizationManage {
         }
         QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("delete_flag", false);
-        queryWrapper.ne("pid",-1);
+        queryWrapper.ne("pid", -1);
         queryWrapper.eq(ObjectUtils.isNotEmpty(request.getLeaf()), "node_type", ObjectUtils.isNotEmpty(request.getLeaf()) && request.getLeaf() ? "leaf" : "folder");
         queryWrapper.eq("type", request.getBusiFlag());
         queryWrapper.orderByDesc("create_time");
         List<VisualizationNodePO> pos = extMapper.queryNodes(queryWrapper);
-        if (CollectionUtil.isNotEmpty(pos)) {
+        if (CollectionUtils.isNotEmpty(pos)) {
             nodes.addAll(pos.stream().map(this::convert).toList());
         }
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
@@ -81,7 +81,7 @@ public class CoreVisualizationManage {
             if (isTopNode(tempPid)) continue;
             delIds.add(tempPid);
             List<Long> childrenIdList = extMapper.queryChildrenId(tempPid);
-            if (CollectionUtil.isNotEmpty(childrenIdList)) {
+            if (CollectionUtils.isNotEmpty(childrenIdList)) {
                 childrenIdList.forEach(kid -> {
                     if (!delIds.contains(kid)) {
                         stack.add(kid);
@@ -112,7 +112,7 @@ public class CoreVisualizationManage {
         return preInnerSave(visualizationInfo);
     }
 
-    public Long preInnerSave(DataVisualizationInfo visualizationInfo){
+    public Long preInnerSave(DataVisualizationInfo visualizationInfo) {
         if (visualizationInfo.getId() == null) {
             Long id = IDUtils.snowID();
             visualizationInfo.setId(id);
@@ -169,7 +169,7 @@ public class CoreVisualizationManage {
     }
 
     List<VisualizationResourceVO> formatResult(List<VisualizationResourcePO> pos) {
-        if (CollectionUtil.isEmpty(pos)) {
+        if (CollectionUtils.isEmpty(pos)) {
             return new ArrayList<>();
         }
         return pos.stream().map(po ->
