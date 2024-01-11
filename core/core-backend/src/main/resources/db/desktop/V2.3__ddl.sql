@@ -10,3 +10,5 @@ CREATE TABLE `visualization_watermark` (
 )  COMMENT='仪表板水印设置表';
 
 INSERT INTO `visualization_watermark` (`id`, `version`, `setting_content`, `create_by`, `create_time`) VALUES ('system_default', '1.0', '{\"enable\":false,\"enablePanelCustom\":true,\"type\":\"custom\",\"content\":\"水印\",\"watermark_color\":\"#DD1010\",\"watermark_x_space\":12,\"watermark_y_space\":36,\"watermark_fontsize\":15}', 'admin', NULL);
+
+INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (9, 'basic.frontTimeOut', '60', 'text', 1);
