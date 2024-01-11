@@ -14,7 +14,9 @@
           <span>${ip}-IP</span><br />
         </div>
       </template>
-      <span><i class="el-icon-warning" /></span>
+      <span
+        ><el-icon><InfoFilled /></el-icon
+      ></span>
     </el-tooltip>
   </div>
 </template>
@@ -29,5 +31,6 @@ const { t } = useI18n()
   position: absolute;
   right: 10px;
   z-index: 10;
+  top: 5px;
 }
 </style>

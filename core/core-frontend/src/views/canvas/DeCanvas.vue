@@ -11,6 +11,8 @@ import { getCanvasStyle, syncShapeItemStyle } from '@/utils/style'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { isMainCanvas } from '@/utils/canvasUtils'
+import { activeWatermark } from '@/components/watermark/watermark'
+import { personInfoApi } from '@/api/user'
 
 // change-begin
 const props = defineProps({
@@ -42,10 +44,11 @@ const domId = ref('de-canvas-' + canvasId.value)
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { pcMatrixCount, curOriginThemes } = storeToRefs(dvMainStore)
+const { pcMatrixCount, curOriginThemes, dvInfo } = storeToRefs(dvMainStore)
 const canvasOut = ref(null)
 const canvasInner = ref(null)
 const canvasInitStatus = ref(false)
+const userInfo = ref(null)
 
 const state = reactive({
   screenWidth: 1920,
@@ -59,6 +62,7 @@ const renderState = ref(false) // 仪表板默认
 const baseMarginLeft = ref(0)
 const baseMarginTop = ref(0)
 const cyGridster = ref(null)
+const editDomId = ref('edit-' + canvasId.value)
 
 const editStyle = computed(() => {
   if (canvasStyleData.value && isMainCanvas(canvasId.value)) {
@@ -187,6 +191,32 @@ const moveOutFromTab = component => {
   }, 500)
 }
 
+const initWatermark = (waterDomId = 'edit-canvas-main') => {
+  // if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
+  //   if (userInfo.value) {
+  //     activeWatermark(
+  //       dvInfo.value.watermarkInfo.settingContent,
+  //       userInfo.value,
+  //       waterDomId,
+  //       canvasId.value,
+  //       dvInfo.value.selfWatermarkStatus
+  //     )
+  //   } else {
+  //     const method = personInfoApi
+  //     method().then(res => {
+  //       userInfo.value = res.data
+  //       activeWatermark(
+  //         dvInfo.value.watermarkInfo.settingContent,
+  //         userInfo.value,
+  //         waterDomId,
+  //         canvasId.value,
+  //         dvInfo.value.selfWatermarkStatus
+  //       )
+  //     })
+  //   }
+  // }
+}
+
 // 全局监听按键事件
 onMounted(() => {
   window.addEventListener('resize', canvasSizeInit)
@@ -242,7 +272,7 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="canvasOut" class="content" :class="{ 'render-active': renderState }">
+  <div ref="canvasOut" :id="editDomId" class="content" :class="{ 'render-active': renderState }">
     <canvas-opt-bar
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"

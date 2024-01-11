@@ -145,7 +145,14 @@ export function getNow() {
   return time
 }
 
-export function activeWatermark(watermarkForm, userLoginInfo, domId, canvasId, watermarkOpen) {
+export function activeWatermark(
+  watermarkForm,
+  userLoginInfo,
+  domId,
+  canvasId,
+  selfWatermarkStatus,
+  scale = 1
+) {
   // 清理历史水印
   const historyWatermarkDom = document.getElementById('de-watermark-server')
   if (historyWatermarkDom) {
@@ -155,7 +162,7 @@ export function activeWatermark(watermarkForm, userLoginInfo, domId, canvasId, w
     !(
       canvasId === 'canvas-main' &&
       ((watermarkForm.enable && !watermarkForm.enablePanelCustom) ||
-        (watermarkForm.enable && watermarkOpen))
+        (watermarkForm.enable && selfWatermarkStatus))
     )
   ) {
     return
@@ -183,11 +190,11 @@ export function activeWatermark(watermarkForm, userLoginInfo, domId, canvasId, w
   }
   const settings = {
     watermark_txt: watermark_txt,
-    watermark_width: watermark_width,
+    watermark_width: watermark_width * scale,
     watermark_color: watermarkForm.watermark_color,
-    watermark_x_space: watermarkForm.watermark_x_space,
-    watermark_y_space: watermarkForm.watermark_y_space,
-    watermark_fontsize: watermarkForm.watermark_fontsize + 'px'
+    watermark_x_space: watermarkForm.watermark_x_space * scale,
+    watermark_y_space: watermarkForm.watermark_y_space * scale,
+    watermark_fontsize: watermarkForm.watermark_fontsize * scale + 'px'
   }
   watermark(settings, domId)
 }

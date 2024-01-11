@@ -15,7 +15,7 @@ import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import { changeStyleWithScale } from '@/utils/translate'
-import { ref, onMounted, computed, toRefs, nextTick, onBeforeUnmount } from 'vue'
+import { ref, onMounted, computed, toRefs, nextTick, onBeforeUnmount, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -39,6 +39,8 @@ import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 import DragInfo from '@/components/visualization/common/DragInfo.vue'
+import { activeWatermark } from '@/components/watermark/watermark'
+import { personInfoApi } from '@/api/user'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -155,6 +157,7 @@ const props = defineProps({
     default: true
   }
 })
+const userInfo = ref(null)
 
 const {
   baseWidth,
@@ -191,6 +194,51 @@ const userViewEnlargeRef = ref(null)
 const linkJumpRef = ref(null)
 const linkageRef = ref(null)
 const mainDomId = ref('editor-' + canvasId.value)
+
+watch(
+  () => dvInfo.value,
+  () => {
+    initWatermark()
+  },
+  { deep: true }
+)
+
+watch(
+  () => canvasStyleData.value,
+  () => {
+    initWatermark()
+  },
+  { deep: true }
+)
+
+const initWatermark = (waterDomId = 'editor-canvas-main') => {
+  if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
+    const scale = dashboardActive.value ? 1 : curScale.value
+    if (userInfo.value) {
+      activeWatermark(
+        dvInfo.value.watermarkInfo.settingContent,
+        userInfo.value,
+        waterDomId,
+        canvasId.value,
+        dvInfo.value.selfWatermarkStatus,
+        scale
+      )
+    } else {
+      const method = personInfoApi
+      method().then(res => {
+        userInfo.value = res.data
+        activeWatermark(
+          dvInfo.value.watermarkInfo.settingContent,
+          userInfo.value,
+          waterDomId,
+          canvasId.value,
+          dvInfo.value.selfWatermarkStatus,
+          scale
+        )
+      })
+    }
+  }
+}
 
 const dragInfoShow = computed(() => {
   return (
@@ -942,6 +990,9 @@ const cellInit = () => {
 }
 
 const canvasSizeInit = () => {
+  if (isMainCanvas(canvasId.value)) {
+    initWatermark()
+  }
   cellInit()
   reCalcCellWidth()
 }
@@ -1233,6 +1284,7 @@ const markLineShow = computed(() => isMainCanvas(canvasId.value))
 onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
     initSnapshotTimer()
+    initWatermark()
   }
   // 获取编辑器元素
   composeStore.getEditor(canvasId.value)
