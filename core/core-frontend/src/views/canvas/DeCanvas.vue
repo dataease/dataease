@@ -80,6 +80,7 @@ const handleNewFromCanvasMain = newComponentInfo => {
     syncShapeItemStyle(component, baseWidth.value, baseHeight.value)
     component.id = guid()
     component.y = 200
+    component.x = cyGridster.value.findPositionX(component)
     dvMainStore.addComponent({
       component: component,
       index: undefined,

@@ -602,6 +602,50 @@ function resetPositionBox() {
 }
 
 /**
+ * 查找位置盒子
+ */
+function findPositionX(item) {
+  const width = item.sizeX
+  let resultX = 1
+  let checkPointYIndex = -1 // -1 没有占用任何Y方向画布
+  // 组件宽度
+  let pb = positionBox.value
+  if (width <= 0) return
+  // 查找组件最高位置索引 component 规则 y最新为1
+  componentData.value.forEach((component, index) => {
+    const componentYIndex = component.y + component.sizeY - 2
+    if (checkPointYIndex < componentYIndex) {
+      checkPointYIndex = componentYIndex
+    }
+  })
+
+  if (checkPointYIndex < 0) {
+    return 1
+  } else {
+    // 获取最后一列X方向数组
+    const pbX = pb[checkPointYIndex]
+    // 从X i位置索引开始检查 ；
+    // 检查宽度为组件宽度width 检查索引终点为checkEndIndex = i + width - 1 ；
+    // 退出检查条件为索引终点checkEndIndex 越界 pbX终点索引；
+    for (let i = 0, checkEndIndex = width - 1; checkEndIndex < pbX.length; i++, checkEndIndex++) {
+      let adaptorCount = 0
+      // 定位最后一列占位位置
+      for (let k = 0; k < width; k++) {
+        // pbX[i + k].el === false 表示当前矩阵点位未被占用，当连续未被占用的矩阵点位宽度为width时 表示改起始点位i可用
+        if (!pbX[i + k].el) {
+          adaptorCount++
+        }
+      }
+      if (adaptorCount === width) {
+        resultX = i + 1
+        break
+      }
+    }
+    return resultX
+  }
+}
+
+/**
  * 填充位置盒子
  */
 function addItemToPositionBox(item) {
@@ -1321,7 +1365,8 @@ defineExpose({
   handleDragOver,
   getMoveItem,
   handleMouseUp,
-  handleMouseDown
+  handleMouseDown,
+  findPositionX
 })
 </script>
 
