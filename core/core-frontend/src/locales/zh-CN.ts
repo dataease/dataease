@@ -2182,5 +2182,24 @@ export default {
     keep_going: '继续',
     log: '日志',
     show_log: '查看日志'
+  },
+  watermark: {
+    support_params: '当前支持的参数：',
+    enable: '启用水印',
+    enable_panel_custom: '允许仪表板单独打开或者关闭水印',
+    content: '水印内容',
+    custom_content: '自定义公式',
+    account: '账号',
+    nick_name: '昵称',
+    ip: 'IP',
+    now: '当前时间',
+    watermark_color: '水印颜色',
+    watermark_font_size: '水印字号',
+    watermark_space: '水印间距',
+    horizontal: '横向间距',
+    vertical: '纵向间距',
+    reset: '重置',
+    preview: '预览',
+    save: '保存'
   }
 }

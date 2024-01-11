@@ -689,6 +689,7 @@ const addOperation = (cmd, condition, index) => {
     case 'del':
       renameInput.value = []
       conditions.value.splice(index, 1)
+      curComponent.value = null
       break
     case 'rename':
       renameInput.value = []
@@ -820,7 +821,7 @@ defineExpose({
           </template>
         </draggable>
       </div>
-      <div class="chart-field" :class="curComponent.auto && 'hidden'">
+      <div v-if="!!curComponent" class="chart-field" :class="curComponent.auto && 'hidden'">
         <div class="mask" v-if="curComponent.auto"></div>
         <div class="title flex-align-center">
           选择关联图表及字段
@@ -917,7 +918,7 @@ defineExpose({
           </el-checkbox-group>
         </div>
       </div>
-      <div class="condition-configuration">
+      <div v-if="!!curComponent" class="condition-configuration">
         <div class="mask condition" v-if="curComponent.auto"></div>
         <div class="title flex-align-center">
           查询条件配置

@@ -1,4 +1,5 @@
 import request from '@/config/axios'
 
-export const searchRoleApi = (keyword: string) =>
-  request.post({ url: '/role/query', data: { keyword } })
+export const watermarkSave = params => request.post({ url: '/watermark/save', data: params })
+
+export const watermarkFind = () => request.get({ url: 'watermark/find' })
