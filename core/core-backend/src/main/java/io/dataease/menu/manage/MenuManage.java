@@ -1,6 +1,5 @@
 package io.dataease.menu.manage;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.menu.vo.MenuMeta;
 import io.dataease.api.menu.vo.MenuVO;
@@ -10,6 +9,7 @@ import io.dataease.menu.dao.auto.entity.CoreMenu;
 import io.dataease.menu.dao.auto.mapper.CoreMenuMapper;
 import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
@@ -61,10 +61,10 @@ public class MenuManage {
         for (MenuTreeNode menuTreeNode : roots) {
             MenuVO vo = convert(menuTreeNode);
             List<MenuTreeNode> children = null;
-            if (CollectionUtil.isNotEmpty(children = menuTreeNode.getChildren())) {
+            if (CollectionUtils.isNotEmpty(children = menuTreeNode.getChildren())) {
                 vo.setChildren(convertTree(children));
             }
-            if (CollectionUtil.isNotEmpty(vo.getChildren()) || menuTreeNode.getType() != 1) {
+            if (CollectionUtils.isNotEmpty(vo.getChildren()) || menuTreeNode.getType() != 1) {
                 result.add(vo);
             }
         }

@@ -1,6 +1,5 @@
 package io.dataease.visualization.manage;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -18,6 +17,7 @@ import io.dataease.visualization.dao.auto.mapper.CoreStoreMapper;
 import io.dataease.visualization.dao.ext.mapper.CoreStoreExtMapper;
 import io.dataease.visualization.dao.ext.po.StorePO;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -84,7 +84,7 @@ public class VisualizationStoreManage {
     }
 
     public List<VisualizationStoreVO> formatResult(List<StorePO> pos) {
-        if (CollectionUtil.isEmpty(pos)) return new ArrayList<>();
+        if (CollectionUtils.isEmpty(pos)) return new ArrayList<>();
         return pos.stream().map(po ->
                 new VisualizationStoreVO(
                         po.getStoreId(), po.getResourceId(), po.getName(),

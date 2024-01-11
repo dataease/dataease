@@ -31,7 +31,6 @@
         <java-jwt.version>3.12.1</java-jwt.version>
         <velocity.version>2.3</velocity.version>
         <maven.antrun.version>3.1.0</maven.antrun.version>
-        <hutool.version>5.8.24</hutool.version>
         <ehcache.version>3.10.8</ehcache.version>
         <bcprov.version>1.74</bcprov.version>
         <junit.version>4.13.2</junit.version>
@@ -115,16 +114,6 @@
         <dependency>
             <groupId>org.projectlombok</groupId>
             <artifactId>lombok</artifactId>
-        </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-core</artifactId>
-            <version>${hutool.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>cn.hutool</groupId>
-            <artifactId>hutool-crypto</artifactId>
-            <version>${hutool.version}</version>
         </dependency>
 
         <dependency>

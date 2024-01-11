@@ -1,12 +1,12 @@
 package io.dataease.operation.manage;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.operation.dao.auto.entity.CoreOptRecent;
 import io.dataease.operation.dao.auto.mapper.CoreOptRecentMapper;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.IDUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
@@ -64,7 +64,7 @@ public class CoreOptRecentManage {
         queryWrapper.eq("resource_type", OptConstants.OPT_RESOURCE_TYPE.TEMPLATE);
         queryWrapper.eq("uid", uid);
         List<CoreOptRecent> result = coreStoreMapper.selectList(queryWrapper);
-        if (CollectionUtil.isNotEmpty(result)) {
+        if (CollectionUtils.isNotEmpty(result)) {
             return result.stream().collect(Collectors.toMap(CoreOptRecent::getResourceName, CoreOptRecent::getTime));
         } else {
             return new HashMap<>();

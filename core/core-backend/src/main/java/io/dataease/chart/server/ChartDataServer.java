@@ -1,6 +1,5 @@
 package io.dataease.chart.server;
 
-import cn.hutool.core.util.ArrayUtil;
 import io.dataease.api.chart.ChartDataApi;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ViewDetailField;
@@ -15,18 +14,14 @@ import io.dataease.visualization.manage.VisualizationTemplateExtendDataManage;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
-import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.springframework.util.Base64Utils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.io.IOException;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -50,9 +45,9 @@ public class ChartDataServer implements ChartDataApi {
     public ChartViewDTO getData(ChartViewDTO chartViewDTO) throws Exception {
         try {
             // 从模板数据获取
-            if(CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(chartViewDTO.getDataFrom())){
-                return extendDataManage.getChartDataInfo(chartViewDTO.getId(),chartViewDTO);
-            }else{
+            if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equalsIgnoreCase(chartViewDTO.getDataFrom())) {
+                return extendDataManage.getChartDataInfo(chartViewDTO.getId(), chartViewDTO);
+            } else {
                 return chartDataManage.calcData(chartViewDTO);
             }
         } catch (Exception e) {
@@ -85,7 +80,7 @@ public class ChartDataServer implements ChartDataApi {
 
     @Override
     public void innerExportDetails(ChartExcelRequest request, HttpServletResponse response) throws Exception {
-    OutputStream outputStream = response.getOutputStream();
+        OutputStream outputStream = response.getOutputStream();
         try {
             findExcelData(request);
             List<Object[]> details = request.getDetails();
@@ -114,7 +109,7 @@ public class ChartDataServer implements ChartDataApi {
 
             Boolean mergeHead = false;
             ViewDetailField[] detailFields = request.getDetailFields();
-            if (ArrayUtil.isNotEmpty(detailFields)) {
+            if (ArrayUtils.isNotEmpty(detailFields)) {
                 cellStyle.setBorderTop(BorderStyle.THIN);
                 cellStyle.setBorderRight(BorderStyle.THIN);
                 cellStyle.setBorderBottom(BorderStyle.THIN);
@@ -199,7 +194,7 @@ public class ChartDataServer implements ChartDataApi {
                             } else if (cellValObj != null) {
                                 try {
                                     // with DataType
-                                    if ((excelTypes[j].equals(DeTypeConstants.DE_INT)  || excelTypes[j] .equals(DeTypeConstants.DE_FLOAT) ) && StringUtils.isNotEmpty(cellValObj.toString())) {
+                                    if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
                                         cell.setCellValue(Double.valueOf(cellValObj.toString()));
                                     } else {
                                         cell.setCellValue(cellValObj.toString());

@@ -1,6 +1,5 @@
 package io.dataease.utils;
 
-import cn.hutool.core.collection.ListUtil;
 import io.dataease.constant.AuthConstant;
 import org.apache.commons.lang3.StringUtils;
 
@@ -8,7 +7,7 @@ import java.util.List;
 
 public class WhitelistUtils {
 
-    public static List<String> WHITE_PATH = ListUtil.of(
+    public static List<String> WHITE_PATH = List.of(
             "/login/localLogin",
             "/apisix/check",
             "/dekey",
