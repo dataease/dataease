@@ -1,0 +1,12 @@
+version: '2.1'
+services:
+  task-actuator:
+    image: registry.cn-qingdao.aliyuncs.com/dataease/dataease-sync-task:DE_TAG
+    container_name: sync-task-actuator
+    ports:
+      - 9001:9001
+    volumes:
+      - ${DE_BASE}/dataease2.0/task/conf:/opt/apps/config
+      - ${DE_BASE}/dataease2.0/task/logs:/opt/dataease2.0/logs
+    networks:
+      - dataease-network
