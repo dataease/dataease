@@ -1,12 +1,7 @@
 package io.dataease.api.sync.task.vo;
 
-import lombok.Data;
 import lombok.Getter;
-import lombok.NoArgsConstructor;
 import lombok.Setter;
-
-import java.io.Serial;
-import java.io.Serializable;
 
 /**
  * 日志返回结果
@@ -15,8 +10,7 @@ import java.io.Serializable;
  */
 @Getter
 @Setter
-@NoArgsConstructor
-public class LogResultVO implements Serializable{
+public class LogResultVO {
 
     /**
      * 日志开始行号
@@ -34,6 +28,10 @@ public class LogResultVO implements Serializable{
      * 是否是最后一行
      */
     private boolean isEnd;
+
+    public LogResultVO() {
+
+    }
 
     public LogResultVO(int fromLineNum, int toLineNum, String logContent, boolean isEnd) {
         this.fromLineNum = fromLineNum;
