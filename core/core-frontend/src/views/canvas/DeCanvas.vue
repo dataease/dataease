@@ -11,8 +11,6 @@ import { getCanvasStyle, syncShapeItemStyle } from '@/utils/style'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { isMainCanvas } from '@/utils/canvasUtils'
-import { activeWatermark } from '@/components/watermark/watermark'
-import { personInfoApi } from '@/api/user'
 
 // change-begin
 const props = defineProps({
@@ -189,32 +187,6 @@ const moveOutFromTab = component => {
     })
     addItemBox(component)
   }, 500)
-}
-
-const initWatermark = (waterDomId = 'edit-canvas-main') => {
-  // if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
-  //   if (userInfo.value) {
-  //     activeWatermark(
-  //       dvInfo.value.watermarkInfo.settingContent,
-  //       userInfo.value,
-  //       waterDomId,
-  //       canvasId.value,
-  //       dvInfo.value.selfWatermarkStatus
-  //     )
-  //   } else {
-  //     const method = personInfoApi
-  //     method().then(res => {
-  //       userInfo.value = res.data
-  //       activeWatermark(
-  //         dvInfo.value.watermarkInfo.settingContent,
-  //         userInfo.value,
-  //         waterDomId,
-  //         canvasId.value,
-  //         dvInfo.value.selfWatermarkStatus
-  //       )
-  //     })
-  //   }
-  // }
 }
 
 // 全局监听按键事件
