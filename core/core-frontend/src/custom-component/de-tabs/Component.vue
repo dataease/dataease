@@ -84,7 +84,7 @@
     >
       <el-input
         v-model="state.textarea"
-        maxlength="10"
+        maxlength="50"
         :placeholder="$t('dataset.input_content')"
       />
       <template #footer>
