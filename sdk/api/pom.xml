@@ -15,6 +15,7 @@
     <modules>
         <module>api-permissions</module>
         <module>api-base</module>
+        <module>api-sync</module>
     </modules>
 
     <dependencies>
