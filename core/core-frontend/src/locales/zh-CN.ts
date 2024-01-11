@@ -2126,7 +2126,8 @@ export default {
   setting_basic: {
     autoCreateUser: '第三方自动创建用户',
     dsIntervalTime: '数据源检测时间间隔',
-    dsExecuteTime: '数据源检测频率'
+    dsExecuteTime: '数据源检测频率',
+    frontTimeOut: '请求超时时间（秒）'
   },
   template_manage: {
     name_already_exists_type: '分类名称已存在',

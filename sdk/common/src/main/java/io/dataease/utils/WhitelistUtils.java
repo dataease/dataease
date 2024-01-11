@@ -18,6 +18,7 @@ public class WhitelistUtils {
             "/panel.html",
             "/lark/info",
             "/lark/token",
+            "/sysParameter/requestTimeOut",
             "/setting/authentication/status",
             "/");
 
