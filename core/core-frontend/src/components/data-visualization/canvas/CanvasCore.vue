@@ -212,7 +212,11 @@ watch(
 )
 
 const initWatermark = (waterDomId = 'editor-canvas-main') => {
-  if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
+  if (
+    dvInfo.value.watermarkInfo &&
+    dvInfo.value.watermarkInfo.settingContent &&
+    isMainCanvas(canvasId.value)
+  ) {
     const scale = dashboardActive.value ? 1 : curScale.value
     if (userInfo.value) {
       activeWatermark(
