@@ -56,6 +56,46 @@ export const composeStore = defineStore('compose', {
       // do updateGroupBorder
     },
 
+    alignment: function (params) {
+      const { areaData } = this
+      if (areaData.components.length === 1) {
+        // 一个组件不进行组合直接释放
+        areaData.components = []
+        return
+      }
+      if (areaData.components.length > 0 && areaData.style.width === 0) {
+        // 计算组合区域
+        this.calcComposeArea()
+      }
+      const { left, top, width, height } = areaData.style
+      const areaRight = left + width
+      const areaTransverseCenter = left + width / 2 // 横向中心点
+      const areaBottom = top + height
+      const areaDirectionCenter = top + height / 2 // 纵向中心点
+
+      areaData.components.forEach(component => {
+        if (params === 'left') {
+          // 居左
+          component.style.left = left
+        } else if (params === 'right') {
+          // 居右
+          component.style.left = areaRight - component.style.width
+        } else if (params === 'top') {
+          // 居上
+          component.style.top = top
+        } else if (params === 'bottom') {
+          // 居下
+          component.style.top = areaBottom - component.style.height
+        } else if (params === 'transverse') {
+          // 横向居中
+          component.style.left = areaTransverseCenter - component.style.width / 2
+        } else if (params === 'direction') {
+          // 纵向
+          component.style.top = areaDirectionCenter - component.style.height / 2
+        }
+      })
+    },
+
     compose: function (canvasId = 'canvas-main') {
       const editor = this.editorMap[canvasId]
       const { areaData } = this
