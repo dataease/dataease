@@ -6,7 +6,6 @@ services:
     ports:
       - 9001:9001
     volumes:
-      - ${DE_BASE}/dataease2.0/task/conf:/opt/apps/config
-      - ${DE_BASE}/dataease2.0/task/logs:/opt/dataease2.0/logs
+      - ${DE_BASE}/dataease2.0/logs:/opt/dataease2.0/logs
     networks:
       - dataease-network
