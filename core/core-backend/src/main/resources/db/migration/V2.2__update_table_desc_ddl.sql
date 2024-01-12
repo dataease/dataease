@@ -1,50 +1,5 @@
-ALTER TABLE `QRTZ_BLOB_TRIGGERS` COMMENT = '自定义触发器存储（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_CALENDARS` COMMENT = 'Quartz日历（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_CRON_TRIGGERS` COMMENT = 'CronTrigger存储（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_FIRED_TRIGGERS` COMMENT = '存储已经触发的trigger相关信息（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_JOB_DETAILS` COMMENT = '存储jobDetails信息（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_LOCKS` COMMENT = 'Quartz锁表，为多个节点调度提供分布式锁（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_PAUSED_TRIGGER_GRPS` COMMENT = '存放暂停掉的触发器（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_SCHEDULER_STATE` COMMENT = '存储所有节点的scheduler（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_SIMPLE_TRIGGERS` COMMENT = 'SimpleTrigger存储（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_SIMPROP_TRIGGERS` COMMENT = '存储CalendarIntervalTrigger和DailyTimeIntervalTrigger两种类型的触发器（开源作业调度框架Quartz）';
-ALTER TABLE `QRTZ_TRIGGERS` COMMENT = '存储定义的trigger（开源作业调度框架Quartz）';
-ALTER TABLE `area` COMMENT = '地图区域表';
-ALTER TABLE `core_area_custom` COMMENT = '自定义地图区域信息表';
-ALTER TABLE `core_chart_view` COMMENT = '组件视图表';
-ALTER TABLE `core_dataset_group` COMMENT = '数据集分组表';
-ALTER TABLE `core_dataset_table` COMMENT = 'table数据集';
-ALTER TABLE `core_dataset_table_field` COMMENT = 'table数据集表字段';
-ALTER TABLE `core_dataset_table_sql_log` COMMENT = 'table数据集查询sql日志';
-ALTER TABLE `core_datasource` COMMENT = '数据源表';
-ALTER TABLE `core_datasource_task` COMMENT = '数据源定时同步任务';
-ALTER TABLE `core_datasource_task_log` COMMENT = '数据源定时同步任务执行日志';
-ALTER TABLE `core_de_engine` COMMENT = '数据引擎';
-ALTER TABLE `core_driver` COMMENT = '驱动';
-ALTER TABLE `core_driver_jar` COMMENT = '驱动详情';
-ALTER TABLE `core_menu` COMMENT = '路由菜单';
-ALTER TABLE `core_opt_recent` COMMENT = '可视化资源表';
-ALTER TABLE `core_rsa` COMMENT = 'rsa 密钥表';
-ALTER TABLE `core_store` COMMENT = '用户收藏表';
-ALTER TABLE `core_sys_setting` COMMENT = '系统设置表';
-ALTER TABLE `data_visualization_info` COMMENT = '可视化大屏信息表';
-ALTER TABLE `de_standalone_version` COMMENT = '数据库版本变更记录表';
-ALTER TABLE `license` COMMENT = '企业版许可证信息表';
-ALTER TABLE `per_api_key` COMMENT = 'API Key 密钥表';
-ALTER TABLE `per_auth_busi_role` COMMENT = '角色资源权限配置';
-ALTER TABLE `per_auth_busi_user` COMMENT = '用户资源权限配置';
-ALTER TABLE `per_auth_menu` COMMENT = '菜单资源权限配置';
-ALTER TABLE `per_busi_resource` COMMENT = '企业资源';
-ALTER TABLE `per_dataset_column_permissions` COMMENT = '数据集列权限';
-ALTER TABLE `per_dataset_row_permissions_tree` COMMENT = '数据集行权限';
-ALTER TABLE `per_embedded_instance` COMMENT = '嵌入式应用';
-ALTER TABLE `per_menu_resource` COMMENT = '菜单资源';
-ALTER TABLE `per_org` COMMENT = '组织机构';
-ALTER TABLE `per_role` COMMENT = '角色';
-ALTER TABLE `per_sys_setting` COMMENT = '系统设置表';
-ALTER TABLE `per_user` COMMENT = '用户表';
-ALTER TABLE `per_user_role` COMMENT = '用户角色表';
 ALTER TABLE `visualization_background` COMMENT = '边框背景表';
+/*
 ALTER TABLE `visualization_background_image` COMMENT = '背景图';
 ALTER TABLE `visualization_link_jump` COMMENT = '跳转记录表';
 ALTER TABLE `visualization_link_jump_info` COMMENT = '跳转配置表';
@@ -53,8 +8,6 @@ ALTER TABLE `visualization_linkage` COMMENT = '联动记录表';
 ALTER TABLE `visualization_linkage_field` COMMENT = '联动字段';
 ALTER TABLE `visualization_subject` COMMENT = '主题表';
 ALTER TABLE `visualization_template_extend_data` COMMENT = '模板视图明细信息表';
-ALTER TABLE `xpack_setting_authentication` COMMENT = '认证设置';
-ALTER TABLE `xpack_share` COMMENT = '公共链接';
 
 ALTER TABLE `core_dataset_group`
     MODIFY COLUMN `qrtz_instance` varchar(1024) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL DEFAULT NULL COMMENT 'Quartz 实例 ID' AFTER `create_time`;
@@ -91,20 +44,7 @@ ALTER TABLE `de_standalone_version`
     MODIFY COLUMN `execution_time` int(0) NOT NULL COMMENT '执行时长' AFTER `installed_on`,
     MODIFY COLUMN `success` tinyint(1) NOT NULL COMMENT '状态（1-成功，0-失败）' AFTER `execution_time`;
 
-ALTER TABLE `license`
-    MODIFY COLUMN `id` bigint(0) NOT NULL COMMENT '主键' FIRST,
-    MODIFY COLUMN `update_time` bigint(0) NULL DEFAULT NULL COMMENT '更新时间' AFTER `id`,
-    MODIFY COLUMN `license` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'license' AFTER `update_time`,
-    MODIFY COLUMN `f2c_license` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NULL COMMENT 'F2C License' AFTER `license`;
 
-ALTER TABLE `per_dataset_column_permissions`
-    MODIFY COLUMN `update_time` bigint(0) NULL DEFAULT NULL COMMENT '更新时间' AFTER `white_list_user`;
-
-ALTER TABLE `per_dataset_row_permissions_tree`
-    MODIFY COLUMN `update_time` bigint(0) NULL DEFAULT NULL COMMENT '更新时间' AFTER `white_list_dept`;
-
-ALTER TABLE `per_user`
-    MODIFY COLUMN `pwd` varchar(255) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '密码' AFTER `account`;
 
 ALTER TABLE `visualization_background`
     MODIFY COLUMN `id` varchar(64) CHARACTER SET utf8mb4 COLLATE utf8mb4_0900_ai_ci NOT NULL COMMENT '主键' FIRST,
@@ -175,3 +115,5 @@ ALTER TABLE `visualization_template_extend_data`
 
 ALTER TABLE `core_opt_recent`
     MODIFY COLUMN `resource_type` int(0) NOT NULL COMMENT '资源类型 1-可视化资源 2-仪表板 3-数据大屏 4-数据集 5-数据源 6-模板' AFTER `uid`;
+
+ */
