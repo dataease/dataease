@@ -173,7 +173,8 @@ const showLoginErrorMsg = () => {
 onMounted(() => {
   checkPlatform()
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {
-    loginErrorMsg.value = localStorage.getItem('DE-GATEWAY-FLAG')
+    const msg = localStorage.getItem('DE-GATEWAY-FLAG')
+    loginErrorMsg.value = decodeURIComponent(msg)
     showLoginErrorMsg()
     localStorage.removeItem('DE-GATEWAY-FLAG')
     logoutHandler(true)

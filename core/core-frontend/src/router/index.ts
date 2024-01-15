@@ -112,6 +112,13 @@ export const routes: AppRouteRecordRaw[] = [
         meta: { hidden: true }
       }
     ]
+  },
+  {
+    path: '/chart-view',
+    name: 'chart-view',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/chart/ChartView.vue')
   }
 ]
 
