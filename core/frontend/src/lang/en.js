@@ -1287,6 +1287,7 @@ export default {
     map_range: 'Map range',
     select_map_range: 'Please select map range',
     area: 'Area',
+    aggregate: 'Aggregate',
     placeholder_field: 'Drag Field To Here',
     axis_label_rotate: 'Label Rotate',
     chart_scatter_bubble: 'Bubble',

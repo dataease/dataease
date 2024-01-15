@@ -1285,6 +1285,7 @@ export default {
     select_map_range: '請選擇地圖範圍',
     area: '地區',
     stack_item: '堆疊項',
+    aggregate: '聚合',
     placeholder_field: '拖動字段至此處',
     axis_label_rotate: '標簽角度',
     chart_scatter_bubble: '氣泡圖',

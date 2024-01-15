@@ -46,4 +46,5 @@ public class ChartViewDTO extends ChartViewWithBLOBs {
     private long totalItems;
     private int datasetMode;
     private String datasourceType;
+    private Boolean aggregate;
 }

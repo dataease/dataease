@@ -1192,6 +1192,21 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
+                    <el-row class="padding-lr">
+                      <span>
+                        {{ $t('chart.aggregate') }}{{ $t('chart.chart_bar_time') }}
+                      </span>
+                      <span
+                        class="padding-lr"
+                      >
+                        <el-checkbox
+                          v-model="view.aggregate"
+                          class="el-input-refresh-loading"
+                          @change="aggregateChange"
+                        />
+                        {{ $t('chart.aggregate') }}
+                      </span>
+                    </el-row>
                   </div>
                 </el-row>
               </div>
@@ -3398,6 +3413,9 @@ export default {
       this.calcData(true)
     },
     drillItemChange(item) {
+      this.calcData(true)
+    },
+    aggregateChange() {
       this.calcData(true)
     },
     drillItemRemove(item) {

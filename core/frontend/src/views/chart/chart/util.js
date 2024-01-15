@@ -3526,10 +3526,30 @@ export function customColor(custom, res, colors) {
 }
 
 export function getColors(chart, colors, reset) {
+  const ifAggregate = !!chart.aggregate
   // 自定义颜色，先按照没有设定的情况，并排好序，当做最终结果
   let seriesColors = []
   let series
-  if (chart.type.includes('stack')) {
+  if (!ifAggregate && chart.type === 'bar-time-range') {
+    if (chart.data && chart.data.data && chart.data.data.length > 0) {
+      // 只能处理field字段
+      const groups = []
+      for (let i = 0; i < chart.data.data.length; i++) {
+        const name = chart.data.data[i].field
+        if (groups.indexOf(name) < 0) {
+          groups.push(name)
+        }
+      }
+      for (let i = 0; i < groups.length; i++) {
+        const s = groups[i]
+        seriesColors.push({
+          name: s,
+          color: colors[i % colors.length],
+          isCustom: false
+        })
+      }
+    }
+  } else if (chart.type.includes('stack')) {
     if (chart.data) {
       const data = chart.data.data
       const stackData = []
