@@ -1500,6 +1500,8 @@ export default {
     gauge_size_field_delete: 'Dynamic field changed，please edit again',
     chart_group: 'Sub Type',
     chart_bar_time: 'Range',
+    chart_bar_time2: 'Time Range',
+    chart_bar_time_tip: 'Only active when the range type is time',
     chart_bar_group: 'Bar Group',
     chart_bar_group_stack: 'Group Stack Bar',
     field_dynamic: 'Dynamic',
