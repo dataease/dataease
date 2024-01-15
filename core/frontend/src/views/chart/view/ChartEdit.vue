@@ -1194,7 +1194,22 @@
                     </el-row>
                     <el-row class="padding-lr">
                       <span>
-                        {{ $t('chart.aggregate') }}{{ $t('chart.chart_bar_time') }}
+                        {{ $t('chart.chart_bar_time2') }}
+                      </span>
+                      <span>
+                        <el-tooltip
+                          class="item"
+                          effect="dark"
+                          placement="bottom"
+                        >
+                          <div slot="content">
+                            {{ $t('chart.chart_bar_time_tip') }}
+                          </div>
+                          <i
+                            class="el-icon-info"
+                            style="cursor: pointer;color: #606266;"
+                          />
+                        </el-tooltip>
                       </span>
                       <span
                         class="padding-lr"
