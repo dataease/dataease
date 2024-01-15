@@ -13,13 +13,14 @@
             style="width: 215px"
             :placeholder="$t('dataset.pls_slc_data_source')"
             size="small"
-            @change="changeDatasource()"
+            @change="changeDatasource(true)"
           >
             <el-option
               v-for="item in options"
               :key="item.id"
               :label="item.name"
               :value="item.id"
+              :disabled="item.calculationMode === 'DIRECT' && !!param.tableId"
             />
           </el-select>
           <el-select
@@ -878,20 +879,22 @@ export default {
         this.kettleRunning = res.data
       })
     },
-    changeDatasource() {
+    changeDatasource(val) {
       this.keywords = ''
-      for (let i = 0; i < this.options.length; i++) {
-        if (this.options[i].id === this.dataSource) {
-          this.selectedDatasource = this.options[i]
-          this.mode = '0'
-          if (
-            this.engineMode === 'simple' ||
-            !this.kettleRunning ||
-            this.selectedDatasource.calculationMode === 'DIRECT'
-          ) {
-            this.disabledSync = true
-          } else {
-            this.disabledSync = false
+      if (!(this.param.tableId && val)) {
+        for (let i = 0; i < this.options.length; i++) {
+          if (this.options[i].id === this.dataSource) {
+            this.selectedDatasource = this.options[i]
+            this.mode = '0'
+            if (
+              this.engineMode === 'simple' ||
+              !this.kettleRunning ||
+              this.selectedDatasource.calculationMode === 'DIRECT'
+            ) {
+              this.disabledSync = true
+            } else {
+              this.disabledSync = false
+            }
           }
         }
       }
