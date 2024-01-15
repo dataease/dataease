@@ -92,15 +92,10 @@ const props = defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
-  },
-  canvasActive: {
-    type: Boolean,
-    required: false,
-    default: true
   }
 })
 
-const { scale, element, editMode, active, disabled, showPosition, canvasActive } = toRefs(props)
+const { scale, element, editMode, active, disabled, showPosition } = toRefs(props)
 
 const state = reactive({
   data: null,
@@ -276,8 +271,16 @@ const showPlaceHolder = computed<boolean>(() => {
   )
 })
 
+const editActive = computed<boolean>(() => {
+  if (element.value.canvasId.includes('Group') && !active.value) {
+    return false
+  } else {
+    return true
+  }
+})
+
 const setEdit = () => {
-  if (computedCanEdit.value && canvasActive.value) {
+  if (computedCanEdit.value && editActive.value) {
     canEdit.value = true
     element.value['editing'] = true
     myValue.value = element.value.propValue.textValue
