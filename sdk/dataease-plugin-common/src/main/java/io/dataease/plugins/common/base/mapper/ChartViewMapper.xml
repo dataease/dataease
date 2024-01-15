@@ -21,6 +21,7 @@
     <result column="refresh_view_enable" jdbcType="BIT" property="refreshViewEnable" />
     <result column="refresh_unit" jdbcType="VARCHAR" property="refreshUnit" />
     <result column="refresh_time" jdbcType="INTEGER" property="refreshTime" />
+    <result column="_aggregate" jdbcType="BIT" property="aggregate" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.ChartViewWithBLOBs">
     <result column="x_axis" jdbcType="LONGVARCHAR" property="xAxis" />
@@ -98,7 +99,7 @@
   <sql id="Base_Column_List">
     id, `name`, title, scene_id, table_id, `type`, render, result_count, result_mode, 
     create_by, create_time, update_time, style_priority, chart_type, is_plugin, data_from, 
-    refresh_view_enable, refresh_unit, refresh_time
+    refresh_view_enable, refresh_unit, refresh_time, _aggregate
   </sql>
   <sql id="Blob_Column_List">
     x_axis, x_axis_ext, y_axis, y_axis_ext, ext_stack, ext_bubble, custom_attr, custom_style, 
@@ -159,22 +160,24 @@
       create_by, create_time, update_time, 
       style_priority, chart_type, is_plugin, 
       data_from, refresh_view_enable, refresh_unit, 
-      refresh_time, x_axis, x_axis_ext, 
-      y_axis, y_axis_ext, ext_stack, 
-      ext_bubble, custom_attr, custom_style, 
-      custom_filter, drill_fields, senior, 
-      snapshot, view_fields)
+      refresh_time, _aggregate, x_axis, 
+      x_axis_ext, y_axis, y_axis_ext, 
+      ext_stack, ext_bubble, custom_attr, 
+      custom_style, custom_filter, drill_fields, 
+      senior, snapshot, view_fields
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{title,jdbcType=VARCHAR}, 
       #{sceneId,jdbcType=VARCHAR}, #{tableId,jdbcType=VARCHAR}, #{type,jdbcType=VARCHAR}, 
       #{render,jdbcType=VARCHAR}, #{resultCount,jdbcType=INTEGER}, #{resultMode,jdbcType=VARCHAR}, 
       #{createBy,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
       #{stylePriority,jdbcType=VARCHAR}, #{chartType,jdbcType=VARCHAR}, #{isPlugin,jdbcType=BIT}, 
       #{dataFrom,jdbcType=VARCHAR}, #{refreshViewEnable,jdbcType=BIT}, #{refreshUnit,jdbcType=VARCHAR}, 
-      #{refreshTime,jdbcType=INTEGER}, #{xAxis,jdbcType=LONGVARCHAR}, #{xAxisExt,jdbcType=LONGVARCHAR}, 
-      #{yAxis,jdbcType=LONGVARCHAR}, #{yAxisExt,jdbcType=LONGVARCHAR}, #{extStack,jdbcType=LONGVARCHAR}, 
-      #{extBubble,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, #{customStyle,jdbcType=LONGVARCHAR}, 
-      #{customFilter,jdbcType=LONGVARCHAR}, #{drillFields,jdbcType=LONGVARCHAR}, #{senior,jdbcType=LONGVARCHAR}, 
-      #{snapshot,jdbcType=LONGVARCHAR}, #{viewFields,jdbcType=LONGVARCHAR})
+      #{refreshTime,jdbcType=INTEGER}, #{aggregate,jdbcType=BIT}, #{xAxis,jdbcType=LONGVARCHAR}, 
+      #{xAxisExt,jdbcType=LONGVARCHAR}, #{yAxis,jdbcType=LONGVARCHAR}, #{yAxisExt,jdbcType=LONGVARCHAR}, 
+      #{extStack,jdbcType=LONGVARCHAR}, #{extBubble,jdbcType=LONGVARCHAR}, #{customAttr,jdbcType=LONGVARCHAR}, 
+      #{customStyle,jdbcType=LONGVARCHAR}, #{customFilter,jdbcType=LONGVARCHAR}, #{drillFields,jdbcType=LONGVARCHAR}, 
+      #{senior,jdbcType=LONGVARCHAR}, #{snapshot,jdbcType=LONGVARCHAR}, #{viewFields,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.ChartViewWithBLOBs">
     insert into chart_view
@@ -235,6 +238,9 @@
       </if>
       <if test="refreshTime != null">
         refresh_time,
+      </if>
+      <if test="aggregate != null">
+        _aggregate,
       </if>
       <if test="xAxis != null">
         x_axis,
@@ -333,6 +339,9 @@
       </if>
       <if test="refreshTime != null">
         #{refreshTime,jdbcType=INTEGER},
+      </if>
+      <if test="aggregate != null">
+        #{aggregate,jdbcType=BIT},
       </if>
       <if test="xAxis != null">
         #{xAxis,jdbcType=LONGVARCHAR},
@@ -441,6 +450,9 @@
       <if test="record.refreshTime != null">
         refresh_time = #{record.refreshTime,jdbcType=INTEGER},
       </if>
+      <if test="record.aggregate != null">
+        _aggregate = #{record.aggregate,jdbcType=BIT},
+      </if>
       <if test="record.xAxis != null">
         x_axis = #{record.xAxis,jdbcType=LONGVARCHAR},
       </if>
@@ -506,6 +518,7 @@
       refresh_view_enable = #{record.refreshViewEnable,jdbcType=BIT},
       refresh_unit = #{record.refreshUnit,jdbcType=VARCHAR},
       refresh_time = #{record.refreshTime,jdbcType=INTEGER},
+      _aggregate = #{record.aggregate,jdbcType=BIT},
       x_axis = #{record.xAxis,jdbcType=LONGVARCHAR},
       x_axis_ext = #{record.xAxisExt,jdbcType=LONGVARCHAR},
       y_axis = #{record.yAxis,jdbcType=LONGVARCHAR},
@@ -543,7 +556,8 @@
       data_from = #{record.dataFrom,jdbcType=VARCHAR},
       refresh_view_enable = #{record.refreshViewEnable,jdbcType=BIT},
       refresh_unit = #{record.refreshUnit,jdbcType=VARCHAR},
-      refresh_time = #{record.refreshTime,jdbcType=INTEGER}
+      refresh_time = #{record.refreshTime,jdbcType=INTEGER},
+      _aggregate = #{record.aggregate,jdbcType=BIT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -604,6 +618,9 @@
       </if>
       <if test="refreshTime != null">
         refresh_time = #{refreshTime,jdbcType=INTEGER},
+      </if>
+      <if test="aggregate != null">
+        _aggregate = #{aggregate,jdbcType=BIT},
       </if>
       <if test="xAxis != null">
         x_axis = #{xAxis,jdbcType=LONGVARCHAR},
@@ -667,6 +684,7 @@
       refresh_view_enable = #{refreshViewEnable,jdbcType=BIT},
       refresh_unit = #{refreshUnit,jdbcType=VARCHAR},
       refresh_time = #{refreshTime,jdbcType=INTEGER},
+      _aggregate = #{aggregate,jdbcType=BIT},
       x_axis = #{xAxis,jdbcType=LONGVARCHAR},
       x_axis_ext = #{xAxisExt,jdbcType=LONGVARCHAR},
       y_axis = #{yAxis,jdbcType=LONGVARCHAR},
@@ -701,7 +719,8 @@
       data_from = #{dataFrom,jdbcType=VARCHAR},
       refresh_view_enable = #{refreshViewEnable,jdbcType=BIT},
       refresh_unit = #{refreshUnit,jdbcType=VARCHAR},
-      refresh_time = #{refreshTime,jdbcType=INTEGER}
+      refresh_time = #{refreshTime,jdbcType=INTEGER},
+      _aggregate = #{aggregate,jdbcType=BIT}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>
