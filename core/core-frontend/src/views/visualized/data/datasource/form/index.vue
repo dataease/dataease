@@ -391,6 +391,7 @@ const saveDS = () => {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
   const validate = detail.value.submitForm()
+  request.apiConfiguration = ''
   validate(val => {
     if (val) {
       if (editDs.value && form.id) {
@@ -401,7 +402,6 @@ const saveDS = () => {
           showClose: false,
           tip: ''
         }
-
         checkRepeat(request).then(res => {
           if (res) {
             ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
