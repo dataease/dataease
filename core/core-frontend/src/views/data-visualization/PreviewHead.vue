@@ -6,7 +6,7 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import DvDetailInfo from '@/views/common/DvDetailInfo.vue'
 import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
 import { ref, watch, computed } from 'vue'
-import { XpackComponent } from '@/components/plugin'
+import ShareVisualHead from '@/views/share/share/ShareVisualHead.vue'
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -94,8 +94,7 @@ watch(
         </template>
         预览</el-button
       >
-      <XpackComponent
-        jsname="L2NvbXBvbmVudC9zaGFyZS9TaGFyZVZpc3VhbEhlYWQ="
+      <ShareVisualHead
         :resource-id="dvInfo.id"
         :weight="dvInfo.weight"
         :resource-type="dvInfo.type"
