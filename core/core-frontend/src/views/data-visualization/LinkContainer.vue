@@ -1,6 +1,6 @@
 <template>
-  <XpackComponent jsname="bGluaw==" :error-tips="true" />
+  <link-index :error-tips="true" />
 </template>
 <script lang="ts" setup>
-import { XpackComponent } from '@/components/plugin'
+import LinkIndex from '@/views/share/link/index.vue'
 </script>
