@@ -3,6 +3,7 @@ import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { handleTableEmptyStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
+import { maxBy, minBy } from 'lodash'
 
 class RowHoverInteraction extends BaseEvent {
   bindEvents() {
@@ -500,6 +501,25 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
     }
     sortParams.push(sort)
   }
+  // 自定义总计小计
+  const totals = [
+    totalCfg.row.calcTotals,
+    totalCfg.row.calcSubTotals,
+    totalCfg.col.calcTotals,
+    totalCfg.col.calcSubTotals
+  ]
+  totals.forEach(total => {
+    if (total.cfg?.length) {
+      delete total.aggregation
+      const totalCfgMap = total.cfg.reduce((p, n) => {
+        p[n.dataeaseName] = n
+        return p
+      }, {})
+      total.calcFunc = (query, data) => {
+        return customCalcFunc(query, data, totalCfgMap)
+      }
+    }
+  })
   // 空值处理
   const newData = handleTableEmptyStrategy(tableData, chart)
   // data config
@@ -837,4 +857,41 @@ function getFieldValueMap(view) {
     })
   }
   return fieldValueMap
+}
+
+function customCalcFunc(query, data, totalCfgMap) {
+  if (!data?.length) {
+    return 0
+  }
+  const aggregation = totalCfgMap[query[EXTRA_FIELD]].aggregation
+  switch (aggregation) {
+    case 'SUM': {
+      return data.reduce((p, n) => {
+        return p + n[n[EXTRA_FIELD]]
+      }, 0)
+    }
+    case 'AVG': {
+      const sum = data.reduce((p, n) => {
+        return p + n[n[EXTRA_FIELD]]
+      }, 0)
+      return sum / data.length
+    }
+    case 'MIN': {
+      const result = minBy(data, n => {
+        return n[n[EXTRA_FIELD]]
+      })
+      return result[result[EXTRA_FIELD]]
+    }
+    case 'MAX': {
+      const result = maxBy(data, n => {
+        return n[n[EXTRA_FIELD]]
+      })
+      return result[result[EXTRA_FIELD]]
+    }
+    default: {
+      return data.reduce((p, n) => {
+        return p + n[n[EXTRA_FIELD]]
+      }, 0)
+    }
+  }
 }

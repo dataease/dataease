@@ -52,20 +52,39 @@
             :label="$t('chart.aggregation')"
             class="form-item"
           >
-            <el-select
-              v-model="totalForm.row.calcTotals.aggregation"
-              class="form-item-select"
-              :placeholder="$t('chart.aggregation')"
-              size="mini"
-              @change="changeTotalCfg('row')"
+            <el-col :span="10">
+              <el-select
+                v-model="rowTotalItem.dataeaseName"
+                :placeholder="$t('chart.aggregation')"
+                size="mini"
+                @change="changeTotal(rowTotalItem, totalForm.row.calcTotals.cfg)"
+              >
+                <el-option
+                  v-for="option in totalSortFields"
+                  :key="option.dataeaseName"
+                  :label="option.name"
+                  :value="option.dataeaseName"
+                />
+              </el-select>
+            </el-col>
+            <el-col
+              :span="10"
+              :offset="1"
             >
-              <el-option
-                v-for="option in aggregations"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
+              <el-select
+                v-model="rowTotalItem.aggregation"
+                :placeholder="$t('chart.aggregation')"
+                size="mini"
+                @change="changeTotalAggr(rowTotalItem, totalForm.row.calcTotals.cfg, 'row')"
+              >
+                <el-option
+                  v-for="option in aggregations"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </el-col>
           </el-form-item>
           <el-form-item
             v-if="chart.type === 'table-pivot'"
@@ -146,21 +165,41 @@
             :label="$t('chart.aggregation')"
             class="form-item"
           >
-            <el-select
-              v-model="totalForm.row.calcSubTotals.aggregation"
-              :disabled="rowNum < 2"
-              class="form-item-select"
-              :placeholder="$t('chart.aggregation')"
-              size="mini"
-              @change="changeTotalCfg('row')"
+            <el-col :span="10">
+              <el-select
+                v-model="rowSubTotalItem.dataeaseName"
+                :disabled="rowNum < 2"
+                :placeholder="$t('chart.aggregation')"
+                size="mini"
+                @change="changeTotal(rowSubTotalItem, totalForm.row.calcSubTotals.cfg)"
+              >
+                <el-option
+                  v-for="option in totalSortFields"
+                  :key="option.dataeaseName"
+                  :label="option.name"
+                  :value="option.dataeaseName"
+                />
+              </el-select>
+            </el-col>
+            <el-col
+              :span="10"
+              :offset="1"
             >
-              <el-option
-                v-for="option in aggregations"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
+              <el-select
+                v-model="rowSubTotalItem.aggregation"
+                :disabled="colNum < 2"
+                :placeholder="$t('chart.aggregation')"
+                size="mini"
+                @change="changeTotalAggr(rowSubTotalItem, totalForm.row.calcSubTotals.cfg, 'row')"
+              >
+                <el-option
+                  v-for="option in aggregations"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </el-col>
           </el-form-item>
         </div>
 
@@ -209,20 +248,39 @@
             :label="$t('chart.aggregation')"
             class="form-item"
           >
-            <el-select
-              v-model="totalForm.col.calcTotals.aggregation"
-              class="form-item-select"
-              :placeholder="$t('chart.aggregation')"
-              size="mini"
-              @change="changeTotalCfg('col')"
+            <el-col :span="10">
+              <el-select
+                v-model="colTotalItem.dataeaseName"
+                :placeholder="$t('chart.aggregation')"
+                size="mini"
+                @change="changeTotal(colTotalItem, totalForm.col.calcTotals.cfg)"
+              >
+                <el-option
+                  v-for="option in totalSortFields"
+                  :key="option.dataeaseName"
+                  :label="option.name"
+                  :value="option.dataeaseName"
+                />
+              </el-select>
+            </el-col>
+            <el-col
+              :span="10"
+              :offset="1"
             >
-              <el-option
-                v-for="option in aggregations"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
+              <el-select
+                v-model="colTotalItem.aggregation"
+                :placeholder="$t('chart.aggregation')"
+                size="mini"
+                @change="changeTotalAggr(colTotalItem, totalForm.col.calcTotals.cfg, 'col')"
+              >
+                <el-option
+                  v-for="option in aggregations"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </el-col>
           </el-form-item>
           <el-form-item
             v-if="chart.type === 'table-pivot'"
@@ -303,21 +361,41 @@
             :label="$t('chart.aggregation')"
             class="form-item"
           >
-            <el-select
-              v-model="totalForm.col.calcSubTotals.aggregation"
-              :disabled="colNum < 2"
-              class="form-item-select"
-              :placeholder="$t('chart.aggregation')"
-              size="mini"
-              @change="changeTotalCfg('col')"
+            <el-col :span="10">
+              <el-select
+                v-model="colSubTotalItem.dataeaseName"
+                :disabled="colNum < 2"
+                :placeholder="$t('chart.aggregation')"
+                size="mini"
+                @change="changeTotal(colSubTotalItem, totalForm.col.calcSubTotals.cfg)"
+              >
+                <el-option
+                  v-for="option in totalSortFields"
+                  :key="option.dataeaseName"
+                  :label="option.name"
+                  :value="option.dataeaseName"
+                />
+              </el-select>
+            </el-col>
+            <el-col
+              :span="10"
+              :offset="1"
             >
-              <el-option
-                v-for="option in aggregations"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
+              <el-select
+                v-model="colSubTotalItem.aggregation"
+                :disabled="colNum < 2"
+                :placeholder="$t('chart.aggregation')"
+                size="mini"
+                @change="changeTotalAggr(colSubTotalItem, totalForm.col.calcSubTotals.cfg, 'col')"
+              >
+                <el-option
+                  v-for="option in aggregations"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </el-col>
           </el-form-item>
         </div>
       </el-form>
@@ -352,7 +430,23 @@ export default {
         { name: this.$t('chart.max'), value: 'MAX' },
         { name: this.$t('chart.min'), value: 'MIN' }
       ],
-      totalSortFields: []
+      totalSortFields: [],
+      rowSubTotalItem: {
+        dataeaseName: '',
+        aggregation: ''
+      },
+      rowTotalItem: {
+        dataeaseName: '',
+        aggregation: ''
+      },
+      colSubTotalItem: {
+        dataeaseName: '',
+        aggregation: ''
+      },
+      colTotalItem: {
+        dataeaseName: '',
+        aggregation: ''
+      }
     }
   },
   computed: {
@@ -430,7 +524,66 @@ export default {
           this.totalForm.row.totalSortField = ''
           this.totalForm.col.totalSortField = ''
         }
+        let needCompatible = false
+        if (!this.totalForm.row.calcTotals.cfg) {
+          needCompatible = true
+          this.$set(this.totalForm.row.calcTotals, 'cfg', [])
+          this.$set(this.totalForm.row.calcSubTotals, 'cfg', [])
+          this.$set(this.totalForm.col.calcTotals, 'cfg', [])
+          this.$set(this.totalForm.col.calcSubTotals, 'cfg', [])
+        }
+        const totals = [
+          { ...this.totalForm.row.calcTotals },
+          { ...this.totalForm.row.calcSubTotals },
+          { ...this.totalForm.col.calcTotals },
+          { ...this.totalForm.col.calcSubTotals }
+        ]
+        totals.forEach(total => {
+          // 兼容原有的聚合方式
+          const aggregation = needCompatible ? total.aggregation : 'SUM'
+          this.setupTotalCfg(total.cfg, this.totalSortFields, aggregation)
+        })
+        const totalTupleArr = [
+          [this.rowTotalItem, this.totalForm.row.calcTotals.cfg],
+          [this.rowSubTotalItem, this.totalForm.row.calcSubTotals.cfg],
+          [this.colTotalItem, this.totalForm.col.calcTotals.cfg],
+          [this.colSubTotalItem, this.totalForm.col.calcSubTotals.cfg]
+        ]
+        totalTupleArr.forEach(tuple => {
+          const [total, totalCfg] = tuple
+          if (!totalCfg.length) {
+            total.dataeaseName = ''
+            total.aggregation = ''
+            return
+          }
+          const totalIndex = totalCfg.findIndex(i => i.dataeaseName === total.dataeaseName)
+          if (totalIndex !== -1) {
+            total.aggregation = totalCfg[totalIndex].aggregation
+          } else {
+            total.dataeaseName = totalCfg[0].dataeaseName
+            total.aggregation = totalCfg[0].aggregation
+          }
+        })
       }
+    },
+    changeTotal(totalItem, totals) {
+      for (let i = 0; i < totals.length; i++) {
+        const item = totals[i]
+        if (item.dataeaseName === totalItem.dataeaseName) {
+          totalItem.aggregation = item.aggregation
+          return
+        }
+      }
+    },
+    changeTotalAggr(totalItem, totals, colOrNum) {
+      for (let i = 0; i < totals.length; i++) {
+        const item = totals[i]
+        if (item.dataeaseName === totalItem.dataeaseName) {
+          item.aggregation = totalItem.aggregation
+          break
+        }
+      }
+      this.changeTotalCfg(colOrNum)
     },
     changeTotalCfg(modifyName) {
       this.totalForm['modifyName'] = modifyName
@@ -448,6 +601,32 @@ export default {
         sortFieldList.push(ele.dataeaseName)
       })
       return sortFieldList.indexOf(field) === -1
+    },
+    setupTotalCfg(totalCfg, axis, aggregation) {
+      if (!totalCfg.length) {
+        axis.forEach(i => {
+          totalCfg.push({
+            dataeaseName: i.dataeaseName,
+            aggregation
+          })
+        })
+        return
+      }
+      if (!axis.length) {
+        totalCfg.splice(0, totalCfg.length)
+        return
+      }
+      const cfgMap = totalCfg.reduce((p, n) => {
+        p[n.dataeaseName] = n
+        return p
+      }, {})
+      totalCfg.splice(0, totalCfg.length)
+      axis.forEach(i => {
+        totalCfg.push({
+          dataeaseName: i.dataeaseName,
+          aggregation: cfgMap[i.dataeaseName] ? cfgMap[i.dataeaseName].aggregation : 'SUM'
+        })
+      })
     }
   }
 }

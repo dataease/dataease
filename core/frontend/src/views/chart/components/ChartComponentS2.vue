@@ -393,6 +393,9 @@ export default {
         this.initData()
         this.initTitle()
         this.calcHeightRightNow((width, height) => {
+          if (!this.myChart) {
+            return
+          }
           const { width: chartWidth, height: chartHeight } = this.myChart.options
           if (width !== chartWidth || height !== chartHeight) {
             this.myChart?.changeSheetSize(width, height)
