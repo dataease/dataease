@@ -136,6 +136,9 @@ public class DatasourceServer implements DatasourceApi {
                 dataSourceManage.move(dataSourceDTO);
             }
             case "rename" -> {
+                if(StringUtils.isEmpty(dataSourceDTO.getName())){
+                    DEException.throwException("名称不能为空！");
+                }
                 CoreDatasource datasource = datasourceMapper.selectById(dataSourceDTO.getId());
                 datasource.setName(dataSourceDTO.getName());
                 dataSourceManage.innerEdit(datasource);
@@ -464,8 +467,9 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         checkDatasourceStatus(coreDatasource);
-        dataSourceDTO.setStatus(coreDatasource.getStatus());
-        return dataSourceDTO;
+        DatasourceDTO result = new DatasourceDTO();
+        result.setStatus(coreDatasource.getStatus());
+        return result;
     }
 
     @Override

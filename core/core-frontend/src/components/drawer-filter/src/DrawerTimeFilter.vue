@@ -1,46 +1,66 @@
 <script setup lang="ts">
 import { propTypes } from '@/utils/propTypes'
-import { ElSelect, ElPopover, ElOption, ElIcon } from 'element-plus-secondary'
-import { computed, reactive, nextTick, ref } from 'vue'
-import { Icon } from '@/components/icon-custom'
+import { computed, PropType, reactive, toRefs } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+
+const { t } = useI18n()
+
+interface Config {
+  // 显示类型
+  showType: string
+  // 日期分隔符
+  rangeSeparator: string
+  // 前缀图标
+  prefixIcon: string
+  // 开始日期label
+  startPlaceholder: string
+  // 结束日期label
+  endPlaceholder: string
+  // 日期格式
+  format: string
+  // 日期值格式
+  valueFormat: string
+  // 尺寸
+  size: string
+  // 弹出位置
+  placement: string
+}
 
 const props = defineProps({
-  statusList: propTypes.arrayOf(
-    propTypes.shape({
-      id: propTypes.string,
-      name: propTypes.string
-    })
-  ),
+  property: Object as PropType<Config>,
   title: propTypes.string
 })
-
+const { property } = toRefs(props)
+const timeConfig = computed(() => {
+  let obj = Object.assign(
+    {
+      showType: 'datetime',
+      rangeSeparator: '-',
+      prefixIcon: 'Calendar',
+      startPlaceholder: t('datasource.start_time'),
+      endPlaceholder: t('datasource.end_time'),
+      format: 'YYYY-MM-DD HH:mm:ss',
+      valueFormat: 'YYYY-MM-DD HH:mm:ss',
+      size: 'default',
+      placement: 'bottom-end'
+    },
+    property.value
+  )
+  return obj
+})
 const state = reactive({
-  currentStatus: [],
-  activeStatus: []
+  modelValue: []
 })
 
-const elPopoverU = ref(null)
-const more = ref(null)
-
-const statusChange = (id: string | number) => {
-  state.activeStatus = state.activeStatus.filter(ele => ele.id !== id)
+const emits = defineEmits(['filter-change'])
+const onChange = () => {
+  emits('filter-change', state.modelValue)
 }
-const selectStatus = ids => {
-  const [item] = ids
-  state.activeStatus.push(item)
-  state.currentStatus = []
-  nextTick(() => {
-    elPopoverU.value.hide()
-    more.value.click()
-  })
+const clear = () => {
+  state.modelValue = []
 }
-
-const statusListNotSelect = computed(() => {
-  return props.statusList.filter(ele => !state.activeStatus.map(t => t.id).includes(ele.id))
-})
-
 defineExpose({
-  activeStatus: state.activeStatus
+  clear
 })
 </script>
 
@@ -48,108 +68,42 @@ defineExpose({
   <div class="filter">
     <span>{{ title }}</span>
     <div class="filter-item">
-      <span
-        v-for="ele in state.activeStatus"
-        :key="ele.id"
-        class="item active"
-        @click="statusChange(ele.id)"
-        >{{ $t(ele.name) }}</span
-      >
-      <slot v-if="!!statusListNotSelect.length">
-        <el-popover
-          :show-arrow="false"
-          ref="elPopoverU"
-          placement="bottom"
-          popper-class="filter-popper"
-          width="200"
-          trigger="click"
-        >
-          <el-select
-            :teleported="false"
-            style="width: 100%"
-            v-model="state.currentStatus"
-            value-key="id"
-            filterable
-            multiple
-            @change="selectStatus"
-          >
-            <el-option
-              v-for="item in statusListNotSelect"
-              :key="item.name"
-              :label="item.name"
-              :value="item"
-            />
-          </el-select>
-          <template #reference>
-            <span ref="more" class="more">
-              <el-icon>
-                <Icon name="icon_add_outlined"> </Icon>
-              </el-icon>
-              更多
-            </span>
-          </template>
-        </el-popover>
-      </slot>
+      <el-date-picker
+        v-model="state.modelValue"
+        :type="timeConfig.showType"
+        :range-separator="timeConfig.rangeSeparator"
+        :prefix-icon="timeConfig.prefixIcon"
+        :start-placeholder="timeConfig.startPlaceholder"
+        :end-placeholder="timeConfig.endPlaceholder"
+        :format="timeConfig.format"
+        :value-format="timeConfig.valueFormat"
+        key="drawer-time-filt"
+        :size="timeConfig.size"
+        @change="onChange"
+        :placement="timeConfig.placement"
+      />
     </div>
   </div>
 </template>
 <style lang="less" scope>
 .filter {
   display: flex;
-  min-height: 46px;
+  min-height: 32px;
 
   > :nth-child(1) {
     color: var(--deTextSecondary, #1f2329);
-    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+    font-family: 'PingFang SC';
     font-style: normal;
     font-weight: 400;
     font-size: 14px;
     line-height: 24px;
     white-space: nowrap;
     width: 116px;
+    margin-top: 5px;
   }
 
   .filter-item {
     flex: 1;
-
-    .item,
-    .more {
-      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
-      white-space: nowrap;
-      font-size: 14px;
-      font-weight: 400;
-      line-height: 24px;
-      margin-right: 12px;
-      text-align: center;
-      padding: 1px 6px;
-      background: var(--deTextPrimary5, #f5f6f7);
-      color: var(--deTextPrimary, #1f2329);
-      border-radius: 2px;
-      cursor: pointer;
-      display: inline-block;
-      margin-bottom: 12px;
-    }
-
-    .active,
-    .more:hover {
-      background: var(--primary10, rgba(51, 112, 255, 0.1));
-      color: var(--primaryselect, #0c296e);
-    }
-
-    .more {
-      white-space: nowrap;
-      display: inline-flex;
-      align-items: center;
-      i {
-        margin-right: 5px;
-      }
-    }
   }
-}
-</style>
-<style lang="less">
-.filter-popper {
-  padding: 0 !important;
-  background: #fff !important;
 }
 </style>

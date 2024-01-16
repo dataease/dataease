@@ -60,12 +60,13 @@ public class SqlparserUtils {
     }
 
     private static void getDependencies(SqlNode sqlNode, Boolean fromOrJoin) {
-
+        if (sqlNode == null) {
+            return;
+        }
         if (sqlNode.getKind() == JOIN) {
             SqlJoin sqlKind = (SqlJoin) sqlNode;
 
         } else if (sqlNode.getKind() == IDENTIFIER) {
-
         } else if (sqlNode.getKind() == AS) {
             SqlBasicCall sqlKind = (SqlBasicCall) sqlNode;
         } else if (sqlNode.getKind() == SELECT) {
@@ -80,9 +81,19 @@ public class SqlparserUtils {
                 SqlNode newWhere = sqlKind.getWhere().accept(getSqlShuttle());
                 sqlKind.setWhere(newWhere);
             }
-
-        } else {
-            // TODO 这里可根据需求拓展处理其他类型的 sqlNode
+        } else if (sqlNode.getKind() == ORDER_BY) {
+            SqlOrderBy sqlKind = (SqlOrderBy) sqlNode;
+            List<SqlNode> operandList = sqlKind.getOperandList();
+            for (int i = 0; i < operandList.size(); i++) {
+                getDependencies(operandList.get(i), false);
+            }
+        } else if (sqlNode.getKind() == UNION) {
+            SqlBasicCall sqlKind = (SqlBasicCall) sqlNode;
+            if (sqlKind.getOperandList().size() >= 2) {
+                for (int i = 0; i < sqlKind.getOperandList().size(); i++) {
+                    getDependencies(sqlKind.getOperandList().get(i), false);
+                }
+            }
         }
     }
 

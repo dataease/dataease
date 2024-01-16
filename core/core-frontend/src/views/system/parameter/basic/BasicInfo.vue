@@ -22,7 +22,7 @@ const editor = ref()
 const infoTemplate = ref()
 const tooltips = [
   {
-    key: '请求超时时间',
+    key: 'setting_basic.frontTimeOut',
     val: '请求超时时间(单位：秒，注意：保存后刷新浏览器生效)'
   }
 ]
@@ -45,6 +45,7 @@ const search = cb => {
         item.pval = item.pval
       }
       item.pkey = 'setting_' + item.pkey
+      console.log(item.pkey)
       state.templateList.push(item)
     }
     cb && cb()

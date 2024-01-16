@@ -39,4 +39,8 @@ public interface SysParameterApi {
     @PostMapping("/basic/save")
     void saveBasicSetting(@RequestBody List<SettingItemVO> settingItemVOS);
 
+    @Operation(summary = "查询超时时间(非xpack)")
+    @GetMapping("/requestTimeOut")
+    public Integer RequestTimeOut();
+
 }

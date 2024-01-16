@@ -14,3 +14,8 @@ dataease:
   apisix-api:
     domain: http://apisix:9180
     key: DE_APISIX_KEY
+task:
+  executor:
+    address: http://sync-task-actuator:9001
+    log:
+      path: /opt/dataease2.0/logs/sync-task/task-handler-log
