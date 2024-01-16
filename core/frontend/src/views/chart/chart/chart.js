@@ -1108,7 +1108,8 @@ export const BASE_TREEMAP = {
       breadcrumb: {
         show: false
       },
-      data: []
+      data: [],
+      nodeClick: false
     }
   ]
 }
