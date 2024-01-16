@@ -1192,7 +1192,10 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
-                    <el-row class="padding-lr">
+                    <el-row
+                      v-if="view.type === 'bar-time-range'"
+                      class="padding-lr"
+                    >
                       <span>
                         {{ $t('chart.chart_bar_time2') }}
                       </span>
