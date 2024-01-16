@@ -187,7 +187,7 @@
             >
               <el-select
                 v-model="rowSubTotalItem.aggregation"
-                :disabled="colNum < 2"
+                :disabled="rowNum < 2"
                 :placeholder="$t('chart.aggregation')"
                 size="mini"
                 @change="changeTotalAggr(rowSubTotalItem, totalForm.row.calcSubTotals.cfg, 'row')"
