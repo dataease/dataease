@@ -102,7 +102,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             }
             VisualizationWatermark watermark = watermarkMapper.selectById("system_default");
             VisualizationWatermarkVO watermarkVO = new VisualizationWatermarkVO();
-            BeanUtils.copyBean(watermarkVO,watermark);
+            BeanUtils.copyBean(watermarkVO, watermark);
             result.setWatermarkInfo(watermarkVO);
             return result;
         } else {
@@ -117,9 +117,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
         visualizationInfo.setNodeType(request.getNodeType() == null ? DataVisualizationConstants.NODE_TYPE.LEAF : request.getNodeType());
-        if(request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()){
+        if (request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()) {
             visualizationInfo.setSelfWatermarkStatus(1);
-        }else{
+        } else {
             visualizationInfo.setSelfWatermarkStatus(0);
         }
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
@@ -137,17 +137,17 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
-        if(request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()){
+        if (request.getSelfWatermarkStatus() != null && request.getSelfWatermarkStatus()) {
             visualizationInfo.setSelfWatermarkStatus(1);
-        }else{
+        } else {
             visualizationInfo.setSelfWatermarkStatus(0);
         }
-        if(DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())){
+        if (DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())) {
             // 复制更新 新建权限插入
             visualizationInfoMapper.deleteById(dvId);
             visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
             coreVisualizationManage.innerSave(visualizationInfo);
-        }else{
+        } else {
             // 检查当前节点的pid是否一致如果不一致 需要调用move 接口(预存 可能会出现pid =-1的情况)
             if (request.getPid() != -1) {
                 QueryWrapper<DataVisualizationInfo> queryWrapper = new QueryWrapper<>();
@@ -241,7 +241,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         extDataVisualizationMapper.copyLinkJumpInfo(copyId);
         extDataVisualizationMapper.copyLinkJumpTargetInfo(copyId);
         DataVisualizationInfo visualizationInfoTarget = new DataVisualizationInfo();
-        BeanUtils.copyBean(visualizationInfoTarget,newDv);
+        BeanUtils.copyBean(visualizationInfoTarget, newDv);
         visualizationInfoTarget.setPid(-1L);
         coreVisualizationManage.preInnerSave(visualizationInfoTarget);
         return String.valueOf(newDvId);
@@ -271,7 +271,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
             name = visualizationTemplate.getName();
             dvType = visualizationTemplate.getDvType();
             // 模板市场记录
-            coreOptRecentManage.saveOpt(request.getTemplateId(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE,OptConstants.OPT_TYPE.NEW);
+            coreOptRecentManage.saveOpt(request.getTemplateId(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
+            VisualizationTemplate visualizationTemplateUpdate = new VisualizationTemplate();
+            visualizationTemplateUpdate.setId(visualizationTemplate.getId());
+            visualizationTemplateUpdate.setUseCount(visualizationTemplate.getUseCount() == null ? 0 : visualizationTemplate.getUseCount() + 1);
+            templateMapper.updateById(visualizationTemplateUpdate);
         } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
             templateStyle = request.getCanvasStyleData();
             templateData = request.getComponentData();
@@ -291,7 +295,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             name = templateFileInfo.getName();
             dvType = templateFileInfo.getDvType();
             // 模板市场记录
-            coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE,OptConstants.OPT_TYPE.NEW);
+            coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
         }
         // 解析动态数据
         Map<String, String> dynamicDataMap = JsonUtil.parseObject(dynamicData, Map.class);
@@ -302,7 +306,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             String originViewId = entry.getKey();
             String originViewData = JsonUtil.toJSONString(entry.getValue()).toString();
             ChartViewDTO chartView = JsonUtil.parseObject(originViewData, ChartViewDTO.class);
-            if(chartView == null){
+            if (chartView == null) {
                 continue;
             }
             Long newViewId = IDUtils.snowID();

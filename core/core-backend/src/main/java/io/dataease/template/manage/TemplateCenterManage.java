@@ -121,13 +121,17 @@ public class TemplateCenterManage {
 
 
     public MarketBaseResponse searchTemplateRecommend() {
+        MarketTemplateV2BaseResponse v2BaseResponse = null;
+        Map<String, String> templateParams = sysParameterManage.groupVal("template.");
+        // 模版市场推荐
         try {
-            Map<String, String> templateParams = sysParameterManage.groupVal("template.");
-            return baseResponseV2TransRecommend(templateQuery(templateParams), templateParams.get("template.url"));
+            v2BaseResponse = templateQuery(templateParams);
         } catch (Exception e) {
             DEException.throwException(e);
         }
-        return null;
+        // 模版管理使用次数推荐
+        List<TemplateMarketDTO> manage = searchTemplateFromManage();
+        return baseResponseV2TransRecommend(v2BaseResponse, templateParams.get("template.url"));
     }
 
     public MarketPreviewBaseResponse searchTemplatePreview() {
