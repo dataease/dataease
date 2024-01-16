@@ -227,10 +227,14 @@ export const DEFAULT_TOTAL = {
     subLabel: '小计',
     subTotalsDimensions: [],
     calcTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      // { dataeaseName, aggregation }
+      cfg: []
     },
     calcSubTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      // { dataeaseName, aggregation }
+      cfg: []
     },
     totalSort: 'none', // asc,desc
     totalSortField: ''
@@ -244,10 +248,14 @@ export const DEFAULT_TOTAL = {
     subLabel: '小计',
     subTotalsDimensions: [],
     calcTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      // { dataeaseName, aggregation }
+      cfg: []
     },
     calcSubTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      // { dataeaseName, aggregation }
+      cfg: []
     },
     totalSort: 'none', // asc,desc
     totalSortField: ''
