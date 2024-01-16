@@ -33,17 +33,21 @@ const onBaseChange = () => {
 const themeAttrChange = (custom, property, value) => {
   if (canvasAttrInit) {
     Object.keys(canvasViewInfo.value).forEach(function (viewId) {
-      const viewInfo = canvasViewInfo.value[viewId]
-      if (custom === 'customAttr') {
-        merge(viewInfo['customAttr'], value)
-      } else {
-        Object.keys(value).forEach(function (key) {
-          if (viewInfo[custom][property][key] !== undefined) {
-            viewInfo[custom][property][key] = value[key]
-          }
-        })
+      try {
+        const viewInfo = canvasViewInfo.value[viewId]
+        if (custom === 'customAttr') {
+          merge(viewInfo['customAttr'], value)
+        } else {
+          Object.keys(value).forEach(function (key) {
+            if (viewInfo[custom][property][key] !== undefined) {
+              viewInfo[custom][property][key] = value[key]
+            }
+          })
+        }
+        useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+      } catch (e) {
+        console.warn('themeAttrChange-error')
       }
-      useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
     })
     snapshotStore.recordSnapshotCache('renderChart')
   }
