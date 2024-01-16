@@ -7,6 +7,9 @@ ba = "ba"
 referer = "referer"
 keynode = "keynode"
 SCHEM = "SCHEM"
+wheres = "wheres"
+Wheres = "Wheres"
+Parenthesed = "Parenthesed"
 
 [files]
 extend-exclude = [

@@ -2194,7 +2194,7 @@ export default {
     when_share: 'When share',
     share_to: 'Share to',
     share_to_some: 'Share [{some}] to',
-    org: 'Orgnization',
+    org: 'Organization',
     role: 'Role',
     user: 'User',
     datalist: 'Chart List',
