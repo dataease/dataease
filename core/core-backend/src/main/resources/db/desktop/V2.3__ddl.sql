@@ -22,4 +22,4 @@ ALTER TABLE `visualization_template`
     ADD COLUMN `use_count` int NULL DEFAULT 0 COMMENT '使用次数';
 
 update visualization_template set use_count = 0;
-INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (9, 'basic.frontTimeOut', '60', 'text', 1);
+
