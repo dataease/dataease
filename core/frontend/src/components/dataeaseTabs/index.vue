@@ -1,7 +1,7 @@
 <template>
   <el-tabs
     ref="tabsConstom"
-    :class="['de-tabs',...tabClassName]"
+    :class="['de-tabs-component',...tabClassName]"
     :style="tabStyle"
     v-bind="$attrs"
     v-on="$listeners"
@@ -60,7 +60,7 @@ export default {
 }
 </script>
 <style lang="scss">
-@import "../../styles/de-tabs";
+@import "../../styles/de-tabs-component";
 
 </style>
 
