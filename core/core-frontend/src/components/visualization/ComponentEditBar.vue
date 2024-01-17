@@ -1,6 +1,7 @@
 <template>
   <div
     class="bar-main"
+    v-if="!mobileInPc"
     :class="[
       showEditPosition,
       {
@@ -249,7 +250,7 @@ const props = defineProps({
 })
 
 const { element, index, showPosition, canvasId } = toRefs(props)
-const { batchOptStatus, pcMatrixCount, curComponent, componentData, canvasViewInfo } =
+const { batchOptStatus, pcMatrixCount, curComponent, componentData, canvasViewInfo, mobileInPc } =
   storeToRefs(dvMainStore)
 
 const state = reactive({

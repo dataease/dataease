@@ -104,6 +104,7 @@ const hasCurrentRouter = (locations, routers, index) => {
     kids = router.children
     return router.path === location || '/' + location === router.path
   })
+
   if (isvalid && index < locations.length - 1) {
     return hasCurrentRouter(locations, kids, index + 1)
   }

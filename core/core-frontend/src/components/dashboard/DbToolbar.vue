@@ -182,6 +182,10 @@ const multiplexingCanvasOpen = () => {
   multiplexingRef.value.dialogInit()
 }
 
+const mobileConfig = () => {
+  useEmitt().emitter.emit('mobileConfig')
+}
+
 eventBus.on('preview', previewInner)
 eventBus.on('save', saveCanvasWithCheck)
 eventBus.on('clearCanvas', clearCanvas)
@@ -416,6 +420,12 @@ onMounted(() => {
             title="复用"
             is-label
             @customClick="multiplexingCanvasOpen"
+          ></component-button-label>
+          <component-button-label
+            icon-name="icon_copy_filled"
+            title="移动端"
+            is-label
+            @customClick="mobileConfig"
           ></component-button-label>
         </div>
       </template>

@@ -5,6 +5,8 @@ import { storeToRefs } from 'pinia'
 import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
 import router from '@/router'
+import MobileConfigPanel from './MobileConfigPanel.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import DbToolbar from '@/components/dashboard/DbToolbar.vue'
 import ViewEditor from '@/views/chart/components/editor/index.vue'
 import { getDatasetTree } from '@/api/dataset'
@@ -29,7 +31,6 @@ const eventCheck = e => {
 }
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-
 const {
   componentData,
   curComponent,
@@ -68,8 +69,20 @@ const checkPer = async resourceId => {
   await interactiveStore.setInteractive(request)
   return check(wsCache.get('panel-weight'), resourceId, 4)
 }
+
+const mobileConfig = ref(false)
+
+const onMobileConfig = () => {
+  mobileConfig.value = true
+}
 // 全局监听按键事件
 onMounted(async () => {
+  useEmitt({
+    name: 'mobileConfig',
+    callback: () => {
+      onMobileConfig()
+    }
+  })
   window.addEventListener('storage', eventCheck)
   const { resourceId, opt, pid, createType } = window.DataEaseBi || router.currentRoute.value.query
   const checkResult = await checkPer(resourceId)
@@ -123,7 +136,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="dv-common-layout dv-teleport-query">
+  <div class="dv-common-layout dv-teleport-query" v-if="!mobileConfig">
     <DbToolbar />
     <el-container
       class="dv-layout-container"
@@ -189,6 +202,7 @@ onUnmounted(() => {
       </dv-sidebar>
     </el-container>
   </div>
+  <MobileConfigPanel @pcMode="mobileConfig = false" v-else></MobileConfigPanel>
 </template>
 
 <style lang="less">

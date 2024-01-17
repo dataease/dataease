@@ -53,7 +53,7 @@ const props = defineProps({
 const { element, view, scale } = toRefs(props)
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
+const { curComponent, canvasViewInfo, mobileInPc } = storeToRefs(dvMainStore)
 const canEdit = ref(false)
 const queryConfig = ref()
 const defaultStyle = {
@@ -346,7 +346,11 @@ const autoStyle = computed(() => {
       <div v-if="!listVisible.length" class="no-list-label flex-align-center">
         <div class="container flex-align-center">
           将右侧的字段拖拽到这里 或 点击
-          <el-button :disabled="showPosition === 'preview'" @click="addCriteriaConfigOut" text>
+          <el-button
+            :disabled="showPosition === 'preview' || mobileInPc"
+            @click="addCriteriaConfigOut"
+            text
+          >
             添加查询条件
           </el-button>
         </div>

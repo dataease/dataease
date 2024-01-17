@@ -118,7 +118,7 @@ import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
-const { tabMoveInActiveId, bashMatrixInfo, editMode } = storeToRefs(dvMainStore)
+const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
 
 const props = defineProps({
@@ -168,7 +168,7 @@ const editableTabsValue = ref(null)
 const noBorderColor = ref('none')
 let currentInstance
 
-const isEditMode = computed(() => editMode.value === 'edit' && isEdit.value)
+const isEditMode = computed(() => editMode.value === 'edit' && isEdit.value && !mobileInPc.value)
 
 const calcTabLength = () => {
   setTimeout(() => {
