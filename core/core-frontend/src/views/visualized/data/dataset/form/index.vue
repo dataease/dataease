@@ -513,6 +513,10 @@ const confirmEditCalc = () => {
         return
       }
       const obj = cloneDeep(calcEdit.value.fieldForm)
+      const { deType, dateFormat, deExtractType } = obj
+      obj.dateFormat = deType === 1 ? dateFormat : ''
+      obj.dateFormatType = deType === 1 ? dateFormat : ''
+      obj.deTypeArr = deType === 1 && deExtractType === 0 ? [deType, dateFormat] : [deType]
       const result = allfields.value.findIndex(ele => obj.id === ele.id)
       if (result !== -1) {
         allfields.value.splice(result, 1, obj)
