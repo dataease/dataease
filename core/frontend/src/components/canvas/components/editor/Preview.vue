@@ -1,6 +1,7 @@
 <template>
   <div
     :id="previewMainDomId"
+    :ref="previewOutRefId"
     class="bg"
     :style="customStyle"
     @scroll="canvasScroll"
@@ -9,7 +10,9 @@
       v-if="canvasId==='canvas-main'"
       ref="canvas-opt-bar"
       :canvas-style-data="canvasStyleData"
+      :back-to-top-btn="backToTopBtnShow"
       @link-export-pdf="downloadAsPDF"
+      @back-to-top="backToTop"
     />
     <div
       :id="previewDomId"
@@ -239,6 +242,7 @@ export default {
   },
   data() {
     return {
+      backToTopBtnShow: false,
       imageDownloading: false,
       chartDetailsVisible: false,
       canvasMain: null,
@@ -251,6 +255,7 @@ export default {
       previewMainDomId: 'preview-main-' + this.canvasId,
       previewDomId: 'preview-' + this.canvasId,
       previewRefId: 'preview-ref-' + this.canvasId,
+      previewOutRefId: 'preview-out-ref-' + this.canvasId,
       previewTempDomId: 'preview-temp-' + this.canvasId,
       previewTempRefId: 'preview-temp-ref-' + this.canvasId,
       isShowPreview: false,
@@ -777,6 +782,8 @@ export default {
       this.$store.commit('openMobileLayout')
     },
     canvasScroll() {
+      // 当滚动距离超过 100px 时显示返回顶部按钮，否则隐藏按钮
+      this.backToTopBtnShow = this.$refs[this.previewOutRefId].scrollTop > 200
       bus.$emit('onScroll')
     },
     initListen() {
@@ -805,6 +812,9 @@ export default {
           })
         }
       }, 1500)
+    },
+    backToTop() {
+      this.$refs[this.previewOutRefId].scrollTop = 0
     },
     downloadAsPDF() {
       this.dataLoading = true

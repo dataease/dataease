@@ -28,7 +28,7 @@
         ><i
           style="width: 12px;height: 12px"
           class="icon iconfont icon-quxiaoliandong"
-        />{{ $t('panel.remove_all_linkage') }}</el-button>
+        />{{ $t('panel.remove_all_linkage') }}111</el-button>
         <el-button
           size="mini"
           @click="exportPDF"
@@ -46,18 +46,32 @@
             style="width: 12px;height: 12px"
             :icon-class="fullscreenState?'public_fullscreen_exit':'public_fullscreen'"
           />{{ fullscreenState?$t('panel.fullscreen_exit'): $t('panel.fullscreen_preview') }}</span></el-button>
+        <el-button
+          v-show="backToTopBtn"
+          size="mini"
+          type="warning"
+          @click="backToTop"
+        ><i class="icon iconfont icon-back-top" />{{ $t('panel.back_to_top') }}</el-button>
       </el-button-group>
     </div>
 
     <div
-      v-else-if="existLinkage"
+      v-else-if="existLinkage || backToTopBtn"
       class="bar-main-right"
     >
       <el-button
+        v-if="existLinkage"
         size="mini"
         type="warning"
         @click="clearAllLinkage"
       ><i class="icon iconfont icon-quxiaoliandong" />{{ $t('panel.remove_all_linkage') }}</el-button>
+
+      <el-button
+        v-if="backToTopBtn"
+        size="mini"
+        type="warning"
+        @click="backToTop"
+      ><i class="icon iconfont icon-back-top" />{{ $t('panel.back_to_top') }}</el-button>
     </div>
   </div>
 </template>
@@ -72,6 +86,10 @@ export default {
     canvasStyleData: {
       type: Object,
       default: null
+    },
+    backToTopBtn: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -168,6 +186,9 @@ export default {
       const val = this.$refs['widget-div'].style.display
 
       this.$refs['widget-div'].style.display = val ? '' : 'block'
+    },
+    backToTop() {
+      this.$emit('back-to-top')
     }
   }
 }

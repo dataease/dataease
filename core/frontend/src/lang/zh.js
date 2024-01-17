@@ -2334,6 +2334,7 @@ export default {
     switch_picture: '更换图片',
     select_field: '选择视图字段',
     remove_all_linkage: '清除所有联动',
+    back_to_top: '返回顶部',
     exit_un_march_linkage_field: '存在未匹配联动关系的字段',
     details: '详情',
     setting: '设置',
