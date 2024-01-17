@@ -75,4 +75,6 @@ public interface InteractiveAuthApi {
     @GetMapping("/query2Root/{id}/{flag}")
     List<ResourceNodeVO> query2Root(@PathVariable("id") Long id, @PathVariable("flag") Integer flag);
 
+    @GetMapping("/checkEmpty")
+    boolean checkEmpty();
 }
