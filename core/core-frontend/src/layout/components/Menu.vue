@@ -40,4 +40,7 @@ const menuSelect = (index: string, indexPath: string[]) => {
   width: 100%;
   min-height: 400px;
 }
+.ed-menu {
+  border: none;
+}
 </style>
