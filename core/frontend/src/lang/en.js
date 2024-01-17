@@ -2339,6 +2339,7 @@ export default {
     switch_picture: 'Switch Picture',
     select_field: 'Select View Field',
     remove_all_linkage: 'Remove All Linkage',
+    back_to_top: 'Back To Top',
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',
     setting: 'Setting',
