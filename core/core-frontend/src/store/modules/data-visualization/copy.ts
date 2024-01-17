@@ -129,6 +129,15 @@ export const copyStore = defineStore('copy', {
         composeStore.areaData.components.forEach(component => {
           dvMainStore.deleteComponentById(component.id)
         })
+        composeStore.setAreaData({
+          style: {
+            left: 0,
+            top: 0,
+            width: 0,
+            height: 0
+          },
+          components: []
+        })
       }
       snapshotStore.recordSnapshotCache()
       this.isCut = true

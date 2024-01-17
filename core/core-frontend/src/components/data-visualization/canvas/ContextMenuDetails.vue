@@ -53,8 +53,12 @@ const menuOpt = optName => {
 }
 
 const cut = () => {
-  const curInfo = getCurInfo()
-  copyStore.cut(curInfo.componentData)
+  if (curComponent.value) {
+    const curInfo = getCurInfo()
+    copyStore.cut(curInfo.componentData)
+  } else if (areaData.value.components.length) {
+    copyStore.cut()
+  }
   menuOpt('cut')
 }
 
