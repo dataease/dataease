@@ -35,6 +35,7 @@ export interface ITableField {
   fieldType: string
   remarks: string
   fieldSize: number
+  fieldPrecision: number
   fieldPk: boolean
   fieldIndex: boolean
 }

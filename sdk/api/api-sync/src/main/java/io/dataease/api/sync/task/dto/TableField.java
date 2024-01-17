@@ -14,9 +14,13 @@ public class TableField {
     private String remarks;
     private String fieldType;
     private int fieldSize;
+    /**
+     * 精度
+     */
+    private int fieldPrecision;
+
     private boolean fieldPk;
     private boolean fieldIndex;
-    private int accuracy;
     private Object defaultValue;
 
 }
