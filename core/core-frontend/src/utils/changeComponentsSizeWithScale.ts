@@ -83,6 +83,9 @@ function format(value, scale) {
   return multiply(value, divide(parseFloat(scale), 100))
 }
 
-function getOriginStyle(value, scale) {
+function getOriginStyle(value = 0, scale) {
+  if (!value) {
+    value = 0
+  }
   return divide(value, divide(parseFloat(scale), 100))
 }

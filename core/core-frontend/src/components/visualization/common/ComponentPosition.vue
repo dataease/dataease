@@ -67,6 +67,9 @@ const positionKeysGroup = computed(() => {
 })
 
 const onPositionChange = key => {
+  if (!positionMounted.value[key]) {
+    positionMounted.value[key] = 0
+  }
   curComponent.value.style[key] = Math.round(
     (positionMounted.value[key] * canvasStyleData.value.scale) / 100
   )
