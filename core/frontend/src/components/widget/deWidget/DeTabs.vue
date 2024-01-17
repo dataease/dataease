@@ -131,7 +131,7 @@
         v-model="textarea"
         type="textarea"
         :rows="2"
-        maxlength="10"
+        maxlength="20"
         show-word-limit
         :placeholder="$t('dataset.input_content')"
       />
