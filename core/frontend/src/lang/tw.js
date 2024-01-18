@@ -2079,7 +2079,7 @@ export default {
     component_color: '組件配色',
     chart_title: '圖表標題',
     filter_component: '過濾組件',
-    enable_refresh_view: '開啟刷新',
+    enable_refresh_view: '数据刷新',
     enable_view_loading: '視圖加載提示',
     image_size_tips: '圖片請不要大於15M',
     image_add_tips: '只能插入圖片',
