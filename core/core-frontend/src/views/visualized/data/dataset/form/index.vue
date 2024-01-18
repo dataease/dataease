@@ -212,6 +212,18 @@ const dfsName = (arr, id) => {
   return name
 }
 
+const dfsChild = arr => {
+  return arr.filter(ele => {
+    if (ele.leaf) {
+      return true
+    }
+    if (!!ele.children?.length) {
+      ele.children = dfsChild(ele.children || [])
+    }
+    return !!ele.children?.length
+  })
+}
+
 const getDsName = (id: string) => {
   return dfsName(state.dataSourceList, id)
 }
@@ -860,9 +872,9 @@ const getDatasource = () => {
   getDatasourceList().then(res => {
     const _list = (res as unknown as DataSource[]) || []
     if (_list && _list.length > 0 && _list[0].id === '0') {
-      state.dataSourceList = _list[0].children
+      state.dataSourceList = dfsChild(_list[0].children)
     } else {
-      state.dataSourceList = _list
+      state.dataSourceList = dfsChild(_list)
     }
   })
 }
