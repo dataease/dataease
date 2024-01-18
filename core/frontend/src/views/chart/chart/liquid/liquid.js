@@ -8,7 +8,7 @@ let labelFormatter = null
 export function baseLiquid(plot, container, chart) {
   let value = 0
   const colors = []
-  let max, radius, bgColor, shape, labelContent, liquidStyle
+  let max, radius, bgColor, shape, labelContent, liquidStyle, originVal = 0
   if (chart.data?.series.length > 0) {
     value = chart.data.series[0].data[0]
   }
@@ -33,6 +33,7 @@ export function baseLiquid(plot, container, chart) {
       radius = parseFloat((size.liquidSize ? size.liquidSize : DEFAULT_SIZE.liquidSize) / 100)
       shape = size.liquidShape ? size.liquidShape : DEFAULT_SIZE.liquidShape
     }
+    originVal = (parseFloat(value) / parseFloat(max))
     // label
     if (customAttr.label) {
       const label = JSON.parse(JSON.stringify(customAttr.label))
@@ -43,9 +44,8 @@ export function baseLiquid(plot, container, chart) {
             fontSize: parseInt(label.fontSize),
             color: label.color
           }),
-          formatter: function(v) {
-            const value = v.percent
-            return valueFormatter(value, labelFormatter)
+          formatter: () => {
+            return valueFormatter(originVal, labelFormatter)
           }
         }
       } else {
@@ -58,11 +58,11 @@ export function baseLiquid(plot, container, chart) {
   if (senior?.threshold) {
     const { liquidThreshold } = senior?.threshold
     if (liquidThreshold) {
-      liquidStyle = ({ percent }) => {
+      liquidStyle = () => {
         const thresholdArr = liquidThreshold.split(',')
         let index = 0
         thresholdArr.forEach((v, i) => {
-          if (percent > v / 100) {
+          if (originVal > v / 100) {
             index = i + 1
           }
         })
@@ -93,7 +93,7 @@ export function baseLiquid(plot, container, chart) {
         backgroundColor: bgColor
       }
     },
-    percent: (parseFloat(value) / parseFloat(max)),
+    percent: originVal > 1 ? 1 : originVal,
     radius: radius,
     shape: shape,
     statistic: {
