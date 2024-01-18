@@ -6,6 +6,7 @@ import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
+import java.net.URLDecoder;
 import java.util.Arrays;
 import java.util.List;
 
@@ -25,7 +26,7 @@ public class Mysql extends DatasourceConfiguration {
                     .replace("DATABASE", getDataBase().trim());
         } else {
             for (String illegalParameter : illegalParameters) {
-                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase())) {
+                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
                     DEException.throwException("Illegal parameter: " + illegalParameter);
                 }
             }
