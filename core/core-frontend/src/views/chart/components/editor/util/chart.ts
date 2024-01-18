@@ -333,7 +333,7 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,
-  fontSize: '18',
+  fontSize: 16,
   color: '#ffffff',
   hPosition: 'left',
   vPosition: 'top',
@@ -349,7 +349,7 @@ export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
 
 export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
   show: true,
-  fontSize: '18',
+  fontSize: 16,
   hPosition: 'left',
   vPosition: 'top',
   isItalic: false,
