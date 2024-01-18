@@ -44,7 +44,7 @@ public class ResourceMonitorManage {
         if (CollectionUtils.isNotEmpty(dsFreeResources)) {
             List<PerMonitorNodeBO> dsBos = dsFreeResources.stream().map(node -> {
                 PerMonitorNodeBO bo = BeanUtils.copyBean(new PerMonitorNodeBO(), node);
-                bo.setLeaf(StringUtils.equals("folder", node.getType()));
+                bo.setLeaf(!StringUtils.equals("folder", node.getType()));
                 return bo;
             }).collect(Collectors.toList());
             List<PerMonitorNodeBO> dsTree = TreeUtils.mergeTree(dsBos, PerMonitorNodeBO.class, false);
@@ -55,7 +55,7 @@ public class ResourceMonitorManage {
         if (CollectionUtils.isNotEmpty(datasetFreeResources)) {
             List<PerMonitorNodeBO> datasetBos = datasetFreeResources.stream().map(node -> {
                 PerMonitorNodeBO bo = BeanUtils.copyBean(new PerMonitorNodeBO(), node);
-                bo.setLeaf(StringUtils.equals("folder", node.getNodeType()));
+                bo.setLeaf(!StringUtils.equals("folder", node.getNodeType()));
                 return bo;
             }).collect(Collectors.toList());
             List<PerMonitorNodeBO> datasetTree = TreeUtils.mergeTree(datasetBos, PerMonitorNodeBO.class, false);
@@ -69,7 +69,7 @@ public class ResourceMonitorManage {
                 List<VisualFreeResource> freeResource = entry.getValue();
                 List<PerMonitorNodeBO> visualBos = freeResource.stream().map(node -> {
                     PerMonitorNodeBO bo = BeanUtils.copyBean(new PerMonitorNodeBO(), node);
-                    bo.setLeaf(StringUtils.equals("folder", node.getNodeType()));
+                    bo.setLeaf(!StringUtils.equals("folder", node.getNodeType()));
                     return bo;
                 }).collect(Collectors.toList());
                 result.put(convertBusiFlag(entry.getKey()), TreeUtils.mergeTree(visualBos, PerMonitorNodeBO.class, false));

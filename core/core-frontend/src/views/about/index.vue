@@ -11,7 +11,7 @@ import {
   syncFreeApi,
   delFreeApi
 } from '@/api/about'
-import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { ElMessage, ElMessageBox, Action } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dialogVisible = ref(false)
@@ -141,14 +141,20 @@ const checkFree = () => {
         message: h('div', { class: 'free-sync-tip-box' }, childrenDomList),
         showClose: false,
         cancelButtonText: '删除',
-        confirmButtonText: '同步'
+        cancelButtonClass: 'free-cancel-bt',
+        showCancelButton: false,
+        preButtonType: 'danger',
+        preButtonText: '删除',
+        showPreButton: true,
+        confirmButtonText: '同步',
+        callback: (action: Action) => {
+          if (action === 'confirm') {
+            syncFree()
+          } else {
+            delFree
+          }
+        }
       })
-        .then(() => {
-          syncFree()
-        })
-        .catch(() => {
-          delFree()
-        })
     }
   })
 }
