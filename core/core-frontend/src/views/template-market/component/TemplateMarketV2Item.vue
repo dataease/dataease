@@ -124,6 +124,8 @@ const templateInnerPreview = e => {
 .template-button {
   justify-content: center;
   width: 100%;
+  padding-bottom: 8px;
+  display: none;
 }
 
 .bottom-area {
@@ -148,6 +150,11 @@ const templateInnerPreview = e => {
   outline: solid 1px #4b8fdf;
   color: deepskyblue;
   cursor: pointer;
+}
+.testcase-template:hover {
+  .template-button {
+    display: block;
+  }
 }
 .create-area {
   bottom: -38px !important;
