@@ -43,7 +43,7 @@ declare interface ChartTextStyle {
   /**
    * 字体大小
    */
-  fontSize: string
+  fontSize: number
   /**
    * 颜色
    */
