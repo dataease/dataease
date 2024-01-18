@@ -168,6 +168,7 @@ const saveSelfSubject = () => {
     position: absolute;
     top: 4px;
     right: 4px;
+    font-size: 12px;
   }
 }
 
