@@ -28,7 +28,7 @@
         ><i
           style="width: 12px;height: 12px"
           class="icon iconfont icon-quxiaoliandong"
-        />{{ $t('panel.remove_all_linkage') }}111</el-button>
+        />{{ $t('panel.remove_all_linkage') }}</el-button>
         <el-button
           v-if="isPcTerminal"
           size="mini"
