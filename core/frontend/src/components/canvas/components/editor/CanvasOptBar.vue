@@ -30,6 +30,7 @@
           class="icon iconfont icon-quxiaoliandong"
         />{{ $t('panel.remove_all_linkage') }}111</el-button>
         <el-button
+          v-if="downloadPdfShow"
           size="mini"
           @click="exportPDF"
         >
@@ -90,6 +91,10 @@ export default {
     backToTopBtn: {
       type: Boolean,
       default: false
+    },
+    terminal: {
+      type: String,
+      default: 'pc'
     }
   },
   data() {
@@ -99,6 +104,9 @@ export default {
     }
   },
   computed: {
+    downloadPdfShow() {
+      return this.terminal === 'PC'
+    },
     functionClass() {
       let result = 'function-light'
       if (this.canvasStyleData?.panel?.themeColor === 'dark') {

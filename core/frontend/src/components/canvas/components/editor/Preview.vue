@@ -9,6 +9,7 @@
     <canvas-opt-bar
       v-if="canvasId==='canvas-main'"
       ref="canvas-opt-bar"
+      :terminal="terminal"
       :canvas-style-data="canvasStyleData"
       :back-to-top-btn="backToTopBtnShow"
       @link-export-pdf="downloadAsPDF"
