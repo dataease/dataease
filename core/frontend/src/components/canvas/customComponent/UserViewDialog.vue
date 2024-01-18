@@ -5,10 +5,15 @@
   >
     <de-main-container
       v-show="showChartCanvas"
-      class=""
+      v-loading="exportLoading"
+      style="overflow: hidden"
+      :element-loading-text="$t('panel.data_loading')"
+      element-loading-spinner="el-icon-loading"
+      element-loading-background="rgba(220,220,220,1)"
     >
       <div
         id="chartCanvas"
+        :class="{'canvas-class-exporting':exporting}"
         class="canvas-class"
         :style="customStyle"
       >
@@ -119,7 +124,9 @@ export default {
       refId: null,
       element: {},
       lastMapChart: null,
-      linkLoading: false
+      linkLoading: false,
+      exporting: false,
+      exportLoading: false
     }
   },
   computed: {
@@ -255,7 +262,19 @@ export default {
       }
     },
     exportViewImg(callback) {
-      exportImg(this.chart.name, callback)
+      this.exportLoading = true
+      this.$nextTick(() => {
+        this.exporting = true
+        setTimeout(() => {
+          exportImg(this.chart.name, (params) => {
+            this.exporting = false
+            setTimeout(() => {
+              this.exportLoading = false
+            }, 500)
+            callback(params)
+          })
+        }, 500)
+      })
     },
     setLastMapChart(data) {
       this.lastMapChart = JSON.parse(JSON.stringify(data))
@@ -299,6 +318,10 @@ export default {
   width: 100%;
   height: 100%;
   background-size: 100% 100% !important;
+}
+.canvas-class-exporting {
+  width: 1080px!important;
+  height: 560px!important;
 }
 
 .abs-container {
