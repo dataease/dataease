@@ -6,6 +6,7 @@ import { getCurrentField } from '@/views/chart/components/js/panel/common/common
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isNumber } from 'lodash-es'
+import { TableColCell } from '@antv/s2'
 
 const { t } = useI18n()
 /**
@@ -106,15 +107,18 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
-      s2Options.colCell = node => {
+      s2Options.colCell = (node, sheet, config) => {
         if (node.colIndex === 0) {
-          if (!customAttr.tableHeader.indexLabel) {
-            node.label = ' '
-          } else {
-            node.label = customAttr.tableHeader.indexLabel
+          let indexLabel = customAttr.tableHeader.indexLabel
+          if (!indexLabel) {
+            indexLabel = ''
           }
+          const cell = new TableColCell(node, sheet, config)
+          const shape = cell.getTextShape() as any
+          shape.attrs.text = indexLabel
+          return cell
         }
-        return node.belongsCell
+        return new TableColCell(node, sheet, config)
       }
     }
 

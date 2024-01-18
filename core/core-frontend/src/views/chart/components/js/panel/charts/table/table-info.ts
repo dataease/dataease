@@ -1,4 +1,4 @@
-import { DataCell, S2Event, S2Options, TableSheet } from '@antv/s2/esm/index'
+import { S2Event, S2Options, TableColCell, TableDataCell, TableSheet } from '@antv/s2/esm/index'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
@@ -104,22 +104,25 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
-      s2Options.colCell = node => {
+      s2Options.colCell = (node, sheet, config) => {
         if (node.colIndex === 0) {
-          if (!customAttr.tableHeader.indexLabel) {
-            node.label = ' '
-          } else {
-            node.label = customAttr.tableHeader.indexLabel
+          let indexLabel = customAttr.tableHeader.indexLabel
+          if (!indexLabel) {
+            indexLabel = ''
           }
+          const cell = new TableColCell(node, sheet, config)
+          const shape = cell.getTextShape() as any
+          shape.attrs.text = indexLabel
+          return cell
         }
-        return node.belongsCell
+        return new TableColCell(node, sheet, config)
       }
       s2Options.dataCell = viewMeta => {
         if (viewMeta.colIndex === 0) {
           viewMeta.fieldValue =
             pageInfo.pageSize * (pageInfo.currentPage - 1) + viewMeta.rowIndex + 1
         }
-        return new DataCell(viewMeta, viewMeta?.spreadsheet)
+        return new TableDataCell(viewMeta, viewMeta?.spreadsheet)
       }
     }
 
