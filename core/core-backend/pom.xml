@@ -101,21 +101,6 @@
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                 </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-base</artifactId>
-                    <version>${dataease.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-permissions</artifactId>
-                    <version>${dataease.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>io.dataease</groupId>
-                    <artifactId>xpack-sync</artifactId>
-                    <version>${dataease.version}</version>
-                </dependency>
             </dependencies>
 
             <build>
