@@ -30,7 +30,7 @@
           class="icon iconfont icon-quxiaoliandong"
         />{{ $t('panel.remove_all_linkage') }}111</el-button>
         <el-button
-          v-if="downloadPdfShow"
+          v-if="isPcTerminal"
           size="mini"
           @click="exportPDF"
         >
@@ -40,6 +40,7 @@
           />{{ $t('panel.down') }}</span></el-button>
         <el-button
           id="fullscreenElement"
+          v-if="isPcTerminal"
           size="mini"
           @click="toggleFullscreen"
         >
@@ -104,7 +105,7 @@ export default {
     }
   },
   computed: {
-    downloadPdfShow() {
+    isPcTerminal() {
       return this.terminal === 'PC'
     },
     functionClass() {
