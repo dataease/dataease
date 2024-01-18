@@ -52,6 +52,14 @@ function _check_apisix_init() {
       _prepare_apisix
    fi
 }
+function _check_task_init() {
+  if [[ $DE_INSTALL_MODE != "community" ]];then
+      _prepare_task
+  fi
+}
+function _prepare_task() {
+  compose_files="${compose_files} -f docker-compose-task.yml"
+}
 function _prepare_apisix() {
    if [[ -z $DE_APISIX_KEY ]];then
       need_init_apisix=true
@@ -132,6 +140,7 @@ function status() {
 function start() {
    echo
    _check_apisix_init
+   _check_task_init
    cd ${DE_RUNNING_BASE}
    ${compose_cmd} ${compose_files} up -d
    _healthcheck

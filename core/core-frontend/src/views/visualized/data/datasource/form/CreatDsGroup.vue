@@ -272,6 +272,7 @@ const saveDataset = () => {
           showClose: false,
           tip: ''
         }
+        request.apiConfiguration = ''
         checkRepeat(request).then(res => {
           if (res) {
             ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(

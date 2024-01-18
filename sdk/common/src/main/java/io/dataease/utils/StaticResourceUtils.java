@@ -1,9 +1,10 @@
 package io.dataease.utils;
 
-import cn.hutool.core.codec.Base64Encoder;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
+import org.springframework.util.Base64Utils;
+
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
@@ -12,7 +13,7 @@ import static io.dataease.constant.StaticResourceConstants.*;
 
 public class StaticResourceUtils {
 
-    private final static String FILE_BASE_PATH = USER_HOME+ FILE_SEPARATOR+UPLOAD_URL_PREFIX;
+    private final static String FILE_BASE_PATH = USER_HOME + FILE_SEPARATOR + UPLOAD_URL_PREFIX;
 
     public static String ensureBoth(@NonNull String string, @NonNull String bothfix) {
         return ensureBoth(string, bothfix, bothfix);
@@ -53,8 +54,7 @@ public class StaticResourceUtils {
     }
 
     /**
-     *
-     * @param imgFile  local storage path
+     * @param imgFile local storage path
      * @return
      */
     public static String getImgFileToBase64(String imgFile) {
@@ -63,7 +63,7 @@ public class StaticResourceUtils {
         byte[] buffer = null;
         //Read picture byte array
         try {
-            inputStream = new FileInputStream(FILE_BASE_PATH+FILE_SEPARATOR+imgFile);
+            inputStream = new FileInputStream(FILE_BASE_PATH + FILE_SEPARATOR + imgFile);
             int count = 0;
             while (count == 0) {
                 count = inputStream.available();
@@ -72,9 +72,9 @@ public class StaticResourceUtils {
             inputStream.read(buffer);
         } catch (IOException e) {
             LogUtil.error(e);
-        }catch (Exception e){
+        } catch (Exception e) {
             LogUtil.error(e);
-        }finally {
+        } finally {
             if (inputStream != null) {
                 try {
                     // Close InputStream
@@ -85,10 +85,9 @@ public class StaticResourceUtils {
             }
         }
         // Encode byte array as Base64
-        if(buffer!=null){
-
-             return Base64Encoder.encode(buffer);
-        }else{
+        if (buffer != null) {
+            return Base64Utils.encodeToString(buffer);
+        } else {
             return null;
         }
     }

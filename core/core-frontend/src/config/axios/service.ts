@@ -13,6 +13,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { config } from './config'
 import { configHandler } from './refresh'
+
 type AxiosErrorWidthLoading<T> = T & {
   config: {
     loading?: boolean
@@ -25,8 +26,10 @@ type InternalAxiosRequestConfigWidthLoading<T> = T & {
 
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import router from '@/router'
+
 const { result_code } = config
 import { useCache } from '@/hooks/web/useCache'
+
 const { wsCache } = useCache()
 
 export const PATH_URL = window.DataEaseBi
@@ -38,10 +41,41 @@ export interface AxiosInstanceWithLoading extends AxiosInstance {
     config: AxiosRequestConfig<D> & { loading?: boolean }
   ): Promise<R>
 }
+
+const getTimeOut = () => {
+  let time = 100
+  const url = PATH_URL + '/sysParameter/requestTimeOut'
+  const xhr = new XMLHttpRequest()
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState === 4 && xhr.status === 200) {
+      if (xhr.responseText) {
+        try {
+          const response = JSON.parse(xhr.responseText)
+          if (response.code === 0) {
+            time = response.data
+          } else {
+            ElMessage.error('系统异常，请联系管理员')
+          }
+        } catch (e) {
+          ElMessage.error('系统异常，请联系管理员')
+        }
+      } else {
+        ElMessage.error('网络异常，请联系网管')
+      }
+    }
+  }
+
+  xhr.open('get', url, false)
+  xhr.send()
+  console.log(time)
+  return time
+}
+
 // 创建axios实例
+const time = getTimeOut()
 const service: AxiosInstanceWithLoading = axios.create({
   baseURL: PATH_URL, // api 的 base_url
-  timeout: config.request_timeout // 请求超时时间
+  timeout: time ? time * 1000 : config.request_timeout // 请求超时时间
 })
 const mapping = {
   'zh-CN': 'zh-CN',

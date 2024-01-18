@@ -10,8 +10,8 @@
             :min="min"
             :max="max"
             :step="step"
-            v-model="curComponent.style[key]"
-            @change="onPositionChange"
+            v-model="positionMounted[key]"
+            @change="onPositionChange(key)"
             controls-position="right"
           />
         </el-form-item>
@@ -21,7 +21,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { positionData } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -30,7 +30,13 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 const snapshotStore = snapshotStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, canvasStyleData } = storeToRefs(dvMainStore)
+const positionMounted = ref({
+  width: 0,
+  height: 0,
+  top: 0,
+  left: 0
+})
 
 withDefaults(
   defineProps<{
@@ -60,9 +66,36 @@ const positionKeysGroup = computed(() => {
   return _list
 })
 
-const onPositionChange = () => {
+const onPositionChange = key => {
+  if (!positionMounted.value[key]) {
+    positionMounted.value[key] = 0
+  }
+  curComponent.value.style[key] = Math.round(
+    (positionMounted.value[key] * canvasStyleData.value.scale) / 100
+  )
   snapshotStore.recordSnapshotCache()
 }
+
+const positionInit = () => {
+  if (curComponent.value) {
+    Object.keys(positionMounted.value).forEach(key => {
+      positionMounted.value[key] = Math.round(
+        (curComponent.value.style[key] * 100) / canvasStyleData.value.scale
+      )
+    })
+  }
+}
+
+watch(
+  () => curComponent.value,
+  () => {
+    positionInit()
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
 </script>
 
 <style lang="less" scoped>

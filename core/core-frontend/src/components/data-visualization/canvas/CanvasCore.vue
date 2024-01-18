@@ -15,7 +15,7 @@ import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
 import eventBus from '@/utils/eventBus'
 import { changeStyleWithScale } from '@/utils/translate'
-import { ref, onMounted, computed, toRefs, nextTick, onBeforeUnmount } from 'vue'
+import { ref, onMounted, computed, toRefs, nextTick, onBeforeUnmount, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
@@ -39,6 +39,8 @@ import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import LinkageSet from '@/components/visualization/LinkageSet.vue'
 import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 import DragInfo from '@/components/visualization/common/DragInfo.vue'
+import { activeWatermark } from '@/components/watermark/watermark'
+import { personInfoApi } from '@/api/user'
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -155,6 +157,7 @@ const props = defineProps({
     default: true
   }
 })
+const userInfo = ref(null)
 
 const {
   baseWidth,
@@ -191,6 +194,55 @@ const userViewEnlargeRef = ref(null)
 const linkJumpRef = ref(null)
 const linkageRef = ref(null)
 const mainDomId = ref('editor-' + canvasId.value)
+
+watch(
+  () => dvInfo.value,
+  () => {
+    initWatermark()
+  },
+  { deep: true }
+)
+
+watch(
+  () => canvasStyleData.value,
+  () => {
+    initWatermark()
+  },
+  { deep: true }
+)
+
+const initWatermark = (waterDomId = 'editor-canvas-main') => {
+  if (
+    dvInfo.value.watermarkInfo &&
+    dvInfo.value.watermarkInfo.settingContent &&
+    isMainCanvas(canvasId.value)
+  ) {
+    const scale = dashboardActive.value ? 1 : curScale.value
+    if (userInfo.value) {
+      activeWatermark(
+        dvInfo.value.watermarkInfo.settingContent,
+        userInfo.value,
+        waterDomId,
+        canvasId.value,
+        dvInfo.value.selfWatermarkStatus,
+        scale
+      )
+    } else {
+      const method = personInfoApi
+      method().then(res => {
+        userInfo.value = res.data
+        activeWatermark(
+          dvInfo.value.watermarkInfo.settingContent,
+          userInfo.value,
+          waterDomId,
+          canvasId.value,
+          dvInfo.value.selfWatermarkStatus,
+          scale
+        )
+      })
+    }
+  }
+}
 
 const dragInfoShow = computed(() => {
   return (
@@ -445,6 +497,10 @@ const handleContextMenu = e => {
   // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
   if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
     contextmenuStore.showContextMenu({ top, left, position: 'canvasCore' })
+    const iconDom = document.getElementById('close-button')
+    if (iconDom) {
+      iconDom.click()
+    }
   }
 }
 
@@ -550,6 +606,50 @@ function resetPositionBox() {
       })
     }
     positionBox.value.push(row)
+  }
+}
+
+/**
+ * 查找位置盒子
+ */
+function findPositionX(item) {
+  const width = item.sizeX
+  let resultX = 1
+  let checkPointYIndex = -1 // -1 没有占用任何Y方向画布
+  // 组件宽度
+  let pb = positionBox.value
+  if (width <= 0) return
+  // 查找组件最高位置索引 component 规则 y最新为1
+  componentData.value.forEach((component, index) => {
+    const componentYIndex = component.y + component.sizeY - 2
+    if (checkPointYIndex < componentYIndex) {
+      checkPointYIndex = componentYIndex
+    }
+  })
+
+  if (checkPointYIndex < 0) {
+    return 1
+  } else {
+    // 获取最后一列X方向数组
+    const pbX = pb[checkPointYIndex]
+    // 从X i位置索引开始检查 ；
+    // 检查宽度为组件宽度width 检查索引终点为checkEndIndex = i + width - 1 ；
+    // 退出检查条件为索引终点checkEndIndex 越界 pbX终点索引；
+    for (let i = 0, checkEndIndex = width - 1; checkEndIndex < pbX.length; i++, checkEndIndex++) {
+      let adaptorCount = 0
+      // 定位最后一列占位位置
+      for (let k = 0; k < width; k++) {
+        // pbX[i + k].el === false 表示当前矩阵点位未被占用，当连续未被占用的矩阵点位宽度为width时 表示改起始点位i可用
+        if (!pbX[i + k].el) {
+          adaptorCount++
+        }
+      }
+      if (adaptorCount === width) {
+        resultX = i + 1
+        break
+      }
+    }
+    return resultX
   }
 }
 
@@ -942,6 +1042,9 @@ const cellInit = () => {
 }
 
 const canvasSizeInit = () => {
+  if (isMainCanvas(canvasId.value)) {
+    initWatermark()
+  }
   cellInit()
   reCalcCellWidth()
 }
@@ -1233,6 +1336,7 @@ const markLineShow = computed(() => isMainCanvas(canvasId.value))
 onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
     initSnapshotTimer()
+    initWatermark()
   }
   // 获取编辑器元素
   composeStore.getEditor(canvasId.value)
@@ -1269,7 +1373,8 @@ defineExpose({
   handleDragOver,
   getMoveItem,
   handleMouseUp,
-  handleMouseDown
+  handleMouseDown,
+  findPositionX
 })
 </script>
 

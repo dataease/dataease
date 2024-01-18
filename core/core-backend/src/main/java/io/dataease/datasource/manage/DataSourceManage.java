@@ -1,6 +1,5 @@
 package io.dataease.datasource.manage;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.api.ds.vo.DatasourceDTO;
@@ -19,6 +18,7 @@ import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -65,7 +65,7 @@ public class DataSourceManage {
         List<DatasourceNodeBO> nodes = new ArrayList<>();
         List<DataSourceNodePO> pos = dataSourceExtMapper.selectList(queryWrapper);
         if (ObjectUtils.isEmpty(request.getLeaf()) || !request.getLeaf()) nodes.add(rootNode());
-        if (CollectionUtil.isNotEmpty(pos)) {
+        if (CollectionUtils.isNotEmpty(pos)) {
             nodes.addAll(pos.stream().map(this::convert).toList());
         }
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);

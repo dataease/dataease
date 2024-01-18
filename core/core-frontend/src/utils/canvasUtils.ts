@@ -90,7 +90,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       name: canvasInfo.name,
       pid: canvasInfo.pid,
       status: canvasInfo.status,
-      watermarkOpen: canvasInfo.selfWatermarkStatus,
+      selfWatermarkStatus: canvasInfo.selfWatermarkStatus,
       type: canvasInfo.type,
       creatorName: canvasInfo.creatorName,
       updateName: canvasInfo.updateName,

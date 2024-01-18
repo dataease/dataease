@@ -77,6 +77,11 @@ public class VisualizationTemplateVO {
     private String dynamicData;
 
     /**
+     * 使用次数
+     */
+    private Integer useCount;
+
+    /**
      * 分类
      */
     private List<String> categories;

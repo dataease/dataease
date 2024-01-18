@@ -15,7 +15,8 @@ const options = [
 const state = reactive({
   form: reactive({
     dsIntervalTime: '30',
-    dsExecuteTime: 'minute'
+    dsExecuteTime: 'minute',
+    frontTimeOut: '30'
   }),
   settingList: []
 })
@@ -165,7 +166,19 @@ defineExpose({
           </el-select>
           <span class="ds-span">执行一次</span>
         </div>
-        <div v-else />
+        <div v-else-if="item.pkey === 'frontTimeOut'">
+          <el-input-number
+            v-model="state.form.frontTimeOut"
+            autocomplete="off"
+            step-strictly
+            class="text-left"
+            :min="1"
+            :placeholder="t('common.inputText')"
+            controls-position="right"
+            type="number"
+          />
+        </div>
+        <v-else />
       </el-form-item>
     </el-form>
     <template #footer>

@@ -17,6 +17,7 @@ import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { watermarkFind } from '@/api/watermark'
 const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
 const eventCheck = e => {
@@ -93,8 +94,17 @@ onMounted(async () => {
     })
   } else if (opt && opt === 'create') {
     dataInitState.value = false
+    let watermarkBaseInfo
+    try {
+      await watermarkFind().then(rsp => {
+        watermarkBaseInfo = rsp.data
+        watermarkBaseInfo.settingContent = JSON.parse(watermarkBaseInfo.settingContent)
+      })
+    } catch (e) {
+      console.error('can not find watermark info')
+    }
     nextTick(() => {
-      dvMainStore.createInit('dashboard', null, pid)
+      dvMainStore.createInit('dashboard', null, pid, watermarkBaseInfo)
       // 从模板新建
       if (createType === 'template') {
         const deTemplateDataStr = wsCache.get(`de-template-data`)

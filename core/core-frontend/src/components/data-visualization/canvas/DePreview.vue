@@ -53,6 +53,11 @@ const props = defineProps({
   userId: {
     type: String,
     require: false
+  },
+  outerScale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
 
@@ -65,6 +70,7 @@ const {
   showPosition,
   previewActive,
   downloadStatus,
+  outerScale,
   userId
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
@@ -134,7 +140,9 @@ const restore = () => {
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
-        scaleWidth.value = scaleWidth.value * 1.5
+        scaleWidth.value = isMainCanvas(canvasId.value)
+          ? scaleWidth.value * 1.5
+          : outerScale.value * 100
       } else {
         changeRefComponentsSizeWithScale(
           componentData.value,
@@ -188,7 +196,8 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
         userInfo.value,
         waterDomId,
         canvasId.value,
-        dvInfo.value.watermarkOpen
+        dvInfo.value.selfWatermarkStatus,
+        scaleWidth.value / 100
       )
     } else {
       const method = personInfoApi
@@ -199,7 +208,8 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
           userInfo.value,
           waterDomId,
           canvasId.value,
-          dvInfo.value.watermarkOpen
+          dvInfo.value.selfWatermarkStatus,
+          scaleWidth.value / 100
         )
       })
     }
@@ -213,8 +223,8 @@ onMounted(() => {
   const erd = elementResizeDetectorMaker()
   erd.listenTo(document.getElementById(domId), () => {
     restore()
+    initWatermark()
   })
-  initWatermark()
 })
 
 onBeforeUnmount(() => {

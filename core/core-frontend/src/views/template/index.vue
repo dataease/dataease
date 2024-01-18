@@ -468,6 +468,14 @@ const categoryClick = params => {
 }
 
 const saveTemplateEdit = templateEditForm => {
+  if (templateEditForm.name === '最近使用') {
+    ElMessage({
+      message: '不合法命名，请更换！',
+      type: 'error',
+      showClose: true
+    })
+    return
+  }
   templateEditFormRef.value.validate(valid => {
     if (valid) {
       save({ ...templateEditForm }).then(response => {

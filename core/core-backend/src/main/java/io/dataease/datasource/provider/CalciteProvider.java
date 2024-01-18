@@ -173,7 +173,7 @@ public class CalciteProvider {
                 datasetTableFields.add(tableField);
             }
             list = getDataResult(resultSet);
-        } catch (Exception e) {
+        } catch (Exception | AssertionError e) {
             DEException.throwException(Translator.get("i18n_fetch_error") + e.getMessage());
         } finally {
             try {
@@ -255,7 +255,7 @@ public class CalciteProvider {
                     DatasourceConfiguration configuration = null;
                     DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
                     try {
-                        if(rootSchema.getSubSchema(ds.getSchemaAlias()) != null){
+                        if (rootSchema.getSubSchema(ds.getSchemaAlias()) != null) {
                             JdbcSchema jdbcSchema = rootSchema.getSubSchema(ds.getSchemaAlias()).unwrap(JdbcSchema.class);
                             BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
                             basicDataSource.close();

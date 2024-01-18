@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -71,6 +71,9 @@ onMounted(() => {
   window.addEventListener('mousewheel', handleMouseWheel, { passive: false })
   setTimeout(() => {
     scale.value = canvasStyleData.value.scale
+    nextTick(() => {
+      useEmitt().emitter.emit('initScroll')
+    })
   }, 1000)
 })
 

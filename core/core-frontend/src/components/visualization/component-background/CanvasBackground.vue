@@ -14,6 +14,16 @@
       @change="reUpload"
     />
     <el-form label-position="top" style="width: 100%; margin-bottom: 16px">
+      <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showWatermarkSetting">
+        <el-checkbox
+          size="small"
+          :effect="themes"
+          v-model="dvInfo.selfWatermarkStatus"
+          @change="onBackgroundChange"
+        >
+          水印
+        </el-checkbox>
+      </el-form-item>
       <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
         <el-checkbox
           size="small"
@@ -108,7 +118,7 @@
 
 <script setup lang="ts">
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import { onMounted, reactive, ref, watch } from 'vue'
+import { computed, onMounted, reactive, ref, watch } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
@@ -123,7 +133,7 @@ const files = ref(null)
 const maxImageSize = 15000000
 
 const dvMainStore = dvMainStoreWithOut()
-const { canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData, dvInfo } = storeToRefs(dvMainStore)
 
 withDefaults(
   defineProps<{
@@ -143,6 +153,14 @@ const state = reactive({
   dialogVisible: false,
   uploadDisabled: false,
   predefineColors: COLOR_PANEL
+})
+
+const showWatermarkSetting = computed(() => {
+  return (
+    dvInfo.value.watermarkInfo &&
+    dvInfo.value.watermarkInfo?.settingContent?.enable &&
+    dvInfo.value.watermarkInfo?.settingContent?.enablePanelCustom
+  )
 })
 
 const goFile = () => {

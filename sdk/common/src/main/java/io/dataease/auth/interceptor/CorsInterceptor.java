@@ -1,15 +1,17 @@
 package io.dataease.auth.interceptor;
 
-import cn.hutool.core.util.ReflectUtil;
 import io.dataease.utils.CommonBeanFactory;
+import io.dataease.utils.DeReflectUtil;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.util.ReflectionUtils;
 import org.springframework.web.servlet.HandlerInterceptor;
 
+import java.lang.reflect.Method;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -51,7 +53,8 @@ public class CorsInterceptor implements HandlerInterceptor {
             bean = CommonBeanFactory.getBean(aClass);
         }
         if (ObjectUtils.isNotEmpty(bean)) {
-            Object result = ReflectUtil.invoke(bean, methodName);
+            Method method = DeReflectUtil.findMethod(aClass, methodName);
+            Object result = ReflectionUtils.invokeMethod(method, bean);
             if (ObjectUtils.isNotEmpty(result)) {
                 List<String> list = (List<String>) result;
                 if (CollectionUtils.isNotEmpty(list)) {

@@ -1,8 +1,6 @@
 package io.dataease.visualization.server;
 
 
-import cn.hutool.core.codec.Base64Decoder;
-import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.api.visualization.StaticResourceApi;
 import io.dataease.api.visualization.request.StaticResourceRequest;
 import io.dataease.exception.DEException;
@@ -10,8 +8,10 @@ import io.dataease.utils.FileUtils;
 import io.dataease.utils.JsonUtil;
 import io.dataease.utils.LogUtil;
 import io.dataease.utils.StaticResourceUtils;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
+import org.springframework.util.Base64Utils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -89,17 +89,18 @@ public class StaticResourceServer implements StaticResourceApi {
             } else {
                 if (StringUtils.isNotEmpty(content)) {
                     Files.createFile(uploadPath);
-                    FileCopyUtils.copy(Base64Decoder.decode(content), Files.newOutputStream(uploadPath));
+                    FileCopyUtils.copy(Base64Utils.decodeFromString(content), Files.newOutputStream(uploadPath));
                 }
             }
         } catch (Exception e) {
             LogUtil.error("template static resource save error" + e.getMessage());
         }
     }
+
     @Override
     public Map<String, String> findResourceAsBase64(StaticResourceRequest resourceRequest) {
         Map<String, String> result = new HashMap<>();
-        if (CollectionUtil.isNotEmpty(resourceRequest.getResourcePathList())) {
+        if (CollectionUtils.isNotEmpty(resourceRequest.getResourcePathList())) {
             for (String path : resourceRequest.getResourcePathList()) {
                 String value = StaticResourceUtils.getImgFileToBase64(path.substring(path.lastIndexOf("/") + 1, path.length()));
                 result.put(path, value);

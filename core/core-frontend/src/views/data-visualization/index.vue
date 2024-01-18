@@ -26,6 +26,7 @@ import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
 import RealTimeListTree from '@/components/data-visualization/RealTimeListTree.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { watermarkFind } from '@/api/watermark'
 const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
 const eventCheck = e => {
@@ -221,7 +222,17 @@ onMounted(async () => {
     })
   } else if (opt && opt === 'create') {
     state.canvasInitStatus = false
-    dvMainStore.createInit('dataV', null, pid)
+    let watermarkBaseInfo
+    try {
+      await watermarkFind().then(rsp => {
+        watermarkBaseInfo = rsp.data
+        watermarkBaseInfo.settingContent = JSON.parse(watermarkBaseInfo.settingContent)
+      })
+    } catch (e) {
+      console.error('can not find watermark info')
+    }
+
+    dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo)
     nextTick(() => {
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)

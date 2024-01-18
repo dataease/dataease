@@ -70,6 +70,7 @@
           :canvas-id="element.id + '--' + tabItem.name"
           :preview-active="editableTabsValue === tabItem.name"
           :show-position="showPosition"
+          :outer-scale="scale"
         ></de-preview>
       </el-tab-pane>
     </de-custom-tab>
@@ -84,7 +85,7 @@
     >
       <el-input
         v-model="state.textarea"
-        maxlength="10"
+        maxlength="50"
         :placeholder="$t('dataset.input_content')"
       />
       <template #footer>
@@ -150,6 +151,11 @@ const props = defineProps({
     type: String,
     required: false,
     default: 'canvas'
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
 const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo } = toRefs(props)

@@ -42,10 +42,11 @@ const domId = ref('de-canvas-' + canvasId.value)
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const { pcMatrixCount, curOriginThemes } = storeToRefs(dvMainStore)
+const { pcMatrixCount, curOriginThemes, dvInfo } = storeToRefs(dvMainStore)
 const canvasOut = ref(null)
 const canvasInner = ref(null)
 const canvasInitStatus = ref(false)
+const userInfo = ref(null)
 
 const state = reactive({
   screenWidth: 1920,
@@ -59,6 +60,7 @@ const renderState = ref(false) // 仪表板默认
 const baseMarginLeft = ref(0)
 const baseMarginTop = ref(0)
 const cyGridster = ref(null)
+const editDomId = ref('edit-' + canvasId.value)
 
 const editStyle = computed(() => {
   if (canvasStyleData.value && isMainCanvas(canvasId.value)) {
@@ -78,6 +80,7 @@ const handleNewFromCanvasMain = newComponentInfo => {
     syncShapeItemStyle(component, baseWidth.value, baseHeight.value)
     component.id = guid()
     component.y = 200
+    component.x = cyGridster.value.findPositionX(component)
     dvMainStore.addComponent({
       component: component,
       index: undefined,
@@ -242,7 +245,7 @@ defineExpose({
 </script>
 
 <template>
-  <div ref="canvasOut" class="content" :class="{ 'render-active': renderState }">
+  <div ref="canvasOut" :id="editDomId" class="content" :class="{ 'render-active': renderState }">
     <canvas-opt-bar
       :canvas-style-data="canvasStyleData"
       :component-data="componentData"

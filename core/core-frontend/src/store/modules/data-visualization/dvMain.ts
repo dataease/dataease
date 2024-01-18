@@ -58,6 +58,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         pid: null,
         status: null,
         selfWatermarkStatus: null,
+        watermarkInfo: {},
         type: null
       },
       // 图表信息
@@ -861,8 +862,8 @@ export const dvMainStore = defineStore('dataVisualization', {
         pid: null,
         status: null,
         selfWatermarkStatus: null,
-        type: null,
-        watermarkInfo: null
+        watermarkInfo: {},
+        type: null
       }
     },
     setViewDataDetails(viewId, dataInfo) {
@@ -889,7 +890,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         }
       }
     },
-    createInit(dvType, resourceId?, pid?) {
+    createInit(dvType, resourceId?, pid?, watermarkInfo?) {
       const optName = dvType === 'dashboard' ? '新建仪表板' : '新建数据大屏'
       this.dvInfo = {
         dataState: 'prepare',
@@ -899,7 +900,8 @@ export const dvMainStore = defineStore('dataVisualization', {
         pid: pid,
         type: dvType,
         status: 1,
-        selfWatermarkStatus: 0
+        selfWatermarkStatus: true,
+        watermarkInfo: watermarkInfo
       }
       const canvasStyleDataNew =
         dvType === 'dashboard'
@@ -921,6 +923,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         pid: null,
         status: null,
         selfWatermarkStatus: null,
+        watermarkInfo: {},
         type: null
       }
       this.canvasStyleData = { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null }

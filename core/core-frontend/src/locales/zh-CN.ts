@@ -2126,11 +2126,63 @@ export default {
   setting_basic: {
     autoCreateUser: '第三方自动创建用户',
     dsIntervalTime: '数据源检测时间间隔',
-    dsExecuteTime: '数据源检测频率'
+    dsExecuteTime: '数据源检测频率',
+    frontTimeOut: '请求超时时间（秒）'
   },
   template_manage: {
     name_already_exists_type: '分类名称已存在',
     the_same_category: '同一分类下，该模板名称已存在'
+  },
+  sync_manage: {
+    title: '同步管理',
+    ds_search_placeholder: '搜索名称,描述'
+  },
+  sync_datasource: {
+    title: '数据连接管理',
+    source_ds: '源数据源',
+    target_ds: '目标数据源',
+    add_source_ds: '@:common.add@:sync_datasource.source_ds',
+    add_target_ds: '@:common.add@:sync_datasource.target_ds',
+    name: '名称',
+    desc: '描述',
+    type: '类型',
+    status: '状态',
+    create_time: '创建时间',
+    update_time: '更新时间',
+    operation: '操作',
+    edit: '编辑',
+    delete: '删除',
+    confirm_batch_delete_target_ds: '确定删除{0}个目标数据源吗？',
+    confirm_batch_delete_source_ds: '确定删除{0}个源数据源吗？'
+  },
+  sync_task: {
+    title: '任务管理',
+    list: '任务列表',
+    log_list: '任务日志',
+    add_task: '添加任务',
+    name: '名称',
+    desc: '描述',
+    status: '状态',
+    create_time: '创建时间',
+    update_time: '更新时间',
+    operation: '操作',
+    edit: '编辑',
+    delete: '删除',
+    start: '启动',
+    stop: '停止',
+    trigger_last_time: '上次执行时间',
+    trigger_next_time: '下次执行时间',
+    status_success: '成功',
+    status_running: '执行中',
+    status_failed: '失败',
+    status_stopped: '已停止',
+    status_waiting: '等待执行',
+    status_done: '执行结束',
+    status_suspend: '暂停',
+    running_one: '执行一次',
+    keep_going: '继续',
+    log: '日志',
+    show_log: '查看日志'
   },
   watermark: {
     support_params: '当前支持的参数：',

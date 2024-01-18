@@ -1,22 +1,41 @@
 package io.dataease.utils;
 
-import cn.hutool.core.util.RandomUtil;
-import cn.hutool.crypto.asymmetric.KeyType;
-import cn.hutool.crypto.asymmetric.RSA;
-import cn.hutool.crypto.symmetric.AES;
+
+import io.dataease.exception.DEException;
 import io.dataease.model.RSAModel;
 import io.dataease.rsa.dao.entity.CoreRsa;
 import io.dataease.rsa.manage.RsaManage;
 import jakarta.annotation.Resource;
-import org.bouncycastle.jce.provider.BouncyCastleProvider;
+import org.apache.commons.codec.binary.Base64;
+import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.Base64Utils;
 
+import javax.crypto.Cipher;
+import javax.crypto.SecretKey;
+import javax.crypto.spec.IvParameterSpec;
+import javax.crypto.spec.SecretKeySpec;
+import java.io.ByteArrayOutputStream;
 import java.nio.charset.StandardCharsets;
-import java.security.Security;
+import java.security.*;
+import java.security.spec.PKCS8EncodedKeySpec;
+import java.security.spec.X509EncodedKeySpec;
 
 @Component
 public class RsaUtils {
+
+    static {
+        if (ObjectUtils.isNotEmpty(Security.getProvider("BC"))) {
+            Security.removeProvider("BC");
+        }
+        Security.addProvider(new org.bouncycastle.jce.provider.BouncyCastleProvider());
+    }
+
+
+    private static final int MAX_ENCRYPT_BLOCK = 117;
+
+    private static final int MAX_DECRYPT_BLOCK = 128;
 
     private static final String PK_SEPARATOR = "-pk_separator-";
 
@@ -27,20 +46,108 @@ public class RsaUtils {
         RsaUtils.rsaManage = rsaManage;
     }
 
+    private static KeyPair getKeyPair() {
+        KeyPairGenerator generator = null;
+        try {
+            generator = KeyPairGenerator.getInstance("RSA");
+        } catch (NoSuchAlgorithmException e) {
+            LogUtil.error(e.getMessage(), e);
+            DEException.throwException(e);
+        }
+        generator.initialize(1024);
+        return generator.generateKeyPair();
+    }
+
+    private static PrivateKey getPrivateKey(String privateKey) {
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA");
+            byte[] decodedKey = Base64.decodeBase64(privateKey.getBytes());
+            PKCS8EncodedKeySpec keySpec = new PKCS8EncodedKeySpec(decodedKey);
+            return keyFactory.generatePrivate(keySpec);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static PublicKey getPublicKey(String publicKey) {
+        KeyFactory keyFactory = null;
+        try {
+            keyFactory = KeyFactory.getInstance("RSA");
+            byte[] decodedKey = Base64.decodeBase64(publicKey.getBytes());
+            X509EncodedKeySpec keySpec = new X509EncodedKeySpec(decodedKey);
+            return keyFactory.generatePublic(keySpec);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+    }
+
+    private static String encrypt(String data, PublicKey publicKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.ENCRYPT_MODE, publicKey);
+        int inputLen = data.getBytes().length;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int offset = 0;
+        byte[] cache;
+        int i = 0;
+        while (inputLen - offset > 0) {
+            if (inputLen - offset > MAX_ENCRYPT_BLOCK) {
+                cache = cipher.doFinal(data.getBytes(), offset, MAX_ENCRYPT_BLOCK);
+            } else {
+                cache = cipher.doFinal(data.getBytes(), offset, inputLen - offset);
+            }
+            out.write(cache, 0, cache.length);
+            i++;
+            offset = i * MAX_ENCRYPT_BLOCK;
+        }
+        byte[] encryptedData = out.toByteArray();
+        out.close();
+        return Base64.encodeBase64String(encryptedData);
+    }
+
+    private static String decrypt(String data, PrivateKey privateKey) throws Exception {
+        Cipher cipher = Cipher.getInstance("RSA");
+        cipher.init(Cipher.DECRYPT_MODE, privateKey);
+        byte[] dataBytes = Base64.decodeBase64(data);
+        int inputLen = dataBytes.length;
+        ByteArrayOutputStream out = new ByteArrayOutputStream();
+        int offset = 0;
+        byte[] cache;
+        int i = 0;
+        while (inputLen - offset > 0) {
+            if (inputLen - offset > MAX_DECRYPT_BLOCK) {
+                cache = cipher.doFinal(dataBytes, offset, MAX_DECRYPT_BLOCK);
+            } else {
+                cache = cipher.doFinal(dataBytes, offset, inputLen - offset);
+            }
+            out.write(cache, 0, cache.length);
+            i++;
+            offset = i * MAX_DECRYPT_BLOCK;
+        }
+        out.close();
+        return out.toString(StandardCharsets.UTF_8);
+    }
+
     public static RSAModel generate() {
-        RSA rsa = new RSA();
-        String privateKeyBase64 = rsa.getPrivateKeyBase64();
-        String publicKeyBase64 = rsa.getPublicKeyBase64();
+        KeyPair keyPair = getKeyPair();
+        String privateKey = new String(Base64.encodeBase64(keyPair.getPrivate().getEncoded()));
+        String publicKey = new String(Base64.encodeBase64(keyPair.getPublic().getEncoded()));
         RSAModel rsaModel = new RSAModel();
-        rsaModel.setPrivateKey(privateKeyBase64);
-        rsaModel.setPublicKey(publicKeyBase64);
+        rsaModel.setPrivateKey(privateKey);
+        rsaModel.setPublicKey(publicKey);
         rsaModel.setAesKey(generateAesKey());
         return rsaModel;
     }
 
     public static String decryptStr(String data, String privateKey) {
-        RSA rsa = new RSA(privateKey, null);
-        return rsa.decryptStr(data, KeyType.PrivateKey);
+        try {
+            return decrypt(data, getPrivateKey(privateKey));
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 
     public static String decryptStr(String data) {
@@ -48,8 +155,12 @@ public class RsaUtils {
     }
 
     public static String encryptStr(String data) {
-        RSA rsa = new RSA(privateKey(), publicKey());
-        return rsa.encryptBase64(data, KeyType.PublicKey);
+        try {
+            return encrypt(data, getPublicKey(publicKey()));
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
     }
 
     public static String privateKey() {
@@ -61,23 +172,40 @@ public class RsaUtils {
         CoreRsa coreRsa = rsaManage.query();
         String publicKey = coreRsa.getPublicKey();
         String aesKey = coreRsa.getAesKey();
-        // Security.addProvider(new BouncyCastleProvider());
-        String pk = ascEncrypt(publicKey, aesKey);
+        String pk = ascEncrypt(publicKey, aesKey).replaceAll("[\\s*\t\n\r]", "");
         String separator = Base64Utils.encodeToUrlSafeString(PK_SEPARATOR.getBytes(StandardCharsets.UTF_8));
         return pk + separator + aesKey;
     }
 
     private static final String IV_KEY = "0000000000000000";
+
     private static String generateAesKey() {
-        return RandomUtil.randomString(16);
+        return RandomStringUtils.randomAlphanumeric(16);
     }
+
     private static String ascEncrypt(String message, String key) {
-        byte[] baseKey = key.getBytes(StandardCharsets.UTF_8);
+        /*byte[] baseKey = key.getBytes(StandardCharsets.UTF_8);
         byte[] ivBytes = IV_KEY.getBytes(StandardCharsets.UTF_8);
         AES aes = new AES("CBC", "PKCS7Padding", baseKey, ivBytes);
         byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
-        return Base64Utils.encodeToString(aes.encrypt(messageBytes));
+        return Base64Utils.encodeToString(aes.encrypt(messageBytes));*/
+
+        Cipher cipher = null;
+        try {
+            byte[] baseKey = key.getBytes(StandardCharsets.UTF_8);
+            byte[] ivBytes = IV_KEY.getBytes(StandardCharsets.UTF_8);
+            byte[] messageBytes = message.getBytes(StandardCharsets.UTF_8);
+            cipher = Cipher.getInstance("AES/CBC/PKCS7Padding");
+            // 根据secretKey(密钥)的字节内容，"恢复"秘钥对象
+            SecretKey keySpec = new SecretKeySpec(baseKey, "AES");
+            IvParameterSpec ivps = new IvParameterSpec(ivBytes);
+            cipher.init(Cipher.ENCRYPT_MODE, keySpec, ivps);
+            byte[] data = cipher.doFinal(messageBytes);
+            return Base64.encodeBase64String(data);
+        } catch (Exception e) {
+            LogUtil.error(e.getMessage(), e);
+            throw new RuntimeException(e);
+        }
+
     }
-
-
 }

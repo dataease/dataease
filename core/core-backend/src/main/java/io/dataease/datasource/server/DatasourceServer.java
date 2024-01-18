@@ -1,6 +1,5 @@
 package io.dataease.datasource.server;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
@@ -42,13 +41,13 @@ import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.CoreUserManage;
 import io.dataease.utils.*;
 import jakarta.annotation.Resource;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.quartz.JobDataMap;
 import org.quartz.JobKey;
 import org.quartz.TriggerKey;
 import org.springframework.transaction.annotation.Transactional;
-import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RequestParam;
@@ -137,6 +136,9 @@ public class DatasourceServer implements DatasourceApi {
                 dataSourceManage.move(dataSourceDTO);
             }
             case "rename" -> {
+                if(StringUtils.isEmpty(dataSourceDTO.getName())){
+                    DEException.throwException("名称不能为空！");
+                }
                 CoreDatasource datasource = datasourceMapper.selectById(dataSourceDTO.getId());
                 datasource.setName(dataSourceDTO.getName());
                 dataSourceManage.innerEdit(datasource);
@@ -168,7 +170,7 @@ public class DatasourceServer implements DatasourceApi {
                     ids.add(busiNodeVO.getId());
                 }
             }
-            if (CollectionUtil.isNotEmpty(busiNodeVO.getChildren())) {
+            if (CollectionUtils.isNotEmpty(busiNodeVO.getChildren())) {
                 filterDs(busiNodeVO.getChildren(), ids, type, id);
             }
         }
@@ -184,14 +186,14 @@ public class DatasourceServer implements DatasourceApi {
         List<Long> ids = new ArrayList<>();
         filterDs(busiNodeVOS, ids, dataSourceDTO.getType(), dataSourceDTO.getId());
 
-        if (CollectionUtil.isEmpty(ids)) {
+        if (CollectionUtils.isEmpty(ids)) {
             return false;
         }
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         wrapper.in("id", ids);
 
         List<CoreDatasource> datasources = datasourceMapper.selectList(wrapper);
-        if (CollectionUtil.isEmpty(datasources)) {
+        if (CollectionUtils.isEmpty(datasources)) {
             return false;
         }
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
@@ -465,8 +467,9 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         checkDatasourceStatus(coreDatasource);
-        dataSourceDTO.setStatus(coreDatasource.getStatus());
-        return dataSourceDTO;
+        DatasourceDTO result = new DatasourceDTO();
+        result.setStatus(coreDatasource.getStatus());
+        return result;
     }
 
     @Override
