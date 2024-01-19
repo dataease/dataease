@@ -647,6 +647,7 @@ const iconSize = computed<string>(() => {
         :show-position="showPosition"
       />
       <de-indicator
+        :scale="scale"
         v-else-if="showChartView(ChartLibraryType.INDICATOR)"
         :themes="canvasStyleData.dashboard.themeColor"
         ref="chartComponent"
