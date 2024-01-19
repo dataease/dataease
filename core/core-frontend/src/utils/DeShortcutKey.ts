@@ -180,6 +180,7 @@ function move(keyCode) {
     } else if (keyCode === downKey) {
       curComponent.value.style.top = ++curComponent.value.style.top
     }
+    snapshotStore.recordSnapshotCache('key-move')
   }
 }
 
