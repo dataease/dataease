@@ -577,7 +577,7 @@ onMounted(() => {
     <!--liquid-end-->
 
     <!--text&label-start-->
-    <template v-if="props.chart.type.includes('text') || props.chart.type.includes('label')">
+    <template v-if="props.chart.type.includes('indicator') || props.chart.type.includes('label')">
       <el-form-item
         :label="t('chart.quota_font_size')"
         class="form-item"

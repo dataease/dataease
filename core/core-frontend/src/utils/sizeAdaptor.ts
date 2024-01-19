@@ -22,7 +22,9 @@ export const customAttrTrans = {
     textStyle: ['fontSize']
   },
   slider: ['fontSize'],
-  graphic: ['fontSize']
+  graphic: ['fontSize'],
+  indicator: ['fontSize', 'suffixFontSize'],
+  indicatorName: ['fontSize']
 }
 export const customStyleTrans = {
   text: ['fontSize'],
