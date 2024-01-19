@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
+import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
 import {
   computed,
   CSSProperties,
@@ -643,6 +644,13 @@ const iconSize = computed<string>(() => {
         :element="element"
         :disabled="!['canvas', 'canvasDataV'].includes(showPosition) || disabled"
         :active="active"
+        :show-position="showPosition"
+      />
+      <de-indicator
+        v-else-if="showChartView(ChartLibraryType.INDICATOR)"
+        :themes="canvasStyleData.dashboard.themeColor"
+        ref="chartComponent"
+        :view="view"
         :show-position="showPosition"
       />
       <chart-component-g2-plot

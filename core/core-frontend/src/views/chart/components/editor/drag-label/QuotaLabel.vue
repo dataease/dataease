@@ -36,7 +36,7 @@ const props = defineProps({
     <span v-else-if="props.view.type && props.view.type.includes('gauge')">{{
       t('chart.drag_block_gauge_angel')
     }}</span>
-    <span v-else-if="props.view.type && props.view.type.includes('text')">{{
+    <span v-else-if="props.view.type && props.view.type.includes('indicator')">{{
       t('chart.drag_block_label_value')
     }}</span>
     <span v-else-if="props.view.type && props.view.type === 'map'">{{

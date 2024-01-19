@@ -85,7 +85,9 @@ watch(
 
 const showValueFormatter = computed<boolean>(() => {
   return (
-    (props.chart.type === 'table-normal' || props.chart.type === 'table-info') &&
+    (props.chart.type === 'table-normal' ||
+      props.chart.type === 'table-info' ||
+      props.chart.type === 'indicator') &&
     (props.item.deType === 2 || props.item.deType === 3)
   )
 })
@@ -118,7 +120,7 @@ const isEnableCompare = () => {
   // 暂时只支持类别轴/维度的时间类型字段
   if (
     t1.length > 0 &&
-    chart.value.type !== 'text' &&
+    chart.value.type !== 'indicator' &&
     chart.value.type !== 'label' &&
     chart.value.type !== 'gauge' &&
     chart.value.type !== 'liquid'

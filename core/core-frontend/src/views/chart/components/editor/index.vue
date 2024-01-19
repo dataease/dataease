@@ -657,6 +657,16 @@ const onLabelChange = val => {
   renderChart(view.value)
 }
 
+const onIndicatorChange = val => {
+  view.value.customAttr.indicator = val
+  renderChart(view.value)
+}
+
+const onIndicatorNameChange = val => {
+  view.value.customAttr.indicatorName = val
+  renderChart(view.value)
+}
+
 const onTooltipChange = (chartForm: ChartEditorForm<ChartTooltipAttr>, prop: string) => {
   const { data, requestData, render } = chartForm
   let tooltipObj = data
@@ -1703,6 +1713,8 @@ const onRefreshChange = val => {
                       @onChangeXAxisForm="onChangeXAxisForm"
                       @onChangeYAxisForm="onChangeYAxisForm"
                       @onTextChange="onTextChange"
+                      @onIndicatorChange="onIndicatorChange"
+                      @onIndicatorNameChange="onIndicatorNameChange"
                       @onLegendChange="onLegendChange"
                       @onBackgroundChange="onBackgroundChange"
                       @onBasicStyleChange="onBasicStyleChange"
