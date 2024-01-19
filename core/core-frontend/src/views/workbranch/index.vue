@@ -238,11 +238,13 @@ const toTemplateMarket = () => {
 }
 
 const toTemplateMarketAdd = () => {
-  const params = {
-    curPosition: 'branchCreate',
-    templateType: 'all'
+  if (havePanelAuth.value || haveScreenAuth.value) {
+    const params = {
+      curPosition: 'branchCreate',
+      templateType: 'all'
+    }
+    resourceCreateOpt.value.optInit(params)
   }
-  resourceCreateOpt.value.optInit(params)
 }
 
 fillCardInfo()
