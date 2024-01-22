@@ -13,6 +13,7 @@ const dialogPanel = {
       multiple: false,
       placeholder: 'denumbergridselect.placeholder',
       viewIds: [],
+      parameters: [],
       data: [],
       key: 'id',
       label: 'text',
