@@ -194,6 +194,8 @@ const indicatorSuffixClass = ref<CSSProperties>({
   'font-synthesis': 'weight style'
 })
 
+const showSuffix = ref<boolean>(DEFAULT_INDICATOR_STYLE.suffixEnable)
+
 const suffixContent = ref('')
 
 const indicatorNameShow = ref(false)
@@ -293,6 +295,7 @@ const renderChart = async view => {
         'font-synthesis': 'weight style'
       }
 
+      showSuffix.value = customAttr.indicator.suffixEnable
       suffixContent.value = defaultTo(customAttr.indicator.suffix, '')
     }
     if (customAttr.indicatorName && customAttr.indicatorName.show) {
@@ -359,7 +362,7 @@ defineExpose({
   <div :style="contentStyle">
     <div>
       <span :style="indicatorClass">{{ formattedResult }}</span>
-      <span :style="indicatorSuffixClass">{{ suffixContent }}</span>
+      <span :style="indicatorSuffixClass" v-if="showSuffix">{{ suffixContent }}</span>
     </div>
     <div v-if="indicatorNameShow">
       <span :style="indicatorNameClass">{{ resultName }}</span>
