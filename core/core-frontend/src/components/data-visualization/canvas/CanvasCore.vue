@@ -206,7 +206,9 @@ watch(
 watch(
   () => canvasStyleData.value,
   () => {
-    initWatermark()
+    nextTick(() => {
+      initWatermark()
+    })
   },
   { deep: true }
 )
