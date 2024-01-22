@@ -5,6 +5,7 @@ import { type DatePickType } from 'element-plus-secondary'
 import { getCustomTime } from './time-format'
 interface SelectConfig {
   timeType: string
+  timeGranularityMultiple: DatePickType
   defaultValue: [Date, Date]
   selectValue: [Date, Date]
   defaultValueCheck: boolean
@@ -25,6 +26,7 @@ const props = defineProps({
     type: Object as PropType<SelectConfig>,
     default: () => {
       return {
+        timeGranularityMultiple: 'datetimerange',
         defaultValue: [],
         selectValue: [],
         timeType: 'fixed',
@@ -136,14 +138,19 @@ const init = () => {
 onBeforeMount(() => {
   init()
 })
+
+const formatDate = computed(() => {
+  return (config.value.timeGranularityMultiple as string) === 'yearrange' ? 'YYYY' : undefined
+})
 </script>
 
 <template>
   <el-date-picker
     disabled
     v-model="selectValue"
-    type="datetimerange"
+    :type="config.timeGranularityMultiple"
     :prefix-icon="Calendar"
+    :format="formatDate"
     :range-separator="$t('cron.to')"
     :start-placeholder="$t('datasource.start_time')"
     :end-placeholder="$t('datasource.end_time')"
