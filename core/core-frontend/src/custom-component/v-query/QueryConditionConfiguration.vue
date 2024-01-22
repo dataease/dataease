@@ -1313,7 +1313,7 @@ defineExpose({
                   class="setting"
                   :class="
                     ['yearrange', 'monthrange'].includes(curComponent.timeGranularityMultiple) &&
-                    'is-yaer-month-range'
+                    'is-year-month-range'
                   "
                 >
                   <div class="setting-label">开始时间</div>
@@ -1346,7 +1346,7 @@ defineExpose({
                   class="setting"
                   :class="
                     ['yearrange', 'monthrange'].includes(curComponent.timeGranularityMultiple) &&
-                    'is-yaer-month-range'
+                    'is-year-month-range'
                   "
                 >
                   <div class="setting-label">结束时间</div>
@@ -1768,7 +1768,7 @@ defineExpose({
               }
             }
 
-            &.is-yaer-month-range {
+            &.is-year-month-range {
               .setting-input {
                 &.with-date {
                   .ed-input-number,
