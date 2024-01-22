@@ -5,7 +5,12 @@ import componentList, {
 } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { findById, saveCanvas, updateCanvas } from '@/api/visualization/dataVisualization'
+import {
+  findById,
+  findCopyResource,
+  saveCanvas,
+  updateCanvas
+} from '@/api/visualization/dataVisualization'
 import { storeToRefs } from 'pinia'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
@@ -78,7 +83,10 @@ export function commonHandleDragEnd(e, dvModel) {
 }
 
 export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
-  findById(dvId, busiFlag).then(res => {
+  const copyFlag = busiFlag != null && busiFlag.includes('-copy')
+  const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag
+  const method = copyFlag ? findCopyResource : findById
+  method(dvId, busiFlagCustom).then(res => {
     const canvasInfo = res.data
     const watermarkInfo = {
       ...canvasInfo.watermarkInfo,
