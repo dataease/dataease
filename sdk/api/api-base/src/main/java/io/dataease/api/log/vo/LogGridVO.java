@@ -16,4 +16,8 @@ public class LogGridVO implements Serializable {
     private String ip;
 
     private Long time;
+
+    private boolean success;
+
+    private String msg;
 }

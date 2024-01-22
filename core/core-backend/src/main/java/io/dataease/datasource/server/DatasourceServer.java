@@ -14,6 +14,8 @@ import io.dataease.api.ds.vo.*;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.constant.DataSourceType;
+import io.dataease.constant.LogOT;
+import io.dataease.constant.LogST;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
@@ -35,6 +37,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.job.sechedule.CheckDsStatusJob;
 import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.license.config.XpackInteract;
+import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
@@ -136,7 +139,7 @@ public class DatasourceServer implements DatasourceApi {
                 dataSourceManage.move(dataSourceDTO);
             }
             case "rename" -> {
-                if(StringUtils.isEmpty(dataSourceDTO.getName())){
+                if (StringUtils.isEmpty(dataSourceDTO.getName())) {
                     DEException.throwException("名称不能为空！");
                 }
                 CoreDatasource datasource = datasourceMapper.selectById(dataSourceDTO.getId());
@@ -550,6 +553,7 @@ public class DatasourceServer implements DatasourceApi {
         return datasourceDTO;
     }
 
+    @DeLog(id = "#p0", ot = LogOT.DELETE, st = LogST.DATASOURCE)
     @Override
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void delete(Long datasourceId) throws DEException {
