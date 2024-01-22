@@ -152,4 +152,8 @@ public interface UserApi {
     @Hidden
     @GetMapping("/firstEchelon/{limit}")
     List<Long> firstEchelon(@PathVariable("limit") Long limit);
+
+    @Hidden
+    @GetMapping("/queryByAccount")
+    CurUserVO queryByAccount(String account);
 }

@@ -91,6 +91,7 @@ const changeLabelThreshold = () => {
   // check line config
   for (let i = 0; i < state.thresholdArr.length; i++) {
     const ele = state.thresholdArr[i]
+    console.log(ele)
     if (!ele.term || ele.term === '') {
       ElMessage.error(t('chart.exp_can_not_empty'))
       return
@@ -109,7 +110,8 @@ const changeLabelThreshold = () => {
         return
       }
     } else {
-      if (!ele.value) {
+      console.log(ele.value === undefined)
+      if (ele.value === undefined) {
         ElMessage.error(t('chart.value_can_not_empty'))
         return
       }
@@ -325,30 +327,54 @@ init()
     </el-col>
 
     <!--指标卡-->
-    <el-col v-if="props.chart.type && props.chart.type === 'text'">
+    <el-col v-if="props.chart.type && props.chart.type === 'indicator'">
       <el-col>
-        <el-button
-          :title="t('chart.edit')"
-          class="circle-button"
-          type="primary"
-          text
-          size="small"
-          style="width: 24px; margin-left: 4px"
-          @click="editLabelThreshold"
+        <div class="inner-container">
+          <span class="label" :class="'label-' + props.themes">阈值设置</span>
+          <span class="right-btns">
+            <span
+              class="set-text-info"
+              :class="{ 'set-text-info-dark': themes === 'dark' }"
+              v-if="state.thresholdForm?.labelThreshold?.length > 0"
+            >
+              已设置
+            </span>
+            <el-button
+              :title="t('chart.edit')"
+              :class="'label-' + props.themes"
+              :style="{ width: '24px', marginLeft: '6px' }"
+              :disabled="!state.thresholdForm.enable"
+              class="circle-button"
+              text
+              size="small"
+              @click="editLabelThreshold"
+            >
+              <template #icon>
+                <el-icon size="14px">
+                  <Icon name="icon_edit_outlined" />
+                </el-icon>
+              </template>
+            </el-button>
+          </span>
+        </div>
+
+        <div
+          class="threshold-container"
+          :class="{ 'threshold-container-dark': themes === 'dark' }"
+          v-if="state.thresholdForm.labelThreshold.length > 0"
         >
-          <template #icon>
-            <el-icon size="14px">
-              <Icon name="icon_edit_outlined" />
-            </el-icon>
-          </template>
-        </el-button>
-        <el-col style="padding: 0 18px">
-          <el-row
+          <div class="field-style" :class="{ 'field-style-dark': themes === 'dark' }">
+            <span class="field-text" style="padding-left: 12px">
+              {{ t('chart.indicator_value') }}
+            </span>
+          </div>
+
+          <div
             v-for="(item, index) in state.thresholdForm.labelThreshold"
             :key="index"
             class="line-style"
           >
-            <el-col :span="6">
+            <div style="flex: 1">
               <span v-if="item.term === 'eq'" :title="t('chart.filter_eq')">{{
                 t('chart.filter_eq')
               }}</span>
@@ -370,25 +396,31 @@ init()
               <span v-else-if="item.term === 'between'" :title="t('chart.filter_between')">{{
                 t('chart.filter_between')
               }}</span>
-            </el-col>
-            <el-col :span="12">
+            </div>
+            <div style="flex: 1; margin: 0 8px">
               <span v-if="item.term !== 'between'" :title="item.value">{{ item.value }}</span>
               <span v-if="item.term === 'between'">
                 {{ item.min }}&nbsp;≤{{ t('chart.drag_block_label_value') }}≤&nbsp;{{ item.max }}
               </span>
-            </el-col>
-            <el-col :span="6">
-              <span
-                :style="{
-                  width: '14px',
-                  height: '14px',
-                  backgroundColor: item.color,
-                  border: 'solid 1px #e1e4e8'
-                }"
-              />
-            </el-col>
-          </el-row>
-        </el-col>
+            </div>
+            <div
+              :title="t('chart.textColor')"
+              :style="{
+                backgroundColor: item.color
+              }"
+              class="color-div"
+              :class="{ 'color-div-dark': themes === 'dark' }"
+            ></div>
+            <!--            <div
+              :title="t('chart.backgroundColor')"
+              :style="{
+                backgroundColor: item.backgroundColor
+              }"
+              class="color-div"
+              :class="{ 'color-div-dark': themes === 'dark' }"
+            ></div>-->
+          </div>
+        </div>
       </el-col>
     </el-col>
 

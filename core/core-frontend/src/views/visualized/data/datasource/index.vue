@@ -535,7 +535,7 @@ const nodeCollapse = data => {
 
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
-  return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+  return data.name?.includes(value)
 }
 
 const editDatasource = (editType?: number) => {

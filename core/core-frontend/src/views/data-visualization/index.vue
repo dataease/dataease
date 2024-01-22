@@ -204,7 +204,8 @@ onMounted(async () => {
   initDataset()
   if (dvId) {
     state.canvasInitStatus = false
-    initCanvasData(dvId, 'dataV', function () {
+    const busiFlg = opt === 'copy' ? 'dataV-copy' : 'dataV'
+    initCanvasData(dvId, busiFlg, function () {
       state.canvasInitStatus = true
       // afterInit
       nextTick(() => {

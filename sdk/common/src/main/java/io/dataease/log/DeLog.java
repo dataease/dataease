@@ -13,7 +13,9 @@ public @interface DeLog {
 
     String pid() default "";
 
-    LogST st();
+    LogST st() default LogST.PANEL;
 
     LogOT ot();
+
+    String stExp() default "";
 }

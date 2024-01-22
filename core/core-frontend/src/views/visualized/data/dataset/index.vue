@@ -455,7 +455,7 @@ watch(nickName, (val: string) => {
 
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
-  return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+  return data.name?.includes(value)
 }
 
 const getMenuList = (val: boolean) => {

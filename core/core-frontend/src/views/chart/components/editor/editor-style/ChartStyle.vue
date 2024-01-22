@@ -19,6 +19,8 @@ import TableHeaderSelector from '@/views/chart/components/editor/editor-style/co
 import TableCellSelector from '@/views/chart/components/editor/editor-style/components/table/TableCellSelector.vue'
 import TableTotalSelector from '@/views/chart/components/editor/editor-style/components/table/TableTotalSelector.vue'
 import MiscStyleSelector from '@/views/chart/components/editor/editor-style/components/MiscStyleSelector.vue'
+import IndicatorValueSelector from '@/views/chart/components/editor/editor-style/components/IndicatorValueSelector.vue'
+import IndicatorNameSelector from '@/views/chart/components/editor/editor-style/components/IndicatorNameSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -83,7 +85,9 @@ const emit = defineEmits([
   'onTableCellChange',
   'onTableTotalChange',
   'onChangeMiscStyleForm',
-  'onExtTooltipChange'
+  'onExtTooltipChange',
+  'onIndicatorChange',
+  'onIndicatorNameChange'
 ])
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
@@ -110,6 +114,14 @@ const onChangeYAxisForm = (val, prop) => {
 
 const onTextChange = (val, prop) => {
   state.initReady && emit('onTextChange', val, prop)
+}
+
+const onIndicatorChange = (val, prop) => {
+  state.initReady && emit('onIndicatorChange', val, prop)
+}
+
+const onIndicatorNameChange = (val, prop) => {
+  state.initReady && emit('onIndicatorNameChange', val, prop)
 }
 
 const onLegendChange = (val, prop) => {
@@ -224,6 +236,39 @@ watch(
               component-position="component"
             />
           </el-collapse-item>
+          <el-collapse-item
+            :effect="themes"
+            v-if="showProperties('indicator-value-selector')"
+            name="indicator-value"
+            title="指标值"
+          >
+            <indicator-value-selector
+              :property-inner="propertyInnerAll['indicator-value-selector']"
+              :themes="themes"
+              class="attr-selector"
+              :chart="chart"
+              :quota-fields="props.quotaData"
+              @onIndicatorChange="onIndicatorChange"
+            />
+          </el-collapse-item>
+          <collapse-switch-item
+            :themes="themes"
+            v-model="chart.customAttr.indicatorName.show"
+            v-if="showProperties('indicator-name-selector')"
+            :change-model="chart.customAttr.indicatorName"
+            @modelChange="val => onIndicatorNameChange(val, 'show')"
+            title="指标名称"
+            name="indicator-name"
+          >
+            <indicator-name-selector
+              :property-inner="propertyInnerAll['indicator-name-selector']"
+              :themes="themes"
+              class="attr-selector"
+              :chart="chart"
+              :quota-fields="props.quotaData"
+              @onIndicatorNameChange="onIndicatorNameChange"
+            />
+          </collapse-switch-item>
           <el-collapse-item
             :effect="themes"
             v-if="showProperties('misc-selector')"

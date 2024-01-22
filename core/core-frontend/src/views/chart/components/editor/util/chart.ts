@@ -333,7 +333,7 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,
-  fontSize: '18',
+  fontSize: 16,
   color: '#ffffff',
   hPosition: 'left',
   vPosition: 'top',
@@ -347,9 +347,42 @@ export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   fontShadow: false
 }
 
-export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
+export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
+  show: true,
+  fontSize: '20',
+  color: '#5470C6',
+  hPosition: 'center',
+  vPosition: 'center',
+  isItalic: false,
+  isBolder: true,
+  fontFamily: 'Microsoft YaHei',
+  letterSpace: '0',
+  fontShadow: false,
+
+  suffixEnable: true,
+  suffix: '',
+  suffixFontSize: '14',
+  suffixColor: '#5470C6',
+  suffixIsItalic: false,
+  suffixIsBolder: true,
+  suffixFontFamily: 'Microsoft YaHei',
+  suffixLetterSpace: '0',
+  suffixFontShadow: false
+}
+export const DEFAULT_INDICATOR_NAME_STYLE: ChartIndicatorNameStyle = {
   show: true,
   fontSize: '18',
+  color: '#ffffff',
+  isItalic: false,
+  isBolder: true,
+  fontFamily: 'Microsoft YaHei',
+  letterSpace: '0',
+  fontShadow: false
+}
+
+export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
+  show: true,
+  fontSize: 16,
   hPosition: 'left',
   vPosition: 'top',
   isItalic: false,
@@ -952,6 +985,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'liquid',
         title: t('chart.chart_liquid'),
         icon: 'liquid'
+      },
+      {
+        render: 'custom',
+        category: 'quota',
+        value: 'indicator',
+        title: t('chart.chart_indicator'),
+        icon: 'indicator'
       }
     ]
   },
@@ -1258,6 +1298,8 @@ export const BASE_VIEW_CONFIG = {
     tableTotal: DEFAULT_TABLE_TOTAL,
     tableHeader: DEFAULT_TABLE_HEADER,
     tableCell: DEFAULT_TABLE_CELL,
+    indicator: DEFAULT_INDICATOR_STYLE,
+    indicatorName: DEFAULT_INDICATOR_NAME_STYLE,
     map: {
       id: '',
       level: 'world'

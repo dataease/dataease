@@ -3,6 +3,12 @@ const { t } = useI18n()
 
 export const dsTypes = [
   {
+    type: 'db2',
+    name: 'Db2',
+    catalog: 'OLTP',
+    extraParams: ''
+  },
+  {
     type: 'mysql',
     name: 'MySQL',
     catalog: 'OLTP',

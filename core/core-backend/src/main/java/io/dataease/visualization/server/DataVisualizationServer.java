@@ -17,8 +17,10 @@ import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.CommonConstants;
+import io.dataease.constant.LogOT;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
+import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
@@ -89,6 +91,17 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private VisualizationWatermarkMapper watermarkMapper;
 
+    @DeLog(id = "#p0", ot = LogOT.READ, stExp = "#p1")
+    @Override
+    public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
+        DataVisualizationVO result = findById(dvId, busiFlag);
+        if(result !=null && result.getPid() == -1){
+            return result;
+        }else{
+            return null;
+        }
+    }
+
     @Override
     @XpackInteract(value = "dataVisualizationServer", original = true)
     public DataVisualizationVO findById(Long dvId, String busiFlag) {
@@ -111,6 +124,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return null;
     }
 
+    @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, stExp = "#p0.type")
     @Override
     @Transactional
     public String saveCanvas(DataVisualizationBaseRequest request) {
@@ -123,11 +137,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
             visualizationInfo.setSelfWatermarkStatus(0);
         }
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
+        request.setId(newDvId);
         //保存视图信
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), newDvId, request.getCanvasViewInfo());
         return newDvId.toString();
     }
 
+    @DeLog(id = "#p0.id", ot = LogOT.MODIFY, stExp = "#p0.type")
     @Override
     @Transactional
     public void updateCanvas(DataVisualizationBaseRequest request) {
@@ -168,6 +184,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
      * @Description: 更新基础信息；
      * 为什么单独接口：1.基础信息更新频繁数据且数据载量较小；2.防止出现更新过多信息的情况，造成视图的误删等操作
      */
+    @DeLog(id = "#p0.id", ot = LogOT.MODIFY, stExp = "#p0.type")
     @Override
     @Transactional
     public void updateBase(DataVisualizationBaseRequest request) {
@@ -181,6 +198,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     /**
      * @Description: 逻辑删除可视化信息；将delete_flag 置为0
      */
+    @DeLog(id = "#p0", ot = LogOT.DELETE, stExp = "#p1")
     @Transactional
     @Override
     public void deleteLogic(Long dvId, String busiFlag) {
@@ -193,6 +211,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         return coreVisualizationManage.tree(request);
     }
 
+    @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.MODIFY, stExp = "#p0.type")
     @Transactional
     @Override
     public void move(DataVisualizationBaseRequest request) {

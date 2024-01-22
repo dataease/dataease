@@ -141,7 +141,7 @@ const restore = () => {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
         scaleWidth.value = isMainCanvas(canvasId.value)
-          ? scaleWidth.value * 1.5
+          ? scaleWidth.value * 1.2
           : outerScale.value * 100
       } else {
         changeRefComponentsSizeWithScale(

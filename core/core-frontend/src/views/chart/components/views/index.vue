@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
+import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
 import {
   computed,
   CSSProperties,
@@ -606,7 +607,7 @@ const iconSize = computed<string>(() => {
       </template>
       <div
         class="icons-container"
-        :class="{ 'is-editing': titleEditStatus }"
+        :class="{ 'is-editing': titleEditStatus, 'icons-container__dark': themes === 'dark' }"
         v-if="trackMenu.length > 0 || state.title_remark.show"
       >
         <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
@@ -643,6 +644,14 @@ const iconSize = computed<string>(() => {
         :element="element"
         :disabled="!['canvas', 'canvasDataV'].includes(showPosition) || disabled"
         :active="active"
+        :show-position="showPosition"
+      />
+      <de-indicator
+        :scale="scale"
+        v-else-if="showChartView(ChartLibraryType.INDICATOR)"
+        :themes="canvasStyleData.dashboard.themeColor"
+        ref="chartComponent"
+        :view="view"
         :show-position="showPosition"
       />
       <chart-component-g2-plot
@@ -702,6 +711,10 @@ const iconSize = computed<string>(() => {
     gap: 8px;
 
     color: #646a73;
+
+    &.icons-container__dark {
+      color: #a6a6a6;
+    }
 
     &.is-editing {
       gap: 6px;
