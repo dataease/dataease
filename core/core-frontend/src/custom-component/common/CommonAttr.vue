@@ -102,6 +102,12 @@ onMounted(() => {
     })
   })
 })
+const stopEvent = e => {
+  if (e && e.code === 'Enter') {
+    e.stopPropagation()
+    e.preventDefault()
+  }
+}
 </script>
 
 <template>
@@ -231,6 +237,8 @@ onMounted(() => {
                   ></el-option>
                 </el-select>
                 <el-input-number
+                  @keydown="stopEvent"
+                  @keyup="stopEvent"
                   v-else
                   size="middle"
                   style="width: 100%"
