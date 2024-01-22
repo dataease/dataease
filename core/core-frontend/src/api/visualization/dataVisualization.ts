@@ -17,7 +17,7 @@ export interface Panel {
 }
 
 export const findCopyResource = async (dvId, busiFlag): Promise<IResponse> => {
-  return request.get({ url: '/findCopyResource/findById/' + dvId + '/' + busiFlag })
+  return request.get({ url: '/dataVisualization/findCopyResource/' + dvId + '/' + busiFlag })
 }
 
 export const findById = async (dvId, busiFlag): Promise<IResponse> => {
