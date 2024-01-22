@@ -90,6 +90,16 @@ public class DataVisualizationServer implements DataVisualizationApi {
     private VisualizationWatermarkMapper watermarkMapper;
 
     @Override
+    public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
+        DataVisualizationVO result = findById(dvId, busiFlag);
+        if(result !=null && result.getPid() == -1){
+            return result;
+        }else{
+            return null;
+        }
+    }
+
+    @Override
     @XpackInteract(value = "dataVisualizationServer", original = true)
     public DataVisualizationVO findById(Long dvId, String busiFlag) {
         DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);

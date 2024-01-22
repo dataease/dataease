@@ -81,7 +81,8 @@ onMounted(async () => {
   state.sourcePid = pid
   if (resourceId) {
     dataInitState.value = false
-    initCanvasData(resourceId, 'dashboard', function () {
+    const busiFlg = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
+    initCanvasData(resourceId, busiFlg, function () {
       dataInitState.value = true
       if (dvInfo.value && opt === 'copy') {
         dvInfo.value.dataState = 'prepare'
