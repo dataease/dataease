@@ -359,6 +359,7 @@ export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
   letterSpace: '0',
   fontShadow: false,
 
+  suffixEnable: true,
   suffix: '',
   suffixFontSize: '14',
   suffixColor: '#5470C6',

@@ -149,6 +149,7 @@ watch(
 
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
           <el-select
+            size="small"
             :effect="themes"
             v-model="state.indicatorNameForm.letterSpace"
             :placeholder="t('chart.quota_letter_space')"
