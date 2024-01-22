@@ -607,7 +607,7 @@ const iconSize = computed<string>(() => {
       </template>
       <div
         class="icons-container"
-        :class="{ 'is-editing': titleEditStatus }"
+        :class="{ 'is-editing': titleEditStatus, 'icons-container__dark': themes === 'dark' }"
         v-if="trackMenu.length > 0 || state.title_remark.show"
       >
         <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
@@ -711,6 +711,10 @@ const iconSize = computed<string>(() => {
     gap: 8px;
 
     color: #646a73;
+
+    &.icons-container__dark {
+      color: #a6a6a6;
+    }
 
     &.is-editing {
       gap: 6px;
