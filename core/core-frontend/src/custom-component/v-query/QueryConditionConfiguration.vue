@@ -197,6 +197,12 @@ const setTypeChange = () => {
   nextTick(() => {
     curComponent.value.field.id = ''
     inputCom.value?.displayTypeChange?.()
+    if (
+      +curComponent.value.displayType === 7 &&
+      ['yearrange', 'monthrange', 'datetimerange'].includes(curComponent.value.timeGranularity)
+    ) {
+      curComponent.value.timeGranularityMultiple = curComponent.value.timeGranularity
+    }
   })
 }
 
@@ -635,6 +641,13 @@ const dynamicTime = computed(() => {
 
 const relativeToCurrentTypeList = computed(() => {
   if (!curComponent.value) return []
+  let index = ['year', 'month', 'date', 'datetime'].indexOf(curComponent.value.timeGranularity) + 1
+  if (+curComponent.value.displayType === 7) {
+    index =
+      ['yearrange', 'monthrange', 'datetimerange'].indexOf(
+        curComponent.value.timeGranularityMultiple
+      ) + 1
+  }
   return [
     {
       label: '年',
@@ -648,7 +661,7 @@ const relativeToCurrentTypeList = computed(() => {
       label: '日',
       value: 'date'
     }
-  ].slice(0, ['year', 'month', 'date', 'datetime'].indexOf(curComponent.value.timeGranularity) + 1)
+  ].slice(0, index)
 })
 
 const timeGranularityChange = (val: string) => {
@@ -660,6 +673,15 @@ const timeGranularityChange = (val: string) => {
   }
   if (curComponent.value.relativeToCurrent !== 'custom') {
     curComponent.value.relativeToCurrent = relativeToCurrentList.value[0]?.value
+  }
+}
+
+const timeGranularityMultipleChange = (val: string) => {
+  if (
+    ['yearrange', 'monthrange', 'datetimerange'].indexOf(val) <
+    ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentType)
+  ) {
+    curComponent.value.relativeToCurrentType = 'year'
   }
 }
 const aroundList = [
@@ -968,9 +990,12 @@ defineExpose({
             <div class="value">
               <template v-if="curComponent.displayType === '7'">
                 <el-select
+                  @change="timeGranularityMultipleChange"
                   placeholder="请选择时间粒度"
                   v-model="curComponent.timeGranularityMultiple"
                 >
+                  <el-option label="年" value="yearrange" />
+                  <el-option label="年月" value="monthrange" />
                   <el-option label="年月日时分秒" value="datetimerange" />
                 </el-select>
               </template>
@@ -1284,7 +1309,13 @@ defineExpose({
                 </div>
               </template>
               <template v-else-if="dynamicTime && curComponent.displayType === '7'">
-                <div class="setting">
+                <div
+                  class="setting"
+                  :class="
+                    ['yearrange', 'monthrange'].includes(curComponent.timeGranularityMultiple) &&
+                    'is-yaer-month-range'
+                  "
+                >
                   <div class="setting-label">开始时间</div>
                   <div class="setting-input with-date range">
                     <el-input-number
@@ -1311,7 +1342,13 @@ defineExpose({
                     <el-time-picker v-model="curComponent.arbitraryTime" />
                   </div>
                 </div>
-                <div class="setting">
+                <div
+                  class="setting"
+                  :class="
+                    ['yearrange', 'monthrange'].includes(curComponent.timeGranularityMultiple) &&
+                    'is-yaer-month-range'
+                  "
+                >
                   <div class="setting-label">结束时间</div>
                   <div class="setting-input with-date range">
                     <el-input-number
@@ -1651,6 +1688,7 @@ defineExpose({
             padding-left: 24px;
             display: flex;
             flex-wrap: wrap;
+
             .range-title,
             .params-start,
             .params-end {
@@ -1726,6 +1764,20 @@ defineExpose({
 
                 .ed-date-editor.ed-input {
                   width: 106px;
+                }
+              }
+            }
+
+            &.is-yaer-month-range {
+              .setting-input {
+                &.with-date {
+                  .ed-input-number,
+                  .ed-select {
+                    width: 103px;
+                  }
+                }
+                .ed-date-editor.ed-input {
+                  display: none;
                 }
               }
             }
