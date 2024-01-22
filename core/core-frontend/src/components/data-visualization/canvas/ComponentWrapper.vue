@@ -133,7 +133,10 @@ const componentBackgroundStyle = computed(() => {
       innerPadding,
       borderRadius
     } = config.value.commonBackground
-    const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
+    const style = {
+      padding: innerPadding * deepScale.value + 'px',
+      borderRadius: borderRadius + 'px'
+    }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = backgroundColor
