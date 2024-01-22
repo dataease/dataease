@@ -7,6 +7,9 @@ DE_RUNNING_BASE=${DE_BASE}/dataease2.0
 need_init_apisix=false
 compose_files="-f docker-compose.yml"
 compose_cmd="docker-compose"
+server_url="github.com"
+current_version=""
+latest_version=""
 
 set -a
 source ${DE_RUNNING_BASE}/.env
@@ -23,6 +26,12 @@ fi
 
 if [[ ! ${DE_EXTERNAL_MYSQL} ]] || [ "${DE_EXTERNAL_MYSQL}" = "false" ]; then
   compose_files="${compose_files} -f docker-compose-mysql.yml"
+fi
+
+if [[ -x "$(command -v python)" ]]; then
+   py_cmd='python'
+elif [[ -x "$(command -v python3)" ]]; then
+   py_cmd='python3'
 fi
 
 function usage() {
@@ -107,7 +116,87 @@ function _healthcheck() {
 }
 function _get_current_version() {
    de_current_version=$(grep "^    image:.*dataease:" ${DE_RUNNING_BASE}/docker-compose.yml | awk -F'dataease:' '{print $2}')
-   echo $de_current_version
+   if test -z $de_current_version; then
+      echo "获取当前版本失败，请检查当前版本是否正确"
+      exit 1
+   fi
+   current_version=$de_current_version
+}
+function _get_available_server() {
+   git_urls=('github.com')
+
+   for git_url in ${git_urls[*]}; do
+      success="true"
+      
+      echo -ne "检测 ${git_url} ... "
+      curl -m 5 -kIs https://${git_url} >/dev/null
+      if [ $? != 0 ]; then
+         echo "failed"
+         success="false"
+      else
+         echo "ok"
+      fi
+      
+      if [[ ${success} == "true" ]]; then
+         server_url=${git_url}
+         break
+      else
+         unset server_url
+      fi
+   done
+
+   if [[ "x${server_url}" == "x" ]]; then
+      echo "没有找到稳定的下载服务器，请访问 https://community.fit2cloud.com/#/products/dataease/downloads 下载离线安装包"
+      exit 1
+   fi
+}
+function _get_latest_version() {
+   rm -f /tmp/de_latest_release
+
+   $py_cmd - <<EOF
+# -*- coding: UTF-8 -*-
+import os
+import json
+import re
+
+latest_release=""
+release_pattern="v2\.\d+\.\d+$"
+
+def get_releases(page):
+   try:
+      releases=os.popen("curl -s https://api.github.com/repos/dataease/dataease/releases?page=%d" % (page)).read()
+      releases=[ x["name"] for x in json.loads(releases) if x["prerelease"] == False ]
+   except Exception as e:
+      print(str(e))
+      print("Failed to obtain Release information, please check the network.")
+      exit(1)
+   else:
+      for release in releases:
+         if re.search(release_pattern,release) != None:
+            return release
+
+page = 1
+while (page <= 3):
+   latest_release = get_releases(page)
+   if (latest_release != "" and latest_release != None):
+      break
+   page += 1
+
+if latest_release == None or latest_release == "":
+   print("Failed to obtain latest version, please try again.")
+   exit(1)
+else:
+   print("latest version is %s" % (latest_release))
+
+# 记录最新版本号
+os.popen("echo "+latest_release+" > /tmp/de_latest_release")
+EOF
+
+   if [ ! -f /tmp/de_latest_release ]; then
+      echo "获取最新版本失败，请检查网络连接是否正常"
+      exit 1
+   fi
+   latest_version=$(cat /tmp/de_latest_release)
 }
 function status() {
    echo
@@ -164,113 +253,20 @@ function reload() {
 function version() {
    echo
    _get_current_version
+   _get_latest_version
+   echo "current version is $current_version"
 }
 function upgrade() {
    echo
-   git_urls=('github.com')
-   if [[ -x "$(command -v python)" ]]; then
-      py_cmd='python'
-   elif [[ -x "$(command -v python3)" ]]; then
-      py_cmd='python3'
-   fi
+   _get_current_version
+   echo "检测当前版本为${current_version}"
+   _get_available_server
+   _get_latest_version
 
-   for git_url in ${git_urls[*]}; do
-      success="true"
-      for i in {1..3}; do
-         echo -ne "检测 ${git_url} ... ${i} "
-         curl -m 5 -kIs https://${git_url} >/dev/null
-         if [ $? != 0 ]; then
-            echo "failed"
-            success="false"
-            break
-         else
-            echo "ok"
-         fi
-      done
-      if [[ ${success} == "true" ]]; then
-         server_url=${git_url}
-         break
-      fi
-   done
-
-   if [[ "x${server_url}" == "x" ]]; then
-      echo "没有找到稳定的下载服务器，请访问 https://community.fit2cloud.com/#/products/dataease/downloads 下载离线安装包"
-      exit 1
-   fi
-
-   if [[ "${server_url}" == "gitee.com" ]]; then
-      owner='fit2cloud-feizhiyun'
-      repo='DataEase'
-   else
-      owner='dataease'
-      repo='dataease'
-   fi
-
-   export DE_VERSION=$(_get_current_version)
-   if test -z $DE_VERSION; then
-      echo "获取当前版本失败，请检查当前版本是否正确"
-      exit 1
-   fi
-   echo "检测当前版本为${DE_VERSION}"
-
-   rm -f /tmp/de_latest_release
-   $py_cmd - <<EOF
-# -*- coding: UTF-8 -*-
-import os
-import json
-import re
-
-latest_release=""
-release_pattern=""
-
-current_version="$DE_VERSION"
-server_url="$server_url"
-release_pattern="v2\.\d+\.\d+$"
-
-def get_releases(page):
-   try:
-      if server_url == "gitee.com":
-         releases=os.popen("curl -s https://gitee.com/api/v5/repos/fit2cloud-feizhiyun/DataEase/releases?direction=desc&page=%d" % (page)).read()
-      else:
-         releases=os.popen("curl -s https://api.github.com/repos/dataease/dataease/releases?page=%d" % (page)).read()
-
-      releases=[ x["name"] for x in json.loads(releases) if x["prerelease"] == False ]
-   except Exception as e:
-      print(str(e))
-      print("Failed to obtain Release information, please check the network.")
-      exit(1)
-   else:
-      for release in releases:
-         if re.search(release_pattern,release) != None:
-            return release
-
-page = 1
-while (page <= 3):
-   latest_release = get_releases(page)
-   if (latest_release != "" and latest_release != None):
-      break
-   page += 1
-
-if latest_release == None or latest_release == "":
-   print("Failed to obtain latest version, please try again.")
-   exit(1)
-else:
-   print("latest version is %s" % (latest_release))
-
-# 记录最新版本号
-os.popen("echo "+latest_release+" > /tmp/de_latest_release")
-EOF
-
-   if [ ! -f /tmp/de_latest_release ]; then
-      echo "获取最新版本失败，请检查网络连接是否正常"
-      exit 1
-   fi
-
-   latest_version=$(cat /tmp/de_latest_release)
    if [ "${latest_version}" = "" ]; then
       echo "未获取到最新版本"
       exit 1
-   elif [ "${latest_version}" = "${DE_VERSION}" ]; then
+   elif [ "${latest_version}" = "${current_version}" ]; then
       echo "最新版本与当前版本一致,退出升级过程"
       exit 0
    else
@@ -283,11 +279,11 @@ EOF
    cd /tmp
 
    installer_file="dataease-online-installer-${latest_version}.tar.gz"
-   download_url="https://${server_url}/${owner}/${repo}/releases/download/${latest_version}/$installer_file"
+   download_url="https://${server_url}/dataease/dataease/releases/download/${latest_version}/$installer_file"
    curl -LOk -m 60 -o $installer_file $download_url
    if [ $? -ne 0 ]; then
       echo -e "\e[31m升级失败:连接下载服务器超时！\n可手动下载升级包，然后执行\e[1;33m /bin/bash install.sh \e[0;31m离线升级，也可以重新执行一次 dectl upgrade 命令。\e[0m"
-      return 2
+      exit 1
    fi
 
    if [ ! -f $installer_file ]; then
