@@ -5,6 +5,8 @@ import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.DataSourceType;
+import io.dataease.constant.LogOT;
+import io.dataease.constant.LogST;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
@@ -12,6 +14,7 @@ import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
 import io.dataease.datasource.dto.DatasourceNodeBO;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
+import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
@@ -25,7 +28,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class DataSourceManage {
@@ -71,12 +73,14 @@ public class DataSourceManage {
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }
 
+    @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASOURCE)
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerSave(CoreDatasource coreDatasource) {
         coreDatasourceMapper.insert(coreDatasource);
-        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE,OptConstants.OPT_TYPE.NEW);
+        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.NEW);
     }
 
+    @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEdit(CoreDatasource coreDatasource) {
         UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
@@ -84,9 +88,10 @@ public class DataSourceManage {
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
         coreDatasourceMapper.update(coreDatasource, updateWrapper);
-        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE,OptConstants.OPT_TYPE.UPDATE);
+        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 
+    @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEditStatus(CoreDatasource coreDatasource) {
         UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
@@ -94,6 +99,7 @@ public class DataSourceManage {
         coreDatasourceMapper.update(coreDatasource, updateWrapper);
     }
 
+    @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void move(DatasourceDTO dataSourceDTO) {
         Long id = dataSourceDTO.getId();
@@ -106,6 +112,6 @@ public class DataSourceManage {
         sourceData.setPid(dataSourceDTO.getPid());
         sourceData.setName(dataSourceDTO.getName());
         coreDatasourceMapper.updateById(sourceData);
-        coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE,OptConstants.OPT_TYPE.UPDATE);
+        coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 }

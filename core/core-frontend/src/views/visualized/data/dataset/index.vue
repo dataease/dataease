@@ -759,10 +759,6 @@ const getMenuList = (val: boolean) => {
     height: calc(100vh - 56px);
     overflow: auto;
     position: relative;
-
-    &.h100 {
-      height: 100%;
-    }
   }
 
   .dataset-content {

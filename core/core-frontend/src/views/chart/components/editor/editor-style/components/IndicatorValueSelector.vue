@@ -360,152 +360,170 @@ watch(
 
       <el-divider class="m-divider" :class="{ 'divider-dark': themes === 'dark' }" />
 
-      <el-form-item
-        class="form-item"
-        :class="'form-item-' + themes"
-        :label="t('chart.indicator_suffix')"
-      >
-        <el-input
-          v-model="state.indicatorValueForm.suffix"
-          :placeholder="t('chart.indicator_suffix_placeholder')"
-          maxlength="10"
-          @change="changeTitleStyle('suffix')"
-        />
-      </el-form-item>
-
-      <el-form-item class="form-item" :class="'form-item-' + themes" :effect="themes">
-        <el-select
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-checkbox
+          size="small"
           :effect="themes"
-          v-model="state.indicatorValueForm.suffixFontFamily"
-          :placeholder="t('chart.font_family')"
-          @change="changeTitleStyle('suffixFontFamily')"
+          v-model="state.indicatorValueForm.suffixEnable"
+          @change="changeTitleStyle('suffixEnable')"
         >
-          <el-option
-            v-for="option in fontFamily"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
+          {{ t('chart.indicator_suffix') }}
+        </el-checkbox>
       </el-form-item>
 
-      <div style="display: flex">
-        <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
-          <el-color-picker
-            :effect="themes"
-            v-model="state.indicatorValueForm.suffixColor"
-            class="color-picker-style"
-            :predefine="predefineColors"
-            @change="changeTitleStyle('suffixColor')"
-            is-custom
+      <div style="padding-left: 22px">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-input
+            :disabled="!state.indicatorValueForm.suffixEnable"
+            v-model="state.indicatorValueForm.suffix"
+            :placeholder="t('chart.indicator_suffix_placeholder')"
+            maxlength="10"
+            @change="changeTitleStyle('suffix')"
           />
         </el-form-item>
-        <el-form-item class="form-item" :class="'form-item-' + themes" style="padding: 0 4px">
-          <el-tooltip content="字号" :effect="toolTip" placement="top">
-            <el-select
-              style="width: 56px"
-              :effect="themes"
-              v-model="state.indicatorValueForm.suffixFontSize"
-              :placeholder="t('chart.text_fontsize')"
-              size="small"
-              @change="changeTitleStyle('suffixFontSize')"
-            >
-              <el-option
-                v-for="option in fontSizeList"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-tooltip>
-        </el-form-item>
 
-        <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
+        <el-form-item class="form-item" :class="'form-item-' + themes" :effect="themes">
           <el-select
+            :disabled="!state.indicatorValueForm.suffixEnable"
             :effect="themes"
-            v-model="state.indicatorValueForm.suffixLetterSpace"
-            :placeholder="t('chart.quota_letter_space')"
-            @change="changeTitleStyle('suffixLetterSpace')"
+            v-model="state.indicatorValueForm.suffixFontFamily"
+            :placeholder="t('chart.font_family')"
+            @change="changeTitleStyle('suffixFontFamily')"
           >
-            <template #prefix>
-              <el-icon>
-                <Icon name="icon_letter-spacing_outlined" />
-              </el-icon>
-            </template>
             <el-option
-              v-for="option in fontLetterSpace"
+              v-for="option in fontFamily"
               :key="option.value"
               :label="option.name"
               :value="option.value"
             />
           </el-select>
         </el-form-item>
+
+        <div style="display: flex">
+          <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
+            <el-color-picker
+              :disabled="!state.indicatorValueForm.suffixEnable"
+              :effect="themes"
+              v-model="state.indicatorValueForm.suffixColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeTitleStyle('suffixColor')"
+              is-custom
+            />
+          </el-form-item>
+          <el-form-item class="form-item" :class="'form-item-' + themes" style="padding: 0 4px">
+            <el-tooltip content="字号" :effect="toolTip" placement="top">
+              <el-select
+                :disabled="!state.indicatorValueForm.suffixEnable"
+                style="width: 56px"
+                :effect="themes"
+                v-model="state.indicatorValueForm.suffixFontSize"
+                :placeholder="t('chart.text_fontsize')"
+                size="small"
+                @change="changeTitleStyle('suffixFontSize')"
+              >
+                <el-option
+                  v-for="option in fontSizeList"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </el-tooltip>
+          </el-form-item>
+
+          <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
+            <el-select
+              size="small"
+              :disabled="!state.indicatorValueForm.suffixEnable"
+              :effect="themes"
+              v-model="state.indicatorValueForm.suffixLetterSpace"
+              :placeholder="t('chart.quota_letter_space')"
+              @change="changeTitleStyle('suffixLetterSpace')"
+            >
+              <template #prefix>
+                <el-icon>
+                  <Icon name="icon_letter-spacing_outlined" />
+                </el-icon>
+              </template>
+              <el-option
+                v-for="option in fontLetterSpace"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+        </div>
+
+        <el-space>
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-checkbox
+              :disabled="!state.indicatorValueForm.suffixEnable"
+              :effect="themes"
+              class="icon-checkbox"
+              v-model="state.indicatorValueForm.suffixIsBolder"
+              @change="changeTitleStyle('suffixIsBolder')"
+            >
+              <el-tooltip :effect="toolTip" placement="top">
+                <template #content>
+                  {{ t('chart.bolder') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: state.indicatorValueForm.suffixIsBolder
+                  }"
+                >
+                  <el-icon>
+                    <Icon name="icon_bold_outlined" />
+                  </el-icon>
+                </div>
+              </el-tooltip>
+            </el-checkbox>
+          </el-form-item>
+
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-checkbox
+              :disabled="!state.indicatorValueForm.suffixEnable"
+              :effect="themes"
+              class="icon-checkbox"
+              v-model="state.indicatorValueForm.suffixIsItalic"
+              @change="changeTitleStyle('suffixIsItalic')"
+            >
+              <el-tooltip :effect="toolTip" placement="top">
+                <template #content>
+                  {{ t('chart.italic') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: state.indicatorValueForm.suffixIsItalic
+                  }"
+                >
+                  <el-icon>
+                    <Icon name="icon_italic_outlined" />
+                  </el-icon>
+                </div>
+              </el-tooltip>
+            </el-checkbox>
+          </el-form-item>
+        </el-space>
+
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-checkbox
+            :disabled="!state.indicatorValueForm.suffixEnable"
+            size="small"
+            :effect="themes"
+            v-model="state.indicatorValueForm.suffixFontShadow"
+            @change="changeTitleStyle('suffixFontShadow')"
+          >
+            {{ t('chart.font_shadow') }}
+          </el-checkbox>
+        </el-form-item>
       </div>
-
-      <el-space>
-        <el-form-item class="form-item" :class="'form-item-' + themes">
-          <el-checkbox
-            :effect="themes"
-            class="icon-checkbox"
-            v-model="state.indicatorValueForm.suffixIsBolder"
-            @change="changeTitleStyle('suffixIsBolder')"
-          >
-            <el-tooltip :effect="toolTip" placement="top">
-              <template #content>
-                {{ t('chart.bolder') }}
-              </template>
-              <div
-                class="icon-btn"
-                :class="{
-                  dark: themes === 'dark',
-                  active: state.indicatorValueForm.suffixIsBolder
-                }"
-              >
-                <el-icon>
-                  <Icon name="icon_bold_outlined" />
-                </el-icon>
-              </div>
-            </el-tooltip>
-          </el-checkbox>
-        </el-form-item>
-
-        <el-form-item class="form-item" :class="'form-item-' + themes">
-          <el-checkbox
-            :effect="themes"
-            class="icon-checkbox"
-            v-model="state.indicatorValueForm.suffixIsItalic"
-            @change="changeTitleStyle('suffixIsItalic')"
-          >
-            <el-tooltip :effect="toolTip" placement="top">
-              <template #content>
-                {{ t('chart.italic') }}
-              </template>
-              <div
-                class="icon-btn"
-                :class="{
-                  dark: themes === 'dark',
-                  active: state.indicatorValueForm.suffixIsItalic
-                }"
-              >
-                <el-icon>
-                  <Icon name="icon_italic_outlined" />
-                </el-icon>
-              </div>
-            </el-tooltip>
-          </el-checkbox>
-        </el-form-item>
-      </el-space>
-
-      <el-form-item class="form-item" :class="'form-item-' + themes">
-        <el-checkbox
-          size="small"
-          :effect="themes"
-          v-model="state.indicatorValueForm.suffixFontShadow"
-          @change="changeTitleStyle('suffixFontShadow')"
-        >
-          {{ t('chart.font_shadow') }}
-        </el-checkbox>
-      </el-form-item>
     </el-form>
   </div>
 </template>

@@ -1576,8 +1576,6 @@ const getMenuList = (val: boolean) => {
     overflow: auto;
     position: relative;
     &.h100 {
-      height: 100%;
-
       .datasource-table {
         height: calc(100% - 140px);
       }

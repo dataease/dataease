@@ -24,7 +24,7 @@
     "axios": "^1.3.3",
     "crypto-js": "^4.1.1",
     "dayjs": "^1.11.9",
-    "element-plus-secondary": "^0.4.15",
+    "element-plus-secondary": "^0.4.16",
     "element-resize-detector": "^1.2.4",
     "file-saver": "^2.0.5",
     "html-to-image": "^1.11.11",

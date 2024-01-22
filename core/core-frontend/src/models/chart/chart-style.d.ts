@@ -44,6 +44,7 @@ declare interface ChartIndicatorStyle {
   letterSpace: string
   fontShadow: boolean
 
+  suffixEnable: boolean
   suffix: string
   suffixFontSize: string
   suffixColor: string
