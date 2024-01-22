@@ -41,17 +41,17 @@ export function watermark(settings, domId) {
   // 如果将水印列数设置为0，或水印列数设置过大，超过页面最大宽度，则重新计算水印列数和水印x轴间隔
   if (
     defaultSettings.watermark_cols === 0 ||
-    parseInt(
+    Math.round(
       defaultSettings.watermark_x +
         defaultSettings.watermark_width * defaultSettings.watermark_cols +
         defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)
     ) > page_width
   ) {
-    defaultSettings.watermark_cols = parseInt(
+    defaultSettings.watermark_cols = Math.round(
       (page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) /
         (defaultSettings.watermark_width + defaultSettings.watermark_x_space)
     )
-    defaultSettings.watermark_x_space = parseInt(
+    defaultSettings.watermark_x_space = Math.round(
       (page_width -
         defaultSettings.watermark_x -
         defaultSettings.watermark_width * defaultSettings.watermark_cols) /
@@ -61,17 +61,17 @@ export function watermark(settings, domId) {
   // 如果将水印行数设置为0，或水印行数设置过大，超过页面最大长度，则重新计算水印行数和水印y轴间隔
   if (
     defaultSettings.watermark_rows === 0 ||
-    parseInt(
+    Math.round(
       defaultSettings.watermark_y +
         defaultSettings.watermark_height * defaultSettings.watermark_rows +
         defaultSettings.watermark_y_space * (defaultSettings.watermark_rows - 1)
     ) > page_height
   ) {
-    defaultSettings.watermark_rows = parseInt(
+    defaultSettings.watermark_rows = Math.round(
       (defaultSettings.watermark_y_space + page_height - defaultSettings.watermark_y) /
         (defaultSettings.watermark_height + defaultSettings.watermark_y_space)
     )
-    defaultSettings.watermark_y_space = parseInt(
+    defaultSettings.watermark_y_space = Math.round(
       (page_height -
         defaultSettings.watermark_y -
         defaultSettings.watermark_height * defaultSettings.watermark_rows) /
@@ -110,7 +110,7 @@ export function watermark(settings, domId) {
       mask_div.style.zIndex = '10'
       // 让水印不遮挡页面的点击事件
       mask_div.style.pointerEvents = 'none'
-      mask_div.style.opacity = defaultSettings.watermark_alpha
+      mask_div.style.opacity = defaultSettings.watermark_alpha + ''
       mask_div.style.fontSize = defaultSettings.watermark_fontsize
       mask_div.style.fontFamily = defaultSettings.watermark_font
       mask_div.style.color = defaultSettings.watermark_color
