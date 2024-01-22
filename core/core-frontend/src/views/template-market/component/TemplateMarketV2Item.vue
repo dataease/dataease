@@ -9,7 +9,7 @@
       }"
     >
       <el-row class="demonstration"> {{ template.title }} </el-row>
-      <el-row class="template-button">
+      <el-row class="template-button" v-show="createAuth[template.templateType]">
         <el-button size="mini" style="width: calc(50% - 18px)" @click="templateInnerPreview">{{
           t('visualization.preview')
         }}</el-button>
