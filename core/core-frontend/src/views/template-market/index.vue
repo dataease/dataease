@@ -17,7 +17,7 @@
         <el-icon class="custom-back-icon hover-icon" @click="previewModel = 'full'"
           ><ArrowLeft
         /></el-icon>
-        <span>{{ state.curTemplate.title }} </span>
+        <span>{{ state.curTemplate.title }}1 </span>
         <el-row class="head-right">
           <el-button :disabled="state.curTemplateIndex === 0" style="float: right" @click="preOne"
             >上一个</el-button
@@ -480,8 +480,10 @@ const templatePreview = previewId => {
   } else {
     state.curTemplateShowFilter =
       state.marketActiveTab === '推荐'
-        ? state.currentMarketTemplateShowList
-        : state.currentMarketTemplateShowList.filter(ele => ele.showFlag)
+        ? state.currentMarketTemplateShowList.filter(ele => ele.showFlag)
+        : state.currentMarketTemplateShowList.filter(
+            ele => ele.showFlag && ele.categoryNames?.includes(state.marketActiveTab)
+          )
     state.curTemplateIndex = state.curTemplateShowFilter.findIndex(temp => temp.id === previewId)
     state.curTemplate = state.curTemplateShowFilter[state.curTemplateIndex]
     previewModel.value = 'createPreview'
