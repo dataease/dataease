@@ -9,4 +9,5 @@ import java.util.List;
 public class DatasetTableFieldDTO extends DatasetTableField {
     private String jsonPath;
     private List<Object> deTypeCascader;
+    private boolean isKey;
 }

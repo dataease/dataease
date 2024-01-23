@@ -4,6 +4,7 @@ import cn.hutool.core.collection.CollectionUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import com.google.gson.Gson;
 import io.dataease.auth.annotation.DePermission;
 import io.dataease.auth.annotation.DePermissions;
 import io.dataease.auth.filter.F2CLinkFilter;
@@ -12,6 +13,7 @@ import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.dataset.MultFieldValuesRequest;
 import io.dataease.controller.response.DatasetTableField4Type;
+import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DatasetTable;
@@ -108,6 +110,8 @@ public class DataSetTableFieldController {
         DatasetTableField datasetTableField = DatasetTableField.builder().build();
         datasetTableField.setTableId(tableId);
         datasetTableField.setGroupType("d");
+        DatasetTable datasetTable = dataSetTableService.get(tableId);
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
         List<DatasetTableFieldDTO> dimensionList = new ArrayList<>();
         dataSetTableFieldsService.list(datasetTableField).forEach(o -> {
             DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
@@ -118,6 +122,9 @@ public class DataSetTableFieldController {
                 deTypeCascader.add(datasetTableFieldDTO.getDateFormatType());
             }
             datasetTableFieldDTO.setDeTypeCascader(deTypeCascader);
+            if (dataTableInfoDTO.isSetKey() && dataTableInfoDTO.getKeys().contains(datasetTableFieldDTO.getOriginName())){
+                datasetTableFieldDTO.setKey(true);
+            }
             dimensionList.add(datasetTableFieldDTO);
         });
 
@@ -133,6 +140,9 @@ public class DataSetTableFieldController {
                 deTypeCascader.add(datasetTableFieldDTO.getDateFormatType());
             }
             datasetTableFieldDTO.setDeTypeCascader(deTypeCascader);
+            if (dataTableInfoDTO.isSetKey() && dataTableInfoDTO.getKeys().contains(datasetTableFieldDTO.getOriginName())){
+                datasetTableFieldDTO.setKey(true);
+            }
             quotaList.add(datasetTableFieldDTO);
         });
 
@@ -185,6 +195,16 @@ public class DataSetTableFieldController {
             }
         }
         return dataSetTableFieldsService.save(datasetTableField);
+    }
+
+    @DePermission(type = DePermissionType.DATASET, value = "tableId", level = ResourceAuthLevel.DATASET_LEVEL_MANAGE)
+    @ApiOperation("设置主键")
+    @PostMapping("saveKey")
+    public void saveKey(@RequestBody DatasetTableFieldDTO datasetTableField) throws Exception {
+        DatasetTable datasetTable = dataSetTableService.get(datasetTableField.getTableId());
+        if (datasetTable.getMode() == 1) {
+            dataSetTableService.saveKey(datasetTable, datasetTableField);
+        }
     }
 
     @DePermissions(value = {

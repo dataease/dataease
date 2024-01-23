@@ -1866,7 +1866,11 @@ export default {
       tip6: '使用数据集对应数据库类型所支持的函数，语法同对应数据库',
       tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
       tip8: '非直连模式数据集，使用Doris数据库函数，可参考Doris官网'
-    }
+    },
+    set_key: '设置主键',
+    change_to_key: '设置为主键',
+    selecet_key: '选择主键',
+    no_set_key: '未设置主键'
   },
   driver: {
     driver: '驱动',

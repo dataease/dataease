@@ -138,6 +138,23 @@
               )
             }}
           </div>
+          <el-checkbox  v-model="sheetObj.setKey">{{ $t('dataset.set_key') }}</el-checkbox>
+          <el-select
+              size="small"
+              v-model="sheetObj.keys"
+              v-if="mode === '1'"
+              multiple
+              filterable
+              :disabled="!sheetObj.setKey"
+              :placeholder="$t('dataset.selecet_key')"
+          >
+            <el-option
+                v-for="field in sheetObj.fields"
+                :key="field.fieldName"
+                :label="field.fieldName"
+                :value="field.fieldName"
+            />
+          </el-select>
         </div>
         <div class="data">
           <div class="result-num">
@@ -769,6 +786,10 @@ export default {
 
       .el-input {
         width: 420px;
+        margin-left: 12px;
+      }
+
+      .el-checkbox{
         margin-left: 12px;
       }
     }

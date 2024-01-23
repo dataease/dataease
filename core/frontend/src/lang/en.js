@@ -1874,7 +1874,11 @@ export default {
       tip6: 'Use the functions supported by the database type corresponding to the dataset. The syntax is the same as that of the corresponding database',
       tip7: 'For example, date format: MySQL uses DATE_ FORMAT(date,format)； Oracle uses TO_ DATE(X,[,fmt])',
       tip8: 'Non direct connection mode data set, use Doris database functions, refer to Doris official website'
-    }
+    },
+    set_key: 'Set Primary Key',
+    change_to_key: 'Set as primary key',
+    selecet_key: 'Select primary key',
+    no_set_key: 'No primary key set'
   },
   driver: {
     driver: 'Driver',

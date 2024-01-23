@@ -1,11 +1,13 @@
 package io.dataease.provider.engine.doris;
 
 import com.google.gson.Gson;
+import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.dto.datasource.DorisConfiguration;
 import io.dataease.provider.DDLProviderImpl;
+import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
@@ -44,12 +46,16 @@ public class DorisDDLProvider extends DDLProviderImpl {
     }
 
     @Override
-    public String createTableSql(String tableName, List<DatasetTableField> datasetTableFields, Datasource engine, String version) {
+    public String createTableSql(DataTableInfoDTO dataTableInfoDTO, String tableName, List<DatasetTableField> datasetTableFields, Datasource engine, String version) {
         DorisConfiguration dorisConfiguration = new Gson().fromJson(engine.getConfiguration(), DorisConfiguration.class);
         String dorisTableColumnSql = createDorisTableColumnSql(datasetTableFields, version);
-        return creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql)
+        String sql =  creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql)
                 .replace("BUCKETS_NUM", dorisConfiguration.getBucketNum().toString())
                 .replace("ReplicationNum", dorisConfiguration.getReplicationNum().toString());
+        if(dataTableInfoDTO.isSetKey() && CollectionUtils.isNotEmpty(dataTableInfoDTO.getKeys())){
+            sql = sql.replace("dataease_uuid", "`" + String.join("`, `", dataTableInfoDTO.getKeys()) + "`");
+        }
+        return sql;
     }
 
     private String createDorisTableColumnSql(final List<DatasetTableField> datasetTableFields, String version) {

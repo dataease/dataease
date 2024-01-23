@@ -281,7 +281,7 @@ public class PanelAppTemplateService {
         for (DatasetTable datasetTable : datasetTablesInfo) {
             if (1 == datasetTable.getMode() && !(DatasetType.CUSTOM.name().equalsIgnoreCase(datasetTable.getType()) || DatasetType.UNION.name().equalsIgnoreCase(datasetTable.getType()))) {
                 List<DatasetTableField> fields = extractDataService.getDatasetTableFields(datasetTable.getId());
-                extractDataService.createEngineTable(TableUtils.tableName(datasetTable.getId()), fields);
+                extractDataService.createEngineTable(datasetTable.getInfo(), TableUtils.tableName(datasetTable.getId()), fields);
             }
         }
     }
