@@ -1020,14 +1020,14 @@ public class ExtractDataService {
                 dataMeta = new DatabaseMeta("db", "MSSQLNATIVE", "Native", sqlServerConfiguration.getHost().trim(), sqlServerConfiguration.getDataBase(), sqlServerConfiguration.getPort().toString(), sqlServerConfiguration.getUsername(), sqlServerConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 inputSteps = inputStep(transMeta, selectSQL, sqlServerConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer, sqlServerConfiguration);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.sqlServer, sqlServerConfiguration, isSetKey);
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasource.getConfiguration(), PgConfiguration.class);
                 dataMeta = new DatabaseMeta("db", "POSTGRESQL", "Native", pgConfiguration.getHost().trim(), pgConfiguration.getDataBase(), pgConfiguration.getPort().toString(), pgConfiguration.getUsername(), pgConfiguration.getPassword());
                 transMeta.addDatabase(dataMeta);
                 inputSteps = inputStep(transMeta, selectSQL, pgConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.pg, pgConfiguration);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.pg, pgConfiguration, isSetKey);
                 break;
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasource.getConfiguration(), OracleConfiguration.class);
@@ -1039,7 +1039,7 @@ public class ExtractDataService {
                 }
                 transMeta.addDatabase(dataMeta);
                 inputSteps = inputStep(transMeta, selectSQL, oracleConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle, oracleConfiguration);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.oracle, oracleConfiguration, isSetKey);
                 break;
             case ck:
                 CHConfiguration chConfiguration = new Gson().fromJson(datasource.getConfiguration(), CHConfiguration.class);
@@ -1047,7 +1047,7 @@ public class ExtractDataService {
                 dataMeta.setDatabaseType("Clickhouse");
                 transMeta.addDatabase(dataMeta);
                 inputSteps = inputStep(transMeta, selectSQL, chConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.ck, chConfiguration);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.ck, chConfiguration, isSetKey);
                 break;
             case db2:
                 Db2Configuration db2Configuration = new Gson().fromJson(datasource.getConfiguration(), Db2Configuration.class);
@@ -1055,11 +1055,11 @@ public class ExtractDataService {
                 dataMeta.setDatabaseType("DB2");
                 transMeta.addDatabase(dataMeta);
                 inputSteps = inputStep(transMeta, selectSQL, db2Configuration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.db2, db2Configuration);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.db2, db2Configuration, isSetKey);
                 break;
             case excel:
                 inputSteps = excelInputStep(datasetTable.getInfo(), datasetTableFields);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.excel, null);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.excel, null, isSetKey);
             default:
                 break;
         }
