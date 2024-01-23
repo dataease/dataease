@@ -221,7 +221,17 @@ export const dvMainStore = defineStore('dataVisualization', {
           })
         }
       }
+      if (!this.curComponent) {
+        this.componentData.forEach(componentItem => {
+          componentItem['canvasActive'] = false
+        })
+      }
       if (component) {
+        this.componentData.forEach(componentItem => {
+          if (!component.canvasId.includes(componentItem.id)) {
+            componentItem['canvasActive'] = false
+          }
+        })
         // Is the current component in editing status
         if (!this.curComponent) {
           component['editing'] = false
