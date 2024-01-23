@@ -20,7 +20,7 @@ if [ -f /usr/bin/dectl ]; then
    dectl stop
    INSTALL_TYPE='upgrade'
 
-   v2_version=$(dectl version |grep "^v2.")
+   v2_version=$(dectl version | head -n 2 | grep "v2.")
    if [[ -z $v2_version ]];then
       echo "系统当前版本不是 DataEase v2 版本系列，不支持升级到 v2，请检查离线包版本。"
       exit 1;
