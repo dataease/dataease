@@ -244,8 +244,8 @@ function reload() {
 function version() {
    echo
    _get_current_version
-   _get_latest_version
    echo "current version is $current_version"
+   _get_latest_version
    echo "latest version is $latest_version"
 }
 function upgrade() {
