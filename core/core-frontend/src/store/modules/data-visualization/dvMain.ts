@@ -569,7 +569,10 @@ export const dvMainStore = defineStore('dataVisualization', {
           mixPropertiesTemp = deepCopy(componentInfo.properties)
           mixPropertyInnerTemp = deepCopy(componentInfo.propertyInner)
         }
-        batchAttachInfo.type = componentInfo.value
+        batchAttachInfo.type =
+          batchAttachInfo.type === null || batchAttachInfo.type === componentInfo.value
+            ? componentInfo.value
+            : 'mix'
       }
       mixPropertiesTemp.forEach(property => {
         if (mixPropertyInnerTemp[property]) {

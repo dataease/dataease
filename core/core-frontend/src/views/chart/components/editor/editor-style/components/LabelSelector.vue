@@ -210,7 +210,6 @@ onMounted(() => {
     :model="state.labelForm"
     label-position="top"
   >
-    <el-row v-if="batchOptStatus" style="margin-bottom: 12px"> 无其他公共属性 </el-row>
     <el-space>
       <el-form-item
         class="form-item"
