@@ -16,8 +16,8 @@ import io.dataease.utils.CommonBeanFactory;
 import io.dataease.utils.HttpClientConfig;
 import io.dataease.utils.HttpClientUtil;
 import io.dataease.utils.JsonUtil;
-import net.minidev.json.JSONArray;
 import org.apache.commons.lang3.StringUtils;
+import org.json.simple.JSONArray;
 import org.springframework.util.CollectionUtils;
 import org.springframework.util.ObjectUtils;
 
