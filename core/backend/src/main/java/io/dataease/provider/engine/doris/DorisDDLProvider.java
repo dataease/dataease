@@ -20,7 +20,7 @@ import java.util.List;
 public class DorisDDLProvider extends DDLProviderImpl {
     private static final String creatTableSql = "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
             "Column_Fields" +
-            "UNIQUE KEY(dataease_uuid)\n" +
+            "UNIQUE KEY(`dataease_uuid`)\n" +
             "DISTRIBUTED BY HASH(dataease_uuid) BUCKETS BUCKETS_NUM\n" +
             "PROPERTIES(\"replication_num\" = \"ReplicationNum\");";
 
@@ -53,7 +53,7 @@ public class DorisDDLProvider extends DDLProviderImpl {
                 .replace("BUCKETS_NUM", dorisConfiguration.getBucketNum().toString())
                 .replace("ReplicationNum", dorisConfiguration.getReplicationNum().toString());
         if(dataTableInfoDTO.isSetKey() && CollectionUtils.isNotEmpty(dataTableInfoDTO.getKeys())){
-            sql = sql.replace("dataease_uuid", "`" + String.join("`, `", dataTableInfoDTO.getKeys()) + "`");
+            sql = sql.replace("`dataease_uuid`", "`" + String.join("`, `", dataTableInfoDTO.getKeys()) + "`");
         }
         return sql;
     }
