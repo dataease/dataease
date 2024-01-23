@@ -196,8 +196,8 @@ function uninstall() {
 function version() {
    echo
    _get_current_version
-   _get_latest_version
    echo "current version is $current_version"
+   _get_latest_version
    echo "latest version is $latest_version"
 }
 function _clear_component_docker_images() {
