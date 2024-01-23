@@ -20,8 +20,8 @@ import java.util.List;
 public class DorisDDLProvider extends DDLProviderImpl {
     private static final String creatTableSql = "CREATE TABLE IF NOT EXISTS `TABLE_NAME`" +
             "Column_Fields" +
-            "UNIQUE KEY(`dataease_uuid`)\n" +
-            "DISTRIBUTED BY HASH(dataease_uuid) BUCKETS BUCKETS_NUM\n" +
+            "UNIQUE KEY(`UNIQUE_KEY`)\n" +
+            "DISTRIBUTED BY HASH(`DISTRIBUTED_BY_HASH`) BUCKETS BUCKETS_NUM\n" +
             "PROPERTIES(\"replication_num\" = \"ReplicationNum\");";
 
     @Override
@@ -40,26 +40,30 @@ public class DorisDDLProvider extends DDLProviderImpl {
     }
 
     @Override
-    public String replaceTable(String name){
-       return  "ALTER TABLE DORIS_TABLE  REPLACE WITH TABLE DORIS_TMP_TABLE PROPERTIES('swap' = 'false')"
-               .replace("DORIS_TABLE", name).replace("DORIS_TMP_TABLE", TableUtils.tmpName(name));
+    public String replaceTable(String name) {
+        return "ALTER TABLE DORIS_TABLE  REPLACE WITH TABLE DORIS_TMP_TABLE PROPERTIES('swap' = 'false')"
+                .replace("DORIS_TABLE", name).replace("DORIS_TMP_TABLE", TableUtils.tmpName(name));
     }
 
     @Override
     public String createTableSql(DataTableInfoDTO dataTableInfoDTO, String tableName, List<DatasetTableField> datasetTableFields, Datasource engine, String version) {
         DorisConfiguration dorisConfiguration = new Gson().fromJson(engine.getConfiguration(), DorisConfiguration.class);
-        String dorisTableColumnSql = createDorisTableColumnSql(datasetTableFields, version);
-        String sql =  creatTableSql.replace("TABLE_NAME", tableName).replace("Column_Fields", dorisTableColumnSql)
+
+        String sql = creatTableSql.replace("TABLE_NAME", tableName)
                 .replace("BUCKETS_NUM", dorisConfiguration.getBucketNum().toString())
                 .replace("ReplicationNum", dorisConfiguration.getReplicationNum().toString());
-        if(dataTableInfoDTO.isSetKey() && CollectionUtils.isNotEmpty(dataTableInfoDTO.getKeys())){
-            sql = sql.replace("`dataease_uuid`", "`" + String.join("`, `", dataTableInfoDTO.getKeys()) + "`");
+        if (dataTableInfoDTO.isSetKey() && CollectionUtils.isNotEmpty(dataTableInfoDTO.getKeys())) {
+            sql = sql.replace("`UNIQUE_KEY`", "`" + String.join("`, `", dataTableInfoDTO.getKeys()) + "`")
+                    .replace("DISTRIBUTED_BY_HASH", dataTableInfoDTO.getKeys().get(0)).replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version));
+        } else {
+            sql = sql.replace("UNIQUE_KEY", "dataease_uuid").replace("DISTRIBUTED_BY_HASH", "dataease_uuid").replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version));
         }
+
         return sql;
     }
 
     private String createDorisTableColumnSql(final List<DatasetTableField> datasetTableFields, String version) {
-        StringBuilder Column_Fields = new StringBuilder("dataease_uuid  varchar(50), `");
+        StringBuilder Column_Fields = new StringBuilder("`");
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields.append(datasetTableField.getDataeaseName()).append("` ");
             Integer size = datasetTableField.getSize() * 3;
@@ -71,23 +75,23 @@ public class DorisDDLProvider extends DDLProviderImpl {
                     Column_Fields.append("STRING".replace("length", String.valueOf(size))).append(",`");
                     break;
                 case 1:
-                    size  = size < 50? 50 : size;
+                    size = size < 50 ? 50 : size;
                     Column_Fields.append("STRING".replace("length", String.valueOf(size))).append(",`");
                     break;
                 case 2:
                     Column_Fields.append("bigint").append(",`");
                     break;
                 case 3:
-                   if(datasetTableField.getType().equalsIgnoreCase("DECIMAL") && datasetTableField.getAccuracy() != 0){
-                       if(Integer.valueOf(version.split("5.7.")[1]) < 99){
-                           Column_Fields.append("DECIMAL(" + datasetTableField.getSize() + "," + datasetTableField.getAccuracy() + ")").append(",`");
-                       }else {
-                           Column_Fields.append("DecimalV3(" + datasetTableField.getSize() + "," + datasetTableField.getAccuracy() + ")").append(",`");
-                       }
+                    if (datasetTableField.getType().equalsIgnoreCase("DECIMAL") && datasetTableField.getAccuracy() != 0) {
+                        if (Integer.valueOf(version.split("5.7.")[1]) < 99) {
+                            Column_Fields.append("DECIMAL(" + datasetTableField.getSize() + "," + datasetTableField.getAccuracy() + ")").append(",`");
+                        } else {
+                            Column_Fields.append("DecimalV3(" + datasetTableField.getSize() + "," + datasetTableField.getAccuracy() + ")").append(",`");
+                        }
 
-                   }else {
-                       Column_Fields.append("DOUBLE").append(",`");
-                   }
+                    } else {
+                        Column_Fields.append("DOUBLE").append(",`");
+                    }
                     break;
                 case 4:
                     Column_Fields.append("TINYINT(length)".replace("length", String.valueOf(size))).append(",`");
