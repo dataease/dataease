@@ -27,6 +27,7 @@ import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import _ from 'lodash'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { groupSizeStyleAdaptor } from '@/utils/style'
 const snapshotStore = snapshotStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -73,6 +74,13 @@ const onPositionChange = key => {
   curComponent.value.style[key] = Math.round(
     (positionMounted.value[key] * canvasStyleData.value.scale) / 100
   )
+
+  if (curComponent.value.component === 'Group') {
+    //如果当前组件是Group分组 则要进行内部组件深度计算
+    const parentNode = document.querySelector('#editor-canvas-main')
+    groupSizeStyleAdaptor(curComponent.value)
+  }
+
   snapshotStore.recordSnapshotCache()
 }
 
