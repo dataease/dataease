@@ -271,7 +271,7 @@ watch(
           </collapse-switch-item>
           <el-collapse-item
             :effect="themes"
-            v-if="showProperties('misc-selector')"
+            v-if="showProperties('misc-selector') && !chart.type.includes('mix')"
             name="size"
             title="大小"
           >
