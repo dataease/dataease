@@ -108,6 +108,9 @@ export const copyStore = defineStore('copy', {
           // 旧-新ID映射关系
           const idMap = {}
           const newComponent = deepCopyHelper(data, idMap)
+          if (newComponent.canvasId.includes('Group')) {
+            newComponent.canvasId = 'canvas-main'
+          }
           dvMainStore.addCopyComponent(newComponent, idMap, copyDataTemp.copyCanvasViewInfo)
           if (dvInfo.value.type === 'dashboard') {
             if (dvMainStore.multiplexingStyleAdapt && copyDataTemp.copyFrom === 'multiplexing') {
@@ -115,6 +118,7 @@ export const copyStore = defineStore('copy', {
             }
             eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
           }
+
           i++
         }
       }, moveTime)
