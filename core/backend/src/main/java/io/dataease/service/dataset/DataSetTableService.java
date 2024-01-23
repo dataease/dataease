@@ -1053,7 +1053,7 @@ public class DataSetTableService {
     }
 
     public String removeVariables(final String sql, String dsType) throws Exception {
-        String tmpSql = sql;
+        String tmpSql = sql.replaceAll("(?m)^\\s*$[\n\r]{0,}", "");
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tmpSql);
         boolean hasVariables = false;
