@@ -159,6 +159,24 @@
           >
             {{ $t('deDataset.already_exists') }}
           </div>
+          <el-checkbox v-if="engineMode !== 'simple'" v-model="activeTable.setKey">{{ $t('dataset.set_key') }}</el-checkbox>
+
+          <el-select
+              size="small"
+              v-model="activeTable.keys"
+              v-if="engineMode !== 'simple'"
+              multiple
+              filterable
+              :disabled="!activeTable.setKey"
+              :placeholder="$t('dataset.selecet_key')"
+          >
+            <el-option
+                v-for="field in fields"
+                :key="field.fieldName"
+                :label="field.fieldName"
+                :value="field.fieldName"
+            />
+          </el-select>
         </div>
         <div
           v-loading="tableLoading"
@@ -421,20 +439,25 @@ export default {
       const tables = []
       const mode = this.mode
       const syncType = this.syncType
-      this.checkTableList.forEach((name) => {
-        const datasetName = this.tables.find(
-          (ele) => ele.name === name
-        ).datasetName
+
+      for (let i = 0; i < this.checkTableList.length; i++) {
+        const table = this.tables.find(
+            (ele) => ele.name === this.checkTableList[i]
+        )
+        if(table.setKey && table.keys.length === 0 ){
+          this.openMessageSuccess(this.checkTableList[i] + this.$t('dataset.no_set_key')  , 'error')
+          return
+        }
         tables.push({
-          name: datasetName,
+          name: table.datasetName,
           sceneId: sceneId,
           dataSourceId: dataSourceId,
           type: 'api',
           syncType: syncType,
           mode: parseInt(mode),
-          info: JSON.stringify({ table: name })
+          info: JSON.stringify({ table: this.checkTableList[i], setKey: table.setKey, keys: table.keys})
         })
-      })
+      }
       post('/dataset/table/batchAdd', tables)
         .then((response) => {
           this.openMessageSuccess('deDataset.set_saved_successfully')
@@ -608,6 +631,10 @@ export default {
 
       .el-input {
         width: 420px;
+        margin-left: 12px;
+      }
+
+      .el-checkbox{
         margin-left: 12px;
       }
     }

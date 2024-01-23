@@ -1866,7 +1866,11 @@ export default {
       tip6: '使用數據集對應數據庫類型所支持的函數，語法同對應數據庫',
       tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
       tip8: '非直連模式數據集，使用Doris數據庫函數，可參考Doris官網'
-    }
+    },
+    set_key: '設定主鍵',
+    change_to_key: '設定為主鍵',
+    selecet_key: '選擇主鍵',
+    no_set_key: '未設定主鍵'
   },
   driver: {
     driver: '驅動',

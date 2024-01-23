@@ -191,8 +191,8 @@ public class ExtractDataService {
         switch (updateType) {
             case all_scope:  // 全量更新
                 try {
-                    createEngineTable(TableUtils.tableName(datasetTableId), datasetTableFields);
-                    createEngineTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)), datasetTableFields);
+                    createEngineTable(datasetTable.getInfo(), TableUtils.tableName(datasetTableId), datasetTableFields);
+                    createEngineTable(datasetTable.getInfo(), TableUtils.tmpName(TableUtils.tableName(datasetTableId)), datasetTableFields);
                     Long execTime = System.currentTimeMillis();
                     if (!engineService.isSimpleMode()) {
                         generateTransFile("all_scope", datasetTable, datasource, datasetTableFields, null);
@@ -318,8 +318,8 @@ public class ExtractDataService {
         switch (updateType) {
             case all_scope:  // 全量更新
                 try {
-                    createEngineTable(TableUtils.tableName(datasetTableId), datasetTableFields);
-                    createEngineTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)), datasetTableFields);
+                    createEngineTable(datasetTable.getInfo(), TableUtils.tableName(datasetTableId), datasetTableFields);
+                    createEngineTable(datasetTable.getInfo(), TableUtils.tmpName(TableUtils.tableName(datasetTableId)), datasetTableFields);
                     execTime = System.currentTimeMillis();
                     extractData(datasetTable, datasource, datasetTableFields, "all_scope", null);
                     replaceTable(TableUtils.tableName(datasetTableId));
@@ -641,7 +641,8 @@ public class ExtractDataService {
         dataSetTableTaskLogService.save(datasetTableTaskLog, hasTask);
     }
 
-    public void createEngineTable(String tableName, List<DatasetTableField> datasetTableFields) throws Exception {
+    public void createEngineTable(String datasetTableInfo, String tableName, List<DatasetTableField> datasetTableFields) throws Exception {
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTableInfo, DataTableInfoDTO.class);
         Datasource engine = engineService.getDeEngine();
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -649,7 +650,7 @@ public class ExtractDataService {
         datasourceRequest.setQuery("SELECT VERSION()");
         String version = jdbcProvider.getData(datasourceRequest).get(0)[0];
         DDLProvider ddlProvider = ProviderFactory.getDDLProvider(engine.getType());
-        datasourceRequest.setQuery(ddlProvider.createTableSql(tableName, datasetTableFields, engine, version));
+        datasourceRequest.setQuery(ddlProvider.createTableSql(dataTableInfoDTO, tableName, datasetTableFields, engine, version));
         jdbcProvider.exec(datasourceRequest);
     }
 
@@ -1323,7 +1324,7 @@ public class ExtractDataService {
         String handleMysqlBIGINTUNSIGNEDStr = "";
         if (datasourceType.equals(DatasourceTypes.mysql)) {
             for (DatasetTableField datasetTableField : datasetTableFields) {
-                if(datasetTableField.getType().equalsIgnoreCase("BIGINT UNSIGNED")){
+                if (datasetTableField.getType().equalsIgnoreCase("BIGINT UNSIGNED")) {
                     handleMysqlBIGINTUNSIGNEDStr = handleMysqlBIGINTUNSIGNEDStr + handleMysqlBIGINTUNSIGNED.replace("BIGINTUNSIGNEDFIELD", datasetTableField.getDataeaseName()) + "; \n";
                 }
             }

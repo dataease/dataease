@@ -179,6 +179,20 @@ public class DataSetTableService {
         return list;
     }
 
+    public void saveKey(DatasetTable datasetTable, DatasetTableFieldDTO datasetTableField) {
+        DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+        if (datasetTableField.isKey()) {
+            dt.getKeys().add(datasetTableField.getOriginName());
+        } else {
+            dt.getKeys().remove(datasetTableField.getOriginName());
+        }
+        DatasetTable record = new DatasetTable();
+        record.setInfo(new Gson().toJson(dt));
+        DatasetTableExample example = new DatasetTableExample();
+        example.createCriteria().andIdEqualTo(datasetTable.getId());
+        datasetTableMapper.updateByExampleSelective(record, example);
+    }
+
     private void extractData(DataSetTableRequest datasetTable) throws Exception {
         if (datasetTable.getMode() == 1 && StringUtils.isNotEmpty(datasetTable.getSyncType()) && datasetTable.getSyncType().equalsIgnoreCase("sync_now")) {
             DataSetTaskRequest dataSetTaskRequest = new DataSetTaskRequest();
@@ -234,6 +248,8 @@ public class DataSetTableService {
                     });
                     DataTableInfoDTO info = new DataTableInfoDTO();
                     info.setExcelSheetDataList(excelSheetDataList);
+                    info.setKeys(excelSheetDataList.get(0).getKeys());
+                    info.setSetKey(excelSheetDataList.get(0).isSetKey());
                     sheetTable.setInfo(new Gson().toJson(info));
                     datasetTableMapper.insert(sheetTable);
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
@@ -263,6 +279,8 @@ public class DataSetTableService {
                     excelSheetDataList.add(sheet);
                     DataTableInfoDTO info = new DataTableInfoDTO();
                     info.setExcelSheetDataList(excelSheetDataList);
+                    info.setKeys(sheet.getKeys());
+                    info.setSetKey(sheet.isSetKey());
                     sheetTable.setInfo(new Gson().toJson(info));
                     datasetTableMapper.insert(sheetTable);
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
@@ -296,6 +314,8 @@ public class DataSetTableService {
             excelSheetDataList.add(sheet);
         }
         DataTableInfoDTO info = new DataTableInfoDTO();
+        info.setKeys(datasetTable.getSheets().get(0).getKeys());
+        info.setSetKey(datasetTable.getSheets().get(0).isSetKey());
         info.setExcelSheetDataList(excelSheetDataList);
         datasetTable.setInfo(new Gson().toJson(info));
         datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
