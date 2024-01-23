@@ -11,11 +11,13 @@ import java.util.List;
 @Data
 public class LogGridRequest extends KeywordRequest implements Serializable {
 
-    private String op;
+    private List<String> op;
 
-    private Long uid;
+    private List<Long> uid;
 
-    private Long oid;
+    private List<Long> oid;
 
     private List<Long> time;
+
+    private Boolean timeDesc = true;
 }
