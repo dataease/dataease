@@ -56,8 +56,8 @@ public interface SyncDatasourceApi {
     @GetMapping("/validate/{datasourceId}")
     SyncDatasourceDTO validate(@PathVariable("datasourceId") String datasourceId) throws DEException;
 
-    @PostMapping("/latestUse")
-    List<String> latestUse();
+    @PostMapping("/latestUse/{sourceType}")
+    List<String> latestUse(@PathVariable("sourceType") String sourceType);
 
     @GetMapping("/get/{datasourceId}")
     SyncDatasourceDTO get(@PathVariable("datasourceId") String datasourceId) throws DEException;
