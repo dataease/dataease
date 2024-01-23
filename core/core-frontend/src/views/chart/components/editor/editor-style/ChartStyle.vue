@@ -276,7 +276,7 @@ watch(
             title="大小"
           >
             <misc-selector
-              :property-inner="propertyInnerAll['size-selector']"
+              :property-inner="propertyInnerAll['misc-selector']"
               :themes="themes"
               class="attr-selector"
               :chart="chart"
