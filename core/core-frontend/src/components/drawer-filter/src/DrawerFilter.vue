@@ -21,7 +21,7 @@ const emits = defineEmits(['filter-change'])
 const selectStatus = ids => {
   emits(
     'filter-change',
-    ids.map(item => item.label)
+    ids.map(item => item.id || item.value)
   )
 }
 

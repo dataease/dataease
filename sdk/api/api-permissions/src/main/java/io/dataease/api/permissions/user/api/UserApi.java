@@ -156,4 +156,8 @@ public interface UserApi {
     @Hidden
     @GetMapping("/queryByAccount")
     CurUserVO queryByAccount(String account);
+
+    @Hidden
+    @PostMapping("/all")
+    List<UserItem> allUser(@RequestBody KeywordRequest request);
 }

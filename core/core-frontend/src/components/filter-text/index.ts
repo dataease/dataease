@@ -25,6 +25,12 @@ const valueTextFormTree = (val, options) => {
   }
   return result || val
 }
+const timestampFormatDate = value => {
+  if (!value) {
+    return '-'
+  }
+  return new Date(value)['format']()
+}
 const valueText = (field, val, options) => {
   for (let index = 0; index < options.length; index++) {
     const element = options[index]
@@ -40,6 +46,9 @@ const valueText = (field, val, options) => {
         if (item.id === val || item.value === val) {
           return item.name || item.label
         }
+      }
+      if (element.type === 'time') {
+        return timestampFormatDate(val)
       }
       if (isTree) {
         return valueTextFormTree(val, selectOption)
