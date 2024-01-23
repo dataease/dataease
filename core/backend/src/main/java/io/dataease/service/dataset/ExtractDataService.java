@@ -205,7 +205,7 @@ public class ExtractDataService {
                     saveSuccessLog(datasetTableTaskLog, false);
                     updateTableStatus(datasetTableId, JobStatus.Completed, execTime);
                     if (ops.equalsIgnoreCase("替换")) {
-                        List<DatasetTableField> oldFields = getDatasetTableFields(datasetTable.getId());
+                        List<DatasetTableField> oldFields = getDatasetTableFields(datasetTable);
                         List<DatasetTableField> toAdd = new ArrayList<>();
                         List<DatasetTableField> toDelete = new ArrayList<>();
                         for (DatasetTableField oldField : oldFields) {
@@ -311,7 +311,7 @@ public class ExtractDataService {
         } else {
             datasource.setType(datasetTable.getType());
         }
-        List<DatasetTableField> datasetTableFields = getDatasetTableFields(datasetTable.getId());
+        List<DatasetTableField> datasetTableFields = getDatasetTableFields(datasetTable);
         boolean msg = false;
         JobStatus lastExecStatus = JobStatus.Completed;
         Long execTime = null;
@@ -421,8 +421,9 @@ public class ExtractDataService {
 
     }
 
-    public List<DatasetTableField> getDatasetTableFields(String datasetTableId) {
-        List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTableId).build());
+    public List<DatasetTableField> getDatasetTableFields(DatasetTable datasetTable) {
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+        List<DatasetTableField> datasetTableFields = dataSetTableFieldsService.list(DatasetTableField.builder().tableId(datasetTable.getId()).build());
         datasetTableFields = datasetTableFields.stream().filter(datasetTableField -> datasetTableField.getExtField() == 0).collect(Collectors.toList());
         datasetTableFields.sort((o1, o2) -> {
             if (o1.getColumnIndex() == null) {
@@ -433,6 +434,27 @@ public class ExtractDataService {
             }
             return o1.getColumnIndex().compareTo(o2.getColumnIndex());
         });
+        if (dataTableInfoDTO.isSetKey() && CollectionUtils.isNotEmpty(dataTableInfoDTO.getKeys()) && !engineService.isSimpleMode()) {
+            List<DatasetTableField> orderKeyDatasetTableFields = new ArrayList<>();
+            for (int i = 0; i < dataTableInfoDTO.getKeys().size(); i++) {
+                for (DatasetTableField datasetTableField : datasetTableFields) {
+                    if (datasetTableField.getOriginName().equalsIgnoreCase(dataTableInfoDTO.getKeys().get(i))) {
+                        orderKeyDatasetTableFields.add(datasetTableField);
+                    }
+                }
+            }
+            for (DatasetTableField datasetTableField : datasetTableFields) {
+                if (!dataTableInfoDTO.getKeys().contains(datasetTableField.getOriginName())) {
+                    orderKeyDatasetTableFields.add(datasetTableField);
+                }
+            }
+        } else {
+            DatasetTableField datasetTableField = new DatasetTableField();
+            datasetTableField.setDeExtractType(0);
+            datasetTableField.setDataeaseName("dataease_uuid");
+            datasetTableField.setOriginName("dataease_uuid");
+            datasetTableFields.add(0, datasetTableField);
+        }
         return datasetTableFields;
     }
 
@@ -483,7 +505,7 @@ public class ExtractDataService {
 
         Datasource engine = engineService.getDeEngine();
         DorisConfiguration dorisConfiguration = new Gson().fromJson(engine.getConfiguration(), DorisConfiguration.class);
-        String columns = datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(",")) + ",dataease_uuid";
+        String columns = datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(","));
 
         String dataFile = null;
         String script = null;
@@ -874,7 +896,7 @@ public class ExtractDataService {
         String script = null;
         Datasource dorisDatasource = engineService.getDeEngine();
         DorisConfiguration dorisConfiguration = new Gson().fromJson(dorisDatasource.getConfiguration(), DorisConfiguration.class);
-        String columns = columnFields + ",dataease_uuid";
+        String columns = columnFields;
         String streamLoadScript = "";
         if (kettleFilesKeep) {
             streamLoadScript = shellScript;
@@ -962,6 +984,8 @@ public class ExtractDataService {
         if (engineService.isSimpleMode()) {
             return;
         }
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+        boolean isSetKey = dataTableInfoDTO.isSetKey() && CollectionUtils.isNotEmpty(dataTableInfoDTO.getKeys());
         TransMeta transMeta = new TransMeta();
         String outFile = null;
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasource.getType());
@@ -989,7 +1013,7 @@ public class ExtractDataService {
                 }
                 transMeta.addDatabase(dataMeta);
                 inputSteps = inputStep(transMeta, selectSQL, mysqlConfiguration);
-                udjcStep = udjc(datasetTableFields, DatasourceTypes.mysql, mysqlConfiguration);
+                udjcStep = udjc(datasetTableFields, DatasourceTypes.mysql, mysqlConfiguration, isSetKey);
                 break;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfiguration.class);
@@ -1216,11 +1240,6 @@ public class ExtractDataService {
                 textFileField.setType("String");
                 outputFields[i] = textFileField;
             }
-            TextFileField textFileField = new TextFileField();
-            textFileField.setName("dataease_uuid");
-            textFileField.setType("String");
-            outputFields[datasetTableFields.size()] = textFileField;
-
             textFileOutputMeta.setOutputFields(outputFields);
         } else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.pg.name()) || datasource.getType().equalsIgnoreCase(DatasourceTypes.mysql.name())) {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
@@ -1236,11 +1255,6 @@ public class ExtractDataService {
 
                 outputFields[i] = textFileField;
             }
-            TextFileField textFileField = new TextFileField();
-            textFileField.setName("dataease_uuid");
-            textFileField.setType("String");
-            outputFields[datasetTableFields.size()] = textFileField;
-
             textFileOutputMeta.setOutputFields(outputFields);
         } else if (datasource.getType().equalsIgnoreCase(DatasourceTypes.excel.name())) {
             TextFileField[] outputFields = new TextFileField[datasetTableFields.size() + 1];
@@ -1256,10 +1270,6 @@ public class ExtractDataService {
 
                 outputFields[i] = textFileField;
             }
-            TextFileField textFileField = new TextFileField();
-            textFileField.setName("dataease_uuid");
-            textFileField.setType("String");
-            outputFields[datasetTableFields.size()] = textFileField;
 
             textFileOutputMeta.setOutputFields(outputFields);
         } else {
@@ -1272,7 +1282,7 @@ public class ExtractDataService {
         return outputStep;
     }
 
-    private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType, JdbcConfiguration jdbcConfiguration) {
+    private StepMeta udjc(List<DatasetTableField> datasetTableFields, DatasourceTypes datasourceType, JdbcConfiguration jdbcConfiguration, boolean isSetKey) {
         StringBuilder handleBinaryTypeCode = new StringBuilder();
         String excelCompletion = "";
 
@@ -1284,12 +1294,18 @@ public class ExtractDataService {
 
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
-        UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("dataease_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);
-        fields.add(fieldInfo);
+        if(isSetKey){
+            UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("dataease_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);
+            fields.add(fieldInfo);
+        }
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<>();
         String tmp_code = code.replace("handleWraps", handleWraps).replace("handleBinaryType", handleBinaryTypeCode.toString());
-
+        if(isSetKey){
+            tmp_code.replace("handleDataease_uuid", "");
+        }else {
+            tmp_code.replace("handleDataease_uuid", handleDataease_uuid);
+        }
         String Column_Fields;
 
         if (datasourceType.equals(DatasourceTypes.oracle) || datasourceType.equals(DatasourceTypes.db2)) {
@@ -1442,11 +1458,13 @@ public class ExtractDataService {
             "            get(Fields.Out, filed).setValue(r, tmp);\n" +
             "        } \n";
 
+    private final static String handleDataease_uuid = "get(Fields.Out, \"dataease_uuid\").setValue(r, md5);" ;
     private final static String handleCharset = "\tif(tmp != null && Arrays.asList(\"varcharFields\".split(\",\")).contains(filed)){\n" +
             "  \t\t\ttry {\n" +
             "\t\t\t\tget(Fields.Out, filed).setValue(r, new String(tmp.getBytes(\"Datasource_Charset\"), \"Target_Charset\"));\n" +
             "       \t\t}catch (Exception e){}\n" +
             "\t\t}";
+
 
     private final static String code = "import org.pentaho.di.core.row.ValueMetaInterface;\n" +
             "import java.util.List;\n" +
@@ -1487,7 +1505,7 @@ public class ExtractDataService {
             "    }\n" +
             "\n" +
             "  String md5 = md5(str);\n" +
-            "  get(Fields.Out, \"dataease_uuid\").setValue(r, md5);\n" +
+            "  handleDataease_uuid\n" +
             "\n" +
             "  putRow(data.outputRowMeta, r);\n" +
             "\n" +
