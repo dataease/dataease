@@ -1,8 +1,15 @@
 <script setup lang="ts">
 import { propTypes } from '@/utils/propTypes'
 import { ElTreeSelect } from 'element-plus-secondary'
-import { computed, reactive, ref } from 'vue'
-
+import { computed, reactive, ref, PropType, toRefs } from 'vue'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
+interface TreeConfig {
+  checkStrictly: boolean
+  showCheckbox: boolean
+  checkOnClickNode: boolean
+  placeholder: string
+}
 const props = defineProps({
   optionList: propTypes.arrayOf(
     propTypes.shape({
@@ -12,7 +19,22 @@ const props = defineProps({
       disabled: Boolean
     })
   ),
-  title: propTypes.string
+  title: propTypes.string,
+  property: Object as PropType<TreeConfig>
+})
+
+const { property } = toRefs(props)
+const treeConfig = computed(() => {
+  let obj = Object.assign(
+    {
+      checkStrictly: false,
+      showCheckbox: true,
+      checkOnClickNode: true,
+      placeholder: t('user.role')
+    },
+    property.value
+  )
+  return obj
 })
 
 const state = reactive({
@@ -58,9 +80,10 @@ defineExpose({
         :highlight-current="true"
         multiple
         :render-after-expand="false"
-        :placeholder="$t('common.please_select') + $t('user.role')"
-        show-checkbox
-        check-on-click-node
+        :placeholder="$t('common.please_select') + treeConfig.placeholder"
+        :show-checkbox="treeConfig.showCheckbox"
+        :check-strictly="treeConfig.checkStrictly"
+        :check-on-click-node="treeConfig.checkOnClickNode"
       />
     </div>
   </div>

@@ -107,6 +107,7 @@ defineExpose({
         v-if="component.type === 'tree-select'"
         :option-list="component.option"
         :title="component.title"
+        :property="component.property"
         @filter-change="v => filterChange(v, component.field, 'in')"
       />
       <drawer-filter
@@ -114,6 +115,7 @@ defineExpose({
         v-if="component.type === 'select'"
         :option-list="component.option"
         :title="component.title"
+        :property="component.property"
         @filter-change="v => filterChange(v, component.field, 'in')"
       />
       <drawer-enum-filter
