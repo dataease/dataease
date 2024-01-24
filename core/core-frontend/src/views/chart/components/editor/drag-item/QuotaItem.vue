@@ -82,12 +82,10 @@ watch(
   },
   { deep: true }
 )
-
+const AXIS_FORMAT_VIEW = ['table-normal', 'table-info', 'table-pivot', 'indicator']
 const showValueFormatter = computed<boolean>(() => {
   return (
-    (props.chart.type === 'table-normal' ||
-      props.chart.type === 'table-info' ||
-      props.chart.type === 'indicator') &&
+    AXIS_FORMAT_VIEW.includes(props.chart.type) &&
     (props.item.deType === 2 || props.item.deType === 3)
   )
 })

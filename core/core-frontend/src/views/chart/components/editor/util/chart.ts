@@ -289,10 +289,12 @@ export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
     subLabel: '小计',
     subTotalsDimensions: [],
     calcTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      cfg: []
     },
     calcSubTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      cfg: []
     },
     totalSort: 'none',
     totalSortField: ''
@@ -306,10 +308,12 @@ export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
     subLabel: '小计',
     subTotalsDimensions: [],
     calcTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      cfg: []
     },
     calcSubTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      cfg: []
     },
     totalSort: 'none', // asc,desc
     totalSortField: ''
@@ -1013,6 +1017,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'table-normal',
         title: t('chart.chart_table_normal'),
         icon: 'table-normal'
+      },
+      {
+        render: 'antv',
+        category: 'table',
+        value: 'table-pivot',
+        title: t('chart.chart_table_pivot'),
+        icon: 'table-pivot'
       }
     ]
   },

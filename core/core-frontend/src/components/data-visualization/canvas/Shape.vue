@@ -263,7 +263,7 @@ const active = computed(() => {
 })
 
 const boardMoveActive = computed(() => {
-  return ['map', 'table-info', 'table-normal'].includes(element.value.innerType)
+  return ['map', 'table-info', 'table-normal', 'table-pivot'].includes(element.value.innerType)
 })
 
 const dashboardActive = computed(() => {
