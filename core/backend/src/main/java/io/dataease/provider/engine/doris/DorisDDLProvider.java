@@ -10,6 +10,7 @@ import io.dataease.provider.DDLProviderImpl;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -53,8 +54,16 @@ public class DorisDDLProvider extends DDLProviderImpl {
                 .replace("BUCKETS_NUM", dorisConfiguration.getBucketNum().toString())
                 .replace("ReplicationNum", dorisConfiguration.getReplicationNum().toString());
         if (dataTableInfoDTO.isSetKey() && CollectionUtils.isNotEmpty(dataTableInfoDTO.getKeys())) {
-            sql = sql.replace("`UNIQUE_KEY`", "`" + String.join("`, `", dataTableInfoDTO.getKeys()) + "`")
-                    .replace("DISTRIBUTED_BY_HASH", dataTableInfoDTO.getKeys().get(0)).replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version));
+            List<String> keys = new ArrayList<>();
+            for (int i = 0; i < dataTableInfoDTO.getKeys().size(); i++) {
+                for (DatasetTableField datasetTableField : datasetTableFields) {
+                    if (datasetTableField.getOriginName().equalsIgnoreCase(dataTableInfoDTO.getKeys().get(i))) {
+                        keys.add(datasetTableField.getDataeaseName());
+                    }
+                }
+            }
+            sql = sql.replace("`UNIQUE_KEY`", "`" + String.join("`, `", keys) + "`")
+                    .replace("DISTRIBUTED_BY_HASH", keys.get(0)).replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version));
         } else {
             sql = sql.replace("UNIQUE_KEY", "dataease_uuid").replace("DISTRIBUTED_BY_HASH", "dataease_uuid").replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version));
         }
