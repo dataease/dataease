@@ -116,15 +116,39 @@
         v-if="chartDetailsVisible"
         style="position: absolute;right: 70px;top:15px"
       >
-        <el-button
-          v-if="showChartInfoType==='enlarge' && hasDataPermission('export',panelInfo.privileges)&& showChartInfo && showChartInfo.type !== 'symbol-map'"
-          class="el-icon-picture-outline"
-          size="mini"
-          :disabled="imageDownloading"
-          @click="exportViewImg"
-        >
-          {{ $t('chart.export_img') }}
-        </el-button>
+        <span v-if="showChartInfoType==='enlarge' && hasDataPermission('export',panelInfo.privileges)&& showChartInfo && showChartInfo.type !== 'symbol-map'">
+          <span style="font-size: 12px">
+            导出分辨率
+          </span>
+          <el-select
+            v-model="pixel"
+            style="width: 120px; margin-right: 8px; margin-top: -1px"
+            :popper-append-to-body="false"
+            size="mini"
+          >
+            <el-option-group
+              v-for="group in pixelOptions"
+              :key="group.label"
+              :label="group.label"
+            >
+              <el-option
+                v-for="item in group.options"
+                :key="item.value"
+                :label="item.label"
+                :value="item.value"
+              />
+            </el-option-group>
+          </el-select>
+          <el-button
+            class="el-icon-picture-outline"
+            size="mini"
+            :disabled="imageDownloading"
+            @click="exportViewImg"
+          >
+            {{ $t('chart.export_img') }}
+          </el-button>
+        </span>
+
         <el-button
           v-if="showChartInfoType==='details'&& hasDataPermission('export',panelInfo.privileges)"
           size="mini"
@@ -293,7 +317,44 @@ export default {
       pdfTemplateSelectedIndex: 0,
       pdfTemplateContent: '',
       templateInfo: {},
-      pdfTemplateAll: []
+      pdfTemplateAll: [],
+      pixelOptions: [
+        {
+          label: 'Windows(16:9)',
+          options: [
+            {
+              value: '1920 * 1080',
+              label: '1920 * 1080'
+            },
+            {
+              value: '1600 * 900',
+              label: '1600 * 900'
+            },
+            {
+              value: '1280 * 720',
+              label: '1280 * 720'
+            }
+          ]
+        },
+        {
+          label: 'MacOS(16:10)',
+          options: [
+            {
+              value: '2560 * 1600',
+              label: '2560 * 1600'
+            },
+            {
+              value: '1920 * 1200',
+              label: '1920 * 1200'
+            },
+            {
+              value: '1680 * 1050',
+              label: '1680 * 1050'
+            }
+          ]
+        }
+      ],
+      pixel: '1280 * 720'
     }
   },
   computed: {
@@ -764,7 +825,7 @@ export default {
     },
     exportViewImg() {
       this.imageDownloading = true
-      this.$refs['userViewDialog-canvas-main'].exportViewImg(() => {
+      this.$refs['userViewDialog-canvas-main'].exportViewImg(this.pixel, () => {
         this.imageDownloading = false
       })
     },

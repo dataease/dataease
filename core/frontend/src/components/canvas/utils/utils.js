@@ -226,6 +226,11 @@ export function checkViewTitle(opt, id, tile) {
 export function exportImg(imgName, callback) {
   const canvasID = document.getElementById('chartCanvas')
   const a = document.createElement('a')
+  // 保存原始的设备像素比值
+  const originalDPR = window.devicePixelRatio
+
+  // 将设备像素比设置为1
+  window.devicePixelRatio = 1
   html2canvas(canvasID).then(canvas => {
     const dom = document.body.appendChild(canvas)
     dom.style.display = 'none'
@@ -238,8 +243,10 @@ export function exportImg(imgName, callback) {
     a.click()
     URL.revokeObjectURL(blob)
     document.body.removeChild(a)
+    window.devicePixelRatio = originalDPR
     callback()
   }).catch(() => {
+    window.devicePixelRatio = originalDPR
     callback()
   })
 }
