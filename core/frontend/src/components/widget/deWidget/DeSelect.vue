@@ -554,12 +554,27 @@ export default {
       if (this.isCustomSortWidget && this.element.options.attrs?.sort?.sort === 'custom') {
         tempData = mergeCustomSortOption(this.element.options.attrs.sort.list, tempData)
       }
+      this.filterInvalidValue(tempData)
       return tempData.map(item => {
         return {
           id: item,
           text: item
         }
       })
+    },
+    filterInvalidValue(data) {
+      if (this.value === null) {
+        return
+      }
+      if (!data.length) {
+        this.value = null
+        return
+      }
+      if (this.element.options.attrs.multiple) {
+        this.value = this.value.filter(item => data.includes(item))
+      } else {
+        this.value = data.includes(this.value) ? this.value : null
+      }
     },
     setOptionWidth(event) {
       this.onFocus = true
