@@ -1171,7 +1171,7 @@ export default {
           }
         })
       }
-      if (!jumpInfo) {
+      if (!jumpInfo && !this.chart.type.includes('table')) {
         for (let i = param.dimensionList.length - 1; i >= 0; i--) {
           dimension = param.dimensionList[i]
           sourceInfo = param.viewId + '#' + dimension.id
