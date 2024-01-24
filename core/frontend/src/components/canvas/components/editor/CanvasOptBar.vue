@@ -106,7 +106,7 @@ export default {
   },
   computed: {
     isPcTerminal() {
-      return this.terminal === 'PC'
+      return this.terminal === 'pc'
     },
     functionClass() {
       let result = 'function-light'
