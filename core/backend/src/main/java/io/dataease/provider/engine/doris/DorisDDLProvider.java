@@ -63,15 +63,15 @@ public class DorisDDLProvider extends DDLProviderImpl {
                 }
             }
             sql = sql.replace("`UNIQUE_KEY`", "`" + String.join("`, `", keys) + "`")
-                    .replace("DISTRIBUTED_BY_HASH", keys.get(0)).replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version));
+                    .replace("DISTRIBUTED_BY_HASH", keys.get(0)).replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version, keys));
         } else {
-            sql = sql.replace("UNIQUE_KEY", "dataease_uuid").replace("DISTRIBUTED_BY_HASH", "dataease_uuid").replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version));
+            sql = sql.replace("UNIQUE_KEY", "dataease_uuid").replace("DISTRIBUTED_BY_HASH", "dataease_uuid").replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version, null));
         }
 
         return sql;
     }
 
-    private String createDorisTableColumnSql(final List<DatasetTableField> datasetTableFields, String version) {
+    private String createDorisTableColumnSql(final List<DatasetTableField> datasetTableFields, String version, List<String> keys) {
         StringBuilder Column_Fields = new StringBuilder("`");
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields.append(datasetTableField.getDataeaseName()).append("` ");
@@ -81,11 +81,14 @@ public class DorisDDLProvider extends DDLProviderImpl {
             }
             switch (datasetTableField.getDeExtractType()) {
                 case 0:
-                    Column_Fields.append("STRING".replace("length", String.valueOf(size))).append(",`");
+                    if (size <= 65533 || (keys != null && keys.contains(datasetTableField.getDataeaseName()))) {
+                        Column_Fields.append("VARCHAR(length)".replace("length", String.valueOf(size))).append(",`");
+                    } else {
+                        Column_Fields.append("STRING".replace("length", String.valueOf(size))).append(",`");
+                    }
                     break;
                 case 1:
-                    size = size < 50 ? 50 : size;
-                    Column_Fields.append("STRING".replace("length", String.valueOf(size))).append(",`");
+                    Column_Fields.append("DATETIME").append(",`");
                     break;
                 case 2:
                     Column_Fields.append("bigint").append(",`");
@@ -99,7 +102,7 @@ public class DorisDDLProvider extends DDLProviderImpl {
                         }
 
                     } else {
-                        Column_Fields.append("DOUBLE").append(",`");
+                        Column_Fields.append("DECIMAL(27,8)").append(",`");
                     }
                     break;
                 case 4:
