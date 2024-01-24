@@ -134,7 +134,7 @@ export default {
       return this.$route.query.fromLink === 'true'
     },
     containerClass() {
-      return this.isPublicLink ? 'trans-pc' : 'bar-main'
+      return this.isPublicLink && this.isPcTerminal ? 'trans-pc' : 'bar-main'
     },
     ...mapState([
       'componentData'
