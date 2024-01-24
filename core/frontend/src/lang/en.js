@@ -840,6 +840,7 @@ export default {
     empty_msg: 'If empty then default value is 30 days',
     front_error: 'Valid range [0 - 300]', // 修改了提示信息
     msg_error: 'Valid range [1 - 365]',
+    log_live_time_error: 'Valid range [1 - 4000]',
     limit_times_error: 'Valid range [1 - 100]',
     relieve_times_error: 'Valid range [1 - 100]',
     SMTP_port: 'SMTP Port',

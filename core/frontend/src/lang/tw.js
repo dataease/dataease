@@ -839,6 +839,7 @@ export default {
     empty_msg: '為空則默認取值30天',
     front_error: '請填寫0-300正整數', // 修改了提示信息
     msg_error: '請填寫1-365正整數',
+    log_live_time_error: '請填寫1-4000正整數',
     limit_times_error: '請填寫1-100正整數',
     relieve_times_error: '請填寫1-100正整數',
     SMTP_port: 'SMTP端口',
