@@ -846,6 +846,7 @@ export default {
     canvasScroll() {
       // 当滚动距离超过 100px 时显示返回顶部按钮，否则隐藏按钮
       this.backToTopBtnShow = this.$refs[this.previewOutRefId].scrollTop > 200
+      console.log('top=' + this.$refs[this.previewOutRefId].scrollTop + ';this.backToTopBtnShow=' + this.backToTopBtnShow)
       bus.$emit('onScroll')
     },
     initListen() {

@@ -9,7 +9,7 @@
       v-if="isPublicLink"
       ref="widget-div"
       class="function-div"
-      :class="functionClass"
+      :class="[{['function-back-div']: backToTopBtn},functionClass]"
     >
       <el-button-group size="mini">
         <el-button
@@ -39,8 +39,8 @@
             icon-class="link-down"
           />{{ $t('panel.down') }}</span></el-button>
         <el-button
-          id="fullscreenElement"
           v-if="isPcTerminal"
+          id="fullscreenElement"
           size="mini"
           @click="toggleFullscreen"
         >
@@ -48,15 +48,8 @@
             style="width: 12px;height: 12px"
             :icon-class="fullscreenState?'public_fullscreen_exit':'public_fullscreen'"
           />{{ fullscreenState?$t('panel.fullscreen_exit'): $t('panel.fullscreen_preview') }}</span></el-button>
-        <el-button
-          v-show="backToTopBtn"
-          size="mini"
-          type="warning"
-          @click="backToTop"
-        ><i class="icon iconfont icon-back-top" />{{ $t('panel.back_to_top') }}</el-button>
       </el-button-group>
     </div>
-
     <div
       v-else-if="existLinkage || backToTopBtn"
       class="bar-main-right"
@@ -70,6 +63,16 @@
 
       <el-button
         v-if="backToTopBtn"
+        size="mini"
+        type="warning"
+        @click="backToTop"
+      ><i class="icon iconfont icon-back-top" />{{ $t('panel.back_to_top') }}</el-button>
+    </div>
+    <div
+      v-show="isPublicLink && backToTopBtn"
+      class="link-public"
+    >
+      <el-button
         size="mini"
         type="warning"
         @click="backToTop"
@@ -293,4 +296,14 @@ export default {
     }
   }
 
+  .link-public {
+    top: -49px;
+    right: 8px;
+    opacity: 0.8;
+    position: absolute;
+  }
+
+  .function-back-div {
+    right: 100px!important;
+  }
 </style>
