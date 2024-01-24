@@ -13,7 +13,6 @@
     >
       <div
         id="chartCanvas"
-        :class="{'canvas-class-exporting':exporting}"
         class="canvas-class"
         :style="customStyle"
       >
@@ -23,6 +22,7 @@
         >
           <plugin-com
             v-if="chart.isPlugin"
+            :ref="element.propValue.id"
             :component-name="chart.type + '-view'"
             :obj="{chart: mapChart || chart}"
             :chart="mapChart || chart"
@@ -31,32 +31,38 @@
             class="chart-class"
           />
           <chart-component
+            :ref="element.propValue.id"
             v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'"
             :theme-style="element.commonBackground"
             class="chart-class"
             :chart="mapChart || chart"
           />
           <chart-component-g2
+            :ref="element.propValue.id"
             v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'"
             class="chart-class show-in-dialog"
             :chart="chart"
           />
           <chart-component-s2
+            :ref="element.propValue.id"
             v-else-if="chart.type.includes('table') && renderComponent() === 'antv'"
             class="chart-class"
             :chart="chart"
           />
           <label-normal
+            :ref="element.propValue.id"
             v-else-if="chart.type.includes('text')"
             :chart="chart"
             class="table-class"
           />
           <label-normal-text
+            :ref="element.propValue.id"
             v-else-if="chart.type === 'label'"
             :chart="chart"
             class="table-class"
           />
           <table-normal
+            :ref="element.propValue.id"
             v-else-if="chart.type.includes('table') && renderComponent() === 'echarts'"
             :chart="chart"
             class="table-class"
@@ -126,7 +132,8 @@ export default {
       lastMapChart: null,
       linkLoading: false,
       exporting: false,
-      exportLoading: false
+      exportLoading: false,
+      pixel: '1280 * 720'
     }
   },
   computed: {
@@ -144,6 +151,13 @@ export default {
     },
     customStyle() {
       let style = {}
+      if (this.exporting) {
+        const bashStyle = this.pixel.split(' * ')
+        style = {
+          width: bashStyle[0] + 'px!important',
+          height: bashStyle[1] + 'px!important'
+        }
+      }
       if (this.canvasStyleData.openCommonStyle) {
         if (this.canvasStyleData.panel.backgroundType === 'image' && this.canvasStyleData.panel.imageUrl) {
           style = {
@@ -261,13 +275,16 @@ export default {
         }
       }
     },
-    exportViewImg(callback) {
+    exportViewImg(pixel, callback) {
+      this.pixel = pixel
       this.exportLoading = true
       this.$nextTick(() => {
         this.exporting = true
+        this.resizeChart()
         setTimeout(() => {
           exportImg(this.chart.name, (params) => {
             this.exporting = false
+            this.resizeChart()
             setTimeout(() => {
               this.exportLoading = false
             }, 500)
@@ -286,6 +303,13 @@ export default {
 
     renderComponent() {
       return this.chart.render
+    },
+    resizeChart() {
+      if (this.$refs[this.element.propValue.id]) {
+        this.chart.isPlugin
+          ? this.$refs[this.element.propValue.id].callPluginInner({ methodName: 'chartResize' })
+          : this.$refs[this.element.propValue.id].chartResize()
+      }
     }
   }
 }
@@ -320,8 +344,8 @@ export default {
   background-size: 100% 100% !important;
 }
 .canvas-class-exporting {
-  width: 1080px!important;
-  height: 560px!important;
+  width: 1980px!important;
+  height: 860px!important;
 }
 
 .abs-container {
