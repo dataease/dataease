@@ -2949,6 +2949,9 @@ public class DataSetTableService {
     }
 
     private String cellType(String value) {
+        if (value.length() > 19) {
+            return "TEXT";
+        }
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             sdf.parse(value);

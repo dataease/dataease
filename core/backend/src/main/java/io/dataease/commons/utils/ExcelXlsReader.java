@@ -370,6 +370,9 @@ public class ExcelXlsReader implements HSSFListener {
 
 
     private String checkType(String str, int thisColumn) {
+        if (str.length() > 19) {
+            return "TEXT";
+        }
         String type = null;
         try {
             double d = Double.valueOf(str);
