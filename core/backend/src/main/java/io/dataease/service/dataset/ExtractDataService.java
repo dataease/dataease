@@ -479,9 +479,10 @@ public class ExtractDataService {
     }
 
     private void extractApiData(DatasetTable datasetTable, Datasource datasource, List<DatasetTableField> datasetTableFields, String extractType) throws Exception {
+        DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
         List<ApiDefinition> lists = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<ArrayList<ApiDefinition>>() {
         }.getType());
-        lists = lists.stream().filter(item -> item.getName().equalsIgnoreCase(new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class).getTable())).collect(Collectors.toList());
+        lists = lists.stream().filter(item -> item.getName().equalsIgnoreCase(dataTableInfoDTO.getTable())).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(lists)) {
             throw new Exception("未找到API数据表");
         }
@@ -521,15 +522,16 @@ public class ExtractDataService {
                 script = String.format(streamLoadScript, dorisConfiguration.getUsername(), dorisConfiguration.getPassword(), System.currentTimeMillis(), separator, columns, "APPEND", dataFile, dorisConfiguration.getHost(), dorisConfiguration.getHttpPort(), dorisConfiguration.getDataBase(), TableUtils.tableName(datasetTable.getId()), dataFile);
                 break;
         }
-
-
         BufferedWriter bw = new BufferedWriter(new FileWriter(dataFile));
         for (String[] strings : dataList) {
             String content = "";
             for (int i = 0; i < strings.length; i++) {
-                content = content + strings[i] + separator;
+                content = i != strings.length - 1 ? content + strings[i] + separator : content + strings[i];
             }
-            content = content + Md5Utils.md5(content);
+            boolean isSetKey = dataTableInfoDTO.isSetKey() && CollectionUtils.isNotEmpty(dataTableInfoDTO.getKeys());
+            if (!isSetKey) {
+                content = Md5Utils.md5(content) + separator + content;
+            }
             bw.write(content);
             bw.newLine();
         }
@@ -565,8 +567,8 @@ public class ExtractDataService {
         } catch (Exception e) {
             throw e;
         } finally {
-            File deleteFile = new File(root_path + datasetTable.getId() + ".sh");
-            FileUtils.forceDelete(deleteFile);
+//            File deleteFile = new File(root_path + datasetTable.getId() + ".sh");
+//            FileUtils.forceDelete(deleteFile);
         }
 
     }
