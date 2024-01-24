@@ -290,6 +290,7 @@ const validate = () => {
         timeNum,
         relativeToCurrentType,
         around,
+        timeGranularityMultiple,
         arbitraryTime,
         timeGranularity,
         timeNumRange,
@@ -303,14 +304,18 @@ const validate = () => {
         relativeToCurrentType,
         timeGranularity,
         around,
-        arbitraryTime
+        arbitraryTime,
+        timeGranularityMultiple,
+        'start-config'
       )
       const endTime = getCustomTime(
         timeNumRange,
         relativeToCurrentTypeRange,
         timeGranularity,
         aroundRange,
-        arbitraryTimeRange
+        arbitraryTimeRange,
+        timeGranularityMultiple,
+        'end-config'
       )
       if (+startTime > +endTime) {
         ElMessage.error('结束时间必须大于开始时间!')

@@ -45,14 +45,34 @@ function getYearBeginning() {
   return new Date(`${date.getFullYear()}/1/1`)
 }
 
+function getYearMonthRange(result, flag, sort) {
+  const [direction, scene] = (sort || '').split('-')
+  const [dateTimeType] = (flag || '').split('range')
+  if (direction === 'start') {
+    return result
+  } else if (direction === 'end') {
+    if (scene === 'config') {
+      return result
+    } else if (scene === 'panel') {
+      return new Date(
+        +getCustomTime(1, dateTimeType, dateTimeType, 'b', null, flag, 'start-config', result) -
+          1000
+      )
+    }
+  }
+}
+
 function getCustomTime(
   timeNum: number,
   timeType: string,
   timeGranularity: string,
   around: string,
-  arbitraryTime?: Date
+  arbitraryTime?: Date,
+  timeGranularityMultiple?: string,
+  sort?: string,
+  withDate?: Date
 ) {
-  const date = new Date()
+  const date = withDate ? new Date(withDate) : new Date()
   const num = around === 'f' ? -timeNum : timeNum
   const year = date.getFullYear()
   const month = date.getMonth() + 1
@@ -77,6 +97,15 @@ function getCustomTime(
     resultYear = new Date(date.getTime() + 24 * 60 * 60 * 1000 * num).getFullYear()
   }
 
+  switch (timeGranularityMultiple) {
+    case 'monthrange':
+      return getYearMonthRange(new Date(`${resultYear}/${resultMonth}/1`), 'monthrange', sort)
+    case 'yearrange':
+      return getYearMonthRange(new Date(`${resultYear}/1`), 'yearrange', sort)
+    default:
+      break
+  }
+
   if (!!arbitraryTime) {
     const time = new Date(arbitraryTime)
     time.setFullYear(resultYear)
@@ -92,6 +121,10 @@ function getCustomTime(
       return new Date(`${resultYear}/${resultMonth}/1`)
     case 'date':
       return new Date(`${resultYear}/${resultMonth}/${resultDate}`)
+    case 'monthrange':
+      return new Date(`${resultYear}/${resultMonth}/1`)
+    case 'yearrange':
+      return new Date(`${resultYear}/1`)
     default:
       break
   }
