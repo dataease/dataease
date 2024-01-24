@@ -520,8 +520,7 @@ public class DatasourceService {
     }
 
     public ApiDefinition checkApiDatasource(ApiDefinition apiDefinition) throws Exception {
-        BasicInfo basicInfo = systemParameterService.basicInfo();
-        String response = ApiProvider.execHttpRequest(apiDefinition, StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10);
+        String response = ApiProvider.execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 30 : apiDefinition.getApiQueryTimeout());
         return ApiProvider.checkApiDefinition(apiDefinition, response);
     }
 

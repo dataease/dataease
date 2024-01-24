@@ -13,7 +13,7 @@ public enum DatasourceTypes {
     StarRocks("StarRocks", "StarRocks", "`", "`", "'", "'", "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null, null, true, DatabaseClassification.OLAP, ""),
     ds_doris("ds_doris", "Doris", "`", "`", "'", "'", "characterEncoding=UTF-8&connectTimeout=5000&useSSL=false&allowPublicKeyRetrieval=true", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null, null, true, DatabaseClassification.OLAP, ""),
     pg("pg", "PostgreSQL", "\"", "\"", "\"", "\"", "", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null, null, true, DatabaseClassification.OLTP, "12,13,14,15,16"),
-    sqlServer("sqlServer", "SQL Server", "\"", "\"", "\"", "\"", "", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null, null, true, DatabaseClassification.OLTP, "13,14,15,16"),
+    sqlServer("sqlServer", "SQL Server", "\"", "\"", "\"", "\"", "", true, DatasourceCalculationMode.DIRECT_AND_SYNC, null, null, true, DatabaseClassification.OLTP, "10,13,14,15,16"),
     oracle("oracle", "Oracle", "\"", "\"", "\"", "\"", "", true, DatasourceCalculationMode.DIRECT_AND_SYNC, Arrays.asList("Default", "GBK", "BIG5", "ISO-8859-1", "UTF-8", "UTF-16", "CP850", "EUC_JP", "EUC_KR", "US7ASCII", "AL32UTF8"), Arrays.asList("Default", "GBK", "UTF-8"), true, DatabaseClassification.OLTP, "8,9,10,11,12"),
     mongo("mongo", "MongoDB", "`", "`", "\"", "\"", "rebuildschema=true&authSource=admin", true, DatasourceCalculationMode.DIRECT, null, null, true, DatabaseClassification.OLTP, "3,4"),
     ck("ck", "ClickHouse", "`", "`", "", "", "", true, DatasourceCalculationMode.DIRECT, null, null, true, DatabaseClassification.OLAP, "18,19,20,21,22,23"),

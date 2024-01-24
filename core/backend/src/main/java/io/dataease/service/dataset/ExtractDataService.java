@@ -449,6 +449,7 @@ public class ExtractDataService {
             datasetTableField.setDeExtractType(0);
             datasetTableField.setDataeaseName("dataease_uuid");
             datasetTableField.setOriginName("dataease_uuid");
+            datasetTableField.setSize(0);
             datasetTableFields.add(0, datasetTableField);
             return datasetTableFields;
         }
