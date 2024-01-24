@@ -5,6 +5,7 @@
   >
     <de-main-container
       v-show="showChartCanvas"
+      v-loading="exportLoading"
       style="overflow: hidden"
       :element-loading-text="$t('panel.data_loading')"
       element-loading-spinner="el-icon-loading"
