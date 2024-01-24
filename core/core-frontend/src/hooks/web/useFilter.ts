@@ -4,12 +4,41 @@ import { getDynamicRange, getCustomTime } from '@/custom-component/v-query/time-
 const dvMainStore = dvMainStoreWithOut()
 const { componentData } = storeToRefs(dvMainStore)
 
-const forMatterValue = (type: number, selectValue: any, timeGranularity: string) => {
+const getDynamicRangeTime = (type: number, selectValue: any, timeGranularityMultiple: string) => {
+  const timeType = (timeGranularityMultiple || '').split('range')[0]
+
+  if (timeGranularityMultiple === 'datetimerange' || type === 1 || !timeType) {
+    return selectValue.map(ele => +new Date(ele))
+  }
+
+  const [start, end] = selectValue
+
+  return [
+    +new Date(start),
+    +getCustomTime(
+      1,
+      timeType,
+      timeType,
+      'b',
+      null,
+      timeGranularityMultiple,
+      'start-config',
+      new Date(end)
+    ) - 1000
+  ]
+}
+
+const forMatterValue = (
+  type: number,
+  selectValue: any,
+  timeGranularity: string,
+  timeGranularityMultiple: string
+) => {
   if (![1, 7].includes(type)) {
     return Array.isArray(selectValue) ? selectValue : [selectValue]
   }
   return Array.isArray(selectValue)
-    ? selectValue.map(ele => +new Date(ele))
+    ? getDynamicRangeTime(type, selectValue, timeGranularityMultiple)
     : getRange(selectValue, timeGranularity)
 }
 
@@ -90,6 +119,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             let selectValue = ''
             const {
               selectValue: value,
+              timeGranularityMultiple,
               parametersStart,
               parametersEnd,
               defaultValueCheck,
@@ -118,6 +148,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                   timeNumRange,
                   relativeToCurrentTypeRange,
                   aroundRange,
+                  timeGranularityMultiple,
                   arbitraryTimeRange
                 } = item
 
@@ -126,16 +157,19 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                   relativeToCurrentType,
                   timeGranularity,
                   around,
-                  arbitraryTime
+                  arbitraryTime,
+                  timeGranularityMultiple,
+                  'start-panel'
                 )
                 const endTime = getCustomTime(
                   timeNumRange,
                   relativeToCurrentTypeRange,
                   timeGranularity,
                   aroundRange,
-                  arbitraryTimeRange
+                  arbitraryTimeRange,
+                  timeGranularityMultiple,
+                  'end-panel'
                 )
-
                 item.defaultValue = [startTime, endTime]
                 item.selectValue = [startTime, endTime]
               }
@@ -152,7 +186,12 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               !!selectValue?.length ||
               Object.prototype.toString.call(selectValue) === '[object Date]'
             ) {
-              const values = forMatterValue(+displayType, selectValue, timeGranularity)
+              const values = forMatterValue(
+                +displayType,
+                selectValue,
+                timeGranularity,
+                timeGranularityMultiple
+              )
               filter.push({
                 componentId: ele.id,
                 fieldId: item.checkedFieldsMap[curComponentId],

@@ -52,6 +52,7 @@ const timeConfig = computed(() => {
   const {
     timeNum,
     relativeToCurrentType,
+    timeGranularityMultiple,
     around,
     defaultValueCheck,
     arbitraryTime,
@@ -65,6 +66,7 @@ const timeConfig = computed(() => {
     timeNum,
     relativeToCurrentType,
     around,
+    timeGranularityMultiple,
     defaultValueCheck,
     arbitraryTime,
     timeGranularity,
@@ -108,6 +110,7 @@ const init = () => {
     defaultValueCheck,
     arbitraryTime,
     timeGranularity,
+    timeGranularityMultiple,
     timeNumRange,
     relativeToCurrentTypeRange,
     aroundRange,
@@ -123,15 +126,20 @@ const init = () => {
     relativeToCurrentType,
     timeGranularity,
     around,
-    arbitraryTime
+    arbitraryTime,
+    timeGranularityMultiple,
+    'start-config'
   )
   const endTime = getCustomTime(
     timeNumRange,
     relativeToCurrentTypeRange,
     timeGranularity,
     aroundRange,
-    arbitraryTimeRange
+    arbitraryTimeRange,
+    timeGranularityMultiple,
+    'end-config'
   )
+
   selectValue.value = [startTime, endTime]
 }
 
