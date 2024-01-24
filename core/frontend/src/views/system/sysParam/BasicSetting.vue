@@ -86,7 +86,7 @@
 
       <el-form-item
         :label="$t('system_parameter_setting.ds_sync_log_retention_time')"
-        prop="logTimeOut"
+        prop="dsSyncLogTimeOut"
       >
         <el-input
           v-model="formInline.dsSyncLogTimeOut"
