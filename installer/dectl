@@ -7,7 +7,7 @@ DE_RUNNING_BASE=${DE_BASE}/dataease2.0
 need_init_apisix=false
 compose_files="-f docker-compose.yml"
 compose_cmd="docker-compose"
-server_url="github.com"
+server_url=""
 current_version=""
 latest_version=""
 
@@ -26,12 +26,6 @@ fi
 
 if [[ ! ${DE_EXTERNAL_MYSQL} ]] || [ "${DE_EXTERNAL_MYSQL}" = "false" ]; then
   compose_files="${compose_files} -f docker-compose-mysql.yml"
-fi
-
-if [[ -x "$(command -v python)" ]]; then
-   py_cmd='python'
-elif [[ -x "$(command -v python3)" ]]; then
-   py_cmd='python3'
 fi
 
 function usage() {
@@ -125,33 +119,32 @@ function _get_current_version() {
 function _get_available_server() {
    git_urls=('github.com')
 
-   for git_url in ${git_urls[*]}; do
-      success="true"
-      
+   for git_url in ${git_urls[*]}; do      
       echo -ne "检测 ${git_url} ... "
       curl -m 5 -kIs https://${git_url} >/dev/null
       if [ $? != 0 ]; then
          echo "failed"
-         success="false"
       else
          echo "ok"
-      fi
-      
-      if [[ ${success} == "true" ]]; then
          server_url=${git_url}
          break
-      else
-         unset server_url
       fi
    done
-
-   if [[ "x${server_url}" == "x" ]]; then
-      echo "没有找到稳定的下载服务器，请访问 https://community.fit2cloud.com/#/products/dataease/downloads 下载离线安装包"
-      exit 1
-   fi
 }
 function _get_latest_version() {
    rm -f /tmp/de_latest_release
+
+   _get_available_server
+   if [[ "x${server_url}" == "x" ]];then
+      echo "无法连接版本服务器，请稍候重试"
+      exit 1
+   fi
+
+   if [[ -x "$(command -v python)" ]]; then
+      py_cmd='python'
+   elif [[ -x "$(command -v python3)" ]]; then
+      py_cmd='python3'
+   fi
 
    $py_cmd - <<EOF
 # -*- coding: UTF-8 -*-
@@ -185,8 +178,6 @@ while (page <= 3):
 if latest_release == None or latest_release == "":
    print("Failed to obtain latest version, please try again.")
    exit(1)
-else:
-   print("latest version is %s" % (latest_release))
 
 # 记录最新版本号
 os.popen("echo "+latest_release+" > /tmp/de_latest_release")
@@ -253,15 +244,12 @@ function reload() {
 function version() {
    echo
    _get_current_version
-   _get_latest_version
    echo "current version is $current_version"
+   _get_latest_version
+   echo "latest version is $latest_version"
 }
 function upgrade() {
-   echo
-   _get_current_version
-   echo "检测当前版本为${current_version}"
-   _get_available_server
-   _get_latest_version
+   version
 
    if [ "${latest_version}" = "" ]; then
       echo "未获取到最新版本"
@@ -270,7 +258,12 @@ function upgrade() {
       echo "最新版本与当前版本一致,退出升级过程"
       exit 0
    else
-      echo "检测到 ${server_url} 上最新版本为 ${latest_version} 即将执行在线升级..."
+      if [[ ! "$latest_version" =~ ^v2.* ]];then
+         echo "获取到的最新版本与当前版本不匹配，请访问 https://community.fit2cloud.com/#/products/dataease/downloads 下载离线安装包"
+         exit 1
+      else
+         echo "检测到 ${server_url} 上最新版本为 ${latest_version} 即将执行在线升级..."
+      fi
    fi
    sleep 2
 

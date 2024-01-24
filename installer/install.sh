@@ -20,7 +20,7 @@ if [ -f /usr/bin/dectl ]; then
    dectl stop
    INSTALL_TYPE='upgrade'
 
-   v2_version=$(dectl version |grep "^v2.")
+   v2_version=$(dectl version | head -n 2 | grep "v2.")
    if [[ -z $v2_version ]];then
       echo "系统当前版本不是 DataEase v2 版本系列，不支持升级到 v2，请检查离线包版本。"
       exit 1;
@@ -47,6 +47,14 @@ fi
 DE_RUN_BASE=$DE_BASE/dataease2.0
 conf_folder=${DE_RUN_BASE}/conf
 templates_folder=${DE_RUN_BASE}/templates
+
+if [[ $DE_RUN_BASE ]];then
+   for image in $(grep  "image: " $DE_RUN_BASE/docker*.yml | awk -F 'image:' '{print $2}'); do
+      image_path=$(eval echo $image)
+      image_name=$(echo $image_path | awk -F "[/]" '{print $3}')
+      current_images[${#current_images[@]}]=$image_name
+   done
+fi
 
 function prop {
    [ -f "$1" ] | grep -P "^\s*[^#]?${2}=.*$" $1 | cut -d'=' -f2
@@ -183,7 +191,11 @@ cd ${CURRENT_DIR}
 if [[ -d images ]]; then
    log "加载镜像"
    for i in $(ls images); do
-      docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      if [[ "${current_images[@]}"  =~ "${i%.tar.gz}" ]]; then
+         echo "ignore image $i"
+      else
+         docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      fi
    done
 else
    DEVERSION=$(cat ${CURRENT_DIR}/dataease/templates/version)

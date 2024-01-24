@@ -206,7 +206,9 @@ watch(
 watch(
   () => canvasStyleData.value,
   () => {
-    initWatermark()
+    nextTick(() => {
+      initWatermark()
+    })
   },
   { deep: true }
 )
@@ -1383,7 +1385,7 @@ defineExpose({
     :id="mainDomId"
     ref="container"
     class="editor"
-    :class="{ edit: isEdit }"
+    :class="{ edit: isEdit, 'dashboard-editor': dashboardActive }"
     :style="editStyle"
     @contextmenu="handleContextMenu"
   >
@@ -1480,6 +1482,9 @@ defineExpose({
 </template>
 
 <style lang="less" scoped>
+.dashboard-editor {
+  min-height: 100%;
+}
 .editor {
   position: relative;
   margin: auto;

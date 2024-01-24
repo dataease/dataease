@@ -25,6 +25,8 @@
       @onTableCellChange="onTableCellChange"
       @onTableTotalChange="onTableTotalChange"
       @onChangeMiscStyleForm="onChangeMiscStyleForm"
+      @onIndicatorChange="onIndicatorChange"
+      @onIndicatorNameChange="onIndicatorNameChange"
     />
     <common-attr
       v-else-if="mixProperties && batchOptComponentInfo && batchOptComponentType !== 'UserView'"
@@ -75,6 +77,14 @@ const onChangeXAxisForm = (val, prop) => {
 
 const onChangeYAxisForm = (val, prop) => {
   batchOptChange('customStyle', 'yAxis', val, prop)
+}
+
+const onIndicatorChange = (val, prop) => {
+  batchOptChange('customAttr', 'indicator', val, prop)
+}
+
+const onIndicatorNameChange = (val, prop) => {
+  batchOptChange('customAttr', 'indicatorName', val, prop)
 }
 
 const onChangeMiscStyleForm = (val, prop) => {

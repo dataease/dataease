@@ -7,8 +7,8 @@ export const sourceDsPageApi = (page: number, limit: number, data) => {
 export const targetDsPageApi = (page: number, limit: number, data) => {
   return request.post({ url: `/sync/datasource/target/pager/${page}/${limit}`, data })
 }
-export const latestUseApi = () => {
-  return request.post({ url: '/sync/datasource/latestUse', data: {} })
+export const latestUseApi = (sourceType: string) => {
+  return request.post({ url: `/sync/datasource/latestUse/${sourceType}`, data: {} })
 }
 
 export const validateApi = data => {

@@ -2,7 +2,8 @@
 import { propTypes } from '@/utils/propTypes'
 import { ElSelect, ElOption } from 'element-plus-secondary'
 import { computed, reactive } from 'vue'
-
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const props = defineProps({
   optionList: propTypes.arrayOf(
     propTypes.shape({
@@ -10,7 +11,13 @@ const props = defineProps({
       name: propTypes.string
     })
   ),
-  title: propTypes.string
+  title: propTypes.string,
+  property: {
+    type: Object,
+    default: () => {
+      placeholder: ''
+    }
+  }
 })
 
 const state = reactive({
@@ -21,7 +28,7 @@ const emits = defineEmits(['filter-change'])
 const selectStatus = ids => {
   emits(
     'filter-change',
-    ids.map(item => item.label)
+    ids.map(item => item.id || item.value)
   )
 }
 
@@ -46,6 +53,7 @@ defineExpose({
         v-model="state.activeStatus"
         value-key="id"
         filterable
+        :placeholder="t('common.please_select') + props.property.placeholder"
         multiple
         @change="selectStatus"
       >

@@ -41,17 +41,17 @@ export function watermark(settings, domId) {
   // 如果将水印列数设置为0，或水印列数设置过大，超过页面最大宽度，则重新计算水印列数和水印x轴间隔
   if (
     defaultSettings.watermark_cols === 0 ||
-    parseInt(
+    Math.floor(
       defaultSettings.watermark_x +
         defaultSettings.watermark_width * defaultSettings.watermark_cols +
         defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)
     ) > page_width
   ) {
-    defaultSettings.watermark_cols = parseInt(
+    defaultSettings.watermark_cols = Math.floor(
       (page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) /
         (defaultSettings.watermark_width + defaultSettings.watermark_x_space)
     )
-    defaultSettings.watermark_x_space = parseInt(
+    defaultSettings.watermark_x_space = Math.floor(
       (page_width -
         defaultSettings.watermark_x -
         defaultSettings.watermark_width * defaultSettings.watermark_cols) /
@@ -61,17 +61,17 @@ export function watermark(settings, domId) {
   // 如果将水印行数设置为0，或水印行数设置过大，超过页面最大长度，则重新计算水印行数和水印y轴间隔
   if (
     defaultSettings.watermark_rows === 0 ||
-    parseInt(
+    Math.floor(
       defaultSettings.watermark_y +
         defaultSettings.watermark_height * defaultSettings.watermark_rows +
         defaultSettings.watermark_y_space * (defaultSettings.watermark_rows - 1)
     ) > page_height
   ) {
-    defaultSettings.watermark_rows = parseInt(
+    defaultSettings.watermark_rows = Math.floor(
       (defaultSettings.watermark_y_space + page_height - defaultSettings.watermark_y) /
         (defaultSettings.watermark_height + defaultSettings.watermark_y_space)
     )
-    defaultSettings.watermark_y_space = parseInt(
+    defaultSettings.watermark_y_space = Math.floor(
       (page_height -
         defaultSettings.watermark_y -
         defaultSettings.watermark_height * defaultSettings.watermark_rows) /

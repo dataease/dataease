@@ -41,8 +41,29 @@ const reposition = () => {
 // 记录瞬时wheel值 防止放大操作和滚动操作冲突
 let lastWheelNum = 0
 
+// 检查当前页面是否有弹框
+const checkDialog = () => {
+  let haveDialog = false
+  document.querySelectorAll('.ed-overlay').forEach(element => {
+    if (window.getComputedStyle(element).getPropertyValue('display') != 'none') {
+      haveDialog = true
+    }
+  })
+  document.querySelectorAll('.ed-popover').forEach(element => {
+    if (window.getComputedStyle(element).getPropertyValue('display') != 'none') {
+      haveDialog = true
+    }
+  })
+  // 富文本单框
+  if (document.querySelector('.tox-dialog-wrap')) {
+    haveDialog = true
+  }
+
+  return haveDialog
+}
+
 const handleMouseWheel = e => {
-  if (editMode.value === 'preview') {
+  if (editMode.value === 'preview' || checkDialog()) {
     return
   }
   let dvMain = document.getElementById('dv-main-center')
