@@ -1299,9 +1299,9 @@ public class ExtractDataService {
         List<UserDefinedJavaClassDef> definitions = new ArrayList<>();
         String tmp_code = code.replace("handleWraps", handleWraps).replace("handleBinaryType", handleBinaryTypeCode.toString());
         if (isSetKey) {
-            tmp_code.replace("handleDataease_uuid", "");
+            tmp_code = tmp_code.replace("handleDataease_uuid", "");
         } else {
-            tmp_code.replace("handleDataease_uuid", handleDataease_uuid);
+            tmp_code = tmp_code.replace("handleDataease_uuid", handleDataease_uuid);
         }
         String Column_Fields;
 
@@ -1455,7 +1455,7 @@ public class ExtractDataService {
             "            get(Fields.Out, filed).setValue(r, tmp);\n" +
             "        } \n";
 
-    private final static String handleDataease_uuid = "get(Fields.Out, \"dataease_uuid\").setValue(r, md5);";
+    private final static String handleDataease_uuid = "get(Fields.Out, \"dataease_uuid\").setValue(r, md5)";
     private final static String handleCharset = "\tif(tmp != null && Arrays.asList(\"varcharFields\".split(\",\")).contains(filed)){\n" +
             "  \t\t\ttry {\n" +
             "\t\t\t\tget(Fields.Out, filed).setValue(r, new String(tmp.getBytes(\"Datasource_Charset\"), \"Target_Charset\"));\n" +
@@ -1502,7 +1502,7 @@ public class ExtractDataService {
             "    }\n" +
             "\n" +
             "  String md5 = md5(str);\n" +
-            "  handleDataease_uuid\n" +
+            "  handleDataease_uuid ;\n" +
             "\n" +
             "  putRow(data.outputRowMeta, r);\n" +
             "\n" +
