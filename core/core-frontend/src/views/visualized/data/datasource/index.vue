@@ -22,7 +22,9 @@ import {
   getTableField,
   listDatasourceTables,
   deleteById,
-  save,
+  move,
+  reName,
+  createFolder,
   validateById,
   syncApiDs,
   syncApiTable
@@ -234,28 +236,24 @@ const handleLoadExcel = data => {
 }
 
 const validateDS = () => {
-  validateById(nodeInfo.id as number)
-    .then(res => {
-      if (res.data.type === 'API') {
-        let error = 0
-        const status = JSON.parse(res.data.status)
-        for (let i = 0; i < status.length; i++) {
-          if (status[i].status === 'Error') {
-            error++
-          }
+  validateById(nodeInfo.id as number).then(res => {
+    if (res.data.type === 'API') {
+      let error = 0
+      const status = JSON.parse(res.data.status)
+      for (let i = 0; i < status.length; i++) {
+        if (status[i].status === 'Error') {
+          error++
         }
-        if (error === 0) {
-          ElMessage.success('校验成功')
-        } else {
-          ElMessage.error('校验失败')
-        }
-      } else {
-        ElMessage.success('校验成功')
       }
-    })
-    .catch(() => {
-      ElMessage.error('校验失败')
-    })
+      if (error === 0) {
+        ElMessage.success('校验成功')
+      } else {
+        ElMessage.error('校验失败')
+      }
+    } else {
+      ElMessage.success('校验成功')
+    }
+  })
 }
 
 const dialogErrorInfo = ref(false)
@@ -351,21 +349,29 @@ const infoList = computed(() => {
   }
 })
 const saveDsFolder = (params, successCb, finallyCb, cmd) => {
-  save(params)
+  let method = move
+  let message = '移动成功'
+
+  switch (cmd) {
+    case 'move':
+      method = move
+      message = '移动成功'
+
+      break
+    case 'rename':
+      method = reName
+      message = '重命名成功'
+      break
+    default:
+      method = createFolder
+      message = '新建成功'
+      break
+  }
+  method(params)
     .then(res => {
       if (res !== undefined) {
         successCb()
-        switch (cmd) {
-          case 'move':
-            ElMessage.success('移动成功')
-            break
-          case 'rename':
-            ElMessage.success('重命名成功')
-            break
-          default:
-            ElMessage.success('新建成功')
-            break
-        }
+        ElMessage.success(message)
         listDs()
       }
     })
