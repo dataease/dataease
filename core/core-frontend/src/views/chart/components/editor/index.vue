@@ -442,6 +442,27 @@ const addAxis = (e, axis: AxisType) => {
   if (type) {
     typeValid = dragCheckType(view.value[axis], type)
   }
+  // 针对指标卡进行数值类型判断
+  if (typeValid && type === 'q' && view.value.type === 'indicator') {
+    const list = view.value[axis]
+    if (list && list.length > 0) {
+      let valid = true
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].deType !== 2 && list[i].deType !== 3) {
+          list.splice(i, 1)
+          valid = false
+        }
+      }
+      typeValid = valid
+      if (!typeValid) {
+        ElMessage({
+          message: t('chart.error_not_number'),
+          type: 'warning'
+        })
+      }
+    }
+  }
+
   if (!duplicate) {
     dup = dragMoveDuplicate(view.value[axis], e, 'chart')
   }
