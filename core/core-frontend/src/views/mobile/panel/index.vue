@@ -25,7 +25,6 @@ const hanedleMessage = event => {
   }
 
   if (event.data.type === 'addToMobile') {
-    console.log('event.data.value', event.data.value)
     const component = event.data.value
     checkItemPosition(component)
     dvMainStore.componentData.push(component)
@@ -33,6 +32,7 @@ const hanedleMessage = event => {
 }
 
 onBeforeMount(() => {
+  window.top.postMessage({ type: 'panelInit', value: true }, '*')
   window.addEventListener('message', hanedleMessage)
 })
 

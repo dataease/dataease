@@ -29,29 +29,31 @@ const mobileStatusChange = (type, value) => {
 }
 
 const handleLoad = () => {
-  mobileLoading.value = false
-  console.log('dvInfo', JSON.parse(JSON.stringify(unref(dvInfo))))
-
-  setTimeout(() => {
-    mobileStatusChange(
-      'panelInit',
-      JSON.parse(
-        JSON.stringify({
-          componentData: JSON.parse(JSON.stringify(unref(componentData))),
-          canvasStyleData: JSON.parse(JSON.stringify(unref(canvasStyleData))),
-          canvasViewInfo: JSON.parse(JSON.stringify(unref(canvasViewInfo))),
-          dvInfo: JSON.parse(JSON.stringify(unref(dvInfo)))
-        })
-      )
+  mobileStatusChange(
+    'panelInit',
+    JSON.parse(
+      JSON.stringify({
+        componentData: JSON.parse(JSON.stringify(unref(componentData))),
+        canvasStyleData: JSON.parse(JSON.stringify(unref(canvasStyleData))),
+        canvasViewInfo: JSON.parse(JSON.stringify(unref(canvasViewInfo))),
+        dvInfo: JSON.parse(JSON.stringify(unref(dvInfo)))
+      })
     )
-  }, 800)
+  )
 }
 
 const componentDataNotInMobile = computed(() => {
   return componentData.value.filter(ele => !ele.inMobile)
 })
 
+const hanedleMessage = event => {
+  if (event.data.type === 'panelInit') {
+    mobileLoading.value = false
+    handleLoad()
+  }
+}
 onMounted(() => {
+  window.addEventListener('message', hanedleMessage)
   dvMainStore.setMobileInPc(true)
   useEmitt({
     name: 'onMobileStatusChange',
@@ -63,6 +65,7 @@ onMounted(() => {
 
 onBeforeUnmount(() => {
   dvMainStore.setMobileInPc(false)
+  window.removeEventListener('message', hanedleMessage)
 })
 
 const addToMobile = com => {
@@ -81,13 +84,7 @@ const addToMobile = com => {
     <div class="mobile-canvas">
       <div class="config-panel-title">{{ dvInfo.name }}</div>
       <div class="config-panel-content" v-loading="mobileLoading">
-        <iframe
-          src="./mobile.html#/panel"
-          frameborder="0"
-          width="360"
-          height="570"
-          @load="handleLoad"
-        />
+        <iframe src="./mobile.html#/panel" frameborder="0" width="360" height="570" />
       </div>
       <div class="config-panel-foot"></div>
     </div>
