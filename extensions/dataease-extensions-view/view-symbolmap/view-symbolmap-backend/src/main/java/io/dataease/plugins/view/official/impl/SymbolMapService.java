@@ -140,7 +140,10 @@ public class SymbolMapService extends ViewPluginService {
         if (CollectionUtils.isEmpty(xAxis) || xAxis.size() < 2) {
             return null;
         }
-
+        List<PluginViewField> xAxisExt = pluginViewParam.getFieldsByType("xAxisExt");
+        if (CollectionUtils.isNotEmpty(xAxisExt)) {
+            xAxisExt.forEach(i -> i.setTypeField("xAxis"));
+        }
         if (CollectionUtils.isNotEmpty(yAxis)) {
             String generateSQL = super.generateSQL(pluginViewParam);
             pluginViewParam.setPluginViewFields(pluginViewFields);
@@ -149,7 +152,7 @@ public class SymbolMapService extends ViewPluginService {
 
         // 下面考虑符号大小为空的情况
         String result = symbolMapStatHandler.build(pluginViewParam, this);
-        // pluginViewParam.setPluginViewFields(pluginViewFields);
+        pluginViewParam.setPluginViewFields(pluginViewFields);
         return result;
 
     }
