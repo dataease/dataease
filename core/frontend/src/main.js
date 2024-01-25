@@ -32,7 +32,9 @@ import '@/utils/DateUtil'
 import draggable from 'vuedraggable'
 import deWebsocket from '@/websocket'
 import { GaodeMap } from '@antv/l7-maps'
+import { Mix } from '@antv/g2plot'
 import * as echarts from 'echarts'
+import { clear } from 'size-sensor'
 import UmyUi from 'umy-ui'
 // 全屏插件
 import fullscreen from 'vue-fullscreen'
@@ -58,6 +60,8 @@ Vue.prototype.$api = api
 
 Vue.prototype.$echarts = echarts
 Vue.prototype.$gaodeMap = GaodeMap
+Vue.prototype.$Mix = Mix
+Vue.prototype.$G2SizeSensorClear = clear
 
 Vue.use(UmyUi)
 
