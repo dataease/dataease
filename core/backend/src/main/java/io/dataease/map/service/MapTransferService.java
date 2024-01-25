@@ -1,12 +1,13 @@
 package io.dataease.map.service;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.ArrayUtil;
+
 import com.google.gson.Gson;
 import io.dataease.plugins.common.base.domain.ChartView;
 import io.dataease.plugins.common.base.domain.ChartViewExample;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.mapper.ChartViewMapper;
+import io.dataease.plugins.common.util.FileUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -72,7 +73,7 @@ public class MapTransferService {
         String chinaRootPath = geoPath + FULL_KEY + FILE_SEPARATOR;
         File chinaRootDir = new File(chinaRootPath);
         File[] files = chinaRootDir.listFiles();
-        if (ArrayUtil.isEmpty(files)) return;
+        if (ArrayUtils.isEmpty(files)) return;
         Map<String, List<File>> listMap = Arrays.stream(files).filter(FileUtil::isFile).collect(Collectors.groupingBy(this::fileType));
         if (ObjectUtils.isEmpty(listMap)) return;
         moveFiles(listMap, BORDER_KEY);

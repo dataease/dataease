@@ -7,6 +7,13 @@
         <groupId>io.dataease</groupId>
         <version>${dataease.version}</version>
     </parent>
+    <dependencies>
+        <dependency>
+            <groupId>org.apache.httpcomponents</groupId>
+            <artifactId>httpmime</artifactId>
+            <version>4.5.13</version>
+        </dependency>
+    </dependencies>
     <modelVersion>4.0.0</modelVersion>
 
     <artifactId>dataease-plugin-common</artifactId>

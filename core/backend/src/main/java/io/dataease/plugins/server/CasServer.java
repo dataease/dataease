@@ -1,6 +1,5 @@
 package io.dataease.plugins.server;
 
-import cn.hutool.core.util.RandomUtil;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
@@ -14,6 +13,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.service.sys.SysUserService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.jasig.cas.client.authentication.AttributePrincipal;
 import org.jasig.cas.client.util.AssertionHolder;
@@ -67,7 +67,7 @@ public class CasServer {
                 sysUserEntity = authUserService.getCasUserByName(name);
             }
             if (null == sysUserEntity) {
-                String s = RandomUtil.randomString(6);
+                String s = RandomStringUtils.random(6);
                 String email = s + "@xxx.com";
                 sysUserService.validateCasUser(name);
                 sysUserService.saveCASUser(name, email);

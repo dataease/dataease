@@ -2,7 +2,10 @@ package io.dataease.commons.utils;
 
 import org.apache.commons.lang3.StringUtils;
 
+import java.lang.reflect.Field;
 import java.lang.reflect.Method;
+import java.util.HashMap;
+import java.util.Map;
 
 public class BeanUtils {
 
@@ -64,5 +67,20 @@ public class BeanUtils {
         } catch (Exception e) {
             return null;
         }
+    }
+
+    public static Map<String, Object> bean2Map(Object bean) {
+        Map<String, Object> result = new HashMap<>();
+        Class<?> aClass = bean.getClass();
+        Field[] fields = aClass.getDeclaredFields();
+        for (Field field : fields) {
+            field.setAccessible(true);
+            try {
+                result.put(field.getName(), field.get(bean));
+            } catch (IllegalAccessException e) {
+                throw new RuntimeException(e);
+            }
+        }
+        return result;
     }
 }

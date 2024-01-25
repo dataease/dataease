@@ -1,6 +1,5 @@
 package io.dataease.plugins.server;
 
-import cn.hutool.core.util.ArrayUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DeRateLimiter;
@@ -21,6 +20,7 @@ import io.dataease.plugins.xpack.email.dto.response.XpackTaskInstanceDTO;
 import io.dataease.plugins.xpack.email.service.EmailXpackService;
 import io.dataease.service.ScheduleService;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
@@ -180,7 +180,7 @@ public class XEmailTaskServer {
             Object object = future.get();
             if (ObjectUtils.isNotEmpty(object)) {
                 bytes = (byte[]) object;
-                if (ArrayUtil.isNotEmpty(bytes)) {
+                if (ArrayUtils.isNotEmpty(bytes)) {
                     String fileName = request.getPanelId() + ".pdf";
                     ByteArrayResource bar = new ByteArrayResource(bytes);
                     HttpHeaders headers = new HttpHeaders();
@@ -218,7 +218,7 @@ public class XEmailTaskServer {
             Object object = future.get();
             if (ObjectUtils.isNotEmpty(object)) {
                 bytes = (byte[]) object;
-                if (ArrayUtil.isNotEmpty(bytes)) {
+                if (ArrayUtils.isNotEmpty(bytes)) {
                     String fileName = request.getPanelId() + ".jpeg";
                     ByteArrayResource bar = new ByteArrayResource(bytes);
                     HttpHeaders headers = new HttpHeaders();

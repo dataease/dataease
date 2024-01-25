@@ -1,6 +1,5 @@
 package io.dataease.controller.dataset;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.auth0.jwt.JWT;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
@@ -32,6 +31,7 @@ import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.beans.BeanUtils;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -235,7 +235,7 @@ public class DataSetTableFieldController {
         List<Object> results = new ArrayList<>();
         for (String fieldId : multFieldValuesRequest.getFieldIds()) {
             List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getSort(), multFieldValuesRequest.getUserId(), true, false, multFieldValuesRequest.getKeyword());
-            if (CollectionUtil.isNotEmpty(fieldValues)) {
+            if (CollectionUtils.isNotEmpty(fieldValues)) {
                 results.addAll(fieldValues);
             }
 
@@ -268,7 +268,7 @@ public class DataSetTableFieldController {
         List<Object> results = new ArrayList<>();
         for (String fieldId : multFieldValuesRequest.getFieldIds()) {
             List<Object> fieldValues = dataSetFieldService.fieldValues(fieldId, multFieldValuesRequest.getUserId(), false, true);
-            if (CollectionUtil.isNotEmpty(fieldValues)) {
+            if (CollectionUtils.isNotEmpty(fieldValues)) {
                 results.addAll(fieldValues);
             }
 
