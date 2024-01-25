@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onBeforeMount, ref, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
 import DePreviewMobile from './MobileInPc.vue'
@@ -67,7 +68,7 @@ onBeforeMount(() => {
 const mobileStatusChange = (type, value) => {
   window.top.postMessage({ type, value }, '*')
   if (type === 'delFromMobile') {
-    dvMainStore.setComponentData(dvMainStore.componentData.filter(ele => ele.id !== value))
+    eventBus.emit('removeMatrixItemById-canvas-main', value)
   }
 }
 onBeforeUnmount(() => {
