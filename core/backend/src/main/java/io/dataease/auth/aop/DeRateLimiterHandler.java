@@ -1,10 +1,10 @@
 package io.dataease.auth.aop;
 
-import cn.hutool.core.util.StrUtil;
 import io.dataease.auth.annotation.DeRateLimiter;
 import io.dataease.auth.service.DeLimitService;
 import io.dataease.commons.utils.IPUtils;
 import io.dataease.commons.utils.ServletUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.aspectj.lang.ProceedingJoinPoint;
 import org.aspectj.lang.annotation.Around;
 import org.aspectj.lang.annotation.Aspect;
@@ -34,8 +34,8 @@ public class DeRateLimiterHandler {
         DeRateLimiter rateLimiter = AnnotationUtils.findAnnotation(method, DeRateLimiter.class);
         if (rateLimiter != null) {
             String key = rateLimiter.key();
-            if (StrUtil.isBlank(key)) {
-                key = method.getDeclaringClass().getName() + StrUtil.DOT + method.getName();
+            if (StringUtils.isBlank(key)) {
+                key = method.getDeclaringClass().getName() + "." + method.getName();
             }
             key = key + SEPARATOR + IPUtils.get();
 

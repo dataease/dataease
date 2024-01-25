@@ -1,6 +1,5 @@
 package io.dataease.auth.filter;
 
-import cn.hutool.core.util.ArrayUtil;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
@@ -9,6 +8,7 @@ import io.dataease.commons.license.DefaultLicenseService;
 import io.dataease.commons.license.F2CLicenseResponse;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.LogUtil;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.shiro.web.filter.AccessControlFilter;
@@ -66,7 +66,7 @@ public class F2CDocFilter extends AccessControlFilter {
         String authorization = request.getHeader("Authorization");
         if (StringUtils.isBlank(authorization)) {
             Cookie[] cookies = request.getCookies();
-            if (ArrayUtil.isNotEmpty(cookies)) {
+            if (ArrayUtils.isNotEmpty(cookies)) {
                 Cookie cookie = Arrays.stream(cookies).filter(item -> StringUtils.equals(item.getName(), "Authorization")).findFirst().orElse(null);
                 if (ObjectUtils.isNotEmpty(cookie) && StringUtils.isNotBlank(cookie.getValue())) {
                     authorization = cookie.getValue();

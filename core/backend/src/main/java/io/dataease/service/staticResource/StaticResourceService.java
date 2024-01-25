@@ -1,16 +1,16 @@
 package io.dataease.service.staticResource;
 
-import cn.hutool.core.codec.Base64Decoder;
-import cn.hutool.core.collection.CollectionUtil;
 import com.google.gson.Gson;
 import io.dataease.commons.utils.FileUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.StaticResourceUtils;
 import io.dataease.controller.request.resource.StaticResourceRequest;
 import io.dataease.plugins.common.exception.DataEaseException;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Assert;
+import org.springframework.util.Base64Utils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -93,7 +93,7 @@ public class StaticResourceService {
             } else {
                 if (StringUtils.isNotEmpty(content)) {
                     Files.createFile(uploadPath);
-                    FileCopyUtils.copy(Base64Decoder.decode(content), Files.newOutputStream(uploadPath));
+                    FileCopyUtils.copy(Base64Utils.decodeFromString(content), Files.newOutputStream(uploadPath));
                 }
             }
         } catch (Exception e) {
@@ -103,7 +103,7 @@ public class StaticResourceService {
 
     public Map<String, String> findResourceAsBase64(StaticResourceRequest resourceRequest) {
         Map<String, String> result = new HashMap<>();
-        if (CollectionUtil.isNotEmpty(resourceRequest.getResourcePathList())) {
+        if (CollectionUtils.isNotEmpty(resourceRequest.getResourcePathList())) {
             for (String path : resourceRequest.getResourcePathList()) {
                 String value = StaticResourceUtils.getImgFileToBase64(path.substring(path.lastIndexOf("/") + 1, path.length()));
                 result.put(path, value);

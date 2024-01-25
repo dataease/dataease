@@ -1,6 +1,6 @@
 package io.dataease.service.chart.build;
 
-import cn.hutool.core.bean.BeanUtil;
+import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.dataset.DataSetTableFieldController;
 import io.dataease.controller.request.dataset.MultFieldValuesRequest;
@@ -74,7 +74,7 @@ public class SelectBuild extends FilterBuildTemplate {
         MultFieldValuesRequest request = new MultFieldValuesRequest();
         request.setFieldIds(Arrays.stream(attrs.get("fieldId").toString().split(",")).collect(Collectors.toList()));
         if (ObjectUtils.isNotEmpty(attrs.get("sort"))) {
-            DeSortDTO sort = BeanUtil.copyProperties(attrs.get("sort"), DeSortDTO.class);
+            DeSortDTO sort = BeanUtils.copyBean(new DeSortDTO(), attrs.get("sort"));
             request.setSort(sort);
         }
         List<Object> list = null;

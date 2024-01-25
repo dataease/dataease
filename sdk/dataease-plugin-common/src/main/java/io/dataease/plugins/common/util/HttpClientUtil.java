@@ -1,5 +1,6 @@
-package io.dataease.commons.utils;
+package io.dataease.plugins.common.util;
 
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -16,17 +17,22 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.HttpMultipartMode;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
+import org.apache.http.entity.mime.content.FileBody;
+import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.protocol.HTTP;
 import org.apache.http.ssl.SSLContextBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.File;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
 import java.util.List;
@@ -64,6 +70,7 @@ public class HttpClientUtil {
             throw new RuntimeException("HttpClient构建失败", e);
         }
     }
+
     /**
      * Get http请求
      *
@@ -199,14 +206,82 @@ public class HttpClientUtil {
         }
     }
 
-    private static String getResponseStr(HttpResponse response, HttpClientConfig config) throws Exception{
-        if(response.getStatusLine().getStatusCode() >= 400){
+    private static String getResponseStr(HttpResponse response, HttpClientConfig config) throws Exception {
+        if (response.getStatusLine().getStatusCode() >= 400) {
             String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
-            if(StringUtils.isEmpty(msg)){
+            if (StringUtils.isEmpty(msg)) {
                 msg = "StatusCode: " + response.getStatusLine().getStatusCode();
             }
             throw new Exception(msg);
         }
         return EntityUtils.toString(response.getEntity(), config.getCharset());
+    }
+
+
+    public static String postFile(String fileServer, File file, Map<String, String> param, HttpClientConfig config) {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost postRequest = new HttpPost(fileServer);
+        if (config == null) {
+            config = new HttpClientConfig();
+        }
+        Map<String, String> header = config.getHeader();
+        if (MapUtils.isNotEmpty(header)) {
+            for (String key : header.keySet()) {
+                postRequest.addHeader(key, header.get(key));
+            }
+        }
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+        builder.setCharset(StandardCharsets.UTF_8);
+        FileBody fileBody = new FileBody(file);
+        builder.addPart(file.getName(), fileBody);
+        if (param != null) {
+            for (Map.Entry<String, String> entry : param.entrySet()) {
+
+                StringBody stringBody = new StringBody(entry.getValue(), ContentType.TEXT_PLAIN.withCharset("utf-8"));
+                builder.addPart(entry.getKey(), stringBody);
+            }
+        }
+        try {
+            postRequest.setEntity(builder.build());
+            return getResponseStr(httpClient.execute(postRequest), config);
+        } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
+        }
+    }
+
+    public static String postFile(String fileServer, byte[] bytes, String fileName, Map<String, String> param, HttpClientConfig config) {
+        CloseableHttpClient httpClient = HttpClients.createDefault();
+        HttpPost postRequest = new HttpPost(fileServer);
+        if (config == null) {
+            config = new HttpClientConfig();
+        }
+        Map<String, String> header = config.getHeader();
+        if (MapUtils.isNotEmpty(header)) {
+            for (String key : header.keySet()) {
+                postRequest.addHeader(key, header.get(key));
+            }
+        }
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
+
+        builder.setCharset(StandardCharsets.UTF_8);
+        builder.addBinaryBody(fileName, bytes);
+
+        if (param != null) {
+            for (Map.Entry<String, String> entry : param.entrySet()) {
+                StringBody stringBody = new StringBody(entry.getValue(), ContentType.TEXT_PLAIN.withCharset("utf-8"));
+                builder.addPart(entry.getKey(), stringBody);
+            }
+        }
+        try {
+            postRequest.setEntity(builder.build());
+            return getResponseStr(httpClient.execute(postRequest), config);
+        } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
+        }
     }
 }

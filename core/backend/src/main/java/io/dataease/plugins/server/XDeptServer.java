@@ -1,7 +1,6 @@
 package io.dataease.plugins.server;
 
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.auth.annotation.DeLog;
@@ -30,6 +29,7 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiImplicitParam;
 import io.swagger.annotations.ApiImplicitParams;
 import io.swagger.annotations.ApiOperation;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.shiro.authz.annotation.RequiresPermissions;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -190,7 +190,7 @@ public class XDeptServer {
     @PostMapping("/unBindUser")
     public void unBindUser(@RequestBody XpackDeptBindRequest request) {
         DeptXpackService deptService = SpringContextUtil.getBean(DeptXpackService.class);
-        if (CollectionUtil.isEmpty(request.getUserIds())) {
+        if (CollectionUtils.isEmpty(request.getUserIds())) {
             DataEaseException.throwException("userIds can not be empty");
         }
         request.getUserIds().forEach(userId -> {

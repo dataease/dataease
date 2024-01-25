@@ -18,8 +18,8 @@ import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.entity.Status;
 import io.dataease.plugins.datasource.provider.Provider;
 import com.jayway.jsonpath.JsonPath;
-import io.dataease.commons.utils.HttpClientConfig;
-import io.dataease.commons.utils.HttpClientUtil;
+import io.dataease.plugins.common.util.HttpClientConfig;
+import io.dataease.plugins.common.util.HttpClientUtil;
 import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.request.datasource.ApiDefinitionRequest;
 

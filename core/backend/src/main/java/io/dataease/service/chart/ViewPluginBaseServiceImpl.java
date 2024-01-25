@@ -1,6 +1,5 @@
 package io.dataease.service.chart;
 
-import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.commons.model.PluginViewSetImpl;
@@ -33,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
@@ -232,7 +232,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
             Method method = declaredMethods[i];
             if (StringUtils.equals(method.getName(), methodName)) {
                 method.setAccessible(true);
-                return ReflectUtil.invoke(queryProvider, method, args);
+                return ReflectionUtils.invokeMethod(method, queryProvider, args);
             }
         }
         return null;
@@ -240,11 +240,10 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
     private Object execProviderMethod(QueryProvider queryProvider, String methodName, Object... args) {
         Method[] declaredMethods = queryProvider.getClass().getDeclaredMethods();
-        for (int i = 0; i < declaredMethods.length; i++) {
-            Method method = declaredMethods[i];
+        for (Method method : declaredMethods) {
             if (StringUtils.equals(method.getName(), methodName)) {
                 method.setAccessible(true);
-                return ReflectUtil.invoke(queryProvider, method, args);
+                return ReflectionUtils.invokeMethod(method, queryProvider, args);
             }
         }
         return null;

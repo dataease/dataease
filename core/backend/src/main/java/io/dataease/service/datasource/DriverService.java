@@ -1,6 +1,5 @@
 package io.dataease.service.datasource;
 
-import cn.hutool.core.collection.CollectionUtil;
 import com.google.gson.Gson;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.BeanUtils;
@@ -17,6 +16,7 @@ import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
 import io.dataease.provider.ProviderFactory;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
@@ -81,7 +81,7 @@ public class DriverService {
         }
         DeDriverExample example = new DeDriverExample();
         example.createCriteria().andNameEqualTo(deDriver.getName());
-        if(CollectionUtil.isNotEmpty(deDriverMapper.selectByExampleWithBLOBs(example))){
+        if(CollectionUtils.isNotEmpty(deDriverMapper.selectByExampleWithBLOBs(example))){
             throw new RuntimeException(Translator.get("I18N_DRIVER_REPEAT_NAME"));
         }
         deDriver.setCreateTime(System.currentTimeMillis());
@@ -147,7 +147,7 @@ public class DriverService {
 
         DeDriverDetailsExample deDriverDetailsExample = new DeDriverDetailsExample();
         deDriverDetailsExample.createCriteria().andDeDriverIdEqualTo(driverId).andFileNameEqualTo(filename);
-        if(CollectionUtil.isNotEmpty(deDriverDetailsMapper.selectByExample(deDriverDetailsExample))){
+        if(CollectionUtils.isNotEmpty(deDriverDetailsMapper.selectByExample(deDriverDetailsExample))){
             throw new Exception("A file with the same name already exists：" + filename);
         }
 
