@@ -35,6 +35,7 @@ public class ConstantsUtil {
     }
 
     public static Object getFieldValue(Class<?> classz, String key) {
+        if (ObjectUtils.isEmpty(ReflectionUtils.findField(classz, key))) return null;
         return ReflectionUtils.getField(Objects.requireNonNull(ReflectionUtils.findField(classz, key)), null);
     }
 
