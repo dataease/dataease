@@ -382,6 +382,7 @@ export default {
     thumbnail: '縮略圖',
     confirm_delete: '確認刪除',
     delete_this_dashboard: '確認删除該儀錶板嗎?',
+    cancel_this_dashboard: '確認取消該默认儀錶板嗎?',
     delete_this_folder: '確認删除該目錄嗎?',
     confirm_stop: '確認停止',
     stop_success: '停止成功',
@@ -839,6 +840,7 @@ export default {
     empty_msg: '為空則默認取值30天',
     front_error: '請填寫0-300正整數', // 修改了提示信息
     msg_error: '請填寫1-365正整數',
+    log_live_time_error: '請填寫1-4000正整數',
     limit_times_error: '請填寫1-100正整數',
     relieve_times_error: '請填寫1-100正整數',
     SMTP_port: 'SMTP端口',

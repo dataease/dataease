@@ -439,10 +439,10 @@ public class SqlserverQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return originTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, true);
+        return originTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, true, false);
     }
 
-    public String originTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder, boolean needResultCount) {
+    public String originTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder, boolean needResultCount, boolean ignoreOrder) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(SqlServerSQLConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -496,13 +496,15 @@ public class SqlserverQueryProvider extends QueryProvider {
         groups.addAll(xFields);
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
-        orders.addAll(xOrders);
-        if (needOrder && CollectionUtils.isEmpty(xOrders)) {
-            orders.add(SQLObj.builder()
-                    .orderField(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
-                    .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
-                    .orderDirection("ASC")
-                    .build());
+        if (!ignoreOrder) {
+            orders.addAll(xOrders);
+            if (needOrder && CollectionUtils.isEmpty(xOrders)) {
+                orders.add(SQLObj.builder()
+                        .orderField(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                        .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                        .orderDirection("ASC")
+                        .build());
+            }
         }
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
@@ -528,8 +530,8 @@ public class SqlserverQueryProvider extends QueryProvider {
         return st.render();
     }
 
-    public String originSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
-        return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view, needOrder, true);
+    public String originSQLAsTmpTableInfo(String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder, boolean ignoreOrder) {
+        return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, null, view, needOrder, true, ignoreOrder);
     }
 
     public String getSQLWithPage(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
@@ -543,9 +545,9 @@ public class SqlserverQueryProvider extends QueryProvider {
             boolean isPage = (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null);
             String limit = (isPage ? " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + " ROW FETCH NEXT " + pageInfo.getPageSize() + " ROW ONLY " : "");
             if (isTable) {
-                return originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
+                return originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage, false) + limit;
             } else {
-                return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage) + limit;
+                return originTableInfo("(" + sqlFix(sql) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true, !isPage, false) + limit;
             }
         }
     }
@@ -1790,9 +1792,9 @@ public class SqlserverQueryProvider extends QueryProvider {
     @Override
     public String getResultCount(boolean isTable, String sql, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
         if (isTable) {
-            return "SELECT COUNT(*) AS count from (" + originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false, true) + ") COUNT_TEMP";
+            return "SELECT COUNT(*) AS count from (" + originTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false, true, true) + ") COUNT_TEMP";
         } else {
-            return "SELECT COUNT(*) AS count from (" + originSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false) + ") COUNT_TEMP";
+            return "SELECT COUNT(*) AS count from (" + originSQLAsTmpTableInfo(sql, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false, true) + ") COUNT_TEMP";
         }
     }
 }

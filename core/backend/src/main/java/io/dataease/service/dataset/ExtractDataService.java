@@ -226,6 +226,7 @@ public class ExtractDataService {
                         toDelete.forEach(datasetTableField -> dataSetTableFieldsService.delete(datasetTableField.getId()));
                     }
                 } catch (Exception e) {
+                    e.printStackTrace();
                     saveErrorLog(datasetTableTaskLog, e, false);
                     updateTableStatus(datasetTableId, JobStatus.Error, null);
                     dropDorisTable(TableUtils.tmpName(TableUtils.tableName(datasetTableId)));
@@ -1294,14 +1295,14 @@ public class ExtractDataService {
 
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
-        if (isSetKey) {
+        if (!isSetKey) {
             UserDefinedJavaClassMeta.FieldInfo fieldInfo = new UserDefinedJavaClassMeta.FieldInfo("dataease_uuid", ValueMetaInterface.TYPE_STRING, -1, -1);
             fields.add(fieldInfo);
         }
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<>();
         String tmp_code = code.replace("handleWraps", handleWraps).replace("handleBinaryType", handleBinaryTypeCode.toString());
-        if (isSetKey) {
+        if (!isSetKey) {
             tmp_code = tmp_code.replace("handleDataease_uuid", "");
         } else {
             tmp_code = tmp_code.replace("handleDataease_uuid", handleDataease_uuid);

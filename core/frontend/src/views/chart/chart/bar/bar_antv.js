@@ -296,6 +296,11 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
   // config
   const slider = getSlider(chart)
   const analyse = getAnalyse(chart)
+
+  data.forEach(d => {
+    d.tempId = (Math.random() * 10000000).toString()
+  })
+
   // options
   const options = {
     theme: theme,
@@ -364,7 +369,9 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
         type: 'time',
         min: minTime,
         max: maxTime,
-        mask: 'YYYY-MM-DD HH:mm:ss',
+        mask: 'YYYY-MM-DD HH:mm:ss'
+      },
+      tempId: {
         key: true
       }
     }
@@ -373,7 +380,9 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
       values: {
         min: minNumber,
         max: maxNumber,
-        mask: 'YYYY-MM-DD HH:mm:ss',
+        mask: 'YYYY-MM-DD HH:mm:ss'
+      },
+      tempId: {
         key: true
       }
     }

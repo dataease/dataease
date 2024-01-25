@@ -382,6 +382,7 @@ export default {
     thumbnail: 'thumbnail',
     confirm_delete: 'Confirm delete',
     delete_this_dashboard: 'Are you sure to delete this dashboard?',
+    cancel_this_dashboard: 'Are you sure to cancel this default dashboard?',
     delete_this_folder: 'Are you sure to delete this folder?',
     confirm_stop: 'Confirm stop',
     stop_success: 'Stop success',
@@ -840,6 +841,7 @@ export default {
     empty_msg: 'If empty then default value is 30 days',
     front_error: 'Valid range [0 - 300]', // 修改了提示信息
     msg_error: 'Valid range [1 - 365]',
+    log_live_time_error: 'Valid range [1 - 4000]',
     limit_times_error: 'Valid range [1 - 100]',
     relieve_times_error: 'Valid range [1 - 100]',
     SMTP_port: 'SMTP Port',
