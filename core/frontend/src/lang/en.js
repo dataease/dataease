@@ -382,6 +382,7 @@ export default {
     thumbnail: 'thumbnail',
     confirm_delete: 'Confirm delete',
     delete_this_dashboard: 'Are you sure to delete this dashboard?',
+    cancel_this_dashboard: 'Are you sure to cancel this default dashboard?',
     delete_this_folder: 'Are you sure to delete this folder?',
     confirm_stop: 'Confirm stop',
     stop_success: 'Stop success',
