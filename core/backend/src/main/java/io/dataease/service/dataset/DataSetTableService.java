@@ -2759,7 +2759,7 @@ public class DataSetTableService {
 
             @Override
             public void visit(InExpression inExpression) {
-                if (inExpression.getRightExpression() != null && hasVariable(inExpression.getRightExpression().toString()) && inExpression.getRightExpression() instanceof ParenthesedExpressionList) {
+                if (inExpression.getRightExpression() != null && hasVariable(inExpression.getRightExpression().toString()) && !(inExpression.getRightExpression() instanceof ParenthesedSelect)) {
                     stringBuilder.append(SubstitutedSql);
                     return;
                 }
