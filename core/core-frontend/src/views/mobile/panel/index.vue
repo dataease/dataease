@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { onBeforeMount, ref, onBeforeUnmount } from 'vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
 import DePreviewMobile from './MobileInPc.vue'
@@ -16,7 +17,14 @@ const checkItemPosition = component => {
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
     const { componentData, canvasStyleData, dvInfo, canvasViewInfo } = event.data.value
-    dvMainStore.setComponentData(componentData.filter(ele => !!ele.inMobile))
+    componentData.forEach(ele => {
+      const { mx, my, mSizeX, mSizeY } = ele
+      ele.x = mx
+      ele.y = my
+      ele.sizeX = mSizeX
+      ele.sizeY = mSizeY
+    })
+    dvMainStore.setComponentData(componentData)
     dvMainStore.setMobileInPc(true)
     dvMainStore.setCanvasStyle(canvasStyleData)
     dvMainStore.updateCurDvInfo(dvInfo)
@@ -29,13 +37,39 @@ const hanedleMessage = event => {
     checkItemPosition(component)
     dvMainStore.componentData.push(component)
   }
+
+  if (event.data.type === 'mobileSave') {
+    window.top.postMessage(
+      {
+        type: 'mobileSaveFromMobile',
+        value: dvMainStore.componentData.reduce((pre, next) => {
+          const { x, y, sizeX, sizeY, id } = next
+          pre[id] = { x, y, sizeX, sizeY }
+          return pre
+        }, {})
+      },
+      '*'
+    )
+  }
 }
 
 onBeforeMount(() => {
   window.top.postMessage({ type: 'panelInit', value: true }, '*')
   window.addEventListener('message', hanedleMessage)
+  useEmitt({
+    name: 'onMobileStatusChange',
+    callback: ({ type, value }) => {
+      mobileStatusChange(type, value)
+    }
+  })
 })
 
+const mobileStatusChange = (type, value) => {
+  window.top.postMessage({ type, value }, '*')
+  if (type === 'delFromMobile') {
+    dvMainStore.setComponentData(dvMainStore.componentData.filter(ele => ele.id !== value))
+  }
+}
 onBeforeUnmount(() => {
   window.removeEventListener('message', hanedleMessage)
 })

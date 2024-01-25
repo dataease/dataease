@@ -1,5 +1,13 @@
 <template>
   <div class="shape" ref="shapeInnerRef" :id="domId" @dblclick="handleDbClick">
+    <div v-if="showCheck" class="del-from-mobile" @click="delFromMobile">
+      <label class="el-checkbox el-checkbox--small is-checked"
+        ><span class="el-checkbox__input is-checked"
+          ><input class="el-checkbox__original" checked type="checkbox" /><span
+            class="el-checkbox__inner"
+          ></span></span
+      ></label>
+    </div>
     <div
       class="shape-outer"
       v-show="contentDisplay"
@@ -113,7 +121,8 @@ const {
   curLinkageView,
   tabCollisionActiveId,
   tabMoveInActiveId,
-  tabMoveOutComponentId
+  tabMoveOutComponentId,
+  mobileInPc
 } = storeToRefs(dvMainStore)
 const { editorMap, areaData, isCtrlOrCmdDown } = storeToRefs(composeStore)
 const emit = defineEmits([
@@ -126,6 +135,7 @@ const emit = defineEmits([
   'linkJumpSetOpen',
   'linkageSetOpen'
 ])
+
 const isEditMode = computed(() => editMode.value === 'edit')
 const state = reactive({
   seriesIdMap: {
@@ -245,6 +255,17 @@ const initialAngle = {
   l: 315
 }
 const cursors = ref({})
+
+const showCheck = computed(() => {
+  return mobileInPc.value && element.value.canvasId === 'canvas-main'
+})
+
+const delFromMobile = () => {
+  useEmitt().emitter.emit('onMobileStatusChange', {
+    type: 'delFromMobile',
+    value: element.value.id
+  })
+}
 
 const angleToCursor = [
   // 每个范围的角度对应的光标
@@ -879,6 +900,13 @@ onMounted(() => {
 <style lang="less" scoped>
 .shape {
   position: absolute;
+
+  .del-from-mobile {
+    position: absolute;
+    right: 5px;
+    top: 5px;
+    z-index: 2;
+  }
 }
 
 .shape-shadow {

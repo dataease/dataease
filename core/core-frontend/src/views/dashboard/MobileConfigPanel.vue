@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, onMounted, unref, onBeforeUnmount, computed } from 'vue'
+import eventBus from '@/utils/eventBus'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getStyle } from '@/utils/style'
@@ -33,7 +34,9 @@ const handleLoad = () => {
     'panelInit',
     JSON.parse(
       JSON.stringify({
-        componentData: JSON.parse(JSON.stringify(unref(componentData))),
+        componentData: JSON.parse(
+          JSON.stringify(unref(componentData.value.filter(ele => !!ele.inMobile)))
+        ),
         canvasStyleData: JSON.parse(JSON.stringify(unref(canvasStyleData))),
         canvasViewInfo: JSON.parse(JSON.stringify(unref(canvasViewInfo))),
         dvInfo: JSON.parse(JSON.stringify(unref(dvInfo)))
@@ -50,6 +53,31 @@ const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
     mobileLoading.value = false
     handleLoad()
+  }
+
+  if (event.data.type === 'delFromMobile') {
+    componentData.value.some(ele => {
+      if (ele.id === event.data.value) {
+        ele.inMobile = false
+        return true
+      }
+      return false
+    })
+  }
+
+  if (event.data.type === 'mobileSaveFromMobile') {
+    componentData.value.forEach(ele => {
+      const com = event.data.value[ele.id]
+      if (!!com) {
+        const { x, y, sizeX, sizeY } = com
+        ele.mx = x
+        ele.my = y
+        ele.mSizeX = sizeX
+        ele.mSizeY = sizeY
+      }
+    })
+
+    eventBus.emit('save')
   }
 }
 onMounted(() => {
@@ -80,6 +108,11 @@ const addToMobile = com => {
       <el-icon class="custom-el-icon back-icon" @click="emits('pcMode')">
         <Icon class="toolbar-icon" name="icon_left_outlined" />
       </el-icon>
+    </div>
+    <div class="mobile-save">
+      <el-button type="primary" @click="mobileStatusChange('mobileSave', undefined)"
+        >保存</el-button
+      >
     </div>
     <div class="mobile-canvas">
       <div class="config-panel-title">{{ dvInfo.name }}</div>
@@ -120,7 +153,7 @@ const addToMobile = com => {
           />
           <div class="mobile-com-mask"></div>
 
-          <div class="pc-select-to-mobile" @click="addToMobile(config)"></div>
+          <div class="pc-select-to-mobile" v-if="!mobileLoading" @click="addToMobile(config)"></div>
         </div>
       </template>
     </div>
@@ -132,6 +165,19 @@ const addToMobile = com => {
   height: 100vh;
   width: 100vw;
   position: relative;
+
+  .mobile-to-pc {
+    position: absolute;
+    left: 20px;
+    top: 20px;
+    cursor: pointer;
+  }
+
+  .mobile-save {
+    position: absolute;
+    right: 20px;
+    top: 20px;
+  }
   .mobile-canvas {
     border-radius: 30px;
     width: 370px;
