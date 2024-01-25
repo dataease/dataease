@@ -244,6 +244,11 @@ const validateDS = () => {
         if (status[i].status === 'Error') {
           error++
         }
+        for (let i = 0; i < nodeInfo.apiConfiguration.length; i++) {
+          if (nodeInfo.apiConfiguration[i].name === status[i].name) {
+            nodeInfo.apiConfiguration[i].status = status[i].status
+          }
+        }
       }
       if (error === 0) {
         ElMessage.success('校验成功')
