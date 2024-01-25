@@ -1058,9 +1058,10 @@ public class ChartViewService {
                 });
                 xAxis.addAll(xAxisExtList);
             }
+            fieldMap.put("xAxis", xAxis);
+            fieldMap.put("xAxisExt", xAxisExt);
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
-            fieldMap.put("xAxis", xAxis);
             fieldMap.put("yAxis", yAxis);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
             String sql = pluginViewSql(pluginViewParam, view);
