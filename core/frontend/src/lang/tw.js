@@ -382,6 +382,7 @@ export default {
     thumbnail: '縮略圖',
     confirm_delete: '確認刪除',
     delete_this_dashboard: '確認删除該儀錶板嗎?',
+    cancel_this_dashboard: '確認取消該默认儀錶板嗎?',
     delete_this_folder: '確認删除該目錄嗎?',
     confirm_stop: '確認停止',
     stop_success: '停止成功',

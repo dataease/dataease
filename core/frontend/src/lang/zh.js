@@ -381,6 +381,7 @@ export default {
     thumbnail: '缩略图',
     confirm_delete: '确认删除',
     delete_this_dashboard: '确认删除该仪表板吗?',
+    cancel_this_dashboard: '确认取消该默认仪表板吗?',
     delete_this_folder: '确认删除该目录吗?',
     confirm_stop: '确认停止',
     stop_success: '停止成功',
