@@ -144,7 +144,7 @@ public class CalciteProvider {
         String querySql = getTablesSql(datasourceRequest).get(0);
         try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
         } catch (Exception e) {
-            DEException.throwException(e.getMessage());
+            throw e;
         }
         return "Success";
     }
