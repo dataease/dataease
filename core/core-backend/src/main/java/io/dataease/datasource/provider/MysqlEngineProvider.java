@@ -60,7 +60,7 @@ public class MysqlEngineProvider extends EngineProvider {
                 if (StringUtils.isEmpty(strings[i])) {
                     strings1[i] = null;
                 } else {
-                    strings1[i] = strings[i].replace("'", "\\'");
+                    strings1[i] = strings[i].replace("\\", "\\\\").replace("'", "\\'");
                 }
             }
             values.append("('").append(String.join("','", Arrays.asList(strings1)))
