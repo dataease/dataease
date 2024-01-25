@@ -13,7 +13,7 @@ import {
   nextTick
 } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
-import { save } from '@/api/datasource'
+import { save, update } from '@/api/datasource'
 import type { Action } from 'element-plus-secondary'
 import { Base64 } from 'js-base64'
 import ExcelInfo from '../ExcelInfo.vue'
@@ -255,9 +255,12 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
     table.sheets[i].jsonArray = []
   }
   table.configuration = Base64.encode(JSON.stringify(table.sheets))
+  let method = save
   if (!table.id || table.id === '0') {
     delete table.id
     table.pid = params.pid
+  } else {
+    method = update
   }
   if (new Set(sheetFileMd5).size !== sheetFileMd5.length && !props.param.id) {
     ElMessageBox.confirm(t('dataset.merge_title'), {
@@ -272,7 +275,7 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
         loading.value = true
         table.mergeSheet = action === 'confirm'
         if (action === 'confirm') {
-          save(table)
+          method(table)
             .then(res => {
               emitter.emit('showFinishPage', res)
               successCb?.()
@@ -288,7 +291,7 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
         }
 
         if (action === 'cancel') {
-          save(table)
+          method(table)
             .then(res => {
               emitter.emit('showFinishPage', res)
               successCb?.()
@@ -307,7 +310,7 @@ const saveExcelData = (sheetFileMd5, table, params, successCb, finallyCb) => {
   } else {
     if (loading.value) return
     loading.value = true
-    save(table)
+    method(table)
       .then(res => {
         emitter.emit('showFinishPage', res)
         successCb?.()
