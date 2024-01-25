@@ -470,6 +470,12 @@ const addAxis = (e, axis: AxisType) => {
       emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
     }
   }
+  if (view.value.type === 'indicator') {
+    if (view.value?.yAxis?.length > 1) {
+      const axis = view.value.yAxis.splice(1)
+      emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
+    }
+  }
 }
 
 const addXaxis = e => {
