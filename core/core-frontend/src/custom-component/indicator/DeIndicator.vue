@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getData } from '@/api/chart'
-import { nextTick, ref, reactive, shallowRef, computed, CSSProperties, toRefs, watch } from 'vue'
+import { ref, reactive, shallowRef, computed, CSSProperties, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy } from '@/utils/utils'
@@ -82,12 +82,14 @@ const result = computed(() => {
   return _result
 })
 
+const indicatorColor = ref(DEFAULT_INDICATOR_STYLE.color)
+
 const thresholdColor = computed(() => {
+  let color = indicatorColor.value
   if (result.value === '-') {
-    return undefined
+    return color
   }
   const value = result.value
-  let color = undefined
   if (view.value.senior && view.value.senior.threshold?.labelThreshold?.length > 0) {
     const senior = view.value.senior
     for (let i = 0; i < senior.threshold.labelThreshold.length; i++) {
@@ -134,8 +136,6 @@ const thresholdColor = computed(() => {
       }
       if (flag) {
         break
-      } else if (i === senior.threshold.labelThreshold.length - 1) {
-        color = t.color
       }
     }
   }
@@ -167,7 +167,7 @@ const contentStyle = ref({
 })
 
 const indicatorClass = ref<CSSProperties>({
-  color: DEFAULT_INDICATOR_STYLE.color,
+  color: thresholdColor.value,
   'font-size': DEFAULT_INDICATOR_STYLE.fontSize + 'px',
   'font-family': defaultTo(
     CHART_CONT_FAMILY_MAP[DEFAULT_INDICATOR_STYLE.fontFamily],
@@ -214,22 +214,6 @@ const indicatorNameClass = ref<CSSProperties>({
   'font-synthesis': 'weight style'
 })
 
-function setThresholdColor(_value, _color) {
-  if (_color === undefined) {
-    return
-  }
-  if (_value === '-') {
-    return
-  }
-  indicatorClass.value.color = _color
-}
-
-watch([result, thresholdColor], (value, oldValue) => {
-  const _value = value[0]
-  const _color = value[1]
-  setThresholdColor(_value, _color)
-})
-
 const renderChart = async view => {
   if (!view) {
     return
@@ -265,10 +249,10 @@ const renderChart = async view => {
           contentStyle.value['justify-content'] = 'center'
       }
 
-      let color = customAttr.indicator.color
+      indicatorColor.value = customAttr.indicator.color
 
       indicatorClass.value = {
-        color: color,
+        color: thresholdColor.value,
         'font-size': customAttr.indicator.fontSize + 'px',
         'font-family': defaultTo(
           CHART_CONT_FAMILY_MAP[customAttr.indicator.fontFamily],
@@ -317,8 +301,6 @@ const renderChart = async view => {
       indicatorNameShow.value = false
     }
   }
-
-  setThresholdColor(result.value, thresholdColor.value)
 }
 
 const calcData = (view, callback) => {
@@ -333,7 +315,6 @@ const calcData = (view, callback) => {
           errMsg.value = res.msg
         } else {
           chartData.value = res?.data as Partial<Chart['data']>
-          console.log(chartData.value)
           emit('onDrillFilters', res?.drillFilters)
 
           dvMainStore.setViewDataDetails(view.id, chartData.value)
