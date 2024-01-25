@@ -91,13 +91,12 @@ const changeLabelThreshold = () => {
   // check line config
   for (let i = 0; i < state.thresholdArr.length; i++) {
     const ele = state.thresholdArr[i]
-    console.log(ele)
-    if (!ele.term || ele.term === '') {
+    if (ele.term === undefined || ele.term === '') {
       ElMessage.error(t('chart.exp_can_not_empty'))
       return
     }
     if (ele.term === 'between') {
-      if (!ele.min || !ele.max) {
+      if (ele.min === undefined || ele.max === undefined) {
         ElMessage.error(t('chart.value_can_not_empty'))
         return
       }
@@ -110,7 +109,6 @@ const changeLabelThreshold = () => {
         return
       }
     } else {
-      console.log(ele.value === undefined)
       if (ele.value === undefined) {
         ElMessage.error(t('chart.value_can_not_empty'))
         return
