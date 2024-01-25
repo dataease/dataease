@@ -33,6 +33,7 @@
     "autoprefixer": "^7.1.2",
     "babel-loader": "^8.0.6",
     "chalk": "^2.0.1",
+    "compression-webpack-plugin": "^6.0.0",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^0.28.0",
     "element-ui": "2.15.7",
