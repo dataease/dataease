@@ -260,7 +260,7 @@
             />
           </el-collapse-item>
           <el-collapse-item
-            v-show="showPropertiesCollapse(['legend-selector', 'legend-selector-ant-v'])"
+            v-if="showPropertiesCollapse(['legend-selector', 'legend-selector-ant-v']) && !(chart.type === 'bar-time-range' && !chart.aggregate)"
             name="legend"
             :title="$t('chart.legend')"
           >
