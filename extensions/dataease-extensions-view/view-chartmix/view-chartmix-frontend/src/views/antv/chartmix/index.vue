@@ -32,7 +32,6 @@
 </template>
 
 <script>
-import {Mix} from '@antv/g2plot'
 import {uuid, hexColorToRGBA, setGradientColor} from '../../../utils/chartmix'
 import ViewTrackBar from '../../../components/views/ViewTrackBar'
 import {getRemark} from "../../../components/views/utils";
@@ -44,7 +43,6 @@ import {
 } from '../../../utils/map';
 import ChartTitleUpdate from '../../../components/views/ChartTitleUpdate';
 import {map, filter, join, flatten, cloneDeep} from 'lodash-es';
-import {clear} from 'size-sensor'
 import {valueFormatter} from '../../../utils/formatter'
 
 export default {
@@ -176,7 +174,7 @@ export default {
     }
   },
   created() {
-    !this.$chartmix && (this.$chartmix = Mix)
+    !this.$chartmix && (this.$chartmix = this.$Mix)
   },
   mounted() {
     this.preDraw()
@@ -1153,7 +1151,7 @@ export default {
     beforeDestroy() {
       if (this.myChart.container) {
         if (typeof this.myChart.container.getAttribute === 'function') {
-          clear(this.myChart.container)
+          this.$G2SizeSensorClear(this.myChart.container)
         }
       }
       if (this.myChart) {
