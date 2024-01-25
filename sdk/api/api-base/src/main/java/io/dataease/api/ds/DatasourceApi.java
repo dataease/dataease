@@ -34,6 +34,9 @@ public interface DatasourceApi {
     @PostMapping("/save")
     DatasourceDTO save(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
 
+    @PostMapping("/update")
+    DatasourceDTO update(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;
+
 
     @PostMapping("/move")
     DatasourceDTO move(@RequestBody DatasourceDTO dataSourceDTO) throws DEException;

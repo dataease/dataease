@@ -91,6 +91,12 @@ export const save = async (data = {}): Promise<Dataset> => {
   })
 }
 
+export const update = async (data = {}): Promise<Dataset> => {
+  return request.post({ url: '/datasource/update', data }).then(res => {
+    return res?.data
+  })
+}
+
 export const move = async (data = {}): Promise<Dataset> => {
   return request.post({ url: '/datasource/move', data }).then(res => {
     return res?.data

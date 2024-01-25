@@ -311,6 +311,8 @@ public class DatasourceServer implements DatasourceApi {
         return dataSourceDTO;
     }
 
+    @Transactional
+    @Override
     public DatasourceDTO update(DatasourceDTO dataSourceDTO) throws DEException {
         Long pk = null;
         if (ObjectUtils.isEmpty(pk = dataSourceDTO.getId())) {

@@ -8,7 +8,7 @@ import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
-import { save, validate, latestUse, isShowFinishPage, checkRepeat } from '@/api/datasource'
+import { save, update, validate, latestUse, isShowFinishPage, checkRepeat } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
 import { dsTypes, typeList, nameMap } from './option'
@@ -403,6 +403,7 @@ const saveDS = () => {
           tip: ''
         }
         checkRepeat(request).then(res => {
+          let method = request.id === '' ? save : update
           if (res) {
             ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
               () => {
@@ -410,7 +411,7 @@ const saveDS = () => {
                   return
                 }
                 dsLoading.value = true
-                save(request)
+                method(request)
                   .then(res => {
                     if (res !== undefined) {
                       handleShowFinishPage({ id: res.id, name: res.name })
@@ -427,7 +428,7 @@ const saveDS = () => {
               return
             }
             dsLoading.value = true
-            save(request)
+            method(request)
               .then(res => {
                 if (res !== undefined) {
                   handleShowFinishPage({ id: res.id, name: res.name })
