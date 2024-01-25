@@ -56,6 +56,7 @@
               <el-select
                 v-model="rowTotalItem.dataeaseName"
                 :placeholder="$t('chart.aggregation')"
+                popper-class="total-select"
                 size="mini"
                 @change="changeTotal(rowTotalItem, totalForm.row.calcTotals.cfg)"
               >
@@ -74,6 +75,7 @@
               <el-select
                 v-model="rowTotalItem.aggregation"
                 :placeholder="$t('chart.aggregation')"
+                popper-class="total-select"
                 size="mini"
                 @change="changeTotalAggr(rowTotalItem, totalForm.row.calcTotals.cfg, 'row')"
               >
@@ -108,6 +110,7 @@
             <el-select
               v-model="totalForm.row.totalSortField"
               class="form-item-select"
+              popper-class="total-select"
               :placeholder="$t('chart.total_sort_field')"
               size="mini"
               @change="changeTotalCfg('row')"
@@ -171,6 +174,7 @@
                 :disabled="rowNum < 2"
                 :placeholder="$t('chart.aggregation')"
                 size="mini"
+                popper-class="total-select"
                 @change="changeTotal(rowSubTotalItem, totalForm.row.calcSubTotals.cfg)"
               >
                 <el-option
@@ -190,6 +194,7 @@
                 :disabled="rowNum < 2"
                 :placeholder="$t('chart.aggregation')"
                 size="mini"
+                popper-class="total-select"
                 @change="changeTotalAggr(rowSubTotalItem, totalForm.row.calcSubTotals.cfg, 'row')"
               >
                 <el-option
@@ -253,6 +258,7 @@
                 v-model="colTotalItem.dataeaseName"
                 :placeholder="$t('chart.aggregation')"
                 size="mini"
+                popper-class="total-select"
                 @change="changeTotal(colTotalItem, totalForm.col.calcTotals.cfg)"
               >
                 <el-option
@@ -271,6 +277,7 @@
                 v-model="colTotalItem.aggregation"
                 :placeholder="$t('chart.aggregation')"
                 size="mini"
+                popper-class="total-select"
                 @change="changeTotalAggr(colTotalItem, totalForm.col.calcTotals.cfg, 'col')"
               >
                 <el-option
@@ -304,6 +311,7 @@
             <el-select
               v-model="totalForm.col.totalSortField"
               class="form-item-select"
+              popper-class="total-select"
               :placeholder="$t('chart.total_sort_field')"
               size="mini"
               @change="changeTotalCfg('col')"
@@ -367,6 +375,7 @@
                 :disabled="colNum < 2"
                 :placeholder="$t('chart.aggregation')"
                 size="mini"
+                popper-class="total-select"
                 @change="changeTotal(colSubTotalItem, totalForm.col.calcSubTotals.cfg)"
               >
                 <el-option
@@ -386,6 +395,7 @@
                 :disabled="colNum < 2"
                 :placeholder="$t('chart.aggregation')"
                 size="mini"
+                popper-class="total-select"
                 @change="changeTotalAggr(colSubTotalItem, totalForm.col.calcSubTotals.cfg, 'col')"
               >
                 <el-option
@@ -631,7 +641,11 @@ export default {
   }
 }
 </script>
-
+<style>
+.total-select .el-select-dropdown__item {
+  font-size: 12px;
+}
+</style>
 <style scoped>
 .shape-item{
   padding: 6px;
