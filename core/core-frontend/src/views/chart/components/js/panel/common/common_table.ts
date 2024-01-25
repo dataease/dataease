@@ -259,6 +259,11 @@ export function getCustomTheme(chart: Chart): S2Theme {
             crossBackgroundColor: tableItemBgColor,
             backgroundColor: tableItemBgColor
           },
+          bolderText: {
+            fill: tableFontColor,
+            textAlign: tableItemAlign,
+            fontSize: tableItemFontSize
+          },
           text: {
             fill: tableFontColor,
             textAlign: tableItemAlign,
