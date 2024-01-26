@@ -300,7 +300,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
   }
 }
 function customCalcFunc(query, data, totalCfgMap) {
-  if (!data?.length) {
+  if (!data?.length || !query[EXTRA_FIELD]) {
     return 0
   }
   const aggregation = totalCfgMap[query[EXTRA_FIELD]].aggregation
