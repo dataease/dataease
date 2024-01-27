@@ -296,9 +296,9 @@ export default {
         }
       }
       if (chart.type === 'table-info') {
-        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage)
+        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage, this)
       } else if (chart.type === 'table-normal') {
-        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this)
       } else if (chart.type === 'table-pivot') {
         this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableHeaderClick, this.tableData)
       } else {

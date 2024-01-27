@@ -1,11 +1,71 @@
-import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE } from '@antv/s2'
+import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE, BaseTooltip, getAutoAdjustPosition,
+  getTooltipDefaultOptions,
+  setTooltipContainerStyle } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { handleTableEmptyStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
 import { maxBy, minBy, find } from 'lodash-es'
+import TableTooltip from '@/views/chart/components/table/TableTooltip.vue'
+class SortTooltip extends BaseTooltip {
+  vueCom
+  constructor(spreadsheet, vueCom) {
+    super(spreadsheet)
+    this.vueCom = vueCom
+  }
 
-export function baseTableInfo(s2, container, chart, action, tableData, pageInfo) {
+  show(showOptions) {
+    const { iconName } = showOptions
+    if (iconName) {
+      this.showSortTooltip(showOptions)
+      return
+    }
+    super.show(showOptions)
+  }
+
+  showSortTooltip(showOptions) {
+    const { position, options, meta, event } = showOptions
+    const { enterable } = getTooltipDefaultOptions(options)
+    const { autoAdjustBoundary, adjustPosition } =
+    this.spreadsheet.options.tooltip || {}
+    this.visible = true
+    this.options = showOptions
+    const container = this.getContainer()
+    // 用 vue 手动 patch
+    const vNode = this.vueCom.$createElement(TableTooltip, {
+      props: {
+        table: this.spreadsheet,
+        meta
+      }
+    })
+    this.spreadsheet.tooltip.container.innerHTML = ''
+    const childElement = document.createElement('div')
+    this.spreadsheet.tooltip.container.appendChild(childElement)
+    this.vueCom.__patch__(childElement, vNode, false, true)
+
+    const { x, y } = getAutoAdjustPosition({
+      spreadsheet: this.spreadsheet,
+      position,
+      tooltipContainer: container,
+      autoAdjustBoundary
+    })
+
+    this.position = adjustPosition?.({ position: { x, y }, event }) ?? {
+      x,
+      y
+    }
+
+    setTooltipContainerStyle(container, {
+      style: {
+        left: `${this.position?.x}px`,
+        top: `${this.position?.y}px`,
+        pointerEvents: enterable ? 'all' : 'none'
+      },
+      visible: true
+    })
+  }
+}
+export function baseTableInfo(s2, container, chart, action, tableData, pageInfo, vueCom) {
   const containerDom = document.getElementById(container)
 
   // fields
@@ -87,12 +147,44 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
   }
 
   const customAttr = JSON.parse(chart.customAttr)
+  const sortIconMap = {
+    'asc': 'SortUp',
+    'desc': 'SortDown'
+  }
   // options
   const s2Options = {
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
     showSeriesNumber: customAttr.size.showIndex,
     style: getSize(chart),
+    tooltip: {
+      renderTooltip: sheet => new SortTooltip(sheet, vueCom)
+    },
+    headerActionIcons: [
+      {
+        iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
+        belongsCell: 'colCell',
+        displayCondition: (meta, iconName) => {
+          const sortMethodMap = meta.spreadsheet.store.get('sortMethodMap')
+          const sortType = sortMethodMap?.[meta.field]
+          if (sortType) {
+            return iconName === sortIconMap[sortType]
+          }
+          return iconName === 'GroupAsc'
+        },
+        onClick: (props) => {
+          const { meta, event } = props
+          meta.spreadsheet.showTooltip({
+            position: {
+              x: event.clientX,
+              y: event.clientY
+            },
+            event,
+            ...props
+          })
+        }
+      }
+    ],
     conditions: getConditions(chart),
     frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
     frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
@@ -150,7 +242,7 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo)
   return s2
 }
 
-export function baseTableNormal(s2, container, chart, action, tableData) {
+export function baseTableNormal(s2, container, chart, action, tableData, vueCom) {
   const containerDom = document.getElementById(container)
   if (!containerDom) return
 
@@ -281,12 +373,44 @@ export function baseTableNormal(s2, container, chart, action, tableData) {
   }
 
   const customAttr = JSON.parse(chart.customAttr)
+  const sortIconMap = {
+    'asc': 'SortUp',
+    'desc': 'SortDown'
+  }
   // options
   const s2Options = {
     width: containerDom.offsetWidth,
     height: containerDom.offsetHeight,
     showSeriesNumber: customAttr.size.showIndex,
     style: getSize(chart),
+    tooltip: {
+      renderTooltip: sheet => new SortTooltip(sheet, vueCom)
+    },
+    headerActionIcons: [
+      {
+        iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
+        belongsCell: 'colCell',
+        displayCondition: (meta, iconName) => {
+          const sortMethodMap = meta.spreadsheet.store.get('sortMethodMap')
+          const sortType = sortMethodMap?.[meta.field]
+          if (sortType) {
+            return iconName === sortIconMap[sortType]
+          }
+          return iconName === 'GroupAsc'
+        },
+        onClick: (props) => {
+          const { meta, event } = props
+          meta.spreadsheet.showTooltip({
+            position: {
+              x: event.clientX,
+              y: event.clientY
+            },
+            event,
+            ...props
+          })
+        }
+      }
+    ],
     conditions: getConditions(chart),
     frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
     frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
