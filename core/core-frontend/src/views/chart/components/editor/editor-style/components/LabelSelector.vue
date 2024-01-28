@@ -191,6 +191,13 @@ const checkLabelContent = contentProp => {
 const showProperty = prop => {
   return props.propertyInner?.includes(prop)
 }
+
+const showEmpty = computed(() => {
+  return (
+    props.propertyInner.length === 0 ||
+    (batchOptStatus.value && showProperty('seriesLabelFormatter'))
+  )
+})
 const showSeriesLabelFormatter = computed(() => {
   return !batchOptStatus.value && showProperty('seriesLabelFormatter')
 })
@@ -210,6 +217,7 @@ onMounted(() => {
     :model="state.labelForm"
     label-position="top"
   >
+    <el-row v-show="showEmpty" style="margin-bottom: 12px"> 无其他可设置的属性 </el-row>
     <el-space>
       <el-form-item
         class="form-item"

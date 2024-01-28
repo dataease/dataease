@@ -143,7 +143,7 @@ onUnmounted(() => {
   </el-row>
 </template>
 
-<style lang="less">
+<style scoped lang="less">
 .custom-main {
   display: flex;
   width: 100%;
