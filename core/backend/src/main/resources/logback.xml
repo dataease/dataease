@@ -19,10 +19,10 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>${logging.file.path}/history/debug.%d{yyyyMMdd}-%i.log
 			</FileNamePattern>
-			<maxHistory>30</maxHistory>
+			<maxHistory>${logging.file.history}</maxHistory>
 			<TimeBasedFileNamingAndTriggeringPolicy
 					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>50MB</maxFileSize>
+				<maxFileSize>${logging.file.size}</maxFileSize>
 			</TimeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 		<encoder>
@@ -40,10 +40,10 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>${logging.file.path}/history/info.%d{yyyyMMdd}-%i.log
 			</FileNamePattern>
-			<maxHistory>30</maxHistory>
+			<maxHistory>${logging.file.history}</maxHistory>
 			<TimeBasedFileNamingAndTriggeringPolicy
 					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>50MB</maxFileSize>
+				<maxFileSize>${logging.file.size}</maxFileSize>
 			</TimeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 		<encoder>
@@ -64,10 +64,10 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>${logging.file.path}/history/error.%d{yyyyMMdd}-%i.log
 			</FileNamePattern>
-			<maxHistory>30</maxHistory>
+			<maxHistory>${logging.file.history}</maxHistory>
 			<TimeBasedFileNamingAndTriggeringPolicy
 					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>50MB</maxFileSize>
+				<maxFileSize>${logging.file.size}</maxFileSize>
 			</TimeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 		<encoder>
@@ -87,10 +87,10 @@
 		<rollingPolicy class="ch.qos.logback.core.rolling.TimeBasedRollingPolicy">
 			<FileNamePattern>${logging.file.path}/history/warn.%d{yyyyMMdd}-%i.log
 			</FileNamePattern>
-			<maxHistory>30</maxHistory>
+			<maxHistory>${logging.file.history}</maxHistory>
 			<TimeBasedFileNamingAndTriggeringPolicy
 					class="ch.qos.logback.core.rolling.SizeAndTimeBasedFNATP">
-				<maxFileSize>50MB</maxFileSize>
+				<maxFileSize>${logging.file.size}</maxFileSize>
 			</TimeBasedFileNamingAndTriggeringPolicy>
 		</rollingPolicy>
 		<encoder>
