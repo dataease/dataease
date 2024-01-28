@@ -186,7 +186,7 @@ export function activeWatermark(
     watermark_txt = getNow()
     watermark_width = 200
   } else {
-    watermark_txt = userLoginInfo.name
+    watermark_txt = userLoginInfo.account
   }
   const settings = {
     watermark_txt: watermark_txt,
