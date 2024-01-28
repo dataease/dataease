@@ -91,13 +91,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private VisualizationWatermarkMapper watermarkMapper;
 
-    @DeLog(id = "#p0", ot = LogOT.READ, stExp = "#p1")
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
         DataVisualizationVO result = findById(dvId, busiFlag);
-        if(result !=null && result.getPid() == -1){
+        if (result != null && result.getPid() == -1) {
             return result;
-        }else{
+        } else {
             return null;
         }
     }
@@ -136,6 +135,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
         } else {
             visualizationInfo.setSelfWatermarkStatus(0);
         }
+        if (DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())) {
+            // 复制更新 新建权限插入
+            visualizationInfoMapper.deleteById(request.getId());
+            visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
+        }
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
         request.setId(newDvId);
         //保存视图信
@@ -158,24 +162,19 @@ public class DataVisualizationServer implements DataVisualizationApi {
         } else {
             visualizationInfo.setSelfWatermarkStatus(0);
         }
-        if (DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOptType())) {
-            // 复制更新 新建权限插入
-            visualizationInfoMapper.deleteById(dvId);
-            visualizationInfo.setNodeType(DataVisualizationConstants.NODE_TYPE.LEAF);
-            coreVisualizationManage.innerSave(visualizationInfo);
-        } else {
-            // 检查当前节点的pid是否一致如果不一致 需要调用move 接口(预存 可能会出现pid =-1的情况)
-            if (request.getPid() != -1) {
-                QueryWrapper<DataVisualizationInfo> queryWrapper = new QueryWrapper<>();
-                queryWrapper.eq("pid", request.getPid());
-                queryWrapper.eq("id", dvId);
-                if (!visualizationInfoMapper.exists(queryWrapper)) {
-                    request.setMoveFromUpdate(true);
-                    coreVisualizationManage.move(request);
-                }
+
+        // 检查当前节点的pid是否一致如果不一致 需要调用move 接口(预存 可能会出现pid =-1的情况)
+        if (request.getPid() != -1) {
+            QueryWrapper<DataVisualizationInfo> queryWrapper = new QueryWrapper<>();
+            queryWrapper.eq("pid", request.getPid());
+            queryWrapper.eq("id", dvId);
+            if (!visualizationInfoMapper.exists(queryWrapper)) {
+                request.setMoveFromUpdate(true);
+                coreVisualizationManage.move(request);
             }
-            coreVisualizationManage.innerEdit(visualizationInfo);
         }
+        coreVisualizationManage.innerEdit(visualizationInfo);
+
         //保存视图信
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
     }

@@ -175,7 +175,7 @@ export function canvasSave(callBack) {
     watermarkInfo: null
   }
 
-  const method = dvInfo.value.id ? updateCanvas : saveCanvas
+  const method = dvInfo.value.id && dvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
   method(canvasInfo).then(res => {
     dvMainStore.updateDvInfoId(res.data)
     snapshotStore.resetStyleChangeTimes()

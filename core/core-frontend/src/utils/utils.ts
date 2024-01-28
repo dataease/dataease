@@ -1,3 +1,5 @@
+import { BusiTreeNode } from '@/models/tree/TreeNode'
+
 export function deepCopy(target) {
   if (target === null || target === undefined) {
     return target
@@ -79,4 +81,15 @@ export const getQueryString = (name: string) => {
 
 export const isLarkPlatform = () => {
   return !!getQueryString('state') && !!getQueryString('code')
+}
+
+export function cutTargetTree(tree: BusiTreeNode[], targetId: string | number) {
+  tree.forEach((node, index) => {
+    if (node.id === targetId) {
+      tree.splice(index, 1)
+      return
+    } else if (node.children) {
+      cutTargetTree(node.children, targetId)
+    }
+  })
 }
