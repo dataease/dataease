@@ -4,8 +4,19 @@ import {
   DEFAULT_TABLE_CELL,
   DEFAULT_TABLE_HEADER
 } from '@/views/chart/components/editor/util/chart'
-import { S2Theme, Style } from '@antv/s2'
+import {
+  BaseTooltip,
+  getAutoAdjustPosition,
+  getTooltipDefaultOptions,
+  S2Theme,
+  setTooltipContainerStyle,
+  Style,
+  S2Options,
+  SERIES_NUMBER_FIELD
+} from '@antv/s2'
 import { keys, intersection, filter, cloneDeep, merge } from 'lodash-es'
+import { createVNode, render } from 'vue'
+import TableTooltip from '@/views/chart/components/editor/common/TableTooltip.vue'
 
 export function getCustomTheme(chart: Chart): S2Theme {
   const headerColor = hexColorToRGBA(
@@ -536,4 +547,91 @@ export function handleTableEmptyStrategy(chart: Chart) {
     }
   }
   return newData
+}
+class SortTooltip extends BaseTooltip {
+  show(showOptions) {
+    const { iconName } = showOptions
+    if (iconName) {
+      this.showSortTooltip(showOptions)
+      return
+    }
+    super.show(showOptions)
+  }
+
+  showSortTooltip(showOptions) {
+    const { position, options, meta, event } = showOptions
+    const { enterable } = getTooltipDefaultOptions(options)
+    const { autoAdjustBoundary, adjustPosition } = this.spreadsheet.options.tooltip || {}
+    this.visible = true
+    this.options = showOptions
+    const container = this['getContainer']()
+    // 用 vue 手动 patch
+    const vNode = createVNode(TableTooltip, {
+      table: this.spreadsheet,
+      meta
+    })
+    this.spreadsheet.tooltip.container.innerHTML = ''
+    const childElement = document.createElement('div')
+    this.spreadsheet.tooltip.container.appendChild(childElement)
+    render(vNode, childElement, false)
+
+    const { x, y } = getAutoAdjustPosition({
+      spreadsheet: this.spreadsheet,
+      position,
+      tooltipContainer: container,
+      autoAdjustBoundary
+    })
+
+    this.position = adjustPosition?.({ position: { x, y }, event }) ?? {
+      x,
+      y
+    }
+
+    setTooltipContainerStyle(container, {
+      style: {
+        left: `${this.position?.x}px`,
+        top: `${this.position?.y}px`,
+        pointerEvents: enterable ? 'all' : 'none'
+      },
+      visible: true
+    })
+  }
+}
+export function configTooltip(option: S2Options) {
+  const sortIconMap = {
+    asc: 'SortUp',
+    desc: 'SortDown'
+  }
+  option.tooltip = {
+    ...option.tooltip,
+    renderTooltip: sheet => new SortTooltip(sheet)
+  }
+  option.headerActionIcons = [
+    {
+      iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
+      belongsCell: 'colCell',
+      displayCondition: (meta, iconName) => {
+        if (meta.field === SERIES_NUMBER_FIELD) {
+          return false
+        }
+        const sortMethodMap = meta.spreadsheet.store.get('sortMethodMap')
+        const sortType = sortMethodMap?.[meta.field]
+        if (sortType) {
+          return iconName === sortIconMap[sortType]
+        }
+        return iconName === 'GroupAsc'
+      },
+      onClick: props => {
+        const { meta, event } = props
+        meta.spreadsheet.showTooltip({
+          position: {
+            x: event.clientX,
+            y: event.clientY
+          },
+          event,
+          ...props
+        })
+      }
+    }
+  ]
 }

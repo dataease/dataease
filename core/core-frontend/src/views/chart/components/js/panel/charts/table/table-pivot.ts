@@ -1,11 +1,10 @@
-import { EXTRA_FIELD, PivotSheet, S2Event, S2Options, TOTAL_VALUE } from '@antv/s2/esm/index'
+import { EXTRA_FIELD, PivotSheet, S2Event, S2Options, TOTAL_VALUE, S2Theme } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { maxBy, merge, minBy } from 'lodash-es'
-import { S2Theme } from '@antv/s2'
 
 const { t } = useI18n()
 

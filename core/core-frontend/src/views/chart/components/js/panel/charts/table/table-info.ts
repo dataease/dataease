@@ -1,4 +1,4 @@
-import { S2Event, S2Options, TableColCell, TableDataCell, TableSheet } from '@antv/s2/esm/index'
+import { S2Event, S2Options, TableColCell, TableDataCell, TableSheet } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
@@ -125,7 +125,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
         return new TableDataCell(viewMeta, viewMeta?.spreadsheet)
       }
     }
-
+    // tooltip
+    this.configTooltip(s2Options)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 
