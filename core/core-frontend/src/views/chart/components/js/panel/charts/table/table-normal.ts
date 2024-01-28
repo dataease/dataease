@@ -1,12 +1,11 @@
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
-import { S2Event, S2Options, TableSheet } from '@antv/s2/esm/index'
+import { S2Event, S2Options, TableSheet, TableColCell } from '@antv/s2'
 import { parseJson } from '@/views/chart/components/js/util'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { getCurrentField } from '@/views/chart/components/js/panel/common/common_table'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isNumber } from 'lodash-es'
-import { TableColCell } from '@antv/s2'
 
 const { t } = useI18n()
 /**
@@ -121,7 +120,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
         return new TableColCell(node, sheet, config)
       }
     }
-
+    // tooltip
+    this.configTooltip(s2Options)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 

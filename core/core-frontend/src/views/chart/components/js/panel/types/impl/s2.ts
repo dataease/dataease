@@ -3,13 +3,15 @@ import {
   AntVDrawOptions,
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
-import { S2Theme, SpreadSheet, Style } from '@antv/s2'
+import { S2Theme, SpreadSheet, Style, S2Options } from '@antv/s2'
 import {
+  configTooltip,
   getConditions,
   getCustomTheme,
   getStyle,
   handleTableEmptyStrategy
 } from '@/views/chart/components/js/panel/common/common_table'
+import '@antv/s2/dist/style.min.css'
 
 declare interface PageInfo {
   currentPage: number
@@ -19,9 +21,7 @@ declare interface PageInfo {
 
 export interface S2DrawOptions<O> extends AntVDrawOptions<O> {
   pageInfo?: PageInfo
-  tableHeaderClick?: (args: any[]) => void
 }
-
 export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractChartView {
   public abstract drawChart(drawOption: S2DrawOptions<P>): P
   protected constructor(name: string, defaultData: any[]) {
@@ -37,6 +37,10 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
 
   protected configEmptyDataStrategy(chart: Chart): Record<string, any>[] {
     return handleTableEmptyStrategy(chart)
+  }
+
+  protected configTooltip(option: S2Options) {
+    configTooltip(option)
   }
 
   protected configConditions(chart: Chart) {
