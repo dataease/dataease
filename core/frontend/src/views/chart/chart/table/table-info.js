@@ -1,6 +1,16 @@
-import { TableSheet, S2Event, PivotSheet, DataCell, EXTRA_FIELD, TOTAL_VALUE, BaseTooltip, getAutoAdjustPosition,
+import {
+  TableSheet,
+  S2Event,
+  PivotSheet,
+  DataCell,
+  EXTRA_FIELD,
+  TOTAL_VALUE,
+  BaseTooltip,
+  getAutoAdjustPosition,
   getTooltipDefaultOptions,
-  setTooltipContainerStyle } from '@antv/s2'
+  setTooltipContainerStyle,
+  SERIES_NUMBER_FIELD
+} from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
@@ -165,6 +175,9 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo,
         iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
         belongsCell: 'colCell',
         displayCondition: (meta, iconName) => {
+          if (meta.field === SERIES_NUMBER_FIELD) {
+            return false
+          }
           const sortMethodMap = meta.spreadsheet.store.get('sortMethodMap')
           const sortType = sortMethodMap?.[meta.field]
           if (sortType) {
@@ -391,6 +404,9 @@ export function baseTableNormal(s2, container, chart, action, tableData, vueCom)
         iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
         belongsCell: 'colCell',
         displayCondition: (meta, iconName) => {
+          if (meta.field === SERIES_NUMBER_FIELD) {
+            return false
+          }
           const sortMethodMap = meta.spreadsheet.store.get('sortMethodMap')
           const sortType = sortMethodMap?.[meta.field]
           if (sortType) {
