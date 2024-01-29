@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
@@ -29,11 +29,11 @@ const dfsTree = (ids, arr) => {
   const id = ids.shift()
   return arr.reduce((pre, ele) => {
     if (id && ele.id === id) {
-      pre = ele.children
-    }
-    const children = dfsTree([...ids], ele.children || [])
-    if (children?.length) {
-      pre = children
+      if (!ids.length) {
+        return ele.children || []
+      }
+      const children = dfsTree([...ids], ele.children || [])
+      pre = children || []
     }
     return pre
   }, [])
@@ -45,7 +45,8 @@ const activeTableData = computed(() => {
 
 const emits = defineEmits(['hiddentabbar', 'setLoading'])
 const onClickLeft = () => {
-  activeDirectName.value = directName.value.pop()
+  directName.value.pop()
+  activeDirectName.value = directName.value[directName.value.length - 1]
   directId.value.pop()
   if (!!directName.value.length) {
     emits('hiddentabbar', false)
