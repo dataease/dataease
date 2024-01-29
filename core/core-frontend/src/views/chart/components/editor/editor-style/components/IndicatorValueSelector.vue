@@ -71,6 +71,7 @@ const init = () => {
   //第一次颜色可能赋值失败，单独赋值一次
   nextTick(() => {
     state.indicatorValueForm.color = customText.color
+    state.indicatorValueForm.suffixColor = customText.suffixColor
   })
 }
 
