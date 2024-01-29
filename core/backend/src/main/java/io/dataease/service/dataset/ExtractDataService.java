@@ -1304,7 +1304,7 @@ public class ExtractDataService {
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<>();
         String tmp_code = code.replace("handleWraps", handleWraps).replace("handleBinaryType", handleBinaryTypeCode.toString());
-        if (!isSetKey) {
+        if (isSetKey) {
             tmp_code = tmp_code.replace("handleDataease_uuid", "");
         } else {
             tmp_code = tmp_code.replace("handleDataease_uuid", handleDataease_uuid);
