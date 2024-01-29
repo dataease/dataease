@@ -17,9 +17,7 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
-import org.apache.http.entity.mime.HttpMultipartMode;
 import org.apache.http.entity.mime.MultipartEntityBuilder;
-import org.apache.http.entity.mime.content.FileBody;
 import org.apache.http.entity.mime.content.StringBody;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
@@ -219,26 +217,28 @@ public class HttpClientUtil {
 
 
     public static String postFile(String fileServer, File file, Map<String, String> param, HttpClientConfig config) {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = buildHttpClient(fileServer);
         HttpPost postRequest = new HttpPost(fileServer);
         if (config == null) {
             config = new HttpClientConfig();
         }
+        postRequest.setConfig(config.buildRequestConfig());
         Map<String, String> header = config.getHeader();
+        String fileFlag = param.get("fileFlag");
+        String fileName = param.get("fileName");
+        param.remove("fileFlag");
+        param.remove("fileName");
         if (MapUtils.isNotEmpty(header)) {
             for (String key : header.keySet()) {
                 postRequest.addHeader(key, header.get(key));
             }
         }
+        postRequest.setHeader("Content-Type", "multipart/form-data");
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-
         builder.setCharset(StandardCharsets.UTF_8);
-        FileBody fileBody = new FileBody(file);
-        builder.addPart(file.getName(), fileBody);
-        if (param != null) {
+        builder.addBinaryBody(StringUtils.isNotBlank(fileFlag) ? fileFlag : "file", file, ContentType.APPLICATION_OCTET_STREAM, StringUtils.isNotBlank(fileName) ? fileName : file.getName());
+        if (MapUtils.isNotEmpty(param)) {
             for (Map.Entry<String, String> entry : param.entrySet()) {
-
                 StringBody stringBody = new StringBody(entry.getValue(), ContentType.TEXT_PLAIN.withCharset("utf-8"));
                 builder.addPart(entry.getKey(), stringBody);
             }
@@ -253,11 +253,13 @@ public class HttpClientUtil {
     }
 
     public static String postFile(String fileServer, byte[] bytes, String fileName, Map<String, String> param, HttpClientConfig config) {
-        CloseableHttpClient httpClient = HttpClients.createDefault();
+        CloseableHttpClient httpClient = buildHttpClient(fileServer);
+
         HttpPost postRequest = new HttpPost(fileServer);
         if (config == null) {
             config = new HttpClientConfig();
         }
+        postRequest.setConfig(config.buildRequestConfig());
         Map<String, String> header = config.getHeader();
         if (MapUtils.isNotEmpty(header)) {
             for (String key : header.keySet()) {
@@ -265,15 +267,12 @@ public class HttpClientUtil {
             }
         }
         MultipartEntityBuilder builder = MultipartEntityBuilder.create();
-        builder.setMode(HttpMultipartMode.BROWSER_COMPATIBLE);
-
         builder.setCharset(StandardCharsets.UTF_8);
-        builder.addBinaryBody(fileName, bytes);
+        builder.addBinaryBody("image", bytes, ContentType.DEFAULT_BINARY, fileName);
 
         if (param != null) {
             for (Map.Entry<String, String> entry : param.entrySet()) {
-                StringBody stringBody = new StringBody(entry.getValue(), ContentType.TEXT_PLAIN.withCharset("utf-8"));
-                builder.addPart(entry.getKey(), stringBody);
+                builder.addTextBody(entry.getKey(), entry.getValue());
             }
         }
         try {
