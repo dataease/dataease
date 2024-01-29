@@ -11,9 +11,11 @@ import com.fasterxml.jackson.databind.ObjectMapper;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import com.google.gson.JsonObject;
+import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.plugins.common.dto.datasource.TableDesc;
 import io.dataease.plugins.common.dto.datasource.TableField;
+import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.entity.Status;
 import io.dataease.plugins.datasource.provider.Provider;
@@ -245,9 +247,9 @@ public class ApiProvider extends Provider {
                 rootPath = "$[*]";
                 JsonNode jsonArray = null;
                 try {
-                    jsonArray = new ObjectMapper().readTree(response);
+                    jsonArray = CommonBeanFactory.getBean(ObjectMapper.class).readTree(response);
                 } catch (Exception e) {
-                    e.printStackTrace();
+                    DataEaseException.throwException(e.getMessage());
                 }
                 for (Object o : jsonArray) {
                     handleStr(apiDefinition, o.toString(), fields, rootPath);
