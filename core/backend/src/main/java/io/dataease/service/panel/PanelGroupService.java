@@ -50,6 +50,7 @@ import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
@@ -142,6 +143,9 @@ public class PanelGroupService {
 
     @Resource
     private DatasourceMapper datasourceMapper;
+
+    @Value("${export.views.limit:100000}")
+    private Long limit;
 
     public List<PanelGroupDTO> tree(PanelGroupRequest panelGroupRequest) {
         String userId = String.valueOf(AuthUtils.getUser().getUserId());
@@ -1162,8 +1166,8 @@ public class PanelGroupService {
             try {
                 List<String> excelHeaderKeys = request.getExcelHeaderKeys();
                 ChartExtRequest componentFilterInfo = request.getComponentFilterInfo();
-                componentFilterInfo.setGoPage(1l);
-                componentFilterInfo.setPageSize(1000000l);
+                componentFilterInfo.setGoPage(1L);
+                componentFilterInfo.setPageSize(limit);
                 componentFilterInfo.setExcelExportFlag(true);
                 componentFilterInfo.setProxy(request.getProxy());
                 componentFilterInfo.setUser(request.getUserId());
