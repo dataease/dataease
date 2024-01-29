@@ -141,6 +141,7 @@
           <el-checkbox  v-model="sheetObj.setKey">{{ $t('dataset.set_key') }}</el-checkbox>
           <el-select
               size="small"
+              style="margin-left: 12px;width: 315px"
               v-model="sheetObj.keys"
               v-if="mode === '1'"
               multiple

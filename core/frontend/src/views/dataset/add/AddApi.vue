@@ -163,6 +163,7 @@
 
           <el-select
               size="small"
+              style="margin-left: 12px;width: 315px"
               v-model="activeTable.keys"
               v-if="engineMode !== 'simple'"
               multiple

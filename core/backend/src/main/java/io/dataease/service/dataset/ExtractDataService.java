@@ -1158,14 +1158,13 @@ public class ExtractDataService {
         for (ExcelSheetData excelSheetData : excelSheetDataList) {
             StepMeta fromStep = null;
             String suffix = excelSheetData.getPath().substring(excelSheetDataList.get(0).getPath().lastIndexOf(".") + 1);
-
+            Integer fileInputFields = isSetKey ? datasetTableFields.size() : datasetTableFields.size() - 1;
             if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                 CsvInputMeta csvInputMeta = new CsvInputMeta();
                 csvInputMeta.setFilename(excelSheetData.getPath());
                 csvInputMeta.setHeaderPresent(true);
                 csvInputMeta.setBufferSize("10000");
                 csvInputMeta.setDelimiter(",");
-                Integer fileInputFields = isSetKey ? datasetTableFields.size() : datasetTableFields.size() - 1;
                 TextFileInputField[] fields = new TextFileInputField[fileInputFields];
 
                 for (int i = 0; i < datasetTableFields.size(); i++) {
@@ -1209,8 +1208,11 @@ public class ExtractDataService {
                 excelInputMeta.setFileRequired(filesRequired.toArray(new String[filesRequired.size()]));
                 excelInputMeta.setStartsWithHeader(true);
                 excelInputMeta.setIgnoreEmptyRows(true);
-                ExcelInputField[] fields = new ExcelInputField[datasetTableFields.size()];
+                ExcelInputField[] fields = new ExcelInputField[fileInputFields];
                 for (int i = 0; i < datasetTableFields.size(); i++) {
+                    if(datasetTableFields.get(i).getDataeaseName().equalsIgnoreCase("dataease_uuid")){
+                        continue;
+                    }
                     ExcelInputField field = new ExcelInputField();
                     field.setName(datasetTableFields.get(i).getDataeaseName());
                     if (datasetTableFields.get(i).getDeExtractType() == 1) {
@@ -1295,11 +1297,13 @@ public class ExtractDataService {
         String excelCompletion = "";
 
         for (DatasetTableField datasetTableField : datasetTableFields) {
+            if(isSetKey && datasetTableField.getDataeaseName().equals("dataease_uuid")){
+                continue;
+            }
             if (datasetTableField.getDeExtractType().equals(DeTypeConstants.DE_BINARY) || datasetTableField.getType().equalsIgnoreCase("blob")) {
                 handleBinaryTypeCode.append("\n").append(handleBinaryType.replace("FIELD", datasetTableField.getDataeaseName()));
             }
         }
-
         UserDefinedJavaClassMeta userDefinedJavaClassMeta = new UserDefinedJavaClassMeta();
         List<UserDefinedJavaClassMeta.FieldInfo> fields = new ArrayList<>();
         if (!isSetKey) {
