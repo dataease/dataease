@@ -45,6 +45,7 @@ const props = defineProps({
   }
 })
 const selectValue = ref<[Date, Date]>([new Date(), new Date()])
+const rendering = ref(true)
 
 const { config } = toRefs(props)
 
@@ -80,7 +81,11 @@ const timeConfig = computed(() => {
 watch(
   () => timeConfig.value,
   () => {
-    init()
+    rendering.value = false
+    nextTick(() => {
+      init()
+      rendering.value = true
+    })
   },
   {
     deep: true
@@ -105,8 +110,6 @@ watch(
     })
   }
 )
-
-const rendering = ref(true)
 
 const init = () => {
   const {
