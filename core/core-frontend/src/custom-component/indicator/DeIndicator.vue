@@ -90,7 +90,11 @@ const thresholdColor = computed(() => {
     return color
   }
   const value = result.value
-  if (view.value.senior && view.value.senior.threshold?.labelThreshold?.length > 0) {
+  if (
+    view.value.senior &&
+    view.value.senior.threshold?.enable &&
+    view.value.senior.threshold?.labelThreshold?.length > 0
+  ) {
     const senior = view.value.senior
     for (let i = 0; i < senior.threshold.labelThreshold.length; i++) {
       let flag = false
