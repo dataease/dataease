@@ -136,9 +136,11 @@ onUnmounted(() => {
         <Icon name="dv-max"></Icon
       ></el-icon>
       <el-divider direction="vertical" class="custom-divider" />
-      <el-icon @click="reposition" class="hover-icon-custom" style="margin-right: 12px">
-        <Icon name="dv-reposition"></Icon
-      ></el-icon>
+      <el-tooltip effect="ndark" content="定位到中心点" placement="top">
+        <el-icon @click="reposition" class="hover-icon-custom" style="margin-right: 12px">
+          <Icon name="dv-reposition"></Icon
+        ></el-icon>
+      </el-tooltip>
     </div>
   </el-row>
 </template>
