@@ -174,7 +174,13 @@ public class CalciteProvider {
             }
             list = getDataResult(resultSet);
         } catch (Exception | AssertionError e) {
-            DEException.throwException(Translator.get("i18n_fetch_error") + e.getMessage());
+            String msg;
+            if (e.getCause() != null && e.getCause().getCause() != null) {
+                msg = e.getMessage() + " [" + e.getCause().getCause().getMessage() + "]";
+            } else {
+                msg = e.getMessage();
+            }
+            DEException.throwException(Translator.get("i18n_fetch_error") + msg);
         } finally {
             try {
                 if (resultSet != null) resultSet.close();
