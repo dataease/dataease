@@ -186,6 +186,11 @@ public class DataSetTableService {
         } else {
             dt.getKeys().remove(datasetTableField.getOriginName());
         }
+        if(CollectionUtils.isNotEmpty(dt.getKeys())){
+            dt.setSetKey(true);
+        }else {
+            dt.setSetKey(false);
+        }
         DatasetTable record = new DatasetTable();
         record.setInfo(new Gson().toJson(dt));
         DatasetTableExample example = new DatasetTableExample();
