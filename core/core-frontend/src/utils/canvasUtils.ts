@@ -138,6 +138,41 @@ export function initCanvasData(dvId, busiFlag, callBack) {
   )
 }
 
+export function initCanvasDataMobile(dvId, busiFlag, callBack) {
+  initCanvasDataPrepare(
+    dvId,
+    busiFlag,
+    function ({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview }) {
+      const componentData = canvasDataResult.filter(ele => !!ele.inMobile)
+      canvasDataResult.forEach(ele => {
+        const { mx, my, mSizeX, mSizeY } = ele
+        ele.x = mx
+        ele.y = my
+        ele.sizeX = mSizeX
+        ele.sizeY = mSizeY
+      })
+      dvMainStore.setComponentData(componentData)
+      dvMainStore.setCanvasStyle(canvasStyleResult)
+      dvMainStore.updateCurDvInfo(dvInfo)
+      dvMainStore.setCanvasViewInfo(canvasViewInfoPreview)
+      // 刷新联动信息
+      getPanelAllLinkageInfo(dvInfo.id).then(rsp => {
+        dvMainStore.setNowPanelTrackInfo(rsp.data)
+      })
+      // 刷新跳转信息
+      queryVisualizationJumpInfo(dvInfo.id).then(rsp => {
+        dvMainStore.setNowPanelJumpInfo(rsp.data)
+      })
+      callBack({
+        canvasDataResult: componentData,
+        canvasStyleResult,
+        dvInfo,
+        canvasViewInfoPreview
+      })
+    }
+  )
+}
+
 export function checkIsBatchOptView(viewId) {
   return curBatchOptComponents.value.includes(viewId)
 }

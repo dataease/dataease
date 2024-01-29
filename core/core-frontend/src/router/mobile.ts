@@ -30,6 +30,13 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/mobile/panel/index.vue')
+  },
+  {
+    path: '/panel/mobile',
+    name: 'mobile',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/mobile/panel/Mobile.vue')
   }
 ]
 

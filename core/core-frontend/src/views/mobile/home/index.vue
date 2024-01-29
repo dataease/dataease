@@ -3,6 +3,7 @@ import { ref, computed, onMounted, reactive } from 'vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { shortcutOption } from '@/views/workbranch/ShortcutOption'
 import { XpackComponent } from '@/components/plugin'
+import { useRouter } from 'vue-router'
 import VanTabs from 'vant/es/tabs'
 import VanTab from 'vant/es/tab'
 import VanCell from 'vant/es/cell'
@@ -13,6 +14,8 @@ import 'vant/es/tab/style'
 import 'vant/es/tabs/style'
 import 'vant/es/cell/style'
 import 'vant/es/cell-group/style'
+
+const router = useRouter()
 
 const activeTab = ref('recent')
 const state = reactive({
@@ -80,6 +83,15 @@ onMounted(() => {
     })
 })
 
+const handleCellClick = ele => {
+  router.push({
+    path: '/panel/mobile',
+    query: {
+      dvId: ele.id
+    }
+  })
+}
+
 const formatterTime = val => {
   return new Date(val).toLocaleString()
 }
@@ -100,6 +112,7 @@ const formatterTime = val => {
     </van-sticky>
     <van-cell-group>
       <van-cell
+        @click="handleCellClick(ele)"
         v-for="ele in state.tableData"
         :key="ele.id"
         size="large"

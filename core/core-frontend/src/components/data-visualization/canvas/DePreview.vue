@@ -13,7 +13,7 @@ import { isMainCanvas } from '@/utils/canvasUtils'
 import { activeWatermark } from '@/components/watermark/watermark'
 import { personInfoApi } from '@/api/user'
 const dvMainStore = dvMainStoreWithOut()
-const { pcMatrixCount, curComponent } = storeToRefs(dvMainStore)
+const { pcMatrixCount, curComponent, mobileInPc } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   canvasStyleData: {
@@ -64,8 +64,7 @@ const {
   canvasViewInfo,
   showPosition,
   previewActive,
-  downloadStatus,
-  userId
+  downloadStatus
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
@@ -266,7 +265,7 @@ defineExpose({
       :style="getShapeItemShowStyle(item)"
       :show-position="showPosition"
       :search-count="searchCount"
-      :scale="scaleWidth"
+      :scale="mobileInPc ? scaleWidth * 3 : scaleWidth"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
