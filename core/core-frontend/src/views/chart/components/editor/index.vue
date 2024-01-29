@@ -637,6 +637,13 @@ const onTypeChange = (render, type) => {
         emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
       }
     }
+    if (
+      view.value.type === 'liquid' ||
+      view.value.type === 'gauge' ||
+      view.value.type === 'indicator'
+    ) {
+      removeItems('drillFields')
+    }
   }
   curComponent.value.innerType = type
   calcData(view.value, true)
