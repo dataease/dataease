@@ -1060,7 +1060,7 @@ public class ExtractDataService {
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.db2, db2Configuration, isSetKey);
                 break;
             case excel:
-                inputSteps = excelInputStep(datasetTable.getInfo(), datasetTableFields);
+                inputSteps = excelInputStep(datasetTable.getInfo(), datasetTableFields, isSetKey);
                 udjcStep = udjc(datasetTableFields, DatasourceTypes.excel, null, isSetKey);
             default:
                 break;
@@ -1147,7 +1147,7 @@ public class ExtractDataService {
         return inputSteps;
     }
 
-    private List<StepMeta> excelInputStep(String Info, List<DatasetTableField> datasetTableFields) {
+    private List<StepMeta> excelInputStep(String Info, List<DatasetTableField> datasetTableFields, boolean isSetKey) {
         List<StepMeta> inputSteps = new ArrayList<>();
         DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(Info, DataTableInfoDTO.class);
         List<ExcelSheetData> excelSheetDataList = dataTableInfoDTO.getExcelSheetDataList();
@@ -1165,8 +1165,13 @@ public class ExtractDataService {
                 csvInputMeta.setHeaderPresent(true);
                 csvInputMeta.setBufferSize("10000");
                 csvInputMeta.setDelimiter(",");
-                TextFileInputField[] fields = new TextFileInputField[datasetTableFields.size()];
+                Integer fileInputFields = isSetKey ? datasetTableFields.size() : datasetTableFields.size() - 1;
+                TextFileInputField[] fields = new TextFileInputField[fileInputFields];
+
                 for (int i = 0; i < datasetTableFields.size(); i++) {
+                    if(datasetTableFields.get(i).getDataeaseName().equalsIgnoreCase("dataease_uuid")){
+                        continue;
+                    }
                     TextFileInputField field = new TextFileInputField();
                     field.setName(datasetTableFields.get(i).getDataeaseName());
                     if (datasetTableFields.get(i).getDeExtractType() == 1) {
