@@ -82,10 +82,11 @@ watch(
   () => timeConfig.value,
   () => {
     rendering.value = false
-    nextTick(() => {
+1    setTimeout(() => {
       init()
+      console.log('config', config)
       rendering.value = true
-    })
+    }, 1000)
   },
   {
     deep: true
