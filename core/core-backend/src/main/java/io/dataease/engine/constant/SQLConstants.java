@@ -71,7 +71,7 @@ public class SQLConstants {
 
     public static final String DEFAULT_DATE_FORMAT = "yyyy-MM-dd HH:mm:ss";
 
-    public static final String DEFAULT_INT_FORMAT = "DECIMAL(20,0)";
+    public static final String DEFAULT_INT_FORMAT = "DECIMAL(18,0)";
 
     public static final String DEFAULT_FLOAT_FORMAT = "DECIMAL(27,8)";
 
