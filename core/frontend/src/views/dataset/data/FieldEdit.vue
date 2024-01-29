@@ -228,7 +228,7 @@
           <el-table-column
               property="key"
               :label="$t('dataset.change_to_key')"
-              v-if=""
+              v-if="table.mode === 1"
           >
             <template slot-scope="scope">
               <el-select v-model="scope.row.key" @change="saveKey(scope.row)" >
@@ -583,6 +583,7 @@
           <el-table-column
               property="key"
               :label="$t('dataset.change_to_key')"
+              v-if="table.mode === 1"
           >
             <template slot-scope="scope">
               <el-select v-model="scope.row.key" @change="saveKey(scope.row)" >

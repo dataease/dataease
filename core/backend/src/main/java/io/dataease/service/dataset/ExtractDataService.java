@@ -448,6 +448,8 @@ public class ExtractDataService {
         } else {
             DatasetTableField datasetTableField = new DatasetTableField();
             datasetTableField.setDeExtractType(0);
+            datasetTableField.setType("String");
+            datasetTableField.setDeType(0);
             datasetTableField.setDataeaseName("dataease_uuid");
             datasetTableField.setOriginName("dataease_uuid");
             datasetTableField.setSize(0);
@@ -1302,7 +1304,7 @@ public class ExtractDataService {
         userDefinedJavaClassMeta.setFieldInfo(fields);
         List<UserDefinedJavaClassDef> definitions = new ArrayList<>();
         String tmp_code = code.replace("handleWraps", handleWraps).replace("handleBinaryType", handleBinaryTypeCode.toString());
-        if (!isSetKey) {
+        if (isSetKey) {
             tmp_code = tmp_code.replace("handleDataease_uuid", "");
         } else {
             tmp_code = tmp_code.replace("handleDataease_uuid", handleDataease_uuid);
