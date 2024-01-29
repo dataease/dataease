@@ -159,25 +159,6 @@
           >
             {{ $t('deDataset.already_exists') }}
           </div>
-          <el-checkbox v-if="engineMode !== 'simple'" v-model="activeTable.setKey">{{ $t('dataset.set_key') }}</el-checkbox>
-
-          <el-select
-              size="small"
-              style="margin-left: 12px;width: 315px"
-              v-model="activeTable.keys"
-              v-if="engineMode !== 'simple'"
-              multiple
-              filterable
-              :disabled="!activeTable.setKey"
-              :placeholder="$t('dataset.selecet_key')"
-          >
-            <el-option
-                v-for="field in fields"
-                :key="field.fieldName"
-                :label="field.fieldName"
-                :value="field.fieldName"
-            />
-          </el-select>
         </div>
         <div
           v-loading="tableLoading"
