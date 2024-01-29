@@ -1113,6 +1113,7 @@ export default {
     asc: 'Ascending Order',
     desc: 'Descending Order',
     sort: 'Sort',
+    default: 'Default',
     filter: 'Filter',
     is_set: 'Is Set',
     none: 'None',

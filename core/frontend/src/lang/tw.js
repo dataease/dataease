@@ -1113,6 +1113,7 @@ export default {
     asc: '升序',
     desc: '降序',
     sort: '排序',
+    default: '默認',
     filter: '過濾',
     is_set: '已設定',
     none: '無',
