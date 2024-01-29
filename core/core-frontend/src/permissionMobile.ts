@@ -14,6 +14,7 @@ const { start, done } = useNProgress()
 const interactiveStore = interactiveStoreWithOut()
 
 const { loadStart, loadDone } = usePageLoading()
+const whiteList = ['/login'] // 不重定向白名单
 
 router.beforeEach(async (to, _, next) => {
   start()
@@ -34,7 +35,11 @@ router.beforeEach(async (to, _, next) => {
       next()
     }
   } else {
-    next('/login') // 否则全部重定向到登录页
+    if (whiteList.includes(to.path)) {
+      next()
+    } else {
+      next('/login') // 否则全部重定向到登录页
+    }
   }
 })
 

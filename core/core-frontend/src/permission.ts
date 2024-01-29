@@ -7,6 +7,7 @@ import { usePermissionStoreWithOut, pathValid, getFirstAuthMenu } from '@/store/
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getRoleRouters } from '@/api/common'
 import { useCache } from '@/hooks/web/useCache'
+import { isMobile } from '@/utils/utils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
@@ -23,6 +24,12 @@ const whiteList = ['/login', '/de-link'] // 不重定向白名单
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
+
+  if (isMobile()) {
+    done()
+    loadDone()
+    window.location.href = window.origin + '/mobile.html#/index'
+  }
   let isDesktop = wsCache.get('app.desktop')
   if (isDesktop === null) {
     await appStore.setAppModel()

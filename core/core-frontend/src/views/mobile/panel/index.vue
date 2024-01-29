@@ -3,9 +3,9 @@ import { onBeforeMount, ref, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-const dvMainStore = dvMainStoreWithOut()
 import DePreviewMobile from './MobileInPc.vue'
 const panelInit = ref(false)
+const dvMainStore = dvMainStoreWithOut()
 
 const checkItemPosition = component => {
   component.x = 1
