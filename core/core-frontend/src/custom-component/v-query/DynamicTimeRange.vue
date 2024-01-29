@@ -82,7 +82,7 @@ watch(
   () => timeConfig.value,
   () => {
     rendering.value = false
-1    setTimeout(() => {
+    setTimeout(() => {
       init()
       console.log('config', config)
       rendering.value = true
