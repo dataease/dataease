@@ -23,7 +23,7 @@ interface SelectConfig {
   timeNum: number
   relativeToCurrentType: string
   around: string
-  arbitraryTime: string
+  arbitraryTime: Date
   timeGranularity: DatePickType
 }
 
