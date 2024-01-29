@@ -1112,6 +1112,7 @@ export default {
     asc: '升序',
     desc: '降序',
     sort: '排序',
+    default: '默认',
     filter: '过滤',
     is_set: '已设置',
     none: '无',
