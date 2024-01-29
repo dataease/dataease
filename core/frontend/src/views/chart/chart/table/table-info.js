@@ -168,7 +168,15 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo,
     showSeriesNumber: customAttr.size.showIndex,
     style: getSize(chart),
     tooltip: {
-      renderTooltip: sheet => new SortTooltip(sheet, vueCom)
+      renderTooltip: sheet => new SortTooltip(sheet, vueCom),
+      getContainer: () => containerDom,
+      adjustPosition: ({ event }) => {
+        return getTooltipPosition(event)
+      },
+      style: {
+        position: 'absolute',
+        padding: '4px 2px'
+      }
     },
     headerActionIcons: [
       {
@@ -397,7 +405,15 @@ export function baseTableNormal(s2, container, chart, action, tableData, vueCom)
     showSeriesNumber: customAttr.size.showIndex,
     style: getSize(chart),
     tooltip: {
-      renderTooltip: sheet => new SortTooltip(sheet, vueCom)
+      renderTooltip: sheet => new SortTooltip(sheet, vueCom),
+      getContainer: () => containerDom,
+      adjustPosition: ({ event }) => {
+        return getTooltipPosition(event)
+      },
+      style: {
+        position: 'absolute',
+        padding: '4px 2px'
+      }
     },
     headerActionIcons: [
       {
@@ -669,7 +685,17 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
     height: containerDom.offsetHeight,
     style: getSize(chart),
     totals: totalCfg,
-    conditions: getConditions(chart)
+    conditions: getConditions(chart),
+    tooltip: {
+      getContainer: () => containerDom,
+      adjustPosition: ({ event }) => {
+        return getTooltipPosition(event)
+      },
+      style: {
+        position: 'absolute',
+        padding: '4px 2px'
+      }
+    },
   }
 
   // 开始渲染
@@ -953,17 +979,27 @@ function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) 
 function showTooltipValue(s2Instance, event, meta) {
   const cell = s2Instance.getCell(event.target)
   const valueField = cell.getMeta().valueField
-  const value = cell.getMeta().data[valueField]
+  const cellMeta = cell.getMeta()
+  if (!cellMeta.data) {
+    return
+  }
+  const value = cellMeta.data[valueField]
   const metaObj = find(meta, m =>
     m.field === valueField
   )
-  const content = metaObj.formatter(value)
+  event.s2Instance = s2Instance
+  let content = value?.toString()
+  if (metaObj) {
+    content = metaObj.formatter(value)
+  }
   s2Instance.showTooltip({
     position: {
       x: event.clientX,
       y: event.clientY
     },
-    content
+    content,
+    meta: cellMeta,
+    event
   })
 }
 
@@ -974,12 +1010,15 @@ function showTooltip(s2Instance, event, fieldMap) {
   if (fieldMap?.[content]) {
     content = fieldMap?.[content]
   }
+  event.s2Instance = s2Instance
   s2Instance.showTooltip({
     position: {
       x: event.clientX,
       y: event.clientY
     },
-    content
+    content,
+    meta,
+    event
   })
 }
 
@@ -1028,4 +1067,31 @@ function customCalcFunc(query, data, totalCfgMap) {
       }, 0)
     }
   }
+}
+
+function getTooltipPosition(event) {
+  const s2Instance = event.s2Instance
+  const { x, y } = event
+  const result = { x: x + 15, y: y + 10 }
+  if (!s2Instance) {
+    return result
+  }
+  const { height, width} = s2Instance.getCanvasElement().getBoundingClientRect()
+  const { offsetHeight, offsetWidth } = s2Instance.tooltip.getContainer()
+  if (offsetWidth > width) {
+    result.x = 0
+  }
+  if (offsetHeight > height) {
+    result.y = 0
+  }
+  if (!(result.x || result.y)) {
+    return result
+  }
+  if (result.x && result.x + offsetWidth > width) {
+    result.x -= (result.x + offsetWidth - width)
+  }
+  if (result.y && result.y + offsetHeight > height) {
+    result.y -= (offsetHeight + 15)
+  }
+  return result
 }
