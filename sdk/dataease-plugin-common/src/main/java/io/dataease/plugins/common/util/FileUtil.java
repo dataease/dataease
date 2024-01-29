@@ -2,10 +2,7 @@ package io.dataease.plugins.common.util;
 
 import io.dataease.plugins.common.exception.DataEaseException;
 
-import java.io.ByteArrayOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.IOException;
+import java.io.*;
 import java.nio.file.Files;
 import java.nio.file.StandardCopyOption;
 import java.util.Arrays;
@@ -35,6 +32,25 @@ public class FileUtil {
         return bytes;
     }
 
+    public static void writeBytes(File file, byte[] bytes) {
+        FileOutputStream fos = null;
+        try {
+            fos = new FileOutputStream(file);
+            fos.write(bytes);
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        } finally {
+            if (fos != null) {
+                try {
+                    fos.close();
+                } catch (IOException e) {
+                    throw new RuntimeException(e);
+                }
+            }
+        }
+
+    }
+
     public static String getSuffix(String fileName) {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
@@ -54,7 +70,7 @@ public class FileUtil {
         return new File(path).exists();
     }
 
-    public static List<String> listFileNames(String dirPath){
+    public static List<String> listFileNames(String dirPath) {
         File file = new File(dirPath);
         if (!file.exists()) return null;
         File[] files = file.listFiles();

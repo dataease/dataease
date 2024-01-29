@@ -67,7 +67,7 @@ public class CasServer {
                 sysUserEntity = authUserService.getCasUserByName(name);
             }
             if (null == sysUserEntity) {
-                String s = RandomStringUtils.random(6);
+                String s = RandomStringUtils.randomAlphanumeric(6);
                 String email = s + "@xxx.com";
                 sysUserService.validateCasUser(name);
                 sysUserService.saveCASUser(name, email);
