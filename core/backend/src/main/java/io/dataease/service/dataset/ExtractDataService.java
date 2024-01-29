@@ -448,6 +448,8 @@ public class ExtractDataService {
         } else {
             DatasetTableField datasetTableField = new DatasetTableField();
             datasetTableField.setDeExtractType(0);
+            datasetTableField.setType("String");
+            datasetTableField.setDeType(0);
             datasetTableField.setDataeaseName("dataease_uuid");
             datasetTableField.setOriginName("dataease_uuid");
             datasetTableField.setSize(0);
