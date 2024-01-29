@@ -1620,7 +1620,7 @@ public class EsQueryProvider extends QueryProvider {
                 "{\"dateformat\": \"yyyy/MMdd\"},\n" +
                 "{\"dateformat\": \"yyyy-MM-dd\"},\n" +
                 "{\"dateformat\": \"yyyyMMdd HH:mm:ss\"},\n" +
-                "{\"dateformat\": \"yyyy/MMdd HH:mm:ss\"},\n" +
+                "{\"dateformat\": \"yyyy/MM/dd HH:mm:ss\"},\n" +
                 "{\"dateformat\": \"yyyy-MM-dd HH:mm:ss\"}\n" +
                 "]", Dateformat.class);
     }
