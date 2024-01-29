@@ -65,6 +65,7 @@
 
           <el-select
               size="small"
+              style="margin-left: 12px;width: 315px"
               v-model="param.keys"
               v-if="mode === '1' && engineMode !== 'simple'"
               multiple

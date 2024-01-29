@@ -70,6 +70,8 @@ public class MysqlQueryProvider extends QueryProvider {
             case "TIME":
             case "YEAR":
             case "DATETIME":
+            case "DATEV2":
+            case "DATETIMEV2":
             case "TIMESTAMP":
                 return 1;// 时间
             case "INT":
