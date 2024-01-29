@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toRefs, PropType, ref, onBeforeMount, watch, computed } from 'vue'
+import { toRefs, nextTick, PropType, ref, onBeforeMount, watch, computed } from 'vue'
 import { Calendar } from '@element-plus/icons-vue'
 import { type DatePickType } from 'element-plus-secondary'
 import { getCustomTime } from './time-format'
@@ -98,9 +98,15 @@ watch(
 watch(
   () => config.value.id,
   () => {
-    init()
+    rendering.value = false
+    nextTick(() => {
+      init()
+      rendering.value = true
+    })
   }
 )
+
+const rendering = ref(true)
 
 const init = () => {
   const {
@@ -155,6 +161,7 @@ const formatDate = computed(() => {
 <template>
   <el-date-picker
     disabled
+    v-if="rendering"
     v-model="selectValue"
     :type="config.timeGranularityMultiple"
     :prefix-icon="Calendar"
