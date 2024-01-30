@@ -503,8 +503,7 @@ public class ExtractDataService {
 
         Datasource engine = engineService.getDeEngine();
         DorisConfiguration dorisConfiguration = new Gson().fromJson(engine.getConfiguration(), DorisConfiguration.class);
-        String columns = datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(","));
-
+        String columns = "dataease_uuid, " + datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.joining(","));
         String dataFile = null;
         String script = null;
         String streamLoadScript = "";
