@@ -164,6 +164,7 @@
       <user-view-dialog
         v-if="chartDetailsVisible"
         ref="userViewDialog-canvas-main"
+        :user-id="userId"
         :chart="showChartInfo"
         :chart-table="showChartTableInfo"
         :canvas-style-data="canvasStyleData"

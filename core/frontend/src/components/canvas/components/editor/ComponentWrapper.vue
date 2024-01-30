@@ -149,6 +149,10 @@ export default {
     isRelation: {
       type: Boolean,
       default: false
+    },
+    userId: {
+      type: String,
+      require: false
     }
   },
   data() {
