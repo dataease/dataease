@@ -28,13 +28,6 @@ export const routes: AppRouteRecordRaw[] = [
     component: () => import('@/views/login/index.vue')
   },
   {
-    path: '/home',
-    name: 'home',
-    hidden: true,
-    meta: {},
-    component: () => import('@/views/home/index.vue')
-  },
-  {
     path: '/dvCanvas',
     name: 'dvCanvas',
     hidden: true,
