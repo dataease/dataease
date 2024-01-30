@@ -101,6 +101,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
     }
 
+    @DeLog(id = "#p0", ot = LogOT.READ, stExp = "#p1")
     @Override
     @XpackInteract(value = "dataVisualizationServer", original = true)
     public DataVisualizationVO findById(Long dvId, String busiFlag) {
