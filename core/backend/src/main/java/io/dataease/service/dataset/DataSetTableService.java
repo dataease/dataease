@@ -1303,6 +1303,15 @@ public class DataSetTableService {
         List<TableField> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
         checkIsRepeat(fieldArray);
+
+        if(!realData && dataTableInfo.isSetKey()){
+            for (String key : dataTableInfo.getKeys()) {
+                if(!fields.stream().map(TableField::getFieldName).collect(Collectors.toList()).contains(key)){
+                    DataEaseException.throwException(Translator.get("i18n_dont_contian_key") + "" + key);
+                }
+            }
+        }
+
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
