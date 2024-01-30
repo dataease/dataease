@@ -841,6 +841,9 @@ const data = {
         customAttr: {}
       }
     },
+    initPanelViewDetailsInfo(state) {
+      state.panelViewDetailsInfo = {}
+    },
     initCanvas(state) {
       this.commit('initCanvasBase')
       state.isInEditor = true

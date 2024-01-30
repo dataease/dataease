@@ -649,14 +649,29 @@ export default {
       }
     },
     downLoadToAppPre() {
-      this.$refs.appExportForm.init({
-        appName: this.$store.state.panel.panelInfo.name,
-        icon: null,
-        version: '1.0',
-        creator: this.$store.getters.user.nickName,
-        required: '1.16.0',
-        description: null
+      const result = this.checkTemplate()
+      if (result && result.length > 0) {
+        this.$message({ message: this.$t('panel.app_export_tips', [result]), type: 'warning', showClose: true })
+      } else {
+        this.$refs.appExportForm.init({
+          appName: this.$store.state.panel.panelInfo.name,
+          icon: null,
+          version: '1.0',
+          creator: this.$store.getters.user.nickName,
+          required: '1.16.0',
+          description: null
+        })
+      }
+    },
+    checkTemplate() {
+      let templateViewNames = ','
+      Object.keys(this.panelViewDetailsInfo).forEach(key => {
+        const viewInfo = JSON.parse(this.panelViewDetailsInfo[key])
+        if (viewInfo.dataFrom === 'template') {
+          templateViewNames = templateViewNames + viewInfo.title + ','
+        }
       })
+      return templateViewNames.slice(1)
     },
     downLoadToApp(appAttachInfo) {
       this.dataLoading = true
