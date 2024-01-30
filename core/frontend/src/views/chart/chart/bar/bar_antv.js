@@ -271,7 +271,6 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
   const label = getLabel(chart)
   if (label && !ifAggregate) {
     label.layout = [
-      { type: 'interval-adjust-position' },
       { type: 'interval-hide-overlap' },
       { type: 'limit-in-plot', cfg: { action: 'hide' }}
     ]
