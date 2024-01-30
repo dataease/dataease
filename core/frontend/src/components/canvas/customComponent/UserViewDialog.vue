@@ -31,39 +31,39 @@
             class="chart-class"
           />
           <chart-component
-            :ref="element.propValue.id"
             v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'echarts'"
+            :ref="element.propValue.id"
             :theme-style="element.commonBackground"
             class="chart-class"
             :chart="mapChart || chart"
           />
           <chart-component-g2
-            :ref="element.propValue.id"
             v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'"
+            :ref="element.propValue.id"
             class="chart-class show-in-dialog"
             :chart="chart"
           />
           <chart-component-s2
-            :ref="element.propValue.id"
             v-else-if="chart.type.includes('table') && renderComponent() === 'antv'"
+            :ref="element.propValue.id"
             class="chart-class"
             :chart="chart"
           />
           <label-normal
-            :ref="element.propValue.id"
             v-else-if="chart.type.includes('text')"
+            :ref="element.propValue.id"
             :chart="chart"
             class="table-class"
           />
           <label-normal-text
-            :ref="element.propValue.id"
             v-else-if="chart.type === 'label'"
+            :ref="element.propValue.id"
             :chart="chart"
             class="table-class"
           />
           <table-normal
-            :ref="element.propValue.id"
             v-else-if="chart.type.includes('table') && renderComponent() === 'echarts'"
+            :ref="element.propValue.id"
             :chart="chart"
             class="table-class"
           />
@@ -96,6 +96,8 @@ import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import html2canvas from 'html2canvasde'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { deepCopy, exportExcelDownload, exportImg, imgUrlTrans } from '@/components/canvas/utils/utils'
+import { activeWatermark } from '@/components/canvas/tools/watermark'
+import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 
 export default {
   name: 'UserViewDialog',
@@ -122,6 +124,10 @@ export default {
     openType: {
       type: String,
       default: 'details'
+    },
+    userId: {
+      type: String,
+      require: false
     }
 
   },
@@ -258,8 +264,22 @@ export default {
     this.element = deepCopy(this.curComponent)
   },
   mounted() {
+    this.initWatermark()
   },
   methods: {
+    initWatermark(waterDomId = 'chartCanvas') {
+      if (this.panelInfo.watermarkInfo) {
+        if (this.userInfo) {
+          activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, 'canvas-main', this.panelInfo.watermarkOpen, 'de-watermark-view')
+        } else {
+          const method = this.userId ? proxyUserLoginInfo : userLoginInfo
+          method().then(res => {
+            this.userInfo = res.data
+            activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, 'canvas-main', this.panelInfo.watermarkOpen, 'de-watermark-view')
+          })
+        }
+      }
+    },
     exportExcel(callBack) {
       const _this = this
       if (this.isOnlyDetails) {
@@ -282,6 +302,7 @@ export default {
         this.exporting = true
         this.resizeChart()
         setTimeout(() => {
+          this.initWatermark()
           exportImg(this.chart.name, (params) => {
             this.exporting = false
             this.resizeChart()

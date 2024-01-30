@@ -206,6 +206,7 @@
         :chart-table="showChartTableInfo"
         :canvas-style-data="canvasStyleData"
         :open-type="showChartInfoType"
+        :user-id="userId"
       />
     </el-dialog>
 
@@ -342,6 +343,10 @@ export default {
       type: String,
       require: false,
       default: 'preview'
+    },
+    userId: {
+      type: String,
+      require: false
     }
   },
   data() {
@@ -746,7 +751,7 @@ export default {
     },
     exportViewImg() {
       this.imageDownloading = true
-      this.$refs['userViewDialog'].exportViewImg(this.pixel,() => {
+      this.$refs['userViewDialog'].exportViewImg(this.pixel, () => {
         this.imageDownloading = false
       })
     },
