@@ -2055,6 +2055,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    app_export_tips: '当前仪表板中[{0}]属于模版视图，无法导出，请先设置数据集！',
     required_tips: '必填项不能为空！',
     filter_no_select: '过滤组件无需选择',
     first_item: '首项',

@@ -85,6 +85,7 @@ export function panelInit(componentData, componentStyle) {
 }
 
 export function panelDataPrepare(componentData, componentStyle, callback) {
+  store.commit('initPanelViewDetailsInfo')
   // style初始化
   componentStyle.autoSizeAdaptor = (componentStyle.autoSizeAdaptor === undefined ? true : componentStyle.autoSizeAdaptor)
   componentStyle.refreshTime = (componentStyle.refreshTime || 5)

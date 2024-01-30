@@ -2060,6 +2060,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    app_export_tips: 'In the current dashboard, [{0}] belongs to a template view and cannot be exported. Please set up the dataset first!',
     required_tips: 'Cannot be empty!',
     filter_no_select: 'Filter components do not need to be selected',
     first_item: 'First item',

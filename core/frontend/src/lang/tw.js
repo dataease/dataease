@@ -2052,6 +2052,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    app_export_tips: '當前儀表板中[{0}]屬於模板視圖，無法導出，請先設置數據集！',
     required_tips: '必填項不能爲空！',
     filter_no_select: '過濾組件無需選擇',
     first_item: '首項',
