@@ -18,13 +18,26 @@ case $input in
       ;;
 esac
 
+echo "停止 DataEase 服务"
+service dataease stop
+
+echo "移除 DataEase 服务"
+if which chkconfig;then
+   chkconfig --del dataease
+fi
+
+if [ -f /etc/systemd/system/dataease.service ];then
+   systemctl disable dataease
+   rm -f /etc/systemd/system/dataease.service
+   systemctl daemon-reload
+elif [[ -f /etc/init.d/dataease ]];then
+   rm -f /etc/init.d/dataease
+fi
+
 if [ -f /usr/bin/dectl ]; then
    # 获取已安装的 DataEase 的运行目录
    DE_BASE=$(grep "^DE_BASE=" /usr/bin/dectl | cut -d'=' -f2)
 fi
-
-echo "停止 DataEase 服务"
-dectl stop
 
 # 清理 DataEase 相关镜像
 if test ! -z "$(docker images -f dangling=true -q)"; then
