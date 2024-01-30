@@ -85,7 +85,7 @@ function getCustomTime(
     resultMonth = resultMonth % 12
   } else if (resultMonth < 0) {
     resultYear += parseInt(`${resultMonth / 12}`) - 1
-    resultMonth = month + (resultMonth % 12)
+    resultMonth = (resultMonth % 12) + 12
   } else if (resultMonth === 0) {
     resultYear += parseInt(`${resultMonth / 12}`) - 1
     resultMonth = 12

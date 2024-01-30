@@ -45,8 +45,6 @@ const props = defineProps({
   }
 })
 const selectValue = ref<[Date, Date]>([new Date(), new Date()])
-const rendering = ref(true)
-
 const { config } = toRefs(props)
 
 const timeConfig = computed(() => {
@@ -81,11 +79,7 @@ const timeConfig = computed(() => {
 watch(
   () => timeConfig.value,
   () => {
-    rendering.value = false
-    nextTick(() => {
-      init()
-      rendering.value = true
-    })
+    init()
   },
   {
     deep: true
@@ -103,11 +97,7 @@ watch(
 watch(
   () => config.value.id,
   () => {
-    rendering.value = false
-    nextTick(() => {
-      init()
-      rendering.value = true
-    })
+    init()
   }
 )
 
@@ -164,7 +154,6 @@ const formatDate = computed(() => {
 <template>
   <el-date-picker
     disabled
-    v-if="rendering"
     v-model="selectValue"
     :type="config.timeGranularityMultiple"
     :prefix-icon="Calendar"
