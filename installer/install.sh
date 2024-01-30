@@ -28,7 +28,7 @@ if [ -f /usr/bin/dectl ]; then
 fi
 
 set -a
-if [[ $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
+if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
    source $DE_BASE/dataease2.0/.env
    INSTALL_TYPE='upgrade'
 else
@@ -48,7 +48,7 @@ DE_RUN_BASE=$DE_BASE/dataease2.0
 conf_folder=${DE_RUN_BASE}/conf
 templates_folder=${DE_RUN_BASE}/templates
 
-if [[ $DE_RUN_BASE ]];then
+if [[ -d $DE_RUN_BASE ]];then
    for image in $(grep  "image: " $DE_RUN_BASE/docker*.yml | awk -F 'image:' '{print $2}'); do
       image_path=$(eval echo $image)
       image_name=$(echo $image_path | awk -F "[/]" '{print $3}')
@@ -122,7 +122,7 @@ else
       cp docker/bin/* /usr/bin/
       cp docker/service/docker.service /etc/systemd/system/
       chmod +x /usr/bin/docker*
-      chmod 754 /etc/systemd/system/docker.service
+      chmod 644 /etc/systemd/system/docker.service
       log "... 启动 docker"
       systemctl enable docker; systemctl daemon-reload; service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
    else
@@ -203,21 +203,17 @@ else
    cd -
 fi
 
-log "配置 dataease Service"
-cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/init.d/dataease
-chmod a+x /etc/init.d/dataease
 if which chkconfig;then
-   chkconfig --add dataease
+   chkconfig --del dataease
 fi
-
-if [ -f /etc/rc.d/rc.local ];then
-   dataeaseService=$(grep "service dataease start" /etc/rc.d/rc.local | wc -l)
-   if [ "$dataeaseService" -eq 0 ]; then
-      echo "sleep 10" >> /etc/rc.d/rc.local
-      echo "service dataease start" >> /etc/rc.d/rc.local
-   fi
-   chmod +x /etc/rc.d/rc.local
+if [[ -f /etc/init.d/dataease ]];then
+   rm -f /etc/init.d/dataease
 fi
+log "配置 dataease Service"
+cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/dataease.service
+log "配置开机自启动"
+systemctl enable dataease; systemctl daemon-reload 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
 if [[ $(grep "vm.max_map_count" /etc/sysctl.conf | wc -l) -eq 0 ]];then
    sysctl -w vm.max_map_count=2000000
@@ -251,8 +247,7 @@ if [[ $http_code == 200 ]];then
 fi
 
 log "启动服务"
-dectl start | tee -a ${CURRENT_DIR}/install.log
-dectl status 2>&1 | tee -a ${CURRENT_DIR}/install.log
+systemctl start dataease 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
 access_port=$DE_PORT
 if [[ $DE_INSTALL_MODE != "community" ]];then
