@@ -44,7 +44,7 @@ onMounted(() => {
     popper-class="toolbox-top-popover"
     placement="bottom-end"
     width="208"
-    trigger="click"
+    trigger="hover"
   >
     <top-doc-card
       :span="12"
