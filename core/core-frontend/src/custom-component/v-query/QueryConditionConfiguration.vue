@@ -688,6 +688,12 @@ const timeGranularityMultipleChange = (val: string) => {
   ) {
     curComponent.value.relativeToCurrentType = 'year'
   }
+  if (
+    ['yearrange', 'monthrange', 'datetimerange'].indexOf(val) <
+    ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentTypeRange)
+  ) {
+    curComponent.value.relativeToCurrentTypeRange = 'year'
+  }
 }
 const aroundList = [
   {
