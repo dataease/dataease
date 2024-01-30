@@ -1,7 +1,7 @@
 package io.dataease.provider.engine.doris;
 
 import com.google.gson.Gson;
-import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.commons.utils.TableUtils;

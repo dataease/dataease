@@ -20,7 +20,7 @@ import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetGroupDTO;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTaskDTO;
-import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.panel.PanelExport2App;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.PanelTemplateFileDTO;

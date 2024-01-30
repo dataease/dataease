@@ -1,6 +1,6 @@
 package io.dataease.commons.utils;
 
-import io.dataease.dto.dataset.union.UnionDTO;
+import io.dataease.plugins.common.dto.dataset.union.UnionDTO;
 import org.apache.commons.collections4.CollectionUtils;
 
 import java.util.List;

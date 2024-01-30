@@ -20,8 +20,8 @@ import io.dataease.plugins.datasource.entity.JdbcConfiguration;
 import io.dataease.plugins.datasource.entity.Status;
 import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.plugins.datasource.query.QueryProvider;
-import io.dataease.provider.ProviderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 

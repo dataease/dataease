@@ -1,4 +1,4 @@
-package io.dataease.dto.dataset;
+package io.dataease.plugins.common.dto.dataset;
 
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;

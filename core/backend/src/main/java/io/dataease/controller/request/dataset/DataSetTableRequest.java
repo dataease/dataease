@@ -1,6 +1,6 @@
 package io.dataease.controller.request.dataset;
 
-import io.dataease.dto.dataset.ExcelSheetData;
+import io.dataease.plugins.common.dto.dataset.ExcelSheetData;
 import io.dataease.plugins.common.base.domain.DatasetTable;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
