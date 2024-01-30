@@ -188,6 +188,7 @@ public class DatasourceServer implements DatasourceApi {
         return hasRepeat;
     }
 
+    @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)
     @Transactional
     public DatasourceDTO move(DatasourceDTO dataSourceDTO) {
         if (dataSourceDTO.getPid() == null) {
@@ -218,6 +219,7 @@ public class DatasourceServer implements DatasourceApi {
         return dataSourceDTO;
     }
 
+    @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASOURCE)
     @Transactional
     public DatasourceDTO createFolder(DatasourceDTO dataSourceDTO) {
         dataSourceDTO.setCreateTime(System.currentTimeMillis());
@@ -232,6 +234,7 @@ public class DatasourceServer implements DatasourceApi {
         return dataSourceDTO;
     }
 
+    @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, st = LogST.DATASOURCE)
     @Transactional
     @Override
     public DatasourceDTO save(DatasourceDTO dataSourceDTO) throws DEException {
@@ -311,6 +314,7 @@ public class DatasourceServer implements DatasourceApi {
         return dataSourceDTO;
     }
 
+    @DeLog(id = "#p0.id", ot = LogOT.MODIFY, st = LogST.DATASOURCE)
     @Transactional
     @Override
     public DatasourceDTO update(DatasourceDTO dataSourceDTO) throws DEException {
