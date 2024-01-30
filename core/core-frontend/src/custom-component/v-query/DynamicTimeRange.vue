@@ -149,6 +149,7 @@ const init = () => {
     'end-config'
   )
 
+  console.log('startTime, endTime', startTime, endTime)
   selectValue.value = [startTime, endTime]
 }
 
@@ -164,11 +165,22 @@ const formatDate = computed(() => {
 <template>
   <el-date-picker
     disabled
-    v-if="rendering"
+    v-if="rendering && config.timeGranularityMultiple !== 'yearrange'"
     v-model="selectValue"
     :type="config.timeGranularityMultiple"
     :prefix-icon="Calendar"
     :format="formatDate"
+    :range-separator="$t('cron.to')"
+    :start-placeholder="$t('datasource.start_time')"
+    :end-placeholder="$t('datasource.end_time')"
+  />
+  <el-date-picker
+    v-else
+    disabled
+    v-model="selectValue"
+    type="yearrange"
+    :prefix-icon="Calendar"
+    format="YYYY"
     :range-separator="$t('cron.to')"
     :start-placeholder="$t('datasource.start_time')"
     :end-placeholder="$t('datasource.end_time')"
