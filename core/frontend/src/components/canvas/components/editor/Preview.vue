@@ -508,6 +508,13 @@ export default {
           }
         })
       }
+    },
+    screenShotStatues: {
+      handler(newVal, oldVla) {
+        if (this.screenShotStatues) {
+          this.initWatermark('preview-temp-canvas-main')
+        }
+      }
     }
   },
   created() {
