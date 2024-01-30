@@ -1,8 +1,8 @@
-package io.dataease.provider;
+package io.dataease.plugins.datasource.provider;
 
-import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 
 import java.util.List;
 

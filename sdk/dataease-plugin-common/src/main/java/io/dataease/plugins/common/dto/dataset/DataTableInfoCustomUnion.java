@@ -1,4 +1,4 @@
-package io.dataease.dto.dataset;
+package io.dataease.plugins.common.dto.dataset;
 
 import lombok.Getter;
 import lombok.Setter;

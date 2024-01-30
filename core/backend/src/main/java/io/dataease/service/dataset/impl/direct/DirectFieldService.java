@@ -6,7 +6,7 @@ import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.commons.utils.TreeUtils;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
-import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.dataset.DeSortDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DatasetTable;
@@ -21,7 +21,7 @@ import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDT
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
-import io.dataease.provider.ProviderFactory;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;

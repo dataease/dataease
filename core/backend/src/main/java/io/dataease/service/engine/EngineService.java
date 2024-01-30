@@ -17,7 +17,7 @@ import io.dataease.plugins.common.base.domain.DeEngineExample;
 import io.dataease.plugins.common.base.mapper.DeEngineMapper;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.datasource.provider.Provider;
-import io.dataease.provider.ProviderFactory;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.service.datasource.DatasourceService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
