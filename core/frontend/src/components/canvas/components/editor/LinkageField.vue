@@ -184,10 +184,15 @@ export default {
     // 初始化映射关系 如果当前是相同的数据集且没有关联关系，则自动补充映射关系
     checkSameDataSet(this.curLinkageView.propValue.viewId, this.element.propValue.viewId).then(res => {
       const chartDetails = JSON.parse(this.panelViewDetailsInfo[this.curLinkageView.propValue.viewId])
-      const curCheckAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
+      let curCheckAllAxisStr = chartDetails.xaxis + chartDetails.xaxisExt + chartDetails.yaxis + chartDetails.yaxisExt
+      if (chartDetails.type === 'bar-time-range') {
+        curCheckAllAxisStr = chartDetails.xaxis + chartDetails.yaxis + chartDetails.yaxisExt
+      }
       const targetChartDetails = JSON.parse(this.panelViewDetailsInfo[this.element.propValue.viewId])
-      const targetCheckAllAxisStr = targetChartDetails.xaxis + targetChartDetails.xaxisExt + targetChartDetails.yaxis + targetChartDetails.yaxisExt
-
+      let targetCheckAllAxisStr = targetChartDetails.xaxis + targetChartDetails.xaxisExt + targetChartDetails.yaxis + targetChartDetails.yaxisExt
+      if (targetChartDetails.type === 'bar-time-range') {
+        targetCheckAllAxisStr = targetChartDetails.xaxis + targetChartDetails.yaxis + targetChartDetails.yaxisExt
+      }
       if (res.data === 'YES' && this.linkageInfo.linkageFields.length === 0) {
         this.sourceLinkageInfo.targetViewFields.forEach(item => {
           if (curCheckAllAxisStr.includes(item.id) && targetCheckAllAxisStr.includes(item.id)) {
