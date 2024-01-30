@@ -1053,13 +1053,13 @@ function customCalcFunc(query, data, totalCfgMap) {
       const result = minBy(data, n => {
         return n[query[EXTRA_FIELD]]
       })
-      return result[query[EXTRA_FIELD]]
+      return result?.[query[EXTRA_FIELD]]
     }
     case 'MAX': {
       const result = maxBy(data, n => {
         return n[query[EXTRA_FIELD]]
       })
-      return result[query[EXTRA_FIELD]]
+      return result?.[query[EXTRA_FIELD]]
     }
     default: {
       return data.reduce((p, n) => {
