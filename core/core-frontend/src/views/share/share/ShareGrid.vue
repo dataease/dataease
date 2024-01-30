@@ -16,7 +16,6 @@ const interactiveStore = interactiveStoreWithOut()
 
 const busiDataMap = computed(() => interactiveStore.getData)
 const panelKeyword = ref()
-const userAddPopper = ref(false)
 const activeCommand = ref('all_types')
 const state = reactive({
   tableData: [],
@@ -27,10 +26,6 @@ const state = reactive({
     { field: 'exp', label: '有效期', type: 'time' }
   ]
 })
-
-const handleVisibleChange = (val: boolean) => {
-  userAddPopper.value = val
-}
 
 const handleCommand = (command: string) => {
   activeCommand.value = command
@@ -126,38 +121,21 @@ watch(
 <template>
   <el-row v-if="props.activeName === 'share'">
     <el-col :span="12">
-      <el-dropdown
-        placement="bottom-start"
-        @visible-change="handleVisibleChange"
+      <el-select
         popper-class="menu-panel-select_popper"
-        @command="handleCommand"
-        trigger="click"
+        class="select-type-list"
+        v-model="activeCommand"
+        @change="handleCommand"
       >
-        <el-button secondary>
-          {{ t(`auth.${activeCommand}`) }}
-          <el-icon style="margin-left: 4px">
-            <arrow-up v-if="userAddPopper" />
-            <arrow-down v-else />
-          </el-icon>
-        </el-button>
-        <template #dropdown>
-          <el-dropdown-menu>
-            <el-dropdown-item
-              :class="activeCommand === ele && 'active'"
-              v-for="ele in state.curTypeList.filter(
-                busi => busi === 'all_types' || busiAuthList.includes(busi)
-              )"
-              :command="ele"
-              :key="ele"
-            >
-              {{ t(`auth.${ele}`) }}
-              <el-icon v-if="activeCommand === ele">
-                <Icon name="icon_done_outlined"></Icon>
-              </el-icon>
-            </el-dropdown-item>
-          </el-dropdown-menu>
-        </template>
-      </el-dropdown>
+        <el-option
+          v-for="ele in state.curTypeList.filter(
+            busi => busi === 'all_types' || busiAuthList.includes(busi)
+          )"
+          :key="ele"
+          :label="t(`auth.${ele}`)"
+          :value="ele"
+        />
+      </el-select>
     </el-col>
     <el-col class="search" :span="12">
       <el-input
@@ -229,6 +207,13 @@ watch(
 </template>
 
 <style lang="less" scoped>
+.select-type-list {
+  width: 104px;
+  :deep(.ed-input__wrapper) {
+    padding-left: 11px;
+    padding-right: 11px;
+  }
+}
 .search {
   text-align: right;
   .ed-input {
