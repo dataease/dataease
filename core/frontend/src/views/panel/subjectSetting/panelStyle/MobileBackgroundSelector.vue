@@ -107,6 +107,7 @@ import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { uploadFileResult } from '@/api/staticResource/staticResource'
 import bus from '@/utils/bus'
+import { MOBILE_SETTING } from '@/views/panel/panel'
 
 export default {
   name: 'MobileBackgroundSelector',
@@ -117,7 +118,7 @@ export default {
       dialogImageUrl: '',
       dialogVisible: false,
       uploadDisabled: false,
-      mobileSetting: null,
+      mobileSetting: deepCopy(MOBILE_SETTING),
       predefineColors: COLOR_PANEL
     }
   },
@@ -128,10 +129,14 @@ export default {
     // deep监听panel 如果改变 提交到 store
   },
   created() {
-    // 初始化赋值
-    this.mobileSetting = this.canvasStyleData.panel.mobileSetting
-    if (this.mobileSetting.imageUrl && typeof (this.mobileSetting.imageUrl) === 'string') {
-      this.fileList.push({ url: imgUrlTrans(this.mobileSetting.imageUrl) })
+    if (this.canvasStyleData.panel.mobileSetting) {
+      // 初始化赋值
+      this.mobileSetting = this.canvasStyleData.panel.mobileSetting
+      if (this.mobileSetting.imageUrl && typeof (this.mobileSetting.imageUrl) === 'string') {
+        this.fileList.push({ url: imgUrlTrans(this.mobileSetting.imageUrl) })
+      }
+    } else {
+      this.canvasStyleData.panel['mobileSetting'] = this.mobileSetting
     }
   },
   methods: {

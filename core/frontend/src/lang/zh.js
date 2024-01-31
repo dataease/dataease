@@ -381,6 +381,7 @@ export default {
     thumbnail: '缩略图',
     confirm_delete: '确认删除',
     delete_this_dashboard: '确认删除该仪表板吗?',
+    cancel_this_dashboard: '确认取消该默认仪表板吗?',
     delete_this_folder: '确认删除该目录吗?',
     confirm_stop: '确认停止',
     stop_success: '停止成功',
@@ -934,7 +935,8 @@ export default {
     edit_classification: '编辑分类',
     classification_name: '分类名称',
     by_event_details: '通过事件详情搜索',
-    password_input_error: '原始密码输入错误'
+    password_input_error: '原始密码输入错误',
+    log_live_time_error: '请填写1-4000整数'
   },
   chart: {
     empty_hide: '隐藏空值',
@@ -1110,6 +1112,7 @@ export default {
     asc: '升序',
     desc: '降序',
     sort: '排序',
+    default: '默认',
     filter: '过滤',
     is_set: '已设置',
     none: '无',
@@ -1285,6 +1288,7 @@ export default {
     select_map_range: '请选择地图范围',
     area: '地区',
     stack_item: '堆叠项',
+    aggregate: '聚合',
     placeholder_field: '拖动字段至此处',
     axis_label_rotate: '标签角度',
     chart_scatter_bubble: '气泡图',
@@ -1496,6 +1500,8 @@ export default {
     gauge_size_field_delete: '动态值中字段发生变更，请重新编辑',
     chart_group: '子类别',
     chart_bar_time: '区间范围',
+    chart_bar_time2: '时间区间范围',
+    chart_bar_time_tip: '仅针对时间区间生效',
     chart_bar_group: '分组柱状图',
     chart_bar_group_stack: '分组堆叠柱状图',
     field_dynamic: '动态值',
@@ -1863,7 +1869,11 @@ export default {
       tip6: '使用数据集对应数据库类型所支持的函数，语法同对应数据库',
       tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
       tip8: '非直连模式数据集，使用Doris数据库函数，可参考Doris官网'
-    }
+    },
+    set_key: '设置主键',
+    change_to_key: '设置为主键',
+    selecet_key: '选择主键',
+    no_set_key: '未设置主键'
   },
   driver: {
     driver: '驱动',
@@ -2046,6 +2056,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    app_export_tips: '当前仪表板中[{0}]属于模版视图，无法导出，请先设置数据集！',
     required_tips: '必填项不能为空！',
     filter_no_select: '过滤组件无需选择',
     first_item: '首项',
@@ -2079,7 +2090,7 @@ export default {
     component_color: '组件配色',
     chart_title: '图表标题',
     filter_component: '过滤组件',
-    enable_refresh_view: '开启刷新',
+    enable_refresh_view: '数据刷新',
     enable_view_loading: '视图加载提示',
     image_size_tips: '图片请不要大于15M',
     image_add_tips: '只能插入图片',
@@ -2331,6 +2342,7 @@ export default {
     switch_picture: '更换图片',
     select_field: '选择视图字段',
     remove_all_linkage: '清除所有联动',
+    back_to_top: '返回顶部',
     exit_un_march_linkage_field: '存在未匹配联动关系的字段',
     details: '详情',
     setting: '设置',

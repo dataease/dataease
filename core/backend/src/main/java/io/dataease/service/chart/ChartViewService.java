@@ -1,6 +1,5 @@
 package io.dataease.service.chart;
 
-import cn.hutool.core.lang.Assert;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
@@ -19,7 +18,6 @@ import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.chart.*;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
-import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.ext.ExtChartGroupMapper;
 import io.dataease.ext.ExtChartViewMapper;
 import io.dataease.ext.ExtPanelGroupExtendDataMapper;
@@ -36,6 +34,7 @@ import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
@@ -45,12 +44,12 @@ import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDT
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.PageInfo;
 import io.dataease.plugins.datasource.provider.Provider;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.entity.filter.PluginFilterTreeObj;
 import io.dataease.plugins.view.service.ViewPluginService;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
-import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.query.SQLUtils;
 import io.dataease.service.chart.util.ChartDataBuild;
 import io.dataease.service.dataset.*;
@@ -66,6 +65,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Type;
@@ -294,7 +294,7 @@ public class ChartViewService {
             if (ObjectUtils.isNotEmpty(datasetTable)) {
                 result.setDatasetMode(datasetTable.getMode());
                 Datasource datasource = datasourceService.get(datasetTable.getDataSourceId());
-                result.setDatasourceType(datasource != null ? datasource.getType() : null);
+                buildDsType(datasource, result);
             }
             return result;
         } catch (Exception e) {
@@ -322,7 +322,7 @@ public class ChartViewService {
             if (ObjectUtils.isNotEmpty(datasetTable)) {
                 view.setDatasetMode(datasetTable.getMode());
                 Datasource datasource = datasourceService.get(datasetTable.getDataSourceId());
-                view.setDatasourceType(datasource != null ? datasource.getType() : null);
+                buildDsType(datasource, view);
             }
             // 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
             if (CommonConstants.VIEW_RESULT_MODE.CUSTOM.equals(request.getResultMode())) {
@@ -639,8 +639,6 @@ public class ChartViewService {
         }
         Type tokenType = new TypeToken<List<ChartViewFieldDTO>>() {
         }.getType();
-//        Type filterTokenType = new TypeToken<List<ChartFieldCustomFilterDTO>>() {
-//        }.getType();
 
         List<ChartViewFieldDTO> viewFields = gson.fromJson(view.getViewFields(), tokenType);
         final Map<String, List<ChartViewFieldDTO>> extFieldsMap = new LinkedHashMap<>();
@@ -709,7 +707,6 @@ public class ChartViewService {
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList());
         dataeaseNames.add("*");
-//        fieldCustomFilter = fieldCustomFilter.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
         extStack = extStack.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
         extBubble = extBubble.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
         drill = drill.stream().filter(item -> chartViewFieldNameList.contains(item.getDataeaseName()) || (!desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName()))).collect(Collectors.toList());
@@ -717,9 +714,6 @@ public class ChartViewService {
         //行权限
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionsTreeService.getRowPermissionsTree(fields, table, chartExtRequest.getUser());
 
-        /*for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
-            ele.setField(dataSetTableFieldsService.get(ele.getId()));
-        }*/
         chartFilterTreeService.searchFieldAndSet(fieldCustomFilter);
 
         if (CollectionUtils.isEmpty(xAxis) && CollectionUtils.isEmpty(yAxis)) {
@@ -1043,17 +1037,6 @@ public class ChartViewService {
             assistFields = getAssistFields(dynamicAssistFields, yAxis, xAxis);
         }
 
-        // 处理过滤条件中的单引号
-        /*fieldCustomFilter = fieldCustomFilter.stream().peek(ele -> {
-            if (CollectionUtils.isNotEmpty(ele.getEnumCheckField())) {
-                List<String> collect = ele.getEnumCheckField().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
-                ele.setEnumCheckField(collect);
-            }
-            if (CollectionUtils.isNotEmpty(ele.getFilter())) {
-                List<ChartCustomFilterItemDTO> collect = ele.getFilter().stream().peek(f -> f.setValue(SQLUtils.transKeyword(f.getValue()))).collect(Collectors.toList());
-                ele.setFilter(collect);
-            }
-        }).collect(Collectors.toList());*/
         fieldCustomFilter = chartFilterTreeService.charReplace(fieldCustomFilter);
 
         extFilterList = extFilterList.stream().peek(ele -> {
@@ -1075,9 +1058,10 @@ public class ChartViewService {
                 });
                 xAxis.addAll(xAxisExtList);
             }
+            fieldMap.put("xAxis", xAxis);
+            fieldMap.put("xAxisExt", xAxisExt);
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
-            fieldMap.put("xAxis", xAxis);
             fieldMap.put("yAxis", yAxis);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
             String sql = pluginViewSql(pluginViewParam, view);
@@ -2364,6 +2348,26 @@ public class ChartViewService {
             // array -> tree
             FilterTreeObj tree = chartViewOldDataMergeService.transArr2Obj(fieldCustomFilter);
             view.setCustomFilter(gson.toJson(tree));
+        }
+    }
+
+    public void buildDsType(Datasource datasource, ChartViewDTO result) {
+        if (datasource != null) {
+            if (StringUtils.equalsIgnoreCase(datasource.getType(), "sqlServer")) {
+                if (datasource.getVersion() == null) {
+                    result.setDatasourceType(datasource.getType());
+                } else {
+                    if (Integer.parseInt(datasource.getVersion()) < 11) {
+                        result.setDatasourceType(datasource.getType() + "_all");
+                    } else {
+                        result.setDatasourceType(datasource.getType());
+                    }
+                }
+            } else {
+                result.setDatasourceType(datasource.getType());
+            }
+        } else {
+            result.setDatasourceType(null);
         }
     }
 }

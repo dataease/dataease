@@ -382,6 +382,7 @@ export default {
     thumbnail: '縮略圖',
     confirm_delete: '確認刪除',
     delete_this_dashboard: '確認删除該儀錶板嗎?',
+    cancel_this_dashboard: '確認取消該默认儀錶板嗎?',
     delete_this_folder: '確認删除該目錄嗎?',
     confirm_stop: '確認停止',
     stop_success: '停止成功',
@@ -839,6 +840,7 @@ export default {
     empty_msg: '為空則默認取值30天',
     front_error: '請填寫0-300正整數', // 修改了提示信息
     msg_error: '請填寫1-365正整數',
+    log_live_time_error: '請填寫1-4000正整數',
     limit_times_error: '請填寫1-100正整數',
     relieve_times_error: '請填寫1-100正整數',
     SMTP_port: 'SMTP端口',
@@ -1111,6 +1113,7 @@ export default {
     asc: '升序',
     desc: '降序',
     sort: '排序',
+    default: '默認',
     filter: '過濾',
     is_set: '已設定',
     none: '無',
@@ -1285,6 +1288,7 @@ export default {
     select_map_range: '請選擇地圖範圍',
     area: '地區',
     stack_item: '堆疊項',
+    aggregate: '聚合',
     placeholder_field: '拖動字段至此處',
     axis_label_rotate: '標簽角度',
     chart_scatter_bubble: '氣泡圖',
@@ -1496,6 +1500,8 @@ export default {
     gauge_size_field_delete: '動態值中字段發生變更，請重新編輯',
     chart_group: '子類別',
     chart_bar_time: '區間范圍',
+    chart_bar_time2: '時間區間范圍',
+    chart_bar_time_tip: '僅針對時間區間生效',
     chart_bar_group: '分組柱狀圖',
     chart_bar_group_stack: '分組堆疊柱狀圖',
     field_dynamic: '動態值',
@@ -1863,7 +1869,11 @@ export default {
       tip6: '使用數據集對應數據庫類型所支持的函數，語法同對應數據庫',
       tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
       tip8: '非直連模式數據集，使用Doris數據庫函數，可參考Doris官網'
-    }
+    },
+    set_key: '設定主鍵',
+    change_to_key: '設定為主鍵',
+    selecet_key: '選擇主鍵',
+    no_set_key: '未設定主鍵'
   },
   driver: {
     driver: '驅動',
@@ -2043,6 +2053,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    app_export_tips: '當前儀表板中[{0}]屬於模板視圖，無法導出，請先設置數據集！',
     required_tips: '必填項不能爲空！',
     filter_no_select: '過濾組件無需選擇',
     first_item: '首項',
@@ -2076,7 +2087,7 @@ export default {
     component_color: '組件配色',
     chart_title: '圖表標題',
     filter_component: '過濾組件',
-    enable_refresh_view: '開啟刷新',
+    enable_refresh_view: '数据刷新',
     enable_view_loading: '視圖加載提示',
     image_size_tips: '圖片請不要大於15M',
     image_add_tips: '只能插入圖片',
@@ -2328,6 +2339,7 @@ export default {
     switch_picture: '更換圖片',
     select_field: '選擇視圖字段',
     remove_all_linkage: '清除所有聯動',
+    back_to_top: '返回頂部',
     exit_un_march_linkage_field: '存在未匹配聯動關繫的字段',
     details: '詳情',
     setting: '設置',

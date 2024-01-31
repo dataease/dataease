@@ -1,4 +1,4 @@
-package io.dataease.provider;
+package io.dataease.plugins.datasource.provider;
 
 import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datasource.DataSourceType;
@@ -8,24 +8,21 @@ import org.springframework.beans.factory.config.ConfigurableListableBeanFactory;
 import org.springframework.context.ApplicationContext;
 import org.springframework.context.ApplicationContextAware;
 import org.springframework.context.ConfigurableApplicationContext;
-import org.springframework.context.annotation.Configuration;
-import io.dataease.plugins.datasource.provider.Provider;
 
 import java.util.Map;
 
-@Configuration
 public class ProviderFactory implements ApplicationContextAware {
 
     private static ApplicationContext context;
 
     @Override
     public void setApplicationContext(final ApplicationContext ctx) {
-        this.context =  ctx;
-        for(final DatasourceTypes d: DatasourceTypes.values()) {
+        this.context = ctx;
+        for (final DatasourceTypes d : DatasourceTypes.values()) {
             final ConfigurableListableBeanFactory beanFactory = ((ConfigurableApplicationContext) context).getBeanFactory();
-            if(d.isDatasource()){
+            if (d.isDatasource()) {
                 DataSourceType dataSourceType = new DataSourceType(d.getType(), d.getName(), false, d.getExtraParams(), d.getCalculationMode(), d.isJdbc());
-                if(dataSourceType.getType().equalsIgnoreCase("oracle")){
+                if (dataSourceType.getType().equalsIgnoreCase("oracle")) {
                     dataSourceType.setCharset(d.getCharset());
                     dataSourceType.setTargetCharset(d.getTargetCharset());
                 }
@@ -42,12 +39,12 @@ public class ProviderFactory implements ApplicationContextAware {
 
 
     public static Provider getProvider(String type) {
-        if(type.equalsIgnoreCase(DatasourceTypes.engine_doris.toString()) || type.equalsIgnoreCase(DatasourceTypes.engine_mysql.toString())){
+        if (type.equalsIgnoreCase(DatasourceTypes.engine_doris.toString()) || type.equalsIgnoreCase(DatasourceTypes.engine_mysql.toString())) {
             return context.getBean("jdbc", Provider.class);
         }
 
         Map<String, DataSourceType> dataSourceTypeMap = SpringContextUtil.getApplicationContext().getBeansOfType((DataSourceType.class));
-        if(dataSourceTypeMap.keySet().contains(type)){
+        if (dataSourceTypeMap.keySet().contains(type)) {
             DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
             switch (datasourceType) {
                 case es:

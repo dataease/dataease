@@ -86,7 +86,7 @@
 
       <el-form-item
         :label="$t('system_parameter_setting.ds_sync_log_retention_time')"
-        prop="logTimeOut"
+        prop="dsSyncLogTimeOut"
       >
         <el-input
           v-model="formInline.dsSyncLogTimeOut"
@@ -291,8 +291,8 @@ export default {
         ],
         logTimeOut: [
           {
-            pattern: '^([1-9]|[1-9][0-9]|[1-2][0-9][0-9]|3[0-5][0-9]|36[0-5])$',
-            message: this.$t('system_parameter_setting.msg_error'),
+            pattern: /^(?:[1-9]|[1-9]\d{1,2}|[1-3]\d{3}|4000)$/,
+            message: this.$t('system_parameter_setting.log_live_time_error'),
             trigger: 'blur'
           }
         ],

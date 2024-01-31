@@ -1373,6 +1373,66 @@ public class ChartViewExample {
             addCriterion("refresh_time not between", value1, value2, "refreshTime");
             return (Criteria) this;
         }
+
+        public Criteria andAggregateIsNull() {
+            addCriterion("_aggregate is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateIsNotNull() {
+            addCriterion("_aggregate is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateEqualTo(Boolean value) {
+            addCriterion("_aggregate =", value, "aggregate");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateNotEqualTo(Boolean value) {
+            addCriterion("_aggregate <>", value, "aggregate");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateGreaterThan(Boolean value) {
+            addCriterion("_aggregate >", value, "aggregate");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("_aggregate >=", value, "aggregate");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateLessThan(Boolean value) {
+            addCriterion("_aggregate <", value, "aggregate");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateLessThanOrEqualTo(Boolean value) {
+            addCriterion("_aggregate <=", value, "aggregate");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateIn(List<Boolean> values) {
+            addCriterion("_aggregate in", values, "aggregate");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateNotIn(List<Boolean> values) {
+            addCriterion("_aggregate not in", values, "aggregate");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateBetween(Boolean value1, Boolean value2) {
+            addCriterion("_aggregate between", value1, value2, "aggregate");
+            return (Criteria) this;
+        }
+
+        public Criteria andAggregateNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("_aggregate not between", value1, value2, "aggregate");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

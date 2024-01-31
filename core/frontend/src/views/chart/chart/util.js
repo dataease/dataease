@@ -3513,9 +3513,16 @@ export function customColor(custom, res, colors) {
     let flag = false
     for (let j = 0; j < custom.length; j++) {
       const c = custom[j]
-      if (r.name === c.name) {
+      if (c.id && c.id === r.id) {
         flag = true
         result.push(c)
+        break
+      }
+      if (r.name === c.name) {
+        flag = true
+        c.id = r.id
+        result.push(c)
+        break
       }
     }
     if (!flag) {
@@ -3526,10 +3533,30 @@ export function customColor(custom, res, colors) {
 }
 
 export function getColors(chart, colors, reset) {
+  const ifAggregate = !!chart.aggregate
   // 自定义颜色，先按照没有设定的情况，并排好序，当做最终结果
   let seriesColors = []
   let series
-  if (chart.type.includes('stack')) {
+  if (!ifAggregate && chart.type === 'bar-time-range') {
+    if (chart.data && chart.data.data && chart.data.data.length > 0) {
+      // 只能处理field字段
+      const groups = []
+      for (let i = 0; i < chart.data.data.length; i++) {
+        const name = chart.data.data[i].field
+        if (groups.indexOf(name) < 0) {
+          groups.push(name)
+        }
+      }
+      for (let i = 0; i < groups.length; i++) {
+        const s = groups[i]
+        seriesColors.push({
+          name: s,
+          color: colors[i % colors.length],
+          isCustom: false
+        })
+      }
+    }
+  } else if (chart.type.includes('stack')) {
     if (chart.data) {
       const data = chart.data.data
       const stackData = []
@@ -3616,6 +3643,7 @@ export function getColors(chart, colors, reset) {
         const s = series[i]
         seriesColors.push({
           name: s.name,
+          id: s.id,
           color: colors[i % colors.length],
           isCustom: false
         })
@@ -3642,16 +3670,6 @@ export function getColors(chart, colors, reset) {
   } else {
     if (chart.data) {
       const data = chart.data.data
-      // data 的维度值，需要根据自定义顺序排序
-      // let customSortData
-      // if (Object.prototype.toString.call(chart.customSort) === '[object Array]') {
-      //   customSortData = JSON.parse(JSON.stringify(chart.customSort))
-      // } else {
-      //   customSortData = JSON.parse(chart.customSort)
-      // }
-      // if (customSortData && customSortData.length > 0) {
-      //   data = customSort(customSortData, data)
-      // }
       for (let i = 0; i < data.length; i++) {
         const s = data[i]
         seriesColors.push({

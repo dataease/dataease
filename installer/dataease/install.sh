@@ -24,7 +24,7 @@ if [ -f /usr/bin/dectl ]; then
 fi
 
 set -a
-if [[ $DE_BASE ]] && [[ -f $DE_BASE/dataease/.env ]]; then
+if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease/.env ]]; then
    source $DE_BASE/dataease/.env
    INSTALL_TYPE='upgrade'
 else
@@ -231,7 +231,7 @@ else
       cp docker/bin/* /usr/bin/
       cp docker/service/docker.service /etc/systemd/system/
       chmod +x /usr/bin/docker*
-      chmod 754 /etc/systemd/system/docker.service
+      chmod 644 /etc/systemd/system/docker.service
       log "... 启动 docker"
       systemctl enable docker; systemctl daemon-reload; service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
    else
@@ -316,21 +316,19 @@ else
    cd -
 fi
 
-log "配置 dataease Service"
-cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/init.d/dataease
-chmod a+x /etc/init.d/dataease
 if which chkconfig;then
-   chkconfig --add dataease
+   chkconfig --del dataease
 fi
 
-if [ -f /etc/rc.d/rc.local ];then
-   dataeaseService=$(grep "service dataease start" /etc/rc.d/rc.local | wc -l)
-   if [ "$dataeaseService" -eq 0 ]; then
-      echo "sleep 10" >> /etc/rc.d/rc.local
-      echo "service dataease start" >> /etc/rc.d/rc.local
-   fi
-   chmod +x /etc/rc.d/rc.local
+if [[ -f /etc/init.d/dataease ]];then
+   rm -f /etc/init.d/dataease
 fi
+
+log "配置 dataease Service"
+cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/dataease.service
+log "配置开机自启动"
+systemctl enable dataease; systemctl daemon-reload 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
 if [[ $(grep "vm.max_map_count" /etc/sysctl.conf | wc -l) -eq 0 ]];then
    sysctl -w vm.max_map_count=2000000
@@ -364,8 +362,7 @@ if [[ $http_code == 200 ]];then
 fi
 
 log "启动服务"
-dectl reload | tee -a ${CURRENT_DIR}/install.log
-dectl status 2>&1 | tee -a ${CURRENT_DIR}/install.log
+systemctl start dataease 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
 echo -e "======================= 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 echo -e "请通过以下方式访问:\n URL: http://\$LOCAL_IP:$DE_PORT\n 用户名: admin\n 初始密码: dataease" 2>&1 | tee -a ${CURRENT_DIR}/install.log

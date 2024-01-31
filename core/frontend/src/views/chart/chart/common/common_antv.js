@@ -711,13 +711,23 @@ export function getXAxis(chart) {
           }
         } : null
 
+        const position = transAxisPosition(chart, a)
+
         if (a.axisLabel.show && chart.type === 'bidirectional-bar') {
           label.rotate = 0
           label.style.textAlign = 'start'
         }
+        if (a.axisLabel.show && chart.type === 'bar-time-range') {
+          label.rotate = 0
+          if (position === 'top') {
+            label.style.textAlign = 'start'
+          } else {
+            label.style.textAlign = 'end'
+          }
+        }
 
         axis = {
-          position: transAxisPosition(chart, a),
+          position: position,
           title: title,
           grid: grid,
           label: label,

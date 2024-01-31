@@ -226,6 +226,22 @@
             </template>
           </el-table-column>
           <el-table-column
+              property="key"
+              :label="$t('dataset.change_to_key')"
+              v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')"
+          >
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.key" @change="saveKey(scope.row)" :disabled="scope.row.extField !== 0">
+                <el-option
+                    v-for="item in getKeyFields(scope.row)"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column
             property="deExtractType"
             :label="$t('dataset.origin_field_type')"
             width="100"
@@ -565,6 +581,22 @@
             </template>
           </el-table-column>
           <el-table-column
+              property="key"
+              :label="$t('dataset.change_to_key')"
+              v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')"
+          >
+            <template slot-scope="scope">
+              <el-select v-model="scope.row.key" @change="saveKey(scope.row)"  :disabled="scope.row.extField !== 0">
+                <el-option
+                    v-for="item in getKeyFields(scope.row)"
+                    :key="item.value"
+                    :label="item.label"
+                    :value="item.value">
+                </el-option>
+              </el-select>
+            </template>
+          </el-table-column>
+          <el-table-column
             property="deExtractType"
             :label="$t('dataset.origin_field_type')"
             width="100"
@@ -746,6 +778,7 @@ import { batchEdit, dateformats, fieldListDQ, post } from '@/api/dataset/dataset
 import CalcFieldEdit from './CalcFieldEdit'
 import { getFieldName } from '@/views/dataset/data/utils'
 import msgCfm from '@/components/msgCfm/index'
+import {engineMode} from "@/api/system/engine";
 
 export default {
   name: 'FieldEdit',
@@ -780,7 +813,8 @@ export default {
       dimensionChecked: false,
       dimensionIndeterminate: false,
       quotaChecked: false,
-      quotaIndeterminate: false
+      quotaIndeterminate: false,
+      engineMode: 'local',
     }
   },
   watch: {
@@ -793,6 +827,11 @@ export default {
   },
   beforeDestroy() {
     window.removeEventListener('resize', this.calcHeight)
+  },
+  created() {
+    engineMode().then((res) => {
+      this.engineMode = res.data
+    })
   },
   mounted() {
     window.addEventListener('resize', this.calcHeight)
@@ -826,6 +865,12 @@ export default {
         this.dateformats = children
       })
     },
+    getKeyFields(item) {
+      return [
+        { label: this.$t('commons.yes'), value: true },
+        { label: this.$t('commons.no'), value: false }
+      ]
+    },
     getFields(item) {
       if (item.deExtractType === 0) {
         const children = this.dateformats
@@ -850,6 +895,19 @@ export default {
         ]
       }
     },
+
+    saveKey(item ) {
+      post('/dataset/field/saveKey', item)
+          .then((response) => {
+            this.initField()
+            localStorage.setItem('reloadDsData', 'true')
+          })
+          .catch((res) => {
+            this.initField()
+            localStorage.setItem('reloadDsData', 'true')
+          })
+    },
+
     saveEdit(item, checkExp = true) {
       if (item.name && item.name.length > 50) {
         this.$message.error(this.$t('dataset.field_name_less_50'))

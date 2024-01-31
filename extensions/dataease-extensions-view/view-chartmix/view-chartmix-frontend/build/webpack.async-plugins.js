@@ -1,4 +1,5 @@
 const webpack = require('webpack')
+const CompressionPlugin = require('compression-webpack-plugin');
 const path = require('path')
 const utils = require('./utils')
 const CopyPlugin = require("copy-webpack-plugin");
@@ -93,5 +94,8 @@ module.exports = {
     new CopyPlugin([
         {from: 'src/icons/svg/'}
     ]),
+    new CompressionPlugin({
+      test: /\.js(\?.*)?$/i,
+    }),
   ]
 }

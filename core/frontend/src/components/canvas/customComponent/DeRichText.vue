@@ -164,7 +164,28 @@ export default {
       this.editShow = false
       this.$nextTick(() => {
         this.editShow = true
+        this.editCursor()
       })
+    },
+    editCursor() {
+      setTimeout(() => {
+        const myDiv = document.getElementById(this.tinymceId)
+
+        // 让光标聚焦到文本末尾
+        const range = document.createRange()
+        const sel = window.getSelection()
+        if (myDiv.childNodes) {
+          range.setStart(myDiv.childNodes[myDiv.childNodes.length - 1]
+            .childNodes[myDiv.childNodes[myDiv.childNodes.length - 1].childNodes.length - 1], 1)
+          range.collapse(false)
+          sel.removeAllRanges()
+          sel.addRange(range)
+        }
+        // 对于一些浏览器，可能需要设置光标到最后的另一种方式
+        if (myDiv.focus) {
+          myDiv.focus()
+        }
+      }, 100)
     }
   }
 }

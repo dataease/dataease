@@ -4,7 +4,10 @@ import io.dataease.auth.config.RsaProperties;
 import io.dataease.auth.util.JWTUtils;
 import io.dataease.auth.util.RsaUtil;
 import io.dataease.commons.constants.SysLogConstants;
-import io.dataease.commons.utils.*;
+import io.dataease.commons.utils.AuthUtils;
+import io.dataease.commons.utils.CodingUtil;
+import io.dataease.commons.utils.DeLogUtils;
+import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.request.panel.link.EnablePwdRequest;
 import io.dataease.controller.request.panel.link.LinkRequest;
 import io.dataease.controller.request.panel.link.OverTimeRequest;
@@ -127,6 +130,16 @@ public class PanelLinkService {
         }
     }
 
+    public String getMappingUuid(PanelLink link) {
+        String resourceId = link.getResourceId();
+        Long userId = link.getUserId();
+        PanelLinkMappingExample example = new PanelLinkMappingExample();
+        example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(userId);
+        List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
+        if (CollectionUtils.isNotEmpty(mappings)) return mappings.get(0).getUuid();
+        return null;
+    }
+
     @Transactional
     public GenerateDto currentGenerate(String resourceId) {
         PanelLink one = findOne(resourceId, AuthUtils.getUser().getUserId());
@@ -143,14 +156,17 @@ public class PanelLinkService {
         PanelLinkMappingExample example = new PanelLinkMappingExample();
         example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(AuthUtils.getUser().getUserId());
         List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
+        PanelLinkMapping mapping = null;
         if (CollectionUtils.isEmpty(mappings)) {
-            PanelLinkMapping mapping = new PanelLinkMapping();
+            mapping = new PanelLinkMapping();
             mapping.setResourceId(resourceId);
             mapping.setUserId(AuthUtils.getUser().getUserId());
             mapping.setUuid(CodingUtil.shortUuid());
             panelLinkMappingMapper.insert(mapping);
+        } else {
+            mapping = mappings.get(0);
         }
-        return convertDto(one);
+        return convertDto(one, mapping.getUuid());
     }
 
     public void deleteByResourceId(String resourceId) {
@@ -177,20 +193,24 @@ public class PanelLinkService {
         return null;
     }
 
-    private String buildLinkParam(PanelLink link) {
-        String linkParam = encrypt(link.getResourceId());
+    private String buildLinkParam(PanelLink link, String uuid) {
+        String resourceId = link.getResourceId();
+        if (StringUtils.isNotBlank(uuid)) {
+            resourceId += ("," + uuid);
+        }
+        String linkParam = encrypt(resourceId);
         if (link.getUserId() != null) {
             linkParam = linkParam + USERPARAM + encrypt(link.getUserId().toString());
         }
         return linkParam;
     }
 
-    private GenerateDto convertDto(PanelLink link) {
+    private GenerateDto convertDto(PanelLink link, String uuid) {
         GenerateDto result = new GenerateDto();
         result.setValid(link.getValid());
         result.setEnablePwd(link.getEnablePwd());
         result.setPwd(link.getPwd());
-        result.setUri(BASEURL + buildLinkParam(link));
+        result.setUri(BASEURL + buildLinkParam(link, uuid));
         result.setOverTime(link.getOverTime());
         return result;
     }
@@ -237,8 +257,8 @@ public class PanelLinkService {
         return pass;
     }
 
-    public PanelGroupDTO resourceInfo(String resourceId,String userId) {
-        PanelGroupDTO result = extPanelGroupMapper.findOneWithPrivileges(resourceId,userId);
+    public PanelGroupDTO resourceInfo(String resourceId, String userId) {
+        PanelGroupDTO result = extPanelGroupMapper.findOneWithPrivileges(resourceId, userId);
         result.setWatermarkInfo(panelWatermarkMapper.selectByPrimaryKey("system_default"));
         return result;
     }
@@ -261,7 +281,7 @@ public class PanelLinkService {
         if (StringUtils.isNotBlank(mapping.getUuid())) {
             one.setResourceId("error-resource-id");
         }
-        return convertDto(one).getUri();
+        return convertDto(one, mapping.getUuid()).getUri();
     }
 
     public String getUrlByUuid(String uuid) {
@@ -271,12 +291,12 @@ public class PanelLinkService {
         if (CollectionUtils.isEmpty(mappings)) {
             PanelLink panelLink = new PanelLink();
             panelLink.setResourceId("error-resource-id");
-            return BASEURL + buildLinkParam(panelLink);
+            return BASEURL + buildLinkParam(panelLink, null);
         }
         PanelLinkMapping mapping = mappings.get(0);
         String resourceId = mapping.getResourceId();
         Long userId = mapping.getUserId();
         PanelLink one = findOne(resourceId, userId);
-        return convertDto(one).getUri();
+        return convertDto(one, uuid).getUri();
     }
 }

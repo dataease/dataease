@@ -43,5 +43,7 @@ public class ChartView implements Serializable {
 
     private Integer refreshTime;
 
+    private Boolean aggregate;
+
     private static final long serialVersionUID = 1L;
 }

@@ -383,8 +383,8 @@ const list = [
     mobileStyle: BASE_MOBILE_STYLE,
     hyperlinks: HYPERLINKS,
     style: {
-      width: 200,
-      height: 200,
+      width: 400,
+      height: 400,
       borderStyle: 'solid',
       borderWidth: 0,
       borderColor: '#000000',

@@ -1,13 +1,12 @@
 package io.dataease.service.chart;
 
-import cn.hutool.core.util.ReflectUtil;
 import com.google.gson.Gson;
 import com.google.gson.reflect.TypeToken;
 import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
-import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
@@ -25,7 +24,7 @@ import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.entity.filter.PluginFilterTreeObj;
 import io.dataease.plugins.view.service.ViewPluginBaseService;
-import io.dataease.provider.ProviderFactory;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.lang3.ObjectUtils;
@@ -33,6 +32,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.util.ReflectionUtils;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Method;
@@ -232,7 +232,7 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
             Method method = declaredMethods[i];
             if (StringUtils.equals(method.getName(), methodName)) {
                 method.setAccessible(true);
-                return ReflectUtil.invoke(queryProvider, method, args);
+                return ReflectionUtils.invokeMethod(method, queryProvider, args);
             }
         }
         return null;
@@ -240,11 +240,10 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
     private Object execProviderMethod(QueryProvider queryProvider, String methodName, Object... args) {
         Method[] declaredMethods = queryProvider.getClass().getDeclaredMethods();
-        for (int i = 0; i < declaredMethods.length; i++) {
-            Method method = declaredMethods[i];
+        for (Method method : declaredMethods) {
             if (StringUtils.equals(method.getName(), methodName)) {
                 method.setAccessible(true);
-                return ReflectUtil.invoke(queryProvider, method, args);
+                return ReflectionUtils.invokeMethod(method, queryProvider, args);
             }
         }
         return null;

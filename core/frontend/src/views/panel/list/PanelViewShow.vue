@@ -462,8 +462,8 @@ export default {
     imageWrapperStyle() {
       if (this.exporting) {
         return {
-          width: '1280px',
-          height: '720px'
+          width: '2560px',
+          height: '1440px'
         }
       } else {
         return {
@@ -649,14 +649,29 @@ export default {
       }
     },
     downLoadToAppPre() {
-      this.$refs.appExportForm.init({
-        appName: this.$store.state.panel.panelInfo.name,
-        icon: null,
-        version: '1.0',
-        creator: this.$store.getters.user.nickName,
-        required: '1.16.0',
-        description: null
+      const result = this.checkTemplate()
+      if (result && result.length > 0) {
+        this.$message({ message: this.$t('panel.app_export_tips', [result]), type: 'warning', showClose: true })
+      } else {
+        this.$refs.appExportForm.init({
+          appName: this.$store.state.panel.panelInfo.name,
+          icon: null,
+          version: '1.0',
+          creator: this.$store.getters.user.nickName,
+          required: '1.16.0',
+          description: null
+        })
+      }
+    },
+    checkTemplate() {
+      let templateViewNames = ','
+      Object.keys(this.panelViewDetailsInfo).forEach(key => {
+        const viewInfo = JSON.parse(this.panelViewDetailsInfo[key])
+        if (viewInfo.dataFrom === 'template') {
+          templateViewNames = templateViewNames + viewInfo.title + ','
+        }
       })
+      return templateViewNames.slice(1)
     },
     downLoadToApp(appAttachInfo) {
       this.dataLoading = true
@@ -705,6 +720,10 @@ export default {
 
     downloadAsImage() {
       this.dataLoading = true
+      // 保存原始的设备像素比值
+      const originalDPR = window.devicePixelRatio
+      // 将设备像素比设置为1
+      window.devicePixelRatio = 2
       setTimeout(() => {
         this.exporting = this.changeExportingState()
         setTimeout(() => {
@@ -723,6 +742,7 @@ export default {
             a.click()
             URL.revokeObjectURL(blob)
             document.body.removeChild(a)
+            window.devicePixelRatio = originalDPR
             setTimeout(() => {
               this.dataLoading = false
             }, 300)
@@ -735,7 +755,10 @@ export default {
       // this.pdfExportShow = true
       //
       this.dataLoading = true
-
+      // 保存原始的设备像素比值
+      const originalDPR = window.devicePixelRatio
+      // 将设备像素比设置为1
+      window.devicePixelRatio = 2
       setTimeout(() => {
         this.exporting = this.changeExportingState()
         setTimeout(() => {
@@ -749,6 +772,7 @@ export default {
             }
           })
         }, 1500)
+        window.devicePixelRatio = originalDPR
       }, 500)
     },
     refreshTemplateInfo() {

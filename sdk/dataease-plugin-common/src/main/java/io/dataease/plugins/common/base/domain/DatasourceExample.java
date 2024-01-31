@@ -384,6 +384,76 @@ public class DatasourceExample {
             return (Criteria) this;
         }
 
+        public Criteria andConfigurationIsNull() {
+            addCriterion("configuration is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationIsNotNull() {
+            addCriterion("configuration is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationEqualTo(String value) {
+            addCriterion("configuration =", value, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationNotEqualTo(String value) {
+            addCriterion("configuration <>", value, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationGreaterThan(String value) {
+            addCriterion("configuration >", value, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationGreaterThanOrEqualTo(String value) {
+            addCriterion("configuration >=", value, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationLessThan(String value) {
+            addCriterion("configuration <", value, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationLessThanOrEqualTo(String value) {
+            addCriterion("configuration <=", value, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationLike(String value) {
+            addCriterion("configuration like", value, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationNotLike(String value) {
+            addCriterion("configuration not like", value, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationIn(List<String> values) {
+            addCriterion("configuration in", values, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationNotIn(List<String> values) {
+            addCriterion("configuration not in", values, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationBetween(String value1, String value2) {
+            addCriterion("configuration between", value1, value2, "configuration");
+            return (Criteria) this;
+        }
+
+        public Criteria andConfigurationNotBetween(String value1, String value2) {
+            addCriterion("configuration not between", value1, value2, "configuration");
+            return (Criteria) this;
+        }
+
         public Criteria andCreateTimeIsNull() {
             addCriterion("create_time is null");
             return (Criteria) this;
@@ -574,73 +644,73 @@ public class DatasourceExample {
             return (Criteria) this;
         }
 
-        public Criteria andStatusIsNull() {
-            addCriterion("`status` is null");
+        public Criteria andVersionIsNull() {
+            addCriterion("version is null");
             return (Criteria) this;
         }
 
-        public Criteria andStatusIsNotNull() {
-            addCriterion("`status` is not null");
+        public Criteria andVersionIsNotNull() {
+            addCriterion("version is not null");
             return (Criteria) this;
         }
 
-        public Criteria andStatusEqualTo(String value) {
-            addCriterion("`status` =", value, "status");
+        public Criteria andVersionEqualTo(String value) {
+            addCriterion("version =", value, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotEqualTo(String value) {
-            addCriterion("`status` <>", value, "status");
+        public Criteria andVersionNotEqualTo(String value) {
+            addCriterion("version <>", value, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusGreaterThan(String value) {
-            addCriterion("`status` >", value, "status");
+        public Criteria andVersionGreaterThan(String value) {
+            addCriterion("version >", value, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusGreaterThanOrEqualTo(String value) {
-            addCriterion("`status` >=", value, "status");
+        public Criteria andVersionGreaterThanOrEqualTo(String value) {
+            addCriterion("version >=", value, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusLessThan(String value) {
-            addCriterion("`status` <", value, "status");
+        public Criteria andVersionLessThan(String value) {
+            addCriterion("version <", value, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusLessThanOrEqualTo(String value) {
-            addCriterion("`status` <=", value, "status");
+        public Criteria andVersionLessThanOrEqualTo(String value) {
+            addCriterion("version <=", value, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusLike(String value) {
-            addCriterion("`status` like", value, "status");
+        public Criteria andVersionLike(String value) {
+            addCriterion("version like", value, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotLike(String value) {
-            addCriterion("`status` not like", value, "status");
+        public Criteria andVersionNotLike(String value) {
+            addCriterion("version not like", value, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusIn(List<String> values) {
-            addCriterion("`status` in", values, "status");
+        public Criteria andVersionIn(List<String> values) {
+            addCriterion("version in", values, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotIn(List<String> values) {
-            addCriterion("`status` not in", values, "status");
+        public Criteria andVersionNotIn(List<String> values) {
+            addCriterion("version not in", values, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusBetween(String value1, String value2) {
-            addCriterion("`status` between", value1, value2, "status");
+        public Criteria andVersionBetween(String value1, String value2) {
+            addCriterion("version between", value1, value2, "version");
             return (Criteria) this;
         }
 
-        public Criteria andStatusNotBetween(String value1, String value2) {
-            addCriterion("`status` not between", value1, value2, "status");
+        public Criteria andVersionNotBetween(String value1, String value2) {
+            addCriterion("version not between", value1, value2, "version");
             return (Criteria) this;
         }
     }

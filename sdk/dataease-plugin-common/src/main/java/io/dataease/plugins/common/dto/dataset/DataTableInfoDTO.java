@@ -1,9 +1,10 @@
-package io.dataease.dto.dataset;
+package io.dataease.plugins.common.dto.dataset;
 
-import io.dataease.dto.dataset.union.UnionDTO;
+import io.dataease.plugins.common.dto.dataset.union.UnionDTO;
 import lombok.Getter;
 import lombok.Setter;
 
+import java.util.ArrayList;
 import java.util.List;
 
 /**
@@ -14,6 +15,8 @@ import java.util.List;
 @Getter
 public class DataTableInfoDTO {
     private String table;
+    private boolean setKey = false;
+    private List<String> keys = new ArrayList<>();
     private String sql;
     private boolean isBase64Encryption = false;
     private List<ExcelSheetData> excelSheetDataList;

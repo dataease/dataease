@@ -18,6 +18,7 @@ export default {
     dark: 'Dark',
     label_format_tip: 'The field value can be read in the form of {field Name}, the fields in the label and the tips are interchangeable, and the built-in latitude and longitude related fields',
     tooltip_format_tip: 'The field value can be read in the form of {field Name}, the fields in the label and the tips are interchangeable, and the built-in latitude and longitude related fields.(the label does not support line breaks)',
-    mark_size_tip: 'When this quota is in effect, the bubble size attribute in the style size will be invalid'
+    mark_size_tip: 'When this quota is in effect, the bubble size attribute in the style size will be invalid',
+    color: 'Color'
   }
 }

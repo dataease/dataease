@@ -6,13 +6,14 @@
     <result column="name" jdbcType="VARCHAR" property="name" />
     <result column="desc" jdbcType="VARCHAR" property="desc" />
     <result column="type" jdbcType="VARCHAR" property="type" />
+    <result column="configuration" jdbcType="VARCHAR" property="configuration" />
     <result column="create_time" jdbcType="BIGINT" property="createTime" />
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
-    <result column="status" jdbcType="VARCHAR" property="status" />
+    <result column="version" jdbcType="VARCHAR" property="version" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.Datasource">
-    <result column="configuration" jdbcType="LONGVARCHAR" property="configuration" />
+    <result column="status" jdbcType="LONGVARCHAR" property="status" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -73,10 +74,10 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, `desc`, `type`, create_time, update_time, create_by, `status`
+    id, `name`, `desc`, `type`, configuration, create_time, update_time, create_by, version
   </sql>
   <sql id="Blob_Column_List">
-    configuration
+    `status`
   </sql>
   <select id="selectByExampleWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.DatasourceExample" resultMap="ResultMapWithBLOBs">
     select
@@ -128,13 +129,13 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.Datasource">
     insert into datasource (id, `name`, `desc`, 
-      `type`, create_time, update_time, 
-      create_by, `status`, configuration
-      )
+      `type`, configuration, create_time, 
+      update_time, create_by, version, 
+      `status`)
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
-      #{type,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, #{updateTime,jdbcType=BIGINT}, 
-      #{createBy,jdbcType=VARCHAR}, #{status,jdbcType=VARCHAR}, #{configuration,jdbcType=LONGVARCHAR}
-      )
+      #{type,jdbcType=VARCHAR}, #{configuration,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, 
+      #{updateTime,jdbcType=BIGINT}, #{createBy,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, 
+      #{status,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.Datasource">
     insert into datasource
@@ -151,6 +152,9 @@
       <if test="type != null">
         `type`,
       </if>
+      <if test="configuration != null">
+        configuration,
+      </if>
       <if test="createTime != null">
         create_time,
       </if>
@@ -160,11 +164,11 @@
       <if test="createBy != null">
         create_by,
       </if>
+      <if test="version != null">
+        version,
+      </if>
       <if test="status != null">
         `status`,
-      </if>
-      <if test="configuration != null">
-        configuration,
       </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
@@ -180,6 +184,9 @@
       <if test="type != null">
         #{type,jdbcType=VARCHAR},
       </if>
+      <if test="configuration != null">
+        #{configuration,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         #{createTime,jdbcType=BIGINT},
       </if>
@@ -189,11 +196,11 @@
       <if test="createBy != null">
         #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="status != null">
-        #{status,jdbcType=VARCHAR},
+      <if test="version != null">
+        #{version,jdbcType=VARCHAR},
       </if>
-      <if test="configuration != null">
-        #{configuration,jdbcType=LONGVARCHAR},
+      <if test="status != null">
+        #{status,jdbcType=LONGVARCHAR},
       </if>
     </trim>
   </insert>
@@ -218,6 +225,9 @@
       <if test="record.type != null">
         `type` = #{record.type,jdbcType=VARCHAR},
       </if>
+      <if test="record.configuration != null">
+        configuration = #{record.configuration,jdbcType=VARCHAR},
+      </if>
       <if test="record.createTime != null">
         create_time = #{record.createTime,jdbcType=BIGINT},
       </if>
@@ -227,11 +237,11 @@
       <if test="record.createBy != null">
         create_by = #{record.createBy,jdbcType=VARCHAR},
       </if>
-      <if test="record.status != null">
-        `status` = #{record.status,jdbcType=VARCHAR},
+      <if test="record.version != null">
+        version = #{record.version,jdbcType=VARCHAR},
       </if>
-      <if test="record.configuration != null">
-        configuration = #{record.configuration,jdbcType=LONGVARCHAR},
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=LONGVARCHAR},
       </if>
     </set>
     <if test="_parameter != null">
@@ -244,11 +254,12 @@
       `name` = #{record.name,jdbcType=VARCHAR},
       `desc` = #{record.desc,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
+      configuration = #{record.configuration,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
       create_by = #{record.createBy,jdbcType=VARCHAR},
-      `status` = #{record.status,jdbcType=VARCHAR},
-      configuration = #{record.configuration,jdbcType=LONGVARCHAR}
+      version = #{record.version,jdbcType=VARCHAR},
+      `status` = #{record.status,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -259,10 +270,11 @@
       `name` = #{record.name,jdbcType=VARCHAR},
       `desc` = #{record.desc,jdbcType=VARCHAR},
       `type` = #{record.type,jdbcType=VARCHAR},
+      configuration = #{record.configuration,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
       create_by = #{record.createBy,jdbcType=VARCHAR},
-      `status` = #{record.status,jdbcType=VARCHAR}
+      version = #{record.version,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -279,6 +291,9 @@
       <if test="type != null">
         `type` = #{type,jdbcType=VARCHAR},
       </if>
+      <if test="configuration != null">
+        configuration = #{configuration,jdbcType=VARCHAR},
+      </if>
       <if test="createTime != null">
         create_time = #{createTime,jdbcType=BIGINT},
       </if>
@@ -288,11 +303,11 @@
       <if test="createBy != null">
         create_by = #{createBy,jdbcType=VARCHAR},
       </if>
-      <if test="status != null">
-        `status` = #{status,jdbcType=VARCHAR},
+      <if test="version != null">
+        version = #{version,jdbcType=VARCHAR},
       </if>
-      <if test="configuration != null">
-        configuration = #{configuration,jdbcType=LONGVARCHAR},
+      <if test="status != null">
+        `status` = #{status,jdbcType=LONGVARCHAR},
       </if>
     </set>
     where id = #{id,jdbcType=VARCHAR}
@@ -302,11 +317,12 @@
     set `name` = #{name,jdbcType=VARCHAR},
       `desc` = #{desc,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
+      configuration = #{configuration,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
       create_by = #{createBy,jdbcType=VARCHAR},
-      `status` = #{status,jdbcType=VARCHAR},
-      configuration = #{configuration,jdbcType=LONGVARCHAR}
+      version = #{version,jdbcType=VARCHAR},
+      `status` = #{status,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
   <update id="updateByPrimaryKey" parameterType="io.dataease.plugins.common.base.domain.Datasource">
@@ -314,10 +330,11 @@
     set `name` = #{name,jdbcType=VARCHAR},
       `desc` = #{desc,jdbcType=VARCHAR},
       `type` = #{type,jdbcType=VARCHAR},
+      configuration = #{configuration,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
       create_by = #{createBy,jdbcType=VARCHAR},
-      `status` = #{status,jdbcType=VARCHAR}
+      version = #{version,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

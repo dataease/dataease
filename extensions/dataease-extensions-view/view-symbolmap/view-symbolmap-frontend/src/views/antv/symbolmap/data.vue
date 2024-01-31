@@ -66,7 +66,37 @@
         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
       </div>
     </el-row>
-
+    <!--颜色-->
+    <el-row class="padding-lr" style="margin-top: 6px;">
+      <span style="width: 80px;text-align: right;">
+        <span>{{ $t('plugin_view_symbol_map.color') }}</span>/<span>{{ $t('chart.dimension') }}</span>
+      </span>
+      <draggable
+        v-model="colors"
+        :move="onMove"
+        animation="300"
+        class="drag-block-style" group="drag"
+        @add="addColor"
+        @update="calcData(true)"
+      >
+        <transition-group class="draggable-group">
+          <dimension-ext-item
+            v-for="(item,index) in colors"
+            :key="item.id" :chart="chart"
+            :dimension-data="dimensionData"
+            :index="index"
+            :item="item"
+            :param="param"
+            :quota-data="quotaData"
+            @onDimensionItemRemove="colorItemRemove"
+            @onNameEdit="showRename"
+          />
+        </transition-group>
+      </draggable>
+      <div v-if="!colors || colors.length === 0" class="drag-placeholder-style">
+        <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
+      </div>
+    </el-row>
     <!-- 符号大小 -->
     <el-row class="padding-lr" style="margin-top: 6px;">
       <span style="width: 80px;text-align: right;">
@@ -137,7 +167,7 @@
     </el-row>
     <FilterTree
       ref="filterTree"
-     @filter-data="changeFilterData"    @execute-axios="executeAxios"                               
+     @filter-data="changeFilterData"    @execute-axios="executeAxios"
     />
 
   </div>
@@ -147,6 +177,7 @@
 import LocationXItem from '@/components/views/LocationXItem'
 import LocationYItem from '@/components/views/LocationYItem'
 import QuotaItem from '@/components/views/QuotaItem'
+import DimensionExtItem from '@/components/views/DimensionExtItem'
 import FilterItem from '@/components/views/FilterItem'
 import messages from '@/de-base/lang/messages'
 import FilterTree from '@/components/views/filter/FilterTree.vue'
@@ -170,7 +201,8 @@ export default {
     LocationYItem,
     QuotaItem,
     FilterItem,
-    FilterTree
+    FilterTree,
+    DimensionExtItem
   },
   data() {
     return {
@@ -188,7 +220,8 @@ export default {
         }
       ],
       longitudes: [],
-      latitudes: []
+      latitudes: [],
+      colors: []
     }
   },
   computed: {
@@ -220,6 +253,7 @@ export default {
   created() {
     this.longitudes = this.view.xaxis && this.view.xaxis.length && [this.view.xaxis[0]] || []
     this.latitudes = this.view.xaxis && this.view.xaxis.length > 1 && [this.view.xaxis[1]] || []
+    this.colors = this.view.xaxisExt && this.view.xaxisExt.length && [this.view.xaxisExt[0]] || []
     this.$emit('on-add-languages', messages)
   },
   watch: {
@@ -228,6 +262,9 @@ export default {
     },
     latitudes(val) {
       this.view.xaxis = [...this.longitudes, ...this.latitudes]
+    },
+    colors(val) {
+      this.view.xaxisExt = this.colors
     }
   },
   methods: {
@@ -294,8 +331,22 @@ export default {
       }
       this.calcData(true)
     },
+    addColor(e) {
+      this.multiAdd(e, this.colors)
+      this.dragMoveDuplicate(this.colors, e)
+      this.dragCheckType(this.colors, 'd')
+      if (this.colors.length > 1) {
+        this.colors = [this.colors[0]]
+      }
+      this.calcData(true)
+    },
+    colorItemRemove(item) {
+      this.colors.splice(item.index, 1)
+      this.calcData(true)
+    },
     calcData(cache) {
       this.view.xaxis = [...this.longitudes, ...this.latitudes]
+      this.view.xaxisExt = this.colors
       this.$emit('plugin-call-back', {
         eventName: 'calc-data',
         eventParam: {

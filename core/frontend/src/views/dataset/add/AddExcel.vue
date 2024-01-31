@@ -771,6 +771,10 @@ export default {
         width: 420px;
         margin-left: 12px;
       }
+
+      .el-checkbox{
+        margin-left: 12px;
+      }
     }
 
     .data {

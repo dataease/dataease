@@ -1192,6 +1192,39 @@
                         <span class="drag-placeholder-style-span">{{ $t('chart.placeholder_field') }}</span>
                       </div>
                     </el-row>
+                    <el-row
+                      v-if="view.type === 'bar-time-range'"
+                      class="padding-lr"
+                    >
+                      <span>
+                        {{ $t('chart.chart_bar_time2') }}
+                      </span>
+                      <span>
+                        <el-tooltip
+                          class="item"
+                          effect="dark"
+                          placement="bottom"
+                        >
+                          <div slot="content">
+                            {{ $t('chart.chart_bar_time_tip') }}
+                          </div>
+                          <i
+                            class="el-icon-info"
+                            style="cursor: pointer;color: #606266;"
+                          />
+                        </el-tooltip>
+                      </span>
+                      <span
+                        class="padding-lr"
+                      >
+                        <el-checkbox
+                          v-model="view.aggregate"
+                          class="el-input-refresh-loading"
+                          @change="aggregateChange"
+                        />
+                        {{ $t('chart.aggregate') }}
+                      </span>
+                    </el-row>
                   </div>
                 </el-row>
               </div>
@@ -2145,8 +2178,7 @@ export default {
       return this.view.type &&
         !(this.view.type.includes('table') && this.view.render === 'echarts') &&
         !includesAny(this.view.type, 'text', 'gauge') &&
-        !equalsAny(this.view.type, 'liquid', 'bidirectional-bar',
-          'word-cloud', 'table-pivot', 'label', 'richTextView', 'flow-map')
+        !equalsAny(this.view.type, 'liquid', 'bidirectional-bar', 'table-pivot', 'label', 'richTextView', 'flow-map')
     },
     isPlugin() {
       const plugins = localStorage.getItem('plugin-views') && JSON.parse(localStorage.getItem('plugin-views')) || []
@@ -3399,6 +3431,9 @@ export default {
       this.calcData(true)
     },
     drillItemChange(item) {
+      this.calcData(true)
+    },
+    aggregateChange() {
       this.calcData(true)
     },
     drillItemRemove(item) {

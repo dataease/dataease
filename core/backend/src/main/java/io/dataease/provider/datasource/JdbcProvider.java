@@ -5,7 +5,6 @@ import com.alibaba.druid.pool.DruidPooledConnection;
 import com.google.gson.Gson;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.dto.datasource.*;
-
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.domain.DeDriver;
@@ -18,10 +17,11 @@ import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
+import io.dataease.plugins.datasource.entity.Status;
 import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.plugins.datasource.query.QueryProvider;
-import io.dataease.provider.ProviderFactory;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -104,6 +104,42 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
                 schemaPattern = oracleConfiguration.getSchema();
             }
+
+            //获取主键
+            ResultSet primaryKeys = databaseMetaData.getPrimaryKeys(null, schemaPattern, tableNamePattern);
+            Set<String> primaryKeySet = new HashSet<>();
+            while (primaryKeys.next()) {
+                String tableName = primaryKeys.getString("TABLE_NAME");
+                String database;
+                String schema = primaryKeys.getString("TABLE_SCHEM");
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())
+                        || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.impala.name())) {
+                    database = primaryKeys.getString("TABLE_SCHEM");
+                } else {
+                    database = primaryKeys.getString("TABLE_CAT");
+                }
+                //获取主键的名称
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name())) {
+                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                        primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
+                    }
+                } else if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())) {
+                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest)) && schema.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                        primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
+                    }
+                } else {
+                    if (database != null) {
+                        if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                            primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
+                        }
+                    } else {
+                        if (tableName.equals(datasourceRequest.getTable())) {
+                            primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
+                        }
+                    }
+                }
+            }
+
             ResultSet resultSet = databaseMetaData.getColumns(null, schemaPattern, tableNamePattern, "%");
             while (resultSet.next()) {
                 String tableName = resultSet.getString("TABLE_NAME");
@@ -117,23 +153,23 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 }
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name())) {
                     if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
-                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                        TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
                         list.add(tableField);
                     }
                 } else if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())) {
                     if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest)) && schema.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
-                        TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                        TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
                         list.add(tableField);
                     }
                 } else {
                     if (database != null) {
                         if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
-                            TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                            TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
                             list.add(tableField);
                         }
                     } else {
                         if (tableName.equals(datasourceRequest.getTable())) {
-                            TableField tableField = getTableFiled(resultSet, datasourceRequest);
+                            TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
                             list.add(tableField);
                         }
                     }
@@ -155,7 +191,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         return list;
     }
 
-    private TableField getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest) throws SQLException {
+    private TableField getTableFiled(ResultSet resultSet, DatasourceRequest datasourceRequest, Set<String> primaryKeySet) throws SQLException {
         TableField tableField = new TableField();
         String colName = resultSet.getString("COLUMN_NAME");
         tableField.setFieldName(colName);
@@ -196,6 +232,14 @@ public class JdbcProvider extends DefaultJdbcProvider {
         if (StringUtils.isNotEmpty(tableField.getFieldType()) && tableField.getFieldType().equalsIgnoreCase("DECIMAL")) {
             tableField.setAccuracy(Integer.valueOf(resultSet.getString("DECIMAL_DIGITS")));
         }
+
+        if (primaryKeySet.contains(colName)) {
+            tableField.setPrimaryKey(true);
+        }
+        if (StringUtils.equalsIgnoreCase(resultSet.getString("IS_NULLABLE"), "NO")) {
+            tableField.setNotNull(true);
+        }
+
         return tableField;
     }
 
@@ -294,7 +338,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                         break;
                     case Types.NUMERIC:
                         BigDecimal bigDecimal = rs.getBigDecimal(j + 1);
-                        row[j] = bigDecimal == null ? null: bigDecimal.toString();
+                        row[j] = bigDecimal == null ? null : bigDecimal.toString();
                         break;
                     default:
                         if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
@@ -370,6 +414,22 @@ public class JdbcProvider extends DefaultJdbcProvider {
     }
 
     @Override
+    public Status checkDsStatus(DatasourceRequest datasourceRequest) throws Exception {
+        Status status = new Status();
+        String queryStr = getTablesSql(datasourceRequest);
+        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+        int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
+        try (Connection con = getConnection(datasourceRequest); Statement statement = getStatement(con, queryTimeout); ResultSet resultSet = statement.executeQuery(queryStr)) {
+            status.setVersion(String.valueOf(con.getMetaData().getDatabaseMajorVersion()));
+        } catch (Exception e) {
+            LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName(), e);
+            DataEaseException.throwException(e.getMessage());
+        }
+        status.setStatus("Success");
+        return status;
+    }
+
+    @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         String queryStr = getTablesSql(datasourceRequest);
         JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
@@ -377,7 +437,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         try (Connection con = getConnection(datasourceRequest); Statement statement = getStatement(con, queryTimeout); ResultSet resultSet = statement.executeQuery(queryStr)) {
         } catch (Exception e) {
             LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName(), e);
-            io.dataease.plugins.common.exception.DataEaseException.throwException(e.getMessage());
+            DataEaseException.throwException(e.getMessage());
         }
         return "Success";
     }
@@ -521,7 +581,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
             driverClassName = defaultDriver;
             jdbcClassLoader = extendedJdbcClassLoader;
             for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
-                if(value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())){
+                if (value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())) {
                     surpportVersions = value.getSurpportVersions();
                 }
             }
@@ -546,10 +606,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
             Thread.currentThread().setContextClassLoader(classLoader);
         }
 
-        if(StringUtils.isNotEmpty(surpportVersions) && surpportVersions.split(",").length > 0){
-            if(! Arrays.asList(surpportVersions.split(",")).contains(String.valueOf(conn.getMetaData().getDatabaseMajorVersion()))){
+        if (StringUtils.isNotEmpty(surpportVersions) && surpportVersions.split(",").length > 0) {
+            if (!Arrays.asList(surpportVersions.split(",")).contains(String.valueOf(conn.getMetaData().getDatabaseMajorVersion()))) {
                 DataEaseException.throwException("当前驱动不支持此版本!");
-            };
+            }
+            ;
         }
         return conn;
     }
@@ -681,7 +742,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
                 }
                 return "select table_name, owner, comments from all_tab_comments where owner='" + oracleConfiguration.getSchema() + "' AND table_type = 'TABLE'";
-      case pg:
+            case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
                 if (StringUtils.isEmpty(pgConfiguration.getSchema())) {
                     throw new Exception(Translator.get("i18n_schema_is_empty"));
@@ -804,58 +865,58 @@ public class JdbcProvider extends DefaultJdbcProvider {
             case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasource.getConfiguration(), MysqlConfiguration.class);
                 mysqlConfiguration.getJdbc();
-                if(!mysqlConfiguration.getDataBase().matches("^[ 0-9a-zA-Z_.-]{1,}$")){
+                if (!mysqlConfiguration.getDataBase().matches("^[ 0-9a-zA-Z_.-]{1,}$")) {
                     throw new Exception("Invalid database name");
                 }
                 break;
             case redshift:
                 RedshiftConfiguration redshiftConfiguration = new Gson().fromJson(datasource.getConfiguration(), RedshiftConfiguration.class);
-                if(redshiftConfiguration.getDataBase().length() > 64 || redshiftConfiguration.getDataBase().length() < 1){
+                if (redshiftConfiguration.getDataBase().length() > 64 || redshiftConfiguration.getDataBase().length() < 1) {
                     throw new Exception("Invalid database name");
                 }
-                if(!redshiftConfiguration.getDataBase().matches("^[a-z][a-z0-9_+.@-]*$")){
+                if (!redshiftConfiguration.getDataBase().matches("^[a-z][a-z0-9_+.@-]*$")) {
                     throw new Exception("Invalid database name");
                 }
                 break;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasource.getConfiguration(), SqlServerConfiguration.class);
-                if(!sqlServerConfiguration.getDataBase().matches("^[0-9a-zA-Z-_.\u4E00-\u9FA5\u8FBD-\u9FBB\uFA0E-\uFA29\u2e80-\u9fff]{1,}$")){
+                if (!sqlServerConfiguration.getDataBase().matches("^[0-9a-zA-Z-_.\u4E00-\u9FA5\u8FBD-\u9FBB\uFA0E-\uFA29\u2e80-\u9fff]{1,}$")) {
                     throw new Exception("Invalid database name");
                 }
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasource.getConfiguration(), PgConfiguration.class);
-                if(!pgConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                if (!pgConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")) {
                     throw new Exception("Invalid database name");
                 }
                 break;
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasource.getConfiguration(), OracleConfiguration.class);
-                if(!oracleConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$") && !oracleConfiguration.getConnectionType().equalsIgnoreCase("serviceName")){
+                if (!oracleConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$") && !oracleConfiguration.getConnectionType().equalsIgnoreCase("serviceName")) {
                     throw new Exception("Invalid database name");
                 }
                 break;
             case mongo:
                 MongodbConfiguration mongodbConfiguration = new Gson().fromJson(datasource.getConfiguration(), MongodbConfiguration.class);
-                if(!mongodbConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                if (!mongodbConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")) {
                     throw new Exception("Invalid database name");
                 }
                 break;
             case impala:
                 ImpalaConfiguration impalaConfiguration = new Gson().fromJson(datasource.getConfiguration(), ImpalaConfiguration.class);
-                if(!impalaConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                if (!impalaConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")) {
                     throw new Exception("Invalid database name");
                 }
                 break;
             case hive:
                 HiveConfiguration hiveConfiguration = new Gson().fromJson(datasource.getConfiguration(), HiveConfiguration.class);
-                if(!hiveConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                if (!hiveConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")) {
                     throw new Exception("Invalid database name");
                 }
                 break;
             case db2:
                 Db2Configuration db2Configuration = new Gson().fromJson(datasource.getConfiguration(), Db2Configuration.class);
-                if(!db2Configuration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")){
+                if (!db2Configuration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")) {
                     throw new Exception("Invalid database name");
                 }
                 break;

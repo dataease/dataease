@@ -2,7 +2,7 @@
    项目中可根据自己的styles路径 自行更改 */
    @import "./variables";
 
-   .de-tabs {
+   .de-tabs-component {
      &.no-header {
        .el-tabs__header {
          display: none;

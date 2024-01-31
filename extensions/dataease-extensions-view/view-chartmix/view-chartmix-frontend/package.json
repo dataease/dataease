@@ -11,11 +11,9 @@
     "buildPlugin": "node build/build-async-plugins.js"
   },
   "dependencies": {
-    "@antv/g2plot": "^2.4.31",
     "@babel/polyfill": "^7.12.1",
     "@babel/runtime": "^7.18.9",
     "@riophae/vue-treeselect": "0.4.0",
-    "lodash": "^4.17.21",
     "lodash-es": "^4.17.21",
     "vue": "2.6.10",
     "vue-i18n": "7.3.2",
@@ -33,6 +31,7 @@
     "autoprefixer": "^7.1.2",
     "babel-loader": "^8.0.6",
     "chalk": "^2.0.1",
+    "compression-webpack-plugin": "^6.0.0",
     "copy-webpack-plugin": "^4.6.0",
     "css-loader": "^0.28.0",
     "element-ui": "2.15.7",

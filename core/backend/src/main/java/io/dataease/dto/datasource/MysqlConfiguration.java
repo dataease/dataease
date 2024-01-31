@@ -5,6 +5,7 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -22,7 +23,7 @@ public class MysqlConfiguration extends JdbcConfiguration {
             return "jdbc:mysql://HOSTNAME:PORT/DATABASE".replace("HOSTNAME", getHost().trim()).replace("PORT", getPort().toString().trim()).replace("DATABASE", getDataBase().trim());
         } else {
             for (String illegalParameter : getIllegalParameters()) {
-                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase())) {
+                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase()) || URLDecoder.decode(getExtraParams()).contains(illegalParameter.toLowerCase())) {
                     throw new RuntimeException("Illegal parameter: " + illegalParameter);
                 }
             }

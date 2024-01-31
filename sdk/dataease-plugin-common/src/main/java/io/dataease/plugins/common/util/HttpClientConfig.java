@@ -1,4 +1,4 @@
-package io.dataease.commons.utils;
+package io.dataease.plugins.common.util;
 
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.config.RequestConfig.Builder;

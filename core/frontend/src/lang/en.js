@@ -382,6 +382,7 @@ export default {
     thumbnail: 'thumbnail',
     confirm_delete: 'Confirm delete',
     delete_this_dashboard: 'Are you sure to delete this dashboard?',
+    cancel_this_dashboard: 'Are you sure to cancel this default dashboard?',
     delete_this_folder: 'Are you sure to delete this folder?',
     confirm_stop: 'Confirm stop',
     stop_success: 'Stop success',
@@ -840,6 +841,7 @@ export default {
     empty_msg: 'If empty then default value is 30 days',
     front_error: 'Valid range [0 - 300]', // 修改了提示信息
     msg_error: 'Valid range [1 - 365]',
+    log_live_time_error: 'Valid range [1 - 4000]',
     limit_times_error: 'Valid range [1 - 100]',
     relieve_times_error: 'Valid range [1 - 100]',
     SMTP_port: 'SMTP Port',
@@ -1111,6 +1113,7 @@ export default {
     asc: 'Ascending Order',
     desc: 'Descending Order',
     sort: 'Sort',
+    default: 'Default',
     filter: 'Filter',
     is_set: 'Is Set',
     none: 'None',
@@ -1287,6 +1290,7 @@ export default {
     map_range: 'Map range',
     select_map_range: 'Please select map range',
     area: 'Area',
+    aggregate: 'Aggregate',
     placeholder_field: 'Drag Field To Here',
     axis_label_rotate: 'Label Rotate',
     chart_scatter_bubble: 'Bubble',
@@ -1499,6 +1503,8 @@ export default {
     gauge_size_field_delete: 'Dynamic field changed，please edit again',
     chart_group: 'Sub Type',
     chart_bar_time: 'Range',
+    chart_bar_time2: 'Time Range',
+    chart_bar_time_tip: 'Only active when the range type is time',
     chart_bar_group: 'Bar Group',
     chart_bar_group_stack: 'Group Stack Bar',
     field_dynamic: 'Dynamic',
@@ -1871,7 +1877,11 @@ export default {
       tip6: 'Use the functions supported by the database type corresponding to the dataset. The syntax is the same as that of the corresponding database',
       tip7: 'For example, date format: MySQL uses DATE_ FORMAT(date,format)； Oracle uses TO_ DATE(X,[,fmt])',
       tip8: 'Non direct connection mode data set, use Doris database functions, refer to Doris official website'
-    }
+    },
+    set_key: 'Set Primary Key',
+    change_to_key: 'Set as primary key',
+    selecet_key: 'Select primary key',
+    no_set_key: 'No primary key set'
   },
   driver: {
     driver: 'Driver',
@@ -2051,6 +2061,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    app_export_tips: 'In the current dashboard, [{0}] belongs to a template view and cannot be exported. Please set up the dataset first!',
     required_tips: 'Cannot be empty!',
     filter_no_select: 'Filter components do not need to be selected',
     first_item: 'First item',
@@ -2084,7 +2095,7 @@ export default {
     component_color: 'Component color',
     chart_title: 'Chart title',
     filter_component: 'Filter component',
-    enable_refresh_view: 'Enable refresh',
+    enable_refresh_view: 'Data refresh',
     enable_view_loading: 'View loading prompt',
     image_size_tips: 'Please do not exceed 15M in the picture',
     image_add_tips: 'Only pictures can be inserted',
@@ -2191,7 +2202,7 @@ export default {
     when_share: 'When share',
     share_to: 'Share to',
     share_to_some: 'Share [{some}] to',
-    org: 'Orgnization',
+    org: 'Organization',
     role: 'Role',
     user: 'User',
     datalist: 'Chart List',
@@ -2336,6 +2347,7 @@ export default {
     switch_picture: 'Switch Picture',
     select_field: 'Select View Field',
     remove_all_linkage: 'Remove All Linkage',
+    back_to_top: 'Back To Top',
     exit_un_march_linkage_field: 'Exit Un March Linkage Field',
     details: 'Details',
     setting: 'Setting',

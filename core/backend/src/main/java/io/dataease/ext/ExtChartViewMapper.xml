@@ -309,7 +309,8 @@
                                 `is_plugin`,
                                 `senior`,
                                 `data_from`,
-                                `view_fields`)
+                                `view_fields`,
+                                `_aggregate`)
         SELECT #{newChartId},
                GET_CHART_VIEW_COPY_NAME(#{oldChartId}, #{panelId}) as `name`,
                #{panelId},
@@ -338,7 +339,8 @@
                `is_plugin`,
                `senior`,
                `data_from`,
-               `view_fields`
+               `view_fields`,
+               `_aggregate`
         FROM chart_view
         WHERE id = #{oldChartId}
     </insert>

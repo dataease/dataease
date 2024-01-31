@@ -1,6 +1,6 @@
 // 动态创建水印元素的封装函数
 
-export function watermark(settings, domId) {
+export function watermark(settings, domId, watermarkDomId = 'de-watermark-server') {
   const watermarkDom = document.getElementById(domId)
   // 默认设置
   const defaultSettings = {
@@ -85,7 +85,7 @@ export function watermark(settings, domId) {
       oTemp.appendChild(mask_div)
     }
   }
-  oTemp.setAttribute('id', 'de-watermark-server')
+  oTemp.setAttribute('id', watermarkDomId)
   watermarkDom.appendChild(oTemp)
 }
 
@@ -109,9 +109,9 @@ export function getNow() {
   return time
 }
 
-export function activeWatermark(watermarkForm, userLoginInfo, domId, canvasId, watermarkOpen) {
+export function activeWatermark(watermarkForm, userLoginInfo, domId, canvasId, watermarkOpen, watermarkDomId = 'de-watermark-server') {
   // 清理历史水印
-  const historyWatermarkDom = document.getElementById('de-watermark-server')
+  const historyWatermarkDom = document.getElementById(watermarkDomId)
   if (historyWatermarkDom) {
     historyWatermarkDom.remove()
   }
@@ -148,7 +148,7 @@ export function activeWatermark(watermarkForm, userLoginInfo, domId, canvasId, w
     watermark_y_space: watermarkForm.watermark_y_space,
     watermark_fontsize: watermarkForm.watermark_fontsize + 'px'
   }
-  watermark(settings, domId)
+  watermark(settings, domId, watermarkDomId)
 }
 
 export default { watermark, getNow, activeWatermark }

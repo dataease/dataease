@@ -1,8 +1,8 @@
 package io.dataease.service.kettle;
 
 import com.google.gson.Gson;
-import io.dataease.commons.utils.HttpClientConfig;
-import io.dataease.commons.utils.HttpClientUtil;
+import io.dataease.plugins.common.util.HttpClientConfig;
+import io.dataease.plugins.common.util.HttpClientUtil;
 import io.dataease.controller.ResultHolder;
 import io.dataease.dto.KettleDTO;
 import io.dataease.plugins.common.base.domain.DeEngine;

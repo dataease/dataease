@@ -6,6 +6,7 @@
       class="full-div"
     >
       <div
+        id="chartCanvas"
         class="canvas-class"
         :style="commonStyle"
       >
@@ -70,6 +71,8 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import {activeWatermark} from "@/components/canvas/tools/watermark";
+import {proxyUserLoginInfo, userLoginInfo} from "@/api/systemInfo/userLogin";
 export default {
   name: 'UserViewMobileDialog',
   components: { ChartComponentS2, LabelNormalText, DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal, PluginCom },
@@ -81,6 +84,10 @@ export default {
     chartTable: {
       type: Object,
       default: null
+    },
+    userId: {
+      type: String,
+      require: false
     }
 
   },
@@ -180,6 +187,19 @@ export default {
     this.element = deepCopy(this.curComponent)
   },
   methods: {
+    initWatermark(waterDomId = 'chartCanvas') {
+      if (this.panelInfo.watermarkInfo) {
+        if (this.userInfo) {
+          activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, 'canvas-main', this.panelInfo.watermarkOpen, 'de-watermark-view')
+        } else {
+          const method = this.userId ? proxyUserLoginInfo : userLoginInfo
+          method().then(res => {
+            this.userInfo = res.data
+            activeWatermark(this.panelInfo.watermarkInfo.settingContent, this.userInfo, waterDomId, 'canvas-main', this.panelInfo.watermarkOpen, 'de-watermark-view')
+          })
+        }
+      }
+    },
 
     renderComponent() {
       return this.chart.render

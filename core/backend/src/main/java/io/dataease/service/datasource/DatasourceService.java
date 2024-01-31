@@ -21,7 +21,7 @@ import io.dataease.controller.request.datasource.ApiDefinition;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.TaskInstance;
-import io.dataease.dto.dataset.DataTableInfoDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.dto.datasource.DBTableDTO;
 import io.dataease.dto.datasource.MysqlConfiguration;
 import io.dataease.ext.ExtDataSourceMapper;
@@ -42,8 +42,9 @@ import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.JdbcConfiguration;
+import io.dataease.plugins.datasource.entity.Status;
 import io.dataease.plugins.datasource.provider.Provider;
-import io.dataease.provider.ProviderFactory;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.provider.datasource.ApiProvider;
 import io.dataease.service.ScheduleService;
 import io.dataease.service.dataset.DataSetGroupService;
@@ -51,7 +52,6 @@ import io.dataease.service.message.DeMsgutil;
 import io.dataease.service.sys.SysAuthService;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.core.env.Environment;
@@ -116,7 +116,9 @@ public class DatasourceService {
         datasource.setUpdateTime(currentTimeMillis);
         datasource.setCreateTime(currentTimeMillis);
         datasource.setCreateBy(String.valueOf(AuthUtils.getUser().getUsername()));
-        checkAndUpdateDatasourceStatus(datasource);
+        Status status = checkDatasourceStatus(datasource);
+        datasource.setStatus(status.getStatus());
+        datasource.setVersion(status.getVersion());
         datasourceMapper.insertSelective(datasource);
         handleConnectionPool(datasource, "add");
         sysAuthService.copyAuth(datasource.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASOURCE);
@@ -278,7 +280,9 @@ public class DatasourceService {
     public void updateDatasource(String id, Datasource datasource) {
         DatasourceExample example = new DatasourceExample();
         example.createCriteria().andIdEqualTo(id);
-        checkAndUpdateDatasourceStatus(datasource);
+        Status status = checkDatasourceStatus(datasource);
+        datasource.setStatus(status.getStatus());
+        datasource.setVersion(status.getVersion());
         datasourceMapper.updateByExampleSelective(datasource, example);
         handleConnectionPool(id);
 
@@ -328,15 +332,15 @@ public class DatasourceService {
             datasourceProvider.checkConfiguration(datasource);
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
-            String datasourceStatus = datasourceProvider.checkStatus(datasourceRequest);
+            Status datasourceStatus = datasourceProvider.checkDsStatus(datasourceRequest);
             if (datasource.getType().equalsIgnoreCase("api")) {
                 int success = 0;
                 List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {
                 }.getType());
                 List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
 
-                if (StringUtils.isNotEmpty(datasourceStatus)) {
-                    JsonObject apiItemStatuses = JsonParser.parseString(datasourceStatus).getAsJsonObject();
+                if (StringUtils.isNotEmpty(datasourceStatus.getStatus())) {
+                    JsonObject apiItemStatuses = JsonParser.parseString(datasourceStatus.getStatus()).getAsJsonObject();
                     for (ApiDefinition apiDefinition : apiDefinitionList) {
                         String status = apiItemStatuses.get(apiDefinition.getName()).getAsString();
                         apiDefinition.setStatus(status);
@@ -349,7 +353,7 @@ public class DatasourceService {
 
                 datasourceDTO.setApiConfiguration(apiDefinitionListWithStatus);
                 if (success == apiDefinitionList.size()) {
-                    datasource.setStatus(datasourceStatus);
+                    datasource.setStatus(datasourceStatus.getStatus());
                     return ResultHolder.success(datasourceDTO);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {
@@ -368,16 +372,16 @@ public class DatasourceService {
         if (datasource == null) {
             return ResultHolder.error("Can not find datasource: " + datasourceId);
         }
-        String datasourceStatus = null;
+        Status datasourceStatus = new Status();
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
-            datasourceStatus = datasourceProvider.checkStatus(datasourceRequest);
+            datasourceStatus = datasourceProvider.checkDsStatus(datasourceRequest);
             if (datasource.getType().equalsIgnoreCase("api")) {
                 List<ApiDefinition> apiDefinitionList = new Gson().fromJson(datasource.getConfiguration(), new TypeToken<List<ApiDefinition>>() {
                 }.getType());
-                JsonObject apiItemStatuses = JsonParser.parseString(datasourceStatus).getAsJsonObject();
+                JsonObject apiItemStatuses = JsonParser.parseString(datasourceStatus.getStatus()).getAsJsonObject();
                 int success = 0;
                 for (ApiDefinition apiDefinition : apiDefinitionList) {
                     String status = apiItemStatuses.get(apiDefinition.getName()).getAsString();
@@ -387,7 +391,7 @@ public class DatasourceService {
                     }
                 }
                 if (success == apiDefinitionList.size()) {
-                    datasource.setStatus(datasourceStatus);
+                    datasource.setStatus(datasourceStatus.getStatus());
                     return ResultHolder.success(datasource);
                 }
                 if (success > 0 && success < apiDefinitionList.size()) {
@@ -399,14 +403,14 @@ public class DatasourceService {
             return ResultHolder.success("Success");
         } catch (Exception e) {
             e.printStackTrace();
-            datasourceStatus = "Error";
+            datasourceStatus.setStatus("Error");
             return ResultHolder.error(Translator.get("I18N_DS_INVALID") + ": " + e.getMessage());
         } finally {
             Datasource record = new Datasource();
-            record.setStatus(datasourceStatus);
+            record.setStatus(datasourceStatus.getStatus());
+            record.setVersion(datasourceStatus.getVersion());
             DatasourceExample example = new DatasourceExample();
             example.createCriteria().andIdEqualTo(datasource.getId());
-            System.out.println(new Gson().toJson(record));
             datasourceMapper.updateByExampleSelective(record, example);
         }
     }
@@ -427,15 +431,11 @@ public class DatasourceService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         if (!ds.getType().equalsIgnoreCase(DatasetType.API.name())) {
-            datasourceProvider.checkStatus(datasourceRequest);
+            datasourceProvider.checkDsStatus(datasourceRequest);
         }
 
         List<TableDesc> tables = datasourceProvider.getTables(datasourceRequest);
-
-        // 获取当前数据源下的db、api类型数据集
-        DatasetTableExample datasetTableExample = new DatasetTableExample();
-        datasetTableExample.createCriteria().andTypeIn(Arrays.asList(DatasetType.DB.name(), DatasetType.API.name())).andDataSourceIdEqualTo(ds.getId());
-        List<DatasetTable> datasetTables = datasetTableMapper.selectByExample(datasetTableExample);
+        // 构造table节点
         List<DBTableDTO> list = new ArrayList<>();
         for (TableDesc tableDesc : tables) {
             DBTableDTO dbTableDTO = new DBTableDTO();
@@ -444,22 +444,6 @@ public class DatasourceService {
             dbTableDTO.setRemark(tableDesc.getRemark());
             dbTableDTO.setEnableCheck(true);
             dbTableDTO.setDatasetPath(null);
-            for (DatasetTable datasetTable : datasetTables) {
-                DataTableInfoDTO dataTableInfoDTO = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
-                if (StringUtils.equals(tableDesc.getName(), dataTableInfoDTO.getTable())) {
-                    dbTableDTO.setEnableCheck(false);
-                    List<DatasetGroup> parents = dataSetGroupService.getParents(datasetTable.getSceneId());
-                    StringBuilder stringBuilder = new StringBuilder();
-                    parents.forEach(ele -> {
-                        if (ObjectUtils.isNotEmpty(ele)) {
-                            stringBuilder.append(ele.getName()).append("/");
-                        }
-                    });
-                    stringBuilder.append(datasetTable.getName());
-                    dbTableDTO.setDatasetPath(stringBuilder.toString());
-                    break;
-                }
-            }
             list.add(dbTableDTO);
         }
         return list;
@@ -479,6 +463,15 @@ public class DatasourceService {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
         datasources.forEach(datasource -> {
             commonThreadPool.addTask(() -> {
+                try {
+                    DatasourceExample example = new DatasourceExample();
+                    example.createCriteria().andIdEqualTo(datasource.getId());
+                    Status status = checkDatasourceStatus(datasource);
+                    Datasource record = new Datasource();
+                    record.setVersion(status.getVersion());
+                    record.setStatus(status.getStatus());
+                    datasourceMapper.updateByExampleSelective(record, example);
+                }catch (Exception ignore){}
                 try {
                     handleConnectionPool(datasource, "add");
                 } catch (Exception e) {
@@ -525,8 +518,7 @@ public class DatasourceService {
     }
 
     public ApiDefinition checkApiDatasource(ApiDefinition apiDefinition) throws Exception {
-        BasicInfo basicInfo = systemParameterService.basicInfo();
-        String response = ApiProvider.execHttpRequest(apiDefinition, StringUtils.isNotBlank(basicInfo.getFrontTimeOut()) ? Integer.parseInt(basicInfo.getFrontTimeOut()) : 10);
+        String response = ApiProvider.execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 30 : apiDefinition.getApiQueryTimeout());
         return ApiProvider.checkApiDefinition(apiDefinition, response);
     }
 
@@ -536,16 +528,17 @@ public class DatasourceService {
         return datasourceMapper.selectByExampleWithBLOBs(example);
     }
 
-    public void checkAndUpdateDatasourceStatus(Datasource datasource) {
+    public Status checkDatasourceStatus(Datasource datasource) {
+        Status status = new Status();
         try {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
-            String status = datasourceProvider.checkStatus(datasourceRequest);
-            datasource.setStatus(status);
+            status = datasourceProvider.checkDsStatus(datasourceRequest);
         } catch (Exception e) {
-            datasource.setStatus("Error");
+            status.setStatus("Error");
         }
+        return status;
     }
 
     private void checkAndUpdateDatasourceStatus(Datasource datasource, Boolean withMsg) {
@@ -556,8 +549,9 @@ public class DatasourceService {
             Provider datasourceProvider = ProviderFactory.getProvider(datasource.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(datasource);
-            String status = datasourceProvider.checkStatus(datasourceRequest);
-            record.setStatus(status);
+            Status status = datasourceProvider.checkDsStatus(datasourceRequest);
+            record.setStatus(status.getStatus());
+            record.setVersion(status.getVersion());
             datasourceMapper.updateByExampleSelective(record, example);
         } catch (Exception e) {
             Datasource temp = datasourceMapper.selectByPrimaryKey(datasource.getId());

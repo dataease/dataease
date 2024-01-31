@@ -9,7 +9,7 @@
       v-if="isPublicLink"
       ref="widget-div"
       class="function-div"
-      :class="functionClass"
+      :class="[{['function-back-div']: backToTopBtn},functionClass]"
     >
       <el-button-group size="mini">
         <el-button
@@ -30,6 +30,7 @@
           class="icon iconfont icon-quxiaoliandong"
         />{{ $t('panel.remove_all_linkage') }}</el-button>
         <el-button
+          v-if="isPcTerminal"
           size="mini"
           @click="exportPDF"
         >
@@ -38,6 +39,7 @@
             icon-class="link-down"
           />{{ $t('panel.down') }}</span></el-button>
         <el-button
+          v-if="isPcTerminal"
           id="fullscreenElement"
           size="mini"
           @click="toggleFullscreen"
@@ -48,16 +50,33 @@
           />{{ fullscreenState?$t('panel.fullscreen_exit'): $t('panel.fullscreen_preview') }}</span></el-button>
       </el-button-group>
     </div>
-
     <div
-      v-else-if="existLinkage"
+      v-else-if="existLinkage || backToTopBtn"
       class="bar-main-right"
     >
       <el-button
+        v-if="existLinkage"
         size="mini"
         type="warning"
         @click="clearAllLinkage"
       ><i class="icon iconfont icon-quxiaoliandong" />{{ $t('panel.remove_all_linkage') }}</el-button>
+
+      <el-button
+        v-if="backToTopBtn"
+        size="mini"
+        type="warning"
+        @click="backToTop"
+      ><i class="icon iconfont icon-back-top" />{{ $t('panel.back_to_top') }}</el-button>
+    </div>
+    <div
+      v-show="isPublicLink && backToTopBtn"
+      class="link-public"
+    >
+      <el-button
+        size="mini"
+        type="warning"
+        @click="backToTop"
+      ><i class="icon iconfont icon-back-top" />{{ $t('panel.back_to_top') }}</el-button>
     </div>
   </div>
 </template>
@@ -72,6 +91,14 @@ export default {
     canvasStyleData: {
       type: Object,
       default: null
+    },
+    backToTopBtn: {
+      type: Boolean,
+      default: false
+    },
+    terminal: {
+      type: String,
+      default: 'pc'
     }
   },
   data() {
@@ -81,6 +108,9 @@ export default {
     }
   },
   computed: {
+    isPcTerminal() {
+      return this.terminal === 'pc'
+    },
     functionClass() {
       let result = 'function-light'
       if (this.canvasStyleData?.panel?.themeColor === 'dark') {
@@ -104,7 +134,7 @@ export default {
       return this.$route.query.fromLink === 'true'
     },
     containerClass() {
-      return this.isPublicLink ? 'trans-pc' : 'bar-main'
+      return this.isPublicLink && this.isPcTerminal ? 'trans-pc' : 'bar-main'
     },
     ...mapState([
       'componentData'
@@ -154,7 +184,10 @@ export default {
         window.location.reload()
         return false
       } else {
-        this.$router.back(-1)
+        const parentUrl = localStorage.getItem('beforeJumpUrl')
+        localStorage.removeItem('beforeJumpUrl')
+        window.location.href = parentUrl
+        window.location.reload()
       }
     },
     exportPDF() {
@@ -168,6 +201,9 @@ export default {
       const val = this.$refs['widget-div'].style.display
 
       this.$refs['widget-div'].style.display = val ? '' : 'block'
+    },
+    backToTop() {
+      this.$emit('back-to-top')
     }
   }
 }
@@ -263,4 +299,14 @@ export default {
     }
   }
 
+  .link-public {
+    top: -49px;
+    right: 8px;
+    opacity: 0.8;
+    position: absolute;
+  }
+
+  .function-back-div {
+    right: 100px!important;
+  }
 </style>
