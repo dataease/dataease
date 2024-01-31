@@ -28,7 +28,7 @@ public class DorisConstants extends SQLConstants {
 
     public static final String DEFAULT_INT_FORMAT = "BIGINT";
 
-    public static final String DEFAULT_FLOAT_FORMAT = "DECIMAL(27,8)";
+    public static final String DEFAULT_FLOAT_FORMAT = "DECIMAL(26,8)";
 
     public static final String WHERE_VALUE_NULL = "(NULL,'')";
 
