@@ -852,10 +852,9 @@ export default {
       param.viewId && param.viewId === this.element.propValue.viewId && this.getDataEdit(param)
     },
     clearPanelLinkage(param) {
-      console.log('clear linkage')
       if (param.viewId === 'all' || param.viewId === this.element.propValue.viewId) {
         try {
-          // do nothing
+          this.$refs[this.element.propValue.id]?.clearLinkage?.()
         } catch (e) {
           console.error('reDrawView-error：', this.element.propValue.id)
         }
