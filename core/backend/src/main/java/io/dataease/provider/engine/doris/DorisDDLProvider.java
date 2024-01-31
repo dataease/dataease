@@ -66,7 +66,7 @@ public class DorisDDLProvider extends DDLProviderImpl {
             sql = sql.replace("`UNIQUE_KEY`", "`" + String.join("`, `", keys) + "`")
                     .replace("DISTRIBUTED_BY_HASH", keys.get(0)).replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version, keys));
         } else {
-            if(!datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains("dataease_uuid")){
+            if (!datasetTableFields.stream().map(DatasetTableField::getDataeaseName).collect(Collectors.toList()).contains("dataease_uuid")) {
                 List<DatasetTableField> tempList = new ArrayList<>();
                 DatasetTableField datasetTableField = new DatasetTableField();
                 datasetTableField.setDeExtractType(0);
@@ -80,7 +80,7 @@ public class DorisDDLProvider extends DDLProviderImpl {
                     tempList.add(datasetTableFields.get(i));
                 }
                 sql = sql.replace("UNIQUE_KEY", "dataease_uuid").replace("DISTRIBUTED_BY_HASH", "dataease_uuid").replace("Column_Fields", createDorisTableColumnSql(tempList, version, null));
-            }else {
+            } else {
                 sql = sql.replace("UNIQUE_KEY", "dataease_uuid").replace("DISTRIBUTED_BY_HASH", "dataease_uuid").replace("Column_Fields", createDorisTableColumnSql(datasetTableFields, version, null));
             }
 
@@ -114,7 +114,8 @@ public class DorisDDLProvider extends DDLProviderImpl {
                 case 3:
                     if (datasetTableField.getType().equalsIgnoreCase("DECIMAL") && datasetTableField.getAccuracy() != 0) {
                         if (Integer.valueOf(version.split("5.7.")[1]) < 99) {
-                            Column_Fields.append("DECIMAL(" + datasetTableField.getSize() + "," + datasetTableField.getAccuracy() + ")").append(",`");
+                            Integer p = datasetTableField.getAccuracy() > 9 ? 9 : datasetTableField.getAccuracy();
+                            Column_Fields.append("DECIMAL(" + datasetTableField.getSize() + "," + p + ")").append(",`");
                         } else {
                             Column_Fields.append("DecimalV3(" + datasetTableField.getSize() + "," + datasetTableField.getAccuracy() + ")").append(",`");
                         }

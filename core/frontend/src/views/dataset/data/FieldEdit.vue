@@ -231,7 +231,7 @@
               v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')"
           >
             <template slot-scope="scope">
-              <el-select v-model="scope.row.key" @change="saveKey(scope.row)" >
+              <el-select v-model="scope.row.key" @change="saveKey(scope.row)" :disabled="scope.row.extField !== 0">
                 <el-option
                     v-for="item in getKeyFields(scope.row)"
                     :key="item.value"
@@ -586,7 +586,7 @@
               v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')"
           >
             <template slot-scope="scope">
-              <el-select v-model="scope.row.key" @change="saveKey(scope.row)" >
+              <el-select v-model="scope.row.key" @change="saveKey(scope.row)"  :disabled="scope.row.extField !== 0">
                 <el-option
                     v-for="item in getKeyFields(scope.row)"
                     :key="item.value"

@@ -78,7 +78,7 @@ public class MysqlDDLProvider extends DDLProviderImpl {
     }
 
     private String createDorisTableColumnSql(final List<DatasetTableField> datasetTableFields) {
-        StringBuilder Column_Fields = new StringBuilder("`");
+        StringBuilder Column_Fields = new StringBuilder("dataease_uuid  varchar(50), `");
         for (DatasetTableField datasetTableField : datasetTableFields) {
             Column_Fields.append(datasetTableField.getDataeaseName()).append("` ");
             Integer size = datasetTableField.getSize() * 4;

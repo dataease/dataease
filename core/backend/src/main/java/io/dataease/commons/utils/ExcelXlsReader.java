@@ -331,6 +331,11 @@ public class ExcelXlsReader implements HSSFListener {
 
             if (flag && curRow != 0) { //该行不为空行且该行不是第一行，发送（第一行为列名，不需要）
                 if (!totalSheets.stream().map(ExcelSheetData::getExcelLabel).collect(Collectors.toList()).contains(sheetName)) {
+                    if(cellList.size() < fields.size()){
+                        for (int i = 0; i < fields.size() - cellList.size(); i++) {
+                            cellList.add("");
+                        }
+                    }
                     ExcelSheetData excelSheetData = new ExcelSheetData();
                     excelSheetData.setData(new ArrayList<>(data));
                     excelSheetData.setExcelLabel(sheetName);

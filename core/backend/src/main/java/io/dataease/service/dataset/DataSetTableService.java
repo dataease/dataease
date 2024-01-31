@@ -189,9 +189,9 @@ public class DataSetTableService {
         } else {
             dt.getKeys().remove(datasetTableField.getOriginName());
         }
-        if(CollectionUtils.isNotEmpty(dt.getKeys())){
+        if (CollectionUtils.isNotEmpty(dt.getKeys())) {
             dt.setSetKey(true);
-        }else {
+        } else {
             dt.setSetKey(false);
         }
         DatasetTable record = new DatasetTable();
@@ -1304,10 +1304,10 @@ public class DataSetTableService {
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
         checkIsRepeat(fieldArray);
 
-        if(!realData && dataTableInfo.isSetKey()){
+        if (!realData && dataTableInfo.isSetKey()) {
             for (String key : dataTableInfo.getKeys()) {
-                if(!fields.stream().map(TableField::getFieldName).collect(Collectors.toList()).contains(key)){
-                    DataEaseException.throwException(Translator.get("i18n_dont_contian_key") + "" + key);
+                if (!fields.stream().map(TableField::getFieldName).collect(Collectors.toList()).contains(key)) {
+                    DataEaseException.throwException(Translator.get("i18n_dont_contain_key") + key);
                 }
             }
         }
