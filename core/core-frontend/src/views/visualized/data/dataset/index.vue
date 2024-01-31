@@ -261,12 +261,7 @@ const handleNodeClick = (data: BusiTreeNode) => {
 }
 
 const editorDataset = () => {
-  router.push({
-    path: '/dataset-form',
-    query: {
-      id: nodeInfo.id
-    }
-  })
+  handleEdit(nodeInfo.id)
 }
 
 const handleEdit = id => {
