@@ -55,16 +55,6 @@ public class FileUtil {
         return fileName.substring(fileName.lastIndexOf(".") + 1);
     }
 
-    public static void main(String[] args) {
-        String name = "test.text";
-        System.out.println(getSuffix(name));
-        System.out.println(getPrefix(name));
-
-        String dirPath = "/opt/dataease/plugins/default";
-        List<String> strings = listFileNames(dirPath);
-        assert strings != null;
-        strings.forEach(System.out::println);
-    }
 
     public static boolean exist(String path) {
         return new File(path).exists();
@@ -101,6 +91,11 @@ public class FileUtil {
     public static void move(File file, File target, boolean replace) {
         if (!file.exists()) return;
         try {
+            String parentPath = target.getParent();
+            File parentDir = new File(parentPath);
+            if (!parentDir.exists()) {
+                parentDir.mkdirs();
+            }
             Files.move(file.toPath(), target.toPath(), StandardCopyOption.REPLACE_EXISTING);
         } catch (IOException e) {
             throw new RuntimeException(e);
