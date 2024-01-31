@@ -691,13 +691,25 @@ const onLabelChange = val => {
   renderChart(view.value)
 }
 
-const onIndicatorChange = val => {
-  view.value.customAttr.indicator = val
+const onIndicatorChange = (val, prop) => {
+  if (prop === 'color' || prop === 'suffixColor') {
+    view.value.customAttr.basicStyle.alpha = undefined
+    if (val.indicatorName !== undefined) {
+      view.value.customAttr.indicatorName = val.indicatorName
+    }
+  }
+  view.value.customAttr.indicator = val.indicatorValue
   renderChart(view.value)
 }
 
-const onIndicatorNameChange = val => {
-  view.value.customAttr.indicatorName = val
+const onIndicatorNameChange = (val, prop) => {
+  if (prop === 'color') {
+    view.value.customAttr.basicStyle.alpha = undefined
+    if (val.indicatorValue !== undefined) {
+      view.value.customAttr.indicator = val.indicatorValue
+    }
+  }
+  view.value.customAttr.indicatorName = val.indicatorName
   renderChart(view.value)
 }
 
