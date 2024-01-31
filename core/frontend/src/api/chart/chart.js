@@ -28,7 +28,7 @@ export function getChartTree(data) {
   })
 }
 
-export function chartCopy(id, panelId) {
+export async function chartCopy(id, panelId) {
   return request({
     url: '/chart/view/chartCopy/' + id + '/' + panelId,
     method: 'post',
@@ -36,7 +36,7 @@ export function chartCopy(id, panelId) {
   })
 }
 
-export function chartBatchCopy(params, panelId) {
+export async function chartBatchCopy(params, panelId) {
   return request({
     url: '/chart/view/chartBatchCopy/' + panelId,
     method: 'post',
