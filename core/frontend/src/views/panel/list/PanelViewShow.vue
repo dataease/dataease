@@ -462,8 +462,8 @@ export default {
     imageWrapperStyle() {
       if (this.exporting) {
         return {
-          width: '1280px',
-          height: '720px'
+          width: '2560px',
+          height: '1440px'
         }
       } else {
         return {
@@ -720,6 +720,10 @@ export default {
 
     downloadAsImage() {
       this.dataLoading = true
+      // 保存原始的设备像素比值
+      const originalDPR = window.devicePixelRatio
+      // 将设备像素比设置为1
+      window.devicePixelRatio = 2
       setTimeout(() => {
         this.exporting = this.changeExportingState()
         setTimeout(() => {
@@ -738,6 +742,7 @@ export default {
             a.click()
             URL.revokeObjectURL(blob)
             document.body.removeChild(a)
+            window.devicePixelRatio = originalDPR
             setTimeout(() => {
               this.dataLoading = false
             }, 300)
@@ -750,7 +755,10 @@ export default {
       // this.pdfExportShow = true
       //
       this.dataLoading = true
-
+      // 保存原始的设备像素比值
+      const originalDPR = window.devicePixelRatio
+      // 将设备像素比设置为1
+      window.devicePixelRatio = 2
       setTimeout(() => {
         this.exporting = this.changeExportingState()
         setTimeout(() => {
@@ -764,6 +772,7 @@ export default {
             }
           })
         }, 1500)
+        window.devicePixelRatio = originalDPR
       }, 500)
     },
     refreshTemplateInfo() {

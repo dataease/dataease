@@ -130,6 +130,10 @@ export default {
     save() {
       const _this = this
       _this.exportLoading = true
+      // 保存原始的设备像素比值
+      const originalDPR = window.devicePixelRatio
+      // 将设备像素比设置为1
+      window.devicePixelRatio = 2
       setTimeout(() => {
         _this.toExport = true
         setTimeout(() => {
@@ -143,6 +147,7 @@ export default {
             PDF.addImage(pageData, 'JPEG', 0, 0, contentWidth, contentHeight)
             PDF.save(_this.panelName + '.pdf')
             _this.$emit('closePreExport')
+            window.devicePixelRatio = originalDPR
           })
         }, 1500)
       }, 500)
