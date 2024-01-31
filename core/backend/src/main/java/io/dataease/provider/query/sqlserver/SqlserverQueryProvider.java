@@ -73,7 +73,7 @@ public class SqlserverQueryProvider extends QueryProvider {
             case "DATETIME":
             case "DATETIME2":
             case "DATETIMEOFFSET":
-            case "SMALLDATATIME":
+            case "SMALLDATETIME":
                 return DeTypeConstants.DE_TIME;// 时间
             case "INT":
             case "MEDIUMINT":
