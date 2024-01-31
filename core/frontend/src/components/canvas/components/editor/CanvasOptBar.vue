@@ -184,7 +184,10 @@ export default {
         window.location.reload()
         return false
       } else {
-        this.$router.back(-1)
+        const parentUrl = localStorage.getItem('beforeJumpUrl')
+        localStorage.removeItem('beforeJumpUrl')
+        window.location.href = parentUrl
+        window.location.reload()
       }
     },
     exportPDF() {
