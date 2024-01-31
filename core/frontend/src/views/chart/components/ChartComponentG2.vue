@@ -224,6 +224,11 @@ export default {
         }
       })
     },
+    clearLinkage() {
+      this.linkageActiveHistory = false
+      this.myChart?.setState('active', () => true, false)
+      this.myChart?.setState('inactive', () => true, false)
+    },
     checkSelected(param) {
       return (this.linkageActiveParam.name === param.name || (this.linkageActiveParam.name === 'NO_DATA' && !param.name)) &&
         (this.linkageActiveParam.category === param.category)
