@@ -966,8 +966,8 @@ export default {
               table.info.replace(/\n/g, '\\n').replace(/\r/g, '\\r')
             ).sql
           }
-          if(JSON.parse(table.info).hasOwnProperty("setKey")){
-            this.param.setKey = JSON.parse(table.info).setKey
+          if (JSON.parse(table.info).hasOwnProperty("setKey")) {
+            this.$set(this.param, 'setKey', JSON.parse(table.info).setKey)
             this.param.keys = JSON.parse(table.info).keys
           }
           this.variables = JSON.parse(table.sqlVariableDetails)
