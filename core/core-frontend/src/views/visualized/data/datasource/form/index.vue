@@ -11,6 +11,7 @@ import ExcelDetail from './ExcelDetail.vue'
 import { save, update, validate, latestUse, isShowFinishPage, checkRepeat } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
+import type { Configuration, ApiConfiguration, SyncSetting } from './option'
 import { dsTypes, typeList, nameMap } from './option'
 import { useRouter } from 'vue-router'
 import { uuid } from 'vue-uuid'
@@ -52,45 +53,6 @@ state.datasourceTree = typeList.map(ele => {
     type: ele
   }
 })
-
-export interface Configuration {
-  dataBase: string
-  connectionType: string
-  schema: string
-  extraParams: string
-  username: string
-  password: string
-  host: string
-  authMethod: string
-  port: string
-  initialPoolSize: string
-  minPoolSize: string
-  maxPoolSize: string
-  queryTimeout: string
-}
-
-export interface ApiConfiguration {
-  id: string
-  name: string
-  deTableName: string
-  method: string
-  url: string
-  status: string
-  useJsonPath: boolean
-  serialNumber: number
-}
-
-export interface SyncSetting {
-  id: string
-  updateType: string
-  syncRate: string
-  simpleCronValue: number
-  simpleCronType: string
-  startTime: number
-  endTime: number
-  endLimit: string
-  cron: string
-}
 
 const activeStep = ref(0)
 const detail = ref()
