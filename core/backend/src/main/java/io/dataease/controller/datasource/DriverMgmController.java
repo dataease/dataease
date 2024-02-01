@@ -99,6 +99,13 @@ public class DriverMgmController {
     }
 
     @RequiresPermissions("datasource:read")
+    @ApiOperation("获取驱动")
+    @GetMapping("/getDriver/{id}")
+    public DeDriver getDriver(@PathVariable String id) throws Exception {
+        return driverService.get(id);
+    }
+
+    @RequiresPermissions("datasource:read")
     @ApiOperation("更新驱动")
     @PostMapping("/update")
     @DeLog(
