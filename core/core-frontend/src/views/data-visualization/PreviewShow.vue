@@ -39,6 +39,10 @@ const hasTreeData = computed(() => {
   return resourceTreeRef.value?.hasData
 })
 
+const mounted = computed(() => {
+  return resourceTreeRef.value?.mounted
+})
+
 const rootManage = computed(() => {
   return resourceTreeRef.value?.rootManage
 })
@@ -172,10 +176,10 @@ onBeforeMount(() => {
           </div>
         </div>
       </template>
-      <template v-else-if="hasTreeData">
+      <template v-else-if="hasTreeData && mounted">
         <empty-background description="请在左侧选择数据大屏" img-type="select" />
       </template>
-      <template v-else>
+      <template v-else-if="mounted">
         <empty-background description="暂无数据大屏" img-type="none">
           <el-button v-if="rootManage && !isDataEaseBi" @click="createNew" type="primary">
             <template #icon>
