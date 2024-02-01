@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
+import { ref, onMounted } from 'vue'
 import Home from './home/index.vue'
 import Directory from './directory/index.vue'
 import Personal from './personal/index.vue'
@@ -15,6 +15,30 @@ import 'vant/es/loading/style'
 const activeTabbar = ref('home')
 const showLoading = ref(false)
 const hiddenTabbar = ref(false)
+const fixFocus = () => {
+  let u = navigator.userAgent
+  let isiOS = !!u.match(/\(i[^;]+;( U;)? CPU.+Mac OS X/)
+  if (isiOS) {
+    let flag = false
+    let pageBackNormFunc
+    document.body.addEventListener('focusin', () => {
+      flag = true
+      pageBackNormFunc && clearTimeout(pageBackNormFunc)
+    })
+    document.body.addEventListener('focusout', () => {
+      if (flag) {
+        pageBackNormFunc = setTimeout(() => {
+          window.scrollTo({ top: 0, left: 0, behavior: 'smooth' })
+        }, 200)
+      }
+      flag = false
+    })
+  }
+}
+
+onMounted(() => {
+  fixFocus()
+})
 </script>
 
 <template>
