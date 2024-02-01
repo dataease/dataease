@@ -119,3 +119,61 @@ export const nameMap = {
   OTHER: 'API数据',
   LOCAL: t('datasource.local_file')
 }
+
+export interface Configuration {
+  dataBase: string
+  connectionType: string
+  schema: string
+  extraParams: string
+  username: string
+  password: string
+  host: string
+  authMethod: string
+  port: string
+  initialPoolSize: string
+  minPoolSize: string
+  maxPoolSize: string
+  queryTimeout: string
+}
+
+export interface ApiConfiguration {
+  id: string
+  name: string
+  deTableName: string
+  method: string
+  url: string
+  status: string
+  useJsonPath: boolean
+  serialNumber: number
+}
+
+export interface SyncSetting {
+  id: string
+  updateType: string
+  syncRate: string
+  simpleCronValue: number
+  simpleCronType: string
+  startTime: number
+  endTime: number
+  endLimit: string
+  cron: string
+}
+
+export interface Node {
+  name: string
+  createBy: string
+  creator: string
+  createTime: string
+  id: number | string
+  size: number
+  description: string
+  type: string
+  nodeType: string
+  fileName: string
+  syncSetting?: SyncSetting
+  editType?: number
+  configuration?: Configuration
+  apiConfiguration?: ApiConfiguration[]
+  weight?: number
+  lastSyncTime?: number | string
+}

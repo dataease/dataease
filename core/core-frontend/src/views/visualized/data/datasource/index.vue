@@ -30,7 +30,7 @@ import {
   syncApiTable
 } from '@/api/datasource'
 import { Base64 } from 'js-base64'
-import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
+import type { SyncSetting, Node } from './form/option'
 import EditorDatasource from './form/index.vue'
 import ExcelInfo from './ExcelInfo.vue'
 import SheetTabs from './SheetTabs.vue'
@@ -47,25 +47,6 @@ interface Field {
   dataeaseName: string
   originName: string
   deType: number
-}
-
-export interface Node {
-  name: string
-  createBy: string
-  creator: string
-  createTime: string
-  id: number | string
-  size: number
-  description: string
-  type: string
-  nodeType: string
-  fileName: string
-  syncSetting?: SyncSetting
-  editType?: number
-  configuration?: Configuration
-  apiConfiguration?: ApiConfiguration[]
-  weight?: number
-  lastSyncTime?: number | string
 }
 
 const { t } = useI18n()
@@ -386,6 +367,7 @@ const saveDsFolder = (params, successCb, finallyCb, cmd) => {
 }
 
 const dsLoading = ref(false)
+const mounted = ref(false)
 
 const listDs = () => {
   rawDatasourceList.value = []
@@ -403,6 +385,7 @@ const listDs = () => {
       state.datasourceTree = nodeData
     })
     .finally(() => {
+      mounted.value = true
       dsLoading.value = false
       updateTreeExpand()
       const id = nodeInfo.id
@@ -794,7 +777,7 @@ const getMenuList = (val: boolean) => {
     </el-aside>
 
     <div class="datasource-content" :class="isDataEaseBi && 'h100'">
-      <template v-if="!state.datasourceTree.length">
+      <template v-if="!state.datasourceTree.length && mounted">
         <empty-background description="暂无数据源" img-type="none">
           <el-button
             v-if="rootManage && !isDataEaseBi"
@@ -1228,7 +1211,7 @@ const getMenuList = (val: boolean) => {
           </BaseInfoContent>
         </template>
       </template>
-      <template v-else>
+      <template v-else-if="mounted">
         <empty-background description="请在左侧选择数据源" img-type="select" />
       </template>
     </div>

@@ -52,6 +52,9 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const rootManage = computed(() => {
   return resourceTreeRef.value?.rootManage
 })
+const mounted = computed(() => {
+  return resourceTreeRef.value?.mounted
+})
 
 function createNew() {
   resourceTreeRef.value?.createNewObject()
@@ -188,10 +191,10 @@ defineExpose({
           ></de-preview>
         </div>
       </template>
-      <template v-else-if="hasTreeData">
+      <template v-else-if="hasTreeData && mounted">
         <empty-background description="请在左侧选择仪表板" img-type="select" />
       </template>
-      <template v-else>
+      <template v-else-if="mounted">
         <empty-background description="暂无仪表板" img-type="none">
           <el-button v-if="rootManage && !isDataEaseBi" @click="createNew" type="primary">
             <template #icon>
