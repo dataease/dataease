@@ -39,19 +39,19 @@
       <div
         v-if="chart.type === 'table-normal'"
         :id="chartId"
-        style="width: 100%;overflow: hidden;"
+        style="position: relative;width: 100%;overflow: hidden;"
         :class="chart.drill ? 'table-dom-normal-drill' : 'table-dom-normal'"
       />
       <div
         v-if="chart.type === 'table-info'"
         :id="chartId"
-        style="width: 100%;overflow: hidden;"
+        style="position: relative;width: 100%;overflow: hidden;"
         :class="chart.drill ? (showPage ? 'table-dom-info-drill' : 'table-dom-info-drill-pull') : (showPage ? 'table-dom-info' : 'table-dom-info-pull')"
       />
       <div
         v-if="chart.type === 'table-pivot'"
         :id="chartId"
-        style="width: 100%;overflow: hidden;"
+        style="position: relative;width: 100%;overflow: hidden;"
         class="table-dom-normal"
       />
       <el-row
@@ -296,9 +296,9 @@ export default {
         }
       }
       if (chart.type === 'table-info') {
-        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage)
+        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage, this)
       } else if (chart.type === 'table-normal') {
-        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData)
+        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this)
       } else if (chart.type === 'table-pivot') {
         this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableHeaderClick, this.tableData)
       } else {
@@ -615,10 +615,5 @@ export default {
 
 .page-style ::v-deep li {
   background: transparent !important;
-}
-</style>
-<style>
-.antv-s2-tooltip-container {
-    padding: 4px 2px;
 }
 </style>

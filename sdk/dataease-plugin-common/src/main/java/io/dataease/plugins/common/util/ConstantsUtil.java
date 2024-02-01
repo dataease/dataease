@@ -1,15 +1,16 @@
 package io.dataease.plugins.common.util;
 
 
-import cn.hutool.core.util.ReflectUtil;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.ibatis.io.ResolverUtil;
+import org.springframework.util.ReflectionUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Objects;
 import java.util.Set;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -33,6 +34,11 @@ public class ConstantsUtil {
         return SQLConstantsCache;
     }
 
+    public static Object getFieldValue(Class<?> classz, String key) {
+        if (ObjectUtils.isEmpty(ReflectionUtils.findField(classz, key))) return null;
+        return ReflectionUtils.getField(Objects.requireNonNull(ReflectionUtils.findField(classz, key)), null);
+    }
+
     public static String constantsValue(String dsType, String constantKey) {
         String[] mysqlTreaties = {"mariadb", "ds_doris", "TiDB", "StarRocks"};
         if (Stream.of(mysqlTreaties).collect(Collectors.toList()).contains(dsType)) {
@@ -44,9 +50,9 @@ public class ConstantsUtil {
         List<Class> allSQLConstantsClass = ConstantsUtil.getAllSQLConstants();
         for (int i = 0; i < allSQLConstantsClass.size(); i++) {
             Class classz = allSQLConstantsClass.get(i);
-            Object fieldValue = ReflectUtil.getFieldValue(classz, ConstantsUtil.TYPE_KEY_FIELD);
+            Object fieldValue = getFieldValue(classz, ConstantsUtil.TYPE_KEY_FIELD);
             if (ObjectUtils.isNotEmpty(fieldValue) && StringUtils.equals(dsType, fieldValue.toString())) {
-                result = ReflectUtil.getFieldValue(classz, constantKey);
+                result = getFieldValue(classz, constantKey);
                 return ObjectUtils.isNotEmpty(result) ? result.toString() : null;
             }
         }
@@ -56,9 +62,9 @@ public class ConstantsUtil {
             for (ModuleClassLoader moduleClassLoader : ClassloaderResponsity.getInstance().getAllClassLoader()) {
                 Thread.currentThread().setContextClassLoader(moduleClassLoader);
                 for (Class<? extends Class<?>> scanConstant : scanConstants("io.dataease.plugins.datasource", SQLConstants.class)) {
-                    Object fieldValue = ReflectUtil.getFieldValue(scanConstant, ConstantsUtil.TYPE_KEY_FIELD);
+                    Object fieldValue = getFieldValue(scanConstant, ConstantsUtil.TYPE_KEY_FIELD);
                     if (ObjectUtils.isNotEmpty(fieldValue) && StringUtils.equals(dsType, fieldValue.toString())) {
-                        result = ReflectUtil.getFieldValue(scanConstant, constantKey);
+                        result = getFieldValue(scanConstant, constantKey);
                         return ObjectUtils.isNotEmpty(result) ? result.toString() : null;
                     }
                 }

@@ -1,16 +1,13 @@
 package io.dataease.service.chart.build;
 
-import cn.hutool.core.collection.CollectionUtil;
 import io.dataease.dto.chart.FilterParamTO;
 import io.dataease.service.chart.FilterBuildTemplate;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
-import java.util.stream.Collectors;
 
 @Service("numberRangeWidget")
 public class NumberRangeBuild extends FilterBuildTemplate {

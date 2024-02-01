@@ -1,6 +1,5 @@
 package io.dataease.service.chart;
 
-import cn.hutool.core.lang.Assert;
 import com.alibaba.fastjson.JSONArray;
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
@@ -19,7 +18,6 @@ import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.chart.*;
 import io.dataease.dto.dataset.DataSetTableDTO;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
-import io.dataease.dto.dataset.DataTableInfoDTO;
 import io.dataease.ext.ExtChartGroupMapper;
 import io.dataease.ext.ExtChartViewMapper;
 import io.dataease.ext.ExtPanelGroupExtendDataMapper;
@@ -36,6 +34,7 @@ import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
 import io.dataease.plugins.common.dto.chart.ChartFieldCustomFilterDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
@@ -45,12 +44,12 @@ import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDT
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.datasource.entity.PageInfo;
 import io.dataease.plugins.datasource.provider.Provider;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.entity.filter.PluginFilterTreeObj;
 import io.dataease.plugins.view.service.ViewPluginService;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
-import io.dataease.provider.ProviderFactory;
 import io.dataease.provider.query.SQLUtils;
 import io.dataease.service.chart.util.ChartDataBuild;
 import io.dataease.service.dataset.*;
@@ -66,6 +65,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Propagation;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
 import java.lang.reflect.Type;
@@ -1058,9 +1058,10 @@ public class ChartViewService {
                 });
                 xAxis.addAll(xAxisExtList);
             }
+            fieldMap.put("xAxis", xAxis);
+            fieldMap.put("xAxisExt", xAxisExt);
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
-            fieldMap.put("xAxis", xAxis);
             fieldMap.put("yAxis", yAxis);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
             String sql = pluginViewSql(pluginViewParam, view);

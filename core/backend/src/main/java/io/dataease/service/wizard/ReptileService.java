@@ -1,7 +1,7 @@
 package io.dataease.service.wizard;
 
-import io.dataease.commons.utils.HttpClientConfig;
-import io.dataease.commons.utils.HttpClientUtil;
+import io.dataease.plugins.common.util.HttpClientConfig;
+import io.dataease.plugins.common.util.HttpClientUtil;
 import org.jsoup.Jsoup;
 import org.jsoup.nodes.Document;
 import org.jsoup.nodes.Element;

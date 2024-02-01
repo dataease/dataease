@@ -1,8 +1,6 @@
 package io.dataease.service.system;
 
-import cn.hutool.core.util.ArrayUtil;
 import io.dataease.commons.constants.ParamConstants;
-
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.commons.utils.LogUtil;
@@ -13,6 +11,7 @@ import io.dataease.plugins.common.base.domain.SystemParameterExample;
 import io.dataease.plugins.common.base.mapper.SystemParameterMapper;
 import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.mail.javamail.JavaMailSenderImpl;
@@ -85,7 +84,7 @@ public class EmailService {
 
 
     public void sendPdfWithFiles(String to, String title, String content, byte[] bytes, List<File> files) {
-        if (ArrayUtil.isEmpty(bytes)) {
+        if (ArrayUtils.isEmpty(bytes)) {
             send(to, title, content);
             return;
         }
@@ -118,7 +117,7 @@ public class EmailService {
         if (StringUtils.isBlank(to))
             return;
 
-        if (ArrayUtil.isEmpty(bytes)) {
+        if (ArrayUtils.isEmpty(bytes)) {
             send(to, title, content);
             return;
         }

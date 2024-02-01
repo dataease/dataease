@@ -275,6 +275,9 @@ const data = {
     setMobileComponentData(state, mobileComponentData = []) {
       Vue.set(state, 'mobileComponentData', mobileComponentData)
     },
+    addBatchComponent(state, components = []) {
+      state.componentData.push(...components)
+    },
     addComponent(state, { component, index }) {
       if (index !== undefined) {
         state.componentData.splice(index, 0, component)
@@ -840,6 +843,9 @@ const data = {
         customStyle: {},
         customAttr: {}
       }
+    },
+    initPanelViewDetailsInfo(state) {
+      state.panelViewDetailsInfo = {}
     },
     initCanvas(state) {
       this.commit('initCanvasBase')

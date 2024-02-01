@@ -381,6 +381,7 @@ export default {
     thumbnail: '缩略图',
     confirm_delete: '确认删除',
     delete_this_dashboard: '确认删除该仪表板吗?',
+    cancel_this_dashboard: '确认取消该默认仪表板吗?',
     delete_this_folder: '确认删除该目录吗?',
     confirm_stop: '确认停止',
     stop_success: '停止成功',
@@ -934,7 +935,8 @@ export default {
     edit_classification: '编辑分类',
     classification_name: '分类名称',
     by_event_details: '通过事件详情搜索',
-    password_input_error: '原始密码输入错误'
+    password_input_error: '原始密码输入错误',
+    log_live_time_error: '请填写1-4000整数'
   },
   chart: {
     empty_hide: '隐藏空值',
@@ -1110,6 +1112,7 @@ export default {
     asc: '升序',
     desc: '降序',
     sort: '排序',
+    default: '默认',
     filter: '过滤',
     is_set: '已设置',
     none: '无',
@@ -1866,7 +1869,11 @@ export default {
       tip6: '使用数据集对应数据库类型所支持的函数，语法同对应数据库',
       tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
       tip8: '非直连模式数据集，使用Doris数据库函数，可参考Doris官网'
-    }
+    },
+    set_key: '设置主键',
+    change_to_key: '设置为主键',
+    selecet_key: '选择主键',
+    no_set_key: '未设置主键'
   },
   driver: {
     driver: '驱动',
@@ -2049,6 +2056,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    app_export_tips: '当前仪表板中[{0}]属于模版视图，无法导出，请先设置数据集！',
     required_tips: '必填项不能为空！',
     filter_no_select: '过滤组件无需选择',
     first_item: '首项',

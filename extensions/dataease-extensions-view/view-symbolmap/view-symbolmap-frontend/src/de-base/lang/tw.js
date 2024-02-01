@@ -19,6 +19,7 @@ export default {
       dark: '暗色',
       label_format_tip: '可以${fieldName}的形式讀取字段值，標籤和提示中的字段互相通用，內置經緯度相關字段',
       tooltip_format_tip: '可以${fieldName}的形式讀取字段值，標籤和提示中的字段互相通用，內置經緯度相關字段（標籤不支持換行）',
-      mark_size_tip: '該指標生效時，樣式大小中的氣泡大小屬性將失效'
+      mark_size_tip: '該指標生效時，樣式大小中的氣泡大小屬性將失效',
+      color: '顏色'
     }
 }

@@ -280,8 +280,8 @@ public class PanelAppTemplateService {
     public void createDorisTable(List<DatasetTable> datasetTablesInfo) throws Exception {
         for (DatasetTable datasetTable : datasetTablesInfo) {
             if (1 == datasetTable.getMode() && !(DatasetType.CUSTOM.name().equalsIgnoreCase(datasetTable.getType()) || DatasetType.UNION.name().equalsIgnoreCase(datasetTable.getType()))) {
-                List<DatasetTableField> fields = extractDataService.getDatasetTableFields(datasetTable.getId());
-                extractDataService.createEngineTable(TableUtils.tableName(datasetTable.getId()), fields);
+                List<DatasetTableField> fields = extractDataService.getDatasetTableFields(datasetTable);
+                extractDataService.createEngineTable(datasetTable.getInfo(), TableUtils.tableName(datasetTable.getId()), fields);
             }
         }
     }

@@ -1,6 +1,5 @@
 package io.dataease.map.utils;
 
-import cn.hutool.core.util.StrUtil;
 import io.dataease.map.dto.entity.AreaEntity;
 import io.dataease.map.dto.entity.Constants;
 import io.dataease.plugins.common.base.domain.AreaMapping;
@@ -84,7 +83,7 @@ public class MapUtils {
             String city_code = map.getCityCode();
             String county_code = map.getCountyCode();
             // 是否是跨级直辖
-            Boolean isCrossLevel = StrUtil.equals(province_code, city_code) && !StrUtil.equals(province_code, "156710000");
+            Boolean isCrossLevel = StringUtils.equals(province_code, city_code) && !StringUtils.equals(province_code, "156710000");
 
             if (!countryMap.containsKey(country_code)) {
                 String country_name = map.getCountryName();
@@ -154,7 +153,7 @@ public class MapUtils {
             county_code = formatCode(county_code);
 
             // 是否是跨级直辖
-            Boolean isCrossLevel = StrUtil.equals(province_code, city_code) && !StrUtil.equals(province_code, "710000");
+            Boolean isCrossLevel = StringUtils.equals(province_code, city_code) && !StringUtils.equals(province_code, "710000");
 
             if (!provinceMap.containsKey(province_code)) {
                 String province_name = map.get(Constants.PROVINCE_NAME).toString();

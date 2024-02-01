@@ -2,8 +2,8 @@ package io.dataease.service.templateMarket;
 
 import com.alibaba.fastjson.JSONObject;
 import com.google.gson.Gson;
-import io.dataease.commons.utils.HttpClientConfig;
-import io.dataease.commons.utils.HttpClientUtil;
+import io.dataease.plugins.common.util.HttpClientConfig;
+import io.dataease.plugins.common.util.HttpClientUtil;
 import io.dataease.controller.request.templateMarket.TemplateMarketSearchRequest;
 import io.dataease.controller.sys.response.BasicInfo;
 import io.dataease.dto.panel.PanelTemplateFileDTO;

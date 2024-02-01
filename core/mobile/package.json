@@ -1,6 +1,6 @@
 {
   "name": "dataease-mobile",
-  "version": "1.18.14",
+  "version": "1.18.15",
   "private": true,
   "scripts": {
     "serve": "npm run dev:h5",

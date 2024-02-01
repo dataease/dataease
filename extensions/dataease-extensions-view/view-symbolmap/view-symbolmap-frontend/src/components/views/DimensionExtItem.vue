@@ -1,6 +1,6 @@
 <template>
-  <span>
-
+  <span style="position: relative;display: inline-block;">
+    <i class="el-icon-arrow-down el-icon-delete" style="position: absolute;top: 6px;right: 24px;color: #878d9f;cursor: pointer;z-index: 1;" @click="removeItem" />
     <el-dropdown trigger="click" size="mini" @command="clickItem">
       <span class="el-dropdown-link">
         <el-tag size="small" class="item-axis" :type="tagType">
@@ -20,24 +20,6 @@
           <i class="el-icon-arrow-down el-icon--right" style="position: absolute;top: 6px;right: 10px;" />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
-          <el-dropdown-item>
-            <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="sort">
-              <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
-                  <i class="el-icon-sort" />
-                  <span>{{ $t('chart.sort') }}</span>
-                  <span class="summary-span-item">({{ $t('chart.'+item.sort) }})</span>
-                </span>
-                <i class="el-icon-arrow-right el-icon--right" />
-              </span>
-              <el-dropdown-menu slot="dropdown">
-                <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
-                <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
-              </el-dropdown-menu>
-            </el-dropdown>
-          </el-dropdown-item>
-
           <el-dropdown-item v-show="item.deType === 1" divided>
             <el-dropdown placement="right-start" size="mini" style="width: 100%" @command="dateStyle">
               <span class="el-dropdown-link inner-dropdown-menu">

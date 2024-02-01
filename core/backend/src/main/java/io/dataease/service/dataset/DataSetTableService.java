@@ -26,9 +26,12 @@ import io.dataease.controller.request.dataset.DataSetTaskRequest;
 import io.dataease.controller.response.DataSetDetail;
 import io.dataease.dto.SysLogDTO;
 import io.dataease.dto.dataset.*;
-import io.dataease.dto.dataset.union.UnionDTO;
-import io.dataease.dto.dataset.union.UnionItemDTO;
-import io.dataease.dto.dataset.union.UnionParamDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoCustomUnion;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
+import io.dataease.plugins.common.dto.dataset.ExcelSheetData;
+import io.dataease.plugins.common.dto.dataset.union.UnionDTO;
+import io.dataease.plugins.common.dto.dataset.union.UnionItemDTO;
+import io.dataease.plugins.common.dto.dataset.union.UnionParamDTO;
 import io.dataease.ext.ExtDataSetGroupMapper;
 import io.dataease.ext.ExtDataSetTableMapper;
 import io.dataease.ext.UtilMapper;
@@ -50,8 +53,8 @@ import io.dataease.plugins.common.util.ClassloaderResponsity;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
-import io.dataease.provider.DDLProvider;
-import io.dataease.provider.ProviderFactory;
+import io.dataease.plugins.datasource.provider.DDLProvider;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.service.chart.util.ChartDataBuild;
 import io.dataease.service.datasource.DatasourceService;
@@ -179,6 +182,25 @@ public class DataSetTableService {
         return list;
     }
 
+    public void saveKey(DatasetTable datasetTable, DatasetTableFieldDTO datasetTableField) {
+        DataTableInfoDTO dt = new Gson().fromJson(datasetTable.getInfo(), DataTableInfoDTO.class);
+        if (datasetTableField.isKey()) {
+            dt.getKeys().add(datasetTableField.getOriginName());
+        } else {
+            dt.getKeys().remove(datasetTableField.getOriginName());
+        }
+        if (CollectionUtils.isNotEmpty(dt.getKeys())) {
+            dt.setSetKey(true);
+        } else {
+            dt.setSetKey(false);
+        }
+        DatasetTable record = new DatasetTable();
+        record.setInfo(new Gson().toJson(dt));
+        DatasetTableExample example = new DatasetTableExample();
+        example.createCriteria().andIdEqualTo(datasetTable.getId());
+        datasetTableMapper.updateByExampleSelective(record, example);
+    }
+
     private void extractData(DataSetTableRequest datasetTable) throws Exception {
         if (datasetTable.getMode() == 1 && StringUtils.isNotEmpty(datasetTable.getSyncType()) && datasetTable.getSyncType().equalsIgnoreCase("sync_now")) {
             DataSetTaskRequest dataSetTaskRequest = new DataSetTaskRequest();
@@ -234,6 +256,8 @@ public class DataSetTableService {
                     });
                     DataTableInfoDTO info = new DataTableInfoDTO();
                     info.setExcelSheetDataList(excelSheetDataList);
+                    info.setKeys(excelSheetDataList.get(0).getKeys());
+                    info.setSetKey(excelSheetDataList.get(0).isSetKey());
                     sheetTable.setInfo(new Gson().toJson(info));
                     datasetTableMapper.insert(sheetTable);
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
@@ -263,6 +287,8 @@ public class DataSetTableService {
                     excelSheetDataList.add(sheet);
                     DataTableInfoDTO info = new DataTableInfoDTO();
                     info.setExcelSheetDataList(excelSheetDataList);
+                    info.setKeys(sheet.getKeys());
+                    info.setSetKey(sheet.isSetKey());
                     sheetTable.setInfo(new Gson().toJson(info));
                     datasetTableMapper.insert(sheetTable);
                     sysAuthService.copyAuth(sheetTable.getId(), SysAuthConstants.AUTH_SOURCE_TYPE_DATASET);
@@ -296,6 +322,8 @@ public class DataSetTableService {
             excelSheetDataList.add(sheet);
         }
         DataTableInfoDTO info = new DataTableInfoDTO();
+        info.setKeys(datasetTable.getSheets().get(0).getKeys());
+        info.setSetKey(datasetTable.getSheets().get(0).isSetKey());
         info.setExcelSheetDataList(excelSheetDataList);
         datasetTable.setInfo(new Gson().toJson(info));
         datasetTableMapper.updateByPrimaryKeySelective(datasetTable);
@@ -1033,7 +1061,7 @@ public class DataSetTableService {
     }
 
     public String removeVariables(final String sql, String dsType) throws Exception {
-        String tmpSql = sql;
+        String tmpSql = sql.replaceAll("(?m)^\\s*$[\n\r]{0,}", "");
         Pattern pattern = Pattern.compile(regex);
         Matcher matcher = pattern.matcher(tmpSql);
         boolean hasVariables = false;
@@ -1275,6 +1303,15 @@ public class DataSetTableService {
         List<TableField> fields = result.get("fieldList");
         String[] fieldArray = fields.stream().map(TableField::getFieldName).toArray(String[]::new);
         checkIsRepeat(fieldArray);
+
+        if (!realData && dataTableInfo.isSetKey()) {
+            for (String key : dataTableInfo.getKeys()) {
+                if (!fields.stream().map(TableField::getFieldName).collect(Collectors.toList()).contains(key)) {
+                    DataEaseException.throwException(Translator.get("i18n_dont_contain_key") + key);
+                }
+            }
+        }
+
         List<Map<String, Object>> jsonArray = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(data)) {
             jsonArray = data.stream().map(ele -> {
@@ -2739,7 +2776,7 @@ public class DataSetTableService {
 
             @Override
             public void visit(InExpression inExpression) {
-                if (inExpression.getRightExpression() != null && hasVariable(inExpression.getRightExpression().toString()) && inExpression.getRightExpression() instanceof ParenthesedExpressionList) {
+                if (inExpression.getRightExpression() != null && hasVariable(inExpression.getRightExpression().toString()) && !(inExpression.getRightExpression() instanceof ParenthesedSelect)) {
                     stringBuilder.append(SubstitutedSql);
                     return;
                 }
@@ -2929,6 +2966,9 @@ public class DataSetTableService {
     }
 
     private String cellType(String value) {
+        if (value.length() > 19) {
+            return "TEXT";
+        }
         try {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
             sdf.parse(value);

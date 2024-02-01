@@ -250,7 +250,9 @@ export default {
         const range = document.createRange()
         const sel = window.getSelection()
         if (myDiv.childNodes) {
-          range.setStart(myDiv.childNodes[myDiv.childNodes.length - 1], 1)
+          range.setStart(myDiv.childNodes[myDiv.childNodes.length - 1]
+            .childNodes[myDiv.childNodes[myDiv.childNodes.length - 1].childNodes.length - 1],
+          myDiv.childNodes[myDiv.childNodes.length - 1].childNodes[myDiv.childNodes[myDiv.childNodes.length - 1].childNodes.length - 1].length)
           range.collapse(false)
           sel.removeAllRanges()
           sel.addRange(range)

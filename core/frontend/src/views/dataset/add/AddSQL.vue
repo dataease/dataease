@@ -61,6 +61,26 @@
               value="sync_latter"
             />
           </el-select>
+          <el-checkbox   style="margin-left: 12px" v-if="mode === '1' && engineMode !== 'simple'" v-model="param.setKey">{{ $t('dataset.set_key') }}</el-checkbox>
+
+          <el-select
+              size="small"
+              style="margin-left: 12px;width: 315px"
+              v-model="param.keys"
+              v-if="mode === '1' && engineMode !== 'simple'"
+              multiple
+              filterable
+              :disabled="!param.setKey"
+              :placeholder="$t('dataset.selecet_key')"
+          >
+            <el-option
+                v-for="field in fields"
+                :key="field.fieldName"
+                :label="field.fieldName"
+                :value="field.fieldName"
+            />
+          </el-select>
+
         </el-col>
         <el-col
           style="text-align: right"
@@ -946,6 +966,10 @@ export default {
               table.info.replace(/\n/g, '\\n').replace(/\r/g, '\\r')
             ).sql
           }
+          if(JSON.parse(table.info).hasOwnProperty("setKey")){
+            this.param.setKey = JSON.parse(table.info).setKey
+            this.param.keys = JSON.parse(table.info).keys
+          }
           this.variables = JSON.parse(table.sqlVariableDetails)
         }).finally(() => {
           this.$emit('setSaveDisabled', false)
@@ -1051,7 +1075,9 @@ export default {
         sqlVariableDetails: JSON.stringify(this.variables),
         info: JSON.stringify({
           sql: Base64.encode(this.sql.trim()),
-          isBase64Encryption: true
+          isBase64Encryption: true,
+          setKey: this.param.setKey,
+          keys: this.param.keys
         })
       }
       post('/dataset/table/update', table)

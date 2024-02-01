@@ -382,6 +382,7 @@ export default {
     thumbnail: '縮略圖',
     confirm_delete: '確認刪除',
     delete_this_dashboard: '確認删除該儀錶板嗎?',
+    cancel_this_dashboard: '確認取消該默认儀錶板嗎?',
     delete_this_folder: '確認删除該目錄嗎?',
     confirm_stop: '確認停止',
     stop_success: '停止成功',
@@ -839,6 +840,7 @@ export default {
     empty_msg: '為空則默認取值30天',
     front_error: '請填寫0-300正整數', // 修改了提示信息
     msg_error: '請填寫1-365正整數',
+    log_live_time_error: '請填寫1-4000正整數',
     limit_times_error: '請填寫1-100正整數',
     relieve_times_error: '請填寫1-100正整數',
     SMTP_port: 'SMTP端口',
@@ -1111,6 +1113,7 @@ export default {
     asc: '升序',
     desc: '降序',
     sort: '排序',
+    default: '默認',
     filter: '過濾',
     is_set: '已設定',
     none: '無',
@@ -1866,7 +1869,11 @@ export default {
       tip6: '使用數據集對應數據庫類型所支持的函數，語法同對應數據庫',
       tip7: '如日期格式化：MySQL使用DATE_FORMAT(date,format)；Oracle使用TO_DATE(X,[,fmt])',
       tip8: '非直連模式數據集，使用Doris數據庫函數，可參考Doris官網'
-    }
+    },
+    set_key: '設定主鍵',
+    change_to_key: '設定為主鍵',
+    selecet_key: '選擇主鍵',
+    no_set_key: '未設定主鍵'
   },
   driver: {
     driver: '驅動',
@@ -2046,6 +2053,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    app_export_tips: '當前儀表板中[{0}]屬於模板視圖，無法導出，請先設置數據集！',
     required_tips: '必填項不能爲空！',
     filter_no_select: '過濾組件無需選擇',
     first_item: '首項',

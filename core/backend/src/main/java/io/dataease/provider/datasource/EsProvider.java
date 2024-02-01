@@ -2,8 +2,8 @@ package io.dataease.provider.datasource;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonParser;
-import io.dataease.commons.utils.HttpClientConfig;
-import io.dataease.commons.utils.HttpClientUtil;
+import io.dataease.plugins.common.util.HttpClientConfig;
+import io.dataease.plugins.common.util.HttpClientUtil;
 import io.dataease.controller.request.datasource.es.EsResponse;
 import io.dataease.controller.request.datasource.es.Request;
 import io.dataease.controller.request.datasource.es.RequestWithCursor;

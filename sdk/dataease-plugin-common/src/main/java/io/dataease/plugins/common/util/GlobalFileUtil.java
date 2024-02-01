@@ -1,17 +1,18 @@
 package io.dataease.plugins.common.util;
 
-import cn.hutool.core.date.DateUtil;
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.IdUtil;
+
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.io.ByteArrayResource;
 import org.springframework.http.*;
 import org.springframework.stereotype.Component;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.net.URLEncoder;
 import java.util.Date;
 import java.util.List;
+import java.util.UUID;
 
 @Component
 public class GlobalFileUtil {
@@ -27,16 +28,25 @@ public class GlobalFileUtil {
     private static final String SPLITOR = "-de-";
 
     public static String upload(byte[] bytes, String suffix) {
-        String dateStr = DateUtil.formatDate(new Date());
-        String formatRoot = formatRoot();
-        String dirPath = formatRoot + dateStr;
-        if (!FileUtil.exist(dirPath)) {
-            FileUtil.mkdir(dirPath);
+        String dateStr = null;
+        try {
+            dateStr = GlobalDateUtils.getDateString(new Date());
+            String formatRoot = formatRoot();
+            String dirPath = formatRoot + dateStr;
+            File dirFile = new File(dirPath);
+            if (!dirFile.exists()) {
+                dirFile.mkdirs();
+            }
+            String fileId = fileIdByDate(dateStr);
+            String filePath = formatRoot + dateStr + "/" + fileId + "." + suffix;
+            File file = new File(filePath);
+            FileOutputStream fos = new FileOutputStream(file);
+            fos.write(bytes);
+            fos.close();
+            return fileId;
+        } catch (Exception e) {
+            throw new RuntimeException(e);
         }
-        String fileId = fileIdByDate(dateStr);
-        String filePath = formatRoot + dateStr + "/" + fileId + "." + suffix;
-        FileUtil.writeBytes(bytes, filePath);
-        return fileId;
     }
 
     public static ResponseEntity<byte[]> showPicture(String fileId) {
@@ -71,9 +81,9 @@ public class GlobalFileUtil {
     }
 
     private static String fileIdByDate(String dateStr) {
-        dateStr = StringUtils.isBlank(dateStr) ? DateUtil.formatDate(new Date()) : dateStr;
+        dateStr = StringUtils.isBlank(dateStr) ? GlobalDateUtils.formatDate(new Date()) : dateStr;
 
-        String uuid = IdUtil.fastUUID();
+        String uuid = UUID.randomUUID().toString().replace("-", "");
         return dateStr + SPLITOR + uuid;
     }
 
@@ -93,8 +103,8 @@ public class GlobalFileUtil {
             return filePath;
         }
         List<String> fileNames = FileUtil.listFileNames(dirPath);
-        for (int i = 0; i < fileNames.size(); i++) {
-            String fileName = fileNames.get(i);
+        assert fileNames != null;
+        for (String fileName : fileNames) {
             String prefix = FileUtil.getPrefix(fileName);
             if (StringUtils.equals(fileId, prefix)) {
                 return dirPath + "/" + fileName;

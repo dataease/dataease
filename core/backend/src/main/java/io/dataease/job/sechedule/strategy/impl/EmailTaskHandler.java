@@ -1,6 +1,5 @@
 package io.dataease.job.sechedule.strategy.impl;
 
-import cn.hutool.core.io.FileUtil;
 import io.dataease.auth.entity.SysUserEntity;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.service.AuthUserService;
@@ -16,6 +15,7 @@ import io.dataease.job.sechedule.strategy.TaskHandler;
 import io.dataease.plugins.common.base.domain.SysUserAssist;
 import io.dataease.plugins.common.entity.GlobalTaskEntity;
 import io.dataease.plugins.common.entity.GlobalTaskInstance;
+import io.dataease.plugins.common.util.FileUtil;
 import io.dataease.plugins.common.util.SpringContextUtil;
 import io.dataease.plugins.xpack.dingtalk.dto.entity.DingtalkMsgResult;
 import io.dataease.plugins.xpack.dingtalk.service.DingtalkXpackService;

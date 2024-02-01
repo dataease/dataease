@@ -1,13 +1,8 @@
 package io.dataease.service.sys;
 
-import cn.hutool.core.io.FileUtil;
-import cn.hutool.core.util.ZipUtil;
 import com.google.gson.Gson;
 import io.dataease.commons.constants.AuthConstants;
-import io.dataease.commons.utils.CodingUtil;
-import io.dataease.commons.utils.DeFileUtils;
-import io.dataease.commons.utils.IPUtils;
-import io.dataease.commons.utils.LogUtil;
+import io.dataease.commons.utils.*;
 import io.dataease.dto.MyPluginDTO;
 import io.dataease.ext.ExtSysPluginMapper;
 import io.dataease.i18n.Translator;
@@ -16,6 +11,7 @@ import io.dataease.plugins.common.base.domain.MyPlugin;
 import io.dataease.plugins.common.base.mapper.MyPluginMapper;
 import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.KeywordRequest;
+import io.dataease.plugins.common.util.FileUtil;
 import io.dataease.plugins.config.LoadjarUtil;
 import io.dataease.plugins.entity.PluginOperate;
 import io.dataease.service.datasource.DatasourceService;
@@ -84,7 +80,7 @@ public class PluginService {
         //2.解压目标文件dest 得到plugin.json和jar
         String folder = pluginDir + "folder/";
         try {
-            ZipUtil.unzip(dest.getAbsolutePath(), folder);
+            ZipUtils.unZipIt(dest.getAbsolutePath(), folder);
         } catch (Exception e) {
             DeFileUtils.deleteFile(pluginDir + "temp/");
             DeFileUtils.deleteFile(folder);

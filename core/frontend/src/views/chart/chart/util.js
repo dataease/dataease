@@ -3513,9 +3513,16 @@ export function customColor(custom, res, colors) {
     let flag = false
     for (let j = 0; j < custom.length; j++) {
       const c = custom[j]
-      if (r.name === c.name) {
+      if (c.id && c.id === r.id) {
         flag = true
         result.push(c)
+        break
+      }
+      if (r.name === c.name) {
+        flag = true
+        c.id = r.id
+        result.push(c)
+        break
       }
     }
     if (!flag) {
@@ -3636,6 +3643,7 @@ export function getColors(chart, colors, reset) {
         const s = series[i]
         seriesColors.push({
           name: s.name,
+          id: s.id,
           color: colors[i % colors.length],
           isCustom: false
         })
@@ -3662,16 +3670,6 @@ export function getColors(chart, colors, reset) {
   } else {
     if (chart.data) {
       const data = chart.data.data
-      // data 的维度值，需要根据自定义顺序排序
-      // let customSortData
-      // if (Object.prototype.toString.call(chart.customSort) === '[object Array]') {
-      //   customSortData = JSON.parse(JSON.stringify(chart.customSort))
-      // } else {
-      //   customSortData = JSON.parse(chart.customSort)
-      // }
-      // if (customSortData && customSortData.length > 0) {
-      //   data = customSort(customSortData, data)
-      // }
       for (let i = 0; i < data.length; i++) {
         const s = data[i]
         seriesColors.push({

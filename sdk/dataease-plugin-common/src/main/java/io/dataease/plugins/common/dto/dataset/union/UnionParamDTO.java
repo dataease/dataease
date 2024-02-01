@@ -1,4 +1,4 @@
-package io.dataease.dto.dataset.union;
+package io.dataease.plugins.common.dto.dataset.union;
 
 import lombok.Data;
 

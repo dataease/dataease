@@ -1,22 +1,19 @@
 package io.dataease.commons.utils;
 
+import io.dataease.commons.model.excel.ExcelSheetModel;
+import io.dataease.plugins.common.util.FileUtil;
+import org.apache.commons.collections.CollectionUtils;
+import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+
 import java.io.BufferedOutputStream;
 import java.io.File;
-
-import cn.hutool.core.io.FileUtil;
-import io.dataease.commons.model.excel.ExcelSheetModel;
-
+import java.io.FileOutputStream;
 import java.util.List;
 import java.util.concurrent.atomic.AtomicReference;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
-
-import org.apache.commons.collections.CollectionUtils;
-import org.apache.commons.lang3.StringUtils;
-
-import org.apache.poi.ss.usermodel.*;
-import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 
 
 public class ExcelUtils {
@@ -78,10 +75,11 @@ public class ExcelUtils {
         folderPath += Thread.currentThread().getId() + "/";
 
         if (!FileUtil.exist(folderPath)) {
-            FileUtil.mkdir(folderPath);
+            new File(folderPath).mkdirs();
         }
         File result = new File(folderPath + realFileName.get());
-        BufferedOutputStream outputStream = FileUtil.getOutputStream(result);
+        FileOutputStream fos = new FileOutputStream(result);
+        BufferedOutputStream outputStream = new BufferedOutputStream(fos);
         try {
             wb.write(outputStream);
         } catch (Exception e) {

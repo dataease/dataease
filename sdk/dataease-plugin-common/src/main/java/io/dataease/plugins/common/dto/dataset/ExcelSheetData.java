@@ -1,8 +1,10 @@
-package io.dataease.dto.dataset;
+package io.dataease.plugins.common.dto.dataset;
 
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.swagger.annotations.ApiModelProperty;
 import lombok.Data;
+
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -31,4 +33,6 @@ public class ExcelSheetData {
     @ApiModelProperty("字段变更")
     private Boolean changeFiled = false;
     private Boolean effectExtField = false;
+    private boolean setKey = false;
+    private List<String> keys = new ArrayList<>();
 }
