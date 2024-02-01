@@ -41,6 +41,7 @@ const defaultProps = {
   children: 'children',
   label: 'name'
 }
+const mounted = ref(false)
 const rootManage = ref(false)
 const anyManage = ref(false)
 const { curCanvasType, showPosition } = toRefs(props)
@@ -219,6 +220,7 @@ function flatTree(tree: BusiTreeNode[]) {
 }
 
 const afterTreeInit = () => {
+  mounted.value = true
   if (selectedNodeKey.value && returnMounted.value) {
     expandedArray.value = getDefaultExpandedKeys()
     returnMounted.value = false
@@ -371,7 +373,8 @@ onMounted(() => {
 defineExpose({
   rootManage,
   hasData,
-  createNewObject
+  createNewObject,
+  mounted
 })
 </script>
 
