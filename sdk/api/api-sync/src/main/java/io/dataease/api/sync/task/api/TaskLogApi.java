@@ -7,13 +7,13 @@ import io.dataease.auth.DeApiPath;
 import io.dataease.request.BaseGridRequest;
 import org.springframework.web.bind.annotation.*;
 
-import static io.dataease.constant.AuthResourceEnum.TASK_LOG;
+import static io.dataease.constant.AuthResourceEnum.TASK;
 
 /**
  * @author fit2cloud
  * @date 2023/12/4 12:43
  **/
-@DeApiPath(value = "/sync/task/log", rt = TASK_LOG)
+@DeApiPath(value = "/sync/task/log", rt = TASK)
 public interface TaskLogApi {
     @PostMapping("/pager/{goPage}/{pageSize}")
     IPage<TaskLogVO> pager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
