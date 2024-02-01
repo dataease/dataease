@@ -773,7 +773,7 @@ defineExpose({
 
 const handleActiveNode = ele => {
   activeNodeId.value = ele.id
-  handleCommand(ele, ele.type === 'sql' ? 'editerSql' : 'editerField')
+  handleCommand(ele, 'editerField')
 }
 
 const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
