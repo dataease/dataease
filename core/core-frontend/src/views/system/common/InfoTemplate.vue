@@ -183,9 +183,12 @@ formatLabel()
 
 <style lang="less" scope>
 .setting-tip-btn {
-  height: 22px !important;
-  line-height: 22px !important;
-  margin-left: 2px !important;
+  height: 24px !important;
+  width: 24px !important;
+  margin-left: 4px !important;
+  .ed-icon {
+    font-size: 16px;
+  }
 }
 .info-template-container {
   padding: 24px;
