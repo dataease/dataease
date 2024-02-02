@@ -241,6 +241,7 @@ export default {
   created() {
   },
   mounted() {
+    this.restore()
     this.resizeObserver = new ResizeObserver(() => {
       this.resizerTimer && clearTimeout(this.resizerTimer)
       this.resizerTimer = setTimeout(() => {
