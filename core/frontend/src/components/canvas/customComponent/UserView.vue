@@ -936,7 +936,7 @@ export default {
         // table-info明细表增加分页
         if (this.view && this.view.customAttr) {
           const attrSize = JSON.parse(this.view.customAttr).size
-          if ((this.chart.type === 'table-info' && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
+          if (this.chart.type === 'table-info' && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
             requestInfo.goPage = this.currentPage.page
             requestInfo.pageSize = this.currentPage.pageSize === parseInt(attrSize.tablePageSize) ? this.currentPage.pageSize : parseInt(attrSize.tablePageSize)
           }
