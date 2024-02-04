@@ -1255,7 +1255,8 @@ public class ChartViewService {
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, ds, view));
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                datasourceRequest.setQuery(qp.getSQLTableInfo(tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
+                querySql = qp.getSQLWithPage(true, tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                totalPageSql = qp.getResultCount(true, tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
             } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
 
                 datasourceRequest.setQuery(qp.getSQLRangeBar(tableName, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, ds, view));
@@ -1271,6 +1272,15 @@ public class ChartViewService {
                     view.setResultMode(resultMode);
                 }
             }
+            // 分页
+            if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+                datasourceRequest.setQuery(totalPageSql);
+                datasourceRequest.setTotalPageFlag(true);
+                java.util.List<java.lang.String[]> tmpData = datasourceProvider.getData(datasourceRequest);
+                totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
+                totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
+            }
+
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields, ds));
                 logger.info(datasourceAssistRequest.getQuery());
@@ -1282,7 +1292,11 @@ public class ChartViewService {
                     || CollectionUtils.isNotEmpty(chartExtRequest.getOuterParamsFilters())
                     || CollectionUtils.isNotEmpty(chartExtRequest.getDrill())
                     || CollectionUtils.isNotEmpty(rowPermissionsTree)
-                    || fields.size() != columnPermissionFields.size()) {
+                    || fields.size() != columnPermissionFields.size()
+                    || StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+                if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+                    datasourceRequest.setQuery(querySql);
+                }
                 data = datasourceProvider.getData(datasourceRequest);
             } else {
                 try {
