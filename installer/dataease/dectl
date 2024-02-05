@@ -47,16 +47,18 @@ function usage() {
    echo "  ./dectl --help"
    echo
    echo "Commands: "
-   echo "  status       查看 DATAEASE 服务运行状态"
-   echo "  start        启动 DATAEASE 服务"
-   echo "  stop         停止 DATAEASE 服务"
-   echo "  restart      重启 DATAEASE 服务"
-   echo "  reload       重新加载 DATAEASE 服务"
-   echo "  uninstall    卸载 DATAEASE 服务"
-   echo "  upgrade      升级 DATAEASE 服务"
-   echo "  version      查看 DATAEASE 版本信息"
-   echo "  clear-images 清理 DATAEASE 旧版本的相关镜像"
-   echo "  clear-logs   清理 DATAEASE 历史日志以及 Doris 临时日志"
+   echo "  status                查看 DATAEASE 服务运行状态"
+   echo "  start                 启动 DATAEASE 服务"
+   echo "  stop                  停止 DATAEASE 服务"
+   echo "  restart               重启 DATAEASE 服务"
+   echo "  reload                重新加载 DATAEASE 服务"
+   echo "  uninstall             卸载 DATAEASE 服务"
+   echo "  upgrade               升级 DATAEASE 服务"
+   echo "  backup                备份 DATAEASE 服务"
+   echo "  restore xxx.tar.gz    还原 DATAEASE 服务"
+   echo "  version               查看 DATAEASE 版本信息"
+   echo "  clear-images          清理 DATAEASE 旧版本的相关镜像"
+   echo "  clear-logs            清理 DATAEASE 历史日志以及 Doris 临时日志"
 }
 function _healthcheck() {
    echo
@@ -293,7 +295,34 @@ function upgrade() {
    cd ..
    rm -rf /tmp/dataease-${latest_version}-online
 }
-
+function backup() {
+   echo "开始备份，建议在备份时先停止 DataEase 服务!"
+   backup_file_name=dataease-backup-$(date +%Y%m%d)_$(date +%H%M%S).tar.gz
+   tar --exclude=logs/* -zcf $backup_file_name -C $DE_BASE/dataease .
+   if [ $? -ne 0 ]; then
+      echo "备份失败"
+      exit 1
+   else
+      echo "备份成功，备份文件 : $backup_file_name"
+   fi
+}
+function restore() {
+   if [[ -z $target ]];then
+      echo "未指定需要恢复的备份文件！"
+      exit 1
+   elif [[ -f $target ]];then
+      service dataease stop
+      if [[ ! -d $DE_BASE/dataease ]];then
+         mkdir -p $DE_BASE/dataease
+      fi
+      echo "恢复备份 $target"
+      tar -zxf $target --directory=$DE_BASE/dataease
+      service dataease start
+   else
+      echo "未找到备份文件 $target！"
+      exit 1
+   fi
+}
 function main() {
     case "${action}" in
       status)
@@ -316,6 +345,12 @@ function main() {
          ;;
       upgrade)
          upgrade
+         ;;
+      backup)
+         backup
+         ;;
+      restore)
+         restore $target
          ;;
       version)
          version
