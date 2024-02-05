@@ -723,7 +723,7 @@ public class ChartViewService {
         // 直连明细表分页
         Map<String, Object> mapAttr = gson.fromJson(view.getCustomAttr(), Map.class);
         Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("size");
-        if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
+        if (StringUtils.equalsIgnoreCase(view.getType(), "table-info")) {
             if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !chartExtRequest.getExcelExportFlag()) {
                 if (chartExtRequest.getGoPage() == null) {
                     chartExtRequest.setGoPage(1L);
