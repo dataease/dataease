@@ -2,6 +2,7 @@
 
 DE_BASE=/opt
 
+echo "如需备份 DataEase 数据，请执行 dectl backup 进行备份。如您的 dectl 命令不支持 backup 命令，请升级版本。"
 read -r -p "即将卸载 DataEase 服务，包括删除运行目录、数据及相关镜像，是否继续? [Y/n] " input
 
 case $input in
