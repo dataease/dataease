@@ -1279,7 +1279,6 @@ public class ChartViewService {
                 datasourceRequest.setQuery(totalPageSql);
                 datasourceRequest.setTotalPageFlag(true);
                 java.util.List<java.lang.String[]> tmpData = datasourceProvider.getData(datasourceRequest);
-                logger.info("sql_result:" + new Gson().toJson(tmpData));
                 totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
                 totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
             }
