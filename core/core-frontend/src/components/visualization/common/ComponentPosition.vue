@@ -17,6 +17,17 @@
         </el-form-item>
       </el-col>
     </el-row>
+    <el-form-item class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
+        v-if="curComponent"
+        size="small"
+        :effect="themes"
+        v-model="curComponent['maintainRadio']"
+        @change="maintainRadioChange"
+      >
+        保持宽高比
+      </el-checkbox>
+    </el-form-item>
   </el-form>
 </template>
 
@@ -81,6 +92,10 @@ const onPositionChange = key => {
     groupSizeStyleAdaptor(curComponent.value)
   }
 
+  snapshotStore.recordSnapshotCache()
+}
+
+const maintainRadioChange = () => {
   snapshotStore.recordSnapshotCache()
 }
 
