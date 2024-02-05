@@ -18,6 +18,8 @@ public class WhitelistUtils {
             "/panel.html",
             "/lark/info",
             "/lark/token",
+            "/dingtalk/info",
+            "/dingtalk/token",
             "/sysParameter/requestTimeOut",
             "/setting/authentication/status",
             "/");
