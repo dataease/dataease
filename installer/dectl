@@ -49,7 +49,7 @@ function usage() {
 }
 function _generate_compose_file_args() {
    if [[ $DE_INSTALL_MODE != "community" ]];then
-      compose_files="${compose_files} -f docker-compose-apisix.yml"
+      compose_files="${compose_files} -f docker-compose-apisix.yml -f docker-compose-task.yml"
    fi
 }
 function _check_apisix_init() {
