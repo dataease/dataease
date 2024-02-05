@@ -115,6 +115,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       if (componentItem.component === 'Group') {
         componentItem.expand = componentItem.expand || false
       }
+      componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
     })
     const curPreviewGap =
       dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
