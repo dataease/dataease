@@ -102,7 +102,7 @@ service.interceptors.request.use(
       config.data = qs.stringify(config.data)
     }
     if (window.DataEaseBi?.baseUrl) {
-      config.baseURL = window.DataEaseBi.baseUrl + 'de2api/'
+      config.baseURL = PATH_URL
     }
 
     if (linkStore.getLinkToken) {
