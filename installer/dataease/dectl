@@ -282,7 +282,7 @@ function upgrade() {
       exit 1
    fi
 
-   tar zxvf dataease-${latest_version}-online.tar.gz
+   tar zxf dataease-${latest_version}-online.tar.gz
    if [ $? != 0 ];then
       echo "下载在线安装包失败，请试试重新执行一次安装命令。"
       rm -f dataease-${latest_version}-online.tar.gz
