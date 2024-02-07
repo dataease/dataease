@@ -286,7 +286,7 @@ function upgrade() {
       exit 1
    fi
 
-   tar zxvf $installer_file
+   tar zxf $installer_file
    if [ $? != 0 ]; then
       echo "下载在线安装包失败，请试试重新执行一次安装命令。"
       rm -f $installer_file

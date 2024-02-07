@@ -20,15 +20,18 @@ case $input in
 esac
 
 echo "停止 DataEase 服务"
-service dataease stop
+service dataease stop >/dev/null 2>&1
 
 echo "移除 DataEase 服务"
-if which chkconfig;then
-   chkconfig --del dataease
+if which chkconfig >/dev/null 2>&1;then
+   chkconfig dataease >/dev/null
+   if [ $? -eq 0 ]; then
+      chkconfig --del dataease >/dev/null 2>&1
+   fi
 fi
 
 if [ -f /etc/systemd/system/dataease.service ];then
-   systemctl disable dataease
+   systemctl disable dataease >/dev/null 2>&1
    rm -f /etc/systemd/system/dataease.service
    systemctl daemon-reload
 elif [[ -f /etc/init.d/dataease ]];then
@@ -53,3 +56,5 @@ fi
 
 # 清理 DataEase 运行目录及命令行工具 dectl
 rm -rf ${DE_BASE}/dataease2.0 /usr/bin/dectl
+
+echo "DataEase 服务卸载完成"
