@@ -24,7 +24,7 @@ service dataease stop >/dev/null 2>&1
 
 echo "移除 DataEase 服务"
 if which chkconfig >/dev/null 2>&1;then
-   chkconfig dataease >/dev/null
+   chkconfig dataease >/dev/null 2>&1
    if [ $? -eq 0 ]; then
       chkconfig --del dataease >/dev/null 2>&1
    fi

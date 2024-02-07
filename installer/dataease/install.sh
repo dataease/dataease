@@ -21,7 +21,8 @@ INSTALL_TYPE='install'
 if [ -f /usr/bin/dectl ]; then
    # 获取已安装的 DataEase 的运行目录
    DE_BASE=$(grep "^DE_BASE=" /usr/bin/dectl | cut -d'=' -f2)
-   dectl uninstall
+   echo "停止 DataEase 服务"
+   service dataease stop
    INSTALL_TYPE='upgrade'
 fi
 
@@ -44,6 +45,14 @@ if [ -f ${DE_RUN_BASE}/docker-compose-mysql.yml ]; then
 fi
 
 dataease_conf=${conf_folder}/dataease.properties
+
+if [[ -d $DE_RUN_BASE ]];then
+   for image in $(grep  "image: " $DE_RUN_BASE/docker*.yml | awk -F 'image:' '{print $2}'); do
+      image_path=$(eval echo $image)
+      image_name=$(echo $image_path | awk -F "[/]" '{print $3}')
+      current_images[${#current_images[@]}]=$image_name
+   done
+fi
 
 function prop {
    [ -f "$1" ] | grep -P "^\s*[^#]?${2}=.*$" $1 | cut -d'=' -f2
@@ -305,7 +314,11 @@ if [[ -d images ]]; then
             continue
          fi
       fi
-      docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      if [[ "${current_images[@]}"  =~ "${i%.tar.gz}" ]]; then
+         echo "本地已存在镜像 ${i%.tar.gz}，略过加载"
+      else
+         docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      fi
    done
 else
    log "拉取镜像"
@@ -317,9 +330,9 @@ else
 fi
 
 if which chkconfig >/dev/null 2>&1;then
-   chkconfig dataease >/dev/null
+   chkconfig dataease >/dev/null 2>&1
    if [ $? -eq 0 ]; then
-      chkconfig --del dataease
+      chkconfig --del dataease >/dev/null 2>&1
    fi
 fi
 
