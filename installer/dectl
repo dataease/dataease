@@ -57,14 +57,6 @@ function _check_apisix_init() {
       _prepare_apisix
    fi
 }
-function _check_task_init() {
-  if [[ $DE_INSTALL_MODE != "community" ]];then
-      _prepare_task
-  fi
-}
-function _prepare_task() {
-  compose_files="${compose_files} -f docker-compose-task.yml"
-}
 function _prepare_apisix() {
    if [[ -z $DE_APISIX_KEY ]];then
       need_init_apisix=true
@@ -75,7 +67,6 @@ function _prepare_apisix() {
       sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/apisix/apisix_conf/config.yaml
       sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
    fi
-   compose_files="${compose_files} -f docker-compose-apisix.yml"
 }
 function _init_apisix() {
    DE_APISIX_KEY=$DE_APISIX_KEY sh $DE_RUNNING_BASE/bin/apisix/init.sh
@@ -222,7 +213,7 @@ function status() {
 function start() {
    echo
    _check_apisix_init
-   _check_task_init
+   _generate_compose_file_args
    cd ${DE_RUNNING_BASE}
    ${compose_cmd} ${compose_files} up -d
    _healthcheck
