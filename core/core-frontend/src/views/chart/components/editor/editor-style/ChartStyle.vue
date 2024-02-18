@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { PropType, toRefs, nextTick, watch } from 'vue'
+import { PropType, toRefs, nextTick, watch, ref } from 'vue'
 import MiscSelector from '@/views/chart/components/editor/editor-style/components/MiscSelector.vue'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 import TooltipSelector from '@/views/chart/components/editor/editor-style/components/TooltipSelector.vue'
@@ -90,6 +90,9 @@ const emit = defineEmits([
   'onIndicatorNameChange'
 ])
 
+const indicatorValueRef = ref()
+const indicatorNameRef = ref()
+
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
 
 const onMiscChange = (val, prop) => {
@@ -117,11 +120,19 @@ const onTextChange = (val, prop) => {
 }
 
 const onIndicatorChange = (val, prop) => {
-  state.initReady && emit('onIndicatorChange', val, prop)
+  const value = { indicatorValue: val, indicatorName: undefined }
+  if (prop === 'color' || prop === 'suffixColor') {
+    value.indicatorName = indicatorNameRef.value?.getFormData()
+  }
+  state.initReady && emit('onIndicatorChange', value, prop)
 }
 
 const onIndicatorNameChange = (val, prop) => {
-  state.initReady && emit('onIndicatorNameChange', val, prop)
+  const value = { indicatorName: val, indicatorValue: undefined }
+  if (prop === 'color') {
+    value.indicatorValue = indicatorValueRef.value?.getFormData()
+  }
+  state.initReady && emit('onIndicatorNameChange', value, prop)
 }
 
 const onLegendChange = (val, prop) => {
@@ -243,6 +254,7 @@ watch(
             title="指标值"
           >
             <indicator-value-selector
+              ref="indicatorValueRef"
               :property-inner="propertyInnerAll['indicator-value-selector']"
               :themes="themes"
               class="attr-selector"
@@ -261,6 +273,7 @@ watch(
             name="indicator-name"
           >
             <indicator-name-selector
+              ref="indicatorNameRef"
               :property-inner="propertyInnerAll['indicator-name-selector']"
               :themes="themes"
               class="attr-selector"

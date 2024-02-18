@@ -104,7 +104,7 @@ service.interceptors.request.use(
       config.data = qs.stringify(config.data)
     }
     if (embeddedStore.baseUrl) {
-      config.baseURL = embeddedStore.baseUrl + 'de2api/'
+      config.baseURL = PATH_URL
     }
 
     if (linkStore.getLinkToken) {

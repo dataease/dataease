@@ -21,10 +21,9 @@ public class SqlUtils {
         }
 
         SqlParser.Config config =
-                SqlParser.configBuilder()
-                        .setLex(Lex.JAVA)
-                        .setIdentifierMaxLength(256)
-                        .build();
+                SqlParser.config()
+                        .withLex(Lex.JAVA)
+                        .withIdentifierMaxLength(256);
         // 创建解析器
         SqlParser sqlParser = SqlParser
                 .create(sql, config);

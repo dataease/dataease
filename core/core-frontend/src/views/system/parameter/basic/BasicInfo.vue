@@ -45,7 +45,6 @@ const search = cb => {
         item.pval = item.pval
       }
       item.pkey = 'setting_' + item.pkey
-      console.log(item.pkey)
       state.templateList.push(item)
     }
     cb && cb()

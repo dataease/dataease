@@ -12,6 +12,7 @@ import {
   DEFAULT_INDICATOR_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { hexColorToRGBA } from '@/views/chart/components/js/util'
 
 const props = defineProps({
   view: {
@@ -222,15 +223,21 @@ const renderChart = async view => {
   if (!view) {
     return
   }
+
+  const TEMP_DEFAULT_CHART = cloneDeep(BASE_VIEW_CONFIG)
+  delete TEMP_DEFAULT_CHART.customAttr.basicStyle.alpha
+
   const chart = deepCopy({
-    ...defaultsDeep(view, cloneDeep(BASE_VIEW_CONFIG)),
+    ...defaultsDeep(view, TEMP_DEFAULT_CHART),
     data: chartData.value
   })
+
   recursionTransObj(customAttrTrans, chart.customAttr, scale.value, terminal.value)
   recursionTransObj(customStyleTrans, chart.customStyle, scale.value, terminal.value)
 
   if (chart.customAttr) {
     const customAttr = chart.customAttr
+
     if (customAttr.indicator) {
       switch (customAttr.indicator.hPosition) {
         case 'left':
@@ -254,6 +261,15 @@ const renderChart = async view => {
       }
 
       indicatorColor.value = customAttr.indicator.color
+      let suffixColor = customAttr.indicator.suffixColor
+
+      if (customAttr.basicStyle && customAttr.basicStyle.alpha !== undefined) {
+        indicatorColor.value = hexColorToRGBA(
+          customAttr.basicStyle.colors[0],
+          customAttr.basicStyle.alpha
+        )
+        suffixColor = hexColorToRGBA(customAttr.basicStyle.colors[1], customAttr.basicStyle.alpha)
+      }
 
       indicatorClass.value = {
         color: thresholdColor.value,
@@ -270,7 +286,7 @@ const renderChart = async view => {
       }
 
       indicatorSuffixClass.value = {
-        color: customAttr.indicator.suffixColor,
+        color: suffixColor,
         'font-size': customAttr.indicator.suffixFontSize + 'px',
         'font-family': defaultTo(
           CHART_CONT_FAMILY_MAP[customAttr.indicator.suffixFontFamily],
@@ -287,9 +303,15 @@ const renderChart = async view => {
       suffixContent.value = defaultTo(customAttr.indicator.suffix, '')
     }
     if (customAttr.indicatorName && customAttr.indicatorName.show) {
+      let nameColor = customAttr.indicatorName.color
+
+      if (customAttr.basicStyle && customAttr.basicStyle.alpha !== undefined) {
+        nameColor = hexColorToRGBA(customAttr.basicStyle.colors[2], customAttr.basicStyle.alpha)
+      }
+
       indicatorNameShow.value = true
       indicatorNameClass.value = {
-        color: customAttr.indicatorName.color,
+        color: nameColor,
         'font-size': customAttr.indicatorName.fontSize + 'px',
         'font-family': defaultTo(
           CHART_CONT_FAMILY_MAP[customAttr.indicatorName.fontFamily],

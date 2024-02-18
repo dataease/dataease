@@ -354,7 +354,7 @@ export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
 export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
   show: true,
   fontSize: '20',
-  color: '#5470C6',
+  color: '#5470C6ff',
   hPosition: 'center',
   vPosition: 'center',
   isItalic: false,
@@ -366,7 +366,7 @@ export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
   suffixEnable: true,
   suffix: '',
   suffixFontSize: '14',
-  suffixColor: '#5470C6',
+  suffixColor: '#5470C6ff',
   suffixIsItalic: false,
   suffixIsBolder: true,
   suffixFontFamily: 'Microsoft YaHei',
@@ -376,7 +376,7 @@ export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
 export const DEFAULT_INDICATOR_NAME_STYLE: ChartIndicatorNameStyle = {
   show: true,
   fontSize: '18',
-  color: '#ffffff',
+  color: '#ffffffff',
   isItalic: false,
   isBolder: true,
   fontFamily: 'Microsoft YaHei',

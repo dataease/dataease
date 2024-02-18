@@ -30,7 +30,7 @@
         </div>
 
         <div class="auth-root-class">
-          <el-button size="small" type="primary" @click="refresh">{{
+          <el-button size="small" type="primary" @click="refresh(pwdForm)">{{
             t('pblink.sure_bt')
           }}</el-button>
         </div>
@@ -71,20 +71,30 @@ const rule = reactive<FormRules>({
   ]
 })
 
-const refresh = () => {
-  const curLocation = window.location.href
-  const paramIndex = curLocation.indexOf('?')
-  const uuidIndex = curLocation.indexOf('de-link/') + 8
-  const uuid = curLocation.substring(uuidIndex, paramIndex !== -1 ? paramIndex : curLocation.length)
-  const pwd = form.value.password
-  const text = uuid + pwd
-  const ciphertext = rsaEncryp(text)
-  request.post({ url: '/share/validate', data: { ciphertext } }).then(res => {
-    if (res.data) {
-      wsCache.set(`link-${uuid}`, ciphertext)
-      window.location.reload()
+const refresh = async (formEl: FormInstance | undefined) => {
+  if (!formEl) return
+  await formEl.validate((valid, fields) => {
+    if (valid) {
+      const curLocation = window.location.href
+      const paramIndex = curLocation.indexOf('?')
+      const uuidIndex = curLocation.indexOf('de-link/') + 8
+      const uuid = curLocation.substring(
+        uuidIndex,
+        paramIndex !== -1 ? paramIndex : curLocation.length
+      )
+      const pwd = form.value.password
+      const text = uuid + pwd
+      const ciphertext = rsaEncryp(text)
+      request.post({ url: '/share/validate', data: { ciphertext } }).then(res => {
+        if (res.data) {
+          wsCache.set(`link-${uuid}`, ciphertext)
+          window.location.reload()
+        } else {
+          msg.value = '密码错误'
+        }
+      })
     } else {
-      msg.value = '密码错误'
+      console.error('error submit!', fields)
     }
   })
 }

@@ -190,8 +190,13 @@ const enableSwitcher = () => {
 }
 
 const formatLinkAddr = () => {
-  const href = window.location.href
-  const prefix = href.substring(0, href.indexOf('#') + 1)
+  let prefix = '/'
+  if (window.DataEaseBi?.baseUrl) {
+    prefix = window.DataEaseBi.baseUrl + '#'
+  } else {
+    const href = window.location.href
+    prefix = href.substring(0, href.indexOf('#') + 1)
+  }
   linkAddr.value = prefix + SHARE_BASE + state.detailInfo.uuid
 }
 

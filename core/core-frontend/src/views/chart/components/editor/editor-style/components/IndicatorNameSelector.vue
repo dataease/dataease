@@ -5,13 +5,15 @@ import {
   COLOR_PANEL,
   CHART_FONT_FAMILY,
   CHART_FONT_LETTER_SPACE,
-  DEFAULT_INDICATOR_NAME_STYLE
+  DEFAULT_INDICATOR_NAME_STYLE,
+  DEFAULT_BASIC_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { ElButton, ElIcon } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import { hexColorToRGBA } from '@/views/chart/components/js/util'
 const dvMainStore = dvMainStoreWithOut()
 const { batchOptStatus } = storeToRefs(dvMainStore)
 
@@ -40,7 +42,8 @@ const fontFamily = CHART_FONT_FAMILY
 const fontLetterSpace = CHART_FONT_LETTER_SPACE
 
 const state = reactive({
-  indicatorNameForm: JSON.parse(JSON.stringify(DEFAULT_INDICATOR_NAME_STYLE))
+  indicatorNameForm: JSON.parse(JSON.stringify(DEFAULT_INDICATOR_NAME_STYLE)),
+  basicStyleForm: {} as ChartBasicStyle
 })
 
 const { chart } = toRefs(props)
@@ -61,10 +64,24 @@ const changeTitleStyle = prop => {
 }
 
 const init = () => {
+  const TEMP_DEFAULT_BASIC_STYLE = cloneDeep(DEFAULT_BASIC_STYLE)
+  delete TEMP_DEFAULT_BASIC_STYLE.alpha
+
+  state.basicStyleForm = defaultsDeep(
+    cloneDeep(props.chart?.customAttr?.basicStyle),
+    cloneDeep(TEMP_DEFAULT_BASIC_STYLE)
+  )
+
   const customText = defaultsDeep(
     cloneDeep(props.chart?.customAttr?.indicatorName),
     cloneDeep(DEFAULT_INDICATOR_NAME_STYLE)
   )
+
+  if (state.basicStyleForm.alpha !== undefined) {
+    const color = hexColorToRGBA(state.basicStyleForm.colors[2], state.basicStyleForm.alpha)
+
+    customText.color = color
+  }
 
   state.indicatorNameForm = cloneDeep(customText)
 
@@ -85,6 +102,12 @@ watch(
   },
   { deep: true }
 )
+
+function getFormData() {
+  return state.indicatorNameForm
+}
+
+defineExpose({ getFormData })
 </script>
 
 <template>
@@ -125,6 +148,7 @@ watch(
             :predefine="predefineColors"
             @change="changeTitleStyle('color')"
             is-custom
+            show-alpha
           />
         </el-form-item>
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding: 0 4px">
