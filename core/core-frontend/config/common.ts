@@ -45,7 +45,8 @@ export default {
     }),
     createSvgIconsPlugin({
       iconDirs: [pathResolve('src/assets/svg')],
-      symbolId: 'icon-[dir]-[name]'
+      symbolId: 'icon-[dir]-[name]',
+      customDomId: '__svg__icons__dom__de'
     }),
     VueI18nPlugin({
       runtimeOnly: false,
