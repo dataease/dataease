@@ -60,7 +60,7 @@ import { setupStore } from '@/store'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
-import { setupRouter } from '@/router'
+import { setupRouter } from '@/router/embedded'
 
 const setupAll = async (
   dom: string,
