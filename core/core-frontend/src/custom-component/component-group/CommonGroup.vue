@@ -86,7 +86,7 @@ const groupActiveChange = category => {
             :data-id="groupInfo.category + '&' + chartInfo.value"
           >
             <Icon
-              v-if="chartInfo.type === 'outer_svg'"
+              v-if="['outer_svg', 'graphical'].includes(chartInfo.type)"
               class-name="item-top-icon"
               :name="chartInfo.icon"
             />

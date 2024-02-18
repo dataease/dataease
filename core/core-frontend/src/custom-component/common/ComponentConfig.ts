@@ -61,6 +61,31 @@ export const CANVAS_MATERIAL = [
     ]
   },
   {
+    category: 'DeGraphical',
+    title: '图形',
+    span: 8,
+    details: [
+      {
+        value: 'rect',
+        type: 'graphical',
+        title: '矩形',
+        icon: 'graphical-rect'
+      },
+      {
+        value: 'triangle',
+        type: 'graphical',
+        title: '三角形',
+        icon: 'graphical-triangle'
+      },
+      {
+        value: 'circular',
+        type: 'graphical',
+        title: '圆形',
+        icon: 'graphical-circular'
+      }
+    ]
+  },
+  {
     category: 'CanvasIcon',
     title: '图标',
     span: 4,
