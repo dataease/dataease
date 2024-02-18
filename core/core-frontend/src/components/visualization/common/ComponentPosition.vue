@@ -82,9 +82,19 @@ const onPositionChange = key => {
   if (!positionMounted.value[key]) {
     positionMounted.value[key] = 0
   }
+  const originRadio = curComponent.value.style.width / curComponent.value.style.height
   curComponent.value.style[key] = Math.round(
     (positionMounted.value[key] * canvasStyleData.value.scale) / 100
   )
+  if (curComponent.value.maintainRadio) {
+    if (key === 'width') {
+      curComponent.value.style['height'] = curComponent.value.style['width'] / originRadio
+      positionMounted.value['height'] = Math.round(positionMounted.value['width'] / originRadio)
+    } else if (key === 'height') {
+      curComponent.value.style['width'] = curComponent.value.style['height'] * originRadio
+      positionMounted.value['width'] = Math.round(positionMounted.value['height'] * originRadio)
+    }
+  }
 
   if (curComponent.value.component === 'Group') {
     //如果当前组件是Group分组 则要进行内部组件深度计算
