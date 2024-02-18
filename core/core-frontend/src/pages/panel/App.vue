@@ -1,11 +1,7 @@
 <script setup lang="ts">
-import { shallowRef, defineAsyncComponent, onBeforeMount } from 'vue'
+import { shallowRef, defineAsyncComponent } from 'vue'
 import { propTypes } from '@/utils/propTypes'
-import { useAppStoreWithOut } from '@/store/modules/app'
-const appStore = useAppStoreWithOut()
-onBeforeMount(() => {
-  appStore.setIsDataEaseBi(true)
-})
+
 const VisualizationEditor = defineAsyncComponent(
   () => import('@/views/data-visualization/index.vue')
 )
