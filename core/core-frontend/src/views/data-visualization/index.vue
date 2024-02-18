@@ -20,6 +20,7 @@ import { findDragComponent, findNewComponent, initCanvasData } from '@/utils/can
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { listenGlobalKeyDown, releaseAttachKey } from '@/utils/DeShortcutKey'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
+import { useEmbedded } from '@/store/modules/embedded'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { check, compareStorage } from '@/utils/CrossPermission'
@@ -28,12 +29,17 @@ import RealTimeListTree from '@/components/data-visualization/RealTimeListTree.v
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
 const interactiveStore = interactiveStoreWithOut()
+const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const { dvId, opt } = window.DataEaseBi || router.currentRoute.value.query
+    const { opt } = router.currentRoute.value.query
     if (!(opt && opt === 'create')) {
-      check(wsCache.get('screen-weight'), dvId, 4)
+      check(
+        wsCache.get('screen-weight'),
+        embeddedStore.dvId || (router.currentRoute.value.query.dvId as string),
+        4
+      )
     }
   }
 }
@@ -196,7 +202,9 @@ onMounted(async () => {
   if (editMode.value === 'edit') {
     window.addEventListener('storage', eventCheck)
   }
-  const { dvId, opt, pid, createType } = window.DataEaseBi || router.currentRoute.value.query
+  const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
+  const pid = embeddedStore.pid || router.currentRoute.value.query.pid
+  const { opt, createType } = router.currentRoute.value.query
   const checkResult = await checkPer(dvId)
   if (!checkResult) {
     return

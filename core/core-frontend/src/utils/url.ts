@@ -1,3 +1,5 @@
+import { useEmbedded } from '@/store/modules/embedded'
+const embeddedStore = useEmbedded()
 export const formatDataEaseBi = (url: string) => {
-  return window.DataEaseBi?.baseUrl ? `${window.DataEaseBi.baseUrl}${url}` : url
+  return embeddedStore.baseUrl ? `${embeddedStore.baseUrl}${url}` : url
 }

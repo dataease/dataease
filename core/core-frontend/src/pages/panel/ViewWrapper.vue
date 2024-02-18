@@ -2,10 +2,12 @@
 import { ref, onBeforeMount, reactive } from 'vue'
 import { initCanvasDataPrepare } from '@/utils/canvasUtils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { useEmbedded } from '@/store/modules/embedded'
 import { check } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
+const embeddedStore = useEmbedded()
 const config = ref()
 const viewInfo = ref()
 const userViewEnlargeRef = ref()
@@ -22,19 +24,19 @@ const checkPer = async resourceId => {
   if (!window.DataEaseBi || !resourceId) {
     return true
   }
-  const request = { busiFlag: window.DataEaseBi.busiFlag }
+  const request = { busiFlag: embeddedStore.busiFlag }
   await interactiveStore.setInteractive(request)
-  const key = window.DataEaseBi.busiFlag === 'dataV' ? 'screen-weight' : 'panel-weight'
+  const key = embeddedStore.busiFlag === 'dataV' ? 'screen-weight' : 'panel-weight'
   return check(wsCache.get(key), resourceId, 1)
 }
 onBeforeMount(async () => {
-  const checkResult = await checkPer(window.DataEaseBi.dvId)
+  const checkResult = await checkPer(embeddedStore.dvId)
   if (!checkResult) {
     return
   }
   initCanvasDataPrepare(
-    window.DataEaseBi.dvId,
-    window.DataEaseBi.busiFlag,
+    embeddedStore.dvId,
+    embeddedStore.busiFlag,
     function ({
       canvasDataResult,
       canvasStyleResult,
@@ -48,7 +50,7 @@ onBeforeMount(async () => {
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
 
-      viewInfo.value = canvasViewInfoPreview[window.DataEaseBi.chartId]
+      viewInfo.value = canvasViewInfoPreview[embeddedStore.chartId]
       ;(
         (canvasDataResult as unknown as Array<{
           id: string
@@ -56,14 +58,14 @@ onBeforeMount(async () => {
           propValue: Array<{ id: string }>
         }>) || []
       ).some(ele => {
-        if (ele.id === window.DataEaseBi.chartId) {
+        if (ele.id === embeddedStore.chartId) {
           config.value = ele
           return true
         }
 
         if (ele.component === 'Group') {
           return (ele.propValue || []).some(itx => {
-            if (itx.id === window.DataEaseBi.chartId) {
+            if (itx.id === embeddedStore.chartId) {
               config.value = itx
               return true
             }
@@ -97,8 +99,8 @@ const userViewEnlargeOpen = () => {
 
 <style lang="less" scoped>
 .de-view-wrapper {
-  width: 400px;
-  height: 400px;
+  width: 100%;
+  height: 100%;
   position: relative;
 }
 </style>

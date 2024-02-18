@@ -15,16 +15,19 @@ import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/Cha
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
+import { useEmbedded } from '@/store/modules/embedded'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
 const interactiveStore = interactiveStoreWithOut()
+const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const { resourceId, opt } = window.DataEaseBi || router.currentRoute.value.query
+    const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
+    const { opt } = router.currentRoute.value.query
     if (!(opt && opt === 'create')) {
-      check(wsCache.get('panel-weight'), resourceId, 4)
+      check(wsCache.get('panel-weight'), resourceId as string, 4)
     }
   }
 }
@@ -72,7 +75,9 @@ const checkPer = async resourceId => {
 // 全局监听按键事件
 onMounted(async () => {
   window.addEventListener('storage', eventCheck)
-  const { resourceId, opt, pid, createType } = window.DataEaseBi || router.currentRoute.value.query
+  const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
+  const pid = embeddedStore.pid || router.currentRoute.value.query.pid
+  const { opt, createType } = router.currentRoute.value.query
   const checkResult = await checkPer(resourceId)
   if (!checkResult) {
     return
