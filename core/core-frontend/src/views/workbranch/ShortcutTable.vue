@@ -161,6 +161,17 @@ const executeStore = rowInfo => {
     rowInfo.favorite = !rowInfo.favorite
   })
 }
+
+const executeCancelStore = rowInfo => {
+  const param = {
+    id: rowInfo.resourceId,
+    type: rowInfo.type === 'dataV' ? 'screen' : 'panel'
+  }
+  storeApi(param).then(() => {
+    loadTableData()
+  })
+}
+
 const imgType = ref()
 const emptyDesc = ref('')
 const getEmptyImg = (): string => {
@@ -297,7 +308,7 @@ const getEmptyDesc = (): string => {
           </template>
         </el-table-column>
 
-        <el-table-column width="96" fixed="right" key="_operation" :label="$t('common.operate')">
+        <el-table-column width="100" fixed="right" key="_operation" :label="$t('common.operate')">
           <template #default="scope">
             <template v-if="['dashboard', 'dataV', 'panel', 'screen'].includes(scope.row.type)">
               <el-tooltip effect="dark" content="新页面预览" placement="top">
@@ -321,6 +332,19 @@ const getEmptyDesc = (): string => {
                 :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
                 :resource-type="scope.row.type"
               /> -->
+              <el-tooltip
+                v-if="activeName === 'store'"
+                effect="dark"
+                content="取消收藏"
+                placement="top"
+              >
+                <el-icon
+                  class="hover-icon hover-icon-in-table"
+                  @click="executeCancelStore(scope.row)"
+                >
+                  <Icon name="icon_cancel_store"></Icon>
+                </el-icon>
+              </el-tooltip>
             </template>
 
             <template v-if="['dataset'].includes(scope.row.type)">
