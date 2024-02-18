@@ -58,7 +58,6 @@ import AppElement from './App.vue'
 import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
 import { useEmbedded } from '@/store/modules/embedded'
-import { useUserStoreWithOut } from '@/store/modules/user'
 import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
 import { setupRouter } from '@/router/embedded'
 
@@ -88,8 +87,12 @@ const setupAll = async (
   embeddedStore.setPid(pid)
   embeddedStore.setChartId(chartId)
   embeddedStore.setResourceId(resourceId)
-  const userStore = useUserStoreWithOut()
-  await userStore.setUser()
+  const res = await import('@/store/modules/user')
+  const userStore = res.userStore()
+  userStore.setUser()
+  const appRes = await import('@/store/modules/app')
+  const appStore = appRes.useAppStoreWithOut()
+  appStore.setIsDataEaseBi(true)
   app.mount(dom)
   return app
 }
@@ -151,9 +154,11 @@ class DataEaseBi {
   }
 
   destroy() {
-    const userStore = useUserStoreWithOut()
+    import('@/store/modules/user').then(res => {
+      const userStore = res.userStore()
+      userStore.setUser()
+    })
     const embeddedStore = useEmbedded()
-    userStore.clear()
     embeddedStore.setType(null)
     embeddedStore.setBusiFlag(null)
     embeddedStore.setToken(null)
