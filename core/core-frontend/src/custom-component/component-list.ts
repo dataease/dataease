@@ -182,6 +182,26 @@ const list = [
     }
   },
   {
+    component: 'DeGraphical',
+    name: '图形',
+    label: '图形',
+    propValue: '',
+    icon: 'icon_graphical',
+    innerType: '',
+    editing: false,
+    canvasActive: false,
+    x: 1,
+    y: 1,
+    sizeX: 15,
+    sizeY: 15,
+    style: {
+      width: 300,
+      height: 200,
+      color: '#000000',
+      board: 1
+    }
+  },
+  {
     component: 'DeTabs',
     name: '选项卡',
     label: '选项卡',

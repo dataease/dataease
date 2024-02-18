@@ -13,6 +13,8 @@ import CanvasIcon from '@/custom-component/canvas-icon/Component.vue'
 import CanvasIconAttr from '@/custom-component/canvas-icon/Attr.vue'
 import DeTabs from '@/custom-component/de-tabs/Component.vue'
 import DeTabsAttr from '@/custom-component/de-tabs/Attr.vue'
+import DeGraphical from '@/custom-component/de-graphical/Component.vue'
+import DeGraphicalAttr from '@/custom-component/de-graphical/Attr.vue'
 
 export const componentsMap = {
   VText: VText,
@@ -29,7 +31,9 @@ export const componentsMap = {
   CanvasIcon: CanvasIcon,
   CanvasIconAttr: CanvasIconAttr,
   DeTabs: DeTabs,
-  DeTabsAttr: DeTabsAttr
+  DeTabsAttr: DeTabsAttr,
+  DeGraphical: DeGraphical,
+  DeGraphicalAttr: DeGraphicalAttr
 }
 
 export default function findComponent(key) {
