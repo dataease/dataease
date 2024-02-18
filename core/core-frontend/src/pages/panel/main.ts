@@ -79,8 +79,6 @@ const setupAll = async (
   setupRouter(app)
   setupElementPlus(app)
   setupElementPlusIcons(app)
-  const userStore = useUserStoreWithOut()
-  await userStore.setUser()
   const embeddedStore = useEmbedded()
   embeddedStore.setType(type)
   embeddedStore.setBusiFlag(busiFlag)
@@ -90,6 +88,8 @@ const setupAll = async (
   embeddedStore.setPid(pid)
   embeddedStore.setChartId(chartId)
   embeddedStore.setResourceId(resourceId)
+  const userStore = useUserStoreWithOut()
+  await userStore.setUser()
   app.mount(dom)
   return app
 }
