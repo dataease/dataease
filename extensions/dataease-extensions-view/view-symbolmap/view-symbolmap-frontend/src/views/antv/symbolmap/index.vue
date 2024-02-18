@@ -455,7 +455,11 @@ export default {
               })
               const colorAxis = JSON.parse(chart.xaxisExt)
               if (colorAxis && colorAxis.length) {
-                this.pointLayer.color('color', colors)
+                this.pointLayer
+                  .scale('color', {
+                    type: 'cat'
+                  })
+                  .color('color', colors)
               } else {
                 this.pointLayer.color(colors[0])
               }
