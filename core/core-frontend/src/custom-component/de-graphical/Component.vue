@@ -1,15 +1,5 @@
 <template>
-  <div class="rect-main">
-    <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-      <rect
-        width="100%"
-        height="100%"
-        fill="transparent"
-        :stroke="style.color"
-        :stroke-width="style.fontSize"
-      />
-    </svg>
-  </div>
+  <div class="rect-main"></div>
 </template>
 
 <script setup lang="ts">
