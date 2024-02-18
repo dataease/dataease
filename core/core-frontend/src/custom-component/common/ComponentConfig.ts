@@ -70,18 +70,6 @@ export const CANVAS_MATERIAL = [
         type: 'graphical',
         title: '矩形',
         icon: 'graphical-rect'
-      },
-      {
-        value: 'triangle',
-        type: 'graphical',
-        title: '三角形',
-        icon: 'graphical-triangle'
-      },
-      {
-        value: 'circular',
-        type: 'graphical',
-        title: '圆形',
-        icon: 'graphical-circular'
       }
     ]
   },

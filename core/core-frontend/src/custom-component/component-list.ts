@@ -195,10 +195,10 @@ const list = [
     sizeX: 15,
     sizeY: 15,
     style: {
-      width: 300,
-      height: 200,
-      color: '#000000',
-      board: 1
+      borderColor: '#000',
+      borderWidth: 1,
+      backgroundColor: '',
+      borderStyle: 'solid'
     }
   },
   {

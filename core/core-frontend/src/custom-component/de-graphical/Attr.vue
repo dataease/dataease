@@ -95,67 +95,12 @@ onBeforeUnmount(() => {
 
 <template>
   <div class="attr-list de-collapse-style">
-    <input
-      id="input"
-      ref="files"
-      type="file"
-      accept=".jpeg,.jpg,.png,.gif"
-      hidden
-      @click="
-        e => {
-          e.target.value = ''
-        }
-      "
-      @change="reUpload"
-    />
     <CommonAttr
       :themes="themes"
       :element="curComponent"
       :background-color-picker-width="197"
       :background-border-select-width="197"
     >
-      <el-collapse-item :effect="themes" title="图片" name="picture">
-        <el-row class="img-area" :class="`img-area_${themes}`">
-          <el-col style="width: 130px !important">
-            <el-upload
-              :themes="themes"
-              action=""
-              accept=".jpeg,.jpg,.png,.gif,.svg"
-              class="avatar-uploader"
-              list-type="picture-card"
-              :class="{ disabled: uploadDisabled }"
-              :on-preview="handlePictureCardPreview"
-              :on-remove="handleRemove"
-              :before-upload="beforeUploadCheck"
-              :http-request="upload"
-              :file-list="fileList"
-            >
-              <el-icon><Plus /></el-icon>
-            </el-upload>
-            <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
-          </el-col>
-        </el-row>
-        <el-row style="margin-bottom: 16px">
-          <span
-            style="margin-top: 2px"
-            v-if="!curComponent.propValue.url"
-            class="image-hint"
-            :class="`image-hint_${themes}`"
-          >
-            支持JPG、PNG、GIF
-          </span>
-
-          <el-button
-            size="small"
-            style="margin: 8px 0 0 -4px"
-            v-if="curComponent.propValue.url"
-            text
-            @click="goFile"
-          >
-            重新上传
-          </el-button>
-        </el-row>
-      </el-collapse-item>
     </CommonAttr>
   </div>
 </template>
