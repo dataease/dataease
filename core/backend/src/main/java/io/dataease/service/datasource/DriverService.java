@@ -94,6 +94,9 @@ public class DriverService {
         return deDriver;
     }
 
+    public DeDriver get(String id) {
+        return deDriverMapper.selectByPrimaryKey(id);
+    }
 
     public List<DeDriverDetails> listDriverDetails(String driverId) {
         DeDriverDetailsExample example = new DeDriverDetailsExample();

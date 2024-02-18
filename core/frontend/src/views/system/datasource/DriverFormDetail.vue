@@ -107,7 +107,7 @@
 <script>
 import i18n from '@/lang/index'
 import {
-  deleteDriverFile,
+  deleteDriverFile, getDriver,
   listDriverDetails,
   updateDriver
 } from '@/api/system/datasource'
@@ -216,6 +216,10 @@ export default {
       this.params.showModel === 'show' &&
       !this.canEdit
     this.listDriverDetails()
+
+    getDriver(this.driverForm.id).then((res) => {
+      this.driverForm = res.data
+    })
   },
   methods: {
     beforeUpload(file) {
