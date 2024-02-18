@@ -5,6 +5,7 @@ import { ElIcon, ElMessage, ElMessageBox, ElScrollbar } from 'element-plus-secon
 import { Icon } from '@/components/icon-custom'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
+import { useEmbedded } from '@/store/modules/embedded'
 import { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -23,6 +24,7 @@ const { wsCache } = useCache()
 
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
+const embeddedStore = useEmbedded()
 const { dvInfo } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 
@@ -152,7 +154,7 @@ const menuList = computed(() => {
   return [...list, ...edit]
 })
 
-const { dvId } = window.DataEaseBi || router.currentRoute.value.query
+const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
 if (dvId) {
   selectedNodeKey.value = dvId
   returnMounted.value = true

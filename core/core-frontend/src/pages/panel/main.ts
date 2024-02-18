@@ -57,12 +57,23 @@ import 'normalize.css/normalize.css'
 import AppElement from './App.vue'
 import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
+import { useEmbedded } from '@/store/modules/embedded'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
 import { setupRouter } from '@/router'
 
-const setupAll = async (dom: string, componentName: string): Promise<App<Element>> => {
-  const app = createApp(AppElement, { componentName })
+const setupAll = async (
+  dom: string,
+  type: string,
+  busiFlag: string,
+  token: string,
+  baseUrl: string,
+  dvId: string,
+  pid: string,
+  chartId: string,
+  resourceId: string
+): Promise<App<Element>> => {
+  const app = createApp(AppElement, { componentName: type })
   await setupI18n(app)
   setupStore(app)
   setupRouter(app)
@@ -70,6 +81,15 @@ const setupAll = async (dom: string, componentName: string): Promise<App<Element
   setupElementPlusIcons(app)
   const userStore = useUserStoreWithOut()
   await userStore.setUser()
+  const embeddedStore = useEmbedded()
+  embeddedStore.setType(type)
+  embeddedStore.setBusiFlag(busiFlag)
+  embeddedStore.setToken(token)
+  embeddedStore.setBaseUrl(baseUrl)
+  embeddedStore.setDvId(dvId)
+  embeddedStore.setPid(pid)
+  embeddedStore.setChartId(chartId)
+  embeddedStore.setResourceId(resourceId)
   app.mount(dom)
   return app
 }
@@ -104,7 +124,7 @@ class DataEaseBi {
   deOptions: Options
   vm: App<Element>
 
-  create(type, options) {
+  constructor(type, options) {
     this.type = type
     this.token = options.token
     this.busiFlag = options.busiFlag
@@ -117,15 +137,42 @@ class DataEaseBi {
 
   async initialize(options: Options) {
     this.deOptions = { ...defaultOptions, ...options }
-    this.vm = await setupAll(this.deOptions.container, this.type)
+    this.vm = await setupAll(
+      this.deOptions.container,
+      this.type,
+      this.busiFlag,
+      this.token,
+      this.baseUrl,
+      this.dvId,
+      this.pid,
+      this.chartId,
+      this.resourceId
+    )
   }
 
   destroy() {
     const userStore = useUserStoreWithOut()
+    const embeddedStore = useEmbedded()
     userStore.clear()
+    embeddedStore.setType(null)
+    embeddedStore.setBusiFlag(null)
+    embeddedStore.setToken(null)
+    embeddedStore.setBaseUrl(null)
+    embeddedStore.setDvId(null)
+    embeddedStore.setPid(null)
+    embeddedStore.setChartId(null)
+    embeddedStore.setResourceId(null)
     this.vm.unmount()
+    this.type = null
+    this.token = null
+    this.busiFlag = null
+    this.baseUrl = null
+    this.dvId = null
+    this.pid = null
+    this.chartId = null
+    this.resourceId = null
     this.vm = null
   }
 }
 
-window.DataEaseBi = new DataEaseBi()
+window.DataEaseBi = DataEaseBi

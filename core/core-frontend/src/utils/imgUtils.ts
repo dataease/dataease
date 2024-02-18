@@ -1,10 +1,12 @@
 import html2canvas from 'html2canvas'
 import JsPDF from 'jspdf'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { useEmbedded } from '@/store/modules/embedded'
 import { storeToRefs } from 'pinia'
 import { findResourceAsBase64 } from '@/api/staticResource'
 import FileSaver from 'file-saver'
 import { deepCopy } from '@/utils/utils'
+const embeddedStore = useEmbedded()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo, canvasViewDataInfo, dvInfo } =
   storeToRefs(dvMainStore)
@@ -20,8 +22,8 @@ export function imgUrlTrans(url) {
         ? (basePath.endsWith('/') ? basePath.substring(0, basePath.length - 1) : basePath) + url
         : null
       return formatterUrl(
-        window.DataEaseBi
-          ? `${window.DataEaseBi.baseUrl}${
+        embeddedStore.baseUrl
+          ? `${embeddedStore.baseUrl}${
               rawUrl.startsWith('/api') ? rawUrl.slice(5) : rawUrl
             }`.replace('com//', 'com/')
           : rawUrl
