@@ -232,6 +232,7 @@ const {
 } = toRefs(props)
 const domId = ref('shape-id-' + element.value.id)
 const pointList = ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l']
+const pointCorner = ['lt', 'rt', 'rb', 'lb']
 const pointList2 = ['r', 'l']
 const initialAngle = {
   // 每个点对应的初始角度
@@ -639,7 +640,9 @@ const handleMouseDownOnPoint = (point, e) => {
       const adaptorWidthOffset = heightOffset * originRadio
       // 保持宽高比例是相对高度偏移量
       const adaptorHeightOffset = widthOffset / originRadio
-      if (Math.abs(widthOffset) > Math.abs(adaptorWidthOffset)) {
+      if (pointCorner.includes(point)) {
+        style.height = defaultStyle.value.height + adaptorHeightOffset
+      } else if (Math.abs(widthOffset) > Math.abs(adaptorWidthOffset)) {
         // 调整高度
         style.height = defaultStyle.value.height + adaptorHeightOffset
       } else {
