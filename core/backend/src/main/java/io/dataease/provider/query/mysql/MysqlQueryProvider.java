@@ -1095,6 +1095,10 @@ public class MysqlQueryProvider extends QueryProvider {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'%" + value;
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = value + "%'";
             } else {
                 whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value);
             }
@@ -1170,6 +1174,10 @@ public class MysqlQueryProvider extends QueryProvider {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'%" + value;
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = value + "%'";
             } else {
                 whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value);
             }
@@ -1206,6 +1214,8 @@ public class MysqlQueryProvider extends QueryProvider {
             case "not in":
                 return " NOT IN ";
             case "like":
+            case "begin_with":
+            case "end_with":
                 return " LIKE ";
             case "not like":
                 return " NOT LIKE ";
@@ -1295,6 +1305,10 @@ public class MysqlQueryProvider extends QueryProvider {
                         whereValue = "('" + String.join("','", value.split(",")) + "')";
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "begin_with")) {
+                        whereValue = "'%" + value;
+                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "end_with")) {
+                        whereValue = value + "%'";
                     } else {
                         whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value);
                     }
@@ -1591,6 +1605,10 @@ public class MysqlQueryProvider extends QueryProvider {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
+                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "begin_with")) {
+                    whereValue = "'%" + f.getValue();
+                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "end_with")) {
+                    whereValue = f.getValue() + "%'";
                 } else {
                     whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
@@ -1655,6 +1673,10 @@ public class MysqlQueryProvider extends QueryProvider {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
+                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "begin_with")) {
+                    whereValue = "'%" + f.getValue();
+                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "end_with")) {
+                    whereValue = f.getValue() + "%'";
                 } else {
                     whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
