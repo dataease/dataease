@@ -116,6 +116,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     }
     const label = {
       type: labelAttr.position === 'outer' ? 'spider' : labelAttr.position,
+      layout: [{ type: 'limit-in-plot' }],
       autoRotate: false,
       style: {
         fill: labelAttr.color,
@@ -221,6 +222,13 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     const { label } = customAttr
     if (!['inner', 'outer'].includes(label.position)) {
       label.position = 'outer'
+    }
+    customAttr.label = {
+      ...label,
+      show: true,
+      showDimension: true,
+      showProportion: true,
+      reserveDecimalCount: 2
     }
     return chart
   }
