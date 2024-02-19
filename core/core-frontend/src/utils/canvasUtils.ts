@@ -41,7 +41,7 @@ export function findDragComponent(componentInfo) {
 export function findNewComponent(componentName, innerType) {
   let newComponent
   componentList.forEach(comp => {
-    if (comp.component === componentName) {
+    if (comp.component === componentName || comp.component === innerType) {
       newComponent = cloneDeep(comp)
       newComponent.innerType = innerType
       if (newComponent.innerType === 'richText') {

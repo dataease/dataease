@@ -66,10 +66,16 @@ export const CANVAS_MATERIAL = [
     span: 8,
     details: [
       {
-        value: 'rect',
+        value: 'RectShape',
         type: 'graphical',
         title: '矩形',
         icon: 'graphical-rect'
+      },
+      {
+        value: 'CircleShape',
+        type: 'graphical',
+        title: '圆形',
+        icon: 'graphical-circular'
       }
     ]
   },

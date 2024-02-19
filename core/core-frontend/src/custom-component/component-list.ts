@@ -164,7 +164,7 @@ const list = [
   },
   {
     component: 'CanvasBoard',
-    name: '边框',
+    name: '图形',
     label: '边框',
     propValue: '',
     icon: 'other_material_board',
@@ -182,23 +182,48 @@ const list = [
     }
   },
   {
-    component: 'DeGraphical',
-    name: '图形',
-    label: '图形',
-    propValue: '',
+    component: 'RectShape',
+    name: '矩形',
+    label: '矩形',
+    propValue: '&nbsp;',
     icon: 'icon_graphical',
-    innerType: '',
-    editing: false,
-    canvasActive: false,
-    x: 1,
-    y: 1,
-    sizeX: 15,
-    sizeY: 15,
     style: {
+      width: 200,
+      height: 200,
       borderColor: '#000',
       borderWidth: 1,
       backgroundColor: '',
-      borderStyle: 'solid'
+      borderStyle: 'solid',
+      borderRadius: 5
+    }
+  },
+  {
+    component: 'CircleShape',
+    name: '图形',
+    label: '圆形',
+    propValue: '&nbsp;',
+    icon: 'icon_graphical',
+    style: {
+      width: 200,
+      height: 200,
+      borderColor: '#000',
+      borderWidth: 1,
+      borderStyle: 'solid',
+      backgroundColor: ''
+    }
+  },
+  {
+    component: 'SvgTriangle',
+    name: '图形',
+    label: '三角形',
+    icon: 'icon_graphical',
+    propValue: '',
+    style: {
+      width: 200,
+      height: 200,
+      borderColor: '#000',
+      borderWidth: 1,
+      backgroundColor: ''
     }
   },
   {

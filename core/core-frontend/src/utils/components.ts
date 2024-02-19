@@ -15,6 +15,12 @@ import DeTabs from '@/custom-component/de-tabs/Component.vue'
 import DeTabsAttr from '@/custom-component/de-tabs/Attr.vue'
 import DeGraphical from '@/custom-component/de-graphical/Component.vue'
 import DeGraphicalAttr from '@/custom-component/de-graphical/Attr.vue'
+import CircleShape from '@/custom-component/circle-shape/Component.vue'
+import CircleShapeAttr from '@/custom-component/circle-shape/Attr.vue'
+import RectShape from '@/custom-component/rect-shape/Component.vue'
+import RectShapeAttr from '@/custom-component/rect-shape/Attr.vue'
+import SvgTriangle from '@/custom-component/svgs/svg-triangle/Component.vue'
+import SvgTriangleAttr from '@/custom-component/svgs/svg-triangle/Attr.vue'
 
 export const componentsMap = {
   VText: VText,
@@ -33,7 +39,13 @@ export const componentsMap = {
   DeTabs: DeTabs,
   DeTabsAttr: DeTabsAttr,
   DeGraphical: DeGraphical,
-  DeGraphicalAttr: DeGraphicalAttr
+  DeGraphicalAttr: DeGraphicalAttr,
+  CircleShape: CircleShape,
+  CircleShapeAttr: CircleShapeAttr,
+  RectShape: RectShape,
+  RectShapeAttr: RectShapeAttr,
+  SvgTriangle: SvgTriangle,
+  SvgTriangleAttr: SvgTriangleAttr
 }
 
 export default function findComponent(key) {
