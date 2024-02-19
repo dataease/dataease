@@ -85,10 +85,13 @@ const saveCanvasWithCheck = () => {
 }
 
 const saveResource = () => {
-  canvasSave(() => {
-    ElMessage.success('保存成功')
-    window.history.pushState({}, '', `#/dvCanvas?dvId=${dvInfo.value.id}`)
-  })
+  if (styleChangeTimes.value > 0) {
+    snapshotStore.resetStyleChangeTimes()
+    canvasSave(() => {
+      ElMessage.success('保存成功')
+      window.history.pushState({}, '', `#/dvCanvas?dvId=${dvInfo.value.id}`)
+    })
+  }
 }
 
 const clearCanvas = () => {
