@@ -72,6 +72,12 @@ export const CANVAS_MATERIAL = [
         icon: 'graphical-rect'
       },
       {
+        value: 'SvgTriangle',
+        type: 'graphical',
+        title: '三角形',
+        icon: 'graphical-triangle'
+      },
+      {
         value: 'CircleShape',
         type: 'graphical',
         title: '圆形',

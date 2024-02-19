@@ -190,11 +190,11 @@ const list = [
     style: {
       width: 200,
       height: 200,
-      borderColor: '#000',
       borderWidth: 1,
-      backgroundColor: '',
+      borderRadius: 5,
       borderStyle: 'solid',
-      borderRadius: 5
+      borderColor: '#000',
+      backgroundColor: ''
     }
   },
   {
@@ -206,9 +206,9 @@ const list = [
     style: {
       width: 200,
       height: 200,
-      borderColor: '#000',
       borderWidth: 1,
       borderStyle: 'solid',
+      borderColor: '#000',
       backgroundColor: ''
     }
   },
@@ -221,9 +221,9 @@ const list = [
     style: {
       width: 200,
       height: 200,
-      borderColor: '#000',
       borderWidth: 1,
-      backgroundColor: ''
+      borderColor: '#000',
+      backgroundColor: 'rgba(236,231,231,0.1)'
     }
   },
   {

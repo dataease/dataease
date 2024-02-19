@@ -381,7 +381,9 @@ export function adaptCurThemeCommonStyle(component) {
   // 背景融合-Begin 如果是大屏['CanvasBoard', 'CanvasIcon', 'Picture']组件不需要设置背景
   if (
     dvMainStore.dvInfo.type === 'dataV' &&
-    ['CanvasBoard', 'CanvasIcon', 'Picture', 'Group'].includes(component.component)
+    ['CanvasBoard', 'CanvasIcon', 'Picture', 'Group', 'SvgTriangle', 'SvgStar'].includes(
+      component.component
+    )
   ) {
     component.commonBackground['backgroundColorSelect'] = false
     component.commonBackground['innerPadding'] = 0

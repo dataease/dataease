@@ -115,7 +115,11 @@ const onClick = () => {
 }
 
 const getComponentStyleDefault = style => {
-  return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+  if (config.value.component.includes('Svg')) {
+    return getStyle(style, ['top', 'left', 'width', 'height', 'rotate', 'backgroundColor'])
+  } else {
+    return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+  }
 }
 
 const onMouseEnter = () => {

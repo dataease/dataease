@@ -6,7 +6,7 @@
         :points="points"
         :stroke="element.style.borderColor"
         :fill="element.style.backgroundColor"
-        stroke-width="1"
+        :stroke-width="element.style.borderWidth"
       />
     </svg>
     <v-text :prop-value="element.propValue" :element="element" />
