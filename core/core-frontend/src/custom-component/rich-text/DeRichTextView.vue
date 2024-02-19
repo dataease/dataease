@@ -55,6 +55,7 @@ import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 const snapshotStore = snapshotStoreWithOut()
 const errMsg = ref('')
 const dvMainStore = dvMainStoreWithOut()
@@ -389,9 +390,18 @@ const initCurFields = chartDetails => {
         yDataeaseNamesCfg[yItem.dataeaseName] = yItem.formatterCfg
       })
     }
+    const valueFieldMap: Record<string, Axis> = chartDetails.yAxis.reduce((p, n) => {
+      p[n.dataeaseName] = n
+      return p
+    }, {})
     for (const key in rowData) {
       dataRowSelect.value[nameIdMap[key]] = rowData[key]
-      dataRowNameSelect.value[sourceFieldNameIdMap[key]] = rowData[key]
+      let rowDataValue = rowData[key]
+      const f = valueFieldMap[key]
+      if (f && f.formatterCfg) {
+        rowDataValue = valueFormatter(rowDataValue, f.formatterCfg)
+      }
+      dataRowNameSelect.value[sourceFieldNameIdMap[key]] = rowDataValue
     }
   }
   element.value.propValue['innerType'] = chartDetails.type
