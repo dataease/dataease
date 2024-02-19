@@ -141,16 +141,19 @@ const saveCanvasWithCheck = () => {
 }
 
 const saveResource = () => {
-  dvMainStore.matrixSizeAdaptor()
-  queryList.value.forEach(ele => {
-    useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
-  })
-
-  canvasSave(() => {
+  if (styleChangeTimes.value > 0) {
     snapshotStore.resetStyleChangeTimes()
-    ElMessage.success('保存成功')
-    window.history.pushState({}, '', `#/dashboard?resourceId=${dvInfo.value.id}`)
-  })
+    dvMainStore.matrixSizeAdaptor()
+    queryList.value.forEach(ele => {
+      useEmitt().emitter.emit(`updateQueryCriteria${ele.id}`)
+    })
+
+    canvasSave(() => {
+      snapshotStore.resetStyleChangeTimes()
+      ElMessage.success('保存成功')
+      window.history.pushState({}, '', `#/dashboard?resourceId=${dvInfo.value.id}`)
+    })
+  }
 }
 
 const clearCanvas = () => {
