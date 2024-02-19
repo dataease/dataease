@@ -1137,6 +1137,8 @@ export default {
     filter_not_empty: 'Not Empty String',
     filter_include: 'Contain',
     filter_not_include: 'Not Contain',
+    filter_end_with: 'End With',
+    filter_begin_with: 'Begin With',
     rose_type: 'Rose pattern',
     radius_mode: 'Radius',
     area_mode: 'Area',

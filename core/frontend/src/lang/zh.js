@@ -1135,6 +1135,8 @@ export default {
     filter_not_empty: '非空字符串',
     filter_include: '包含',
     filter_not_include: '不包含',
+    filter_end_with: '结尾是',
+    filter_begin_with: '开头是',
     rose_type: '玫瑰图模式',
     radius_mode: '半径',
     area_mode: '面积',
