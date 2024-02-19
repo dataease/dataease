@@ -96,7 +96,10 @@ export const snapshotStore = defineStore('snapshot', {
             })
           }
         })
-        if (!curComponentMatch) {
+        if (
+          !curComponentMatch ||
+          (curComponent.value.innerType && curComponent.value.innerType === 'rich-text')
+        ) {
           dvMainStore.setCurComponent({
             component: null,
             index: null
