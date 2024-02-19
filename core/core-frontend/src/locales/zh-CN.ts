@@ -2000,7 +2000,7 @@ export default {
     borderStyle: '边框风格',
     borderWidth: '边框宽度',
     borderColor: '边框颜色',
-    borderRadius: '边框半径',
+    borderRadius: '圆角',
     fontSize: '字体大小',
     fontWeight: '字体粗细',
     lineHeight: '行高',
