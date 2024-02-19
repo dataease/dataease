@@ -164,8 +164,8 @@ watch(
       const ed = tinymce.editors[tinymceId]
       element.value.propValue.textValue = ed.getContent()
     }
-    if (initReady.value) {
-      snapshotStore.recordSnapshotCache()
+    if (initReady.value && canEdit.value) {
+      snapshotStore.recordSnapshotCache('renderChart', element.value.id)
     }
   }
 )
@@ -405,7 +405,7 @@ const initCurFields = chartDetails => {
 }
 
 const renderChart = () => {
-  //do nothing
+  initCurFieldsChange()
 }
 
 onMounted(() => {
