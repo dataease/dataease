@@ -2,8 +2,9 @@
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { deepCopy } from '@/utils/utils'
-import { nextTick, reactive, ref, computed, onMounted } from 'vue'
+import { nextTick, reactive, ref, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
@@ -307,10 +308,8 @@ const saveLinkageSetting = () => {
 const onDvNameChange = () => {
   snapshotStore.recordSnapshotCache()
 }
-const isDataEaseBi = ref(false)
-onMounted(() => {
-  isDataEaseBi.value = !!window.DataEaseBi
-})
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 </script>
 
 <template>

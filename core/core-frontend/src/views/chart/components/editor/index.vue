@@ -8,12 +8,12 @@ import {
   computed,
   nextTick,
   onBeforeMount,
-  onMounted,
   provide,
   h
 } from 'vue'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Tree } from '../../../visualized/data/dataset/form/CreatDsGroup.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -103,10 +103,8 @@ onBeforeMount(() => {
   cacheId = route.query.id as unknown as string
 })
 
-const isDataEaseBi = ref(false)
-onMounted(() => {
-  isDataEaseBi.value = !!window.DataEaseBi
-})
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const dsFieldDragOptions = { group: { name: 'drag', pull: 'clone' }, sort: true }
 
 const itemFormRules = reactive<FormRules>({

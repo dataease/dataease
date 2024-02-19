@@ -15,6 +15,7 @@ import {
 } from 'vue'
 import { getData } from '@/api/chart'
 import chartViewManager from '@/views/chart/components/js/panel'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
@@ -233,8 +234,9 @@ const action = param => {
     viewTrack.value.trackButtonClick()
   }
 }
+const appStore = useAppStoreWithOut()
 
-const isDataEaseBi = ref(false)
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const trackClick = trackAction => {
   const param = state.pointParam
@@ -316,7 +318,6 @@ const preSize = [0, 0]
 const TOLERANCE = 1
 let resizeObserver: ResizeObserver
 onMounted(() => {
-  isDataEaseBi.value = !!window.DataEaseBi
   resizeObserver = new ResizeObserver(([entry] = []) => {
     const [size] = entry.borderBoxSize || []
     // 拖动的时候宽高重新计算，误差范围内不重绘，误差先设置为1

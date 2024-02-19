@@ -10,6 +10,7 @@ interface AppState {
   dekey: string
   desktop: boolean
   isDataEaseBi: boolean
+  isIframe: boolean
 }
 
 export const useAppStore = defineStore('app', {
@@ -20,6 +21,7 @@ export const useAppStore = defineStore('app', {
       title: 'DataEase',
       dekey: 'DataEaseKey',
       isDataEaseBi: false,
+      isIframe: false,
       desktop: false
     }
   },
@@ -35,6 +37,9 @@ export const useAppStore = defineStore('app', {
     },
     getIsDataEaseBi(): boolean {
       return this.isDataEaseBi
+    },
+    getIsIframe(): boolean {
+      return this.isIframe
     },
     getDekey(): string {
       return this.dekey
@@ -55,6 +60,9 @@ export const useAppStore = defineStore('app', {
     },
     setIsDataEaseBi(isDataEaseBi: boolean) {
       this.isDataEaseBi = isDataEaseBi
+    },
+    setIsIframe(isIframe: boolean) {
+      this.isIframe = isIframe
     },
     setPageLoading(pageLoading: boolean) {
       this.pageLoading = pageLoading

@@ -1,9 +1,9 @@
 <script setup lang="ts">
 import { Tree } from '../../../../visualized/data/dataset/form/CreatDsGroup.vue'
-import { computed, onMounted, ref, watch } from 'vue'
+import { computed, ref, watch, onMounted } from 'vue'
 import { Plus, Search } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Field, getFieldByDQ } from '@/api/chart'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import _ from 'lodash'
 import { useRouter } from 'vue-router'
 import { getDatasetTree } from '@/api/dataset'
@@ -52,15 +52,6 @@ const _modelValue = computed({
   },
   set(v) {
     emits('update:modelValue', v)
-  }
-})
-
-const state = computed({
-  get() {
-    return props.stateObj
-  },
-  set(v) {
-    emits('update:stateObj', v)
   }
 })
 
@@ -190,10 +181,10 @@ function getNode(nodeId: number) {
 }
 
 defineExpose({ getNode })
-const isDataEaseBi = ref(false)
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 onMounted(() => {
   initDataset()
-  isDataEaseBi.value = !!window.DataEaseBi
 })
 </script>
 
