@@ -39,6 +39,10 @@ const hanedleMessage = event => {
     dvMainStore.componentData.push(component)
   }
 
+  if (event.data.type === 'setCanvasStyle') {
+    dvMainStore.setCanvasStyle(event.data.value)
+  }
+
   if (event.data.type === 'mobileSave') {
     window.top.postMessage(
       {

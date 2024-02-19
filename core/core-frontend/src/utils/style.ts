@@ -182,8 +182,14 @@ export function getComponentRotatedStyle(style) {
 }
 
 export function getCanvasStyle(canvasStyleData) {
-  const { backgroundColorSelect, background, backgroundColor, backgroundImageEnable, fontSize } =
-    canvasStyleData
+  const {
+    backgroundColorSelect,
+    background,
+    backgroundColor,
+    backgroundImageEnable,
+    fontSize,
+    mobileSetting
+  } = canvasStyleData
   const style = { fontSize: fontSize + 'px', color: canvasStyleData.color }
   // 仪表板默认色#f5f6f7 大屏默认配色 #1a1a1a
   let colorRGBA = dvMainStore.dvInfo.type === 'dashboard' ? '#f5f6f7' : '#1a1a1a'
@@ -195,6 +201,17 @@ export function getCanvasStyle(canvasStyleData) {
   } else {
     style['background-color'] = colorRGBA
   }
+
+  if (dvMainStore.mobileInPc && mobileSetting?.customSetting) {
+    const { backgroundType, color, alpha, imageUrl } = mobileSetting
+    if (backgroundType === 'image' && typeof imageUrl === 'string') {
+      style['background'] = `url(${imgUrlTrans(imageUrl)}) no-repeat`
+    } else if (backgroundType === 'color') {
+      const colorRGBA = hexColorToRGBA(color, alpha === undefined ? 100 : alpha)
+      style['background'] = colorRGBA
+    }
+  }
+  console.log('style', style)
   return style
 }
 

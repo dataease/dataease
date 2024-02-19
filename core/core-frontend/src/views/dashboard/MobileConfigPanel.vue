@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref, onMounted, unref, onBeforeUnmount, computed } from 'vue'
 import eventBus from '@/utils/eventBus'
+import MobileBackgroundSelector from './MobileBackgroundSelector.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getStyle } from '@/utils/style'
@@ -85,7 +86,7 @@ onMounted(() => {
   dvMainStore.setMobileInPc(true)
   useEmitt({
     name: 'onMobileStatusChange',
-    callback: (type, value) => {
+    callback: ({ type, value }) => {
       mobileStatusChange(type, value)
     }
   })
@@ -156,6 +157,7 @@ const addToMobile = com => {
           <div class="pc-select-to-mobile" v-if="!mobileLoading" @click="addToMobile(config)"></div>
         </div>
       </template>
+      <MobileBackgroundSelector v-else></MobileBackgroundSelector>
     </div>
   </div>
 </template>

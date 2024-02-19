@@ -4,6 +4,7 @@ import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { useRouter } from 'vue-router'
 import VanCell from 'vant/es/cell'
 import VanSticky from 'vant/es/sticky'
 import VanSearch from 'vant/es/search'
@@ -43,22 +44,33 @@ const activeTableData = computed(() => {
   return directId.value.length ? dfsTree([...directId.value], tableData.value) : tableData.value
 })
 
-const emits = defineEmits(['hiddentabbar', 'setLoading'])
+const emits = defineEmits(['hiddenTabbar', 'setLoading'])
 const onClickLeft = () => {
   directName.value.pop()
   activeDirectName.value = directName.value[directName.value.length - 1]
   directId.value.pop()
   if (!!directName.value.length) {
-    emits('hiddentabbar', false)
+    emits('hiddenTabbar', false)
   }
+}
+const router = useRouter()
+
+const handleCellClick = ele => {
+  router.push({
+    path: '/panel/mobile',
+    query: {
+      dvId: ele.id
+    }
+  })
 }
 
 const dataClick = val => {
   directName.value.push(val.name)
   activeDirectName.value = val.name
   directId.value.push(val.id)
-  if (directName.value.length === 1) {
-    emits('hiddentabbar', true)
+  if (val.leaf) {
+    emits('hiddenTabbar', true)
+    handleCellClick(val)
   }
 }
 

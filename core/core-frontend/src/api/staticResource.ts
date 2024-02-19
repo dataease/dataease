@@ -32,7 +32,7 @@ export function uploadFileResult(file, callback) {
   const fileUrl = staticResourcePath + newFileName
   const param = new FormData()
   param.append('file', file)
-  uploadFile(fileId, param).then(() => {
+  return uploadFile(fileId, param).then(() => {
     callback(fileUrl)
   })
 }
