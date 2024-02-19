@@ -66,6 +66,7 @@ const curCanvasType = ref('')
 const mounted = ref(false)
 
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isIframe = computed(() => appStore.getIsIframe)
 const createPanel = path => {
   const baseUrl = `#/${path}?opt=create&id=${nodeInfo.id}`
   window.open(baseUrl, '_blank')
@@ -569,7 +570,7 @@ const getMenuList = (val: boolean) => {
       </div>
     </el-aside>
 
-    <div class="dataset-content" :class="isDataEaseBi && 'h100'">
+    <div class="dataset-content" :class="(isDataEaseBi || isIframe) && 'h100'">
       <template v-if="!state.datasetTree.length && mounted">
         <empty-background description="暂无数据集" img-type="none">
           <el-button

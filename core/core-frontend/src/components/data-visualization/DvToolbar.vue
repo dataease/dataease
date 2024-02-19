@@ -1,9 +1,10 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { ref, nextTick, onMounted } from 'vue'
+import { ref, nextTick, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { storeToRefs } from 'pinia'
 import Icon from '../icon-custom/src/Icon.vue'
 import ComponentGroup from '@/components/visualization/ComponentGroup.vue'
@@ -131,10 +132,8 @@ const getFullScale = () => {
   const curWidth = dvToolbarMain.value.clientWidth
   return (curWidth * 100) / canvasStyleData.value.width
 }
-const isDataEaseBi = ref(false)
-onMounted(() => {
-  isDataEaseBi.value = !!window.DataEaseBi
-})
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 eventBus.on('preview', preview)
 eventBus.on('save', saveCanvasWithCheck)

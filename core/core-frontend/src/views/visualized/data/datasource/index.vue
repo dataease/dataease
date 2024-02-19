@@ -71,6 +71,7 @@ const recordState = reactive({
   }
 })
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isIframe = computed(() => appStore.getIsIframe)
 
 const createDataset = (tableName?: string) => {
   router.push({
@@ -776,7 +777,7 @@ const getMenuList = (val: boolean) => {
       </div>
     </el-aside>
 
-    <div class="datasource-content" :class="isDataEaseBi && 'h100'">
+    <div class="datasource-content" :class="(isDataEaseBi || isIframe) && 'h100'">
       <template v-if="!state.datasourceTree.length && mounted">
         <empty-background description="暂无数据源" img-type="none">
           <el-button

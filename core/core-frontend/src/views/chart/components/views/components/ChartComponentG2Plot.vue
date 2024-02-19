@@ -5,6 +5,7 @@ import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import { G2PlotChartView } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { L7PlotChartView } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import chartViewManager from '@/views/chart/components/js/panel'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ViewTrackBar from '@/components/visualization/ViewTrackBar.vue'
 import { storeToRefs } from 'pinia'
@@ -147,7 +148,8 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
 
 const dynamicAreaId = ref('')
 const country = ref('')
-const isDataEaseBi = ref(false)
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 let mapTimer
 const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
   const map = parseJson(chart.customAttr).map
@@ -260,7 +262,6 @@ defineExpose({
 let resizeObserver
 const TOLERANCE = 0.01
 onMounted(() => {
-  isDataEaseBi.value = !!window.DataEaseBi
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom
   const preSize = [offsetWidth, offsetHeight]
