@@ -53,8 +53,12 @@ const menuOpt = optName => {
 }
 
 const cut = () => {
-  const curInfo = getCurInfo()
-  copyStore.cut(curInfo.componentData)
+  if (curComponent.value) {
+    const curInfo = getCurInfo()
+    copyStore.cut(curInfo.componentData)
+  } else if (areaData.value.components.length) {
+    copyStore.cut()
+  }
   menuOpt('cut')
 }
 
@@ -135,6 +139,11 @@ const decompose = () => {
   menuOpt('decompose')
 }
 
+const alignment = params => {
+  composeStore.alignment(params)
+  snapshotStore.recordSnapshotCache('decompose')
+}
+
 // 阻止事件向父级组件传播调用父级的handleMouseDown 导致areaData 被隐藏
 const handleComposeMouseDown = e => {
   e.preventDefault()
@@ -147,10 +156,37 @@ const composeDivider = computed(() => {
 </script>
 
 <template>
-  <div class="context-menu-details" @mousedown="handleComposeMouseDown">
+  <div class="context-menu-base context-menu-details" @mousedown="handleComposeMouseDown">
     <ul @mouseup="handleMouseUp">
       <template v-if="areaData.components.length">
         <li @mousedown="handleComposeMouseDown" @click="componentCompose">组合</li>
+        <el-dropdown
+          style="width: 100%"
+          trigger="hover"
+          effect="dark"
+          placement="right-start"
+          popper-class="context-menu-details"
+        >
+          <li>
+            <div>
+              <span>对齐</span><el-icon><ArrowRight /></el-icon>
+            </div>
+          </li>
+          <template #dropdown>
+            <el-dropdown-menu>
+              <el-dropdown-item style="width: 118px" @click="alignment('left')"
+                >左对齐</el-dropdown-item
+              >
+              <el-dropdown-item style="width: 118px" @click="alignment('right')"
+                >右对齐</el-dropdown-item
+              >
+              <el-dropdown-item @click="alignment('top')">上对齐</el-dropdown-item>
+              <el-dropdown-item @click="alignment('bottom')">下对齐</el-dropdown-item>
+              <el-dropdown-item @click="alignment('transverse')">水平居中</el-dropdown-item>
+              <el-dropdown-item @click="alignment('direction')">垂直居中</el-dropdown-item>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
         <el-divider class="custom-divider" />
         <li @click="copy">复制</li>
         <li @click="paste">粘贴</li>
@@ -190,11 +226,13 @@ const composeDivider = computed(() => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="less">
+.context-menu-base {
+  width: 220px;
+}
 .context-menu-details {
   z-index: 1000;
   border: #434343 1px solid;
-  width: 220px;
   ul {
     padding: 4px 0;
     background-color: #292929;
@@ -205,6 +243,7 @@ const composeDivider = computed(() => {
     }
 
     li {
+      width: 100%;
       font-size: 14px;
       padding: 0 12px;
       position: relative;
@@ -219,13 +258,13 @@ const composeDivider = computed(() => {
 
       i {
         position: absolute;
-        left: 30px;
+        right: 0px;
         top: 50%;
         transform: translate(-50%, -50%);
       }
 
       &:hover {
-        background-color: #333;
+        background-color: #333 !important;
       }
     }
   }
@@ -233,5 +272,6 @@ const composeDivider = computed(() => {
 
 .custom-divider {
   border-color: #434343 !important;
+  margin: 0px;
 }
 </style>

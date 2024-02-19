@@ -127,7 +127,7 @@ onMounted(() => {
         <el-radio-group
           class="icon-radio-group"
           v-model="state.tableCellForm.tableItemAlign"
-          @change="changeTableCell('tableHeaderAlign')"
+          @change="changeTableCell('tableItemAlign')"
         >
           <el-radio label="left">
             <el-tooltip effect="dark" placement="top">

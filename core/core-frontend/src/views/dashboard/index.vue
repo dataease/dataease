@@ -17,15 +17,19 @@ import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/Cha
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
+import { useEmbedded } from '@/store/modules/embedded'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { watermarkFind } from '@/api/watermark'
 const interactiveStore = interactiveStoreWithOut()
+const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const { resourceId, opt } = window.DataEaseBi || router.currentRoute.value.query
+    const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
+    const { opt } = router.currentRoute.value.query
     if (!(opt && opt === 'create')) {
-      check(wsCache.get('panel-weight'), resourceId, 4)
+      check(wsCache.get('panel-weight'), resourceId as string, 4)
     }
   }
 }
@@ -84,7 +88,9 @@ onMounted(async () => {
     }
   })
   window.addEventListener('storage', eventCheck)
-  const { resourceId, opt, pid, createType } = window.DataEaseBi || router.currentRoute.value.query
+  const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
+  const pid = embeddedStore.pid || router.currentRoute.value.query.pid
+  const { opt, createType } = router.currentRoute.value.query
   const checkResult = await checkPer(resourceId)
   if (!checkResult) {
     return
@@ -93,7 +99,8 @@ onMounted(async () => {
   state.sourcePid = pid
   if (resourceId) {
     dataInitState.value = false
-    initCanvasData(resourceId, 'dashboard', function () {
+    const busiFlg = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
+    initCanvasData(resourceId, busiFlg, function () {
       dataInitState.value = true
       if (dvInfo.value && opt === 'copy') {
         dvInfo.value.dataState = 'prepare'
@@ -106,8 +113,17 @@ onMounted(async () => {
     })
   } else if (opt && opt === 'create') {
     dataInitState.value = false
+    let watermarkBaseInfo
+    try {
+      await watermarkFind().then(rsp => {
+        watermarkBaseInfo = rsp.data
+        watermarkBaseInfo.settingContent = JSON.parse(watermarkBaseInfo.settingContent)
+      })
+    } catch (e) {
+      console.error('can not find watermark info')
+    }
     nextTick(() => {
-      dvMainStore.createInit('dashboard', null, pid)
+      dvMainStore.createInit('dashboard', null, pid, watermarkBaseInfo)
       // 从模板新建
       if (createType === 'template') {
         const deTemplateDataStr = wsCache.get(`de-template-data`)

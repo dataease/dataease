@@ -16,6 +16,10 @@ export interface Panel {
   updateBy: string
 }
 
+export const findCopyResource = async (dvId, busiFlag): Promise<IResponse> => {
+  return request.get({ url: '/dataVisualization/findCopyResource/' + dvId + '/' + busiFlag })
+}
+
 export const findById = async (dvId, busiFlag): Promise<IResponse> => {
   let busiFlagResult = busiFlag
   if (!busiFlagResult) {

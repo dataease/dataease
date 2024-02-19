@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import { ref, onMounted, onUnmounted } from 'vue'
+import { ref, onMounted, onUnmounted, nextTick } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
@@ -41,8 +41,29 @@ const reposition = () => {
 // 记录瞬时wheel值 防止放大操作和滚动操作冲突
 let lastWheelNum = 0
 
+// 检查当前页面是否有弹框
+const checkDialog = () => {
+  let haveDialog = false
+  document.querySelectorAll('.ed-overlay').forEach(element => {
+    if (window.getComputedStyle(element).getPropertyValue('display') != 'none') {
+      haveDialog = true
+    }
+  })
+  document.querySelectorAll('.ed-popover').forEach(element => {
+    if (window.getComputedStyle(element).getPropertyValue('display') != 'none') {
+      haveDialog = true
+    }
+  })
+  // 富文本单框
+  if (document.querySelector('.tox-dialog-wrap')) {
+    haveDialog = true
+  }
+
+  return haveDialog
+}
+
 const handleMouseWheel = e => {
-  if (editMode.value === 'preview') {
+  if (editMode.value === 'preview' || checkDialog()) {
     return
   }
   let dvMain = document.getElementById('dv-main-center')
@@ -71,6 +92,9 @@ onMounted(() => {
   window.addEventListener('mousewheel', handleMouseWheel, { passive: false })
   setTimeout(() => {
     scale.value = canvasStyleData.value.scale
+    nextTick(() => {
+      useEmitt().emitter.emit('initScroll')
+    })
   }, 1000)
 })
 
@@ -112,14 +136,16 @@ onUnmounted(() => {
         <Icon name="dv-max"></Icon
       ></el-icon>
       <el-divider direction="vertical" class="custom-divider" />
-      <el-icon @click="reposition" class="hover-icon-custom" style="margin-right: 12px">
-        <Icon name="dv-reposition"></Icon
-      ></el-icon>
+      <el-tooltip effect="ndark" content="定位到中心点" placement="top">
+        <el-icon @click="reposition" class="hover-icon-custom" style="margin-right: 12px">
+          <Icon name="dv-reposition"></Icon
+        ></el-icon>
+      </el-tooltip>
     </div>
   </el-row>
 </template>
 
-<style lang="less">
+<style scoped lang="less">
 .custom-main {
   display: flex;
   width: 100%;

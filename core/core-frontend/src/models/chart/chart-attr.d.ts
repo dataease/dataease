@@ -275,7 +275,7 @@ declare interface TotalConfig {
   /**
    * 小计维度
    */
-  subTotalsDimensions: []
+  subTotalsDimensions: string[]
   /**
    * 总计汇总设置
    */
@@ -297,7 +297,17 @@ declare interface TotalConfig {
  * 汇总聚合方式
  */
 declare interface CalcTotals {
-  aggregation: string
+  aggregation: 'MIN' | 'MAX' | 'AVG' | 'SUM'
+  cfg: CalcTotalCfg[]
+  calcFunc?: (...args) => any
+}
+
+/**
+ * 汇总聚合配置
+ */
+declare interface CalcTotalCfg {
+  dataeaseName: string
+  aggregation: 'MIN' | 'MAX' | 'AVG' | 'SUM' | ''
 }
 
 /**
@@ -522,7 +532,7 @@ declare interface ChartLabelAttr {
   /**
    * 标签格式化设置
    */
-  labelFormatter: BaseFormatter
+  labelFormatter: Partial<BaseFormatter>
   /**
    * 标签保留小数位数
    */

@@ -2,8 +2,6 @@ import { defineStore } from 'pinia'
 import { store } from '../index'
 import { useCache } from '@/hooks/web/useCache'
 import { useLocaleStoreWithOut } from './locale'
-
-import { userInfo } from '@/api/user'
 const { wsCache } = useCache()
 const locale = useLocaleStoreWithOut()
 interface UserState {
@@ -49,9 +47,13 @@ export const userStore = defineStore('user', {
   actions: {
     async setUser() {
       const desktop = wsCache.get('app.desktop')
-      const res = desktop
-        ? { data: { uid: '1', name: 'DataEase 用户', oid: '1', language: 'zh-CN' } }
-        : await userInfo()
+      let res = null
+      if (desktop) {
+        res = { data: { uid: '1', name: 'DataEase 用户', oid: '1', language: 'zh-CN' } }
+      } else {
+        const user = await import('@/api/user')
+        res = await user.userInfo()
+      }
       const data = res.data
       data.token = wsCache.get('user.token')
       data.exp = wsCache.get('user.exp')

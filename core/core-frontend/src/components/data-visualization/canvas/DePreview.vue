@@ -53,6 +53,11 @@ const props = defineProps({
   userId: {
     type: String,
     require: false
+  },
+  outerScale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
 
@@ -64,7 +69,9 @@ const {
   canvasViewInfo,
   showPosition,
   previewActive,
-  downloadStatus
+  downloadStatus,
+  outerScale,
+  userId
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
@@ -133,7 +140,9 @@ const restore = () => {
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
-        scaleWidth.value = scaleWidth.value * 1.5
+        scaleWidth.value = isMainCanvas(canvasId.value)
+          ? scaleWidth.value * 1.2
+          : outerScale.value * 100
       } else {
         changeRefComponentsSizeWithScale(
           componentData.value,

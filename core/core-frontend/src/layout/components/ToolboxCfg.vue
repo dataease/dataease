@@ -43,7 +43,7 @@ onMounted(() => {
     :show-arrow="false"
     popper-class="toolbox-top-popover"
     placement="bottom-end"
-    width="112"
+    width="208"
     trigger="hover"
   >
     <top-doc-card
@@ -66,10 +66,11 @@ onMounted(() => {
 <style lang="less">
 .toolbox-top-popover {
   height: 82px;
-  min-width: 112px !important;
+  min-width: 208px !important;
   padding: 16px !important;
+  display: flex;
   .doc-card {
-    margin: auto !important;
+    margin: auto;
   }
 }
 </style>

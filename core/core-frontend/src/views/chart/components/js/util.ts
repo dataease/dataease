@@ -230,7 +230,7 @@ export function getRemark(chart) {
   return remark
 }
 
-export const quotaViews = ['label', 'richTextView', 'text', 'gauge', 'liquid']
+export const quotaViews = ['label', 'richTextView', 'indicator', 'gauge', 'liquid']
 
 export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, options: O): O {
   const { data } = options as unknown as Options

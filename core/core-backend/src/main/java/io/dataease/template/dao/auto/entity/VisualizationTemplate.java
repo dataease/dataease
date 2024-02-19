@@ -5,11 +5,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 仪表板模板表
+ * 
  * </p>
  *
  * @author fit2cloud
- * @since 2023-11-06
+ * @since 2024-01-16
  */
 @TableName("visualization_template")
 public class VisualizationTemplate implements Serializable {
@@ -37,7 +37,7 @@ public class VisualizationTemplate implements Serializable {
     private Integer level;
 
     /**
-     * 模板种类  dataV or dashboard 目录或者文件夹
+     * 模版种类  dataV or dashboard 目录或者文件夹
      */
     private String dvType;
 
@@ -62,7 +62,7 @@ public class VisualizationTemplate implements Serializable {
     private String snapshot;
 
     /**
-     * 模板类型 system 系统内置 self 用户自建 
+     * 模版类型 system 系统内置 self 用户自建 
      */
     private String templateType;
 
@@ -80,6 +80,11 @@ public class VisualizationTemplate implements Serializable {
      * 预存数据
      */
     private String dynamicData;
+
+    /**
+     * 使用次数
+     */
+    private Integer useCount;
 
     public String getId() {
         return id;
@@ -185,6 +190,14 @@ public class VisualizationTemplate implements Serializable {
         this.dynamicData = dynamicData;
     }
 
+    public Integer getUseCount() {
+        return useCount;
+    }
+
+    public void setUseCount(Integer useCount) {
+        this.useCount = useCount;
+    }
+
     @Override
     public String toString() {
         return "VisualizationTemplate{" +
@@ -201,6 +214,7 @@ public class VisualizationTemplate implements Serializable {
         ", templateStyle = " + templateStyle +
         ", templateData = " + templateData +
         ", dynamicData = " + dynamicData +
+        ", useCount = " + useCount +
         "}";
     }
 }

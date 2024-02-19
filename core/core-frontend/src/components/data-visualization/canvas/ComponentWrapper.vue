@@ -115,7 +115,11 @@ const onClick = () => {
 }
 
 const getComponentStyleDefault = style => {
-  return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+  if (config.value.component.includes('Svg')) {
+    return getStyle(style, ['top', 'left', 'width', 'height', 'rotate', 'backgroundColor'])
+  } else {
+    return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+  }
 }
 
 const onMouseEnter = () => {
@@ -133,7 +137,10 @@ const componentBackgroundStyle = computed(() => {
       innerPadding,
       borderRadius
     } = config.value.commonBackground
-    const style = { padding: innerPadding + 'px', borderRadius: borderRadius + 'px' }
+    const style = {
+      padding: innerPadding * deepScale.value + 'px',
+      borderRadius: borderRadius + 'px'
+    }
     let colorRGBA = ''
     if (backgroundColorSelect && backgroundColor) {
       colorRGBA = backgroundColor

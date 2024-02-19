@@ -6,7 +6,7 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import DvDetailInfo from '@/views/common/DvDetailInfo.vue'
 import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
 import { ref, watch, computed } from 'vue'
-import { XpackComponent } from '@/components/plugin'
+import ShareVisualHead from '@/views/share/share/ShareVisualHead.vue'
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -79,7 +79,7 @@ watch(
     </el-tooltip>
     <el-divider style="margin: 0 16px 0 7px" direction="vertical" />
     <div class="create-area flex-align-center">
-      <span>创建人:{{ dvInfo.creatorName }}</span>
+      <span style="line-height: 22px">创建人:{{ dvInfo.creatorName }}</span>
       <el-popover show-arrow :offset="8" placement="bottom" width="400" trigger="hover">
         <template #reference>
           <el-icon class="info-tips"><Icon name="dv-info"></Icon></el-icon>
@@ -94,8 +94,7 @@ watch(
         </template>
         预览</el-button
       >
-      <XpackComponent
-        jsname="L2NvbXBvbmVudC9zaGFyZS9TaGFyZVZpc3VhbEhlYWQ="
+      <ShareVisualHead
         :resource-id="dvInfo.id"
         :weight="dvInfo.weight"
         :resource-type="dvInfo.type"

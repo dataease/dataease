@@ -5,6 +5,8 @@ CURRENT_DIR=$(
    pwd
 )
 
+echo "$(date)" | tee -a ${CURRENT_DIR}/install.log
+
 function log() {
    message="[DATAEASE Log]: $1 "
    echo -e "${message}" 2>&1 | tee -a ${CURRENT_DIR}/install.log
@@ -20,7 +22,7 @@ if [ -f /usr/bin/dectl ]; then
    dectl stop
    INSTALL_TYPE='upgrade'
 
-   v2_version=$(dectl version |grep "^v2.")
+   v2_version=$(dectl version | head -n 2 | grep "v2.")
    if [[ -z $v2_version ]];then
       echo "系统当前版本不是 DataEase v2 版本系列，不支持升级到 v2，请检查离线包版本。"
       exit 1;
@@ -28,7 +30,7 @@ if [ -f /usr/bin/dectl ]; then
 fi
 
 set -a
-if [[ $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
+if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
    source $DE_BASE/dataease2.0/.env
    INSTALL_TYPE='upgrade'
 else
@@ -48,6 +50,14 @@ DE_RUN_BASE=$DE_BASE/dataease2.0
 conf_folder=${DE_RUN_BASE}/conf
 templates_folder=${DE_RUN_BASE}/templates
 
+if [[ -d $DE_RUN_BASE ]];then
+   for image in $(grep  "image: " $DE_RUN_BASE/docker*.yml | awk -F 'image:' '{print $2}'); do
+      image_path=$(eval echo $image)
+      image_name=$(echo $image_path | awk -F "[/]" '{print $3}')
+      current_images[${#current_images[@]}]=$image_name
+   done
+fi
+
 function prop {
    [ -f "$1" ] | grep -P "^\s*[^#]?${2}=.*$" $1 | cut -d'=' -f2
 }
@@ -63,7 +73,8 @@ env | grep DE_ >.env
 mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
 mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo}
 mkdir -p ${DE_RUN_BASE}/apisix/logs
-chmod 777 ${DE_RUN_BASE}/apisix/logs ${DE_RUN_BASE}/data/etcd_data
+mkdir -p ${DE_RUN_BASE}/task/logs
+chmod 777 ${DE_RUN_BASE}/apisix/logs ${DE_RUN_BASE}/data/etcd_data ${DE_RUN_BASE}/task/logs
 
 if [ "${DE_EXTERNAL_MYSQL}" = "false" ]; then
    compose_files="${compose_files} -f docker-compose-mysql.yml"
@@ -93,9 +104,7 @@ if [ ! -f /usr/bin/dectl ]; then
    ln -s /usr/local/bin/dectl /usr/bin/dectl 2>/dev/null
 fi
 
-echo "time: $(date)"
-
-if which getenforce && [ $(getenforce) == "Enforcing" ];then
+if which getenforce >/dev/null 2>&1 && [ $(getenforce) == "Enforcing" ];then
    log  "... 关闭 SELINUX"
    setenforce 0
    sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
@@ -106,14 +115,14 @@ fi
 if which docker >/dev/null 2>&1; then
    log "检测到 Docker 已安装，跳过安装步骤"
    log "启动 Docker "
-   service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
+   service docker start >/dev/null 2>&1 | tee -a ${CURRENT_DIR}/install.log
 else
    if [[ -d docker ]]; then
       log "... 离线安装 docker"
       cp docker/bin/* /usr/bin/
       cp docker/service/docker.service /etc/systemd/system/
       chmod +x /usr/bin/docker*
-      chmod 754 /etc/systemd/system/docker.service
+      chmod 644 /etc/systemd/system/docker.service
       log "... 启动 docker"
       systemctl enable docker; systemctl daemon-reload; service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
    else
@@ -182,7 +191,11 @@ cd ${CURRENT_DIR}
 if [[ -d images ]]; then
    log "加载镜像"
    for i in $(ls images); do
-      docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      if [[ "${current_images[@]}"  =~ "${i%.tar.gz}" ]]; then
+         echo "ignore image $i"
+      else
+         docker load -i images/$i 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      fi
    done
 else
    DEVERSION=$(cat ${CURRENT_DIR}/dataease/templates/version)
@@ -190,21 +203,20 @@ else
    cd -
 fi
 
-log "配置 dataease Service"
-cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/init.d/dataease
-chmod a+x /etc/init.d/dataease
-if which chkconfig;then
-   chkconfig --add dataease
-fi
-
-if [ -f /etc/rc.d/rc.local ];then
-   dataeaseService=$(grep "service dataease start" /etc/rc.d/rc.local | wc -l)
-   if [ "$dataeaseService" -eq 0 ]; then
-      echo "sleep 10" >> /etc/rc.d/rc.local
-      echo "service dataease start" >> /etc/rc.d/rc.local
+if which chkconfig >/dev/null 2>&1;then
+   chkconfig dataease >/dev/null
+   if [ $? -eq 0 ]; then
+      chkconfig --del dataease
    fi
-   chmod +x /etc/rc.d/rc.local
 fi
+if [[ -f /etc/init.d/dataease ]];then
+   rm -f /etc/init.d/dataease
+fi
+log "配置 dataease Service"
+cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/systemd/system/
+chmod 644 /etc/systemd/system/dataease.service
+log "配置开机自启动"
+systemctl enable dataease >/dev/null 2>&1; systemctl daemon-reload | tee -a ${CURRENT_DIR}/install.log
 
 if [[ $(grep "vm.max_map_count" /etc/sysctl.conf | wc -l) -eq 0 ]];then
    sysctl -w vm.max_map_count=2000000
@@ -221,7 +233,7 @@ else
    sed -i 's/^net\.ipv4\.ip_forward.*/net\.ipv4\.ip_forward=1/' /etc/sysctl.conf
 fi
 
-if which firewall-cmd >/dev/null; then
+if which firewall-cmd >/dev/null 2>&1; then
    if systemctl is-active firewalld &>/dev/null ;then
       log "防火墙端口开放"
       firewall-cmd --zone=public --add-port=${DE_PORT}/tcp --permanent
@@ -238,12 +250,11 @@ if [[ $http_code == 200 ]];then
 fi
 
 log "启动服务"
-dectl start | tee -a ${CURRENT_DIR}/install.log
-dectl status 2>&1 | tee -a ${CURRENT_DIR}/install.log
+systemctl start dataease 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
 access_port=$DE_PORT
 if [[ $DE_INSTALL_MODE != "community" ]];then
    access_port=9080
 fi
 echo -e "======================= 安装完成 =======================\n" 2>&1 | tee -a ${CURRENT_DIR}/install.log
-echo -e "系统登录信息如下:\n 访问地址: http://服务器IP:$access_port\n 用户名: admin\n 初始密码: DataEase@123456" 2>&1 | tee -a ${CURRENT_DIR}/install.log
+echo -e "系统登录信息如下:\n\t访问地址: http://服务器IP:$access_port\n\t用户名: admin\n\t初始密码: DataEase@123456" 2>&1 | tee -a ${CURRENT_DIR}/install.log

@@ -5,7 +5,12 @@ import componentList, {
 } from '@/custom-component/component-list'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { findById, saveCanvas, updateCanvas } from '@/api/visualization/dataVisualization'
+import {
+  findById,
+  findCopyResource,
+  saveCanvas,
+  updateCanvas
+} from '@/api/visualization/dataVisualization'
 import { storeToRefs } from 'pinia'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
@@ -36,7 +41,7 @@ export function findDragComponent(componentInfo) {
 export function findNewComponent(componentName, innerType) {
   let newComponent
   componentList.forEach(comp => {
-    if (comp.component === componentName) {
+    if (comp.component === componentName || comp.component === innerType) {
       newComponent = cloneDeep(comp)
       newComponent.innerType = innerType
       if (newComponent.innerType === 'richText') {
@@ -78,7 +83,10 @@ export function commonHandleDragEnd(e, dvModel) {
 }
 
 export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
-  findById(dvId, busiFlag).then(res => {
+  const copyFlag = busiFlag != null && busiFlag.includes('-copy')
+  const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag
+  const method = copyFlag ? findCopyResource : findById
+  method(dvId, busiFlagCustom).then(res => {
     const canvasInfo = res.data
     const watermarkInfo = {
       ...canvasInfo.watermarkInfo,
@@ -107,6 +115,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       if (componentItem.component === 'Group') {
         componentItem.expand = componentItem.expand || false
       }
+      componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
     })
     const curPreviewGap =
       dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
@@ -202,7 +211,7 @@ export function canvasSave(callBack) {
     watermarkInfo: null
   }
 
-  const method = dvInfo.value.id ? updateCanvas : saveCanvas
+  const method = dvInfo.value.id && dvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
   method(canvasInfo).then(res => {
     dvMainStore.updateDvInfoId(res.data)
     snapshotStore.resetStyleChangeTimes()

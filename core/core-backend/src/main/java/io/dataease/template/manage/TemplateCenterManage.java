@@ -121,13 +121,17 @@ public class TemplateCenterManage {
 
 
     public MarketBaseResponse searchTemplateRecommend() {
+        MarketTemplateV2BaseResponse v2BaseResponse = null;
+        Map<String, String> templateParams = sysParameterManage.groupVal("template.");
+        // 模版市场推荐
         try {
-            Map<String, String> templateParams = sysParameterManage.groupVal("template.");
-            return baseResponseV2TransRecommend(templateQuery(templateParams), templateParams.get("template.url"));
+            v2BaseResponse = templateQuery(templateParams);
         } catch (Exception e) {
             DEException.throwException(e);
         }
-        return null;
+        // 模版管理使用次数推荐
+        List<TemplateMarketDTO> manage = searchTemplateFromManage();
+        return baseResponseV2TransRecommend(v2BaseResponse, manage, templateParams.get("template.url"));
     }
 
     public MarketPreviewBaseResponse searchTemplatePreview() {
@@ -161,7 +165,7 @@ public class TemplateCenterManage {
         }
     }
 
-    private MarketBaseResponse baseResponseV2TransRecommend(MarketTemplateV2BaseResponse v2BaseResponse, String url) {
+    private MarketBaseResponse baseResponseV2TransRecommend(MarketTemplateV2BaseResponse v2BaseResponse,List<TemplateMarketDTO> templateManages, String url) {
         Map<String, Long> useTime = coreOptRecentManage.findTemplateRecentUseTime();
         List<MarketMetaDataVO> categoryVO = getCategoriesV2().stream().filter(node -> !"全部".equalsIgnoreCase(node.getLabel())).collect(Collectors.toList());
         Map<String, String> categoriesMap = categoryVO.stream()
@@ -177,6 +181,22 @@ public class TemplateCenterManage {
         }
         // 最近使用排序
         Collections.sort(contents);
+        Long countDataV = contents.stream().filter(item -> "PANEL".equals(item.getTemplateType())).count();
+        Long countDashboard = contents.stream().filter(item -> "SCREEN".equals(item.getTemplateType())).count();
+        List<TemplateMarketDTO> templateDataV = templateManages.stream().filter(item -> "PANEL".equals(item.getTemplateType())).collect(Collectors.toList());
+        List<TemplateMarketDTO> templateDashboard = templateManages.stream().filter(item -> "SCREEN".equals(item.getTemplateType())).collect(Collectors.toList());
+        if(countDataV<10){
+            Long addItemCount = 10 -countDataV;
+            Long addIndex = templateDataV.size()<addItemCount? templateDataV.size() :addItemCount;
+            contents.addAll(templateDataV.subList(0,addIndex.intValue()));
+        }
+
+        if(countDashboard<10){
+            Long addItemCount = 10 -countDashboard;
+            Long addIndex = templateDashboard.size()<addItemCount? templateDashboard.size() :addItemCount;
+            contents.addAll(templateDashboard.subList(0,addIndex.intValue()));
+        }
+
         return new MarketBaseResponse(url, categoryVO, contents);
     }
 

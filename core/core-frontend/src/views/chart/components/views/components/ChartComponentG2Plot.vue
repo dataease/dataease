@@ -232,8 +232,8 @@ const trackClick = trackAction => {
 
 const trackMenu = computed(() => {
   const trackMenuInfo = []
-  // 复用状态的仪表板不进行联动、跳转和下钻的动作
-  if (!'multiplexing'.includes(showPosition.value)) {
+  // 复用、放大状态的仪表板不进行联动、跳转和下钻的动作
+  if (!['multiplexing', 'viewDialog'].includes(showPosition.value)) {
     let linkageCount = 0
     let jumpCount = 0
     chartData.value?.fields?.forEach(item => {

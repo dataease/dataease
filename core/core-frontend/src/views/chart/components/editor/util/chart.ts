@@ -289,10 +289,12 @@ export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
     subLabel: '小计',
     subTotalsDimensions: [],
     calcTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      cfg: []
     },
     calcSubTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      cfg: []
     },
     totalSort: 'none',
     totalSortField: ''
@@ -306,10 +308,12 @@ export const DEFAULT_TABLE_TOTAL: ChartTableTotalAttr = {
     subLabel: '小计',
     subTotalsDimensions: [],
     calcTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      cfg: []
     },
     calcSubTotals: {
-      aggregation: 'SUM'
+      aggregation: 'SUM',
+      cfg: []
     },
     totalSort: 'none', // asc,desc
     totalSortField: ''
@@ -333,7 +337,7 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,
-  fontSize: '18',
+  fontSize: 16,
   color: '#ffffff',
   hPosition: 'left',
   vPosition: 'top',
@@ -347,9 +351,42 @@ export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   fontShadow: false
 }
 
-export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
+export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
+  show: true,
+  fontSize: '20',
+  color: '#5470C6ff',
+  hPosition: 'center',
+  vPosition: 'center',
+  isItalic: false,
+  isBolder: true,
+  fontFamily: 'Microsoft YaHei',
+  letterSpace: '0',
+  fontShadow: false,
+
+  suffixEnable: true,
+  suffix: '',
+  suffixFontSize: '14',
+  suffixColor: '#5470C6ff',
+  suffixIsItalic: false,
+  suffixIsBolder: true,
+  suffixFontFamily: 'Microsoft YaHei',
+  suffixLetterSpace: '0',
+  suffixFontShadow: false
+}
+export const DEFAULT_INDICATOR_NAME_STYLE: ChartIndicatorNameStyle = {
   show: true,
   fontSize: '18',
+  color: '#ffffffff',
+  isItalic: false,
+  isBolder: true,
+  fontFamily: 'Microsoft YaHei',
+  letterSpace: '0',
+  fontShadow: false
+}
+
+export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
+  show: true,
+  fontSize: 16,
   hPosition: 'left',
   vPosition: 'top',
   isItalic: false,
@@ -952,6 +989,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'liquid',
         title: t('chart.chart_liquid'),
         icon: 'liquid'
+      },
+      {
+        render: 'custom',
+        category: 'quota',
+        value: 'indicator',
+        title: t('chart.chart_indicator'),
+        icon: 'indicator'
       }
     ]
   },
@@ -973,6 +1017,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'table-normal',
         title: t('chart.chart_table_normal'),
         icon: 'table-normal'
+      },
+      {
+        render: 'antv',
+        category: 'table',
+        value: 'table-pivot',
+        title: t('chart.chart_table_pivot'),
+        icon: 'table-pivot'
       }
     ]
   },
@@ -1258,6 +1309,8 @@ export const BASE_VIEW_CONFIG = {
     tableTotal: DEFAULT_TABLE_TOTAL,
     tableHeader: DEFAULT_TABLE_HEADER,
     tableCell: DEFAULT_TABLE_CELL,
+    indicator: DEFAULT_INDICATOR_STYLE,
+    indicatorName: DEFAULT_INDICATOR_NAME_STYLE,
     map: {
       id: '',
       level: 'world'

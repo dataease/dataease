@@ -144,7 +144,7 @@ public class CalciteProvider {
         String querySql = getTablesSql(datasourceRequest).get(0);
         try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
         } catch (Exception e) {
-            DEException.throwException(e.getMessage());
+            throw e;
         }
         return "Success";
     }
@@ -173,8 +173,14 @@ public class CalciteProvider {
                 datasetTableFields.add(tableField);
             }
             list = getDataResult(resultSet);
-        } catch (Exception e) {
-            DEException.throwException(Translator.get("i18n_fetch_error") + e.getMessage());
+        } catch (Exception | AssertionError e) {
+            String msg;
+            if (e.getCause() != null && e.getCause().getCause() != null) {
+                msg = e.getMessage() + " [" + e.getCause().getCause().getMessage() + "]";
+            } else {
+                msg = e.getMessage();
+            }
+            DEException.throwException(Translator.get("i18n_fetch_error") + msg);
         } finally {
             try {
                 if (resultSet != null) resultSet.close();
@@ -255,7 +261,7 @@ public class CalciteProvider {
                     DatasourceConfiguration configuration = null;
                     DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
                     try {
-                        if(rootSchema.getSubSchema(ds.getSchemaAlias()) != null){
+                        if (rootSchema.getSubSchema(ds.getSchemaAlias()) != null) {
                             JdbcSchema jdbcSchema = rootSchema.getSubSchema(ds.getSchemaAlias()).unwrap(JdbcSchema.class);
                             BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
                             basicDataSource.close();
@@ -453,6 +459,7 @@ public class CalciteProvider {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
                 tableSqls.add("select table_name, owner, comments from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'TABLE'");
+                tableSqls.add("select table_name, owner, comments from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'VIEW'");
                 break;
             case db2:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);

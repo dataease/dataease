@@ -34,6 +34,11 @@ public interface DataVisualizationApi {
     @Operation(summary = "查询可视化资源")
     DataVisualizationVO findById(@PathVariable("dvId") Long dvId,@PathVariable("busiFlag") String busiFlag);
 
+    @GetMapping("/findCopyResource/{dvId}/{busiFlag}")
+    @Operation(summary = "查询临时复制资源")
+    DataVisualizationVO findCopyResource(@PathVariable("dvId") Long dvId,@PathVariable("busiFlag") String busiFlag);
+
+
     @PostMapping("/saveCanvas")
     @DePermit(value = {"#p0.pid + ':manage'"}, busiFlag = "#p0.type")
     @Operation(summary = "画布保存")

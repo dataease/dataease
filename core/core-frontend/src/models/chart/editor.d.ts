@@ -20,6 +20,8 @@ declare type EditorProperty =
   | 'map-mapping'
   | 'jump-set'
   | 'linkage'
+  | 'indicator-value-selector'
+  | 'indicator-name-selector'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }

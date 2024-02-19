@@ -26,11 +26,9 @@ import static io.dataease.constant.AuthResourceEnum.SYNC_DATASOURCE;
 @DeApiPath(value = "/sync/datasource", rt = SYNC_DATASOURCE)
 public interface SyncDatasourceApi {
 
-    @DePermit("m:read")
     @PostMapping("/source/pager/{goPage}/{pageSize}")
     IPage<SyncDatasourceVO> sourcePager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
 
-    @DePermit("m:read")
     @PostMapping("/target/pager/{goPage}/{pageSize}")
     IPage<SyncDatasourceVO> targetPager(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody BaseGridRequest request);
 
@@ -52,12 +50,11 @@ public interface SyncDatasourceApi {
     @PostMapping("/getSchema")
     List<String> getSchema(@RequestBody SyncDatasourceDTO dataSourceDTO) throws DEException;
 
-    @DePermit({"#p0+':manage'"})
     @GetMapping("/validate/{datasourceId}")
     SyncDatasourceDTO validate(@PathVariable("datasourceId") String datasourceId) throws DEException;
 
-    @PostMapping("/latestUse")
-    List<String> latestUse();
+    @PostMapping("/latestUse/{sourceType}")
+    List<String> latestUse(@PathVariable("sourceType") String sourceType);
 
     @GetMapping("/get/{datasourceId}")
     SyncDatasourceDTO get(@PathVariable("datasourceId") String datasourceId) throws DEException;

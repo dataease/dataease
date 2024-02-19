@@ -58,6 +58,7 @@ export const commonAttr = {
   events: {},
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
+  maintainRadio: false, // 布局时保持宽高比例
   isShow: true, // 是否显示组件
   collapseName: ['position', 'background', 'style', 'picture'], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
@@ -163,7 +164,7 @@ const list = [
   },
   {
     component: 'CanvasBoard',
-    name: '边框',
+    name: '图形',
     label: '边框',
     propValue: '',
     icon: 'other_material_board',
@@ -178,6 +179,51 @@ const list = [
       width: 600,
       height: 300,
       color: ''
+    }
+  },
+  {
+    component: 'RectShape',
+    name: '矩形',
+    label: '矩形',
+    propValue: '&nbsp;',
+    icon: 'icon_graphical',
+    style: {
+      width: 200,
+      height: 200,
+      borderWidth: 1,
+      borderRadius: 5,
+      borderStyle: 'solid',
+      borderColor: '#000',
+      backgroundColor: ''
+    }
+  },
+  {
+    component: 'CircleShape',
+    name: '图形',
+    label: '圆形',
+    propValue: '&nbsp;',
+    icon: 'icon_graphical',
+    style: {
+      width: 200,
+      height: 200,
+      borderWidth: 1,
+      borderStyle: 'solid',
+      borderColor: '#000',
+      backgroundColor: ''
+    }
+  },
+  {
+    component: 'SvgTriangle',
+    name: '图形',
+    label: '三角形',
+    icon: 'icon_graphical',
+    propValue: '',
+    style: {
+      width: 200,
+      height: 200,
+      borderWidth: 1,
+      borderColor: '#000',
+      backgroundColor: 'rgba(236,231,231,0.1)'
     }
   },
   {

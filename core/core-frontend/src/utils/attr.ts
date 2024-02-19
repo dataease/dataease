@@ -1,7 +1,7 @@
 export const positionData = [
   { key: 'left', label: 'X', min: -1000, max: 20000, step: 10 },
-  { key: 'top', label: 'Y', min: -1000, max: 20000, step: 10 },
   { key: 'width', label: 'W', min: 10, max: 20000, step: 10 },
+  { key: 'top', label: 'Y', min: -1000, max: 20000, step: 10 },
   { key: 'height', label: 'H', min: 10, max: 20000, step: 10 }
 ]
 
@@ -11,7 +11,7 @@ export const styleData = [
   { key: 'borderWidth', label: '边框宽度', min: 0, max: 20, step: 1 },
   { key: 'borderStyle', label: '边框风格' },
   { key: 'borderColor', label: '边框颜色' },
-  { key: 'borderRadius', label: '边框半径', min: 0, max: 50, step: 1 },
+  { key: 'borderRadius', label: '圆角', min: 0, max: 50, step: 1 },
   { key: 'letterSpacing', label: '字间距', min: 0, max: 50, step: 1 },
   { key: 'fontSize', label: '字体大小', min: 0, max: 128, step: 1 },
   { key: 'activeFontSize', label: '激活字体大小', min: 0, max: 128, step: 1 },
@@ -38,7 +38,7 @@ export const styleMap = {
   borderWidth: '边框宽度',
   borderStyle: '边框风格',
   borderColor: '边框颜色',
-  borderRadius: '边框半径',
+  borderRadius: '圆角',
   fontSize: '字体大小',
   fontWeight: '字体粗细',
   lineHeight: '行高',

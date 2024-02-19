@@ -208,6 +208,13 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
     if (!['inner', 'outer'].includes(label.position)) {
       label.position = 'outer'
     }
+    customAttr.label = {
+      ...label,
+      show: true,
+      showDimension: true,
+      showProportion: true,
+      reserveDecimalCount: 2
+    }
     return chart
   }
 

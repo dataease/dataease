@@ -90,7 +90,9 @@ const backgroundCustomShow = computed(() => {
   return (
     dashboardActive.value ||
     (!dashboardActive.value &&
-      !['CanvasBoard', 'CanvasIcon', 'Picture'].includes(element.value.component))
+      !['CanvasBoard', 'CanvasIcon', 'Picture', 'CircleShape', 'RectShape'].includes(
+        element.value.component
+      ))
   )
 })
 onMounted(() => {
@@ -102,6 +104,12 @@ onMounted(() => {
     })
   })
 })
+const stopEvent = e => {
+  if (e && e.code === 'Enter') {
+    e.stopPropagation()
+    e.preventDefault()
+  }
+}
 </script>
 
 <template>
@@ -231,6 +239,8 @@ onMounted(() => {
                   ></el-option>
                 </el-select>
                 <el-input-number
+                  @keydown="stopEvent"
+                  @keyup="stopEvent"
                   v-else
                   size="middle"
                   style="width: 100%"

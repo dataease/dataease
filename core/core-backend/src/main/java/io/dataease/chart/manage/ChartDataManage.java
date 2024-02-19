@@ -174,7 +174,7 @@ public class ChartDataManage {
         Map<String, Object> mapAttr = view.getCustomAttr();
         Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("basicStyle");
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
-            if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !chartExtRequest.getExcelExportFlag()) {
+            if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !view.getIsExcelExport()) {
                 if (chartExtRequest.getGoPage() == null) {
                     chartExtRequest.setGoPage(1L);
                 }
@@ -190,7 +190,7 @@ public class ChartDataManage {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
                     chartExtRequest.setGoPage(1L);
                     chartExtRequest.setPageSize(view.getResultCount().longValue());
-                } else if (!chartExtRequest.getExcelExportFlag()) {
+                } else if (!view.getIsExcelExport()) {
                     chartExtRequest.setGoPage(null);
                     chartExtRequest.setPageSize(null);
                 }
@@ -203,12 +203,13 @@ public class ChartDataManage {
         switch (view.getType()) {
             case "label":
                 xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                xAxisBase = xAxisBase.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 yAxis = new ArrayList<>();
                 if (ObjectUtils.isEmpty(xAxis)) {
                     return emptyChartViewDTO(view);
                 }
                 break;
-            case "text":
+            case "indicator":
             case "gauge":
             case "liquid":
                 xAxis = new ArrayList<>();
@@ -220,16 +221,19 @@ public class ChartDataManage {
             case "table-info":
                 yAxis = new ArrayList<>();
                 xAxis = xAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                xAxisBase = xAxisBase.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 if (ObjectUtils.isEmpty(xAxis)) {
                     return emptyChartViewDTO(view);
                 }
                 break;
             case "table-normal":
                 xAxis = xAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                xAxisBase = xAxisBase.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 yAxis = yAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 break;
             default:
                 xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                xAxisBase = xAxisBase.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
                 yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         }
 
@@ -496,7 +500,7 @@ public class ChartDataManage {
             ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, transFields(allFields));
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields));
 
-            if (StringUtils.equalsAnyIgnoreCase(view.getType(), "text", "gauge", "liquid")) {
+            if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
@@ -684,7 +688,7 @@ public class ChartDataManage {
                 mapChart = ChartDataBuild.transScatterData(xAxis, yAxis, view, data, extBubble, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "radar")) {
                 mapChart = ChartDataBuild.transRadarChartData(xAxis, yAxis, view, data, isDrill);
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "text")
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "indicator")
                     || StringUtils.containsIgnoreCase(view.getType(), "gauge")
                     || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                 mapChart = ChartDataBuild.transNormalChartData(xAxis, yAxis, view, data, isDrill);
@@ -708,7 +712,7 @@ public class ChartDataManage {
                 mapChart = ChartDataBuild.transScatterDataAntV(xAxis, yAxis, view, data, extBubble, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "radar")) {
                 mapChart = ChartDataBuild.transRadarChartDataAntV(xAxis, yAxis, view, data, isDrill);
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "text")
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "indicator")
                     || StringUtils.containsIgnoreCase(view.getType(), "gauge")
                     || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                 mapChart = ChartDataBuild.transNormalChartData(xAxis, yAxis, view, data, isDrill);
@@ -718,6 +722,10 @@ public class ChartDataManage {
                 mapChart = ChartDataBuild.transLabelChartData(xAxis, yAxis, view, data, isDrill);
             } else {
                 mapChart = ChartDataBuild.transChartDataAntV(xAxis, yAxis, view, data, isDrill);
+            }
+        } else if (StringUtils.equalsIgnoreCase(view.getRender(), "custom")) {
+            if (StringUtils.containsIgnoreCase(view.getType(), "indicator")) {
+                mapChart = ChartDataBuild.transNormalChartData(xAxis, yAxis, view, data, isDrill);
             }
         }
         // table组件，明细表，也用于导出数据
@@ -1220,7 +1228,7 @@ public class ChartDataManage {
                     return new ArrayList<String[]>();
                 }
                 break;
-            case "text":
+            case "indicator":
             case "gauge":
             case "liquid":
                 xAxis = new ArrayList<>();
@@ -1276,7 +1284,7 @@ public class ChartDataManage {
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields));
 
-            if (StringUtils.equalsAnyIgnoreCase(view.getType(), "text", "gauge", "liquid")) {
+            if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {

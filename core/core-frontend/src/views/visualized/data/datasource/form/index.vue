@@ -8,9 +8,10 @@ import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
 import ExcelDetail from './ExcelDetail.vue'
-import { save, validate, latestUse, isShowFinishPage, checkRepeat } from '@/api/datasource'
+import { save, update, validate, latestUse, isShowFinishPage, checkRepeat } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import type { Param } from './ExcelDetail.vue'
+import type { Configuration, ApiConfiguration, SyncSetting } from './option'
 import { dsTypes, typeList, nameMap } from './option'
 import { useRouter } from 'vue-router'
 import { uuid } from 'vue-uuid'
@@ -52,45 +53,6 @@ state.datasourceTree = typeList.map(ele => {
     type: ele
   }
 })
-
-export interface Configuration {
-  dataBase: string
-  connectionType: string
-  schema: string
-  extraParams: string
-  username: string
-  password: string
-  host: string
-  authMethod: string
-  port: string
-  initialPoolSize: string
-  minPoolSize: string
-  maxPoolSize: string
-  queryTimeout: string
-}
-
-export interface ApiConfiguration {
-  id: string
-  name: string
-  deTableName: string
-  method: string
-  url: string
-  status: string
-  useJsonPath: boolean
-  serialNumber: number
-}
-
-export interface SyncSetting {
-  id: string
-  updateType: string
-  syncRate: string
-  simpleCronValue: number
-  simpleCronType: string
-  startTime: number
-  endTime: number
-  endLimit: string
-  cron: string
-}
 
 const activeStep = ref(0)
 const detail = ref()
@@ -391,6 +353,7 @@ const saveDS = () => {
     request.configuration = Base64.encode(JSON.stringify(request.configuration))
   }
   const validate = detail.value.submitForm()
+  request.apiConfiguration = ''
   validate(val => {
     if (val) {
       if (editDs.value && form.id) {
@@ -401,8 +364,8 @@ const saveDS = () => {
           showClose: false,
           tip: ''
         }
-
         checkRepeat(request).then(res => {
+          let method = request.id === '' ? save : update
           if (res) {
             ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
               () => {
@@ -410,7 +373,7 @@ const saveDS = () => {
                   return
                 }
                 dsLoading.value = true
-                save(request)
+                method(request)
                   .then(res => {
                     if (res !== undefined) {
                       handleShowFinishPage({ id: res.id, name: res.name })
@@ -427,7 +390,7 @@ const saveDS = () => {
               return
             }
             dsLoading.value = true
-            save(request)
+            method(request)
               .then(res => {
                 if (res !== undefined) {
                   handleShowFinishPage({ id: res.id, name: res.name })

@@ -225,7 +225,17 @@ export const dvMainStore = defineStore('dataVisualization', {
           })
         }
       }
+      if (!this.curComponent) {
+        this.componentData.forEach(componentItem => {
+          componentItem['canvasActive'] = false
+        })
+      }
       if (component) {
+        this.componentData.forEach(componentItem => {
+          if (!component.canvasId.includes(componentItem.id)) {
+            componentItem['canvasActive'] = false
+          }
+        })
         // Is the current component in editing status
         if (!this.curComponent) {
           component['editing'] = false
@@ -563,7 +573,10 @@ export const dvMainStore = defineStore('dataVisualization', {
           mixPropertiesTemp = deepCopy(componentInfo.properties)
           mixPropertyInnerTemp = deepCopy(componentInfo.propertyInner)
         }
-        batchAttachInfo.type = componentInfo.value
+        batchAttachInfo.type =
+          batchAttachInfo.type === null || batchAttachInfo.type === componentInfo.value
+            ? componentInfo.value
+            : 'mix'
       }
       mixPropertiesTemp.forEach(property => {
         if (mixPropertyInnerTemp[property]) {
@@ -894,7 +907,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         }
       }
     },
-    createInit(dvType, resourceId?, pid?) {
+    createInit(dvType, resourceId?, pid?, watermarkInfo?) {
       const optName = dvType === 'dashboard' ? '新建仪表板' : '新建数据大屏'
       this.dvInfo = {
         dataState: 'prepare',
@@ -905,7 +918,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         type: dvType,
         status: 1,
         selfWatermarkStatus: true,
-        watermarkInfo: {}
+        watermarkInfo: watermarkInfo
       }
       const canvasStyleDataNew =
         dvType === 'dashboard'

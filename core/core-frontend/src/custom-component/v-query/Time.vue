@@ -121,6 +121,10 @@ onBeforeMount(() => {
 defineExpose({
   displayTypeChange
 })
+
+const formatDate = computed(() => {
+  return (config.value.timeGranularityMultiple as string) === 'yearrange' ? 'YYYY' : undefined
+})
 </script>
 
 <template>
@@ -128,6 +132,7 @@ defineExpose({
     v-model="selectValue"
     :type="config.timeGranularityMultiple"
     :style="selectStyle"
+    :format="formatDate"
     v-if="multiple"
     @change="handleValueChange"
     :prefix-icon="Calendar"

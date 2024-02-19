@@ -242,6 +242,7 @@ const {
 } = toRefs(props)
 const domId = ref('shape-id-' + element.value.id)
 const pointList = ['lt', 't', 'rt', 'r', 'rb', 'b', 'lb', 'l']
+const pointCorner = ['lt', 'rt', 'rb', 'lb']
 const pointList2 = ['r', 'l']
 const initialAngle = {
   // 每个点对应的初始角度
@@ -284,7 +285,7 @@ const active = computed(() => {
 })
 
 const boardMoveActive = computed(() => {
-  return ['map', 'table-info', 'table-normal'].includes(element.value.innerType)
+  return ['map', 'table-info', 'table-normal', 'table-pivot'].includes(element.value.innerType)
 })
 
 const dashboardActive = computed(() => {
@@ -629,6 +630,7 @@ const handleMouseDownOnPoint = (point, e) => {
   let isFirst = true
 
   const needLockProportion = isNeedLockProportion()
+  const originRadio = curComponent.value.style.width / curComponent.value.style.height
   const move = moveEvent => {
     // 第一次点击时也会触发 move，所以会有“刚点击组件但未移动，组件的大小却改变了”的情况发生
     // 因此第一次点击时不触发 move 事件
@@ -649,6 +651,27 @@ const handleMouseDownOnPoint = (point, e) => {
     })
     //Temp dataV坐标偏移
     offsetDataVAdaptor(style, point)
+    // 保持宽搞比例调整
+    if (curComponent.value.maintainRadio) {
+      // 高度偏移量
+      const heightOffset = style.height - defaultStyle.value.height
+      // 宽度偏移量
+      const widthOffset = style.width - defaultStyle.value.width
+      // 保持宽高比例是相对宽度偏移量
+      const adaptorWidthOffset = heightOffset * originRadio
+      // 保持宽高比例是相对高度偏移量
+      const adaptorHeightOffset = widthOffset / originRadio
+      if (pointCorner.includes(point)) {
+        style.height = defaultStyle.value.height + adaptorHeightOffset
+      } else if (Math.abs(widthOffset) > Math.abs(adaptorWidthOffset)) {
+        // 调整高度
+        style.height = defaultStyle.value.height + adaptorHeightOffset
+      } else {
+        // 调整宽度
+        style.width = defaultStyle.value.width + adaptorWidthOffset
+      }
+    }
+
     dvMainStore.setShapeStyle(style)
     // 矩阵逻辑 如果当前是仪表板（矩阵模式）则要进行矩阵重排
     dashboardActive.value && emit('onResizing', moveEvent)

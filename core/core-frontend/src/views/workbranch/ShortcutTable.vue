@@ -6,11 +6,13 @@ import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { shortcutOption } from './ShortcutOption'
-import { XpackComponent } from '@/components/plugin'
+/* import { XpackComponent } from '@/components/plugin' */
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { storeApi } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import ShareGrid from '@/views/share/share/ShareGrid.vue'
+import ShareHandler from '@/views/share/share/ShareHandler.vue'
 const userStore = useUserStoreWithOut()
 const { resolve } = useRouter()
 const { t } = useI18n()
@@ -111,17 +113,18 @@ const loadTableData = () => {
     })
 }
 
-const panelLoad = paneInfo => {
+/* const panelLoad = paneInfo => {
   tablePaneList.value.push({
     title: paneInfo.title,
     name: paneInfo.name,
     disabled: tablePaneList.value[1].disabled
   })
-}
+} */
 
 const tablePaneList = ref([
   { title: '最近使用', name: 'recent', disabled: false },
-  { title: '我的收藏', name: 'store', disabled: false }
+  { title: '我的收藏', name: 'store', disabled: false },
+  { title: t('visualization.share_out'), name: 'share', disabled: false }
 ])
 
 const busiAuthList = getBusiListWithPermission()
@@ -158,6 +161,17 @@ const executeStore = rowInfo => {
     rowInfo.favorite = !rowInfo.favorite
   })
 }
+
+const executeCancelStore = rowInfo => {
+  const param = {
+    id: rowInfo.resourceId,
+    type: rowInfo.type === 'dataV' ? 'screen' : 'panel'
+  }
+  storeApi(param).then(() => {
+    loadTableData()
+  })
+}
+
 const imgType = ref()
 const emptyDesc = ref('')
 const getEmptyImg = (): string => {
@@ -206,8 +220,9 @@ const getEmptyDesc = (): string => {
         </template>
       </el-tab-pane>
     </el-tabs>
-    <XpackComponent jsname="c2hhcmUtcGFuZWw=" @loaded="panelLoad" />
-    <XpackComponent :active-name="activeName" jsname="c2hhcmU=" @set-loading="setLoading" />
+    <!-- <XpackComponent jsname="c2hhcmUtcGFuZWw=" @loaded="panelLoad" /> -->
+    <!-- <XpackComponent :active-name="activeName" jsname="c2hhcmU=" @set-loading="setLoading" /> -->
+    <share-grid :active-name="activeName" @set-loading="setLoading" />
     <el-row v-if="activeName === 'recent' || activeName === 'store'">
       <el-col :span="12">
         <el-select
@@ -293,7 +308,7 @@ const getEmptyDesc = (): string => {
           </template>
         </el-table-column>
 
-        <el-table-column width="96" fixed="right" key="_operation" :label="$t('common.operate')">
+        <el-table-column width="100" fixed="right" key="_operation" :label="$t('common.operate')">
           <template #default="scope">
             <template v-if="['dashboard', 'dataV', 'panel', 'screen'].includes(scope.row.type)">
               <el-tooltip effect="dark" content="新页面预览" placement="top">
@@ -304,14 +319,32 @@ const getEmptyDesc = (): string => {
                   <Icon name="icon_pc_outlined"></Icon>
                 </el-icon>
               </el-tooltip>
-
-              <XpackComponent
+              <ShareHandler
+                :in-grid="true"
+                :weight="scope.row.weight"
+                :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
+                :resource-type="scope.row.type"
+              />
+              <!-- <XpackComponent
                 :in-grid="true"
                 jsname="c2hhcmUtaGFuZGxlcg=="
                 :weight="scope.row.weight"
                 :resource-id="activeName === 'recent' ? scope.row.id : scope.row.resourceId"
                 :resource-type="scope.row.type"
-              />
+              /> -->
+              <el-tooltip
+                v-if="activeName === 'store'"
+                effect="dark"
+                content="取消收藏"
+                placement="top"
+              >
+                <el-icon
+                  class="hover-icon hover-icon-in-table"
+                  @click="executeCancelStore(scope.row)"
+                >
+                  <Icon name="icon_cancel_store"></Icon>
+                </el-icon>
+              </el-tooltip>
             </template>
 
             <template v-if="['dataset'].includes(scope.row.type)">

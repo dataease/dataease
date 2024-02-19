@@ -11,7 +11,7 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { checkApiItem } from '@/api/datasource'
 import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
-import { ApiConfiguration } from '@/views/visualized/data/datasource/form/index.vue'
+import type { ApiConfiguration } from '@/views/visualized/data/datasource/form/option'
 
 export interface Field {
   name: string
@@ -103,7 +103,7 @@ const rule = reactive<FormRules>({
     },
     {
       min: 2,
-      max: 25,
+      max: 64,
       message: t('datasource.input_limit_2_25', [2, 64]),
       trigger: 'blur'
     }

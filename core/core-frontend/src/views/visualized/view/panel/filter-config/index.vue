@@ -284,7 +284,7 @@ const handleTabClick = () => {
         </div>
         <div class="setting-item">
           <div class="title">
-            <el-checkbox v-model="attrs.enableRange">边框半径</el-checkbox>
+            <el-checkbox v-model="attrs.enableRange">圆角</el-checkbox>
           </div>
           <div class="value">
             <el-input-number

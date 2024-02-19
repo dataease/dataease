@@ -13,6 +13,14 @@ import CanvasIcon from '@/custom-component/canvas-icon/Component.vue'
 import CanvasIconAttr from '@/custom-component/canvas-icon/Attr.vue'
 import DeTabs from '@/custom-component/de-tabs/Component.vue'
 import DeTabsAttr from '@/custom-component/de-tabs/Attr.vue'
+import DeGraphical from '@/custom-component/de-graphical/Component.vue'
+import DeGraphicalAttr from '@/custom-component/de-graphical/Attr.vue'
+import CircleShape from '@/custom-component/circle-shape/Component.vue'
+import CircleShapeAttr from '@/custom-component/circle-shape/Attr.vue'
+import RectShape from '@/custom-component/rect-shape/Component.vue'
+import RectShapeAttr from '@/custom-component/rect-shape/Attr.vue'
+import SvgTriangle from '@/custom-component/svgs/svg-triangle/Component.vue'
+import SvgTriangleAttr from '@/custom-component/svgs/svg-triangle/Attr.vue'
 
 export const componentsMap = {
   VText: VText,
@@ -29,7 +37,15 @@ export const componentsMap = {
   CanvasIcon: CanvasIcon,
   CanvasIconAttr: CanvasIconAttr,
   DeTabs: DeTabs,
-  DeTabsAttr: DeTabsAttr
+  DeTabsAttr: DeTabsAttr,
+  DeGraphical: DeGraphical,
+  DeGraphicalAttr: DeGraphicalAttr,
+  CircleShape: CircleShape,
+  CircleShapeAttr: CircleShapeAttr,
+  RectShape: RectShape,
+  RectShapeAttr: RectShapeAttr,
+  SvgTriangle: SvgTriangle,
+  SvgTriangleAttr: SvgTriangleAttr
 }
 
 export default function findComponent(key) {

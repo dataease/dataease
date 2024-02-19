@@ -1,10 +1,17 @@
 <script lang="ts" setup>
 import aboutBg from '@/assets/img/about-bg.png'
-import { ref, reactive, onMounted } from 'vue'
+import { ref, reactive, onMounted, h } from 'vue'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import { F2CLicense } from './index'
-import { validateApi, buildVersionApi, updateInfoApi } from '@/api/about'
-import { ElMessage } from 'element-plus-secondary'
+import {
+  validateApi,
+  buildVersionApi,
+  updateInfoApi,
+  checkFreeApi,
+  syncFreeApi,
+  delFreeApi
+} from '@/api/about'
+import { ElMessage, ElMessageBox, Action } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
 const dialogVisible = ref(false)
@@ -113,8 +120,57 @@ const update = (licKey: string) => {
       ElMessage.success(t('about.update_success'))
       const info = getLicense(response.data)
       setLicense(info)
+      checkFree()
     } else {
       ElMessage.warning(response.data.message)
+    }
+  })
+}
+
+const checkFree = () => {
+  checkFreeApi().then(res => {
+    if (res.data) {
+      // do something
+      const title = '存在未同步的资源数据，请谨慎操作！'
+      const childrenDomList = [h('strong', null, title)]
+      ElMessageBox.confirm('', {
+        confirmButtonType: 'primary',
+        type: 'warning',
+        autofocus: false,
+        dangerouslyUseHTMLString: true,
+        message: h('div', { class: 'free-sync-tip-box' }, childrenDomList),
+        showClose: false,
+        cancelButtonText: '删除',
+        cancelButtonClass: 'free-cancel-bt',
+        showCancelButton: false,
+        preButtonType: 'danger',
+        preButtonText: '删除',
+        showPreButton: true,
+        confirmButtonText: '同步',
+        callback: (action: Action) => {
+          if (action === 'confirm') {
+            syncFree()
+          } else {
+            delFree
+          }
+        }
+      })
+    }
+  })
+}
+
+const delFree = () => {
+  delFreeApi().then(res => {
+    if (!res.code && !res.msg) {
+      ElMessage.success(t('common.delete_success'))
+    }
+  })
+}
+
+const syncFree = () => {
+  syncFreeApi().then(res => {
+    if (!res.code && !res.msg) {
+      ElMessage.success('同步成功')
     }
   })
 }

@@ -311,6 +311,7 @@ public class DatasetDataManage {
         Map<String, Object> previewData = buildPreviewData(data, fields, new HashMap<>());
         Map<String, Object> map = new LinkedHashMap<>();
         map.put("data", previewData);
+        map.put("sql", Base64.getEncoder().encodeToString(sql.getBytes()));
         return map;
     }
 

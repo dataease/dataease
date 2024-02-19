@@ -199,6 +199,20 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
     }
     return { ...options, label }
   }
+
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const customAttr = chart.customAttr
+    const { label } = customAttr
+    customAttr.label = {
+      ...label,
+      show: true,
+      showDimension: true,
+      showProportion: true,
+      reserveDecimalCount: 2
+    }
+    return chart
+  }
+
   protected setupOptions(chart: Chart, options: TreemapOptions): TreemapOptions {
     return flow(
       this.configTheme,

@@ -91,6 +91,30 @@ export const save = async (data = {}): Promise<Dataset> => {
   })
 }
 
+export const update = async (data = {}): Promise<Dataset> => {
+  return request.post({ url: '/datasource/update', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const move = async (data = {}): Promise<Dataset> => {
+  return request.post({ url: '/datasource/move', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const reName = async (data = {}): Promise<Dataset> => {
+  return request.post({ url: '/datasource/reName', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const createFolder = async (data = {}): Promise<Dataset> => {
+  return request.post({ url: '/datasource/createFolder', data }).then(res => {
+    return res?.data
+  })
+}
+
 export const checkRepeat = async (data = {}): Promise<Dataset> => {
   return request.post({ url: '/datasource/checkRepeat', data }).then(res => {
     return res?.data
@@ -106,6 +130,14 @@ export const checkApiItem = async (data = {}): Promise<IResponse> => {
 export const getDatasetTree = async (data = {}): Promise<IResponse> => {
   return request
     .post({ url: '/datasetTree/tree', data: { ...data, ...{ busiFlag: 'dataset' } } })
+    .then(res => {
+      return res?.data
+    })
+}
+
+export const getDsTree = async (data = {}): Promise<IResponse> => {
+  return request
+    .post({ url: '/datasource/tree', data: { ...data, ...{ busiFlag: 'datasource' } } })
     .then(res => {
       return res?.data
     })

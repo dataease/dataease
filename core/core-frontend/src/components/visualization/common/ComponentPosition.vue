@@ -10,27 +10,45 @@
             :min="min"
             :max="max"
             :step="step"
-            v-model="curComponent.style[key]"
-            @change="onPositionChange"
+            v-model="positionMounted[key]"
+            @change="onPositionChange(key)"
             controls-position="right"
           />
         </el-form-item>
       </el-col>
     </el-row>
+    <el-form-item class="form-item" :class="'form-item-' + themes">
+      <el-checkbox
+        v-if="curComponent"
+        size="small"
+        :effect="themes"
+        v-model="curComponent['maintainRadio']"
+        @change="maintainRadioChange"
+      >
+        保持宽高比
+      </el-checkbox>
+    </el-form-item>
   </el-form>
 </template>
 
 <script setup lang="ts">
-import { computed } from 'vue'
+import { computed, ref, watch } from 'vue'
 import { positionData } from '@/utils/attr'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import _ from 'lodash'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { groupSizeStyleAdaptor } from '@/utils/style'
 const snapshotStore = snapshotStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, canvasStyleData } = storeToRefs(dvMainStore)
+const positionMounted = ref({
+  width: 0,
+  height: 0,
+  top: 0,
+  left: 0
+})
 
 withDefaults(
   defineProps<{
@@ -60,9 +78,57 @@ const positionKeysGroup = computed(() => {
   return _list
 })
 
-const onPositionChange = () => {
+const onPositionChange = key => {
+  if (!positionMounted.value[key]) {
+    positionMounted.value[key] = 0
+  }
+  const originRadio = curComponent.value.style.width / curComponent.value.style.height
+  curComponent.value.style[key] = Math.round(
+    (positionMounted.value[key] * canvasStyleData.value.scale) / 100
+  )
+  if (curComponent.value.maintainRadio) {
+    if (key === 'width') {
+      curComponent.value.style['height'] = curComponent.value.style['width'] / originRadio
+      positionMounted.value['height'] = Math.round(positionMounted.value['width'] / originRadio)
+    } else if (key === 'height') {
+      curComponent.value.style['width'] = curComponent.value.style['height'] * originRadio
+      positionMounted.value['width'] = Math.round(positionMounted.value['height'] * originRadio)
+    }
+  }
+
+  if (curComponent.value.component === 'Group') {
+    //如果当前组件是Group分组 则要进行内部组件深度计算
+    const parentNode = document.querySelector('#editor-canvas-main')
+    groupSizeStyleAdaptor(curComponent.value)
+  }
+
   snapshotStore.recordSnapshotCache()
 }
+
+const maintainRadioChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
+
+const positionInit = () => {
+  if (curComponent.value) {
+    Object.keys(positionMounted.value).forEach(key => {
+      positionMounted.value[key] = Math.round(
+        (curComponent.value.style[key] * 100) / canvasStyleData.value.scale
+      )
+    })
+  }
+}
+
+watch(
+  () => curComponent.value,
+  () => {
+    positionInit()
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
 </script>
 
 <style lang="less" scoped>

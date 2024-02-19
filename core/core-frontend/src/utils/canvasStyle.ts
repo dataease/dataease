@@ -124,7 +124,9 @@ export const customAttrTrans = {
     'radarSize' // 雷达占比
   ],
   label: ['fontSize'],
-  tooltip: ['fontSize']
+  tooltip: ['fontSize'],
+  indicator: ['fontSize', 'suffixFontSize'],
+  indicatorName: ['fontSize']
 }
 export const customStyleTrans = {
   text: ['fontSize'],
@@ -257,7 +259,8 @@ export const THEME_STYLE_TRANS_SLAVE1 = {
 
 export const THEME_ATTR_TRANS_MAIN = {
   label: ['color'],
-  tooltip: ['color']
+  tooltip: ['color'],
+  indicatorName: ['color']
 }
 
 export const THEME_ATTR_TRANS_MAIN_SYMBOL = {
@@ -378,7 +381,9 @@ export function adaptCurThemeCommonStyle(component) {
   // 背景融合-Begin 如果是大屏['CanvasBoard', 'CanvasIcon', 'Picture']组件不需要设置背景
   if (
     dvMainStore.dvInfo.type === 'dataV' &&
-    ['CanvasBoard', 'CanvasIcon', 'Picture', 'Group'].includes(component.component)
+    ['CanvasBoard', 'CanvasIcon', 'Picture', 'Group', 'SvgTriangle', 'SvgStar'].includes(
+      component.component
+    )
   ) {
     component.commonBackground['backgroundColorSelect'] = false
     component.commonBackground['innerPadding'] = 0

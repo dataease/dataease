@@ -63,6 +63,7 @@ const state = reactive({
 
 const resourceGroupOpt = ref()
 const curCanvasType = ref('')
+const mounted = ref(false)
 
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const createPanel = path => {
@@ -204,6 +205,7 @@ const getData = () => {
     })
     .finally(() => {
       dtLoading.value = false
+      mounted.value = true
       nextTick(() => {
         if (!!nickName.value.length) {
           datasetListTree.value.filter(nickName.value)
@@ -450,7 +452,7 @@ watch(nickName, (val: string) => {
 
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
-  return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+  return data.name?.includes(value)
 }
 
 const getMenuList = (val: boolean) => {
@@ -568,7 +570,7 @@ const getMenuList = (val: boolean) => {
     </el-aside>
 
     <div class="dataset-content" :class="isDataEaseBi && 'h100'">
-      <template v-if="!state.datasetTree.length">
+      <template v-if="!state.datasetTree.length && mounted">
         <empty-background description="暂无数据集" img-type="none">
           <el-button
             v-if="rootManage && !isDataEaseBi"
@@ -675,7 +677,7 @@ const getMenuList = (val: boolean) => {
           </template>
         </div>
       </template>
-      <template v-else>
+      <template v-else-if="mounted">
         <empty-background :description="t('deDataset.on_the_left')" img-type="select" />
       </template>
     </div>
@@ -754,10 +756,6 @@ const getMenuList = (val: boolean) => {
     height: calc(100vh - 56px);
     overflow: auto;
     position: relative;
-
-    &.h100 {
-      height: 100%;
-    }
   }
 
   .dataset-content {

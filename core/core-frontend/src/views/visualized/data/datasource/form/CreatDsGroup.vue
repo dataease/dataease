@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, reactive, computed, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { checkRepeat, listDatasources, save } from '@/api/datasource'
+import { checkRepeat, listDatasources, save, update } from '@/api/datasource'
 import { ElMessage, ElMessageBox, ElMessageBoxOptions } from 'element-plus-secondary'
 import type { DatasetOrFolder } from '@/api/dataset'
 import nothingTree from '@/assets/img/nothing-tree.png'
@@ -272,11 +272,13 @@ const saveDataset = () => {
           showClose: false,
           tip: ''
         }
+        request.apiConfiguration = ''
         checkRepeat(request).then(res => {
+          let method = request.id === '' ? save : update
           if (res) {
             ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
               () => {
-                save({ ...request, name: datasetForm.name, pid: params.pid })
+                method({ ...request, name: datasetForm.name, pid: params.pid })
                   .then(res => {
                     if (res !== undefined) {
                       wsCache.set('ds-new-success', true)
@@ -291,7 +293,7 @@ const saveDataset = () => {
               }
             )
           } else {
-            save({ ...request, name: datasetForm.name, pid: params.pid })
+            method({ ...request, name: datasetForm.name, pid: params.pid })
               .then(res => {
                 if (res !== undefined) {
                   wsCache.set('ds-new-success', true)

@@ -10,6 +10,7 @@ import axios, {
 import { tryShowLoading, tryHideLoading } from '@/utils/loading'
 import qs from 'qs'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import { useEmbedded } from '@/store/modules/embedded'
 import { useLinkStoreWithOut } from '@/store/modules/link'
 import { config } from './config'
 import { configHandler } from './refresh'
@@ -31,9 +32,10 @@ const { result_code } = config
 import { useCache } from '@/hooks/web/useCache'
 
 const { wsCache } = useCache()
+const embeddedStore = useEmbedded()
 
-export const PATH_URL = window.DataEaseBi
-  ? window.DataEaseBi?.baseUrl + 'de2api/'
+export const PATH_URL = embeddedStore.baseUrl
+  ? embeddedStore?.baseUrl + 'de2api/'
   : import.meta.env.VITE_API_BASEPATH
 
 export interface AxiosInstanceWithLoading extends AxiosInstance {
@@ -101,14 +103,14 @@ service.interceptors.request.use(
     ) {
       config.data = qs.stringify(config.data)
     }
-    if (window.DataEaseBi?.baseUrl) {
-      config.baseURL = window.DataEaseBi.baseUrl + 'de2api/'
+    if (embeddedStore.baseUrl) {
+      config.baseURL = PATH_URL
     }
 
     if (linkStore.getLinkToken) {
       ;(config.headers as AxiosRequestHeaders)['X-DE-LINK-TOKEN'] = linkStore.getLinkToken
-    } else if (window.DataEaseBi?.token) {
-      ;(config.headers as AxiosRequestHeaders)['X-EMBEDDED-TOKEN'] = window.DataEaseBi.token
+    } else if (embeddedStore.token) {
+      ;(config.headers as AxiosRequestHeaders)['X-EMBEDDED-TOKEN'] = embeddedStore.token
     }
     if (wsCache.get('user.language')) {
       const key = wsCache.get('user.language')

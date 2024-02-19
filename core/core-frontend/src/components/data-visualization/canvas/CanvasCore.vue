@@ -189,7 +189,8 @@ const start = ref({
 const width = ref(0)
 const height = ref(0)
 const isShowArea = ref(false)
-const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
+const svgFilterAttrs = ['width', 'height', 'top', 'left', 'rotate', 'backgroundColor']
+const commonFilterAttrs = ['width', 'height', 'top', 'left', 'rotate']
 const userViewEnlargeRef = ref(null)
 const linkJumpRef = ref(null)
 const linkageRef = ref(null)
@@ -206,13 +207,19 @@ watch(
 watch(
   () => canvasStyleData.value,
   () => {
-    initWatermark()
+    nextTick(() => {
+      initWatermark()
+    })
   },
   { deep: true }
 )
 
 const initWatermark = (waterDomId = 'editor-canvas-main') => {
-  if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
+  if (
+    dvInfo.value.watermarkInfo &&
+    dvInfo.value.watermarkInfo.settingContent &&
+    isMainCanvas(canvasId.value)
+  ) {
     const scale = dashboardActive.value ? 1 : curScale.value
     if (userInfo.value) {
       activeWatermark(
@@ -493,10 +500,18 @@ const handleContextMenu = e => {
   // 组件处于编辑状态的时候 如富文本 不弹出右键菜单
   if (!curComponent.value || (curComponent.value && !curComponent.value.editing)) {
     contextmenuStore.showContextMenu({ top, left, position: 'canvasCore' })
+    const iconDom = document.getElementById('close-button')
+    if (iconDom) {
+      iconDom.click()
+    }
   }
 }
 
 const getComponentStyle = style => {
+  return getStyle(style, commonFilterAttrs)
+}
+
+const getSvgComponentStyle = style => {
   return getStyle(style, svgFilterAttrs)
 }
 
@@ -1375,7 +1390,7 @@ defineExpose({
     :id="mainDomId"
     ref="container"
     class="editor"
-    :class="{ edit: isEdit }"
+    :class="{ edit: isEdit, 'dashboard-editor': dashboardActive }"
     :style="editStyle"
     @contextmenu="handleContextMenu"
   >
@@ -1440,7 +1455,23 @@ defineExpose({
         :dv-info="dvInfo"
         :canvas-active="canvasActive"
       />
-
+      <component
+        v-else-if="item.component.includes('Svg')"
+        :is="findComponent(item.component)"
+        :id="'component' + item.id"
+        :scale="curBaseScale"
+        class="component"
+        :is-edit="true"
+        :style="getSvgComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :element="item"
+        :request="item.request"
+        :canvas-style-data="canvasStyleData"
+        :canvas-view-info="canvasViewInfo"
+        :dv-info="dvInfo"
+        :active="item.id === curComponentId"
+        :canvas-active="canvasActive"
+      />
       <component
         v-else
         :is="findComponent(item.component)"
@@ -1472,6 +1503,9 @@ defineExpose({
 </template>
 
 <style lang="less" scoped>
+.dashboard-editor {
+  min-height: 100%;
+}
 .editor {
   position: relative;
   margin: auto;

@@ -25,7 +25,6 @@ import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.stream.Collectors;
 
 @Component
 public class DataSourceManage {
@@ -71,11 +70,13 @@ public class DataSourceManage {
         return TreeUtils.mergeTree(nodes, BusiNodeVO.class, false);
     }
 
+
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerSave(CoreDatasource coreDatasource) {
         coreDatasourceMapper.insert(coreDatasource);
-        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE,OptConstants.OPT_TYPE.NEW);
+        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.NEW);
     }
+
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEdit(CoreDatasource coreDatasource) {
@@ -84,8 +85,9 @@ public class DataSourceManage {
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
         coreDatasourceMapper.update(coreDatasource, updateWrapper);
-        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE,OptConstants.OPT_TYPE.UPDATE);
+        coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
+
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerEditStatus(CoreDatasource coreDatasource) {
@@ -93,6 +95,7 @@ public class DataSourceManage {
         updateWrapper.eq("id", coreDatasource.getId());
         coreDatasourceMapper.update(coreDatasource, updateWrapper);
     }
+
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void move(DatasourceDTO dataSourceDTO) {
@@ -106,6 +109,6 @@ public class DataSourceManage {
         sourceData.setPid(dataSourceDTO.getPid());
         sourceData.setName(dataSourceDTO.getName());
         coreDatasourceMapper.updateById(sourceData);
-        coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE,OptConstants.OPT_TYPE.UPDATE);
+        coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 }

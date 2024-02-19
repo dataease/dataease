@@ -88,7 +88,7 @@ public class VisualizationStoreManage {
         return pos.stream().map(po ->
                 new VisualizationStoreVO(
                         po.getStoreId(), po.getResourceId(), po.getName(),
-                        po.getType(), po.getCreator().toString(), ObjectUtils.isEmpty(po.getEditor()) ? null : po.getEditor().toString(),
+                        po.getType(), String.valueOf(po.getCreator()), ObjectUtils.isEmpty(po.getEditor()) ? null : String.valueOf(po.getEditor()),
                         po.getEditTime(), 9)).toList();
     }
 

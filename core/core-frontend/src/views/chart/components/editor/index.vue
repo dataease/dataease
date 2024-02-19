@@ -442,6 +442,27 @@ const addAxis = (e, axis: AxisType) => {
   if (type) {
     typeValid = dragCheckType(view.value[axis], type)
   }
+  // 针对指标卡进行数值类型判断
+  if (typeValid && type === 'q' && view.value.type === 'indicator') {
+    const list = view.value[axis]
+    if (list && list.length > 0) {
+      let valid = true
+      for (let i = 0; i < list.length; i++) {
+        if (list[i].deType !== 2 && list[i].deType !== 3) {
+          list.splice(i, 1)
+          valid = false
+        }
+      }
+      typeValid = valid
+      if (!typeValid) {
+        ElMessage({
+          message: t('chart.error_not_number'),
+          type: 'warning'
+        })
+      }
+    }
+  }
+
   if (!duplicate) {
     dup = dragMoveDuplicate(view.value[axis], e, 'chart')
   }
@@ -466,6 +487,12 @@ const addAxis = (e, axis: AxisType) => {
   }
   if (view.value.type === 'line') {
     if (view.value?.xAxisExt?.length && view.value?.yAxis?.length > 1) {
+      const axis = view.value.yAxis.splice(1)
+      emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
+    }
+  }
+  if (view.value.type === 'indicator') {
+    if (view.value?.yAxis?.length > 1) {
       const axis = view.value.yAxis.splice(1)
       emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
     }
@@ -610,6 +637,13 @@ const onTypeChange = (render, type) => {
         emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
       }
     }
+    if (
+      view.value.type === 'liquid' ||
+      view.value.type === 'gauge' ||
+      view.value.type === 'indicator'
+    ) {
+      removeItems('drillFields')
+    }
   }
   curComponent.value.innerType = type
   calcData(view.value, true)
@@ -654,6 +688,28 @@ const onMiscChange = val => {
 
 const onLabelChange = val => {
   view.value.customAttr.label = val
+  renderChart(view.value)
+}
+
+const onIndicatorChange = (val, prop) => {
+  if (prop === 'color' || prop === 'suffixColor') {
+    view.value.customAttr.basicStyle.alpha = undefined
+    if (val.indicatorName !== undefined) {
+      view.value.customAttr.indicatorName = val.indicatorName
+    }
+  }
+  view.value.customAttr.indicator = val.indicatorValue
+  renderChart(view.value)
+}
+
+const onIndicatorNameChange = (val, prop) => {
+  if (prop === 'color') {
+    view.value.customAttr.basicStyle.alpha = undefined
+    if (val.indicatorValue !== undefined) {
+      view.value.customAttr.indicator = val.indicatorValue
+    }
+  }
+  view.value.customAttr.indicatorName = val.indicatorName
   renderChart(view.value)
 }
 
@@ -1703,6 +1759,8 @@ const onRefreshChange = val => {
                       @onChangeXAxisForm="onChangeXAxisForm"
                       @onChangeYAxisForm="onChangeYAxisForm"
                       @onTextChange="onTextChange"
+                      @onIndicatorChange="onIndicatorChange"
+                      @onIndicatorNameChange="onIndicatorNameChange"
                       @onLegendChange="onLegendChange"
                       @onBackgroundChange="onBackgroundChange"
                       @onBasicStyleChange="onBasicStyleChange"

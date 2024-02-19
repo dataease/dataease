@@ -13,6 +13,7 @@ import {
   saveCanvas
 } from '@/api/visualization/dataVisualization'
 import { ElMessage } from 'element-plus-secondary'
+import { cutTargetTree } from '@/utils/utils'
 const props = defineProps({
   curCanvasType: {
     type: String,
@@ -154,6 +155,9 @@ const optInit = (type, data: BusiTreeNode, exec, parentSelect = false) => {
       state.tData[0].name = curCanvasType.value === 'dataV' ? '数据大屏' : '仪表板'
     }
     tData = [...state.tData]
+    if ('move' === exec) {
+      cutTargetTree(state.tData, data.id)
+    }
     if (['newLeaf', 'newFolder'].includes(exec)) {
       resourceForm.pid = data.id as string
       pid.value = data.id

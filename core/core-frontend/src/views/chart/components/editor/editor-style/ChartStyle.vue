@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { PropType, toRefs, nextTick, watch } from 'vue'
+import { PropType, toRefs, nextTick, watch, ref } from 'vue'
 import MiscSelector from '@/views/chart/components/editor/editor-style/components/MiscSelector.vue'
 import LabelSelector from '@/views/chart/components/editor/editor-style/components/LabelSelector.vue'
 import TooltipSelector from '@/views/chart/components/editor/editor-style/components/TooltipSelector.vue'
@@ -19,6 +19,8 @@ import TableHeaderSelector from '@/views/chart/components/editor/editor-style/co
 import TableCellSelector from '@/views/chart/components/editor/editor-style/components/table/TableCellSelector.vue'
 import TableTotalSelector from '@/views/chart/components/editor/editor-style/components/table/TableTotalSelector.vue'
 import MiscStyleSelector from '@/views/chart/components/editor/editor-style/components/MiscStyleSelector.vue'
+import IndicatorValueSelector from '@/views/chart/components/editor/editor-style/components/IndicatorValueSelector.vue'
+import IndicatorNameSelector from '@/views/chart/components/editor/editor-style/components/IndicatorNameSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -83,8 +85,13 @@ const emit = defineEmits([
   'onTableCellChange',
   'onTableTotalChange',
   'onChangeMiscStyleForm',
-  'onExtTooltipChange'
+  'onExtTooltipChange',
+  'onIndicatorChange',
+  'onIndicatorNameChange'
 ])
+
+const indicatorValueRef = ref()
+const indicatorNameRef = ref()
 
 const showProperties = (property: EditorProperty) => properties.value?.includes(property)
 
@@ -110,6 +117,22 @@ const onChangeYAxisForm = (val, prop) => {
 
 const onTextChange = (val, prop) => {
   state.initReady && emit('onTextChange', val, prop)
+}
+
+const onIndicatorChange = (val, prop) => {
+  const value = { indicatorValue: val, indicatorName: undefined }
+  if (prop === 'color' || prop === 'suffixColor') {
+    value.indicatorName = indicatorNameRef.value?.getFormData()
+  }
+  state.initReady && emit('onIndicatorChange', value, prop)
+}
+
+const onIndicatorNameChange = (val, prop) => {
+  const value = { indicatorName: val, indicatorValue: undefined }
+  if (prop === 'color') {
+    value.indicatorValue = indicatorValueRef.value?.getFormData()
+  }
+  state.initReady && emit('onIndicatorNameChange', value, prop)
 }
 
 const onLegendChange = (val, prop) => {
@@ -226,12 +249,47 @@ watch(
           </el-collapse-item>
           <el-collapse-item
             :effect="themes"
-            v-if="showProperties('misc-selector')"
+            v-if="showProperties('indicator-value-selector')"
+            name="indicator-value"
+            title="指标值"
+          >
+            <indicator-value-selector
+              ref="indicatorValueRef"
+              :property-inner="propertyInnerAll['indicator-value-selector']"
+              :themes="themes"
+              class="attr-selector"
+              :chart="chart"
+              :quota-fields="props.quotaData"
+              @onIndicatorChange="onIndicatorChange"
+            />
+          </el-collapse-item>
+          <collapse-switch-item
+            :themes="themes"
+            v-model="chart.customAttr.indicatorName.show"
+            v-if="showProperties('indicator-name-selector')"
+            :change-model="chart.customAttr.indicatorName"
+            @modelChange="val => onIndicatorNameChange(val, 'show')"
+            title="指标名称"
+            name="indicator-name"
+          >
+            <indicator-name-selector
+              ref="indicatorNameRef"
+              :property-inner="propertyInnerAll['indicator-name-selector']"
+              :themes="themes"
+              class="attr-selector"
+              :chart="chart"
+              :quota-fields="props.quotaData"
+              @onIndicatorNameChange="onIndicatorNameChange"
+            />
+          </collapse-switch-item>
+          <el-collapse-item
+            :effect="themes"
+            v-if="showProperties('misc-selector') && !chart.type.includes('mix')"
             name="size"
             title="大小"
           >
             <misc-selector
-              :property-inner="propertyInnerAll['size-selector']"
+              :property-inner="propertyInnerAll['misc-selector']"
               :themes="themes"
               class="attr-selector"
               :chart="chart"

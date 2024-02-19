@@ -22,13 +22,15 @@ import {
   getTableField,
   listDatasourceTables,
   deleteById,
-  save,
+  move,
+  reName,
+  createFolder,
   validateById,
   syncApiDs,
   syncApiTable
 } from '@/api/datasource'
 import { Base64 } from 'js-base64'
-import type { Configuration, ApiConfiguration, SyncSetting } from './form/index.vue'
+import type { SyncSetting, Node } from './form/option'
 import EditorDatasource from './form/index.vue'
 import ExcelInfo from './ExcelInfo.vue'
 import SheetTabs from './SheetTabs.vue'
@@ -45,25 +47,6 @@ interface Field {
   dataeaseName: string
   originName: string
   deType: number
-}
-
-export interface Node {
-  name: string
-  createBy: string
-  creator: string
-  createTime: string
-  id: number | string
-  size: number
-  description: string
-  type: string
-  nodeType: string
-  fileName: string
-  syncSetting?: SyncSetting
-  editType?: number
-  configuration?: Configuration
-  apiConfiguration?: ApiConfiguration[]
-  weight?: number
-  lastSyncTime?: number | string
 }
 
 const { t } = useI18n()
@@ -234,28 +217,29 @@ const handleLoadExcel = data => {
 }
 
 const validateDS = () => {
-  validateById(nodeInfo.id as number)
-    .then(res => {
-      if (res.data.type === 'API') {
-        let error = 0
-        const status = JSON.parse(res.data.status)
-        for (let i = 0; i < status.length; i++) {
-          if (status[i].status === 'Error') {
-            error++
+  validateById(nodeInfo.id as number).then(res => {
+    if (res.data.type === 'API') {
+      let error = 0
+      const status = JSON.parse(res.data.status)
+      for (let i = 0; i < status.length; i++) {
+        if (status[i].status === 'Error') {
+          error++
+        }
+        for (let i = 0; i < nodeInfo.apiConfiguration.length; i++) {
+          if (nodeInfo.apiConfiguration[i].name === status[i].name) {
+            nodeInfo.apiConfiguration[i].status = status[i].status
           }
         }
-        if (error === 0) {
-          ElMessage.success('校验成功')
-        } else {
-          ElMessage.error('校验失败')
-        }
-      } else {
-        ElMessage.success('校验成功')
       }
-    })
-    .catch(() => {
-      ElMessage.error('校验失败')
-    })
+      if (error === 0) {
+        ElMessage.success('校验成功')
+      } else {
+        ElMessage.error('校验失败')
+      }
+    } else {
+      ElMessage.success('校验成功')
+    }
+  })
 }
 
 const dialogErrorInfo = ref(false)
@@ -351,21 +335,29 @@ const infoList = computed(() => {
   }
 })
 const saveDsFolder = (params, successCb, finallyCb, cmd) => {
-  save(params)
+  let method = move
+  let message = '移动成功'
+
+  switch (cmd) {
+    case 'move':
+      method = move
+      message = '移动成功'
+
+      break
+    case 'rename':
+      method = reName
+      message = '重命名成功'
+      break
+    default:
+      method = createFolder
+      message = '新建成功'
+      break
+  }
+  method(params)
     .then(res => {
       if (res !== undefined) {
         successCb()
-        switch (cmd) {
-          case 'move':
-            ElMessage.success('移动成功')
-            break
-          case 'rename':
-            ElMessage.success('重命名成功')
-            break
-          default:
-            ElMessage.success('新建成功')
-            break
-        }
+        ElMessage.success(message)
         listDs()
       }
     })
@@ -375,6 +367,7 @@ const saveDsFolder = (params, successCb, finallyCb, cmd) => {
 }
 
 const dsLoading = ref(false)
+const mounted = ref(false)
 
 const listDs = () => {
   rawDatasourceList.value = []
@@ -392,6 +385,7 @@ const listDs = () => {
       state.datasourceTree = nodeData
     })
     .finally(() => {
+      mounted.value = true
       dsLoading.value = false
       updateTreeExpand()
       const id = nodeInfo.id
@@ -535,7 +529,7 @@ const nodeCollapse = data => {
 
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
-  return data.name?.toLocaleLowerCase().includes(value.toLocaleLowerCase())
+  return data.name?.includes(value)
 }
 
 const editDatasource = (editType?: number) => {
@@ -783,7 +777,7 @@ const getMenuList = (val: boolean) => {
     </el-aside>
 
     <div class="datasource-content" :class="isDataEaseBi && 'h100'">
-      <template v-if="!state.datasourceTree.length">
+      <template v-if="!state.datasourceTree.length && mounted">
         <empty-background description="暂无数据源" img-type="none">
           <el-button
             v-if="rootManage && !isDataEaseBi"
@@ -1217,7 +1211,7 @@ const getMenuList = (val: boolean) => {
           </BaseInfoContent>
         </template>
       </template>
-      <template v-else>
+      <template v-else-if="mounted">
         <empty-background description="请在左侧选择数据源" img-type="select" />
       </template>
     </div>
@@ -1576,8 +1570,6 @@ const getMenuList = (val: boolean) => {
     overflow: auto;
     position: relative;
     &.h100 {
-      height: 100%;
-
       .datasource-table {
         height: calc(100% - 140px);
       }

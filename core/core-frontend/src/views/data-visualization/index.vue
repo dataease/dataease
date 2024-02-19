@@ -20,19 +20,26 @@ import { findDragComponent, findNewComponent, initCanvasData } from '@/utils/can
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { listenGlobalKeyDown, releaseAttachKey } from '@/utils/DeShortcutKey'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
+import { useEmbedded } from '@/store/modules/embedded'
 import { changeComponentSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
 import RealTimeListTree from '@/components/data-visualization/RealTimeListTree.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { watermarkFind } from '@/api/watermark'
 const interactiveStore = interactiveStoreWithOut()
+const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const { dvId, opt } = window.DataEaseBi || router.currentRoute.value.query
+    const { opt } = router.currentRoute.value.query
     if (!(opt && opt === 'create')) {
-      check(wsCache.get('screen-weight'), dvId, 4)
+      check(
+        wsCache.get('screen-weight'),
+        embeddedStore.dvId || (router.currentRoute.value.query.dvId as string),
+        4
+      )
     }
   }
 }
@@ -195,7 +202,9 @@ onMounted(async () => {
   if (editMode.value === 'edit') {
     window.addEventListener('storage', eventCheck)
   }
-  const { dvId, opt, pid, createType } = window.DataEaseBi || router.currentRoute.value.query
+  const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
+  const pid = embeddedStore.pid || router.currentRoute.value.query.pid
+  const { opt, createType } = router.currentRoute.value.query
   const checkResult = await checkPer(dvId)
   if (!checkResult) {
     return
@@ -203,7 +212,8 @@ onMounted(async () => {
   initDataset()
   if (dvId) {
     state.canvasInitStatus = false
-    initCanvasData(dvId, 'dataV', function () {
+    const busiFlg = opt === 'copy' ? 'dataV-copy' : 'dataV'
+    initCanvasData(dvId, busiFlg, function () {
       state.canvasInitStatus = true
       // afterInit
       nextTick(() => {
@@ -221,7 +231,17 @@ onMounted(async () => {
     })
   } else if (opt && opt === 'create') {
     state.canvasInitStatus = false
-    dvMainStore.createInit('dataV', null, pid)
+    let watermarkBaseInfo
+    try {
+      await watermarkFind().then(rsp => {
+        watermarkBaseInfo = rsp.data
+        watermarkBaseInfo.settingContent = JSON.parse(watermarkBaseInfo.settingContent)
+      })
+    } catch (e) {
+      console.error('can not find watermark info')
+    }
+
+    dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo)
     nextTick(() => {
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)
