@@ -532,7 +532,7 @@ declare interface ChartLabelAttr {
   /**
    * 标签格式化设置
    */
-  labelFormatter: BaseFormatter
+  labelFormatter: Partial<BaseFormatter>
   /**
    * 标签保留小数位数
    */

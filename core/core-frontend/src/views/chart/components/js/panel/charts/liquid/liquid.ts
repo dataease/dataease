@@ -146,6 +146,20 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     }
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.customAttr.label = {
+      ...chart.customAttr.label,
+      fontSize: 12,
+      show: true,
+      labelFormatter: {
+        type: 'percent',
+        thousandSeparator: true,
+        decimalCount: 2
+      }
+    }
+    return chart
+  }
+
   protected setupOptions(chart: Chart, options: LiquidOptions): LiquidOptions {
     return flow(this.configTheme, this.configMisc, this.configLabel)(chart, options)
   }

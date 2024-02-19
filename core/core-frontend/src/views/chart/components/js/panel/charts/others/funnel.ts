@@ -130,6 +130,10 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     if (!['left', 'middle', 'right'].includes(label.position)) {
       label.position = 'middle'
     }
+    customAttr.label = {
+      ...label,
+      show: true
+    }
     return chart
   }
 

@@ -248,6 +248,20 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     return { ...options, statistic }
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    chart.customAttr.label = {
+      ...chart.customAttr.label,
+      show: true,
+      labelFormatter: {
+        type: 'value',
+        thousandSeparator: true,
+        decimalCount: 0,
+        unit: 1
+      }
+    }
+    return chart
+  }
+
   protected setupOptions(chart: Chart, options: GaugeOptions, ...extra: any[]): GaugeOptions {
     return flow(
       this.configTheme,
