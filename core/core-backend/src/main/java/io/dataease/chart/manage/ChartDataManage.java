@@ -174,7 +174,7 @@ public class ChartDataManage {
         Map<String, Object> mapAttr = view.getCustomAttr();
         Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("basicStyle");
         if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
-            if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !chartExtRequest.getExcelExportFlag()) {
+            if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !view.getIsExcelExport()) {
                 if (chartExtRequest.getGoPage() == null) {
                     chartExtRequest.setGoPage(1L);
                 }
@@ -190,7 +190,7 @@ public class ChartDataManage {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
                     chartExtRequest.setGoPage(1L);
                     chartExtRequest.setPageSize(view.getResultCount().longValue());
-                } else if (!chartExtRequest.getExcelExportFlag()) {
+                } else if (!view.getIsExcelExport()) {
                     chartExtRequest.setGoPage(null);
                     chartExtRequest.setPageSize(null);
                 }
