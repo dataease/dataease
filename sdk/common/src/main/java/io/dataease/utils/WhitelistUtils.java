@@ -32,6 +32,8 @@ public class WhitelistUtils {
             "/lark/token",
             "/dingtalk/info",
             "/dingtalk/token",
+            "/wecom/info",
+            "/wecom/token",
             "/sysParameter/requestTimeOut",
             "/setting/authentication/status",
             "/");
