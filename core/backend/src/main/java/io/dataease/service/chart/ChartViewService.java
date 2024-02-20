@@ -1064,6 +1064,7 @@ public class ChartViewService {
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("yAxis", yAxis);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
+            logger.info("param1:" + gson.toJson(pluginViewParam));
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
                 return emptyChartViewDTO(view);
