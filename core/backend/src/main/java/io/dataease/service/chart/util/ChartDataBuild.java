@@ -1,6 +1,5 @@
 package io.dataease.service.chart.util;
 
-import com.google.gson.Gson;
 import io.dataease.controller.request.chart.ChartDrillRequest;
 import io.dataease.dto.chart.*;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
@@ -1177,9 +1176,6 @@ public class ChartDataBuild {
     }
 
     private static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> fields, ChartViewWithBLOBs view, List<String[]> data, Map<String, ColumnPermissionItem> desensitizationList) {
-        Gson gson = new Gson();
-        logger.info("field:" + gson.toJson(fields));
-        logger.info("data:" + gson.toJson(data));
         Map<String, Object> map = new TreeMap<>();
         List<Map<String, Object>> tableRow = new ArrayList<>();
         data.forEach(ele -> {
