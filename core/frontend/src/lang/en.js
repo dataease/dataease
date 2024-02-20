@@ -2144,6 +2144,8 @@ export default {
     theme_color_dark: 'Dark',
     theme_color_light: 'Light',
     refresh_frequency: 'Refresh Frequency',
+    refresh_browser_frequency: 'Refresh Browser',
+    refresh_browser_tips: 'Only public links are effective',
     card_color_matching: 'Card Color Matching',
     table_color_matching: 'Table Color Matching',
     background_color: 'Background Color',
