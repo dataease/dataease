@@ -92,6 +92,8 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   componentStyle.refreshViewLoading = (componentStyle.refreshViewLoading || false)
   componentStyle.refreshUnit = (componentStyle.refreshUnit || 'minute')
   componentStyle.refreshViewEnable = (componentStyle.refreshViewEnable === undefined ? true : componentStyle.refreshViewEnable)
+  componentStyle.refreshBrowserEnable = (componentStyle.refreshBrowserEnable || false)
+  componentStyle.refreshBrowserTime = (componentStyle.refreshBrowserTime || 5)
   componentStyle.aidedDesign = (componentStyle.aidedDesign || deepCopy(AIDED_DESIGN))
   componentStyle.pdfPageLine = (componentStyle.pdfPageLine || deepCopy(PAGE_LINE_DESIGN))
   componentStyle.chartInfo = (componentStyle.chartInfo || deepCopy(PANEL_CHART_INFO))

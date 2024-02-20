@@ -2136,6 +2136,8 @@ export default {
     theme_color_dark: '深色',
     theme_color_light: '淺色',
     refresh_frequency: '刷新頻率',
+    refresh_browser_frequency: '浏览器刷新',
+    refresh_browser_tips: '仅公共链接生效',
     card_color_matching: '卡片配色',
     table_color_matching: '表格配色',
     background_color: '背景顏色',
