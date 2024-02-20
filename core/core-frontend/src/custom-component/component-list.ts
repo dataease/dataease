@@ -193,8 +193,8 @@ const list = [
       borderWidth: 1,
       borderRadius: 5,
       borderStyle: 'solid',
-      borderColor: '#000',
-      backgroundColor: ''
+      borderColor: '#cccccc',
+      backgroundColor: 'rgba(236,231,231,0.1)'
     }
   },
   {
@@ -208,8 +208,8 @@ const list = [
       height: 200,
       borderWidth: 1,
       borderStyle: 'solid',
-      borderColor: '#000',
-      backgroundColor: ''
+      borderColor: '#cccccc',
+      backgroundColor: 'rgba(236,231,231,0.1)'
     }
   },
   {
@@ -222,7 +222,7 @@ const list = [
       width: 200,
       height: 200,
       borderWidth: 1,
-      borderColor: '#000',
+      borderColor: '#cccccc',
       backgroundColor: 'rgba(236,231,231,0.1)'
     }
   },
