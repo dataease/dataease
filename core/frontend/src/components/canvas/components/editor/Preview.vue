@@ -63,6 +63,7 @@
           :screen-shot="screenShot"
           :canvas-style-data="canvasStyleData"
           :show-position="showPosition"
+          :user-id="userId"
           @filter-loaded="filterLoaded"
         />
       </div>

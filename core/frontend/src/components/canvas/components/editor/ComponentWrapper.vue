@@ -71,6 +71,7 @@
         :screen-shot="screenShot"
         :canvas-style-data="canvasStyleData"
         :show-position="showPosition"
+        :user-id="userId"
         @fill-chart-2-parent="setChartData"
       />
     </div>
