@@ -1111,8 +1111,8 @@ export default {
         tableChart.customAttr.color.tableFontColor = '#7c7e81'
         tableChart.customAttr.color.enableTableCrossBG = false
         tableChart.customAttr.size.showTableHeader = true
-        tableChart.customAttr.size.tableTitleFontSize = 12
-        tableChart.customAttr.size.tableItemFontSize = 12
+        tableChart.customAttr.size.tableTitleFontSize = 14
+        tableChart.customAttr.size.tableItemFontSize = 14
       }
       tableChart.customAttr.size.tableColumnFreezeHead = 0
       tableChart.customAttr.size.tableRowFreezeHead = 0
