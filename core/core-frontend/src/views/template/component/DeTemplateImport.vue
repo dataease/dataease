@@ -287,7 +287,7 @@ if (props.templateId) {
   justify-content: flex-end;
 }
 .preview {
-  margin-top: -5px;
+  margin-top: -8px;
   border: 1px solid #e6e6e6;
   height: 300px !important;
   overflow: auto;

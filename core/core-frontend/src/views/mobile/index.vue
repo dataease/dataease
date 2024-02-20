@@ -42,15 +42,18 @@ const hiddenTabbar = ref(false)
 <style lang="less">
 body {
   min-height: 100vh;
-  min-height: -webkit-fill-available;
+  display: flex;
+  flex-direction: column;
 }
 
-html {
-  height: -webkit-fill-available;
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
 }
 .mobile-index {
-  width: 100vw;
-  height: 100vh;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
 }
 </style>
