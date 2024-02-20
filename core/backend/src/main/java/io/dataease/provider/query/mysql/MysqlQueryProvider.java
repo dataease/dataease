@@ -109,7 +109,7 @@ public class MysqlQueryProvider extends QueryProvider {
         return createQuerySQL("(" + sqlFix(sql) + ")", fields, isGroup, null, fieldCustomFilter, rowPermissionsTree, null, null, null);
     }
 
-    private SQLObj buildSortField(DeSortField f, SQLObj tableObj, int index) {
+    public SQLObj buildSortField(DeSortField f, SQLObj tableObj, int index) {
         String originField;
         if (ObjectUtils.isNotEmpty(f.getExtField()) && f.getExtField() == 2) {
             // 解析origin name中有关联的字段生成sql表达式
@@ -1475,7 +1475,7 @@ public class MysqlQueryProvider extends QueryProvider {
         return sql;
     }
 
-    private String transDateFormat(String dateStyle, String datePattern) {
+    public String transDateFormat(String dateStyle, String datePattern) {
         String split = "-";
         if (StringUtils.equalsIgnoreCase(datePattern, "date_sub")) {
             split = "-";
@@ -1513,7 +1513,7 @@ public class MysqlQueryProvider extends QueryProvider {
         }
     }
 
-    private SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
+    public SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
         String fieldName = "";
         if (x.getDeExtractType() == 1) {
             if (x.getDeType() == 2 || x.getDeType() == 3) {
@@ -1580,7 +1580,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 .build();
     }
 
-    private List<SQLObj> getXWheres(ChartViewFieldDTO x, String originField, String fieldAlias) {
+    public List<SQLObj> getXWheres(ChartViewFieldDTO x, String originField, String fieldAlias) {
         List<SQLObj> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(x.getFilter()) && x.getFilter().size() > 0) {
             x.getFilter().forEach(f -> {
@@ -1622,7 +1622,7 @@ public class MysqlQueryProvider extends QueryProvider {
         return list;
     }
 
-    private SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
+    public SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {
         String fieldName = "";
         if (StringUtils.equalsIgnoreCase(y.getOriginName(), "*")) {
             fieldName = MySQLConstants.AGG_COUNT;
@@ -1654,7 +1654,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 .build();
     }
 
-    private String getYWheres(ChartViewFieldDTO y, String originField, String fieldAlias) {
+    public String getYWheres(ChartViewFieldDTO y, String originField, String fieldAlias) {
         List<SQLObj> list = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(y.getFilter()) && y.getFilter().size() > 0) {
             y.getFilter().forEach(f -> {
@@ -1692,7 +1692,7 @@ public class MysqlQueryProvider extends QueryProvider {
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" " + getLogic(y.getLogic()) + " ", strList) + ")" : null;
     }
 
-    private String calcFieldRegex(String originField, SQLObj tableObj) {
+    public String calcFieldRegex(String originField, SQLObj tableObj) {
         try {
             int i = 0;
             return buildCalcField(originField, tableObj, i);
@@ -1702,7 +1702,7 @@ public class MysqlQueryProvider extends QueryProvider {
         return null;
     }
 
-    private String buildCalcField(String originField, SQLObj tableObj, int i) throws Exception {
+    public String buildCalcField(String originField, SQLObj tableObj, int i) throws Exception {
         try {
             i++;
             if (i > 100) {
@@ -1743,7 +1743,7 @@ public class MysqlQueryProvider extends QueryProvider {
         return null;
     }
 
-    private String sqlLimit(String sql, ChartViewWithBLOBs view) {
+    public String sqlLimit(String sql, ChartViewWithBLOBs view) {
         if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
             return sql + " LIMIT 0," + view.getResultCount();
         } else {
