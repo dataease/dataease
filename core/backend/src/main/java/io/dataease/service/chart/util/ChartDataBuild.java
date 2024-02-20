@@ -1,5 +1,6 @@
 package io.dataease.service.chart.util;
 
+import com.google.gson.Gson;
 import io.dataease.controller.request.chart.ChartDrillRequest;
 import io.dataease.dto.chart.*;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
@@ -9,6 +10,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,6 +22,8 @@ import java.util.stream.Collectors;
 public class ChartDataBuild {
 
     private final static String format = "(%s)";
+
+    private static final Logger logger = LoggerFactory.getLogger(ChartDataBuild.class);
 
     // AntV
     public static Map<String, Object> transChartDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
@@ -1172,6 +1177,9 @@ public class ChartDataBuild {
     }
 
     private static Map<String, Object> transTableNormal(List<ChartViewFieldDTO> fields, ChartViewWithBLOBs view, List<String[]> data, Map<String, ColumnPermissionItem> desensitizationList) {
+        Gson gson = new Gson();
+        logger.info("field:" + gson.toJson(fields));
+        logger.info("data:" + gson.toJson(data));
         Map<String, Object> map = new TreeMap<>();
         List<Map<String, Object>> tableRow = new ArrayList<>();
         data.forEach(ele -> {
