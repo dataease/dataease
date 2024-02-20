@@ -119,7 +119,7 @@
       :title="state.dialogTitle"
       v-model="state.editTemplate"
       append-to-body
-      class="de-dialog-form"
+      class="de-dialog-form create-dialog"
       width="420px"
     >
       <el-form
@@ -148,7 +148,7 @@
       v-model="state.templateDialog.visible"
       :show-close="true"
       :destroy-on-close="true"
-      class="de-dialog-form"
+      class="de-dialog-form create-dialog"
       width="600px"
     >
       <de-template-import

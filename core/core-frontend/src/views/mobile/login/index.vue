@@ -100,10 +100,21 @@ const onSubmit = async () => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style lang="less">
+body {
+  min-height: 100vh;
+  display: flex;
+  flex-direction: column;
+}
+
+@supports (-webkit-touch-callout: none) {
+  body {
+    min-height: -webkit-fill-available;
+  }
+}
 .de-mobile-login {
-  height: 100vh;
-  width: 100vw;
+  height: 100%;
+  width: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
