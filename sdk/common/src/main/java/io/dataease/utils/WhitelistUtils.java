@@ -28,6 +28,7 @@ public class WhitelistUtils {
             "/swagger-resources",
             "/doc.html",
             "/panel.html",
+            "/mobile.html",
             "/lark/info",
             "/lark/token",
             "/dingtalk/info",
