@@ -241,7 +241,7 @@ export default {
     width: 60px;
     right: 0;
     top: 0;
-    border-top: 60px solid rgba(245, 74, 69, 0);
+    border-top: 10px solid rgba(245, 74, 69, 0);
     border-left: 60px solid transparent;
     cursor: pointer;
     z-index: 999;
