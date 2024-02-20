@@ -112,6 +112,10 @@ body {
     min-height: -webkit-fill-available;
   }
 }
+#app {
+  height: 100vh;
+  width: 100vw;
+}
 .de-mobile-login {
   height: 100%;
   width: 100%;
