@@ -1,5 +1,6 @@
 <script lang="ts" setup>
-import { shallowRef, defineAsyncComponent } from 'vue'
+import { shallowRef, defineAsyncComponent, ref, onBeforeUnmount } from 'vue'
+import { debounce } from 'lodash-es'
 import { useEmbedded } from '@/store/modules/embedded'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useRoute } from 'vue-router'
@@ -50,11 +51,27 @@ const init = () => {
   embeddedStore.setType(type)
   currentComponent.value = componentMap[type || 'ViewWrapper']
 }
+
+const iframeStyle = ref(null)
+const setStyle = debounce(() => {
+  iframeStyle.value = {
+    height: window.innerHeight + 'px',
+    width: window.innerWidth + 'px'
+  }
+}, 300)
 onBeforeMount(() => {
+  window.addEventListener('resize', setStyle)
+  setStyle()
   init()
+})
+
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', setStyle)
 })
 </script>
 
 <template>
-  <component :is="currentComponent"></component>
+  <div :style="iframeStyle">
+    <component :is="currentComponent"></component>
+  </div>
 </template>

@@ -211,7 +211,6 @@ export function getCanvasStyle(canvasStyleData) {
       style['background'] = colorRGBA
     }
   }
-  console.log('style', style)
   return style
 }
 
