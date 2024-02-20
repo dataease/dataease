@@ -1064,7 +1064,6 @@ public class ChartViewService {
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("yAxis", yAxis);
             PluginViewParam pluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, extFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
-            logger.info("param1:" + gson.toJson(pluginViewParam));
             String sql = pluginViewSql(pluginViewParam, view);
             if (StringUtils.isBlank(sql)) {
                 return emptyChartViewDTO(view);
@@ -1073,7 +1072,7 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
 
             Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
-            logger.info("sql:" + sql);
+            logger.info("plugin_sql:" + sql);
             Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(fieldMap, view, data, desensitizationList);
 
             return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);

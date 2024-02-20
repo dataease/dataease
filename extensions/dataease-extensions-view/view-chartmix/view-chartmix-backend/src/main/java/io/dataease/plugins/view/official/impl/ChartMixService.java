@@ -1,6 +1,5 @@
 package io.dataease.plugins.view.official.impl;
 
-import com.google.gson.Gson;
 import io.dataease.plugins.common.dto.StaticResource;
 import io.dataease.plugins.common.dto.chart.ChartFieldCompareDTO;
 import io.dataease.plugins.view.entity.*;
@@ -9,8 +8,6 @@ import io.dataease.plugins.view.service.ViewPluginService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 
 import java.io.InputStream;
@@ -21,8 +18,6 @@ import java.util.*;
 
 @Service
 public class ChartMixService extends ViewPluginService {
-    private static final Logger logger = LoggerFactory.getLogger(ViewPluginService.class);
-    private static final Gson gson = new Gson();
     private static final String VIEW_TYPE_VALUE = "chart-mix";
 
     /* 下版这些常量移到sdk */
@@ -106,7 +101,6 @@ public class ChartMixService extends ViewPluginService {
 
     @Override
     public String generateSQL(PluginViewParam param) {
-        logger.info("param:" + gson.toJson(param));
         List<PluginViewField> xAxis = param.getFieldsByType("xAxis");
         List<PluginViewField> yAxis = param.getFieldsByType("yAxis");
         /*if (yAxis == null) {
