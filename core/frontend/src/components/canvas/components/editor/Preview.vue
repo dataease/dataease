@@ -197,10 +197,11 @@ import { listenGlobalKeyDownPreview } from '@/components/canvas/utils/shortcutKe
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { isMobile } from '@/utils/index'
+import LinkOptBar from '@/components/canvas/components/editor/LinkOptBar'
 
 const erd = elementResizeDetectorMaker()
 export default {
-  components: { UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport },
+  components: { LinkOptBar, UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport },
   model: {
     prop: 'show',
     event: 'change'
