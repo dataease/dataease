@@ -15,8 +15,8 @@ const VisualizationEditor = defineAsyncComponent(
 )
 const DashboardEditor = defineAsyncComponent(() => import('@/views/dashboard/index.vue'))
 
-const Dashboard = defineAsyncComponent(() => import('./DashboardPreview.vue'))
-const ViewWrapper = defineAsyncComponent(() => import('./ViewWrapper.vue'))
+const Dashboard = defineAsyncComponent(() => import('@/pages/panel/DashboardPreview.vue'))
+const ViewWrapper = defineAsyncComponent(() => import('@/pages/panel/ViewWrapper.vue'))
 const Dataset = defineAsyncComponent(() => import('@/views/visualized/data/dataset/index.vue'))
 const Datasource = defineAsyncComponent(
   () => import('@/views/visualized/data/datasource/index.vue')
