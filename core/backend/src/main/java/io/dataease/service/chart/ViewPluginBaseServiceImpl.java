@@ -6,7 +6,6 @@ import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
-import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
@@ -14,17 +13,18 @@ import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldFilterDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.chart.filter.FilterTreeObj;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.util.BeanUtils;
 import io.dataease.plugins.common.util.ConstantsUtil;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.entity.filter.PluginFilterTreeObj;
 import io.dataease.plugins.view.service.ViewPluginBaseService;
-import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.lang3.ObjectUtils;
@@ -67,18 +67,26 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         String FIELD_ALIAS_PREFIX = StringUtils.equals(pluginViewField.getTypeField(), "xAxis") ? SQLConstants.FIELD_ALIAS_X_PREFIX : SQLConstants.FIELD_ALIAS_Y_PREFIX;
 
         String originField = getOriginName(dsType, pluginViewField, tableObj);
+        logger.info("originField:" + gson.toJson(originField));
 
         PluginViewSQL field;
         String where;
         String alias_fix = ConstantsUtil.constantsValue(dsType, "ALIAS_FIX");
+        logger.info("alias_fix:" + alias_fix);
         String fieldAlias = String.format(alias_fix, String.format(FIELD_ALIAS_PREFIX, index));
 
         field = getField(dsType, pluginViewField, originField, fieldAlias);
         where = getWhere(dsType, pluginViewField, originField, fieldAlias);
         PluginViewSQL sort = addSort(pluginViewField.getSort(), originField, fieldAlias);
+
+        logger.info("field:" + gson.toJson(field));
+        logger.info("where:" + where);
+        logger.info("sort:" + gson.toJson(sort));
+
         Optional.ofNullable(field).ifPresent(f -> result.setField(f));
         Optional.ofNullable(sort).ifPresent(s -> result.setSort(s));
         Optional.ofNullable(where).ifPresent(w -> result.setWhere(w));
+        logger.info("result:" + gson.toJson(result));
         return result;
     }
 
@@ -240,7 +248,14 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
     private Object execProviderMethod(QueryProvider queryProvider, String methodName, Object... args) {
         Method[] declaredMethods = queryProvider.getClass().getDeclaredMethods();
+        Method[] declaredAllMethods = queryProvider.getClass().getMethods();
         for (Method method : declaredMethods) {
+            if (StringUtils.equals(method.getName(), methodName)) {
+                method.setAccessible(true);
+                return ReflectionUtils.invokeMethod(method, queryProvider, args);
+            }
+        }
+        for (Method method : declaredAllMethods) {
             if (StringUtils.equals(method.getName(), methodName)) {
                 method.setAccessible(true);
                 return ReflectionUtils.invokeMethod(method, queryProvider, args);

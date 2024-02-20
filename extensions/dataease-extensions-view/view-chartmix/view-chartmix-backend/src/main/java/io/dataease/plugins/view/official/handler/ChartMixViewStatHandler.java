@@ -29,6 +29,7 @@ public class ChartMixViewStatHandler implements PluginViewStatHandler {
 
     @Override
     public String build(PluginViewParam pluginViewParam, ViewPluginService viewPluginService) {
+        logger.info("param:" + gson.toJson(pluginViewParam));
         ViewPluginBaseService baseService = viewPluginService.getBaseService();
         PluginViewSet pluginViewSet = pluginViewParam.getPluginViewSet();
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = pluginViewParam.getRowPermissionsTree();
@@ -42,6 +43,7 @@ public class ChartMixViewStatHandler implements PluginViewStatHandler {
             PluginViewField pluginViewField = pluginViewParam.getPluginViewFields().get(i);
             String typeKey = pluginViewField.getTypeField();
             PluginSingleField pluginSingleField = baseService.buildField(dsType, pluginViewField, tableObj, i);
+            logger.info("pluginSingleField:" + gson.toJson(pluginSingleField));
             List<PluginSingleField> lists = fieldSQLMap.getOrDefault(typeKey, new ArrayList<>());
             lists.add(pluginSingleField);
             fieldSQLMap.put(typeKey, lists);
