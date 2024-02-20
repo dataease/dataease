@@ -1075,10 +1075,14 @@ public class RedshiftQueryProvider extends QueryProvider {
                 whereValue = PgConstants.WHERE_VALUE_NULL;
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_null")) {
                 whereTerm = String.format(whereTerm, originName);
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in") || StringUtils.equalsIgnoreCase(item.getTerm(), "not in")) {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = "'%" + value + "'";
             } else {
                 whereValue = String.format(PgConstants.WHERE_VALUE_VALUE, value);
             }
@@ -1146,10 +1150,14 @@ public class RedshiftQueryProvider extends QueryProvider {
                 whereValue = PgConstants.WHERE_VALUE_NULL;
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_null")) {
                 whereTerm = String.format(whereTerm, originName);
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in") || StringUtils.equalsIgnoreCase(item.getTerm(), "not in")) {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = "'%" + value + "'";
             } else {
                 whereValue = String.format(PgConstants.WHERE_VALUE_VALUE, value);
             }
@@ -1188,6 +1196,8 @@ public class RedshiftQueryProvider extends QueryProvider {
             case "not in":
                 return " NOT IN ";
             case "like":
+            case "begin_with":
+            case "end_with":
                 return " LIKE ";
             case "not like":
                 return " NOT LIKE ";

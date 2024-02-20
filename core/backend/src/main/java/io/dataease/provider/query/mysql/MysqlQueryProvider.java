@@ -1091,14 +1091,14 @@ public class MysqlQueryProvider extends QueryProvider {
                 whereValue = "''";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in") || StringUtils.equalsIgnoreCase(item.getTerm(), "not in")) {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "begin_with")) {
-                whereValue = "'%" + value;
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
-                whereValue = value + "%'";
+                whereValue = "'%" + value + "'";
             } else {
                 whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value);
             }
@@ -1170,14 +1170,14 @@ public class MysqlQueryProvider extends QueryProvider {
                 whereValue = "''";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in") || StringUtils.containsIgnoreCase(item.getTerm(), "not in")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in") || StringUtils.equalsIgnoreCase(item.getTerm(), "not in")) {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "begin_with")) {
-                whereValue = "'%" + value;
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
-                whereValue = value + "%'";
+                whereValue = "'%" + value + "'";
             } else {
                 whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value);
             }
@@ -1301,14 +1301,14 @@ public class MysqlQueryProvider extends QueryProvider {
                         whereValue = "''";
                     } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not_empty")) {
                         whereValue = "''";
-                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "in") || StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "not in")) {
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "in") || StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "not in")) {
                         whereValue = "('" + String.join("','", value.split(",")) + "')";
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "like")) {
                         whereValue = "'%" + value + "%'";
-                    } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "begin_with")) {
-                        whereValue = "'%" + value;
+                    } else if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "begin_with")) {
+                        whereValue = "'" + value + "%'";
                     } else if (StringUtils.containsIgnoreCase(filterItemDTO.getTerm(), "end_with")) {
-                        whereValue = value + "%'";
+                        whereValue = "'%" + value + "'";
                     } else {
                         whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, value);
                     }
@@ -1601,14 +1601,14 @@ public class MysqlQueryProvider extends QueryProvider {
                     whereValue = "''";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
                     whereValue = "''";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "in")) {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "begin_with")) {
-                    whereValue = "'%" + f.getValue();
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "begin_with")) {
+                    whereValue = "'" + f.getValue() + "%'";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "end_with")) {
-                    whereValue = f.getValue() + "%'";
+                    whereValue = "'%" + f.getValue() + "'";
                 } else {
                     whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
@@ -1669,14 +1669,14 @@ public class MysqlQueryProvider extends QueryProvider {
                     whereValue = "''";
                 } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "not_empty")) {
                     whereValue = "''";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "in")) {
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "in")) {
                     whereValue = "('" + StringUtils.join(f.getValue(), "','") + "')";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "like")) {
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "like")) {
                     whereValue = "'%" + f.getValue() + "%'";
-                } else if (StringUtils.containsIgnoreCase(f.getTerm(), "begin_with")) {
-                    whereValue = "'%" + f.getValue();
+                } else if (StringUtils.equalsIgnoreCase(f.getTerm(), "begin_with")) {
+                    whereValue = "'" + f.getValue() + "%'";
                 } else if (StringUtils.containsIgnoreCase(f.getTerm(), "end_with")) {
-                    whereValue = f.getValue() + "%'";
+                    whereValue = "'%" + f.getValue() + "'";
                 } else {
                     whereValue = String.format(MySQLConstants.WHERE_VALUE_VALUE, f.getValue());
                 }
