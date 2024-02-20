@@ -29,8 +29,6 @@ import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -58,35 +56,26 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
     @Resource
     private ChartViewService chartViewService;
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewPluginBaseServiceImpl.class);
-
-
     @Override
     public PluginSingleField buildField(String dsType, PluginViewField pluginViewField, PluginViewSQL tableObj, int index) {
         PluginSingleField result = new PluginSingleField();
         String FIELD_ALIAS_PREFIX = StringUtils.equals(pluginViewField.getTypeField(), "xAxis") ? SQLConstants.FIELD_ALIAS_X_PREFIX : SQLConstants.FIELD_ALIAS_Y_PREFIX;
 
         String originField = getOriginName(dsType, pluginViewField, tableObj);
-        logger.info("originField:" + gson.toJson(originField));
 
         PluginViewSQL field;
         String where;
         String alias_fix = ConstantsUtil.constantsValue(dsType, "ALIAS_FIX");
-        logger.info("alias_fix:" + alias_fix);
         String fieldAlias = String.format(alias_fix, String.format(FIELD_ALIAS_PREFIX, index));
 
         field = getField(dsType, pluginViewField, originField, fieldAlias);
         where = getWhere(dsType, pluginViewField, originField, fieldAlias);
         PluginViewSQL sort = addSort(pluginViewField.getSort(), originField, fieldAlias);
 
-        logger.info("field:" + gson.toJson(field));
-        logger.info("where:" + where);
-        logger.info("sort:" + gson.toJson(sort));
 
         Optional.ofNullable(field).ifPresent(f -> result.setField(f));
         Optional.ofNullable(sort).ifPresent(s -> result.setSort(s));
         Optional.ofNullable(where).ifPresent(w -> result.setWhere(w));
-        logger.info("result:" + gson.toJson(result));
         return result;
     }
 

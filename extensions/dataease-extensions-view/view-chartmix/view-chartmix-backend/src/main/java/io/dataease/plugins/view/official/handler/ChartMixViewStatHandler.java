@@ -1,6 +1,5 @@
 package io.dataease.plugins.view.official.handler;
 
-import com.google.gson.Gson;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.util.ConstantsUtil;
@@ -10,8 +9,6 @@ import io.dataease.plugins.view.service.ViewPluginBaseService;
 import io.dataease.plugins.view.service.ViewPluginService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.stringtemplate.v4.ST;
 import org.stringtemplate.v4.STGroup;
 import org.stringtemplate.v4.STGroupFile;
@@ -24,12 +21,8 @@ import java.util.stream.Collectors;
 
 public class ChartMixViewStatHandler implements PluginViewStatHandler {
 
-    private static final Logger logger = LoggerFactory.getLogger(ChartMixViewStatHandler.class);
-    private static final Gson gson = new Gson();
-
     @Override
     public String build(PluginViewParam pluginViewParam, ViewPluginService viewPluginService) {
-        logger.info("param:" + gson.toJson(pluginViewParam));
         ViewPluginBaseService baseService = viewPluginService.getBaseService();
         PluginViewSet pluginViewSet = pluginViewParam.getPluginViewSet();
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = pluginViewParam.getRowPermissionsTree();
@@ -43,7 +36,6 @@ public class ChartMixViewStatHandler implements PluginViewStatHandler {
             PluginViewField pluginViewField = pluginViewParam.getPluginViewFields().get(i);
             String typeKey = pluginViewField.getTypeField();
             PluginSingleField pluginSingleField = baseService.buildField(dsType, pluginViewField, tableObj, i);
-            logger.info("pluginSingleField:" + gson.toJson(pluginSingleField));
             List<PluginSingleField> lists = fieldSQLMap.getOrDefault(typeKey, new ArrayList<>());
             lists.add(pluginSingleField);
             fieldSQLMap.put(typeKey, lists);
@@ -58,8 +50,6 @@ public class ChartMixViewStatHandler implements PluginViewStatHandler {
         List<PluginViewSQL> yOrders = fieldSQLMap.getOrDefault("yAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getSort())).map(PluginSingleField::getSort).collect(Collectors.toList());
         List<String> yWheres = fieldSQLMap.getOrDefault("yAxis", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getWhere())).map(PluginSingleField::getWhere).collect(Collectors.toList());
 
-        logger.info("xAxis:" + gson.toJson(xFields));
-        logger.info("yAxis:" + gson.toJson(yFields));
         /*List<PluginViewSQL> yExtFields = fieldSQLMap.getOrDefault("yAxisExt", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getField())).map(PluginSingleField::getField).collect(Collectors.toList());
         List<PluginViewSQL> yExtOrders = fieldSQLMap.getOrDefault("yAxisExt", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getSort())).map(PluginSingleField::getSort).collect(Collectors.toList());
         List<String> yExtWheres = fieldSQLMap.getOrDefault("yAxisExt", new ArrayList<>()).stream().filter(singleField -> ObjectUtils.isNotEmpty(singleField.getWhere())).map(PluginSingleField::getWhere).collect(Collectors.toList());
