@@ -33,10 +33,11 @@ import { useCache } from '@/hooks/web/useCache'
 
 const { wsCache } = useCache()
 const embeddedStore = useEmbedded()
+const basePath = import.meta.env.VITE_API_BASEPATH
 
-export const PATH_URL = embeddedStore.baseUrl
-  ? embeddedStore?.baseUrl + 'de2api/'
-  : import.meta.env.VITE_API_BASEPATH
+const embeddedBasePath =
+  basePath.startsWith('./') && basePath.length > 2 ? basePath.substring(2) : basePath
+export const PATH_URL = embeddedStore.baseUrl ? embeddedStore?.baseUrl + embeddedBasePath : basePath
 
 export interface AxiosInstanceWithLoading extends AxiosInstance {
   <T = any, R = AxiosResponse<T>, D = any>(
