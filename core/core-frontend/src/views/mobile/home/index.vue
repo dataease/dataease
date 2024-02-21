@@ -1,9 +1,10 @@
 <script lang="ts" setup>
 import { ref, computed, onMounted, reactive } from 'vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { useI18n } from '@/hooks/web/useI18n'
 import { shortcutOption } from '@/views/workbranch/ShortcutOption'
-import { XpackComponent } from '@/components/plugin'
 import { useRouter } from 'vue-router'
+import request from '@/config/axios'
 import VanTabs from 'vant/es/tabs'
 import VanTab from 'vant/es/tab'
 import VanCell from 'vant/es/cell'
@@ -16,6 +17,7 @@ import 'vant/es/cell/style'
 import 'vant/es/cell-group/style'
 
 const router = useRouter()
+const { t } = useI18n()
 
 const activeTab = ref('recent')
 const state = reactive({
@@ -37,18 +39,27 @@ const loadTableData = () => {
     })
 }
 
+const loadShareTableData = () => {
+  emits('setLoading', true)
+  request
+    .post({
+      url: '/share/query',
+      data: { type: 'panel', keyword: '', asc: false }
+    })
+    .then(res => {
+      state.tableData = res.data
+    })
+    .finally(() => {
+      emits('setLoading', false)
+    })
+}
+
 const tablePaneList = ref([
   { title: '最近使用', name: 'recent', disabled: false },
-  { title: '我的收藏', name: 'store', disabled: false }
+  { title: '我的收藏', name: 'store', disabled: false },
+  { title: t('visualization.share_out'), name: 'share', disabled: false }
 ])
 
-const panelLoad = paneInfo => {
-  tablePaneList.value.push({
-    title: paneInfo.title,
-    name: paneInfo.name,
-    disabled: tablePaneList.value[1].disabled
-  })
-}
 const busiDataMap = computed(() => interactiveStore.getData)
 
 const getBusiListWithPermission = () => {
@@ -73,6 +84,8 @@ const handleClick = ({ name, disabled }) => {
     emits('setLoading', true)
     shortcutOption.setBusiFlag(name)
     loadTableData()
+  } else {
+    loadShareTableData()
   }
 }
 onMounted(() => {
@@ -117,11 +130,10 @@ const formatterTime = val => {
         :key="ele.id"
         size="large"
         :title="ele.name"
-        :value="formatterTime(ele.lastEditTime)"
+        :value="formatterTime(ele.lastEditTime || ele.time)"
         icon="bar-chart-o"
       />
     </van-cell-group>
     <div style="width: 100%; height: 50px"></div>
-    <XpackComponent jsname="c2hhcmUtcGFuZWw=" @loaded="panelLoad" />
   </div>
 </template>
