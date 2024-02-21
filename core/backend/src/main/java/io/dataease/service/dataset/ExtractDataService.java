@@ -757,14 +757,7 @@ public class ExtractDataService {
         for (ExcelSheetData excelSheetData : excelSheetDataList) {
             String suffix = excelSheetData.getPath().substring(excelSheetData.getPath().lastIndexOf(".") + 1);
             List<ExcelSheetData> totalSheets = new ArrayList<>();
-            if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
-                ExcelXlsReader excelXlsReader = new ExcelXlsReader();
-                excelXlsReader.process(new FileInputStream(excelSheetData.getPath()));
-                totalSheets = excelXlsReader.totalSheets;
-            }
-            if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
-                totalSheets = dataSetTableService.excelSheetDataList(new FileInputStream(excelSheetData.getPath()), false);
-            }
+            totalSheets = dataSetTableService.excelSheetDataList(new FileInputStream(excelSheetData.getPath()), false);
 
             if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                 List<TableField> fields = new ArrayList<>();
