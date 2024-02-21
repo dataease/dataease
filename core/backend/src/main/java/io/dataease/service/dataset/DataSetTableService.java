@@ -1118,7 +1118,7 @@ public class DataSetTableService {
     private void handleFromItems(PlainSelect plainSelect, String dsType) throws Exception {
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem instanceof ParenthesedSelect) {
-            if(((ParenthesedSelect) fromItem).getSelect() instanceof SetOperationList){
+            if (((ParenthesedSelect) fromItem).getSelect() instanceof SetOperationList) {
                 StringBuilder result = new StringBuilder();
                 SetOperationList setOperationList = (SetOperationList) ((ParenthesedSelect) fromItem).getSelect().getSelectBody();
                 for (int i = 0; i < setOperationList.getSelects().size(); i++) {
@@ -1127,7 +1127,7 @@ public class DataSetTableService {
                         result.append(" ").append(setOperationList.getOperations().get(i).toString()).append(" ");
                     }
                 }
-            }else {
+            } else {
                 PlainSelect selectBody = ((ParenthesedSelect) fromItem).getSelect().getPlainSelect();
                 Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
                 ((ParenthesedSelect) fromItem).setSelect(subSelectTmp.getSelectBody());
@@ -2807,6 +2807,9 @@ public class DataSetTableService {
                         e.printStackTrace();
                     }
                     inExpression.getRightExpression().accept(this);
+                }
+                if (inExpression.getRightExpression() instanceof ParenthesedExpressionList) {
+                    buffer.append(inExpression.getRightExpression());
                 }
             }
 
