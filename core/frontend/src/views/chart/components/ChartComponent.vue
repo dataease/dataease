@@ -262,6 +262,9 @@ export default {
       }
       this.currentSeriesId = seriesId
     },
+    clearLinkage() {
+      this.reDrawView()
+    },
     reDrawView() {
       if (this.linkageActiveParam) {
         this.myChart.dispatchAction({
