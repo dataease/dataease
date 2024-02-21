@@ -38,7 +38,7 @@
         <version>${frontend-maven-plugin.version}</version>
         <executions>
           <!--首次打包需要放开-->
-          <!--<execution>
+          <execution>
             <id>install node and npm</id>
             <goals>
               <goal>install-node-and-npm</goal>
@@ -47,9 +47,9 @@
               <nodeVersion>v16.15.0</nodeVersion>
               <npmVersion>8.5.5</npmVersion>
             </configuration>
-          </execution>-->
+          </execution>
           <!--前端组件有更新需要放开-->
-          <!--<execution>
+          <execution>
             <id>npm install</id>
             <goals>
               <goal>npm</goal>
@@ -57,7 +57,7 @@
             <configuration>
               <arguments>install</arguments>
             </configuration>
-          </execution>-->
+          </execution>
 
           <execution>
             <id>npm run build</id>
