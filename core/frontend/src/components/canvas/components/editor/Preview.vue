@@ -17,7 +17,9 @@
     />
     <link-opt-bar
       v-if="canvasId==='canvas-main'"
+      ref="link-opt-bar"
       :terminal="terminal"
+      :canvas-style-data="canvasStyleData"
       @link-export-pdf="downloadAsPDF"
       @back-to-top="backToTop"
     />
@@ -852,9 +854,6 @@ export default {
     deselectCurComponent(e) {
       if (!this.isClickComponent) {
         this.$store.commit('setCurComponent', { component: null, index: null })
-        if (this.$refs?.['canvas-opt-bar']) {
-          this.$refs['canvas-opt-bar'].setWidgetStatus()
-        }
       }
     },
     handleMouseDown() {
@@ -919,6 +918,9 @@ export default {
             if (snapshot !== '') {
               this.snapshotInfo = snapshot
               this.pdfExportShow = true
+            }
+            if (this.$refs?.['link-opt-bar']) {
+              this.$refs['link-opt-bar'].setWidgetStatus()
             }
           })
         }, 2500)

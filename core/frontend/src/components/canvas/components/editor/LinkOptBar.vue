@@ -1,14 +1,15 @@
 <template>
   <div
-    class="link-bar-main bar-light"
+    v-if="isPublicLink && isPcTerminal"
     id="fullscreenElement"
-    v-if="isPublicLink"
     ref="widget-div"
-    :class="{'link-bar-main-active':barActive}"
+    class="link-bar-main bar-light"
+    :class="[{['link-bar-main-active']: barActive},functionClass]"
+    :style="{ '--fullWidth': fullWidth+'px','--fullContent': 28-fullWidth+'px','--firstHoveMove': 32-fullWidth+'px' }"
   >
     <div class="bar-first">
       <el-tooltip
-        :content="barActive?'收起':'展开'"
+        :content="barActive?$t('panel.fold'):$t('panel.expand')"
       >
         <svg-icon
           style="width: 16px;height: 16px"
@@ -19,26 +20,45 @@
     </div>
     <div class="bar-content">
       <div class="bar-diver" />
-      <div class="link-icon-active">
-        <svg-icon
-          style="width: 16px;height: 16px"
-          icon-class="icon_left_outlined"
-          @click="back2Last"
-        />
+      <div
+        v-show="fromLink"
+        class="link-icon-active"
+      >
+        <el-tooltip
+          :content="$t('pblink.back_parent')"
+        >
+          <svg-icon
+            style="width: 16px;height: 16px"
+            icon-class="icon_left_outlined"
+            @click="back2Last"
+          />
+        </el-tooltip>
       </div>
       <div class="link-icon-active">
-        <svg-icon
-          style="width: 16px;height: 16px"
-          icon-class="icon_download_outlined"
-          @click="exportPDF"
-        />
+        <el-tooltip
+          :content="$t('panel.panel')"
+        >
+          <svg-icon
+            style="width: 16px;height: 16px"
+            icon-class="icon_download_outlined"
+            @click="exportPDF"
+          />
+        </el-tooltip>
       </div>
-      <div class="link-icon-active" id="fullscreenElement">
-        <svg-icon
-          style="width: 16px;height: 16px"
-          :icon-class="fullscreenState?'icon_minify_outlined':'icon_magnify_outlined'"
-          @click="toggleFullscreen"
-        />
+      <div
+        id="fullscreenElement"
+        class="link-icon-active"
+        style="padding-right: 4px"
+      >
+        <el-tooltip
+          :content="fullscreenState? $t('panel.fullscreen_exit'): $t('panel.fullscreen_preview')"
+        >
+          <svg-icon
+            style="width: 16px;height: 16px"
+            :icon-class="fullscreenState?'icon_minify_outlined':'icon_magnify_outlined'"
+            @click="toggleFullscreen"
+          />
+        </el-tooltip>
       </div>
     </div>
   </div>
@@ -68,7 +88,8 @@ export default {
     return {
       fullscreenElement: null,
       fullscreenState: false,
-      barActive: false
+      barActive: false,
+      fullWidth: this.$route.query.fromLink === 'true' ? 126 : 94
     }
   },
   computed: {
@@ -76,9 +97,9 @@ export default {
       return this.terminal === 'pc'
     },
     functionClass() {
-      let result = 'function-light'
+      let result = 'link-bar-main-light'
       if (this.canvasStyleData?.panel?.themeColor === 'dark') {
-        result = 'function-dark'
+        result = 'link-bar-main-dark'
       }
       return result
     },
@@ -158,16 +179,14 @@ export default {
       }
     },
     exportPDF() {
-      this.$refs['widget-div'].style.display = ''
+      this.$refs['widget-div'].style.display = 'none'
       this.$emit('link-export-pdf')
     },
     setWidgetStatus() {
       if (!this.isPublicLink || !this.$refs['widget-div']) {
         return
       }
-      const val = this.$refs['widget-div'].style.display
-
-      this.$refs['widget-div'].style.display = val ? '' : 'block'
+      this.$refs['widget-div'].style.display = 'flex'
     },
     backToTop() {
       this.$emit('back-to-top')
@@ -182,17 +201,60 @@ export default {
   display: flex;
   z-index: 10;
   height: 30px;
-  width: 130px;
+  width: var(--fullWidth);
   bottom: 24px;
-  right: -102px;
+  right: var(--fullContent);
   border-top-left-radius: 50%;
   border-bottom-left-radius: 50%;
 
   &:hover {
-    right: -96px;
+    right: var(--firstHoveMove);
   }
 
   transition: 0.2s; /* 添加过渡动画 */
+}
+
+.link-bar-main-light {
+  color: rgba(31, 35, 41, 1);
+
+  .bar-first {
+    border-left: 1px solid rgba(222, 224, 227, 1);
+    border-top: 1px solid rgba(222, 224, 227, 1);
+    border-bottom: 1px solid rgba(222, 224, 227, 1);
+    background-color: rgba(255, 255, 255, 1);
+  }
+
+  .bar-content {
+    border-top: 1px solid rgba(222, 224, 227, 1);
+    border-bottom: 1px solid rgba(222, 224, 227, 1);
+    background-color: rgba(255, 255, 255, 1);
+
+    .bar-diver {
+      background: rgba(187, 191, 196, 1);
+    }
+
+  }
+}
+
+.link-bar-main-dark {
+  color: rgba(255, 255, 255, 1);
+
+  .bar-first {
+    border-left: 1px solid rgba(67, 67, 67, 1);
+    border-top: 1px solid rgba(67, 67, 67, 1);
+    border-bottom: 1px solid rgba(67, 67, 67, 1);
+    background-color: rgba(26, 26, 26, 1);
+  }
+
+  .bar-content {
+    border-top: 1px solid rgba(67, 67, 67, 1);
+    border-bottom: 1px solid rgba(67, 67, 67, 1);
+    background-color: rgba(26, 26, 26, 1);
+
+    .bar-diver {
+      background: rgba(95, 95, 95, 1);
+    }
+  }
 }
 
 .link-bar-main-active {
@@ -202,10 +264,6 @@ export default {
 
 .bar-first {
   width: 36px;
-  border-left: 1px solid rgba(222, 224, 227, 1);
-  border-top: 1px solid rgba(222, 224, 227, 1);
-  border-bottom: 1px solid rgba(222, 224, 227, 1);
-  background-color: rgba(255, 255, 255, 1);
   border-top-left-radius: 50%;
   border-bottom-left-radius: 50%;
   padding: 3px 0px 4px 8px;
@@ -219,15 +277,12 @@ export default {
 .bar-diver {
   width: 1px;
   height: 18px;
-  background: rgba(187, 191, 196, 1);
 }
 
 .bar-content {
   display: flex;
   align-items: center;
-  border-top: 1px solid rgba(222, 224, 227, 1);
-  border-bottom: 1px solid rgba(222, 224, 227, 1);
-  background-color: rgba(255, 255, 255, 1);
+  padding-right: 4px;
 }
 
 .link-icon-active {
