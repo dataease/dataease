@@ -95,7 +95,7 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import html2canvas from 'html2canvasde'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { deepCopy, exportExcelDownload, exportImg, imgUrlTrans } from '@/components/canvas/utils/utils'
+import {deepCopy, exportExcelDownload, exportImg, exportImgNew, imgUrlTrans} from '@/components/canvas/utils/utils'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 
@@ -303,7 +303,7 @@ export default {
         this.resizeChart()
         setTimeout(() => {
           this.initWatermark()
-          exportImg(this.chart.name, (params) => {
+          exportImgNew(this.chart.name, (params) => {
             this.exporting = false
             this.resizeChart()
             setTimeout(() => {
