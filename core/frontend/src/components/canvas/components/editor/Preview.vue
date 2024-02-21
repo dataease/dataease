@@ -15,6 +15,12 @@
       @link-export-pdf="downloadAsPDF"
       @back-to-top="backToTop"
     />
+    <link-opt-bar
+      v-if="canvasId==='canvas-main'"
+      :terminal="terminal"
+      @link-export-pdf="downloadAsPDF"
+      @back-to-top="backToTop"
+    />
     <div
       :id="previewDomId"
       :ref="previewRefId"

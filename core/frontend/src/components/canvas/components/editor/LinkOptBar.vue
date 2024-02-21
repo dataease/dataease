@@ -1,28 +1,43 @@
 <template>
   <div
     class="link-bar-main bar-light"
+    id="fullscreenElement"
+    v-if="isPublicLink"
+    ref="widget-div"
+    :class="{'link-bar-main-active':barActive}"
   >
     <div class="bar-first">
-      <i class="el-icon-d-arrow-left" />
+      <el-tooltip
+        :content="barActive?'收起':'展开'"
+      >
+        <svg-icon
+          style="width: 16px;height: 16px"
+          :icon-class="barActive?'icon_down-right_outlined':'icon_up-left_outlined'"
+          @click="firstBarClick"
+        />
+      </el-tooltip>
     </div>
     <div class="bar-content">
       <div class="bar-diver" />
       <div class="link-icon-active">
         <svg-icon
           style="width: 16px;height: 16px"
-          icon-class="icon-fanhui"
+          icon-class="icon_left_outlined"
+          @click="back2Last"
         />
       </div>
       <div class="link-icon-active">
         <svg-icon
           style="width: 16px;height: 16px"
-          icon-class="icon-xiazai"
+          icon-class="icon_download_outlined"
+          @click="exportPDF"
         />
       </div>
-      <div class="link-icon-active">
+      <div class="link-icon-active" id="fullscreenElement">
         <svg-icon
           style="width: 16px;height: 16px"
-          :icon-class="fullscreenState?'icon-suoxiao1':'icon_magnify_outlined'"
+          :icon-class="fullscreenState?'icon_minify_outlined':'icon_magnify_outlined'"
+          @click="toggleFullscreen"
         />
       </div>
     </div>
@@ -52,7 +67,8 @@ export default {
   data() {
     return {
       fullscreenElement: null,
-      fullscreenState: false
+      fullscreenState: false,
+      barActive: false
     }
   },
   computed: {
@@ -98,6 +114,9 @@ export default {
     document.removeEventListener('fullscreenchange', this.handleFullscreenChange)
   },
   methods: {
+    firstBarClick() {
+      this.barActive = !this.barActive
+    },
     handleFullscreenChange() {
       // 在全屏状态变化时触发此方法
       if (document.fullscreenElement) {
@@ -165,9 +184,20 @@ export default {
   height: 30px;
   width: 130px;
   bottom: 24px;
-  right: 0px;
+  right: -102px;
   border-top-left-radius: 50%;
   border-bottom-left-radius: 50%;
+
+  &:hover {
+    right: -96px;
+  }
+
+  transition: 0.2s; /* 添加过渡动画 */
+}
+
+.link-bar-main-active {
+  right: 0px !important;
+  transition: 0.2s; /* 添加过渡动画 */
 }
 
 .bar-first {
@@ -179,6 +209,11 @@ export default {
   border-top-left-radius: 50%;
   border-bottom-left-radius: 50%;
   padding: 3px 0px 4px 8px;
+  cursor: pointer;
+
+  &:hover {
+    background: rgba(31, 35, 41, 0.1);
+  }
 }
 
 .bar-diver {
@@ -190,7 +225,6 @@ export default {
 .bar-content {
   display: flex;
   align-items: center;
-  width: 100px;
   border-top: 1px solid rgba(222, 224, 227, 1);
   border-bottom: 1px solid rgba(222, 224, 227, 1);
   background-color: rgba(255, 255, 255, 1);
@@ -203,6 +237,7 @@ export default {
   transition: .1s;
   border-radius: 3px;
   padding-left: 4px;
+  margin-left: 4px;
   text-align: center;
 
   &:active {

@@ -1,7 +1,6 @@
 <template>
 
   <div
-    id="fullscreenElement"
     :class="containerClass"
   >
 
@@ -40,7 +39,6 @@
           />{{ $t('panel.down') }}</span></el-button>
         <el-button
           v-if="isPcTerminal"
-          id="fullscreenElement"
           size="mini"
           @click="toggleFullscreen"
         >
