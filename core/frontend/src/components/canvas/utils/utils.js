@@ -14,6 +14,7 @@ import xssCheck from 'xss'
 import Vue from 'vue'
 import { exportDetails, innerExportDetails } from '@/api/panel/panel'
 import { getLinkToken, getToken } from '@/utils/auth'
+import { toPngUrl } from '@/utils/CanvasUtils'
 
 export function deepCopy(target) {
   if (typeof target === 'object' && target !== null) {
@@ -251,6 +252,29 @@ export function exportImg(imgName, callback) {
   }).catch(() => {
     window.devicePixelRatio = originalDPR
     callback()
+  })
+}
+
+export function exportImgNew(imgName, callback) {
+  const canvasID = document.getElementById('chartCanvas')
+  // 保存原始的设备像素比值
+  const originalDPR = window.devicePixelRatio
+  // 将设备像素比设置为1
+  window.devicePixelRatio = 1
+  toPngUrl(canvasID, (pngUrl) => {
+    try {
+      const a = document.createElement('a')
+      a.setAttribute('download', imgName + '.png')
+      a.href = pngUrl
+      document.body.appendChild(a)
+      a.click()
+      document.body.removeChild(a)
+      window.devicePixelRatio = originalDPR
+      callback()
+    } catch (e) {
+      window.devicePixelRatio = originalDPR
+      callback()
+    }
   })
 }
 
