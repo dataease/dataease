@@ -1,7 +1,7 @@
 <template>
 
   <div
-    :class="containerClass"
+    class="bar-main"
   >
     <div
       v-if="existLinkage || backToTopBtn"
@@ -75,9 +75,6 @@ export default {
     },
     fromLink() {
       return this.$route.query.fromLink === 'true'
-    },
-    containerClass() {
-      return this.isPublicLink && this.isPcTerminal ? 'trans-pc' : 'bar-main'
     },
     ...mapState([
       'componentData'
