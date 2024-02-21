@@ -31,6 +31,8 @@ public class WhitelistUtils {
             "/mobile.html",
             "/lark/info",
             "/lark/token",
+            "/larksuite/info",
+            "/larksuite/token",
             "/dingtalk/info",
             "/dingtalk/token",
             "/wecom/info",
