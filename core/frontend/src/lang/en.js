@@ -1398,6 +1398,7 @@ export default {
     table_column_width_config: 'Column Width',
     table_column_adapt: 'Adapt',
     table_column_custom: 'Custom',
+    table_column_fixed: 'Fixed',
     chart_table_pivot: 'Pivot Table',
     table_pivot_row: 'Data Row',
     field_error_tips: 'This field is changed(Include dimension、quota，field type，deleted),please edit again.',
@@ -1539,7 +1540,7 @@ export default {
     drill_dimension_tip: 'Only fields in the dataset can be drilled',
     table_scroll_tip: 'The detail table is only effective when the pagination mode is "Drop-down".',
     table_threshold_tip: 'Tip: Do not select fields repeatedly. If the same field is configured repeatedly, only the last field will take effect.',
-    table_column_width_tip: `Column width do not always work.<br/>
+    table_column_width_tip: `Fixed Column width do not always work.<br/>
                              The priority of the container width is higher than the column width, <br/>
                              which means if the result of dividing the width of the table container by the number of columns is greater than specified column width, <br/>
                              the former will take effect.`,

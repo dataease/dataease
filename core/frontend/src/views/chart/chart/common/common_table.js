@@ -249,12 +249,33 @@ export function getSize(chart) {
       size.cellCfg = {
         height: s.tableItemHeight
       }
-      if (s.tableColumnMode && s.tableColumnMode === 'adapt') {
-        delete size.cellCfg.width
-        size.layoutWidthType = 'compact'
-      } else {
-        delete size.layoutWidthType
-        size.cellCfg.width = s.tableColumnWidth
+      switch (s.tableColumnMode) {
+        case 'adapt': {
+          delete size.cellCfg.width
+          size.layoutWidthType = 'compact'
+          break
+        }
+        case 'field': {
+          delete size.layoutWidthType
+          const fieldMap = s.tableFieldWidth?.reduce((p, n) => {
+            p[n.fieldId] = n
+            return p
+          }, {}) || {}
+          size.colCfg.width = node => {
+            const width = node.spreadsheet.container.cfg.el.offsetWidth
+            if (!s.tableFieldWidth?.length) {
+              let columnCount = s.showIndex ? chart.data.fields.length + 1 : chart.data.fields.length
+              return width / columnCount
+            }
+            const baseWidth = width / 100
+            return fieldMap[node.field] ? fieldMap[node.field].width * baseWidth : baseWidth * 10
+          }
+          break
+        }
+        default: {
+          delete size.layoutWidthType
+          size.cellCfg.width = s.tableColumnWidth
+        }
       }
     }
   }

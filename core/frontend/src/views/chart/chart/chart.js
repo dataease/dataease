@@ -103,6 +103,7 @@ export const DEFAULT_SIZE = {
   tableCellTooltip: {
     show: false
   },
+  tableFieldWidth: [],
   gaugeMinType: 'fix', // fix or dynamic
   gaugeMinField: {
     id: '',

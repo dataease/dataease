@@ -75,7 +75,7 @@ class SortTooltip extends BaseTooltip {
     })
   }
 }
-export function baseTableInfo(s2, container, chart, action, tableData, pageInfo, vueCom) {
+export function baseTableInfo(s2, container, chart, action, tableData, pageInfo, vueCom, resizeFunc) {
   const containerDom = document.getElementById(container)
 
   // fields
@@ -256,6 +256,10 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo,
   if (size.tableCellTooltip?.show) {
     s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event, meta))
   }
+  // column resize
+  if (size.tableColumnMode === 'field') {
+    s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, event => resizeFunc(event))
+  }
   // theme
   const customTheme = getCustomTheme(chart)
   s2.setThemeCfg({ theme: customTheme })
@@ -263,7 +267,7 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo,
   return s2
 }
 
-export function baseTableNormal(s2, container, chart, action, tableData, vueCom) {
+export function baseTableNormal(s2, container, chart, action, tableData, vueCom, resizeFunc) {
   const containerDom = document.getElementById(container)
   if (!containerDom) return
 
@@ -489,6 +493,10 @@ export function baseTableNormal(s2, container, chart, action, tableData, vueCom)
   }
   if (size.tableCellTooltip?.show) {
     s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event, meta))
+  }
+  // column resize
+  if (size.tableColumnMode === 'field') {
+    s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, event => resizeFunc(event))
   }
   // theme
   const customTheme = getCustomTheme(chart)
