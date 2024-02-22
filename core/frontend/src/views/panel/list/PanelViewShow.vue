@@ -393,7 +393,6 @@ import PDFPreExport from '@/views/panel/export/PDFPreExport'
 import Preview from '@/components/canvas/components/editor/Preview'
 import SaveToTemplate from '@/views/panel/list/SaveToTemplate'
 import { mapState } from 'vuex'
-import html2canvas from 'html2canvasde'
 import FileSaver from 'file-saver'
 import JSZip from 'jszip'
 import { deleteEnshrine, saveEnshrine, starStatus } from '@/api/panel/enshrine'
@@ -402,13 +401,14 @@ import { queryAll } from '@/api/panel/pdfTemplate'
 import ShareHead from '@/views/panel/grantAuth/shareHead'
 import { export2AppCheck, initPanelData, updatePanelStatus } from '@/api/panel/panel'
 import { proxyInitPanelData } from '@/api/panel/shareProxy'
-import { dataURLToBlob, getNowCanvasComponentData } from '@/components/canvas/utils/utils'
+import { getNowCanvasComponentData } from '@/components/canvas/utils/utils'
 import { findResourceAsBase64 } from '@/api/staticResource/staticResource'
 import PanelDetailInfo from '@/views/panel/list/common/PanelDetailInfo'
 import AppExportForm from '@/views/panel/list/AppExportForm'
 import GrantAuth from '../grantAuth'
 import msgCfm from '@/components/msgCfm/index'
 import { inOtherPlatform } from '@/utils/index'
+import { toPngUrl } from '@/utils/CanvasUtils'
 
 export default {
   name: 'PanelViewShow',
@@ -563,14 +563,13 @@ export default {
     saveToTemplate() {
       this.dataLoading = true
       setTimeout(() => {
-        html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
+        toPngUrl(document.getElementById(this.canvasInfoTemp), (pngUrl) => {
           this.templateSaveShow = true
           this.dataLoading = false
-          const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
-          if (snapshot !== '') {
+          if (pngUrl !== '') {
             this.templateInfo = {
               name: this.$store.state.panel.panelInfo.name,
-              snapshot: snapshot,
+              snapshot: pngUrl,
               templateStyle: JSON.stringify(this.canvasStyleData),
               templateData: JSON.stringify(this.componentData),
               templateType: 'self',
@@ -588,14 +587,13 @@ export default {
       _this.dataLoading = true
       try {
         _this.findStaticSource(function(staticResource) {
-          html2canvas(document.getElementById(_this.canvasInfoTemp)).then(canvas => {
+          toPngUrl(document.getElementById(_this.canvasInfoTemp), (pngUrl) => {
             _this.dataLoading = false
-            const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.1是图片质量
-            if (snapshot !== '') {
+            if (pngUrl !== '') {
               _this.templateInfo = {
                 name: _this.$store.state.panel.panelInfo.name,
                 templateType: 'self',
-                snapshot: snapshot,
+                snapshot: pngUrl,
                 panelStyle: JSON.stringify(_this.canvasStyleData),
                 panelData: JSON.stringify(_this.componentData),
                 dynamicData: JSON.stringify(_this.panelViewDetailsInfo),
@@ -617,14 +615,13 @@ export default {
       try {
         const jsZip = new JSZip()
         _this.findStaticSource(function(staticResource) {
-          html2canvas(document.getElementById(_this.canvasInfoTemp)).then(canvas => {
+          toPngUrl(document.getElementById(_this.canvasInfoTemp), (pngUrl) => {
             _this.dataLoading = false
-            const snapshot = canvas.toDataURL('image/jpeg', 1) // 0.1是图片质量
-            if (snapshot !== '') {
+            if (pngUrl !== '') {
               const panelInfo = {
                 name: _this.$store.state.panel.panelInfo.name,
                 id: _this.$store.state.panel.panelInfo.id,
-                snapshot: snapshot,
+                snapshot: pngUrl,
                 panelStyle: JSON.stringify(_this.canvasStyleData),
                 panelData: JSON.stringify(_this.componentData),
                 dynamicData: JSON.stringify(_this.panelViewDetailsInfo),
@@ -728,32 +725,28 @@ export default {
         this.exporting = this.changeExportingState()
         setTimeout(() => {
           const canvasID = document.getElementById(this.canvasInfoTemp)
-          const a = document.createElement('a')
-          html2canvas(canvasID).then(canvas => {
-            this.exporting = false
-            const dom = document.body.appendChild(canvas)
-            dom.style.display = 'none'
-            a.style.display = 'none'
-            document.body.removeChild(dom)
-            const blob = dataURLToBlob(dom.toDataURL('image/png', 1))
-            a.setAttribute('href', URL.createObjectURL(blob))
-            a.setAttribute('download', this.$store.state.panel.panelInfo.name + '.png')
-            document.body.appendChild(a)
-            a.click()
-            URL.revokeObjectURL(blob)
-            document.body.removeChild(a)
-            window.devicePixelRatio = originalDPR
-            setTimeout(() => {
-              this.dataLoading = false
-            }, 300)
+          toPngUrl(canvasID, (pngUrl) => {
+            try {
+              this.exporting = false
+              const a = document.createElement('a')
+              a.setAttribute('download', this.$store.state.panel.panelInfo.name + '.png')
+              a.href = pngUrl
+              document.body.appendChild(a)
+              a.click()
+              document.body.removeChild(a)
+              window.devicePixelRatio = originalDPR
+              setTimeout(() => {
+                this.dataLoading = false
+              }, 300)
+            } catch (e) {
+              window.devicePixelRatio = originalDPR
+            }
           })
         }, 1500)
       }, 500)
     },
 
     downloadAsPDF() {
-      // this.pdfExportShow = true
-      //
       this.dataLoading = true
       // 保存原始的设备像素比值
       const originalDPR = window.devicePixelRatio
@@ -762,13 +755,16 @@ export default {
       setTimeout(() => {
         this.exporting = this.changeExportingState()
         setTimeout(() => {
-          html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
-            const snapshot = canvas.toDataURL('image/jpeg', 1) // 是图片质量
-            this.dataLoading = false
-            this.exporting = false
-            if (snapshot !== '') {
-              this.snapshotInfo = snapshot
-              this.pdfExportShow = true
+          toPngUrl(document.getElementById(this.canvasInfoTemp), (pngUrl) => {
+            try {
+              this.dataLoading = false
+              this.exporting = false
+              if (pngUrl !== '') {
+                this.snapshotInfo = pngUrl
+                this.pdfExportShow = true
+              }
+            } catch (e) {
+              window.devicePixelRatio = originalDPR
             }
           })
         }, 1500)
@@ -777,15 +773,18 @@ export default {
     },
     refreshTemplateInfo() {
       this.templateInfo = {}
-      html2canvas(document.getElementById(this.canvasInfoTemp)).then(canvas => {
-        const snapshot = canvas.toDataURL('image/jpeg', 0.1) // 0.2是图片质量
-        if (snapshot !== '') {
-          this.templateInfo = {
-            snapshot: snapshot,
-            panelStyle: JSON.stringify(this.canvasStyleData),
-            panelData: JSON.stringify(this.componentData),
-            dynamicData: ''
+      toPngUrl(document.getElementById(this.canvasInfoTemp), (pngUrl) => {
+        try {
+          if (pngUrl !== '') {
+            this.templateInfo = {
+              snapshot: pngUrl,
+              panelStyle: JSON.stringify(this.canvasStyleData),
+              panelData: JSON.stringify(this.componentData),
+              dynamicData: ''
+            }
           }
+        } catch (e) {
+          console.log('toPngUrl error')
         }
       })
     },
