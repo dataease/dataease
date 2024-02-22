@@ -98,7 +98,7 @@ public class PanelAppTemplateService {
         if (StringUtils.isNotEmpty(request.getSnapshot())) {
             //Store static resource into the server
             String snapshotName = "app-template-" + request.getId() + ".jpeg";
-            staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
+            staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""));
             requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
         }
         panelAppTemplateMapper.insertSelective(requestTemplate);
@@ -114,7 +114,7 @@ public class PanelAppTemplateService {
         //Store static resource into the server
         if (StringUtils.isNotEmpty(request.getSnapshot()) && request.getSnapshot().indexOf("static-resource") == -1) {
             String snapshotName = "app-template-" + UUIDUtil.getUUIDAsString() + ".jpeg";
-            staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
+            staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""));
             requestTemplate.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
         }
         panelAppTemplateMapper.updateByPrimaryKeySelective(requestTemplate);
