@@ -102,6 +102,7 @@ import { CHART_CONT_FAMILY_MAP, DEFAULT_TITLE_STYLE, NOT_SUPPORT_PAGE_DATASET } 
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { mapState } from 'vuex'
 import DePagination from '@/components/deCustomCm/pagination.js'
+import bus from '@/utils/bus'
 
 export default {
   name: 'ChartComponentS2',
@@ -133,6 +134,10 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    inScreen: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -296,9 +301,9 @@ export default {
         }
       }
       if (chart.type === 'table-info') {
-        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage, this)
+        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage, this, this.columnResize)
       } else if (chart.type === 'table-normal') {
-        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this)
+        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this, this.columnResize)
       } else if (chart.type === 'table-pivot') {
         this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableHeaderClick, this.tableData)
       } else {
@@ -554,6 +559,21 @@ export default {
     },
     initRemark() {
       this.remarkCfg = getRemark(this.chart)
+    },
+    columnResize(resizeColumn) {
+      if (!this.inScreen) {
+        // 预览/全屏预览不保存
+        return
+      }
+      const fieldId = resizeColumn.info.meta.field
+      const size = JSON.parse(this.chart.customAttr).size
+      size.tableFieldWidth?.forEach(item => {
+        if (item.fieldId === fieldId) {
+          const containerWidth = document.getElementById(this.chartId).offsetWidth
+          item.width = (resizeColumn.info.resizedWidth / containerWidth * 100).toFixed(2)
+        }
+      })
+      bus.$emit('set-table-column-width', size.tableFieldWidth)
     }
   }
 }

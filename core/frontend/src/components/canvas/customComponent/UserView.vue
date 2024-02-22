@@ -101,6 +101,7 @@
       :terminal-type="scaleCoefficientType"
       :track-menu="trackMenu"
       :search-count="searchCount"
+      :in-screen="inScreen"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
       @onPageChange="pageClick"
