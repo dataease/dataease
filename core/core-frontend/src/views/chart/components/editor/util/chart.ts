@@ -660,15 +660,16 @@ export const DEFAULT_SCROLL: ScrollCfg = {
 }
 
 export const COLOR_PANEL = [
-  '#1E90FF',
-  '#90EE90',
+  '#FF4500',
+  '#FF8C00',
+  '#FFD700',
+  '#71AE46',
   '#00CED1',
-  '#E2BD84',
-  '#7A90E0',
-  '#3BA272',
-  '#2BE7FF',
-  '#0A8ADA',
-  '#FFD700'
+  '#1E90FF',
+  '#C71585',
+  '#999999',
+  '#000000',
+  '#FFFFFF'
 ]
 
 export const COLOR_CASES = [
