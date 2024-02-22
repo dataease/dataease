@@ -9,7 +9,7 @@
     v-for="(templateItem, index) in fullTemplateShowList"
     v-show="showFlagCheck(templateItem)"
     :key="templateItem.id + label"
-    style="float: left; padding: 24px 12px 0; text-align: center; flex: 0"
+    style="float: left; padding: 8px 8px 0; text-align: center; flex: 0"
     :style="{ width: templateSpan }"
   >
     <template-market-v2-item
@@ -88,6 +88,7 @@ const props = defineProps({
   height: 24px;
   margin-top: 16px;
   display: inline;
+  margin-bottom: 16px;
   .custom-split-line {
     margin: 4px 8px 0 12px;
     width: 2px;
