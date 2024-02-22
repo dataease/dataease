@@ -16,6 +16,11 @@ import { XpackComponent } from '@/components/plugin'
 const { push } = useRouter()
 const route = useRoute()
 
+const handleIconClick = () => {
+  if (route.path === '/workbranch/index') return
+  push('/workbranch/index')
+}
+
 const desktop = isDesktop()
 const activeIndex = computed(() => {
   if (route.path.includes('system')) {
@@ -50,7 +55,7 @@ onMounted(() => {
 
 <template>
   <el-header class="header-flex">
-    <Icon className="logo" name="logo"></Icon>
+    <Icon @click="handleIconClick" className="logo" name="logo"></Icon>
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
