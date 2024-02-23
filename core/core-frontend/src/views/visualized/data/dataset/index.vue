@@ -1,6 +1,7 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, shallowRef, computed, watch, onBeforeMount, nextTick } from 'vue'
+import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import {
   ElIcon,
   ElMessageBox,
@@ -450,6 +451,10 @@ const datasetListTree = ref()
 watch(nickName, (val: string) => {
   datasetListTree.value.filter(val)
 })
+const sideTreeStatus = ref(true)
+const changeSideTreeStatus = val => {
+  sideTreeStatus.value = val
+}
 
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
@@ -471,7 +476,16 @@ const getMenuList = (val: boolean) => {
 
 <template>
   <div class="dataset-manage" v-loading="dtLoading">
-    <el-aside class="resource-area" ref="node" :style="{ width: width + 'px' }">
+    <ArrowSide
+      :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
+      @change-side-tree-status="changeSideTreeStatus"
+    ></ArrowSide>
+    <el-aside
+      class="resource-area"
+      :class="{ retract: !sideTreeStatus }"
+      ref="node"
+      :style="{ width: width + 'px' }"
+    >
       <div class="resource-tree">
         <div class="tree-header">
           <div class="icon-methods">
@@ -698,6 +712,7 @@ const getMenuList = (val: boolean) => {
   width: 100%;
   height: 100%;
   background: #fff;
+  position: relative;
 
   .resource-area {
     position: relative;
@@ -706,6 +721,9 @@ const getMenuList = (val: boolean) => {
     padding: 0;
     border-right: 1px solid #d7d7d7;
     overflow: visible;
+    &.retract {
+      display: none;
+    }
 
     .resource-tree {
       padding: 16px 0 0;
@@ -725,7 +743,7 @@ const getMenuList = (val: boolean) => {
         font-size: 20px;
         font-weight: 500;
         color: var(--TextPrimary, #1f2329);
-        padding-bottom: 10px;
+        padding-bottom: 16px;
 
         .title {
           margin-right: auto;

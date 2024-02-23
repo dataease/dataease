@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { nextTick, onBeforeMount, reactive, ref, computed } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
@@ -121,6 +122,11 @@ const state = reactive({
   curPreviewGap: 0
 })
 
+const sideTreeStatus = ref(true)
+const changeSideTreeStatus = val => {
+  sideTreeStatus.value = val
+}
+
 onBeforeMount(() => {
   dvMainStore.canvasDataInit()
 })
@@ -128,9 +134,13 @@ onBeforeMount(() => {
 
 <template>
   <div class="dv-preview">
+    <ArrowSide
+      :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
+      @change-side-tree-status="changeSideTreeStatus"
+    ></ArrowSide>
     <el-aside
       class="resource-area"
-      :class="{ 'close-side': !slideShow }"
+      :class="{ 'close-side': !slideShow, retract: !sideTreeStatus }"
       ref="node"
       :style="{ width: width + 'px' }"
     >
@@ -200,6 +210,7 @@ onBeforeMount(() => {
   overflow: hidden;
   display: flex;
   background: #ffffff;
+  position: relative;
   .resource-area {
     position: relative;
     height: 100%;
@@ -207,6 +218,10 @@ onBeforeMount(() => {
     padding: 0;
     overflow: visible;
     border-right: 1px solid #d7d7d7;
+
+    &.retract {
+      display: none;
+    }
   }
   .preview-area {
     flex: 1;

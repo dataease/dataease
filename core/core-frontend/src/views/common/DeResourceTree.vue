@@ -531,7 +531,7 @@ defineExpose({
     font-size: 20px;
     font-weight: 500;
     color: var(--TextPrimary, #1f2329);
-    padding-bottom: 10px;
+    padding-bottom: 16px;
     .title {
       margin-right: auto;
       font-size: 16px;

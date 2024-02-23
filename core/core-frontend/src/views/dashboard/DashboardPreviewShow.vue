@@ -5,6 +5,7 @@ import { reactive, nextTick, ref, toRefs, onBeforeMount, computed } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { initCanvasData, initCanvasDataPrepare } from '@/utils/canvasUtils'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { useRequestStoreWithOut } from '@/store/modules/request'
@@ -134,6 +135,10 @@ onBeforeMount(() => {
     dvMainStore.canvasDataInit()
   }
 })
+const sideTreeStatus = ref(true)
+const changeSideTreeStatus = val => {
+  sideTreeStatus.value = val
+}
 
 defineExpose({
   getPreviewStateInfo
@@ -142,9 +147,13 @@ defineExpose({
 
 <template>
   <div class="dv-preview dv-teleport-query">
+    <ArrowSide
+      :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
+      @change-side-tree-status="changeSideTreeStatus"
+    ></ArrowSide>
     <el-aside
       class="resource-area"
-      :class="{ 'close-side': !slideShow }"
+      :class="{ 'close-side': !slideShow, retract: !sideTreeStatus }"
       ref="node"
       :style="{ width: width + 'px' }"
     >
@@ -215,6 +224,7 @@ defineExpose({
   overflow: hidden;
   display: flex;
   background: #ffffff;
+  position: relative;
   .resource-area {
     position: relative;
     height: 100%;
@@ -222,6 +232,10 @@ defineExpose({
     padding: 0;
     border-right: 1px solid #d7d7d7;
     overflow: visible;
+
+    &.retract {
+      display: none;
+    }
   }
   .preview-area {
     flex: 1;

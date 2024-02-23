@@ -4,6 +4,7 @@ import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import type { TabPaneName, ElMessageBoxOptions } from 'element-plus-secondary'
 import { ElIcon, ElMessageBox, ElMessage, ElScrollbar, ElAside } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
+import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { fieldType } from '@/utils/attr'
@@ -666,6 +667,11 @@ onMounted(() => {
   }
 })
 
+const sideTreeStatus = ref(true)
+const changeSideTreeStatus = val => {
+  sideTreeStatus.value = val
+}
+
 const getMenuList = (val: boolean) => {
   return !val || isDataEaseBi.value
     ? menuList
@@ -681,7 +687,16 @@ const getMenuList = (val: boolean) => {
 
 <template>
   <div class="datasource-manage" v-loading="dsLoading">
-    <el-aside class="resource-area" ref="node" :style="{ width: width + 'px' }">
+    <ArrowSide
+      :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
+      @change-side-tree-status="changeSideTreeStatus"
+    ></ArrowSide>
+    <el-aside
+      class="resource-area"
+      :class="{ retract: !sideTreeStatus }"
+      ref="node"
+      :style="{ width: width + 'px' }"
+    >
       <div class="resource-tree">
         <div class="tree-header">
           <div class="icon-methods">
@@ -1376,6 +1391,7 @@ const getMenuList = (val: boolean) => {
   width: 100%;
   height: 100%;
   background: #fff;
+  position: relative;
 
   .resource-area {
     position: relative;
@@ -1384,6 +1400,9 @@ const getMenuList = (val: boolean) => {
     padding: 0;
     border-right: 1px solid #d7d7d7;
     overflow: visible;
+    &.retract {
+      display: none;
+    }
 
     .resource-tree {
       padding: 16px 0 0;
@@ -1403,7 +1422,7 @@ const getMenuList = (val: boolean) => {
         font-size: 20px;
         font-weight: 500;
         color: var(--TextPrimary, #1f2329);
-        padding-bottom: 10px;
+        padding-bottom: 16px;
 
         .title {
           margin-right: auto;
