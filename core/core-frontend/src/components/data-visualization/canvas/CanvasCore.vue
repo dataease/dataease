@@ -222,7 +222,7 @@ const initWatermark = (waterDomId = 'editor-canvas-main') => {
       isMainCanvas(canvasId.value)
     ) {
       const scale = dashboardActive.value ? 1 : curScale.value
-      if (userInfo.value) {
+      if (userInfo.value && userInfo.value.model !== 'lose') {
         activeWatermark(
           dvInfo.value.watermarkInfo.settingContent,
           userInfo.value,
@@ -235,14 +235,16 @@ const initWatermark = (waterDomId = 'editor-canvas-main') => {
         const method = personInfoApi
         method().then(res => {
           userInfo.value = res.data
-          activeWatermark(
-            dvInfo.value.watermarkInfo.settingContent,
-            userInfo.value,
-            waterDomId,
-            canvasId.value,
-            dvInfo.value.selfWatermarkStatus,
-            scale
-          )
+          if (userInfo.value && userInfo.value.model !== 'lose') {
+            activeWatermark(
+              dvInfo.value.watermarkInfo.settingContent,
+              userInfo.value,
+              waterDomId,
+              canvasId.value,
+              dvInfo.value.selfWatermarkStatus,
+              scale
+            )
+          }
         })
       }
     }
