@@ -190,7 +190,7 @@ const initRefreshTimer = () => {
 
 const initWatermark = (waterDomId = 'preview-canvas-main') => {
   if (dvInfo.value.watermarkInfo && isMainCanvas(canvasId.value)) {
-    if (userInfo.value) {
+    if (userInfo.value && userInfo.value.model !== 'lose') {
       activeWatermark(
         dvInfo.value.watermarkInfo.settingContent,
         userInfo.value,
@@ -203,14 +203,16 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
       const method = personInfoApi
       method().then(res => {
         userInfo.value = res.data
-        activeWatermark(
-          dvInfo.value.watermarkInfo.settingContent,
-          userInfo.value,
-          waterDomId,
-          canvasId.value,
-          dvInfo.value.selfWatermarkStatus,
-          scaleWidth.value / 100
-        )
+        if (userInfo.value && userInfo.value.model !== 'lose') {
+          activeWatermark(
+            dvInfo.value.watermarkInfo.settingContent,
+            userInfo.value,
+            waterDomId,
+            canvasId.value,
+            dvInfo.value.selfWatermarkStatus,
+            scaleWidth.value / 100
+          )
+        }
       })
     }
   }

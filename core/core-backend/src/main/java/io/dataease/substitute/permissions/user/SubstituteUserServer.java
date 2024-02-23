@@ -1,6 +1,8 @@
 package io.dataease.substitute.permissions.user;
 
 
+import io.dataease.api.permissions.user.vo.UserFormVO;
+import io.dataease.utils.IPUtils;
 import org.springframework.boot.autoconfigure.condition.ConditionalOnMissingBean;
 import org.springframework.stereotype.Component;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -24,5 +26,16 @@ public class SubstituteUserServer {
         result.put("oid", "1");
         result.put("language", "zh-CN");
         return result;
+    }
+    @GetMapping("/personInfo")
+    public UserFormVO personInfo() {
+        UserFormVO userFormVO = new UserFormVO();
+        userFormVO.setId(1L);
+        userFormVO.setAccount("admin");
+        userFormVO.setName("管理员");
+        userFormVO.setIp(IPUtils.get());
+        // 当前模式为无XPack
+        userFormVO.setModel("lose");
+        return userFormVO;
     }
 }
