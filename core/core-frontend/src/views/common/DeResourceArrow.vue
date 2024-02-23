@@ -2,7 +2,7 @@
 import { ref } from 'vue'
 const sideTreeStatus = ref(true)
 const emits = defineEmits(['changeSideTreeStatus'])
-const handelClick = val => {
+const handleClick = val => {
   emits('changeSideTreeStatus', val)
   sideTreeStatus.value = val
 }
@@ -10,7 +10,7 @@ const handelClick = val => {
 
 <template>
   <div
-    @click="handelClick(false)"
+    @click="handleClick(false)"
     v-if="sideTreeStatus"
     class="arrow-side-tree arrow-side-tree-left"
   >
@@ -18,7 +18,7 @@ const handelClick = val => {
       <Icon name="icon_left_outlined" />
     </el-icon>
   </div>
-  <div @click="handelClick(true)" v-else class="arrow-side-tree arrow-side-tree-right">
+  <div @click="handleClick(true)" v-else class="arrow-side-tree arrow-side-tree-right">
     <el-icon>
       <Icon name="icon_right_outlined" />
     </el-icon>
