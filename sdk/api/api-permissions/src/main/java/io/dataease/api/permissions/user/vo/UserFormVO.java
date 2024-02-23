@@ -39,4 +39,7 @@ public class UserFormVO implements Serializable {
 
     @Schema(description = "IP")
     private String ip;
+
+    @Schema(description = "模式")
+    private String model;
 }
