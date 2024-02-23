@@ -18,4 +18,6 @@ public class Target {
     private SyncDatasourceDTO datasource;
     private String datasourceId;
     private String targetProperty;
+    private String incrementSync;
+    private String incrementField;
 }

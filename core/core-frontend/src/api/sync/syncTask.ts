@@ -107,6 +107,8 @@ export interface ITarget {
   dsList?: []
   multipleSelection?: ITableField[]
   property: ITargetProperty
+  incrementSync: string
+  incrementField: string
 }
 
 export class ITaskInfoRes {
