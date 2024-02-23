@@ -19,12 +19,17 @@
         /></el-icon>
         <span>{{ state.curTemplate.title }}1 </span>
         <el-row class="head-right">
-          <el-button :disabled="state.curTemplateIndex === 0" style="float: right" @click="preOne"
+          <el-button
+            secondary
+            :disabled="state.curTemplateIndex === 0"
+            style="float: right"
+            @click="preOne"
             >上一个</el-button
           >
           <el-button
             :disabled="state.curTemplateIndex === state.curTemplateShowFilter.length - 1"
             style="float: right"
+            secondary
             @click="nextOne"
             >下一个</el-button
           >

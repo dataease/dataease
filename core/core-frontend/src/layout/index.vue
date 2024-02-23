@@ -23,6 +23,7 @@ const toolboxMenu = computed(() => route.path.includes('toolbox'))
     <Header v-else></Header>
     <el-container class="layout-container">
       <Sidebar v-if="systemMenu || settingMenu || toolboxMenu" class="layout-sidebar">
+        <div v-if="systemMenu" class="org-config-center">组织管理中心</div>
         <Menu style="height: 100%"></Menu>
       </Sidebar>
       <Main
@@ -46,6 +47,23 @@ const toolboxMenu = computed(() => route.path.includes('toolbox'))
   .layout-container {
     .layout-sidebar {
       height: calc(100vh - 56px);
+    }
+
+    .org-config-center {
+      height: 48px;
+      padding-left: 24px;
+      display: flex;
+      align-items: center;
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 22px;
+      color: #8f959e;
+      border-bottom: 1px solid #1f232926;
+      position: sticky;
+      top: 0;
+      left: 0;
+      background: #fff;
+      z-index: 10;
     }
 
     .layout-main {
