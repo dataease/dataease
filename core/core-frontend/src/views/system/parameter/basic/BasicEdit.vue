@@ -205,7 +205,7 @@ defineExpose({
     </el-form>
     <template #footer>
       <span class="dialog-footer">
-        <el-button @click="resetForm(basicForm)">{{ t('common.cancel') }}</el-button>
+        <el-button secondary @click="resetForm(basicForm)">{{ t('common.cancel') }}</el-button>
         <el-button type="primary" @click="submitForm(basicForm)">
           {{ t('commons.save') }}
         </el-button>
