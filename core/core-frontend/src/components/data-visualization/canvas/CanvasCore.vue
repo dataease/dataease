@@ -214,25 +214,14 @@ watch(
 )
 
 const initWatermark = (waterDomId = 'editor-canvas-main') => {
-  if (
-    dvInfo.value.watermarkInfo &&
-    dvInfo.value.watermarkInfo.settingContent &&
-    isMainCanvas(canvasId.value)
-  ) {
-    const scale = dashboardActive.value ? 1 : curScale.value
-    if (userInfo.value) {
-      activeWatermark(
-        dvInfo.value.watermarkInfo.settingContent,
-        userInfo.value,
-        waterDomId,
-        canvasId.value,
-        dvInfo.value.selfWatermarkStatus,
-        scale
-      )
-    } else {
-      const method = personInfoApi
-      method().then(res => {
-        userInfo.value = res.data
+  try {
+    if (
+      dvInfo.value.watermarkInfo &&
+      dvInfo.value.watermarkInfo.settingContent &&
+      isMainCanvas(canvasId.value)
+    ) {
+      const scale = dashboardActive.value ? 1 : curScale.value
+      if (userInfo.value) {
         activeWatermark(
           dvInfo.value.watermarkInfo.settingContent,
           userInfo.value,
@@ -241,8 +230,23 @@ const initWatermark = (waterDomId = 'editor-canvas-main') => {
           dvInfo.value.selfWatermarkStatus,
           scale
         )
-      })
+      } else {
+        const method = personInfoApi
+        method().then(res => {
+          userInfo.value = res.data
+          activeWatermark(
+            dvInfo.value.watermarkInfo.settingContent,
+            userInfo.value,
+            waterDomId,
+            canvasId.value,
+            dvInfo.value.selfWatermarkStatus,
+            scale
+          )
+        })
+      }
     }
+  } catch (e) {
+    console.warn('Watermarks are not supported!')
   }
 }
 
