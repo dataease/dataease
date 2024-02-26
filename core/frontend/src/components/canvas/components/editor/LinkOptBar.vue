@@ -36,7 +36,7 @@
       </div>
       <div class="link-icon-active">
         <el-tooltip
-          :content="$t('panel.panel')"
+          :content="$t('panel.export_pdf')"
         >
           <svg-icon
             style="width: 16px;height: 16px"
