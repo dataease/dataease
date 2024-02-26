@@ -78,7 +78,7 @@ const hanedleMessage = event => {
       }
     })
 
-    eventBus.emit('save')
+    eventBus.emit('saveFromMobile')
   }
 }
 onMounted(() => {
