@@ -30,7 +30,11 @@
           multiple
           placeholder="可多选"
           style="width: 100%"
-          :popper-class="templateCategories.length ? '' : 'custom-category-empty'"
+          :popper-class="
+            templateCategories.length
+              ? 'custom-category-padding'
+              : 'custom-category-empty custom-category-padding'
+          "
         >
           <el-option
             v-for="option in templateCategories"
@@ -41,15 +45,13 @@
           <div class="custom-dropdown__empty">
             <span>暂无可选分类</span>
           </div>
-          <div class="custom-option-line"></div>
-          <div>
-            <el-button
-              @click="doAddCategory"
-              icon="Plus"
-              text
-              style="width: 100%; justify-content: flex-start"
-              >添加分类</el-button
-            >
+          <div class="custom-option-line">
+            <div @click="doAddCategory" class="flex-align-center">
+              <el-icon>
+                <Plus></Plus>
+              </el-icon>
+              添加分类
+            </div>
           </div>
         </el-select>
       </el-form-item>
@@ -314,10 +316,42 @@ if (props.templateId) {
 }
 
 .custom-option-line {
-  width: calc(100% -8px);
-  margin: 4px;
-  height: 1px;
-  background-color: rgba(31, 35, 41, 0.15);
+  width: 100%;
+  position: absolute;
+  bottom: 0;
+  height: 42px;
+  display: flex;
+  align-items: center;
+  background: #fff;
+
+  &::before {
+    content: '';
+    position: absolute;
+    height: 1px;
+    width: calc(100% - 22px);
+    left: 11px;
+    top: 0;
+    background-color: #1f232926;
+  }
+
+  .flex-align-center {
+    width: 100%;
+    height: 32px;
+    color: var(--el-input-icon-color);
+    cursor: pointer;
+    padding-left: 11px;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+
+    &:hover {
+      background-color: var(--ed-fill-color-light);
+    }
+    .ed-icon {
+      font-size: 16px;
+      margin: 0 8px 0 0;
+    }
+  }
 }
 
 .custom-category-empty {
@@ -334,10 +368,18 @@ if (props.templateId) {
   }
 }
 
+.custom-category-padding {
+  .ed-select-dropdown__list {
+    padding-bottom: 42px;
+  }
+}
+
 .custom-dropdown__empty {
   display: none;
   margin-left: 12px;
   font-size: 14px;
+  height: 32px;
+  line-height: 32px;
   color: rgba(143, 149, 158, 1);
 }
 </style>
