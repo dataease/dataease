@@ -581,11 +581,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
         if (isDefaultClassLoader(customDriver)) {
             driverClassName = defaultDriver;
             jdbcClassLoader = extendedJdbcClassLoader;
-//            for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
-//                if (value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())) {
-//                    surpportVersions = value.getSurpportVersions();
-//                }
-//            }
+            for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
+                if (value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())) {
+                    surpportVersions = value.getSurpportVersions();
+                }
+            }
         } else {
             if (deDriver == null) {
                 deDriver = deDriverMapper.selectByPrimaryKey(customDriver);
@@ -601,7 +601,6 @@ public class JdbcProvider extends DefaultJdbcProvider {
             Thread.currentThread().setContextClassLoader(jdbcClassLoader);
             conn = driverClass.connect(jdbcurl, props);
         } catch (Exception e) {
-            e.printStackTrace();
             throw e;
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);
