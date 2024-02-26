@@ -26,9 +26,11 @@ import { defaultsDeep, cloneDeep } from 'lodash-es'
 import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy } from '@/utils/utils'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
+const { emitter } = useEmitt()
 
 const props = defineProps({
   view: {
@@ -71,7 +73,6 @@ const state = reactive({
   },
   linkageActiveParam: null,
   pointParam: null,
-  myChart: null,
   loading: false,
   data: { fields: [] }, // 图表数据
   pageInfo: {
@@ -145,7 +146,8 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
     chart: toRaw(chart),
     chartObj: myChart,
     pageInfo: state.pageInfo,
-    action
+    action,
+    resizeAction
   })
   myChart?.render()
   initScroll()
@@ -296,6 +298,20 @@ const trackMenu = computed(() => {
   return trackMenuInfo
 })
 
+const resizeAction = resizeColumn => {
+  if (showPosition.value !== 'canvas') {
+    return
+  }
+  const fieldId = resizeColumn.info.meta.field
+  const { basicStyle } = view.value.customAttr
+  const containerWidth = document.getElementById(containerId).offsetWidth
+  basicStyle.tableFieldWidth?.forEach(item => {
+    if (item.fieldId === fieldId) {
+      item.width = parseFloat(((resizeColumn.info.resizedWidth / containerWidth) * 100).toFixed(2))
+    }
+  })
+  emitter.emit('set-table-column-width', basicStyle.tableFieldWidth)
+}
 defineExpose({
   calcData,
   renderChart,

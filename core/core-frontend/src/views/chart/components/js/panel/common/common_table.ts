@@ -311,12 +311,35 @@ export function getStyle(chart: Chart): Style {
     style.cellCfg = {
       height: tableCell.tableItemHeight
     }
-    if (basicStyle.tableColumnMode === 'adapt') {
-      delete style.colCfg.width
-      style.layoutWidthType = 'adaptive'
-    } else {
-      delete style.layoutWidthType
-      style.colCfg.width = basicStyle.tableColumnWidth
+    switch (basicStyle.tableColumnMode) {
+      case 'adapt': {
+        delete style.cellCfg.width
+        style.layoutWidthType = 'compact'
+        break
+      }
+      case 'field': {
+        delete style.layoutWidthType
+        const fieldMap =
+          basicStyle.tableFieldWidth?.reduce((p, n) => {
+            p[n.fieldId] = n
+            return p
+          }, {}) || {}
+        style.colCfg.width = node => {
+          const width = node.spreadsheet.container.cfg.el.offsetWidth
+          if (!basicStyle.tableFieldWidth?.length) {
+            const fieldsSize = chart.data.fields.length
+            const columnCount = tableHeader.showIndex ? fieldsSize + 1 : fieldsSize
+            return width / columnCount
+          }
+          const baseWidth = width / 100
+          return fieldMap[node.field] ? fieldMap[node.field].width * baseWidth : baseWidth * 10
+        }
+        break
+      }
+      default: {
+        delete style.layoutWidthType
+        style.colCfg.width = basicStyle.tableColumnWidth
+      }
     }
   }
 
@@ -573,7 +596,7 @@ class SortTooltip extends BaseTooltip {
     this.spreadsheet.tooltip.container.innerHTML = ''
     const childElement = document.createElement('div')
     this.spreadsheet.tooltip.container.appendChild(childElement)
-    render(vNode, childElement, false)
+    render(vNode, childElement)
 
     const { x, y } = getAutoAdjustPosition({
       spreadsheet: this.spreadsheet,

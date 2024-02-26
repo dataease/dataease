@@ -294,6 +294,14 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     return theme
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const { customAttr } = chart
+    if (customAttr.basicStyle.tableColumnMode === 'field') {
+      customAttr.basicStyle.tableColumnMode = 'custom'
+    }
+    return chart
+  }
+
   constructor() {
     super('table-pivot', [])
   }
