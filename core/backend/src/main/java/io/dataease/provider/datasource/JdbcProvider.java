@@ -436,6 +436,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
         try (Connection con = getConnection(datasourceRequest); Statement statement = getStatement(con, queryTimeout); ResultSet resultSet = statement.executeQuery(queryStr)) {
         } catch (Exception e) {
+            e.printStackTrace();
             LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName(), e);
             DataEaseException.throwException(e.getMessage());
         }
@@ -580,11 +581,11 @@ public class JdbcProvider extends DefaultJdbcProvider {
         if (isDefaultClassLoader(customDriver)) {
             driverClassName = defaultDriver;
             jdbcClassLoader = extendedJdbcClassLoader;
-            for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
-                if (value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())) {
-                    surpportVersions = value.getSurpportVersions();
-                }
-            }
+//            for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
+//                if (value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())) {
+//                    surpportVersions = value.getSurpportVersions();
+//                }
+//            }
         } else {
             if (deDriver == null) {
                 deDriver = deDriverMapper.selectByPrimaryKey(customDriver);

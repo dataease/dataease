@@ -8,6 +8,7 @@ import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.parser.Feature;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -2355,7 +2356,7 @@ public class DataSetTableService {
             }
             String json = JSON.toJSONString(noModelDataListener.getData());
             List<List<String>> data = JSON.parseObject(json, new TypeReference<List<List<String>>>() {
-            });
+            }, Feature.IgnoreNotMatch);
             data = (isPreview && noModelDataListener.getData().size() > 1000 ? new ArrayList<>(data.subList(0, 1000)) : data);
             if (isPreview) {
                 for (int i = 0; i < data.size(); i++) {
@@ -2379,15 +2380,7 @@ public class DataSetTableService {
     public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-        if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
-            ExcelXlsReader excelXlsReader = new ExcelXlsReader();
-            excelXlsReader.setObtainedNum(1000);
-            excelXlsReader.process(inputStream);
-            excelSheetDataList = excelXlsReader.totalSheets;
-        }
-        if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
-            excelSheetDataList = excelSheetDataList(inputStream, isPreview);
-        }
+        excelSheetDataList = excelSheetDataList(inputStream, isPreview);
 
         if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
             List<TableField> fields = new ArrayList<>();
