@@ -27,7 +27,7 @@
       <el-tab-pane
         v-for="(item, index) in element.options.tabList"
         :key="item.name+index"
-        :lazy="!isEdit"
+        :lazy="!isEdit && terminal === 'pc'"
         :name="item.name"
       >
         <span slot="label">
@@ -276,6 +276,10 @@ export default {
       type: String,
       required: false,
       default: 'NotProvided'
+    },
+    terminal: {
+      type: String,
+      default: 'pc'
     }
   },
   data() {
