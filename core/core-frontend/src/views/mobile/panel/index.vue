@@ -30,6 +30,7 @@ const hanedleMessage = event => {
     dvMainStore.setCanvasStyle(canvasStyleData)
     dvMainStore.updateCurDvInfo(dvInfo)
     dvMainStore.setCanvasViewInfo(canvasViewInfo)
+    eventBus.emit('doCanvasInit-canvas-main')
     panelInit.value = true
   }
 
@@ -37,6 +38,7 @@ const hanedleMessage = event => {
     const component = event.data.value
     checkItemPosition(component)
     dvMainStore.componentData.push(component)
+    eventBus.emit('doCanvasInit-canvas-main')
   }
 
   if (event.data.type === 'setCanvasStyle') {
