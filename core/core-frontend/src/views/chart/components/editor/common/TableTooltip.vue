@@ -26,7 +26,7 @@ const sort = type => {
 }
 </script>
 <template>
-  <el-col>
+  <el-col style="color: black">
     <el-row align="middle">
       <el-icon><SortUp /></el-icon>
       <span class="sort-btn" @click="() => sort('asc')">{{ t('chart.asc') }}</span>

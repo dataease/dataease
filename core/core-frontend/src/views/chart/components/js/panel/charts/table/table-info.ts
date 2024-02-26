@@ -31,7 +31,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
   }
 
   public drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
-    const { container, chart, pageInfo, action } = drawOption
+    const { container, chart, pageInfo, action, resizeAction } = drawOption
     const containerDom = document.getElementById(container)
 
     // fields
@@ -159,6 +159,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
       action(param)
     })
 
+    // header resize
+    newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, ev => resizeAction(ev))
     // theme
     const customTheme = this.configTheme(chart)
     newChart.setThemeCfg({ theme: customTheme })

@@ -3,6 +3,8 @@ import { onMounted, PropType, reactive, watch } from 'vue'
 import { COLOR_PANEL, DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
 import { useI18n } from '@/hooks/web/useI18n'
 import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
+import { SERIES_NUMBER_FIELD } from '@antv/s2'
 
 const { t } = useI18n()
 const props = defineProps({
@@ -23,10 +25,19 @@ const predefineColors = COLOR_PANEL
 const state = reactive({
   basicStyleForm: JSON.parse(JSON.stringify(DEFAULT_BASIC_STYLE)) as ChartBasicStyle,
   customColor: null,
-  colorIndex: 0
+  colorIndex: 0,
+  fieldColumnWidth: {
+    fieldId: '',
+    width: 0
+  }
 })
 watch(
-  () => props.chart.customAttr.basicStyle,
+  [
+    () => props.chart.customAttr.basicStyle,
+    () => props.chart.customAttr.tableHeader,
+    () => props.chart.xAxis,
+    () => props.chart.yAxis
+  ],
   () => {
     init()
   },
@@ -37,14 +48,95 @@ const changeBasicStyle = (prop?: string, requestData = false) => {
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData }, prop)
 }
 const init = () => {
-  const basicStyle = JSON.parse(JSON.stringify(props.chart.customAttr.basicStyle))
-  state.basicStyleForm = basicStyle as ChartBasicStyle
+  const basicStyle = cloneDeep(props.chart.customAttr.basicStyle)
+  state.basicStyleForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
   if (!state.customColor) {
     state.customColor = state.basicStyleForm.colors[0]
     state.colorIndex = 0
   }
+  initTableColumnWidth()
 }
-
+const COLUMN_WIDTH_TYPE = ['table-info', 'table-normal']
+const initTableColumnWidth = () => {
+  if (!COLUMN_WIDTH_TYPE.includes(props.chart.type)) {
+    return
+  }
+  let { xAxis, yAxis, customAttr } = JSON.parse(JSON.stringify(props.chart))
+  let allAxis = xAxis
+  if (props.chart.type === 'table-normal') {
+    allAxis = allAxis.concat(yAxis)
+  }
+  const { tableHeader } = customAttr
+  if (allAxis.length && tableHeader.showIndex) {
+    const indexColumn = {
+      dataeaseName: SERIES_NUMBER_FIELD,
+      name: tableHeader.indexLabel
+    } as unknown as Axis
+    allAxis.unshift(indexColumn)
+  }
+  if (!allAxis.length) {
+    state.basicStyleForm.tableFieldWidth?.splice(0)
+    state.fieldColumnWidth.fieldId = ''
+    state.fieldColumnWidth.width = 0
+  } else {
+    if (!state.basicStyleForm.tableFieldWidth.length) {
+      state.basicStyleForm.tableFieldWidth.splice(0)
+      const defaultWidth = parseFloat((100 / allAxis.length).toFixed(2))
+      allAxis.forEach(item => {
+        state.basicStyleForm.tableFieldWidth.push({
+          fieldId: item.dataeaseName,
+          name: item.name,
+          width: defaultWidth
+        })
+      })
+    } else {
+      const fieldMap = state.basicStyleForm.tableFieldWidth.reduce((p, n) => {
+        p[n.fieldId] = n
+        return p
+      }, {})
+      state.basicStyleForm.tableFieldWidth.splice(0)
+      allAxis.forEach(item => {
+        let width = 10
+        if (fieldMap[item.dataeaseName]) {
+          width = fieldMap[item.dataeaseName].width
+        }
+        state.basicStyleForm.tableFieldWidth.push({
+          fieldId: item.dataeaseName,
+          name: item.name,
+          width
+        })
+      })
+    }
+    let selectedField = state.basicStyleForm.tableFieldWidth[0]
+    const curFieldIndex = state.basicStyleForm.tableFieldWidth.findIndex(
+      i => i.fieldId === state.fieldColumnWidth.fieldId
+    )
+    if (curFieldIndex !== -1) {
+      selectedField = state.basicStyleForm.tableFieldWidth[curFieldIndex]
+    }
+    state.fieldColumnWidth.fieldId = selectedField.fieldId
+    state.fieldColumnWidth.width = selectedField.width
+  }
+}
+const changeFieldColumn = () => {
+  const { basicStyleForm, fieldColumnWidth } = state
+  const fieldWidth = basicStyleForm.tableFieldWidth?.find(
+    i => i.fieldId === fieldColumnWidth.fieldId
+  )
+  if (fieldWidth) {
+    fieldColumnWidth.width = fieldWidth.width
+  }
+}
+const changeFieldColumnWidth = () => {
+  const { basicStyleForm, fieldColumnWidth } = state
+  const fieldWidth = basicStyleForm.tableFieldWidth?.find(
+    i => i.fieldId === fieldColumnWidth.fieldId
+  )
+  if (fieldWidth) {
+    fieldWidth.width = fieldColumnWidth.width
+    changeBasicStyle('tableFieldWidth')
+  }
+}
 const pageSizeOptions = [
   { name: '10' + t('chart.table_page_size_unit'), value: 10 },
   { name: '20' + t('chart.table_page_size_unit'), value: 20 },
@@ -265,7 +357,7 @@ onMounted(() => {
               v-model="state.basicStyleForm.alpha"
               :min="0"
               :max="100"
-              class="alpha-input-number"
+              class="basic-input-number"
               :controls="false"
               @change="changeBasicStyle('alpha')"
             >
@@ -286,15 +378,16 @@ onMounted(() => {
       <el-radio-group
         v-model="state.basicStyleForm.tableColumnMode"
         @change="changeBasicStyle('tableColumnMode')"
+        class="table-column-mode"
       >
         <el-radio label="adapt" :effect="themes">
           {{ t('chart.table_column_adapt') }}
         </el-radio>
         <el-radio label="custom" :effect="themes">
+          {{ t('chart.table_column_fixed') }}
+        </el-radio>
+        <el-radio v-show="chart.type !== 'table-pivot'" label="field" :effect="themes">
           {{ t('chart.table_column_custom') }}
-          <el-tooltip placement="bottom" :content="t('chart.table_column_width_tip')" raw-content>
-            <el-icon><InfoFilled /></el-icon>
-          </el-tooltip>
         </el-radio>
       </el-radio-group>
     </el-form-item>
@@ -310,6 +403,35 @@ onMounted(() => {
         controls-position="right"
         @change="changeBasicStyle('tableColumnWidth')"
       />
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('tableColumnMode') && state.basicStyleForm.tableColumnMode === 'field'"
+      label=""
+      class="form-item table-field-width-config"
+    >
+      <el-select
+        v-model="state.fieldColumnWidth.fieldId"
+        :effect="themes"
+        @change="changeFieldColumn()"
+      >
+        <el-option
+          v-for="item in state.basicStyleForm.tableFieldWidth"
+          :key="item.fieldId"
+          :label="item.name"
+          :value="item.fieldId"
+        />
+      </el-select>
+      <el-input
+        v-model.number="state.fieldColumnWidth.width"
+        type="number"
+        class="basic-input-number"
+        :min="0"
+        :max="100"
+        :effect="themes"
+        @change="changeFieldColumnWidth()"
+      >
+        <template #append>%</template>
+      </el-input>
     </el-form-item>
     <!--table2 end-->
     <!--gauge start-->
@@ -610,7 +732,7 @@ onMounted(() => {
               v-model="state.basicStyleForm.innerRadius"
               :min="1"
               :max="100"
-              class="alpha-input-number"
+              class="basic-input-number"
               :controls="false"
               @change="changeBasicStyle('innerRadius')"
             >
@@ -645,7 +767,7 @@ onMounted(() => {
               v-model="state.basicStyleForm.radius"
               :min="1"
               :max="100"
-              class="alpha-input-number"
+              class="basic-input-number"
               :controls="false"
               @change="changeBasicStyle('radius')"
             >
@@ -695,15 +817,37 @@ onMounted(() => {
       color: #a6a6a6;
     }
   }
-  .alpha-input-number {
-    :deep(input) {
-      -webkit-appearance: none;
-      -moz-appearance: textfield;
+}
+.table-field-width-config {
+  .ed-select {
+    width: 100px !important;
+    :deep(.ed-input__wrapper) {
+      border-radius: 4px 0 0 4px !important;
+    }
+  }
+  .ed-input-group {
+    width: 124px;
+    :deep(.ed-input__wrapper) {
+      border-radius: 0 !important;
+    }
+    :deep(.ed-input-group__append) {
+      padding: 0 8px;
+    }
+  }
+}
+.table-column-mode {
+  :deep(.ed-radio) {
+    margin-right: 12px !important;
+  }
+}
+.basic-input-number {
+  :deep(input) {
+    -webkit-appearance: none;
+    -moz-appearance: textfield;
 
-      &::-webkit-inner-spin-button,
-      &::-webkit-outer-spin-button {
-        -webkit-appearance: none;
-      }
+    &::-webkit-inner-spin-button,
+    &::-webkit-outer-spin-button {
+      -webkit-appearance: none;
     }
   }
 }

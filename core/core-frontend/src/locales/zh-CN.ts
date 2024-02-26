@@ -865,6 +865,7 @@ export default {
     table_config: '表格配置',
     table_column_width_config: '列宽调整',
     table_column_adapt: '自适应',
+    table_column_fixed: '固定列宽',
     table_column_custom: '自定义',
     chart_table_pivot: '透视表',
     table_pivot_row: '数据行',
@@ -1005,7 +1006,7 @@ export default {
     table_scroll_tip: '明细表仅在分页模式为"下拉"时生效。',
     table_threshold_tip: '提示：请勿重复选择字段，若同一字段重复配置，则只有最后的字段配置生效',
     table_column_width_tip:
-      '列宽并非任何时候都能生效。<br/>容器宽度优先级高于列宽，即(表格容器宽度 / 列数 > 指定列宽)，则列宽优先取(容器宽度 / 列数)。',
+      '固定列宽并非任何时候都能生效。<br/>容器宽度优先级高于列宽，即(表格容器宽度 / 列数 > 指定列宽)，则列宽优先取(容器宽度 / 列数)。',
     reference_field_tip:
       '引用字段以 "[" 开始， "]" 结束。<br/>请勿修改引用内容，否则将引用失败。<br/>若输入与引用字段相同格式的内容，将被当作引用字段处理。',
     scatter_tip: '该指标生效时，样式大小中的气泡大小属性将失效',

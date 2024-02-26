@@ -1239,6 +1239,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
   tableColumnMode: 'adapt',
   tableColumnWidth: 100,
+  tableFieldWidth: [],
   tablePageMode: 'page',
   tablePageSize: 20,
   gaugeStyle: 'default',

@@ -54,7 +54,7 @@ import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTempl
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
-const { canvasCollapse, curComponent, componentData } = storeToRefs(dvMainStore)
+const { canvasCollapse, curComponent, componentData, editMode } = storeToRefs(dvMainStore)
 const router = useRouter()
 
 const { t } = useI18n()
@@ -64,7 +64,10 @@ const tabActiveVQuery = ref('style')
 const datasetSelector = ref(null)
 const curDatasetWeight = ref(0)
 const renameForm = ref<FormInstance>()
-const { emitter } = useEmitt()
+const { emitter } = useEmitt({
+  name: 'set-table-column-width',
+  callback: args => onTableColumnWidthChange(args)
+})
 const props = defineProps({
   view: {
     type: Object as PropType<ChartObj>,
@@ -785,6 +788,14 @@ const onThresholdChange = val => {
 const onScrollCfgChange = val => {
   view.value.senior.scrollCfg = val
   renderChart(view.value)
+}
+
+const onTableColumnWidthChange = val => {
+  if (editMode.value !== 'edit') {
+    return
+  }
+  view.value.customAttr.basicStyle.tableFieldWidth = val
+  snapshotStore.recordSnapshotCache('renderChart', view.value.id)
 }
 
 const onExtTooltipChange = val => {

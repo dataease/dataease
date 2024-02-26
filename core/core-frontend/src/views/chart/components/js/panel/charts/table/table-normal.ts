@@ -32,7 +32,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
   }
 
   drawChart(drawOption: S2DrawOptions<TableSheet>): TableSheet {
-    const { container, chart, action } = drawOption
+    const { container, chart, action, resizeAction } = drawOption
     const containerDom = document.getElementById(container)
     if (!containerDom) return
 
@@ -153,6 +153,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
       action(param)
     })
+    // header resize
+    newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, ev => resizeAction(ev))
     // theme
     const customTheme = this.configTheme(chart)
     newChart.setThemeCfg({ theme: customTheme })

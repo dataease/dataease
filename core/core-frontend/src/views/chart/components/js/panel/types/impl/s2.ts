@@ -21,6 +21,7 @@ declare interface PageInfo {
 
 export interface S2DrawOptions<O> extends AntVDrawOptions<O> {
   pageInfo?: PageInfo
+  resizeAction?: (...args: any) => void
 }
 export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractChartView {
   public abstract drawChart(drawOption: S2DrawOptions<P>): P

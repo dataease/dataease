@@ -54,11 +54,28 @@ declare interface ChartBasicStyle {
   /**
    * 表格列宽模式: 自适应和自定义
    */
-  tableColumnMode: 'adapt' | 'custom'
+  tableColumnMode: 'adapt' | 'custom' | 'field'
   /**
    * 表格列宽
    */
   tableColumnWidth: number
+  /**
+   * 表格字段列宽
+   */
+  tableFieldWidth: {
+    /**
+     * 字段ID
+     */
+    fieldId: string,
+    /**
+     * 字段名称
+     */
+    name: string,
+    /**
+     * 字段宽度占比
+     */
+    width: number
+  }[]
   /**
    * 表格分页模式
    */
