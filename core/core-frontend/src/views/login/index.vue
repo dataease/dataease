@@ -3,7 +3,7 @@ import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { FormRules, FormInstance } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
-import { loginApi, queryDekey } from '@/api/login'
+import { loginApi, queryDekey, uiLoadApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { CustomPassword } from '@/components/custom-password'
@@ -16,18 +16,20 @@ import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { isLarkPlatform } from '@/utils/utils'
+const basePath = import.meta.env.VITE_API_BASEPATH
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
 const contentShow = ref(true)
 const loading = ref(false)
-const axiosFinished = ref(true)
+const axiosFinished = ref(false)
 const showFoot = ref(false)
 
 const loginLogoUrl = ref(null)
 const msg = ref(null)
 const loginImageUrl = ref(null)
+const slogan = ref(null)
 const footContent = ref(null)
 const loginErrorMsg = ref('')
 const xpackLoginHandler = ref()
@@ -170,7 +172,26 @@ const showLoginErrorMsg = () => {
   }
   ElMessage.error(loginErrorMsg.value)
 }
+const loadArrearance = () => {
+  const imgUrlPrefix = basePath + '/appearance/image/'
+  uiLoadApi().then(res => {
+    axiosFinished.value = true
+    const items = res.data
+    items.forEach(item => {
+      const pkey = item.pkey
+      const pval = item.pval
+      if (pkey === 'bg') {
+        loginImageUrl.value = imgUrlPrefix + pval
+      } else if (pkey === 'login') {
+        loginLogoUrl.value = imgUrlPrefix + pval
+      } else if (pkey === 'slogan') {
+        slogan.value = pval
+      }
+    })
+  })
+}
 onMounted(() => {
+  loadArrearance()
   checkPlatform()
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {
     const msg = localStorage.getItem('DE-GATEWAY-FLAG')
@@ -206,18 +227,10 @@ onMounted(() => {
     <div class="login-container" ref="loginContainer">
       <div class="login-image-content" v-loading="!axiosFinished" v-if="showLoginImage">
         <el-image
-          v-if="!loginImageUrl && axiosFinished"
+          v-if="axiosFinished"
           class="login-image"
           fit="cover"
-          :src="DeImage"
-        />
-        <div
-          v-if="loginImageUrl && axiosFinished"
-          class="login-image-de"
-          :style="{
-            background: 'url(' + loginImageUrl + ') no-repeat',
-            backgroundSize: 'contain'
-          }"
+          :src="loginImageUrl || DeImage"
         />
       </div>
       <div class="login-form-content" v-loading="loading">
@@ -231,24 +244,8 @@ onMounted(() => {
               ></Icon>
               <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="" />
             </div>
-            <div
-              v-if="
-                state.uiInfo &&
-                state.uiInfo['ui.loginTitle'] &&
-                state.uiInfo['ui.loginTitle'].paramValue
-              "
-              class="login-welcome"
-            >
-              {{ state.uiInfo['ui.loginTitle'].paramValue }}
-            </div>
-            <div v-else class="login-welcome">
-              {{
-                t('login.welcome') +
-                ((state.uiInfo &&
-                  state.uiInfo['ui.title'] &&
-                  state.uiInfo['ui.title'].paramValue) ||
-                  ' DataEase 数据可视化分析平台')
-              }}
+            <div class="login-welcome">
+              {{ slogan || '欢迎使用 DataEase 数据可视化分析平台' }}
             </div>
             <div class="login-form">
               <el-tabs v-model="activeName" @tab-click="handleClick" class="default-login-tabs">

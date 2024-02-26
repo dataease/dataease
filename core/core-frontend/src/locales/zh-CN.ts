@@ -2210,5 +2210,9 @@ export default {
     reset: '重置',
     preview: '预览',
     save: '保存'
+  },
+  appearance: {
+    give_up: '放弃更新',
+    save_apply: '保存并应用'
   }
 }

@@ -75,6 +75,9 @@ const toolboxMenu = computed(() => route.path.includes('toolbox'))
     .with-sider {
       padding: 10px 24px 24px 24px;
     }
+    .with-sider:has(.appearance-foot) {
+      padding: 10px 24px 0px 24px !important;
+    }
   }
 }
 </style>
