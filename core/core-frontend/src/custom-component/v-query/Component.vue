@@ -367,7 +367,10 @@ const autoStyle = computed(() => {
                   <span v-if="ele.required" class="required">*</span>
                 </div>
               </div>
-              <div class="label-wrapper-tooltip" v-if="showPosition !== 'preview'">
+              <div
+                class="label-wrapper-tooltip"
+                v-if="showPosition !== 'preview' && !dvMainStore.mobileInPc"
+              >
                 <el-tooltip effect="dark" content="设置过滤条件" placement="top">
                   <el-icon @click="editeQueryConfig(ele.id)">
                     <Icon name="icon_edit_outlined"></Icon>
@@ -536,6 +539,7 @@ const autoStyle = computed(() => {
         display: flex;
         flex-wrap: wrap;
         line-height: 28px;
+        position: relative;
 
         :deep(.ed-date-editor) {
           width: 227px;
