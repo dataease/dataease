@@ -39,6 +39,7 @@ public class WhitelistUtils {
             "/wecom/token",
             "/sysParameter/requestTimeOut",
             "/setting/authentication/status",
+            "/appearance/query",
             "/");
 
     public static boolean match(String requestURI) {
@@ -53,6 +54,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "data:image")
                 || StringUtils.startsWithAny(requestURI, "/login/platformLogin/")
                 || StringUtils.startsWithAny(requestURI, "/static-resource/")
+                || StringUtils.startsWithAny(requestURI, "/appearance/image/")
                 || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/content/")
                 || StringUtils.startsWithAny(requestURI, "/geo/")
