@@ -1824,16 +1824,16 @@ export default {
           this.sizeForm.wordSpacing = this.sizeForm.wordSpacing ?? DEFAULT_SIZE.wordSpacing
 
           if (this.chart.type !== 'table-pivot') {
-            let { xaxis, xaxisExt } = this.chart
+            let { xaxis, yaxis } = this.chart
             if (!(xaxis instanceof Object)) {
               xaxis = JSON.parse(xaxis)
             }
-            if (!(xaxisExt instanceof Object)) {
-              xaxisExt = JSON.parse(xaxisExt)
+            if (!(yaxis instanceof Object)) {
+              yaxis = JSON.parse(yaxis)
             }
             let allAxis = xaxis
             if (this.chart.type === 'table-normal') {
-              allAxis = allAxis.concat(xaxisExt)
+              allAxis = allAxis.concat(yaxis)
             }
             if (allAxis.length && this.sizeForm.showIndex) {
               allAxis.unshift({
