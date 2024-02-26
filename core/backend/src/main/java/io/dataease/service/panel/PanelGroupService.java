@@ -666,11 +666,9 @@ public class PanelGroupService {
             List<Object[]> details = request.getDetails();
             Integer[] excelTypes = request.getExcelTypes();
             details.add(0, request.getHeader());
-
             Workbook wb = new SXSSFWorkbook();
             //明细sheet
             Sheet detailsSheet = wb.createSheet("数据");
-
 
             //给单元格设置样式
             CellStyle cellStyle = wb.createCellStyle();
@@ -685,7 +683,10 @@ public class PanelGroupService {
             cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
             //设置单元格填充样式(使用纯色背景颜色填充)
             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
+            if ("table-info".equals(request.getDownloadType())) {
+                exportTableDetails(request, response, wb, cellStyle, detailsSheet);
+                return;
+            }
 
             Boolean mergeHead = false;
             ViewDetailField[] detailFields = request.getDetailFields();
@@ -774,7 +775,7 @@ public class PanelGroupService {
                             } else if (cellValObj != null) {
                                 try {
                                     // with DataType
-                                    if ((excelTypes[j] == DeTypeConstants.DE_INT || excelTypes[j] == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(cellValObj.toString())) {
+                                    if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
                                         cell.setCellValue(Double.valueOf(cellValObj.toString()));
                                     } else {
                                         cell.setCellValue(cellValObj.toString());
@@ -818,6 +819,46 @@ public class PanelGroupService {
             String pid = chartViewWithBLOBs.getSceneId();
             DeLogUtils.save(SysLogConstants.OPERATE_TYPE.EXPORT, SysLogConstants.SOURCE_TYPE.VIEW, viewId, pid, null, null);
         }
+    }
+
+    public void exportTableDetails(PanelViewDetailsRequest request, HttpServletResponse response, Workbook wb, CellStyle cellStyle, Sheet detailsSheet) throws IOException {
+        List<Object[]> details = request.getDetails();
+        Integer[] excelTypes = request.getExcelTypes();
+        if (CollectionUtils.isNotEmpty(details)) {
+            for (int i = 0; i < details.size(); i++) {
+                Row row = detailsSheet.createRow(i);
+                Object[] rowData = details.get(i);
+                if (rowData != null) {
+                    for (int j = 0; j < rowData.length; j++) {
+                        Cell cell = row.createCell(j);
+                        if (i == 0) {// 头部
+                            cell.setCellValue(String.valueOf(rowData[j]));
+                            cell.setCellStyle(cellStyle);
+                            //设置列的宽度
+                            detailsSheet.setColumnWidth(j, 255 * 20);
+                        } else {
+                            try {
+                                // with DataType
+                                if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && rowData[j] != null) {
+                                    cell.setCellValue(Double.valueOf(rowData[j].toString()));
+                                } else {
+                                    cell.setCellValue(String.valueOf(rowData[j]));
+                                }
+                            } catch (Exception e) {
+                                LogUtil.warn("export excel data transform error");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        OutputStream outputStream = response.getOutputStream();
+        response.setContentType("application/vnd.ms-excel");
+        //文件名称
+        response.setHeader("Content-disposition", "attachment;filename=" + request.getViewName() + ".xlsx");
+        wb.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
     }
 
     public void updatePanelStatus(String panelId, PanelGroupBaseInfoRequest request) {
@@ -1040,24 +1081,28 @@ public class PanelGroupService {
         }.getType());
         //9.获取跳转信息
         List<PanelLinkJump> linkJumps = null;
-        if(StringUtils.isNotEmpty(appInfo.getLinkJumps())){
-            linkJumps = gson.fromJson(appInfo.getLinkJumps(), new TypeToken<List<PanelLinkJump>>() {}.getType());
+        if (StringUtils.isNotEmpty(appInfo.getLinkJumps())) {
+            linkJumps = gson.fromJson(appInfo.getLinkJumps(), new TypeToken<List<PanelLinkJump>>() {
+            }.getType());
         }
         //10.获取跳转关联信息
         List<PanelLinkJumpInfo> linkJumpInfos = null;
-        if(StringUtils.isNotEmpty(appInfo.getLinkJumpInfos())){
-            linkJumpInfos = gson.fromJson(appInfo.getLinkJumpInfos(), new TypeToken<List<PanelLinkJumpInfo>>() {}.getType());
+        if (StringUtils.isNotEmpty(appInfo.getLinkJumpInfos())) {
+            linkJumpInfos = gson.fromJson(appInfo.getLinkJumpInfos(), new TypeToken<List<PanelLinkJumpInfo>>() {
+            }.getType());
         }
         //11.获取联动信息
         List<PanelViewLinkage> linkages = null;
-        if(StringUtils.isNotEmpty(appInfo.getLinkages())){
-            linkages = gson.fromJson(appInfo.getLinkages(), new TypeToken<List<PanelViewLinkage>>() {}.getType());
+        if (StringUtils.isNotEmpty(appInfo.getLinkages())) {
+            linkages = gson.fromJson(appInfo.getLinkages(), new TypeToken<List<PanelViewLinkage>>() {
+            }.getType());
         }
 
         //12.获取联动关联信息
         List<PanelViewLinkageField> linkageFields = null;
-        if(StringUtils.isNotEmpty(appInfo.getLinkageFields())){
-            linkageFields = gson.fromJson(appInfo.getLinkageFields(), new TypeToken<List<PanelViewLinkageField>>() {}.getType());
+        if (StringUtils.isNotEmpty(appInfo.getLinkageFields())) {
+            linkageFields = gson.fromJson(appInfo.getLinkageFields(), new TypeToken<List<PanelViewLinkageField>>() {
+            }.getType());
         }
 
         Map<String, String> datasourceRealMap = panelAppTemplateService.applyDatasource(oldDatasourceInfo, request);
@@ -1082,13 +1127,13 @@ public class PanelGroupService {
 
         panelAppTemplateService.applyPanelView(panelViewsInfo, chartViewsRealMap, newPanelId);
 
-        Map<String,String> linkageIdMap = panelAppTemplateService.applyLinkages(linkages,chartViewsRealMap,newPanelId);
+        Map<String, String> linkageIdMap = panelAppTemplateService.applyLinkages(linkages, chartViewsRealMap, newPanelId);
 
-        panelAppTemplateService.applyLinkageFields(linkageFields,linkageIdMap,datasetFieldsRealMap);
+        panelAppTemplateService.applyLinkageFields(linkageFields, linkageIdMap, datasetFieldsRealMap);
 
-        Map<String,String> linkJumpIdMap = panelAppTemplateService.applyLinkJumps(linkJumps,chartViewsRealMap,newPanelId);
+        Map<String, String> linkJumpIdMap = panelAppTemplateService.applyLinkJumps(linkJumps, chartViewsRealMap, newPanelId);
 
-        panelAppTemplateService.applyLinkJumpInfos(linkJumpInfos,linkJumpIdMap,datasetFieldsRealMap);
+        panelAppTemplateService.applyLinkJumpInfos(linkJumpInfos, linkJumpIdMap, datasetFieldsRealMap);
 
         String newDatasourceId = datasourceRealMap.entrySet().stream().findFirst().get().getValue();
 
@@ -1162,6 +1207,7 @@ public class PanelGroupService {
 
     public void findExcelData(PanelViewDetailsRequest request) {
         ChartViewWithBLOBs viewInfo = chartViewService.get(request.getViewId());
+        request.setDownloadType(viewInfo.getType());
         if ("table-info".equals(viewInfo.getType())) {
             try {
                 List<String> excelHeaderKeys = request.getExcelHeaderKeys();
