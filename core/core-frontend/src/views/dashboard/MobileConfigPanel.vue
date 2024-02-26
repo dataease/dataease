@@ -212,6 +212,7 @@ const addToMobile = com => {
     background: #f5f6f7;
     padding: 16px;
     padding-top: 0;
+    overflow-y: auto;
 
     :deep(.ed-tabs) {
       width: 100%;
