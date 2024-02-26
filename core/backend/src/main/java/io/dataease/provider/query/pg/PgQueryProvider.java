@@ -993,7 +993,7 @@ public class PgQueryProvider extends QueryProvider {
             String tableWithSchema = String.format(PgConstants.KEYWORD_TABLE, schema) + "." + String.format(PgConstants.KEYWORD_TABLE, sql);
             return "SELECT COUNT(*) from " + tableWithSchema;
         } else {
-            return "SELECT COUNT(*) from ( " + sqlFix(sql) + " ) DE_COUNT_TEMP";
+            return null;
         }
     }
 
