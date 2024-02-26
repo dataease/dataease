@@ -43,8 +43,8 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 -   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)
 -   图库：[AntV](https://antv.vision/zh)
 -   后端：[Spring Boot](https://spring.io/projects/spring-boot)
--   中间件：[MySQL](https://www.mysql.com/)
--   数据处理：[Apache Calcite](https://github.com/apache/calcite/)
+-   数据库：[MySQL](https://www.mysql.com/)
+-   数据处理：[Apache Calcite](https://github.com/apache/calcite/)、[Apache SeaTunnel](https://github.com/apache/seatunnel)
 -   基础设施：[Docker](https://www.docker.com/)
 
 ## DataEase 快速入门
