@@ -61,7 +61,7 @@
     "@dcloudio/uni-stat": "^2.0.0-32920211029001",
     "@dcloudio/uni-ui": "^1.4.6",
     "@vue/shared": "^3.0.0",
-    "axios": "^0.24.0",
+    "axios": "^0.28.0",
     "core-js": "^3.6.5",
     "flyio": "^0.6.2",
     "jsencrypt": "^3.2.1",
