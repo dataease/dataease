@@ -94,7 +94,7 @@ const handleCommand = key => {
   background: #ffffff;
   border: 1px solid #dee0e3;
   border-radius: 4px;
-  margin: 0 24px 25px 0;
+  margin: 0 16px 16px 0;
   overflow: hidden;
   .custom-item-checkbox {
     position: absolute;
