@@ -11,6 +11,7 @@ interface AppState {
   desktop: boolean
   isDataEaseBi: boolean
   isIframe: boolean
+  arrowSide: boolean
 }
 
 export const useAppStore = defineStore('app', {
@@ -22,12 +23,16 @@ export const useAppStore = defineStore('app', {
       dekey: 'DataEaseKey',
       isDataEaseBi: false,
       isIframe: false,
-      desktop: false
+      desktop: false,
+      arrowSide: false
     }
   },
   getters: {
     getSize(): boolean {
       return this.size
+    },
+    getArrowSide(): boolean {
+      return this.arrowSide
     },
     getPageLoading(): boolean {
       return this.pageLoading
@@ -57,6 +62,9 @@ export const useAppStore = defineStore('app', {
     },
     setSize(size: boolean) {
       this.size = size
+    },
+    setArrowSide(ArrowSide: boolean) {
+      this.arrowSide = ArrowSide
     },
     setIsDataEaseBi(isDataEaseBi: boolean) {
       this.isDataEaseBi = isDataEaseBi

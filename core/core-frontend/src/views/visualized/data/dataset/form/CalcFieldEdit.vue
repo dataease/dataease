@@ -133,9 +133,6 @@ onBeforeUnmount(() => {
 
 const insertParamToCodeMirror = (value: string) => {
   mirror.value.dispatch({
-    changes: { from: 0, to: mirror.value.state.doc.toString().length, insert: '' }
-  })
-  mirror.value.dispatch({
     changes: { from: mirror.value.viewState.state.selection.ranges[0].from, insert: value },
     selection: { anchor: mirror.value.viewState.state.selection.ranges[0].from }
   })

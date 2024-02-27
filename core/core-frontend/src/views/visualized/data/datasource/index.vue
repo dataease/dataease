@@ -672,6 +672,14 @@ const changeSideTreeStatus = val => {
   sideTreeStatus.value = val
 }
 
+const mouseenter = () => {
+  appStore.setArrowSide(true)
+}
+
+const mouseleave = () => {
+  appStore.setArrowSide(false)
+}
+
 const getMenuList = (val: boolean) => {
   return !val || isDataEaseBi.value
     ? menuList
@@ -690,13 +698,21 @@ const getMenuList = (val: boolean) => {
     <ArrowSide
       :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
       @change-side-tree-status="changeSideTreeStatus"
+      :isInside="!sideTreeStatus"
     ></ArrowSide>
     <el-aside
+      @mouseenter="mouseenter"
+      @mouseleave="mouseleave"
       class="resource-area"
       :class="{ retract: !sideTreeStatus }"
       ref="node"
       :style="{ width: width + 'px' }"
     >
+      <ArrowSide
+        :isInside="!sideTreeStatus"
+        :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
+        @change-side-tree-status="changeSideTreeStatus"
+      ></ArrowSide>
       <div class="resource-tree">
         <div class="tree-header">
           <div class="icon-methods">
