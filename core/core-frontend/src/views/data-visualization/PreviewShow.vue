@@ -127,6 +127,14 @@ const changeSideTreeStatus = val => {
   sideTreeStatus.value = val
 }
 
+const mouseenter = () => {
+  appStore.setArrowSide(true)
+}
+
+const mouseleave = () => {
+  appStore.setArrowSide(false)
+}
+
 onBeforeMount(() => {
   dvMainStore.canvasDataInit()
 })
@@ -137,13 +145,21 @@ onBeforeMount(() => {
     <ArrowSide
       :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
       @change-side-tree-status="changeSideTreeStatus"
+      :isInside="!sideTreeStatus"
     ></ArrowSide>
     <el-aside
       class="resource-area"
+      @mouseenter="mouseenter"
+      @mouseleave="mouseleave"
       :class="{ 'close-side': !slideShow, retract: !sideTreeStatus }"
       ref="node"
       :style="{ width: width + 'px' }"
     >
+      <ArrowSide
+        :isInside="!sideTreeStatus"
+        :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
+        @change-side-tree-status="changeSideTreeStatus"
+      ></ArrowSide>
       <de-resource-tree
         ref="resourceTreeRef"
         v-show="slideShow"

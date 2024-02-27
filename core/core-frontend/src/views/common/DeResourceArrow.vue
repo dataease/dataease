@@ -1,24 +1,34 @@
 <script lang="ts" setup>
-import { ref } from 'vue'
-const sideTreeStatus = ref(true)
+import { useAppStoreWithOut } from '@/store/modules/app'
+const appStore = useAppStoreWithOut()
+defineProps({
+  isInside: {
+    type: Boolean,
+    default: false
+  }
+})
 const emits = defineEmits(['changeSideTreeStatus'])
 const handleClick = val => {
+  appStore.setArrowSide(val)
   emits('changeSideTreeStatus', val)
-  sideTreeStatus.value = val
 }
 </script>
 
 <template>
   <div
     @click="handleClick(false)"
-    v-if="sideTreeStatus"
+    v-if="appStore.getArrowSide && !isInside"
     class="arrow-side-tree arrow-side-tree-left"
   >
     <el-icon>
       <Icon name="icon_left_outlined" />
     </el-icon>
   </div>
-  <div @click="handleClick(true)" v-else class="arrow-side-tree arrow-side-tree-right">
+  <div
+    @click="handleClick(true)"
+    v-else-if="!appStore.getArrowSide && isInside"
+    class="arrow-side-tree arrow-side-tree-right"
+  >
     <el-icon>
       <Icon name="icon_right_outlined" />
     </el-icon>
