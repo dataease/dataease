@@ -26,7 +26,7 @@ const hiddenTabbar = ref(false)
       @hiddenTabbar="val => (hiddenTabbar = val)"
     ></Directory>
     <Personal v-else-if="activeTabbar === 'user'"> </Personal>
-    <van-tabbar v-if="!hiddenTabbar" v-model="activeTabbar">
+    <van-tabbar safe-area-inset-bottom v-if="!hiddenTabbar" v-model="activeTabbar">
       <van-tabbar-item name="home" icon="wap-home-o">首页</van-tabbar-item>
       <van-tabbar-item name="direct" icon="bars">目录</van-tabbar-item>
       <van-tabbar-item name="user" icon="user-o">我的</van-tabbar-item>
@@ -40,20 +40,9 @@ const hiddenTabbar = ref(false)
 </template>
 
 <style lang="less">
-body {
-  min-height: 100vh;
-  display: flex;
-  flex-direction: column;
-}
-
-@supports (-webkit-touch-callout: none) {
-  body {
-    min-height: -webkit-fill-available;
-  }
-}
 .mobile-index {
-  width: 100%;
-  height: 100%;
+  width: 100vw;
+  height: 100vh;
   overflow: hidden;
 }
 </style>
