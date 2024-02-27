@@ -97,7 +97,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div style="overflow-y: auto; height: calc(100vh - 50px)">
     <van-sticky>
       <van-search
         v-if="!directName.length"
