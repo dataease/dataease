@@ -88,7 +88,7 @@ watch(
       </el-popover>
     </div>
     <div class="canvas-opt-button">
-      <el-button v-if="!isDataEaseBi" @click="preview()">
+      <el-button secondary v-if="!isDataEaseBi" @click="preview()">
         <template #icon>
           <icon name="icon_pc_outlined"></icon>
         </template>
