@@ -36,4 +36,7 @@ public interface TaskLogApi {
     @PostMapping("/clear")
     void clearJobLog(@RequestBody TaskLogVO taskLogVO);
 
+    @PostMapping("terminationTask/{logId}")
+    void terminationTask(@PathVariable("logId") String logId);
+
 }
