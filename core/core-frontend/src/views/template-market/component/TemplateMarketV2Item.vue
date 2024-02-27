@@ -10,10 +10,10 @@
     >
       <el-row class="demonstration"> {{ template.title }} </el-row>
       <el-row class="template-button" v-show="createAuth[template.templateType]">
-        <el-button size="mini" style="width: calc(50% - 18px)" @click="templateInnerPreview">{{
+        <el-button secondary style="width: calc(50% - 18px)" @click="templateInnerPreview">{{
           t('visualization.preview')
         }}</el-button>
-        <el-button size="mini" style="width: calc(50% - 18px)" type="primary" @click="apply">{{
+        <el-button style="width: calc(50% - 18px)" type="primary" @click="apply">{{
           t('visualization.apply')
         }}</el-button>
       </el-row>

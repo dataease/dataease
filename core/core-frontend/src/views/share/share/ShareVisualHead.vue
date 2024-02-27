@@ -1,5 +1,5 @@
 <template>
-  <el-button ref="shareButtonRef" v-if="props.weight >= 7" v-click-outside="openShare">
+  <el-button secondary ref="shareButtonRef" v-if="props.weight >= 7" v-click-outside="openShare">
     <template #icon>
       <icon name="icon_share-label_outlined"></icon>
     </template>
