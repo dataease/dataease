@@ -129,7 +129,7 @@ const addToMobile = com => {
       </el-tabs>
       <template v-if="activeName === 'hide'">
         <div
-          :style="{ height: '200px', width: '31%' }"
+          :style="{ height: '200px', width: 'calc(33.3% - 16px)' }"
           class="mobile-wrapper-inner-adaptor"
           v-for="config in componentDataNotInMobile"
           :key="config.id"
@@ -217,6 +217,11 @@ const addToMobile = com => {
     :deep(.ed-tabs) {
       width: 100%;
       margin-bottom: 16px;
+      position: sticky;
+      top: 0;
+      left: 0;
+      z-index: 20;
+      background: #f5f6f7;
     }
 
     .mobile-wrapper-inner-adaptor {
@@ -224,6 +229,9 @@ const addToMobile = com => {
       margin-right: 24px;
       margin-bottom: 24px;
       background: #fff;
+      &:nth-child(3n - 2) {
+        margin-right: 0px;
+      }
     }
 
     .mobile-com-mask {
