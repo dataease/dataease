@@ -201,7 +201,7 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    const customAttr = chart.customAttr
+    const { customAttr, customStyle } = chart
     const { label } = customAttr
     customAttr.label = {
       ...label,
@@ -210,6 +210,8 @@ export class Treemap extends G2PlotChartView<TreemapOptions, G2Treemap> {
       showProportion: true,
       reserveDecimalCount: 2
     }
+    const { legend } = customStyle
+    legend.show = false
     return chart
   }
 

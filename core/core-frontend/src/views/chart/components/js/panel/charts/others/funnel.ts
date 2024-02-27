@@ -125,7 +125,7 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
     )(chart, options)
   }
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    const { customAttr } = chart
+    const { customAttr, customStyle } = chart
     const { label } = customAttr
     if (!['left', 'middle', 'right'].includes(label.position)) {
       label.position = 'middle'
@@ -134,6 +134,8 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
       ...label,
       show: true
     }
+    const { legend } = customStyle
+    legend.show = false
     return chart
   }
 
