@@ -218,7 +218,7 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
     }
   }
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    const customAttr = chart.customAttr
+    const { customAttr, customStyle } = chart
     const { label } = customAttr
     if (!['inner', 'outer'].includes(label.position)) {
       label.position = 'outer'
@@ -230,6 +230,8 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
       showProportion: true,
       reserveDecimalCount: 2
     }
+    const { legend } = customStyle
+    legend.show = false
     return chart
   }
 

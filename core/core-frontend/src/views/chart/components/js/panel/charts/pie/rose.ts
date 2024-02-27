@@ -203,7 +203,7 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
   }
 
   setupDefaultOptions(chart: ChartObj): ChartObj {
-    const customAttr = chart.customAttr
+    const { customAttr, customStyle } = chart
     const { label } = customAttr
     if (!['inner', 'outer'].includes(label.position)) {
       label.position = 'outer'
@@ -215,6 +215,8 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
       showProportion: true,
       reserveDecimalCount: 2
     }
+    const { legend } = customStyle
+    legend.show = false
     return chart
   }
 
