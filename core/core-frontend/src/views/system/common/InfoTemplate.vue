@@ -40,7 +40,7 @@
 
             <el-tooltip
               effect="dark"
-              :content="pwdItem[item.pkey]['hidden'] ? '点击隐藏' : '点击显示'"
+              :content="pwdItem[item.pkey]['hidden'] ? '点击显示' : '点击隐藏'"
               placement="top"
             >
               <el-button text @click="switchPwd(item.pkey)" class="setting-tip-btn">
