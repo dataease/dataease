@@ -2272,6 +2272,7 @@ export default {
     data_list: 'Data list',
     component_list: 'Component list',
     custom_scope: 'Target',
+    show_empty: 'Option contains empty data',
     multiple_choice: 'Multiple choice',
     show_time: 'Show time',
     single_choice: 'Single choice',

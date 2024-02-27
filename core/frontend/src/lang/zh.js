@@ -2266,6 +2266,7 @@ export default {
     data_list: '数据列表',
     component_list: '组件列表',
     custom_scope: '控制范围',
+    show_empty: '选项包含空数据',
     binding_parameters: '参数',
     multiple_choice: '多选',
     show_time: '显示时间',
