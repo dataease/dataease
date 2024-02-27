@@ -18,3 +18,7 @@ export const getTaskLogDetailApi = (logId: string, fromLineNum: number) => {
 export const clear = (clearData: {}) => {
   return request.post({ url: `/sync/task/log/clear`, data: clearData })
 }
+
+export const terminationTaskApi = (logId: string) => {
+  return request.post({ url: `/sync/task/log/terminationTask/${logId}`, data: {} })
+}
