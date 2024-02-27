@@ -1,7 +1,10 @@
 <script lang="ts" setup>
-import { ref, onMounted } from 'vue'
+import { ref, onMounted, computed } from 'vue'
 import { useRouter } from 'vue-router'
 import TopDocCard from '@/layout/components/TopDocCard.vue'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+const appearanceStore = useAppearanceStoreWithOut()
+const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const { push, resolve } = useRouter()
 
 const showToolbox = ref(true)
@@ -54,7 +57,13 @@ onMounted(() => {
       @click="toRouter(item)"
     ></top-doc-card>
     <template #reference>
-      <div class="sys-setting" :class="{ 'hidden-toolbox': !showToolbox }">
+      <div
+        class="sys-setting"
+        :class="{
+          'hidden-toolbox': !showToolbox,
+          'is-light-setting': navigateBg && navigateBg === 'light'
+        }"
+      >
         <el-icon>
           <Icon name="sys-tools" />
         </el-icon>
@@ -88,6 +97,11 @@ onMounted(() => {
   cursor: pointer;
   &:hover {
     background-color: #1e2738;
+  }
+}
+.is-light-setting {
+  &:hover {
+    background-color: var(--ed-menu-hover-bg-color) !important;
   }
 }
 </style>

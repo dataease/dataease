@@ -1,8 +1,11 @@
 <script lang="ts" setup>
+import { computed } from 'vue'
 import { ElHeader } from 'element-plus-secondary'
 import { useRouter } from 'vue-router'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
 import { propTypes } from '@/utils/propTypes'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
 const props = defineProps({
   title: propTypes.string.def('系统设置')
@@ -10,11 +13,17 @@ const props = defineProps({
 const backToMain = () => {
   push('/workbranch/index')
 }
+const navigateBg = computed(() => appearanceStore.getNavigateBg)
+const navigate = computed(() => appearanceStore.getNavigate)
 </script>
 
 <template>
-  <el-header class="header-flex system-header">
-    <Icon className="logo" name="logo"></Icon>
+  <el-header
+    class="header-flex system-header"
+    :class="{ 'header-light': navigateBg && navigateBg === 'light' }"
+  >
+    <img class="logo" v-if="navigate" :src="navigate" alt="" />
+    <Icon v-else className="logo" name="logo"></Icon>
     <el-divider direction="vertical" />
     <span class="system">{{ props.title || '系统设置' }}</span>
     <div class="operate-setting">
@@ -69,7 +78,15 @@ const backToMain = () => {
     margin: 0 -7px 0 20px !important;
   }
 }
+.header-light {
+  background-color: #ffffff !important;
+  box-shadow: 0px 0.5px 0px 0px #1f232926 !important;
+  :deep(.work-bar) {
+    color: var(--ed-color-black) !important;
+  }
+}
 .header-flex {
+  margin-bottom: 0.5px;
   display: flex;
   align-items: center;
   height: 56px;
@@ -93,6 +110,13 @@ const backToMain = () => {
       cursor: pointer;
       color: rgba(255, 255, 255, 0.8);
       font-size: 18px;
+    }
+  }
+}
+.header-light {
+  .operate-setting {
+    .ed-icon {
+      color: var(--ed-color-black) !important;
     }
   }
 }
