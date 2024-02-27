@@ -1,5 +1,9 @@
 <script lang="ts" setup>
 import { useRouter } from 'vue-router'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+import { computed } from 'vue'
+const appearanceStore = useAppearanceStoreWithOut()
+const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const { push, resolve } = useRouter()
 const redirectUser = () => {
   const sysMenu = resolve('/system')
@@ -10,7 +14,7 @@ const redirectUser = () => {
 
 <template>
   <el-tooltip class="box-item" effect="dark" content="组织管理中心" placement="top">
-    <div class="sys-setting">
+    <div class="sys-setting" :class="{ 'is-light-setting': navigateBg && navigateBg === 'light' }">
       <el-icon @click="redirectUser">
         <Icon class="icon-setting" name="icon-setting" />
       </el-icon>
@@ -29,6 +33,11 @@ const redirectUser = () => {
   cursor: pointer;
   &:hover {
     background-color: #1e2738;
+  }
+}
+.is-light-setting {
+  &:hover {
+    background-color: var(--ed-menu-hover-bg-color) !important;
   }
 }
 </style>

@@ -3,11 +3,12 @@ import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { FormRules, FormInstance } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
-import { loginApi, queryDekey, uiLoadApi } from '@/api/login'
+import { loginApi, queryDekey } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { CustomPassword } from '@/components/custom-password'
 import { useUserStoreWithOut } from '@/store/modules/user'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { rsaEncryp } from '@/utils/encryption'
 import router from '@/router'
 import { ElMessage } from 'element-plus-secondary'
@@ -16,14 +17,14 @@ import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { isLarkPlatform } from '@/utils/utils'
-const basePath = import.meta.env.VITE_API_BASEPATH
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
+const appearanceStore = useAppearanceStoreWithOut()
 const { t } = useI18n()
 const contentShow = ref(true)
 const loading = ref(false)
-const axiosFinished = ref(false)
+const axiosFinished = ref(true)
 const showFoot = ref(false)
 
 const loginLogoUrl = ref(null)
@@ -172,23 +173,17 @@ const showLoginErrorMsg = () => {
   }
   ElMessage.error(loginErrorMsg.value)
 }
+
 const loadArrearance = () => {
-  const imgUrlPrefix = basePath + '/appearance/image/'
-  uiLoadApi().then(res => {
-    axiosFinished.value = true
-    const items = res.data
-    items.forEach(item => {
-      const pkey = item.pkey
-      const pval = item.pval
-      if (pkey === 'bg') {
-        loginImageUrl.value = imgUrlPrefix + pval
-      } else if (pkey === 'login') {
-        loginLogoUrl.value = imgUrlPrefix + pval
-      } else if (pkey === 'slogan') {
-        slogan.value = pval
-      }
-    })
-  })
+  if (appearanceStore.getBg) {
+    loginImageUrl.value = appearanceStore.getBg
+  }
+  if (appearanceStore.getLogin) {
+    loginLogoUrl.value = appearanceStore.getLogin
+  }
+  if (appearanceStore.getSlogan) {
+    slogan.value = appearanceStore.getSlogan
+  }
 }
 onMounted(() => {
   loadArrearance()

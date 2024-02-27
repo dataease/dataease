@@ -13,6 +13,8 @@ import TopDoc from '@/layout/components/TopDoc.vue'
 import AccountOperator from '@/layout/components/AccountOperator.vue'
 import { isDesktop } from '@/utils/ModelUtil'
 import { XpackComponent } from '@/components/plugin'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
 const route = useRoute()
 
@@ -47,6 +49,8 @@ const initShowSystem = () => {
 const initShowToolbox = () => {
   showToolbox.value = permissionStore.getRouters.some(route => route.path === '/toolbox')
 }
+const navigateBg = computed(() => appearanceStore.getNavigateBg)
+const navigate = computed(() => appearanceStore.getNavigate)
 onMounted(() => {
   initShowSystem()
   initShowToolbox()
@@ -54,8 +58,9 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-header class="header-flex">
-    <Icon @click="handleIconClick" className="logo" name="logo"></Icon>
+  <el-header class="header-flex" :class="{ 'header-light': navigateBg && navigateBg === 'light' }">
+    <img class="logo" v-if="navigate" :src="navigate" alt="" />
+    <Icon v-else @click="handleIconClick" className="logo" name="logo"></Icon>
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
@@ -76,7 +81,23 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
+.header-light {
+  background-color: #ffffff !important;
+  box-shadow: 0px 0.5px 0px 0px #1f232926 !important;
+  .ed-menu {
+    background-color: #ffffff !important;
+  }
+  .ed-menu--horizontal {
+    .ed-menu-item {
+      color: var(--ed-color-black) !important;
+    }
+    :deep(.ed-sub-menu__title) {
+      color: var(--ed-color-black) !important;
+    }
+  }
+}
 .header-flex {
+  margin-bottom: 0.5px;
   display: flex;
   align-items: center;
   height: 56px;
@@ -140,6 +161,13 @@ onMounted(() => {
       cursor: pointer;
       color: rgba(255, 255, 255, 0.8);
       font-size: 18px;
+    }
+  }
+}
+.header-light {
+  .operate-setting {
+    .ed-icon {
+      color: var(--ed-color-black) !important;
     }
   }
 }

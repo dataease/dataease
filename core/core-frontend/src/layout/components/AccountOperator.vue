@@ -11,6 +11,9 @@ import AboutPage from '@/views/about/index.vue'
 import LangSelector from './LangSelector.vue'
 import router from '@/router'
 import { useCache } from '@/hooks/web/useCache'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+const appearanceStore = useAppearanceStoreWithOut()
+const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const { wsCache } = useCache()
 const userStore = useUserStoreWithOut()
 const { t } = useI18n()
@@ -88,7 +91,12 @@ if (uid.value === '1') {
 </script>
 
 <template>
-  <div class="top-info-container" ref="buttonRef" v-click-outside="openPopover">
+  <div
+    class="top-info-container"
+    :class="{ 'is-light-top-info': navigateBg && navigateBg === 'light' }"
+    ref="buttonRef"
+    v-click-outside="openPopover"
+  >
     <el-icon class="main-color">
       <Icon name="user-img" />
     </el-icon>
@@ -162,6 +170,14 @@ if (uid.value === '1') {
   width: 12px;
   height: 12px;
   font-size: 14px !important;
+}
+.is-light-top-info {
+  .uname-span {
+    color: var(--ed-color-black) !important;
+  }
+  &:hover {
+    background-color: var(--ed-menu-hover-bg-color) !important;
+  }
 }
 .top-info-container {
   height: 32px;

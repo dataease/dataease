@@ -70,7 +70,6 @@ const getTimeOut = () => {
 
   xhr.open('get', url, false)
   xhr.send()
-  console.log(time)
   return time
 }
 

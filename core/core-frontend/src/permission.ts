@@ -9,6 +9,9 @@ import { getRoleRouters } from '@/api/common'
 import { useCache } from '@/hooks/web/useCache'
 import { isMobile } from '@/utils/utils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+
+const appearanceStore = useAppearanceStoreWithOut()
 const { wsCache } = useCache()
 const permissionStore = usePermissionStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
@@ -35,6 +38,7 @@ router.beforeEach(async (to, from, next) => {
     await appStore.setAppModel()
     isDesktop = appStore.getDesktop
   }
+  await appearanceStore.setAppearance()
   if (wsCache.get('user.token') || isDesktop) {
     if (!userStore.getUid) {
       await userStore.setUser()
