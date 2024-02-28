@@ -1,10 +1,16 @@
 <template>
   <el-aside
     :width="currentWidth"
+    @mouseenter.native="mouseenter"
+    @mouseleave.native="mouseleave"
     class="ms-aside-container"
+    :class="{ retract: !sideTreeStatus }"
     :style="{'margin-left': !asideHidden ? 0 : '-' + currentWidth}"
   >
-    <slot />
+    <DeArrowSide @changeSideTreeStatus="changeSideTreeStatus" :style="{ left: (sideTreeStatus ? parseInt(currentWidth) - 12 : 0) + 'px' }" :isInside="!sideTreeStatus"></DeArrowSide>
+    <keep-alive>
+      <slot v-if="sideTreeStatus"/>
+    </keep-alive>
     <de-horizontal-drag-bar
       v-if="isSystem"
       :type="type"
@@ -15,9 +21,10 @@
 <script>
 import DeHorizontalDragBar from './dragbar/DeLeft2RightDragBar'
 import { getLayout } from '@/utils/LayoutUtil'
+import DeArrowSide from '@/components/dataease/DeArrowSide.vue'
 export default {
   name: 'DeAsideContainer',
-  components: { DeHorizontalDragBar },
+  components: { DeHorizontalDragBar, DeArrowSide },
   props: {
     width: {
       type: String,
@@ -47,7 +54,8 @@ export default {
   data() {
     return {
       asideHidden: false,
-      currentWidth: ''
+      currentWidth: '',
+      sideTreeStatus: true,
     }
   },
   computed: {
@@ -65,12 +73,23 @@ export default {
   methods: {
     setCurrentWidth() {
       this.currentWidth = this.isCollapseWidth || this.type && getLayout(this.type) || this.width
+    },
+    mouseenter() {
+      if(!this.sideTreeStatus) return
+      this.$store.dispatch('app/setArrowSide', true)
+    },
+    mouseleave() {
+      if(!this.sideTreeStatus) return
+      this.$store.dispatch('app/setArrowSide', false)
+    },
+    changeSideTreeStatus(val) {
+      this.sideTreeStatus = val
     }
   }
 }
 </script>
 
-<style scoped>
+<style lang="less" scoped>
 
   .ms-aside-container {
     /* border: 1px solid #E6E6E6; */
@@ -81,6 +100,12 @@ export default {
     border-right: 0px;
     position: relative;
     padding-bottom: 50px;
+    overflow: visible;
+    
+    &.retract {
+      width: 0 !important;
+      min-width: 0 !important;
+    }
   }
 
   /* .collapse-style {
