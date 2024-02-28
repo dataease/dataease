@@ -44,7 +44,7 @@ public class DatasourceSyncManage {
     @Resource
     private CoreDatasourceMapper datasourceMapper;
     @Resource
-    private EngineServer engineServer;
+    private EngineManage engineManage;
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
     @Resource
@@ -231,7 +231,7 @@ public class DatasourceSyncManage {
                 engineTableName = TableUtils.tableName(datasourceRequest.getTable());
                 break;
         }
-        CoreDeEngine engine = engineServer.info();
+        CoreDeEngine engine = engineManage.info();
 
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
@@ -262,7 +262,7 @@ public class DatasourceSyncManage {
                 engineTableName = TableUtils.tableName(datasourceRequest.getTable());
                 break;
         }
-        CoreDeEngine engine = engineServer.info();
+        CoreDeEngine engine = engineManage.info();
 
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
@@ -281,7 +281,7 @@ public class DatasourceSyncManage {
     }
 
     private void replaceTable(String tableName) throws Exception {
-        CoreDeEngine engine = engineServer.info();
+        CoreDeEngine engine = engineManage.info();
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
@@ -295,7 +295,7 @@ public class DatasourceSyncManage {
     }
 
     public void createEngineTable(String tableName, List<TableField> tableFields) throws Exception {
-        CoreDeEngine engine = engineServer.info();
+        CoreDeEngine engine = engineManage.info();
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());
@@ -304,7 +304,7 @@ public class DatasourceSyncManage {
     }
 
     public void dropEngineTable(String tableName) throws Exception{
-        CoreDeEngine engine = engineServer.info();
+        CoreDeEngine engine = engineManage.info();
         EngineRequest engineRequest = new EngineRequest();
         engineRequest.setEngine(engine);
         EngineProvider engineProvider = ProviderUtil.getEngineProvider(engine.getType());

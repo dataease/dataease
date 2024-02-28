@@ -292,6 +292,7 @@ export default {
     modify: '编辑数据源',
     copy: '复制数据源',
     validate_success: '校验成功',
+    validate_failed: '校验失败',
     validate: '校验',
     search_by_name: '根据名称搜索',
     delete_warning: '确定要删除吗?',

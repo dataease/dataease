@@ -2,10 +2,10 @@ package io.dataease.listener;
 
 import io.dataease.datasource.dao.auto.entity.CoreDatasourceTask;
 import io.dataease.datasource.manage.DatasourceSyncManage;
+import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.datasource.server.DatasourceTaskServer;
-import io.dataease.datasource.server.EngineServer;
 import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.SysParameterManage;
 import jakarta.annotation.Resource;
@@ -30,14 +30,14 @@ public class DataSourceInitStartListener implements ApplicationListener<Applicat
     @Resource
     private CalciteProvider calciteProvider;
     @Resource
-    private EngineServer engineServer;
+    private EngineManage engineManage;
     @Resource
     private SysParameterManage sysParameterManage;
 
     @Override
     public void onApplicationEvent(ApplicationReadyEvent applicationReadyEvent) {
         try {
-            engineServer.initSimpleEngine();
+            engineManage.initSimpleEngine();
         }catch (Exception e){
             e.printStackTrace();
         }

@@ -1,151 +1,69 @@
 package io.dataease.datasource.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
+import io.dataease.api.ds.vo.DatasourceDTO;
+import io.dataease.api.ds.EngineApi;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
-import io.dataease.datasource.provider.EngineProvider;
-import io.dataease.datasource.provider.ProviderUtil;
-import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.datasource.type.H2;
-import io.dataease.datasource.type.Mysql;
-import io.dataease.exception.DEException;
-import io.dataease.result.ResultMessage;
+import io.dataease.datasource.manage.EngineManage;
 import io.dataease.utils.BeanUtils;
-import io.dataease.utils.JsonUtil;
-import io.dataease.utils.ModelUtils;
+import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.core.env.Environment;
-import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
+import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RestController;
 
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 
-import static io.dataease.result.ResultCode.DATA_IS_WRONG;
-
-@Service
+@RestController
+@RequestMapping("/engine")
 @Transactional(rollbackFor = Exception.class)
-public class EngineServer {
-    @Resource
-    private Environment env;
+public class EngineServer implements EngineApi {
     @Resource
     private CoreDeEngineMapper deEngineMapper;
+    @Resource
+    private EngineManage engineManage;
 
 
-    public CoreDeEngine info() throws DEException {
+    @Override
+    public DatasourceDTO getEngine() {
+        DatasourceDTO datasourceDTO = new DatasourceDTO();
         List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
         if (CollectionUtils.isEmpty(deEngines)) {
-            DEException.throwException("未完整设置数据引擎");
+            return datasourceDTO;
         }
-        return deEngines.get(0);
+        return BeanUtils.copyBean(datasourceDTO, deEngines.get(0));
     }
 
-    public CoreDatasource getDeEngine(){
-        List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
-        if(CollectionUtils.isEmpty(deEngines)){
-            DEException.throwException("未完整设置数据引擎");
+    @Override
+    public void save(DatasourceDTO datasourceDTO) {
+        if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
+            datasourceDTO.setConfiguration(new String(Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
         }
-        CoreDatasource coreDatasource = new CoreDatasource();
-        BeanUtils.copyBean(coreDatasource, deEngines.get(0));
-        return coreDatasource;
-    }
 
-
-    public CoreDatasource deEngine(){
-        List<CoreDeEngine> deEngines = deEngineMapper.selectList(null);
-        CoreDatasource coreDatasource = new CoreDatasource();
-        if(CollectionUtils.isEmpty(deEngines)){
-            return null;
-        }
-        BeanUtils.copyBean(coreDatasource, deEngines.get(0));
-        return coreDatasource;
-    }
-
-    public ResultMessage validate(CoreDeEngine engine) throws Exception {
-        if (StringUtils.isEmpty(engine.getType()) || StringUtils.isEmpty(engine.getConfiguration())) {
-            throw new Exception("未完整设置数据引擎");
-        }
-        try {
-            EngineProvider provider = ProviderUtil.getEngineProvider(engine.getType());
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            CoreDatasource datasource = new CoreDatasource();
-            BeanUtils.copyBean(datasource, engine);
-            datasourceRequest.setDatasource(datasource);
-            provider.checkStatus(datasourceRequest);
-            return ResultMessage.success(datasource);
-        } catch (Exception e) {
-            return ResultMessage.failure(DATA_IS_WRONG, "Engine is invalid: " + e.getMessage());
-        }
-    }
-
-    public ResultMessage save(CoreDeEngine engine) throws Exception {
-        if (engine.getId() == null) {
-            deEngineMapper.insert(engine);
-        } else {
-            deEngineMapper.updateById(engine);
-        }
-        return ResultMessage.success(engine);
-    }
-
-    public void initSimpleEngine() throws Exception{
-        QueryWrapper<CoreDeEngine> queryWrapper = new QueryWrapper<>();
-        if(ModelUtils.isDesktop()){
-            queryWrapper.eq("type", engineType.h2.name());
+        CoreDeEngine coreDeEngine = new CoreDeEngine();
+        BeanUtils.copyBean(coreDeEngine, datasourceDTO);
+        if(coreDeEngine.getId() == null){
+            coreDeEngine.setId(IDUtils.snowID());
+            deEngineMapper.insert(coreDeEngine);
         }else {
-            queryWrapper.eq("type", engineType.mysql.name());
+            deEngineMapper.updateById(coreDeEngine);
         }
-        List<CoreDeEngine> deEngines = deEngineMapper.selectList(queryWrapper);
-        if (!CollectionUtils.isEmpty(deEngines)) {
-            return;
-        }
+    }
 
-        CoreDeEngine engine = new CoreDeEngine();
-        if(ModelUtils.isDesktop()){
-            engine.setType(engineType.h2.name());
-            H2 h2 = new H2();
-            h2.setJdbc("jdbc:h2:/opt/dataease2.0/desktop_data;AUTO_SERVER=TRUE;AUTO_RECONNECT=TRUE;MODE=MySQL");
-            h2.setDataBase("PUBLIC");
-            h2.setUsername(env.getProperty("spring.datasource.username"));
-            h2.setPassword(env.getProperty("spring.datasource.password"));
-            engine.setConfiguration(JsonUtil.toJSONString(h2).toString());
-        }else {
-            engine.setType(engineType.mysql.name());
-            Mysql mysqlConfiguration = new Mysql();
-            Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
-            Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
-            if (!matcher.find()) {
-                return;
-            }
-            mysqlConfiguration.setHost(matcher.group(1));
-            mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
-            String[] databasePrams = matcher.group(3).split("\\?");
-            mysqlConfiguration.setDataBase(databasePrams[0]);
-            if(databasePrams.length == 2){
-                mysqlConfiguration.setExtraParams(databasePrams[1]);
-            }
-            mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
-            mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
-            engine.setConfiguration(JsonUtil.toJSONString(mysqlConfiguration).toString());
-        }
-        deEngineMapper.insert(engine);
+    @Override
+    public void validate(DatasourceDTO datasourceDTO) throws Exception{
+        CoreDeEngine coreDeEngine = new CoreDeEngine();
+        BeanUtils.copyBean(coreDeEngine, datasourceDTO);
+        coreDeEngine.setConfiguration(new String(Base64.getDecoder().decode(coreDeEngine.getConfiguration())));
+        engineManage.validate(coreDeEngine);
+    }
+
+    @Override
+    public void validateById(Long id) throws Exception {
+        engineManage.validate(deEngineMapper.selectById(id));
     }
 
 
-    public enum engineType {
-        mysql("Mysql"),
-        h2("h2");
-        private String alias;
-
-        private engineType(String alias) {
-            this.alias = alias;
-        }
-
-        public String getAlias() {
-            return alias;
-        }
-    }
 }
