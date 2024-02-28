@@ -26,7 +26,7 @@ const hideLine = () => {
 }
 
 const showLine = (isDownward, isRightward) => {
-  const lines = currentInstance.ctx.$refs
+  const linesRef = currentInstance.ctx.$refs
   const components = componentData.value
   const curComponentStyle = getComponentRotatedStyle(curComponent.value.style)
   const curComponentHalfWidth = curComponentStyle.width / 2
@@ -44,14 +44,14 @@ const showLine = (isDownward, isRightward) => {
       top: [
         {
           isNearly: isNearly(curComponentStyle.top, top),
-          lineNode: lines.xt[0], // xt
+          lineNode: linesRef.xt[0], // xt
           line: 'xt',
           dragShift: top,
           lineShift: top
         },
         {
           isNearly: isNearly(curComponentStyle.bottom, top),
-          lineNode: lines.xt[0], // xt
+          lineNode: linesRef.xt[0], // xt
           line: 'xt',
           dragShift: top - curComponentStyle.height,
           lineShift: top
@@ -62,21 +62,21 @@ const showLine = (isDownward, isRightward) => {
             curComponentStyle.top + curComponentHalfHeight,
             top + componentHalfHeight
           ),
-          lineNode: lines.xc[0], // xc
+          lineNode: linesRef.xc[0], // xc
           line: 'xc',
           dragShift: top + componentHalfHeight - curComponentHalfHeight,
           lineShift: top + componentHalfHeight
         },
         {
           isNearly: isNearly(curComponentStyle.top, bottom),
-          lineNode: lines.xb[0], // xb
+          lineNode: linesRef.xb[0], // xb
           line: 'xb',
           dragShift: bottom,
           lineShift: bottom
         },
         {
           isNearly: isNearly(curComponentStyle.bottom, bottom),
-          lineNode: lines.xb[0], // xb
+          lineNode: linesRef.xb[0], // xb
           line: 'xb',
           dragShift: bottom - curComponentStyle.height,
           lineShift: bottom
@@ -85,14 +85,14 @@ const showLine = (isDownward, isRightward) => {
       left: [
         {
           isNearly: isNearly(curComponentStyle.left, left),
-          lineNode: lines.yl[0], // yl
+          lineNode: linesRef.yl[0], // yl
           line: 'yl',
           dragShift: left,
           lineShift: left
         },
         {
           isNearly: isNearly(curComponentStyle.right, left),
-          lineNode: lines.yl[0], // yl
+          lineNode: linesRef.yl[0], // yl
           line: 'yl',
           dragShift: left - curComponentStyle.width,
           lineShift: left
@@ -103,21 +103,21 @@ const showLine = (isDownward, isRightward) => {
             curComponentStyle.left + curComponentHalfWidth,
             left + componentHalfWidth
           ),
-          lineNode: lines.yc[0], // yc
+          lineNode: linesRef.yc[0], // yc
           line: 'yc',
           dragShift: left + componentHalfWidth - curComponentHalfWidth,
           lineShift: left + componentHalfWidth
         },
         {
           isNearly: isNearly(curComponentStyle.left, right),
-          lineNode: lines.yr[0], // yr
+          lineNode: linesRef.yr[0], // yr
           line: 'yr',
           dragShift: right,
           lineShift: right
         },
         {
           isNearly: isNearly(curComponentStyle.right, right),
-          lineNode: lines.yr[0], // yr
+          lineNode: linesRef.yr[0], // yr
           line: 'yr',
           dragShift: right - curComponentStyle.width,
           lineShift: right
