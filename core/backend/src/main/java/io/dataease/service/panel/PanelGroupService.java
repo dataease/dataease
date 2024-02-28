@@ -1210,7 +1210,6 @@ public class PanelGroupService {
         request.setDownloadType(viewInfo.getType());
         if ("table-info".equals(viewInfo.getType())) {
             try {
-                List<String> excelHeaderKeys = request.getExcelHeaderKeys();
                 ChartExtRequest componentFilterInfo = request.getComponentFilterInfo();
                 componentFilterInfo.setGoPage(1L);
                 componentFilterInfo.setPageSize(limit);
@@ -1218,16 +1217,8 @@ public class PanelGroupService {
                 componentFilterInfo.setProxy(request.getProxy());
                 componentFilterInfo.setUser(request.getUserId());
                 ChartViewDTO chartViewInfo = chartViewService.getData(request.getViewId(), componentFilterInfo);
-                List<Map> tableRow = (List) chartViewInfo.getData().get("tableRow");
-                List<Object[]> result = new ArrayList<>();
-                for (Map detailMap : tableRow) {
-                    List<Object> detailObj = new ArrayList<>();
-                    for (String key : excelHeaderKeys) {
-                        detailObj.add(detailMap.get(key));
-                    }
-                    result.add(detailObj.toArray());
-                }
-                request.setDetails(result);
+                List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
+                request.setDetails(tableRow);
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }

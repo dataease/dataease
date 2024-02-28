@@ -1327,6 +1327,13 @@ public class ChartViewService {
         } else {
             data = resultCustomSort(xAxis, data);
         }
+        // 如果是表格导出查询 则在此处直接就可以返回
+        if(chartExtRequest.getExcelExportFlag()){
+            Map<String,Object> sourceInfo = new HashMap<>();
+            sourceInfo.put("sourceData",data);
+            chartViewDTO.setData(sourceInfo);
+            return chartViewDTO;
+        }
         // 同比/环比计算，通过对比类型和数据设置，计算出对应指标的结果，然后替换结果data数组中的对应元素
         // 如果因维度变化（如时间字段缺失，时间字段的展示格式变化）导致无法计算结果的，则结果data数组中的对应元素全置为null
         // 根据不同图表类型，获得需要替换的指标index array
