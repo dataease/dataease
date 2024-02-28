@@ -11,7 +11,6 @@ import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -92,11 +91,11 @@ public class CustomWhere2Str {
                             // 规定几种日期格式，一一匹配，匹配到就是该格式
                             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                                 String f = DateUtils.get_date_format(filterItemDTO.getValue());
-                                String n = String.format(SQLConstants.DE_CAST_DATE_FORMAT, whereName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT, f);
+                                String n = String.format(SQLConstants.DE_STR_TO_DATE, whereName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT, f);
                                 whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
                             } else {
                                 String f = DateUtils.get_date_format(filterItemDTO.getValue());
-                                String n = String.format(SQLConstants.DE_DATE_FORMAT, whereName, f);
+                                String n = String.format(SQLConstants.DE_STR_TO_DATE, whereName, f);
                                 whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
                             }
                         } else {
