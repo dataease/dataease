@@ -148,6 +148,7 @@ const activeTableData = computed(() => {
         :key="ele.id"
         :label="ele.name"
         :nextlevel="ele.children"
+        :active="name === ele.name"
       ></OrgCell>
     </template>
   </div>
@@ -158,12 +159,7 @@ const activeTableData = computed(() => {
   height: 100vh;
   width: 100vw;
   background: #f5f6f7;
-  --van-nav-bar-height: 44px;
-  --van-nav-bar-arrow-size: 20px;
-  --van-nav-bar-icon-color: #1f2329;
-  --van-nav-bar-title-text-color: #1f2329;
-  --van-font-bold: 500;
-  --van-nav-bar-title-font-size: 17px;
+
   .mobile-user-top {
     padding: 16px;
     display: flex;

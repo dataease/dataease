@@ -4,17 +4,16 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useI18n } from '@/hooks/web/useI18n'
 import { shortcutOption } from '@/views/workbranch/ShortcutOption'
 import { useRouter } from 'vue-router'
+import Workbranch from '@/views/mobile/components/Workbranch.vue'
 import request from '@/config/axios'
 import VanTabs from 'vant/es/tabs'
+import VanNavBar from 'vant/es/nav-bar'
 import VanTab from 'vant/es/tab'
-import VanCell from 'vant/es/cell'
 import VanSticky from 'vant/es/sticky'
-import VanCellGroup from 'vant/es/cell-group'
 import 'vant/es/sticky/style'
 import 'vant/es/tab/style'
+import 'vant/es/nav-bar/style'
 import 'vant/es/tabs/style'
-import 'vant/es/cell/style'
-import 'vant/es/cell-group/style'
 
 const router = useRouter()
 const { t } = useI18n()
@@ -113,6 +112,7 @@ const formatterTime = val => {
 <template>
   <div class="mobile-panel-list">
     <van-sticky>
+      <van-nav-bar safe-area-inset-top title="工作台" />
       <van-tabs @click-tab="handleClick" v-model:active="activeTab">
         <van-tab
           v-for="item in tablePaneList"
@@ -123,16 +123,27 @@ const formatterTime = val => {
         ></van-tab>
       </van-tabs>
     </van-sticky>
-    <van-cell-group style="overflow-y: auto; height: calc(100vh - 94px)">
-      <van-cell
+    <div class="workbranch-cell-group">
+      <Workbranch
         @click="handleCellClick(ele)"
         v-for="ele in state.tableData"
         :key="ele.id"
         size="large"
-        :title="ele.name"
-        :value="formatterTime(ele.lastEditTime || ele.time)"
-        icon="bar-chart-o"
+        :label="ele.name"
+        :time="formatterTime(ele.lastEditTime || ele.time)"
       />
-    </van-cell-group>
+    </div>
   </div>
 </template>
+
+<style lang="less" scoped>
+.mobile-panel-list {
+  background: #f5f6f7;
+
+  .workbranch-cell-group {
+    overflow-y: auto;
+    height: calc(100vh - 142px);
+    margin-top: 8px;
+  }
+}
+</style>
