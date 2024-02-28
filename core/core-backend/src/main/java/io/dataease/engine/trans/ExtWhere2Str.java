@@ -5,8 +5,8 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.utils.DateUtils;
 import io.dataease.engine.utils.Utils;
-import org.apache.calcite.func.scalar.ScalarFunctions;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
@@ -57,7 +57,7 @@ public class ExtWhere2Str {
                         if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                             date_format = "yyyy-MM-dd HH:mm:ss";
                         } else {
-                            date_format = ScalarFunctions.get_date_format(value.get(0));
+                            date_format = DateUtils.get_date_format(value.get(0));
                         }
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                             // 此处获取标准格式的日期

@@ -8,8 +8,8 @@ import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.utils.DateUtils;
 import io.dataease.engine.utils.Utils;
-import org.apache.calcite.func.scalar.ScalarFunctions;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -98,7 +98,7 @@ public class WhereTree2Str {
                 whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 1) {
-                String f = ScalarFunctions.get_date_format(originName);
+                String f = DateUtils.get_date_format(originName);
                 whereName = String.format(SQLConstants.DATE_FORMAT, originName, f);
             }
         } else if (field.getDeType() == 2 || field.getDeType() == 3) {
@@ -130,12 +130,12 @@ public class WhereTree2Str {
             if (field.getDeType() == 1) {
                 // 规定几种日期格式，一一匹配，匹配到就是该格式
                 if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    String f = ScalarFunctions.get_date_format(item.getValue());
-                    whereName = String.format(SQLConstants.DE_CAST_DATE_FORMAT, whereName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT, f);
+                    String f = DateUtils.get_date_format(item.getValue());
+                    whereName = String.format(SQLConstants.DE_STR_TO_DATE, whereName, f);
                     whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                 } else {
-                    String f = ScalarFunctions.get_date_format(item.getValue());
-                    whereName = String.format(SQLConstants.DE_DATE_FORMAT, whereName, f);
+                    String f = DateUtils.get_date_format(item.getValue());
+                    whereName = String.format(SQLConstants.DE_STR_TO_DATE, whereName, f);
                     whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                 }
             }

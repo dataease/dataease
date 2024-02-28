@@ -6,11 +6,12 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.utils.DateUtils;
 import io.dataease.engine.utils.Utils;
-import org.apache.calcite.func.scalar.ScalarFunctions;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -55,7 +56,7 @@ public class CustomWhere2Str {
                     }
                     if (field.getDeExtractType() == 1) {
                         // 此处获取标准格式的日期
-                        String f = ScalarFunctions.get_date_format(originName);
+                        String f = DateUtils.get_date_format(originName);
                         whereName = String.format(SQLConstants.DATE_FORMAT, originName, f);
                     }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
@@ -90,11 +91,11 @@ public class CustomWhere2Str {
                         if (field.getDeType() == 1) {
                             // 规定几种日期格式，一一匹配，匹配到就是该格式
                             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                                String f = ScalarFunctions.get_date_format(filterItemDTO.getValue());
+                                String f = DateUtils.get_date_format(filterItemDTO.getValue());
                                 String n = String.format(SQLConstants.DE_CAST_DATE_FORMAT, whereName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT, f);
                                 whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
                             } else {
-                                String f = ScalarFunctions.get_date_format(filterItemDTO.getValue());
+                                String f = DateUtils.get_date_format(filterItemDTO.getValue());
                                 String n = String.format(SQLConstants.DE_DATE_FORMAT, whereName, f);
                                 whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
                             }
@@ -135,5 +136,6 @@ public class CustomWhere2Str {
             meta.setCustomWheres(ObjectUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null);
         }
     }
+
 
 }

@@ -25,11 +25,9 @@ import io.dataease.utils.LogUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import org.apache.calcite.adapter.jdbc.JdbcSchema;
-import org.apache.calcite.func.scalar.ScalarFunctions;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.schema.impl.ScalarFunctionImpl;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -37,7 +35,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.IOException;
-import java.lang.reflect.Method;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
@@ -206,18 +203,7 @@ public class CalciteProvider {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);
         SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
-        addCustomFunctions(rootSchema);
         return connection;
-    }
-
-    private void addCustomFunctions(SchemaPlus rootSchema) {
-        // scalar functions
-        Class<?> clazz = ScalarFunctions.class;
-        Method[] methods = clazz.getMethods();
-        for (Method method : methods) {
-            rootSchema.add(method.getName().toUpperCase(), ScalarFunctionImpl.create(
-                    ScalarFunctions.class, method.getName()));
-        }
     }
 
     private void registerDriver() {
@@ -691,7 +677,6 @@ public class CalciteProvider {
         try {
             CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
             SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
-            addCustomFunctions(rootSchema);
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
         }
