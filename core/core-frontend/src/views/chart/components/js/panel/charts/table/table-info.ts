@@ -5,6 +5,7 @@ import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isNumber } from 'lodash-es'
+import { copyContent } from '@/views/chart/components/js/panel/common/common_table'
 
 const { t } = useI18n()
 
@@ -161,6 +162,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
 
     // header resize
     newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, ev => resizeAction(ev))
+    // right click
+    newChart.on(S2Event.GLOBAL_CONTEXT_MENU, event => copyContent(newChart, event, meta))
     // theme
     const customTheme = this.configTheme(chart)
     newChart.setThemeCfg({ theme: customTheme })

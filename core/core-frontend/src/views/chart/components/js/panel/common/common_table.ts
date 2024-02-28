@@ -14,7 +14,7 @@ import {
   S2Options,
   SERIES_NUMBER_FIELD
 } from '@antv/s2'
-import { keys, intersection, filter, cloneDeep, merge } from 'lodash-es'
+import { keys, intersection, filter, cloneDeep, merge, find } from 'lodash-es'
 import { createVNode, render } from 'vue'
 import TableTooltip from '@/views/chart/components/editor/common/TableTooltip.vue'
 
@@ -657,4 +657,30 @@ export function configTooltip(option: S2Options) {
       }
     }
   ]
+}
+
+export function copyContent(s2Instance, event, fieldMap) {
+  event.preventDefault()
+  const cell = s2Instance.getCell(event.target)
+  const valueField = cell.getMeta().valueField
+  const cellMeta = cell.getMeta()
+  let content
+  // 单元格
+  if (cellMeta?.data) {
+    const value = cellMeta.data[valueField]
+    const metaObj = find(fieldMap, m => m.field === valueField)
+    content = value?.toString()
+    if (metaObj) {
+      content = metaObj.formatter(value)
+    }
+  } else {
+    // 列头&行头
+    content = cellMeta.value
+    if (fieldMap?.[content]) {
+      content = fieldMap[content]
+    }
+  }
+  if (content) {
+    navigator.clipboard.writeText(content)
+  }
 }
