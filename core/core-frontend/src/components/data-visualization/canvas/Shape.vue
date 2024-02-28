@@ -87,7 +87,9 @@
 
 <script setup lang="ts">
 import eventBus from '@/utils/eventBus'
-import calculateComponentPositionAndSize from '@/utils/calculateComponentPositionAndSize'
+import calculateComponentPositionAndSize, {
+  calculateRadioComponentPositionAndSize
+} from '@/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/utils/translate'
 import { deepCopy } from '@/utils/utils'
 import { computed, nextTick, onMounted, ref, toRefs, reactive } from 'vue'
@@ -670,8 +672,8 @@ const handleMouseDownOnPoint = (point, e) => {
         // 调整宽度
         style.width = defaultStyle.value.height * originRadio
       }
+      calculateRadioComponentPositionAndSize(point, style, symmetricPoint)
     }
-
     dvMainStore.setShapeStyle(style)
     // 矩阵逻辑 如果当前是仪表板（矩阵模式）则要进行矩阵重排
     dashboardActive.value && emit('onResizing', moveEvent)

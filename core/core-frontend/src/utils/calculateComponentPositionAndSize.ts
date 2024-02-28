@@ -373,3 +373,28 @@ export default function calculateComponentPositionAndSize(
 ) {
   funcs[name](style, curPosition, proportion, needLockProportion, pointInfo)
 }
+
+export function calculateRadioComponentPositionAndSize(name, style, symmetricPoint) {
+  if (['b'].includes(name)) {
+    style.left = Math.round(symmetricPoint.x - style.width / 2)
+    style.top = symmetricPoint.y
+  } else if (['t'].includes(name)) {
+    style.left = Math.round(symmetricPoint.x - style.width / 2)
+    style.top = symmetricPoint.y - style.height
+  } else if (['l'].includes(name)) {
+    style.left = symmetricPoint.x - style.width
+    style.top = Math.round(symmetricPoint.y - style.height / 2)
+  } else if (['r'].includes(name)) {
+    style.left = symmetricPoint.x
+    style.top = Math.round(symmetricPoint.y - style.height / 2)
+  } else if (['lt'].includes(name)) {
+    style.left = symmetricPoint.x - style.width
+    style.top = symmetricPoint.y - style.height
+  } else if (['lb'].includes(name)) {
+    style.left = symmetricPoint.x - style.width
+    style.top = symmetricPoint.y
+  } else if (['rt'].includes(name)) {
+    style.left = symmetricPoint.x
+    style.top = symmetricPoint.y - style.height
+  }
+}
