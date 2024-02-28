@@ -83,10 +83,10 @@ const onPositionChange = key => {
     positionMounted.value[key] = 0
   }
   const originRadio = curComponent.value.style.width / curComponent.value.style.height
-  curComponent.value.style[key] = Math.round(
-    (positionMounted.value[key] * canvasStyleData.value.scale) / 100
-  )
   if (curComponent.value.maintainRadio) {
+    curComponent.value.style[key] = Math.ceil(
+      (positionMounted.value[key] * canvasStyleData.value.scale) / 100
+    )
     if (key === 'width') {
       curComponent.value.style['height'] = curComponent.value.style['width'] / originRadio
       positionMounted.value['height'] = Math.round(positionMounted.value['width'] / originRadio)
@@ -94,6 +94,10 @@ const onPositionChange = key => {
       curComponent.value.style['width'] = curComponent.value.style['height'] * originRadio
       positionMounted.value['width'] = Math.round(positionMounted.value['height'] * originRadio)
     }
+  } else {
+    curComponent.value.style[key] = Math.round(
+      (positionMounted.value[key] * canvasStyleData.value.scale) / 100
+    )
   }
 
   if (curComponent.value.component === 'Group') {
