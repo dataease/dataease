@@ -123,7 +123,7 @@ const formatterTime = val => {
         ></van-tab>
       </van-tabs>
     </van-sticky>
-    <van-cell-group>
+    <van-cell-group style="overflow-y: auto; height: calc(100vh - 94px)">
       <van-cell
         @click="handleCellClick(ele)"
         v-for="ele in state.tableData"
@@ -134,6 +134,5 @@ const formatterTime = val => {
         icon="bar-chart-o"
       />
     </van-cell-group>
-    <div style="width: 100%; height: 50px"></div>
   </div>
 </template>

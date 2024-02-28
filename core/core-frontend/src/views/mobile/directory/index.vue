@@ -97,7 +97,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div style="overflow-y: auto; height: calc(100vh - 50px)">
+  <div>
     <van-sticky>
       <van-search
         v-if="!directName.length"
@@ -113,7 +113,7 @@ onMounted(() => {
         @click-left="onClickLeft"
       />
     </van-sticky>
-    <van-cell-group>
+    <van-cell-group style="overflow-y: auto; height: calc(100vh - 104px)">
       <van-cell
         v-for="ele in activeTableData"
         :key="ele.id"
