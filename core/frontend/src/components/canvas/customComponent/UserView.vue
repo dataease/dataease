@@ -120,15 +120,17 @@
       v-else-if="labelShowFlag"
       :ref="element.propValue.id"
       :chart="chart"
+      :in-screen="inScreen"
       class="table-class"
     />
     <label-normal-text
       v-else-if="labelTextShowFlag"
       :ref="element.propValue.id"
       :chart="chart"
-      class="table-class"
       :track-menu="trackMenu"
       :search-count="searchCount"
+      :in-screen="inScreen"
+      class="table-class"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />

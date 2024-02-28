@@ -63,6 +63,7 @@ import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
 import TitleRemark from '@/views/chart/view/TitleRemark'
 import { CHART_CONT_FAMILY_MAP, DEFAULT_SIZE, DEFAULT_TITLE_STYLE } from '@/views/chart/chart/chart'
 import ChartTitleUpdate from '../ChartTitleUpdate.vue'
+import { mapState } from 'vuex'
 
 export default {
   name: 'LabelNormalText',
@@ -85,6 +86,10 @@ export default {
       default: function() {
         return []
       }
+    },
+    inScreen: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -108,7 +113,8 @@ export default {
         flexDirection: 'column',
         alignItems: 'center',
         justifyContent: 'center',
-        height: 'auto'
+        height: 'auto',
+        userSelect: 'none'
       },
       label_class: {
         margin: 0
@@ -145,7 +151,9 @@ export default {
     chartInfo() {
       const { id, title } = this.chart
       return { id, title }
-    }
+    },
+    ...mapState(['editMode']),
+    ...mapState('panel', ['mainActiveName'])
   },
   watch: {
     chart() {
@@ -220,6 +228,9 @@ export default {
 
           this.content_class.alignItems = customAttr.size.hPosition ? customAttr.size.hPosition : DEFAULT_SIZE.hPosition
           this.content_class.justifyContent = customAttr.size.vPosition ? customAttr.size.vPosition : DEFAULT_SIZE.vPosition
+          if (!this.inScreen || this.editMode === 'preview' || this.mainActiveName === 'PanelMain') {
+            this.content_class.userSelect = 'text'
+          }
 
           if (!this.dimensionShow) {
             this.label_space.marginTop = '0px'
