@@ -4,18 +4,12 @@ import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import DashboardCell from '@/views/mobile/components/DashboardCell.vue'
 import { useRouter } from 'vue-router'
-import VanCell from 'vant/es/cell'
 import VanSticky from 'vant/es/sticky'
-import VanSearch from 'vant/es/search'
-import VanCellGroup from 'vant/es/cell-group'
 import VanNavBar from 'vant/es/nav-bar'
-import 'vant/es/cell/style'
-import 'vant/es/cell-group/style'
 import 'vant/es/nav-bar/style'
 import 'vant/es/sticky/style'
-import 'vant/es/search/style'
-const keywords = ref()
 const anyManage = ref(false)
 const rootManage = ref(false)
 const tableData = ref([])
@@ -97,34 +91,36 @@ onMounted(() => {
 </script>
 
 <template>
-  <div>
+  <div class="mobile-dashboard">
     <van-sticky>
-      <van-search
-        v-if="!directName.length"
-        v-model="keywords"
-        shape="round"
-        placeholder="请输入仪表板名称"
-      />
       <van-nav-bar
-        v-else
-        :title="activeDirectName"
-        left-text="返回"
-        left-arrow
+        safe-area-inset-top
+        :title="activeDirectName || '仪表板'"
+        :left-arrow="!!activeDirectName"
         @click-left="onClickLeft"
       />
     </van-sticky>
-    <van-cell-group style="overflow-y: auto; height: calc(100vh - 104px)">
-      <van-cell
+    <div class="dashboard-cell-group">
+      <DashboardCell
         v-for="ele in activeTableData"
         :key="ele.id"
-        size="large"
         @click="dataClick(ele)"
-        :title="ele.name"
-        :is-link="!ele.leaf"
-        :icon="ele.leaf ? 'bar-chart-o' : 'list-switch'"
+        :label="ele.name"
+        :nextlevel="!ele.leaf"
+        :prefix-icon="ele.leaf ? 'icon_dashboard' : 'dv-folder'"
       />
-    </van-cell-group>
+    </div>
   </div>
 </template>
 
-<style lang="less" scoped></style>
+<style lang="less" scoped>
+.mobile-dashboard {
+  background: #f5f6f7;
+
+  .dashboard-cell-group {
+    overflow-y: auto;
+    height: calc(100vh - 102px);
+    margin-top: 8px;
+  }
+}
+</style>
