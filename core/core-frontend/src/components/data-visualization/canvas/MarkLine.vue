@@ -26,7 +26,7 @@ const hideLine = () => {
 }
 
 const showLine = (isDownward, isRightward) => {
-  const linesRef = currentInstance.ctx.$refs
+  const linesRef = currentInstance.proxy.$refs
   const components = componentData.value
   const curComponentStyle = getComponentRotatedStyle(curComponent.value.style)
   const curComponentHalfWidth = curComponentStyle.width / 2
