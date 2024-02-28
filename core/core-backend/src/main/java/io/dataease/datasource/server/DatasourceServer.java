@@ -27,6 +27,7 @@ import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.mapper.TaskLogExtMapper;
 import io.dataease.datasource.manage.DataSourceManage;
 import io.dataease.datasource.manage.DatasourceSyncManage;
+import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
@@ -70,7 +71,7 @@ public class DatasourceServer implements DatasourceApi {
     @Resource
     private CoreDatasourceMapper datasourceMapper;
     @Resource
-    private EngineServer engineServer;
+    private EngineManage engineManage;
     @Resource
     private DatasourceTaskServer datasourceTaskServer;
     @Resource
@@ -737,9 +738,9 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(coreDatasource);
         if (coreDatasource.getType().equals("API") || coreDatasource.getType().equals("Excel")) {
-            datasourceRequest.setDatasource(engineServer.getDeEngine());
+            datasourceRequest.setDatasource(engineManage.getDeEngine());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
-            BeanUtils.copyBean(datasourceSchemaDTO, engineServer.getDeEngine());
+            BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");

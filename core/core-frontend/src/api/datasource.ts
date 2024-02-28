@@ -161,3 +161,5 @@ export const uploadFile = async (data): Promise<IResponse> => {
 
 export const listSyncRecord = (page: number, limit: number, dsId: number | string) =>
   request.post({ url: '/datasource/listSyncRecord/' + dsId + '/' + page + '/' + limit })
+
+export const getDeEngine = () => request.get({ url: '/engine/getEngine' })

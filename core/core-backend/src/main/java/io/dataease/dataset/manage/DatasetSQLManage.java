@@ -16,7 +16,7 @@ import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.datasource.server.EngineServer;
+import io.dataease.datasource.manage.EngineManage;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -46,7 +46,7 @@ public class DatasetSQLManage {
     @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
     @Resource
-    private EngineServer engineServer;
+    private EngineManage engineManage;
 
     @Resource
     private CorePermissionManage corePermissionManage;
@@ -340,7 +340,7 @@ public class DatasetSQLManage {
                 DEException.throwException(Translator.get("i18n_dataset_ds_error") + ",ID:" + ds.getDatasourceId());
             }
             if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
-                coreDatasource = engineServer.getDeEngine();
+                coreDatasource = engineManage.getDeEngine();
             }
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
             if (!dsMap.containsKey(coreDatasource.getId())) {
@@ -350,7 +350,7 @@ public class DatasetSQLManage {
                 dsMap.put(coreDatasource.getId(), datasourceSchemaDTO);
             }
         } else {
-            CoreDatasource coreDatasource = engineServer.getDeEngine();
+            CoreDatasource coreDatasource = engineManage.getDeEngine();
             schemaAlias = String.format(SQLConstants.SCHEMA, coreDatasource.getId());
             if (!dsMap.containsKey(coreDatasource.getId())) {
                 DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();

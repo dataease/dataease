@@ -22,9 +22,9 @@ import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.datasource.server.EngineServer;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -66,9 +66,7 @@ public class DatasetDataManage {
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
     @Resource
-    private DatasetTableManage datasetTableManage;
-    @Resource
-    private EngineServer engineServer;
+    private EngineManage engineManage;
     @Resource
     private DatasetGroupManage datasetGroupManage;
     @Resource
@@ -89,7 +87,7 @@ public class DatasetDataManage {
             CoreDatasource coreDatasource = coreDatasourceMapper.selectById(datasetTableDTO.getDatasourceId());
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
-                coreDatasource = engineServer.getDeEngine();
+                coreDatasource = engineManage.getDeEngine();
             }
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
@@ -112,7 +110,7 @@ public class DatasetDataManage {
             tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
         } else {
             // excel,api
-            CoreDatasource coreDatasource = engineServer.getDeEngine();
+            CoreDatasource coreDatasource = engineManage.getDeEngine();
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
@@ -274,7 +272,7 @@ public class DatasetDataManage {
         CoreDatasource coreDatasource = coreDatasourceMapper.selectById(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         if (coreDatasource.getType().equalsIgnoreCase("API") || coreDatasource.getType().equalsIgnoreCase("Excel")) {
-            BeanUtils.copyBean(datasourceSchemaDTO, engineServer.getDeEngine());
+            BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
         } else {
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
         }

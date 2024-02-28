@@ -12,8 +12,8 @@ import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
+import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.datasource.server.EngineServer;
 import io.dataease.datasource.type.*;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
@@ -47,7 +47,7 @@ public class CalciteProvider {
     @Resource
     protected CoreDatasourceMapper coreDatasourceMapper;
     @Resource
-    private EngineServer engineServer;
+    private EngineManage engineManage;
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
     private Map<Long, ExtendedJdbcClassLoader> customJdbcClassLoaders = new HashMap<>();
     private final String FILE_PATH = "/opt/dataease2.0/drivers";
@@ -642,7 +642,7 @@ public class CalciteProvider {
         LogUtil.info("Begin to init datasource pool...");
         QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
         List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
-        CoreDatasource engine = engineServer.deEngine();
+        CoreDatasource engine = engineManage.deEngine();
         if (engine != null) {
             coreDatasources.add(engine);
         }
