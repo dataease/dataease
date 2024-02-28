@@ -17,6 +17,8 @@ import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { handleTableEmptyStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
 import { maxBy, minBy, find } from 'lodash-es'
 import TableTooltip from '@/views/chart/components/table/TableTooltip.vue'
+import Vue from 'vue'
+
 class SortTooltip extends BaseTooltip {
   vueCom
   constructor(spreadsheet, vueCom) {
@@ -256,6 +258,8 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo,
   if (size.tableCellTooltip?.show) {
     s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event, meta))
   }
+  // right click
+  s2.on(S2Event.GLOBAL_CONTEXT_MENU, event => copyContent(s2, event, meta))
   // column resize
   if (size.tableColumnMode === 'field') {
     s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, event => resizeFunc(event))
@@ -494,6 +498,8 @@ export function baseTableNormal(s2, container, chart, action, tableData, vueCom,
   if (size.tableCellTooltip?.show) {
     s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event, meta))
   }
+  // right click
+  s2.on(S2Event.GLOBAL_CONTEXT_MENU, event => copyContent(s2, event, meta))
   // column resize
   if (size.tableColumnMode === 'field') {
     s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, event => resizeFunc(event))
@@ -727,6 +733,8 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
   if (size.tableCellTooltip?.show) {
     s2.on(S2Event.DATA_CELL_HOVER, event => showTooltipValue(s2, event, meta))
   }
+  // right click
+  s2.on(S2Event.GLOBAL_CONTEXT_MENU, event => copyContent(s2, event, meta))
   // theme
   const customTheme = getCustomTheme(chart)
   s2.setThemeCfg({ theme: customTheme })
@@ -1102,4 +1110,32 @@ function getTooltipPosition(event) {
     result.y -= (offsetHeight + 15)
   }
   return result
+}
+
+function copyContent(s2Instance, event, fieldMap) {
+  event.preventDefault()
+  const cell = s2Instance.getCell(event.target)
+  const valueField = cell.getMeta().valueField
+  const cellMeta = cell.getMeta()
+  let content
+  // 单元格
+  if (cellMeta?.data) {
+    const value = cellMeta.data[valueField]
+    const metaObj = find(fieldMap, m =>
+      m.field === valueField
+    )
+    content = value?.toString()
+    if (metaObj) {
+      content = metaObj.formatter(value)
+    }
+  } else {
+    // 列头&行头
+    content = cellMeta.value
+    if (fieldMap?.[content]) {
+      content = fieldMap[content]
+    }
+  }
+  if (content) {
+    navigator.clipboard.writeText(content)
+  }
 }
