@@ -662,13 +662,13 @@ const handleMouseDownOnPoint = (point, e) => {
       // 保持宽高比例是相对高度偏移量
       const adaptorHeightOffset = widthOffset / originRadio
       if (pointCorner.includes(point)) {
-        style.height = defaultStyle.value.height + adaptorHeightOffset
+        style.height = defaultStyle.value.width / originRadio
       } else if (Math.abs(widthOffset) > Math.abs(adaptorWidthOffset)) {
         // 调整高度
-        style.height = defaultStyle.value.height + adaptorHeightOffset
+        style.height = defaultStyle.value.width / originRadio
       } else {
         // 调整宽度
-        style.width = defaultStyle.value.width + adaptorWidthOffset
+        style.width = defaultStyle.value.height * originRadio
       }
     }
 
