@@ -44,5 +44,10 @@ const hiddenTabbar = ref(false)
   width: 100vw;
   height: 100vh;
   overflow: hidden;
+
+  .van-hairline--top-bottom:after {
+    bottom: auto;
+    top: auto;
+  }
 }
 </style>
