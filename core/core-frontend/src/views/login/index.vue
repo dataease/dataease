@@ -17,6 +17,7 @@ import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { isLarkPlatform } from '@/utils/utils'
+import xss from 'xss'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 const userStore = useUserStoreWithOut()
@@ -183,6 +184,33 @@ const loadArrearance = () => {
   }
   if (appearanceStore.getSlogan) {
     slogan.value = appearanceStore.getSlogan
+  }
+  if (appearanceStore.getFoot) {
+    showFoot.value = appearanceStore.getFoot === 'true'
+    if (showFoot.value) {
+      const content = appearanceStore.getFootContent
+      const myXss = new xss.FilterXSS({
+        css: {
+          whiteList: {
+            'background-color': true,
+            'text-align': true,
+            color: true,
+            'margin-top': true,
+            'margin-bottom': true,
+            'line-height': true,
+            'box-sizing': true,
+            'padding-top': true,
+            'padding-bottom': true
+          }
+        },
+        whiteList: {
+          ...xss.whiteList,
+          p: ['style'],
+          span: ['style']
+        }
+      })
+      footContent.value = myXss.process(content)
+    }
   }
 }
 onMounted(() => {

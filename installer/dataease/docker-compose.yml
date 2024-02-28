@@ -12,6 +12,7 @@ services:
       - ${DE_BASE}/dataease2.0/data/static-resource:/opt/dataease2.0/data/static-resource
       - ${DE_BASE}/dataease2.0/cache:/opt/dataease2.0/cache
       - ${DE_BASE}/dataease2.0/data/geo:/opt/dataease2.0/data/geo
+      - ${DE_BASE}/dataease2.0/data/appearance:/opt/dataease2.0/data/appearance
     depends_on:
       DE_MYSQL_HOST:
         condition: service_healthy
