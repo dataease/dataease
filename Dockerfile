@@ -2,7 +2,7 @@ FROM registry.cn-qingdao.aliyuncs.com/dataease/alpine-openjdk17-jre
 
 ARG IMAGE_TAG
 
-RUN mkdir -p /opt/apps/config /opt/dataease2.0/drivers/ /opt/dataease2.0/cache/ /opt/dataease2.0/data/map /opt/dataease2.0/data/static-resource/
+RUN mkdir -p /opt/apps/config /opt/dataease2.0/drivers/ /opt/dataease2.0/cache/ /opt/dataease2.0/data/map /opt/dataease2.0/data/static-resource/ /opt/dataease2.0/data/appearance/
 
 ADD drivers/* /opt/dataease2.0/drivers/
 ADD mapFiles/ /opt/dataease2.0/data/map/

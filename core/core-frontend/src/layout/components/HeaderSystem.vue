@@ -84,6 +84,9 @@ const navigate = computed(() => appearanceStore.getNavigate)
   :deep(.work-bar) {
     color: var(--ed-color-black) !important;
   }
+  .ed-divider {
+    border-color: #1f232926 !important;
+  }
 }
 .header-flex {
   margin-bottom: 0.5px;

@@ -15,6 +15,8 @@ interface AppearanceState {
   slogan?: string
   web?: string
   name?: string
+  foot?: string
+  footContent?: string
   loaded: boolean
 }
 const { wsCache } = useCache()
@@ -31,6 +33,8 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       slogan: '',
       web: '',
       name: '',
+      foot: 'false',
+      footContent: '',
       loaded: false
     }
   },
@@ -79,6 +83,12 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     },
     getLoaded(): boolean {
       return this.loaded
+    },
+    getFoot(): string {
+      return this.foot
+    },
+    getFootContent(): string {
+      return this.footContent
     }
   },
   actions: {
@@ -133,6 +143,8 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.slogan = data.slogan
       this.web = data.web
       this.name = data.name
+      this.foot = data.foot
+      this.footContent = data.footContent
       if (this.name) {
         document.title = this.name
       }
