@@ -37,6 +37,8 @@
         :index-config="{seqMethod}"
         :show-header="showHeader"
         @cell-click="cellClick"
+        @row-contextmenu="(_, __, e) => cellRightClick(e)"
+        @header-contextmenu="(_, e) => cellRightClick(e)"
       >
         <ux-table-column
           type="index"
@@ -653,6 +655,12 @@ export default {
         y
       }
       this.antVActionPost(dimensionList, nameIdMap[col.property] || 'null', position)
+    },
+    cellRightClick(event) {
+      if (event.target?.innerText) {
+        navigator.clipboard.writeText(event.target.innerText)
+      }
+      event.preventDefault()
     },
     antVActionPost(dimensionList, name, param) {
       this.pointParam = {
