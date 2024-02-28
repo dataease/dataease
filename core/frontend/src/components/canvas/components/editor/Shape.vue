@@ -263,7 +263,13 @@ export default {
 
       // 如果元素没有移动，则不保存快照
       let hasMove = false
+      let isFirst = true
       const move = (moveEvent) => {
+        // 因此第一次点击时不触发 move 事件 防止快速交替出现的重叠问题
+        if (isFirst) {
+          isFirst = false
+          return
+        }
         hasMove = true
         const curX = moveEvent.clientX
         const curY = moveEvent.clientY
