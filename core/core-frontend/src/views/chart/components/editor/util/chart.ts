@@ -39,7 +39,8 @@ export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
   },
   tableCell: {
     tableItemBgColor: '#FFFFFF',
-    tableFontColor: '#000000'
+    tableFontColor: '#000000',
+    tableItemSubBgColor: '#EEEEEE'
   }
 }
 
@@ -79,7 +80,8 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
   },
   tableCell: {
     tableItemBgColor: '#FFFFFF',
-    tableFontColor: '#000000'
+    tableFontColor: '#000000',
+    tableItemSubBgColor: '#EEEEEE'
   }
 }
 
@@ -119,7 +121,8 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
   },
   tableCell: {
     tableItemBgColor: '#131E42',
-    tableFontColor: '#ffffff'
+    tableFontColor: '#ffffff',
+    tableItemSubBgColor: '#EEEEEE'
   }
 }
 
@@ -333,7 +336,9 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableItemAlign: 'right',
   tableItemBgColor: '#FFFFFF',
   tableItemFontSize: 12,
-  tableItemHeight: 36
+  tableItemHeight: 36,
+  enableTableCrossBG: false,
+  tableItemSubBgColor: '#EEEEEE'
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,

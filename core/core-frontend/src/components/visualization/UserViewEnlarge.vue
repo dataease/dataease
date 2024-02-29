@@ -62,7 +62,7 @@ import { exportExcelDownload } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
-let viewInfo = ref(null)
+let viewInfo = ref<DeepPartial<ChartObj>>(null)
 const config = ref(null)
 const canvasStyleData = ref(null)
 const viewContainer = ref(null)
@@ -74,8 +74,15 @@ const { dvInfo } = storeToRefs(dvMainStore)
 const dialogInit = (canvasStyle, view, item, opt) => {
   optType.value = opt
   dialogShow.value = true
-  viewInfo.value = deepCopy(view)
+  viewInfo.value = deepCopy(view) as DeepPartial<ChartObj>
   viewInfo.value.customStyle.text.show = false
+  if (!viewInfo.value.type?.includes('table')) {
+    viewInfo.value.customAttr.tableHeader.tableHeaderBgColor = '#F8F8F9'
+    viewInfo.value.customAttr.tableHeader.tableHeaderFontColor = '#7C7E81'
+    viewInfo.value.customAttr.tableCell.tableItemBgColor = '#FFFFFF'
+    viewInfo.value.customAttr.tableCell.tableFontColor = '#7C7E81'
+    viewInfo.value.customAttr.tableCell.enableTableCrossBG = false
+  }
   config.value = deepCopy(item)
   canvasStyleData.value = canvasStyle
   if (opt === 'details') {
