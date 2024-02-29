@@ -6,6 +6,7 @@ import { shortcutOption } from '@/views/workbranch/ShortcutOption'
 import { useRouter } from 'vue-router'
 import Workbranch from '@/views/mobile/components/Workbranch.vue'
 import request from '@/config/axios'
+import nothingNone from '@/assets/img/none.png'
 import VanTabs from 'vant/es/tabs'
 import VanNavBar from 'vant/es/nav-bar'
 import VanTab from 'vant/es/tab'
@@ -19,6 +20,7 @@ const router = useRouter()
 const { t } = useI18n()
 
 const activeTab = ref('recent')
+const emptyTips = ref('')
 const state = reactive({
   tableData: [],
   curTypeList: []
@@ -35,7 +37,20 @@ const loadTableData = () => {
     })
     .finally(() => {
       emits('setLoading', false)
+      setEmptyTips()
     })
+}
+
+const setEmptyTips = () => {
+  emptyTips.value = state.tableData.length
+    ? ''
+    : `暂无${
+        {
+          recent: '数据',
+          store: '收藏',
+          share: '分享'
+        }[activeTab.value]
+      }`
 }
 
 const loadShareTableData = () => {
@@ -50,6 +65,7 @@ const loadShareTableData = () => {
     })
     .finally(() => {
       emits('setLoading', false)
+      setEmptyTips()
     })
 }
 
@@ -133,6 +149,12 @@ const formatterTime = val => {
         :time="formatterTime(ele.lastEditTime || ele.time)"
       />
     </div>
+    <div class="empty-img-mobile" v-if="!!emptyTips">
+      <img width="125" height="125" :src="nothingNone" alt="" />
+      <div class="empty-tips">
+        {{ emptyTips }}
+      </div>
+    </div>
   </div>
 </template>
 
@@ -144,6 +166,24 @@ const formatterTime = val => {
     overflow-y: auto;
     height: calc(100vh - 142px);
     margin-top: 8px;
+  }
+
+  .empty-img-mobile {
+    position: absolute;
+    top: 33%;
+    left: 0;
+    width: 100%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    flex-direction: column;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+
+    img {
+      margin-bottom: 8px;
+    }
   }
 }
 </style>
