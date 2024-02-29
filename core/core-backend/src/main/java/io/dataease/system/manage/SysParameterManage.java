@@ -91,6 +91,11 @@ public class SysParameterManage {
         return sysSettings.stream().sorted(Comparator.comparing(CoreSysSetting::getSort)).map(item -> BeanUtils.copyBean(new SettingItemVO(), item)).toList();
     }
 
+    @XpackInteract(value = "perSetting", replace = true)
+    public List<Object> getUiList() {
+        return null;
+    }
+
 
     @Transactional
     public void saveGroup(List<SettingItemVO> vos, String groupKey) {
