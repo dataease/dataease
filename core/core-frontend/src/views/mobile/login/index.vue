@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { ref } from 'vue'
 import VanCellGroup from 'vant/es/cell-group'
+import mobileDeTop from '@/assets/img/mobile-de-top.png'
 import { showToast } from 'vant'
 import { loginApi, queryDekey } from '@/api/login'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -12,6 +13,7 @@ import VanForm from 'vant/es/form'
 import VanField from 'vant/es/field'
 import VanButton from 'vant/es/button'
 import 'vant/es/button/style'
+import 'vant/es/toast/style'
 import 'vant/es/field/style'
 import 'vant/es/form/style'
 import 'vant/es/cell-group/style'
@@ -46,7 +48,10 @@ const validatePwd = value => {
 
 const onSubmit = async () => {
   if (!checkUsername(username.value) || !validatePwd(password.value)) {
-    showToast('用户名或密码错误')
+    showToast({
+      duration: 2000,
+      message: '用户名、密码不对'
+    })
     return
   }
   const name = username.value.trim()
@@ -68,33 +73,51 @@ const onSubmit = async () => {
       duringLogin.value = false
     })
 }
+
+const passwordError = ref('')
+const usernameError = ref('')
+
+const passwordEndValidate = ({ status, message }) => {
+  passwordError.value = status === 'passed' ? '' : message
+}
+
+const usernameEndValidate = ({ status, message }) => {
+  usernameError.value = status === 'passed' ? '' : message
+}
 </script>
 
 <template>
   <div class="de-mobile-login" v-loading="duringLogin">
     <div class="mobile-login-content">
+      <img width="120" height="31" :src="mobileDeTop" alt="" />
       <div class="mobile-login-welcome">用户登录</div>
       <van-form @submit="onSubmit">
         <van-cell-group inset>
           <van-field
             v-model="username"
             name="用户名"
-            label="用户名"
-            placeholder="用户名"
+            :style="{ borderColor: !!usernameError ? '#F54A45' : '#bbbfc4' }"
+            placeholder="请输入用户名"
+            @end-validate="usernameEndValidate"
             :rules="[{ required: true, message: '请填写用户名' }]"
           />
+          <div v-if="!!usernameError" class="van-ed-error">
+            {{ usernameError }}
+          </div>
           <van-field
             v-model="password"
             type="password"
+            :style="{ borderColor: !!passwordError ? '#F54A45' : '#bbbfc4' }"
             name="密码"
-            label="密码"
-            placeholder="密码"
+            placeholder="请输入密码"
             :rules="[{ required: true, message: '请填写密码' }]"
+            @end-validate="passwordEndValidate"
           />
+          <div v-if="!!passwordError" class="van-ed-error">
+            {{ passwordError }}
+          </div>
         </van-cell-group>
-        <div style="margin: 16px">
-          <van-button round block type="primary" native-type="submit"> 提交 </van-button>
-        </div>
+        <van-button block type="primary" native-type="submit"> 登录 </van-button>
       </van-form>
     </div>
   </div>
@@ -104,28 +127,71 @@ const onSubmit = async () => {
 .de-mobile-login {
   height: 100vh;
   width: 100vw;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  background-image: url(../../../assets/logo-bg.jpg);
+  position: relative;
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-image: url(../../../assets/img/bg-mobile.png);
 
   .mobile-login-content {
-    background-color: #fff;
-    margin-top: 20px;
-    position: relative;
-    opacity: 0.95;
-    border-radius: 10px;
+    background: linear-gradient(180deg, rgba(255, 255, 255, 0.94) 0%, #ffffff 58.86%);
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    border-top-right-radius: 20px;
+    border-top-left-radius: 20px;
     overflow: hidden;
+    width: 100%;
+    height: 70%;
+    padding: 24px 16px;
+    --van-cell-group-inset-padding: 0;
+    --van-cell-group-inset-radius: 0;
+    --van-cell-group-background: transparent;
+    --van-cell-background: transparent;
+    --van-cell-vertical-padding: 12px;
+    --van-button-default-height: 48px;
+    --van-field-placeholder-text-color: #8f959e;
 
-    :deep(.van-field) {
-      padding-left: 0 !important;
+    .van-ed-error {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 20px;
+      margin-top: -12px;
+      color: #f54a45;
+    }
+
+    .van-field {
+      border: 1px solid #bbbfc4;
+      border-radius: 4px;
+      margin: 16px 0;
+    }
+
+    .van-cell:after {
+      display: none;
     }
 
     .mobile-login-welcome {
-      padding-left: 15px;
-      font-size: x-large;
+      font-size: 22px;
       font-weight: 500;
-      letter-spacing: 2px;
+      line-height: 30px;
+      margin-top: 10px;
+    }
+
+    .van-button--normal {
+      font-size: 17px;
+      font-weight: 400;
+      line-height: 24px;
+    }
+
+    .van-field__control {
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 22px;
+    }
+
+    .van-cell {
+      .van-field__error-message {
+        display: none;
+      }
     }
   }
 }
