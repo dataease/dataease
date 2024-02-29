@@ -67,12 +67,7 @@ const onClickLeft = () => {
 <template>
   <div class="dv-common-layout-mobile">
     <van-sticky>
-      <van-nav-bar
-        :title="state.dvInfo.name"
-        left-text="返回"
-        left-arrow
-        @click-left="onClickLeft"
-      />
+      <van-nav-bar :title="state.dvInfo.name" left-arrow @click-left="onClickLeft" />
     </van-sticky>
     <de-preview
       ref="dashboardPreview"
@@ -92,5 +87,11 @@ const onClickLeft = () => {
   height: 100vh;
   width: 100vw;
   overflow-y: auto;
+  --van-nav-bar-height: 44px;
+  --van-nav-bar-arrow-size: 20px;
+  --van-nav-bar-icon-color: #1f2329;
+  --van-nav-bar-title-text-color: #1f2329;
+  --van-font-bold: 500;
+  --van-nav-bar-title-font-size: 17px;
 }
 </style>
