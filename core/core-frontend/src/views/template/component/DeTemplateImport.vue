@@ -192,10 +192,25 @@ const editTemplate = () => {
   nameCheck(nameCheckRequest).then(response => {
     save(state.templateInfo).then(response => {
       ElMessage.success(t('编辑成功'))
-      emits('refresh', { optType: 'refresh' })
+      emits('refresh', getRefreshPInfo())
       emits('closeEditTemplateDialog')
     })
   })
+}
+
+const getRefreshPInfo = () => {
+  const refreshPid = state.templateInfo.categories[0]
+  let refreshPName = ''
+  props.templateCategories.forEach(category => {
+    if (category.id === refreshPid) {
+      refreshPName = category.name
+    }
+  })
+  return {
+    optType: 'refresh',
+    refreshPid: refreshPid,
+    refreshPName: refreshPName
+  }
 }
 
 const importTemplate = () => {
@@ -216,7 +231,7 @@ const importTemplate = () => {
       }).then(() => {
         save(state.templateInfo).then(response => {
           ElMessage.success(t('覆盖成功'))
-          emits('refresh', { optType: 'refresh' })
+          emits('refresh', getRefreshPInfo())
           emits('closeEditTemplateDialog')
         })
       })
@@ -225,7 +240,7 @@ const importTemplate = () => {
       nameCheck(nameCheckRequest).then(response => {
         save(state.templateInfo).then(response => {
           ElMessage.success(t('导入成功'))
-          emits('refresh', { optType: 'refresh' })
+          emits('refresh', getRefreshPInfo())
           emits('closeEditTemplateDialog')
         })
       })

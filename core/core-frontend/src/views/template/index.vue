@@ -370,7 +370,7 @@ const handleClick = (tab, event) => {
 
 const importRefresh = params => {
   if (params.optType === 'refresh') {
-    showCurrentTemplate(state.currentTemplateId, state.currentTemplateLabel)
+    templateListRef.value.nodeClick({ id: params.refreshPid, name: params.refreshPid })
   } else {
     showTemplateEditDialog('new', null)
   }
