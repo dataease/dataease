@@ -47,7 +47,6 @@ export function watermark(settings, domId, watermarkDomId = 'de-watermark-server
   defaultSettings.watermark_rows = parseInt((defaultSettings.watermark_y_space + page_height - defaultSettings.watermark_y) / (defaultSettings.watermark_height + defaultSettings.watermark_y_space))
   defaultSettings.watermark_y_space = parseInt(((page_height - defaultSettings.watermark_y) - defaultSettings.watermark_height * defaultSettings.watermark_rows) / (defaultSettings.watermark_rows - 1))
   defaultSettings.watermark_rows = defaultSettings.watermark_rows < 2 ? 2 : defaultSettings.watermark_rows
-  console.log('watermark_rows=' + defaultSettings.watermark_rows)
   defaultSettings.watermark_cols = defaultSettings.watermark_cols < 2 ? 2 : defaultSettings.watermark_cols
   let x
   let y
