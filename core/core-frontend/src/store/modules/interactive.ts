@@ -6,6 +6,8 @@ import { listDatasources } from '@/api/datasource'
 import type { BusiTreeRequest, BusiTreeNode } from '@/models/tree/TreeNode'
 import { pathValid } from '@/store/modules/permission'
 import { useCache } from '@/hooks/web/useCache'
+import { useAppStoreWithOut } from '@/store/modules/app'
+const appStore = useAppStoreWithOut()
 const { wsCache } = useCache()
 export interface InnerInteractive {
   rootManage: boolean
@@ -47,7 +49,7 @@ export const interactiveStore = defineStore('interactive', {
   actions: {
     async setInteractive(param: BusiTreeRequest) {
       const flag = busiFlagMap.findIndex(item => item === param.busiFlag)
-      if (!hasMenuAuth(flag) && !window.DataEaseBi) {
+      if (!hasMenuAuth(flag) && !window.DataEaseBi && !appStore.getIsIframe) {
         const tempData: InnerInteractive = {
           rootManage: false,
           anyManage: false,
