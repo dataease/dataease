@@ -2136,7 +2136,9 @@ export default {
     dsIntervalTime: '数据源检测时间间隔',
     dsExecuteTime: '数据源检测频率',
     frontTimeOut: '请求超时时间（秒）',
-    logLiveTime: '日志保留时间（天）'
+    logLiveTime: '日志保留时间（天）',
+    platformOid: '第三方平台用户组织',
+    platformRid: '第三方平台用户角色'
   },
   template_manage: {
     name_already_exists_type: '分类名称已存在',

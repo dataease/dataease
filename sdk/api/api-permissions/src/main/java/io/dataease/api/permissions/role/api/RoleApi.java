@@ -8,6 +8,7 @@ import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
 import io.dataease.model.KeywordRequest;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -90,4 +91,8 @@ public interface RoleApi {
     @Operation(summary = "查询组织内角色")
     @PostMapping("/byCurOrg")
     List<RoleVO> byCurOrg(@RequestBody KeywordRequest request);
+
+    @Hidden
+    @GetMapping("/queryWithOid/{oid}")
+    List<RoleVO> queryWithOid(@PathVariable("oid") Long oid);
 }
