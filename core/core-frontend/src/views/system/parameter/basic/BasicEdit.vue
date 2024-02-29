@@ -18,7 +18,9 @@ const state = reactive({
     dsExecuteTime: 'minute',
     frontTimeOut: '30'
   }),
-  settingList: []
+  settingList: [],
+  orgOptions: [],
+  roleOptions: []
 })
 
 const rule = reactive<FormRules>({
@@ -36,7 +38,10 @@ const buildSettingList = () => {
     const pkey = item.pkey.startsWith('basic.') ? item.pkey : `basic.${item.pkey}`
     const sort = item.sort
     const type = item.type
-    const pval = state.form[item.pkey]
+    let pval = state.form[item.pkey]
+    if (Array.isArray(pval)) {
+      pval = pval.join(',')
+    }
     return { pkey, pval, type, sort }
   })
 }
@@ -99,7 +104,9 @@ const closeLoading = () => {
   loadingInstance.value?.close()
 }
 
-const edit = list => {
+const edit = (list, orgOptions, roleOptions) => {
+  state.orgOptions = orgOptions || []
+  state.roleOptions = roleOptions || []
   state.settingList = list.map(item => {
     const pkey = item.pkey
     if (pkey === 'basic.logLiveTime') {
@@ -114,10 +121,61 @@ const edit = list => {
     item['label'] = `setting_${pkey}`
     item['pkey'] = pkey.split('.')[1]
     let pval = item.pval
+    if (item.pkey.includes('platformRid') && pval?.length) {
+      pval = pval.split(',')
+      if (!rule['platformRid']) {
+        rule['platformRid'] = [
+          {
+            required: true,
+            message: t('common.require'),
+            trigger: ['blur', 'change']
+          }
+        ]
+      }
+    }
+    if (item.pkey.includes('platformOid')) {
+      if (!rule['platformOid']) {
+        rule['platformOid'] = [
+          {
+            required: true,
+            message: t('common.require'),
+            trigger: ['blur', 'change']
+          }
+        ]
+      }
+    }
     state.form[item['pkey']] = pval || state.form[item['pkey']]
     return item
   })
   dialogVisible.value = true
+}
+const loadRoleOptions = async () => {
+  const oid = state.form['platformOid']
+  if (!oid) {
+    return
+  }
+  const res = await request.get({ url: `/role/queryWithOid/${oid}` })
+  const data = res.data
+  const map = groupBy(data)
+  state.roleOptions[0].children = map.get(false)
+  state.roleOptions[1].children = map.get(true)
+}
+const groupBy = list => {
+  const map = new Map()
+  list.forEach(item => {
+    const readonly = item.readonly
+    let arr = map.get(readonly)
+    if (!arr) {
+      arr = []
+    }
+    arr.push({ value: item.id, label: item.name, disabled: false })
+    map.set(readonly, arr)
+  })
+  return map
+}
+const oidChange = () => {
+  state.form['platformRid'] = []
+  loadRoleOptions()
 }
 defineExpose({
   edit
@@ -198,6 +256,29 @@ defineExpose({
             :placeholder="t('common.inputText')"
             controls-position="right"
             type="number"
+          />
+        </div>
+        <div v-else-if="item.pkey === 'platformOid'">
+          <el-tree-select
+            class="edit-all-line"
+            v-model="state.form[item.pkey]"
+            :data="state.orgOptions"
+            check-strictly
+            :render-after-expand="false"
+            @change="oidChange"
+          />
+        </div>
+        <div v-else-if="item.pkey === 'platformRid'">
+          <el-tree-select
+            class="edit-all-line"
+            v-model="state.form[item.pkey]"
+            :data="state.roleOptions"
+            :highlight-current="true"
+            multiple
+            :render-after-expand="false"
+            :placeholder="$t('common.please_select') + $t('user.role')"
+            show-checkbox
+            check-on-click-node
           />
         </div>
         <v-else />
