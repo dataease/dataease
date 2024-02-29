@@ -3,6 +3,7 @@ package io.dataease.api.system;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.system.request.OnlineMapEditor;
 import io.dataease.api.system.vo.SettingItemVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -42,5 +43,9 @@ public interface SysParameterApi {
     @Operation(summary = "查询超时时间(非xpack)")
     @GetMapping("/requestTimeOut")
     public Integer RequestTimeOut();
+
+    @Hidden
+    @GetMapping("/ui")
+    List<Object> ui();
 
 }

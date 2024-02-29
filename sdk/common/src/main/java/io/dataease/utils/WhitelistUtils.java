@@ -39,7 +39,7 @@ public class WhitelistUtils {
             "/wecom/token",
             "/sysParameter/requestTimeOut",
             "/setting/authentication/status",
-            "/appearance/query",
+            "/sysParameter/ui",
             "/");
 
     public static boolean match(String requestURI) {

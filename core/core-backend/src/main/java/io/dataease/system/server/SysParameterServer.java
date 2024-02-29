@@ -8,7 +8,6 @@ import io.dataease.system.dao.auto.entity.CoreSysSetting;
 import io.dataease.system.manage.SysParameterManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -60,5 +59,10 @@ public class SysParameterServer implements SysParameterApi {
             }
         }
         return frontTimeOut;
+    }
+
+    @Override
+    public List<Object> ui() {
+        return sysParameterManage.getUiList();
     }
 }
