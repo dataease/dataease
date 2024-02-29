@@ -246,6 +246,14 @@ declare interface ChartTableCellAttr {
    * 单元格行高
    */
   tableItemHeight: number
+  /**
+   * 是否开启斑马纹
+   */
+  enableTableCrossBG: boolean
+  /**
+   * 斑马纹单数行颜色
+   */
+  tableItemSubBgColor: string
 }
 
 /**

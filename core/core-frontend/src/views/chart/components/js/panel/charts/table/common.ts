@@ -27,7 +27,9 @@ export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'tableItemFontSize',
     'tableFontColor',
     'tableItemAlign',
-    'tableItemHeight'
+    'tableItemHeight',
+    'enableTableCrossBG',
+    'tableItemSubBgColor'
   ],
   'title-selector': [
     'title',

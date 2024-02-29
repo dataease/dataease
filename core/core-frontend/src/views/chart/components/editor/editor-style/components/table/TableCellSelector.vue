@@ -82,6 +82,34 @@ onMounted(() => {
         @change="changeTableCell('tableItemBgColor')"
       />
     </el-form-item>
+    <el-form-item
+      :class="'form-item-' + themes"
+      class="form-item"
+      v-if="showProperty('enableTableCrossBG')"
+      label=""
+    >
+      <el-checkbox
+        v-model="state.tableCellForm.enableTableCrossBG"
+        :label="t('chart.stripe')"
+        :effect="themes"
+        @change="changeTableCell('enableTableCrossBG')"
+      />
+    </el-form-item>
+    <el-form-item
+      :class="'form-item-' + themes"
+      class="form-item"
+      label=""
+      v-if="showProperty('tableItemSubBgColor')"
+    >
+      <el-color-picker
+        v-model="state.tableCellForm.tableItemSubBgColor"
+        :effect="themes"
+        :predefine="predefineColors"
+        :disabled="!state.tableCellForm.enableTableCrossBG"
+        is-custom
+        @change="changeTableCell('tableItemSubBgColor')"
+      />
+    </el-form-item>
     <el-space>
       <el-form-item
         class="form-item"

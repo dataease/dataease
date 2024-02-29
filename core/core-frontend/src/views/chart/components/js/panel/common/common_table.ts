@@ -236,7 +236,8 @@ export function getCustomTheme(chart: Chart): S2Theme {
     if (tableCell) {
       const tableFontColor = hexColorToRGBA(tableCell.tableFontColor, basicStyle.alpha)
       const tableItemBgColor = hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
-      const { tableItemAlign, tableItemFontSize } = tableCell
+      const tableItemSubBgColor = hexColorToRGBA(tableCell.tableItemSubBgColor, basicStyle.alpha)
+      const { tableItemAlign, tableItemFontSize, enableTableCrossBG } = tableCell
       const tmpTheme: S2Theme = {
         rowCell: {
           cell: {
@@ -267,7 +268,7 @@ export function getCustomTheme(chart: Chart): S2Theme {
         },
         dataCell: {
           cell: {
-            crossBackgroundColor: tableItemBgColor,
+            crossBackgroundColor: enableTableCrossBG ? tableItemSubBgColor : tableItemBgColor,
             backgroundColor: tableItemBgColor
           },
           bolderText: {
@@ -381,8 +382,11 @@ export function getConditions(chart: Chart) {
   if (conditions?.length > 0) {
     const { tableCell, basicStyle } = parseJson(chart.customAttr)
     const valueColor = tableCell.tableFontColor
-    const valueBgColor = hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
-
+    let valueBgColor = hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
+    const enableTableCrossBG = tableCell.enableTableCrossBG
+    if (enableTableCrossBG) {
+      valueBgColor = null
+    }
     for (let i = 0; i < conditions.length; i++) {
       const field = conditions[i]
       res.text.push({
@@ -396,9 +400,8 @@ export function getConditions(chart: Chart) {
       res.background.push({
         field: field.field.dataeaseName,
         mapping(value) {
-          return {
-            fill: mappingColor(value, valueBgColor, field, 'backgroundColor')
-          }
+          const fill = mappingColor(value, valueBgColor, field, 'backgroundColor')
+          return fill ? { fill } : null
         }
       })
     }
@@ -614,7 +617,8 @@ class SortTooltip extends BaseTooltip {
       style: {
         left: `${this.position?.x}px`,
         top: `${this.position?.y}px`,
-        pointerEvents: enterable ? 'all' : 'none'
+        pointerEvents: enterable ? 'all' : 'none',
+        zIndex: 9999
       },
       visible: true
     })
