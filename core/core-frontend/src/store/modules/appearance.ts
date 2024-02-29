@@ -111,7 +111,6 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.loaded = data
     },
     async setAppearance() {
-      return
       const desktop = wsCache.get('app.desktop')
       if (desktop) {
         this.loaded = true
