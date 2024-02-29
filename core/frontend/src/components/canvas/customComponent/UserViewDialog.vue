@@ -4,7 +4,7 @@
     :class="isAbsoluteContainer ? 'abs-container' : ''"
   >
     <de-main-container
-      v-show="showChartCanvas"
+      v-if="showChartCanvas"
       v-loading="exportLoading"
       style="overflow: hidden"
       :element-loading-text="$t('panel.data_loading')"
@@ -70,8 +70,9 @@
         </div>
       </div>
     </de-main-container>
-    <de-main-container v-show="!showChartCanvas">
+    <de-main-container v-else>
       <table-normal
+        id="chartCanvas"
         :enable-scroll="false"
         :chart="chartTable"
         :show-summary="false"
