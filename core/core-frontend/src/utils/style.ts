@@ -203,12 +203,13 @@ export function getCanvasStyle(canvasStyleData) {
   }
 
   if (dvMainStore.mobileInPc && mobileSetting?.customSetting) {
-    const { backgroundType, color, alpha, imageUrl } = mobileSetting
-    if (backgroundType === 'image' && typeof imageUrl === 'string') {
-      style['background'] = `url(${imgUrlTrans(imageUrl)}) no-repeat`
-    } else if (backgroundType === 'color') {
-      const colorRGBA = hexColorToRGBA(color, alpha === undefined ? 100 : alpha)
-      style['background'] = colorRGBA
+    const { backgroundColorSelect, color, backgroundImageEnable, background } = mobileSetting
+    if (backgroundColorSelect && backgroundImageEnable && typeof background === 'string') {
+      style['background'] = `url(${imgUrlTrans(background)}) no-repeat ${color}`
+    } else if (backgroundColorSelect) {
+      style['background-color'] = color
+    } else if (backgroundImageEnable) {
+      style['background'] = `url(${imgUrlTrans(background)}) no-repeat`
     }
   }
   return style
