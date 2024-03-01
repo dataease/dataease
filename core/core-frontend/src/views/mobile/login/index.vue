@@ -46,6 +46,10 @@ const validatePwd = value => {
   return regep.test(value)
 }
 
+const visible = ref(true)
+const clickRightIcon = () => {
+  visible.value = !visible.value
+}
 const onSubmit = async () => {
   if (!checkUsername(username.value) || !validatePwd(password.value)) {
     showToast({
@@ -106,13 +110,21 @@ const usernameEndValidate = ({ status, message }) => {
           </div>
           <van-field
             v-model="password"
-            type="password"
+            :type="visible ? 'password' : 'text'"
+            @click-right-icon="clickRightIcon"
             :style="{ borderColor: !!passwordError ? '#F54A45' : '#bbbfc4' }"
             name="密码"
             placeholder="请输入密码"
             :rules="[{ required: true, message: '请填写密码' }]"
             @end-validate="passwordEndValidate"
-          />
+          >
+            <template #right-icon>
+              <el-icon>
+                <Icon v-if="visible" name="icon_invisible_outlined"></Icon>
+                <Icon v-else name="icon_visible_outlined"></Icon>
+              </el-icon>
+            </template>
+          </van-field>
           <div v-if="!!passwordError" class="van-ed-error">
             {{ passwordError }}
           </div>
@@ -157,6 +169,15 @@ const usernameEndValidate = ({ status, message }) => {
       line-height: 20px;
       margin-top: -12px;
       color: #f54a45;
+    }
+
+    .van-field__right-icon {
+      padding: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-right: -2px;
+      font-size: 20px;
     }
 
     .van-field {
