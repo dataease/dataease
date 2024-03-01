@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { getData } from '@/api/chart'
-import { ref, reactive, shallowRef, computed, CSSProperties, toRefs } from 'vue'
+import { ref, reactive, shallowRef, computed, CSSProperties, toRefs, PropType } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy } from '@/utils/utils'
@@ -16,7 +16,7 @@ import { hexColorToRGBA } from '@/views/chart/components/js/util'
 
 const props = defineProps({
   view: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     default() {
       return {
         propValue: null
@@ -64,7 +64,11 @@ const resultObject = computed(() => {
 })
 
 const resultName = computed(() => {
-  return resultObject.value?.name
+  if (view.value?.yAxis?.length) {
+    const axis = view.value.yAxis[0]
+    return axis.chartShowName ? axis.chartShowName : axis.name
+  }
+  return undefined
 })
 
 const result = computed(() => {
