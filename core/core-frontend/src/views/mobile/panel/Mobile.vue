@@ -50,16 +50,22 @@ const loadCanvasData = (dvId, weight?) => {
 
 const route = useRoute()
 const router = useRouter()
-
+let fromPage, cache
 onBeforeMount(() => {
   dvMainStore.setMobileInPc(true)
   const dvId = route.query.dvId as unknown as string
+  fromPage = route.query.from as unknown as string
+  cache = route.query.cache as unknown as string
   loadCanvasData(dvId)
 })
 
 const onClickLeft = () => {
   router.replace({
-    path: '/index'
+    path: '/index',
+    query: {
+      from: fromPage,
+      cache: cache
+    }
   })
 }
 </script>
