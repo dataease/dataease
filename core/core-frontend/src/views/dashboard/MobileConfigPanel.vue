@@ -2,6 +2,7 @@
 import { ref, onMounted, unref, onBeforeUnmount, computed } from 'vue'
 import eventBus from '@/utils/eventBus'
 import MobileBackgroundSelector from './MobileBackgroundSelector.vue'
+import { ElMessageBox } from 'element-plus-secondary'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getStyle } from '@/utils/style'
@@ -10,8 +11,6 @@ import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
 const mobileLoading = ref(true)
-const activeName = ref('hide')
-
 const emits = defineEmits(['pcMode'])
 
 const getComponentStyleDefault = style => {
@@ -57,6 +56,7 @@ const hanedleMessage = event => {
   }
 
   if (event.data.type === 'delFromMobile') {
+    changeTimes.value++
     componentData.value.some(ele => {
       if (ele.id === event.data.value) {
         ele.inMobile = false
@@ -99,65 +99,103 @@ onBeforeUnmount(() => {
 
 const addToMobile = com => {
   com.inMobile = true
+  changeTimes.value++
   mobileStatusChange('addToMobile', JSON.parse(JSON.stringify(unref(com))))
+}
+
+const changeTimes = ref(0)
+
+const handleBack = () => {
+  if (!changeTimes.value) {
+    emits('pcMode')
+    return
+  }
+  ElMessageBox.confirm('当前的更改尚未保存，确定退出吗？', {
+    confirmButtonType: 'primary',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    emits('pcMode')
+  })
+}
+
+const save = () => {
+  changeTimes.value = 0
+  mobileStatusChange('mobileSave', undefined)
 }
 </script>
 
 <template>
   <div class="mobile-config-panel">
-    <div class="mobile-to-pc">
-      <el-icon class="custom-el-icon back-icon" @click="emits('pcMode')">
-        <Icon class="toolbar-icon" name="icon_left_outlined" />
-      </el-icon>
-    </div>
-    <div class="mobile-save">
-      <el-button type="primary" @click="mobileStatusChange('mobileSave', undefined)"
-        >保存</el-button
-      >
+    <div class="top-bar">
+      <div class="mobile-to-pc">
+        <el-icon @click="handleBack">
+          <Icon name="icon_left_outlined" />
+        </el-icon>
+        {{ dvInfo.name }}
+      </div>
+      <div class="mobile-save">
+        <el-icon @click="handleBack">
+          <Icon name="icon_pc_outlined" />
+        </el-icon>
+        <el-button type="primary" @click="save">保存</el-button>
+      </div>
     </div>
     <div class="mobile-canvas">
-      <div class="config-panel-title">{{ dvInfo.name }}</div>
+      <div class="config-panel-title">
+        <el-icon>
+          <Icon name="icon_left_outlined" />
+        </el-icon>
+        {{ dvInfo.name }}
+      </div>
       <div class="config-panel-content" v-loading="mobileLoading">
-        <iframe src="./mobile.html#/panel" frameborder="0" width="360" height="570" />
+        <iframe src="./mobile.html#/panel" frameborder="0" width="375" height="640" />
       </div>
       <div class="config-panel-foot"></div>
     </div>
     <div class="mobile-com-list">
-      <el-tabs v-model="activeName">
-        <el-tab-pane label="隐藏的组件" name="hide" />
-        <el-tab-pane label="样式设置" name="style" />
-      </el-tabs>
-      <template v-if="activeName === 'hide'">
-        <div
-          :style="{ height: '200px', width: 'calc(33.3% - 16px)' }"
-          class="mobile-wrapper-inner-adaptor"
-          v-for="config in componentDataNotInMobile"
-          :key="config.id"
-        >
-          <component
-            :is="findComponent(config['component'])"
-            ref="component"
-            class="component"
-            :view="canvasViewInfo[config.id]"
-            :canvas-style-data="canvasStyleData"
-            :dv-info="dvInfo"
-            :dv-type="dvInfo.type"
-            :canvas-view-info="canvasViewInfo"
-            :prop-value="config?.propValue"
-            :element="config"
-            :request="config?.request"
-            :style="getComponentStyleDefault(config?.style)"
-            :linkage="config?.linkage"
-            show-position="preview"
-            :disabled="true"
-            :is-edit="false"
-          />
-          <div class="mobile-com-mask"></div>
-
-          <div class="pc-select-to-mobile" v-if="!mobileLoading" @click="addToMobile(config)"></div>
-        </div>
-      </template>
-      <MobileBackgroundSelector v-else></MobileBackgroundSelector>
+      <div class="config-mobile-sidebar">移动端配置</div>
+      <el-collapse>
+        <el-collapse-item title="样式设置" name="style" class="content-no-padding-bottom">
+          <MobileBackgroundSelector @styleChange="changeTimes++"></MobileBackgroundSelector>
+        </el-collapse-item>
+        <el-collapse-item title="可视化组件" name="com" class="content-no-padding-bottom">
+          <div
+            :style="{ height: '198px', width: '198px' }"
+            class="mobile-wrapper-inner-adaptor"
+            v-for="config in componentDataNotInMobile"
+            :key="config.id"
+          >
+            <div class="component-outer">
+              <component
+                :is="findComponent(config['component'])"
+                ref="component"
+                class="component"
+                :view="canvasViewInfo[config.id]"
+                :canvas-style-data="canvasStyleData"
+                :dv-info="dvInfo"
+                :dv-type="dvInfo.type"
+                :canvas-view-info="canvasViewInfo"
+                :prop-value="config?.propValue"
+                :element="config"
+                :request="config?.request"
+                :style="getComponentStyleDefault(config?.style)"
+                :linkage="config?.linkage"
+                show-position="preview"
+                :disabled="true"
+                :is-edit="false"
+              />
+            </div>
+            <div class="mobile-com-mask"></div>
+            <div
+              class="pc-select-to-mobile"
+              v-if="!mobileLoading"
+              @click="addToMobile(config)"
+            ></div>
+          </div>
+        </el-collapse-item>
+      </el-collapse>
     </div>
   </div>
 </template>
@@ -167,70 +205,123 @@ const addToMobile = com => {
   height: 100vh;
   width: 100vw;
   position: relative;
+  background: #f5f6f7;
+  overflow-y: auto;
 
-  .mobile-to-pc {
-    position: absolute;
-    left: 20px;
-    top: 20px;
-    cursor: pointer;
+  .top-bar {
+    position: sticky;
+    top: 0;
+    left: 0;
+    z-index: 10;
+    background: #050e21;
+    box-shadow: 0px 2px 4px 0px #1f23291f;
+    height: 64px;
+    padding: 0 24px 0 20px;
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+
+    .mobile-save {
+      display: flex;
+      align-items: center;
+      .ed-icon {
+        font-size: 20px;
+        cursor: pointer;
+        margin-right: 20px;
+        color: #ffffff99;
+      }
+    }
+
+    .mobile-to-pc {
+      display: flex;
+      align-items: center;
+      font-size: 16px;
+      font-weight: 400;
+      line-height: 24px;
+      color: #ffffffe5;
+      .ed-icon {
+        font-size: 20px;
+        cursor: pointer;
+        margin-right: 12px;
+        color: #ffffffcc;
+      }
+    }
   }
 
-  .mobile-save {
-    position: absolute;
-    right: 20px;
-    top: 20px;
-  }
   .mobile-canvas {
     border-radius: 30px;
-    width: 370px;
-    min-height: 600px;
-    max-height: 700px;
+    width: 419px;
+    height: 854px;
     overflow: hidden;
-    background-color: #000;
     background-size: 100% 100% !important;
-    padding: 5px;
     height: 777px;
     position: absolute;
-    top: 100px;
-    left: 100px;
+    top: 104px;
+    left: calc(50% - 419px);
+    background-image: url(../../assets/img/mobile-bg-pc.png);
+    padding: 0 22px;
 
     .config-panel-title {
-      margin-top: 30px;
+      margin-top: 64px;
+      height: 44px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
       background: #fff;
-      text-align: center;
+      position: relative;
+
+      .ed-icon {
+        font-size: 20px;
+        position: absolute;
+        left: 16px;
+        top: 12px;
+      }
+    }
+
+    .config-panel-content {
+      width: 100%;
+      border-bottom-left-radius: 45px;
+      border-bottom-right-radius: 45px;
+      overflow: hidden;
     }
   }
 
   .mobile-com-list {
-    position: absolute;
-    top: 100px;
-    left: 500px;
-    width: calc(100% - 600px);
-    max-height: 700px;
-    display: flex;
-    flex-wrap: wrap;
-    background: #f5f6f7;
-    padding: 16px;
-    padding-top: 0;
-    overflow-y: auto;
+    float: right;
+    width: 420px;
+    height: 100%;
+    background-color: #fff;
+    position: relative;
+    border-left: rgba(31, 35, 41, 0.15) 1px solid;
+    height: 100%;
 
-    :deep(.ed-tabs) {
-      width: 100%;
-      margin-bottom: 16px;
-      position: sticky;
-      top: 0;
-      left: 0;
-      z-index: 20;
-      background: #f5f6f7;
+    .config-mobile-sidebar {
+      font-size: 14px;
+      font-weight: 500;
+      line-height: 22px;
+      padding: 8px;
     }
-
     .mobile-wrapper-inner-adaptor {
       position: relative;
-      margin-right: 24px;
-      margin-bottom: 24px;
+      margin-right: 8px;
+      margin-bottom: 8px;
+      float: left;
       background: #fff;
-      &:nth-child(3n - 2) {
-        margin-right: 0px;
+      padding: 31px 4px 36px 4px;
+      border-radius: 4px;
+      border: 1px solid #dee0e3;
+      &:nth-child(2n) {
+        margin-right: -1px;
+      }
+
+      .component-outer {
+        position: relative;
+        width: 100%;
+        height: 100%;
+      }
+
+      &:hover {
+        border-color: var(--ed-color-primary);
       }
     }
 
@@ -247,11 +338,11 @@ const addToMobile = com => {
       position: absolute;
       width: 16px;
       height: 16px;
-      top: 0;
-      right: 0;
-      border: 2px solid #ccc;
+      top: 12px;
+      right: 12px;
+      border: 2px solid #8f959e;
       border-radius: 4px;
-      z-index: 11;
+      z-index: 20;
       cursor: pointer;
     }
   }

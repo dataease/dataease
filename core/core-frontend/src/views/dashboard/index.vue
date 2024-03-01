@@ -17,6 +17,7 @@ import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/Cha
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { check, compareStorage } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
+import { cloneDeep } from 'lodash-es'
 import { useEmbedded } from '@/store/modules/embedded'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
@@ -77,7 +78,20 @@ const checkPer = async resourceId => {
 const mobileConfig = ref(false)
 
 const onMobileConfig = () => {
-  mobileConfig.value = true
+  const canvasStyleDataCopy = cloneDeep(canvasStyleData.value)
+  if (!canvasStyleDataCopy.mobileSetting) {
+    canvasStyleDataCopy.mobileSetting = {
+      backgroundColorSelect: false,
+      background: '',
+      color: '#ffffff',
+      backgroundImageEnable: false,
+      customSetting: false
+    }
+  }
+  dvMainStore.setCanvasStyle(canvasStyleDataCopy)
+  nextTick(() => {
+    mobileConfig.value = true
+  })
 }
 // 全局监听按键事件
 onMounted(async () => {
@@ -96,6 +110,7 @@ onMounted(async () => {
     return
   }
   initDataset()
+
   state.sourcePid = pid
   if (resourceId) {
     dataInitState.value = false

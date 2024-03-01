@@ -1,12 +1,9 @@
 <template>
   <div class="shape" ref="shapeInnerRef" :id="domId" @dblclick="handleDbClick">
     <div v-if="showCheck" class="del-from-mobile" @click="delFromMobile">
-      <label class="el-checkbox el-checkbox--small is-checked"
-        ><span class="el-checkbox__input is-checked"
-          ><input class="el-checkbox__original" checked type="checkbox" /><span
-            class="el-checkbox__inner"
-          ></span></span
-      ></label>
+      <el-icon>
+        <Icon name="mobile-checkbox"></Icon>
+      </el-icon>
     </div>
     <div
       class="shape-outer"
@@ -928,9 +925,11 @@ onMounted(() => {
 
   .del-from-mobile {
     position: absolute;
-    right: 5px;
-    top: 5px;
+    right: 12px;
+    top: 12px;
     z-index: 2;
+    font-size: 16px;
+    cursor: pointer;
   }
 }
 
