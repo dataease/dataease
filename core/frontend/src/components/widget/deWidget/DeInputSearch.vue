@@ -86,7 +86,8 @@ export default {
     }
   },
   created() {
-    if (this.element.options.value) {
+    const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]?.length
+    if (this.element.options.value || existLastValidFilters) {
       this.value = this.fillValueDerfault()
       this.search()
     }

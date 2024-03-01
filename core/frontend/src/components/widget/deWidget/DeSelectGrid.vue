@@ -342,7 +342,8 @@ export default {
     initLoad() {
       this.value = this.element.options.attrs.multiple ? [] : null
       this.initOptions()
-      if (this.element.options.value) {
+      const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]?.length
+      if (this.element.options.value || existLastValidFilters) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }
