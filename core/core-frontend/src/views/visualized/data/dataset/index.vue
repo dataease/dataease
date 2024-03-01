@@ -599,7 +599,12 @@ const getMenuList = (val: boolean) => {
       </div>
     </el-aside>
 
-    <div class="dataset-content" :class="(isDataEaseBi || isIframe) && 'h100'">
+    <div
+      class="dataset-content"
+      :class="{
+        auto: isIframe
+      }"
+    >
       <template v-if="!state.datasetTree.length && mounted">
         <empty-background description="暂无数据集" img-type="none">
           <el-button
@@ -794,6 +799,9 @@ const getMenuList = (val: boolean) => {
 
   .dataset-content {
     background: #f5f6f7;
+    &.auto {
+      height: auto;
+    }
   }
 
   .dataset-list {

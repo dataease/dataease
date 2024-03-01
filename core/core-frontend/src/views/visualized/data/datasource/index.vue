@@ -808,7 +808,13 @@ const getMenuList = (val: boolean) => {
       </div>
     </el-aside>
 
-    <div class="datasource-content" :class="(isDataEaseBi || isIframe) && 'h100'">
+    <div
+      class="datasource-content"
+      :class="{
+        auto: isIframe,
+        h100: isDataEaseBi || isIframe
+      }"
+    >
       <template v-if="!state.datasourceTree.length && mounted">
         <empty-background description="暂无数据源" img-type="none">
           <el-button
@@ -1620,6 +1626,9 @@ const getMenuList = (val: boolean) => {
   .datasource-content {
     background: #f5f6f7;
     overflow-y: auto;
+    &.auto {
+      height: auto;
+    }
   }
 
   .m24 {
