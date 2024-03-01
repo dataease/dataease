@@ -235,6 +235,7 @@ export default {
       } else if (val > 3600) {
         this.overallSettingForm.refreshBrowserTime = 3600
       }
+      this.$store.commit('recordSnapshot')
     },
     themeChange(modifyName) {
       if (modifyName === 'themeColor') {
