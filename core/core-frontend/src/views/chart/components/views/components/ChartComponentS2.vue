@@ -302,15 +302,20 @@ const resizeAction = resizeColumn => {
   if (showPosition.value !== 'canvas') {
     return
   }
-  const fieldId = resizeColumn.info.meta.field
+  const fieldId: string = resizeColumn.info.meta.field
   const { basicStyle } = view.value.customAttr
   const containerWidth = document.getElementById(containerId).offsetWidth
-  basicStyle.tableFieldWidth?.forEach(item => {
-    if (item.fieldId === fieldId) {
-      item.width = parseFloat(((resizeColumn.info.resizedWidth / containerWidth) * 100).toFixed(2))
-    }
-  })
-  emitter.emit('set-table-column-width', basicStyle.tableFieldWidth)
+  const column = basicStyle.tableFieldWidth?.find(i => i.fieldId === fieldId)
+  let tableWidth: ChartBasicStyle['tableFieldWidth']
+  const width = parseFloat(((resizeColumn.info.resizedWidth / containerWidth) * 100).toFixed(2))
+  if (column) {
+    column.width = width
+    tableWidth = [...basicStyle.tableFieldWidth]
+  } else {
+    const tmp = { fieldId, width }
+    tableWidth = basicStyle.tableFieldWidth?.length ? [...basicStyle.tableFieldWidth, tmp] : [tmp]
+  }
+  emitter.emit('set-table-column-width', tableWidth)
 }
 defineExpose({
   calcData,
