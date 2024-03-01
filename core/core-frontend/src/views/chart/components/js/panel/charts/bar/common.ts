@@ -37,8 +37,7 @@ export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'splitLine',
     'axisForm',
     'axisLabel',
-    'position',
-    'axisLabelFormatter'
+    'position'
   ],
   'title-selector': [
     'title',

@@ -26,7 +26,8 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter']
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
+    'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'axisLabelFormatter']
   }
   protected baseOptions: ColumnOptions = {
     xField: 'field',
