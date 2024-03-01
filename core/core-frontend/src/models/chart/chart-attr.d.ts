@@ -70,7 +70,7 @@ declare interface ChartBasicStyle {
     /**
      * 字段名称
      */
-    name: string
+    name?: string
     /**
      * 字段宽度占比
      */
