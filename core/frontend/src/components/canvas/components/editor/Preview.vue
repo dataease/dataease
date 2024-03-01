@@ -829,8 +829,8 @@ export default {
               if ((key === 'fontSize' || key === 'activeFontSize') && (this.terminal === 'mobile' || ['custom'].includes(component.type))) {
                 // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
               } else {
-                if (key === 'fontSize') {
-                  component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth * 1.6)
+                if (key === 'fontSize' && component.component !== 'de-tabs') {
+                  component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth * 1.4)
                 } else {
                   component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth)
                 }
