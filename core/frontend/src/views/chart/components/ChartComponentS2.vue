@@ -567,13 +567,18 @@ export default {
       }
       const fieldId = resizeColumn.info.meta.field
       const size = JSON.parse(this.chart.customAttr).size
-      size.tableFieldWidth?.forEach(item => {
-        if (item.fieldId === fieldId) {
-          const containerWidth = document.getElementById(this.chartId).offsetWidth
-          item.width = (resizeColumn.info.resizedWidth / containerWidth * 100).toFixed(2)
-        }
-      })
-      bus.$emit('set-table-column-width', size.tableFieldWidth)
+      const containerWidth = document.getElementById(this.chartId).offsetWidth
+      const column = size.tableFieldWidth?.find(i => i.fieldId === fieldId)
+      let tableWidth
+      const width = parseFloat((resizeColumn.info.resizedWidth / containerWidth * 100).toFixed(2))
+      if (column) {
+        column.width = width
+        tableWidth = [...size.tableFieldWidth]
+      } else {
+        const tmp = { fieldId, width }
+        tableWidth = size.tableFieldWidth?.length ? [...size.tableFieldWidth, tmp] : [tmp]
+      }
+      bus.$emit('set-table-column-width', tableWidth)
     }
   }
 }

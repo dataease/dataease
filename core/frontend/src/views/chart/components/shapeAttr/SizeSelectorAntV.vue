@@ -1848,7 +1848,7 @@ export default {
             } else {
               if (!this.sizeForm.tableFieldWidth?.length) {
                 this.sizeForm.tableFieldWidth = []
-                const defaultWidth = (100 / allAxis.length).toFixed(2)
+                const defaultWidth = parseFloat((100 / allAxis.length).toFixed(2))
                 allAxis.forEach(item => {
                   this.sizeForm.tableFieldWidth.push({
                     fieldId: item.dataeaseName,

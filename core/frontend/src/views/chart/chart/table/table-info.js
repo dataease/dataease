@@ -17,7 +17,6 @@ import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { handleTableEmptyStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
 import { maxBy, minBy, find } from 'lodash-es'
 import TableTooltip from '@/views/chart/components/table/TableTooltip.vue'
-import Vue from 'vue'
 
 class SortTooltip extends BaseTooltip {
   vueCom
