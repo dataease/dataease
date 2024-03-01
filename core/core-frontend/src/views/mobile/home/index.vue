@@ -115,7 +115,7 @@ const handleCellClick = ele => {
   router.push({
     path: '/panel/mobile',
     query: {
-      dvId: ele.id
+      dvId: ele.resourceId
     }
   })
 }
