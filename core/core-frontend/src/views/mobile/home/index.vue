@@ -4,6 +4,7 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useI18n } from '@/hooks/web/useI18n'
 import { shortcutOption } from '@/views/workbranch/ShortcutOption'
 import { useRouter } from 'vue-router'
+import { useCache } from '@/hooks/web/useCache'
 import Workbranch from '@/views/mobile/components/Workbranch.vue'
 import request from '@/config/axios'
 import nothingNone from '@/assets/img/none.png'
@@ -18,6 +19,7 @@ import 'vant/es/tabs/style'
 
 const router = useRouter()
 const { t } = useI18n()
+const { wsCache } = useCache('sessionStorage')
 
 const activeTab = ref('recent')
 const emptyTips = ref('')
@@ -104,14 +106,17 @@ const handleClick = ({ name, disabled }) => {
   }
 }
 onMounted(() => {
+  activeTab.value = wsCache.get('activeTab') || 'recent'
+  wsCache.set('activeTab', '')
   !!busiAuthList.length &&
     handleClick({
-      name: 'recent',
+      name: activeTab.value,
       disabled: false
     })
 })
 
 const handleCellClick = ele => {
+  wsCache.set('activeTab', activeTab.value)
   router.push({
     path: '/panel/mobile',
     query: {

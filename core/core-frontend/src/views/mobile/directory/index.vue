@@ -2,6 +2,7 @@
 import { ref, computed, onMounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { useCache } from '@/hooks/web/useCache'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import DashboardCell from '@/views/mobile/components/DashboardCell.vue'
@@ -19,6 +20,7 @@ const activeDirectName = ref('')
 const interactiveStore = interactiveStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
+const { wsCache } = useCache('sessionStorage')
 
 const dfsTree = (ids, arr) => {
   const id = ids.shift()
@@ -50,6 +52,10 @@ const onClickLeft = () => {
 const router = useRouter()
 
 const handleCellClick = ele => {
+  wsCache.set('directName', directName.value)
+  wsCache.set('activeDirectName', activeDirectName.value)
+  wsCache.set('activeTabbar', 'direct')
+  wsCache.set('directId', directId.value)
   router.push({
     path: '/panel/mobile',
     query: {
@@ -59,13 +65,14 @@ const handleCellClick = ele => {
 }
 
 const dataClick = val => {
-  directName.value.push(val.name)
-  activeDirectName.value = val.name
-  directId.value.push(val.id)
   if (val.leaf) {
     emits('hiddenTabbar', true)
     handleCellClick(val)
+    return
   }
+  directName.value.push(val.name)
+  activeDirectName.value = val.name
+  directId.value.push(val.id)
 }
 
 const getTree = async () => {
@@ -87,6 +94,14 @@ const getTree = async () => {
 
 onMounted(() => {
   getTree()
+  activeDirectName.value = wsCache.get('activeDirectName')
+  if (wsCache.get('activeTabbar') !== 'direct' || !activeDirectName.value) return
+  directName.value = wsCache.get('directName')
+  directId.value = wsCache.get('directId')
+  wsCache.set('directName', [])
+  wsCache.set('activeDirectName', '')
+  wsCache.set('directId', [])
+  wsCache.set('activeTabbar', '')
 })
 </script>
 
