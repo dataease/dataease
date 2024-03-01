@@ -508,24 +508,25 @@ export default {
       },
       deep: true
     },
+    mainHeight: {
+      handler(newVal, oldVla) {
+        this.$nextTick(() => {
+          this.reloadWatermark()
+        })
+      },
+      deep: true
+    },
     canvasInfoTempStyle: {
       handler(newVal, oldVla) {
-        const _this = this
-        _this.$nextTick(() => {
-          if (_this.screenShotStatues) {
-            _this.initWatermark('preview-temp-canvas-main')
-          } else {
-            _this.initWatermark()
-          }
+        this.$nextTick(() => {
+          this.reloadWatermark()
         })
       },
       deep: true
     },
     screenShotStatues: {
       handler(newVal, oldVla) {
-        if (this.screenShotStatues) {
-          this.initWatermark('preview-temp-canvas-main')
-        }
+        this.reloadWatermark()
       }
     }
   },
@@ -564,6 +565,13 @@ export default {
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
+    reloadWatermark() {
+      if (this.screenShotStatues) {
+        this.initWatermark('preview-temp-canvas-main')
+      } else {
+        this.initWatermark()
+      }
+    },
     filterLoaded(p) {
       buildAfterFilterLoaded(this.filterMap, p)
       this.filterMapCache = {}
