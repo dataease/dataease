@@ -37,7 +37,6 @@
 
 <script>
 import eventBus from '@/components/canvas/utils/eventBus'
-import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mapState } from 'vuex'
 import calculateComponentPositionAndSize from '@/components/canvas/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/components/canvas/utils/translate'
@@ -107,18 +106,8 @@ export default {
       this.cursors = this.getCursor() // 根据旋转角度获取光标位置
     }
     this.element.type === 'custom' && (this.pointList = ['l', 'r'])
-
-    eventBus.$on('runAnimation', this.runAnimation)
-  },
-  beforeDestroy() {
-    eventBus.$off('runAnimation', this.runAnimation)
   },
   methods: {
-    runAnimation() {
-      if (this.element === this.curComponent) {
-        runAnimation(this.$el, this.curComponent.animations)
-      }
-    },
     // 鼠标移入事件
     enter() {
       this.mouseOn = true

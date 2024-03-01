@@ -79,7 +79,6 @@
 
 <script>
 import { getStyle } from '@/components/canvas/utils/style'
-import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mixins } from '@/components/canvas/utils/events'
 import { mapState } from 'vuex'
 import DeOutWidget from '@/components/dataease/DeOutWidget'
@@ -235,9 +234,6 @@ export default {
       'componentGap',
       'panelViewDetailsInfo'
     ])
-  },
-  mounted() {
-    runAnimation(this.$el, this.config.animations)
   },
   methods: {
     triggerFilterLoaded(p) {
