@@ -508,7 +508,7 @@ export default {
       },
       deep: true
     },
-    mainHeight: {
+    canvasInfoTempStyle: {
       handler(newVal, oldVla) {
         const _this = this
         _this.$nextTick(() => {
@@ -518,7 +518,8 @@ export default {
             _this.initWatermark()
           }
         })
-      }
+      },
+      deep: true
     },
     screenShotStatues: {
       handler(newVal, oldVla) {
