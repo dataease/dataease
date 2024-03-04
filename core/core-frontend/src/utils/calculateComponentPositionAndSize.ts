@@ -396,5 +396,8 @@ export function calculateRadioComponentPositionAndSize(name, style, symmetricPoi
   } else if (['rt'].includes(name)) {
     style.left = symmetricPoint.x
     style.top = symmetricPoint.y - style.height
+  } else if (['rb'].includes(name)) {
+    style.left = symmetricPoint.x
+    style.top = symmetricPoint.y
   }
 }
