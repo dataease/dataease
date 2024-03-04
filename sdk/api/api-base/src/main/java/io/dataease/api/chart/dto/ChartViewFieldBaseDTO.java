@@ -6,7 +6,7 @@ import lombok.Data;
 import java.io.Serializable;
 
 /**
- * 视图字段base类，与数据集字段表基本一致
+ * 图表字段base类，与数据集字段表基本一致
  */
 @Data
 public class ChartViewFieldBaseDTO extends DatasetTableFieldDTO implements Serializable {

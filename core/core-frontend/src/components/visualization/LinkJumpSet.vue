@@ -529,7 +529,7 @@ const init = viewItem => {
       state.curDatasetInfo = res || {}
     })
 
-    // 获取当前视图的字段信息
+    // 获取当前图表的字段信息
     listFieldByDatasetGroup(chartDetails.tableId).then(rsp => {
       state.linkJumpCurViewFieldArray = []
       const sourceCurViewFieldArray = rsp.data
@@ -540,7 +540,7 @@ const init = viewItem => {
       })
     })
 
-    // 获取当前视图的关联信息
+    // 获取当前图表的关联信息
     queryWithViewId(dvInfo.value.id, state.viewId).then(rsp => {
       state.linkJump = rsp.data
       state.linkJumpInfoArray = []
@@ -639,7 +639,7 @@ const codeMirrorContentSet = content => {
   })
 }
 
-// 获取当前视图字段 关联仪表板的视图信息列表
+// 获取当前图表字段 关联仪表板的图表信息列表
 const getPanelViewList = dvId => {
   viewTableDetailList(dvId).then(rsp => {
     state.viewIdFieldArrayMap = {}

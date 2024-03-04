@@ -82,7 +82,7 @@ public class ChartDataManage {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_delete"));
         }
 
-        //如果是excel导出 则最多导出20万条； 如果是从仪表板获取视图数据，则仪表板的查询模式，查询结果的数量，覆盖视图对应的属性
+        //如果是excel导出 则最多导出20万条； 如果是从仪表板获取图表数据，则仪表板的查询模式，查询结果的数量，覆盖图表对应的属性
         if (view.getIsExcelExport()) {
             view.setResultMode(ChartConstants.VIEW_RESULT_MODE.CUSTOM);
             view.setResultCount(200000);
@@ -482,7 +482,7 @@ public class ChartDataManage {
         List<ChartViewFieldDTO> detailFieldList = new ArrayList<>();
         String detailFieldSql = null;
         List<String[]> detailData = new ArrayList<>();
-        //如果不是插件视图 走原生逻辑
+        //如果不是插件图表 走原生逻辑
         if (table.getMode() == 0) {// 直连
             if (ObjectUtils.isEmpty(dsMap)) {
                 DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_datasource_delete"));
@@ -1268,7 +1268,7 @@ public class ChartDataManage {
         List<String[]> data = new ArrayList<>();
 
         String querySql = null;
-        //如果不是插件视图 走原生逻辑
+        //如果不是插件图表 走原生逻辑
         if (table.getMode() == 0) {// 直连
             if (ObjectUtils.isEmpty(dsMap)) {
                 DEException.throwException(Translator.get("i18n_datasource_delete"));

@@ -14,7 +14,7 @@ import java.util.Map;
  */
 @Data
 public class VisualizationLinkJumpDTO extends VisualizationLinkJumpVO {
-    //仪表板可以跳转视图信息 sourceViewId#
+    //仪表板可以跳转图表信息 sourceViewId#
     private String sourceInfo;
 
     private List<String> targetInfoList;

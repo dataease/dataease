@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author fit2cloud
@@ -24,7 +24,7 @@ public class VisualizationLinkJump implements Serializable {
     private Long sourceDvId;
 
     /**
-     * 源视图ID
+     * 源图表ID
      */
     private Long sourceViewId;
 

@@ -38,7 +38,7 @@ public class VisualizationViewTableVO {
     private String type;
 
     /**
-     * 视图渲染方式
+     * 图表渲染方式
      */
     private String render;
 

@@ -107,7 +107,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public DataVisualizationVO findById(Long dvId, String busiFlag) {
         DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
         if (result != null) {
-            //获取视图信息
+            //获取图表信息
             List<ChartViewDTO> chartViewDTOS = chartViewManege.listBySceneId(dvId);
             if (!CollectionUtils.isEmpty(chartViewDTOS)) {
                 Map<Long, ChartViewDTO> viewInfo = chartViewDTOS.stream().collect(Collectors.toMap(ChartViewDTO::getId, chartView -> chartView));
@@ -143,7 +143,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
         request.setId(newDvId);
-        //保存视图信
+        //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), newDvId, request.getCanvasViewInfo());
         return newDvId.toString();
     }
@@ -176,13 +176,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         coreVisualizationManage.innerEdit(visualizationInfo);
 
-        //保存视图信
+        //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), dvId, request.getCanvasViewInfo());
     }
 
     /**
      * @Description: 更新基础信息；
-     * 为什么单独接口：1.基础信息更新频繁数据且数据载量较小；2.防止出现更新过多信息的情况，造成视图的误删等操作
+     * 为什么单独接口：1.基础信息更新频繁数据且数据载量较小；2.防止出现更新过多信息的情况，造成图表的误删等操作
      */
     @DeLog(id = "#p0.id", ot = LogOT.MODIFY, stExp = "#p0.type")
     @Override
@@ -227,7 +227,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     /**
      * @Description: 复制仪表板
-     * 复制步骤 1.复制基础可视化数据；2.复制视图数据；3.附加数据（包括联动信息，跳转信息，外部参数信息等仪表板附加信息）
+     * 复制步骤 1.复制基础可视化数据；2.复制图表数据；3.附加数据（包括联动信息，跳转信息，外部参数信息等仪表板附加信息）
      */
     @Transactional
     @Override
@@ -241,7 +241,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         newDv.setId(newDvId);
         newDv.setPid(request.getPid());
         newDv.setCreateTime(System.currentTimeMillis());
-        // 复制视图 chart_view
+        // 复制图表 chart_view
         extDataVisualizationMapper.viewCopyWithDv(sourceDvId, newDvId, copyId);
         List<CoreChartView> viewList = extDataVisualizationMapper.findViewInfoByCopyId(copyId);
         if (!CollectionUtils.isEmpty(viewList)) {
@@ -252,10 +252,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
             }
             newDv.setComponentData(componentData);
         }
-        // 复制视图联动信息
+        // 复制图表联动信息
         extDataVisualizationMapper.copyLinkage(copyId);
         extDataVisualizationMapper.copyLinkageField(copyId);
-        // 复制视图跳转信息
+        // 复制图表跳转信息
         extDataVisualizationMapper.copyLinkJump(copyId);
         extDataVisualizationMapper.copyLinkJumpInfo(copyId);
         extDataVisualizationMapper.copyLinkJumpTargetInfo(copyId);

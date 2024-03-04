@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author fit2cloud
@@ -37,7 +37,7 @@ public class CoreDatasetTableField implements Serializable {
     private Long datasetGroupId;
 
     /**
-     * 视图ID
+     * 图表ID
      */
     private Long chartId;
 

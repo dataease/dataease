@@ -248,7 +248,7 @@ defineExpose({
             <template #icon>
               <Icon name="icon_add_outlined"></Icon>
             </template>
-            添加联动视图字段
+            添加联动图表字段
           </el-button>
         </div>
       </div>

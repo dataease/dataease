@@ -1,5 +1,5 @@
 /**
- * 视图设置
+ * 图表设置
  */
 declare interface ChartAttr {
   /**
@@ -336,7 +336,7 @@ declare interface CalcTotalCfg {
 }
 
 /**
- * 视图杂项设置
+ * 图表杂项设置
  */
 declare interface ChartMiscAttr {
   /**

@@ -377,7 +377,7 @@ public class DatasetDataManage {
                 DEException.throwException(Translator.get("i18n_no_field"));
             }
             List<DatasetTableFieldDTO> allFields = new ArrayList<>();
-            // 根据视图计算字段，获取数据集
+            // 根据图表计算字段，获取数据集
             Long datasetGroupId;
             if (field.getDatasetGroupId() == null && field.getChartId() != null) {
                 ChartViewDTO chart = chartViewManege.getChart(field.getChartId());

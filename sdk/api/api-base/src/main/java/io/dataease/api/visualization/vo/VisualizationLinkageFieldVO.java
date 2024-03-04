@@ -20,13 +20,13 @@ public class VisualizationLinkageFieldVO implements Serializable {
     private Long linkageId;
 
     /**
-     * 源视图字段
+     * 源图表字段
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sourceField;
 
     /**
-     * 目标视图字段
+     * 目标图表字段
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long targetField;

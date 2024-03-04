@@ -230,7 +230,7 @@ const action = param => {
     // 只有一个事件直接调用
     trackClick(trackMenu.value[0])
   } else {
-    // 视图关联多个事件
+    // 图表关联多个事件
     state.trackBarStyle.left = param.x - 50 + 'px'
     state.trackBarStyle.top = param.y + 10 + 'px'
     viewTrack.value.trackButtonClick()

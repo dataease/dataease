@@ -114,7 +114,7 @@ const renderChart = async view => {
   }
   curView = view
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  // 与默认视图对象合并，方便增加配置项
+  // 与默认图表对象合并，方便增加配置项
   const chart = deepCopy({
     ...defaultsDeep(view, cloneDeep(BASE_VIEW_CONFIG)),
     data: chartData.value
@@ -182,7 +182,7 @@ const action = param => {
     // 只有一个事件直接调用
     trackClick(trackMenu.value[0])
   } else {
-    // 视图关联多个事件
+    // 图表关联多个事件
     state.trackBarStyle.left = param.x - 50 + 'px'
     state.trackBarStyle.top = param.y + 10 + 'px'
     viewTrack.value.trackButtonClick()

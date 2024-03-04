@@ -29,7 +29,7 @@ public interface VisualizationLinkJumpApi {
     List<DatasetTableFieldDTO> getTableFieldWithViewId(@PathVariable Long viewId);
 
     @GetMapping("/queryWithViewId/{dvId}/{viewId}")
-    @Operation(summary = "根据视图ID查询跳转信息")
+    @Operation(summary = "根据图表ID查询跳转信息")
     VisualizationLinkJumpDTO queryWithViewId(@PathVariable Long dvId, @PathVariable Long viewId);
 
     @GetMapping("/queryVisualizationJumpInfo/{dvId}")

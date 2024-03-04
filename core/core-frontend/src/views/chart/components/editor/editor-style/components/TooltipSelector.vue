@@ -51,7 +51,7 @@ const initSeriesTooltip = () => {
     pre[next.seriesId] = next
     return pre
   }, {})
-  // 新增视图
+  // 新增图表
   if (!quotaAxis.value?.length) {
     if (!formatter.length) {
       quotaData.value?.forEach(i => formatter.push({ ...i, seriesId: i.id, show: false }))
@@ -198,7 +198,7 @@ const init = () => {
     if (customAttr.tooltip) {
       state.tooltipForm = defaultsDeep(customAttr.tooltip, cloneDeep(DEFAULT_TOOLTIP))
       formatterSelector.value?.blur()
-      // 新增视图
+      // 新增图表
       const formatter = state.tooltipForm.seriesTooltipFormatter
       if (!formatter.length) {
         quotaData.value?.forEach(i => formatter.push({ ...i, seriesId: i.id, show: false }))

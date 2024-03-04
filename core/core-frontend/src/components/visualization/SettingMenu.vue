@@ -90,7 +90,7 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <!--视图详情-->
+    <!--图表详情-->
     <el-dialog
       v-model:visible="state.hyperlinksSetVisible"
       width="400px"
@@ -313,7 +313,7 @@ const linkageSetting = () => {
     .filter(item => item.type === 'view' && item.propValue && item.propValue.viewId)
     .map(item => item.propValue.viewId)
 
-  // 获取当前仪表板当前视图联动信息
+  // 获取当前仪表板当前图表联动信息
   const requestInfo = {
     panelId: dvInfo.value.id,
     sourceViewId: curComponent.value.propValue.viewId,

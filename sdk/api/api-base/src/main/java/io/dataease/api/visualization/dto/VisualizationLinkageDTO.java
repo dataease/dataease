@@ -18,12 +18,12 @@ import java.util.List;
 public class VisualizationLinkageDTO extends VisualizationLinkageVO {
 
     /**
-     * 目标视图名称
+     * 目标图表名称
      */
     private String targetViewName;
 
     /**
-     * 目标视图类型
+     * 目标图表类型
      */
     private String targetViewType;
     /**
@@ -32,7 +32,7 @@ public class VisualizationLinkageDTO extends VisualizationLinkageVO {
     private List<VisualizationLinkageFieldVO> linkageFields = new ArrayList<>();
 
     /**
-     * 目标视图字段
+     * 目标图表字段
      */
     private List<DatasetTableFieldDTO> targetViewFields = new ArrayList<>();
     /**

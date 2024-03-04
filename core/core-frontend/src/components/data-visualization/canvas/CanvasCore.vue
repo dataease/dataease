@@ -1442,7 +1442,7 @@ defineExpose({
       @linkJumpSetOpen="linkJumpSetOpen(item)"
       @linkageSetOpen="linkageSetOpen(item)"
     >
-      <!--如果是视图 则动态获取预存的chart-view数据-->
+      <!--如果是图表 则动态获取预存的chart-view数据-->
       <component
         :is="findComponent(item.component)"
         v-if="item.component === 'UserView'"

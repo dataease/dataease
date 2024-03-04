@@ -1286,7 +1286,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
 }
 
 export const BASE_VIEW_CONFIG = {
-  id: '', // 视图id
+  id: '', // 图表id
   title: '图表',
   sceneId: 0, // 仪表板id
   tableId: '', // 数据集id

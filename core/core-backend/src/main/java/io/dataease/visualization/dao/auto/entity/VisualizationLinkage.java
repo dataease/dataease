@@ -5,7 +5,7 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ *
  * </p>
  *
  * @author fit2cloud
@@ -21,12 +21,12 @@ public class VisualizationLinkage implements Serializable {
     private Long dvId;
 
     /**
-     * 源视图id
+     * 源图表id
      */
     private Long sourceViewId;
 
     /**
-     * 联动视图id
+     * 联动图表id
      */
     private Long targetViewId;
 

@@ -1,5 +1,5 @@
 /**
- * 视图样式设置
+ * 图表样式设置
  */
 declare interface ChartStyle {
   /**
@@ -158,7 +158,7 @@ declare interface ChartLegendStyle {
 }
 
 /**
- * 视图轴设置
+ * 图表轴设置
  */
 declare interface ChartAxisStyle {
   /**

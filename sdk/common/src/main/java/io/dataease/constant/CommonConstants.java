@@ -37,7 +37,7 @@ public class CommonConstants {
 
     }
 
-    //视图数据查询来源
+    //图表数据查询来源
     public static final class VIEW_QUERY_FROM {
 
         // 仪表板
@@ -48,7 +48,7 @@ public class CommonConstants {
 
     }
 
-    //视图数据查询模式
+    //图表数据查询模式
     public static final class VIEW_RESULT_MODE {
 
         // 所有
@@ -58,7 +58,7 @@ public class CommonConstants {
         public static final String CUSTOM = "custom";
     }
 
-    //视图数据查询来源
+    //图表数据查询来源
     public static final class VIEW_EDIT_FROM {
 
         // 仪表板
@@ -69,7 +69,7 @@ public class CommonConstants {
 
     }
 
-    //视图数据读取来源
+    //图表数据读取来源
     public static final class VIEW_DATA_FROM {
 
         // 模板数据

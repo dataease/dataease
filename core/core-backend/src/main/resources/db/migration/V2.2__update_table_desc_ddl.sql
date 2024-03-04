@@ -25,7 +25,7 @@ ALTER TABLE `area`
 ALTER TABLE `core_area_custom`
     COMMENT = '自定义地图区域信息表';
 ALTER TABLE `core_chart_view`
-    COMMENT = '组件视图表';
+    COMMENT = '组件图表表';
 ALTER TABLE `core_dataset_group`
     COMMENT = '数据集分组表';
 ALTER TABLE `core_dataset_table`
@@ -70,7 +70,7 @@ ALTER TABLE `visualization_link_jump`
 ALTER TABLE `visualization_link_jump_info`
     COMMENT = '跳转配置表';
 ALTER TABLE `visualization_link_jump_target_view_info`
-    COMMENT = '跳转目标仪表板视图字段配置表';
+    COMMENT = '跳转目标仪表板图表字段配置表';
 ALTER TABLE `visualization_linkage`
     COMMENT = '联动记录表';
 ALTER TABLE `visualization_linkage_field`
@@ -78,7 +78,7 @@ ALTER TABLE `visualization_linkage_field`
 ALTER TABLE `visualization_subject`
     COMMENT = '主题表';
 ALTER TABLE `visualization_template_extend_data`
-    COMMENT = '模板视图明细信息表';
+    COMMENT = '模板图表明细信息表';
 
 ALTER TABLE `core_dataset_group`
     MODIFY COLUMN `qrtz_instance` varchar(1024) NULL DEFAULT NULL COMMENT 'Quartz 实例 ID' AFTER `create_time`;
@@ -151,7 +151,7 @@ ALTER TABLE `visualization_link_jump_info`
 ALTER TABLE `visualization_link_jump_target_view_info`
     MODIFY COLUMN `target_id` bigint(0) NOT NULL COMMENT '主键' FIRST,
     MODIFY COLUMN `link_jump_info_id` bigint(0) NULL DEFAULT NULL COMMENT 'visualization_link_jump_info 表的 ID' AFTER `target_id`,
-    MODIFY COLUMN `target_view_id` bigint(0) NULL DEFAULT NULL COMMENT '目标视图ID' AFTER `source_field_active_id`,
+    MODIFY COLUMN `target_view_id` bigint(0) NULL DEFAULT NULL COMMENT '目标图表ID' AFTER `source_field_active_id`,
     MODIFY COLUMN `target_field_id` bigint(0) NULL DEFAULT NULL COMMENT '目标字段ID' AFTER `target_view_id`,
     MODIFY COLUMN `copy_from` bigint(0) NULL DEFAULT NULL COMMENT '复制来源' AFTER `target_field_id`,
     MODIFY COLUMN `copy_id` bigint(0) NULL DEFAULT NULL COMMENT '复制来源ID' AFTER `copy_from`;
@@ -178,8 +178,8 @@ ALTER TABLE `visualization_template_category`
 ALTER TABLE `visualization_template_extend_data`
     MODIFY COLUMN `id` bigint(0) NOT NULL COMMENT '主键' FIRST,
     MODIFY COLUMN `dv_id` bigint(0) NULL DEFAULT NULL COMMENT '模板ID' AFTER `id`,
-    MODIFY COLUMN `view_id` bigint(0) NULL DEFAULT NULL COMMENT '视图ID' AFTER `dv_id`,
-    MODIFY COLUMN `view_details` longtext NULL COMMENT '视图详情' AFTER `view_id`,
+    MODIFY COLUMN `view_id` bigint(0) NULL DEFAULT NULL COMMENT '图表ID' AFTER `dv_id`,
+    MODIFY COLUMN `view_details` longtext NULL COMMENT '图表详情' AFTER `view_id`,
     MODIFY COLUMN `copy_from` varchar(255) NULL DEFAULT NULL COMMENT '复制来源' AFTER `view_details`,
     MODIFY COLUMN `copy_id` varchar(255) NULL DEFAULT NULL COMMENT '复制来源ID' AFTER `copy_from`;
 
