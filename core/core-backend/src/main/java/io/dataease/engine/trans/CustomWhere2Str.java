@@ -53,11 +53,6 @@ public class CustomWhere2Str {
                         // 此处获取标准格式的日期
                         whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
                     }
-                    if (field.getDeExtractType() == 1) {
-                        // 此处获取标准格式的日期
-                        String f = DateUtils.get_date_format(originName);
-                        whereName = String.format(SQLConstants.DATE_FORMAT, originName, f);
-                    }
                 } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                     if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                         whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
@@ -88,16 +83,7 @@ public class CustomWhere2Str {
 
                         String whereNameReal;
                         if (field.getDeType() == 1) {
-                            // 规定几种日期格式，一一匹配，匹配到就是该格式
-                            if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                                String f = DateUtils.get_date_format(filterItemDTO.getValue());
-                                String n = String.format(SQLConstants.DE_STR_TO_DATE, whereName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT, f);
-                                whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
-                            } else {
-                                String f = DateUtils.get_date_format(filterItemDTO.getValue());
-                                String n = String.format(SQLConstants.DE_STR_TO_DATE, whereName, f);
-                                whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, n);
-                            }
+                            whereNameReal = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                         } else {
                             whereNameReal = whereName;
                         }

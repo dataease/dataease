@@ -97,10 +97,6 @@ public class WhereTree2Str {
                 String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
                 whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
             }
-            if (field.getDeExtractType() == 1) {
-                String f = DateUtils.get_date_format(originName);
-                whereName = String.format(SQLConstants.DATE_FORMAT, originName, f);
-            }
         } else if (field.getDeType() == 2 || field.getDeType() == 3) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                 whereName = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_FLOAT_FORMAT);
@@ -128,16 +124,7 @@ public class WhereTree2Str {
             String whereValue = "";
 
             if (field.getDeType() == 1) {
-                // 规定几种日期格式，一一匹配，匹配到就是该格式
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    String f = DateUtils.get_date_format(item.getValue());
-                    whereName = String.format(SQLConstants.DE_STR_TO_DATE, whereName, f);
-                    whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
-                } else {
-                    String f = DateUtils.get_date_format(item.getValue());
-                    whereName = String.format(SQLConstants.DE_STR_TO_DATE, whereName, f);
-                    whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
-                }
+                whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
             }
 
             if (StringUtils.equalsIgnoreCase(item.getTerm(), "null")) {
