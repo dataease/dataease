@@ -113,7 +113,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
   protected configLabel(chart: Chart, options: LiquidOptions): LiquidOptions {
     const customAttr = parseJson(chart.customAttr)
     const originVal = options.percent
-    // 数值过大视图会异常，大于 1 无意义
+    // 数值过大图表会异常，大于 1 无意义
     if (originVal > 1) {
       options = {
         ...options,

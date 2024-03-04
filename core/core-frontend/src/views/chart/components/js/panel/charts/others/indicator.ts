@@ -3,7 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
 /**
- * 指标卡视图
+ * 指标卡图表
  */
 export class IndicatorChartView extends AbstractChartView {
   properties: EditorProperty[] = [

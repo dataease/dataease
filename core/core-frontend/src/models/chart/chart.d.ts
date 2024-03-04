@@ -1,5 +1,5 @@
 /**
- * 视图对象
+ * 图表对象
  */
 declare interface Chart {
   id: string
@@ -131,7 +131,7 @@ declare interface ChartViewField {
    */
   id: string
   /**
-   * 视图自定义字段名称
+   * 图表自定义字段名称
    */
   chartShowName: string
   /**

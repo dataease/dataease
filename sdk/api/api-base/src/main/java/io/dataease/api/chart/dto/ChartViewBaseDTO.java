@@ -158,7 +158,7 @@ public class ChartViewBaseDTO implements Serializable {
     private String stylePriority;
 
     /**
-     * 图表类型 public 公共 历史可复用的视图，private 私有 专属某个仪表板
+     * 图表类型 public 公共 历史可复用的图表，private 私有 专属某个仪表板
      */
     private String chartType;
 
@@ -173,7 +173,7 @@ public class ChartViewBaseDTO implements Serializable {
     private String dataFrom;
 
     /**
-     * 视图字段集合
+     * 图表字段集合
      */
     private List<ChartViewFieldDTO> viewFields;
 

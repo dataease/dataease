@@ -27,8 +27,8 @@ export abstract class AbstractChartView {
   abstract axis: AxisType[]
   abstract axisConfig: AxisConfig
   /**
-   * 在新建和切换视图的时候处理默认值
-   * @param chart 数据库视图对象
+   * 在新建和切换图表的时候处理默认值
+   * @param chart 数据库图表对象
    */
   setupDefaultOptions(chart: ChartObj): ChartObj {
     return chart
@@ -51,7 +51,7 @@ export abstract class AbstractChartView {
 
 export interface AntVDrawOptions<O> {
   /**
-   * 生成的视图对象
+   * 生成的图表对象
    */
   chartObj: O
   /**
@@ -59,7 +59,7 @@ export interface AntVDrawOptions<O> {
    */
   container: string
   /**
-   * 数据库中的视图配置对象
+   * 数据库中的图表配置对象
    */
   chart: Chart
   /**
@@ -97,7 +97,7 @@ export abstract class AntVAbstractChartView extends AbstractChartView {
 }
 
 /**
- * Echarts 视图的抽象类
+ * Echarts 图表的抽象类
  */
 export abstract class EchartsChartView extends AbstractChartView {
   protected constructor(name: string, defaultData: any[]) {

@@ -11,7 +11,7 @@ public class ChartConstants {
     public static final String MONTH_YOY = "month_yoy";
     public static final String[] M_Y = {YEAR_MOM, MONTH_MOM, YEAR_YOY, DAY_MOM, MONTH_YOY};
 
-    //视图数据查询模式
+    //图表数据查询模式
     public static final class VIEW_RESULT_MODE {
 
         // 所有

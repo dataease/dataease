@@ -602,7 +602,7 @@ const onAreaChange = val => {
 const onTypeChange = (render, type) => {
   view.value.render = render
   view.value.type = type
-  // 处理配置项默认值，不同视图的同一配置项默认值不同
+  // 处理配置项默认值，不同图表的同一配置项默认值不同
   const chartViewInstance = chartViewManager.getChartView(view.value.render, view.value.type)
   if (chartViewInstance) {
     view.value = chartViewInstance.setupDefaultOptions(view.value) as unknown as ChartObj
@@ -2197,7 +2197,7 @@ const onRefreshChange = val => {
       </template>
     </el-dialog>
 
-    <!--视图计算字段-->
+    <!--图表计算字段-->
     <el-dialog
       v-model="editCalcField"
       width="1000px"

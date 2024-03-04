@@ -73,7 +73,7 @@ declare type AxisSpec = {
   tooltip?: string
 }
 /**
- * 视图编辑表单
+ * 图表编辑表单
  */
 declare interface ChartEditorForm<T> {
   /**

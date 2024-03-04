@@ -16,18 +16,18 @@ import java.util.Map;
 /**
  * @Author Junjun
  */
-@Tag(name = "视图管理:查看")
+@Tag(name = "图表管理:查看")
 @ApiSupport(order = 988)
 public interface ChartViewApi {
-    @Operation(summary = "查询视图详情并同时计算数据", hidden = true)
+    @Operation(summary = "查询图表详情并同时计算数据", hidden = true)
     @PostMapping("getChart/{id}")
     ChartViewDTO getData(@PathVariable Long id) throws Exception;
 
-    @Operation(summary = "获取视图字段")
+    @Operation(summary = "获取图表字段")
     @PostMapping("listByDQ/{id}/{chartId}")
     Map<String, List<ChartViewFieldDTO>> listByDQ(@PathVariable Long id, @PathVariable Long chartId);
 
-    @Operation(summary = "保存视图")
+    @Operation(summary = "保存图表")
     @PostMapping("save")
     ChartViewDTO save(@RequestBody ChartViewDTO dto) throws Exception;
 
@@ -35,7 +35,7 @@ public interface ChartViewApi {
     @GetMapping("/checkSameDataSet/{viewIdSource}/{viewIdTarget}")
     String checkSameDataSet(@PathVariable String viewIdSource, @PathVariable String viewIdTarget);
 
-    @Operation(summary = "查询视图详情")
+    @Operation(summary = "查询图表详情")
     @PostMapping("getDetail/{id}")
     ChartViewDTO getDetail(@PathVariable Long id);
 }

@@ -461,7 +461,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       const id = componentInfo.id
       const componentType = componentInfo.component
       this.curBatchOptComponents.push(id)
-      // 视图批量操作
+      // 图表批量操作
       if (componentType === 'UserView') {
         // get view base info
         const viewBaseInfo = this.canvasViewInfo[id]

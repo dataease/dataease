@@ -34,8 +34,8 @@ export const snapshotStore = defineStore('snapshot', {
       cacheStyleChangeTimes: 0, // 仪表板未缓存的组件样式修改次数
       snapshotCacheTimes: 0, // 当前未计入镜像中的修改变动次数, 此为定时缓存，缓存间隔时间5秒一次 针对类型样式这种变动不大的修改
       cacheViewIdInfo: {
-        snapshotCacheViewCalc: [], // 当前未计入镜像需要视图计算的视图ID, all代表全部
-        snapshotCacheViewRender: [] // 当前未计入镜像需要视图渲染的视图ID,all代表全部
+        snapshotCacheViewCalc: [], // 当前未计入镜像需要图表计算的图表ID, all代表全部
+        snapshotCacheViewRender: [] // 当前未计入镜像需要图表渲染的图表ID,all代表全部
       },
       snapshotData: [], // 编辑器快照数据
       snapshotIndex: -1 // 快照索引

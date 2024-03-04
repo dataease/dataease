@@ -32,7 +32,7 @@ export const getFieldByDQ = async (id, chartId): Promise<IResponse> => {
   })
 }
 
-// 通过视图对象获取数据
+// 通过图表对象获取数据
 export const getData = async (data): Promise<IResponse> => {
   delete data.data
   return request.post({ url: '/chartData/getData', data }).then(res => {
@@ -54,14 +54,14 @@ export const innerExportDetails = async (data): Promise<IResponse> => {
   })
 }
 
-// 通过视图id获取数据
+// 通过图表id获取数据
 export const getChart = async (id): Promise<IResponse> => {
   return request.post({ url: `/chart/getChart/${id}`, data: {} }).then(res => {
     return res?.data
   })
 }
 
-// 单个视图保存测试
+// 单个图表保存测试
 export const saveChart = async (data): Promise<IResponse> => {
   delete data.data
   return request.post({ url: '/chart/save', data }).then(res => {

@@ -21,7 +21,7 @@ public class VisualizationLinkJumpVO {
     private Long sourceDvId;
 
     /**
-     * 源视图ID
+     * 源图表ID
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sourceViewId;

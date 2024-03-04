@@ -233,7 +233,7 @@ const linkageSetting = curViewId => {
   const targetViewIds = []
   findAllViewsId(componentData.value, targetViewIds)
 
-  // 获取当前仪表板当前视图联动信息
+  // 获取当前仪表板当前图表联动信息
   const requestInfo = {
     dvId: dvInfo.value.id,
     sourceViewId: curViewId,
@@ -241,7 +241,7 @@ const linkageSetting = curViewId => {
     linkageInfo: null
   }
   getViewLinkageGatherArray(requestInfo).then(rsp => {
-    // 获取当前仪表板的视图(去掉当前视图)
+    // 获取当前仪表板的图表(去掉当前图表)
     curLinkageTargetViewsInfo.value = rsp.data || []
     curLinkageTargetViewsInfo.value.forEach(item => {
       if (item.targetViewId === curViewId) {

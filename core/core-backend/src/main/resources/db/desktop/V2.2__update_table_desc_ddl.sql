@@ -25,7 +25,7 @@ COMMENT ON TABLE `area`
 COMMENT ON TABLE `core_area_custom`
     IS '自定义地图区域信息表';
 COMMENT ON TABLE `core_chart_view`
-    IS '组件视图表';
+    IS '组件图表表';
 COMMENT ON TABLE `core_dataset_group`
     IS '数据集分组表';
 COMMENT ON TABLE `core_dataset_table`
@@ -68,7 +68,7 @@ COMMENT ON TABLE `visualization_link_jump`
 COMMENT ON TABLE `visualization_link_jump_info`
     IS '跳转配置表';
 COMMENT ON TABLE `visualization_link_jump_target_view_info`
-    IS '跳转目标仪表板视图字段配置表';
+    IS '跳转目标仪表板图表字段配置表';
 COMMENT ON TABLE `visualization_linkage`
     IS '联动记录表';
 COMMENT ON TABLE `visualization_linkage_field`
@@ -76,7 +76,7 @@ COMMENT ON TABLE `visualization_linkage_field`
 COMMENT ON TABLE `visualization_subject`
     IS '主题表';
 COMMENT ON TABLE `visualization_template_extend_data`
-    IS '模板视图明细信息表';
+    IS '模板图表明细信息表';
 
 ALTER TABLE `core_dataset_group`
     MODIFY COLUMN `qrtz_instance` varchar(1024) NULL DEFAULT NULL COMMENT 'Quartz 实例 ID';
@@ -160,7 +160,7 @@ ALTER TABLE `visualization_link_jump_target_view_info`
 ALTER TABLE `visualization_link_jump_target_view_info`
     MODIFY COLUMN `link_jump_info_id` bigint(0) NULL DEFAULT NULL COMMENT 'visualization_link_jump_info 表的 ID';
 ALTER TABLE `visualization_link_jump_target_view_info`
-    MODIFY COLUMN `target_view_id` bigint(0) NULL DEFAULT NULL COMMENT '目标视图ID';
+    MODIFY COLUMN `target_view_id` bigint(0) NULL DEFAULT NULL COMMENT '目标图表ID';
 ALTER TABLE `visualization_link_jump_target_view_info`
     MODIFY COLUMN `target_field_id` bigint(0) NULL DEFAULT NULL COMMENT '目标字段ID';
 ALTER TABLE `visualization_link_jump_target_view_info`
@@ -199,9 +199,9 @@ ALTER TABLE `visualization_template_extend_data`
 ALTER TABLE `visualization_template_extend_data`
     MODIFY COLUMN `dv_id` bigint(0) NULL DEFAULT NULL COMMENT '模板ID';
 ALTER TABLE `visualization_template_extend_data`
-    MODIFY COLUMN `view_id` bigint(0) NULL DEFAULT NULL COMMENT '视图ID';
+    MODIFY COLUMN `view_id` bigint(0) NULL DEFAULT NULL COMMENT '图表ID';
 ALTER TABLE `visualization_template_extend_data`
-    MODIFY COLUMN `view_details` longtext NULL COMMENT '视图详情';
+    MODIFY COLUMN `view_details` longtext NULL COMMENT '图表详情';
 ALTER TABLE `visualization_template_extend_data`
     MODIFY COLUMN `copy_from` varchar(255) NULL DEFAULT NULL COMMENT '复制来源';
 ALTER TABLE `visualization_template_extend_data`

@@ -16,10 +16,10 @@ import java.util.List;
 /**
  * @Author Junjun
  */
-@Tag(name = "视图管理:数据")
+@Tag(name = "图表管理:数据")
 @ApiSupport(order = 989)
 public interface ChartDataApi {
-    @Operation(summary = "获取视图数据")
+    @Operation(summary = "获取图表数据")
     @PostMapping("getData")
     ChartViewDTO getData(@RequestBody ChartViewDTO chartViewDTO) throws Exception;
 

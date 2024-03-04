@@ -55,7 +55,7 @@ public class SwaggerConfig {
 
     @Bean
     public GroupedOpenApi chartApi() {
-        return GroupedOpenApi.builder().group("2-view").displayName("视图管理").packagesToScan("io.dataease.chart").build();
+        return GroupedOpenApi.builder().group("2-view").displayName("图表管理").packagesToScan("io.dataease.chart").build();
     }
 
     @Bean

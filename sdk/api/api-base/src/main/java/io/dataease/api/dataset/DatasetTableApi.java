@@ -22,7 +22,7 @@ import java.util.Map;
 public interface DatasetTableApi {
 
     /**
-     * 该接口用于视图计算字段单独保存
+     * 该接口用于图表计算字段单独保存
      *
      * @param datasetTableFieldDTO
      * @return
@@ -60,7 +60,7 @@ public interface DatasetTableApi {
     @PostMapping("getFunction")
     List<SQLFunctionDTO> getFunction();
 
-    @Operation(summary = "删除视图计算字段", hidden = true)
+    @Operation(summary = "删除图表计算字段", hidden = true)
     @PostMapping("deleteByChartId/{id}")
     void deleteByChartId(@PathVariable Long id);
 }

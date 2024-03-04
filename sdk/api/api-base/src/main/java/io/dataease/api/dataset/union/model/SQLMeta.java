@@ -25,7 +25,7 @@ public class SQLMeta {
     private List<SQLObj> yOrders;
 
     /**
-     * 视图过滤字段
+     * 图表过滤字段
      */
     private String customWheres;
 

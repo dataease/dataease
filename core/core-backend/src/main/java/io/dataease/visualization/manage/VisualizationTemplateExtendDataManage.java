@@ -33,7 +33,7 @@ public class VisualizationTemplateExtendDataManage {
             ChartViewDTO chartViewTemplate = JsonUtil.parseObject(extendDataList.get(0).getViewDetails(),ChartViewDTO.class);
             view.setData(chartViewTemplate.getData());
         } else {
-            DEException.throwException("模板缓存数据中未获取指定视图数据：" + viewId);
+            DEException.throwException("模板缓存数据中未获取指定图表数据：" + viewId);
         }
         return view;
     }

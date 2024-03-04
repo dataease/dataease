@@ -16,13 +16,13 @@ public class VisualizationLinkageVO implements Serializable {
     private Long dvId;
 
     /**
-     * 源视图id
+     * 源图表id
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long sourceViewId;
 
     /**
-     * 联动视图id
+     * 联动图表id
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long targetViewId;

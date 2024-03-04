@@ -128,7 +128,7 @@ public class ChartViewManege {
         datasetTableFieldDTOS.add(createCountField(id));
         List<ChartViewFieldDTO> list = transFieldDTO(datasetTableFieldDTOS);
 
-        // 获取视图计算字段
+        // 获取图表计算字段
         wrapper.clear();
         wrapper.eq("chart_id", chartId);
         List<DatasetTableFieldDTO> chartFields = coreDatasetTableFieldMapper.selectList(wrapper).stream().map(ele -> {

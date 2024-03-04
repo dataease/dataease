@@ -4098,7 +4098,7 @@ CREATE TABLE `visualization_link_jump`
 (
     `id`             bigint NOT NULL,
     `source_dv_id`   bigint        DEFAULT NULL COMMENT '源仪表板ID',
-    `source_view_id` bigint        DEFAULT NULL COMMENT '源视图ID',
+    `source_view_id` bigint        DEFAULT NULL COMMENT '源图表ID',
     `link_jump_info` varchar(4000) DEFAULT NULL COMMENT '跳转信息',
     `checked`        tinyint(1)    DEFAULT NULL COMMENT '是否启用',
     `copy_from`      bigint        DEFAULT NULL,
@@ -4152,8 +4152,8 @@ CREATE TABLE `visualization_linkage`
 (
     `id`             bigint NOT NULL,
     `dv_id`          bigint        DEFAULT NULL,
-    `source_view_id` bigint        DEFAULT NULL COMMENT '源视图id',
-    `target_view_id` bigint        DEFAULT NULL COMMENT '联动视图id',
+    `source_view_id` bigint        DEFAULT NULL COMMENT '源图表id',
+    `target_view_id` bigint        DEFAULT NULL COMMENT '联动图表id',
     `update_time`    bigint        DEFAULT NULL COMMENT '更新时间',
     `update_people`  varchar(255)  DEFAULT NULL COMMENT '更新人',
     `linkage_active` tinyint(1)    DEFAULT '0' COMMENT '是否启用关联',
@@ -4172,8 +4172,8 @@ CREATE TABLE `visualization_linkage_field`
 (
     `id`           bigint NOT NULL,
     `linkage_id`   bigint DEFAULT NULL COMMENT '联动ID',
-    `source_field` bigint DEFAULT NULL COMMENT '源视图字段',
-    `target_field` bigint DEFAULT NULL COMMENT '目标视图字段',
+    `source_field` bigint DEFAULT NULL COMMENT '源图表字段',
+    `target_field` bigint DEFAULT NULL COMMENT '目标图表字段',
     `update_time`  bigint DEFAULT NULL COMMENT '更新时间',
     `copy_from`    bigint DEFAULT NULL,
     `copy_id`      bigint DEFAULT NULL,

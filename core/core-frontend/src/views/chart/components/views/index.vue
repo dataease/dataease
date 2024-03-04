@@ -212,7 +212,7 @@ watch([() => searchCount.value], () => {
     queryData()
   }
 })
-// 仪表板的查询结果设置变化 视图数据需要刷新
+// 仪表板的查询结果设置变化 图表数据需要刷新
 watch([() => resultCount.value], () => {
   queryData()
 })
@@ -420,7 +420,7 @@ onBeforeMount(() => {
     })
   }
 })
-// 部分场景不需要更新视图，例如放大页面
+// 部分场景不需要更新图表，例如放大页面
 const listenerEnable = computed(() => {
   return !showPosition.value.includes('viewDialog')
 })
@@ -635,7 +635,7 @@ const iconSize = computed<string>(() => {
         </el-tooltip>
       </div>
     </div>
-    <!--这里去渲染不同图库的视图-->
+    <!--这里去渲染不同图库的图表-->
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
       <de-rich-text-view
         v-if="showChartView(ChartLibraryType.RICH_TEXT)"

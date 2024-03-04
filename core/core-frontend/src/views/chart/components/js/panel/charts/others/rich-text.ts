@@ -3,7 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 
 const { t } = useI18n()
 /**
- * 富文本视图
+ * 富文本图表
  */
 export class RichTextChartView extends AbstractChartView {
   properties: EditorProperty[] = ['background-overall-component']

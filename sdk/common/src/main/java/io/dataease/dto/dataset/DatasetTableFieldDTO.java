@@ -36,7 +36,7 @@ public class DatasetTableFieldDTO implements Serializable {
     private Long datasetGroupId;
 
     /**
-     * 视图ID
+     * 图表ID
      */
     @JsonSerialize(using = ToStringSerializer.class)
     private Long chartId;
