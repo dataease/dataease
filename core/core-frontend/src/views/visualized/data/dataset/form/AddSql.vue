@@ -527,8 +527,7 @@ const mousedownDrag = () => {
                       {{ ele.name }}
                     </div>
                     <el-icon
-                      style="color: var(--ed-color-primary)!important"
-                      class="hover-icon"
+                      class="hover-icon de-hover-icon-primary"
                       @click.stop="copyInfo(ele.name)"
                     >
                       <Icon name="icon_copy_outlined"></Icon>
@@ -563,8 +562,7 @@ const mousedownDrag = () => {
                       <el-table-column :label="t('common.operate')">
                         <template #default="scope">
                           <el-icon
-                            style="color: var(--ed-color-primary)!important"
-                            class="hover-icon"
+                            class="hover-icon de-hover-icon-primary"
                             @click.stop="copyInfo(scope.row.originName)"
                           >
                             <Icon name="icon_copy_outlined"></Icon>
@@ -1119,6 +1117,9 @@ const mousedownDrag = () => {
 }
 </style>
 <style lang="less">
+.de-hover-icon-primary {
+  color: var(--ed-color-primary) !important;
+}
 .sql-tips {
   color: #646a73;
   text-align: center;
