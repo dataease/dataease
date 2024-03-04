@@ -344,10 +344,10 @@ onMounted(() => {
             </div>
           </el-form>
         </div>
+        <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
       </div>
     </div>
   </div>
-  <div v-if="showFoot" class="dynamic-login-foot" v-html="footContent" />
 </template>
 
 <style lang="less" scoped>
@@ -380,6 +380,7 @@ onMounted(() => {
   }
 
   .login-form-content {
+    position: relative;
     flex: 1;
     display: flex;
     align-items: center;
@@ -509,7 +510,7 @@ onMounted(() => {
 .dynamic-login-foot {
   visibility: visible;
   width: 100%;
-  position: fixed;
+  position: absolute;
   z-index: 302;
   bottom: 0;
   left: 0;
