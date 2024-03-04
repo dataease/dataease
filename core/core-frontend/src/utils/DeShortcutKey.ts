@@ -83,7 +83,7 @@ const checkDialog = () => {
       haveDialog = true
     }
   })
-  document.querySelectorAll('.ed-popover').forEach(element => {
+  document.querySelectorAll('.ed-popper').forEach(element => {
     if (window.getComputedStyle(element).getPropertyValue('display') != 'none') {
       haveDialog = true
     }
