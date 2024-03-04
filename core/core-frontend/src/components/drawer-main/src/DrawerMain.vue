@@ -148,8 +148,8 @@ defineExpose({
     padding: 16px 24px 80px !important;
   }
   .ed-drawer__footer {
-    padding-top: 10px !important;
-    padding-right: 24px !important;
+    padding: 16px 24px;
+    height: 64px;
   }
 }
 </style>
