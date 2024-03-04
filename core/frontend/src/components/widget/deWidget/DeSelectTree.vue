@@ -275,7 +275,7 @@ export default {
       this.value = this.fillValueDerfault()
       this.data = []
       this.initOptions()
-      const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]?.length
+      const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]
       if (this.element.options.value || existLastValidFilters) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
