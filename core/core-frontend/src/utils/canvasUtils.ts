@@ -116,6 +116,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
         componentItem.expand = componentItem.expand || false
       }
       componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
+      componentItem['aspectRatio'] = componentItem['aspectRatio'] || 1
     })
     const curPreviewGap =
       dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
