@@ -64,7 +64,7 @@ defineExpose({
     .title {
       .ed-icon {
         transform: rotate(90deg);
-        color: #3370ff;
+        color: var(--ed-color-primary);
       }
     }
     overflow: auto;
@@ -77,7 +77,7 @@ defineExpose({
     .title {
       .ed-icon {
         transform: rotate(0);
-        color: #3370ff;
+        color: var(--ed-color-primary);
       }
     }
   }

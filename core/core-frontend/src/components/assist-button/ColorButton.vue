@@ -62,7 +62,7 @@ const colorButtonClick = () => {
   padding-left: 4px;
   padding-top: 4px;
   border-width: 2px;
-  border-color: #3370ff;
+  border-color: var(--ed-color-primary);
 }
 
 .color-button-inner {

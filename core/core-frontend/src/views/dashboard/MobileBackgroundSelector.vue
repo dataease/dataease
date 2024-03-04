@@ -244,7 +244,7 @@ watch(
 
       &:hover {
         .ed-icon {
-          color: #3370ff;
+          color: var(--ed-color-primary);
         }
       }
     }
@@ -297,7 +297,7 @@ watch(
 
       &:hover {
         .ed-icon {
-          color: #3370ff;
+          color: var(--ed-color-primary);
         }
       }
     }

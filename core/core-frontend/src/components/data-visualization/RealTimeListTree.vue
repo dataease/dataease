@@ -442,10 +442,10 @@ const handleContextMenu = e => {
       .activated {
         background-color: rgba(51, 112, 255, 0.1) !important;
         :deep(.component-icon) {
-          color: #3370ff;
+          color: var(--ed-color-primary);
         }
         :deep(.component-label) {
-          color: #3370ff;
+          color: var(--ed-color-primary);
         }
       }
     }

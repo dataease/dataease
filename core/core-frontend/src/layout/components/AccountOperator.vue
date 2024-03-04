@@ -190,7 +190,7 @@ if (uid.value === '1') {
     background-color: #1e2738;
   }
   .main-color {
-    background: #3370ff;
+    background: var(--ed-color-primary);
     width: 24px;
     height: 24px;
     border-radius: 50%;

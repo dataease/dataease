@@ -542,7 +542,7 @@ defineExpose({
     .custom-icon {
       font-size: 20px;
       &.btn {
-        color: #3370ff;
+        color: var(--ed-color-primary);
       }
       &:hover {
         cursor: pointer;

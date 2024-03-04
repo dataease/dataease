@@ -134,7 +134,7 @@ defineExpose({
     padding-left: 16px;
 
     i {
-      color: #3370ff;
+      color: var(--ed-color-primary);
       font-size: 14.666666030883789px;
     }
 

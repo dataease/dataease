@@ -393,7 +393,7 @@ const getEmptyDesc = (): string => {
     &:hover,
     &:active,
     &:focus {
-      border-color: #3370ff;
+      border-color: var(--ed-color-primary);
       background-color: #fff;
     }
   }

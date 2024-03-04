@@ -977,7 +977,7 @@ defineExpose({
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
-    color: #3370ff;
+    color: var(--ed-color-primary);
     cursor: pointer;
     display: inline-flex;
     align-items: center;
@@ -1056,7 +1056,7 @@ defineExpose({
           left: 0;
           top: 50%;
           transform: translateY(-50%);
-          border: 1px solid #3370ff;
+          border: 1px solid var(--ed-color-primary);
           border-radius: 50%;
         }
 
@@ -1066,7 +1066,7 @@ defineExpose({
 
         &.active::before {
           border: none;
-          background: #3370ff;
+          background: var(--ed-color-primary);
         }
       }
     }
@@ -1100,7 +1100,7 @@ defineExpose({
   cursor: pointer;
 
   &:hover {
-    border-color: #3370ff;
+    border-color: var(--ed-color-primary);
   }
   .name {
     font-size: 16px;

@@ -1911,7 +1911,7 @@ const getDsIconName = data => {
         height: 24px;
         :deep(.ed-input__wrapper) {
           background-color: #050e21;
-          box-shadow: 0 0 0 1px #3370ff;
+          box-shadow: 0 0 0 1px var(--ed-color-primary);
           padding: 0 4px;
         }
         :deep(.ed-input__inner) {
@@ -1945,7 +1945,7 @@ const getDsIconName = data => {
         position: absolute;
         left: -1px;
         top: 0;
-        background: #3370ff;
+        background: var(--ed-color-primary);
       }
     }
 

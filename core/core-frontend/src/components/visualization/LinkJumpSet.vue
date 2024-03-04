@@ -1014,7 +1014,7 @@ span {
   align-items: center;
 }
 .view-type-icon {
-  color: #3370ff;
+  color: var(--ed-color-primary);
   width: 22px;
   height: 16px;
 }

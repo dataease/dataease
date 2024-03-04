@@ -141,13 +141,6 @@ const saveCanvasWithCheck = () => {
   saveResource()
 }
 
-const saveCanvasWithCheckFromMobile = () => {
-  snapshotStore.resetStyleChangeTimes()
-  canvasSave(() => {
-    ElMessage.success('保存成功')
-  })
-}
-
 const saveResource = () => {
   if (styleChangeTimes.value > 0) {
     snapshotStore.resetStyleChangeTimes()
@@ -199,7 +192,6 @@ const mobileConfig = () => {
 
 eventBus.on('preview', previewInner)
 eventBus.on('save', saveCanvasWithCheck)
-eventBus.on('saveFromMobile', saveCanvasWithCheckFromMobile)
 eventBus.on('clearCanvas', clearCanvas)
 
 const openDataBoardSetting = () => {

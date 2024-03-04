@@ -544,7 +544,7 @@ span {
 .icon-style {
   width: 14px;
   height: 14px;
-  color: #3370ff;
+  color: var(--ed-color-primary);
 }
 
 .m-icon-btn {

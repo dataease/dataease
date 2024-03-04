@@ -176,7 +176,7 @@ function onPopoverHide() {
     <template v-if="customColorExtendSettingOpened">
       <div class="custom-color-extend-setting" :class="{ dark: 'dark' === themes }">
         {{ t('chart.custom_case') }}
-        <span style="color: #3370ff; cursor: pointer" @click="resetCustomColor">
+        <span style="color: var(--ed-color-primary); cursor: pointer" @click="resetCustomColor">
           {{ t('chart.reset') }}
         </span>
       </div>
@@ -260,8 +260,8 @@ function onPopoverHide() {
 
   &.active,
   &:hover {
-    border-color: #3370ff;
-    color: #3370ff;
+    border-color: var(--ed-color-primary);
+    color: var(--ed-color-primary);
   }
 }
 .custom-color-extend-setting {
@@ -303,7 +303,7 @@ function onPopoverHide() {
         border-color: rgba(51, 112, 255, 0.6);
       }
       &.active {
-        border-color: #3370ff;
+        border-color: var(--ed-color-primary);
       }
     }
 

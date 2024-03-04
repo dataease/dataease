@@ -59,7 +59,7 @@ const { icon, name, label, dragInfo, themes } = toRefs(props)
     height: 64px !important;
     border-radius: 4px;
     &:hover {
-      border: 1px solid rgba(51, 112, 255, 1);
+      border: 1px solid var(--ed-color-primary);
       cursor: pointer;
     }
     display: flex;

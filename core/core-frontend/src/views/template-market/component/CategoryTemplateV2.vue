@@ -93,7 +93,7 @@ const props = defineProps({
     margin: 4px 8px 0 12px;
     width: 2px;
     height: 16px;
-    background: rgba(51, 112, 255, 1);
+    background: var(--ed-color-primary);
     float: left;
   }
   .custom-category {
@@ -106,7 +106,7 @@ const props = defineProps({
     float: left;
     font-weight: 500;
     font-size: 16px;
-    color: rgba(51, 112, 255, 1);
+    color: var(--ed-color-primary);
     margin-right: 8px;
   }
 

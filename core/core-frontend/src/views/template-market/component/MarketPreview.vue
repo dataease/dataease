@@ -473,13 +473,13 @@ onMounted(() => {
 }
 
 .filter-icon-active {
-  border: 1px solid #3370ff;
-  color: #3370ff;
+  border: 1px solid var(--ed-color-primary);
+  color: var(--ed-color-primary);
 }
 
 .filter-icon-active {
-  border: 1px solid #3370ff;
-  color: #3370ff;
+  border: 1px solid var(--ed-color-primary);
+  color: var(--ed-color-primary);
 }
 
 .search-area {

@@ -71,7 +71,7 @@ const handleClick = val => {
   z-index: 10;
   &:hover {
     .ed-icon {
-      color: #3370ff;
+      color: var(--ed-color-primary);
     }
   }
   .ed-icon {

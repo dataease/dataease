@@ -273,7 +273,7 @@ const handleCheckedFieldsChange = (value: string[]) => {
         color: #1f2329;
 
         .main-color {
-          color: #3370ff;
+          color: var(--ed-color-primary);
         }
       }
     }

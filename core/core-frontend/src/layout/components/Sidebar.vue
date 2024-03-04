@@ -29,7 +29,7 @@ const { width, node } = useMoveLine('DATASET')
     position: absolute;
     right: -1px;
     top: 0;
-    background: #3370ff;
+    background: var(--ed-color-primary);
   }
 }
 </style>

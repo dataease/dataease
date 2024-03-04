@@ -1486,7 +1486,7 @@ defineExpose({
         .ed-icon {
           cursor: pointer;
           font-size: 16px;
-          color: #3370ff;
+          color: var(--ed-color-primary);
         }
       }
       .list-item_primary {
@@ -1560,7 +1560,7 @@ defineExpose({
         .component-type {
           margin-right: 4px;
           font-size: 20px;
-          color: #3370ff;
+          color: var(--ed-color-primary);
         }
         .list-item {
           height: 32px;

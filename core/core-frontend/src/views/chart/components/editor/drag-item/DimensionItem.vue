@@ -554,7 +554,7 @@ onMounted(() => {
   justify-content: space-between;
   align-items: center;
   background-color: #3370ff0a;
-  border: 1px solid #3370ff;
+  border: 1px solid var(--ed-color-primary);
 }
 
 .item-axis:hover {
@@ -592,7 +592,7 @@ span {
   width: 100%;
 
   &.content-active {
-    color: #3370ff;
+    color: var(--ed-color-primary);
   }
 
   .sub-menu-content--icon {
@@ -706,7 +706,7 @@ span {
   }
 
   .sub-menu-content--icon {
-    color: #3370ff;
+    color: var(--ed-color-primary);
     margin-right: -7px;
   }
   :nth-child(1).ed-icon {
@@ -727,7 +727,7 @@ span {
   }
 
   .sub-menu-content--icon {
-    color: #3370ff;
+    color: var(--ed-color-primary);
     margin-right: -7px !important;
   }
 }

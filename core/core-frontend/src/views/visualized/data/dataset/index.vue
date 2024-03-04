@@ -775,7 +775,7 @@ const getMenuList = (val: boolean) => {
 
         .custom-icon {
           &.btn {
-            color: #3370ff;
+            color: var(--ed-color-primary);
           }
 
           &:hover {

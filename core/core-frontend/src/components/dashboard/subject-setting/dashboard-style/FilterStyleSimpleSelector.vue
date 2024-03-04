@@ -189,7 +189,7 @@ onMounted(() => {
 <style scoped lang="less">
 .hover-icon {
   &.active {
-    color: #3370ff !important;
+    color: var(--ed-color-primary) !important;
     background-color: rgba(51, 112, 255, 0.1);
   }
   & + & {

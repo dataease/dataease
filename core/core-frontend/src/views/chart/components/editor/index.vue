@@ -2292,7 +2292,7 @@ const onRefreshChange = val => {
       .ed-tabs__item {
         height: 35px;
         line-height: 35px;
-        color: #3370ff;
+        color: var(--ed-color-primary);
         font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 12px;
         font-style: normal;
@@ -2460,7 +2460,7 @@ span {
     }
     :deep(.is-active) {
       font-weight: 500;
-      color: #3370ff;
+      color: var(--ed-color-primary);
     }
 
     :deep(.ed-tabs__nav-scroll) {
@@ -2509,7 +2509,7 @@ span {
         position: absolute;
         left: 0px;
         top: 0;
-        background: #3370ff;
+        background: var(--ed-color-primary);
       }
     }
 
@@ -2565,7 +2565,7 @@ span {
     }
 
     &.sortable-chosen {
-      border: 1px solid #3370ff;
+      border: 1px solid var(--ed-color-primary);
       background: #fff;
 
       &:hover {
@@ -2818,7 +2818,7 @@ span {
       border-radius: 2px;
     }
     :deep(.ed-button:hover) {
-      border: 1px solid #3370ff;
+      border: 1px solid var(--ed-color-primary);
     }
   }
 

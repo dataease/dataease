@@ -213,7 +213,7 @@ loadTreeData(true)
         line-height: 24px;
       }
       .add-icon-span {
-        color: #3370ff;
+        color: var(--ed-color-primary);
         height: 20px;
         width: 20px;
         i {

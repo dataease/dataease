@@ -55,6 +55,6 @@ const handleMouseDown = e => {
 }
 
 .shadow-border {
-  border: 1px solid #3370ff;
+  border: 1px solid var(--ed-color-primary);
 }
 </style>

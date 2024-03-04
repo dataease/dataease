@@ -60,7 +60,7 @@ const emits = defineEmits(['customClick'])
 }
 
 .inner-active {
-  border: 1px solid #3370ff;
+  border: 1px solid var(--ed-color-primary);
   background: rgba(255, 255, 255, 0.2);
 }
 

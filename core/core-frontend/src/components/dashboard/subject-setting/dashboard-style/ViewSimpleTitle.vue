@@ -185,7 +185,7 @@ function setPosition(p: 'left' | 'center' | 'right') {
     .bash-icon {
       background: rgba(51, 112, 255, 0.1);
       border-radius: 4px;
-      color: #3370ff;
+      color: var(--ed-color-primary);
     }
   }
 }
@@ -238,7 +238,7 @@ function setPosition(p: 'left' | 'center' | 'right') {
   &.dark {
     color: #a6a6a6;
     &.active {
-      color: #3370ff;
+      color: var(--ed-color-primary);
       background-color: rgba(51, 112, 255, 0.1);
     }
     &:hover {
@@ -247,7 +247,7 @@ function setPosition(p: 'left' | 'center' | 'right') {
   }
 
   &.active {
-    color: #3370ff;
+    color: var(--ed-color-primary);
     background-color: rgba(51, 112, 255, 0.1);
   }
 

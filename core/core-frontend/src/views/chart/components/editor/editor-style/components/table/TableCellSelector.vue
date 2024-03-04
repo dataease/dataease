@@ -255,7 +255,7 @@ onMounted(() => {
   &.dark {
     color: #a6a6a6;
     &.active {
-      color: #3370ff;
+      color: var(--ed-color-primary);
       background-color: rgba(51, 112, 255, 0.1);
     }
     &:hover {
@@ -264,7 +264,7 @@ onMounted(() => {
   }
 
   &.active {
-    color: #3370ff;
+    color: var(--ed-color-primary);
     background-color: rgba(51, 112, 255, 0.1);
   }
 

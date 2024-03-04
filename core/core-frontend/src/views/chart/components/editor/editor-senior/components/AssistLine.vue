@@ -324,7 +324,7 @@ span {
   line-height: 20px;
   color: #a6a6a6 !important;
   &.ed-button {
-    color: #3370ff !important;
+    color: var(--ed-color-primary) !important;
   }
   &.is-disabled {
     color: #5f5f5f !important;
