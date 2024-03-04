@@ -150,6 +150,7 @@ const state = reactive({
   collisionGap: 10 // 碰撞深度有效区域,
 })
 
+const minGap = 15
 const contentDisplay = ref(true)
 
 const shapeLock = computed(() => {
@@ -669,8 +670,9 @@ const handleMouseDownOnPoint = (point, e) => {
         // 调整宽度
         style.width = defaultStyle.value.height * originRadio
       }
-      calculateRadioComponentPositionAndSize(point, style, symmetricPoint)
     }
+    calculateRadioComponentPositionAndSize(point, style, symmetricPoint)
+
     dvMainStore.setShapeStyle(style)
     // 矩阵逻辑 如果当前是仪表板（矩阵模式）则要进行矩阵重排
     dashboardActive.value && emit('onResizing', moveEvent)
