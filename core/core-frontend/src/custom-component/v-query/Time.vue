@@ -220,6 +220,7 @@ const setArrValue = () => {
 
 const onConfirm = () => {
   setArrValue()
+  handleValueChange()
   showDate.value = false
 }
 
