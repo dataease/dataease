@@ -186,6 +186,13 @@ const formatterTime = val => {
     font-weight: 400;
     line-height: 22px;
 
+    .empty-tips {
+      color: #646a73;
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 22px;
+    }
+
     img {
       margin-bottom: 8px;
     }

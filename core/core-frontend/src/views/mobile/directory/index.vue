@@ -49,6 +49,12 @@ const onClickLeft = () => {
     emits('hiddenTabbar', false)
   }
 }
+
+const onClickPanel = () => {
+  directName.value = []
+  directId.value = []
+  activeDirectName.value = ''
+}
 const router = useRouter()
 
 const handleCellClick = ele => {
@@ -114,8 +120,22 @@ onMounted(() => {
         :left-arrow="!!activeDirectName"
         @click-left="onClickLeft"
       />
+      <div class="direct-name-arr" v-if="directName.length">
+        <div @click="onClickPanel" key="仪表板">
+          <span class="label primary-name">仪表板</span>
+          <el-icon>
+            <Icon name="icon_right_outlined"></Icon>
+          </el-icon>
+        </div>
+        <div v-for="(ele, index) in [...directName]" :key="ele">
+          <span class="label">{{ ele }}</span>
+          <el-icon v-if="index !== directName.length - 1">
+            <Icon name="icon_right_outlined"></Icon>
+          </el-icon>
+        </div>
+      </div>
     </van-sticky>
-    <div class="dashboard-cell-group">
+    <div :class="!!directName.length && 'dashboard-cell-group-tab'" class="dashboard-cell-group">
       <DashboardCell
         v-for="ele in activeTableData"
         :key="ele.id"
@@ -136,6 +156,38 @@ onMounted(() => {
     overflow-y: auto;
     height: calc(100vh - 102px);
     margin-top: 8px;
+
+    &.dashboard-cell-group-tab {
+      margin-top: 0;
+      height: calc(100vh - 146px);
+    }
+  }
+
+  .direct-name-arr {
+    height: 44px;
+    padding: 12px 16px;
+    color: #646a73;
+    display: flex;
+    align-items: center;
+    & > div {
+      display: flex;
+      align-items: center;
+    }
+
+    .label {
+      font-size: 14px;
+      font-weight: 400;
+      line-height: 20px;
+    }
+
+    .ed-icon {
+      font-size: 12px;
+      margin: 0 4px;
+    }
+
+    .primary-name {
+      color: var(--ed-color-primary);
+    }
   }
 }
 </style>

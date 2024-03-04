@@ -186,16 +186,16 @@ const multiplexingCanvasOpen = () => {
   multiplexingRef.value.dialogInit()
 }
 
-const mobileConfig = () => {
-  useEmitt().emitter.emit('mobileConfig')
-}
-
 eventBus.on('preview', previewInner)
 eventBus.on('save', saveCanvasWithCheck)
 eventBus.on('clearCanvas', clearCanvas)
 
 const openDataBoardSetting = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
+}
+
+const openMobileSetting = () => {
+  useEmitt().emitter.emit('mobileConfig')
 }
 
 const batchDelete = () => {
@@ -423,12 +423,6 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
             is-label
             @customClick="multiplexingCanvasOpen"
           ></component-button-label>
-          <component-button-label
-            icon-name="icon_copy_filled"
-            title="移动端"
-            is-label
-            @customClick="mobileConfig"
-          ></component-button-label>
         </div>
       </template>
 
@@ -447,6 +441,14 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
               tips="仪表板配置"
               @custom-click="openDataBoardSetting"
               icon-name="dv-dashboard"
+            />
+          </el-tooltip>
+          <div class="divider"></div>
+          <el-tooltip effect="dark" content="移动端配置" placement="bottom">
+            <component-button
+              tips="移动端配置"
+              @custom-click="openMobileSetting"
+              icon-name="icon_phone_outlined"
             />
           </el-tooltip>
         </template>
@@ -647,6 +649,12 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
     display: flex;
     align-items: center;
     justify-content: right;
+
+    .divider {
+      background: #ffffff4d;
+      width: 1px;
+      height: 18px;
+    }
   }
   .custom-el-icon {
     margin-left: 15px;

@@ -930,6 +930,7 @@ onMounted(() => {
     z-index: 2;
     font-size: 16px;
     cursor: pointer;
+    color: var(--ed-color-primary);
   }
 }
 

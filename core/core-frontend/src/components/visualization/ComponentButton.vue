@@ -24,7 +24,9 @@ const emits = defineEmits(['customClick'])
     v-on:click="emits('customClick')"
   >
     <el-col :span="24" class="group_inner" :class="{ 'inner-active': active }">
-      <Icon class="toolbar-icon" :name="iconName" />
+      <el-icon class="toolbar-icon">
+        <Icon :name="iconName" />
+      </el-icon>
       <span>{{ title }}</span>
     </el-col>
   </el-row>
@@ -35,17 +37,35 @@ const emits = defineEmits(['customClick'])
   padding-right: 10px;
 }
 .group_inner {
-  padding: 5px;
   display: flex;
   cursor: pointer;
-  flex-direction: column;
   align-items: center;
+  justify-content: center;
   border-radius: 4px;
+  color: #ffffff99;
+  position: relative;
+  &::after {
+    content: '';
+    border-radius: 4px;
+    display: none;
+    position: absolute;
+    width: calc(100% + 10px);
+    height: calc(100% + 10px);
+    top: -5px;
+    left: -5px;
+  }
+
   &:hover {
-    background: rgba(255, 255, 255, 0.1);
+    &::after {
+      display: block;
+      background: rgba(255, 255, 255, 0.1);
+    }
   }
   &:active {
-    background: rgba(255, 255, 255, 0.2);
+    &::after {
+      display: block;
+      background: rgba(255, 255, 255, 0.2);
+    }
   }
   span {
     float: left;
@@ -65,8 +85,6 @@ const emits = defineEmits(['customClick'])
 }
 
 .toolbar-icon {
-  float: left;
-  width: 20px;
-  height: 20px;
+  font-size: 20px;
 }
 </style>
