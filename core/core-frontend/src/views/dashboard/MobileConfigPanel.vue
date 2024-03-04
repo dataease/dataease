@@ -1,8 +1,9 @@
 <script lang="ts" setup>
 import { ref, onMounted, unref, onBeforeUnmount, computed } from 'vue'
-import eventBus from '@/utils/eventBus'
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import MobileBackgroundSelector from './MobileBackgroundSelector.vue'
-import { ElMessageBox } from 'element-plus-secondary'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { canvasSave } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getStyle } from '@/utils/style'
@@ -12,6 +13,7 @@ const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
 const mobileLoading = ref(true)
 const emits = defineEmits(['pcMode'])
+const snapshotStore = snapshotStoreWithOut()
 
 const getComponentStyleDefault = style => {
   return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
@@ -78,8 +80,15 @@ const hanedleMessage = event => {
       }
     })
 
-    eventBus.emit('saveFromMobile')
+    saveCanvasWithCheckFromMobile()
   }
+}
+
+const saveCanvasWithCheckFromMobile = () => {
+  snapshotStore.resetStyleChangeTimes()
+  canvasSave(() => {
+    ElMessage.success('保存成功')
+  })
 }
 onMounted(() => {
   window.addEventListener('message', hanedleMessage)
