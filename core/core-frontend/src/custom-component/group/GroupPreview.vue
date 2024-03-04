@@ -34,10 +34,15 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 0
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
 
-const { propValue, dvInfo, searchCount } = toRefs(props)
+const { propValue, dvInfo, searchCount, scale } = toRefs(props)
 
 const customGroupStyle = item => {
   return {
@@ -63,6 +68,7 @@ const customGroupStyle = item => {
         :style="customGroupStyle(item)"
         :show-position="showPosition"
         :search-count="searchCount"
+        :scale="scale"
       />
     </div>
   </div>

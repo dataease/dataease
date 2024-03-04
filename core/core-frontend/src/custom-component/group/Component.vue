@@ -99,6 +99,7 @@ watch(
       :canvas-view-info="canvasViewInfo"
       :is-edit="isEdit"
       :element="element"
+      :scale="scale"
     >
     </canvas-group>
   </div>
