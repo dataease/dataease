@@ -1,6 +1,7 @@
 :root {
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Helvetica Neue, Helvetica, '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei,
-    \5fae\8f6f\96c5\9ed1, Arial, sans-serif;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Helvetica Neue, Helvetica,
+    '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei, \5fae\8f6f\96c5\9ed1,
+    Arial, sans-serif;
   line-height: 1.5;
   font-weight: 400;
 
@@ -78,7 +79,7 @@ body {
 
   &.active {
     background: rgba(51, 112, 255, 0.1);
-    color: #3370ff;
+    color: var(--ed-color-primary);
   }
 }
 
@@ -112,7 +113,7 @@ body {
     content: '';
     width: 2px;
     height: 14px;
-    background: #3370ff;
+    background: var(--ed-color-primary);
     position: absolute;
     top: 50%;
     transform: translateY(-50%);
@@ -134,11 +135,11 @@ body {
 }
 
 .field-icon-text {
-  color: #3370ff;
+  color: var(--ed-color-primary);
 }
 
 .field-icon-time {
-  color: #3370ff;
+  color: var(--ed-color-primary);
 }
 
 .field-icon-value {
@@ -146,7 +147,7 @@ body {
 }
 
 .field-icon-location {
-  color: #3370ff;
+  color: var(--ed-color-primary);
 }
 
 .field-icon-red {
@@ -160,7 +161,7 @@ body {
 }
 
 .field-icon-dimension {
-  color: #3370ff;
+  color: var(--ed-color-primary);
 }
 
 .field-icon-quota {
@@ -195,7 +196,7 @@ body {
 }
 
 .hover-icon-in-table {
-  color: #3370ff !important;
+  color: var(--ed-color-primary) !important;
   &[aria-expanded='true'] {
     background: rgba(51, 112, 255, 0.1);
   }
@@ -290,7 +291,7 @@ body {
 //   padding: 0 0 64px 0 !important;
 // }
 
-.ed-tree-node.is-current>.ed-tree-node__content:not(.is-menu):after {
+.ed-tree-node.is-current > .ed-tree-node__content:not(.is-menu):after {
   display: none;
 }
 
@@ -363,11 +364,11 @@ em {
 }
 
 .color-panel {
-  background: #3370ff;
+  background: var(--ed-color-primary);
 }
 
 .color-dashboard {
-  background: #3370ff;
+  background: var(--ed-color-primary);
 }
 
 .color-screen {

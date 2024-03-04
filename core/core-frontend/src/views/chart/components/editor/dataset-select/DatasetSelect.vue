@@ -502,14 +502,14 @@ onMounted(() => {
         }
 
         &.active {
-          color: #3370ff;
+          color: var(--ed-color-primary);
           padding-right: 30px;
         }
         .checked-item {
           position: absolute;
           right: 10px;
           padding-top: 2px;
-          color: #3370ff;
+          color: var(--ed-color-primary);
           font-size: 16px;
         }
       }
@@ -523,12 +523,12 @@ onMounted(() => {
 
     &:not(.is-disabled):focus,
     &:not(.is-disabled):hover {
-      color: rgba(51, 112, 255, 1);
+      color: var(--ed-color-primary);
       border-color: transparent;
       background-color: rgba(51, 112, 255, 0.1);
     }
     &:not(.is-disabled):active {
-      color: rgba(51, 112, 255, 1);
+      color: var(--ed-color-primary);
       border-color: transparent;
       background-color: rgba(51, 112, 255, 0.2);
     }

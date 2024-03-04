@@ -81,7 +81,7 @@ const handleCommand = key => {
 
 <style lang="less">
 .de-card-model-checked {
-  border: 1px solid #3370ff !important;
+  border: 1px solid var(--ed-color-primary) !important;
 }
 .de-card-model-active {
   .custom-item-checkbox {
@@ -181,7 +181,7 @@ const handleCommand = key => {
 }
 
 .icon-screen-new {
-  background: #3370ff;
+  background: var(--ed-color-primary);
   border-radius: 4px;
   color: #fff;
   padding: 3px;

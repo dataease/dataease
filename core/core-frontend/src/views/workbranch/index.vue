@@ -404,7 +404,7 @@ initMarketTemplate()
   .info-quick-creation {
     width: 360px;
     .main-color {
-      background: #3370ff;
+      background: var(--ed-color-primary);
       width: 32px;
       height: 32px;
     }

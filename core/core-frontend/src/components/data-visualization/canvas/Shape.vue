@@ -963,7 +963,7 @@ onMounted(() => {
 }
 
 .active {
-  outline: 1px solid rgba(51, 112, 255, 1) !important;
+  outline: 1px solid var(--ed-color-primary) !important;
   user-select: none;
 }
 

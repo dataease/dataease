@@ -118,6 +118,6 @@ watch(
 }
 
 .canvas-active-custom {
-  outline: 2px solid rgba(51, 112, 255, 1) !important;
+  outline: 2px solid var(--ed-color-primary) !important;
 }
 </style>

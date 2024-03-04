@@ -114,7 +114,7 @@ watch(
   }
 
   .clear-btn:hover {
-    color: #3370ff;
+    color: var(--ed-color-primary);
   }
 
   .filter-texts-container::-webkit-scrollbar {

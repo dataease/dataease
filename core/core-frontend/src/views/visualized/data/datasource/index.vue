@@ -1456,7 +1456,7 @@ const getMenuList = (val: boolean) => {
 
         .custom-icon {
           &.btn {
-            color: #3370ff;
+            color: var(--ed-color-primary);
           }
 
           &:hover {
@@ -1595,7 +1595,7 @@ const getMenuList = (val: boolean) => {
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
-    color: #3370ff;
+    color: var(--ed-color-primary);
     cursor: pointer;
     margin-top: 16px;
     display: inline-flex;

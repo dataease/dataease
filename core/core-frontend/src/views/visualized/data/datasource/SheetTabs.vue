@@ -120,7 +120,7 @@ const nextClick = () => {
       }
 
       &:not(.disabled):hover {
-        color: #3370ff;
+        color: var(--ed-color-primary);
       }
 
       & + .ed-icon {
@@ -140,7 +140,7 @@ const nextClick = () => {
     max-width: 200px;
     border-bottom: 1px solid rgba(31, 35, 41, 0.15);
     &:hover {
-      color: #3370ff;
+      color: var(--ed-color-primary);
     }
 
     .ellipsis {
@@ -180,7 +180,7 @@ const nextClick = () => {
   }
   .active {
     box-shadow: 0px -1px 0px 0px #f5f6f7 inset;
-    color: #3370ff;
+    color: var(--ed-color-primary);
     border: 1px solid rgba(31, 35, 41, 0.15);
     border-bottom: none;
     border-top-left-radius: 4px;

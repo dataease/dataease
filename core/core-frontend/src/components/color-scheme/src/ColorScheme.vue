@@ -223,7 +223,7 @@ const resetCustomColor = () => {
 
       &.active {
         &::after {
-          border-color: #3370ff;
+          border-color: var(--ed-color-primary);
           display: block;
         }
       }

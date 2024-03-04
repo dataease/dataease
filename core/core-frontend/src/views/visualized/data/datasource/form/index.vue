@@ -723,7 +723,7 @@ defineExpose({
       background-color: transparent;
       .step-icon {
         .icon {
-          background: #3370ff;
+          background: var(--ed-color-primary);
         }
       }
     }
@@ -732,7 +732,7 @@ defineExpose({
       background-color: transparent;
       .step-icon {
         .icon {
-          border: 1px solid #3370ff;
+          border: 1px solid var(--ed-color-primary);
         }
       }
     }

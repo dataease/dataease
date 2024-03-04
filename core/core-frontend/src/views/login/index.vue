@@ -418,7 +418,7 @@ onMounted(() => {
     margin: 20px auto 20px;
     position: relative;
     width: 80px;
-    background: #3370ff;
+    background: var(--ed-color-primary);
     @media only screen and (max-width: 1280px) {
       margin: 20px auto 20px;
     }

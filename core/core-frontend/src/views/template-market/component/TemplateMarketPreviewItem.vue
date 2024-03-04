@@ -76,7 +76,7 @@ const previewTemplate = () => {
 }
 
 .template-item-main-active {
-  border: 2px solid #3370ff !important;
+  border: 2px solid var(--ed-color-primary) !important;
 }
 .template-item-img {
   position: absolute;
@@ -103,6 +103,6 @@ const previewTemplate = () => {
 }
 
 .template-item-main:hover {
-  border: solid 1px #3370ff;
+  border: solid 1px var(--ed-color-primary);
 }
 </style>

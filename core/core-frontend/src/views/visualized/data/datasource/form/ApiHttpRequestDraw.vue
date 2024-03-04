@@ -646,7 +646,7 @@ defineExpose({
       background-color: transparent;
       .step-icon {
         .icon {
-          background: #3370ff;
+          background: var(--ed-color-primary);
         }
       }
     }
@@ -655,7 +655,7 @@ defineExpose({
       background-color: transparent;
       .step-icon {
         .icon {
-          border: 1px solid #3370ff;
+          border: 1px solid var(--ed-color-primary);
         }
       }
     }
@@ -750,14 +750,14 @@ defineExpose({
     &.active {
       .ed-icon {
         transform: rotate(90deg);
-        color: #3370ff;
+        color: var(--ed-color-primary);
       }
     }
 
     &.deactivate {
       .ed-icon {
         transform: rotate(0);
-        color: #3370ff;
+        color: var(--ed-color-primary);
       }
     }
   }

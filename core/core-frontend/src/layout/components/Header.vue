@@ -128,21 +128,21 @@ onMounted(() => {
       &.is-active {
         border-bottom: none;
         color: #ffffff !important;
-        background-color: #245bdb;
+        background-color: var(--ed-color-primary);
       }
     }
 
     > .is-active {
       :deep(.ed-sub-menu__title) {
         color: #ffffff !important;
-        background-color: #245bdb;
+        background-color: var(--ed-color-primary);
       }
     }
 
     .ed-menu-item:not(.is-disabled):hover,
     :deep(.ed-sub-menu__title):not(.is-disabled):hover {
       color: #ffffff;
-      background-color: #245bdb;
+      background-color: var(--ed-color-primary);
     }
   }
 }

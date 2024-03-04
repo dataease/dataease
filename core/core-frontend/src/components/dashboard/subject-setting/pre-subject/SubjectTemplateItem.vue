@@ -196,7 +196,7 @@ onMounted(() => {
 }
 
 .background-selected {
-  border: solid 1px #3370ff !important;
+  border: solid 1px var(--ed-color-primary) !important;
   .title-main {
     background: rgba(51, 112, 255, 0.1);
   }

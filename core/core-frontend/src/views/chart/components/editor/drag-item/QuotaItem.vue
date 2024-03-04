@@ -787,7 +787,7 @@ span {
   width: 100%;
 
   &.content-active {
-    color: #3370ff;
+    color: var(--ed-color-primary);
   }
 
   .sub-menu-content--icon {
@@ -908,7 +908,7 @@ span {
   }
 
   .sub-menu-content--icon {
-    color: #3370ff;
+    color: var(--ed-color-primary);
     margin-right: -7px;
   }
   :nth-child(1).ed-icon {
@@ -929,7 +929,7 @@ span {
   }
 
   .sub-menu-content--icon {
-    color: #3370ff;
+    color: var(--ed-color-primary);
     margin-right: -7px !important;
   }
 }

@@ -177,9 +177,9 @@ const groupActiveChange = category => {
 
 .li-custom-active {
   background: rgba(51, 112, 255, 0.1);
-  color: #3370ff !important;
+  color: var(--ed-color-primary) !important;
   .li-a {
-    color: #3370ff !important;
+    color: var(--ed-color-primary) !important;
   }
 }
 
@@ -199,7 +199,7 @@ const groupActiveChange = category => {
     align-items: center;
     justify-content: center;
     &:hover {
-      border: 1px solid #3370ff;
+      border: 1px solid var(--ed-color-primary);
     }
     .item-top-icon {
       width: 80px;
@@ -208,7 +208,7 @@ const groupActiveChange = category => {
     }
   }
   .item-active {
-    border: 1px solid #3370ff;
+    border: 1px solid var(--ed-color-primary);
   }
   .item-bottom {
     height: 20px;

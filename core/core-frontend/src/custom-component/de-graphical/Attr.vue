@@ -157,7 +157,7 @@ onBeforeUnmount(() => {
 
   &:hover {
     .ed-icon {
-      color: #3370ff;
+      color: var(--ed-color-primary);
     }
   }
 }
@@ -179,7 +179,7 @@ onBeforeUnmount(() => {
       }
       &:hover {
         .ed-icon {
-          color: #3370ff;
+          color: var(--ed-color-primary);
         }
       }
     }
@@ -205,7 +205,7 @@ onBeforeUnmount(() => {
 
 .re-update-span {
   cursor: pointer;
-  color: #3370ff;
+  color: var(--ed-color-primary);
   size: 14px;
   line-height: 22px;
   font-weight: 400;

@@ -527,7 +527,7 @@ const mousedownDrag = () => {
                       {{ ele.name }}
                     </div>
                     <el-icon
-                      style="color: #3370ff !important"
+                      style="color: var(--ed-color-primary)!important"
                       class="hover-icon"
                       @click.stop="copyInfo(ele.name)"
                     >
@@ -563,7 +563,7 @@ const mousedownDrag = () => {
                       <el-table-column :label="t('common.operate')">
                         <template #default="scope">
                           <el-icon
-                            style="color: #3370ff !important"
+                            style="color: var(--ed-color-primary)!important"
                             class="hover-icon"
                             @click.stop="copyInfo(scope.row.originName)"
                           >

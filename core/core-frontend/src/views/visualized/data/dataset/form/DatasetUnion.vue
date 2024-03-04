@@ -996,7 +996,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   padding-right: 12px;
 
   &:hover {
-    border-color: #3370ff;
+    border-color: var(--ed-color-primary);
   }
 
   .placeholder {
@@ -1021,7 +1021,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
     height: 32px;
     left: -1px;
     top: -1px;
-    background: #3370ff;
+    background: var(--ed-color-primary);
     border-radius: 4px 0px 0px 4px;
   }
 }
@@ -1038,13 +1038,13 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   background: #fff;
   cursor: pointer;
   &:hover {
-    border-color: #3370ff;
+    border-color: var(--ed-color-primary);
   }
 }
 
 .shadow-node {
   border: 1px dashed;
-  border-color: #3370ff;
+  border-color: var(--ed-color-primary);
   background-color: rgba(51, 112, 255, 0.08);
   .ed-icon,
   .tableName {
@@ -1057,7 +1057,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
 }
 
 .active-node {
-  border-color: #3370ff;
+  border-color: var(--ed-color-primary);
 }
 
 .drag-mask {
@@ -1080,7 +1080,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
 .mask-dataset-none {
   background-color: #e5ebf8;
   border: 1px dashed;
-  border-color: #3370ff;
+  border-color: var(--ed-color-primary);
 }
 
 .zero {
