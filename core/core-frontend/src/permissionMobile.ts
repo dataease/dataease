@@ -6,6 +6,9 @@ import { useCache } from '@/hooks/web/useCache'
 import { getRoleRouters } from '@/api/common'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+
+const appearanceStore = useAppearanceStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
 const { wsCache } = useCache()
 const userStore = useUserStoreWithOut()
@@ -19,6 +22,7 @@ const whiteList = ['/login'] // 不重定向白名单
 router.beforeEach(async (to, _, next) => {
   start()
   loadStart()
+  await appearanceStore.setAppearance()
   if (wsCache.get('user.token')) {
     if (!userStore.getUid) {
       await userStore.setUser()
