@@ -2,6 +2,8 @@ import { defineStore } from 'pinia'
 import { store } from '@/store/index'
 import { uiLoadApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
+import colorFunctions from 'less/lib/less/functions/color.js'
+import colorTree from 'less/lib/less/tree/color.js'
 const basePath = import.meta.env.VITE_API_BASEPATH
 const baseUrl = basePath + '/appearance/image/'
 interface AppearanceState {
@@ -135,6 +137,24 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.customColor = data.customColor
       if (this.themeColor === 'custom' && this.customColor) {
         document.documentElement.style.setProperty('--ed-color-primary', this.customColor)
+        document.documentElement.style.setProperty(
+          '--ed-color-primary-light-5',
+          colorFunctions
+            .mix(new colorTree('ffffff'), new colorTree(this.customColor.substr(1)), { value: 40 })
+            .toRGB()
+        )
+        document.documentElement.style.setProperty(
+          '--ed-color-primary-light-3',
+          colorFunctions
+            .mix(new colorTree('ffffff'), new colorTree(this.customColor.substr(1)), { value: 15 })
+            .toRGB()
+        )
+        document.documentElement.style.setProperty(
+          '--ed-color-primary-dark-2',
+          colorFunctions
+            .mix(new colorTree('000000'), new colorTree(this.customColor.substr(1)), { value: 15 })
+            .toRGB()
+        )
       } else if (document.documentElement.style.getPropertyValue('--ed-color-primary')) {
         document.documentElement.style.setProperty('--ed-color-primary', '#3370FF')
       }

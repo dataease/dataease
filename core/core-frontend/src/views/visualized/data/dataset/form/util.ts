@@ -120,4 +120,45 @@ const timeTypes = [
   'custom'
 ]
 
-export { timestampFormatDate, defaultValueScopeList, fieldOptions, guid, getFieldName, timeTypes }
+type NodeType = 'db' | 'sql'
+type UnionType = 'left' | 'right' | 'inner'
+interface UnionField {
+  currentField: Field
+  parentField: Field
+}
+interface Node {
+  tableName: string
+  type: NodeType
+  datasourceId: string
+  id: string
+  unionType: UnionType
+  unionFields: UnionField[]
+  info: string
+  sqlVariableDetails: string
+  currentDsFields: Field[]
+  children?: Node[]
+}
+
+interface Field {
+  checked: boolean
+  deExtractType: number
+  deType: number
+  name: string
+  type: string
+  originName: string
+  id: string
+}
+
+export {
+  NodeType,
+  UnionType,
+  UnionField,
+  Node,
+  Field,
+  timestampFormatDate,
+  defaultValueScopeList,
+  fieldOptions,
+  guid,
+  getFieldName,
+  timeTypes
+}

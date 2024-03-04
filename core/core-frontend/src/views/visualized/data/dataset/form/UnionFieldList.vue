@@ -4,15 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { propTypes } from '@/utils/propTypes'
 import { ElTable } from 'element-plus-secondary'
 import { fieldType } from '@/utils/attr'
-export interface Field {
-  checked: boolean
-  deExtractType: number
-  deType: number
-  name: string
-  type: string
-  originName: string
-  id: string
-}
+import { type Field } from './util'
 
 const { t } = useI18n()
 const props = defineProps({

@@ -644,6 +644,11 @@ const tabChange = val => {
         ele.deType === 1 && ele.deExtractType === 0
           ? [ele.deType, ele.dateFormatType]
           : [ele.deType]
+    } else {
+      const [type] = ele.deTypeArr
+      if (ele.deTypeArr.length && type !== ele.deType) {
+        ele.deTypeArr.splice(0, 1, ele.deType)
+      }
     }
   })
 }
