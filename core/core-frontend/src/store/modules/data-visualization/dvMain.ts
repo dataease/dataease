@@ -258,11 +258,11 @@ export const dvMainStore = defineStore('dataVisualization', {
         if (height) this.curComponent.style.height = Math.round(height)
         if (rotate) this.curComponent.style.rotate = Math.round(rotate)
       } else {
-        if (top) this.curComponent.style.top = Math.round(top)
-        if (left) this.curComponent.style.left = Math.round(left)
-        if (width) this.curComponent.style.width = Math.round(width)
-        if (height) this.curComponent.style.height = Math.round(height)
-        if (rotate) this.curComponent.style.rotate = Math.round(rotate)
+        if (top) this.curComponent.style.top = top
+        if (left) this.curComponent.style.left = left
+        if (width) this.curComponent.style.width = width
+        if (height) this.curComponent.style.height = height
+        if (rotate) this.curComponent.style.rotate = rotate
       }
     },
 

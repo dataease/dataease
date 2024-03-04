@@ -82,17 +82,22 @@ const onPositionChange = key => {
   if (!positionMounted.value[key]) {
     positionMounted.value[key] = 0
   }
-  const originRadio = curComponent.value.style.width / curComponent.value.style.height
   if (curComponent.value.maintainRadio) {
     curComponent.value.style[key] = Math.ceil(
       (positionMounted.value[key] * canvasStyleData.value.scale) / 100
     )
     if (key === 'width') {
-      curComponent.value.style['height'] = curComponent.value.style['width'] / originRadio
-      positionMounted.value['height'] = Math.round(positionMounted.value['width'] / originRadio)
+      curComponent.value.style['height'] =
+        curComponent.value.style['width'] / curComponent.value.aspectRatio
+      positionMounted.value['height'] = Math.round(
+        positionMounted.value['width'] / curComponent.value.aspectRatio
+      )
     } else if (key === 'height') {
-      curComponent.value.style['width'] = curComponent.value.style['height'] * originRadio
-      positionMounted.value['width'] = Math.round(positionMounted.value['height'] * originRadio)
+      curComponent.value.style['width'] =
+        curComponent.value.style['height'] * curComponent.value.aspectRatio
+      positionMounted.value['width'] = Math.round(
+        positionMounted.value['height'] * curComponent.value.aspectRatio
+      )
     }
   } else {
     curComponent.value.style[key] = Math.round(
@@ -110,6 +115,7 @@ const onPositionChange = key => {
 }
 
 const maintainRadioChange = () => {
+  curComponent.value.aspectRatio = curComponent.value.style.width / curComponent.value.style.height
   snapshotStore.recordSnapshotCache()
 }
 
@@ -120,6 +126,11 @@ const positionInit = () => {
         (curComponent.value.style[key] * 100) / canvasStyleData.value.scale
       )
     })
+    if (curComponent.value.maintainRadio) {
+      positionMounted.value.width = Math.round(
+        positionMounted.value.height * curComponent.value.aspectRatio
+      )
+    }
   }
 }
 

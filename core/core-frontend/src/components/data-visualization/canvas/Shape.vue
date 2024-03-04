@@ -629,7 +629,7 @@ const handleMouseDownOnPoint = (point, e) => {
   let isFirst = true
 
   const needLockProportion = isNeedLockProportion()
-  const originRadio = curComponent.value.style.width / curComponent.value.style.height
+  const originRadio = curComponent.value.aspectRatio
   const move = moveEvent => {
     // 第一次点击时也会触发 move，所以会有“刚点击组件但未移动，组件的大小却改变了”的情况发生
     // 因此第一次点击时不触发 move 事件
