@@ -1041,7 +1041,7 @@ const mousedownDrag = () => {
       .de-Exec-result,
       .de-Underway-pre {
         &::before {
-          background: var(--primary, #3370ff);
+          background: var(--ed-color-primary, #3370ff);
         }
       }
 
@@ -1058,7 +1058,7 @@ const mousedownDrag = () => {
         }
 
         .ed-icon-s-order {
-          color: var(--primary, #3370ff);
+          color: var(--ed-color-primary, #3370ff);
           cursor: pointer;
         }
       }
@@ -1245,7 +1245,7 @@ const mousedownDrag = () => {
       top: 10.6px;
       left: 16px;
       font-size: 14px;
-      color: var(--primary, #3370ff);
+      color: var(--ed-color-primary, #3370ff);
     }
 
     margin-bottom: 16px;

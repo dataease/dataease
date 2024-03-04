@@ -7,12 +7,13 @@ import { guid } from './util'
 import { HandleMore } from '@/components/handle-more'
 import { propTypes } from '@/utils/propTypes'
 import UnionFieldList from './UnionFieldList.vue'
-import type { Node } from './UnionEdit.vue'
+import type { Node, Field } from './util'
 import { getTableField } from '@/api/dataset'
-import type { Field } from './UnionFieldList.vue'
 import type { SqlNode } from './AddSql.vue'
 import { cloneDeep } from 'lodash-es'
 import type { Table } from '@/api/dataset'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+const appearanceStore = useAppearanceStoreWithOut()
 const state = reactive({
   nodeList: [],
   pathList: [],
@@ -26,6 +27,10 @@ const props = defineProps({
   offsetY: propTypes.number.def(0),
   dragHeight: propTypes.number.def(260),
   getDsName: propTypes.func
+})
+
+const primaryColor = computed(() => {
+  return appearanceStore.themeColor === 'custom' ? appearanceStore.customColor : '#3370FF'
 })
 
 const iconName = {
@@ -803,7 +808,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
         v-for="ele in flatPathList"
         :d="ele.d"
         :stroke-dasharray="ele.isShadow ? '4,4' : '0'"
-        :stroke="ele.isShadow ? '#3370ff' : '#BBBFC4'"
+        :stroke="ele.isShadow ? primaryColor : '#BBBFC4'"
         stroke-width="1"
         fill="none"
       />
@@ -1036,6 +1041,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
   align-items: center;
   justify-content: center;
   background: #fff;
+  color: var(--ed-color-primary);
   cursor: pointer;
   &:hover {
     border-color: var(--ed-color-primary);

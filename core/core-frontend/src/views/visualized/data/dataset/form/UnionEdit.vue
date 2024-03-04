@@ -2,29 +2,10 @@
 import { ref, reactive } from 'vue'
 import UnionFieldList from './UnionFieldList.vue'
 import UnionItemEdit from './UnionItemEdit.vue'
-import type { Field } from './UnionFieldList.vue'
+import type { Field, NodeType, UnionType, Node } from './util'
 import { getTableField } from '@/api/dataset'
 import { cloneDeep } from 'lodash-es'
-interface UnionField {
-  currentField: Field
-  parentField: Field
-}
 
-type NodeType = 'db' | 'sql'
-type UnionType = 'left' | 'right' | 'inner'
-
-export interface Node {
-  tableName: string
-  type: NodeType
-  datasourceId: string
-  id: string
-  unionType: UnionType
-  unionFields: UnionField[]
-  info: string
-  sqlVariableDetails: string
-  currentDsFields: Field[]
-  children?: Node[]
-}
 const changeParentFields = val => {
   parent.currentDsFields = val
 }
