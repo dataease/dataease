@@ -945,7 +945,7 @@ export default {
           }
         }
         if (this.isFirstLoad) {
-          this.element.filters = this.filters?.length ? JSON.parse(JSON.stringify(this.filters)) : []
+          this.element.filters = this.filter.filter?.length ? JSON.parse(JSON.stringify(this.filter.filter)) : []
         }
         method(id, this.panelInfo.id, requestInfo).then(response => {
           try {
