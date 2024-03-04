@@ -1302,6 +1302,12 @@ export default {
       this.fontSize = arr
     },
     changeBarSizeCase(modifyName) {
+      if (!this.doChange) {
+        this.doChange = _.debounce(() => this.debounceChange(modifyName), 200)
+      }
+      this.doChange()
+    },
+    debounceChange(modifyName) {
       this.sizeForm['modifyName'] = modifyName
       if (this.sizeForm.gaugeMax <= this.sizeForm.gaugeMin) {
         this.$message.error(this.$t('chart.max_more_than_mix'))
