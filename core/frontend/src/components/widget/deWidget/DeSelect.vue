@@ -387,7 +387,7 @@ export default {
     },
     initLoad() {
       this.initOptions(this.fillFirstSelected)
-      const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]?.length
+      const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]
       if ((this.element.options.value || existLastValidFilters) && !this.selectFirst) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
