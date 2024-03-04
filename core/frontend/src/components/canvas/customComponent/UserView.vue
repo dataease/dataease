@@ -1231,13 +1231,11 @@ export default {
           this.windowsJump(url, jumpInfo.jumpType)
         }
       } else {
-        if (this.chart.type.indexOf('table') === -1) {
-          this.$message({
-            type: 'warn',
-            message: '未获取跳转信息',
-            showClose: true
-          })
-        }
+        this.$message({
+          type: 'warn',
+          message: '未获取跳转信息',
+          showClose: true
+        })
       }
     },
     setIdValueTrans(from, to, content, colList) {
