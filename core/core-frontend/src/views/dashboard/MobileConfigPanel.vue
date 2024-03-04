@@ -159,7 +159,7 @@ const save = () => {
         {{ dvInfo.name }}
       </div>
       <div class="config-panel-content" v-loading="mobileLoading">
-        <iframe src="./mobile.html#/panel" frameborder="0" width="375" height="640" />
+        <iframe src="./mobile.html#/panel" frameborder="0" width="375" />
       </div>
       <div class="config-panel-foot"></div>
     </div>
@@ -215,7 +215,6 @@ const save = () => {
   width: 100vw;
   position: relative;
   background: #f5f6f7;
-  overflow-y: auto;
 
   .top-bar {
     position: sticky;
@@ -263,7 +262,7 @@ const save = () => {
     height: 854px;
     overflow: hidden;
     background-size: 100% 100% !important;
-    height: 777px;
+    height: calc(100vh - 120px);
     position: absolute;
     top: 104px;
     left: calc(50% - 419px);
@@ -289,20 +288,28 @@ const save = () => {
 
     .config-panel-content {
       width: 100%;
+      height: calc(100% - 130px);
       border-bottom-left-radius: 45px;
       border-bottom-right-radius: 45px;
       overflow: hidden;
+      iframe {
+        height: 100%;
+      }
     }
   }
 
   .mobile-com-list {
     float: right;
     width: 420px;
-    height: 100%;
     background-color: #fff;
     position: relative;
     border-left: rgba(31, 35, 41, 0.15) 1px solid;
-    height: 100%;
+    height: calc(100% - 64px);
+    overflow-y: auto;
+    :deep(.ed-collapse) {
+      --ed-collapse-header-font-size: 12px;
+      --ed-collapse-content-font-size: 12px;
+    }
 
     .config-mobile-sidebar {
       font-size: 14px;
@@ -316,7 +323,7 @@ const save = () => {
       margin-bottom: 8px;
       float: left;
       background: #fff;
-      padding: 31px 4px 36px 4px;
+      padding: 4px;
       border-radius: 4px;
       border: 1px solid #dee0e3;
       &:nth-child(2n) {

@@ -50,6 +50,15 @@ const visible = ref(true)
 const clickRightIcon = () => {
   visible.value = !visible.value
 }
+
+const inputFocus = ref('')
+const handleFocus = val => {
+  inputFocus.value = val
+}
+
+const handleBlur = () => {
+  inputFocus.value = ''
+}
 const onSubmit = async () => {
   if (!checkUsername(username.value) || !validatePwd(password.value)) {
     showToast({
@@ -102,7 +111,10 @@ const usernameEndValidate = ({ status, message }) => {
             name="用户名"
             :style="{ borderColor: !!usernameError ? '#F54A45' : '#bbbfc4' }"
             placeholder="请输入用户名"
+            @blur="handleBlur"
+            :class="inputFocus === 'username' && 'input-focus-primary'"
             @end-validate="usernameEndValidate"
+            @focus="handleFocus('username')"
             :rules="[{ required: true, message: '请填写用户名' }]"
           />
           <div v-if="!!usernameError" class="van-ed-error">
@@ -111,8 +123,11 @@ const usernameEndValidate = ({ status, message }) => {
           <van-field
             v-model="password"
             :type="visible ? 'password' : 'text'"
+            :class="inputFocus === 'password' && 'input-focus-primary'"
             @click-right-icon="clickRightIcon"
             :style="{ borderColor: !!passwordError ? '#F54A45' : '#bbbfc4' }"
+            @focus="handleFocus('password')"
+            @blur="handleBlur"
             name="密码"
             placeholder="请输入密码"
             :rules="[{ required: true, message: '请填写密码' }]"
@@ -162,6 +177,10 @@ const usernameEndValidate = ({ status, message }) => {
     --van-cell-vertical-padding: 12px;
     --van-button-default-height: 48px;
     --van-field-placeholder-text-color: #8f959e;
+
+    .input-focus-primary {
+      border-color: var(--ed-color-primary) !important;
+    }
 
     .van-ed-error {
       font-size: 14px;
