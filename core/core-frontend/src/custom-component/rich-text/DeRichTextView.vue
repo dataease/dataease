@@ -543,5 +543,8 @@ defineExpose({
   overflow-y: auto;
   outline: none !important;
   border: none !important;
+  ol {
+    list-style-type: decimal;
+  }
 }
 </style>
