@@ -1281,7 +1281,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   mapSymbolStrokeWidth: 2,
   mapSymbol: 'circle',
   mapSymbolSize: 20,
-  radius: 100,
+  radius: 80,
   innerRadius: 60
 }
 
