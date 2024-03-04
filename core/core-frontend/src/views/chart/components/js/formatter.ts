@@ -66,7 +66,7 @@ function transSeparatorAndSuffix(value, formatter) {
     str = numArr.join('.')
   }
   if (formatter.type === 'percent') {
-    return str + '%'
+    str += '%'
   } else {
     if (formatter.unit === 1000) {
       str += '千'
