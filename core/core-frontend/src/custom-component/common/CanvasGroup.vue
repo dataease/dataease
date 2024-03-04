@@ -46,6 +46,11 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 0
+  },
+  scale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
 const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, componentData } =
@@ -71,6 +76,7 @@ const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, 
     :search-count="searchCount"
     :prop-value="element.propValue"
     :show-position="showPosition"
+    :scale="scale * 100"
   ></group-preview>
 </template>
 
