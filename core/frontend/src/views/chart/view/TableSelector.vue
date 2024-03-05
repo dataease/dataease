@@ -1,6 +1,6 @@
 <template>
   <de-container>
-    <de-aside-container>
+    <de-aside-container close>
       <dataset-group-selector-tree
         :checked-table="checkedTable"
         :privileges="privileges"

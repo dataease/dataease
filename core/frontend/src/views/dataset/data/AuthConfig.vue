@@ -1,6 +1,6 @@
 <template>
   <de-container style="height: auto">
-    <de-aside-container style="height: auto">
+    <de-aside-container close style="height: auto">
       <el-button
         v-show="!showTargetSearchInput"
         class="de-icon"

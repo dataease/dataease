@@ -5,6 +5,7 @@
   >
     <de-aside-container
       v-loading="viewLoading"
+      close
       class="aside-class"
       type="panel"
     >

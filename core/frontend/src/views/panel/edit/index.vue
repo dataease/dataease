@@ -15,7 +15,7 @@
       </el-col>
     </el-header>
     <de-container>
-      <de-aside-container class="ms-aside-container">
+      <de-aside-container close class="ms-aside-container">
         <div
           v-show="showAside"
           style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute"

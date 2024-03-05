@@ -6,6 +6,7 @@
   >
     <de-aside-container
       :show-drag-bar="false"
+      close
       class="ms-aside-container"
     >
       <el-tabs

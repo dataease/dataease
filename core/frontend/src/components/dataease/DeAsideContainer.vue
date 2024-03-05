@@ -7,7 +7,7 @@
     :class="{ retract: !sideTreeStatus }"
     :style="{'margin-left': !asideHidden ? 0 : '-' + currentWidth}"
   >
-    <DeArrowSide @changeSideTreeStatus="changeSideTreeStatus" :style="{ left: (sideTreeStatus ? parseInt(currentWidth) - 12 : 0) + 'px' }" :isInside="!sideTreeStatus"></DeArrowSide>
+    <DeArrowSide v-if="!close" @changeSideTreeStatus="changeSideTreeStatus" :style="sideStyle" :isInside="!sideTreeStatus"></DeArrowSide>
     <keep-alive>
       <slot v-if="sideTreeStatus"/>
     </keep-alive>
@@ -29,6 +29,10 @@ export default {
     width: {
       type: String,
       default: '260px'
+    },
+    close: {
+      type: Boolean,
+      default: false
     },
     isCollapseWidth: {
       type: String,
@@ -62,6 +66,9 @@ export default {
     isSystem() {
       // 系统管理不需要拖拽菜单
       return this.isTemplate || (!this.$route.fullPath.includes('system') && this.showDragBar)
+    },
+    sideStyle () {
+      return this.sideTreeStatus ? { right: '-12px' } : { left: 0 }
     }
   },
   mounted() {
