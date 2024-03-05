@@ -48,21 +48,7 @@ const templateList = ref<SettingRecord[]>([])
 const templateListTime = ref<SettingRecord[]>([])
 const getEngine = () => {
   getDeEngine().then(res => {
-    let {
-      name,
-      createBy,
-      id,
-      createTime,
-      creator,
-      type,
-      pid,
-      configuration,
-      syncSetting,
-      fileName,
-      size,
-      description,
-      lastSyncTime
-    } = res.data
+    let { id, type, configuration } = res.data
     if (configuration) {
       configuration = JSON.parse(configuration)
     }
@@ -129,7 +115,7 @@ const getEngine = () => {
       },
       {
         pkey: 'datasource.extra_params',
-        pval: configuration?.extra_params,
+        pval: configuration?.extraParams,
         type: '',
         sort: 0
       }
