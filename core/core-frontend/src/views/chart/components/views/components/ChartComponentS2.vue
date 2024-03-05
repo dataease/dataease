@@ -29,7 +29,7 @@ import { deepCopy } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
-const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
+const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc } = storeToRefs(dvMainStore)
 const { emitter } = useEmitt()
 
 const props = defineProps({
@@ -268,7 +268,7 @@ const trackClick = trackAction => {
       dvMainStore.addViewTrackFilter(linkageParam)
       break
     case 'jump':
-      if (isDataEaseBi.value) return
+      if (isDataEaseBi.value || mobileInPc.value) return
       emit('onJumpClick', jumpParam)
       break
     default:
@@ -292,7 +292,11 @@ const trackMenu = computed(() => {
       jumpCount++
     }
   })
-  jumpCount && view.value?.jumpActive && !isDataEaseBi.value && trackMenuInfo.push('jump')
+  jumpCount &&
+    view.value?.jumpActive &&
+    !isDataEaseBi.value &&
+    !mobileInPc.value &&
+    trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')
   return trackMenuInfo

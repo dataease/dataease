@@ -46,7 +46,7 @@ const dvMainStore = dvMainStoreWithOut()
 
 let innerRefreshTimer = null
 
-const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData } =
+const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData, mobileInPc } =
   storeToRefs(dvMainStore)
 
 const props = defineProps({
@@ -157,7 +157,7 @@ const hasLinkIcon = computed(() => {
   return trackMenu.value.indexOf('linkage') > -1
 })
 const hasJumpIcon = computed(() => {
-  return trackMenu.value.indexOf('jump') > -1
+  return trackMenu.value.indexOf('jump') > -1 && !mobileInPc.value
 })
 const hasDrillIcon = computed(() => {
   return trackMenu.value.indexOf('drill') > -1

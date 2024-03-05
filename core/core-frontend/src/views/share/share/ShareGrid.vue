@@ -235,7 +235,7 @@ watch(
     margin-right: 12px;
     border-radius: 4px;
     color: #fff;
-    background: var(--ed-color-primary);
+    background: #3370ff;
   }
   .name-star {
     font-size: 15px;

@@ -2,12 +2,11 @@
 import { ref, onMounted, unref, onBeforeUnmount, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import MobileBackgroundSelector from './MobileBackgroundSelector.vue'
+import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { canvasSave } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { getStyle } from '@/utils/style'
-import findComponent from '@/utils/components'
 import { storeToRefs } from 'pinia'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
@@ -15,8 +14,13 @@ const mobileLoading = ref(true)
 const emits = defineEmits(['pcMode'])
 const snapshotStore = snapshotStoreWithOut()
 
-const getComponentStyleDefault = style => {
-  return getStyle(style, ['top', 'left', 'width', 'height', 'rotate'])
+const getComponentStyleDefault = () => {
+  return {
+    top: 0,
+    left: 0,
+    width: '190px',
+    height: '190px'
+  }
 }
 const mobileStatusChange = (type, value) => {
   const iframe = document.querySelector('iframe')
@@ -173,35 +177,26 @@ const save = () => {
           <div
             :style="{ height: '198px', width: '198px' }"
             class="mobile-wrapper-inner-adaptor"
-            v-for="config in componentDataNotInMobile"
-            :key="config.id"
+            v-for="item in componentDataNotInMobile"
+            :key="item.id"
           >
             <div class="component-outer">
-              <component
-                :is="findComponent(config['component'])"
-                ref="component"
-                class="component"
-                :view="canvasViewInfo[config.id]"
+              <ComponentWrapper
+                v-show="item.isShow"
+                canvas-id="canvas-main"
                 :canvas-style-data="canvasStyleData"
                 :dv-info="dvInfo"
-                :dv-type="dvInfo.type"
                 :canvas-view-info="canvasViewInfo"
-                :prop-value="config?.propValue"
-                :element="config"
-                :request="config?.request"
-                :style="getComponentStyleDefault(config?.style)"
-                :linkage="config?.linkage"
+                :view-info="canvasViewInfo[item.id]"
+                :config="item"
+                :style="getComponentStyleDefault()"
                 show-position="preview"
-                :disabled="true"
-                :is-edit="false"
+                :search-count="0"
+                :scale="80"
               />
             </div>
             <div class="mobile-com-mask"></div>
-            <div
-              class="pc-select-to-mobile"
-              v-if="!mobileLoading"
-              @click="addToMobile(config)"
-            ></div>
+            <div class="pc-select-to-mobile" v-if="!mobileLoading" @click="addToMobile(item)"></div>
           </div>
         </el-collapse-item>
       </el-collapse>
@@ -288,7 +283,7 @@ const save = () => {
 
     .config-panel-content {
       width: 100%;
-      height: calc(100% - 130px);
+      height: calc(100% - 127px);
       border-bottom-left-radius: 45px;
       border-bottom-right-radius: 45px;
       overflow: hidden;

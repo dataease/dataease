@@ -416,10 +416,6 @@ const getEmptyDesc = (): string => {
     .name-content {
       display: flex;
       align-items: center;
-
-      .color-panel {
-        background: #3370ff !important;
-      }
       .custom-icon {
         display: none;
       }
