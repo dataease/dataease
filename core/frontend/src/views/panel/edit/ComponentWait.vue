@@ -136,6 +136,7 @@ export default {
   height: calc(100% - 40px);
   float: left;
   overflow-y: auto;
+  background-size: 100% 100% !important;
 }
 
 .component-custom {
