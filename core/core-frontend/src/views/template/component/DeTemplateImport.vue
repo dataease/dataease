@@ -385,7 +385,7 @@ if (props.templateId) {
 
 .custom-category-padding {
   .ed-select-dropdown__list {
-    padding-bottom: 42px;
+    padding-bottom: 42px !important;
   }
 }
 
