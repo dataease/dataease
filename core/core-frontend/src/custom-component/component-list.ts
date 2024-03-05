@@ -200,7 +200,7 @@ const list = [
   },
   {
     component: 'CircleShape',
-    name: '图形',
+    name: '圆形',
     label: '圆形',
     propValue: '&nbsp;',
     icon: 'icon_graphical',
@@ -215,7 +215,7 @@ const list = [
   },
   {
     component: 'SvgTriangle',
-    name: '图形',
+    name: '三角形',
     label: '三角形',
     icon: 'icon_graphical',
     propValue: '',
