@@ -17,7 +17,7 @@ import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/ca
 import { deepCopy } from '@/utils/utils'
 
 const dvMainStore = dvMainStoreWithOut()
-const { nowPanelTrackInfo, nowPanelJumpInfo } = storeToRefs(dvMainStore)
+const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   view: {
@@ -224,7 +224,7 @@ const trackClick = trackAction => {
       dvMainStore.addViewTrackFilter(linkageParam)
       break
     case 'jump':
-      if (isDataEaseBi.value) return
+      if (isDataEaseBi.value || mobileInPc.value) return
       emit('onJumpClick', jumpParam)
       break
     default:
@@ -247,7 +247,11 @@ const trackMenu = computed(() => {
         jumpCount++
       }
     })
-    jumpCount && view.value?.jumpActive && !isDataEaseBi.value && trackMenuInfo.push('jump')
+    jumpCount &&
+      view.value?.jumpActive &&
+      !isDataEaseBi.value &&
+      !mobileInPc.value &&
+      trackMenuInfo.push('jump')
     linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
     view.value.drillFields.length && trackMenuInfo.push('drill')
   }

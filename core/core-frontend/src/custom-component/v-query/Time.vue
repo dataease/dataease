@@ -49,7 +49,8 @@ const multiple = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 
 const { config } = toRefs(props)
-
+const minDate = new Date('1970/1/1')
+const maxDate = new Date('2100/1/1')
 watch(
   () => config.value.defaultValue,
   val => {
@@ -280,7 +281,12 @@ const formatDate = computed(() => {
       :tabs="['选择日期', '选择时间']"
       next-step-text="下一步"
     >
-      <van-date-picker :columns-type="columnsType" v-model="currentDate" />
+      <van-date-picker
+        :min-date="minDate"
+        :max-date="maxDate"
+        :columns-type="columnsType"
+        v-model="currentDate"
+      />
       <van-time-picker :columns-type="['hour', 'minute', 'second']" v-model="currentTime" />
     </van-picker-group>
     <van-date-picker
@@ -288,6 +294,8 @@ const formatDate = computed(() => {
       :columns-type="columnsType"
       @confirm="onConfirm"
       @cancel="onCancel"
+      :min-date="minDate"
+      :max-date="maxDate"
       v-if="!showTimePick"
       v-model="currentDate"
     />

@@ -60,7 +60,13 @@ onMounted(() => {
 <template>
   <el-header class="header-flex" :class="{ 'header-light': navigateBg && navigateBg === 'light' }">
     <img class="logo" v-if="navigate" :src="navigate" alt="" />
-    <Icon v-else @click="handleIconClick" className="logo" name="logo"></Icon>
+    <Icon
+      style="cursor: pointer"
+      v-else
+      @click="handleIconClick"
+      className="logo"
+      name="logo"
+    ></Icon>
     <el-menu
       :default-active="activeIndex"
       class="el-menu-demo"
