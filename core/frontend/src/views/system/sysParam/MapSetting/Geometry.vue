@@ -14,6 +14,7 @@
     </div>
     <de-aside-container
       type="mapset"
+      close
       class="map-setting-aside"
     >
       <map-setting-left
