@@ -124,7 +124,7 @@ const init = ref({
   toolbar:
     'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough link| formatselect |' +
     'alignleft aligncenter alignright | bullist numlist |' +
-    ' blockquote subscript superscript removeformat | table image media | fullscreen ' +
+    ' blockquote subscript superscript removeformat | table image | fullscreen ' +
     '| bdmap indent2em lineheight formatpainter axupimgs',
   toolbar_location: '/',
   font_formats:
