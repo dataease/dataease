@@ -38,6 +38,11 @@ const props = defineProps({
     required: false,
     type: String,
     default: 'preview'
+  },
+  noClose: {
+    required: false,
+    type: Boolean,
+    default: false
   }
 })
 
@@ -156,6 +161,7 @@ defineExpose({
 <template>
   <div class="dv-preview dv-teleport-query">
     <ArrowSide
+      v-if="!noClose"
       :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
       @change-side-tree-status="changeSideTreeStatus"
       :isInside="!sideTreeStatus"
@@ -169,6 +175,7 @@ defineExpose({
       :style="{ width: width + 'px' }"
     >
       <ArrowSide
+        v-if="!noClose"
         :isInside="!sideTreeStatus"
         :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
         @change-side-tree-status="changeSideTreeStatus"

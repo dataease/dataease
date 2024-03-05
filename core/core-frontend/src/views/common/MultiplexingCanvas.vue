@@ -11,6 +11,7 @@
       v-if="dialogShow"
       ref="multiplexingPreviewShowRef"
       class="multiplexing-area"
+      no-close
       show-position="multiplexing"
     ></dashboard-preview-show>
     <template #footer>
