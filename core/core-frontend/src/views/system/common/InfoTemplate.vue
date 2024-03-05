@@ -6,6 +6,9 @@
       </div>
       <div>
         <el-button type="primary" @click="edit">{{ t('commons.edit') }}</el-button>
+        <el-button v-if="showValidate" type="primary" @click="check">{{
+          t('datasource.validate')
+        }}</el-button>
       </div>
     </div>
     <div class="info-template-content">
@@ -102,6 +105,10 @@ const props = defineProps({
     type: Boolean,
     default: false
   },
+  showValidate: {
+    type: Boolean,
+    default: false
+  },
   copyList: {
     type: Array as PropType<string[]>,
     default: () => []
@@ -169,9 +176,13 @@ const switchPwd = (pkey: string) => {
   pwdItem.value[pkey]['hidden'] = !pwdItem.value[pkey]['hidden']
 }
 
-const emits = defineEmits(['edit'])
+const emits = defineEmits(['edit', 'check'])
 const edit = () => {
   emits('edit')
+}
+
+const check = () => {
+  emits('check')
 }
 defineExpose({
   init
@@ -194,6 +205,8 @@ formatLabel()
   padding: 24px;
   .info-template-header {
     display: flex;
+    margin-top: -4px;
+    align-items: center;
     justify-content: space-between;
     .info-template-title {
       height: 24px;
