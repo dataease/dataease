@@ -650,10 +650,14 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private DatasourceDTO validate(CoreDatasource coreDatasource) {
+        String lastStatus = coreDatasource.getStatus();
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         try {
             checkDatasourceStatus(coreDatasource);
+            if(StringUtils.isNotEmpty(lastStatus) && StringUtils.isNotEmpty(coreDatasource.getStatus()) && lastStatus.equalsIgnoreCase("Error") && coreDatasource.getStatus().equalsIgnoreCase("Success")){
+                calciteProvider.update(datasourceDTO);
+            }
         } catch (Exception e) {
             coreDatasource.setStatus("Error");
             DEException.throwException(e.getMessage());
