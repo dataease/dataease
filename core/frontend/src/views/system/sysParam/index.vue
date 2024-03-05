@@ -45,6 +45,13 @@
           :label="$t('system_parameter_setting.kettle_setting')"
           name="eight"
         />
+
+        <el-tab-pane
+          v-if="isPluginLoaded"
+          lazy
+          :label="$t('system_parameter_setting.proxy_setting')"
+          name="nine"
+        />
       </el-tabs>
       <div
         class="tabs-container"
@@ -61,6 +68,11 @@
           <simple-mode v-if="activeName === 'six'" />
           <cluster-mode v-if="activeName === 'seven'" />
           <kettle-setting v-if="activeName === 'eight'" />
+          <plugin-com
+            v-if="isPluginLoaded && activeName === 'nine'"
+            ref="ProxySetting"
+            component-name="ProxySetting"
+          />
         </div>
       </div>
     </div>
@@ -76,6 +88,7 @@ import KettleSetting from './KettleSetting'
 import DeLayoutContent from '@/components/business/DeLayoutContent'
 import { pluginLoaded } from '@/api/user'
 import { engineMode } from '@/api/system/engine'
+import PluginCom from '@/views/system/plugin/PluginCom'
 export default {
   components: {
     BasicSetting,
@@ -84,7 +97,8 @@ export default {
     SimpleMode,
     ClusterMode,
     KettleSetting,
-    MapSetting
+    MapSetting,
+    PluginCom
   },
   data() {
     return {
