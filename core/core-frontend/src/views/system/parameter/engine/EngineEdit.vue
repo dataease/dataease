@@ -5,6 +5,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import request from '@/config/axios'
 import { dsTypes, Node } from '@/views/visualized/data/datasource/form/option'
 import { cloneDeep } from 'lodash-es'
+import { getDeEngine } from '@/api/datasource'
 import { CustomPassword } from '@/components/custom-password'
 import { Base64 } from 'js-base64'
 const { t } = useI18n()
@@ -128,15 +129,63 @@ const defaultInfo = {
   nodeType: '',
   type: '',
   fileName: '',
-  configuration: {},
+  configuration: {
+    host: '',
+    port: 8081,
+    dataBase: '',
+    username: '',
+    password: '',
+    extraParams: '',
+    initialPoolSize: 5,
+    minPoolSize: 5,
+    maxPoolSize: 5,
+    queryTimeout: 30
+  },
   syncSetting: null,
   apiConfiguration: [],
   weight: 0
 }
-const nodeInfo = reactive<Node>(cloneDeep(defaultInfo))
-const edit = info => {
-  Object.assign(nodeInfo, cloneDeep(info))
-  dialogVisible.value = true
+const nodeInfo = reactive(cloneDeep(defaultInfo))
+const edit = () => {
+  getDeEngine()
+    .then(res => {
+      let {
+        name,
+        createBy,
+        id,
+        createTime,
+        creator,
+        type,
+        pid,
+        configuration,
+        syncSetting,
+        fileName,
+        size,
+        description,
+        lastSyncTime
+      } = res.data
+      if (configuration) {
+        configuration = JSON.parse(configuration)
+      }
+      Object.assign(nodeInfo, {
+        name,
+        pid,
+        description,
+        fileName,
+        size,
+        createTime,
+        creator,
+        createBy,
+        id,
+        type,
+        configuration,
+        syncSetting,
+        lastSyncTime
+      })
+    })
+    .finally(() => {
+      dialogVisible.value = true
+    })
 }
 const basicForm = ref()
 
