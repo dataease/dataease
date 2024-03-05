@@ -1,5 +1,9 @@
 <template>
-  <div v-if="existLinkage" class="bar-main-right" :class="{ 'bar-main-edit-right': dvEditMode }">
+  <div
+    v-if="existLinkage && !dvMainStore.mobileInPc"
+    class="bar-main-right"
+    :class="{ 'bar-main-edit-right': dvEditMode }"
+  >
     <el-button size="mini" type="warning" @click="clearAllLinkage"
       ><el-icon class="bar-base-icon"> <Icon name="dv-bar-unLinkage"></Icon></el-icon
       >{{ $t('visualization.remove_all_linkage') }}</el-button
