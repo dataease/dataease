@@ -65,7 +65,7 @@ public class PluginService {
     }
 
     private void checkFileName(String fileName){
-        if(StringUtils.isEmpty(fileName) || !fileName.endsWith(".jar") || fileName.contains("../")){
+        if(StringUtils.isEmpty(fileName) || !fileName.endsWith(".zip") || fileName.contains("../")){
             DataEaseException.throwException("非法的文件名: " + fileName);
         }
     }
