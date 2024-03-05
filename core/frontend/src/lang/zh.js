@@ -826,6 +826,11 @@ export default {
     edite_organization: '编辑组织'
   },
   system_parameter_setting: {
+    proxy_setting: '代理设置',
+    proxy_account: '代理账号',
+    proxy_pwd: '代理密码',
+    proxy_host: '代理服务地址',
+    proxy_port: '服务端口',
     email_server_config: '邮箱服务器配置',
     edit_success: '编辑成功',
     mailbox_service_settings: '邮件设置',

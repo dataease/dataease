@@ -828,6 +828,11 @@ export default {
     edite_organization: 'Edit organization'
   },
   system_parameter_setting: {
+    proxy_setting: 'Proxy setting',
+    proxy_account: 'Proxy account',
+    proxy_pwd: 'Proxy password',
+    proxy_host: 'Proxy address',
+    proxy_port: '服务端口',
     email_server_config: 'Mailbox server configuration',
     edit_success: 'Edit success',
     mailbox_service_settings: 'Mail Setting',

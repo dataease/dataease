@@ -827,6 +827,11 @@ export default {
     edite_organization: '編輯組織'
   },
   system_parameter_setting: {
+    proxy_setting: '代理設置',
+    proxy_account: '代理賬號',
+    proxy_pwd: '代理密碼',
+    proxy_host: '代理服務地址',
+    proxy_port: '服务端口',
     email_server_config: '郵箱服務器配置',
     edit_success: '編輯成功',
     mailbox_service_settings: '郵件設置',
