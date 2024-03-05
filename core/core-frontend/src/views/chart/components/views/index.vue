@@ -106,7 +106,6 @@ const titleShow = computed(
     state.title_show &&
     showPosition.value !== 'viewDialog'
 )
-
 const snapshotStore = snapshotStoreWithOut()
 
 const state = reactive({
