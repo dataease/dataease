@@ -1502,7 +1502,7 @@ defineExpose({
           left: 0;
           width: 100%;
           height: 100%;
-          background: rgba(51, 112, 255, 0.1);
+          background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
           padding: 4px 10px;
           z-index: 5;
         }

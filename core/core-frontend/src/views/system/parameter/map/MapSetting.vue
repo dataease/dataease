@@ -67,7 +67,7 @@ const selectHandler = (index: number) => {
         }
       }
       .active {
-        background: #3370ff1a;
+        background: var(--ed-color-primary-1a, #3370ff1a);
         color: var(--ed-color-primary);
         font-weight: 500;
       }

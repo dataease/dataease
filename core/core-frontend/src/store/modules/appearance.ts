@@ -149,6 +149,9 @@ export const useAppearanceStore = defineStore('appearanceStore', {
             .mix(new colorTree('ffffff'), new colorTree(this.customColor.substr(1)), { value: 15 })
             .toRGB()
         )
+        document.documentElement.style.setProperty('--ed-color-primary-1a', `${this.customColor}1a`)
+        document.documentElement.style.setProperty('--ed-color-primary-33', `${this.customColor}33`)
+        document.documentElement.style.setProperty('--ed-color-primary-99', `${this.customColor}99`)
         document.documentElement.style.setProperty(
           '--ed-color-primary-dark-2',
           colorFunctions

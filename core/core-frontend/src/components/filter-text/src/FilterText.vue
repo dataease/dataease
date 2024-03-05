@@ -94,7 +94,7 @@ watch(
     color: #0c296e;
     font-size: 14px;
     line-height: 22px;
-    background: rgba(51, 112, 255, 0.1);
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
     border-radius: 2px;
     margin: 0;
     margin-right: 8px;

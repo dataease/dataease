@@ -190,7 +190,7 @@ onMounted(() => {
 .hover-icon {
   &.active {
     color: var(--ed-color-primary) !important;
-    background-color: rgba(51, 112, 255, 0.1);
+    background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
   & + & {
     margin-left: 8px;

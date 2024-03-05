@@ -469,7 +469,7 @@ initFunction()
     border-radius: 4px;
 
     .is-active {
-      background: rgba(51, 112, 255, 0.1);
+      background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
     }
 
     .ed-button:not(.is-active) {
@@ -548,7 +548,7 @@ initFunction()
 
 .item-dimension:hover {
   border-color: var(--ed-color-primary, #3370ff);
-  background: rgba(51, 112, 255, 0.1);
+  background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   cursor: pointer;
 }
 

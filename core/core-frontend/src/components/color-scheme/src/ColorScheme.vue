@@ -216,7 +216,7 @@ const resetCustomColor = () => {
 
       &:hover {
         &::after {
-          border-color: #3370ff99;
+          border-color: var(--ed-color-primary-99, #3370ff99);
           display: block;
         }
       }

@@ -175,8 +175,8 @@ refresh()
       color: #646a73;
     }
     &.updating {
-      color: #2b5fd9;
-      background: rgba(51, 112, 255, 0.2);
+      color: var(--ed-color-primary-dark-2, #2b5fd9);
+      background: var(--ed-color-primary-33, rgba(51, 112, 255, 0.2));
     }
     &.pause {
       background: rgba(31, 35, 41, 0.1);

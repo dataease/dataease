@@ -132,7 +132,7 @@ onMounted(() => {
 .subject-template:hover {
   color: deepskyblue;
   cursor: pointer;
-  border-color: rgba(51, 112, 255, 0.6);
+  border-color: var(--ed-color-primary-99, rgba(51, 112, 255, 0.6));
 }
 
 .demonstration {
@@ -198,7 +198,7 @@ onMounted(() => {
 .background-selected {
   border: solid 1px var(--ed-color-primary) !important;
   .title-main {
-    background: rgba(51, 112, 255, 0.1);
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
 }
 
