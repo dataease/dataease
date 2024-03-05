@@ -78,7 +78,7 @@ body {
   }
 
   &.active {
-    background: rgba(51, 112, 255, 0.1);
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
     color: var(--ed-color-primary);
   }
 }
@@ -198,10 +198,10 @@ body {
 .hover-icon-in-table {
   color: var(--ed-color-primary) !important;
   &[aria-expanded='true'] {
-    background: rgba(51, 112, 255, 0.1);
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
   &:hover {
-    background: rgba(51, 112, 255, 0.1);
+    background: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
 }
 
@@ -390,7 +390,6 @@ em {
 .ed-table {
   --ed-table-row-hover-bg-color: #e8e9e9 !important;
 }
-
 
 strong {
   font-synthesis: weight;

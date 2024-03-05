@@ -955,7 +955,7 @@ onMounted(() => {
 .shape-edit {
   &:hover {
     cursor: move;
-    outline: 1px solid rgba(51, 112, 255, 0.6);
+    outline: 1px solid var(--ed-color-primary-99, rgba(51, 112, 255, 0.6));
   }
 }
 

@@ -399,7 +399,7 @@ watch(
     color: #a6a6a6;
     &.active {
       color: var(--ed-color-primary);
-      background-color: rgba(51, 112, 255, 0.1);
+      background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
     }
     &:hover {
       background-color: rgba(255, 255, 255, 0.1);
@@ -408,7 +408,7 @@ watch(
 
   &.active {
     color: var(--ed-color-primary);
-    background-color: rgba(51, 112, 255, 0.1);
+    background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1));
   }
 
   &:hover {

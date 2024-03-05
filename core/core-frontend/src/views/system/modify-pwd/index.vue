@@ -124,9 +124,9 @@ const { t } = useI18n()
         padding: 0 6px;
         align-items: center;
         font-size: 12px;
-        color: #2b5fd9;
+        color: var(--ed-color-primary-dark-2, #2b5fd9);
         border-radius: 2px;
-        background: rgba(51, 112, 255, 0.2);
+        background: var(--ed-color-primary-33, rgba(51, 112, 255, 0.2));
       }
       .info-title {
         .ed-button {

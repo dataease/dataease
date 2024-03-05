@@ -300,7 +300,7 @@ function onPopoverHide() {
       }
 
       &:hover {
-        border-color: rgba(51, 112, 255, 0.6);
+        border-color: var(--ed-color-primary-99, rgba(51, 112, 255, 0.6));
       }
       &.active {
         border-color: var(--ed-color-primary);

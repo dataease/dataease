@@ -407,7 +407,7 @@ const handleContextMenu = e => {
         }
       }
       .activated {
-        background-color: rgba(51, 112, 255, 0.1) !important;
+        background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1)) !important;
         :deep(.component-icon) {
           color: var(--ed-color-primary);
         }
