@@ -496,8 +496,12 @@ export default {
     recordMatrixCurShadowStyle() {
       const left = (this.curComponent.x - 1) * this.curCanvasScaleSelf.matrixStyleWidth
       const top = (this.curComponent.y - 1) * this.curCanvasScaleSelf.matrixStyleHeight
-      const width = this.curComponent.sizex * this.curCanvasScaleSelf.matrixStyleWidth
+      let width = this.curComponent.sizex * this.curCanvasScaleSelf.matrixStyleWidth
       const height = this.curComponent.sizey * this.curCanvasScaleSelf.matrixStyleHeight
+      const ruleWidth = this.curCanvasScaleSelf.scalePointWidth * this.canvasStyleData.width - 5
+      if (width > ruleWidth) {
+        width = ruleWidth
+      }
       const style = {
         left: left,
         top: top,
