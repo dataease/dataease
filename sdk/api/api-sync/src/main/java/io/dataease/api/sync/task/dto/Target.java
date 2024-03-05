@@ -20,4 +20,5 @@ public class Target {
     private String targetProperty;
     private String incrementSync;
     private String incrementField;
+    private String datasourceVersion;
 }

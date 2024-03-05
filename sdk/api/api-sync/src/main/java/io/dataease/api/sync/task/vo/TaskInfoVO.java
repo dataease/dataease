@@ -112,7 +112,10 @@ public class TaskInfoVO {
      * fail失败
      */
     private String lastExecuteStatus;
-    private Long incrementValue;
+    /**
+     * 增量任务
+     */
+    private boolean incrementTask;
 
     // 以下为日志信息
     private String logId;
