@@ -655,7 +655,7 @@ export default {
     openMobileLayout(switchVal) {
       if (switchVal) {
         this.$store.commit('openMobileLayout')
-        bus.$emit('mobile-status-change', 'openMobileLayout', { componentData: this.componentData, panelInfo: this.panelInfo })
+        bus.$emit('mobile-status-change', 'openMobileLayout', { componentData: this.componentData, panelInfo: this.panelInfo, canvasStyleData: this.canvasStyleData })
       } else {
         this.mobileLayoutSave()
       }
