@@ -156,7 +156,7 @@ export default {
             const jumpRequestParam = {
               sourcePanelId: jumpParam.sourcePanelId,
               sourceViewId: jumpParam.sourceViewId,
-              sourceFieldId: jumpParam.sourceFieldId,
+              sourceFieldId: null,
               targetPanelId: this.resourceId
             }
             if (jumpParam.sourceType && jumpParam.sourceType === 'table-pivot') {
