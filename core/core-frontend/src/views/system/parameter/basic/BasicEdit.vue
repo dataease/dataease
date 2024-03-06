@@ -206,6 +206,7 @@ defineExpose({
         :label="t(item.label)"
       >
         <el-switch
+          class="de-basic-switch"
           v-if="item.pkey === 'autoCreateUser'"
           active-value="true"
           inactive-value="false"
@@ -297,6 +298,7 @@ defineExpose({
 <style lang="less">
 .basic-param-drawer {
   .ed-drawer__footer {
+    box-shadow: 0 -1px 4px #1f232926 !important;
     height: 64px !important;
     padding: 16px 24px !important;
     .dialog-footer {
@@ -341,5 +343,8 @@ defineExpose({
   span.ds-span {
     margin-left: 6px;
   }
+}
+.de-basic-switch {
+  height: 22px;
 }
 </style>
