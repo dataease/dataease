@@ -23,7 +23,7 @@ const navigate = computed(() => appearanceStore.getNavigate)
     :class="{ 'header-light': navigateBg && navigateBg === 'light' }"
   >
     <img class="logo" v-if="navigate" :src="navigate" alt="" />
-    <Icon v-else className="logo" name="logo"></Icon>
+    <Icon class="de-logo" v-else className="logo" name="logo"></Icon>
     <el-divider direction="vertical" />
     <span class="system">{{ props.title || '系统设置' }}</span>
     <div class="operate-setting">
@@ -46,6 +46,10 @@ const navigate = computed(() => appearanceStore.getNavigate)
   .logo {
     width: 134px;
     height: 34px;
+  }
+
+  .de-logo {
+    color: #ffffff;
   }
 
   .ed-divider {
@@ -86,6 +90,11 @@ const navigate = computed(() => appearanceStore.getNavigate)
   }
   .ed-divider {
     border-color: #1f232926 !important;
+  }
+
+  .system,
+  .de-logo {
+    color: var(--ed-color-black) !important;
   }
 }
 .header-flex {
