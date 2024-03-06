@@ -47,7 +47,7 @@
         />
 
         <el-tab-pane
-          v-if="isPluginLoaded"
+          v-if="isPluginLoaded && showProxy"
           lazy
           :label="$t('system_parameter_setting.proxy_setting')"
           name="nine"
@@ -104,7 +104,8 @@ export default {
     return {
       activeName: 'zero',
       isPluginLoaded: false,
-      engineMode: 'local'
+      engineMode: 'local',
+      showProxy: false
     }
   },
   beforeCreate() {
