@@ -794,6 +794,7 @@ export default {
     restore() {
       const canvasHeight = document.getElementById(this.previewDomId).offsetHeight
       const canvasWidth = document.getElementById(this.previewDomId).offsetWidth
+      console.log('===canvasHeight=' + canvasHeight + ';canvasWidth=' + canvasWidth)
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
       // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
       if (this.backScreenShot) {
@@ -828,25 +829,30 @@ export default {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
         componentData.forEach(component => {
-          Object.keys(component.style).forEach(key => {
-            if (this.needToChangeHeight.includes(key)) {
-              component.style[key] = this.format(component.style[key], this.scaleHeight)
-            }
-            if (this.needToChangeWidth.includes(key)) {
-              component.style[key] = this.format(component.style[key], this.scaleWidth)
-            }
-            if (this.needToChangeInnerWidth.includes(key)) {
-              if ((key === 'fontSize' || key === 'activeFontSize') && (this.terminal === 'mobile' || ['custom'].includes(component.type))) {
-                // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
-              } else {
-                if (key === 'fontSize' && component.component !== 'de-tabs') {
-                  component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth * 1.4)
+          if (!this.isMainCanvas() && component.type === 'custom' && component.options?.attrs?.selectFirst && this.format(component.style.width, this.scaleWidth) < 80) {
+            // do continue
+          } else {
+            Object.keys(component.style).forEach(key => {
+              if (this.needToChangeHeight.includes(key)) {
+                component.style[key] = this.format(component.style[key], this.scaleHeight)
+              }
+              if (this.needToChangeWidth.includes(key)) {
+                component.style[key] = this.format(component.style[key], this.scaleWidth)
+              }
+              if (this.needToChangeInnerWidth.includes(key)) {
+                if ((key === 'fontSize' || key === 'activeFontSize') && (this.terminal === 'mobile' || ['custom'].includes(component.type))) {
+                  // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
                 } else {
-                  component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth)
+                  if (key === 'fontSize' && component.component !== 'de-tabs') {
+                    component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth * 1.4)
+                  } else {
+                    component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth)
+                  }
                 }
               }
-            }
-          })
+            })
+          }
+
           const maxWidth = this.canvasStyleData.width * this.scaleWidth / 100
           if (component.style['width'] > maxWidth) {
             component.style['width'] = maxWidth
