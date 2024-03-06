@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { propTypes } from '@/utils/propTypes'
 import { ElTreeSelect } from 'element-plus-secondary'
-import { computed, reactive, ref, PropType, toRefs } from 'vue'
+import { computed, reactive, ref, PropType, toRefs, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 interface TreeConfig {
@@ -60,6 +60,15 @@ const optionListNotSelect = computed(() => {
 const clear = () => {
   state.currentStatus = []
 }
+watch(
+  () => state.currentStatus,
+  () => {
+    treeChange()
+  },
+  {
+    immediate: true
+  }
+)
 defineExpose({
   clear
 })
@@ -74,7 +83,6 @@ defineExpose({
         ref="filterTree"
         :teleported="false"
         style="width: 100%"
-        @change="treeChange"
         v-model="state.currentStatus"
         :data="optionListNotSelect"
         :highlight-current="true"
