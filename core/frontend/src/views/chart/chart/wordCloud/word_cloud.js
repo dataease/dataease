@@ -1,4 +1,5 @@
 import {
+  configPlotTooltipEvent,
   getPadding,
   getTheme,
   getTooltip
@@ -48,5 +49,7 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
   plot = new WordCloud(container, options)
   plot.off('point:click')
   plot.on('point:click', action)
+  // 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }

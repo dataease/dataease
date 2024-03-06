@@ -1,4 +1,11 @@
-import { getLabel, getLegend, getPadding, getTheme, getTooltip } from '@/views/chart/chart/common/common_antv'
+import {
+  configPlotTooltipEvent,
+  getLabel,
+  getLegend,
+  getPadding,
+  getTheme,
+  getTooltip
+} from '@/views/chart/chart/common/common_antv'
 import { Treemap } from '@antv/g2plot'
 
 export function baseTreemapOptionAntV(plot, container, chart, action) {
@@ -51,6 +58,7 @@ export function baseTreemapOptionAntV(plot, container, chart, action) {
 
   plot.off('polygon:click')
   plot.on('polygon:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }

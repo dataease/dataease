@@ -1,4 +1,5 @@
 import {
+  configPlotTooltipEvent,
   getLabel,
   getLegend,
   getPadding,
@@ -90,7 +91,8 @@ export function basePieOptionAntV(plot, container, chart, action) {
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }
 
@@ -167,6 +169,7 @@ export function basePieRoseOptionAntV(plot, container, chart, action) {
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }

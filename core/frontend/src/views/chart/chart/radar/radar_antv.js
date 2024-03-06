@@ -1,4 +1,11 @@
-import { getLabel, getLegend, getPadding, getTheme, getTooltip } from '@/views/chart/chart/common/common_antv'
+import {
+  configPlotTooltipEvent,
+  getLabel,
+  getLegend,
+  getPadding,
+  getTheme,
+  getTooltip
+} from '@/views/chart/chart/common/common_antv'
 import { Radar } from '@antv/g2plot'
 import { antVCustomColor } from '@/views/chart/chart/util'
 import { minBy, maxBy } from 'lodash'
@@ -146,7 +153,8 @@ export function baseRadarOptionAntV(plot, container, chart, action) {
 
   plot.off('point:click')
   plot.on('point:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }
 

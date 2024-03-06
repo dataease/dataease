@@ -40,7 +40,7 @@
           <chart-component-g2
             v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'"
             :ref="element.propValue.id"
-            class="chart-class show-in-dialog"
+            class="chart-class"
             :chart="chart"
           />
           <chart-component-s2

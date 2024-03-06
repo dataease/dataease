@@ -9,7 +9,8 @@ import {
   getPadding,
   getSlider,
   getAnalyse,
-  setGradientColor
+  setGradientColor,
+  configPlotTooltipEvent
 } from '@/views/chart/chart/common/common_antv'
 import { antVCustomColor, handleEmptyDataStrategy } from '@/views/chart/chart/util'
 import _ from 'lodash'
@@ -110,7 +111,8 @@ export function baseLineOptionAntV(plot, container, chart, action) {
 
   plot.off('point:click')
   plot.on('point:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }
 
@@ -220,6 +222,7 @@ export function baseAreaOptionAntV(plot, container, chart, action, isStack) {
 
   plot.off('point:click')
   plot.on('point:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }
