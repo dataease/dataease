@@ -1598,6 +1598,7 @@ import { CHART_FONT_FAMILY, CHART_FONT_LETTER_SPACE, DEFAULT_SIZE } from '../../
 import { equalsAny, includesAny } from '@/utils/StringUtils'
 import { mapState } from 'vuex'
 import { SERIES_NUMBER_FIELD } from '@antv/s2'
+import _ from 'lodash'
 
 export default {
   name: 'SizeSelectorAntV',

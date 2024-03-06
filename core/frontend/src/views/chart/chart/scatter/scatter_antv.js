@@ -7,7 +7,10 @@ import {
   getYAxis,
   getPadding,
   getSlider,
-  getAnalyse
+  getAnalyse,
+  getTooltipContainer,
+  TOOLTIP_TPL,
+  configPlotTooltipEvent
 } from '@/views/chart/chart/common/common_antv'
 
 import { Scatter } from '@antv/g2plot'
@@ -92,6 +95,7 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
 
   plot.off('point:click')
   plot.on('point:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }

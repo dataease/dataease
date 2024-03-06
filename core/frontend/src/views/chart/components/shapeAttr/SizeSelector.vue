@@ -1165,6 +1165,7 @@
 <script>
 import { CHART_FONT_FAMILY, CHART_FONT_LETTER_SPACE, DEFAULT_SIZE } from '../../chart/chart'
 import { includesAny } from '@/utils/StringUtils'
+import _ from 'lodash'
 export default {
   name: 'SizeSelector',
   props: {
