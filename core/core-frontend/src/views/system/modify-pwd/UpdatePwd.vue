@@ -127,7 +127,7 @@ const save = () => {
         placeholder="请输入确认密码"
       />
     </el-form-item>
-    <el-button style="margin-top: 12px" @click="save" type="primary">
+    <el-button @click="save" type="primary">
       {{ t('common.save') }}
     </el-button>
   </el-form>
@@ -136,5 +136,11 @@ const save = () => {
 <style lang="less" scoped>
 .mt16 {
   margin-top: 16px;
+  .ed-form-item {
+    margin-bottom: 16px;
+    :deep(label) {
+      line-height: 22px !important;
+    }
+  }
 }
 </style>
