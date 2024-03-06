@@ -794,7 +794,6 @@ export default {
     restore() {
       const canvasHeight = document.getElementById(this.previewDomId).offsetHeight
       const canvasWidth = document.getElementById(this.previewDomId).offsetWidth
-      console.log('===canvasHeight=' + canvasHeight + ';canvasWidth=' + canvasWidth)
       this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
       // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
       if (this.backScreenShot) {
