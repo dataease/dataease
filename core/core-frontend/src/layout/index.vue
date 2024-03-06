@@ -24,7 +24,7 @@ const toolboxMenu = computed(() => route.path.includes('toolbox'))
     <el-container class="layout-container">
       <Sidebar v-if="systemMenu || settingMenu || toolboxMenu" class="layout-sidebar">
         <div v-if="systemMenu" class="org-config-center">组织管理中心</div>
-        <Menu style="height: 100%"></Menu>
+        <Menu :style="{ height: systemMenu ? 'calc(100% - 48px)' : '100%' }"></Menu>
       </Sidebar>
       <Main
         class="layout-main"
