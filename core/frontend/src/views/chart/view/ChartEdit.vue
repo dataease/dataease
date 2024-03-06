@@ -2323,6 +2323,7 @@ export default {
     bus.$off('plugins-calc-style', this.calcStyle)
     bus.$off('plugin-chart-click', this.chartClick)
     bus.$off('set-dynamic-area-code', this.setDynamicAreaCode)
+    bus.$off('set-table-column-width', this.onTableFieldWidthChange)
   },
   activated() {
   },
@@ -2413,6 +2414,7 @@ export default {
       bus.$on('plugins-calc-style', this.calcStyle)
       bus.$on('plugin-chart-click', this.chartClick)
       bus.$on('set-dynamic-area-code', this.setDynamicAreaCode)
+      bus.$on('set-table-column-width', this.onTableFieldWidthChange)
     },
     initTableData(id, optType) {
       if (id != null) {
@@ -2687,6 +2689,14 @@ export default {
         view.type === 'table-pivot') {
         view.drillFields = []
       }
+      view.drillFields.forEach(ele => {
+        if (!ele.dateStyle || ele.dateStyle === '') {
+          ele.dateStyle = 'y_M_d'
+        }
+        if (!ele.datePattern || ele.datePattern === '') {
+          ele.datePattern = 'date_sub'
+        }
+      })
       this.chart = JSON.parse(JSON.stringify(view))
       this.view = JSON.parse(JSON.stringify(view))
       // stringify json param
@@ -2962,7 +2972,10 @@ export default {
       this.view.customAttr.size = val
       this.calcData()
     },
-
+    onTableFieldWidthChange(val) {
+      this.view.customAttr.size.tableFieldWidth = val
+      this.calcData()
+    },
     onTextChange(val) {
       this.view.customStyle.text = val
       this.view.title = val.title
@@ -3650,6 +3663,9 @@ export default {
         }
       } else if (type === 'label-normal') {
         this.view.senior.functionCfg.emptyDataStrategy = 'breakLine'
+      }
+      if (type === 'table-pivot') {
+        this.view.customAttr.size.tableColumnMode = 'custom'
       }
       // reset custom colors
       this.view.customAttr.color.seriesColors = []

@@ -37,7 +37,6 @@
 
 <script>
 import eventBus from '@/components/canvas/utils/eventBus'
-import runAnimation from '@/components/canvas/utils/runAnimation'
 import { mapState } from 'vuex'
 import calculateComponentPositionAndSize from '@/components/canvas/utils/calculateComponentPositionAndSize'
 import { mod360 } from '@/components/canvas/utils/translate'
@@ -107,18 +106,8 @@ export default {
       this.cursors = this.getCursor() // 根据旋转角度获取光标位置
     }
     this.element.type === 'custom' && (this.pointList = ['l', 'r'])
-
-    eventBus.$on('runAnimation', this.runAnimation)
-  },
-  beforeDestroy() {
-    eventBus.$off('runAnimation', this.runAnimation)
   },
   methods: {
-    runAnimation() {
-      if (this.element === this.curComponent) {
-        runAnimation(this.$el, this.curComponent.animations)
-      }
-    },
     // 鼠标移入事件
     enter() {
       this.mouseOn = true
@@ -263,7 +252,13 @@ export default {
 
       // 如果元素没有移动，则不保存快照
       let hasMove = false
+      let isFirst = true
       const move = (moveEvent) => {
+        // 因此第一次点击时不触发 move 事件 防止快速交替出现的重叠问题
+        if (isFirst) {
+          isFirst = false
+          return
+        }
         hasMove = true
         const curX = moveEvent.clientX
         const curY = moveEvent.clientY

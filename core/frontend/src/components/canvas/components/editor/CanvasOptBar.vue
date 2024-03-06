@@ -1,57 +1,10 @@
 <template>
 
   <div
-    id="fullscreenElement"
-    :class="containerClass"
+    class="bar-main"
   >
-
     <div
-      v-if="isPublicLink"
-      ref="widget-div"
-      class="function-div"
-      :class="[{['function-back-div']: backToTopBtn},functionClass]"
-    >
-      <el-button-group size="mini">
-        <el-button
-          v-if="fromLink"
-          size="mini"
-          type="button"
-          @click="back2Last"
-        ><span><svg-icon
-          style="width: 12px;height: 12px"
-          icon-class="link-back"
-        />{{ $t('pblink.back_parent') }}</span></el-button>
-        <el-button
-          v-if="existLinkage"
-          size="mini"
-          @click="clearAllLinkage"
-        ><i
-          style="width: 12px;height: 12px"
-          class="icon iconfont icon-quxiaoliandong"
-        />{{ $t('panel.remove_all_linkage') }}</el-button>
-        <el-button
-          v-if="isPcTerminal"
-          size="mini"
-          @click="exportPDF"
-        >
-          <span><svg-icon
-            style="width: 12px;height: 12px"
-            icon-class="link-down"
-          />{{ $t('panel.down') }}</span></el-button>
-        <el-button
-          v-if="isPcTerminal"
-          id="fullscreenElement"
-          size="mini"
-          @click="toggleFullscreen"
-        >
-          <span><svg-icon
-            style="width: 12px;height: 12px"
-            :icon-class="fullscreenState?'public_fullscreen_exit':'public_fullscreen'"
-          />{{ fullscreenState?$t('panel.fullscreen_exit'): $t('panel.fullscreen_preview') }}</span></el-button>
-      </el-button-group>
-    </div>
-    <div
-      v-else-if="existLinkage || backToTopBtn"
+      v-if="existLinkage || backToTopBtn"
       class="bar-main-right"
     >
       <el-button
@@ -63,16 +16,6 @@
 
       <el-button
         v-if="backToTopBtn"
-        size="mini"
-        type="warning"
-        @click="backToTop"
-      ><i class="icon iconfont icon-back-top" />{{ $t('panel.back_to_top') }}</el-button>
-    </div>
-    <div
-      v-show="isPublicLink && backToTopBtn"
-      class="link-public"
-    >
-      <el-button
         size="mini"
         type="warning"
         @click="backToTop"
@@ -132,9 +75,6 @@ export default {
     },
     fromLink() {
       return this.$route.query.fromLink === 'true'
-    },
-    containerClass() {
-      return this.isPublicLink && this.isPcTerminal ? 'trans-pc' : 'bar-main'
     },
     ...mapState([
       'componentData'
@@ -241,7 +181,7 @@ export default {
     width: 60px;
     right: 0;
     top: 0;
-    border-top: 60px solid rgba(245, 74, 69, 0);
+    border-top: 10px solid rgba(245, 74, 69, 0);
     border-left: 60px solid transparent;
     cursor: pointer;
     z-index: 999;

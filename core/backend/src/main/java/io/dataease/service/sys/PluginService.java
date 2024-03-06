@@ -64,6 +64,11 @@ public class PluginService {
         return extSysPluginMapper.query(request);
     }
 
+    private void checkFileName(String fileName){
+        if(StringUtils.isEmpty(fileName) || !fileName.endsWith(".zip") || fileName.contains("../")){
+            DataEaseException.throwException("非法的文件名: " + fileName);
+        }
+    }
     public void systemUpgrade() {
         extSysPluginMapper.updateVersion(version);
     }
@@ -75,6 +80,7 @@ public class PluginService {
      * @return
      */
     public Map<String, Object> localInstall(MultipartFile file) throws Exception {
+        checkFileName(file.getOriginalFilename());
         //1.上传文件到服务器pluginDir目录下
         File dest = DeFileUtils.upload(file, pluginDir + "temp/");
         //2.解压目标文件dest 得到plugin.json和jar

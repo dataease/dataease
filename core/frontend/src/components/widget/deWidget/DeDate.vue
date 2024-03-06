@@ -371,7 +371,8 @@ export default {
       if (this.refreshHandler()) {
         return
       }
-      if (this.element.options.value) {
+      const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]
+      if (this.element.options.value || existLastValidFilters) {
         this.values = this.fillValueDerfault()
         this.dateChange(this.values)
       }

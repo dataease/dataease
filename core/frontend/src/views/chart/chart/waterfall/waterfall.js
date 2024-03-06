@@ -1,4 +1,5 @@
 import {
+  configPlotTooltipEvent,
   getLabel,
   getPadding,
   getTheme,
@@ -108,7 +109,8 @@ export function baseWaterfallOptionAntV(plot, container, chart, action) {
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }
 

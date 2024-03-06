@@ -24,7 +24,7 @@ import {
 } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import store from "@/store";
+import store from '@/store'
 export default {
   components: { DeCanvas, CanvasOptBar },
   data() {
@@ -90,6 +90,7 @@ export default {
 
       if (event.data.type === 'openMobileLayout') {
         this.$store.commit('setComponentData', event.data.value.componentData)
+        this.$store.commit('setCanvasStyle', event.data.value.canvasStyleData)
         this.$store.dispatch('panel/setPanelInfo', event.data.value.panelInfo)
         this.$store.commit('openMobileLayout')
       }

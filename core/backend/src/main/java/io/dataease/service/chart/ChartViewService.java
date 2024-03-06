@@ -723,7 +723,7 @@ public class ChartViewService {
         // 直连明细表分页
         Map<String, Object> mapAttr = gson.fromJson(view.getCustomAttr(), Map.class);
         Map<String, Object> mapSize = (Map<String, Object>) mapAttr.get("size");
-        if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
+        if (StringUtils.equalsIgnoreCase(view.getType(), "table-info")) {
             if (StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page") && !chartExtRequest.getExcelExportFlag()) {
                 if (chartExtRequest.getGoPage() == null) {
                     chartExtRequest.setGoPage(1L);
@@ -1072,6 +1072,7 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
 
             Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
+            logger.info("plugin_sql:" + sql);
             Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(fieldMap, view, data, desensitizationList);
 
             return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);
@@ -1085,7 +1086,7 @@ public class ChartViewService {
         PageInfo pageInfo = new PageInfo();
         pageInfo.setGoPage(chartExtRequest.getGoPage());
         if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
-            if (StringUtils.equalsIgnoreCase(view.getType(), "table-info") && table.getMode() == 0) {
+            if (StringUtils.equalsIgnoreCase(view.getType(), "table-info")) {
                 pageInfo.setPageSize(Math.min(view.getResultCount() - (chartExtRequest.getGoPage() - 1) * chartExtRequest.getPageSize(), chartExtRequest.getPageSize()));
             }
         } else {
@@ -1215,6 +1216,7 @@ public class ChartViewService {
                 }
             }
             if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+                logger.info("total_sql:" + totalPageSql);
                 datasourceRequest.setQuery(totalPageSql);
                 datasourceRequest.setTotalPageFlag(true);
                 java.util.List<java.lang.String[]> tmpData = datasourceProvider.getData(datasourceRequest);
@@ -1255,7 +1257,8 @@ public class ChartViewService {
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, ds, view));
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                datasourceRequest.setQuery(qp.getSQLTableInfo(tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
+                querySql = qp.getSQLWithPage(true, tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                totalPageSql = qp.getResultCount(true, tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
             } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
 
                 datasourceRequest.setQuery(qp.getSQLRangeBar(tableName, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, ds, view));
@@ -1271,6 +1274,16 @@ public class ChartViewService {
                     view.setResultMode(resultMode);
                 }
             }
+            // 分页
+            if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+                logger.info("total_sql:" + totalPageSql);
+                datasourceRequest.setQuery(totalPageSql);
+                datasourceRequest.setTotalPageFlag(true);
+                java.util.List<java.lang.String[]> tmpData = datasourceProvider.getData(datasourceRequest);
+                totalItems = CollectionUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
+                totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
+            }
+
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields, ds));
                 logger.info(datasourceAssistRequest.getQuery());
@@ -1282,7 +1295,11 @@ public class ChartViewService {
                     || CollectionUtils.isNotEmpty(chartExtRequest.getOuterParamsFilters())
                     || CollectionUtils.isNotEmpty(chartExtRequest.getDrill())
                     || CollectionUtils.isNotEmpty(rowPermissionsTree)
-                    || fields.size() != columnPermissionFields.size()) {
+                    || fields.size() != columnPermissionFields.size()
+                    || StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+                if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+                    datasourceRequest.setQuery(querySql);
+                }
                 data = datasourceProvider.getData(datasourceRequest);
             } else {
                 try {
@@ -1309,6 +1326,13 @@ public class ChartViewService {
             data = resultCustomSort(list, data);
         } else {
             data = resultCustomSort(xAxis, data);
+        }
+        // 如果是表格导出查询 则在此处直接就可以返回
+        if(chartExtRequest.getExcelExportFlag()){
+            Map<String,Object> sourceInfo = new HashMap<>();
+            sourceInfo.put("sourceData",data);
+            chartViewDTO.setData(sourceInfo);
+            return chartViewDTO;
         }
         // 同比/环比计算，通过对比类型和数据设置，计算出对应指标的结果，然后替换结果data数组中的对应元素
         // 如果因维度变化（如时间字段缺失，时间字段的展示格式变化）导致无法计算结果的，则结果data数组中的对应元素全置为null

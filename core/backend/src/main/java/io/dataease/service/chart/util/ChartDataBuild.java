@@ -9,6 +9,8 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
@@ -19,6 +21,8 @@ import java.util.stream.Collectors;
 public class ChartDataBuild {
 
     private final static String format = "(%s)";
+
+    private static final Logger logger = LoggerFactory.getLogger(ChartDataBuild.class);
 
     // AntV
     public static Map<String, Object> transChartDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewWithBLOBs view, List<String[]> data, boolean isDrill) {
@@ -1049,7 +1053,7 @@ public class ChartDataBuild {
         Map<String, Object> map = transTableNormal(fields, null, data, desensitizationList);
         List<Map<String, Object>> tableRow = (List<Map<String, Object>>) map.get("tableRow");
         final int xEndIndex = detailIndex;
-        Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> StringUtils.join(ArrayUtils.subarray(item, 0, xEndIndex), "-de-", "(", ")")));
+        Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> String.format(format, StringUtils.join(ArrayUtils.subarray(item, 0, xEndIndex), "-de-"))));
 
         tableRow.forEach(row -> {
             String key = xAxis.stream().map(x -> String.format(format, row.get(x.getDataeaseName()).toString())).collect(Collectors.joining("-de-"));

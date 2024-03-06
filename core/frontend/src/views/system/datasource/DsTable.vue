@@ -24,7 +24,7 @@
             v-if="privileges && canEdit"
             key="cancel"
             secondary
-            @click="editDatasource(false)"
+            @click="cancelEdit"
           >{{ $t('commons.cancel') }}
           </deBtn>
           <deBtn
@@ -108,6 +108,10 @@ export default {
     editDatasource(type = false) {
       this.$refs.DsFormContent.editDatasource(type)
       this.canEdit = type
+    },
+    cancelEdit() {
+      this.$refs.DsFormContent.cancelEdit()
+      this.canEdit = false
     },
     validaDatasource() {
       this.$refs.DsFormContent.validaDatasource()

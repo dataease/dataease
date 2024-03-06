@@ -413,13 +413,13 @@ public class DorisQueryProvider extends QueryProvider {
     public String getSQLWithPage(boolean isTable, String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, PageInfo pageInfo) {
         String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() + "," + pageInfo.getPageSize() : "");
         if (isTable) {
-            return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            return originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true) + limit;
         } else {
-            return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view) + limit;
+            return originalTableInfo("(" + sqlFix(table) + ")", xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, true) + limit;
         }
     }
 
-    private String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
+    private String originalTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view, boolean needOrder) {
         SQLObj tableObj = SQLObj.builder()
                 .tableName((table.startsWith("(") && table.endsWith(")")) ? table : String.format(DorisConstants.KEYWORD_TABLE, table))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 0))
@@ -478,6 +478,13 @@ public class DorisQueryProvider extends QueryProvider {
         // 外层再次套sql
         List<SQLObj> orders = new ArrayList<>();
         orders.addAll(xOrders);
+        if (needOrder && CollectionUtils.isEmpty(xOrders)) {
+            orders.add(SQLObj.builder()
+                    .orderField(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                    .orderAlias(String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, 0))
+                    .orderDirection("ASC")
+                    .build());
+        }
 
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
@@ -503,7 +510,7 @@ public class DorisQueryProvider extends QueryProvider {
 
     @Override
     public String getSQLTableInfo(String table, List<ChartViewFieldDTO> xAxis, FilterTreeObj fieldCustomFilter, List<DataSetRowPermissionsTreeDTO> rowPermissionsTree, List<ChartExtFilterRequest> extFilterRequestList, Datasource ds, ChartViewWithBLOBs view) {
-        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view), view);
+        return sqlLimit(originalTableInfo(table, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, false), view);
     }
 
     @Override
@@ -1085,10 +1092,14 @@ public class DorisQueryProvider extends QueryProvider {
                 whereValue = "''";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = "'%" + value + "'";
             } else {
                 whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value);
             }
@@ -1160,10 +1171,14 @@ public class DorisQueryProvider extends QueryProvider {
                 whereValue = "''";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = "'%" + value + "'";
             } else {
                 whereValue = String.format(DorisConstants.WHERE_VALUE_VALUE, value);
             }
@@ -1207,6 +1222,8 @@ public class DorisQueryProvider extends QueryProvider {
             case "not in":
                 return " NOT IN ";
             case "like":
+            case "begin_with":
+            case "end_with":
                 return " LIKE ";
             case "not like":
                 return " NOT LIKE ";
@@ -1371,7 +1388,7 @@ public class DorisQueryProvider extends QueryProvider {
                         if (field.getType().equalsIgnoreCase("YEAR") || StringUtils.equalsIgnoreCase(field.getDateFormat(), "%Y")) {
                             date = String.format(MySQLConstants.DATE_FORMAT, "CONCAT(" + date + ",'-01-01')", "%Y-01-01");
                             whereName = String.format(MySQLConstants.DATE_FORMAT, date, format);
-                        }else {
+                        } else {
                             whereName = originName;
                         }
 

@@ -274,6 +274,7 @@ public class ApiProvider extends Provider {
 
     static private void handleStr(ApiDefinition apiDefinition, String jsonStr, List<JSONObject> fields, String rootPath) {
         if (jsonStr.startsWith("[")) {
+            rootPath = rootPath + "[*]";
             JSONArray jsonArray = JSONObject.parseArray(jsonStr);
             for (Object o : jsonArray) {
                 handleStr(apiDefinition, o.toString(), fields, rootPath);

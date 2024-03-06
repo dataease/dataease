@@ -8,6 +8,7 @@ import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
 import com.alibaba.fastjson.JSON;
 import com.alibaba.fastjson.TypeReference;
+import com.alibaba.fastjson.parser.Feature;
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
@@ -1116,21 +1117,31 @@ public class DataSetTableService {
     }
 
     private void handleFromItems(PlainSelect plainSelect, String dsType) throws Exception {
-
         FromItem fromItem = plainSelect.getFromItem();
         if (fromItem instanceof ParenthesedSelect) {
-            PlainSelect selectBody = ((ParenthesedSelect) fromItem).getPlainSelect();
-            Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
-            ((ParenthesedSelect) fromItem).setSelect(subSelectTmp.getSelectBody());
-            if (dsType.equals(DatasourceTypes.oracle.getType())) {
-                if (fromItem.getAlias() != null) {
-                    fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
+            if (((ParenthesedSelect) fromItem).getSelect() instanceof SetOperationList) {
+                StringBuilder result = new StringBuilder();
+                SetOperationList setOperationList = (SetOperationList) ((ParenthesedSelect) fromItem).getSelect().getSelectBody();
+                for (int i = 0; i < setOperationList.getSelects().size(); i++) {
+                    result.append(handlePlainSelect((PlainSelect) setOperationList.getSelects().get(i), null, dsType));
+                    if (i < setOperationList.getSelects().size() - 1) {
+                        result.append(" ").append(setOperationList.getOperations().get(i).toString()).append(" ");
+                    }
                 }
             } else {
-                if (fromItem.getAlias() == null) {
-                    throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                PlainSelect selectBody = ((ParenthesedSelect) fromItem).getSelect().getPlainSelect();
+                Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
+                ((ParenthesedSelect) fromItem).setSelect(subSelectTmp.getSelectBody());
+                if (dsType.equals(DatasourceTypes.oracle.getType())) {
+                    if (fromItem.getAlias() != null) {
+                        fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                    }
+                } else {
+                    if (fromItem.getAlias() == null) {
+                        throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                    }
+                    fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
                 }
-                fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
             }
             plainSelect.setFromItem(fromItem);
         }
@@ -2345,7 +2356,7 @@ public class DataSetTableService {
             }
             String json = JSON.toJSONString(noModelDataListener.getData());
             List<List<String>> data = JSON.parseObject(json, new TypeReference<List<List<String>>>() {
-            });
+            }, Feature.IgnoreNotMatch);
             data = (isPreview && noModelDataListener.getData().size() > 1000 ? new ArrayList<>(data.subList(0, 1000)) : data);
             if (isPreview) {
                 for (int i = 0; i < data.size(); i++) {
@@ -2369,15 +2380,7 @@ public class DataSetTableService {
     public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-        if (StringUtils.equalsIgnoreCase(suffix, "xls")) {
-            ExcelXlsReader excelXlsReader = new ExcelXlsReader();
-            excelXlsReader.setObtainedNum(1000);
-            excelXlsReader.process(inputStream);
-            excelSheetDataList = excelXlsReader.totalSheets;
-        }
-        if (StringUtils.equalsIgnoreCase(suffix, "xlsx")) {
-            excelSheetDataList = excelSheetDataList(inputStream, isPreview);
-        }
+        excelSheetDataList = excelSheetDataList(inputStream, isPreview);
 
         if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
             List<TableField> fields = new ArrayList<>();
@@ -2797,6 +2800,9 @@ public class DataSetTableService {
                         e.printStackTrace();
                     }
                     inExpression.getRightExpression().accept(this);
+                }
+                if (inExpression.getRightExpression() instanceof ParenthesedExpressionList) {
+                    buffer.append(inExpression.getRightExpression());
                 }
             }
 

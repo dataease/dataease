@@ -15,7 +15,7 @@
       </el-col>
     </el-header>
     <de-container>
-      <de-aside-container class="ms-aside-container">
+      <de-aside-container close class="ms-aside-container">
         <div
           v-show="showAside"
           style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute"
@@ -888,7 +888,7 @@ export default {
   methods: {
     handleLoad() {
       this.mobileLoading = false
-      this.mobileStatusChange('openMobileLayout', { componentData: this.componentData, panelInfo: this.panelInfo })
+      this.mobileStatusChange('openMobileLayout', { componentData: this.componentData, panelInfo: this.panelInfo, canvasStyleData: this.canvasStyleData })
     },
     deleteComponentWithId(id) {
       for (let index = 0; index < this.pcComponentData.length; index++) {

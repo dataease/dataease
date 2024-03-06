@@ -68,7 +68,7 @@
           >
             {{ $t('chart.total') }}
             <span>{{
-              (chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
+              ((chart.datasetMode === 0 && !not_support_page_dataset.includes(chart.datasourceType) || chart.datasetMode === 1)) ? chart.totalItems : ((chart.data && chart.data.tableRow) ? chart.data.tableRow.length : 0)
             }}</span>
             {{ $t('chart.items') }}
           </span>
@@ -102,6 +102,7 @@ import { CHART_CONT_FAMILY_MAP, DEFAULT_TITLE_STYLE, NOT_SUPPORT_PAGE_DATASET } 
 import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { mapState } from 'vuex'
 import DePagination from '@/components/deCustomCm/pagination.js'
+import bus from '@/utils/bus'
 
 export default {
   name: 'ChartComponentS2',
@@ -133,6 +134,10 @@ export default {
       type: Number,
       required: false,
       default: 0
+    },
+    inScreen: {
+      type: Boolean,
+      default: false
     }
   },
   data() {
@@ -252,7 +257,7 @@ export default {
         }
         this.currentPage.pageSize = parseInt(attr.size.tablePageSize ? attr.size.tablePageSize : 20)
         data = JSON.parse(JSON.stringify(this.chart.data.tableRow))
-        if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
+        if ((this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType) || this.chart.datasetMode === 1)) {
           if (this.chart.type === 'table-info' && (attr.size.tablePageMode === 'page' || !attr.size.tablePageMode) && this.chart.totalItems > this.currentPage.pageSize) {
             this.currentPage.show = this.chart.totalItems
             this.showPage = true
@@ -296,9 +301,9 @@ export default {
         }
       }
       if (chart.type === 'table-info') {
-        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage, this)
+        this.myChart = baseTableInfo(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this.currentPage, this, this.columnResize)
       } else if (chart.type === 'table-normal') {
-        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this)
+        this.myChart = baseTableNormal(this.myChart, this.chartId, chart, this.antVAction, this.tableData, this, this.columnResize)
       } else if (chart.type === 'table-pivot') {
         this.myChart = baseTablePivot(this.myChart, this.chartId, chart, this.antVAction, this.tableHeaderClick, this.tableData)
       } else {
@@ -494,7 +499,7 @@ export default {
     },
     pageChange(val) {
       this.currentPage.pageSize = val
-      if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
+      if ((this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) || this.chart.datasetMode === 1) {
         this.$emit('onPageChange', this.currentPage)
       } else {
         this.initData()
@@ -504,7 +509,7 @@ export default {
 
     pageClick(val) {
       this.currentPage.page = val
-      if (this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) {
+      if ((this.chart.datasetMode === 0 && !NOT_SUPPORT_PAGE_DATASET.includes(this.chart.datasourceType)) || this.chart.datasetMode === 1) {
         this.$emit('onPageChange', this.currentPage)
       } else {
         this.initData()
@@ -554,6 +559,26 @@ export default {
     },
     initRemark() {
       this.remarkCfg = getRemark(this.chart)
+    },
+    columnResize(resizeColumn) {
+      if (!this.inScreen) {
+        // 预览/全屏预览不保存
+        return
+      }
+      const fieldId = resizeColumn.info.meta.field
+      const size = JSON.parse(this.chart.customAttr).size
+      const containerWidth = document.getElementById(this.chartId).offsetWidth
+      const column = size.tableFieldWidth?.find(i => i.fieldId === fieldId)
+      let tableWidth
+      const width = parseFloat((resizeColumn.info.resizedWidth / containerWidth * 100).toFixed(2))
+      if (column) {
+        column.width = width
+        tableWidth = [...size.tableFieldWidth]
+      } else {
+        const tmp = { fieldId, width }
+        tableWidth = size.tableFieldWidth?.length ? [...size.tableFieldWidth, tmp] : [tmp]
+      }
+      bus.$emit('set-table-column-width', tableWidth)
     }
   }
 }

@@ -34,7 +34,6 @@
     <div
       :id="chartId"
       style="width: 100%;overflow: hidden;"
-      class="g2-container"
       :style="{height:chartHeight}"
     />
   </div>
@@ -482,18 +481,3 @@ export default {
   }
 }
 </script>
-<style lang="less" scoped>
-.g2-container {
-  ::v-deep .g2-tooltip {
-    position: fixed !important;
-  }
-}
-
-.fullscreen, .show-in-dialog {
-  .g2-container {
-    ::v-deep .g2-tooltip {
-      position: absolute !important;
-    }
-  }
-}
-</style>

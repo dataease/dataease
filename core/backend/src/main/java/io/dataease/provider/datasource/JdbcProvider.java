@@ -436,6 +436,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
         try (Connection con = getConnection(datasourceRequest); Statement statement = getStatement(con, queryTimeout); ResultSet resultSet = statement.executeQuery(queryStr)) {
         } catch (Exception e) {
+            e.printStackTrace();
             LogUtil.error("Datasource is invalid: " + datasourceRequest.getDatasource().getName(), e);
             DataEaseException.throwException(e.getMessage());
         }
@@ -600,7 +601,6 @@ public class JdbcProvider extends DefaultJdbcProvider {
             Thread.currentThread().setContextClassLoader(jdbcClassLoader);
             conn = driverClass.connect(jdbcurl, props);
         } catch (Exception e) {
-            e.printStackTrace();
             throw e;
         } finally {
             Thread.currentThread().setContextClassLoader(classLoader);

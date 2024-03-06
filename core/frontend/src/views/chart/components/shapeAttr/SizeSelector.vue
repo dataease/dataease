@@ -1165,6 +1165,7 @@
 <script>
 import { CHART_FONT_FAMILY, CHART_FONT_LETTER_SPACE, DEFAULT_SIZE } from '../../chart/chart'
 import { includesAny } from '@/utils/StringUtils'
+import _ from 'lodash'
 export default {
   name: 'SizeSelector',
   props: {
@@ -1293,7 +1294,7 @@ export default {
     },
     init() {
       const arr = []
-      for (let i = 10; i <= 60; i = i + 2) {
+      for (let i = 6; i <= 60; i = i + 2) {
         arr.push({
           name: i + '',
           value: i + ''
@@ -1302,6 +1303,12 @@ export default {
       this.fontSize = arr
     },
     changeBarSizeCase(modifyName) {
+      if (!this.doChange) {
+        this.doChange = _.debounce(() => this.debounceChange(modifyName), 200)
+      }
+      this.doChange()
+    },
+    debounceChange(modifyName) {
       this.sizeForm['modifyName'] = modifyName
       if (this.sizeForm.gaugeMax <= this.sizeForm.gaugeMin) {
         this.$message.error(this.$t('chart.max_more_than_mix'))

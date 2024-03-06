@@ -10,7 +10,8 @@ import {
   getSlider,
   getAnalyse,
   setGradientColor,
-  getMeta
+  getMeta,
+  configPlotTooltipEvent
 } from '@/views/chart/chart/common/common_antv'
 import { antVCustomColor, getColors, handleEmptyDataStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
 import { cloneDeep, find } from 'lodash-es'
@@ -138,7 +139,8 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-
+  // 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }
 
@@ -258,7 +260,8 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }
 
@@ -451,7 +454,8 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }
 
@@ -546,6 +550,7 @@ export function baseBidirectionalBarOptionAntV(plot, container, chart, action, i
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }

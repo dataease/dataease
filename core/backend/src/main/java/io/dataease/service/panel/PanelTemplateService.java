@@ -84,7 +84,7 @@ public class PanelTemplateService {
                 //Store static resource into the server
                 staticResourceService.saveFilesToServe(request.getStaticResource());
                 String snapshotName = "template-" + request.getId() + ".jpeg";
-                staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", ""));
+                staticResourceService.saveSingleFileToServe(snapshotName, request.getSnapshot().replace("data:image/jpeg;base64,", "").replace("data:image/png;base64,", ""));
                 request.setSnapshot("/" + UPLOAD_URL_PREFIX + '/' + snapshotName);
             }
 

@@ -1,4 +1,11 @@
-import { getLabel, getLegend, getPadding, getTheme, getTooltip } from '@/views/chart/chart/common/common_antv'
+import {
+  configPlotTooltipEvent,
+  getLabel,
+  getLegend,
+  getPadding,
+  getTheme,
+  getTooltip
+} from '@/views/chart/chart/common/common_antv'
 import { Funnel } from '@antv/g2plot'
 import { antVCustomColor } from '@/views/chart/chart/util'
 
@@ -54,7 +61,8 @@ export function baseFunnelOptionAntV(plot, container, chart, action) {
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-
+// 处理 tooltip 被其他视图遮挡
+  configPlotTooltipEvent(chart, plot)
   return plot
 }
 

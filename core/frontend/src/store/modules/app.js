@@ -7,8 +7,9 @@ const state = {
     hide: false
   },
   device: 'desktop',
-
-  size: Cookies.get('size') || 'small'
+  
+  size: Cookies.get('size') || 'small',
+  arrowSide: false
 }
 
 const mutations = {
@@ -36,7 +37,10 @@ const mutations = {
   SET_SIZE: (state, size) => {
     state.size = size
     Cookies.set('size', size)
-  }
+  },
+  SET_ARROW_SIDE: (state, arrowSide) => {
+    state.arrowSide = arrowSide
+  },
 }
 
 const actions = {
@@ -54,6 +58,9 @@ const actions = {
   },
   setSize({ commit }, size) {
     commit('SET_SIZE', size)
+  },
+  setArrowSide({ commit }, arrowSide) {
+    commit('SET_ARROW_SIDE', arrowSide)
   }
 }
 

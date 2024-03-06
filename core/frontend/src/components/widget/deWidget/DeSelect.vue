@@ -370,7 +370,7 @@ export default {
           this.firstChange(this.value)
           return
         }
-        if (this.value.toString() !== eleVal && this.defaultValueStr === eleVal) {
+        if (this.value?.toString() !== eleVal && this.defaultValueStr === eleVal) {
           this.value = this.fillValueDerfault()
           this.changeValue(this.value)
         }
@@ -387,7 +387,8 @@ export default {
     },
     initLoad() {
       this.initOptions(this.fillFirstSelected)
-      if (this.element.options.value && !this.selectFirst) {
+      const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]
+      if ((this.element.options.value || existLastValidFilters) && !this.selectFirst) {
         this.value = this.fillValueDerfault()
         this.changeValue(this.value)
       }

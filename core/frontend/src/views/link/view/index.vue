@@ -76,6 +76,12 @@ export default {
 
       })
     },
+    initBrowserTimer() {
+      if (this.canvasStyleData.refreshBrowserEnable) {
+        const browserRefreshTime = this.canvasStyleData.refreshBrowserTime * 60 * 1000
+        setTimeout(() => { window.location.reload() }, browserRefreshTime)
+      }
+    },
     setPanelInfo() {
       loadResource(this.resourceId, this.user).then(res => {
         this.show = false
@@ -99,6 +105,7 @@ export default {
         this.$store.dispatch('panel/setPanelInfo', this.panelInfo)
 
         panelInit(JSON.parse(res.data.panelData), JSON.parse(res.data.panelStyle))
+        this.initBrowserTimer()
         // 设置浏览器title为当前仪表板名称
         document.title = res.data.name
         // 刷新联动信息
@@ -149,7 +156,7 @@ export default {
             const jumpRequestParam = {
               sourcePanelId: jumpParam.sourcePanelId,
               sourceViewId: jumpParam.sourceViewId,
-              sourceFieldId: jumpParam.sourceFieldId,
+              sourceFieldId: null,
               targetPanelId: this.resourceId
             }
             if (jumpParam.sourceType && jumpParam.sourceType === 'table-pivot') {

@@ -1,7 +1,7 @@
 <template>
   <de-container v-loading="$store.getters.loadingMap[$store.getters.currentPath]">
 
-    <de-aside-container>
+    <de-aside-container close>
       <group
         ref="group"
         :save-status="saveStatus"

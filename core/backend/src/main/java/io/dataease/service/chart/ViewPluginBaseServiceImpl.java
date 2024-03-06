@@ -6,7 +6,6 @@ import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.commons.utils.TableUtils;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
-import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.base.domain.DatasetTableField;
 import io.dataease.plugins.common.base.domain.Datasource;
@@ -14,23 +13,22 @@ import io.dataease.plugins.common.constants.DatasetType;
 import io.dataease.plugins.common.constants.datasource.SQLConstants;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldFilterDTO;
+import io.dataease.plugins.common.dto.dataset.DataTableInfoDTO;
 import io.dataease.plugins.common.dto.sqlObj.SQLObj;
 import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
 import io.dataease.plugins.common.request.chart.filter.FilterTreeObj;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.util.BeanUtils;
 import io.dataease.plugins.common.util.ConstantsUtil;
+import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.view.entity.*;
 import io.dataease.plugins.view.entity.filter.PluginFilterTreeObj;
 import io.dataease.plugins.view.service.ViewPluginBaseService;
-import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.service.dataset.DataSetTableService;
 import io.dataease.service.dataset.DataSetTableUnionService;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.util.ReflectionUtils;
 
@@ -58,9 +56,6 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
     @Resource
     private ChartViewService chartViewService;
 
-    private static final Logger logger = LoggerFactory.getLogger(ViewPluginBaseServiceImpl.class);
-
-
     @Override
     public PluginSingleField buildField(String dsType, PluginViewField pluginViewField, PluginViewSQL tableObj, int index) {
         PluginSingleField result = new PluginSingleField();
@@ -76,6 +71,8 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
         field = getField(dsType, pluginViewField, originField, fieldAlias);
         where = getWhere(dsType, pluginViewField, originField, fieldAlias);
         PluginViewSQL sort = addSort(pluginViewField.getSort(), originField, fieldAlias);
+
+
         Optional.ofNullable(field).ifPresent(f -> result.setField(f));
         Optional.ofNullable(sort).ifPresent(s -> result.setSort(s));
         Optional.ofNullable(where).ifPresent(w -> result.setWhere(w));
@@ -240,7 +237,14 @@ public class ViewPluginBaseServiceImpl implements ViewPluginBaseService {
 
     private Object execProviderMethod(QueryProvider queryProvider, String methodName, Object... args) {
         Method[] declaredMethods = queryProvider.getClass().getDeclaredMethods();
+        Method[] declaredAllMethods = queryProvider.getClass().getMethods();
         for (Method method : declaredMethods) {
+            if (StringUtils.equals(method.getName(), methodName)) {
+                method.setAccessible(true);
+                return ReflectionUtils.invokeMethod(method, queryProvider, args);
+            }
+        }
+        for (Method method : declaredAllMethods) {
             if (StringUtils.equals(method.getName(), methodName)) {
                 method.setAccessible(true);
                 return ReflectionUtils.invokeMethod(method, queryProvider, args);

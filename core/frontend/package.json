@@ -1,6 +1,6 @@
 {
   "name": "dataease",
-  "version": "1.18.15",
+  "version": "1.18.16",
   "description": "dataease front",
   "private": true,
   "scripts": {
@@ -47,6 +47,7 @@
     "file-saver": "^2.0.5",
     "fit2cloud-ui": "^1.8.0",
     "flv.js": "^1.6.2",
+    "html-to-image": "^1.11.11",
     "html2canvasde": "^v1.1.4-de",
     "jquery": "^3.1.1",
     "js-base64": "^3.7.2",

@@ -4,7 +4,7 @@
     :class="isAbsoluteContainer ? 'abs-container' : ''"
   >
     <de-main-container
-      v-show="showChartCanvas"
+      v-if="showChartCanvas"
       v-loading="exportLoading"
       style="overflow: hidden"
       :element-loading-text="$t('panel.data_loading')"
@@ -40,7 +40,7 @@
           <chart-component-g2
             v-else-if="!chart.type.includes('text') && chart.type !== 'label' && !chart.type.includes('table') && renderComponent() === 'antv'"
             :ref="element.propValue.id"
-            class="chart-class show-in-dialog"
+            class="chart-class"
             :chart="chart"
           />
           <chart-component-s2
@@ -70,8 +70,9 @@
         </div>
       </div>
     </de-main-container>
-    <de-main-container v-show="!showChartCanvas">
+    <de-main-container v-else>
       <table-normal
+        id="chartCanvas"
         :enable-scroll="false"
         :chart="chartTable"
         :show-summary="false"
@@ -95,7 +96,7 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import html2canvas from 'html2canvasde'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { deepCopy, exportExcelDownload, exportImg, imgUrlTrans } from '@/components/canvas/utils/utils'
+import {deepCopy, exportExcelDownload, exportImg, exportImgNew, imgUrlTrans} from '@/components/canvas/utils/utils'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 
@@ -303,7 +304,7 @@ export default {
         this.resizeChart()
         setTimeout(() => {
           this.initWatermark()
-          exportImg(this.chart.name, (params) => {
+          exportImgNew(this.chart.name, (params) => {
             this.exporting = false
             this.resizeChart()
             setTimeout(() => {

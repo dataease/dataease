@@ -144,7 +144,8 @@ export default {
     }
   },
   created() {
-    if (this.element.options.value && this.element.options.value.length > 0) {
+    const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]
+    if ((this.element.options.value && this.element.options.value.length > 0) || existLastValidFilters) {
       const values = this.fillValueDerfault()
       this.form.min = values[0]
       if (values.length > 1) {

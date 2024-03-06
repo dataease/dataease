@@ -993,6 +993,10 @@ public class MongoQueryProvider extends QueryProvider {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = "'%" + value + "'";
             } else {
                 if (field.getDeType() == DeTypeConstants.DE_STRING) {
                     whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value);
@@ -1047,6 +1051,10 @@ public class MongoQueryProvider extends QueryProvider {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = "'%" + value + "'";
             } else {
                 if (field.getDeType() == DeTypeConstants.DE_STRING) {
                     whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value);
@@ -1085,6 +1093,8 @@ public class MongoQueryProvider extends QueryProvider {
             case "not in":
                 return " NOT IN ";
             case "like":
+            case "begin_with":
+            case "end_with":
                 return " LIKE ";
             case "not like":
                 return " NOT LIKE ";

@@ -197,7 +197,8 @@ public class AuthServer implements AuthApi {
                 result.put("passwordModified", false);
                 result.put("defaultPwd", "dataease");
             }
-            if (!user.getIsAdmin() && user.getPassword().equals("83d923c9f1d8fcaa46cae0ed2aaa81b5")) {
+
+            if (!user.getIsAdmin() && user.getPassword().equals(CodingUtil.md5(DEFAULT_PWD))) {
                 result.put("passwordModified", false);
                 result.put("defaultPwd", DEFAULT_PWD);
             }

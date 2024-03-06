@@ -1088,11 +1088,15 @@ public class CKQueryProvider extends QueryProvider {
                 whereValue = "''";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
-            } else {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = "'%" + value + "'";
+            }else {
                 if (field.getDeType() == DeTypeConstants.DE_TIME) {
                     whereValue = String.format(CKConstants.toDateTime, "'" + value + "'");
                 } else {
@@ -1180,10 +1184,14 @@ public class CKQueryProvider extends QueryProvider {
                 whereValue = "''";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "not_empty")) {
                 whereValue = "''";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "in")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
-            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
+            }else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+                whereValue = "'" + value + "%'";
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
+                whereValue = "'%" + value + "'";
             } else {
                 if (field.getDeType() == DeTypeConstants.DE_TIME) {
                     whereValue = String.format(CKConstants.toDateTime, "'" + value + "'");
@@ -1237,6 +1245,8 @@ public class CKQueryProvider extends QueryProvider {
             case "not in":
                 return " NOT IN ";
             case "like":
+            case "begin_with":
+            case "end_with":
                 return " LIKE ";
             case "not like":
                 return " NOT LIKE ";

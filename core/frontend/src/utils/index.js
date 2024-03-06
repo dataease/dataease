@@ -10,6 +10,9 @@ export function timeSection(date, type, labelFormat = 'yyyy-MM-dd') {
   if (!date) {
     return null
   }
+  if (typeof date === 'string') {
+    date = parseInt(date);
+  }
   if (!(date instanceof Date)) {
     date = new Date(date)
   }

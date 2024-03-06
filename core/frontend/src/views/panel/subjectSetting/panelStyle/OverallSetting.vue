@@ -83,6 +83,49 @@
           </el-select>
         </el-row>
       </el-row>
+
+      <el-row class="margin-top20">
+        <el-row class="custom-item-text-row">
+          <span class="custom-item-text el-input-refresh-browser-inner bl">
+            <el-checkbox
+              v-model="overallSettingForm.refreshBrowserEnable"
+              class="el-input-refresh-browser"
+              @change="themeChange"
+            >{{ $t('panel.refresh_browser_frequency') }}
+            </el-checkbox>
+            <span class="custom-item-text bl">
+              <span>
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="bottom"
+                >
+                  <div slot="content">
+                    {{ $t('panel.refresh_browser_tips') }}
+                  </div>
+                  <i
+                    class="el-icon-info"
+                    style="cursor: pointer;"
+                  />
+                </el-tooltip>
+              </span>
+            </span>
+          </span>
+          <el-input
+            v-model="overallSettingForm.refreshBrowserTime"
+            class="el-input-refresh-time"
+            type="number"
+            size="mini"
+            controls-position="right"
+            :min="1"
+            :max="3600"
+            :disabled="!overallSettingForm.refreshBrowserEnable"
+            @change="refreshBrowserTimeChange"
+          >
+            <template slot="append">{{ $t('panel.minute') }}</template>
+          </el-input>
+        </el-row>
+      </el-row>
       <el-row class="margin-top20 margin-bottom20">
         <el-row class="custom-item-text-row">
           <span class="custom-item-text bl">
@@ -186,6 +229,14 @@ export default {
     initForm() {
       this.overallSettingForm = this.canvasStyleData
     },
+    refreshBrowserTimeChange(val) {
+      if (val < 1) {
+        this.overallSettingForm.refreshBrowserTime = 1
+      } else if (val > 3600) {
+        this.overallSettingForm.refreshBrowserTime = 3600
+      }
+      this.$store.commit('recordSnapshot')
+    },
     themeChange(modifyName) {
       if (modifyName === 'themeColor') {
         // 主题变更
@@ -236,6 +287,15 @@ export default {
 .el-input-refresh-loading {
   margin-left: 4px;
   font-size: 12px;
+}
+
+.el-input-refresh-browser {
+  font-size: 12px;
+}
+
+.el-input-refresh-browser-inner {
+  width: calc(50% + 4px);
+  padding-top: 2px;
 }
 
 .margin-left4 {

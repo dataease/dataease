@@ -101,6 +101,7 @@
       :terminal-type="scaleCoefficientType"
       :track-menu="trackMenu"
       :search-count="searchCount"
+      :in-screen="inScreen"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
       @onPageChange="pageClick"
@@ -119,15 +120,17 @@
       v-else-if="labelShowFlag"
       :ref="element.propValue.id"
       :chart="chart"
+      :in-screen="inScreen"
       class="table-class"
     />
     <label-normal-text
       v-else-if="labelTextShowFlag"
       :ref="element.propValue.id"
       :chart="chart"
-      class="table-class"
       :track-menu="trackMenu"
       :search-count="searchCount"
+      :in-screen="inScreen"
+      class="table-class"
       @onChartClick="chartClick"
       @onJumpClick="jumpClick"
     />
@@ -936,13 +939,13 @@ export default {
         // table-info明细表增加分页
         if (this.view && this.view.customAttr) {
           const attrSize = JSON.parse(this.view.customAttr).size
-          if (this.chart.type === 'table-info' && this.view.datasetMode === 0 && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
+          if (this.chart.type === 'table-info' && (!attrSize.tablePageMode || attrSize.tablePageMode === 'page')) {
             requestInfo.goPage = this.currentPage.page
             requestInfo.pageSize = this.currentPage.pageSize === parseInt(attrSize.tablePageSize) ? this.currentPage.pageSize : parseInt(attrSize.tablePageSize)
           }
         }
         if (this.isFirstLoad) {
-          this.element.filters = this.filters?.length ? JSON.parse(JSON.stringify(this.filters)) : []
+          this.element.filters = this.filter.filter?.length ? JSON.parse(JSON.stringify(this.filter.filter)) : []
         }
         method(id, this.panelInfo.id, requestInfo).then(response => {
           try {
@@ -1112,6 +1115,8 @@ export default {
         tableChart.customAttr.color.enableTableCrossBG = false
         tableChart.customAttr.size.showTableHeader = true
       }
+      tableChart.customAttr.size.tableTitleFontSize = 14
+      tableChart.customAttr.size.tableItemFontSize = 14
       tableChart.customAttr.size.tableColumnFreezeHead = 0
       tableChart.customAttr.size.tableRowFreezeHead = 0
       tableChart.customAttr.color.tableStripe = true
@@ -1226,13 +1231,11 @@ export default {
           this.windowsJump(url, jumpInfo.jumpType)
         }
       } else {
-        if (this.chart.type.indexOf('table') === -1) {
-          this.$message({
-            type: 'warn',
-            message: '未获取跳转信息',
-            showClose: true
-          })
-        }
+        this.$message({
+          type: 'warn',
+          message: '未获取跳转信息',
+          showClose: true
+        })
       }
     },
     setIdValueTrans(from, to, content, colList) {

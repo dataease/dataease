@@ -1753,8 +1753,7 @@ export const TYPE_CONFIGS = [
       'label-selector-ant-v': [
         'show',
         'fontSize',
-        'color',
-        'position-v'
+        'color'
       ],
       'tooltip-selector-ant-v': [
         'show',
