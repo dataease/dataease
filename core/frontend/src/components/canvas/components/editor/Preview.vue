@@ -724,6 +724,7 @@ export default {
         let vValid = valueValid(condition)
         const required = element.options.attrs.required
         condition.requiredInvalid = required && !vValid
+        condition['triggerId'] = uuid.v1()
         vValid = vValid || required
         const filterComponentId = condition.componentId
         const conditionCanvasId = wrapperChild.getCanvasId && wrapperChild.getCanvasId()
