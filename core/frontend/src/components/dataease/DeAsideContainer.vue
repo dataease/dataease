@@ -8,9 +8,7 @@
     :style="{'margin-left': !asideHidden ? 0 : '-' + currentWidth}"
   >
     <DeArrowSide v-if="!close" @changeSideTreeStatus="changeSideTreeStatus" :style="sideStyle" :isInside="!sideTreeStatus"></DeArrowSide>
-    <keep-alive>
-      <slot v-if="sideTreeStatus"/>
-    </keep-alive>
+    <slot/>
     <de-horizontal-drag-bar
       v-if="isSystem"
       :type="type"
@@ -112,6 +110,12 @@ export default {
     &.retract {
       width: 0 !important;
       min-width: 0 !important;
+
+      ::v-deep.de-dataset-search, ::v-deep.tree-style {
+        width: 0 !important;
+        min-width: 0 !important;
+        padding: 0;
+      }
     }
   }
 
