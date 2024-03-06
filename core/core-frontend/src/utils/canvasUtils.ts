@@ -160,6 +160,16 @@ export function initCanvasDataMobile(dvId, busiFlag, callBack) {
         ele.y = my
         ele.sizeX = mSizeX
         ele.sizeY = mSizeY
+        if (ele.component === 'DeTabs') {
+          ele.propValue.forEach(tabItem => {
+            tabItem.componentData.forEach(tabComponent => {
+              tabComponent.x = tabComponent.mx
+              tabComponent.y = tabComponent.my
+              tabComponent.sizeX = tabComponent.mSizeX
+              tabComponent.sizeY = tabComponent.mSizeY
+            })
+          })
+        }
       })
       dvMainStore.setComponentData(componentData)
       dvMainStore.setCanvasStyle(canvasStyleResult)
