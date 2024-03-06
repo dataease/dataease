@@ -28,7 +28,7 @@ router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
 
-  if (isMobile()) {
+  if (isMobile() && to.name !== 'link') {
     done()
     loadDone()
     window.location.href = window.origin + '/mobile.html#/index'
