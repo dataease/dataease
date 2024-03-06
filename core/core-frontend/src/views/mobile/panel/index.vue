@@ -13,6 +13,7 @@ const checkItemPosition = component => {
   component.y = dvMainStore.componentData.reduce((pre, next) => {
     return Math.max(pre, next.y + next.sizeY)
   }, 1)
+  component.sizeY = 10
 }
 
 const hanedleMessage = event => {
@@ -50,8 +51,22 @@ const hanedleMessage = event => {
       {
         type: 'mobileSaveFromMobile',
         value: dvMainStore.componentData.reduce((pre, next) => {
-          const { x, y, sizeX, sizeY, id } = next
-          pre[id] = { x, y, sizeX, sizeY }
+          const { x, y, sizeX, sizeY, id, component } = next
+          pre[id] = { x, y, sizeX, sizeY, component }
+          if (next.component === 'DeTabs') {
+            pre[id].tab = {}
+            next.propValue.forEach(tabItem => {
+              tabItem.componentData.forEach(tabComponent => {
+                const { x: tx, y: ty, sizeX: tSizeX, sizeY: tSizeY, id: tId } = tabComponent
+                pre[id].tab[tId] = {
+                  x: tx,
+                  y: ty,
+                  sizeX: tSizeX,
+                  sizeY: tSizeY
+                }
+              })
+            })
+          }
           return pre
         }, {})
       },

@@ -276,7 +276,7 @@ defineExpose({
       :style="getShapeItemShowStyle(item)"
       :show-position="showPosition"
       :search-count="searchCount"
-      :scale="mobileInPc ? scaleWidth * 3 : scaleWidth"
+      :scale="mobileInPc ? 100 : scaleWidth"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>

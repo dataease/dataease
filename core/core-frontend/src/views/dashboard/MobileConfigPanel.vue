@@ -81,6 +81,17 @@ const hanedleMessage = event => {
         ele.my = y
         ele.mSizeX = sizeX
         ele.mSizeY = sizeY
+        if (ele.component === 'DeTabs') {
+          ele.propValue.forEach(tabItem => {
+            tabItem.componentData.forEach(tabComponent => {
+              const { x: tx, y: ty, sizeX: tSizeX, sizeY: tSizeY } = com.tab[tabComponent.id]
+              tabComponent.mx = tx
+              tabComponent.my = ty
+              tabComponent.mSizeX = tSizeX
+              tabComponent.mSizeY = tSizeY
+            })
+          })
+        }
       }
     })
 
