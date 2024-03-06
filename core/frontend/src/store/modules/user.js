@@ -164,6 +164,7 @@ const actions = {
         resetRouter()
         commit('RESET_STATE')
         resolve(res.data)
+        localStorage.removeItem('passwordModified')
       }).catch(error => {
         reject(error)
         if (error?.response?.data?.message) {
