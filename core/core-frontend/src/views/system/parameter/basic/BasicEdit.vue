@@ -206,6 +206,7 @@ defineExpose({
         :label="t(item.label)"
       >
         <el-switch
+          class="de-basic-switch"
           v-if="item.pkey === 'autoCreateUser'"
           active-value="true"
           inactive-value="false"
@@ -341,5 +342,8 @@ defineExpose({
   span.ds-span {
     margin-left: 6px;
   }
+}
+.de-basic-switch {
+  height: 22px;
 }
 </style>
