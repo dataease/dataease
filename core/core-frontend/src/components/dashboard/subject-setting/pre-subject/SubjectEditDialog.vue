@@ -119,6 +119,10 @@ const onImgChange = imgUrl => {
   :deep(.ed-input__inner) {
     font-size: 14px !important;
   }
+
+  :deep(.ed-form-item__error) {
+    top: 88%;
+  }
   .ed-input {
     --ed-input-height: 32px !important;
   }
