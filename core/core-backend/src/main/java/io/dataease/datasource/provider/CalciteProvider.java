@@ -221,6 +221,7 @@ public class CalciteProvider {
         registerDriver();
         Properties info = new Properties();
         info.setProperty("lex", "JAVA");
+        info.setProperty("fuc", "all");
         info.setProperty("caseSensitive", "false");
         info.setProperty("remarks", "true");
         info.setProperty("parserFactory", "org.apache.calcite.sql.parser.impl.SqlParserImpl#FACTORY");
