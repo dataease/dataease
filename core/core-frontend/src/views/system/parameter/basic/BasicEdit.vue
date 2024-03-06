@@ -298,6 +298,7 @@ defineExpose({
 <style lang="less">
 .basic-param-drawer {
   .ed-drawer__footer {
+    box-shadow: 0 -1px 4px #1f232926 !important;
     height: 64px !important;
     padding: 16px 24px !important;
     .dialog-footer {
