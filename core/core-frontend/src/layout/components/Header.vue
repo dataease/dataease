@@ -101,6 +101,10 @@ onMounted(() => {
       color: var(--ed-color-black) !important;
     }
   }
+
+  .logo {
+    color: var(--ed-color-black) !important;
+  }
 }
 .header-flex {
   margin-bottom: 0.5px;
@@ -157,6 +161,7 @@ onMounted(() => {
   width: 134px;
   height: 34px;
   margin-right: 48px;
+  color: #ffffff;
 }
 </style>
 
