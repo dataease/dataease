@@ -846,6 +846,10 @@ export default {
               }
             }
           })
+          const maxWidth = this.canvasStyleData.width * this.scaleWidth / 100
+          if (component.style['width'] > maxWidth) {
+            component.style['width'] = maxWidth
+          }
         })
         this.componentDataShow = componentData
         this.$nextTick(() => (eventBus.$emit('resizing', '')))
