@@ -383,7 +383,8 @@ const queryData = (firstLoad = false) => {
   if (loading.value) {
     return
   }
-  const queryFilter = filter(firstLoad)
+  const searched = dvMainStore.firstLoadMap.includes(element.value.id)
+  const queryFilter = filter(searched ? false : firstLoad)
   let params = cloneDeep(view.value)
   params['chartExtRequest'] = queryFilter
   chartExtRequest.value = queryFilter
