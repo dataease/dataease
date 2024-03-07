@@ -2,12 +2,14 @@
 import { ref, onMounted, unref, onBeforeUnmount, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import MobileBackgroundSelector from './MobileBackgroundSelector.vue'
+import { findById } from '@/api/visualization/dataVisualization'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { canvasSave } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
 const mobileLoading = ref(true)
@@ -36,6 +38,9 @@ const mobileStatusChange = (type, value) => {
 }
 
 const handleLoad = () => {
+  componentData.value.forEach(ele => {
+    ele.inMobile = canvasDataPreview.includes(ele.id)
+  })
   mobileStatusChange(
     'panelInit',
     JSON.parse(
@@ -57,8 +62,7 @@ const componentDataNotInMobile = computed(() => {
 
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
-    mobileLoading.value = false
-    handleLoad()
+    loadCanvasData()
   }
 
   if (event.data.type === 'delFromMobile') {
@@ -94,7 +98,6 @@ const hanedleMessage = event => {
         }
       }
     })
-
     saveCanvasWithCheckFromMobile()
   }
 }
@@ -104,6 +107,22 @@ const saveCanvasWithCheckFromMobile = () => {
   canvasSave(() => {
     ElMessage.success('保存成功')
   })
+}
+let canvasDataPreview = []
+const loadCanvasData = () => {
+  findById(dvInfo.value.id, 'dashboard')
+    .then(res => {
+      const canvasInfo = res.data
+      const canvasDataResult = JSON.parse(canvasInfo.componentData) as unknown as Array<{
+        inMobile: boolean
+        id: string
+      }>
+      canvasDataPreview = (canvasDataResult || []).filter(ele => !!ele.inMobile).map(ele => ele.id)
+      handleLoad()
+    })
+    .finally(() => {
+      mobileLoading.value = false
+    })
 }
 onMounted(() => {
   window.addEventListener('message', hanedleMessage)
@@ -184,7 +203,12 @@ const save = () => {
         <el-collapse-item title="样式设置" name="style" class="content-no-padding-bottom">
           <MobileBackgroundSelector @styleChange="changeTimes++"></MobileBackgroundSelector>
         </el-collapse-item>
-        <el-collapse-item title="可视化组件" name="com" class="content-no-padding-bottom">
+        <el-collapse-item
+          v-loading="mobileLoading"
+          title="可视化组件"
+          name="com"
+          class="content-no-padding-bottom"
+        >
           <div
             :style="{ height: '198px', width: '198px' }"
             class="mobile-wrapper-inner-adaptor"
