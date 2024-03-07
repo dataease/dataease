@@ -62,10 +62,7 @@ import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.sys.SysAuthService;
 import lombok.Data;
-import net.sf.jsqlparser.expression.Alias;
-import net.sf.jsqlparser.expression.BinaryExpression;
-import net.sf.jsqlparser.expression.Expression;
-import net.sf.jsqlparser.expression.Parenthesis;
+import net.sf.jsqlparser.expression.*;
 import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
 import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
 import net.sf.jsqlparser.expression.operators.relational.*;
@@ -1185,7 +1182,6 @@ public class DataSetTableService {
             binaryExpression = (BinaryExpression) expr;
         } catch (Exception e) {
         }
-
         if (binaryExpression != null) {
             boolean hasSubBinaryExpression = binaryExpression instanceof AndExpression || binaryExpression instanceof OrExpression;
             if (!hasSubBinaryExpression && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && (hasVariable(binaryExpression.getLeftExpression().toString()) || hasVariable(binaryExpression.getRightExpression().toString()))) {
@@ -2832,28 +2828,43 @@ public class DataSetTableService {
 
             private void visitBinaryExpr(BinaryExpression expr, String operator) {
                 boolean hasSubBinaryExpression = false;
-                try {
-                    BinaryExpression leftBinaryExpression = (BinaryExpression) expr.getLeftExpression();
+                if(expr.getLeftExpression() instanceof Parenthesis){
+                    Parenthesis parenthesis = (Parenthesis)expr.getLeftExpression();
+                    BinaryExpression leftBinaryExpression = (BinaryExpression)parenthesis.getExpression();
                     hasSubBinaryExpression = leftBinaryExpression instanceof AndExpression || leftBinaryExpression instanceof OrExpression;
-                } catch (Exception e) {
-                    e.printStackTrace();
+                }
+                if(expr.getLeftExpression() instanceof BinaryExpression){
+                    try {
+                        BinaryExpression leftBinaryExpression = (BinaryExpression) expr.getLeftExpression();
+                        hasSubBinaryExpression = leftBinaryExpression instanceof AndExpression || leftBinaryExpression instanceof OrExpression;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
                 }
 
-                if (expr.getLeftExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVariable(expr.getLeftExpression().toString())) {
+                if ((expr.getLeftExpression() instanceof BinaryExpression || expr.getLeftExpression() instanceof Parenthesis) && !hasSubBinaryExpression && hasVariable(expr.getLeftExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                 } else {
                     expr.getLeftExpression().accept(this);
                 }
 
                 getBuffer().append(" " + operator + " ");
+
                 hasSubBinaryExpression = false;
-                try {
-                    BinaryExpression rightBinaryExpression = (BinaryExpression) expr.getRightExpression();
+                if(expr.getRightExpression() instanceof Parenthesis){
+                    Parenthesis parenthesis = (Parenthesis)expr.getRightExpression();
+                    BinaryExpression rightBinaryExpression = (BinaryExpression)parenthesis.getExpression();
                     hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;
-                    ;
-                } catch (Exception e) {
                 }
-                if (expr.getRightExpression() instanceof BinaryExpression && !hasSubBinaryExpression && hasVariable(expr.getRightExpression().toString())) {
+                if(expr.getRightExpression() instanceof BinaryExpression){
+                    try {
+                        BinaryExpression rightBinaryExpression = (BinaryExpression) expr.getRightExpression();
+                        hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;
+                    } catch (Exception e) {
+                    }
+                }
+
+                if ((expr.getRightExpression() instanceof Parenthesis || expr.getRightExpression() instanceof BinaryExpression || expr.getRightExpression() instanceof Function) && !hasSubBinaryExpression && hasVariable(expr.getRightExpression().toString())) {
                     getBuffer().append(SubstitutedSql);
                 } else {
                     expr.getRightExpression().accept(this);
