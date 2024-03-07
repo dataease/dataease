@@ -53,7 +53,7 @@ const props = defineProps({
 const { element, view, scale } = toRefs(props)
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
-const { curComponent, canvasViewInfo, mobileInPc } = storeToRefs(dvMainStore)
+const { curComponent, canvasViewInfo, mobileInPc, firstLoadMap } = storeToRefs(dvMainStore)
 const canEdit = ref(false)
 const queryConfig = ref()
 const defaultStyle = {
@@ -299,7 +299,7 @@ const queryData = () => {
     return
   }
   if (!emitterList.length) return
-
+  dvMainStore.setFirstLoadMap([...new Set([...emitterList, ...firstLoadMap.value])])
   emitterList.forEach(ele => {
     emitter.emit(`query-data-${ele}`)
   })

@@ -30,6 +30,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       },
       editMode: 'edit', // 编辑器模式 edit preview
       mobileInPc: false,
+      firstLoadMap: [],
       canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
       // 当前展示画布缓存数据
       componentDataCache: null,
@@ -169,6 +170,9 @@ export const dvMainStore = defineStore('dataVisualization', {
   actions: {
     setPublicLinkStatus(value) {
       this.publicLinkStatus = value
+    },
+    setFirstLoadMap(value) {
+      this.firstLoadMap = value
     },
     setDataPrepareState(value) {
       this.dataPrepareState = value
