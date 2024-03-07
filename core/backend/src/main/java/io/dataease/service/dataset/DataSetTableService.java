@@ -1188,8 +1188,7 @@ public class DataSetTableService {
 
         if (binaryExpression != null) {
             boolean hasSubBinaryExpression = binaryExpression instanceof AndExpression || binaryExpression instanceof OrExpression;
-
-            if (!hasSubBinaryExpression && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && hasVariable(binaryExpression.getRightExpression().toString())) {
+            if (!hasSubBinaryExpression && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && (hasVariable(binaryExpression.getLeftExpression().toString()) || hasVariable(binaryExpression.getRightExpression().toString()))) {
                 stringBuilder.append(SubstitutedSql);
             } else {
                 expr.accept(getExpressionDeParser(stringBuilder));
