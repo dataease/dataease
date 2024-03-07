@@ -105,7 +105,7 @@ export default {
       activeName: 'zero',
       isPluginLoaded: false,
       engineMode: 'local',
-      showProxy: false
+      showProxy: true
     }
   },
   beforeCreate() {
