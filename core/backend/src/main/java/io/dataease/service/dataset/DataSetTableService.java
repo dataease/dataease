@@ -2375,8 +2375,6 @@ public class DataSetTableService {
     public List<ExcelSheetData> parseExcel(String filename, InputStream inputStream, boolean isPreview) throws Exception {
         List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-        excelSheetDataList = excelSheetDataList(inputStream, isPreview);
-
         if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
             List<TableField> fields = new ArrayList<>();
             BufferedReader reader = new BufferedReader(new InputStreamReader(inputStream, StandardCharsets.UTF_8));
@@ -2418,6 +2416,8 @@ public class DataSetTableService {
             excelSheetData.setExcelLabel(filename);
             excelSheetData.setFieldsMd5(Md5Utils.md5(StringUtils.join(fieldArray, ",")));
             excelSheetDataList.add(excelSheetData);
+        }else {
+            excelSheetDataList = excelSheetDataList(inputStream, isPreview);
         }
 
         inputStream.close();
