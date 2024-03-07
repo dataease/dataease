@@ -264,7 +264,7 @@ function upgrade() {
    echo "使用下载服务器 ${server_url}"
    cd /tmp
 
-   installer_file="dataease-online-installer-${latest_version}.tar.gz"
+   installer_file="dataease-online-installer-${latest_version}-ce.tar.gz"
    download_url="https://${server_url}/dataease/dataease/releases/download/${latest_version}/$installer_file"
    curl -LOk -m 60 -o $installer_file $download_url
    if [ $? -ne 0 ]; then
