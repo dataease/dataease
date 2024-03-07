@@ -65,7 +65,7 @@ latest_version=$(cat /tmp/de_latest_release)
 
 echo "开始下载 DataEase ${latest_version} 版本在线安装包"
 
-installer_file="dataease-online-installer-${latest_version}.tar.gz"
+installer_file="dataease-online-installer-${latest_version}-ce.tar.gz"
 download_url="https://${server_url}/dataease/dataease/releases/download/${latest_version}/$installer_file"
 echo "下载地址： ${download_url}"
 curl -LOk -m 60 -o $installer_file $download_url
