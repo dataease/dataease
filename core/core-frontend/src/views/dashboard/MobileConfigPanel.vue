@@ -128,7 +128,7 @@ const addToMobile = com => {
 }
 
 const changeTimes = ref(0)
-
+const activeCollapse = ref('com')
 const handleBack = () => {
   if (!changeTimes.value) {
     emits('pcMode')
@@ -180,7 +180,7 @@ const save = () => {
     </div>
     <div class="mobile-com-list">
       <div class="config-mobile-sidebar">移动端配置</div>
-      <el-collapse>
+      <el-collapse v-model="activeCollapse">
         <el-collapse-item title="样式设置" name="style" class="content-no-padding-bottom">
           <MobileBackgroundSelector @styleChange="changeTimes++"></MobileBackgroundSelector>
         </el-collapse-item>
