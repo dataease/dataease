@@ -287,30 +287,50 @@ public class Utils {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd HH:mm:ss");
             startTime = simpleDateFormat.parse(value).getTime();
             endTime = startTime + 999;
+
+            map.put("startTime", startTime);
+            map.put("endTime", endTime);
+            return map;
         } catch (Exception e) {
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd HH:mm");
             startTime = simpleDateFormat.parse(value).getTime();
             endTime = startTime + (60 * 1000 - 1);
+
+            map.put("startTime", startTime);
+            map.put("endTime", endTime);
+            return map;
         } catch (Exception e) {
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd HH");
             startTime = simpleDateFormat.parse(value).getTime();
             endTime = startTime + (60 * 60 * 1000 - 1);
+
+            map.put("startTime", startTime);
+            map.put("endTime", endTime);
+            return map;
         } catch (Exception e) {
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
             startTime = simpleDateFormat.parse(value).getTime();
             endTime = startTime + 999;
+
+            map.put("startTime", startTime);
+            map.put("endTime", endTime);
+            return map;
         } catch (Exception e) {
         }
         try {
             SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd");
             startTime = simpleDateFormat.parse(value).getTime();
             endTime = startTime + (24 * 60 * 60 * 1000 - 1);
+
+            map.put("startTime", startTime);
+            map.put("endTime", endTime);
+            return map;
         } catch (Exception e) {
         }
         try {
@@ -321,6 +341,10 @@ public class Utils {
             calendar.setTime(parse);
             calendar.add(Calendar.MONTH, 1);
             endTime = calendar.getTime().getTime() - 1;
+
+            map.put("startTime", startTime);
+            map.put("endTime", endTime);
+            return map;
         } catch (Exception e) {
         }
         try {
@@ -331,6 +355,10 @@ public class Utils {
             calendar.setTime(parse);
             calendar.add(Calendar.YEAR, 1);
             endTime = calendar.getTime().getTime() - 1;
+
+            map.put("startTime", startTime);
+            map.put("endTime", endTime);
+            return map;
         } catch (Exception e) {
         }
 
