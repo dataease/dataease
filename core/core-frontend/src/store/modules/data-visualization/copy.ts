@@ -178,6 +178,7 @@ function deepCopyHelper(data, idMap) {
   const newComponentId = generateID()
   idMap[data.id] = newComponentId
   result.id = newComponentId
+  result.inMobile = false
   if (result.component === 'Group') {
     result.propValue.forEach((component, i) => {
       result.propValue[i] = deepCopyHelper(component, idMap)
