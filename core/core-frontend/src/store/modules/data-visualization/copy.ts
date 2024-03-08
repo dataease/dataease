@@ -118,7 +118,12 @@ export const copyStore = defineStore('copy', {
             }
             eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
           }
-
+          if (i === dataArray.length - 1) {
+            dvMainStore.setCurComponent({
+              component: newComponent,
+              index: componentData.value.length - 1
+            })
+          }
           i++
         }
       }, moveTime)
