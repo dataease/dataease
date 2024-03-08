@@ -273,4 +273,69 @@ public class Utils {
         }
         return time;
     }
+
+    public static Map<String, Long> parseDateTimeValue(String value) {
+        Map<String, Long> map = new LinkedHashMap<>();
+        long startTime = 0;
+        long endTime = 0;
+
+        String split = "-";
+        if (value != null && value.contains("/")) {
+            split = "/";
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd HH:mm:ss");
+            startTime = simpleDateFormat.parse(value).getTime();
+            endTime = startTime + 999;
+        } catch (Exception e) {
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd HH:mm");
+            startTime = simpleDateFormat.parse(value).getTime();
+            endTime = startTime + (60 * 1000 - 1);
+        } catch (Exception e) {
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd HH");
+            startTime = simpleDateFormat.parse(value).getTime();
+            endTime = startTime + (60 * 60 * 1000 - 1);
+        } catch (Exception e) {
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("HH:mm:ss");
+            startTime = simpleDateFormat.parse(value).getTime();
+            endTime = startTime + 999;
+        } catch (Exception e) {
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM" + split + "dd");
+            startTime = simpleDateFormat.parse(value).getTime();
+            endTime = startTime + (24 * 60 * 60 * 1000 - 1);
+        } catch (Exception e) {
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy" + split + "MM");
+            Date parse = simpleDateFormat.parse(value);
+            startTime = parse.getTime();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(parse);
+            calendar.add(Calendar.MONTH, 1);
+            endTime = calendar.getTime().getTime() - 1;
+        } catch (Exception e) {
+        }
+        try {
+            SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy");
+            Date parse = simpleDateFormat.parse(value);
+            startTime = parse.getTime();
+            Calendar calendar = Calendar.getInstance();
+            calendar.setTime(parse);
+            calendar.add(Calendar.YEAR, 1);
+            endTime = calendar.getTime().getTime() - 1;
+        } catch (Exception e) {
+        }
+
+        map.put("startTime", startTime);
+        map.put("endTime", endTime);
+        return map;
+    }
 }
