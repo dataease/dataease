@@ -1,8 +1,8 @@
 import request from '@/config/axios'
 
-export function queryWithPanelId(panelId) {
+export function queryWithDvId(dvId) {
   return request.get({
-    url: '/outerParams/queryWithPanelId/' + panelId
+    url: '/outerParams/queryWithDvId/' + dvId
   })
 }
 
@@ -14,9 +14,10 @@ export function updateOuterParamsSet(requestInfo) {
   })
 }
 
-export function getOuterParamsInfo(panelId) {
+export function getOuterParamsInfo(dvId) {
   return request.get({
-    url: '/outerParams/getOuterParamsInfo/' + panelId,
-    loading: true
+    url: '/outerParams/getOuterParamsInfo/' + dvId,
+    method: 'get',
+    loading: false
   })
 }
