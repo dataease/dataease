@@ -479,12 +479,12 @@ const saveTemplateEdit = templateEditForm => {
   templateEditFormRef.value.validate(valid => {
     if (valid) {
       save({ ...templateEditForm }).then(response => {
-        state.currentTemplateLabel = templateEditForm.name
         ElMessage({
           message: '添加成功',
           type: 'success',
           showClose: true
         })
+        state.currentTemplateId = null
         getTree()
         close()
       })
