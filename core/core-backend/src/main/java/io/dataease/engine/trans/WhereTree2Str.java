@@ -8,7 +8,6 @@ import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
-import io.dataease.engine.utils.DateUtils;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -16,6 +15,7 @@ import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -92,16 +92,13 @@ public class WhereTree2Str {
         if (field.getDeType() == 1) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                 whereName = String.format(SQLConstants.DE_STR_TO_DATE, originName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
-                whereName = String.format(SQLConstants.DATE_FORMAT, whereName, StringUtils.isNotEmpty(field.getDateFormat()) ? field.getDateFormat() : SQLConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                 String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
                 whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
-                whereName = String.format(SQLConstants.DATE_FORMAT, whereName, SQLConstants.DEFAULT_DATE_FORMAT);
             }
             if (field.getDeExtractType() == 1) {
-                String f = DateUtils.get_date_format(originName);
-                whereName = String.format(SQLConstants.DATE_FORMAT, originName, f);
+                whereName = originName;
             }
         } else if (field.getDeType() == 2 || field.getDeType() == 3) {
             if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
@@ -130,16 +127,7 @@ public class WhereTree2Str {
             String whereValue = "";
 
             if (field.getDeType() == 1) {
-                // 规定几种日期格式，一一匹配，匹配到就是该格式
-                if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
-                    String f = DateUtils.get_date_format(item.getValue());
-                    whereName = String.format(SQLConstants.DE_STR_TO_DATE, whereName, f);
-                    whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
-                } else {
-                    String f = DateUtils.get_date_format(item.getValue());
-                    whereName = String.format(SQLConstants.DE_STR_TO_DATE, whereName, f);
-                    whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
-                }
+                whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
             }
 
             if (StringUtils.equalsIgnoreCase(item.getTerm(), "null")) {
@@ -155,10 +143,24 @@ public class WhereTree2Str {
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else {
+                // 如果是时间字段过滤，当条件是等于和不等于的时候转换成between和not between
                 if (field.getDeType() == 1) {
-                    value = Utils.allDateFormat2Long(value) + "";
+                    if (StringUtils.containsIgnoreCase(whereTerm, "=")) {
+                        whereTerm = " BETWEEN ";
+                        // 把value类似过滤组件处理，获得start time和end time
+                        Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
+                        whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
+                    } else if (StringUtils.containsIgnoreCase(whereTerm, "<>")) {
+                        whereTerm = " NOT BETWEEN ";
+                        Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
+                        whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
+                    } else {
+                        value = Utils.allDateFormat2Long(value) + "";
+                        whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
+                    }
+                } else {
+                    whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
                 }
-                whereValue = String.format(SQLConstants.WHERE_VALUE_VALUE, value);
             }
             SQLObj build = SQLObj.builder()
                     .whereField(whereName)

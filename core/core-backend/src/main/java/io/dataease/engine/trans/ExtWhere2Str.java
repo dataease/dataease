@@ -5,7 +5,6 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
-import io.dataease.engine.utils.DateUtils;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -53,12 +52,6 @@ public class ExtWhere2Str {
                     }
 
                     if (field.getDeType() == 1) {
-                        String date_format;
-                        if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
-                            date_format = "yyyy-MM-dd HH:mm:ss";
-                        } else {
-                            date_format = DateUtils.get_date_format(value.get(0));
-                        }
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
                             // 此处获取标准格式的日期
                             whereName = String.format(SQLConstants.DE_STR_TO_DATE, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : field.getDateFormat());
@@ -66,12 +59,12 @@ public class ExtWhere2Str {
                         if (field.getDeExtractType() == 2 || field.getDeExtractType() == 3 || field.getDeExtractType() == 4) {
                             String cast = String.format(SQLConstants.CAST, originName, SQLConstants.DEFAULT_INT_FORMAT);
                             // 此处获取标准格式的日期
-                            whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, date_format);
+                            whereName = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
                             whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
                         }
                         if (field.getDeExtractType() == 1) {
                             // 此处获取标准格式的日期
-                            whereName = String.format(SQLConstants.DE_STR_TO_DATE, originName, StringUtils.isEmpty(field.getDateFormat()) ? SQLConstants.DEFAULT_DATE_FORMAT : field.getDateFormat());
+                            whereName = originName;
                         }
                     } else if (field.getDeType() == 2 || field.getDeType() == 3) {
                         if (field.getDeExtractType() == 0 || field.getDeExtractType() == 5) {
