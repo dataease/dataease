@@ -255,12 +255,6 @@ if which firewall-cmd >/dev/null 2>&1; then
    fi
 fi
 
-http_code=$(curl -sILw "%{http_code}\n" http://localhost:${DE_PORT} -o /dev/null)
-if [[ $http_code == 200 ]];then
-   log "停止服务进行升级..."
-   dectl stop
-fi
-
 log "启动服务"
 systemctl start dataease 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
