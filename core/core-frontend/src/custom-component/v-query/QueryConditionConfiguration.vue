@@ -19,6 +19,7 @@ import DynamicTimeRange from './DynamicTimeRange.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import draggable from 'vuedraggable'
+import RangeFilterTime from './RangeFilterTime.vue'
 
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
@@ -120,7 +121,11 @@ const { queryElement } = toRefs(props)
 const getDetype = (id, arr) => {
   return arr.find(ele => ele.id === id)?.deType
 }
-
+const visiblePopover = ref(false)
+const handleVisiblePopover = ev => {
+  ev.stopPropagation()
+  visiblePopover.value = !visiblePopover.value
+}
 const showConfiguration = computed(() => {
   if (!curComponent.value) return false
   if (!curComponent.value.checkedFields?.length) return false
@@ -162,6 +167,7 @@ const handleCheckAllChange = (val: boolean) => {
   isIndeterminate.value = false
 }
 const handleCheckedFieldsChange = (value: string[]) => {
+  handleDialogClick()
   const checkedCount = value.length
   checkAll.value = checkedCount === fields.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
@@ -194,6 +200,7 @@ const setType = () => {
 }
 
 const setTypeChange = () => {
+  handleDialogClick()
   nextTick(() => {
     curComponent.value.field.id = ''
     inputCom.value?.displayTypeChange?.()
@@ -496,7 +503,21 @@ const parameterCompletion = () => {
     timeNumRange: 0,
     relativeToCurrentTypeRange: 'year',
     aroundRange: 'f',
-    arbitraryTimeRange: new Date()
+    arbitraryTimeRange: new Date(),
+    timeRange: {
+      intervalType: 'none',
+      dynamicWindow: false,
+      maximumSingleQuery: 0,
+      regularOrTrends: 'fixed',
+      regularOrTrendsValue: '',
+      relativeToCurrent: 'custom',
+      timeNum: 0,
+      relativeToCurrentType: 'year',
+      around: 'f',
+      timeNumRange: 0,
+      relativeToCurrentTypeRange: 'year',
+      aroundRange: 'f'
+    }
   }
   Object.entries(attributes).forEach(([key, val]) => {
     !curComponent.value[key] && (curComponent.value[key] = val)
@@ -504,6 +525,7 @@ const parameterCompletion = () => {
 }
 
 const handleCondition = item => {
+  handleDialogClick()
   if (activeConditionForRename.id) return
   activeCondition.value = item.id
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
@@ -557,7 +579,9 @@ const showError = computed(() => {
   }
   return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
 })
-
+const handleDialogClick = () => {
+  visiblePopover.value = false
+}
 const relativeToCurrentList = computed(() => {
   let list = []
   if (!curComponent.value) return list
@@ -682,6 +706,7 @@ const timeGranularityChange = (val: string) => {
 }
 
 const timeGranularityMultipleChange = (val: string) => {
+  handleDialogClick()
   if (
     ['yearrange', 'monthrange', 'datetimerange'].indexOf(val) <
     ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentType)
@@ -797,7 +822,7 @@ defineExpose({
     @mousedown.stop
     @mousedup.stop
   >
-    <div class="container">
+    <div class="container" @click="handleDialogClick">
       <div class="query-condition-list">
         <div class="title">
           查询条件
@@ -1184,6 +1209,35 @@ defineExpose({
                 <el-radio :label="false">{{ t('visualization.single_choice') }}</el-radio>
                 <el-radio :label="true">{{ t('visualization.multiple_choice') }}</el-radio>
               </el-radio-group>
+            </div>
+          </div>
+          <div v-if="curComponent.displayType === '7'" class="list-item">
+            <div class="label">
+              <el-checkbox v-model="curComponent.parametersCheck" label="设置时间筛选范围" />
+            </div>
+            <div class="setting-content">
+              <el-popover
+                :show-arrow="false"
+                popper-class="range-filter-time"
+                placement="bottom-start"
+                :width="452"
+                :visible="visiblePopover"
+                :offset="4"
+              >
+                <template #reference>
+                  <el-button @click="handleVisiblePopover($event)" text style="margin-left: -4px">
+                    <template #icon>
+                      <Icon name="icon_admin_outlined"></Icon>
+                    </template>
+                    设置
+                  </el-button>
+                </template>
+                <RangeFilterTime
+                  :timeRange="curComponent.timeRange"
+                  :timeGranularityMultiple="curComponent.timeGranularityMultiple"
+                />
+              </el-popover>
+              <span class="config-flag range-filter-time-flag">已配置</span>
             </div>
           </div>
           <div class="list-item">
@@ -1616,6 +1670,13 @@ defineExpose({
         border-radius: 2px;
         background: rgba(31, 35, 41, 0.1);
         margin-left: 8px;
+
+        &.range-filter-time-flag {
+          display: inline-block;
+          padding: 1px 4px;
+          line-height: 14px;
+          margin-left: 4px;
+        }
       }
 
       .flex-align-center {

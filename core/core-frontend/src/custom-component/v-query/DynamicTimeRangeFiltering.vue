@@ -4,21 +4,16 @@ import { Calendar } from '@element-plus/icons-vue'
 import { type DatePickType } from 'element-plus-secondary'
 import { getCustomTime } from './time-format'
 interface SelectConfig {
-  timeType: string
-  timeGranularityMultiple: DatePickType
-  defaultValue: [Date, Date]
-  selectValue: [Date, Date]
-  defaultValueCheck: boolean
-  id: string
+  regularOrTrends: string
+  regularOrTrendsValue: [Date, Date]
+  intervalType: string
   timeNum: number
   relativeToCurrentType: string
   around: string
-  arbitraryTime: Date
   timeGranularity: DatePickType
   timeNumRange: number
   relativeToCurrentTypeRange: string
   aroundRange: string
-  arbitraryTimeRange: Date
 }
 
 const props = defineProps({
@@ -27,55 +22,55 @@ const props = defineProps({
     default: () => {
       return {
         timeGranularityMultiple: 'datetimerange',
-        defaultValue: [],
-        selectValue: [],
-        timeType: 'fixed',
+        regularOrTrendsValue: [],
+        regularOrTrends: 'fixed',
         timeNum: 0,
+        intervalType: 'none',
         relativeToCurrentType: 'year',
         around: 'f',
-        arbitraryTime: new Date(),
-        defaultValueCheck: false,
         timeGranularity: 'date',
         timeNumRange: 0,
         relativeToCurrentTypeRange: 'year',
-        aroundRange: 'f',
-        arbitraryTimeRange: new Date()
+        aroundRange: 'f'
       }
+    }
+  },
+  timeGranularityMultiple: {
+    type: Object as PropType<DatePickType>,
+    default: () => {
+      return 'yearrange'
     }
   }
 })
-const selectValue = ref<[Date, Date]>([new Date(), new Date()])
 const { config } = toRefs(props)
 
 const timeConfig = computed(() => {
   const {
     timeNum,
     relativeToCurrentType,
-    timeGranularityMultiple,
     around,
-    defaultValueCheck,
-    arbitraryTime,
+    intervalType,
     timeGranularity,
     timeNumRange,
     relativeToCurrentTypeRange,
-    aroundRange,
-    arbitraryTimeRange
+    aroundRange
   } = config.value
   return {
     timeNum,
     relativeToCurrentType,
     around,
-    timeGranularityMultiple,
-    defaultValueCheck,
-    arbitraryTime,
+    intervalType,
     timeGranularity,
     timeNumRange,
     relativeToCurrentTypeRange,
-    aroundRange,
-    arbitraryTimeRange
+    aroundRange
   }
 })
-
+const timeInterval = computed<DatePickType>(() => {
+  return config.value.intervalType !== 'timeInterval'
+    ? (props.timeGranularityMultiple.split('range')[0] as DatePickType)
+    : props.timeGranularityMultiple
+})
 watch(
   () => timeConfig.value,
   () => {
@@ -86,47 +81,24 @@ watch(
   }
 )
 
-watch(
-  () => selectValue.value,
-  val => {
-    config.value.defaultValue = val
-    config.value.selectValue = val
-  }
-)
-
-watch(
-  () => config.value.id,
-  () => {
-    init()
-  }
-)
-
 const init = () => {
   const {
     timeNum,
     relativeToCurrentType,
     around,
-    defaultValueCheck,
-    arbitraryTime,
     timeGranularity,
-    timeGranularityMultiple,
     timeNumRange,
     relativeToCurrentTypeRange,
-    aroundRange,
-    arbitraryTimeRange
+    aroundRange
   } = timeConfig.value
-  if (!defaultValueCheck) {
-    selectValue.value = [new Date(), new Date()]
-    return
-  }
 
   const startTime = getCustomTime(
     timeNum,
     relativeToCurrentType,
     timeGranularity,
     around,
-    arbitraryTime,
-    timeGranularityMultiple,
+    null,
+    timeInterval.value,
     'start-config'
   )
   const endTime = getCustomTime(
@@ -134,12 +106,12 @@ const init = () => {
     relativeToCurrentTypeRange,
     timeGranularity,
     aroundRange,
-    arbitraryTimeRange,
-    timeGranularityMultiple,
+    null,
+    timeInterval.value,
     'end-config'
   )
 
-  selectValue.value = [startTime, endTime]
+  config.value.regularOrTrendsValue = [startTime, endTime]
 }
 
 onBeforeMount(() => {
@@ -147,15 +119,15 @@ onBeforeMount(() => {
 })
 
 const formatDate = computed(() => {
-  return (config.value.timeGranularityMultiple as string) === 'yearrange' ? 'YYYY' : undefined
+  return (props.timeGranularityMultiple as string) === 'yearrange' ? 'YYYY' : undefined
 })
 </script>
 
 <template>
   <el-date-picker
-    disabled
-    v-model="selectValue"
-    :type="config.timeGranularityMultiple"
+    :disabled="config.regularOrTrends !== 'fixed'"
+    v-model="config.regularOrTrendsValue"
+    :type="timeInterval"
     :prefix-icon="Calendar"
     :format="formatDate"
     :range-separator="$t('cron.to')"

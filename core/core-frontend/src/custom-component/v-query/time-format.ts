@@ -219,8 +219,23 @@ function getDynamicRange({
 
   return selectValue
 }
-
+interface TimeRange {
+  intervalType: string
+  dynamicWindow: boolean
+  maximumSingleQuery: number
+  regularOrTrends: string
+  regularOrTrendsValue: string
+  relativeToCurrent: string
+  timeNum: number
+  relativeToCurrentType: string
+  around: string
+  timeNumRange: number
+  relativeToCurrentTypeRange: string
+  aroundRange: string
+  timeGranularityMultiple: string
+}
 export {
+  TimeRange,
   getThisYear,
   getLastYear,
   getThisMonth,
