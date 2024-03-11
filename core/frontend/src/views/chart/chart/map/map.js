@@ -97,14 +97,7 @@ export function baseMapOption(chart_option, geoJson, chart, themeStyle, curAreaC
       chart_option.series[0].select = BASE_ECHARTS_SELECT
       // label
       if (customAttr.label) {
-        const text = customAttr.label.formatter
         chart_option.geo.label = customAttr.label
-        chart_option.geo.label.formatter = params => {
-          const a = params.seriesName
-          const b = params.name
-          const c = params.value ? params.value : ''
-          return text.replace(new RegExp('{a}', 'g'), a).replace(new RegExp('{b}', 'g'), b).replace(new RegExp('{c}', 'g'), c)
-        }
         chart_option.series[0].labelLine = customAttr.label.labelLine
         if (customAttr.label.bgColor) {
           chart_option.geo.label.backgroundColor = customAttr.label.bgColor
@@ -114,7 +107,6 @@ export function baseMapOption(chart_option, geoJson, chart, themeStyle, curAreaC
           chart_option.geo.label.showdowColor = customAttr.label.shadowColor
         }
         chart_option.geo.itemStyle.emphasis.label.show = customAttr.label.show
-        delete chart_option.geo.label.formatter
       }
       const valueArr = chart.data.series[seriesIndex].data
       // visualMap
@@ -160,6 +152,7 @@ export function baseMapOption(chart_option, geoJson, chart, themeStyle, curAreaC
       if (!emptyDataStrategy) {
         emptyDataStrategy = 'breakLine'
       }
+      const dataMap = {}
       const subArea = new Set(geoJson.features.map(item => item.properties.name))
       for (let i = 0; i < valueArr.length; i++) {
         const y = valueArr[i]
@@ -172,6 +165,7 @@ export function baseMapOption(chart_option, geoJson, chart, themeStyle, curAreaC
           continue
         }
         chart_option.series[0].data.push(y)
+        dataMap[y.name] = y.value
       }
       if (emptyDataStrategy === 'setZero' && subArea.size > 0) {
         subArea.forEach(item => {
@@ -190,7 +184,6 @@ export function baseMapOption(chart_option, geoJson, chart, themeStyle, curAreaC
       if (senior) {
         senior.mapMapping && senior.mapMapping[curAreaCode] && (chart_option.geo.nameMap = senior.mapMapping[curAreaCode])
       }
-
       if (chart.data?.detailFields?.length > 1) {
         const deNameArray = ['x', 'y']
         let hasx = false
@@ -267,6 +260,13 @@ export function baseMapOption(chart_option, geoJson, chart, themeStyle, curAreaC
             chart_option.series.push(markSeries)
           }
         }
+      }
+
+      chart_option.geo.label.formatter = params => {
+        if (Object.keys(dataMap).includes(params.name)) {
+          return params.name
+        }
+        return ''
       }
     }
   }
