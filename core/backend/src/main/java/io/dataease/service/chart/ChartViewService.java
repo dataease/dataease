@@ -1329,7 +1329,7 @@ public class ChartViewService {
         }
         // 如果是表格导出查询 则在此处直接就可以返回
         if(chartExtRequest.getExcelExportFlag()){
-            Map<String,Object> sourceInfo = new HashMap<>();
+            Map<String, Object> sourceInfo = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
             sourceInfo.put("sourceData",data);
             chartViewDTO.setData(sourceInfo);
             return chartViewDTO;
