@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, reactive } from 'vue'
+import { ref, reactive, computed } from 'vue'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import type {
@@ -31,7 +31,38 @@ const treeProps = {
   label: 'name',
   disabled: 'readOnly'
 }
-
+const formatPid = computed(() => {
+  if (!state.form.pid) return ''
+  const pid = state.form.pid
+  return pid.replace(/(0+)$/g, '').replace(/\D/g, '')
+})
+const codeTips = ref(
+  '国家代码由三位数字组成，省、市、区县、乡镇代码由两位数字组成；非国家区域需要再后面补0'
+)
+const pidChange = () => {
+  state.form.code = null
+}
+const validateCode = (_: any, value: any, callback: any) => {
+  const isCountry = !formatPid.value
+  if (isCountry) {
+    const reg = /^[0-9]\d{2}$/
+    if (!reg.test(value) || value === '000') {
+      const msg = '请输入非0的三位数字'
+      callback(new Error(msg))
+    } else {
+      callback()
+    }
+  } else {
+    const fullValue = formatPid.value + value
+    const reg = /^[1-9](\d{8}|\d{10})$/
+    if (!reg.test(fullValue)) {
+      const msg = '请输入9或11位数字'
+      callback(new Error(msg))
+    } else {
+      callback()
+    }
+  }
+}
 const rule = reactive<FormRules>({
   pid: [
     {
@@ -45,7 +76,8 @@ const rule = reactive<FormRules>({
       required: true,
       message: t('common.require'),
       trigger: 'blur'
-    }
+    },
+    { validator: validateCode, trigger: 'blur' }
   ],
   name: [
     {
@@ -81,6 +113,7 @@ const submitForm = async (formEl: FormInstance | undefined) => {
   await formEl.validate(valid => {
     if (valid) {
       const param = { ...state.form }
+      param['code'] = formatPid.value ? formatPid.value + param['code'] : param['code']
       const formData = buildFormData(geoFile.value, param)
       showLoading()
       request
@@ -179,11 +212,34 @@ defineExpose({
           check-strictly
           :render-after-expand="false"
           :placeholder="t('common.please_select')"
+          @current-change="pidChange"
         />
       </el-form-item>
 
       <el-form-item label="区域代码" prop="code">
-        <el-input v-model="state.form.code" />
+        <template v-slot:label>
+          <span class="area-code-label">
+            <span>区域代码</span>
+            <el-tooltip effect="dark" :content="codeTips" placement="top">
+              <el-icon class="info-tips"><Icon name="dv-info"></Icon></el-icon>
+            </el-tooltip>
+          </span>
+        </template>
+
+        <el-input v-if="state.form.pid" v-model="state.form.code">
+          <template #prefix>
+            {{ formatPid }}
+          </template>
+        </el-input>
+        <el-tooltip
+          v-else
+          class="box-item"
+          effect="dark"
+          content="请先选择上级区域"
+          placement="top"
+        >
+          <el-input v-model="state.form.code" disabled />
+        </el-tooltip>
       </el-form-item>
 
       <el-form-item label="区域名称" prop="name">
@@ -252,5 +308,12 @@ defineExpose({
   position: absolute;
   width: calc(100% - 48px);
   height: 30px;
+}
+.area-code-label {
+  display: inline-flex;
+  align-items: center;
+  i {
+    margin-left: 4px;
+  }
 }
 </style>
