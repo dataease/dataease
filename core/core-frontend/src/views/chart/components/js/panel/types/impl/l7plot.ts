@@ -4,6 +4,7 @@ import { PlotOptions } from '@antv/l7plot/dist/esm/types/plot'
 import { Plot as L7Plot } from '@antv/l7plot/dist/esm/core/plot'
 import {
   configL7Label,
+  configL7Legend,
   configL7Style,
   configL7Tooltip
 } from '@/views/chart/components/js/panel/common/common_antv'
@@ -13,6 +14,7 @@ import {
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
 import { defaultsDeep } from 'lodash-es'
+import { ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
 
 export interface L7PlotDrawOptions<P> extends AntVDrawOptions<P> {
   areaId?: string
@@ -43,7 +45,11 @@ export abstract class L7PlotChartView<
     defaultsDeep(options.tooltip, tooltip)
     return options
   }
-
+  protected configLegend(_: Chart, options: ChoroplethOptions) {
+    const legend = configL7Legend()
+    defaultsDeep(options.legend, legend)
+    return options
+  }
   protected constructor(name: string, defaultData?: any[]) {
     super(ChartLibraryType.L7_PLOT, name)
     this.defaultData = defaultData
