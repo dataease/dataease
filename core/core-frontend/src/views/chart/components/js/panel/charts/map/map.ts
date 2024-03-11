@@ -218,7 +218,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
           content.push(name)
         }
         if (label.showQuota) {
-          valueFormatter
           areaMap[name] && content.push(valueFormatter(areaMap[name], label.quotaLabelFormatter))
         }
         item.properties['_DE_LABEL_'] = content.join('\n\n')
@@ -229,7 +228,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       colors = colors.slice(0, validArea)
     }
     if (colors.length) {
-      options.color.value = colors
+      options.color['value'] = colors
     }
     return options
   }
@@ -244,7 +243,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       this.configLabel,
       this.configStyle,
       this.configTooltip,
-      this.configBasicStyle
+      this.configBasicStyle,
+      this.configLegend
     )(chart, options, extra)
   }
 }

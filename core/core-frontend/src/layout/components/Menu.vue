@@ -4,6 +4,14 @@ import { ElMenu } from 'element-plus-secondary'
 import { useRoute, useRouter } from 'vue-router'
 import { isExternal } from '@/utils/validate'
 import MenuItem from './MenuItem.vue'
+import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+const appearanceStore = useAppearanceStoreWithOut()
+const tempColor = computed(() => {
+  return {
+    '--temp-color':
+      (appearanceStore.themeColor === 'custom' ? appearanceStore.customColor : '#3370FF') + '1A'
+  }
+})
 const isCollapse = ref(false)
 const route = useRoute()
 const { push } = useRouter()
@@ -26,6 +34,7 @@ const menuSelect = (index: string, indexPath: string[]) => {
 
 <template>
   <el-menu
+    :style="tempColor"
     @select="menuSelect"
     :default-active="activeIndex"
     class="el-menu-vertical"
@@ -40,7 +49,37 @@ const menuSelect = (index: string, indexPath: string[]) => {
   width: 100%;
   min-height: 400px;
 }
+
 .ed-menu {
   border: none;
+  .ed-menu-item:not(.is-active) {
+    &:hover {
+      background-color: #1f23291a !important;
+    }
+  }
+  .is-active:not(.ed-sub-menu) {
+    background-color: var(--temp-color);
+  }
+  :deep(.ed-sub-menu) {
+    margin: 0;
+    .ed-sub-menu__title {
+      &:hover {
+        background-color: #1f23291a;
+      }
+    }
+    .ed-menu-item:not(.is-active) {
+      &:hover {
+        background-color: #1f23291a !important;
+      }
+    }
+  }
+  :deep(.ed-sub-menu.is-active) {
+    .ed-sub-menu__title {
+      color: var(--ed-color-primary);
+    }
+    .is-active {
+      background-color: var(--temp-color);
+    }
+  }
 }
 </style>

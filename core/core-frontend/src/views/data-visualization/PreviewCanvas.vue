@@ -63,6 +63,10 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       if (jumpParam) {
         dvMainStore.addViewTrackFilter(jumpParam)
       }
+      if (props.publicLinkStatus) {
+        // 设置浏览器title为当前仪表板名称
+        document.title = dvInfo.name
+      }
     }
   )
 }

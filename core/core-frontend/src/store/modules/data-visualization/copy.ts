@@ -118,7 +118,12 @@ export const copyStore = defineStore('copy', {
             }
             eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
           }
-
+          if (i === dataArray.length - 1) {
+            dvMainStore.setCurComponent({
+              component: newComponent,
+              index: componentData.value.length - 1
+            })
+          }
           i++
         }
       }, moveTime)
@@ -178,6 +183,7 @@ function deepCopyHelper(data, idMap) {
   const newComponentId = generateID()
   idMap[data.id] = newComponentId
   result.id = newComponentId
+  result.inMobile = false
   if (result.component === 'Group') {
     result.propValue.forEach((component, i) => {
       result.propValue[i] = deepCopyHelper(component, idMap)

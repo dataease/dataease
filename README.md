@@ -52,6 +52,7 @@ DataEase 是开源的数据可视化分析工具，帮助用户快速分析数�
 -   [在线文档](https://dataease.io/docs/)
 -   [社区论坛](https://bbs.fit2cloud.com/c/de/6)
 -   [快速入门视频](https://www.bilibili.com/video/BV1Z84y1X7eF/)
+-   [嵌入式 BI 体验](https://embedded-bi.dataease.cn/)
 
 ## License
 

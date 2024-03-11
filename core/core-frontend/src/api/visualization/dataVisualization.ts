@@ -73,3 +73,18 @@ export const storeStatusApi = (id: string): Promise<IResponse> => {
 }
 
 export const decompression = data => request.post({ url: '/dataVisualization/decompression', data })
+
+export const detailList = dvId => {
+  return request.get({
+    url: '/dataVisualization/view/detailList/' + dvId,
+    method: 'get',
+    loading: false
+  })
+}
+
+export const getComponentInfo = dvId => {
+  return request.get({
+    url: '/panel/view/getComponentInfo/' + dvId,
+    loading: false
+  })
+}
