@@ -6,7 +6,7 @@
     v-model="value"
     :class-id="'visual-' + element.id + '-' + inDraw + '-' + inScreen"
     :collapse-tags="showNumber"
-    :clearable="!element.options.attrs.multiple && (inDraw || !selectFirst)"
+    :clearable="(inDraw || !selectFirst)"
     :multiple="element.options.attrs.multiple"
     :placeholder="showRequiredTips ? $t('panel.required_tips') : ($t(element.options.attrs.placeholder) + placeholderSuffix)"
     :popper-append-to-body="inScreen"
