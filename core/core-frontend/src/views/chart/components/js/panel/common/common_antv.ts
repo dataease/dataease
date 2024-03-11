@@ -12,6 +12,15 @@ import { Tooltip } from '@antv/g2plot/esm'
 import { add } from 'mathjs'
 import isEmpty from 'lodash-es/isEmpty'
 import _ from 'lodash'
+import type { LegendOptions } from '@antv/l7plot/dist/esm/types/legend'
+import { CategoryLegendListItem } from '@antv/l7plot-component/dist/lib/types/legend'
+import createDom from '@antv/dom-util/esm/create-dom'
+import {
+  CONTAINER_TPL,
+  ITEM_TPL,
+  LIST_CLASS
+} from '@antv/l7plot-component/dist/esm/legend/category/constants'
+import substitute from '@antv/util/esm/substitute'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -771,4 +780,37 @@ export function getTooltipSeriesTotalMap(data: any[]): Record<string, number> {
     })
   })
   return result
+}
+
+export function configL7Legend(): LegendOptions {
+  return {
+    customContent: (_: string, items: CategoryLegendListItem[]) => {
+      const showItems = items?.length > 30 ? items.slice(0, 30) : items
+      if (showItems?.length) {
+        const containerDom = createDom(CONTAINER_TPL) as HTMLElement
+        const listDom = containerDom.getElementsByClassName(LIST_CLASS)[0] as HTMLElement
+        showItems.forEach(item => {
+          let value = '-'
+          if (item.value !== '') {
+            if (Array.isArray(item.value)) {
+              item.value.forEach((v, i) => {
+                item.value[i] = Number.isNaN(v) || v === 'NaN' ? 'NaN' : parseFloat(v).toFixed(0)
+              })
+              value = item.value.join('-')
+            } else {
+              const tmp = item.value as string
+              value = Number.isNaN(tmp) || tmp === 'NaN' ? 'NaN' : parseFloat(tmp).toFixed(0)
+            }
+          }
+          const substituteObj = { ...item, value }
+
+          const domStr = substitute(ITEM_TPL, substituteObj)
+          const itemDom = createDom(domStr)
+          listDom.appendChild(itemDom)
+        })
+        return listDom
+      }
+      return ''
+    }
+  }
 }
