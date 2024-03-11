@@ -18,8 +18,17 @@ compose_files="-f docker-compose.yml"
 INSTALL_TYPE='install'
 if [ -f /usr/bin/dectl ]; then
    # 获取已安装的 DataEase 的运行目录
+   cd ${CURRENT_DIR}
    DE_BASE=$(grep "^DE_BASE=" /usr/bin/dectl | cut -d'=' -f2)
-   dectl stop
+   sed -i -e "s#DE_BASE=.*#DE_BASE=${DE_BASE}#g" dectl
+   \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
+
+   if [[ ! -f /etc/systemd/system/dataease.service ]];then
+      systemctl stop dataease
+   else   
+      dectl stop
+   fi
+   
    INSTALL_TYPE='upgrade'
 
    v2_version=$(dectl version | head -n 2 | grep "v2.")
@@ -203,20 +212,23 @@ else
    cd -
 fi
 
-if which chkconfig >/dev/null 2>&1;then
-   chkconfig dataease >/dev/null
-   if [ $? -eq 0 ]; then
-      chkconfig --del dataease
-   fi
-fi
 if [[ -f /etc/init.d/dataease ]];then
+   if which chkconfig >/dev/null 2>&1;then
+      chkconfig dataease >/dev/null
+      if [ $? -eq 0 ]; then
+         chkconfig --del dataease
+      fi
+   fi
    rm -f /etc/init.d/dataease
 fi
-log "配置 dataease Service"
-cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/systemd/system/
-chmod 644 /etc/systemd/system/dataease.service
-log "配置开机自启动"
-systemctl enable dataease >/dev/null 2>&1; systemctl daemon-reload | tee -a ${CURRENT_DIR}/install.log
+
+if [[ ! -f /etc/systemd/system/dataease.service ]];then
+   log "配置 dataease Service"
+   cp ${DE_RUN_BASE}/bin/dataease/dataease.service /etc/systemd/system/
+   chmod 644 /etc/systemd/system/dataease.service
+   log "配置开机自启动"
+   systemctl enable dataease >/dev/null 2>&1; systemctl daemon-reload | tee -a ${CURRENT_DIR}/install.log
+fi
 
 if [[ $(grep "vm.max_map_count" /etc/sysctl.conf | wc -l) -eq 0 ]];then
    sysctl -w vm.max_map_count=2000000
