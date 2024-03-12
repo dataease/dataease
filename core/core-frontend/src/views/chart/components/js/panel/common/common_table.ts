@@ -337,9 +337,23 @@ export function getStyle(chart: Chart): Style {
         }
         break
       }
+      case 'custom': {
+        style.colCfg.width = basicStyle.tableColumnWidth
+        break
+      }
+      // 查看详情用，均分铺满
       default: {
         delete style.layoutWidthType
-        style.colCfg.width = basicStyle.tableColumnWidth
+        style.colCfg.width = node => {
+          const width = node.spreadsheet.container.cfg.el.offsetWidth
+          const fieldsSize = chart.data?.fields?.length
+          if (!fieldsSize) {
+            return 0
+          }
+          const columnCount = tableHeader.showIndex ? fieldsSize + 1 : fieldsSize
+          const minWidth = width / columnCount
+          return Math.max(minWidth, basicStyle.tableColumnWidth)
+        }
       }
     }
   }
