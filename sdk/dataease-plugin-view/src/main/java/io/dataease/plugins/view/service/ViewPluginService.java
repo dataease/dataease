@@ -20,6 +20,7 @@ public abstract class ViewPluginService extends PluginComponentService {
 
     private PluginViewRSHandler<Map> rsHandler;
 
+
     public abstract PluginViewType viewType();
 
     public abstract Object format(Object param);

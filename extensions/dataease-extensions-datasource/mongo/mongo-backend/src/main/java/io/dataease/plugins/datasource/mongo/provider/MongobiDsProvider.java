@@ -62,10 +62,15 @@ public class MongobiDsProvider extends DefaultJdbcProvider {
         if(isDefaultClassLoader(customDriver)){
             driverClassName = defaultDriver;
             jdbcClassLoader = extendedJdbcClassLoader;
-            for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
-                if(value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())){
-                    surpportVersions = value.getSurpportVersions();
+            DeDriver driver = deDriverMapper.selectByPrimaryKey("default-" + datasourceRequest.getDatasource().getType());
+            if (driver == null) {
+                for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
+                    if (value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())) {
+                        surpportVersions = value.getSurpportVersions();
+                    }
                 }
+            } else {
+                surpportVersions = driver.getSurpportVersions();
             }
         }else {
             if(deDriver == null){
