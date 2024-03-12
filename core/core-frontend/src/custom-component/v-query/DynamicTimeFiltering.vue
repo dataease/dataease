@@ -2,27 +2,16 @@
 import { toRefs, PropType, onBeforeMount, watch, computed } from 'vue'
 import { Calendar } from '@element-plus/icons-vue'
 import { type DatePickType } from 'element-plus-secondary'
-import {
-  getThisYear,
-  getLastYear,
-  getThisMonth,
-  getLastMonth,
-  getToday,
-  getYesterday,
-  getMonthBeginning,
-  getYearBeginning,
-  getCustomTime
-} from './time-format'
+import type { ManipulateType } from 'dayjs'
+import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
 interface SelectConfig {
-  timeType: string
   intervalType: string
   regularOrTrendsValue: Date
   regularOrTrends: string
   relativeToCurrent: string
   timeNum: number
-  relativeToCurrentType: string
+  relativeToCurrentType: ManipulateType
   around: string
-  timeGranularity: DatePickType
 }
 
 const props = defineProps({
@@ -51,27 +40,21 @@ const props = defineProps({
 const { config } = toRefs(props)
 
 const timeConfig = computed(() => {
-  const {
-    relativeToCurrent,
-    intervalType,
-    timeNum,
-    relativeToCurrentType,
-    around,
-    timeGranularity
-  } = config.value
+  const { relativeToCurrent, intervalType, timeNum, relativeToCurrentType, around } = config.value
   return {
     relativeToCurrent,
     timeNum,
     intervalType,
     relativeToCurrentType,
     around,
-    timeGranularity
+    timeGranularityMultiple: props.timeGranularityMultiple
   }
 })
 
 watch(
   () => timeConfig.value,
   () => {
+    console.log(1)
     init()
   },
   {
@@ -80,47 +63,45 @@ watch(
 )
 
 const timeInterval = computed<DatePickType>(() => {
-  return config.value.intervalType !== 'timeInterval'
-    ? (props.timeGranularityMultiple.split('range')[0] as DatePickType)
-    : props.timeGranularityMultiple
+  const noTime = props.timeGranularityMultiple.split('time').join('')
+  return config.value.intervalType === 'timeInterval'
+    ? (noTime as DatePickType)
+    : (noTime.split('range')[0] as DatePickType)
 })
 
 const init = () => {
-  const { relativeToCurrent, timeNum, relativeToCurrentType, around, timeGranularity } =
-    timeConfig.value
+  const { relativeToCurrent, timeNum, relativeToCurrentType, around } = timeConfig.value
   if (relativeToCurrent === 'custom') {
-    config.value.regularOrTrendsValue = getCustomTime(
-      timeNum,
+    config.value.regularOrTrendsValue = getAround(
       relativeToCurrentType,
-      timeGranularity,
-      around,
-      null
+      around === 'f' ? 'subtract' : 'add',
+      timeNum
     )
   } else {
     switch (relativeToCurrent) {
       case 'thisYear':
-        config.value.regularOrTrendsValue = getThisYear()
+        config.value.regularOrTrendsValue = getThisStart('year')
         break
       case 'lastYear':
-        config.value.regularOrTrendsValue = getLastYear()
+        config.value.regularOrTrendsValue = getLastStart('year')
         break
       case 'thisMonth':
-        config.value.regularOrTrendsValue = getThisMonth()
+        config.value.regularOrTrendsValue = getThisStart('month')
         break
       case 'lastMonth':
-        config.value.regularOrTrendsValue = getLastMonth()
+        config.value.regularOrTrendsValue = getLastStart('month')
         break
       case 'today':
-        config.value.regularOrTrendsValue = getToday()
+        config.value.regularOrTrendsValue = getThisStart('day')
         break
       case 'yesterday':
-        config.value.regularOrTrendsValue = getYesterday()
+        config.value.regularOrTrendsValue = getLastStart('day')
         break
       case 'monthBeginning':
-        config.value.regularOrTrendsValue = getMonthBeginning()
+        config.value.regularOrTrendsValue = getThisStart('month')
         break
       case 'yearBeginning':
-        config.value.regularOrTrendsValue = getYearBeginning()
+        config.value.regularOrTrendsValue = getThisStart('year')
         break
 
       default:
@@ -137,6 +118,7 @@ onBeforeMount(() => {
 <template>
   <el-date-picker
     :disabled="config.regularOrTrends !== 'fixed'"
+    :key="timeInterval"
     v-model="config.regularOrTrendsValue"
     :type="timeInterval"
     :prefix-icon="Calendar"

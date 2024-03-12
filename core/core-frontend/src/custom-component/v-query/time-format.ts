@@ -1,3 +1,4 @@
+import type { ManipulateType } from 'dayjs'
 function getThisYear() {
   return new Date(`${new Date().getFullYear()}/1`)
 }
@@ -102,6 +103,12 @@ function getCustomTime(
       return getYearMonthRange(new Date(`${resultYear}/${resultMonth}/1`), 'monthrange', sort)
     case 'yearrange':
       return getYearMonthRange(new Date(`${resultYear}/1`), 'yearrange', sort)
+    case 'daterange':
+      return getYearMonthRange(
+        new Date(`${resultYear}/${resultMonth}/${resultDate}`),
+        'daterange',
+        sort
+      )
     default:
       break
   }
@@ -227,10 +234,10 @@ interface TimeRange {
   regularOrTrendsValue: string
   relativeToCurrent: string
   timeNum: number
-  relativeToCurrentType: string
+  relativeToCurrentType: ManipulateType
   around: string
   timeNumRange: number
-  relativeToCurrentTypeRange: string
+  relativeToCurrentTypeRange: ManipulateType
   aroundRange: string
   timeGranularityMultiple: string
 }

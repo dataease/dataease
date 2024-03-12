@@ -3,6 +3,8 @@ import { toRefs, PropType, ref, onBeforeMount, watch, nextTick, computed } from 
 import { Calendar } from '@element-plus/icons-vue'
 import { type DatePickType } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { type TimeRange } from './time-format'
+import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
 import VanPopup from 'vant/es/popup'
 import VanDatePicker from 'vant/es/date-picker'
 import VanTimePicker from 'vant/es/time-picker'
@@ -20,10 +22,8 @@ interface SelectConfig {
   displayType: string
   timeGranularity: DatePickType
   timeGranularityMultiple: DatePickType
-  options?: Array<{
-    label: string
-    value: string
-  }>
+  timeRange: TimeRange
+  setTimeRange: boolean
 }
 
 const props = defineProps({
@@ -35,7 +35,23 @@ const props = defineProps({
         defaultValue: '',
         defaultValueCheck: false,
         displayType: '1',
-        timeGranularity: 'date'
+        timeGranularity: 'date',
+        setTimeRange: false,
+        timeGranularityMultiple: 'daterange',
+        timeRange: {
+          intervalType: 'none',
+          dynamicWindow: false,
+          maximumSingleQuery: 0,
+          regularOrTrends: 'fixed',
+          regularOrTrendsValue: '',
+          relativeToCurrent: 'custom',
+          timeNum: 0,
+          relativeToCurrentType: 'year',
+          around: 'f',
+          timeNumRange: 0,
+          relativeToCurrentTypeRange: 'year',
+          aroundRange: 'f'
+        }
       }
     }
   },
@@ -166,6 +182,87 @@ const getIndex = () => {
   return index
 }
 
+const disabledDate = val => {
+  const timeStamp = +new Date(val)
+  if (!config.value.setTimeRange) {
+    return false
+  }
+  const {
+    intervalType,
+    regularOrTrends,
+    regularOrTrendsValue,
+    relativeToCurrent,
+    timeNum,
+    relativeToCurrentType,
+    around,
+    timeNumRange,
+    relativeToCurrentTypeRange,
+    aroundRange
+  } = config.value.timeRange || {}
+  if (intervalType === 'none') {
+    return false
+  }
+  let startTime
+  if (relativeToCurrent === 'custom') {
+    startTime = getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+  } else {
+    switch (relativeToCurrent) {
+      case 'thisYear':
+        startTime = getThisStart('year')
+        break
+      case 'lastYear':
+        startTime = getLastStart('year')
+        break
+      case 'thisMonth':
+        startTime = getThisStart('month')
+        break
+      case 'lastMonth':
+        startTime = getLastStart('month')
+        break
+      case 'today':
+        startTime = getThisStart('day')
+        break
+      case 'yesterday':
+        startTime = getLastStart('day')
+        break
+      case 'monthBeginning':
+        startTime = getThisStart('month')
+        break
+      case 'yearBeginning':
+        startTime = getThisStart('year')
+        break
+
+      default:
+        break
+    }
+  }
+  const startValue = regularOrTrends === 'fixed' ? regularOrTrendsValue : startTime
+
+  if (intervalType === 'start') {
+    return timeStamp < +new Date(startValue)
+  }
+
+  if (intervalType === 'end') {
+    return timeStamp > +new Date(startValue)
+  }
+
+  if (intervalType === 'timeInterval') {
+    const startTime =
+      regularOrTrends === 'fixed'
+        ? regularOrTrendsValue[0]
+        : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+    const endTime =
+      regularOrTrends === 'fixed'
+        ? regularOrTrendsValue[1]
+        : getAround(
+            relativeToCurrentTypeRange,
+            aroundRange === 'f' ? 'subtract' : 'add',
+            timeNumRange
+          )
+    return timeStamp < +new Date(startTime) - 1000 || timeStamp > +new Date(endTime)
+  }
+}
+
 const showPopup = () => {
   if (isRange.value) {
     const [start] = selectValue.value || []
@@ -241,8 +338,10 @@ const formatDate = computed(() => {
 <template>
   <el-date-picker
     v-model="selectValue"
+    :key="config.timeGranularityMultiple"
     :type="config.timeGranularityMultiple"
     :style="selectStyle"
+    :disabled-date="disabledDate"
     :format="formatDate"
     v-if="multiple"
     @change="handleValueChange"
@@ -254,8 +353,8 @@ const formatDate = computed(() => {
   <el-date-picker
     v-else
     v-model="selectValue"
-    @change="handleValueChange"
     :type="config.timeGranularity"
+    :disabled-date="disabledDate"
     :style="selectStyle"
     :prefix-icon="Calendar"
     :placeholder="$t('commons.date.select_date_time')"

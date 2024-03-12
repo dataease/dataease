@@ -84,7 +84,7 @@ const relativeToCurrentTypeList = computed(() => {
     },
     {
       label: '日',
-      value: 'date'
+      value: 'day'
     }
   ].slice(0, index)
 })
@@ -295,7 +295,12 @@ const relativeToCurrentList = computed(() => {
       <div class="parameters" :class="dynamicTime && 'setting'">
         <div class="setting-label" v-if="dynamicTime">预览</div>
         <div :class="dynamicTime ? 'setting-value' : 'w100'">
-          <component :config="timeRange" isConfig ref="inputCom" :is="filterTypeCom"></component>
+          <component
+            :config="timeRange"
+            :timeGranularityMultiple="timeGranularityMultiple"
+            ref="inputCom"
+            :is="filterTypeCom"
+          ></component>
         </div>
       </div>
     </div>

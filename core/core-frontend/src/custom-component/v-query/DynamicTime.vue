@@ -159,6 +159,7 @@ onBeforeMount(() => {
 <template>
   <el-date-picker
     disabled
+    :key="config.timeGranularity"
     v-model="selectValue"
     :type="config.timeGranularity"
     :prefix-icon="Calendar"

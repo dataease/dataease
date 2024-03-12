@@ -1,18 +1,19 @@
 <script lang="ts" setup>
-import { toRefs, PropType, ref, onBeforeMount, watch, computed } from 'vue'
+import { toRefs, PropType, onBeforeMount, watch, computed } from 'vue'
 import { Calendar } from '@element-plus/icons-vue'
 import { type DatePickType } from 'element-plus-secondary'
-import { getCustomTime } from './time-format'
+import type { ManipulateType } from 'dayjs'
+import { getAround } from './time-format-dayjs'
 interface SelectConfig {
   regularOrTrends: string
   regularOrTrendsValue: [Date, Date]
   intervalType: string
   timeNum: number
-  relativeToCurrentType: string
+  relativeToCurrentType: ManipulateType
   around: string
   timeGranularity: DatePickType
   timeNumRange: number
-  relativeToCurrentTypeRange: string
+  relativeToCurrentTypeRange: ManipulateType
   aroundRange: string
 }
 
@@ -21,7 +22,7 @@ const props = defineProps({
     type: Object as PropType<SelectConfig>,
     default: () => {
       return {
-        timeGranularityMultiple: 'datetimerange',
+        timeGranularityMultiple: 'daterange',
         regularOrTrendsValue: [],
         regularOrTrends: 'fixed',
         timeNum: 0,
@@ -63,13 +64,15 @@ const timeConfig = computed(() => {
     timeGranularity,
     timeNumRange,
     relativeToCurrentTypeRange,
-    aroundRange
+    aroundRange,
+    timeGranularityMultiple: props.timeGranularityMultiple
   }
 })
 const timeInterval = computed<DatePickType>(() => {
-  return config.value.intervalType !== 'timeInterval'
-    ? (props.timeGranularityMultiple.split('range')[0] as DatePickType)
-    : props.timeGranularityMultiple
+  const noTime = props.timeGranularityMultiple.split('time').join('')
+  return config.value.intervalType === 'timeInterval'
+    ? (noTime as DatePickType)
+    : (noTime.split('range')[0] as DatePickType)
 })
 watch(
   () => timeConfig.value,
@@ -86,29 +89,16 @@ const init = () => {
     timeNum,
     relativeToCurrentType,
     around,
-    timeGranularity,
     timeNumRange,
     relativeToCurrentTypeRange,
     aroundRange
   } = timeConfig.value
 
-  const startTime = getCustomTime(
-    timeNum,
-    relativeToCurrentType,
-    timeGranularity,
-    around,
-    null,
-    timeInterval.value,
-    'start-config'
-  )
-  const endTime = getCustomTime(
-    timeNumRange,
+  const startTime = getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+  const endTime = getAround(
     relativeToCurrentTypeRange,
-    timeGranularity,
-    aroundRange,
-    null,
-    timeInterval.value,
-    'end-config'
+    aroundRange === 'f' ? 'subtract' : 'add',
+    timeNumRange
   )
 
   config.value.regularOrTrendsValue = [startTime, endTime]
@@ -127,6 +117,7 @@ const formatDate = computed(() => {
   <el-date-picker
     :disabled="config.regularOrTrends !== 'fixed'"
     v-model="config.regularOrTrendsValue"
+    :key="timeInterval"
     :type="timeInterval"
     :prefix-icon="Calendar"
     :format="formatDate"
