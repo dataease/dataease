@@ -34,4 +34,8 @@ public interface LarksuiteApi {
     @Operation(summary = "验证可用性")
     @PostMapping("/validate")
     void validate(@RequestBody LarkSettingCreator creator);
+
+    @Operation(summary = "国际飞书绑定", hidden = true)
+    @PostMapping("/bind")
+    void bind(@RequestBody LarkTokenRequest request);
 }
