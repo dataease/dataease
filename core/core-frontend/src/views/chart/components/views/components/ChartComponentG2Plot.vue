@@ -59,7 +59,6 @@ const state = reactive({
   },
   linkageActiveParam: null,
   pointParam: null,
-  loading: false,
   data: { fields: [] } // 图表数据
 })
 let chartData = shallowRef<Partial<Chart['data']>>({
@@ -71,7 +70,6 @@ const viewTrack = ref(null)
 
 const calcData = (view, callback) => {
   if (view.tableId || view['dataFrom'] === 'template') {
-    state.loading = true
     isError.value = false
     const v = JSON.parse(JSON.stringify(view))
     getData(v)
@@ -79,6 +77,7 @@ const calcData = (view, callback) => {
         if (res.code && res.code !== 0) {
           isError.value = true
           errMsg.value = res.msg
+          callback?.()
         } else {
           chartData.value = res?.data as Partial<Chart['data']>
           emit('onDrillFilters', res?.drillFilters)
@@ -93,22 +92,21 @@ const calcData = (view, callback) => {
             }
           }
           dvMainStore.setViewDataDetails(view.id, chartData.value)
-          renderChart(res)
+          renderChart(res, callback)
         }
-        callback?.()
       })
       .catch(() => {
         callback?.()
       })
   } else {
     if (view.type === 'map') {
-      renderChart(view)
+      renderChart(view, callback)
     }
     callback?.()
   }
 }
 let curView
-const renderChart = async view => {
+const renderChart = async (view, callback?) => {
   if (!view) {
     return
   }
@@ -124,10 +122,11 @@ const renderChart = async view => {
   recursionTransObj(customStyleTrans, chart.customStyle, scale.value, terminal.value)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
-      renderL7Plot(chart, chartView as L7PlotChartView<any, any>)
+      renderL7Plot(chart, chartView as L7PlotChartView<any, any>, callback)
       break
     case ChartLibraryType.G2_PLOT:
       renderG2Plot(chart, chartView as G2PlotChartView<any, any>)
+      callback?.()
       break
     default:
       break
@@ -151,7 +150,7 @@ const country = ref('')
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 let mapTimer
-const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
+const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>, callback?) => {
   const map = parseJson(chart.customAttr).map
   let areaId = map.id
   country.value = areaId.slice(0, 3)
@@ -168,6 +167,7 @@ const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>) => {
       areaId,
       action
     })
+    callback?.()
   }, 500)
 }
 
@@ -265,12 +265,13 @@ defineExpose({
 })
 let resizeObserver
 const TOLERANCE = 0.01
+const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map']
 onMounted(() => {
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom
   const preSize = [offsetWidth, offsetHeight]
   resizeObserver = new ResizeObserver(([entry] = []) => {
-    if (view.value.type !== 'map') {
+    if (!RESIZE_MONITOR_CHARTS.includes(view.value.type)) {
       return
     }
     const [size] = entry.borderBoxSize || []

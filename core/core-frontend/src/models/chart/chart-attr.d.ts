@@ -54,7 +54,7 @@ declare interface ChartBasicStyle {
   /**
    * 表格列宽模式: 自适应和自定义
    */
-  tableColumnMode: 'adapt' | 'custom' | 'field'
+  tableColumnMode: 'adapt' | 'custom' | 'field' | 'dialog'
   /**
    * 表格列宽
    */

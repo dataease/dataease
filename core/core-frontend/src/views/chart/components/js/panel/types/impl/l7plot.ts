@@ -13,8 +13,9 @@ import {
   AntVDrawOptions,
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
-import { defaultsDeep } from 'lodash-es'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
+import { parseJson } from '@/views/chart/components/js/util'
 
 export interface L7PlotDrawOptions<P> extends AntVDrawOptions<P> {
   areaId?: string
@@ -48,6 +49,28 @@ export abstract class L7PlotChartView<
   protected configLegend(_: Chart, options: ChoroplethOptions) {
     const legend = configL7Legend()
     defaultsDeep(options.legend, legend)
+    return options
+  }
+  protected configEmptyDataStrategy(chart: Chart, options: ChoroplethOptions): ChoroplethOptions {
+    const { functionCfg } = parseJson(chart.senior)
+    const emptyDataStrategy = functionCfg.emptyDataStrategy
+    if (!emptyDataStrategy || emptyDataStrategy === 'breakLine') {
+      return options
+    }
+    const data = cloneDeep(options.source.data)
+    if (emptyDataStrategy === 'setZero') {
+      data.forEach(item => {
+        item.value === null && (item.value = 0)
+      })
+    }
+    if (emptyDataStrategy === 'ignoreData') {
+      for (let i = data.length - 1; i >= 0; i--) {
+        if (data[i].value === null) {
+          data.splice(i, 1)
+        }
+      }
+    }
+    options.source.data = data
     return options
   }
   protected constructor(name: string, defaultData?: any[]) {

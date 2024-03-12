@@ -513,13 +513,24 @@ const loadingFlag = computed(() => {
 })
 
 const chartAreaShow = computed(() => {
-  return (
-    (view.value.tableId &&
-      (element.value['state'] === undefined || element.value['state'] === 'ready')) ||
-    view.value.type === 'rich-text' ||
-    (view.value.type === 'map' && view.value.customAttr.map.id) ||
-    view.value['dataFrom'] === 'template'
-  )
+  if (view.value.tableId) {
+    if (element.value['state'] === undefined || element.value['state'] === 'ready') {
+      return true
+    }
+  }
+  if (view.value.type === 'rich-text') {
+    return true
+  }
+  if (view.value['dataFrom'] === 'template') {
+    return true
+  }
+  if (view.value.customAttr.map.id) {
+    const MAP_CHARTS = ['map', 'bubble-map']
+    if (MAP_CHARTS.includes(view.value.type)) {
+      return true
+    }
+  }
+  return false
 })
 
 const titleInputRef = ref()

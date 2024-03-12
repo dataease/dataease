@@ -1,27 +1,29 @@
+import { useI18n } from '@/hooks/web/useI18n'
 import {
   L7PlotChartView,
   L7PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
-import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
-import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
-import { cloneDeep } from 'lodash-es'
-import { useI18n } from '@/hooks/web/useI18n'
-import { valueFormatter } from '../../../formatter'
+import { DotLayer, IPlotLayer } from '@antv/l7plot'
+import { DotLayerOptions } from '@antv/l7plot/dist/esm/layers/dot-layer/types'
 import {
   MAP_AXIS_TYPE,
   MAP_EDITOR_PROPERTY,
   MAP_EDITOR_PROPERTY_INNER,
   MapMouseEvent
 } from '@/views/chart/components/js/panel/charts/map/common'
+import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import { cloneDeep } from 'lodash-es'
+import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
+import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 
 const { t } = useI18n()
 
 /**
- * 地图
+ * 气泡地图
  */
-export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
+export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   properties = MAP_EDITOR_PROPERTY
   propertyInner = MAP_EDITOR_PROPERTY_INNER
   axis = MAP_AXIS_TYPE
@@ -32,14 +34,13 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       limit: 1
     },
     yAxis: {
-      name: `${t('chart.chart_data')} / ${t('chart.quota')}`,
+      name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1
     }
   }
-
   constructor() {
-    super('map', [])
+    super('bubble-map')
   }
 
   async drawChart(drawOption: L7PlotDrawOptions<Choropleth>): Promise<Choropleth> {
@@ -93,16 +94,17 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       zoom: {
         position: 'bottomright'
       },
-      legend: {
-        position: 'bottomleft'
-      },
+      legend: false,
       // 禁用线上地图数据
       customFetchGeoData: () => null
     }
     options = this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
+    const dotLayer = this.getDotLayer(chart, chart.data?.data, geoJson)
     view.once('loaded', () => {
+      view.addLayer(dotLayer)
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
+        console.log(view)
         const data = ev.feature.properties
         action({
           x: ev.x,
@@ -114,8 +116,51 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         })
       })
     })
-
     return view
+  }
+
+  private getDotLayer(chart: Chart, data: any[], geoJson: FeatureCollection): IPlotLayer {
+    const areaMap = data.reduce((obj, value) => {
+      obj[value['field']] = value.value
+      return obj
+    }, {})
+    const dotData = []
+    geoJson.features.forEach(item => {
+      const name = item.properties['name']
+      if (areaMap[name]) {
+        dotData.push({
+          x: item.properties['centroid'][0],
+          y: item.properties['centroid'][1],
+          size: areaMap[name]
+        })
+      }
+    })
+    const { basicStyle } = parseJson(chart.customAttr)
+    const options: DotLayerOptions = {
+      source: {
+        data: dotData,
+        parser: {
+          type: 'json',
+          x: 'x',
+          y: 'y'
+        }
+      },
+      shape: 'circle',
+      size: {
+        field: 'size'
+      },
+      visible: true,
+      zIndex: 0.05,
+      color: hexColorToRGBA(basicStyle.colors[0], basicStyle.alpha),
+      name: 'bubbleLayer',
+      style: {
+        opacity: 1
+      },
+      state: {
+        active: true
+      }
+    }
+    return new DotLayer(options)
   }
 
   private configBasicStyle(
@@ -129,19 +174,11 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const senior = parseJson(chart.senior)
     const curAreaNameMapping = senior.areaMapping?.[areaId]
     handleGeoJson(geoJson, curAreaNameMapping)
-    options.color = {
-      field: 'value',
-      value: [basicStyle.colors[0]],
-      scale: {
-        type: 'quantize',
-        unknown: basicStyle.areaBaseColor
-      }
-    }
+    options.color = hexColorToRGBA(basicStyle.areaBaseColor, basicStyle.alpha)
     const suspension = basicStyle.suspension
     if (!suspension) {
       options = {
         ...options,
-        legend: false,
         zoom: false
       }
     }
@@ -154,12 +191,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       obj[value['field']] = value.value
       return obj
     }, {})
-    let validArea = 0
     geoJson.features.forEach(item => {
       const name = item.properties['name']
-      if (areaMap[name]) {
-        validArea += 1
-      }
       // trick, maybe move to configLabel, here for perf
       if (label.show) {
         const content = []
@@ -172,13 +205,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         item.properties['_DE_LABEL_'] = content.join('\n\n')
       }
     })
-    let colors = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
-    if (validArea < colors.length) {
-      colors = colors.slice(0, validArea)
-    }
-    if (colors.length) {
-      options.color['value'] = colors
-    }
     return options
   }
 
