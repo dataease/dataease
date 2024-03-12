@@ -60,6 +60,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { VIEW_DETAILS_BASH_STYLE } from '@/views/chart/components/editor/util/dataVisualiztion'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
+import { assign } from 'lodash-es'
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
 let viewInfo = ref<DeepPartial<ChartObj>>(null)
@@ -70,22 +71,35 @@ const { t } = useI18n()
 const optType = ref(null)
 const chartComponentDetails = ref(null)
 const { dvInfo } = storeToRefs(dvMainStore)
-
+const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
+  render: 'antv',
+  type: 'table-info',
+  customAttr: {
+    basicStyle: {
+      tableColumnMode: 'dialog'
+    },
+    tableHeader: {
+      tableHeaderBgColor: '#F8F8F9',
+      tableHeaderFontColor: '#7C7E81'
+    },
+    tableCell: {
+      tableItemBgColor: '#FFFFFF',
+      tableFontColor: '#7C7E81',
+      enableTableCrossBG: false
+    }
+  }
+}
 const dialogInit = (canvasStyle, view, item, opt) => {
   optType.value = opt
   dialogShow.value = true
   viewInfo.value = deepCopy(view) as DeepPartial<ChartObj>
   viewInfo.value.customStyle.text.show = false
-  if (!viewInfo.value.type?.includes('table')) {
-    viewInfo.value.customAttr.tableHeader.tableHeaderBgColor = '#F8F8F9'
-    viewInfo.value.customAttr.tableHeader.tableHeaderFontColor = '#7C7E81'
-    viewInfo.value.customAttr.tableCell.tableItemBgColor = '#FFFFFF'
-    viewInfo.value.customAttr.tableCell.tableFontColor = '#7C7E81'
-    viewInfo.value.customAttr.tableCell.enableTableCrossBG = false
-  }
   config.value = deepCopy(item)
   canvasStyleData.value = canvasStyle
   if (opt === 'details') {
+    if (!viewInfo.value.type?.includes('table')) {
+      assign(viewInfo.value, DETAIL_TABLE_ATTR)
+    }
     dataDetailsOpt()
   }
 }
@@ -93,10 +107,7 @@ const dialogInit = (canvasStyle, view, item, opt) => {
 const dataDetailsOpt = () => {
   nextTick(() => {
     const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
-    chartComponentDetails.value.renderChartFromDialog(
-      JSON.parse(VIEW_DETAILS_BASH_STYLE),
-      viewDataInfo
-    )
+    chartComponentDetails.value.renderChartFromDialog(viewInfo.value, viewDataInfo)
   })
 }
 
