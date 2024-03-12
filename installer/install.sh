@@ -23,7 +23,7 @@ if [ -f /usr/bin/dectl ]; then
    sed -i -e "s#DE_BASE=.*#DE_BASE=${DE_BASE}#g" dectl
    \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
 
-   if [[ ! -f /etc/systemd/system/dataease.service ]];then
+   if [[ -f /etc/systemd/system/dataease.service ]];then
       systemctl stop dataease
    else   
       dectl stop
