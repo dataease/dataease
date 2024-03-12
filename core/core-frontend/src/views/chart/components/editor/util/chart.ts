@@ -1198,6 +1198,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'map',
         title: t('chart.chart_map'),
         icon: 'map'
+      },
+      {
+        render: 'antv',
+        category: 'map',
+        value: 'bubble-map',
+        title: t('chart.chart_bubble_map'),
+        icon: 'bubble-map'
       }
     ]
   },
