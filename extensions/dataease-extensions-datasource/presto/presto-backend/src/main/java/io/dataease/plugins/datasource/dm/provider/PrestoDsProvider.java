@@ -54,10 +54,15 @@ public class PrestoDsProvider extends DefaultJdbcProvider {
             ExtendedJdbcClassLoader classLoader;
             if(isDefaultClassLoader(customDriver)){
                 classLoader = extendedJdbcClassLoader;
-                for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
-                    if(value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())){
-                        surpportVersions = value.getSurpportVersions();
+                DeDriver driver = deDriverMapper.selectByPrimaryKey("default-" + datasourceRequest.getDatasource().getType());
+                if (driver == null) {
+                    for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
+                        if (value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())) {
+                            surpportVersions = value.getSurpportVersions();
+                        }
                     }
+                } else {
+                    surpportVersions = driver.getSurpportVersions();
                 }
             }else {
                 deDriver = deDriverMapper.selectByPrimaryKey(customDriver);
