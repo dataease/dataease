@@ -29,8 +29,10 @@
           v-model="checkAll"
           :indeterminate="isIndeterminate"
           @change="handleCheckAllChange"
-        />
+        >
         {{ $t('commons.all') }}
+        </el-checkbox>
+        
 
         <el-checkbox-group
           v-model="value"
