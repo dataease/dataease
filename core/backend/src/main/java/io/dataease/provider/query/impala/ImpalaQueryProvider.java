@@ -1046,11 +1046,11 @@ public class ImpalaQueryProvider extends QueryProvider {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
-            }else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
                 whereValue = "'" + value + "%'";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
                 whereValue = "'%" + value + "'";
-            }  else {
+            } else {
                 if (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_BOOL) {
                     whereValue = String.format(ImpalaConstants.WHERE_NUMBER_VALUE_VALUE, value);
                 } else {
@@ -1371,7 +1371,12 @@ public class ImpalaQueryProvider extends QueryProvider {
                 if (!request.getIsTree() && (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_BOOL)) {
                     whereValue = "(" + StringUtils.join(value, ",") + ")";
                 } else {
-                    whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    // 过滤空数据
+                    if (value.contains(SQLConstants.EMPTY_SIGN)) {
+                        whereValue = "('" + StringUtils.join(value, "','") + "', '')" + " or " + whereName + " is null ";
+                    } else {
+                        whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    }
                 }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 String keyword = value.get(0).toUpperCase();
@@ -1394,7 +1399,12 @@ public class ImpalaQueryProvider extends QueryProvider {
                 if (!request.getIsTree() && (field.getDeExtractType() == DeTypeConstants.DE_INT || field.getDeExtractType() == DeTypeConstants.DE_FLOAT || field.getDeExtractType() == DeTypeConstants.DE_BOOL)) {
                     whereValue = String.format(ImpalaConstants.WHERE_NUMBER_VALUE_VALUE, value.get(0));
                 } else {
-                    whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, value.get(0));
+                    // 过滤空数据
+                    if (StringUtils.equals(value.get(0), SQLConstants.EMPTY_SIGN)) {
+                        whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, "") + " or " + whereName + " is null ";
+                    } else {
+                        whereValue = String.format(ImpalaConstants.WHERE_VALUE_VALUE, value.get(0));
+                    }
                 }
             }
             list.add(SQLObj.builder()
