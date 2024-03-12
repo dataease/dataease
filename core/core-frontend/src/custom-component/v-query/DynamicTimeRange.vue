@@ -155,6 +155,7 @@ const formatDate = computed(() => {
   <el-date-picker
     disabled
     v-model="selectValue"
+    :key="config.timeGranularityMultiple"
     :type="config.timeGranularityMultiple"
     :prefix-icon="Calendar"
     :format="formatDate"

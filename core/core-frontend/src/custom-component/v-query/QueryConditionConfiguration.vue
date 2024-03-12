@@ -206,7 +206,9 @@ const setTypeChange = () => {
     inputCom.value?.displayTypeChange?.()
     if (
       +curComponent.value.displayType === 7 &&
-      ['yearrange', 'monthrange', 'datetimerange'].includes(curComponent.value.timeGranularity)
+      ['yearrange', 'monthrange', 'daterange', 'datetimerange'].includes(
+        curComponent.value.timeGranularity
+      )
     ) {
       curComponent.value.timeGranularityMultiple = curComponent.value.timeGranularity
     }
@@ -367,6 +369,7 @@ const validate = () => {
 
 const handleBeforeClose = () => {
   inputCom.value?.mult?.handleClickOutside?.()
+  handleDialogClick()
   dialogVisible.value = false
 }
 
@@ -504,6 +507,7 @@ const parameterCompletion = () => {
     relativeToCurrentTypeRange: 'year',
     aroundRange: 'f',
     arbitraryTimeRange: new Date(),
+    setTimeRange: false,
     timeRange: {
       intervalType: 'none',
       dynamicWindow: false,
@@ -673,7 +677,7 @@ const relativeToCurrentTypeList = computed(() => {
   let index = ['year', 'month', 'date', 'datetime'].indexOf(curComponent.value.timeGranularity) + 1
   if (+curComponent.value.displayType === 7) {
     index =
-      ['yearrange', 'monthrange', 'datetimerange'].indexOf(
+      ['yearrange', 'monthrange', 'daterange', 'datetimerange'].indexOf(
         curComponent.value.timeGranularityMultiple
       ) + 1
   }
@@ -708,16 +712,31 @@ const timeGranularityChange = (val: string) => {
 const timeGranularityMultipleChange = (val: string) => {
   handleDialogClick()
   if (
-    ['yearrange', 'monthrange', 'datetimerange'].indexOf(val) <
+    ['yearrange', 'monthrange', 'daterange', 'datetimerange'].indexOf(val) <
     ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentType)
   ) {
     curComponent.value.relativeToCurrentType = 'year'
   }
   if (
-    ['yearrange', 'monthrange', 'datetimerange'].indexOf(val) <
+    ['yearrange', 'monthrange', 'daterange', 'datetimerange'].indexOf(val) <
     ['year', 'month', 'date'].indexOf(curComponent.value.relativeToCurrentTypeRange)
   ) {
     curComponent.value.relativeToCurrentTypeRange = 'year'
+  }
+
+  curComponent.value.timeRange = {
+    intervalType: 'none',
+    dynamicWindow: false,
+    maximumSingleQuery: 0,
+    regularOrTrends: 'fixed',
+    regularOrTrendsValue: '',
+    relativeToCurrent: 'custom',
+    timeNum: 0,
+    relativeToCurrentType: 'year',
+    around: 'f',
+    timeNumRange: 0,
+    relativeToCurrentTypeRange: 'year',
+    aroundRange: 'f'
   }
 }
 const aroundList = [
@@ -928,6 +947,7 @@ defineExpose({
               <span class="dataset ellipsis">{{ field.name }}</span>
               <el-select
                 @change="setType"
+                @focus="handleDialogClick"
                 style="margin-left: 12px"
                 v-if="curComponent.checkedFields.includes(field.componentId)"
                 v-model="curComponent.checkedFieldsMap[field.componentId]"
@@ -990,7 +1010,11 @@ defineExpose({
           <div class="list-item">
             <div class="label">展示类型</div>
             <div class="value">
-              <el-select @change="setTypeChange" v-model="curComponent.displayType">
+              <el-select
+                @focus="handleDialogClick"
+                @change="setTypeChange"
+                v-model="curComponent.displayType"
+              >
                 <el-option
                   :disabled="curComponent.displayType !== '0'"
                   label="文本下拉"
@@ -1028,10 +1052,12 @@ defineExpose({
                 <el-select
                   @change="timeGranularityMultipleChange"
                   placeholder="请选择时间粒度"
+                  @focus="handleDialogClick"
                   v-model="curComponent.timeGranularityMultiple"
                 >
                   <el-option label="年" value="yearrange" />
                   <el-option label="年月" value="monthrange" />
+                  <el-option label="年月日" value="daterange" />
                   <el-option label="年月日时分秒" value="datetimerange" />
                 </el-select>
               </template>
@@ -1213,7 +1239,7 @@ defineExpose({
           </div>
           <div v-if="curComponent.displayType === '7'" class="list-item">
             <div class="label">
-              <el-checkbox v-model="curComponent.parametersCheck" label="设置时间筛选范围" />
+              <el-checkbox v-model="curComponent.setTimeRange" label="设置时间筛选范围" />
             </div>
             <div class="setting-content">
               <el-popover
@@ -1225,7 +1251,12 @@ defineExpose({
                 :offset="4"
               >
                 <template #reference>
-                  <el-button @click="handleVisiblePopover($event)" text style="margin-left: -4px">
+                  <el-button
+                    :disabled="!curComponent.setTimeRange"
+                    @click="handleVisiblePopover($event)"
+                    text
+                    style="margin-left: -4px"
+                  >
                     <template #icon>
                       <Icon name="icon_admin_outlined"></Icon>
                     </template>
@@ -1237,7 +1268,14 @@ defineExpose({
                   :timeGranularityMultiple="curComponent.timeGranularityMultiple"
                 />
               </el-popover>
-              <span class="config-flag range-filter-time-flag">已配置</span>
+              <span
+                v-if="
+                  curComponent.timeRange.intervalType !== 'none' ||
+                  curComponent.timeRange.dynamicWindow
+                "
+                class="config-flag range-filter-time-flag"
+                >已配置</span
+              >
             </div>
           </div>
           <div class="list-item">
@@ -1250,6 +1288,7 @@ defineExpose({
                   popper-class="dataset-parameters"
                   value-key="id"
                   multiple
+                  @focus="handleDialogClick"
                   v-model="curComponent.parameters"
                   clearable
                 >
@@ -1273,6 +1312,7 @@ defineExpose({
                   <el-select
                     popper-class="dataset-parameters"
                     value-key="id"
+                    @focus="handleDialogClick"
                     v-model="curComponent.parametersStart"
                     clearable
                   >
@@ -1293,6 +1333,7 @@ defineExpose({
                   <el-select
                     popper-class="dataset-parameters"
                     value-key="id"
+                    @focus="handleDialogClick"
                     v-model="curComponent.parametersEnd"
                     clearable
                   >
@@ -1330,7 +1371,7 @@ defineExpose({
                 <div class="setting">
                   <div class="setting-label">相对当前</div>
                   <div class="setting-value select">
-                    <el-select v-model="curComponent.relativeToCurrent">
+                    <el-select @focus="handleDialogClick" v-model="curComponent.relativeToCurrent">
                       <el-option
                         v-for="item in relativeToCurrentList"
                         :key="item.value"
@@ -1350,7 +1391,10 @@ defineExpose({
                       :min="0"
                       controls-position="right"
                     />
-                    <el-select v-model="curComponent.relativeToCurrentType">
+                    <el-select
+                      @focus="handleDialogClick"
+                      v-model="curComponent.relativeToCurrentType"
+                    >
                       <el-option
                         v-for="item in relativeToCurrentTypeList"
                         :key="item.value"
@@ -1358,7 +1402,7 @@ defineExpose({
                         :value="item.value"
                       />
                     </el-select>
-                    <el-select v-model="curComponent.around">
+                    <el-select @focus="handleDialogClick" v-model="curComponent.around">
                       <el-option
                         v-for="item in aroundList"
                         :key="item.value"
@@ -1377,8 +1421,9 @@ defineExpose({
                 <div
                   class="setting"
                   :class="
-                    ['yearrange', 'monthrange'].includes(curComponent.timeGranularityMultiple) &&
-                    'is-year-month-range'
+                    ['yearrange', 'monthrange', 'daterange'].includes(
+                      curComponent.timeGranularityMultiple
+                    ) && 'is-year-month-range'
                   "
                 >
                   <div class="setting-label">开始时间</div>
@@ -1388,7 +1433,10 @@ defineExpose({
                       :min="0"
                       controls-position="right"
                     />
-                    <el-select v-model="curComponent.relativeToCurrentType">
+                    <el-select
+                      @focus="handleDialogClick"
+                      v-model="curComponent.relativeToCurrentType"
+                    >
                       <el-option
                         v-for="item in relativeToCurrentTypeList"
                         :key="item.value"
@@ -1396,7 +1444,7 @@ defineExpose({
                         :value="item.value"
                       />
                     </el-select>
-                    <el-select v-model="curComponent.around">
+                    <el-select @focus="handleDialogClick" v-model="curComponent.around">
                       <el-option
                         v-for="item in aroundList"
                         :key="item.value"
@@ -1410,8 +1458,9 @@ defineExpose({
                 <div
                   class="setting"
                   :class="
-                    ['yearrange', 'monthrange'].includes(curComponent.timeGranularityMultiple) &&
-                    'is-year-month-range'
+                    ['yearrange', 'monthrange', 'daterange'].includes(
+                      curComponent.timeGranularityMultiple
+                    ) && 'is-year-month-range'
                   "
                 >
                   <div class="setting-label">结束时间</div>
@@ -1421,7 +1470,10 @@ defineExpose({
                       :min="0"
                       controls-position="right"
                     />
-                    <el-select v-model="curComponent.relativeToCurrentTypeRange">
+                    <el-select
+                      @focus="handleDialogClick"
+                      v-model="curComponent.relativeToCurrentTypeRange"
+                    >
                       <el-option
                         v-for="item in relativeToCurrentTypeList"
                         :key="item.value"
@@ -1429,7 +1481,7 @@ defineExpose({
                         :value="item.value"
                       />
                     </el-select>
-                    <el-select v-model="curComponent.aroundRange">
+                    <el-select @focus="handleDialogClick" v-model="curComponent.aroundRange">
                       <el-option
                         v-for="item in aroundList"
                         :key="item.value"
@@ -1653,6 +1705,7 @@ defineExpose({
       border-left: 1px solid #dee0e3;
       width: 467px;
       position: relative;
+      overflow-y: auto;
       .mask {
         left: -1px;
         width: calc(100% + 2px);
@@ -1696,6 +1749,17 @@ defineExpose({
         font-style: normal;
         font-weight: 500;
         line-height: 22px;
+        position: relative;
+
+        &.flex-align-center::after {
+          content: '';
+          position: absolute;
+          width: 100%;
+          height: 16px;
+          background: #fff;
+          top: -16px;
+          left: 0;
+        }
       }
 
       .configuration-list {
