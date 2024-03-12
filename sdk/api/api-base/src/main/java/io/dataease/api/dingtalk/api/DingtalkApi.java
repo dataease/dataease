@@ -34,4 +34,8 @@ public interface DingtalkApi {
     @Operation(summary = "验证可用性")
     @PostMapping("/validate")
     void validate(@RequestBody DingtalkSettingCreator creator);
+
+    @Operation(summary = "钉钉绑定", hidden = true)
+    @PostMapping("/bind")
+    void bind(@RequestBody DingtalkTokenRequest request);
 }

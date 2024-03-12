@@ -34,4 +34,8 @@ public interface WecomApi {
     @Operation(summary = "验证可用性")
     @PostMapping("/validate")
     void validate(@RequestBody WecomCreator creator);
+
+    @Operation(summary = "企微绑定用户", hidden = true)
+    @PostMapping("/bind")
+    void bind(@RequestBody WecomTokenRequest request);
 }

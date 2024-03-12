@@ -160,4 +160,16 @@ public interface UserApi {
     @Hidden
     @PostMapping("/all")
     List<UserItem> allUser(@RequestBody KeywordRequest request);
+
+    @Hidden
+    @PostMapping("/bind")
+    void bind(@RequestBody UserBindRequest request);
+
+    @Operation(summary = "解除绑定")
+    @PostMapping("/unBind/{origin}")
+    void unBind(@PathVariable("origin") Integer origin);
+
+    @Operation(summary = "绑定状态")
+    @GetMapping("/bindStatus")
+    List<Integer> bindStatus();
 }
