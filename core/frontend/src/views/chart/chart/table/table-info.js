@@ -17,6 +17,7 @@ import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { handleTableEmptyStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
 import { maxBy, minBy, find } from 'lodash-es'
 import TableTooltip from '@/views/chart/components/table/TableTooltip.vue'
+import { copyString } from '@/views/chart/chart/common/common'
 
 class SortTooltip extends BaseTooltip {
   vueCom
@@ -1093,7 +1094,7 @@ function getTooltipPosition(event) {
   return result
 }
 
-function copyContent(s2Instance, event, fieldMap) {
+function copyContent(s2Instance, event, fieldMeta) {
   event.preventDefault()
   const cell = s2Instance.getCell(event.target)
   const valueField = cell.getMeta().valueField
@@ -1102,7 +1103,7 @@ function copyContent(s2Instance, event, fieldMap) {
   // 单元格
   if (cellMeta?.data) {
     const value = cellMeta.data[valueField]
-    const metaObj = find(fieldMap, m =>
+    const metaObj = find(fieldMeta, m =>
       m.field === valueField
     )
     content = value?.toString()
@@ -1112,11 +1113,15 @@ function copyContent(s2Instance, event, fieldMap) {
   } else {
     // 列头&行头
     content = cellMeta.value
+    const fieldMap = fieldMeta?.reduce((p, n) => {
+      p[n.field] = n.name
+      return p
+    },{})
     if (fieldMap?.[content]) {
       content = fieldMap[content]
     }
   }
   if (content) {
-    navigator.clipboard.writeText(content)
+    copyString(content, true)
   }
 }
