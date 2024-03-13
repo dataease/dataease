@@ -527,7 +527,7 @@ export default {
       clearTimeout(this.scrollTimer)
       const customAttr = JSON.parse(this.chart.customAttr)
       const senior = JSON.parse(this.chart.senior)
-      if (senior && senior.scrollCfg && senior.scrollCfg.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
+      if (senior?.scrollCfg?.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
         // 防止多次渲染
         this.myChart.facet.timer?.stop()
         if (this.myChart.store.get('scrollY') !== 0) {
@@ -536,11 +536,19 @@ export default {
         }
         // 平滑滚动，兼容原有的滚动速率设置
         // 假设原设定为 2 行间隔 2 秒，换算公式为: 滚动到底部的时间 = 未展示部分行数 / 2行 * 2秒
+        const offsetHeight = document.getElementById(this.chartId).offsetHeight
+        // 没显示就不滚了
+        if (!offsetHeight) {
+          return
+        }
         const rowHeight = customAttr.size.tableItemHeight
         const headerHeight = customAttr.size.tableTitleHeight
         const scrollBarSize = this.myChart.theme.scrollBar.size
-        const offsetHeight = document.getElementById(this.chartId).offsetHeight
         const scrollHeight = rowHeight * this.chart.data.tableRow.length + headerHeight - offsetHeight + scrollBarSize
+        // 显示内容没撑满
+        if (scrollHeight < scrollBarSize) {
+          return
+        }
         const viewHeight = offsetHeight - headerHeight - scrollBarSize
         const scrollViewCount = this.chart.data.tableRow.length - viewHeight / rowHeight
         const duration = scrollViewCount / senior.scrollCfg.row * senior.scrollCfg.interval
