@@ -8,7 +8,9 @@ import { toRaw } from 'vue'
 import { Options } from '@antv/g2plot/esm'
 import { PickOptions } from '@antv/g2plot/esm/core/plot'
 import { innerExportDetails } from '@/api/chart'
-
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 // 同时支持将hex和rgb，转换成rgba
 export function hexColorToRGBA(hex, alpha) {
   let rgb = [] // 定义rgb数组
@@ -39,7 +41,7 @@ export function hexColorToRGBA(hex, alpha) {
 
 export function digToHex(dig) {
   let prefix = ''
-  const num = parseInt(dig * 2.55)
+  const num = parseInt((dig * 2.55).toString())
   if (num < 16) {
     prefix = '0'
   }
@@ -182,7 +184,7 @@ export function getColors(chart, colors, reset) {
     if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
       sc = JSON.parse(JSON.stringify(chart.customAttr)).color.seriesColors
     } else {
-      sc = JSON.parse(chart.customAttr).color.seriesColors
+      sc = JSON.parse(chart.customAttr)['color'].seriesColors
     }
     if (sc && sc.length > 0) {
       seriesColors = customColor(sc, seriesColors)
@@ -215,7 +217,7 @@ export function antVCustomColor(chart) {
 }
 
 export function getRemark(chart) {
-  const remark = {}
+  const remark = {} as any
   if (chart.customStyle) {
     const customStyle = JSON.parse(JSON.stringify(chart.customStyle))
     if (customStyle.text) {
@@ -473,4 +475,27 @@ export const exportExcelDownload = chart => {
     .catch(() => {
       console.error('Excel download error')
     })
+}
+
+export const copyString = (content: string, notify = false) => {
+  const clipboard = navigator.clipboard || {
+    writeText: data => {
+      return new Promise(resolve => {
+        const inputDom = document.createElement('input')
+        inputDom.setAttribute('style', 'z-index: -1;position: fixed;opacity: 0;')
+        inputDom.setAttribute('type', 'text')
+        inputDom.setAttribute('value', data)
+        document.body.appendChild(inputDom)
+        inputDom.select()
+        document.execCommand('copy')
+        inputDom.remove()
+        resolve()
+      })
+    }
+  }
+  clipboard.writeText(content).then(() => {
+    if (notify) {
+      ElMessage.success(t('commons.copy_success'))
+    }
+  })
 }

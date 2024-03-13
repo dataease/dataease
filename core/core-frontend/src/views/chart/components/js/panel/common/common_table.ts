@@ -1,4 +1,4 @@
-import { hexColorToRGBA, parseJson, resetRgbOpacity } from '../..//util'
+import { copyString, hexColorToRGBA, parseJson, resetRgbOpacity } from '../..//util'
 import {
   DEFAULT_BASIC_STYLE,
   DEFAULT_TABLE_CELL,
@@ -677,7 +677,7 @@ export function configTooltip(option: S2Options) {
   ]
 }
 
-export function copyContent(s2Instance, event, fieldMap) {
+export function copyContent(s2Instance, event, fieldMeta) {
   event.preventDefault()
   const cell = s2Instance.getCell(event.target)
   const valueField = cell.getMeta().valueField
@@ -686,19 +686,23 @@ export function copyContent(s2Instance, event, fieldMap) {
   // 单元格
   if (cellMeta?.data) {
     const value = cellMeta.data[valueField]
-    const metaObj = find(fieldMap, m => m.field === valueField)
+    const metaObj = find(fieldMeta, m => m.field === valueField)
     content = value?.toString()
     if (metaObj) {
       content = metaObj.formatter(value)
     }
   } else {
     // 列头&行头
+    const fieldMap = fieldMeta?.reduce((p, n) => {
+      p[n.field] = n.name
+      return p
+    }, {})
     content = cellMeta.value
     if (fieldMap?.[content]) {
       content = fieldMap[content]
     }
   }
   if (content) {
-    navigator.clipboard.writeText(content)
+    copyString(content, true)
   }
 }
