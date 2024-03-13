@@ -100,4 +100,6 @@ public class SQLConstants {
     public static final String GROUP_CONCAT = "GROUP_CONCAT(%s)";
 
     public static final String QUARTER = "QUARTER(%s)";
+
+    public static final String EMPTY_SIGN = "_empty_$";
 }
