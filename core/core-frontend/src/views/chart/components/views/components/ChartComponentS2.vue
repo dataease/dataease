@@ -136,6 +136,7 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   recursionTransObj(customStyleTrans, chart.customStyle, scale.value, terminal.value)
 
   setupPage(chart, resetPageInfo)
+  myChart?.facet.timer?.stop()
   myChart?.destroy()
   const chartView = chartViewManager.getChartView(
     viewInfo.render,
@@ -172,38 +173,44 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
 }
 
-let scrollTimer: number
-let scrollTop = 0
 const initScroll = () => {
-  clearInterval(scrollTimer)
   // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
   const customAttr = view.value.customAttr
   const senior = view.value.senior
-  scrollTop = 0
   if (
     senior?.scrollCfg?.open &&
     (view.value.type === 'table-normal' || (view.value.type === 'table-info' && !state.showPage))
   ) {
-    const rowHeight = customAttr.tableCell.tableItemHeight
-    const headerHeight = customAttr.tableHeader.tableTitleHeight
-    const dom = document.getElementById(containerId)
-    if (dom.offsetHeight > rowHeight * chartData.value.tableRow.length + headerHeight) {
+    // 防止多次渲染
+    myChart.facet.timer?.stop()
+    if (myChart.store.get('scrollY') !== 0) {
+      myChart.store.set('scrollY', 0)
+      myChart.render()
+    }
+    // 平滑滚动，兼容原有的滚动速率设置
+    // 假设原设定为 2 行间隔 2 秒，换算公式为: 滚动到底部的时间 = 未展示部分行数 / 2行 * 2秒
+    const offsetHeight = document.getElementById(containerId).offsetHeight
+    // 没显示就不滚了
+    if (!offsetHeight) {
       return
     }
-    scrollTimer = setInterval(() => {
-      const offsetHeight = dom.offsetHeight
-      const top = rowHeight * senior.scrollCfg.row
-      if (offsetHeight - headerHeight + scrollTop < rowHeight * chartData.value.tableRow.length) {
-        scrollTop += top
-      } else {
-        scrollTop = 0
-      }
-      myChart.store.set('scrollY', scrollTop)
-      if (!offsetHeight) {
-        return
-      }
-      myChart.render()
-    }, senior.scrollCfg.interval)
+    const rowHeight = customAttr.tableCell.tableItemHeight
+    const headerHeight = customAttr.tableHeader.tableTitleHeight
+    const scrollBarSize = myChart.theme.scrollBar.size
+    const scrollHeight =
+      rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
+    // 显示内容没撑满
+    if (scrollHeight < scrollBarSize) {
+      return
+    }
+    const viewHeight = offsetHeight - headerHeight - scrollBarSize
+    const scrollViewCount = chartData.value.tableRow.length - viewHeight / rowHeight
+    const duration = (scrollViewCount / senior.scrollCfg.row) * senior.scrollCfg.interval
+    myChart.facet.scrollWithAnimation(
+      { offsetY: { value: scrollHeight, animate: false } },
+      duration,
+      initScroll
+    )
   }
 }
 
@@ -335,6 +342,7 @@ const resize = (width, height) => {
   }
   timer = setTimeout(() => {
     myChart?.changeSheetSize(width, height)
+    myChart?.facet.timer?.stop()
     myChart?.render()
     initScroll()
   }, 500)
@@ -363,9 +371,9 @@ onMounted(() => {
   resizeObserver.observe(document.getElementById(containerId))
 })
 onBeforeUnmount(() => {
+  myChart?.facet.timer?.stop()
   myChart?.destroy()
   resizeObserver?.disconnect()
-  clearInterval(scrollTimer)
 })
 
 const autoStyle = computed(() => {
