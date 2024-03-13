@@ -1,7 +1,8 @@
 <script setup lang="ts">
 import { propTypes } from '@/utils/propTypes'
-import { computed, PropType, reactive, toRefs } from 'vue'
+import { computed, PropType, reactive, toRefs, h } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { Icon } from '@/components/icon-custom'
 
 const { t } = useI18n()
 
@@ -31,12 +32,13 @@ const props = defineProps({
   title: propTypes.string
 })
 const { property } = toRefs(props)
+const prefixIcon = h(Icon, { name: 'icon_calendar_outlined' })
 const timeConfig = computed(() => {
   let obj = Object.assign(
     {
       showType: 'datetime',
       rangeSeparator: '-',
-      prefixIcon: 'Calendar',
+      prefixIcon,
       startPlaceholder: t('datasource.start_time'),
       endPlaceholder: t('datasource.end_time'),
       format: 'YYYY-MM-DD HH:mm:ss',
@@ -104,6 +106,9 @@ defineExpose({
 
   .filter-item {
     flex: 1;
+    .ed-date-editor {
+      width: 100%;
+    }
   }
 }
 </style>
