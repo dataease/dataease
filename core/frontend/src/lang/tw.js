@@ -2273,6 +2273,7 @@ export default {
     data_list: '數據列表',
     component_list: '組件列表',
     custom_scope: '控製範圍',
+    show_empty: '選項包含空數據',
     binding_parameters: '參數',
     multiple_choice: '多選',
     show_time: '顯示時間',

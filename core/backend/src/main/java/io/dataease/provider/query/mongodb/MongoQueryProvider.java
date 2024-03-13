@@ -1227,7 +1227,12 @@ public class MongoQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                whereValue = "('" + StringUtils.join(value, "','") + "')";
+                // 过滤空数据
+                if (value.contains(SQLConstants.EMPTY_SIGN)) {
+                    whereValue = "('" + StringUtils.join(value, "','") + "', '')" + " or " + whereName + " is null ";
+                } else {
+                    whereValue = "('" + StringUtils.join(value, "','") + "')";
+                }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 String keyword = value.get(0).toUpperCase();
                 whereValue = "'%" + keyword + "%'";
@@ -1243,7 +1248,12 @@ public class MongoQueryProvider extends QueryProvider {
                 }
             } else {
                 if (!request.getIsTree() && fieldList.get(0).getDeType() == DeTypeConstants.DE_STRING) {
-                    whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value.get(0));
+                    // 过滤空数据
+                    if (StringUtils.equals(value.get(0), SQLConstants.EMPTY_SIGN)) {
+                        whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, "") + " or " + whereName + " is null ";
+                    } else {
+                        whereValue = String.format(MongoConstants.WHERE_VALUE_VALUE, value.get(0));
+                    }
                 } else {
                     whereValue = value.get(0);
                 }
@@ -1254,7 +1264,7 @@ public class MongoQueryProvider extends QueryProvider {
                     .build());
         }
         List<String> strList = new ArrayList<>();
-        list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+        list.forEach(ele -> strList.add("(" + ele.getWhereField() + " " + ele.getWhereTermAndValue() + ")"));
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null;
     }
 

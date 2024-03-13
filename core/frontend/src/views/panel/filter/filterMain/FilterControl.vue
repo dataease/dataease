@@ -71,6 +71,13 @@
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
           <el-checkbox
+            v-model="attrs.showEmpty"
+          >{{ $t('panel.show_empty') }}
+          </el-checkbox>
+        </span>
+        <span style="padding-right: 10px;">
+          
+          <el-checkbox
             v-model="attrs.showTitle"
             @change="showTitleChange"
           >{{ $t('panel.show_title') }}

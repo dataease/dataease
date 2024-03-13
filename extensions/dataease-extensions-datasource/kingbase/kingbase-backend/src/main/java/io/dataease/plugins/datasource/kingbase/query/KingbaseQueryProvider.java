@@ -1270,11 +1270,11 @@ public class KingbaseQueryProvider extends QueryProvider {
                 whereValue = "('" + String.join("','", value.split(",")) + "')";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
-            }else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
+            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
                 whereValue = "'" + value + "%'";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
                 whereValue = "'%" + value + "'";
-            }  else {
+            } else {
                 whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value);
             }
             SQLObj build = SQLObj.builder()
@@ -1600,7 +1600,12 @@ public class KingbaseQueryProvider extends QueryProvider {
             String whereValue = "";
 
             if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
-                whereValue = "('" + StringUtils.join(value, "','") + "')";
+                // 过滤空数据
+                if (value.contains(SQLConstants.EMPTY_SIGN)) {
+                    whereValue = "('" + StringUtils.join(value, "','") + "', '')" + " or " + whereName + " is null ";
+                } else {
+                    whereValue = "('" + StringUtils.join(value, "','") + "')";
+                }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 String keyword = value.get(0).toUpperCase();
                 whereValue = "'%" + keyword + "%'";
@@ -1615,7 +1620,12 @@ public class KingbaseQueryProvider extends QueryProvider {
                     whereValue = String.format(KingbaseConstants.WHERE_BETWEEN, value.get(0), value.get(1));
                 }
             } else {
-                whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value.get(0));
+                // 过滤空数据
+                if (StringUtils.equals(value.get(0), SQLConstants.EMPTY_SIGN)) {
+                    whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, "") + " or " + whereName + " is null ";
+                } else {
+                    whereValue = String.format(KingbaseConstants.WHERE_VALUE_VALUE, value.get(0));
+                }
             }
             list.add(SQLObj.builder()
                     .whereField(whereName)
@@ -1623,7 +1633,7 @@ public class KingbaseQueryProvider extends QueryProvider {
                     .build());
         }
         List<String> strList = new ArrayList<>();
-        list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+        list.forEach(ele -> strList.add("(" + ele.getWhereField() + " " + ele.getWhereTermAndValue() + ")"));
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null;
     }
 

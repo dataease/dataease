@@ -34,4 +34,6 @@ public class SQLConstants {
     public static final String ORDER_ALIAS_X_PREFIX = "o_ax_%s";
     public static final String ORDER_ALIAS_Y_PREFIX = "o_ay_%s";
     public static final String WHERE_ALIAS_PREFIX = "w_a_%s";
+
+    public static final String EMPTY_SIGN = "_empty_$";
 }

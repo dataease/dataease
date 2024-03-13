@@ -594,7 +594,11 @@ export default {
 }
 .tree-select-all {
     padding: 10px 20px 0 24px;
+    
   }
+  .tree-select-all .el-checkbox__label {
+      color: var(--SelectTreeColor, #606266);
+    }
 [aria-disabled='true'] > .el-tree-node__content {
     color: inherit !important;
     background: transparent !important;
