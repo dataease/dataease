@@ -135,7 +135,7 @@ defineExpose({
     </div>
 
     <template #footer>
-      <el-button @click="reset">{{ t('commons.reset') }}</el-button>
+      <el-button secondary @click="reset">{{ t('commons.reset') }}</el-button>
       <el-button @click="trigger" type="primary">{{ t('common.sure') }}</el-button>
     </template>
   </el-drawer>
