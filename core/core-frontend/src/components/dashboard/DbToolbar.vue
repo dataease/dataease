@@ -24,6 +24,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
+import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -50,6 +51,7 @@ const state = reactive({
   preBatchCanvasViewInfo: {}
 })
 const resourceGroupOpt = ref(null)
+const outerParamsSetRef = ref(null)
 
 const editCanvasName = () => {
   nameEdit.value = true
@@ -254,6 +256,10 @@ const batchOptStatusChange = value => {
     state.preBatchCanvasViewInfo = {}
   }
   dvMainStore.setBatchOptStatus(value)
+}
+
+const openOuterParamsSet = () => {
+  outerParamsSetRef.value.optInit()
 }
 
 const saveBatchChange = () => {
@@ -555,6 +561,7 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
       cur-canvas-type="dashboard"
       ref="resourceGroupOpt"
     />
+    <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
   </div>
 </template>
 

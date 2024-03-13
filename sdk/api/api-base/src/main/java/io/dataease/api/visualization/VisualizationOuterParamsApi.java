@@ -4,8 +4,6 @@ import io.dataease.api.visualization.dto.VisualizationOuterParamsDTO;
 import io.dataease.api.visualization.response.VisualizationOuterParamsBaseResponse;
 import org.springframework.web.bind.annotation.*;
 
-@RestController
-@RequestMapping("outerParams")
 public interface VisualizationOuterParamsApi {
 
 
