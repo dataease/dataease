@@ -65,3 +65,17 @@ knife4j:
   setting:
     language: zh_cn
     enable-swagger-models: false
+
+yisa:
+    access:
+      token:
+        client-id: iamur21zQWp4AiCR7   #从应用详情中获取到的 AppKey
+        client-secret: 9nSN4poBPi6qmVAckyuDzTGHOwfYI7C5  #从应用详情中获取到的 AppSecret
+        grant_type: client_credentials #	固定值：client_credentials
+        scope: read   #固定值：read
+        ps-id: 20221124
+        ip-port: http://192.168.5.66:80
+        admin-role-uuid: 71b563f1-64a8-dc2c-1666-19e437ccc347
+        common-role-uuid: 534480a3-247a-6050-54b3-be569ce3dd7c
+        extra-admin-role-uuid: 0,1
+    url: 127.0.0.1:9080

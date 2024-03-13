@@ -10,6 +10,7 @@
 
     <modules>
         <module>sdk</module>
+        <module>core</module>
     </modules>
 
     <properties>
