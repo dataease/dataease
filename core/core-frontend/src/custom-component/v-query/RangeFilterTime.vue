@@ -88,6 +88,10 @@ const relativeToCurrentTypeList = computed(() => {
     }
   ].slice(0, index)
 })
+
+const relativeToCurrentTypeListTips = computed(() => {
+  return (relativeToCurrentTypeList.value[relativeToCurrentTypeList.value.length - 1] || {}).label
+})
 const relativeToCurrentList = computed(() => {
   let list = []
   if (!timeRange.value) return list
@@ -315,7 +319,7 @@ const relativeToCurrentList = computed(() => {
           :min="1"
           controls-position="right"
         />
-        月
+        {{ relativeToCurrentTypeListTips }}
       </div>
     </div>
   </div>

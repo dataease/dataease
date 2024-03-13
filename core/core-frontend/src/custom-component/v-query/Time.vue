@@ -1,9 +1,10 @@
 <script lang="ts" setup>
-import { toRefs, PropType, ref, onBeforeMount, watch, nextTick, computed } from 'vue'
-import { Calendar } from '@element-plus/icons-vue'
+import { toRefs, PropType, ref, onBeforeMount, watch, nextTick, computed, h } from 'vue'
 import { type DatePickType } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import type { ManipulateType } from 'dayjs'
 import { type TimeRange } from './time-format'
+import dayjs from 'dayjs'
 import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
 import VanPopup from 'vant/es/popup'
 import VanDatePicker from 'vant/es/date-picker'
@@ -13,6 +14,7 @@ import 'vant/es/popup/style'
 import 'vant/es/date-picker/style'
 import 'vant/es/picker-group/style'
 import 'vant/es/time-picker/style'
+import { Icon } from '@/components/icon-custom'
 
 interface SelectConfig {
   selectValue: any
@@ -63,7 +65,7 @@ const props = defineProps({
 const selectValue = ref()
 const multiple = ref(false)
 const dvMainStore = dvMainStoreWithOut()
-
+const calendar = h(Icon, { name: 'icon_calendar_outlined' })
 const { config } = toRefs(props)
 const minDate = new Date('1970/1/1')
 const maxDate = new Date('2100/1/1')
@@ -181,6 +183,19 @@ const getIndex = () => {
   const index = ['year', 'month', 'date'].findIndex(ele => type.includes(ele))
   return index
 }
+const startWindowTime = ref(0)
+const calendarChange = val => {
+  startWindowTime.value = +new Date(val[0])
+}
+
+const visibleChange = () => {
+  startWindowTime.value = 0
+}
+
+const queryTimeType = computed(() => {
+  const noTime = config.value.timeGranularityMultiple.split('time').join('').split('range')[0]
+  return noTime === 'date' ? 'day' : (noTime as ManipulateType)
+})
 
 const disabledDate = val => {
   const timeStamp = +new Date(val)
@@ -195,11 +210,24 @@ const disabledDate = val => {
     timeNum,
     relativeToCurrentType,
     around,
+    dynamicWindow,
+    maximumSingleQuery,
     timeNumRange,
     relativeToCurrentTypeRange,
     aroundRange
   } = config.value.timeRange || {}
+  let isDynamicWindowTime = false
+  if (startWindowTime.value && dynamicWindow) {
+    isDynamicWindowTime =
+      dayjs(startWindowTime.value)
+        .add(maximumSingleQuery, queryTimeType.value)
+        .startOf(queryTimeType.value)
+        .valueOf() -
+        1000 <
+      timeStamp
+  }
   if (intervalType === 'none') {
+    if (dynamicWindow) return isDynamicWindowTime
     return false
   }
   let startTime
@@ -239,11 +267,11 @@ const disabledDate = val => {
   const startValue = regularOrTrends === 'fixed' ? regularOrTrendsValue : startTime
 
   if (intervalType === 'start') {
-    return timeStamp < +new Date(startValue)
+    return timeStamp < +new Date(startValue) || isDynamicWindowTime
   }
 
   if (intervalType === 'end') {
-    return timeStamp > +new Date(startValue)
+    return timeStamp > +new Date(startValue) || isDynamicWindowTime
   }
 
   if (intervalType === 'timeInterval') {
@@ -259,7 +287,11 @@ const disabledDate = val => {
             aroundRange === 'f' ? 'subtract' : 'add',
             timeNumRange
           )
-    return timeStamp < +new Date(startTime) - 1000 || timeStamp > +new Date(endTime)
+    return (
+      timeStamp < +new Date(startTime) - 1000 ||
+      timeStamp > +new Date(endTime) ||
+      isDynamicWindowTime
+    )
   }
 }
 
@@ -341,11 +373,13 @@ const formatDate = computed(() => {
     :key="config.timeGranularityMultiple"
     :type="config.timeGranularityMultiple"
     :style="selectStyle"
+    @visible-change="visibleChange"
     :disabled-date="disabledDate"
+    @calendar-change="calendarChange"
     :format="formatDate"
+    :prefix-icon="calendar"
     v-if="multiple"
     @change="handleValueChange"
-    :prefix-icon="Calendar"
     :range-separator="$t('cron.to')"
     :start-placeholder="$t('datasource.start_time')"
     :end-placeholder="$t('datasource.end_time')"
@@ -354,9 +388,8 @@ const formatDate = computed(() => {
     v-else
     v-model="selectValue"
     :type="config.timeGranularity"
-    :disabled-date="disabledDate"
+    :prefix-icon="calendar"
     :style="selectStyle"
-    :prefix-icon="Calendar"
     :placeholder="$t('commons.date.select_date_time')"
   />
   <div
