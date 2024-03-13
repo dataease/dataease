@@ -89,7 +89,7 @@ public class ViewExportExcel {
     private List<String> findTableInfoViewIds(List<Map<String, Object>> components) {
         List<String> tableInfoViewIds = new ArrayList<>();
         components.forEach(element -> {
-            if (StringUtils.equals(element.get("type").toString(), "view") && StringUtils.equals(((Map<String, Object>) element.get("propValue")).get("innerType").toString(), "table-info")) {
+            if (StringUtils.equals(String.valueOf(element.get("type")), "view") && StringUtils.equals(String.valueOf(((Map<String, Object>) element.get("propValue")).get("innerType")), "table-info")) {
                 tableInfoViewIds.add(((Map<String, Object>) element.get("propValue")).get("viewId").toString());
             }
         });
