@@ -1,0 +1,118 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.visualization.dao.ext.mapper.ExtVisualizationOuterParamsMapper">
+
+    <resultMap id="BaseResultMapParams" type="io.dataease.visualization.dao.auto.entity.VisualizationOuterParams">
+        <id column="params_id" jdbcType="VARCHAR" property="paramsId" />
+        <result column="visualization_id" jdbcType="VARCHAR" property="visualizationId" />
+        <result column="checked" jdbcType="BIT" property="checked" />
+        <result column="remark" jdbcType="VARCHAR" property="remark" />
+        <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
+        <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
+    </resultMap>
+
+    <resultMap id="BaseResultMapParamsInfo" type="io.dataease.visualization.dao.auto.entity.VisualizationOuterParamsInfo">
+        <id column="params_info_id" jdbcType="VARCHAR" property="paramsInfoId" />
+        <result column="params_id" jdbcType="VARCHAR" property="paramsId" />
+        <result column="param_name" jdbcType="VARCHAR" property="paramName" />
+        <result column="checked" jdbcType="BIT" property="checked" />
+        <result column="copy_from" jdbcType="VARCHAR" property="copyFrom" />
+        <result column="copy_id" jdbcType="VARCHAR" property="copyId" />
+    </resultMap>
+
+  <resultMap id="BaseResultMapDTO" type="io.dataease.api.visualization.dto.VisualizationOuterParamsDTO"
+             extends="BaseResultMapParams">
+    <collection property="outerParamsInfoArray" ofType="io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO"
+                column="{visualization_id=visualization_id}"
+                select="getOuterParamsInfo">
+    </collection>
+  </resultMap>
+
+  <resultMap id="OuterParamsInfoMap" type="io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO" extends="BaseResultMapParamsInfo">
+    <collection property="targetViewInfoList" ofType="io.dataease.visualization.dao.auto.entity.VisualizationOuterParamsTargetViewInfo">
+      <result column="target_view_id" jdbcType="VARCHAR" property="targetViewId"/>
+      <result column="target_field_id" jdbcType="VARCHAR" property="targetFieldId"/>
+    </collection>
+  </resultMap>
+
+    <resultMap id="AllOuterParamsMap" type="io.dataease.api.visualization.dto.VisualizationOuterParamsInfoDTO">
+        <result column="sourceInfo" jdbcType="VARCHAR" property="sourceInfo"/>
+        <collection property="targetInfoList" ofType="String">
+            <result column="targetInfo" jdbcType="VARCHAR"/>
+        </collection>
+    </resultMap>
+
+  <select id="getOuterParamsInfo" resultMap="OuterParamsInfoMap">
+        SELECT
+            pop.visualization_id,
+            popi.params_info_id,
+            popi.param_name,
+            ifnull( popi.checked, 0 ) AS checked,
+            poptvi.target_view_id,
+            poptvi.target_field_id
+        FROM
+            visualization_outer_params pop
+            LEFT JOIN visualization_outer_params_info popi ON pop.params_id = popi.params_id
+            LEFT JOIN visualization_outer_params_target_view_info poptvi ON popi.params_info_id = poptvi.params_info_id
+        WHERE
+            pop.visualization_id = #{visualization_id}
+        ORDER BY
+            ifnull( popi.checked, 0 ) DESC
+    </select>
+
+  <select id="queryWithVisualizationId"  resultMap="BaseResultMapDTO">
+    SELECT
+        #{visualizationId} as visualization_id,
+        ifnull( visualization_outer_params.checked, 0 ) AS checked
+    FROM
+        visualization_group
+        LEFT JOIN visualization_outer_params ON visualization_group.id = visualization_outer_params.visualization_id
+    WHERE
+        visualization_group.id = #{visualizationId}
+  </select>
+
+    <delete id="deleteOuterParamsTargetWithVisualizationId" >
+        DELETE poptvi
+        FROM
+            visualization_outer_params_target_view_info poptvi,
+            visualization_outer_params_info popi,
+            visualization_outer_params pop
+        WHERE
+            poptvi.params_info_id = popi.params_info_id
+            AND popi.params_id = pop.params_id
+            AND pop.visualization_id = #{visualizationId}
+	</delete>
+
+    <delete id="deleteOuterParamsInfoWithVisualizationId" >
+        DELETE popi
+        FROM
+            visualization_outer_params_info popi,
+            visualization_outer_params pop
+        WHERE
+             popi.params_id = pop.params_id
+            AND pop.visualization_id = #{visualizationId}
+	</delete>
+
+    <delete id="deleteOuterParamsWithVisualizationId" >
+        DELETE pop
+        FROM
+            visualization_outer_params pop
+        WHERE
+            pop.visualization_id = #{visualizationId}
+	</delete>
+
+    <select id="getVisualizationOuterParamsInfo" resultMap="AllOuterParamsMap">
+        SELECT DISTINCT
+            param_name AS sourceInfo,
+            CONCAT( poptvi.target_view_id, '#', poptvi.target_field_id ) AS targetInfo
+        FROM
+            visualization_outer_params pop
+            LEFT JOIN visualization_outer_params_info popi ON pop.params_id = popi.params_id
+            LEFT JOIN visualization_outer_params_target_view_info poptvi ON popi.params_info_id = poptvi.params_info_id
+        WHERE
+            pop.visualization_id = #{visualizationId} and pop.checked=1
+            and popi.checked=1
+    </select>
+
+
+</mapper>
