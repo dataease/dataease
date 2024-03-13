@@ -1,9 +1,11 @@
+getLastStart
 <script lang="ts" setup>
 import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { addQueryCriteriaConfig } from './options'
 import { getCustomTime } from './time-format'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
@@ -20,6 +22,8 @@ import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import draggable from 'vuedraggable'
 import RangeFilterTime from './RangeFilterTime.vue'
+import type { ManipulateType } from 'dayjs'
+import dayjs from 'dayjs'
 
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
@@ -268,6 +272,102 @@ const multipleChange = (val: boolean, isMultipleChange = false) => {
   curComponent.value.multiple = val
 }
 
+const isInRange = (ele, startWindowTime, timeStamp) => {
+  const {
+    intervalType,
+    regularOrTrends,
+    regularOrTrendsValue,
+    relativeToCurrent,
+    timeNum,
+    relativeToCurrentType,
+    around,
+    dynamicWindow,
+    maximumSingleQuery,
+    timeNumRange,
+    relativeToCurrentTypeRange,
+    aroundRange
+  } = ele.timeRange || {}
+  let isDynamicWindowTime = false
+  const noTime = ele.timeGranularityMultiple.split('time').join('').split('range')[0]
+  const queryTimeType = noTime === 'date' ? 'day' : (noTime as ManipulateType)
+  if (startWindowTime && dynamicWindow) {
+    isDynamicWindowTime =
+      dayjs(startWindowTime)
+        .add(maximumSingleQuery, queryTimeType)
+        .startOf(queryTimeType)
+        .valueOf() -
+        1000 <
+      timeStamp
+  }
+
+  if (intervalType === 'none') {
+    if (dynamicWindow) return isDynamicWindowTime
+    return false
+  }
+  let startTime
+  if (relativeToCurrent === 'custom') {
+    startTime = getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+  } else {
+    switch (relativeToCurrent) {
+      case 'thisYear':
+        startTime = getThisStart('year')
+        break
+      case 'lastYear':
+        startTime = getLastStart('year')
+        break
+      case 'thisMonth':
+        startTime = getThisStart('month')
+        break
+      case 'lastMonth':
+        startTime = getLastStart('month')
+        break
+      case 'today':
+        startTime = getThisStart('day')
+        break
+      case 'yesterday':
+        startTime = getLastStart('day')
+        break
+      case 'monthBeginning':
+        startTime = getThisStart('month')
+        break
+      case 'yearBeginning':
+        startTime = getThisStart('year')
+        break
+
+      default:
+        break
+    }
+  }
+  const startValue = regularOrTrends === 'fixed' ? regularOrTrendsValue : startTime
+  if (intervalType === 'start') {
+    return startWindowTime < +new Date(startValue) || isDynamicWindowTime
+  }
+
+  if (intervalType === 'end') {
+    return timeStamp > +new Date(startValue) || isDynamicWindowTime
+  }
+
+  if (intervalType === 'timeInterval') {
+    const startTime =
+      regularOrTrends === 'fixed'
+        ? regularOrTrendsValue[0]
+        : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+    const endTime =
+      regularOrTrends === 'fixed'
+        ? regularOrTrendsValue[1]
+        : getAround(
+            relativeToCurrentTypeRange,
+            aroundRange === 'f' ? 'subtract' : 'add',
+            timeNumRange
+          )
+    return (
+      startWindowTime < +new Date(startTime) - 1000 ||
+      timeStamp > +new Date(endTime) ||
+      isDynamicWindowTime
+    )
+  }
+}
+
 const validate = () => {
   return conditions.value.some(ele => {
     if (ele.auto) return false
@@ -292,8 +392,13 @@ const validate = () => {
     }
 
     if (+ele.displayType === 7) {
-      if (!ele.defaultValueCheck) {
-        return false
+      if (!ele.defaultValueCheck) return false
+      if (ele.timeType === 'fixed') {
+        const [s, e] = ele.defaultValue || []
+        if (!s || !e) {
+          ElMessage.error('默认时间不能为空!')
+          return true
+        }
       }
       const {
         timeNum,
@@ -305,29 +410,51 @@ const validate = () => {
         timeNumRange,
         relativeToCurrentTypeRange,
         aroundRange,
-        arbitraryTimeRange
+        arbitraryTimeRange,
+        timeType
       } = ele
 
-      const startTime = getCustomTime(
-        timeNum,
-        relativeToCurrentType,
-        timeGranularity,
-        around,
-        arbitraryTime,
-        timeGranularityMultiple,
-        'start-config'
-      )
-      const endTime = getCustomTime(
-        timeNumRange,
-        relativeToCurrentTypeRange,
-        timeGranularity,
-        aroundRange,
-        arbitraryTimeRange,
-        timeGranularityMultiple,
-        'end-config'
-      )
+      const startTime =
+        timeType === 'dynamic'
+          ? getCustomTime(
+              timeNum,
+              relativeToCurrentType,
+              timeGranularity,
+              around,
+              arbitraryTime,
+              timeGranularityMultiple,
+              'start-config'
+            )
+          : new Date(ele.defaultValue[0])
+      const endTime =
+        timeType === 'dynamic'
+          ? getCustomTime(
+              timeNumRange,
+              relativeToCurrentTypeRange,
+              timeGranularity,
+              aroundRange,
+              arbitraryTimeRange,
+              timeGranularityMultiple,
+              'end-config'
+            )
+          : new Date(ele.defaultValue[1])
       if (+startTime > +endTime) {
         ElMessage.error('结束时间必须大于开始时间!')
+        return true
+      }
+      if (!ele.setTimeRange) return false
+      if (
+        isInRange(
+          ele,
+          timeGranularityMultiple.includes('time')
+            ? dayjs(+startTime).startOf('day').valueOf()
+            : +startTime,
+          timeGranularityMultiple.includes('time')
+            ? dayjs(+endTime).startOf('day').valueOf()
+            : +endTime
+        )
+      ) {
+        ElMessage.error('默认值必须在时间筛选范围内!')
         return true
       }
       return false
