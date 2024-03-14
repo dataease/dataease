@@ -49,23 +49,15 @@ public class SQLConstants {
 
     public static final String FIELD_DOT = "`%s`";
 
-    public static final String UNIX_TIMESTAMP = "UNIX_TIMESTAMP(%s)";
-
-    public static final String DATE_FORMAT = "DATE_FORMAT(%s,'%s')";
+    public static final String UNIX_TIMESTAMP = "DE_UNIX_TIMESTAMP(%s)";
 
     public static final String DE_DATE_FORMAT = "DE_DATE_FORMAT(%s,'%s')";
 
-    public static final String CAST_DATE_FORMAT = "CAST_DATE_FORMAT(%s,'%s','%s')";
-
     public static final String DE_CAST_DATE_FORMAT = "DE_CAST_DATE_FORMAT(%s,'%s','%s')";
 
-    public static final String FROM_UNIXTIME = "FROM_UNIXTIME(%s,'%s')";
-
-    public static final String STR_TO_DATE = "STR_TO_DATE(%s,'%s')";
+    public static final String FROM_UNIXTIME = "DE_FROM_UNIXTIME(%s,'%s')";
 
     public static final String DE_STR_TO_DATE = "DE_STR_TO_DATE(%s,'%s')";
-
-    public static final String GET_DATE_FORMAT = "GET_DATE_FORMAT(%s)";
 
     public static final String CAST = "CAST(%s AS %s)";
 
