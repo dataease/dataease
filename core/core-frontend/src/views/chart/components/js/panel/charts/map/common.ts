@@ -41,6 +41,7 @@ export const MAP_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
 export const MAP_AXIS_TYPE: AxisType[] = [
   'xAxis',
   'yAxis',
+  'area',
   'drill',
   'filter',
   'extLabel',

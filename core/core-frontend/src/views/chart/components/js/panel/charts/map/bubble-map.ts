@@ -104,7 +104,6 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     view.once('loaded', () => {
       view.addLayer(dotLayer)
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
-        console.log(view)
         const data = ev.feature.properties
         action({
           x: ev.x,
@@ -120,14 +119,14 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   }
 
   private getDotLayer(chart: Chart, data: any[], geoJson: FeatureCollection): IPlotLayer {
-    const areaMap = data.reduce((obj, value) => {
+    const areaMap = data?.reduce((obj, value) => {
       obj[value['field']] = value.value
       return obj
     }, {})
     const dotData = []
     geoJson.features.forEach(item => {
       const name = item.properties['name']
-      if (areaMap[name]) {
+      if (areaMap?.[name]) {
         dotData.push({
           x: item.properties['centroid'][0],
           y: item.properties['centroid'][1],

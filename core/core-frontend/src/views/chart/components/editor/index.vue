@@ -205,17 +205,17 @@ watch(
     if (showAxis('area')) {
       if (!state.worldTree?.length) {
         getWorldTree().then(res => {
-          state.worldTree = [res.data]
+          state.worldTree.splice(0, state.worldTree.length, res.data)
           state.areaId = view.value?.customAttr?.map?.id
         })
       } else {
         state.areaId = view.value?.customAttr?.map?.id
       }
       areaSelect.value?.blur()
-      expandKeys.value = []
-      areaSelect.value?.setCurrentKey(state.areaId, state.areaId)
+      expandKeys.value.splice(0)
+      areaSelect.value?.setCurrentKey(state.areaId)
     }
-    state.chartTypeOptions = [getViewConfig(newVal[0])]
+    state.chartTypeOptions.splice(0, state.chartTypeOptions.length, getViewConfig(newVal[0]))
     state.useless = newVal[0]
   },
   { immediate: true, deep: false }

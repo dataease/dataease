@@ -150,6 +150,7 @@ const country = ref('')
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 let mapTimer
+const chartContainer = ref<HTMLElement>(null)
 const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>, callback?) => {
   const map = parseJson(chart.customAttr).map
   let areaId = map.id
@@ -160,6 +161,9 @@ const renderL7Plot = (chart, chartView: L7PlotChartView<any, any>, callback?) =>
   mapTimer && clearTimeout(mapTimer)
   mapTimer = setTimeout(async () => {
     myChart?.destroy()
+    if (chartContainer.value) {
+      chartContainer.value.textContent = ''
+    }
     myChart = await chartView.drawChart({
       chartObj: myChart,
       container: containerId,
@@ -301,7 +305,7 @@ onBeforeUnmount(() => {
       :style="state.trackBarStyle"
       @trackClick="trackClick"
     />
-    <div v-if="!isError" class="canvas-content" :id="containerId"></div>
+    <div v-if="!isError" ref="chartContainer" class="canvas-content" :id="containerId"></div>
     <chart-error v-else :err-msg="errMsg" />
   </div>
 </template>
