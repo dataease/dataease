@@ -197,7 +197,7 @@ fi
 export COMPOSE_HTTP_TIMEOUT=180
 cd ${CURRENT_DIR}
 
-for i in $(docker images --format '{{.Repository}}:{{.Tag}}'); do
+for i in $(docker images --format '{{.Repository}}:{{.Tag}}' | grep dataease); do
    current_images[${#current_images[@]}]=${i##*/}
 done
 
