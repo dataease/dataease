@@ -1,5 +1,5 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { componentStyle } from '../common/common'
+import { componentStyle, configTopN } from '../common/common'
 import { BASE_ECHARTS_SELECT, DEFAULT_TOOLTIP } from '@/views/chart/chart/chart'
 
 export function basePieOption(chart_option, chart) {
@@ -50,6 +50,7 @@ export function basePieOption(chart_option, chart) {
         y.type = 'pie'
         chart_option.series[0].data.push(y)
       }
+      configTopN(chart_option.series[0].data, chart)
     }
   }
   componentStyle(chart_option, chart)

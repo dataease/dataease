@@ -40,7 +40,9 @@ export const DEFAULT_COLOR_CASE = {
   mapLineGradient: false,
   mapLineSourceColor: '#146C94',
   mapLineTargetColor: '#576CBC',
-  quotaSuffixColor: '#5470c6'
+  quotaSuffixColor: '#5470c6',
+  calcTopN: false,
+  topN: 5,
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -65,7 +67,9 @@ export const DEFAULT_COLOR_CASE_DARK = {
   mapLineGradient: false,
   mapLineSourceColor: '#2F58CD',
   mapLineTargetColor: '#3795BD',
-  quotaSuffixColor: '#5470c6'
+  quotaSuffixColor: '#5470c6',
+  calcTopN: false,
+  topN: 5,
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
