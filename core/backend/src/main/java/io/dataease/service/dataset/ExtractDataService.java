@@ -757,8 +757,6 @@ public class ExtractDataService {
         for (ExcelSheetData excelSheetData : excelSheetDataList) {
             String suffix = excelSheetData.getPath().substring(excelSheetData.getPath().lastIndexOf(".") + 1);
             List<ExcelSheetData> totalSheets = new ArrayList<>();
-            totalSheets = dataSetTableService.excelSheetDataList(new FileInputStream(excelSheetData.getPath()), false);
-
             if (StringUtils.equalsIgnoreCase(suffix, "csv")) {
                 List<TableField> fields = new ArrayList<>();
                 BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(excelSheetData.getPath()), StandardCharsets.UTF_8));
@@ -796,6 +794,8 @@ public class ExtractDataService {
                 csvSheetData.setExcelLabel(excelSheetData.getExcelLabel());
                 csvSheetData.setFieldsMd5(Md5Utils.md5(StringUtils.join(fieldArray, ",")));
                 totalSheets = Arrays.asList(csvSheetData);
+            }else {
+                totalSheets = dataSetTableService.excelSheetDataList(new FileInputStream(excelSheetData.getPath()), false);
             }
 
 

@@ -161,7 +161,7 @@ export default {
           content: this.$t('wizard.online_document_hint'),
           img: 'wizard_help',
           bgColor: '#F3F2FF',
-          href: 'https://dataease.io/docs/index.html'
+          href: 'https://dataease.io/docs/v1/index.html'
         },
         {
           head: this.$t('wizard.enterprise_edition'),

@@ -114,6 +114,7 @@ import { DEFAULT_COLOR_CASE, DEFAULT_SCROLL, DEFAULT_SIZE, NOT_SUPPORT_PAGE_DATA
 import { mapState } from 'vuex'
 import DePagination from '@/components/deCustomCm/pagination.js'
 import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar.vue'
+import { copyString } from '@/views/chart/chart/common/common'
 export default {
   name: 'TableNormal',
   components: { ViewTrackBar, DePagination },
@@ -502,6 +503,13 @@ export default {
           this.bg_class.background = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
         }
       }
+      if (this.showSummary) {
+        const footerArr = this.$refs.tableContainer.getElementsByClassName('elx-footer--row')
+        if (footerArr.length) {
+          const footer = footerArr.item(0)
+          footer.addEventListener('contextmenu', this.summaryRightClick)
+        }
+      }
     },
     getRowStyle({ row, rowIndex }) {
       if (rowIndex % 2 !== 0) {
@@ -658,9 +666,28 @@ export default {
     },
     cellRightClick(event) {
       if (event.target?.innerText) {
-        navigator.clipboard.writeText(event.target.innerText)
+        copyString(event.target.innerText, true)
       }
       event.preventDefault()
+    },
+    summaryRightClick(event) {
+      let targetDom
+      if (event.target.classList.contains('elx-cell--item')) {
+        targetDom = event.target
+      }
+      if (!targetDom) {
+        const tmp = event.target.getElementsByClassName('elx-cell--item')
+        if (tmp.length) {
+          targetDom = tmp.item(0)
+        }
+      }
+      if (targetDom) {
+        const content = targetDom.innerText
+        if (content?.trim()) {
+          copyString(content, true)
+        }
+        event.preventDefault()
+      }
     },
     antVActionPost(dimensionList, name, param) {
       this.pointParam = {

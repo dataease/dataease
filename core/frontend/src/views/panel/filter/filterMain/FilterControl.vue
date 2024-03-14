@@ -70,6 +70,7 @@
     <el-col :span="16">
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
+          
           <el-checkbox
             v-model="attrs.showTitle"
             @change="showTitleChange"

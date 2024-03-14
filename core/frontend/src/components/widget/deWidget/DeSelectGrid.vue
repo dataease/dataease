@@ -29,18 +29,18 @@
           v-model="checkAll"
           :indeterminate="isIndeterminate"
           @change="handleCheckAllChange"
-        />
+        >
         {{ $t('commons.all') }}
-
+        </el-checkbox>
         <el-checkbox-group
           v-model="value"
           @change="handleCheckedChange"
         >
-          <template v-for="item in data">
+          <template v-for="item in dataWithEmpty">
             <el-checkbox
               :key="item.id"
               :label="item.id"
-            >{{ item.id }}
+            >{{ item.label || item.id }}
             </el-checkbox>
             <br :key="item.id">
           </template>
@@ -56,12 +56,12 @@
           @change="changeRadioBox"
         >
           <el-radio
-            v-for="(item, index) in data"
-            :key="index"
+            v-for="item in dataWithEmpty"
+            :key="item.id"
             :label="item.id"
             @click.native.prevent="testChange(item)"
           >
-            <span>{{ item.id }}</span>
+            <span>{{item.label || item.id  }}</span>
           </el-radio>
         </el-radio-group>
       </div>
@@ -129,6 +129,9 @@ export default {
     }
   },
   computed: {
+    dataWithEmpty() {
+      return this.element.options.attrs.showEmpty ? [{ label: '空数据', id: '_empty_$'}, ...this.data] : this.data
+    },
     operator() {
       return this.element.options.attrs.multiple ? 'in' : 'eq'
     },
@@ -173,8 +176,8 @@ export default {
       this.changeValue(value)
 
       if (this.element.options.attrs.multiple) {
-        this.checkAll = this.value.length === this.data.length
-        this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
+        this.checkAll = this.value.length === this.dataWithEmpty.length
+        this.isIndeterminate = this.value.length > 0 && this.value.length < this.dataWithEmpty.length
       }
     },
     'element.options.attrs.fieldId': function(value, old) {
@@ -197,8 +200,8 @@ export default {
         this.clearDefault(this.data)
         this.changeInputStyle()
         if (this.element.options.attrs.multiple) {
-          this.checkAll = this.value.length === this.data.length
-          this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
+          this.checkAll = this.value.length === this.dataWithEmpty.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.dataWithEmpty.length
         }
       }) || (this.element.options.value = '')
     },
@@ -215,8 +218,8 @@ export default {
       this.$nextTick(() => {
         this.show = true
         if (value) {
-          this.checkAll = this.value.length === this.data.length
-          this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
+          this.checkAll = this.value.length === this.dataWithEmpty.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.dataWithEmpty.length
         }
         this.changeInputStyle()
       })
@@ -240,8 +243,8 @@ export default {
         this.data = this.optionData(res.data)
         this.changeInputStyle()
         if (this.element.options.attrs.multiple) {
-          this.checkAll = this.value.length === this.data.length
-          this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
+          this.checkAll = this.value.length === this.dataWithEmpty.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.dataWithEmpty.length
         }
       }) || (this.element.options.value = '')
     },
@@ -316,8 +319,8 @@ export default {
         this.changeValue(this.value)
 
         if (this.element.options.attrs.multiple) {
-          this.checkAll = this.value.length === this.data.length
-          this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
+          this.checkAll = this.value.length === this.dataWithEmpty.length
+          this.isIndeterminate = this.value.length > 0 && this.value.length < this.dataWithEmpty.length
         }
       }
     },
@@ -366,8 +369,8 @@ export default {
           this.data = this.optionData(res.data)
           this.changeInputStyle()
           if (this.element.options.attrs.multiple) {
-            this.checkAll = this.value.length === this.data.length
-            this.isIndeterminate = this.value.length > 0 && this.value.length < this.data.length
+            this.checkAll = this.value.length === this.dataWithEmpty.length
+            this.isIndeterminate = this.value.length > 0 && this.value.length < this.dataWithEmpty.length
           }
         })
       }
@@ -452,14 +455,14 @@ export default {
       this.changeValue(value)
     },
     handleCheckAllChange(val) {
-      this.value = val ? this.data.map(item => item.id) : []
+      this.value = val ? this.dataWithEmpty.map(item => item.id) : []
       this.isIndeterminate = false
       this.changeValue(this.value)
     },
     handleCheckedChange(values) {
       const checkedCount = values.length
-      this.checkAll = checkedCount === this.data.length
-      this.isIndeterminate = checkedCount > 0 && checkedCount < this.data.length
+      this.checkAll = checkedCount === this.dataWithEmpty.length
+      this.isIndeterminate = checkedCount > 0 && checkedCount < this.dataWithEmpty.length
       this.changeValue(values)
     },
     testChange(item) {

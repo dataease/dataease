@@ -327,6 +327,7 @@ export default {
         this.fileList.push({ url: imgUrlTrans(this.curComponent.commonBackground.outerImage) })
       }
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground ? this.curComponent.commonBackground : COMMON_BACKGROUND_NONE)
+      this.backgroundOrigin.style = deepCopy(this.curComponent.style || { brColor: '', innerBgColor: '', wordColor: ''})
       this.queryBackground()
     },
     queryBackground() {
@@ -343,6 +344,10 @@ export default {
       this.curComponent.commonBackground.alpha = this.backgroundOrigin.alpha
       this.curComponent.commonBackground.borderRadius = this.backgroundOrigin.borderRadius
       this.curComponent.commonBackground.innerPadding = this.backgroundOrigin.innerPadding
+      this.curComponent.style.brColor = this.backgroundOrigin.style.brColor
+      this.curComponent.style.innerBgColor = this.backgroundOrigin.style.innerBgColor
+      this.curComponent.style.wordColor = this.backgroundOrigin.style.wordColor
+      console.log('backgroundSetClose');
       this.$emit('backgroundSetClose')
     },
     save() {

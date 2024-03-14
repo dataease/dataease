@@ -1468,7 +1468,11 @@ public class Db2QueryProvider extends QueryProvider {
                 if (isFloat) {
                     whereValue = "(" + StringUtils.join(value, ",") + ")";
                 } else {
-                    whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    if (value.contains(SQLConstants.EMPTY_SIGN)) {
+                        whereValue = "('" + StringUtils.join(value, "','") + "', '')" + " or " + whereName + " is null ";
+                    } else {
+                        whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    }
                 }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 String keyword = value.get(0).toUpperCase();
@@ -1487,7 +1491,12 @@ public class Db2QueryProvider extends QueryProvider {
                 if (isFloat) {
                     whereValue = value.get(0);
                 } else {
-                    whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, value.get(0));
+                    // 过滤空数据
+                    if (StringUtils.equals(value.get(0), SQLConstants.EMPTY_SIGN)) {
+                        whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, "") + " or " + whereName + " is null ";
+                    } else {
+                        whereValue = String.format(Db2Constants.WHERE_VALUE_VALUE, value.get(0));
+                    }
                 }
 
             }
@@ -1497,7 +1506,7 @@ public class Db2QueryProvider extends QueryProvider {
                     .build());
         }
         List<String> strList = new ArrayList<>();
-        list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+        list.forEach(ele -> strList.add("(" + ele.getWhereField() + " " + ele.getWhereTermAndValue() + ")"));
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null;
     }
 

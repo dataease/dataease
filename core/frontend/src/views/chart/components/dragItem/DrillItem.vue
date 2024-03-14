@@ -61,7 +61,6 @@
         <el-dropdown-menu slot="dropdown">
           <el-dropdown-item
             v-show="item.deType === 1"
-            divided
           >
             <el-dropdown
               placement="right-start"

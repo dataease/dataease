@@ -172,6 +172,7 @@ export default {
   watch: {
     'element.style': {
       handler(val) {
+        this.setPlaceholderColor()
         this.handlerPositionChange(val)
       },
       deep: true,
@@ -186,6 +187,7 @@ export default {
     }
   },
   mounted() {
+    this.setPlaceholderColor()
   },
   created() {
     const { horizontal, vertical, brColor, wordColor, innerBgColor } = this.element.style
@@ -196,6 +198,15 @@ export default {
     this.$set(this.element.style, 'innerBgColor', innerBgColor || '')
   },
   methods: {
+    setPlaceholderColor() {
+      let styleEle = document.querySelector(`#style${this.element.id}`)
+      if (!styleEle) {
+        styleEle = document.createElement('style')
+        styleEle.id = `style${this.element.id}`
+        document.querySelector('head').appendChild(styleEle)
+      }
+      styleEle.innerHTML = `#component${this.element.id} .el-input__inner::placeholder {\n  color: ${this.element.style.wordColor} \n    }`
+    },
     filterLoaded(p) {
       this.$emit('filter-loaded', p)
     },

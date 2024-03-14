@@ -81,7 +81,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start.sh | bash
 
 **学习资料**
 
--   [在线文档](https://dataease.io/docs/)
+-   [在线文档](https://dataease.io/docs/v1)
 -   [社区论坛](https://bbs.fit2cloud.com/c/de/6)
 
 ## DataEase v1 的技术栈

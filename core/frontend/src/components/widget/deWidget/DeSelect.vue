@@ -6,7 +6,7 @@
     v-model="value"
     :class-id="'visual-' + element.id + '-' + inDraw + '-' + inScreen"
     :collapse-tags="showNumber"
-    :clearable="!element.options.attrs.multiple && (inDraw || !selectFirst)"
+    :clearable="(inDraw || !selectFirst)"
     :multiple="element.options.attrs.multiple"
     :placeholder="showRequiredTips ? $t('panel.required_tips') : ($t(element.options.attrs.placeholder) + placeholderSuffix)"
     :popper-append-to-body="inScreen"
@@ -17,7 +17,7 @@
     :key-word="keyWord"
     popper-class="coustom-de-select"
     :class="{'disabled-close': !inDraw && selectFirst && element.options.attrs.multiple, 'show-required-tips': showRequiredTips}"
-    :list="data"
+    :list="(element.options.attrs.showEmpty ? [{ text: '空数据', id: '_empty_$'}, ...data] : data)"
     :flag="flag"
     :is-config="isConfig"
     :custom-style="customStyle"
@@ -555,7 +555,7 @@ export default {
       if (this.isCustomSortWidget && this.element.options.attrs?.sort?.sort === 'custom') {
         tempData = mergeCustomSortOption(this.element.options.attrs.sort.list, tempData)
       }
-      this.filterInvalidValue(tempData)
+      this.filterInvalidValue(this.element.options.attrs.showEmpty ? [...tempData, '_empty_$'] : tempData)
       return tempData.map(item => {
         return {
           id: item,

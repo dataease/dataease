@@ -1181,7 +1181,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 whereValue = "'" + value + "%'";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
                 whereValue = "'%" + value + "'";
-            }else {
+            } else {
                 if (field.getType().equalsIgnoreCase("NVARCHAR")) {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value);
                 } else {
@@ -1270,7 +1270,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                 whereValue = "'" + value + "%'";
             } else if (StringUtils.containsIgnoreCase(item.getTerm(), "end_with")) {
                 whereValue = "'%" + value + "'";
-            }else {
+            } else {
                 if (field.getType().equalsIgnoreCase("NVARCHAR")) {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value);
                 } else {
@@ -1523,7 +1523,12 @@ public class SqlserverQueryProvider extends QueryProvider {
                         return "N" + "'" + str + "'";
                     }).collect(Collectors.joining(",")) + ")";
                 } else {
-                    whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    // 过滤空数据
+                    if (value.contains(SQLConstants.EMPTY_SIGN)) {
+                        whereValue = "('" + StringUtils.join(value, "','") + "', '')" + " or " + whereName + " is null ";
+                    } else {
+                        whereValue = "('" + StringUtils.join(value, "','") + "')";
+                    }
                 }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 String keyword = value.get(0).toUpperCase();
@@ -1543,7 +1548,12 @@ public class SqlserverQueryProvider extends QueryProvider {
                 if ((request.getDatasetTableField() != null && request.getDatasetTableField().getType().equalsIgnoreCase("NVARCHAR")) || (request.getDatasetTableFieldList() != null && request.getDatasetTableFieldList().stream().map(DatasetTableField::getType).collect(Collectors.toList()).contains("nvarchar"))) {
                     whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE_CH, value.get(0));
                 } else {
-                    whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value.get(0));
+                    // 过滤空数据
+                    if (StringUtils.equals(value.get(0), SQLConstants.EMPTY_SIGN)) {
+                        whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, "") + " or " + whereName + " is null ";
+                    } else {
+                        whereValue = String.format(SqlServerSQLConstants.WHERE_VALUE_VALUE, value.get(0));
+                    }
                 }
 
             }
@@ -1553,7 +1563,7 @@ public class SqlserverQueryProvider extends QueryProvider {
                     .build());
         }
         List<String> strList = new ArrayList<>();
-        list.forEach(ele -> strList.add(ele.getWhereField() + " " + ele.getWhereTermAndValue()));
+        list.forEach(ele -> strList.add("(" + ele.getWhereField() + " " + ele.getWhereTermAndValue() + ")"));
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null;
     }
 

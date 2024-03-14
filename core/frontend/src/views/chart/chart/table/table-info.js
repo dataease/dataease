@@ -17,6 +17,7 @@ import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { handleTableEmptyStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
 import { maxBy, minBy, find } from 'lodash-es'
 import TableTooltip from '@/views/chart/components/table/TableTooltip.vue'
+import { copyString } from '@/views/chart/chart/common/common'
 
 class SortTooltip extends BaseTooltip {
   vueCom
@@ -76,15 +77,12 @@ class SortTooltip extends BaseTooltip {
     })
   }
 }
-export function baseTableInfo(s2, container, chart, action, tableData, pageInfo, vueCom, resizeFunc) {
+export function baseTableInfo(container, chart, action, tableData, pageInfo, vueCom, resizeFunc) {
   const containerDom = document.getElementById(container)
 
   // fields
   let fields = chart.data.fields
   if (!fields || fields.length === 0) {
-    if (s2) {
-      s2.destroy()
-    }
     return
   }
 
@@ -242,10 +240,7 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo,
   }
 
   // 开始渲染
-  if (s2) {
-    s2.destroy()
-  }
-  s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
+  const s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
 
   // click
   s2.on(S2Event.DATA_CELL_CLICK, action)
@@ -270,16 +265,13 @@ export function baseTableInfo(s2, container, chart, action, tableData, pageInfo,
   return s2
 }
 
-export function baseTableNormal(s2, container, chart, action, tableData, vueCom, resizeFunc) {
+export function baseTableNormal(container, chart, action, tableData, vueCom, resizeFunc) {
   const containerDom = document.getElementById(container)
   if (!containerDom) return
 
   // fields
   const fields = chart.data.fields
   if (!fields || fields.length === 0) {
-    if (s2) {
-      s2.destroy()
-    }
     return
   }
 
@@ -482,10 +474,7 @@ export function baseTableNormal(s2, container, chart, action, tableData, vueCom,
   }
 
   // 开始渲染
-  if (s2) {
-    s2.destroy()
-  }
-  s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
+  const s2 = new TableSheet(containerDom, s2DataConfig, s2Options)
 
   // click
   s2.on(S2Event.DATA_CELL_CLICK, action)
@@ -510,7 +499,7 @@ export function baseTableNormal(s2, container, chart, action, tableData, vueCom,
   return s2
 }
 
-export function baseTablePivot(s2, container, chart, action, headerAction, tableData) {
+export function baseTablePivot(container, chart, action, headerAction, tableData) {
   const containerDom = document.getElementById(container)
 
   // row and column
@@ -531,9 +520,6 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
   // fields
   const fields = chart.data.fields
   if (!fields || fields.length === 0) {
-    if (s2) {
-      s2.destroy()
-    }
     return
   }
 
@@ -712,10 +698,7 @@ export function baseTablePivot(s2, container, chart, action, headerAction, table
   }
 
   // 开始渲染
-  if (s2) {
-    s2.destroy()
-  }
-  s2 = new PivotSheet(containerDom, s2DataConfig, s2Options)
+  const s2 = new PivotSheet(containerDom, s2DataConfig, s2Options)
 
   // click
   s2.on(S2Event.DATA_CELL_CLICK, action)
@@ -1111,7 +1094,7 @@ function getTooltipPosition(event) {
   return result
 }
 
-function copyContent(s2Instance, event, fieldMap) {
+function copyContent(s2Instance, event, fieldMeta) {
   event.preventDefault()
   const cell = s2Instance.getCell(event.target)
   const valueField = cell.getMeta().valueField
@@ -1120,7 +1103,7 @@ function copyContent(s2Instance, event, fieldMap) {
   // 单元格
   if (cellMeta?.data) {
     const value = cellMeta.data[valueField]
-    const metaObj = find(fieldMap, m =>
+    const metaObj = find(fieldMeta, m =>
       m.field === valueField
     )
     content = value?.toString()
@@ -1130,11 +1113,15 @@ function copyContent(s2Instance, event, fieldMap) {
   } else {
     // 列头&行头
     content = cellMeta.value
+    const fieldMap = fieldMeta?.reduce((p, n) => {
+      p[n.field] = n.name
+      return p
+    },{})
     if (fieldMap?.[content]) {
       content = fieldMap[content]
     }
   }
   if (content) {
-    navigator.clipboard.writeText(content)
+    copyString(content, true)
   }
 }

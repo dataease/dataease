@@ -34,7 +34,7 @@ export default {
     },
     multiple: {
       handler() {
-        if (!['de-select-tree', 'de-select'].includes(this.element.component)) return
+        if (!['de-select-tree', 'de-select', 'de-select-grid'].includes(this.element.component)) return
         const time = setTimeout(() => {
           clearTimeout(time)
           this.typeTransform().forEach(ele => {
