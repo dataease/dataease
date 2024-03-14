@@ -434,6 +434,13 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
       <div class="right-area" v-if="!batchOptStatus && !linkageSettingStatus">
         <template v-if="editMode !== 'preview'">
+          <el-tooltip effect="dark" content="外部参数设置" placement="bottom">
+            <component-button
+              tips="外部参数设置"
+              @custom-click="openOuterParamsSet"
+              icon-name="icon_params_setting"
+            />
+          </el-tooltip>
           <el-tooltip effect="dark" content="批量操作" placement="bottom">
             <component-button
               tips="批量操作"

@@ -754,6 +754,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     setNowTargetPanelJumpInfo(jumpInfo) {
       this.nowPanelJumpInfoTargetPanel = jumpInfo.baseJumpInfoVisualizationMap
     },
+    setNowPanelOuterParamsInfo(outerParamsInfo) {
+      this.nowPanelOuterParamsInfo = outerParamsInfo.outerParamsInfoMap
+    },
     // 添加联动 下钻 等查询组件
     addViewTrackFilter(data) {
       const viewId = data.viewId
@@ -793,6 +796,72 @@ export const dvMainStore = defineStore('dataVisualization', {
       preActiveComponentIds.forEach(viewId => {
         useEmitt().emitter.emit('query-data-' + viewId)
       })
+    },
+    // 添加外部参数的过滤条件
+    addOuterParamsFilter(params) {
+      // params 结构 {key1:value1,key2:value2}
+      const curComponentData = this.componentData
+      if (params) {
+        const trackInfo = this.nowPanelOuterParamsInfo
+        for (let index = 0; index < curComponentData.length; index++) {
+          const element = curComponentData[index]
+          if (element.component !== 'UserView') continue
+          const currentFilters = element.outerParamsFilters || [] // 外部参数信息
+
+          // 外部参数 可能会包含多个参数
+          Object.keys(params).forEach(function (sourceInfo) {
+            // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
+            let paramValue = params[sourceInfo]
+            let paramValueStr = params[sourceInfo]
+            let operator = 'in'
+            if (paramValue && !Array.isArray(paramValue)) {
+              paramValue = [paramValue]
+              operator = 'eq'
+            } else if (paramValue && Array.isArray(paramValue)) {
+              paramValueStr = ''
+              paramValue.forEach((innerValue, index) => {
+                if (index === 0) {
+                  paramValueStr = innerValue
+                } else {
+                  paramValueStr = paramValueStr + ',' + innerValue
+                }
+              })
+            }
+            // 获取所有目标联动信息
+            const targetInfoList = trackInfo[sourceInfo] || []
+
+            targetInfoList.forEach(targetInfo => {
+              const targetInfoArray = targetInfo.split('#')
+              const targetViewId = targetInfoArray[0] // 目标视图
+              if (element.component === 'UserView' && element.id === targetViewId) {
+                // 如果目标视图 和 当前循环组件id相等 则进行条件增减
+                const targetFieldId = targetInfoArray[1] // 目标视图列ID
+                const condition = {
+                  fieldId: targetFieldId,
+                  operator: operator,
+                  value: paramValue,
+                  viewIds: [targetViewId]
+                }
+                let j = currentFilters.length
+                while (j--) {
+                  const filter = currentFilters[j]
+                  // 兼容性准备 viewIds 只会存放一个值
+                  if (targetFieldId === filter.fieldId && filter.viewIds.includes(targetViewId)) {
+                    currentFilters.splice(j, 1)
+                  }
+                }
+                // 不存在该条件 且 条件有效 直接保存该条件
+                // !filterExist && vValid && currentFilters.push(condition)
+                currentFilters.push(condition)
+              }
+            })
+            if (element.component === 'UserView') {
+              element['outerParamsFilters'] = currentFilters
+            }
+            curComponentData[index] = element
+          })
+        }
+      }
     },
     trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId) {
       const currentFilters = element.linkageFilters || [] // 当前联动filter

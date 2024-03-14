@@ -74,9 +74,9 @@ export const storeStatusApi = (id: string): Promise<IResponse> => {
 
 export const decompression = data => request.post({ url: '/dataVisualization/decompression', data })
 
-export const detailList = dvId => {
+export const viewDetailList = dvId => {
   return request.get({
-    url: '/dataVisualization/view/detailList/' + dvId,
+    url: '/dataVisualization/viewDetailList/' + dvId,
     method: 'get',
     loading: false
   })

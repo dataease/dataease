@@ -7,7 +7,7 @@ import org.springframework.web.bind.annotation.*;
 public interface VisualizationOuterParamsApi {
 
 
-    @GetMapping("/queryWithDvId/{dvId}")
+    @GetMapping("/queryWithVisualizationId/{dvId}")
     VisualizationOuterParamsDTO queryWithVisualizationId(@PathVariable("dvId") String dvId);
 
     @PostMapping("/updateOuterParamsSet")

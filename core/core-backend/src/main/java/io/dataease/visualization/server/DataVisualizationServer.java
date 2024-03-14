@@ -6,6 +6,7 @@ import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
 import io.dataease.api.visualization.DataVisualizationApi;
+import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
@@ -352,6 +353,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     public DataVisualizationVO decompressionLocalFile(MultipartFile file) {
         return null;
+    }
+
+    @Override
+    public List<VisualizationViewTableDTO> detailList(Long dvId) {
+        return extDataVisualizationMapper.getVisualizationViewDetails(dvId);
     }
 
 
