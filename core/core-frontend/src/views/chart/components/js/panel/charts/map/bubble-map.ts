@@ -100,7 +100,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     options = this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
-    const dotLayer = this.getDotLayer(chart, chart.data?.data, geoJson)
+    const dotLayer = this.getDotLayer(chart, geoJson, drawOption)
     view.once('loaded', () => {
       view.addLayer(dotLayer)
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
@@ -118,8 +118,12 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     return view
   }
 
-  private getDotLayer(chart: Chart, data: any[], geoJson: FeatureCollection): IPlotLayer {
-    const areaMap = data?.reduce((obj, value) => {
+  private getDotLayer(
+    chart: Chart,
+    geoJson: FeatureCollection,
+    drawOption: L7PlotDrawOptions<Choropleth>
+  ): IPlotLayer {
+    const areaMap = chart.data?.data?.reduce((obj, value) => {
       obj[value['field']] = value.value
       return obj
     }, {})
@@ -135,6 +139,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       }
     })
     const { basicStyle } = parseJson(chart.customAttr)
+    const { offsetHeight, offsetWidth } = document.getElementById(drawOption.container)
     const options: DotLayerOptions = {
       source: {
         data: dotData,
@@ -146,7 +151,8 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       },
       shape: 'circle',
       size: {
-        field: 'size'
+        field: 'size',
+        value: [5, Math.min(offsetHeight, offsetWidth) / 20]
       },
       visible: true,
       zIndex: 0.05,
