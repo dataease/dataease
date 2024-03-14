@@ -23,8 +23,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, nextTick, toRefs } from 'vue'
-import { getCurrentInstance, onMounted } from 'vue/dist/vue'
+import { computed, nextTick, toRefs, getCurrentInstance, onMounted } from 'vue'
 const props = defineProps({
   element: {
     type: Object
