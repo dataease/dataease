@@ -118,6 +118,8 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
 }
 // 图表对象不用响应式
 let myChart = null
+// 实际渲染的视图信息，适应缩放
+let actualChart: ChartObj
 const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
   chartData.value = chartDataInfo
   renderChart(viewInfo, false)
@@ -127,15 +129,15 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
     return
   }
   // view 为引用对象 需要存库 view.data 直接赋值会导致保存不必要的数据
-  const chart = deepCopy({
+  actualChart = deepCopy({
     ...defaultsDeep(viewInfo, cloneDeep(BASE_VIEW_CONFIG)),
     data: chartData.value
   } as ChartObj)
 
-  recursionTransObj(customAttrTrans, chart.customAttr, scale.value, terminal.value)
-  recursionTransObj(customStyleTrans, chart.customStyle, scale.value, terminal.value)
+  recursionTransObj(customAttrTrans, actualChart.customAttr, scale.value, terminal.value)
+  recursionTransObj(customStyleTrans, actualChart.customStyle, scale.value, terminal.value)
 
-  setupPage(chart, resetPageInfo)
+  setupPage(actualChart, resetPageInfo)
   myChart?.facet.timer?.stop()
   myChart?.destroy()
   const chartView = chartViewManager.getChartView(
@@ -144,7 +146,7 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
   ) as S2ChartView<any>
   myChart = chartView.drawChart({
     container: containerId,
-    chart: toRaw(chart),
+    chart: toRaw(actualChart),
     chartObj: myChart,
     pageInfo: state.pageInfo,
     action,
@@ -175,8 +177,8 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
 
 const initScroll = () => {
   // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
-  const customAttr = view.value.customAttr
-  const senior = view.value.senior
+  const customAttr = actualChart.customAttr
+  const senior = actualChart.senior
   if (
     senior?.scrollCfg?.open &&
     (view.value.type === 'table-normal' || (view.value.type === 'table-info' && !state.showPage))
