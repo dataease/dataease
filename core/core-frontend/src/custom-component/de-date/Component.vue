@@ -32,7 +32,6 @@ const props = defineProps({
 })
 const { element } = toRefs(props)
 
-
 let currentInstance
 const timeMargin = computed(() => {
   return element.value.style.time_margin
