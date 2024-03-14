@@ -8,6 +8,7 @@ interface SelectConfig {
   defaultValue: any
   checkedFieldsMap: object
   displayType: string
+  showEmpty: boolean
   id: string
   checkedFields: string[]
   field: {
@@ -71,12 +72,14 @@ const handleFieldIdChange = (val: string[]) => {
   loading.value = true
   getEnumValue(val)
     .then(res => {
-      options.value = (res || []).map(ele => {
-        return {
-          label: ele,
-          value: ele
-        }
-      })
+      options.value = (res || [])
+        .filter(ele => ele !== null)
+        .map(ele => {
+          return {
+            label: ele,
+            value: ele
+          }
+        })
     })
     .finally(() => {
       loading.value = false
@@ -89,6 +92,7 @@ const handleFieldIdChange = (val: string[]) => {
           ? [...selectValue.value]
           : selectValue.value
       }
+      setEmptyData()
     })
 }
 
@@ -97,6 +101,28 @@ const visibleChange = (val: boolean) => {
   setTimeout(() => {
     visible.value = !val
   }, 50)
+}
+
+watch(
+  () => config.value.showEmpty,
+  () => {
+    setEmptyData()
+  }
+)
+
+const setEmptyData = () => {
+  const { showEmpty, displayType } = config.value
+  if (+displayType !== 0) return
+  const [s] = options.value
+  if (showEmpty) {
+    if (s?.value !== '_empty_$') {
+      options.value = [{ label: '空数据', value: '_empty_$' }, ...options.value]
+    }
+  } else {
+    if (s?.value === '_empty_$') {
+      options.value = options.value.slice(1)
+    }
+  }
 }
 
 watch(
@@ -214,6 +240,7 @@ const setOptions = (num: number) => {
           }
         })
       )
+      setEmptyData()
       break
     default:
       break

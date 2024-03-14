@@ -635,6 +635,7 @@ const parameterCompletion = () => {
     aroundRange: 'f',
     arbitraryTimeRange: new Date(),
     setTimeRange: false,
+    showEmpty: false,
     timeRange: {
       intervalType: 'none',
       dynamicWindow: false,
@@ -1403,6 +1404,11 @@ defineExpose({
                 class="config-flag range-filter-time-flag"
                 >已配置</span
               >
+            </div>
+          </div>
+          <div class="list-item" v-if="+curComponent.displayType === 0">
+            <div class="label">
+              <el-checkbox v-model="curComponent.showEmpty" label="选项值包含空数据" />
             </div>
           </div>
           <div class="list-item">
