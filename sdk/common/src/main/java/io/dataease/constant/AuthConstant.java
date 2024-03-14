@@ -21,6 +21,7 @@ public class AuthConstant {
     public final static String ASK_TOKEN_KEY = "X-DE-ASK-TOKEN";
 
     public final static String DE_EXECUTE_VERSION = "X-DE-EXECUTE-VERSION";
+    public final static String DE_LDAP_AUTHORIZATION = "Authorization";
 
 
 }
