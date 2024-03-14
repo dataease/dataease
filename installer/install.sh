@@ -27,6 +27,7 @@ if [ -f /usr/bin/dectl ]; then
    sed -i -e "s#DE_BASE=.*#DE_BASE=${DE_BASE}#g" dectl
    \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
 
+   log "停止 DataEase 服务"
    if [[ -f /etc/systemd/system/dataease.service ]];then
       systemctl stop dataease
    else   
@@ -69,14 +70,6 @@ fi
 DE_RUN_BASE=$DE_BASE/dataease2.0
 conf_folder=${DE_RUN_BASE}/conf
 templates_folder=${DE_RUN_BASE}/templates
-
-if [[ -d $DE_RUN_BASE ]];then
-   for image in $(grep  "image: " $DE_RUN_BASE/docker*.yml | awk -F 'image:' '{print $2}'); do
-      image_path=$(eval echo $image)
-      image_name=$(echo $image_path | awk -F "[/]" '{print $3}')
-      current_images[${#current_images[@]}]=$image_name
-   done
-fi
 
 echo -e "======================= 开始安装 =======================" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
@@ -203,6 +196,11 @@ fi
 
 export COMPOSE_HTTP_TIMEOUT=180
 cd ${CURRENT_DIR}
+
+for i in $(docker images --format '{{.Repository}}:{{.Tag}}'); do
+   current_images[${#current_images[@]}]=${i##*/}
+done
+
 # 加载镜像
 if [[ -d images ]]; then
    log "加载镜像"
