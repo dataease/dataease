@@ -16,6 +16,7 @@
 
     <el-button
       slot="append"
+      v-if="!isRelation"
       icon="el-icon-search"
       @click="search"
     />
