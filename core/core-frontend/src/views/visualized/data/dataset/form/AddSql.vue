@@ -7,9 +7,8 @@ import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
 import { getTableField } from '@/api/dataset'
 import CodeMirror from './CodeMirror.vue'
-import type { Field } from './UnionFieldList.vue'
+import type { Field, DataSource } from './util'
 import { getDatasourceList, getTables, getPreviewSql } from '@/api/dataset'
-import type { DataSource } from './index.vue'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { timestampFormatDate, defaultValueScopeList, fieldOptions } from './util'
@@ -19,6 +18,7 @@ export interface SqlNode {
   tableName: string
   datasourceId: string
   id: string
+  changeFlag?: boolean
   variables?: Array<{
     variableName: string
     defaultValue: string
@@ -106,7 +106,7 @@ const referenceSetting = () => {
 
 onMounted(() => {
   dsChange(sqlNode.value.datasourceId)
-  codeCom.value = myCm.value.codeComInit(Base64.decode(sqlNode.value.sql))
+  codeCom.value = myCm.value.codeComInit(Base64.decode(sqlNode.value.sql), true)
 })
 
 onBeforeUnmount(() => {
@@ -211,8 +211,10 @@ getDatasource()
 const emits = defineEmits(['close', 'save'])
 
 let changeFlag = false
+const changeFlagCode = ref(false)
 const setFlag = () => {
   changeFlag = true
+  changeFlagCode.value = true
 }
 let sql = ''
 
@@ -224,6 +226,7 @@ const save = (cb?: () => void) => {
 
   parseVariable()
   sql = codeCom.value.state.doc.toString()
+  sqlNode.value.changeFlag = true
   if (!sql.trim()) {
     ElMessage.error('SQL不能为空')
     return
@@ -264,9 +267,11 @@ const handleClose = () => {
     }).then(() => {
       close()
       changeFlag = false
+      changeFlagCode.value = false
     })
   } else {
     close()
+    changeFlagCode.value = false
   }
 }
 
@@ -387,6 +392,7 @@ const parseVariable = () => {
 const saveVariable = () => {
   state.variables = JSON.parse(JSON.stringify(state.variablesTmp))
   showVariableMgm.value = false
+  changeFlagCode.value = true
   ElMessage.success('参数设置成功')
 }
 const mousedownDrag = () => {
@@ -414,7 +420,9 @@ const mousedownDrag = () => {
         </template>
         参数设置
       </el-button>
-      <el-button @click="save(() => {})" type="primary"> 保存</el-button>
+      <el-button :disabled="!changeFlagCode" @click="save(() => {})" type="primary">
+        保存</el-button
+      >
       <el-divider direction="vertical" />
       <el-icon class="hover-icon" @click="handleClose">
         <Icon name="icon_close_outlined"></Icon>
@@ -579,7 +587,12 @@ const mousedownDrag = () => {
       </div>
     </div>
     <div class="sql-code-right" :style="{ width: `calc(100% - ${showLeft ? LeftWidth : 0}px)` }">
-      <code-mirror :height="`${dragHeight}px`" dom-id="sql-editor" ref="myCm"></code-mirror>
+      <code-mirror
+        @change="changeFlagCode = true"
+        :height="`${dragHeight}px`"
+        dom-id="sql-editor"
+        ref="myCm"
+      ></code-mirror>
       <div class="sql-result" :style="{ height: `calc(100% - ${dragHeight}px)` }">
         <div class="sql-title">
           <span class="drag" @mousedown="mousedownDragH" />

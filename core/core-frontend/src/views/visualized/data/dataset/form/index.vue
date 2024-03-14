@@ -24,7 +24,7 @@ import { useRoute, useRouter } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
 import type { FormInstance } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
-import { guid, getFieldName, timeTypes } from './util'
+import { guid, getFieldName, timeTypes, type DataSource } from './util'
 import { fieldType } from '@/utils/attr'
 import { cancelMap } from '@/config/axios/service'
 import {
@@ -40,18 +40,6 @@ import { cloneDeep, debounce } from 'lodash-es'
 
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
-}
-export interface Position {
-  x: number
-  y: number
-}
-
-export type PointerType = 'mouse' | 'touch' | 'pen'
-
-export interface DataSource {
-  id: string
-  name: string
-  children?: DataSource[]
 }
 
 interface Field {
@@ -755,7 +743,8 @@ const setFieldAll = () => {
 }
 const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
-
+  const to = node.id
+  const from = parent.id
   let unionFieldsLost = node.unionFields.some(ele => {
     const { currentField, parentField } = ele
     return !currentField || !parentField
@@ -774,6 +763,7 @@ const confirmEditUnion = () => {
   setFieldAll()
   editUnion.value = false
   addComplete()
+  datasetDrag.value.setChangeStatus(to, from)
 }
 
 const updateAllfields = () => {
