@@ -12,6 +12,10 @@ function log() {
    echo -e "${message}" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 }
 
+function prop {
+   [ -f "$1" ] | grep -P "^\s*[^#]?${2}=.*$" $1 | cut -d'=' -f2
+}
+
 docker_config_folder="/etc/docker"
 compose_files="-f docker-compose.yml"
 
@@ -42,6 +46,13 @@ set -a
 if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
    source $DE_BASE/dataease2.0/.env
    INSTALL_TYPE='upgrade'
+
+   conf_install_mode=$(prop $CURRENT_DIR/install.conf DE_INSTALL_MODE)
+   if [[ $DE_INSTALL_MODE == 'community' ]] && [[ $conf_install_mode == 'enterprise' ]];then
+      DE_INSTALL_MODE=$conf_install_mode
+      export DE_INSTALL_MODE
+   fi
+   
 else
    source ${CURRENT_DIR}/install.conf
    INSTALL_TYPE='install'
@@ -66,10 +77,6 @@ if [[ -d $DE_RUN_BASE ]];then
       current_images[${#current_images[@]}]=$image_name
    done
 fi
-
-function prop {
-   [ -f "$1" ] | grep -P "^\s*[^#]?${2}=.*$" $1 | cut -d'=' -f2
-}
 
 echo -e "======================= 开始安装 =======================" 2>&1 | tee -a ${CURRENT_DIR}/install.log
 
@@ -114,7 +121,7 @@ if [ ! -f /usr/bin/dectl ]; then
 fi
 
 if which getenforce >/dev/null 2>&1 && [ $(getenforce) == "Enforcing" ];then
-   log  "... 关闭 SELINUX"
+   log  "关闭 SELINUX"
    setenforce 0
    sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
 fi
@@ -127,23 +134,23 @@ if which docker >/dev/null 2>&1; then
    service docker start >/dev/null 2>&1 | tee -a ${CURRENT_DIR}/install.log
 else
    if [[ -d docker ]]; then
-      log "... 离线安装 docker"
+      log "离线安装 docker"
       cp docker/bin/* /usr/bin/
       cp docker/service/docker.service /etc/systemd/system/
       chmod +x /usr/bin/docker*
       chmod 644 /etc/systemd/system/docker.service
-      log "... 启动 docker"
-      systemctl enable docker; systemctl daemon-reload; service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      log "启动 docker"
+      systemctl enable docker >/dev/null 2>&1; systemctl daemon-reload; systemctl start docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
    else
-      log "... 在线安装 docker"
+      log "在线安装 docker"
       curl -fsSL https://resource.fit2cloud.com/get-docker-linux.sh -o get-docker.sh 2>&1 | tee -a ${CURRENT_DIR}/install.log
       if [[ ! -f get-docker.sh ]];then
          log "docker 在线安装脚本下载失败，请稍候重试"
          exit 1
       fi
       sudo sh get-docker.sh 2>&1 | tee -a ${CURRENT_DIR}/install.log
-      log "... 启动 docker"
-      systemctl enable docker; systemctl daemon-reload; service docker start 2>&1 | tee -a ${CURRENT_DIR}/install.log
+      log "启动 docker"
+      systemctl enable docker >/dev/null 2>&1; systemctl daemon-reload; systemctl start docker 2>&1 | tee -a ${CURRENT_DIR}/install.log
    fi
 
    if [ ! -d "$docker_config_folder" ];then
@@ -168,11 +175,11 @@ if [ $? -ne 0 ]; then
       chmod +x /usr/bin/docker-compose
    else
       if [[ -d docker ]]; then
-         log "... 离线安装 docker-compose"
+         log "离线安装 docker-compose"
          cp docker/bin/docker-compose /usr/bin/
          chmod +x /usr/bin/docker-compose
       else
-         log "... 在线安装 docker-compose"
+         log "在线安装 docker-compose"
          curl -L https://resource.fit2cloud.com/docker/compose/releases/download/v2.16.0/docker-compose-$(uname -s | tr A-Z a-z)-$(uname -m) -o /usr/local/bin/docker-compose 2>&1 | tee -a ${CURRENT_DIR}/install.log
          if [[ ! -f /usr/local/bin/docker-compose ]];then
             log "docker-compose 下载失败，请稍候重试"
@@ -231,16 +238,16 @@ if [[ ! -f /etc/systemd/system/dataease.service ]];then
 fi
 
 if [[ $(grep "vm.max_map_count" /etc/sysctl.conf | wc -l) -eq 0 ]];then
-   sysctl -w vm.max_map_count=2000000
-   echo "vm.max_map_count=2000000" >> /etc/sysctl.conf
+   sysctl -w vm.max_map_count=2000000 >/dev/null 2>&1
+   echo "vm.max_map_count=2000000" >> /etc/sysctl.conf >/dev/null 2>&1
 elif (( $(grep "vm.max_map_count" /etc/sysctl.conf | awk -F'=' '{print $2}') < 2000000 ));then
-   sysctl -w vm.max_map_count=2000000
+   sysctl -w vm.max_map_count=2000000 >/dev/null 2>&1
    sed -i 's/^vm\.max_map_count.*/vm\.max_map_count=2000000/' /etc/sysctl.conf
 fi
 
 if [ $(grep "net.ipv4.ip_forward" /etc/sysctl.conf | wc -l) -eq 0 ];then
-   sysctl -w net.ipv4.ip_forward=1
-   echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
+   sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
+   echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf >/dev/null 2>&1
 else
    sed -i 's/^net\.ipv4\.ip_forward.*/net\.ipv4\.ip_forward=1/' /etc/sysctl.conf
 fi
