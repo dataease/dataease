@@ -67,10 +67,10 @@ public class Dimension2SQLObj {
                 String format = Utils.transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                     fieldName = String.format(format,
-                            String.format(SQLConstants.DATE_FORMAT, originField, "yyyy"),
+                            String.format(SQLConstants.DE_DATE_FORMAT, originField, "yyyy"),
                             String.format(SQLConstants.QUARTER, originField));
                 } else {
-                    fieldName = String.format(SQLConstants.CAST_DATE_FORMAT, originField,
+                    fieldName = String.format(SQLConstants.DE_CAST_DATE_FORMAT, originField,
                             SQLConstants.DEFAULT_DATE_FORMAT,
                             format);
                 }
@@ -94,13 +94,13 @@ public class Dimension2SQLObj {
                     String from_unixtime = String.format(SQLConstants.FROM_UNIXTIME, cast, SQLConstants.DEFAULT_DATE_FORMAT);
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
-                                String.format(SQLConstants.DATE_FORMAT, from_unixtime, "yyyy"),
+                                String.format(SQLConstants.DE_DATE_FORMAT, from_unixtime, "yyyy"),
                                 String.format(SQLConstants.QUARTER, from_unixtime));
                     } else {
-                        fieldName = String.format(SQLConstants.CAST_DATE_FORMAT, from_unixtime, SQLConstants.DEFAULT_DATE_FORMAT, format);
+                        fieldName = String.format(SQLConstants.DE_CAST_DATE_FORMAT, from_unixtime, SQLConstants.DEFAULT_DATE_FORMAT, format);
                     }
                 } else {
-                    fieldName = String.format(SQLConstants.DATE_FORMAT, originField, format);
+                    fieldName = String.format(SQLConstants.DE_DATE_FORMAT, originField, format);
                 }
             } else if (Objects.equals(x.getDeType(), DeTypeConstants.DE_STRING) && Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_STRING)) {
                 fieldName = originField;
