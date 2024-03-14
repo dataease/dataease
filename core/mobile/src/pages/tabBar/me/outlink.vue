@@ -12,7 +12,7 @@ export default {
         return {
         urls: [
             'https://github.com/dataease/dataease',
-            'https://dataease.io/docs/user_manual/general/'
+            'https://dataease.io/docs/v1/user_manual/general/'
         ],
         banner: {}
         }
