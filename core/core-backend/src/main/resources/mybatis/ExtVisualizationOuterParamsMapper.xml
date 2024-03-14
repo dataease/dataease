@@ -61,14 +61,14 @@
     </select>
 
   <select id="queryWithVisualizationId"  resultMap="BaseResultMapDTO">
-    SELECT
-        #{visualizationId} as visualization_id,
-        ifnull( visualization_outer_params.checked, 0 ) AS checked
-    FROM
-        visualization_group
-        LEFT JOIN visualization_outer_params ON visualization_group.id = visualization_outer_params.visualization_id
-    WHERE
-        visualization_group.id = #{visualizationId}
+      SELECT
+          #{visualizationId} as visualization_id,
+          ifnull( visualization_outer_params.checked, 0 ) AS checked
+      FROM
+          data_visualization_info
+              LEFT JOIN visualization_outer_params ON data_visualization_info.id = visualization_outer_params.visualization_id
+      WHERE
+          data_visualization_info.id = #{visualizationId}
   </select>
 
     <delete id="deleteOuterParamsTargetWithVisualizationId" >

@@ -302,6 +302,7 @@ const filter = (firstLoad?: boolean) => {
     user: wsCache.get('user.uid'),
     filter,
     linkageFilters: element.value.linkageFilters,
+    outerParamsFilters: element.value.outerParamsFilters,
     drill: state.drillClickDimensionList,
     resultCount: resultCount.value,
     resultMode: resultMode.value

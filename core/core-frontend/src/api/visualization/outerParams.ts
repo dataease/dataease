@@ -1,8 +1,8 @@
 import request from '@/config/axios'
 
-export function queryWithDvId(dvId) {
+export function queryWithVisualizationId(dvId) {
   return request.get({
-    url: '/outerParams/queryWithDvId/' + dvId
+    url: '/outerParams/queryWithVisualizationId/' + dvId
   })
 }
 

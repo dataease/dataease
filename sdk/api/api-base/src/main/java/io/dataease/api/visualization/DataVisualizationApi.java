@@ -3,6 +3,7 @@ package io.dataease.api.visualization;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
@@ -104,4 +105,8 @@ public interface DataVisualizationApi {
     @Operation(summary = "解析可视化资源模板文件信息")
     DataVisualizationVO decompressionLocalFile(@RequestPart(value = "file") MultipartFile file);
 
+
+    @GetMapping("/viewDetailList/{dvId}")
+    @Operation(summary = "仪表板视图明细数据")
+    List<VisualizationViewTableDTO> detailList(@PathVariable("dvId") Long dvId);
 }

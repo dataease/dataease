@@ -2,6 +2,7 @@ package io.dataease.visualization.dao.ext.mapper;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
 import io.dataease.api.visualization.vo.DataVisualizationBaseVO;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
@@ -44,5 +45,8 @@ public interface ExtDataVisualizationMapper {
     void copyLinkage(@Param("copyId") Long copyId);
 
     void copyLinkageField(@Param("copyId") Long copyId);
+
+    List<VisualizationViewTableDTO> getVisualizationViewDetails(@Param("dvId") Long dvId);
+
 
 }

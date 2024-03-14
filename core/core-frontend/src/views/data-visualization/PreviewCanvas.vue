@@ -6,7 +6,11 @@ import router from '@/router'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
+import { getOuterParamsInfo } from '@/api/visualization/outerParams'
+import { ElMessage } from 'element-plus-secondary'
+import { useI18n } from '@/hooks/web/useI18n'
 const dvMainStore = dvMainStoreWithOut()
+const { t } = useI18n()
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -45,6 +49,21 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     }
   }
 
+  // 添加外部参数
+  const attachParamsEncode = router.currentRoute.value.query.attachParams
+  let attachParam
+  if (attachParamsEncode) {
+    try {
+      attachParam = JSON.parse(Base64.decode(decodeURIComponent(attachParamsEncode)))
+      await getOuterParamsInfo(dvId).then(rsp => {
+        dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
+      })
+    } catch (e) {
+      console.error(e)
+      ElMessage.error(t('visualization.outer_param_decode_error'))
+    }
+  }
+
   initCanvasData(
     dvId,
     dvType,
@@ -62,6 +81,9 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       state.curPreviewGap = curPreviewGap
       if (jumpParam) {
         dvMainStore.addViewTrackFilter(jumpParam)
+      }
+      if (attachParam) {
+        dvMainStore.addOuterParamsFilter(attachParam)
       }
       if (props.publicLinkStatus) {
         // 设置浏览器title为当前仪表板名称
