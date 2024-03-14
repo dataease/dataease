@@ -141,7 +141,19 @@ public class DriverService {
     }
 
     public DeDriver get(String id) {
-        return deDriverMapper.selectByPrimaryKey(id);
+        DeDriver result =  deDriverMapper.selectByPrimaryKey(id);
+        if(result == null && id.startsWith("default-")){
+            result = new DeDriver();
+            result.setId(id);
+            result.setName("default");
+            result.setType(id.split("default-")[1]);
+            for (DataSourceType type : datasourceService.types()) {
+                if (type.getType().equalsIgnoreCase(id.split("default-")[1])) {
+                    result.setSurpportVersions(type.getSurpportVersions());
+                }
+            }
+        }
+        return result;
     }
 
     public List<DeDriverDetails> listDriverDetails(String driverId) {
