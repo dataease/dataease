@@ -1359,7 +1359,8 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
-        'alpha'
+        'alpha',
+        'topN'
       ],
       'size-selector-ant-v': [
         'pieOuterRadius'
@@ -1418,7 +1419,8 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
-        'alpha'
+        'alpha',
+        'topN'
       ],
       'size-selector-ant-v': [
         'pieInnerRadius',
@@ -2937,7 +2939,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'value',
         'custom',
-        'alpha'
+        'alpha',
+        'topN'
       ],
       'size-selector': [
         'pieOuterRadius'
@@ -2995,7 +2998,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'value',
         'custom',
-        'alpha'
+        'alpha',
+        'topN'
       ],
       'size-selector': [
         'pieInnerRadius',

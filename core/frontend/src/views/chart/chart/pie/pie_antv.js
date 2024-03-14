@@ -9,6 +9,7 @@ import {
 
 import { Pie, Rose } from '@antv/g2plot'
 import { antVCustomColor } from '@/views/chart/chart/util'
+import { configTopN } from '@/views/chart/chart/common/common_antv'
 
 export function basePieOptionAntV(plot, container, chart, action) {
   // theme
@@ -82,7 +83,8 @@ export function basePieOptionAntV(plot, container, chart, action) {
   }
   // custom color
   options.color = antVCustomColor(chart)
-
+  // topN
+  configTopN(data, chart)
   // 开始渲染
   if (plot) {
     plot.destroy()

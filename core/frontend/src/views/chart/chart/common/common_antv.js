@@ -2,6 +2,7 @@ import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
 import { equalsAny, includesAny } from '@/utils/StringUtils'
+import i18n from '@/lang'
 
 export function getPadding(chart) {
   if (chart.drill) {
@@ -1235,3 +1236,25 @@ export const TOOLTIP_TPL = '<li class="g2-tooltip-list-item" data-index={index}>
                                     '<span class="g2-tooltip-name">{name}</span>:' +
                                     '<span class="g2-tooltip-value">{value}</span>' +
                                   '</li>'
+export const configTopN = (data, chart) => {
+  if (!data?.length) {
+    return
+  }
+  const color = JSON.parse(chart.customAttr).color
+  if (!color.calcTopN || data.length <= color.topN) {
+    return
+  }
+  data.sort((a, b) => b.value - a.value)
+  const otherItems = data.splice(color.topN)
+  const initOtherItem = {
+    ...data[0],
+    field: i18n.t('datasource.other'),
+    name: i18n.t('datasource.other'),
+    value: 0,
+  }
+  otherItems.reduce((p, n) => {
+    p.value += n.value ?? 0
+    return p
+  }, initOtherItem)
+  data.push(initOtherItem)
+}
