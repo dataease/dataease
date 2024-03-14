@@ -149,10 +149,17 @@ interface Field {
   id: string
 }
 
+interface DataSource {
+  id: string
+  name: string
+  children?: DataSource[]
+}
+
 export {
   NodeType,
   UnionType,
   UnionField,
+  DataSource,
   Node,
   Field,
   timestampFormatDate,

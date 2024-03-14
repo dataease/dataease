@@ -133,8 +133,14 @@ const delNode = (id, arr) => {
   })
 }
 
+const changeSqlId = ref([])
+const changedNodeId = ref([])
 const saveSqlNode = (val: SqlNode, cb) => {
-  const { tableName, id, sql, datasourceId, sqlVariableDetails = null } = val
+  const { tableName, id, sql, datasourceId, sqlVariableDetails = null, changeFlag = false } = val
+  if (changeFlag) {
+    changedNodeId.value = changedNodeId.value.filter(itx => itx.from !== id && id !== itx.to)
+    !changeSqlId.value.includes(id) && changeSqlId.value.push(id)
+  }
   if (state.visualNode) {
     Object.assign(state.visualNode, {
       info: JSON.stringify({ table: tableName, sql }),
@@ -171,6 +177,11 @@ const saveSqlNode = (val: SqlNode, cb) => {
   }
   const obj = { info: JSON.stringify({ table: tableName, sql }), id, tableName, sqlVariableDetails }
   dfsNodeBack([obj], [id], state.nodeList)
+}
+
+const setChangeStatus = (to, from) => {
+  if (changedNodeId.value.some(ele => ele.from === from && ele.to === to)) return
+  changedNodeId.value.push({ from, to })
 }
 
 const closeSqlNode = () => {
@@ -495,10 +506,26 @@ const dfsNodeShadow = (arr, { tableName, id }, position, parent) => {
 }
 
 const flatLine = (item, flatNodeList) => {
+  let sqlChangeFlag = changeSqlId.value.includes(item.id)
+  if (item.children?.length) {
+    sqlChangeFlag = item.children.some(itx => changeSqlId.value.includes(itx.id)) || sqlChangeFlag
+  }
   const from = { ...item, d: '' }
   ;(item.children || []).forEach(ele => {
+    let loaclSqlChangeFlag = true
+    changedNodeId.value.some(element => {
+      if (
+        (element.from === item.id && ele.id === element.to) ||
+        (element.from === ele.id && item.id === element.to)
+      ) {
+        loaclSqlChangeFlag = false
+        return true
+      }
+      return false
+    })
     flatNodeList.push({
       from,
+      sqlChangeFlag: loaclSqlChangeFlag && sqlChangeFlag,
       isShadow: ele.isShadow || item.isShadow,
       to: {
         ...ele
@@ -773,7 +800,8 @@ defineExpose({
   setStateBack,
   notConfirm,
   dfsNodeFieldBack,
-  initState
+  initState,
+  setChangeStatus
 })
 
 const handleActiveNode = ele => {
@@ -853,7 +881,12 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
         width="32"
         height="32"
       >
-        <div v-if="!ele.isShadow" @click="handlePathClick(ele)" class="path-union">
+        <div
+          v-if="!ele.isShadow"
+          @click="handlePathClick(ele)"
+          class="path-union"
+          :style="{ borderColor: ele.sqlChangeFlag ? '#F54A45' : '' }"
+        >
           <el-icon>
             <Icon :name="iconName[ele.to.unionType]"></Icon>
           </el-icon>

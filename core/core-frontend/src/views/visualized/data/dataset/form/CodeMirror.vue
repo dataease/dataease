@@ -19,6 +19,8 @@ const props = defineProps({
   dimensionMap: propTypes.arrayOf(String).def(() => [])
 })
 
+const emits = defineEmits(['change'])
+
 const codeComInit = (doc: string, sqlMode?: boolean) => {
   function _optionalChain(ops) {
     let lastAccessLHS = undefined
@@ -112,7 +114,17 @@ const codeComInit = (doc: string, sqlMode?: boolean) => {
     }
   }
   const extensionsAttach = sqlMode
-    ? [basicSetup, sql(), placeholders, keymap.of([indentWithTab])]
+    ? [
+        basicSetup,
+        sql(),
+        placeholders,
+        keymap.of([indentWithTab]),
+        EditorView.updateListener.of(v => {
+          if (v.docChanged) {
+            emits('change')
+          }
+        })
+      ]
     : [basicSetup, placeholders, keymap.of([indentWithTab])]
   return new EditorView({
     doc,
