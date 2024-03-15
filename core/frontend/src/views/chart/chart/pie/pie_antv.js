@@ -30,6 +30,7 @@ export function basePieOptionAntV(plot, container, chart, action) {
     label: label,
     tooltip: tooltip,
     legend: legend,
+    animation: false,
     pieStyle: {
       lineWidth: 0
     },
