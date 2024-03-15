@@ -27,11 +27,14 @@ const whiteList = ['/login', '/de-link', '/chart-view'] // 不重定向白名单
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
-
-  if (isMobile() && to.name !== 'link') {
+  if (isMobile()) {
     done()
     loadDone()
-    window.location.href = window.origin + '/mobile.html#/index'
+    if (to.name === 'link') {
+      window.location.href = window.origin + '/mobile.html#' + to.path
+    } else {
+      window.location.href = window.origin + '/mobile.html#/index'
+    }
   }
   let isDesktop = wsCache.get('app.desktop')
   if (isDesktop === null) {
