@@ -1,17 +1,14 @@
 package io.dataease.utils;
 
-import io.dataease.model.ITreeBase;
-import io.dataease.model.TreeBaseModel;
-import io.dataease.model.TreeModel;
-import io.dataease.model.TreeResultModel;
+import io.dataease.constant.SortConstants;
+import io.dataease.model.*;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Map;
+import java.text.Collator;
+import java.util.*;
 import java.util.concurrent.atomic.AtomicBoolean;
 import java.util.stream.Collectors;
 
@@ -167,4 +164,22 @@ public class TreeUtils {
         return result;
     }
 
+    public static List<BusiNodeVO> customSortVO(List<BusiNodeVO> list, String sortType) {
+        Collator collator = Collator.getInstance(Locale.CHINA);
+        if (StringUtils.equalsIgnoreCase(SortConstants.NAME_DESC, sortType)) {
+            Set<BusiNodeVO> poSet = new TreeSet<>(Comparator.comparing(BusiNodeVO::getName, collator));
+            poSet.addAll(list);
+            return poSet.stream().collect(Collectors.toList());
+        } else if (StringUtils.equalsIgnoreCase(SortConstants.NAME_ASC, sortType)) {
+            Set<BusiNodeVO> poSet = new TreeSet<>(Comparator.comparing(BusiNodeVO::getName, collator).reversed());
+            poSet.addAll(list);
+            return poSet.stream().collect(Collectors.toList());
+        } else if (StringUtils.equalsIgnoreCase(SortConstants.TIME_ASC, sortType)) {
+            Collections.reverse(list);
+            return list;
+        } else {
+            // 默认时间倒序
+            return list;
+        }
+    }
 }
