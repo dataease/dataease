@@ -46,14 +46,6 @@ fi
 
 dataease_conf=${conf_folder}/dataease.properties
 
-if [[ -d $DE_RUN_BASE ]];then
-   for image in $(grep  "image: " $DE_RUN_BASE/docker*.yml | awk -F 'image:' '{print $2}'); do
-      image_path=$(eval echo $image)
-      image_name=$(echo $image_path | awk -F "[/]" '{print $3}')
-      current_images[${#current_images[@]}]=$image_name
-   done
-fi
-
 function prop {
    [ -f "$1" ] | grep -P "^\s*[^#]?${2}=.*$" $1 | cut -d'=' -f2
 }
@@ -223,7 +215,7 @@ if [ ! -f /usr/bin/dectl ]; then
 fi
 
 if which getenforce >/dev/null 2>&1 && [ $(getenforce) == "Enforcing" ];then
-   log  "... 关闭 SELINUX"
+   log  "关闭 SELINUX"
    setenforce 0
    sed -i "s/SELINUX=enforcing/SELINUX=disabled/g" /etc/selinux/config
 fi
@@ -236,22 +228,22 @@ if which docker >/dev/null 2>&1; then
    service docker start >/dev/null 2>&1 | tee -a ${CURRENT_DIR}/install.log
 else
    if [[ -d docker ]]; then
-      log "... 离线安装 docker"
+      log "离线安装 docker"
       cp docker/bin/* /usr/bin/
       cp docker/service/docker.service /etc/systemd/system/
       chmod +x /usr/bin/docker*
       chmod 644 /etc/systemd/system/docker.service
-      log "... 启动 docker"
+      log "启动 docker"
       systemctl enable docker >/dev/null 2>&1; systemctl daemon-reload; service docker start >/dev/null 2>&1 | tee -a ${CURRENT_DIR}/install.log
    else
-      log "... 在线安装 docker"
+      log "在线安装 docker"
       curl -fsSL https://resource.fit2cloud.com/get-docker-linux.sh -o get-docker.sh 2>&1 | tee -a ${CURRENT_DIR}/install.log
       if [[ ! -f get-docker.sh ]];then
          log "docker 在线安装脚本下载失败，请稍候重试"
          exit 1
       fi
       sudo sh get-docker.sh 2>&1 | tee -a ${CURRENT_DIR}/install.log
-      log "... 启动 docker"
+      log "启动 docker"
       systemctl enable docker >/dev/null 2>&1; systemctl daemon-reload; service docker start >/dev/null 2>&1 | tee -a ${CURRENT_DIR}/install.log
    fi
 
@@ -277,11 +269,11 @@ if [ $? -ne 0 ]; then
       chmod +x /usr/bin/docker-compose
    else
       if [[ -d docker ]]; then
-         log "... 离线安装 docker-compose"
+         log "离线安装 docker-compose"
          cp docker/bin/docker-compose /usr/bin/
          chmod +x /usr/bin/docker-compose
       else
-         log "... 在线安装 docker-compose"
+         log "在线安装 docker-compose"
          curl -L https://resource.fit2cloud.com/docker/compose/releases/download/v2.24.5/docker-compose-$(uname -s | tr A-Z a-z)-$(uname -m) -o /usr/local/bin/docker-compose 2>&1 | tee -a ${CURRENT_DIR}/install.log
          if [[ ! -f /usr/local/bin/docker-compose ]];then
             log "docker-compose 下载失败，请稍候重试"
@@ -305,6 +297,11 @@ fi
 
 export COMPOSE_HTTP_TIMEOUT=180
 cd ${CURRENT_DIR}
+
+for i in $(docker images --format '{{.Repository}}:{{.Tag}}' | grep dataease); do
+   current_images[${#current_images[@]}]=${i##*/}
+done
+
 # 加载镜像
 if [[ -d images ]]; then
    log "加载镜像"
@@ -329,14 +326,13 @@ else
    cd -
 fi
 
-if which chkconfig >/dev/null 2>&1;then
-   chkconfig dataease >/dev/null 2>&1
-   if [ $? -eq 0 ]; then
-      chkconfig --del dataease >/dev/null 2>&1
-   fi
-fi
-
 if [[ -f /etc/init.d/dataease ]];then
+   if which chkconfig >/dev/null 2>&1;then
+      chkconfig dataease >/dev/null
+      if [ $? -eq 0 ]; then
+         chkconfig --del dataease
+      fi
+   fi
    rm -f /etc/init.d/dataease
 fi
 
@@ -347,15 +343,15 @@ log "配置开机自启动"
 systemctl enable dataease >/dev/null 2>&1; systemctl daemon-reload | tee -a ${CURRENT_DIR}/install.log
 
 if [[ $(grep "vm.max_map_count" /etc/sysctl.conf | wc -l) -eq 0 ]];then
-   sysctl -w vm.max_map_count=2000000
+   sysctl -w vm.max_map_count=2000000 >/dev/null 2>&1
    echo "vm.max_map_count=2000000" >> /etc/sysctl.conf
 elif (( $(grep "vm.max_map_count" /etc/sysctl.conf | awk -F'=' '{print $2}') < 2000000 ));then
-   sysctl -w vm.max_map_count=2000000
+   sysctl -w vm.max_map_count=2000000 >/dev/null 2>&1
    sed -i 's/^vm\.max_map_count.*/vm\.max_map_count=2000000/' /etc/sysctl.conf
 fi
 
 if [ $(grep "net.ipv4.ip_forward" /etc/sysctl.conf | wc -l) -eq 0 ];then
-   sysctl -w net.ipv4.ip_forward=1
+   sysctl -w net.ipv4.ip_forward=1 >/dev/null 2>&1
    echo "net.ipv4.ip_forward=1" >> /etc/sysctl.conf
 else
    sed -i 's/^net\.ipv4\.ip_forward.*/net\.ipv4\.ip_forward=1/' /etc/sysctl.conf
@@ -369,12 +365,6 @@ if which firewall-cmd >/dev/null 2>&1; then
    else
       log "防火墙未开启，忽略端口开放"
    fi
-fi
-
-http_code=$(curl -sILw "%{http_code}\n" http://localhost:${DE_PORT} -o /dev/null)
-if [[ $http_code == 200 ]];then
-   log "停止服务进行升级..."
-   dectl uninstall
 fi
 
 log "启动服务"
