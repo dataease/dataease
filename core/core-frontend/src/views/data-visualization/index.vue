@@ -28,6 +28,9 @@ import { useCache } from '@/hooks/web/useCache'
 import RealTimeListTree from '@/components/data-visualization/RealTimeListTree.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
+import { newWindowReady, EmbeddedData } from '@/utils/communication'
+import { useAppStoreWithOut } from '@/store/modules/app'
+const appStore = useAppStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -198,6 +201,10 @@ const checkPer = async resourceId => {
   return check(wsCache.get('screen-weight'), resourceId, 4)
 }
 onMounted(async () => {
+  await newWindowReady((data: EmbeddedData) => {
+    embeddedStore.setIframeData(data)
+    appStore.setIsIframe(true)
+  })
   window.addEventListener('blur', releaseAttachKey)
   if (editMode.value === 'edit') {
     window.addEventListener('storage', eventCheck)

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
+import { computed, nextTick, onBeforeMount, onUnmounted, reactive, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import findComponent from '../../utils/components'
@@ -22,6 +22,9 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
+import { newWindowReady, EmbeddedData } from '@/utils/communication'
+import { useAppStoreWithOut } from '@/store/modules/app'
+const appStore = useAppStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -93,8 +96,14 @@ const onMobileConfig = () => {
     mobileConfig.value = true
   })
 }
+const loadFinish = ref(false)
 // 全局监听按键事件
-onMounted(async () => {
+onBeforeMount(async () => {
+  await newWindowReady((data: EmbeddedData) => {
+    embeddedStore.setIframeData(data)
+    appStore.setIsIframe(true)
+  })
+  loadFinish.value = true
   useEmitt({
     name: 'mobileConfig',
     callback: () => {
@@ -167,7 +176,7 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="dv-common-layout dv-teleport-query" v-if="!mobileConfig">
+  <div class="dv-common-layout dv-teleport-query" v-if="loadFinish && !mobileConfig">
     <DbToolbar />
     <el-container
       class="dv-layout-container"
@@ -233,7 +242,10 @@ onUnmounted(() => {
       </dv-sidebar>
     </el-container>
   </div>
-  <MobileConfigPanel @pcMode="mobileConfig = false" v-else></MobileConfigPanel>
+  <MobileConfigPanel
+    @pcMode="mobileConfig = false"
+    v-else-if="loadFinish && mobileConfig"
+  ></MobileConfigPanel>
 </template>
 
 <style lang="less">

@@ -23,7 +23,7 @@ const { start, done } = useNProgress()
 const { loadStart, loadDone } = usePageLoading()
 
 const whiteList = ['/login', '/de-link', '/chart-view'] // 不重定向白名单
-
+const embeddedWhiteList = ['/dvCanvas', '/dashboard']
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
@@ -99,7 +99,11 @@ router.beforeEach(async (to, from, next) => {
       next(nextData)
     }
   } else {
-    if (whiteList.indexOf(to.path) !== -1 || to.path.startsWith('/de-link/')) {
+    if (
+      embeddedWhiteList.includes(to.path) ||
+      whiteList.indexOf(to.path) !== -1 ||
+      to.path.startsWith('/de-link/')
+    ) {
       permissionStore.setCurrentPath(to.path)
       next()
     } else {
