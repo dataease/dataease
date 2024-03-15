@@ -17,4 +17,6 @@ public class BusiNodeRequest implements Serializable {
     private Boolean leaf;
 
     private Integer weight;
+
+    private String sortType;
 }
