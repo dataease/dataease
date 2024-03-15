@@ -30,6 +30,9 @@ export const logoutHandler = (justClean?: boolean) => {
     window.location.href = '/oidcbi/oidc/logout'
     return
   }
+  if (wsCache.get('custom_auth_logout_url')) {
+    window.location.href = wsCache.get('custom_auth_logout_url')
+  }
   router.push(justClean ? queryRedirectPath : `/login?redirect=${queryRedirectPath}`)
 }
 
