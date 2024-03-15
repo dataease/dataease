@@ -36,7 +36,8 @@ const getPrefix = (): string => {
         url = ele.src
       }
       if (url.includes(suffix)) {
-        prefix = new URL(url).origin
+        const { origin, pathname } = new URL(url)
+        prefix = `${origin}${pathname.slice(0, pathname.length - 1)}`
         return true
       }
     }
