@@ -13,8 +13,7 @@ const formatterUrl = <T extends Node>(node: T, prefix: string) => {
     }
 
     if (url.includes(suffix) || url.includes('dataease-private')) {
-      const { origin, pathname } = new URL(url)
-      const currentUrlprefix = `${origin}${pathname.slice(0, pathname.length - 1)}`
+      const currentUrlprefix = new URL(url).origin
       const newUrl = url.replace(currentUrlprefix, prefix)
       if (node instanceof HTMLLinkElement) {
         node.href = newUrl
@@ -37,7 +36,8 @@ const getPrefix = (): string => {
         url = ele.src
       }
       if (url.includes(suffix)) {
-        prefix = new URL(url).origin
+        const { origin, pathname } = new URL(url)
+        prefix = `${origin}${pathname.slice(0, pathname.length - 1)}`
         return true
       }
     }
