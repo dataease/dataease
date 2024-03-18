@@ -40,5 +40,10 @@ public class CKConstants extends SQLConstants {
 
     public static final String GROUP_CONCAT = "arrayStringConcat(groupArray(%s), ',')";
 
+    public static final String toYear = "toYear(%s)";
+
+    public static final String toWeek = "toWeek(%s, 5)";
+
+    public static final String toQuarter = "toQuarter(%s)";
 
 }
