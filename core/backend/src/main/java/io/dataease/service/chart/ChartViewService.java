@@ -1328,9 +1328,9 @@ public class ChartViewService {
             data = resultCustomSort(xAxis, data);
         }
         // 如果是表格导出查询 则在此处直接就可以返回
-        if(chartExtRequest.getExcelExportFlag()){
+        if (chartExtRequest.getExcelExportFlag()) {
             Map<String, Object> sourceInfo = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
-            sourceInfo.put("sourceData",data);
+            sourceInfo.put("sourceData", data);
             view.setData(sourceInfo);
             return view;
         }
@@ -1723,6 +1723,12 @@ public class ChartViewService {
                     } else {
                         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
                     }
+                } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_W")) {
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/'W'w");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-'W'w");
+                    }
                 }
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
@@ -1757,6 +1763,17 @@ public class ChartViewService {
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
                 calendar.add(Calendar.MONTH, -1);
+                lastTime = simpleDateFormat.format(calendar.getTime());
+            } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.WEEK_MOM)) {
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                    simpleDateFormat = new SimpleDateFormat("yyyy/'W'w");
+                } else {
+                    simpleDateFormat = new SimpleDateFormat("yyyy-'W'w");
+                }
+                Date date = simpleDateFormat.parse(cTime);
+                calendar.setTime(date);
+                calendar.add(Calendar.WEEK_OF_YEAR, -1);
                 lastTime = simpleDateFormat.format(calendar.getTime());
             }
             return lastTime;
