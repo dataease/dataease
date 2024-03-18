@@ -23,15 +23,18 @@ const { start, done } = useNProgress()
 const { loadStart, loadDone } = usePageLoading()
 
 const whiteList = ['/login', '/de-link', '/chart-view'] // 不重定向白名单
-
+const embeddedWhiteList = ['/dvCanvas', '/dashboard']
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
-
-  if (isMobile() && to.name !== 'link') {
+  if (isMobile()) {
     done()
     loadDone()
-    window.location.href = window.origin + '/mobile.html#/index'
+    if (to.name === 'link') {
+      window.location.href = window.origin + '/mobile.html#' + to.path
+    } else {
+      window.location.href = window.origin + '/mobile.html#/index'
+    }
   }
   let isDesktop = wsCache.get('app.desktop')
   if (isDesktop === null) {
@@ -96,7 +99,11 @@ router.beforeEach(async (to, from, next) => {
       next(nextData)
     }
   } else {
-    if (whiteList.indexOf(to.path) !== -1 || to.path.startsWith('/de-link/')) {
+    if (
+      embeddedWhiteList.includes(to.path) ||
+      whiteList.indexOf(to.path) !== -1 ||
+      to.path.startsWith('/de-link/')
+    ) {
       permissionStore.setCurrentPath(to.path)
       next()
     } else {

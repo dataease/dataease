@@ -48,6 +48,16 @@ export const userStore = defineStore('embedded', {
     },
     getResourceId(): string {
       return this.resourceId
+    },
+    getIframeData(): any {
+      return {
+        embeddedToken: this.token,
+        busiFlag: this.busiFlag,
+        type: this.type,
+        dvId: this.dvId,
+        chartId: this.chartId,
+        pid: this.pid
+      }
     }
   },
   actions: {
@@ -74,6 +84,14 @@ export const userStore = defineStore('embedded', {
     },
     setResourceId(resourceId: string) {
       this.resourceId = resourceId
+    },
+    setIframeData(data: any) {
+      this.type = data['type']
+      this.token = data['embeddedToken']
+      this.busiFlag = data['busiFlag']
+      this.dvId = data['dvId']
+      this.chartId = data['chartId']
+      this.pid = data['pid']
     }
   }
 })

@@ -20,6 +20,7 @@ import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { findParentIdByChildIdRecursive } from '@/utils/canvasUtils'
 import treeSort from '@/utils/treeSortUtils'
+import { initOpenHandler } from '@/utils/communication'
 const { wsCache } = useCache()
 
 const dvMainStore = dvMainStoreWithOut()
@@ -294,7 +295,8 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         curCanvasType.value === 'dataV'
           ? `#/dvCanvas?opt=copy&pid=${params.pid}&dvId=${data.data}`
           : `#/dashboard?opt=copy&pid=${params.pid}&resourceId=${data.data}`
-      window.open(baseUrl, '_blank')
+      const newWindow = window.open(baseUrl, '_blank')
+      initOpenHandler(newWindow, embeddedStore.getIframeData)
     })
   } else {
     resourceGroupOpt.value.optInit(nodeType, data, cmd, ['copy'].includes(cmd))
@@ -311,11 +313,13 @@ const addOperation = (
   if (cmd === 'newLeaf') {
     const baseUrl =
       curCanvasType.value === 'dataV' ? '#/dvCanvas?opt=create' : '#/dashboard?opt=create'
+    let newWindow = null
     if (data?.id) {
-      window.open(baseUrl + `&pid=${data.id}`, '_blank')
+      newWindow = window.open(baseUrl + `&pid=${data.id}`, '_blank')
     } else {
-      window.open(baseUrl, '_blank')
+      newWindow = window.open(baseUrl, '_blank')
     }
+    initOpenHandler(newWindow, embeddedStore.getIframeData)
   } else if (cmd === 'newFromTemplate') {
     // state.templateCreatePid = data?.id
     // // newFromTemplate
@@ -337,7 +341,8 @@ function createNewObject() {
 
 const resourceEdit = resourceId => {
   const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
-  window.open(baseUrl + resourceId, '_blank')
+  const newWindow = window.open(baseUrl + resourceId, '_blank')
+  initOpenHandler(newWindow, embeddedStore.getIframeData)
 }
 
 const resourceOptFinish = () => {
@@ -351,11 +356,13 @@ const resourceCreateFinish = templateData => {
     curCanvasType.value === 'dataV'
       ? '#/dvCanvas?opt=create&createType=template'
       : '#/dashboard?opt=create&createType=template'
+  let newWindow = null
   if (state.templateCreatePid) {
-    window.open(baseUrl + `&pid=${state.templateCreatePid}`, '_blank')
+    newWindow = window.open(baseUrl + `&pid=${state.templateCreatePid}`, '_blank')
   } else {
-    window.open(baseUrl, '_blank')
+    newWindow = window.open(baseUrl, '_blank')
   }
+  initOpenHandler(newWindow, embeddedStore.getIframeData)
 }
 
 const getParentKeys = (tree, targetKey, parentKeys = []) => {
