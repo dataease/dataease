@@ -829,7 +829,7 @@ div:focus {
 }
 
 
-.el-checkbox__input.is-checked:not(.is-disabled)+.el-checkbox__label {
+.el-checkbox:not(.is-tree-select) .el-checkbox__input.is-checked:not(.is-disabled)+.el-checkbox__label {
   color: #1F2329 !important;
 }
 

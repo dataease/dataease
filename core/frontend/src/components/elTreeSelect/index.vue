@@ -52,6 +52,7 @@
         class="tree-select-all"
       ><el-checkbox
         v-model="selectAll"
+        class="is-tree-select"
         :indeterminate="isIndeterminate"
         @change="selectAllChange"
       >{{ $t('dataset.check_all') }}</el-checkbox></p>
@@ -595,7 +596,7 @@ export default {
   padding: 10px 20px 0 24px;
 }
 .tree-select-all .el-checkbox__label {
-  color: var(--SelectTreeColor, #606266);
+  color: var(--SelectTreeColor, #606266) !important;
 }
 [aria-disabled='true'] > .el-tree-node__content {
     color: inherit !important;

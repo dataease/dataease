@@ -317,6 +317,10 @@ export default {
       this.refreshOptions()
     }, 1000),
     filterMethod(key) {
+      if (!key && !this.keyWord) {
+        this.keyWord = key
+        return
+      }
       this.keyWord = key
       this.searchWithKey()
     },
