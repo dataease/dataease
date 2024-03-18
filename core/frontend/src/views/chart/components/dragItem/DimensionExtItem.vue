@@ -335,6 +335,8 @@ export default {
         this.showDateExt = (this.chart.datasourceType === 'mysql' ||
           this.chart.datasourceType === 'ds_doris' ||
           this.chart.datasourceType === 'StarRocks' ||
+          this.chart.datasourceType === 'ck' ||
+          this.chart.datasourceType === 'oracle' ||
           this.chart.datasetMode === 1) && this.chart.type !== 'bar-time-range'
       } else {
         this.showDateExt = false
