@@ -5,6 +5,7 @@
     @keydown.stop
     @keyup.stop
     @dblclick="setEdit"
+    @click="onClick"
   >
     <chart-error v-if="isError" :err-msg="errMsg" />
     <Editor
@@ -14,7 +15,6 @@
       class="custom-text-content"
       :init="init"
       :disabled="!canEdit || disabled"
-      @onClick="onClick"
     />
     <div
       class="rich-placeholder"
@@ -232,8 +232,10 @@ const fieldSelect = field => {
   snapshotStore.resetStyleChangeTimes()
 }
 const onClick = () => {
-  const node = tinymce.activeEditor.selection.getNode()
-  resetSelect(node)
+  if (canEdit.value) {
+    const node = tinymce.activeEditor.selection.getNode()
+    resetSelect(node)
+  }
 }
 const resetSelect = (node?) => {
   const edInner = tinymce.get(tinymceId)
