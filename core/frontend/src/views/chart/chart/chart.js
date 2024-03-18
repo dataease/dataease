@@ -42,7 +42,7 @@ export const DEFAULT_COLOR_CASE = {
   mapLineTargetColor: '#576CBC',
   quotaSuffixColor: '#5470c6',
   calcTopN: false,
-  topN: 5,
+  topN: 5
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -69,7 +69,7 @@ export const DEFAULT_COLOR_CASE_DARK = {
   mapLineTargetColor: '#3795BD',
   quotaSuffixColor: '#5470c6',
   calcTopN: false,
-  topN: 5,
+  topN: 5
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -1232,7 +1232,7 @@ export const CHART_FONT_LETTER_SPACE = [
 
 export const NOT_SUPPORT_PAGE_DATASET = ['kylin', 'sqlServer_all', 'es', 'presto', 'StarRocks']
 
-export const SUPPORT_Y_M = ['y', 'y_M', 'y_M_d']
+export const SUPPORT_Y_M = ['y', 'y_M', 'y_M_d', 'y_W']
 
 export const DEFAULT_MAP = {
   mapPitch: 0,
