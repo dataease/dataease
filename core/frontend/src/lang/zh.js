@@ -1372,6 +1372,7 @@ export default {
     recover: '重置',
     yoy_label: '同比/环比',
     yoy_setting: '同环比设置',
+    accumulate: '累加',
     pls_select_field: '请选择字段',
     compare_date: '对比日期',
     compare_type: '对比类型',

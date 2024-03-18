@@ -97,7 +97,6 @@ export default {
   },
   data() {
     return {
-      myChart: null,
       chartId: uuid.v1(),
       showTrackBar: true,
       trackBarStyle: {

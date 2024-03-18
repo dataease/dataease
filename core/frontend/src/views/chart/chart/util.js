@@ -3657,7 +3657,7 @@ export function getColors(chart, colors, reset) {
     if (chart.data) {
       const data = chart.data.data
       const s = []
-      data.forEach((cur) => {
+      data?.forEach((cur) => {
         if (s.indexOf(cur.category) < 0) {
           s.push(cur.category)
         }

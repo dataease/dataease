@@ -179,6 +179,10 @@
                   :disabled="quotaViews.indexOf(chart.type) > -1"
                   :command="beforeQuickCalc('percent')"
                 >{{ $t('chart.percent') }}</el-dropdown-item>
+                <el-dropdown-item
+                  :disabled="quotaViews.indexOf(chart.type) > -1"
+                  :command="beforeQuickCalc('accumulate')"
+                >{{ $t('chart.accumulate') }}</el-dropdown-item>
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
@@ -416,6 +420,10 @@ export default {
           this.item.formatterCfg.decimalCount = 2
 
           this.item.compareCalc.type = 'percent'
+          this.$emit('onQuotaItemChange', this.item)
+          break
+        case 'accumulate':
+          this.item.compareCalc.type = 'accumulate'
           this.$emit('onQuotaItemChange', this.item)
           break
         default:

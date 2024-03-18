@@ -1373,6 +1373,7 @@ export default {
     select_chart_type: 'Select Chart Type',
     recover: 'Reset',
     yoy_label: 'YOY/MOM',
+    accumulate: 'Accumulate',
     yoy_setting: 'Setting',
     pls_select_field: 'Select Field',
     compare_date: 'Compare Date',

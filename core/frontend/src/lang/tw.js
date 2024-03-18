@@ -1371,6 +1371,7 @@ export default {
     select_chart_type: '選擇圖表類型',
     recover: '重置',
     yoy_label: '同比/環比',
+    accumulate: '累加',
     yoy_setting: '同環比設置',
     pls_select_field: '請選擇字段',
     compare_date: '對比日期',
