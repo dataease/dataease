@@ -16,10 +16,10 @@ const interactiveStore = interactiveStoreWithOut()
 import router from '@/router'
 import { useI18n } from '@/hooks/web/useI18n'
 import _ from 'lodash'
-import DeResourceCreateOpt from '@/views/common/DeResourceCreateOpt.vue'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
 import { findParentIdByChildIdRecursive } from '@/utils/canvasUtils'
+import treeSort from '@/utils/treeSortUtils'
 import { initOpenHandler } from '@/utils/communication'
 const { wsCache } = useCache()
 
@@ -58,6 +58,7 @@ const resourceGroupOpt = ref()
 const resourceCreateOpt = ref()
 const returnMounted = ref(false)
 const state = reactive({
+  curSortType: 'time_desc',
   resourceTree: [] as BusiTreeNode[],
   folderMenuList: [
     {
@@ -75,6 +76,24 @@ const state = reactive({
       command: 'delete',
       svgName: 'dv-delete',
       divided: true
+    }
+  ],
+  sortType: [
+    {
+      label: '按时间升序',
+      value: 'time_asc'
+    },
+    {
+      label: '按时间降序',
+      value: 'time_desc'
+    },
+    {
+      label: '按名称升序',
+      value: 'name_asc'
+    },
+    {
+      label: '按名称降序',
+      value: 'time_asc'
     }
   ],
   templateCreatePid: 0
@@ -371,6 +390,11 @@ const getDefaultExpandedKeys = () => {
   }
 }
 
+const sortTypeChange = sortType => {
+  state.resourceTree = treeSort(state.resourceTree, sortType, state.curSortType)
+  state.curSortType = sortType
+}
+
 watch(filterText, val => {
   resourceListTree.value.filter(val)
 })
@@ -445,6 +469,43 @@ defineExpose({
           </el-icon>
         </template>
       </el-input>
+      <el-dropdown trigger="click">
+        <el-icon class="insert-filter filter-icon-span"><Filter /></el-icon>
+        <template #dropdown>
+          <el-dropdown-menu style="width: 140px">
+            <el-dropdown-item
+              class="sort-type-normal"
+              :class="{ 'sort-type-checked': state.curSortType === 'time_asc' }"
+              @click="sortTypeChange('time_asc')"
+            >
+              <span>按照时间升序</span>
+              <el-icon><Check /></el-icon>
+            </el-dropdown-item>
+            <el-dropdown-item
+              class="sort-type-normal"
+              :class="{ 'sort-type-checked': state.curSortType === 'time_desc' }"
+              @click="sortTypeChange('time_desc')"
+            >
+              <span>按照时间降序</span> <el-icon><Check /></el-icon>
+            </el-dropdown-item>
+            <el-divider />
+            <el-dropdown-item
+              class="sort-type-normal"
+              :class="{ 'sort-type-checked': state.curSortType === 'name_asc' }"
+              @click="sortTypeChange('name_asc')"
+            >
+              <span>按照名称升序</span><el-icon><Check /></el-icon>
+            </el-dropdown-item>
+            <el-dropdown-item
+              class="sort-type-normal"
+              :class="{ 'sort-type-checked': state.curSortType === 'name_desc' }"
+              @click="sortTypeChange('name_desc')"
+            >
+              <span>按照名称降序</span><el-icon><Check /></el-icon>
+            </el-dropdown-item>
+          </el-dropdown-menu>
+        </template>
+      </el-dropdown>
     </div>
     <el-scrollbar class="custom-tree">
       <el-tree
@@ -520,6 +581,43 @@ defineExpose({
   </div>
 </template>
 <style lang="less" scoped>
+.insert-filter {
+  display: inline-block;
+  font-weight: 400 !important;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--TextPrimary, #1f2329);
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  transition: 0.1s;
+  border-radius: 3px;
+
+  &:active {
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
+  }
+
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6;
+  }
+}
+
+.filter-icon-span {
+  border: 1px solid #dcdfe6;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  padding: 7px;
+  margin-left: 8px;
+}
 .resource-tree {
   padding: 16px 0 0;
   width: 100%;
@@ -558,6 +656,7 @@ defineExpose({
   }
   .search-bar {
     padding-bottom: 10px;
+    width: calc(100% - 50px);
   }
 }
 .title-area {
@@ -635,6 +734,19 @@ defineExpose({
 
   .ed-icon {
     border-radius: 4px;
+  }
+}
+
+.sort-type-normal {
+  i {
+    display: none;
+  }
+}
+
+.sort-type-checked {
+  color: blueviolet;
+  i {
+    display: block;
   }
 }
 </style>
