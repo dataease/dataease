@@ -52,7 +52,6 @@
         class="tree-select-all"
       ><el-checkbox
         v-model="selectAll"
-        v-customStyle="customStyle"
         :indeterminate="isIndeterminate"
         @change="selectAllChange"
       >{{ $t('dataset.check_all') }}</el-checkbox></p>
@@ -590,15 +589,14 @@ export default {
 </script>
 <style>
 .el-tree-select .de-select-option {
-    display: none !important;
+  display: none !important;
 }
 .tree-select-all {
-    padding: 10px 20px 0 24px;
-    
-  }
-  .tree-select-all .el-checkbox__label {
-      color: var(--SelectTreeColor, #606266);
-    }
+  padding: 10px 20px 0 24px;
+}
+.tree-select-all .el-checkbox__label {
+  color: var(--SelectTreeColor, #606266);
+}
 [aria-disabled='true'] > .el-tree-node__content {
     color: inherit !important;
     background: transparent !important;

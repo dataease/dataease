@@ -205,7 +205,7 @@ export default {
         styleEle.id = `style${this.element.id}`
         document.querySelector('head').appendChild(styleEle)
       }
-      styleEle.innerHTML = `#component${this.element.id} .el-input__inner::placeholder {\n  color: ${this.element.style.wordColor} \n    }`
+      styleEle.innerHTML = `#component${this.element.id}.component-custom .el-input__inner::placeholder {\n  color: ${this.element.style.wordColor}b3 \n    }`
     },
     filterLoaded(p) {
       this.$emit('filter-loaded', p)

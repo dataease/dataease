@@ -70,7 +70,12 @@
     <el-col :span="16">
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
-          
+          <span v-if="widget.name && ['textSelectWidget', 'textSelectGridWidget'].includes(widget.name)" style="padding-right: 10px;">
+            <el-checkbox
+              v-model="attrs.showEmpty"
+            >{{ $t('panel.show_empty') }}
+            </el-checkbox>
+          </span>
           <el-checkbox
             v-model="attrs.showTitle"
             @change="showTitleChange"
