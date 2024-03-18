@@ -1551,11 +1551,11 @@ public class CKQueryProvider extends QueryProvider {
             case "y":
                 return "%Y";
             case "y_Q":
-                return "CONCAT(%s,'" + split + "','Q',%s)";
+                return "CONCAT(toString(%s),'" + split + "','Q',toString(%s))";
             case "y_M":
                 return "%Y" + split + "%m";
             case "y_W":
-                return "CONCAT(%s,'" + split + "','W',%s)";
+                return "CONCAT(toString(%s),'" + split + "','W',toString(%s))";
             case "y_M_d":
                 return "%Y" + split + "%m" + split + "%d";
             case "H_m_s":
@@ -1600,28 +1600,30 @@ public class CKQueryProvider extends QueryProvider {
             if (x.getDeType() == DeTypeConstants.DE_TIME) {
                 String format = transDateFormat(x.getDateStyle(), x.getDatePattern());
                 if (x.getDeExtractType() == DeTypeConstants.DE_STRING) {
+                    String s = String.format(CKConstants.toDateTime, originField);
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
-                                String.format(CKConstants.toYear, "toDate(" + originField + ")"),
-                                String.format(CKConstants.toQuarter, "toDate(" + originField + ")"));
+                                String.format(CKConstants.toYear, String.format(CKConstants.toDateTime, originField)),
+                                String.format(CKConstants.toQuarter, String.format(CKConstants.toDateTime, originField)));
                     } else if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_W")) {
                         fieldName = String.format(format,
-                                String.format(CKConstants.toYear, "toDate(" + originField + ")"),
-                                String.format(CKConstants.toWeek, "toDate(" + originField + ")"));
+                                String.format(CKConstants.toYear, s),
+                                String.format(CKConstants.toWeek, s));
                     } else {
-                        fieldName = String.format(CKConstants.formatDateTime, String.format(CKConstants.toDateTime, originField), format);
+                        fieldName = String.format(CKConstants.formatDateTime, s, format);
                     }
                 } else {
+                    String s = String.format(CKConstants.toDateTime, String.format(CKConstants.toFloat64, originField));
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
-                                String.format(CKConstants.toYear, "toDate(" + originField + ")"),
-                                String.format(CKConstants.toQuarter, "toDate(" + originField + ")"));
+                                String.format(CKConstants.toYear, s),
+                                String.format(CKConstants.toQuarter, s));
                     } else if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_W")) {
                         fieldName = String.format(format,
-                                String.format(CKConstants.toYear, "toDate(" + originField + ")"),
-                                String.format(CKConstants.toWeek, "toDate(" + originField + ")"));
+                                String.format(CKConstants.toYear, s),
+                                String.format(CKConstants.toWeek, s));
                     } else {
-                        fieldName = String.format(CKConstants.formatDateTime, String.format(CKConstants.toDateTime, String.format(CKConstants.toFloat64, originField)), format);
+                        fieldName = String.format(CKConstants.formatDateTime, s, format);
                     }
                 }
             } else {
