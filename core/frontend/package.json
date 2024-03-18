@@ -41,6 +41,7 @@
     "@tinymce/tinymce-vue": "^3.2.8",
     "axios": "^1.6.1",
     "core-js": "^2.6.5",
+    "dayjs": "^1.11.10",
     "echarts": "^5.0.1",
     "element-resize-detector": "^1.2.3",
     "element-ui": "2.15.7",
