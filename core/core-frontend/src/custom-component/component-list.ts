@@ -120,6 +120,36 @@ const list = [
     matrixStyle: {}
   },
   {
+    component: 'DeTimeClock',
+    name: '时间组件',
+    label: '时间组件',
+    icon: 'dv-more-time-clock',
+    innerType: 'DeTimeClock',
+    editing: false,
+    canvasActive: false,
+    x: 1,
+    y: 1,
+    sizeX: 18,
+    sizeY: 6,
+    propValue: {},
+    style: {
+      width: 300,
+      height: 100,
+      fontSize: 22,
+      fontWeight: 400,
+      textAlign: 'center',
+      color: '#000000'
+    },
+    formatInfo: {
+      openMode: '0',
+      showWeek: false,
+      showDate: true,
+      dateFormat: 'yyyy-MM-dd',
+      timeFormat: 'hh:mm:ss'
+    },
+    matrixStyle: {}
+  },
+  {
     component: 'Picture',
     name: '图片',
     label: '图片',
