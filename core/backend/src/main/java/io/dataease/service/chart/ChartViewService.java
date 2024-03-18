@@ -73,6 +73,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -1446,6 +1447,78 @@ public class ChartViewService {
                         item[dataIndex] = new BigDecimal(cValue)
                                 .divide(sum, 8, RoundingMode.HALF_UP)
                                 .toString();
+                    }
+                } else if (StringUtils.equalsAnyIgnoreCase(compareCalc.getType(), "accumulate")) {
+                    // 累加
+                    if (data.isEmpty()) {
+                        break;
+                    }
+                    if (StringUtils.containsAny(view.getType(), "group", "stack")) {
+                        if (xAxisBase.isEmpty()) {
+                            break;
+                        }
+                        if (StringUtils.containsIgnoreCase(view.getType(), "stack") && extStack.isEmpty()) {
+                            break;
+                        }
+                        if (StringUtils.containsIgnoreCase(view.getType(), "group") && xAxisExt.isEmpty() ) {
+                            break;
+                        }
+                        final Map<String, Integer> mainIndexMap = new HashMap<>();
+                        final List<List<String[]>> mainMatrix = new ArrayList<>();
+                        List<ChartViewFieldDTO> finalXAxisBase = xAxisBase;
+                        data.forEach(item -> {
+                            String[] mainAxisArr = Arrays.copyOfRange(item, 0, finalXAxisBase.size());
+                            String mainAxis = StringUtils.join(mainAxisArr, '-');
+                            Integer index = mainIndexMap.get(mainAxis);
+                            if (index == null) {
+                                mainIndexMap.put(mainAxis, mainMatrix.size());
+                                List<String[]> tmp = new ArrayList<>();
+                                tmp.add(item);
+                                mainMatrix.add(tmp);
+                            } else {
+                                List<String[]> tmp = mainMatrix.get(index);
+                                tmp.add(item);
+                            }
+                        });
+                        int finalDataIndex = dataIndex;
+                        int subEndIndex = finalXAxisBase.size();
+                        if (StringUtils.containsIgnoreCase(view.getType(), "group")) {
+                            subEndIndex += xAxisExt.size();
+                        }
+                        if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                            subEndIndex += extStack.size();
+                        }
+                        int finalSubEndIndex = subEndIndex;
+                        //滑动累加
+                        for (int k = 1; k < mainMatrix.size(); k++) {
+                            List<String[]> preDataItems = mainMatrix.get(k - 1);
+                            List<String[]> curDataItems = mainMatrix.get(k);
+                            Map<String, BigDecimal> preDataMap = new HashMap<>();
+                            preDataItems.forEach(preDataItem -> {
+                                String[] groupStackAxisArr = Arrays.copyOfRange(preDataItem, finalXAxisBase.size(), finalSubEndIndex);
+                                String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
+                                preDataMap.put(groupStackAxis, new BigDecimal(preDataItem[finalDataIndex]));
+                            });
+                            curDataItems.forEach(curDataItem -> {
+                                String[] groupStackAxisArr = Arrays.copyOfRange(curDataItem, finalXAxisBase.size(), finalSubEndIndex);
+                                String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
+                                BigDecimal preValue = preDataMap.get(groupStackAxis);
+                                if (preValue != null) {
+                                    curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
+                                            .add(preValue)
+                                            .toString();
+                                }
+                            });
+                        }
+                    } else {
+                        final int index = dataIndex;
+                        final AtomicReference<BigDecimal> accumValue = new AtomicReference<>(new BigDecimal(0));
+                        data.forEach(item -> {
+                            BigDecimal curVal = new BigDecimal(item[index]);
+                            BigDecimal curAccumValue = accumValue.get().add(curVal);
+                            item[index] = curAccumValue.toString();
+                            accumValue.set(curAccumValue);
+                        });
                     }
                 }
             }

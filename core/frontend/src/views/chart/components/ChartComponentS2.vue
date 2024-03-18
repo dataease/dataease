@@ -175,7 +175,6 @@ export default {
       },
       tableData: [],
       showPage: false,
-      scrollTimer: null,
       scrollTop: 0,
       remarkCfg: {
         show: false,
@@ -239,7 +238,6 @@ export default {
     this.preDraw()
   },
   beforeDestroy() {
-    clearInterval(this.scrollTimer)
     window.removeEventListener('resize', this.chartResize)
     this.myChart?.facet.timer?.stop()
     this.myChart?.destroy?.()
@@ -524,7 +522,6 @@ export default {
     },
 
     initScroll() {
-      clearTimeout(this.scrollTimer)
       const customAttr = JSON.parse(this.chart.customAttr)
       const senior = JSON.parse(this.chart.senior)
       if (senior?.scrollCfg?.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
