@@ -54,6 +54,7 @@ import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/deWidget/customInput'
 import { textSelectWidget } from '@/components/widget/deWidget/serviceNameFn.js'
 import { uuid } from 'vue-uuid'
+import _ from 'lodash'
 export default {
   components: { ElVisualSelect },
   mixins: [customInput],
@@ -96,7 +97,6 @@ export default {
       onFocus: false,
       keyWord: '',
       separator: ',',
-      timeMachine: null,
       changeIndex: 0,
       flag: uuid.v1(),
       hasDestroy: false
@@ -313,29 +313,14 @@ export default {
       this.$refs.deSelect && this.$refs.deSelect.resetSelectAll && this.$refs.deSelect.resetSelectAll()
     },
 
-    searchWithKey(index) {
-      this.timeMachine = setTimeout(() => {
-        if (index === this.changeIndex) {
-          this.refreshOptions()
-        }
-        this.destroyTimeMachine()
-      }, 1500)
-    },
-    destroyTimeMachine() {
-      this.timeMachine && clearTimeout(this.timeMachine)
-      this.timeMachine = null
-    },
+    searchWithKey: _.debounce(function () {
+      this.refreshOptions()
+    }, 1000),
     filterMethod(key) {
-      if (key === this.keyWord) {
-        return
-      }
       this.keyWord = key
-      this.destroyTimeMachine()
-      this.changeIndex++
-      this.searchWithKey(this.changeIndex)
+      this.searchWithKey()
     },
     refreshOptions() {
-      // this.data = []
       let method = multFieldValues
       const token = this.$store.getters.token || getToken()
       const linkToken = this.$store.getters.linkToken || getLinkToken()
@@ -564,7 +549,7 @@ export default {
       })
     },
     filterInvalidValue(data) {
-      if (this.value === null) {
+      if (this.value === null || !!this.keyWord) {
         return
       }
       if (!data.length) {
