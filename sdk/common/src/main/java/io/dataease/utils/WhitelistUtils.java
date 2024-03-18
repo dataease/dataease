@@ -40,6 +40,7 @@ public class WhitelistUtils {
             "/sysParameter/requestTimeOut",
             "/setting/authentication/status",
             "/sysParameter/ui",
+            "/embedded/initIframe",
             "/");
 
     public static boolean match(String requestURI) {

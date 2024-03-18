@@ -4,8 +4,10 @@ import com.github.xiaoymin.knife4j.annotations.ApiOperationSupport;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.permissions.embedded.dto.EmbeddedCreator;
 import io.dataease.api.permissions.embedded.dto.EmbeddedEditor;
+import io.dataease.api.permissions.embedded.dto.EmbeddedOrigin;
 import io.dataease.api.permissions.embedded.dto.EmbeddedResetRequest;
 import io.dataease.api.permissions.embedded.vo.EmbeddedGridVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
 import io.swagger.v3.oas.annotations.enums.ParameterIn;
@@ -51,4 +53,8 @@ public interface EmbeddedApi {
     @Operation(summary = "嵌入式应用域名集合", hidden = true)
     @GetMapping("/domainList")
     List<String> domainList();
+
+    @Hidden
+    @PostMapping("/initIframe")
+    void initIframe(@RequestBody EmbeddedOrigin origin);
 }

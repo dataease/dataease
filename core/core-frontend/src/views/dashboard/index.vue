@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, nextTick, onBeforeMount, onUnmounted, reactive, ref } from 'vue'
+import { computed, nextTick, onMounted, onUnmounted, reactive, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import findComponent from '../../utils/components'
@@ -22,9 +22,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
-import { newWindowReady, EmbeddedData } from '@/utils/communication'
-import { useAppStoreWithOut } from '@/store/modules/app'
-const appStore = useAppStoreWithOut()
+import { XpackComponent } from '@/components/plugin'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -96,12 +94,28 @@ const onMobileConfig = () => {
     mobileConfig.value = true
   })
 }
+
 const loadFinish = ref(false)
+const newWindowHandler = ref(null)
+
+let p = null
+const XpackLoaded = () => {
+  const pm = {
+    methodName: 'newWindowReady',
+    args: null
+  }
+  if (newWindowHandler?.value) {
+    newWindowHandler.value.invokeMethod(pm)
+    p(true)
+  }
+}
 // 全局监听按键事件
-onBeforeMount(async () => {
-  await newWindowReady((data: EmbeddedData) => {
-    embeddedStore.setIframeData(data)
-    appStore.setIsIframe(true)
+onMounted(async () => {
+  await new Promise(r => {
+    if (!newWindowHandler?.value) {
+      return r(null)
+    }
+    p = r
   })
   loadFinish.value = true
   useEmitt({
@@ -246,6 +260,11 @@ onUnmounted(() => {
     @pcMode="mobileConfig = false"
     v-else-if="loadFinish && mobileConfig"
   ></MobileConfigPanel>
+  <XpackComponent
+    ref="newWindowHandler"
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
+    @loaded="XpackLoaded"
+  />
 </template>
 
 <style lang="less">
