@@ -388,6 +388,7 @@ const formatDate = computed(() => {
     v-else
     v-model="selectValue"
     :type="config.timeGranularity"
+    @change="handleValueChange"
     :prefix-icon="calendar"
     :style="selectStyle"
     :placeholder="$t('commons.date.select_date_time')"
