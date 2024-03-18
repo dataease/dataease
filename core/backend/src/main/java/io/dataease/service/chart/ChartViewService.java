@@ -1684,6 +1684,9 @@ public class ChartViewService {
                 return StringUtils.equalsIgnoreCase(calcType, "day_mom")
                         || StringUtils.equalsIgnoreCase(calcType, "month_yoy")
                         || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
+            case "y_W":
+                return StringUtils.equalsIgnoreCase(calcType, "week_mom")
+                        || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
         }
         return false;
     }
