@@ -21,7 +21,8 @@ import RectShape from '@/custom-component/rect-shape/Component.vue'
 import RectShapeAttr from '@/custom-component/rect-shape/Attr.vue'
 import SvgTriangle from '@/custom-component/svgs/svg-triangle/Component.vue'
 import SvgTriangleAttr from '@/custom-component/svgs/svg-triangle/Attr.vue'
-
+import DeTimeClock from '@/custom-component/de-time-clock/Component.vue'
+import DeTimeClockAttr from '@/custom-component/de-time-clock/Attr.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -45,7 +46,9 @@ export const componentsMap = {
   RectShape: RectShape,
   RectShapeAttr: RectShapeAttr,
   SvgTriangle: SvgTriangle,
-  SvgTriangleAttr: SvgTriangleAttr
+  SvgTriangleAttr: SvgTriangleAttr,
+  DeTimeClock: DeTimeClock,
+  DeTimeClockAttr: DeTimeClockAttr
 }
 
 export default function findComponent(key) {

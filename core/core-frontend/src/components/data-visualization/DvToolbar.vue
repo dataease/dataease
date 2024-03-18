@@ -15,6 +15,7 @@ import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { canvasSave } from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
+import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -200,6 +201,9 @@ eventBus.on('clearCanvas', clearCanvas)
           </component-group>
           <component-group is-label :base-width="115" icon-name="dv-media" title="媒体">
             <media-group></media-group>
+          </component-group>
+          <component-group is-label :base-width="115" icon-name="dv-more-com" title="更多">
+            <more-com-group></more-com-group>
           </component-group>
           <component-group is-label :base-width="410" icon-name="dv-material" title="素材">
             <common-group></common-group>
