@@ -1603,8 +1603,8 @@ public class CKQueryProvider extends QueryProvider {
                     String s = String.format(CKConstants.toDateTime, originField);
                     if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_Q")) {
                         fieldName = String.format(format,
-                                String.format(CKConstants.toYear, String.format(CKConstants.toDateTime, originField)),
-                                String.format(CKConstants.toQuarter, String.format(CKConstants.toDateTime, originField)));
+                                String.format(CKConstants.toYear, s),
+                                String.format(CKConstants.toQuarter, s));
                     } else if (StringUtils.equalsIgnoreCase(x.getDateStyle(), "y_W")) {
                         fieldName = String.format(format,
                                 String.format(CKConstants.toYear, s),
