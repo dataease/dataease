@@ -37,7 +37,9 @@ const getPrefix = (): string => {
       }
       if (url.includes(suffix)) {
         const { origin, pathname } = new URL(url)
-        prefix = `${origin}${pathname.slice(0, pathname.length - 1)}`
+        const splitArr = pathname.split('/')
+        splitArr.pop()
+        prefix = `${origin}${splitArr.join('/')}`
         return true
       }
     }

@@ -1,9 +1,6 @@
 <template>
-  <div
-    style="display: flex; align-items: center"
-    :style="{ height: containerHeight, margin: timeMargin + 'px' }"
-  >
-    <p style="width: 100%; margin: auto">{{ nowDate }}</p>
+  <div style="width: 100%; height: 100%; display: flex; align-items: center">
+    <p>{{ state.nowDate }}</p>
   </div>
 </template>
 
@@ -21,13 +18,6 @@ const state = reactive({
   nowDate: '', // 当前日期
   nowWeek: '',
   timer: null
-})
-const timeMargin = computed(() => {
-  return element.value.style.time_margin
-})
-
-const containerHeight = computed(() => {
-  return 'calc(100% - ' + element.value.style.time_margin * 2 + 'px)'
 })
 
 const currentTime = () => {

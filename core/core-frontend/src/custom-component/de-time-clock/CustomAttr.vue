@@ -1,108 +1,28 @@
 <script setup lang="ts">
-import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElMessage } from 'element-plus-secondary'
-import { ref, onMounted, onBeforeUnmount, watch } from 'vue'
-import { beforeUploadCheck, uploadFileResult } from '@/api/staticResource'
-import { imgUrlTrans } from '@/utils/imgUtils'
-import eventBus from '@/utils/eventBus'
-import ImgViewDialog from '@/custom-component/ImgViewDialog.vue'
+import {onMounted, reactive} from "vue";
 
-withDefaults(
-  defineProps<{
-    themes?: EditorTheme
-  }>(),
-  {
-    themes: 'dark'
-  }
-)
+
+
+const state = reactive({
+
+})
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
 const { curComponent } = storeToRefs(dvMainStore)
 
-const fileList = ref([])
-const dialogImageUrl = ref('')
-const dialogVisible = ref(false)
-const uploadDisabled = ref(false)
-const files = ref(null)
-const maxImageSize = 15000000
-
-const handlePictureCardPreview = file => {
-  dialogImageUrl.value = file.url
-  dialogVisible.value = true
-}
-
-const handleRemove = (_, fileList) => {
-  uploadDisabled.value = false
-  curComponent.value.propValue.url = null
-  fileList.value = []
-  snapshotStore.recordSnapshotCache()
-}
-async function upload(file) {
-  uploadFileResult(file.file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
-    curComponent.value.propValue.url = fileUrl
-  })
-}
-
-const goFile = () => {
-  files.value.click()
-}
-
-const reUpload = e => {
-  const file = e.target.files[0]
-  if (file.size > maxImageSize) {
-    sizeMessage()
-  }
-  uploadFileResult(file, fileUrl => {
-    snapshotStore.recordSnapshotCache()
-    curComponent.value.propValue.url = fileUrl
-    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
-  })
-}
-
-const sizeMessage = () => {
-  ElMessage.success('图片大小不符合')
-}
-const init = () => {
-  if (curComponent.value.propValue.url) {
-    fileList.value = [{ url: imgUrlTrans(curComponent.value.propValue.url) }]
-  } else {
-    fileList.value = []
-  }
-}
-
-watch(
-  () => curComponent.value.propValue.url,
-  () => {
-    init()
-  }
-)
-
-onMounted(() => {
-  init()
-  eventBus.on('uploadImg', goFile)
-})
-onBeforeUnmount(() => {
-  eventBus.off('uploadImg', goFile)
-})
 </script>
 
 <template>
-  <div class="attr-list de-collapse-style">
-    <CommonAttr
-      :themes="themes"
-      :element="curComponent"
-      :background-color-picker-width="197"
-      :background-border-select-width="197"
-    >
-    </CommonAttr>
-  </div>
+  <el-collapse-item :effect="themes" title="位置" name="position" v-if="!dashboardActive">
+    <component-position :themes="themes" />
+  </el-collapse-item>
+
 </template>
 
 <style lang="less" scoped>

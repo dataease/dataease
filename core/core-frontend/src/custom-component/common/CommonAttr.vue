@@ -134,7 +134,7 @@ const stopEvent = e => {
           :background-border-select-width="backgroundBorderSelectWidth"
         />
       </el-collapse-item>
-
+      <slot></slot>
       <el-collapse-item
         v-if="showStyle"
         :effect="themes"
@@ -257,7 +257,6 @@ const stopEvent = e => {
           </el-row>
         </el-form>
       </el-collapse-item>
-      <slot></slot>
     </el-collapse>
   </div>
 </template>
