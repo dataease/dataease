@@ -1,12 +1,7 @@
 <script lang="ts" setup>
-import { shallowRef, defineAsyncComponent, ref, onBeforeUnmount } from 'vue'
+import { shallowRef, defineAsyncComponent, ref, onBeforeUnmount, onBeforeMount } from 'vue'
 import { debounce } from 'lodash-es'
-import { useEmbedded } from '@/store/modules/embedded'
-import { useAppStoreWithOut } from '@/store/modules/app'
-import { onBeforeMount } from 'vue'
-import { communicationInit, EmbeddedData } from '@/utils/communication'
-const embeddedStore = useEmbedded()
-const appStore = useAppStoreWithOut()
+import { XpackComponent } from '@/components/plugin'
 
 const currentComponent = shallowRef()
 
@@ -44,11 +39,6 @@ const setStyle = debounce(() => {
   }
 }, 300)
 onBeforeMount(() => {
-  communicationInit((data: EmbeddedData) => {
-    embeddedStore.setIframeData(data)
-    appStore.setIsIframe(true)
-    currentComponent.value = componentMap[data.type || 'ViewWrapper']
-  })
   window.addEventListener('resize', setStyle)
   setStyle()
 })
@@ -56,9 +46,16 @@ onBeforeMount(() => {
 onBeforeUnmount(() => {
   window.removeEventListener('resize', setStyle)
 })
+const initIframe = (name: string) => {
+  currentComponent.value = componentMap[name || 'ViewWrapper']
+}
 </script>
 
 <template>
+  <XpackComponent
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvRW50cmFuY2Vz"
+    @init-iframe="initIframe"
+  />
   <div :style="iframeStyle">
     <component :is="currentComponent"></component>
   </div>

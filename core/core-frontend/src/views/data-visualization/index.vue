@@ -28,9 +28,7 @@ import { useCache } from '@/hooks/web/useCache'
 import RealTimeListTree from '@/components/data-visualization/RealTimeListTree.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
-import { newWindowReady, EmbeddedData } from '@/utils/communication'
-import { useAppStoreWithOut } from '@/store/modules/app'
-const appStore = useAppStoreWithOut()
+import { XpackComponent } from '@/components/plugin'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -200,11 +198,29 @@ const checkPer = async resourceId => {
   await interactiveStore.setInteractive(request)
   return check(wsCache.get('screen-weight'), resourceId, 4)
 }
+
+const loadFinish = ref(false)
+const newWindowHandler = ref(null)
+
+let p = null
+const XpackLoaded = () => {
+  const pm = {
+    methodName: 'newWindowReady',
+    args: null
+  }
+  if (newWindowHandler?.value) {
+    newWindowHandler.value.invokeMethod(pm)
+    p(true)
+  }
+}
 onMounted(async () => {
-  await newWindowReady((data: EmbeddedData) => {
-    embeddedStore.setIframeData(data)
-    appStore.setIsIframe(true)
+  await new Promise(r => {
+    if (!newWindowHandler?.value) {
+      return r(null)
+    }
+    p = r
   })
+  loadFinish.value = true
   window.addEventListener('blur', releaseAttachKey)
   if (editMode.value === 'edit') {
     window.addEventListener('storage', eventCheck)
@@ -292,8 +308,9 @@ eventBus.on('handleNew', handleNew)
 <template>
   <div ref="dvLayout" class="dv-common-layout">
     <DvToolbar />
-    <div class="custom-dv-divider"></div>
+    <div class="custom-dv-divider" />
     <el-container
+      v-if="loadFinish"
       class="dv-layout-container"
       :class="{ 'preview-layout-container': previewStatus }"
     >
@@ -369,6 +386,11 @@ eventBus.on('handleNew', handleNew)
       </div>
     </el-container>
   </div>
+  <XpackComponent
+    ref="newWindowHandler"
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
+    @loaded="XpackLoaded"
+  />
 </template>
 
 <style lang="less">
