@@ -70,12 +70,32 @@
     <el-col :span="16">
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
-          <span v-if="widget.name && ['textSelectWidget', 'textSelectGridWidget'].includes(widget.name)" style="padding-right: 10px;">
+          <el-popover :visible-arrow="false" placement="bottom-start" :width="180" trigger="click">
+            <template #reference>
+              <div class="more-select-btn icon iconfont icon-icon-more">
+                {{ $t('panel.more') }}
+              </div>
+            </template>
             <el-checkbox
+              v-if="widget.name && ['textSelectWidget', 'textSelectGridWidget'].includes(widget.name)"
               v-model="attrs.showEmpty"
             >{{ $t('panel.show_empty') }}
             </el-checkbox>
-          </span>
+            <el-checkbox
+              v-if="widget.name && ['timeDateRangeWidget'].includes(widget.name)"
+              v-model="attrs.showEmpty"
+            >设置时间筛选范围
+            </el-checkbox>
+            <el-popover :visible-arrow="false" :offset="-452" placement="bottom-start" :width="452" trigger="click">
+              <template #reference>
+                <svg-icon
+                icon-class="icon-setting"
+              />
+              </template>
+              <RangeFilterTime :timeRangeData="attrs.timeRange" />
+            </el-popover>
+          </el-popover>
+          
           <el-checkbox
             v-model="attrs.showTitle"
             @change="showTitleChange"
@@ -261,9 +281,10 @@
 
 <script>
 import FilterSort from './FilterSort'
+import RangeFilterTime from '@/views/panel/filter/filterMain/RangeFilterTime.vue'
 export default {
   name: 'FilterControl',
-  components: { FilterSort },
+  components: { FilterSort, RangeFilterTime },
   props: {
     widget: {
       type: Object,
@@ -370,6 +391,22 @@ export default {
 
   created() {
     this.attrs = this.controlAttrs
+    if (!this.attrs.timeRange) {
+      this.$set(this.attrs, 'timeRange', {
+        intervalType: "none",
+        dynamicWindow: false,
+        maximumSingleQuery: 0,
+        regularOrTrends: "fixed",
+        regularOrTrendsValue: "",
+        relativeToCurrent: "custom",
+        timeNum: 0,
+        relativeToCurrentType: "year",
+        around: "f",
+        timeNumRange: 0,
+        relativeToCurrentTypeRange: "year",
+        aroundRange: "f",
+      })
+    }
     if (this.widget.isTimeWidget) {
       this.showParams = true
       this.isRangeParamWidget = this.widget.isRangeParamWidget && this.widget.isRangeParamWidget()
@@ -461,6 +498,25 @@ export default {
   justify-content: flex-end;
   flex-wrap: nowrap;
   height: 50px;
+  .more-select-btn {
+    display: inline-flex;
+    width: 56px;
+    height: 26px;
+    border-radius: 4px;
+    color: #3370FF;
+    font-size: 14px;
+    font-weight: 400;
+    line-height: 22px;
+    align-items: center;
+    justify-content: center;
+    &:hover {
+      background: #3370FF1A;
+    }
+
+    &.icon-icon-more::before {
+      margin-right: 4px;
+    }
+  }
 }
 
 .i-filter {
