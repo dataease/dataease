@@ -8,49 +8,6 @@
           :active-text="$t('panel.multiple_choice')"
           @change="multipleChange"
         />
-
-        <span
-          v-if="widget.isTimeWidget && widget.isTimeWidget()"
-          style="padding-left: 10px;"
-        >
-          <el-checkbox
-            v-model="attrs.showTime"
-            @change="showTimeChange"
-          >
-            <span>{{ $t('panel.show_time') }} </span>
-          </el-checkbox>
-
-          <el-popover
-            v-model="timePopovervisible"
-            placement="bottom-end"
-            :disabled="!attrs.showTime"
-            width="140"
-          >
-            <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
-              <ul class="de-ul">
-                <li
-                  v-for="(node, i) in accuracyOptions"
-                  :key="node.id"
-                  :index="i"
-                  class="de-sort-field-span"
-                  :class="attrs.accuracy === node.id ? 'de-active-li': ''"
-                  @click="attrs.accuracy = node.id"
-                >
-
-                  <span>{{ node.name }}</span>
-                </li>
-              </ul>
-
-            </div>
-
-            <i
-              slot="reference"
-              :class="{'i-filter-active': attrs.showTime, 'i-filter-inactive': !attrs.showTime}"
-              class="el-icon-setting i-filter"
-            />
-          </el-popover>
-        </span>
-
         <span
           v-if="widget.isSortWidget && widget.isSortWidget()"
           style="padding-left: 10px;"
@@ -70,31 +27,7 @@
     <el-col :span="16">
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
-          <el-popover :visible-arrow="false" placement="bottom-start" :width="180" trigger="click">
-            <template #reference>
-              <div class="more-select-btn icon iconfont icon-icon-more">
-                {{ $t('panel.more') }}
-              </div>
-            </template>
-            <el-checkbox
-              v-if="widget.name && ['textSelectWidget', 'textSelectGridWidget'].includes(widget.name)"
-              v-model="attrs.showEmpty"
-            >{{ $t('panel.show_empty') }}
-            </el-checkbox>
-            <el-checkbox
-              v-if="widget.name && ['timeDateRangeWidget'].includes(widget.name)"
-              v-model="attrs.showEmpty"
-            >设置时间筛选范围
-            </el-checkbox>
-            <el-popover :visible-arrow="false" :offset="-452" placement="bottom-start" :width="452" trigger="click">
-              <template #reference>
-                <svg-icon
-                icon-class="icon-setting"
-              />
-              </template>
-              <RangeFilterTime :timeRangeData="attrs.timeRange" />
-            </el-popover>
-          </el-popover>
+          
           
           <el-checkbox
             v-model="attrs.showTitle"
@@ -180,101 +113,171 @@
           </el-popover>
         </span>
         <span
-          v-if="showParams"
           style="padding-left: 10px;"
         >
-          <el-checkbox
-            v-model="attrs.enableParameters"
-            @change="enableParametersChange"
-          ><span>
-            {{ $t('panel.binding_parameters') }} </span> </el-checkbox>
-
-          <el-popover
-            placement="bottom-end"
-            :disabled="!attrs.enableParameters"
-            width="420"
-          >
-            <div class="view-container-class">
-              <el-tabs
-                v-if="isRangeParamWidget"
-                v-model="activeName"
+        <el-popover popper-class="popover-more-parent" :visible-arrow="false" placement="bottom-start" :width="182" trigger="click">
+            <template #reference>
+              <div class="more-select-btn icon iconfont icon-icon-more">
+                {{ $t('panel.more') }}
+              </div>
+            </template>
+            <div class="check-item">
+              <el-checkbox
+                v-if="widget.name && ['textSelectWidget', 'textSelectGridWidget'].includes(widget.name)"
+                v-model="attrs.showEmpty"
+              >{{ $t('panel.show_empty') }}
+              </el-checkbox>
+            </div>
+            <div class="check-item">
+              <el-checkbox
+                v-model="attrs.showTime"
+                v-if="widget.isTimeWidget && widget.isTimeWidget()"
+                @change="showTimeChange"
               >
-                <el-tab-pane
-                  v-for="(item, index) in tabsOption"
-                  :key="item.name + index"
-                  :label="item.label"
-                  :name="item.name"
-                >
+                <span>{{ $t('panel.show_time') }} </span>
+              </el-checkbox>
+              <el-popover
+                v-model="timePopovervisible"
+                placement="bottom-end"
+                :disabled="!attrs.showTime"
+                width="140"
+              >
+                <div style="width: 100%;overflow-y: auto;overflow-x: hidden;word-break: break-all;position: relative;">
+                  <ul class="de-ul">
+                    <li
+                      v-for="(node, i) in accuracyOptions"
+                      :key="node.id"
+                      :index="i"
+                      class="de-sort-field-span"
+                      :class="attrs.accuracy === node.id ? 'de-active-li': ''"
+                      @click="attrs.accuracy = node.id"
+                    >
+
+                      <span>{{ node.name }}</span>
+                    </li>
+                  </ul>
+
+                </div>
+
+                <i
+                  slot="reference"
+                  :class="{'i-filter-active': attrs.showTime, 'i-filter-inactive': !attrs.showTime}"
+                  v-if="widget.isTimeWidget && widget.isTimeWidget()"
+                  class="el-icon-setting i-filter"
+                />
+              </el-popover>
+            </div>
+            <div class="check-item">
+              <el-checkbox
+                v-if="widget.name && ['timeDateRangeWidget'].includes(widget.name)"
+                v-model="attrs.setTimeRange"
+              >设置时间筛选范围
+              </el-checkbox>
+              <el-popover :disabled="!attrs.setTimeRange" popper-class="popover-setting-parent" ref="popoverSetting" :visible-arrow="false" placement="bottom-start" :width="452" trigger="click">
+                <RangeFilterTime @changeData="changeData" :timeRangeData="attrs.timeRange" />
+                <i
+                  v-if="widget.name && ['timeDateRangeWidget'].includes(widget.name)"
+                  :class="{'i-filter-active': attrs.setTimeRange, 'i-filter-inactive': !attrs.setTimeRange}"
+                  slot="reference"
+                  class="el-icon-setting i-filter"
+                />
+              </el-popover>
+            </div>
+            <div class="check-item">
+              <el-checkbox
+                v-if="showParams"
+                v-model="attrs.enableParameters"
+                @change="enableParametersChange"
+              ><span>
+                {{ $t('panel.binding_parameters') }} </span>
+              </el-checkbox>
+              <el-popover
+                placement="bottom-end"
+                :disabled="!attrs.enableParameters"
+                width="420"
+              >
+                <div class="view-container-class">
+                  <el-tabs
+                    v-if="isRangeParamWidget"
+                    v-model="activeName"
+                  >
+                    <el-tab-pane
+                      v-for="(item, index) in tabsOption"
+                      :key="item.name + index"
+                      :label="item.label"
+                      :name="item.name"
+                    >
+                      <el-checkbox-group
+                        v-model="attrs[item.name + 'Parameters']"
+                        @change="val => {changeDynamicParams(val, item.name)}"
+                      >
+                        <el-checkbox
+                          v-for="(ele ) in allParams"
+                          :key="ele.id"
+                          :label="ele.id"
+                          :disabled="attrs[tabsOption[(index + 1)%2].name + 'Parameters'] && attrs[tabsOption[(index + 1)%2].name + 'Parameters'].includes(ele.id)"
+                          class="de-checkbox"
+                        >
+                          <div class="span-div">
+                            <span
+                              v-if="ele.alias && ele.alias.length <= 7"
+                              style="margin-left: 6px"
+                            >{{ ele.alias }}</span>
+                            <el-tooltip
+                              v-else
+                              class="item"
+                              effect="dark"
+                              :content="ele.alias"
+                              placement="left"
+                            >
+                              <span style="margin-left: 6px">{{ ele.alias }}</span>
+                            </el-tooltip>
+                          </div>
+
+                        </el-checkbox>
+                      </el-checkbox-group>
+                    </el-tab-pane>
+                  </el-tabs>
                   <el-checkbox-group
-                    v-model="attrs[item.name + 'Parameters']"
-                    @change="val => {changeDynamicParams(val, item.name)}"
+                    v-else
+                    v-model="attrs.parameters"
                   >
                     <el-checkbox
-                      v-for="(ele ) in allParams"
-                      :key="ele.id"
-                      :label="ele.id"
-                      :disabled="attrs[tabsOption[(index + 1)%2].name + 'Parameters'] && attrs[tabsOption[(index + 1)%2].name + 'Parameters'].includes(ele.id)"
+                      v-for="(item ) in allParams"
+                      :key="item.id"
+                      :label="item.id"
                       class="de-checkbox"
                     >
-                      <div class="span-div">
+                      <div class="span-div2">
                         <span
-                          v-if="ele.alias && ele.alias.length <= 7"
+                          v-if="item.alias && item.alias.length <= 7"
                           style="margin-left: 6px"
-                        >{{ ele.alias }}</span>
+                        >{{ item.alias }}</span>
                         <el-tooltip
                           v-else
                           class="item"
                           effect="dark"
-                          :content="ele.alias"
+                          :content="item.alias"
                           placement="left"
                         >
-                          <span style="margin-left: 6px">{{ ele.alias }}</span>
+                          <span style="margin-left: 6px">{{ item.alias }}</span>
                         </el-tooltip>
                       </div>
-
                     </el-checkbox>
                   </el-checkbox-group>
-                </el-tab-pane>
-              </el-tabs>
-              <el-checkbox-group
-                v-else
-                v-model="attrs.parameters"
-              >
-                <el-checkbox
-                  v-for="(item ) in allParams"
-                  :key="item.id"
-                  :label="item.id"
-                  class="de-checkbox"
-                >
-                  <div class="span-div2">
-                    <span
-                      v-if="item.alias && item.alias.length <= 7"
-                      style="margin-left: 6px"
-                    >{{ item.alias }}</span>
-                    <el-tooltip
-                      v-else
-                      class="item"
-                      effect="dark"
-                      :content="item.alias"
-                      placement="left"
-                    >
-                      <span style="margin-left: 6px">{{ item.alias }}</span>
-                    </el-tooltip>
-                  </div>
+                </div>
 
-                </el-checkbox>
-              </el-checkbox-group>
+                <i
+                  slot="reference"
+                  v-if="showParams"
+                  :class="{'i-filter-active': attrs.enableParameters, 'i-filter-inactive': !attrs.enableParameters}"
+                  class="el-icon-setting i-filter"
+                />
+              </el-popover>
             </div>
-
-            <i
-              slot="reference"
-              :class="{'i-filter-active': attrs.enableParameters, 'i-filter-inactive': !attrs.enableParameters}"
-              class="el-icon-setting i-filter"
-            />
           </el-popover>
         </span>
       </div>
-
     </el-col>
   </el-row>
 </template>
@@ -428,6 +431,12 @@ export default {
       }
       this.attrs.parameters = [...new Set([...start, ...end])]
     },
+    changeData(val) {
+      if (val) {
+        this.attrs.timeRange = val
+      }
+      this.$refs.popoverSetting.doClose()
+    },
     sortChange(param) {
       this.element.options.attrs.sort = param
     },
@@ -498,10 +507,15 @@ export default {
   justify-content: flex-end;
   flex-wrap: nowrap;
   height: 50px;
+
+  
   .more-select-btn {
     display: inline-flex;
     width: 56px;
     height: 26px;
+    cursor: pointer;
+    margin-right: -4px;
+    margin-left: 6px;
     border-radius: 4px;
     color: #3370FF;
     font-size: 14px;
@@ -594,4 +608,18 @@ export default {
   text-overflow: ellipsis;
 }
 
+</style>
+<style lang="scss">
+.popover-more-parent {
+  margin-top: 4px !important;
+  .check-item {
+    margin-bottom: 5px;
+    &:last-of-type {
+      margin-bottom: 0;
+    }
+  }
+  .el-checkbox {
+    margin-right: 0;
+  }
+}
 </style>
