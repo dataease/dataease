@@ -279,6 +279,15 @@ onUnmounted(() => {
 
 const previewStatus = computed(() => editMode.value === 'preview')
 
+const commonPropertiesShow = computed(
+  () => curComponent.value && !['UserView', 'GroupArea'].includes(curComponent.value.component)
+)
+const canvasPropertiesShow = computed(
+  () => !curComponent.value || ['GroupArea'].includes(curComponent.value.component)
+)
+const viewsPropertiesShow = computed(
+  () => curComponent.value && ['UserView'].includes(curComponent.value.component)
+)
 eventBus.on('handleNew', handleNew)
 </script>
 
@@ -331,7 +340,7 @@ eventBus.on('handleNew', handleNew)
       <!-- 右侧侧组件列表 -->
       <div style="width: auto; height: 100%" ref="leftSidebarRef">
         <dv-sidebar
-          v-if="curComponent && !['UserView'].includes(curComponent.component)"
+          v-if="commonPropertiesShow"
           :title="'属性'"
           :width="240"
           :side-name="'componentProp'"
@@ -342,7 +351,7 @@ eventBus.on('handleNew', handleNew)
           <component :is="findComponent(curComponent['component'] + 'Attr')" />
         </dv-sidebar>
         <dv-sidebar
-          v-show="!curComponent"
+          v-show="canvasPropertiesShow"
           :title="'大屏配置'"
           :width="240"
           :side-name="'canvas'"
@@ -353,7 +362,7 @@ eventBus.on('handleNew', handleNew)
           <canvas-attr></canvas-attr>
         </dv-sidebar>
         <editor
-          v-show="curComponent && ['UserView'].includes(curComponent.component)"
+          v-show="viewsPropertiesShow"
           :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
           themes="dark"
           :dataset-tree="state.datasetTree"

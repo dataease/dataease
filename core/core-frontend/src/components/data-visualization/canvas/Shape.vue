@@ -1,5 +1,11 @@
 <template>
-  <div class="shape" ref="shapeInnerRef" :id="domId" @dblclick="handleDbClick">
+  <div
+    class="shape"
+    :class="{ 'shape-group-area': isGroupArea }"
+    ref="shapeInnerRef"
+    :id="domId"
+    @dblclick="handleDbClick"
+  >
     <div v-if="showCheck" class="del-from-mobile" @click="delFromMobile">
       <el-icon>
         <Icon name="mobile-checkbox"></Icon>
@@ -49,6 +55,7 @@
       </div>
       <div
         v-for="item in isActive() ? getPointList() : []"
+        v-show="!isGroupArea"
         :key="item"
         class="shape-point"
         :style="getPointStyle(item)"
@@ -279,6 +286,10 @@ const angleToCursor = [
   { start: 248, end: 293, cursor: 'sw' },
   { start: 293, end: 338, cursor: 'w' }
 ]
+
+const isGroupArea = computed(() => {
+  return curComponent.value?.component === 'GroupArea'
+})
 
 const active = computed(() => {
   return curComponent.value?.id === element.value.id
@@ -518,16 +529,19 @@ const handleMouseDownOnShape = e => {
       isFirst = false
     }
     // 修改当前组件样式
-    dvMainStore.setShapeStyle(pos)
+    dvMainStore.setShapeStyle(pos, areaData.value.components)
     // 等更新完当前组件的样式并绘制到屏幕后再判断是否需要吸附
-    // 如果不使用 $nextTick，吸附后将无法移动
-    nextTick(() => {
-      // 触发元素移动事件，用于显示标线、吸附功能
-      // 后面两个参数代表鼠标移动方向
-      // curY - startY > 0 true 表示向下移动 false 表示向上移动
-      // curX - startX > 0 true 表示向右移动 false 表示向左移动
-      eventBus.emit('move', { isDownward: curY - startY > 0, isRightward: curX - startX > 0 })
-    })
+    // GroupArea是分组视括租金 不需要进行吸附
+    // 如果不使用 nextTick，吸附后将无法移动
+    if (!isGroupArea.value) {
+      nextTick(() => {
+        // 触发元素移动事件，用于显示标线、吸附功能
+        // 后面两个参数代表鼠标移动方向
+        // curY - startY > 0 true 表示向下移动 false 表示向上移动
+        // curX - startX > 0 true 表示向右移动 false 表示向左移动
+        eventBus.emit('move', { isDownward: curY - startY > 0, isRightward: curX - startX > 0 })
+      })
+    }
   }
 
   const up = () => {
@@ -754,7 +768,7 @@ const commonBackgroundSvgInner = computed(() => {
 })
 
 const componentBackgroundStyle = computed(() => {
-  if (element.value.commonBackground) {
+  if (element.value.commonBackground && element.value.component !== 'GroupArea') {
     const {
       backgroundColorSelect,
       backgroundColor,
@@ -935,6 +949,10 @@ onMounted(() => {
     cursor: pointer;
     color: var(--ed-color-primary);
   }
+}
+
+.shape-group-area {
+  z-index: 15;
 }
 
 .shape-shadow {

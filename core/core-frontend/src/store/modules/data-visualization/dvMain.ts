@@ -254,7 +254,19 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.bashMatrixInfo = bashMatrixInfo
     },
 
-    setShapeStyle({ top, left, width, height, rotate }) {
+    setShapeStyle({ top, left, width, height, rotate }, areaDataComponents = []) {
+      if (this.curComponent.component === 'GroupArea' && areaDataComponents.length > 0) {
+        const topOffset = top - this.curComponent.style.top
+        const leftOffset = left - this.curComponent.style.left
+        const widthOffset = width - this.curComponent.style.width
+        const heightOffset = height - this.curComponent.style.height
+        areaDataComponents.forEach(component => {
+          component.style.top = component.style.top + topOffset
+          component.style.left = component.style.left + leftOffset
+          component.style.width = component.style.width + widthOffset
+          component.style.height = component.style.height + heightOffset
+        })
+      }
       if (this.dvInfo.type === 'dashboard') {
         if (top) this.curComponent.style.top = top < 0 ? 0 : Math.round(top)
         if (left) this.curComponent.style.left = left < 0 ? 0 : Math.round(left)
