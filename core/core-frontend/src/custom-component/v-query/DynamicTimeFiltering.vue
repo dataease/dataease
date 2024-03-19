@@ -40,10 +40,18 @@ const props = defineProps({
 const { config } = toRefs(props)
 
 const timeConfig = computed(() => {
-  const { relativeToCurrent, intervalType, timeNum, relativeToCurrentType, around } = config.value
+  const {
+    relativeToCurrent,
+    regularOrTrends,
+    intervalType,
+    timeNum,
+    relativeToCurrentType,
+    around
+  } = config.value
   return {
     relativeToCurrent,
     timeNum,
+    regularOrTrends,
     intervalType,
     relativeToCurrentType,
     around,
@@ -69,7 +77,14 @@ const timeInterval = computed<DatePickType>(() => {
 })
 
 const init = () => {
-  const { relativeToCurrent, timeNum, relativeToCurrentType, around } = timeConfig.value
+  const { relativeToCurrent, regularOrTrends, timeNum, relativeToCurrentType, around } =
+    timeConfig.value
+  if (regularOrTrends === 'fixed') {
+    if (!!config.value.regularOrTrendsValue && !Array.isArray(config.value.regularOrTrendsValue))
+      return
+    config.value.regularOrTrendsValue = new Date()
+    return
+  }
   if (relativeToCurrent === 'custom') {
     config.value.regularOrTrendsValue = getAround(
       relativeToCurrentType,

@@ -51,6 +51,7 @@ const timeConfig = computed(() => {
     relativeToCurrentType,
     around,
     intervalType,
+    regularOrTrends,
     timeGranularity,
     timeNumRange,
     relativeToCurrentTypeRange,
@@ -61,6 +62,7 @@ const timeConfig = computed(() => {
     relativeToCurrentType,
     around,
     intervalType,
+    regularOrTrends,
     timeGranularity,
     timeNumRange,
     relativeToCurrentTypeRange,
@@ -89,10 +91,24 @@ const init = () => {
     timeNum,
     relativeToCurrentType,
     around,
+    regularOrTrends,
     timeNumRange,
     relativeToCurrentTypeRange,
     aroundRange
   } = timeConfig.value
+
+  if (regularOrTrends === 'fixed') {
+    if (
+      Array.isArray(config.value.regularOrTrendsValue) &&
+      !!config.value.regularOrTrendsValue.length
+    )
+      return
+    config.value.regularOrTrendsValue = [
+      getAround(relativeToCurrentTypeRange, 'add', 0),
+      getAround(relativeToCurrentTypeRange, 'add', 1)
+    ]
+    return
+  }
 
   const startTime = getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
   const endTime = getAround(
