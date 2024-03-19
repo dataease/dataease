@@ -45,6 +45,7 @@
             <div class="setting-input">
               <el-input-number
                 v-model="timeRange.timeNum"
+                size="small"
                 :min="0"
                 controls-position="right"
               />
@@ -75,6 +76,7 @@
             <div class="setting-input range">
               <el-input-number
                 v-model="timeRange.timeNum"
+                size="small"
                 :min="0"
                 controls-position="right"
               />
@@ -101,6 +103,7 @@
             <div class="setting-input range">
               <el-input-number
                 v-model="timeRange.timeNumRange"
+                size="small"
                 :min="0"
                 controls-position="right"
               />
@@ -153,16 +156,30 @@
         <el-input-number
           v-model="timeRange.maximumSingleQuery"
           :min="1"
+          size="small"
           controls-position="right"
         />
-        {{ relativeToCurrentTypeListTips }}
+        天
       </div>
+    </div>
+    <div class="popover-foot">
+      <de-btn
+          secondary
+          @click="closeFilter"
+        >{{ $t('chart.cancel') }}
+        </de-btn>
+        <de-btn
+          type="primary"
+          @click="changeFilter"
+        >{{ $t('chart.confirm') }}
+        </de-btn>
     </div>
   </div>
 </template>
 
 <script>
 import { getThisStart, getLastStart, getAround } from "./time-format-dayjs";
+import { cloneDeep } from 'lodash-es'
 const intervalTypeList = [
   {
     label: "无",
@@ -228,11 +245,8 @@ const relativeToCurrentList = [
     value: "custom",
   },
 ];
-export default {
-  props: {
-    timeRangeData: {
-      type: Object,
-      defalut: () => ({
+
+const defaultObj = {
         intervalType: "none",
         dynamicWindow: false,
         maximumSingleQuery: 0,
@@ -245,7 +259,12 @@ export default {
         timeNumRange: 0,
         relativeToCurrentTypeRange: "year",
         aroundRange: "f",
-      }),
+      }
+export default {
+  props: {
+    timeRangeData: {
+      type: Object,
+      defalut: () => (defaultObj),
     },
   },
   data() {
@@ -271,7 +290,8 @@ export default {
     };
   },
   created() {
-    this.timeRange = this.timeRangeData;
+    this.timeRange = cloneDeep(this.timeRangeData);
+    this.init()
   },
   computed: {
     timeConfig() {
@@ -324,10 +344,17 @@ export default {
         around,
         relativeToCurrent,
         intervalType,
+        regularOrTrendsValue,
         timeNumRange,
         relativeToCurrentTypeRange,
         aroundRange,
+        regularOrTrends,
       } = this.timeRange;
+      if (regularOrTrends === 'fixed') {
+        if (!!regularOrTrendsValue) return
+        this.timeRange.regularOrTrendsValue = new Date()
+        return
+      }
       if (intervalType === "timeInterval") {
         const startTime = getAround(
           relativeToCurrentType,
@@ -380,17 +407,33 @@ export default {
         }
       }
     },
+    closeFilter() {
+      this.timeRange = cloneDeep(defaultObj)
+      this.$emit('changeData', null)
+    },
+    changeFilter() {
+      this.$emit('changeData', cloneDeep(this.timeRange))
+    }
   },
 };
 </script>
 <style lang="less">
 .set-time-filtering-range {
+  color: #1F2329;
   .el-radio,
   .el-checkbox.el-checkbox--default {
     height: 22px;
     margin-right: 24px;
     --el-radio-input-height: 16px;
     --el-radio-input-width: 16px;
+  }
+  .popover-foot {
+    height: 64px;
+    text-align: right;
+    padding: 16px;
+    width: calc(100% + 24px);
+    margin: 0 0 -12px -12px;
+    border-top: 1px solid  #1F232926;
   }
   .title {
     font-size: 14px;
@@ -410,6 +453,7 @@ export default {
       &.maximum-single-query {
         padding-left: 24px;
         display: flex;
+        margin-top: 8px;
         align-items: center;
         .el-input-number {
           width: 120px;
@@ -523,7 +567,7 @@ export default {
 
       .setting-input {
         display: flex;
-        padding-left: 112px;
+        padding-left: 118px;
         justify-content: flex-end;
         align-items: center;
         &.range {

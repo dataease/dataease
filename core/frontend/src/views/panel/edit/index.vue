@@ -501,6 +501,7 @@
 </template>
 
 <script>
+import dayjs from 'dayjs'
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer'
@@ -508,6 +509,7 @@ import { addClass, removeClass } from '@/utils'
 import FilterGroup from '../filter'
 import SubjectSetting from '../subjectSetting'
 import bus from '@/utils/bus'
+import { getThisStart, getLastStart, getAround } from '@/views/panel/filter/filterMain/time-format-dayjs.js'
 import { deepCopy, getNowCanvasComponentData, imgUrlTrans, matrixBaseChange } from '@/components/canvas/utils/utils'
 import componentList, {
   BASE_MOBILE_STYLE,
@@ -550,6 +552,7 @@ import { userLoginInfo } from '@/api/systemInfo/userLogin'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
+import msgCfm from '@/components/msgCfm'
 export default {
   name: 'PanelEdit',
   components: {
@@ -575,6 +578,7 @@ export default {
     ChartEdit,
     CanvasOptBar
   },
+  mixins: [msgCfm],
   data() {
     return {
       userInfo: null,
@@ -1260,8 +1264,113 @@ export default {
         bus.$emit('onRemoveLastItem')
       }
     },
+    isInRange(ele, startWindowTime, timeStamp) {
+      const {
+        intervalType,
+        regularOrTrends,
+        regularOrTrendsValue,
+        relativeToCurrent,
+        timeNum,
+        relativeToCurrentType,
+        around,
+        dynamicWindow,
+        maximumSingleQuery,
+        timeNumRange,
+        relativeToCurrentTypeRange,
+        aroundRange
+      } = ele.timeRange || {}
+      let isDynamicWindowTime = false
+      if (startWindowTime && dynamicWindow) {
+        isDynamicWindowTime =
+          dayjs(startWindowTime)
+            .add(maximumSingleQuery, 'day')
+            .startOf('day')
+            .valueOf() -
+            1000 <
+          timeStamp
+      }
+
+      if (intervalType === 'none') {
+        if (dynamicWindow) return isDynamicWindowTime
+        return false
+      }
+      let startTime
+      if (relativeToCurrent === 'custom') {
+        startTime = getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+      } else {
+        switch (relativeToCurrent) {
+          case 'thisYear':
+            startTime = getThisStart('year')
+            break
+          case 'lastYear':
+            startTime = getLastStart('year')
+            break
+          case 'thisMonth':
+            startTime = getThisStart('month')
+            break
+          case 'lastMonth':
+            startTime = getLastStart('month')
+            break
+          case 'today':
+            startTime = getThisStart('day')
+            break
+          case 'yesterday':
+            startTime = getLastStart('day')
+            break
+          case 'monthBeginning':
+            startTime = getThisStart('month')
+            break
+          case 'yearBeginning':
+            startTime = getThisStart('year')
+            break
+
+          default:
+            break
+        }
+      }
+      const startValue = regularOrTrends === 'fixed' ? regularOrTrendsValue : startTime
+      if (intervalType === 'start') {
+        return startWindowTime < +new Date(startValue) || isDynamicWindowTime
+      }
+
+      if (intervalType === 'end') {
+        return timeStamp > +new Date(startValue) || isDynamicWindowTime
+      }
+
+      if (intervalType === 'timeInterval') {
+        const startTime =
+          regularOrTrends === 'fixed'
+            ? regularOrTrendsValue[0]
+            : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+        const endTime =
+          regularOrTrends === 'fixed'
+            ? regularOrTrendsValue[1]
+            : getAround(
+                relativeToCurrentTypeRange,
+                aroundRange === 'f' ? 'subtract' : 'add',
+                timeNumRange
+              )
+        return (
+          startWindowTime < +new Date(startTime) - 1000 ||
+          timeStamp > +new Date(endTime) ||
+          isDynamicWindowTime
+        )
+      }
+    },
     sureFilter() {
       this.currentFilterCom = this.$refs['filter-setting-' + this.currentFilterCom.id].getElementInfo()
+      if (this.currentFilterCom.serviceName === 'timeDateRangeWidget') {
+        const { value, attrs } = this.currentFilterCom.options
+        if (!!value && attrs.setTimeRange) {
+          const [startWindowTime, timeStamp] = attrs.default.isDynamic ? ApplicationContext.getService('timeDateRangeWidget').dynamicDateFormNow(this.currentFilterCom) : value.split(',')
+          if(this.isInRange(attrs, +startWindowTime, dayjs(+timeStamp)
+            .startOf('day')
+            .valueOf())) {
+              this.openMessageSuccess('默认值必须在时间筛选范围!', 'error')
+              return
+            }
+        }
+      }
       if (this.editType !== 'update') {
         adaptCurThemeCommonStyle(this.currentFilterCom)
       }

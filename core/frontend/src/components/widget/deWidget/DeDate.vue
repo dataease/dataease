@@ -67,6 +67,8 @@
 <script>
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import { timeSection } from '@/utils'
+import dayjs from "dayjs";
+import { getThisStart, getLastStart, getAround } from "@/views/panel/filter/filterMain/time-format-dayjs.js";
 import bus from '@/utils/bus'
 import customInput from '@/components/widget/deWidget/customInput'
 import { dateMap, years, seconds } from '@/components/widget/deWidget/serviceNameFn'
@@ -111,6 +113,7 @@ export default {
   data() {
     return {
       showDate: false,
+      startWindowTime: 0,
       minDate: new Date(1980, 0, 1),
       maxDate: new Date(2025, 10, 1),
       currentDate: new Date(),
@@ -209,7 +212,107 @@ export default {
           }
         })
         return {
-          shortcuts: result
+          shortcuts: result,
+          disabledDate: (val) => {
+            const timeStamp = +new Date(val)
+            if (!this.element.options.attrs.setTimeRange) {
+              return false
+            }
+            const {
+              intervalType,
+              regularOrTrends,
+              regularOrTrendsValue,
+              relativeToCurrent,
+              timeNum,
+              relativeToCurrentType,
+              around,
+              dynamicWindow,
+              maximumSingleQuery,
+              timeNumRange,
+              relativeToCurrentTypeRange,
+              aroundRange
+            } = this.element.options.attrs.timeRange || {}
+            let isDynamicWindowTime = false
+            if (this.startWindowTime && dynamicWindow) {
+              isDynamicWindowTime =
+                dayjs(this.startWindowTime)
+                  .add(maximumSingleQuery, 'day')
+                  .startOf('day')
+                  .valueOf() -
+                  1000 <
+                timeStamp
+            }
+            if (intervalType === 'none') {
+              if (dynamicWindow) return isDynamicWindowTime
+              return false
+            }
+            let startTime
+            if (relativeToCurrent === 'custom') {
+              startTime = getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+            } else {
+              switch (relativeToCurrent) {
+                case 'thisYear':
+                  startTime = getThisStart('year')
+                  break
+                case 'lastYear':
+                  startTime = getLastStart('year')
+                  break
+                case 'thisMonth':
+                  startTime = getThisStart('month')
+                  break
+                case 'lastMonth':
+                  startTime = getLastStart('month')
+                  break
+                case 'today':
+                  startTime = getThisStart('day')
+                  break
+                case 'yesterday':
+                  startTime = getLastStart('day')
+                  break
+                case 'monthBeginning':
+                  startTime = getThisStart('month')
+                  break
+                case 'yearBeginning':
+                  startTime = getThisStart('year')
+                  break
+
+                default:
+                  break
+              }
+            }
+            const startValue = regularOrTrends === 'fixed' ? regularOrTrendsValue : startTime
+
+            if (intervalType === 'start') {
+              return timeStamp < +new Date(startValue) || isDynamicWindowTime
+            }
+
+            if (intervalType === 'end') {
+              return timeStamp > +new Date(startValue) || isDynamicWindowTime
+            }
+
+            if (intervalType === 'timeInterval') {
+              const startTime =
+                regularOrTrends === 'fixed'
+                  ? regularOrTrendsValue[0]
+                  : getAround(relativeToCurrentType, around === 'f' ? 'subtract' : 'add', timeNum)
+              const endTime =
+                regularOrTrends === 'fixed'
+                  ? regularOrTrendsValue[1]
+                  : getAround(
+                      relativeToCurrentTypeRange,
+                      aroundRange === 'f' ? 'subtract' : 'add',
+                      timeNumRange
+                    )
+              return (
+                timeStamp < +new Date(startTime) - 1000 ||
+                timeStamp > +new Date(endTime) ||
+                isDynamicWindowTime
+              )
+            }
+          },
+          onPick: ({ minDate }) => {
+            this.startWindowTime = +new Date(minDate)
+          },
         }
       }
       return null
@@ -447,6 +550,7 @@ export default {
       }
     },
     onBlur() {
+      this.startWindowTime = 0
       this.onFocus = false
     },
     toFocus() {
