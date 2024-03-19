@@ -54,7 +54,6 @@ const timeConfig = computed(() => {
 watch(
   () => timeConfig.value,
   () => {
-    console.log(1)
     init()
   },
   {
