@@ -100,14 +100,7 @@ const newWindowHandler = ref(null)
 
 let p = null
 const XpackLoaded = () => {
-  const pm = {
-    methodName: 'newWindowReady',
-    args: null
-  }
-  if (newWindowHandler?.value) {
-    newWindowHandler.value.invokeMethod(pm)
-    p(true)
-  }
+  p(true)
 }
 // 全局监听按键事件
 onMounted(async () => {

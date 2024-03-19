@@ -12,5 +12,5 @@ export interface BusiTreeRequest {
   busiFlag?: string
   leaf?: boolean
   weight?: number
-  sortType: string
+  sortType?: string
 }
