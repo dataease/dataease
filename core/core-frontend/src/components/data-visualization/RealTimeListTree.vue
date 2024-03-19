@@ -221,6 +221,7 @@ const handleContextMenu = e => {
           <template #item="{ index }">
             <div>
               <div
+                v-show="getComponent(index)?.component !== 'GroupArea'"
                 :title="getComponent(index)?.name"
                 class="component-item"
                 :class="{

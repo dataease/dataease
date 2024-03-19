@@ -23,6 +23,8 @@ import SvgTriangle from '@/custom-component/svgs/svg-triangle/Component.vue'
 import SvgTriangleAttr from '@/custom-component/svgs/svg-triangle/Attr.vue'
 import DeTimeClock from '@/custom-component/de-time-clock/Component.vue'
 import DeTimeClockAttr from '@/custom-component/de-time-clock/Attr.vue'
+import GroupArea from '@/custom-component/group-area/Component.vue'
+import GroupAreaAttr from '@/custom-component/group-area/Attr.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -48,7 +50,9 @@ export const componentsMap = {
   SvgTriangle: SvgTriangle,
   SvgTriangleAttr: SvgTriangleAttr,
   DeTimeClock: DeTimeClock,
-  DeTimeClockAttr: DeTimeClockAttr
+  DeTimeClockAttr: DeTimeClockAttr,
+  GroupArea: GroupArea,
+  GroupAreaAttr: GroupAreaAttr
 }
 
 export default function findComponent(key) {

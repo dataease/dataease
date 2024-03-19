@@ -79,6 +79,19 @@ export const commonAttr = {
 // 编辑器左侧组件列表
 const list = [
   {
+    id: 100000001,
+    component: 'GroupArea',
+    name: '组合区域',
+    label: '组合区域',
+    propValue: '&nbsp;',
+    icon: 'icon_graphical',
+    innerType: 'GroupArea',
+    style: {
+      width: 200,
+      height: 200
+    }
+  },
+  {
     component: 'VQuery',
     name: '查询',
     label: '查询',

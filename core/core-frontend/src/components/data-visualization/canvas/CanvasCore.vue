@@ -9,7 +9,7 @@ import {
   syncShapeItemStyle
 } from '@/utils/style'
 import $ from 'jquery'
-import { _$, isPreventDrop } from '@/utils/utils'
+import { _$, deepCopy, isPreventDrop } from '@/utils/utils'
 import ContextMenu from './ContextMenu.vue'
 import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
@@ -26,6 +26,7 @@ import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
 import {
   canvasSave,
   findDragComponent,
+  findNewComponent,
   isGroupCanvas,
   isMainCanvas,
   isSameCanvas
@@ -396,6 +397,7 @@ const hideArea = () => {
     },
     components: []
   })
+  groupAreaChange(false)
 }
 
 const createGroup = () => {
@@ -442,19 +444,23 @@ const createGroup = () => {
   width.value = right - left
   height.value = bottom - top
 
+  const areaDataStyle = {
+    left,
+    top,
+    width: width.value,
+    height: height.value
+  }
+
   // 设置选中区域位移大小信息和区域内的组件数据
   composeStore.setAreaData({
-    style: {
-      left,
-      top,
-      width: width.value,
-      height: height.value
-    },
+    style: areaDataStyle,
     components: areaData
   })
   // 如果有组件被group选中 取消当前画布选中的组件
   if (areaData.length > 0) {
     dvMainStore.setCurComponent({ component: null, index: null })
+    isShowArea.value = false
+    groupAreaChange(true, areaDataStyle)
   }
 }
 
@@ -1345,6 +1351,21 @@ const contextMenuShow = computed(() => {
 })
 
 const markLineShow = computed(() => isMainCanvas(canvasId.value))
+
+const groupAreaChange = (showArea, style?) => {
+  nextTick(() => {
+    if (showArea) {
+      const groupArea = findNewComponent('GroupArea', 'GroupArea')
+      groupArea.style.left = style.left
+      groupArea.style.top = style.top
+      groupArea.style.width = style.width
+      groupArea.style.height = style.height
+      dvMainStore.addComponent({ component: groupArea, index: undefined })
+    } else {
+      dvMainStore.deleteComponentById(100000001)
+    }
+  })
+}
 
 onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
