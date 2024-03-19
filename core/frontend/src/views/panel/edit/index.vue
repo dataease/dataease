@@ -1366,7 +1366,7 @@ export default {
           if(this.isInRange(attrs, +startWindowTime, dayjs(+timeStamp)
             .startOf('day')
             .valueOf())) {
-              this.openMessageSuccess('默认值必须在时间筛选范围!', 'error')
+              this.openMessageSuccess(this.$t('time.filter_range'), 'error')
               return
             }
         }

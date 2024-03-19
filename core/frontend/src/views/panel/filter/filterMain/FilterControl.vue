@@ -171,7 +171,7 @@
               <el-checkbox
                 v-if="widget.name && ['timeDateRangeWidget'].includes(widget.name)"
                 v-model="attrs.setTimeRange"
-              >设置时间筛选范围
+              >{{ $t('time.set_time_filtering_range') }}
               </el-checkbox>
               <el-popover :disabled="!attrs.setTimeRange" popper-class="popover-setting-parent" ref="popoverSetting" :visible-arrow="false" placement="bottom-start" :width="452" trigger="click">
                 <RangeFilterTime @changeData="changeData" :timeRangeData="attrs.timeRange" />
