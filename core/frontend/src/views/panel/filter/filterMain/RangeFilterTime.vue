@@ -1,8 +1,8 @@
 <template>
   <div class="set-time-filtering-range">
-    <div class="title">设置时间筛选范围</div>
+    <div class="title">{{ $t('time.set_time_filtering_range') }}</div>
     <div class="list-item">
-      <div class="label">区间类型</div>
+      <div class="label">{{ $t('time.interval_type') }}</div>
       <div class="setting-content">
         <div class="setting">
           <el-radio-group v-model="timeRange.intervalType">
@@ -10,7 +10,7 @@
               v-for="ele in intervalTypeList"
               :key="ele.value"
               :label="ele.value"
-              >{{ ele.label }}</el-radio
+              >{{ $t(`time.${ele.label}`) }}</el-radio
             >
           </el-radio-group>
         </div>
@@ -21,21 +21,21 @@
       <div class="setting-content">
         <div class="setting">
           <el-radio-group v-model="timeRange.regularOrTrends">
-            <el-radio label="fixed">固定时间</el-radio>
-            <el-radio label="dynamic">动态时间</el-radio>
+            <el-radio label="fixed">{{ $t('time.fixed_time') }}</el-radio>
+            <el-radio label="dynamic">{{ $t('time.dynamic_time') }}</el-radio>
           </el-radio-group>
         </div>
         <template
           v-if="dynamicTime && timeRange.intervalType !== 'timeInterval'"
         >
           <div class="setting">
-            <div class="setting-label">相对当前</div>
+            <div class="setting-label">{{ $t('time.relative_to_current') }}</div>
             <div class="setting-value select">
               <el-select v-model="timeRange.relativeToCurrent">
                 <el-option
                   v-for="item in relativeToCurrentList"
                   :key="item.value"
-                  :label="item.label"
+                  :label="$t(`time.${item.label}`)"
                   :value="item.value"
                 />
               </el-select>
@@ -53,7 +53,7 @@
                 <el-option
                   v-for="item in relativeToCurrentTypeList"
                   :key="item.value"
-                  :label="item.label"
+                  :label="$t(`time.${item.label}`)"
                   :value="item.value"
                 />
               </el-select>
@@ -61,7 +61,7 @@
                 <el-option
                   v-for="item in aroundList"
                   :key="item.value"
-                  :label="item.label"
+                  :label="$t(`time.${item.label}`)"
                   :value="item.value"
                 />
               </el-select>
@@ -72,7 +72,7 @@
           v-else-if="dynamicTime && timeRange.intervalType === 'timeInterval'"
         >
           <div class="setting">
-            <div class="setting-label">开始时间</div>
+            <div class="setting-label">{{ $t('time.start_time') }}</div>
             <div class="setting-input range">
               <el-input-number
                 v-model="timeRange.timeNum"
@@ -84,7 +84,7 @@
                 <el-option
                   v-for="item in relativeToCurrentTypeList"
                   :key="item.value"
-                  :label="item.label"
+                  :label="$t(`time.${item.label}`)"
                   :value="item.value"
                 />
               </el-select>
@@ -92,14 +92,14 @@
                 <el-option
                   v-for="item in aroundList"
                   :key="item.value"
-                  :label="item.label"
+                  :label="$t(`time.${item.label}`)"
                   :value="item.value"
                 />
               </el-select>
             </div>
           </div>
           <div class="setting">
-            <div class="setting-label">结束时间</div>
+            <div class="setting-label">{{ $t('time.end_time') }}</div>
             <div class="setting-input range">
               <el-input-number
                 v-model="timeRange.timeNumRange"
@@ -111,7 +111,7 @@
                 <el-option
                   v-for="item in relativeToCurrentTypeList"
                   :key="item.value"
-                  :label="item.label"
+                  :label="$t(`time.${item.label}`)"
                   :value="item.value"
                 />
               </el-select>
@@ -119,7 +119,7 @@
                 <el-option
                   v-for="item in aroundList"
                   :key="item.value"
-                  :label="item.label"
+                  :label="$t(`time.${item.label}`)"
                   :value="item.value"
                 />
               </el-select>
@@ -128,7 +128,7 @@
         </template>
       </div>
       <div class="parameters" :class="dynamicTime && 'setting'">
-        <div class="setting-label" v-if="dynamicTime">预览</div>
+        <div class="setting-label" v-if="dynamicTime">{{ $t('time.preview') }}</div>
         <div :class="dynamicTime ? 'setting-value' : 'w100'">
           <el-date-picker
             :disabled="timeRange.regularOrTrends !== 'fixed'"
@@ -145,21 +145,21 @@
       <div class="label">
         <el-checkbox
           v-model="timeRange.dynamicWindow"
-          label="动态查询时间窗口"
+          :label="$t('time.dynamic_query_time_window')"
         />
       </div>
       <div
         v-if="timeRange.dynamicWindow"
         class="setting-content maximum-single-query"
       >
-        单次查询最多
+      {{ $t('time.maximum_single_query') }}
         <el-input-number
           v-model="timeRange.maximumSingleQuery"
           :min="1"
           size="small"
           controls-position="right"
         />
-        天
+        {{ $t('time.day') }}
       </div>
     </div>
     <div class="popover-foot">
@@ -182,66 +182,66 @@ import { getThisStart, getLastStart, getAround } from "./time-format-dayjs";
 import { cloneDeep } from 'lodash-es'
 const intervalTypeList = [
   {
-    label: "无",
+    label: "day",
     value: "none",
   },
   {
-    label: "开始于",
+    label: "starting_from",
     value: "start",
   },
   {
-    label: "结束于",
+    label: "end_at",
     value: "end",
   },
   {
-    label: "时间区间",
+    label: "time_interval",
     value: "timeInterval",
   },
 ];
 const aroundList = [
   {
-    label: "前",
+    label: "ago",
     value: "f",
   },
   {
-    label: "后",
+    label: "after",
     value: "b",
   },
 ];
 const relativeToCurrentTypeList = [
   {
-    label: "年",
+    label: "year",
     value: "year",
   },
   {
-    label: "月",
+    label: "month",
     value: "month",
   },
   {
-    label: "日",
+    label: "day",
     value: "day",
   },
 ];
 
 const relativeToCurrentList = [
   {
-    label: "今天",
+    label: "today",
     value: "today",
   },
   {
-    label: "昨天",
+    label: "yesterday",
     value: "yesterday",
   },
   {
-    label: "月初",
+    label: "at_the_beginning_of_the_month",
     value: "monthBeginning",
   },
   {
-    label: "年初",
+    label: "at_the_beginning_of_the_year",
     value: "yearBeginning",
   },
   {
-    label: "自定义",
+    label: "custom",
     value: "custom",
   },
 ];
