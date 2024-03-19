@@ -204,14 +204,7 @@ const newWindowHandler = ref(null)
 
 let p = null
 const XpackLoaded = () => {
-  const pm = {
-    methodName: 'newWindowReady',
-    args: null
-  }
-  if (newWindowHandler?.value) {
-    newWindowHandler.value.invokeMethod(pm)
-    p(true)
-  }
+  p(true)
 }
 onMounted(async () => {
   await new Promise(r => {
