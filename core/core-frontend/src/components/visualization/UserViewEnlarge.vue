@@ -24,6 +24,7 @@
         link
         icon="Download"
         size="middle"
+        :loading="exportLoading"
         @click="downloadViewDetails"
       >
         导出Excel
@@ -71,6 +72,7 @@ const { t } = useI18n()
 const optType = ref(null)
 const chartComponentDetails = ref(null)
 const { dvInfo } = storeToRefs(dvMainStore)
+const exportLoading = ref(false)
 const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
   render: 'antv',
   type: 'table-info',
@@ -119,7 +121,10 @@ const downloadViewDetails = () => {
   const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
   const chartExtRequest = dvMainStore.getLastViewRequestInfo(viewInfo.value.id)
   const chart = { ...viewInfo.value, chartExtRequest, data: viewDataInfo }
-  exportExcelDownload(chart)
+  exportLoading.value = true
+  exportExcelDownload(chart, () => {
+    exportLoading.value = false
+  })
 }
 
 const htmlToImage = () => {
