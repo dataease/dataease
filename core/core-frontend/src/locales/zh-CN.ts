@@ -1429,7 +1429,8 @@ export default {
     the_running_results: '即可查看运行结果',
     item: '项',
     logic_filter: '条件筛选',
-    enum_filter: '枚举筛选'
+    enum_filter: '枚举筛选',
+    description: '字段备注'
   },
   about: {
     auth_to: '授权给',

@@ -152,7 +152,7 @@ const allFieldsColumns = [
   {
     key: 'description',
     dataKey: 'description',
-    title: '备注',
+    title: '字段备注',
     width: 250
   }
 ]

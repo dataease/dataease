@@ -116,7 +116,7 @@ watch(
             <el-checkbox @change="checkChange" v-model="scope.row.checked" />
           </template>
         </el-table-column>
-        <el-table-column :label="t('panel.column_name')">
+        <el-table-column :label="t('dataset.origin_name')">
           <template #default="scope">
             <el-icon>
               <Icon
@@ -127,7 +127,7 @@ watch(
             {{ scope.row.originName }}
           </template>
         </el-table-column>
-        <el-table-column property="name" :label="t('deDataset.original_name')" />
+        <el-table-column property="description" :label="t('deDataset.description')" />
       </el-table>
     </div>
   </div>

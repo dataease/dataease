@@ -1486,6 +1486,19 @@ const getDsIconName = data => {
                       </template>
                     </el-table-column>
 
+                    <el-table-column
+                      prop="description"
+                      :label="t('deDataset.description')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span v-if="scope.row.extField === 0">{{ scope.row.description }}</span>
+                          <span style="color: #8d9199" v-else>&nbsp;</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
                     <el-table-column prop="deType" :label="t('dataset.field_type')" width="200">
                       <template #default="scope">
                         <el-cascader
@@ -1629,6 +1642,19 @@ const getDsIconName = data => {
                         <div class="column-style">
                           <span v-if="scope.row.extField === 0">{{ scope.row.originName }}</span>
                           <span v-else style="color: #8d9199">{{ t('dataset.calc_field') }}</span>
+                        </div>
+                      </template>
+                    </el-table-column>
+
+                    <el-table-column
+                      prop="description"
+                      :label="t('deDataset.description')"
+                      width="240"
+                    >
+                      <template #default="scope">
+                        <div class="column-style">
+                          <span v-if="scope.row.extField === 0">{{ scope.row.description }}</span>
+                          <span style="color: #8d9199" v-else>&nbsp;</span>
                         </div>
                       </template>
                     </el-table-column>
