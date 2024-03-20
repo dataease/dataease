@@ -748,7 +748,8 @@ public class DatasourceServer implements DatasourceApi {
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
-            List<TableField> tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+            datasourceRequest.setTable(tableName);
+            List<TableField> tableFields = (List<TableField>) calciteProvider.fetchTableField(datasourceRequest) ;
             return tableFields.stream().filter(tableField -> {
                 return !tableField.getOriginName().equalsIgnoreCase("dataease_uuid");
             }).collect(Collectors.toList());
@@ -759,7 +760,8 @@ public class DatasourceServer implements DatasourceApi {
         datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
         datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
-        return (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+        datasourceRequest.setTable(tableName);
+        return (List<TableField>) calciteProvider.fetchTableField(datasourceRequest);
     }
 
     @Override
