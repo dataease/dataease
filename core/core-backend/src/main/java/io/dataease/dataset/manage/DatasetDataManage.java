@@ -107,7 +107,11 @@ public class DatasetDataManage {
             }
             logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
             // 获取数据源表的原始字段
-            if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
+            if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)
+                    && !StringUtils.equalsIgnoreCase("excel", coreDatasource.getType())
+                    && !StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
+                datasourceRequest.setDatasource(coreDatasource);
+                datasourceRequest.setTable(tableInfoDTO.getTable());
                 tableFields = calciteProvider.fetchTableField(datasourceRequest);
             } else {
                 tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
@@ -123,7 +127,7 @@ public class DatasetDataManage {
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
             logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
-            tableFields = calciteProvider.fetchTableField(datasourceRequest);
+            tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
         }
         return transFields(tableFields, true);
     }
