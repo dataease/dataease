@@ -454,7 +454,7 @@ const validate = () => {
             : +endTime
         )
       ) {
-        ElMessage.error('默认值必须在时间筛选范围内!')
+        ElMessage.error('默认值超出日期筛选范围内，请重新设置！')
         return true
       }
       return false
