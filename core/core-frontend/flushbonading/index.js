@@ -99,6 +99,10 @@ htmlStream.pipe(parserStream).on('finish', () => {
         }
         if (url.includes(suffix)) {
           prefix = new URL(url).origin
+          const index = url.indexOf(\`/js/div_import_${suffix}\`)
+          if (index > 0) {
+            prefix = url.substring(0, index)
+          }
           return true
         }
       }
