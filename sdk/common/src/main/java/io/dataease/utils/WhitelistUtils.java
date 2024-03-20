@@ -1,6 +1,7 @@
 package io.dataease.utils;
 
 import io.dataease.constant.AuthConstant;
+import io.dataease.exception.DEException;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.core.env.Environment;
 
@@ -43,6 +44,9 @@ public class WhitelistUtils {
             "/");
 
     public static boolean match(String requestURI) {
+        if (requestURI.contains(";") && !requestURI.contains("?")) {
+            DEException.throwException("Invalid uri: " + requestURI);
+        }
         if (StringUtils.startsWith(requestURI, getContextPath())) {
             requestURI = requestURI.replaceFirst(getContextPath(), "");
         }
