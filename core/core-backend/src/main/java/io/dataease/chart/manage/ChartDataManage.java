@@ -82,10 +82,9 @@ public class ChartDataManage {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_delete"));
         }
 
-        //如果是excel导出 则最多导出20万条； 如果是从仪表板获取图表数据，则仪表板的查询模式，查询结果的数量，覆盖图表对应的属性
+        //如果是excel导出  如果是从仪表板获取图表数据，则仪表板的查询模式，查询结果的数量，覆盖图表对应的属性
         if (view.getIsExcelExport()) {
             view.setResultMode(ChartConstants.VIEW_RESULT_MODE.CUSTOM);
-            view.setResultCount(200000);
         } else if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(chartExtRequest.getResultMode())) {
             view.setResultMode(chartExtRequest.getResultMode());
             view.setResultCount(chartExtRequest.getResultCount());
@@ -571,6 +570,13 @@ public class ChartDataManage {
             data = resultCustomSort(list, data);
         } else {
             data = resultCustomSort(xAxis, data);
+        }
+        // 如果是表格导出查询 则在此处直接就可以返回
+        if (chartExtRequest.getExcelExportFlag()) {
+            Map<String, Object> sourceInfo = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
+            sourceInfo.put("sourceData", data);
+            view.setData(sourceInfo);
+            return view;
         }
         // 同比/环比计算，通过对比类型和数据设置，计算出对应指标的结果，然后替换结果data数组中的对应元素
         // 如果因维度变化（如时间字段缺失，时间字段的展示格式变化）导致无法计算结果的，则结果data数组中的对应元素全置为null

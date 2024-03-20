@@ -19,6 +19,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
@@ -41,6 +42,9 @@ public class ChartDataServer implements ChartDataApi {
     @Resource
     private VisualizationTemplateExtendDataManage extendDataManage;
 
+    @Value("${export.views.limit:500000}")
+    private Integer limit;
+
     @Override
     public ChartViewDTO getData(ChartViewDTO chartViewDTO) throws Exception {
         try {
@@ -60,18 +64,10 @@ public class ChartDataServer implements ChartDataApi {
         try {
             ChartViewDTO viewDTO = request.getViewInfo();
             viewDTO.setIsExcelExport(true);
-            List<String> excelHeaderKeys = request.getExcelHeaderKeys();
+            viewDTO.setResultCount(limit);
             ChartViewDTO chartViewInfo = getData(viewDTO);
-            List<Map> tableRow = (List) chartViewInfo.getData().get("tableRow");
-            List<Object[]> result = new ArrayList<>();
-            for (Map detailMap : tableRow) {
-                List<Object> detailObj = new ArrayList<>();
-                for (String key : excelHeaderKeys) {
-                    detailObj.add(detailMap.get(key));
-                }
-                result.add(detailObj.toArray());
-            }
-            request.setDetails(result);
+            List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
+            request.setDetails(tableRow);
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
