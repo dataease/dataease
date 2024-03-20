@@ -353,6 +353,7 @@ const relativeToCurrentList = computed(() => {
         padding-left: 24px;
         display: flex;
         align-items: center;
+        margin-top: 8px;
         .ed-input-number {
           width: 120px;
           margin: 0 8px;
