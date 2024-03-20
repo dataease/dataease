@@ -1643,7 +1643,16 @@ export default {
     word_size_range: 'Word Size Range',
     word_spacing: 'Word Spacing',
     axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one',
-    needs_to_be_integer: 'Needs to be an integer'
+    needs_to_be_integer: 'Needs to be an integer',
+    regression_poly: 'Polynomial',
+    regression_linear: 'Linear',
+    regression_exp: 'Exponential',
+    regression_log: 'Logarithmic',
+    regression_quad: 'Quadratic',
+    regression_pow: 'Power law',
+    regression_loess: 'LOESS',
+    regression_algo: 'Algorithm',
+    trend_line: 'Trend Line'
   },
   dataset: {
     scope_edit: 'Effective only when editing',

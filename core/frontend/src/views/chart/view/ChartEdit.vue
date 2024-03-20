@@ -1344,6 +1344,18 @@
                       @onThresholdChange="onThresholdChange"
                     />
                   </el-collapse-item>
+                  <el-collapse-item
+                    v-if="showTrendLineCfg"
+                    name="trend-line"
+                    :title="$t('chart.trend_line')"
+                  >
+                    <trend-line
+                      class="attr-selector"
+                      :chart="chart"
+                      :quota-data="view.yaxis"
+                      @onTrendLineChange="onTrendLineChange"
+                    />
+                  </el-collapse-item>
                 </el-collapse>
               </el-row>
 
@@ -1918,6 +1930,8 @@ import CalcChartFieldEdit from '@/views/chart/view/CalcChartFieldEdit'
 import { equalsAny, includesAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
+import TrendLine from '@/views/chart/components/senior/TrendLine'
+
 export default {
   name: 'ChartEdit',
   components: {
@@ -1955,7 +1969,8 @@ export default {
     DrillPath,
     PluginCom,
     MapMapping,
-    MarkMapDataEditor
+    MarkMapDataEditor,
+    TrendLine
   },
   provide() {
     return {
@@ -2021,6 +2036,7 @@ export default {
         senior: {
           functionCfg: DEFAULT_FUNCTION_CFG,
           assistLine: [],
+          trendLine: [],
           threshold: DEFAULT_THRESHOLD
         },
         customFilter: {},
@@ -2165,6 +2181,9 @@ export default {
     },
     showAssistLineCfg() {
       return includesAny(this.view.type, 'bar', 'line', 'area', 'mix') || this.view.type === 'scatter'
+    },
+    showTrendLineCfg() {
+      return this.view.render === 'antv' && equalsAny(this.view.type, 'line')
     },
     showThresholdCfg() {
       if (this.view.type === 'bidirectional-bar') {
@@ -3040,12 +3059,15 @@ export default {
       this.view.senior.assistLine = val
       this.calcData()
     },
+    onTrendLineChange(val) {
+      this.view.senior.trendLine = val
+      this.calcData()
+    },
 
     onThresholdChange(val) {
       this.view.senior.threshold = val
       this.calcData()
     },
-
     onScrollChange(val) {
       this.view.senior.scrollCfg = val
       this.calcStyle()

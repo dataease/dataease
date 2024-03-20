@@ -1635,7 +1635,16 @@ export default {
     word_size_range: '字号区间',
     word_spacing: '文字间隔',
     axis_multi_select_tip: '按住 Ctrl/Cmd 键或者 Shift 键再点击可多选',
-    needs_to_be_integer: '需要为整数'
+    needs_to_be_integer: '需要为整数',
+    regression_poly: '多项式',
+    regression_linear: '线性',
+    regression_exp: '指数',
+    regression_log: '对数',
+    regression_quad: '二次项',
+    regression_pow: '幂函数',
+    regression_loess: '局部加权',
+    regression_algo: '算法',
+    trend_line: '趋势线'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

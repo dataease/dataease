@@ -3,7 +3,15 @@ import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
 import { equalsAny, includesAny } from '@/utils/StringUtils'
 import i18n from '@/lang'
-
+import {
+  regressionExp,
+  regressionPoly,
+  regressionLinear,
+  regressionLoess,
+  regressionLog,
+  regressionPow,
+  regressionQuad
+} from 'd3-regression/dist/d3-regression.esm'
 export function getPadding(chart) {
   if (chart.drill) {
     return [0, 10, 26, 10]
@@ -1257,4 +1265,83 @@ export const configTopN = (data, chart) => {
     return p
   }, initOtherItem)
   data.push(initOtherItem)
+}
+const REGRESSION_ALGO_MAP = {
+  poly: regressionPoly,
+  linear: regressionLinear,
+  exp: regressionExp,
+  log: regressionLog,
+  quad: regressionQuad,
+  pow: regressionPow,
+  loess: regressionLoess
+}
+export function configPlotTrendLine(chart, plot) {
+  const senior = JSON.parse(chart.senior)
+  if (!senior?.trendLine?.length || !chart.data?.data?.length) {
+    return
+  }
+  const originData = chart.data.data
+  const originFieldDataMap = {}
+  originData.forEach(item => {
+    if (item.quotaList?.length) {
+      const quota = item.quotaList[0]
+      if (!originFieldDataMap[quota.id]) {
+        originFieldDataMap[quota.id] = []
+      }
+      originFieldDataMap[quota.id].push(item.value)
+    }
+  })
+  const trendResultData = {}
+  const totalData = []
+  const trendLineMap = senior.trendLine.reduce((p, n) => {
+    const fieldData = originFieldDataMap[n.fieldId]
+    if (!fieldData?.length) {
+      return p
+    }
+    const regAlgo = REGRESSION_ALGO_MAP[n.algoType]()
+      .x((_, i) => i)
+      .y(d => d)
+    const result = regAlgo(fieldData)
+    trendResultData[n.fieldId] = result
+    result.forEach(item => {
+      totalData.push({ index: item[0], value: item[1], color: n.color, field: n.fieldId })
+    })
+    p[n.fieldId] = n
+    return p
+  }, {})
+  if (!totalData.length) {
+    return
+  }
+  const regLine = plot.chart.createView()
+  plot.once('afterrender', () => {
+    for (const fieldId in trendResultData) {
+      const trendLine = trendLineMap[fieldId]
+      const trendData = trendResultData[fieldId]
+      regLine.annotation().text({
+        content: trendLine.name,
+        position: [0, trendData[0][1]],
+        style: {
+          textBaseline: 'bottom',
+          fill: trendLine.color,
+          fontSize: trendLine.fontSize ?? 20,
+          fontWeight: 300
+        },
+        offsetY: 10
+      })
+    }
+    regLine.axis(false);
+    regLine.data(totalData);
+    regLine.line()
+      .position('index*value')
+      .color('color', color => color)
+      .style('field',field => {
+        const trend = trendLineMap[field]
+        return {
+          stroke: trend?.color ?? 'grey',
+          lineDash: trend?.lineType ? getLineDash(trend.lineType) : [0, 0]
+        }
+      })
+      .tooltip(false)
+    regLine.render()
+  })
 }

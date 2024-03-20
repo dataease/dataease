@@ -3776,6 +3776,7 @@ export function handleEmptyDataStrategy(strategy, chart, data, options) {
 function handleBreakLineMultiDimension(chart, data) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
+  const catQuotaMap = {}
   for (let i = 0; i < data.length; i++) {
     const item = data[i]
     const dimensionInfo = dimensionInfoMap.get(item.field)
@@ -3785,6 +3786,9 @@ function handleBreakLineMultiDimension(chart, data) {
       dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
     }
     subDimensionSet.add(item.category)
+    if (!catQuotaMap[item.category]) {
+      catQuotaMap[item.category] = item.quotaList
+    }
   }
   // Map 是按照插入顺序排序的，所以插入索引往后推
   let insertCount = 0
@@ -3796,7 +3800,8 @@ function handleBreakLineMultiDimension(chart, data) {
           data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, {
             field,
             value: null,
-            category: dimension
+            category: dimension,
+            quotaList: catQuotaMap[dimension]
           })
         }
         subInsertIndex++
@@ -3809,6 +3814,7 @@ function handleBreakLineMultiDimension(chart, data) {
 function handleSetZeroMultiDimension(chart, data) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
+  const catQuotaMap = {}
   for (let i = 0; i < data.length; i++) {
     const item = data[i]
     if (item.value === null) {
@@ -3821,6 +3827,9 @@ function handleSetZeroMultiDimension(chart, data) {
       dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
     }
     subDimensionSet.add(item.category)
+    if (!catQuotaMap[item.category]) {
+      catQuotaMap[item.category] = item.quotaList
+    }
   }
   let insertCount = 0
   dimensionInfoMap.forEach((dimensionInfo, field) => {
@@ -3831,7 +3840,8 @@ function handleSetZeroMultiDimension(chart, data) {
           data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, {
             field,
             value: 0,
-            category: dimension
+            category: dimension,
+            quotaList: catQuotaMap[dimension]
           })
         }
         subInsertIndex++

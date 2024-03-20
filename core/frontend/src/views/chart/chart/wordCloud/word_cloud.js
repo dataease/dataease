@@ -6,7 +6,7 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 import { WordCloud } from '@antv/g2plot'
 
-export function baseWordCloudOptionAntV(plot, container, chart, action) {
+export function baseWordCloudOptionAntV(container, chart, action) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -42,12 +42,7 @@ export function baseWordCloudOptionAntV(plot, container, chart, action) {
     ]
   }
 
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new WordCloud(container, options)
-  plot.off('point:click')
+  const plot = new WordCloud(container, options)
   plot.on('point:click', action)
   // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)

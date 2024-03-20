@@ -6,7 +6,7 @@ import { valueFormatter } from '@/views/chart/chart/formatter'
 
 let labelFormatter = null
 
-export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
+export function baseGaugeOptionAntV(container, chart, action, scale = 1) {
   let min, max, labelContent, startAngel, endAngel
   // theme
   const theme = getTheme(chart)
@@ -170,11 +170,5 @@ export function baseGaugeOptionAntV(plot, container, chart, action, scale = 1) {
     }
   }
 
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Gauge(container, options)
-
-  return plot
+  return new Gauge(container, options)
 }
