@@ -47,7 +47,7 @@ export default {
   },
   time: {
     set_time_filtering_range: '设置时间筛选范围',
-    filter_range: '默认值必须在时间筛选范围',
+    filter_range: '默认值超出日期筛选范围内，请重新设置!',
     interval_type: '区间类型',
     fixed_time: '固定时间',
     dynamic_time: '动态时间',
@@ -56,7 +56,7 @@ export default {
     end_time: '结束时间',
     preview: '预览',
     maximum_single_query: '单次查询最多',
-    day: '天',
+    day_s: '天',
     dynamic_query_time_window: '动态查询时间窗口',
     nothing: '无',
     starting_from: '开始于',

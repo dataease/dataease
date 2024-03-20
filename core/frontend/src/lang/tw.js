@@ -43,7 +43,7 @@ export default {
   },
   time: {
     set_time_filtering_range: '設定時間篩選範圍',
-    filter_range: '預設值必須在時間篩選範圍',
+    filter_range: '預設值超出日期篩選範圍內，請重新設定！',
     interval_type: '區間類型',
     fixed_time: '固定時間',
     dynamic_time: '動態時間',
@@ -52,7 +52,7 @@ export default {
     end_time: '結束時間',
     preview: '預覽',
     maximum_single_query: '單次査詢最多',
-    day: '天',
+    day_s: '天',
     dynamic_query_time_window: '動態査詢時間視窗',
     nothing: '無',
     starting_from: '開始於',
