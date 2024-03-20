@@ -107,7 +107,11 @@ public class DatasetDataManage {
             }
             logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
             // 获取数据源表的原始字段
-            tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+            if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
+                tableFields = calciteProvider.fetchTableField(datasourceRequest);
+            } else {
+                tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+            }
         } else {
             // excel,api
             CoreDatasource coreDatasource = engineManage.getDeEngine();
@@ -119,7 +123,7 @@ public class DatasetDataManage {
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
             logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
-            tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+            tableFields = calciteProvider.fetchTableField(datasourceRequest);
         }
         return transFields(tableFields, true);
     }
@@ -136,6 +140,7 @@ public class DatasetDataManage {
             dto.setDeType(deType);
             dto.setGroupType(FieldUtils.transDeType2DQ(deType));
             dto.setExtField(0);
+            dto.setDescription(StringUtils.isNotEmpty(ele.getName()) ? ele.getName() : null);
             return dto;
         }).collect(Collectors.toList());
     }
