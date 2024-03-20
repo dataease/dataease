@@ -70,8 +70,15 @@ export const routes: AppRouteRecordRaw[] = [
     component: () => import('@/views/common/DeResourceTree.vue')
   },
   {
-    path: '/dataset',
-    name: 'dataset',
+    path: '/dataset-embedded',
+    name: 'dataset-embedded',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/visualized/data/dataset/index.vue')
+  },
+  {
+    path: '/dataset-embedded-form',
+    name: 'dataset-embedded-form',
     hidden: true,
     meta: {},
     component: () => import('@/views/visualized/data/dataset/form/index.vue')
