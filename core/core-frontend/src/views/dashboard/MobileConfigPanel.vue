@@ -9,10 +9,13 @@ import { canvasSave } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import { debounce } from 'lodash-es'
+import mobileHeader from '@/assets/img/mobile-header.png'
 
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
 const mobileLoading = ref(true)
+const mobileStyle = ref({})
 const emits = defineEmits(['pcMode'])
 const snapshotStore = snapshotStoreWithOut()
 
@@ -59,6 +62,7 @@ const handleLoad = () => {
 const componentDataNotInMobile = computed(() => {
   return componentData.value.filter(ele => !ele.inMobile)
 })
+const openMobile = ref(false)
 
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
@@ -124,8 +128,23 @@ const loadCanvasData = () => {
       mobileLoading.value = false
     })
 }
+
+const setMobileStyle = debounce(() => {
+  const height = window.innerHeight
+  if (height > 1032) {
+    mobileStyle.value = {}
+    return
+  }
+  const scale = height / 1032
+  mobileStyle.value = {
+    top: `${60 + scale * 40}px`,
+    transform: `scale(${scale})`,
+    transformOrigin: '0 0'
+  }
+}, 500)
 onMounted(() => {
   window.addEventListener('message', hanedleMessage)
+  window.addEventListener('resize', setMobileStyle)
   dvMainStore.setMobileInPc(true)
   useEmitt({
     name: 'onMobileStatusChange',
@@ -133,11 +152,13 @@ onMounted(() => {
       mobileStatusChange(type, value)
     }
   })
+  setMobileStyle()
 })
 
 onBeforeUnmount(() => {
   dvMainStore.setMobileInPc(false)
   window.removeEventListener('message', hanedleMessage)
+  window.removeEventListener('resize', setMobileStyle)
 })
 
 const addToMobile = com => {
@@ -179,13 +200,21 @@ const save = () => {
         {{ dvInfo.name }}
       </div>
       <div class="mobile-save">
-        <el-icon @click="handleBack">
-          <Icon name="icon_pc_outlined" />
-        </el-icon>
+        <span class="open-mobile">开启移动端</span>
+        <el-switch size="small" v-model="openMobile" />
+        <span class="open-mobile-line"></span>
+        <el-tooltip effect="dark" content="切换至PC端布局" placement="bottom">
+          <el-icon @click="handleBack">
+            <Icon name="icon_pc_outlined" />
+          </el-icon>
+        </el-tooltip>
         <el-button type="primary" @click="save">保存</el-button>
       </div>
     </div>
-    <div class="mobile-canvas">
+    <div class="mobile-canvas" :style="mobileStyle">
+      <div class="mobile-header">
+        <img :src="mobileHeader" alt="" srcset="" />
+      </div>
       <div class="config-panel-title">
         <el-icon>
           <Icon name="icon_left_outlined" />
@@ -199,16 +228,16 @@ const save = () => {
     </div>
     <div class="mobile-com-list">
       <div class="config-mobile-sidebar">移动端配置</div>
-      <el-collapse v-model="activeCollapse">
-        <el-collapse-item title="样式设置" name="style" class="content-no-padding-bottom">
-          <MobileBackgroundSelector @styleChange="changeTimes++"></MobileBackgroundSelector>
-        </el-collapse-item>
-        <el-collapse-item
-          v-loading="mobileLoading"
-          title="可视化组件"
-          name="com"
-          class="content-no-padding-bottom"
-        >
+      <el-tabs size="small" v-model="activeCollapse">
+        <el-tab-pane label="样式设置" name="style"> </el-tab-pane>
+        <el-tab-pane label="可视化组件" name="com"> </el-tab-pane>
+      </el-tabs>
+      <div class="config-mobile-tab">
+        <MobileBackgroundSelector
+          v-if="activeCollapse === 'style'"
+          @styleChange="changeTimes++"
+        ></MobileBackgroundSelector>
+        <template v-else>
           <div
             :style="{ height: '198px', width: '198px' }"
             class="mobile-wrapper-inner-adaptor"
@@ -230,11 +259,11 @@ const save = () => {
                 :scale="80"
               />
             </div>
-            <div class="mobile-com-mask"></div>
-            <div class="pc-select-to-mobile" v-if="!mobileLoading" @click="addToMobile(item)"></div>
+            <div class="mobile-com-mask" @click="addToMobile(item)"></div>
+            <div class="pc-select-to-mobile" v-if="!mobileLoading"></div>
           </div>
-        </el-collapse-item>
-      </el-collapse>
+        </template>
+      </div>
     </div>
   </div>
 </template>
@@ -262,6 +291,21 @@ const save = () => {
     .mobile-save {
       display: flex;
       align-items: center;
+
+      .open-mobile-line {
+        background: #ffffff4d;
+        width: 1px;
+        height: 18px;
+        margin: 0 20px;
+      }
+
+      .open-mobile {
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
+        color: #ffffff99;
+        margin-right: 8px;
+      }
       .ed-icon {
         font-size: 20px;
         cursor: pointer;
@@ -289,24 +333,34 @@ const save = () => {
   .mobile-canvas {
     border-radius: 30px;
     width: 419px;
-    height: 854px;
+    height: 852px;
     overflow: hidden;
     background-size: 100% 100% !important;
-    height: calc(100vh - 120px);
     position: absolute;
-    top: 104px;
+    top: 80px;
     left: calc(50% - 419px);
     background-image: url(../../assets/img/mobile-bg-pc.png);
     padding: 0 22px;
 
+    .mobile-header {
+      margin-top: 20px;
+      height: 44px;
+      display: flex;
+      img {
+        height: 100%;
+        width: 100%;
+      }
+    }
+
     .config-panel-title {
-      margin-top: 64px;
       height: 44px;
       display: flex;
       align-items: center;
       justify-content: center;
       background: #fff;
       position: relative;
+      border-top-right-radius: 4px;
+      border-top-left-radius: 4px;
 
       .ed-icon {
         font-size: 20px;
@@ -341,11 +395,37 @@ const save = () => {
       --ed-collapse-content-font-size: 12px;
     }
 
+    :deep(.ed-tabs) {
+      --ed-tabs-header-height: 36px;
+      border-top: 1px solid #1f232926;
+      .ed-tabs__header {
+        padding-left: 8px;
+        &::before {
+          content: '';
+          width: 8px;
+          height: 1px;
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          background: #1f232926;
+        }
+      }
+    }
+
+    :deep(.ed-tabs__item) {
+      font-size: 12px;
+      color: #646a73;
+    }
+
     .config-mobile-sidebar {
       font-size: 14px;
       font-weight: 500;
       line-height: 22px;
       padding: 8px;
+    }
+
+    .config-mobile-tab {
+      padding: 16px 8px;
     }
     .mobile-wrapper-inner-adaptor {
       position: relative;
@@ -367,7 +447,7 @@ const save = () => {
       }
 
       &:hover {
-        border-color: var(--ed-color-primary);
+        border-color: var(--ed-color-primary-99, #3370ff99);
       }
     }
 
@@ -378,6 +458,7 @@ const save = () => {
       top: 0;
       left: 0;
       z-index: 10;
+      cursor: pointer;
     }
 
     .pc-select-to-mobile {
@@ -390,6 +471,9 @@ const save = () => {
       border-radius: 4px;
       z-index: 20;
       cursor: pointer;
+      &:hover {
+        border-color: var(--ed-color-primary-99, #3370ff99);
+      }
     }
   }
 }

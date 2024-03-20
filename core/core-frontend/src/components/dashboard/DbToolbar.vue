@@ -457,9 +457,9 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
             />
           </el-tooltip>
           <div class="divider"></div>
-          <el-tooltip effect="dark" content="移动端配置" placement="bottom">
+          <el-tooltip effect="dark" content="切换至移动端布局" placement="bottom">
             <component-button
-              tips="移动端配置"
+              tips="切换至移动端布局"
               @custom-click="openMobileSetting"
               icon-name="icon_phone_outlined"
             />
