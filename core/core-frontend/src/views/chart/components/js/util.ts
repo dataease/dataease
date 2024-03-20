@@ -419,7 +419,7 @@ export const getGeoJsonFile = async (areaId: string): Promise<FeatureCollection>
   return toRaw(geoJson)
 }
 
-export const exportExcelDownload = chart => {
+export const exportExcelDownload = (chart, callBack?) => {
   const fields = JSON.parse(JSON.stringify(chart.data.fields))
   const tableRow = JSON.parse(JSON.stringify(chart.data.tableRow))
   const excelHeader = fields.map(item => item.chartShowName ?? item.name)
@@ -471,9 +471,11 @@ export const exportExcelDownload = chart => {
       document.body.appendChild(link)
       link.click()
       document.body.removeChild(link)
+      callBack('success')
     })
     .catch(() => {
       console.error('Excel download error')
+      callBack('error')
     })
 }
 

@@ -572,7 +572,7 @@ public class ChartDataManage {
             data = resultCustomSort(xAxis, data);
         }
         // 如果是表格导出查询 则在此处直接就可以返回
-        if (chartExtRequest.getExcelExportFlag()) {
+        if (view.getIsExcelExport()) {
             Map<String, Object> sourceInfo = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
             sourceInfo.put("sourceData", data);
             view.setData(sourceInfo);
