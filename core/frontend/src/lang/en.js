@@ -43,7 +43,7 @@ export default {
   },
   time: {
     set_time_filtering_range: 'Set time filtering range',
-    filter_range: 'The default value must be within the time filtering range',
+    filter_range: 'The default value is outside the date filtering range, please reset it!',
     interval_type: 'Interval type',
     fixed_time: 'Fixed time',
     dynamic_time: 'Dynamic time',
@@ -52,7 +52,7 @@ export default {
     end_time: 'End time',
     preview: 'preview',
     maximum_single_query: 'Maximum single query',
-    day: 'day',
+    day_s: 'day',
     dynamic_query_time_window: 'Dynamic query time window',
     nothing: 'nothing',
     starting_from: 'Starting from',

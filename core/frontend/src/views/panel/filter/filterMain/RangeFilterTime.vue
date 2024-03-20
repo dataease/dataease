@@ -1,8 +1,8 @@
 <template>
   <div class="set-time-filtering-range">
-    <div class="title">{{ $t('time.set_time_filtering_range') }}</div>
+    <div class="title">{{ $t("time.set_time_filtering_range") }}</div>
     <div class="list-item">
-      <div class="label">{{ $t('time.interval_type') }}</div>
+      <div class="label">{{ $t("time.interval_type") }}</div>
       <div class="setting-content">
         <div class="setting">
           <el-radio-group v-model="timeRange.intervalType">
@@ -17,21 +17,23 @@
       </div>
     </div>
     <div class="list-item" v-if="timeRange.intervalType !== 'none'">
-      <div class="label">{{ regularOrTrendsTitle }}</div>
+      <div class="label">{{ $t(`time.${regularOrTrendsTitle}`) }}</div>
       <div class="setting-content">
         <div class="setting">
           <el-radio-group v-model="timeRange.regularOrTrends">
-            <el-radio label="fixed">{{ $t('time.fixed_time') }}</el-radio>
-            <el-radio label="dynamic">{{ $t('time.dynamic_time') }}</el-radio>
+            <el-radio label="fixed">{{ $t("time.fixed_time") }}</el-radio>
+            <el-radio label="dynamic">{{ $t("time.dynamic_time") }}</el-radio>
           </el-radio-group>
         </div>
         <template
           v-if="dynamicTime && timeRange.intervalType !== 'timeInterval'"
         >
           <div class="setting">
-            <div class="setting-label">{{ $t('time.relative_to_current') }}</div>
+            <div class="setting-label">
+              {{ $t("time.relative_to_current") }}
+            </div>
             <div class="setting-value select">
-              <el-select v-model="timeRange.relativeToCurrent">
+              <el-select size="small" v-model="timeRange.relativeToCurrent">
                 <el-option
                   v-for="item in relativeToCurrentList"
                   :key="item.value"
@@ -49,7 +51,7 @@
                 :min="0"
                 controls-position="right"
               />
-              <el-select v-model="timeRange.relativeToCurrentType">
+              <el-select size="small" v-model="timeRange.relativeToCurrentType">
                 <el-option
                   v-for="item in relativeToCurrentTypeList"
                   :key="item.value"
@@ -57,7 +59,7 @@
                   :value="item.value"
                 />
               </el-select>
-              <el-select v-model="timeRange.around">
+              <el-select size="small" v-model="timeRange.around">
                 <el-option
                   v-for="item in aroundList"
                   :key="item.value"
@@ -72,7 +74,7 @@
           v-else-if="dynamicTime && timeRange.intervalType === 'timeInterval'"
         >
           <div class="setting">
-            <div class="setting-label">{{ $t('time.start_time') }}</div>
+            <div class="setting-label">{{ $t("time.start_time") }}</div>
             <div class="setting-input range">
               <el-input-number
                 v-model="timeRange.timeNum"
@@ -80,7 +82,7 @@
                 :min="0"
                 controls-position="right"
               />
-              <el-select v-model="timeRange.relativeToCurrentType">
+              <el-select size="small" v-model="timeRange.relativeToCurrentType">
                 <el-option
                   v-for="item in relativeToCurrentTypeList"
                   :key="item.value"
@@ -88,7 +90,7 @@
                   :value="item.value"
                 />
               </el-select>
-              <el-select v-model="timeRange.around">
+              <el-select size="small" v-model="timeRange.around">
                 <el-option
                   v-for="item in aroundList"
                   :key="item.value"
@@ -99,7 +101,7 @@
             </div>
           </div>
           <div class="setting">
-            <div class="setting-label">{{ $t('time.end_time') }}</div>
+            <div class="setting-label">{{ $t("time.end_time") }}</div>
             <div class="setting-input range">
               <el-input-number
                 v-model="timeRange.timeNumRange"
@@ -107,7 +109,7 @@
                 :min="0"
                 controls-position="right"
               />
-              <el-select v-model="timeRange.relativeToCurrentTypeRange">
+              <el-select size="small" v-model="timeRange.relativeToCurrentTypeRange">
                 <el-option
                   v-for="item in relativeToCurrentTypeList"
                   :key="item.value"
@@ -115,7 +117,7 @@
                   :value="item.value"
                 />
               </el-select>
-              <el-select v-model="timeRange.aroundRange">
+              <el-select size="small" v-model="timeRange.aroundRange">
                 <el-option
                   v-for="item in aroundList"
                   :key="item.value"
@@ -128,13 +130,16 @@
         </template>
       </div>
       <div class="parameters" :class="dynamicTime && 'setting'">
-        <div class="setting-label" v-if="dynamicTime">{{ $t('time.preview') }}</div>
+        <div class="setting-label" v-if="dynamicTime">
+          {{ $t("time.preview") }}
+        </div>
         <div :class="dynamicTime ? 'setting-value' : 'w100'">
           <el-date-picker
             :disabled="timeRange.regularOrTrends !== 'fixed'"
             v-model="timeRange.regularOrTrendsValue"
             :key="timeInterval"
             :type="timeInterval"
+            size="small"
             :start-placeholder="$t('dataset.start_time')"
             :end-placeholder="$t('dataset.end_time')"
           />
@@ -152,37 +157,31 @@
         v-if="timeRange.dynamicWindow"
         class="setting-content maximum-single-query"
       >
-      {{ $t('time.maximum_single_query') }}
+        {{ $t("time.maximum_single_query") }}
         <el-input-number
           v-model="timeRange.maximumSingleQuery"
           :min="1"
           size="small"
           controls-position="right"
         />
-        {{ $t('time.day') }}
+        {{ $t("time.day_s") }}
       </div>
     </div>
     <div class="popover-foot">
-      <de-btn
-          secondary
-          @click="closeFilter"
-        >{{ $t('chart.cancel') }}
-        </de-btn>
-        <de-btn
-          type="primary"
-          @click="changeFilter"
-        >{{ $t('chart.confirm') }}
-        </de-btn>
+      <de-btn secondary @click="closeFilter">{{ $t("chart.cancel") }} </de-btn>
+      <de-btn type="primary" @click="changeFilter"
+        >{{ $t("chart.confirm") }}
+      </de-btn>
     </div>
   </div>
 </template>
 
 <script>
 import { getThisStart, getLastStart, getAround } from "./time-format-dayjs";
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep } from "lodash-es";
 const intervalTypeList = [
   {
-    label: "day",
+    label: "nothing",
     value: "none",
   },
   {
@@ -247,24 +246,24 @@ const relativeToCurrentList = [
 ];
 
 const defaultObj = {
-        intervalType: "none",
-        dynamicWindow: false,
-        maximumSingleQuery: 0,
-        regularOrTrends: "fixed",
-        regularOrTrendsValue: "",
-        relativeToCurrent: "custom",
-        timeNum: 0,
-        relativeToCurrentType: "year",
-        around: "f",
-        timeNumRange: 0,
-        relativeToCurrentTypeRange: "year",
-        aroundRange: "f",
-      }
+  intervalType: "none",
+  dynamicWindow: false,
+  maximumSingleQuery: 0,
+  regularOrTrends: "fixed",
+  regularOrTrendsValue: "",
+  relativeToCurrent: "custom",
+  timeNum: 0,
+  relativeToCurrentType: "year",
+  around: "f",
+  timeNumRange: 0,
+  relativeToCurrentTypeRange: "year",
+  aroundRange: "f",
+};
 export default {
   props: {
     timeRangeData: {
       type: Object,
-      defalut: () => (defaultObj),
+      defalut: () => defaultObj,
     },
   },
   data() {
@@ -291,7 +290,7 @@ export default {
   },
   created() {
     this.timeRange = cloneDeep(this.timeRangeData);
-    this.init()
+    this.init();
   },
   computed: {
     timeConfig() {
@@ -350,10 +349,23 @@ export default {
         aroundRange,
         regularOrTrends,
       } = this.timeRange;
-      if (regularOrTrends === 'fixed') {
-        if (!!regularOrTrendsValue) return
-        this.timeRange.regularOrTrendsValue = new Date()
-        return
+      if (regularOrTrends === "fixed") {
+        if (intervalType === "timeInterval") {
+          if (
+            Array.isArray(regularOrTrendsValue) &&
+            !!regularOrTrendsValue.length
+          )
+            return;
+          this.timeRange.regularOrTrendsValue = [
+            getAround(relativeToCurrentType, "add", 0),
+            getAround(relativeToCurrentType, "add", 1),
+          ];
+          return;
+        }
+        if (!Array.isArray(regularOrTrendsValue) && !!regularOrTrendsValue)
+          return;
+        this.timeRange.regularOrTrendsValue = new Date();
+        return;
       }
       if (intervalType === "timeInterval") {
         const startTime = getAround(
@@ -408,18 +420,18 @@ export default {
       }
     },
     closeFilter() {
-      this.timeRange = cloneDeep(defaultObj)
-      this.$emit('changeData', null)
+      this.timeRange = cloneDeep(defaultObj);
+      this.$emit("changeData", null);
     },
     changeFilter() {
-      this.$emit('changeData', cloneDeep(this.timeRange))
-    }
+      this.$emit("changeData", cloneDeep(this.timeRange));
+    },
   },
 };
 </script>
 <style lang="less">
 .set-time-filtering-range {
-  color: #1F2329;
+  color: #1f2329;
   .el-radio,
   .el-checkbox.el-checkbox--default {
     height: 22px;
@@ -433,7 +445,7 @@ export default {
     padding: 16px;
     width: calc(100% + 24px);
     margin: 0 0 -12px -12px;
-    border-top: 1px solid  #1F232926;
+    border-top: 1px solid #1f232926;
   }
   .title {
     font-size: 14px;
@@ -576,6 +588,13 @@ export default {
         }
         & > div + div {
           margin-left: 8px;
+        }
+
+        .el-select {
+          width: 97px;
+        }
+        .el-input-number {
+          width: 98px;
         }
       }
 
