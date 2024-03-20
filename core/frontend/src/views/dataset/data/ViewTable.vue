@@ -114,6 +114,7 @@
         name="dataPreview"
       >
         <tab-data-preview
+          v-loading="tableLoading"
           :param="param"
           :table="table"
           :fields="fields"
@@ -286,6 +287,7 @@ export default {
       table: {
         name: ''
       },
+      tableLoading: false,
       fields: [],
       exportDatasetLoading: false,
       filedList: [],
@@ -376,6 +378,7 @@ export default {
         post('/dataset/table/getWithPermission/' + id, null)
           .then((response) => {
             this.table = response.data
+            this.$cancelRequest('/dataset/table/getPreviewData/**')
             this.initPreviewData(this.page)
           })
           .catch((res) => {
@@ -386,11 +389,12 @@ export default {
 
     initPreviewData(page) {
       if (this.table.id) {
+        this.tableLoading = true
         this.table.row = this.tableViewRowForm.row
         post(
           '/dataset/table/getPreviewData/' + page.page + '/' + page.pageSize,
           this.table,
-          true,
+          false,
           30000
         )
           .then((response) => {
@@ -408,6 +412,7 @@ export default {
               this.previewDataSuccess = false
             }
             this.lastRequestComplete = true
+            this.tableLoading = false
           })
           .catch((response) => {
             this.lastRequestComplete = true
@@ -419,6 +424,10 @@ export default {
               show: 0
             }
             this.previewDataSuccess = false
+            if(this.$currentHttpRequestList.some((item, key) => {
+              return key.indexOf('dataset/table/getPreviewData') > -1
+            })) return
+            this.tableLoading = false
           })
       }
     },
