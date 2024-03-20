@@ -5,7 +5,7 @@ import { valueFormatter } from '@/views/chart/chart/formatter'
 
 let labelFormatter = null
 
-export function baseLiquid(plot, container, chart) {
+export function baseLiquid(container, chart) {
   let value = 0
   const colors = []
   let max, radius, bgColor, shape, labelContent, liquidStyle, originVal = 0
@@ -80,11 +80,7 @@ export function baseLiquid(plot, container, chart) {
       bgColor = hexColorToRGBA(customStyle.background.color, customStyle.background.alpha)
     }
   }
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Liquid(container, {
+  return new Liquid(container, {
     theme: {
       styleSheet: {
         brandColor: colors[0],
@@ -101,5 +97,4 @@ export function baseLiquid(plot, container, chart) {
     },
     liquidStyle
   })
-  return plot
 }

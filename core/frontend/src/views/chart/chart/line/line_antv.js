@@ -10,12 +10,13 @@ import {
   getSlider,
   getAnalyse,
   setGradientColor,
-  configPlotTooltipEvent
+  configPlotTooltipEvent,
+  configPlotTrendLine
 } from '@/views/chart/chart/common/common_antv'
 import { antVCustomColor, handleEmptyDataStrategy } from '@/views/chart/chart/util'
 import _ from 'lodash'
 
-export function baseLineOptionAntV(plot, container, chart, action) {
+export function baseLineOptionAntV(container, chart, action) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -103,20 +104,17 @@ export function baseLineOptionAntV(plot, container, chart, action) {
     }
     handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   }
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Line(container, options)
+  const plot = new Line(container, options)
 
-  plot.off('point:click')
   plot.on('point:click', action)
+  // 趋势线
+  configPlotTrendLine(chart, plot)
 // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }
 
-export function baseAreaOptionAntV(plot, container, chart, action, isStack) {
+export function baseAreaOptionAntV(container, chart, action, isStack) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -214,13 +212,8 @@ export function baseAreaOptionAntV(plot, container, chart, action, isStack) {
     handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   }
 
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Area(container, options)
+  const plot = new Area(container, options)
 
-  plot.off('point:click')
   plot.on('point:click', action)
 // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)

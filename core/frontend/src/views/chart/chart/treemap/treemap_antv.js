@@ -8,7 +8,7 @@ import {
 } from '@/views/chart/chart/common/common_antv'
 import { Treemap } from '@antv/g2plot'
 
-export function baseTreemapOptionAntV(plot, container, chart, action) {
+export function baseTreemapOptionAntV(container, chart, action) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -50,13 +50,8 @@ export function baseTreemapOptionAntV(plot, container, chart, action) {
       }
     ]
   }
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Treemap(container, options)
+  const plot = new Treemap(container, options)
 
-  plot.off('polygon:click')
   plot.on('polygon:click', action)
 // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
