@@ -200,19 +200,11 @@ const checkPer = async resourceId => {
 }
 
 const loadFinish = ref(false)
-const newWindowHandler = ref(null)
 
 let p = null
-const XpackLoaded = () => {
-  p(true)
-}
+const XpackLoaded = () => p(true)
 onMounted(async () => {
-  await new Promise(r => {
-    if (!newWindowHandler?.value) {
-      return r(null)
-    }
-    p = r
-  })
+  await new Promise(r => (p = r))
   loadFinish.value = true
   window.addEventListener('blur', releaseAttachKey)
   if (editMode.value === 'edit') {
@@ -389,9 +381,9 @@ eventBus.on('handleNew', handleNew)
     </el-container>
   </div>
   <XpackComponent
-    ref="newWindowHandler"
     jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
     @loaded="XpackLoaded"
+    @load-fail="XpackLoaded"
   />
 </template>
 
