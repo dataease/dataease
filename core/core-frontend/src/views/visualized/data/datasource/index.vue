@@ -1305,7 +1305,7 @@ const getMenuList = (val: boolean) => {
             </template>
           </el-table-column>
           <el-table-column
-            prop="remarks"
+            prop="name"
             show-overflow-tooltip
             :label="t('datasource.field_description')"
           />

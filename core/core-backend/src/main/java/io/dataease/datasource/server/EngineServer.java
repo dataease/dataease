@@ -5,6 +5,7 @@ import io.dataease.api.ds.EngineApi;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
 import io.dataease.datasource.manage.EngineManage;
+import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;
@@ -24,7 +25,8 @@ public class EngineServer implements EngineApi {
     private CoreDeEngineMapper deEngineMapper;
     @Resource
     private EngineManage engineManage;
-
+    @Resource
+    private CalciteProvider calciteProvider;
 
     @Override
     public DatasourceDTO getEngine() {
@@ -41,15 +43,16 @@ public class EngineServer implements EngineApi {
         if (StringUtils.isNotEmpty(datasourceDTO.getConfiguration())) {
             datasourceDTO.setConfiguration(new String(Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
         }
-
         CoreDeEngine coreDeEngine = new CoreDeEngine();
         BeanUtils.copyBean(coreDeEngine, datasourceDTO);
         if(coreDeEngine.getId() == null){
             coreDeEngine.setId(IDUtils.snowID());
+            datasourceDTO.setId(coreDeEngine.getId());
             deEngineMapper.insert(coreDeEngine);
         }else {
             deEngineMapper.updateById(coreDeEngine);
         }
+        calciteProvider.update(datasourceDTO);
     }
 
     @Override
