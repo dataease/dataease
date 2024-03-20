@@ -27,6 +27,8 @@ import CreatDsGroup from './CreatDsGroup.vue'
 import { guid, getFieldName, timeTypes, type DataSource } from './util'
 import { fieldType } from '@/utils/attr'
 import { cancelMap } from '@/config/axios/service'
+import { useEmbedded } from '@/store/modules/embedded'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import {
   getDatasourceList,
   getTables,
@@ -49,7 +51,8 @@ interface Field {
   originName: string
   deType: number
 }
-
+const appStore = useAppStoreWithOut()
+const embeddedStore = useEmbedded()
 const { t } = useI18n()
 const route = useRoute()
 const { push } = useRouter()
@@ -217,8 +220,9 @@ const getDsName = (id: string) => {
 }
 
 const pushDataset = () => {
+  const routeName = embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded' : 'dataset'
   push({
-    name: 'dataset',
+    name: routeName,
     params: {
       id: nodeInfo.id
     }
