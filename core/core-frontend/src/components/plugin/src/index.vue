@@ -59,6 +59,7 @@ const loadComponent = () => {
       importProxy(byteArray)
     })
     .catch(() => {
+      emits('loadFail')
       showNolic()
     })
     .finally(() => {
@@ -77,6 +78,7 @@ const pluginProxy = ref(null)
 const invokeMethod = param => {
   pluginProxy.value['invokeMethod'](param)
 }
+const emits = defineEmits(['loadFail'])
 defineExpose({
   invokeMethod
 })

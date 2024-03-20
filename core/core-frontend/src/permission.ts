@@ -23,13 +23,8 @@ const { start, done } = useNProgress()
 const { loadStart, loadDone } = usePageLoading()
 
 const whiteList = ['/login', '/de-link', '/chart-view'] // 不重定向白名单
-const embeddedWhiteList = [
-  '/dvCanvas',
-  '/dashboard',
-  '/dataset-embedded',
-  '/dataset-form',
-  '/dataset-embedded-form'
-]
+const embeddedWindowWhiteList = ['/dvCanvas', '/dashboard']
+const embeddedRouteWhiteList = ['/dataset-embedded', '/dataset-form', '/dataset-embedded-form']
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
@@ -106,14 +101,22 @@ router.beforeEach(async (to, from, next) => {
     }
   } else {
     const embeddedStore = useEmbedded()
-    if (embeddedStore.getToken && appStore.getIsIframe && embeddedWhiteList.includes(to.path)) {
+    if (
+      embeddedStore.getToken &&
+      appStore.getIsIframe &&
+      embeddedRouteWhiteList.includes(to.path)
+    ) {
       if (to.path.includes('/dataset-form')) {
         next({ path: '/dataset-embedded-form', query: to.query })
         return
       }
       permissionStore.setCurrentPath(to.path)
       next()
-    } else if (whiteList.indexOf(to.path) !== -1 || to.path.startsWith('/de-link/')) {
+    } else if (
+      embeddedWindowWhiteList.includes(to.path) ||
+      whiteList.includes(to.path) ||
+      to.path.startsWith('/de-link/')
+    ) {
       permissionStore.setCurrentPath(to.path)
       next()
     } else {

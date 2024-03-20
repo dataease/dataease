@@ -56,7 +56,8 @@ export const userStore = defineStore('embedded', {
         type: this.type,
         dvId: this.dvId,
         chartId: this.chartId,
-        pid: this.pid
+        pid: this.pid,
+        resourceId: this.resourceId
       }
     }
   },
@@ -92,6 +93,7 @@ export const userStore = defineStore('embedded', {
       this.dvId = data['dvId']
       this.chartId = data['chartId']
       this.pid = data['pid']
+      this.resourceId = data['resourceId']
     }
   }
 })

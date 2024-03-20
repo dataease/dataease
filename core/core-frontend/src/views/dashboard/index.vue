@@ -96,20 +96,11 @@ const onMobileConfig = () => {
 }
 
 const loadFinish = ref(false)
-const newWindowHandler = ref(null)
-
 let p = null
-const XpackLoaded = () => {
-  p(true)
-}
+const XpackLoaded = () => p(true)
 // 全局监听按键事件
 onMounted(async () => {
-  await new Promise(r => {
-    if (!newWindowHandler?.value) {
-      return r(null)
-    }
-    p = r
-  })
+  await new Promise(r => (p = r))
   loadFinish.value = true
   useEmitt({
     name: 'mobileConfig',
@@ -254,9 +245,9 @@ onUnmounted(() => {
     v-else-if="loadFinish && mobileConfig"
   ></MobileConfigPanel>
   <XpackComponent
-    ref="newWindowHandler"
     jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
     @loaded="XpackLoaded"
+    @load-fail="XpackLoaded"
   />
 </template>
 
