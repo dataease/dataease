@@ -500,7 +500,7 @@ defineExpose({
             >
               <span>按照时间降序</span> <el-icon><Check /></el-icon>
             </el-dropdown-item>
-            <el-divider />
+            <el-divider style="margin: 12px 0" />
             <el-dropdown-item
               class="sort-type-normal"
               :class="{ 'sort-type-checked': state.curSortType === 'name_asc' }"
@@ -757,7 +757,7 @@ defineExpose({
 }
 
 .sort-type-checked {
-  color: blueviolet;
+  color: var(--ed-color-primary);
   i {
     display: block;
   }
