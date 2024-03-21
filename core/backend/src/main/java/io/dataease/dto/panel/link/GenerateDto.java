@@ -16,4 +16,8 @@ public class GenerateDto {
     private String pwd;
     @ApiModelProperty("有效期")
     private Long overTime;
+    @ApiModelProperty("ticket必填")
+    private boolean requireTicket;
+
+
 }

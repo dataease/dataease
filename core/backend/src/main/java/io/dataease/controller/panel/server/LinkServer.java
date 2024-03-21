@@ -12,6 +12,7 @@ import io.dataease.dto.panel.link.GenerateDto;
 import io.dataease.dto.panel.link.ValidateDto;
 import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.plugins.common.base.domain.PanelLink;
+import io.dataease.plugins.common.base.domain.PanelLinkTicket;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.panel.PanelLinkService;
 import org.apache.commons.lang3.ObjectUtils;
@@ -27,6 +28,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -62,6 +64,11 @@ public class LinkServer implements LinkApi {
     @Override
     public GenerateDto currentGenerate(@PathVariable("resourceId") String resourceId) {
         return panelLinkService.currentGenerate(resourceId);
+    }
+
+    @Override
+    public List<PanelLinkTicket> queryTicket(@PathVariable("resourceId") String resourceId) {
+        return panelLinkService.queryTicket(resourceId);
     }
 
     @Override
@@ -140,5 +147,15 @@ public class LinkServer implements LinkApi {
         PanelGroupWithBLOBs panelGroupWithBLOBs = panelLinkService.resourceInfo(panelId, String.valueOf(userId));
         String pid = panelGroupWithBLOBs.getPid();
         DeLogUtils.save(operateType, SysLogConstants.SOURCE_TYPE.LINK, panelId, pid, userId, SysLogConstants.SOURCE_TYPE.USER);
+    }
+
+    @Override
+    public String saveTicket(TicketCreator creator) {
+        return panelLinkService.saveTicket(creator);
+    }
+
+    @Override
+    public void deleteTicket(TicketDelRequest request) {
+        panelLinkService.deleteTicket(request);
     }
 }

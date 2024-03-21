@@ -4,16 +4,16 @@ import java.io.Serializable;
 import lombok.Data;
 
 @Data
-public class PanelLinkMapping implements Serializable {
+public class PanelLinkTicket implements Serializable {
     private Long id;
-
-    private String resourceId;
-
-    private Long userId;
 
     private String uuid;
 
-    private Boolean requireTicket;
+    private String ticket;
+
+    private Long exp;
+
+    private String args;
 
     private static final long serialVersionUID = 1L;
 }

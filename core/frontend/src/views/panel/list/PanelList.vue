@@ -375,6 +375,7 @@
         v-dialogDrag
         :title="$t('panel.link_share')"
         :visible.sync="linkVisible"
+        class="link-dialog"
         width="500px"
         @closed="removeLink"
       >
@@ -1238,5 +1239,14 @@ export default {
 .father:hover .child {
   /*display: inline;*/
   visibility: visible;
+}
+.link-dialog ::v-deep .el-dialog__title {
+  display: none;
+}
+.link-dialog ::v-deep .el-dialog__body {
+  height: 350px;
+}
+.link-dialog ::v-deep .el-dialog__headerbtn {
+  z-index: 1;
 }
 </style>
