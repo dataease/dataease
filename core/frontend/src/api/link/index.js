@@ -66,6 +66,28 @@ export function loadGenerate(resourceId) {
   })
 }
 
+export function loadTicketApi(resourceId) {
+  return request({
+    url: 'api/link/currentTicket/' + resourceId,
+    method: 'post'
+  })
+}
+
+export function saveTicketApi(data) {
+  return request({
+    url: 'api/link/saveTicket',
+    method: 'post',
+    data
+  })
+}
+export function delTicketApi(data) {
+  return request({
+    url: 'api/link/delTicket',
+    method: 'post',
+    data
+  })
+}
+
 export function loadResource(resourceId, userId) {
   return request({
     url: 'api/link/resourceDetail/' + resourceId + '/' + userId,
