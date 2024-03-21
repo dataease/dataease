@@ -64,7 +64,7 @@ public class DataVisualizationVO implements Serializable {
     /**
      * 移动端布局
      */
-    private String mobileLayout;
+    private Boolean mobileLayout;
 
     /**
      * 状态 0-未发布 1-已发布

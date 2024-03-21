@@ -104,7 +104,8 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       updateName: canvasInfo.updateName,
       createTime: canvasInfo.createTime,
       updateTime: canvasInfo.updateTime,
-      watermarkInfo: watermarkInfo
+      watermarkInfo: watermarkInfo,
+      mobileLayout: canvasInfo.mobileLayout || false
     }
 
     const canvasDataResult = JSON.parse(canvasInfo.componentData)

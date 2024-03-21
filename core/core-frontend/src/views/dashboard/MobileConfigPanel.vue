@@ -201,7 +201,7 @@ const save = () => {
       </div>
       <div class="mobile-save">
         <span class="open-mobile">开启移动端</span>
-        <el-switch size="small" v-model="openMobile" />
+        <el-switch size="small" v-model="dvInfo.mobileLayout" />
         <span class="open-mobile-line"></span>
         <el-tooltip effect="dark" content="切换至PC端布局" placement="bottom">
           <el-icon @click="handleBack">

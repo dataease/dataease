@@ -61,7 +61,7 @@ public class DataVisualizationInfo implements Serializable {
     /**
      * 移动端布局
      */
-    private String mobileLayout;
+    private Boolean mobileLayout;
 
     /**
      * 状态 0-未发布 1-已发布
@@ -195,11 +195,11 @@ public class DataVisualizationInfo implements Serializable {
         this.componentData = componentData;
     }
 
-    public String getMobileLayout() {
+    public Boolean getMobileLayout() {
         return mobileLayout;
     }
 
-    public void setMobileLayout(String mobileLayout) {
+    public void setMobileLayout(Boolean mobileLayout) {
         this.mobileLayout = mobileLayout;
     }
 
