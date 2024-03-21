@@ -148,6 +148,16 @@ const sortChange = param => {
   orderDesc.value = type === 'desc'
   loadTableData()
 }
+
+const handleCellClick = row => {
+  if (row) {
+    if (['dashboard', 'panel'].includes(row.type)) {
+      window.open('#/panel/index?dvId=' + row.id, '_self')
+    } else if (['dataV', 'screen'].includes(row.type)) {
+      window.open('#/screen/index?dvId=' + row.id, '_self')
+    }
+  }
+}
 const setLoading = (val: boolean) => {
   loading.value = val
 }
@@ -259,6 +269,7 @@ const getEmptyDesc = (): string => {
         :show-pagination="false"
         :table-data="state.tableData"
         @sort-change="sortChange"
+        @cell-click="handleCellClick"
         :empty-desc="emptyDesc"
         :empty-img="imgType"
         class="workbranch-grid"
