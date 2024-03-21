@@ -60,6 +60,7 @@ const returnMounted = ref(false)
 const state = reactive({
   curSortType: 'time_desc',
   resourceTree: [] as BusiTreeNode[],
+  originResourceTree: [] as BusiTreeNode[],
   folderMenuList: [
     {
       label: '移动到',
@@ -242,6 +243,7 @@ function flatTree(tree: BusiTreeNode[]) {
 }
 
 const afterTreeInit = () => {
+  state.originResourceTree = _.cloneDeep(state.resourceTree)
   mounted.value = true
   if (selectedNodeKey.value && returnMounted.value) {
     expandedArray.value = getDefaultExpandedKeys()
@@ -391,7 +393,7 @@ const getDefaultExpandedKeys = () => {
 }
 
 const sortTypeChange = sortType => {
-  state.resourceTree = treeSort(state.resourceTree, sortType, state.curSortType)
+  state.resourceTree = treeSort(state.originResourceTree, sortType)
   state.curSortType = sortType
 }
 
