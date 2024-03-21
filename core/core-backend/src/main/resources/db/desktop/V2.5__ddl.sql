@@ -34,3 +34,5 @@ CREATE TABLE `visualization_outer_params_target_view_info` (
                                                        PRIMARY KEY (`target_id`)
 )  COMMENT='外部参数联动视图字段信息表';
 
+ALTER TABLE `data_visualization_info`
+    MODIFY COLUMN `mobile_layout` tinyint NULL DEFAULT 0 COMMENT '移动端布局0-关闭 1-开启';
