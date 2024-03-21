@@ -1399,7 +1399,7 @@ public class ChartViewService {
                             String cValue = item[dataIndex];
 
                             // 获取计算后的时间，并且与所有维度拼接
-                            String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern());
+                            String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern(), ds);
                             String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
                             dimension[timeIndex] = lastTime;
 
@@ -1460,7 +1460,7 @@ public class ChartViewService {
                         if (StringUtils.containsIgnoreCase(view.getType(), "stack") && extStack.isEmpty()) {
                             break;
                         }
-                        if (StringUtils.containsIgnoreCase(view.getType(), "group") && xAxisExt.isEmpty() ) {
+                        if (StringUtils.containsIgnoreCase(view.getType(), "group") && xAxisExt.isEmpty()) {
                             break;
                         }
                         final Map<String, Integer> mainIndexMap = new HashMap<>();
@@ -1764,7 +1764,7 @@ public class ChartViewService {
         return false;
     }
 
-    private String calcLastTime(String cTime, String type, String dateStyle, String datePattern) {
+    private String calcLastTime(String cTime, String type, String dateStyle, String datePattern, Datasource ds) {
         try {
             String lastTime = null;
             Calendar calendar = Calendar.getInstance();
@@ -1843,9 +1843,17 @@ public class ChartViewService {
             } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.WEEK_MOM)) {
                 SimpleDateFormat simpleDateFormat = null;
                 if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
-                    simpleDateFormat = new SimpleDateFormat("yyyy/'W'w");
+                    if (StringUtils.equalsIgnoreCase(ds.getType(), "ck")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/'W'w");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/'W'ww");
+                    }
                 } else {
-                    simpleDateFormat = new SimpleDateFormat("yyyy-'W'w");
+                    if (StringUtils.equalsIgnoreCase(ds.getType(), "ck")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-'W'w");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-'W'ww");
+                    }
                 }
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
