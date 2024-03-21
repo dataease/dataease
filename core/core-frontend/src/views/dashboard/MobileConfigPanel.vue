@@ -132,13 +132,14 @@ const loadCanvasData = () => {
 const setMobileStyle = debounce(() => {
   const height = window.innerHeight
   if (height > 1032) {
-    mobileStyle.value = {}
+    mobileStyle.value = {
+      transform: 'translateY(-50%)'
+    }
     return
   }
   const scale = height / 1032
   mobileStyle.value = {
-    top: `${60 + scale * 40}px`,
-    transform: `scale(${scale})`,
+    transform: `scale(${scale}) translateY(-50%)`,
     transformOrigin: '0 0'
   }
 }, 500)
@@ -337,7 +338,7 @@ const save = () => {
     overflow: hidden;
     background-size: 100% 100% !important;
     position: absolute;
-    top: 80px;
+    top: calc(50% + 32px);
     left: calc(50% - 419px);
     background-image: url(../../assets/img/mobile-bg-pc.png);
     padding: 0 22px;
