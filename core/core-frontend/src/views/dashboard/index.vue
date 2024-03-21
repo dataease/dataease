@@ -6,6 +6,7 @@ import findComponent from '../../utils/components'
 import DvSidebar from '../../components/visualization/DvSidebar.vue'
 import router from '@/router'
 import MobileConfigPanel from './MobileConfigPanel.vue'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import DbToolbar from '@/components/dashboard/DbToolbar.vue'
 import ViewEditor from '@/views/chart/components/editor/index.vue'
@@ -47,6 +48,8 @@ const {
   dvInfo
 } = storeToRefs(dvMainStore)
 const dataInitState = ref(false)
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const state = reactive({
   datasetTree: [],
@@ -174,7 +177,11 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="dv-common-layout dv-teleport-query" v-if="loadFinish && !mobileConfig">
+  <div
+    class="dv-common-layout dv-teleport-query"
+    :class="isDataEaseBi && 'dataease-w-h'"
+    v-if="loadFinish && !mobileConfig"
+  >
     <DbToolbar />
     <el-container
       class="dv-layout-container"
@@ -255,6 +262,7 @@ onUnmounted(() => {
 .dv-common-layout {
   height: 100vh;
   width: 100vw;
+
   .dv-layout-container {
     height: calc(100vh - @top-bar-height);
     .left-sidebar {
@@ -281,6 +289,14 @@ onUnmounted(() => {
     }
     .right-sidebar {
       height: 100%;
+    }
+  }
+
+  &.dataease-w-h {
+    height: 100%;
+    width: 100%;
+    .dv-layout-container {
+      height: calc(100% - @top-bar-height);
     }
   }
 }
