@@ -229,8 +229,8 @@ const save = () => {
     <div class="mobile-com-list">
       <div class="config-mobile-sidebar">移动端配置</div>
       <el-tabs size="small" v-model="activeCollapse">
-        <el-tab-pane label="样式设置" name="style"> </el-tab-pane>
         <el-tab-pane label="可视化组件" name="com"> </el-tab-pane>
+        <el-tab-pane label="样式" name="style"> </el-tab-pane>
       </el-tabs>
       <div class="config-mobile-tab">
         <MobileBackgroundSelector
@@ -260,7 +260,7 @@ const save = () => {
               />
             </div>
             <div class="mobile-com-mask" @click="addToMobile(item)"></div>
-            <div class="pc-select-to-mobile" v-if="!mobileLoading"></div>
+            <div class="pc-select-to-mobile" @click="addToMobile(item)" v-if="!mobileLoading"></div>
           </div>
         </template>
       </div>
@@ -398,6 +398,11 @@ const save = () => {
     :deep(.ed-tabs) {
       --ed-tabs-header-height: 36px;
       border-top: 1px solid #1f232926;
+      position: sticky;
+      top: 38px;
+      left: 0;
+      background: #fff;
+      z-index: 21;
       .ed-tabs__header {
         padding-left: 8px;
         &::before {
@@ -422,6 +427,11 @@ const save = () => {
       font-weight: 500;
       line-height: 22px;
       padding: 8px;
+      position: sticky;
+      top: 0;
+      left: 0;
+      background: #fff;
+      z-index: 21;
     }
 
     .config-mobile-tab {
