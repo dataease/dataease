@@ -5,6 +5,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import { storeToRefs } from 'pinia'
 import DvToolbar from '../../components/data-visualization/DvToolbar.vue'
 import ComponentToolBar from '../../components/data-visualization/ComponentToolBar.vue'
@@ -45,7 +46,8 @@ const eventCheck = e => {
   }
 }
 const mainCanvasCoreRef = ref(null)
-
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
@@ -300,7 +302,7 @@ eventBus.on('handleNew', handleNew)
 </script>
 
 <template>
-  <div ref="dvLayout" class="dv-common-layout">
+  <div ref="dvLayout" class="dv-common-layout" :class="isDataEaseBi && 'dataease-w-h'">
     <DvToolbar />
     <div class="custom-dv-divider" />
     <el-container
@@ -421,6 +423,13 @@ eventBus.on('handleNew', handleNew)
     }
     .right-sidebar {
       height: 100%;
+    }
+  }
+  &.dataease-w-h {
+    height: 100%;
+    width: 100%;
+    .dv-layout-container {
+      height: calc(100% - @top-bar-height);
     }
   }
 }

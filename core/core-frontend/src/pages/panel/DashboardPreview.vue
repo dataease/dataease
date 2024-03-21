@@ -69,7 +69,7 @@ onBeforeMount(async () => {
 
 <style lang="less" scoped>
 .dashboard-preview {
-  width: 1000px;
-  height: 800px;
+  width: 100%;
+  height: 100%;
 }
 </style>
