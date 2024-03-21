@@ -540,12 +540,16 @@ defineExpose({
               <Icon name="dv-folder"></Icon>
             </el-icon>
             <el-icon style="font-size: 18px" v-else-if="curCanvasType === 'dashboard'">
-              <Icon name="dv-dashboard-spine"></Icon>
+              <Icon
+                :name="data.extraFlag ? 'dv-dashboard-spine-mobile' : 'dv-dashboard-spine'"
+              ></Icon>
             </el-icon>
             <el-icon class="icon-screen-new color-dataV" style="font-size: 18px" v-else>
               <Icon name="icon_operation-analysis_outlined"></Icon>
             </el-icon>
-            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
+            <span :title="node.label" class="label-tooltip"
+              >{{ data.extraFlag }}{{ node.label }}</span
+            >
 
             <div
               class="icon-more flex-align-center"
