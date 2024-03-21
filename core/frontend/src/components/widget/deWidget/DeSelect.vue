@@ -4,6 +4,7 @@
     v-if="element.options!== null && element.options.attrs!==null && show "
     ref="deSelect"
     v-model="value"
+    :id="element.id"
     :class-id="'visual-' + element.id + '-' + inDraw + '-' + inScreen"
     :collapse-tags="showNumber"
     :clearable="(inDraw || !selectFirst)"
@@ -21,6 +22,7 @@
     :flag="flag"
     :is-config="isConfig"
     :custom-style="customStyle"
+    :radioStyle="element.style"
     @resetKeyWords="filterMethod"
     @change="changeValue"
     @focus="setOptionWidth"
@@ -47,6 +49,7 @@
 
 <script>
 import ElVisualSelect from '@/components/elVisualSelect'
+import DeRadio from './DeRadio.vue'
 import { linkMultFieldValues, multFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { isSameVueObj, mergeCustomSortOption } from '@/utils'
@@ -56,7 +59,7 @@ import { textSelectWidget } from '@/components/widget/deWidget/serviceNameFn.js'
 import { uuid } from 'vue-uuid'
 import _ from 'lodash'
 export default {
-  components: { ElVisualSelect },
+  components: { ElVisualSelect, DeRadio },
   mixins: [customInput],
   props: {
     canvasId: {
@@ -105,6 +108,9 @@ export default {
   computed: {
     mode() {
       let result = 'el-select'
+      if (this.element.style.showMode && this.element.style.showMode === 'radio' && !this.element.options.attrs.multiple && !this.isConfig) {
+        return 'DeRadio'
+      }
       if (this.element.options && this.element.options.attrs && this.element.options.attrs.visual) {
         result = 'el-visual-select'
       }
