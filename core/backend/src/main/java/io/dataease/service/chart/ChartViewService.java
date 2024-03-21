@@ -1259,11 +1259,10 @@ public class ChartViewService {
                 datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, ds, view));
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 querySql = qp.getSQLWithPage(true, tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                datasourceRequest.setQuery(querySql);
                 totalPageSql = qp.getResultCount(true, tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
             } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
-
                 datasourceRequest.setQuery(qp.getSQLRangeBar(tableName, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, ds, view));
-
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
@@ -1448,7 +1447,7 @@ public class ChartViewService {
                                 .divide(sum, 8, RoundingMode.HALF_UP)
                                 .toString();
                     }
-                } else if (StringUtils.equalsAnyIgnoreCase(compareCalc.getType(), "accumulate")) {
+                } else if (StringUtils.equalsIgnoreCase(compareCalc.getType(), "accumulate")) {
                     // 累加
                     if (data.isEmpty()) {
                         break;
