@@ -448,8 +448,9 @@ public class JdbcProvider extends DefaultJdbcProvider {
         String username = null;
         String password = null;
         String defaultDriver = null;
-        String jdbcurl = null;
         String customDriver = null;
+        String jdbcurl = null;
+
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         Properties props = new Properties();
         DeDriver deDriver = null;
@@ -626,6 +627,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
     public JdbcConfiguration setCredential(DatasourceRequest datasourceRequest, DruidDataSource dataSource) throws Exception {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(datasourceRequest.getDatasource().getType());
         JdbcConfiguration jdbcConfiguration = new JdbcConfiguration();
+        String defaultDriver = null;
         switch (datasourceType) {
             case mysql:
             case mariadb:
@@ -636,41 +638,44 @@ public class JdbcProvider extends DefaultJdbcProvider {
             case StarRocks:
                 MysqlConfiguration mysqlConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MysqlConfiguration.class);
                 dataSource.setUrl(mysqlConfiguration.getJdbc());
-                dataSource.setDriverClassName("com.mysql.jdbc.Driver");
                 dataSource.setValidationQuery("select 1");
                 jdbcConfiguration = mysqlConfiguration;
+                defaultDriver = mysqlConfiguration.getDriver();
                 break;
             case sqlServer:
                 SqlServerConfiguration sqlServerConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), SqlServerConfiguration.class);
-                dataSource.setDriverClassName(sqlServerConfiguration.getDriver());
                 dataSource.setUrl(sqlServerConfiguration.getJdbc());
                 dataSource.setValidationQuery("select 1");
                 jdbcConfiguration = sqlServerConfiguration;
+                defaultDriver = sqlServerConfiguration.getDriver();
                 break;
             case oracle:
                 OracleConfiguration oracleConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), OracleConfiguration.class);
-                dataSource.setDriverClassName(oracleConfiguration.getDriver());
                 dataSource.setUrl(oracleConfiguration.getJdbc());
                 dataSource.setValidationQuery("select 1 from dual");
                 jdbcConfiguration = oracleConfiguration;
+                defaultDriver = oracleConfiguration.getDriver();
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), PgConfiguration.class);
                 dataSource.setDriverClassName(pgConfiguration.getDriver());
                 dataSource.setUrl(pgConfiguration.getJdbc());
                 jdbcConfiguration = pgConfiguration;
+                defaultDriver = pgConfiguration.getDriver();
                 break;
             case ck:
                 CHConfiguration chConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), CHConfiguration.class);
                 dataSource.setDriverClassName(chConfiguration.getDriver());
                 dataSource.setUrl(chConfiguration.getJdbc());
                 jdbcConfiguration = chConfiguration;
+                defaultDriver = chConfiguration.getDriver();
                 break;
             case mongo:
                 MongodbConfiguration mongodbConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), MongodbConfiguration.class);
                 dataSource.setDriverClassName(mongodbConfiguration.getDriver());
                 dataSource.setUrl(mongodbConfiguration.getJdbc(datasourceRequest.getDatasource().getId()));
                 jdbcConfiguration = mongodbConfiguration;
+                defaultDriver = mongodbConfiguration.getDriver();
                 break;
             case redshift:
                 RedshiftConfiguration redshiftConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), RedshiftConfiguration.class);
@@ -678,6 +683,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 dataSource.setDriverClassName(redshiftConfiguration.getDriver());
                 dataSource.setUrl(redshiftConfiguration.getJdbc());
                 jdbcConfiguration = redshiftConfiguration;
+                defaultDriver = redshiftConfiguration.getDriver();
                 break;
             case hive:
                 HiveConfiguration hiveConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), HiveConfiguration.class);
@@ -685,6 +691,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 dataSource.setDriverClassName(hiveConfiguration.getDriver());
                 dataSource.setUrl(hiveConfiguration.getJdbc());
                 jdbcConfiguration = hiveConfiguration;
+                defaultDriver = hiveConfiguration.getDriver();
                 break;
             case impala:
                 ImpalaConfiguration impalaConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), ImpalaConfiguration.class);
@@ -692,6 +699,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 dataSource.setDriverClassName(impalaConfiguration.getDriver());
                 dataSource.setUrl(impalaConfiguration.getJdbc());
                 jdbcConfiguration = impalaConfiguration;
+                defaultDriver = impalaConfiguration.getDriver();
                 break;
             case db2:
                 Db2Configuration db2Configuration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), Db2Configuration.class);
@@ -699,6 +707,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 dataSource.setDriverClassName(db2Configuration.getDriver());
                 dataSource.setUrl(db2Configuration.getJdbc());
                 jdbcConfiguration = db2Configuration;
+                defaultDriver = db2Configuration.getDriver();
             default:
                 break;
         }
@@ -707,14 +716,15 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
         ExtendedJdbcClassLoader classLoader;
         if (isDefaultClassLoader(jdbcConfiguration.getCustomDriver())) {
+            dataSource.setDriverClassName(defaultDriver);
             classLoader = extendedJdbcClassLoader;
         } else {
             DeDriver deDriver = deDriverMapper.selectByPrimaryKey(jdbcConfiguration.getCustomDriver());
             classLoader = getCustomJdbcClassLoader(deDriver);
+            dataSource.setDriverClassName(deDriver.getDriverClass());
         }
         dataSource.setDriverClassLoader(classLoader);
         dataSource.setPassword(jdbcConfiguration.getPassword());
-
         return jdbcConfiguration;
     }
 
