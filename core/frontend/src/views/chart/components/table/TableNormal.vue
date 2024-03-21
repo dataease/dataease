@@ -304,7 +304,14 @@ export default {
             }
           })
         }
-        this.fields = fields
+        const xAxis = JSON.parse(this.chart.xaxis)
+        const axisMap = xAxis?.reduce((p, n) => {
+          p[n.dataeaseName] = n
+          return p
+        }, {})
+        this.fields = fields.filter(field => {
+          return axisMap?.[field.dataeaseName]?.hidden !== true
+        })
         const attr = JSON.parse(this.chart.customAttr)
         if (this.currentPage.pageSize < attr.size.tablePageSize) {
           this.currentPage.page = 1
