@@ -26,9 +26,7 @@ import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 
-import java.util.List;
-import java.util.Optional;
-import java.util.UUID;
+import java.util.*;
 
 import static io.dataease.constant.StaticResourceConstants.UPLOAD_URL_PREFIX;
 
@@ -101,7 +99,7 @@ public class TemplateManageService implements TemplateManageApi {
                 templateCategoryMapper.insert(templateCategory);
             } else {//模板插入 同名的模板进行覆盖(先删除)
                 // 分类映射删除
-                extTemplateMapper.deleteCategoryMapByTemplate(request.getName(),null);
+                extTemplateMapper.deleteCategoryMapByTemplate(request.getName(), null);
                 // 模板删除
                 QueryWrapper<VisualizationTemplate> wrapper = new QueryWrapper<>();
                 wrapper.eq("name", request.getName());
@@ -139,7 +137,7 @@ public class TemplateManageService implements TemplateManageApi {
                 templateMapper.updateById(template);
                 //更新分类
                 // 分类映射删除
-                extTemplateMapper.deleteCategoryMapByTemplate(null,request.getId());
+                extTemplateMapper.deleteCategoryMapByTemplate(null, request.getId());
                 // 插入分类关系
                 request.getCategories().forEach(categoryId -> {
                     VisualizationTemplateCategoryMap categoryMap = new VisualizationTemplateCategoryMap();
@@ -255,6 +253,17 @@ public class TemplateManageService implements TemplateManageApi {
     }
 
     @Override
+    public List<String> findCategoriesByTemplateIds(TemplateManageRequest request) throws Exception {
+        if (!CollectionUtils.isEmpty(request.getTemplateArray())) {
+            List<String> result = extTemplateMapper.findTemplateArrayCategories(request.getTemplateArray());
+            if(!CollectionUtils.isEmpty(result) &&result.size() == 1 ){
+                return Arrays.stream(result.get(0).split(",")).toList();
+            }
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public List<TemplateManageDTO> find(TemplateManageRequest request) {
         return extTemplateMapper.findTemplateList(request);
     }
@@ -263,11 +272,12 @@ public class TemplateManageService implements TemplateManageApi {
     public List<TemplateManageDTO> findCategories(TemplateManageRequest request) {
         return extTemplateMapper.findCategories(request);
     }
+
     @Override
     public void batchUpdate(TemplateManageBatchRequest request) {
-        request.getTemplateIds().forEach(templateId ->{
+        request.getTemplateIds().forEach(templateId -> {
             // 分类映射删除
-            extTemplateMapper.deleteCategoryMapByTemplate(null,templateId);
+            extTemplateMapper.deleteCategoryMapByTemplate(null, templateId);
             // 插入分类关系
             request.getCategories().forEach(categoryId -> {
                 VisualizationTemplateCategoryMap categoryMap = new VisualizationTemplateCategoryMap();
@@ -281,7 +291,7 @@ public class TemplateManageService implements TemplateManageApi {
 
     @Override
     public void batchDelete(TemplateManageBatchRequest request) {
-        request.getTemplateIds().forEach(templateId ->{
+        request.getTemplateIds().forEach(templateId -> {
             request.getCategories().forEach(categoryId -> {
                 QueryWrapper<VisualizationTemplateCategoryMap> queryWrapper = new QueryWrapper<>();
                 queryWrapper.eq("template_id", templateId);

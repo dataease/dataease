@@ -27,6 +27,8 @@ public class TemplateManageRequest extends VisualizationTemplateVO {
 
     private List<String> categories;
 
+    private List<String> templateArray;
+
     public TemplateManageRequest() {
 
     }
