@@ -32,6 +32,11 @@ public interface TemplateManageApi {
     @Operation(summary = "明细查询")
     VisualizationTemplateVO findOne(@PathVariable String templateId) throws Exception;
 
+    @PostMapping("/findCategoriesByTemplateIds")
+    @Operation(summary = "明细查询")
+    List<String> findCategoriesByTemplateIds(@RequestBody TemplateManageRequest request) throws Exception;
+
+
     @PostMapping("/find")
     @Operation(summary = "查询")
     List<TemplateManageDTO> find(@RequestBody TemplateManageRequest request);

@@ -137,4 +137,18 @@
         from visualization_template_category_map
         where template_id = #{templateId}
     </select>
+
+    <select id="findTemplateArrayCategories" resultType="String">
+        SELECT DISTINCT
+        GROUP_CONCAT( DISTINCT vtcm.category_id ORDER BY vtcm.category_id ) AS selected_subjects
+        FROM
+        visualization_template_category_map vtcm
+        WHERE
+        vtcm.template_id in
+        <foreach collection="templateArray" item="templateId" index="index" open="(" close=")" separator=",">
+            #{templateId}
+        </foreach>
+        GROUP BY
+        vtcm.template_id
+    </select>
 </mapper>

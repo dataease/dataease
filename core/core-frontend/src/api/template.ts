@@ -75,3 +75,10 @@ export function batchUpdate(data) {
     data: data
   })
 }
+
+export function findCategoriesByTemplateIds(data) {
+  return request.post({
+    url: '/templateManage/findCategoriesByTemplateIds',
+    data: data
+  })
+}

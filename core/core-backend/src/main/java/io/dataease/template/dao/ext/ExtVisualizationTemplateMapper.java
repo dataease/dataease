@@ -26,5 +26,6 @@ public interface ExtVisualizationTemplateMapper{
     Long checkCategoryTemplateName(@Param("templateName") String templateName,@Param("categories") List<String> categories);
 
     List<String> findTemplateCategories(@Param("templateId") String templateId);
+    List<String> findTemplateArrayCategories(@Param("templateArray") List<String> templateArray);
 
 }
