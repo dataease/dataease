@@ -236,6 +236,74 @@
         </el-col>
       </el-row>
 
+      <template v-if="this.curComponent.component === 'de-select'">
+        <el-row
+          style="height: 40px;overflow: hidden;"
+        >
+        <el-col
+            :span="3"
+            style="padding-left: 10px;padding-top: 8px"
+          >
+          {{ $t('deshowdate.open_mode') }}
+        </el-col>
+        <el-col
+          :span="20"
+          style="padding-left: 10px;padding-top: 8px"
+          >
+          <el-radio-group
+            v-model="curComponent.style.showMode"
+            size="mini"
+          >
+            <el-radio label="select">{{ $t('下拉展示') }}</el-radio>
+            <el-radio label="radio">{{ $t('平铺展示') }}</el-radio>
+          </el-radio-group>
+          </el-col>
+        </el-row>
+        <el-row
+          style="height: 40px;overflow: hidden;"
+        >
+        <el-col
+            :span="3"
+            style="padding-left: 10px;padding-top: 8px"
+          >
+          {{ $t('展示形式') }}
+        </el-col>
+        <el-col
+            :span="20"
+            style="padding-left: 10px;padding-top: 8px"
+          >
+          <el-radio-group
+            v-model="curComponent.style.showStyle"
+            size="mini"
+          >
+            <el-radio label="single">{{ $t('单选框') }}</el-radio>
+            <el-radio label="tab">{{ $t('Tab切换') }}</el-radio>
+          </el-radio-group>
+        </el-col>
+        </el-row>
+        <el-row
+          style="height: 40px;overflow: hidden;"
+        >
+        <el-col
+            :span="3"
+            style="padding-left: 10px;padding-top: 8px"
+          >
+          {{$t('展示选项数')}}
+        </el-col>
+        <el-col
+            :span="8"
+            style="padding-left: 10px;padding-top: 8px"
+          >
+          <el-input-number
+                v-model="curComponent.style.showNum"
+                :min="1"
+                :max="10"
+                controls-position="right"
+                size="small"
+              />
+          </el-col>
+        </el-row>
+      </template>
     </el-row>
     <el-row class="root-class">
       <el-col :span="24">
@@ -327,7 +395,13 @@ export default {
         this.fileList.push({ url: imgUrlTrans(this.curComponent.commonBackground.outerImage) })
       }
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground ? this.curComponent.commonBackground : COMMON_BACKGROUND_NONE)
-      this.backgroundOrigin.style = deepCopy(this.curComponent.style || { brColor: '', innerBgColor: '', wordColor: ''})
+      this.backgroundOrigin.style = deepCopy(this.curComponent.style || { brColor: '', innerBgColor: '', wordColor: '' })
+      if (!this.backgroundOrigin.style.showStyle) {
+        this.backgroundOrigin.style = {...this.backgroundOrigin.style, ...{ showStyle: 'single', showMode: 'select', showNum: 5 }}
+      }
+      if (!this.curComponent.style.showStyle) {
+        this.curComponent.style = {...this.curComponent.style, ...{ showStyle: 'single', showMode: 'select', showNum: 5 }}
+      }
       this.queryBackground()
     },
     queryBackground() {
@@ -347,7 +421,9 @@ export default {
       this.curComponent.style.brColor = this.backgroundOrigin.style.brColor
       this.curComponent.style.innerBgColor = this.backgroundOrigin.style.innerBgColor
       this.curComponent.style.wordColor = this.backgroundOrigin.style.wordColor
-      console.log('backgroundSetClose');
+      this.curComponent.style.showStyle = this.backgroundOrigin.style.showStyle
+      this.curComponent.style.showMode = this.backgroundOrigin.style.showMode
+      this.curComponent.style.showNum = this.backgroundOrigin.style.showNum
       this.$emit('backgroundSetClose')
     },
     save() {
