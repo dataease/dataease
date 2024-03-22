@@ -125,19 +125,16 @@ export default {
         const tempParam = localStorage.getItem('jumpInfoParam')
         // 添加外部参数
         const attachParamsEncode = this.$route.query.attachParams
-
-        tempParam && loadingCount++
-        attachParamsEncode && loadingCount++
-
         let argsObject = null
-        const args = this.ticketArgs
         try {
-          console.log(args)
           argsObject = JSON.parse(this.ticketArgs)
         } catch (error) {
           console.error(error)
         }
         const hasArgs = argsObject && Object.keys(argsObject)
+        tempParam && loadingCount++
+        (attachParamsEncode || hasArgs) && loadingCount++
+
         if (attachParamsEncode || hasArgs) {
           try {
             let attachParam = null
