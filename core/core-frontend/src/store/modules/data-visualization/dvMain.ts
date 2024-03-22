@@ -977,7 +977,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       return this.canvasViewDataInfo[viewId]
     },
     setLastViewRequestInfo(viewId, viewRequestInfo) {
-      this.lastViewRequestInfo[viewId] = viewRequestInfo.requestInfo
+      this.lastViewRequestInfo[viewId] = viewRequestInfo
     },
     getLastViewRequestInfo(viewId) {
       return this.lastViewRequestInfo[viewId]
