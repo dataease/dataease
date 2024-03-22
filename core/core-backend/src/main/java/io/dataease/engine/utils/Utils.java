@@ -58,7 +58,7 @@ public class Utils {
                         originField = originField.replaceAll("\\[" + ele.getId() + "]",
                                 String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
                     } else {
-                        originField = originField.replaceAll("\\[" + ele.getId() + "]", ele.getOriginName());
+                        originField = originField.replaceAll("\\[" + ele.getId() + "]", "(" + ele.getOriginName() + ")");
                         originField = buildCalcField(originField, tableObj, originFields, i);
                     }
                 }
