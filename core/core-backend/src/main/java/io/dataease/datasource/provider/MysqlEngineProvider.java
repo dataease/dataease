@@ -14,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
 import java.sql.Connection;
+import java.sql.PreparedStatement;
 import java.sql.Statement;
 import java.util.Arrays;
 import java.util.List;
@@ -32,7 +33,9 @@ public class MysqlEngineProvider extends EngineProvider {
         CoreDatasource datasource = new CoreDatasource();
         BeanUtils.copyBean(datasource, engineRequest.getEngine());
         try (Connection connection = getConnection(datasource); Statement stat = getStatement(connection, queryTimeout)) {
-            Boolean result = stat.execute(engineRequest.getQuery());
+            PreparedStatement preparedStatement = connection.prepareStatement(engineRequest.getQuery());
+            preparedStatement.setQueryTimeout(queryTimeout);
+            Boolean result = preparedStatement.execute();
         } catch (Exception e) {
             throw e;
         }
