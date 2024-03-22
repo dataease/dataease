@@ -97,6 +97,9 @@ const setupAll = async (
   const appRes = await import('@/store/modules/app')
   const appStore = appRes.useAppStoreWithOut()
   appStore.setIsDataEaseBi(true)
+  const appearanceRes = await import('@/store/modules/appearance')
+  const appearanceStore = appearanceRes.useAppearanceStoreWithOut()
+  appearanceStore.setAppearance()
   app.mount(dom)
   return app
 }

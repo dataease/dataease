@@ -1,10 +1,6 @@
 <script setup lang="ts">
 import { shallowRef, defineAsyncComponent } from 'vue'
 import { propTypes } from '@/utils/propTypes'
-import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
-
-const appearanceStore = useAppearanceStoreWithOut()
-appearanceStore.setAppearance()
 
 const VisualizationEditor = defineAsyncComponent(
   () => import('@/views/data-visualization/index.vue')
