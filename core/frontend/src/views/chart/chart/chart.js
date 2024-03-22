@@ -209,7 +209,9 @@ export const DEFAULT_LABEL = {
     thousandSeparator: true// 千分符
   },
   reserveDecimalCount: 2,
-  labelContent: ['dimension', 'proportion']
+  labelContent: ['dimension', 'proportion'],
+  showConversion: false,
+  conversionLabel: '转换率'
 }
 export const DEFAULT_TOOLTIP = {
   show: true,

@@ -1985,7 +1985,9 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-h'
+        'position-h',
+        'conversion',
+        'conversionLabel'
       ],
       'tooltip-selector-ant-v': [
         'show',

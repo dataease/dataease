@@ -1557,6 +1557,8 @@ export default {
     reserve_two: '2',
     proportion: 'Proportion',
     label_content: 'Label Content',
+    show_conversion: 'Show Conversion',
+    conversion_label: 'Conversion Label',
     percent: 'Percent',
     table_index_desc: 'Index Header Name',
     table_row_tooltip: 'Row Tooltip',
