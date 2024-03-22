@@ -313,7 +313,7 @@ export default {
       scaleWidth: '100',
       scaleHeight: '100',
       timer: null,
-      componentDataShow: null,
+      componentDataShow: [],
       mainWidth: '100%',
       mainHeight: '100%',
       searchCount: 0,

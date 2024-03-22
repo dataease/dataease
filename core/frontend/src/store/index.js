@@ -938,6 +938,15 @@ const data = {
       if (state.lastValidFilters[id]) {
         delete state.lastValidFilters[id]
       }
+    },
+    setViewInitFilter(state, viewInfo) {
+      if (viewInfo) {
+        state.componentData.forEach(component => {
+          if (viewInfo.id === component.id) {
+            component.filters = viewInfo.filters
+          }
+        })
+      }
     }
   },
   modules: {
