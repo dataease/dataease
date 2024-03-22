@@ -254,19 +254,20 @@
             v-model="curComponent.style.showMode"
             size="mini"
           >
-            <el-radio label="select">{{ $t('下拉展示') }}</el-radio>
-            <el-radio label="radio">{{ $t('平铺展示') }}</el-radio>
+            <el-radio label="select">{{ $t('time.dropdown_display') }}</el-radio>
+            <el-radio label="radio">{{ $t('time.tile_display') }}</el-radio>
           </el-radio-group>
           </el-col>
         </el-row>
         <el-row
+          v-if="curComponent.style.showMode === 'radio'"
           style="height: 40px;overflow: hidden;"
         >
         <el-col
             :span="3"
             style="padding-left: 10px;padding-top: 8px"
           >
-          {{ $t('展示形式') }}
+          {{ $t('time.display_format') }}
         </el-col>
         <el-col
             :span="20"
@@ -276,31 +277,32 @@
             v-model="curComponent.style.showStyle"
             size="mini"
           >
-            <el-radio label="single">{{ $t('单选框') }}</el-radio>
-            <el-radio label="tab">{{ $t('Tab切换') }}</el-radio>
+            <el-radio label="single">{{ $t('time.radio') }}</el-radio>
+            <el-radio label="tab">{{ $t('time.tab_switching') }}</el-radio>
           </el-radio-group>
         </el-col>
         </el-row>
         <el-row
+          v-if="curComponent.style.showMode === 'radio'"
           style="height: 40px;overflow: hidden;"
         >
         <el-col
-            :span="3"
-            style="padding-left: 10px;padding-top: 8px"
-          >
-          {{$t('展示选项数')}}
+          :span="3"
+          style="padding-left: 10px;padding-top: 8px"
+        >
+          {{$t('time.number_of_display_options')}}
         </el-col>
         <el-col
-            :span="8"
-            style="padding-left: 10px;padding-top: 8px"
-          >
+          :span="8"
+          style="padding-left: 10px;padding-top: 8px"
+        >
           <el-input-number
-                v-model="curComponent.style.showNum"
-                :min="1"
-                :max="10"
-                controls-position="right"
-                size="small"
-              />
+            v-model="curComponent.style.showNum"
+            :min="1"
+            :max="10"
+            controls-position="right"
+            size="small"
+          />
           </el-col>
         </el-row>
       </template>
@@ -524,6 +526,7 @@ span {
 
 .main-content {
   border: 1px solid #E6E6E6;
+  padding-bottom: 16px;
 }
 
 .params-title {

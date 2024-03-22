@@ -68,6 +68,12 @@ export default {
     at_the_beginning_of_the_month: 'At the beginning of the month',
     at_the_beginning_of_the_year: 'At the beginning of the year',
     custom: 'custom',
+    dropdown_display: 'Dropdown display',
+    tile_display: 'Tile display',
+    display_format: 'Display format',
+    radio: 'Radio',
+    tab_switching: 'Tab switching',
+    number_of_display_options: 'Number of display options'
   },
   track: {
     upload_limit_format: 'The image format is incorrect. It supports JPG and PNG',

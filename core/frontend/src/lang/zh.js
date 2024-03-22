@@ -72,6 +72,12 @@ export default {
     at_the_beginning_of_the_month: '月初',
     at_the_beginning_of_the_year: '年初',
     custom: '自定义',
+    dropdown_display: '下拉展示',
+    tile_display: '平铺展示',
+    display_format: '展示形式',
+    radio: '单选框',
+    tab_switching: 'Tab切换',
+    number_of_display_options: '展示选项数'
   },
   route: {
     dashboard: '首页',

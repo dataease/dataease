@@ -89,7 +89,7 @@ export default {
         this.init();
       });
     },
-    'element.style': {
+    radioStyle: {
       handler() {
         this.setPlaceholderColor()
       },
@@ -102,6 +102,12 @@ export default {
       this.init();
       this.setPlaceholderColor();
     });
+  },
+  beforeDestroy() {
+    let styleEle = document.querySelector(`#radio-style${this.id}`)
+    if (styleEle) {
+      styleEle. parentElement.removeChild(styleEle)
+    }
   },
   methods: {
     setPlaceholderColor() {
@@ -121,18 +127,13 @@ export default {
       }
       this.options = this.newList.slice(0, this.maxLength);
     },
-    customInputStyle() {},
     init() {
       if (this.defaultFirst && this.list.length > 0) {
         this.selectValue = this.list[0].value;
       }
-      if (!this.list || !this.list.length) {
-        this.customInputStyle();
-        return;
-      }
     },
     visualChange(val) {
-      this.$emit("visual-change", val);
+      this.$emit("change", val);
     },
   },
 };
