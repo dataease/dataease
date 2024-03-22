@@ -9,4 +9,5 @@ public class LinkValidateRequest implements Serializable {
 
     private String link;
     private String user;
+    private String ticket;
 }

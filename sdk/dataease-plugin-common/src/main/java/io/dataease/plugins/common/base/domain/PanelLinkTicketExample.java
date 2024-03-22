@@ -433,6 +433,66 @@ public class PanelLinkTicketExample {
             addCriterion("args not between", value1, value2, "args");
             return (Criteria) this;
         }
+
+        public Criteria andAccessTimeIsNull() {
+            addCriterion("access_time is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeIsNotNull() {
+            addCriterion("access_time is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeEqualTo(Long value) {
+            addCriterion("access_time =", value, "accessTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeNotEqualTo(Long value) {
+            addCriterion("access_time <>", value, "accessTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeGreaterThan(Long value) {
+            addCriterion("access_time >", value, "accessTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeGreaterThanOrEqualTo(Long value) {
+            addCriterion("access_time >=", value, "accessTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeLessThan(Long value) {
+            addCriterion("access_time <", value, "accessTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeLessThanOrEqualTo(Long value) {
+            addCriterion("access_time <=", value, "accessTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeIn(List<Long> values) {
+            addCriterion("access_time in", values, "accessTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeNotIn(List<Long> values) {
+            addCriterion("access_time not in", values, "accessTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeBetween(Long value1, Long value2) {
+            addCriterion("access_time between", value1, value2, "accessTime");
+            return (Criteria) this;
+        }
+
+        public Criteria andAccessTimeNotBetween(Long value1, Long value2) {
+            addCriterion("access_time not between", value1, value2, "accessTime");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

@@ -19,4 +19,6 @@ public class ValidateDto {
     private String resourceId;
     @ApiModelProperty("用户ID")
     private String userId;
+
+    private TicketDto ticket;
 }
