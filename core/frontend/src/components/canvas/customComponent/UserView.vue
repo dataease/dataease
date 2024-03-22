@@ -946,6 +946,7 @@ export default {
         }
         if (this.isFirstLoad) {
           this.element.filters = this.filter.filter?.length ? JSON.parse(JSON.stringify(this.filter.filter)) : []
+          this.$store.commit('setViewInitFilter', this.element)
         }
         method(id, this.panelInfo.id, requestInfo).then(response => {
           try {
