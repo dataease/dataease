@@ -68,6 +68,12 @@ export default {
     at_the_beginning_of_the_month: '月初',
     at_the_beginning_of_the_year: '年初',
     custom: '自定義',
+    dropdown_display: '下拉展示',
+    tile_display: '平鋪展示',
+    display_format: '展示形式',
+    radio: '單選框',
+    tab_switching: 'Tab切換',
+    number_of_display_options: '展示選項數'
   },
   track: {
     upload_limit_format: '圖片格式錯誤，支持JPG，PNG',
