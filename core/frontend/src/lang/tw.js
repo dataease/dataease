@@ -1554,6 +1554,8 @@ export default {
     reserve_two: '兩位',
     proportion: '佔比',
     label_content: '標籤展示',
+    show_conversion: '轉換率展示',
+    conversion_label: '轉換率標籤',
     percent: '占比',
     table_index_desc: '表頭名稱',
     table_row_tooltip: '行頭提示',

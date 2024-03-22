@@ -19,6 +19,17 @@ export function baseFunnelOptionAntV(container, chart, action) {
   const legend = getLegend(chart)
   // data
   const data = chart.data.data
+  // conversion tag
+  const labelAttr = JSON.parse(chart.customAttr).label
+  let conversionTag = labelAttr.showConversion
+  if (conversionTag) {
+    conversionTag = {
+      formatter: datum => {
+        const rate = ((datum[Funnel.CONVERSATION_FIELD][1] / datum[Funnel.CONVERSATION_FIELD][0]) * 100).toFixed(2)
+        return `${labelAttr.conversionLabel ?? ''}${rate}%`;
+      }
+    }
+  }
   // options
   const options = {
     theme: theme,
@@ -29,7 +40,7 @@ export function baseFunnelOptionAntV(container, chart, action) {
     label: label,
     tooltip: tooltip,
     legend: legend,
-    conversionTag: false,
+    conversionTag,
     interactions: [
       {
         type: 'legend-active', cfg: {
