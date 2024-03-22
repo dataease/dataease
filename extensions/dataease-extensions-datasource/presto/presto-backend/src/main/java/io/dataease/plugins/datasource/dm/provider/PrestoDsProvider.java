@@ -116,6 +116,7 @@ public class PrestoDsProvider extends DefaultJdbcProvider {
 
         if(StringUtils.isNotEmpty(surpportVersions) && surpportVersions.split(",").length > 0){
             if(! Arrays.asList(surpportVersions.split(",")).contains(String.valueOf(conn.getMetaData().getDatabaseProductVersion().split("-")[0]))){
+                conn.close();
                 DataEaseException.throwException("当前驱动不支持此版本!");
             };
         }

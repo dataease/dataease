@@ -96,6 +96,7 @@ public class KingbaseDsProvider extends DefaultJdbcProvider {
         }
         if(StringUtils.isNotEmpty(surpportVersions) && surpportVersions.split(",").length > 0){
             if(! Arrays.asList(surpportVersions.split(",")).contains(String.valueOf(conn.getMetaData().getDatabaseMajorVersion()))){
+                conn.close();
                 DataEaseException.throwException("当前驱动不支持此版本!");
             };
         }
