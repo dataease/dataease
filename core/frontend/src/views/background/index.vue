@@ -236,7 +236,7 @@
         </el-col>
       </el-row>
 
-      <template v-if="this.curComponent.component === 'de-select'">
+      <template v-if="this.curComponent.component === 'de-select' && !this.curComponent.options.attrs.multiple">
         <el-row
           style="height: 40px;overflow: hidden;"
         >
