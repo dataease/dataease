@@ -127,19 +127,37 @@
       class="ticket"
     >
       <div class="ticket-model">
-        <el-checkbox v-model="requireTicket" />
+        <el-checkbox
+          v-model="requireTicket"
+          @change="requireTicketChange"
+        />
         <span>ticket必选</span>
+        <el-tooltip
+          class="item"
+          effect="dark"
+          content="选择后原始公共链接无效，必须携带ticket参数"
+          placement="top"
+        >
+          <span class="check-tips"><i class="el-icon-warning" /></span>
+        </el-tooltip>
       </div>
       <div
         class="ticket-table"
       >
         <div class="add-ticket">
-          <span>
-            <i
-              class="el-icon-circle-plus-outline"
-              @click="addRow()"
-            />
-          </span>
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="创建"
+            placement="top"
+          >
+            <span>
+              <i
+                class="el-icon-circle-plus-outline"
+                @click="addRow()"
+              />
+            </span>
+          </el-tooltip>
         </div>
         <el-table
           :data="tableData"
@@ -149,51 +167,83 @@
           <el-table-column
             prop="ticket"
             label="ticket"
-            width="120"
+            width="100"
           >
             <template slot-scope="scope">
               <div class="ticket-row">
                 <span>{{ scope.row.ticket }}</span>
-                <span class="refresh-i">
-                  <i
-                    class="el-icon-refresh"
-                    @click="refreshTicket(scope.row)"
-                  />
-                </span>
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="刷新ticket"
+                  placement="top"
+                >
+                  <span class="refresh-i">
+                    <i
+                      class="el-icon-refresh"
+                      @click="refreshTicket(scope.row)"
+                    />
+                  </span>
+                </el-tooltip>
               </div>
             </template>
           </el-table-column>
 
           <el-table-column
             prop="exp"
-            label="有效期(分钟)"
+            label="有效期"
             width="100"
           >
+            <template slot="header">
+              <span>有效期</span>
+              <el-tooltip
+                class="item"
+                effect="dark"
+                content="单位: 分钟，范围: [0-1440],0代表无期限，自首次使用ticket访问开始"
+                placement="top"
+              >
+                <span class="check-tips"><i class="el-icon-warning" /></span>
+              </el-tooltip>
+            </template>
             <template slot-scope="scope">
               <el-input
                 v-if="scope.row.isEdit"
+                :ref="setExpRef(scope.$index)"
                 v-model="scope.row.exp"
                 type="number"
                 placeholder="请输入内容"
+                min="0"
+                max="1440"
                 size="mini"
+                @change="val => validateExp(val, scope.$index)"
               />
               <span v-else>
                 {{ scope.row.exp }}
               </span>
             </template>
           </el-table-column>
-          <el-table-column
-            prop="args"
-            label="参数"
-          >
+          <el-table-column prop="args">
+            <template slot="header">
+              <span>参数</span>
+              <el-tooltip
+                class="item"
+                effect="dark"
+                content="最大长度200，配合仪表板外部参数使用，必须是json格式，例如: {&quot;arg1&quot;: &quot;value1&quot;}"
+                placement="top"
+              >
+                <span class="check-tips"><i class="el-icon-warning" /></span>
+              </el-tooltip>
+            </template>
             <template slot-scope="scope">
               <el-input
                 v-if="scope.row.isEdit"
+                :ref="setArgRef(scope.$index)"
                 v-model="scope.row.args"
                 type="text"
                 placeholder="请输入内容"
-                maxlength="100"
+                maxlength="200"
                 size="mini"
+                @change="val => validateArgs(val, scope.$index)"
               />
               <span v-else>
                 {{ scope.row.args }}
@@ -206,24 +256,38 @@
           >
             <template slot-scope="scope">
               <div class="ticket-op">
-                <span>
-                  <i
-                    class="el-icon-delete"
-                    @click="deleteTicket(scope.row, scope.$idnex)"
-                  />
-                </span>
-                <span>
-                  <i
-                    v-if="!scope.row.isEdit"
-                    class="el-icon-edit"
-                    @click="editRow(scope.row)"
-                  />
-                  <i
-                    v-else
-                    class="el-icon-circle-check"
-                    @click="saveRow(scope.row)"
-                  />
-                </span>
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="删除"
+                  placement="top"
+                >
+                  <span>
+                    <i
+                      class="el-icon-delete"
+                      @click="deleteTicket(scope.row, scope.$idnex)"
+                    />
+                  </span>
+                </el-tooltip>
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  :content="scope.row.isEdit ? '保存' : '编辑'"
+                  placement="top"
+                >
+                  <span>
+                    <i
+                      v-if="!scope.row.isEdit"
+                      class="el-icon-edit"
+                      @click="editRow(scope.row)"
+                    />
+                    <i
+                      v-else
+                      class="el-icon-circle-check"
+                      @click="saveRow(scope.row, scope.$index)"
+                    />
+                  </span>
+                </el-tooltip>
               </div>
             </template>
           </el-table-column>
@@ -241,6 +305,7 @@ import {
   setPwd,
   switchValid,
   switchEnablePwd,
+  switchEnableTicket,
   shortUrl,
   setOverTime
 } from '@/api/link'
@@ -326,13 +391,70 @@ export default {
     this.currentGenerate()
   },
   methods: {
+    setExpRef(index) {
+      return `expRef-${index}`
+    },
+    setArgRef(index) {
+      return `argRef-${index}`
+    },
+    validateExp(val, index) {
+      const refName = this.setExpRef(index)
+      const e = this.$refs[refName].$refs.input
+      if (val === null || val === '' || typeof val === 'undefined') {
+        this.tableData[index]['exp'] = 0
+        return true
+      }
+      if (val > 1440 || val < 0) {
+        e.style.color = 'red'
+        e.style.borderColor = 'red'
+        return false
+      } else {
+        e.style.color = null
+        e.style.borderColor = null
+        return true
+      }
+    },
+    validateArgs(val, index) {
+      const refName = this.setArgRef(index)
+      const e = this.$refs[refName].$refs.input
+      if (val === null || val === '' || typeof val === 'undefined') {
+        return true
+      }
+      try {
+        JSON.parse(val)
+        e.style.color = null
+        e.style.borderColor = null
+        const child = this.$refs[refName].$el.querySelector('.error-msg')
+        if (child) {
+          this.$refs[refName].$el.removeChild(child)
+        }
+        return true
+      } catch (error) {
+        e.style.color = 'red'
+        e.style.borderColor = 'red'
+        const child = this.$refs[refName].$el.querySelector('.error-msg')
+        if (!child) {
+          const errorDom = document.createElement('div')
+          errorDom.className = 'error-msg'
+          errorDom.innerText = '格式错误'
+          this.$refs[refName].$el.appendChild(errorDom)
+        }
+        return false
+      }
+    },
+    requireTicketChange(val) {
+      const param = {
+        resourceId: this.resourceId,
+        require: val
+      }
+      switchEnableTicket(param)
+    },
     refreshTicket(row) {
       const param = JSON.parse(JSON.stringify(row))
       param['generateNew'] = true
       saveTicketApi(param).then(res => {
         row.ticket = res.data
       })
-      console.log(row.ticket)
     },
     deleteTicket(row, index) {
       const param = { ticket: row.ticket }
@@ -343,8 +465,8 @@ export default {
     editRow(row) {
       row.isEdit = true
     },
-    saveRow(row) {
-      saveTicketApi(row).then(res => {
+    saveRow(row, index) {
+      this.validateExp(row.exp, index) && this.validateArgs(row.args, index) && saveTicketApi(row).then(() => {
         row.isEdit = false
       })
     },
@@ -368,11 +490,13 @@ export default {
           enablePwd,
           pwd,
           uri,
-          overTime
+          overTime,
+          requireTicket
         } = res.data
         this.valid = valid
         this.form.enablePwd = enablePwd
         this.form.uri = uri ? (this.origin + uri) : uri
+        this.requireTicket = requireTicket
         // 返回的密码是共钥加密后的 所以展示需要私钥解密一波
         pwd && (this.form.pwd = pwd)
 
@@ -535,9 +659,13 @@ export default {
     .ticket {
       padding: 0 20px !important;
       .ticket-model {
-        padding: 8px 10px;
+        display: flex;
+        padding: 8px 0px 8px 10px;
         label {
           margin-right: 8px;
+        }
+        .check-tips {
+          margin: 0 16px 0 4px;
         }
       }
       .ticket-table {
@@ -564,6 +692,13 @@ export default {
               cursor: pointer;
             }
           }
+        }
+        ::v-deep .error-msg {
+          color: red;
+          position: fixed;
+          z-index: 9;
+          font-size: 10px;
+          height: 10px;
         }
       }
 
@@ -602,10 +737,9 @@ export default {
     justify-content: space-between;
     align-items: center;
     .refresh-i {
-      margin-left: 5px;
-      height: 16px;
+      height: 17px;
       width: 16px;
-      line-height: 16px;
+      line-height: 13px;
       padding: 2px;
       &:hover {
         background-color: rgba(51, 112, 255, .1);

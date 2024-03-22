@@ -11,6 +11,7 @@ import io.dataease.commons.utils.ServletUtils;
 import io.dataease.controller.request.panel.link.*;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.link.GenerateDto;
+import io.dataease.dto.panel.link.TicketDto;
 import io.dataease.ext.ExtPanelGroupMapper;
 import io.dataease.ext.ExtPanelLinkMapper;
 import io.dataease.plugins.common.base.domain.*;
@@ -128,13 +129,13 @@ public class PanelLinkService {
         }
     }
 
-    public String getMappingUuid(PanelLink link) {
+    public PanelLinkMapping getMapping(PanelLink link) {
         String resourceId = link.getResourceId();
         Long userId = link.getUserId();
         PanelLinkMappingExample example = new PanelLinkMappingExample();
         example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(userId);
         List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
-        if (CollectionUtils.isNotEmpty(mappings)) return mappings.get(0).getUuid();
+        if (CollectionUtils.isNotEmpty(mappings)) return mappings.get(0);
         return null;
     }
 
@@ -291,8 +292,12 @@ public class PanelLinkService {
                 PanelLinkTicketExample example = new PanelLinkTicketExample();
                 example.createCriteria().andTicketEqualTo(ticket);
                 if (creator.isGenerateNew()) {
+                    ticketEntity.setAccessTime(null);
                     ticketEntity.setTicket(CodingUtil.shortUuid());
                 }
+                ticketEntity.setArgs(creator.getArgs());
+                ticketEntity.setExp(creator.getExp());
+                ticketEntity.setUuid(creator.getUuid());
                 panelLinkTicketMapper.updateByExample(ticketEntity, example);
                 return ticketEntity.getTicket();
             }
@@ -317,7 +322,15 @@ public class PanelLinkService {
         panelLinkTicketMapper.deleteByExample(example);
     }
 
-
+    public void switchRequire(TicketSwitchRequest request) {
+        String resourceId = request.getResourceId();
+        Boolean require = request.getRequire();
+        PanelLinkMappingExample example = new PanelLinkMappingExample();
+        example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(AuthUtils.getUser().getUserId());
+        PanelLinkMapping mapping = new PanelLinkMapping();
+        mapping.setRequireTicket(require);
+        panelLinkMappingMapper.updateByExampleSelective(mapping, example);
+    }
 
     public PanelLinkTicket getByTicket(String ticket) {
         PanelLinkTicketExample example = new PanelLinkTicketExample();
@@ -353,5 +366,38 @@ public class PanelLinkService {
         Long userId = mapping.getUserId();
         PanelLink one = findOne(resourceId, userId);
         return convertDto(one, uuid, mapping.getRequireTicket()).getUri();
+    }
+
+    public TicketDto validateTicket(String ticket, PanelLinkMapping mapping) {
+        String uuid = mapping.getUuid();
+        TicketDto ticketDto = new TicketDto();
+        if (StringUtils.isBlank(ticket)) {
+            ticketDto.setTicketValid(!mapping.getRequireTicket());
+            return ticketDto;
+        }
+        PanelLinkTicketExample example = new PanelLinkTicketExample();
+        example.createCriteria().andTicketEqualTo(ticket).andUuidEqualTo(uuid);
+        List<PanelLinkTicket> tickets = panelLinkTicketMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(tickets)) {
+            ticketDto.setTicketValid(false);
+            return ticketDto;
+        }
+        PanelLinkTicket linkTicket = tickets.get(0);
+        ticketDto.setTicketValid(true);
+        ticketDto.setArgs(linkTicket.getArgs());
+        Long accessTime = linkTicket.getAccessTime();
+        long now = System.currentTimeMillis();
+        if (ObjectUtils.isEmpty(accessTime)) {
+            accessTime = now;
+            ticketDto.setTicketExp(false);
+            linkTicket.setAccessTime(accessTime);
+            panelLinkTicketMapper.updateByPrimaryKey(linkTicket);
+            return ticketDto;
+        }
+        Long exp = linkTicket.getExp();
+        long expTime = exp * 60L * 1000L;
+        long time = now - accessTime;
+        ticketDto.setTicketExp(time > expTime);
+        return ticketDto;
     }
 }

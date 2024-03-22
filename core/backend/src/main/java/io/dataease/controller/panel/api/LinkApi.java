@@ -84,4 +84,8 @@ public interface LinkApi {
     @ApiOperation("删除ticket")
     @PostMapping("/delTicket")
     void deleteTicket(@RequestBody TicketDelRequest request);
+
+    @ApiOperation("切换是否必填ticket")
+    @PostMapping("/enableTicket")
+    void switchRequire(@RequestBody TicketSwitchRequest request);
 }
