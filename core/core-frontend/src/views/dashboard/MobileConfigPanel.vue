@@ -15,7 +15,7 @@ import mobileHeader from '@/assets/img/mobile-header.png'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
 const mobileLoading = ref(true)
-const mobileStyle = ref({})
+const mobileStyle = ref(null)
 const emits = defineEmits(['pcMode'])
 const snapshotStore = snapshotStoreWithOut()
 
@@ -142,7 +142,7 @@ const setMobileStyle = debounce(() => {
     transform: `scale(${scale}) translateY(-50%)`,
     transformOrigin: '0 0'
   }
-}, 500)
+}, 100)
 onMounted(() => {
   window.addEventListener('message', hanedleMessage)
   window.addEventListener('resize', setMobileStyle)
@@ -212,7 +212,7 @@ const save = () => {
         <el-button type="primary" @click="save">保存</el-button>
       </div>
     </div>
-    <div class="mobile-canvas" :style="mobileStyle">
+    <div class="mobile-canvas" :style="mobileStyle" v-if="mobileStyle">
       <div class="mobile-header">
         <img :src="mobileHeader" alt="" srcset="" />
       </div>
@@ -396,14 +396,14 @@ const save = () => {
       --ed-collapse-content-font-size: 12px;
     }
 
-    :deep(.ed-tabs) {
+    & > :deep(.ed-tabs) {
       --ed-tabs-header-height: 36px;
       border-top: 1px solid #1f232926;
       position: sticky;
       top: 38px;
       left: 0;
       background: #fff;
-      z-index: 21;
+      z-index: 25;
       .ed-tabs__header {
         padding-left: 8px;
         &::before {
@@ -420,6 +420,9 @@ const save = () => {
 
     :deep(.ed-tabs__item) {
       font-size: 12px;
+    }
+
+    :deep(.ed-tabs__item):not(.is-active) {
       color: #646a73;
     }
 
@@ -432,7 +435,7 @@ const save = () => {
       top: 0;
       left: 0;
       background: #fff;
-      z-index: 21;
+      z-index: 25;
     }
 
     .config-mobile-tab {
@@ -480,7 +483,7 @@ const save = () => {
       right: 12px;
       border: 2px solid #8f959e;
       border-radius: 4px;
-      z-index: 20;
+      z-index: 24;
       cursor: pointer;
       &:hover {
         border-color: var(--ed-color-primary-99, #3370ff99);
