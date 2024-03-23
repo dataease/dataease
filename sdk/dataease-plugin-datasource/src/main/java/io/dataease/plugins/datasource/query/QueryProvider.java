@@ -255,4 +255,12 @@ public abstract class QueryProvider {
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
         return null;
     }
+
+    public String formatLikeValue(String value) {
+        if (StringUtils.isBlank(value)) return null;
+        if (StringUtils.equals("%", value)) {
+            return "'%\\\\" + value + "%'";
+        }
+        return "'%" + value + "%'";
+    }
 }

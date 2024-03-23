@@ -1386,7 +1386,7 @@ public class RedshiftQueryProvider extends QueryProvider {
                 }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 String keyword = value.get(0).toUpperCase();
-                whereValue = "'%" + keyword + "%'";
+                whereValue = formatLikeValue(keyword);
                 whereName = "upper(" + whereName + ")";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                 if (request.getDatasetTableField().getDeType() == 1) {
