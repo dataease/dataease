@@ -291,10 +291,6 @@ const moveActive = computed(() => {
   return tabMoveInActiveId.value && tabMoveInActiveId.value === element.value.id
 })
 
-const dropdownShow = computed(() => {
-  return isEdit.value
-})
-
 const headClass = computed(() => {
   if (tabsAreaScroll.value) {
     return 'tab-head-left'

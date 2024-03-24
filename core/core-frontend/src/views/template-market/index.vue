@@ -169,7 +169,6 @@ import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
 import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
-import { deepCopy } from '@/utils/utils'
 import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const { t } = useI18n()
@@ -322,21 +321,21 @@ const optInit = params => {
 }
 watch(
   () => state.searchText,
-  value => {
+  () => {
     initTemplateShow()
   }
 )
 
 watch(
   () => state.templateType,
-  value => {
+  () => {
     initTemplateShow()
   }
 )
 
 watch(
   () => state.templateSourceType,
-  value => {
+  () => {
     state.treeShow = false
     initTemplateShow()
     nextTick(() => {
@@ -379,12 +378,6 @@ const initStyle = () => {
     // 将横线元素插入到第一个选项后面
     tree.firstElementChild.appendChild(line)
   })
-}
-const normalizer = node => {
-  // 去掉children=null的属性
-  if (node.children === null || node.children === 'null') {
-    delete node.children
-  }
 }
 
 const preOne = () => {
@@ -443,9 +436,7 @@ const apply = () => {
       state.loading = false
     })
 }
-const handleClick = item => {
-  // do handleClick
-}
+
 const initTemplateShow = () => {
   let tempHasResult = false
   state.currentMarketTemplateShowList.forEach(template => {
@@ -502,7 +493,7 @@ onMounted(() => {
   const templateMainDom = document.getElementById('template-show-area')
   // 监听div变动事件
   if (templateMainDom) {
-    erd.listenTo(templateMainDom, element => {
+    erd.listenTo(templateMainDom, () => {
       nextTick(() => {
         const offsetWidth = templateMainDom.offsetWidth - 26
         const curSeparator = Math.trunc(offsetWidth / state.templateMiniWidth)

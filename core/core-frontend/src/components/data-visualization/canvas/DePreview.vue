@@ -70,8 +70,7 @@ const {
   showPosition,
   previewActive,
   downloadStatus,
-  outerScale,
-  userId
+  outerScale
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)

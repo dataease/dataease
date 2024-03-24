@@ -62,7 +62,6 @@ const handleLoad = () => {
 const componentDataNotInMobile = computed(() => {
   return componentData.value.filter(ele => !ele.inMobile)
 })
-const openMobile = ref(false)
 
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {

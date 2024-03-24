@@ -124,14 +124,14 @@ const state = reactive({
 
 watch(
   () => state.marketActiveTab,
-  value => {
+  () => {
     initTemplateShow()
   }
 )
 
 watch(
   () => state.searchText,
-  value => {
+  () => {
     initTemplateShow()
   }
 )
@@ -174,23 +174,8 @@ const initMarketTemplate = async () => {
     })
 }
 
-const normalizer = node => {
-  // 去掉children=null的属性
-  if (node.children === null || node.children === 'null') {
-    delete node.children
-  }
-}
-
 const templateApply = template => {
   emits('templateApply', template)
-}
-
-const closeDialog = () => {
-  emits('closeDialog')
-}
-
-const handleClick = item => {
-  //handleClick
 }
 
 const initTemplateShow = () => {

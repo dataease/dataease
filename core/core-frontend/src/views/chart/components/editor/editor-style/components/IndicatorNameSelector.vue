@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, computed, onMounted, reactive, toRefs, watch, nextTick, ref } from 'vue'
+import { PropType, computed, onMounted, reactive, watch, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import {
   COLOR_PANEL,
@@ -8,14 +8,10 @@ import {
   DEFAULT_INDICATOR_NAME_STYLE,
   DEFAULT_BASIC_STYLE
 } from '@/views/chart/components/editor/util/chart'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
-import { ElButton, ElIcon } from 'element-plus-secondary'
+import { ElIcon } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
-const dvMainStore = dvMainStoreWithOut()
-const { batchOptStatus } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 
@@ -45,8 +41,6 @@ const state = reactive({
   indicatorNameForm: JSON.parse(JSON.stringify(DEFAULT_INDICATOR_NAME_STYLE)),
   basicStyleForm: {} as ChartBasicStyle
 })
-
-const { chart } = toRefs(props)
 
 const fontSizeList = computed(() => {
   const arr = []

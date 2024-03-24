@@ -1,4 +1,4 @@
-import { sin, cos, toPercent } from '@/utils/translate'
+import { sin, cos } from '@/utils/translate'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'

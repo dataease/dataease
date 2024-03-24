@@ -68,7 +68,7 @@ const apply = () => {
   emits('templateApply', props.template)
 }
 
-const templateInnerPreview = e => {
+const templateInnerPreview = () => {
   emits('templatePreview', props.template.id)
 }
 </script>

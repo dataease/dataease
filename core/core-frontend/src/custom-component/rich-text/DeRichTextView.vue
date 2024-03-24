@@ -96,7 +96,7 @@ const props = defineProps({
   }
 })
 
-const { scale, element, editMode, active, disabled, showPosition } = toRefs(props)
+const { element, editMode, active, disabled, showPosition } = toRefs(props)
 
 const state = reactive({
   data: null,

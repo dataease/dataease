@@ -157,7 +157,6 @@ const state = reactive({
   collisionGap: 10 // 碰撞深度有效区域,
 })
 
-const minGap = 15
 const contentDisplay = ref(true)
 
 const shapeLock = computed(() => {
@@ -404,7 +403,7 @@ const areaDataPush = component => {
     areaData.value.components.push(component)
   }
 }
-const handleDbClick = e => {
+const handleDbClick = () => {
   if (element.value.canvasId !== 'canvas-main') {
     dvMainStore.setCurComponent({ component: element.value, index: index.value })
   }
@@ -674,8 +673,6 @@ const handleMouseDownOnPoint = (point, e) => {
       const widthOffset = style.width - defaultStyle.value.width
       // 保持宽高比例是相对宽度偏移量
       const adaptorWidthOffset = heightOffset * originRadio
-      // 保持宽高比例是相对高度偏移量
-      const adaptorHeightOffset = widthOffset / originRadio
       if (pointCorner.includes(point)) {
         style.height = defaultStyle.value.width / originRadio
       } else if (Math.abs(widthOffset) > Math.abs(adaptorWidthOffset)) {

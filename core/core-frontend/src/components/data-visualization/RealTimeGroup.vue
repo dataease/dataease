@@ -5,13 +5,12 @@ import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
 import { ElIcon, ElRow } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
-import { computed, nextTick, ref, toRefs } from 'vue'
+import { nextTick, ref, toRefs } from 'vue'
 import draggable from 'vuedraggable'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
-import { propTypes } from '@/utils/propTypes'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -20,7 +19,7 @@ const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
 const composeStore = composeStoreWithOut()
 
-const { areaData, isCtrlOrCmdDown, isShiftDown, laterIndex } = storeToRefs(composeStore)
+const { areaData } = storeToRefs(composeStore)
 
 const { curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
 
@@ -36,69 +35,13 @@ const getComponent = index => {
 const transformIndex = index => {
   return componentData.value.length - 1 - index
 }
-const areaDataPush = component => {
-  if (component && !component.isLock && component.isShow && component.canvasId === 'canvas-main') {
-    areaData.value.components.push(component)
-  }
-}
-// shift 选择算法逻辑
-// 1.记录上次点击的laterIndex（初始状态laterIndex=0）;
-// 2.获取当前index curClickIndex;
-// 3.比较laterIndex 和 curClickIndex之间的大小;
-// 4.将[laterIndex,curClickIndex] 或者 [curClickIndex,laterIndex]区域的图层加入areaData.value.components(已包含的不再重复加入);
-const shiftDataPush = curClickIndex => {
-  const areaDataIdArray = areaData.value.components.map(com => com.id)
-  let indexBegin, indexEnd
-  const laterIndexTrans = laterIndex.value === null ? componentData.value.length : laterIndex.value
-  if (laterIndexTrans < curClickIndex) {
-    indexBegin = laterIndexTrans
-    indexEnd = curClickIndex
-  } else {
-    indexBegin = curClickIndex
-    indexEnd = laterIndexTrans
-  }
-  const shiftAreaComponents = componentData.value
-    .slice(indexBegin, indexEnd + 1)
-    .filter(
-      component => !areaDataIdArray.includes(component.id) && !component.isLock && component.isShow
-    )
-  areaData.value.components.push(...shiftAreaComponents)
-  dvMainStore.setCurComponent({ component: null, index: null })
-}
 
-const onClick = (e, index) => {
+const onClick = index => {
   setCurComponent(index)
   //其他情况点击清理选择区域
   areaData.value.components.splice(0, areaData.value.components.length)
 }
 
-const onClickBack = (e, index) => {
-  // 初始化点击是 laterIndex=0
-  if (!curComponent.value) {
-    composeStore.setLaterIndex(null)
-  }
-  // ctrl or command 按下时 鼠标点击为选择需要组合的组件(取消需要组合的组件在ComposeShow组件中)
-  if (isCtrlOrCmdDown.value && !areaData.value.components.includes(componentData.value[index])) {
-    areaDataPush(componentData.value[index])
-    if (curComponent.value && curComponent.value.id !== componentData.value[index].id) {
-      areaDataPush(curComponent.value)
-    }
-    dvMainStore.setCurComponent({ component: null, index: null })
-    e.stopPropagation()
-    composeStore.setLaterIndex(index)
-    return
-  }
-  //shift操作逻辑
-  if (isShiftDown.value) {
-    shiftDataPush(index)
-    return
-  }
-
-  //其他情况点击清理选择区域
-  areaData.value.components.splice(0, areaData.value.components.length)
-  setCurComponent(index)
-  composeStore.setLaterIndex(index)
-}
 const setCurComponent = index => {
   dvMainStore.setCurComponent({ component: componentData.value[index], index })
 }
@@ -237,7 +180,7 @@ const handleContextMenu = e => {
                   (curComponent && curComponent?.id === getComponent(index)?.id) ||
                   areaData.components.includes(getComponent(index))
               }"
-              @click="onClick($event, transformIndex(index))"
+              @click="onClick(transformIndex(index))"
             >
               <el-icon class="component-icon">
                 <Icon :name="getIconName(getComponent(index))"></Icon>
