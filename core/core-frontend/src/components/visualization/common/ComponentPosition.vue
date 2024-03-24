@@ -107,7 +107,6 @@ const onPositionChange = key => {
 
   if (curComponent.value.component === 'Group') {
     //如果当前组件是Group分组 则要进行内部组件深度计算
-    const parentNode = document.querySelector('#editor-canvas-main')
     groupSizeStyleAdaptor(curComponent.value)
   }
 

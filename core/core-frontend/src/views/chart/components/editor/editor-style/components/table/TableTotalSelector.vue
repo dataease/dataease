@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, onMounted, PropType, reactive, watch } from 'vue'
+import { onMounted, PropType, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { DEFAULT_TABLE_TOTAL } from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
@@ -27,16 +27,6 @@ watch(
   { deep: true }
 )
 
-const fontSizeList = computed(() => {
-  const arr = []
-  for (let i = 10; i <= 40; i = i + 2) {
-    arr.push({
-      name: i + '',
-      value: i
-    })
-  }
-  return arr
-})
 const aggregations = [
   { name: t('chart.sum'), value: 'SUM' },
   { name: t('chart.avg'), value: 'AVG' },

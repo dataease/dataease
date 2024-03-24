@@ -97,9 +97,7 @@ const nodeClick = ({ id, name }) => {
   state.activeTemplate = id
   emits('showCurrentTemplate', id, name)
 }
-const add = () => {
-  emits('showTemplateEditDialog', 'new')
-}
+
 const categoryDelete = template => {
   ElMessageBox.confirm('确定删除该分类吗？', {
     tip: '删除后不可恢复，是否继续？',
@@ -117,10 +115,6 @@ const categoryEdit = template => {
 }
 const templateImport = template => {
   emits('templateImport', template.id)
-}
-
-const handlerConfirm = options => {
-  // do handlerConfirm
 }
 
 defineExpose({

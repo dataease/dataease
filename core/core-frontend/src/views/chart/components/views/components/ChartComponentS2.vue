@@ -10,8 +10,7 @@ import {
   shallowRef,
   ShallowRef,
   toRaw,
-  toRefs,
-  watch
+  toRefs
 } from 'vue'
 import { getData } from '@/api/chart'
 import chartViewManager from '@/views/chart/components/js/panel'

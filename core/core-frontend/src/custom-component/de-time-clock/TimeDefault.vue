@@ -5,7 +5,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, getCurrentInstance, onMounted, onUnmounted, reactive, toRefs } from 'vue'
+import { onMounted, onUnmounted, reactive, toRefs } from 'vue'
 
 const props = defineProps({
   element: {

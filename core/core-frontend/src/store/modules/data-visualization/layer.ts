@@ -1,7 +1,7 @@
 import { defineStore, storeToRefs } from 'pinia'
 import { store } from '../../index'
 import { dvMainStoreWithOut } from './dvMain'
-import { _$, swap } from '@/utils/utils'
+import { swap } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { getCurInfo } from '@/store/modules/data-visualization/common'
 

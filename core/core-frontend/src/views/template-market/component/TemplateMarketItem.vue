@@ -7,10 +7,10 @@
       </el-row>
     </el-row>
     <el-row class="template-button">
-      <el-button size="mini" style="width: 141px" @click="templateInnerPreview">{{
+      <el-button size="small" style="width: 141px" @click="templateInnerPreview">{{
         t('visualization.preview')
       }}</el-button>
-      <el-button size="mini" style="width: 141px" type="primary" @click="apply">{{
+      <el-button size="small" style="width: 141px" type="primary" @click="apply">{{
         t('visualization.apply')
       }}</el-button>
     </el-row>
@@ -61,7 +61,7 @@ const apply = () => {
   emits('templateApply', props.template)
 }
 
-const templateInnerPreview = e => {
+const templateInnerPreview = () => {
   emits('templatePreview', props.template.id)
 }
 </script>

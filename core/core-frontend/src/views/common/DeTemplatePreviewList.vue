@@ -5,7 +5,7 @@
         <el-input
           v-model="state.templateFilterText"
           :placeholder="t('visualization.filter_keywords')"
-          size="mini"
+          size="small"
           clearable
           prefix-icon="el-icon-search"
         />
@@ -50,7 +50,7 @@ import { reactive } from 'vue'
 const { t } = useI18n()
 const emits = defineEmits(['showCurrentTemplateInfo'])
 
-const props = defineProps({
+defineProps({
   curCanvasType: {
     type: String,
     required: true
@@ -74,7 +74,7 @@ const filterNode = (value, data) => {
   return data.label.indexOf(value) !== -1
 }
 
-const nodeClick = (data, node) => {
+const nodeClick = data => {
   if (data.nodeType === 'template') {
     findOne(data.id).then(res => {
       emits('showCurrentTemplateInfo', res.data)
