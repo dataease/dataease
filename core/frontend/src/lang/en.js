@@ -1470,7 +1470,7 @@ export default {
     line_type_dotted: 'Dotted',
     value_can_not_empty: 'Value can not be empty',
     value_error: 'Value illegal',
-    threshold: 'Threshold',
+    threshold: 'Conditional styles',
     threshold_range: 'Range',
     gauge_threshold_format_error: 'Format Error',
     total_cfg: 'Total Config',
@@ -1660,7 +1660,8 @@ export default {
     regression_pow: 'Power law',
     regression_loess: 'LOESS',
     regression_algo: 'Algorithm',
-    trend_line: 'Trend Line'
+    trend_line: 'Trend Line',
+    field_enum: 'Enumeration values'
   },
   dataset: {
     scope_edit: 'Effective only when editing',

@@ -76,7 +76,7 @@
             <el-select
               v-model="item.term"
               size="mini"
-              @change="changeThresholdField(item)"
+              @change="changeThresholdField(item, fieldItem)"
             >
               <el-option-group
                 v-for="(group,idx) in fieldItem.options"
@@ -99,10 +99,10 @@
               v-model="item.field"
               size="mini"
               style="margin-left: 10px;"
-              @change="changeThresholdField(item)"
+              @change="changeThresholdField(item, fieldItem)"
             >
               <el-option
-                v-for="opt in fieldTypeOptions"
+                v-for="opt in getFieldTypeOptions(fieldItem.field, item)"
                 :key="opt.value"
                 :label="opt.label"
                 :value="opt.value"
@@ -328,7 +328,26 @@
             </span>
 
           </el-col>
-
+          <el-col
+            v-if="item.field === '2'"
+            :span="12"
+            >
+            <el-select
+              v-if="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
+              v-model="item.enumValues"
+              size="mini"
+              style="margin-left: 10px; width: 100%"
+              multiple
+              clearable
+            >
+              <el-option
+                v-for="value in fieldEnumValues[fieldItem.fieldId]"
+                :key="value"
+                :value="value"
+                :label="value"
+              />
+            </el-select>
+          </el-col>
           <el-col
             :span="3"
             style="display: flex;align-items: center;justify-content: center;"
@@ -373,6 +392,7 @@
 
 <script>
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { post } from '@/api/dataset/dataset'
 
 export default {
   name: 'TableThresholdEdit',
@@ -410,7 +430,8 @@ export default {
         max: '1',
         targetField: {},
         minField: {},
-        maxField: {}
+        maxField: {},
+        enumValues: []
       },
       summaryOptions: [{
         id: 'value',
@@ -530,9 +551,16 @@ export default {
       ],
       fieldTypeOptions: [
         { label: this.$t('chart.field_fixed'), value: '0' },
-        { label: this.$t('chart.field_dynamic'), value: '1' }
+        { label: this.$t('chart.field_dynamic'), value: '1' },
+        { label: this.$t('chart.field_enum'), value: '2' }
       ],
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      fieldEnumValues: {}
+    }
+  },
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     }
   },
   mounted() {
@@ -595,11 +623,23 @@ export default {
           this.fields = JSON.parse(this.chart.xaxis)
         }
       } else if (this.chart.type === 'table-pivot') {
+        const totalFields = []
         if (Object.prototype.toString.call(this.chart.yaxis) === '[object Array]') {
-          this.fields = JSON.parse(JSON.stringify(this.chart.yaxis))
+          totalFields.splice(totalFields.length, 0, ...JSON.parse(JSON.stringify(this.chart.yaxis)))
         } else {
-          this.fields = JSON.parse(this.chart.yaxis)
+          totalFields.splice(totalFields.length, 0, ...JSON.parse(this.chart.yaxis))
         }
+        if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
+          totalFields.splice(totalFields.length, 0, ...JSON.parse(JSON.stringify(this.chart.xaxis)))
+        } else {
+          totalFields.splice(totalFields.length, 0, ...JSON.parse(this.chart.xaxis))
+        }
+        if (Object.prototype.toString.call(this.chart.xaxisExt) === '[object Array]') {
+          totalFields.splice(totalFields.length, 0, ...JSON.parse(JSON.stringify(this.chart.xaxisExt)))
+        } else {
+          totalFields.splice(totalFields.length, 0, ...JSON.parse(this.chart.xaxisExt))
+        }
+        this.fields.splice(0, this.fields.length, ...totalFields)
       } else {
         if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
           this.fields = this.fields.concat(JSON.parse(JSON.stringify(this.chart.xaxis)))
@@ -654,23 +694,49 @@ export default {
     changeThreshold() {
       this.$emit('onTableThresholdChange', this.thresholdArr)
     },
-    changeThresholdField(item) {
-      if (item.field === '1') {
-        if (item.term === 'between') {
-          item.minField.curField = this.getQuotaField(item.minField.fieldId)
-          item.maxField.curField = this.getQuotaField(item.maxField.fieldId)
+    changeThresholdField(item, curField) {
+      switch (item.field) {
+        case '0':
           item.targetField = {}
-        } else {
-          item.targetField.curField = this.getQuotaField(item.targetField.fieldId)
           item.minField = {}
           item.maxField = {}
-        }
-      } else {
-        item.targetField = {}
-        item.minField = {}
-        item.maxField = {}
+          break
+        case '1':
+          if (item.term === 'between') {
+            item.minField.curField = this.getQuotaField(item.minField.fieldId)
+            item.maxField.curField = this.getQuotaField(item.maxField.fieldId)
+            item.targetField = {}
+          } else {
+            item.targetField.curField = this.getQuotaField(item.targetField.fieldId)
+            item.minField = {}
+            item.maxField = {}
+          }
+          break
+        case '2':
+          if (!curField?.fieldId) {
+            break
+          }
+          // 时间类型只允许相等判断
+          if (curField.field.deType === 1 && !['eq', 'not_eq'].includes(item.term)) {
+            item.field = '0'
+          }
+          this.getFieldEnumValues(curField.field)
+          break
+        default:
+          break
       }
       this.changeThreshold()
+    },
+    getFieldEnumValues(field) {
+      if (this.fieldEnumValues[field.id]) {
+        return
+      }
+      const fieldType = this.getFieldType(field.id)
+      if (fieldType) {
+        post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + field.id + '/' + fieldType, {}).then(response => {
+          this.$set(this.fieldEnumValues, field.id, response.data)
+        })
+      }
     },
     getQuotaField(id) {
       if (!id) {
@@ -703,11 +769,60 @@ export default {
           }
         })
       }
-      // 清空 term
-      item.conditions && item.conditions.forEach(ele => {
+      // 重置 term 和 field
+      item.conditions?.forEach(ele => {
         ele.term = ''
+        if (item.field.groupType === 'q' && ele.field === '2') {
+          ele.field = '0'
+        }
+        if (item.field.groupType === 'd') {
+          if (this.chart.type === 'table-pivot' && ele.field === '1') {
+            ele.field = '0'
+          }
+          if (ele.field === '2') {
+            ele.enumValues?.splice(0)
+            this.getFieldEnumValues(item.field)
+          }
+        }
       })
       this.changeThreshold()
+    },
+    getFieldType(fieldId) {
+      let index = -1
+      index = JSON.parse(this.chart.xaxis).findIndex(i => i.id === fieldId)
+      if (index !== -1) {
+        return 'xaxis'
+      }
+      index = JSON.parse(this.chart.xaxisExt).findIndex(i => i.id === fieldId)
+      if (index !== -1) {
+        return 'xaxisExt'
+      }
+    },
+    getFieldTypeOptions(field, condition) {
+      if (field.groupType === 'q') {
+        return [
+          { label: this.$t('chart.field_fixed'), value: '0' },
+          { label: this.$t('chart.field_dynamic'), value: '1' }
+        ]
+      }
+      if (field.deType === 1 && !['eq', 'not_eq'].includes(condition.term)) {
+        if (this.chart.type === 'table-pivot') {
+          return [
+            { label: this.$t('chart.field_fixed'), value: '0' }
+          ]
+        }
+        return [
+          { label: this.$t('chart.field_fixed'), value: '0' },
+          { label: this.$t('chart.field_dynamic'), value: '1' }
+        ]
+      }
+      if (this.chart.type === 'table-pivot') {
+        return [
+          { label: this.$t('chart.field_fixed'), value: '0' },
+          { label: this.$t('chart.field_enum'), value: '2' }
+        ]
+      }
+      return this.fieldTypeOptions
     }
   }
 }

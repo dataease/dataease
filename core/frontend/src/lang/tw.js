@@ -1468,7 +1468,7 @@ export default {
     line_type_dotted: '點',
     value_can_not_empty: '值不能為空',
     value_error: '值必須為數值',
-    threshold: '閾值',
+    threshold: '條件樣式',
     threshold_range: '閾值區間',
     gauge_threshold_format_error: '格式錯誤',
     total_cfg: '總計配置',
@@ -1652,7 +1652,8 @@ export default {
     regression_pow: '冪函數',
     regression_loess: '局部加權',
     regression_algo: '算法',
-    trend_line: '趨勢線'
+    trend_line: '趨勢線',
+    field_enum: '枚舉值'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
