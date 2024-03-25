@@ -1468,7 +1468,7 @@ export default {
     line_type_dotted: '点',
     value_can_not_empty: '值不能为空',
     value_error: '值必须为数值',
-    threshold: '阈值',
+    threshold: '条件样式',
     threshold_range: '阈值区间',
     gauge_threshold_format_error: '格式错误',
     total_cfg: '总计配置',
@@ -1652,7 +1652,8 @@ export default {
     regression_pow: '幂函数',
     regression_loess: '局部加权',
     regression_algo: '算法',
-    trend_line: '趋势线'
+    trend_line: '趋势线',
+    field_enum: '枚举值'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
