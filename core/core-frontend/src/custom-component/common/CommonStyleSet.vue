@@ -1,27 +1,35 @@
 <template>
   <el-row class="custom-row">
-    <el-row style="margin-top: 8px">
+    <el-row style="margin: 8px 0px 24px 0px">
       <el-space wrap>
-        <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+        <el-form-item
+          v-if="styleForm.color"
+          class="form-item no-margin-bottom"
+          :class="'form-item-' + themes"
+        >
           <el-color-picker
             :title="t('chart.text_color')"
-            v-model="titleForm.color"
+            v-model="styleForm.color"
             class="color-picker-style"
             is-custom
             :predefine="state.predefineColors"
-            @change="changeTitleStyle('color')"
+            @change="changeStyle"
           />
         </el-form-item>
 
-        <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+        <el-form-item
+          v-if="styleForm.fontSize"
+          class="form-item no-margin-bottom"
+          :class="'form-item-' + themes"
+        >
           <el-select
             style="width: 56px"
             :effect="themes"
             :title="t('chart.text_fontsize')"
-            v-model="titleForm.fontSize"
+            v-model="styleMounted.fontSize"
             :placeholder="'大小'"
             size="small"
-            @change="changeTitleStyle('fontSize')"
+            @change="sizeChange('fontSize')"
           >
             <el-option
               v-for="option in fontSizeList"
@@ -32,13 +40,36 @@
           </el-select>
         </el-form-item>
 
-        <el-tooltip effect="dark" placement="top">
+        <el-form-item
+          v-if="styleForm.opacity"
+          class="form-item no-margin-bottom"
+          :class="'form-item-' + themes"
+        >
+          <el-select
+            style="width: 56px"
+            :effect="themes"
+            title="透明度"
+            v-model="styleForm.opacity"
+            placeholder="透明度"
+            size="small"
+            @change="sizeChange"
+          >
+            <el-option
+              v-for="option in opacitySizeList"
+              :key="option"
+              :label="option"
+              :value="option"
+            />
+          </el-select>
+        </el-form-item>
+
+        <el-tooltip v-if="styleForm.fontWeight !== undefined" effect="dark" placement="top">
           <template #content>
             {{ t('chart.bolder') }}
           </template>
           <div
             class="icon-btn"
-            :class="{ dark: themes === 'dark', active: titleForm.isBolder }"
+            :class="{ dark: themes === 'dark', active: styleForm.fontWeight === 'bold' }"
             @click="checkBold"
           >
             <el-icon>
@@ -47,13 +78,13 @@
           </div>
         </el-tooltip>
 
-        <el-tooltip effect="dark" placement="top">
+        <el-tooltip v-if="styleForm.fontStyle !== undefined" effect="dark" placement="top">
           <template #content>
             {{ t('chart.italic') }}
           </template>
           <div
             class="icon-btn"
-            :class="{ dark: themes === 'dark', active: titleForm.isItalic }"
+            :class="{ dark: themes === 'dark', active: styleForm.fontStyle === 'italic' }"
             @click="checkItalic"
           >
             <el-icon>
@@ -64,61 +95,69 @@
 
         <div class="m-divider"></div>
 
-        <el-tooltip effect="dark" placement="top">
-          <template #content>
-            {{ t('chart.text_pos_left') }}
-          </template>
-          <div
-            class="icon-btn"
-            :class="{ dark: themes === 'dark', active: titleForm.hPosition === 'left' }"
-            @click="setPosition('left')"
-          >
-            <el-icon>
-              <Icon name="icon_left-alignment_outlined" />
-            </el-icon>
-          </div>
-        </el-tooltip>
-        <el-tooltip effect="dark" placement="top">
-          <template #content>
-            {{ t('chart.text_pos_center') }}
-          </template>
-          <div
-            class="icon-btn"
-            :class="{ dark: themes === 'dark', active: titleForm.hPosition === 'center' }"
-            @click="setPosition('center')"
-          >
-            <el-icon>
-              <Icon name="icon_center-alignment_outlined" />
-            </el-icon>
-          </div>
-        </el-tooltip>
-        <el-tooltip effect="dark" placement="top">
-          <template #content>
-            {{ t('chart.text_pos_right') }}
-          </template>
-          <div
-            class="icon-btn"
-            :class="{ dark: themes === 'dark', active: titleForm.hPosition === 'right' }"
-            @click="setPosition('right')"
-          >
-            <el-icon>
-              <Icon name="icon_right-alignment_outlined" />
-            </el-icon>
-          </div>
-        </el-tooltip>
+        <template v-if="styleForm.textAlign">
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_left') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'left' }"
+              @click="setPosition('left')"
+            >
+              <el-icon>
+                <Icon name="icon_left-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_center') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'center' }"
+              @click="setPosition('center')"
+            >
+              <el-icon>
+                <Icon name="icon_center-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="top">
+            <template #content>
+              {{ t('chart.text_pos_right') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'right' }"
+              @click="setPosition('right')"
+            >
+              <el-icon>
+                <Icon name="icon_right-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </template>
       </el-space>
     </el-row>
   </el-row>
 </template>
 
 <script lang="ts" setup>
-import { computed, reactive, ref, toRefs } from 'vue'
+import { computed, reactive, ref, toRefs, watch } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { storeToRefs } from 'pinia'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
+const snapshotStore = snapshotStoreWithOut()
+
+const { curComponent, canvasStyleData } = storeToRefs(dvMainStore)
+
 const props = withDefaults(
   defineProps<{
     themes?: EditorTheme
@@ -131,8 +170,18 @@ const props = withDefaults(
 
 const { themes, element } = toRefs(props)
 const emits = defineEmits(['onTextChange'])
+const styleMounted = ref({
+  opacity: 1,
+  fontSize: 22,
+  fontWeight: 'normal',
+  fontStyle: 'normal',
+  textAlign: 'center',
+  color: '#000000'
+})
 
-const titleForm = computed<any>(() => dvMainStore.canvasStyleData.component.chartTitle)
+const opacitySizeList = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+
+const styleForm = computed<any>(() => element.value.style)
 const state = reactive({
   fontSize: [],
   isSetting: false,
@@ -149,24 +198,60 @@ const fontSizeList = computed(() => {
   return arr
 })
 
-const changeTitleStyle = modifyName => {
-  titleForm.value['modifyName'] = modifyName
-  emits('onTextChange', titleForm.value)
+const styleInit = () => {
+  if (curComponent.value) {
+    Object.keys(styleMounted.value).forEach(key => {
+      styleMounted.value[key] = Math.round(
+        (curComponent.value.style[key] * 100) / canvasStyleData.value.scale
+      )
+    })
+  }
 }
 
-function checkBold() {
-  titleForm.value.isBolder = !titleForm.value.isBolder
-  changeTitleStyle('isBolder')
+const sizeChange = key => {
+  curComponent.value.style[key] = Math.round(
+    (styleMounted.value[key] * canvasStyleData.value.scale) / 100
+  )
+  changeStyle()
 }
-function checkItalic() {
-  titleForm.value.isItalic = !titleForm.value.isItalic
-  changeTitleStyle('isItalic')
+
+const changeStyle = () => {
+  snapshotStore.recordSnapshotCache()
+}
+
+const checkBold = () => {
+  if (styleForm.value.fontWeight === 'normal') {
+    styleForm.value.fontWeight = 'bold'
+  } else {
+    styleForm.value.fontWeight = 'normal'
+  }
+  changeStyle()
+}
+
+const checkItalic = () => {
+  if (styleForm.value.fontStyle === 'normal') {
+    styleForm.value.fontStyle = 'italic'
+  } else {
+    styleForm.value.fontStyle = 'normal'
+  }
+  changeStyle()
 }
 
 function setPosition(p: 'left' | 'center' | 'right') {
-  titleForm.value.hPosition = p
-  changeTitleStyle('hPosition')
+  styleForm.value.textAlign = p
+  changeStyle()
 }
+
+watch(
+  () => curComponent.value,
+  () => {
+    styleInit()
+  },
+  {
+    deep: true,
+    immediate: true
+  }
+)
 </script>
 
 <style scoped lang="less">

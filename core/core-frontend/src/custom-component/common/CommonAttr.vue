@@ -8,6 +8,7 @@ import BackgroundOverallCommon from '@/components/visualization/component-backgr
 import { useI18n } from '@/hooks/web/useI18n'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import CommonStyleSet from '@/custom-component/common/CommonStyleSet.vue'
 const snapshotStore = snapshotStoreWithOut()
 
 const { t } = useI18n()
@@ -136,126 +137,13 @@ const stopEvent = e => {
       </el-collapse-item>
       <slot></slot>
       <el-collapse-item
-        v-if="showStyle"
+        v-if="element && element.style"
         :effect="themes"
         title="样式"
         name="style"
         class="common-style-area"
       >
-        <el-form label-position="top">
-          <el-row :gutter="8">
-            <el-col
-              :span="colSpan"
-              v-for="({ key, label, min, max, step }, index) in styleKeys"
-              :key="index"
-            >
-              <el-form-item class="form-item" :class="'form-item-' + themes" :label="label">
-                <el-color-picker
-                  v-if="isIncludesColor(key)"
-                  v-model="element.style[key]"
-                  :trigger-width="colorPickerWidth"
-                  :themes="themes"
-                  size="small"
-                  show-alpha
-                  is-custom
-                  @change="onStyleAttrChange($event, key)"
-                />
-                <el-radio-group
-                  :effect="themes"
-                  style="width: 100%"
-                  class="icon-radio-group"
-                  v-else-if="horizontalPosition.includes(key)"
-                  v-model="element.style[key]"
-                  @change="onStyleAttrChange($event, key)"
-                >
-                  <el-radio :effect="themes" label="left">
-                    <el-tooltip effect="dark" placement="top">
-                      <template #content>
-                        {{ t('chart.text_pos_left') }}
-                      </template>
-                      <div
-                        class="icon-btn"
-                        :class="{
-                          dark: themes === 'dark',
-                          active: element.style[key] === 'left'
-                        }"
-                      >
-                        <el-icon>
-                          <Icon name="filter-h-left" />
-                        </el-icon>
-                      </div>
-                    </el-tooltip>
-                  </el-radio>
-                  <el-radio :effect="themes" label="center">
-                    <el-tooltip effect="dark" placement="top">
-                      <template #content>
-                        {{ t('chart.text_pos_center') }}
-                      </template>
-                      <div
-                        class="icon-btn"
-                        :class="{
-                          dark: themes === 'dark',
-                          active: element.style[key] === 'center'
-                        }"
-                      >
-                        <el-icon>
-                          <Icon name="filter-h-center" />
-                        </el-icon>
-                      </div>
-                    </el-tooltip>
-                  </el-radio>
-                  <el-radio :effect="themes" label="right">
-                    <el-tooltip effect="dark" placement="top">
-                      <template #content>
-                        {{ t('chart.text_pos_right') }}
-                      </template>
-                      <div
-                        class="icon-btn"
-                        :class="{
-                          dark: themes === 'dark',
-                          active: element.style[key] === 'right'
-                        }"
-                      >
-                        <el-icon>
-                          <Icon name="filter-h-right" />
-                        </el-icon>
-                      </div>
-                    </el-tooltip>
-                  </el-radio>
-                </el-radio-group>
-                <el-select
-                  v-else-if="selectKey.includes(key)"
-                  style="width: 100%"
-                  size="small"
-                  :effect="themes"
-                  v-model="element.style[key]"
-                  @change="onStyleAttrChange($event, key)"
-                >
-                  <el-option
-                    v-for="item in optionMap[key]"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value"
-                  ></el-option>
-                </el-select>
-                <el-input-number
-                  @keydown="stopEvent"
-                  @keyup="stopEvent"
-                  v-else
-                  size="middle"
-                  style="width: 100%"
-                  controls-position="right"
-                  :min="min"
-                  :max="max"
-                  :step="step"
-                  :effect="themes"
-                  v-model="element.style[key]"
-                  @change="onStyleAttrChange($event, key)"
-                />
-              </el-form-item>
-            </el-col>
-          </el-row>
-        </el-form>
+        <common-style-set :element="element"></common-style-set>
       </el-collapse-item>
     </el-collapse>
   </div>
