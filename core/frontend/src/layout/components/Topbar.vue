@@ -45,6 +45,12 @@
       class="right-menu"
       style="color: var(--TopTextColor)"
     >
+      <div class="download-export">
+        <svg-icon
+          @click="downloadClick"
+          icon-class="icon_download_outlined"
+        />
+      </div>
       <notification class="right-menu-item hover-effect" />
       <lang-select class="right-menu-item hover-effect" />
       <div
@@ -105,6 +111,7 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <ExportExcel ref="ExportExcelRef"></ExportExcel>
 
     <!--模板市场全屏显示框-->
     <el-dialog
@@ -126,6 +133,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import ExportExcel from '@/views/dataset/exportExcel/index.vue'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
@@ -143,8 +151,8 @@ export default {
     TemplateMarket,
     AppLink,
     Notification,
-    LangSelect
-
+    LangSelect,
+    ExportExcel
   },
   props: {
     showTips: {
@@ -277,6 +285,10 @@ export default {
   methods: {
     beforeunloadHandler() {
       this.beforeUnload_time = new Date().getTime()
+    },
+    downloadClick() {
+      console.log('this.$refs.ExportExcelRef', this.$refs.ExportExcelRef)
+      this.$refs.ExportExcelRef.init()
     },
     unloadHandler(e) {
       this.gap_time = new Date().getTime() - this.beforeUnload_time
@@ -431,6 +443,20 @@ export default {
 
 </script>
 <style lang="scss" scoped>
+.download-export {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  color: #646A73;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+
+  &:hover {
+    background: #1F23291A;
+  }
+}
 .el-dropdown-link {
   cursor: pointer;
   color: #1e212a;
