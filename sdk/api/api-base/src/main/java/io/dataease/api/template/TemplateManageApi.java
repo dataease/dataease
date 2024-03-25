@@ -53,6 +53,10 @@ public interface TemplateManageApi {
     @Operation(summary = "分类名称校验")
     String categoryTemplateNameCheck(@RequestBody TemplateManageRequest request);
 
+    @PostMapping("/checkCategoryTemplateBatchNames")
+    @Operation(summary = "分类名称批量校验")
+    String checkCategoryTemplateBatchNames(@RequestBody TemplateManageRequest request);
+
     @PostMapping("/batchUpdate")
     @Operation(summary = "批量更新")
     void batchUpdate(@RequestBody TemplateManageBatchRequest request);

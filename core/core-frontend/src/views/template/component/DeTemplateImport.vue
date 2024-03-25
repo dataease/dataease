@@ -122,6 +122,7 @@ const state = reactive({
   },
   recover: false,
   templateInfo: {
+    id: null,
     level: '1',
     pid: props.pid,
     categories: [],
@@ -184,17 +185,22 @@ const saveTemplate = () => {
 const editTemplate = () => {
   const nameCheckRequest = {
     pid: state.templateInfo.pid,
+    id: state.templateInfo.id,
     name: state.templateInfo.name,
     categories: state.templateInfo.categories,
     optType: props.optType
   }
   // 全局名称校验
   nameCheck(nameCheckRequest).then(response => {
-    save(state.templateInfo).then(response => {
-      ElMessage.success(t('编辑成功'))
-      emits('refresh', getRefreshPInfo())
-      emits('closeEditTemplateDialog')
-    })
+    if (response.data.indexOf('exist') > -1) {
+      ElMessage.warning('当前名称已在模版管理中存在，请修改')
+    } else {
+      save(state.templateInfo).then(response => {
+        ElMessage.success(t('编辑成功'))
+        emits('refresh', getRefreshPInfo())
+        emits('closeEditTemplateDialog')
+      })
+    }
   })
 }
 
@@ -238,11 +244,15 @@ const importTemplate = () => {
     } else {
       // 全局名称校验
       nameCheck(nameCheckRequest).then(response => {
-        save(state.templateInfo).then(response => {
-          ElMessage.success(t('导入成功'))
-          emits('refresh', getRefreshPInfo())
-          emits('closeEditTemplateDialog')
-        })
+        if (response.data.indexOf('exist') > -1) {
+          ElMessage.warning('当前名称已在模版管理中存在，请修改')
+        } else {
+          save(state.templateInfo).then(response => {
+            ElMessage.success(t('导入成功'))
+            emits('refresh', getRefreshPInfo())
+            emits('closeEditTemplateDialog')
+          })
+        }
       })
     }
   })

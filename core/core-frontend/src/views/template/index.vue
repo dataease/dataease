@@ -199,8 +199,6 @@ import DeTemplateList from '@/views/template/component/DeTemplateList.vue'
 const { t } = useI18n()
 const templateEditFormRef = ref(null)
 const templateListRef = ref(null)
-import NoneTemplate from '@/assets/svg/dv-empty.svg'
-import NoneImage from '@/assets/none.png'
 import DeTemplateImport from '@/views/template/component/DeTemplateImport.vue'
 import DeTemplateItem from '@/views/template/component/DeTemplateItem.vue'
 import DeCategoryChange from '@/views/template/component/DeCategoryChange.vue'
@@ -370,7 +368,7 @@ const handleClick = (tab, event) => {
 
 const importRefresh = params => {
   if (params.optType === 'refresh') {
-    templateListRef.value.nodeClick({ id: params.refreshPid, name: params.refreshPid })
+    templateListRef.value.nodeClick({ id: params.refreshPid, name: params.refreshPName })
   } else {
     showTemplateEditDialog('new', null)
   }

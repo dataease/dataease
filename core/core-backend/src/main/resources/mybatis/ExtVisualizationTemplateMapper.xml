@@ -118,6 +118,27 @@
         </foreach>
     </select>
 
+    <select id="checkCategoryTemplateBatchNames" resultType="Long">
+        SELECT
+        count(1)
+        FROM
+        visualization_template vt
+        LEFT JOIN visualization_template_category_map vtcm ON vt.id = vtcm.template_id
+        WHERE
+        vt.NAME in
+        <foreach collection="templateNames" item="templateName" index="index" open="(" close=")" separator=",">
+            #{templateName}
+        </foreach>
+        AND vtcm.category_id IN
+        <foreach collection="categories" item="categoryId" index="index" open="(" close=")" separator=",">
+            #{categoryId}
+        </foreach>
+        and vt.id not in
+        <foreach collection="templateArray" item="templateId" index="index" open="(" close=")" separator=",">
+            #{templateId}
+        </foreach>
+    </select>
+
     <delete id="deleteCategoryMapByTemplate">
         delete from visualization_template_category_map tcm
         <where>

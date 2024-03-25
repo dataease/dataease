@@ -183,6 +183,16 @@ public class TemplateManageService implements TemplateManageApi {
         }
     }
 
+    @Override
+    public String checkCategoryTemplateBatchNames(TemplateManageRequest request) {
+        Long result = extTemplateMapper.checkCategoryTemplateBatchNames(request.getTemplateNames(),request.getCategories(),request.getTemplateArray());
+        if (result == 0) {
+            return CommonConstants.CHECK_RESULT.NONE;
+        } else {
+            return CommonConstants.CHECK_RESULT.EXIST_ALL;
+        }
+    }
+
     //分类名称检查
     public String categoryNameCheck(String optType, String name, String id) {
         QueryWrapper<VisualizationTemplateCategory> wrapper = new QueryWrapper<>();
