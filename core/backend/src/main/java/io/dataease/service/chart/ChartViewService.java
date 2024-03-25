@@ -731,7 +731,11 @@ public class ChartViewService {
                 }
                 if (chartExtRequest.getPageSize() == null) {
                     String pageSize = (String) mapSize.get("tablePageSize");
-                    chartExtRequest.setPageSize(Math.min(Long.parseLong(pageSize), view.getResultCount().longValue()));
+                    if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+                        chartExtRequest.setPageSize(Math.min(Long.parseLong(pageSize), view.getResultCount().longValue()));
+                    } else {
+                        chartExtRequest.setPageSize(Long.parseLong(pageSize));
+                    }
                 }
             } else {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
@@ -1856,7 +1860,7 @@ public class ChartViewService {
                 }
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
-                calendar.add(Calendar.DAY_OF_YEAR,6);// 加6天用一周最后一天计算周，可避免跨年的问题
+                calendar.add(Calendar.DAY_OF_YEAR, 6);// 加6天用一周最后一天计算周，可避免跨年的问题
                 calendar.add(Calendar.WEEK_OF_YEAR, -1);
                 lastTime = simpleDateFormat.format(calendar.getTime());
             }
