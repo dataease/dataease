@@ -1,6 +1,6 @@
 <template>
   <el-row class="custom-row">
-    <el-row style="margin: 8px 0px 24px">
+    <el-row class="custom-row-inner">
       <el-space wrap>
         <el-form-item
           v-if="styleForm.color"
@@ -357,5 +357,9 @@ watch(
   &.no-margin-bottom {
     margin-bottom: 0 !important;
   }
+}
+
+.custom-row-inner {
+  margin: 8px 0px 24px;
 }
 </style>
