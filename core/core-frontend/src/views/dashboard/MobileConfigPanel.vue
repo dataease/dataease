@@ -113,6 +113,11 @@ const saveCanvasWithCheckFromMobile = () => {
 }
 let canvasDataPreview = []
 const loadCanvasData = () => {
+  if (!dvInfo.value?.id) {
+    handleLoad()
+    mobileLoading.value = false
+    return
+  }
   findById(dvInfo.value.id, 'dashboard')
     .then(res => {
       const canvasInfo = res.data
