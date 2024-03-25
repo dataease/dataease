@@ -482,23 +482,34 @@ defineExpose({
         </template>
       </el-input>
       <el-dropdown trigger="click">
-        <el-icon class="insert-filter filter-icon-span"><Filter /></el-icon>
+        <el-icon class="insert-filter filter-icon-span">
+          <Icon
+            v-show="state.curSortType.includes('asc')"
+            name="dv-sort-asc"
+            class="opt-icon"
+          ></Icon>
+          <Icon
+            v-show="state.curSortType.includes('desc')"
+            name="dv-sort-desc"
+            class="opt-icon"
+          ></Icon>
+        </el-icon>
         <template #dropdown>
-          <el-dropdown-menu style="width: 140px">
+          <el-dropdown-menu style="width: 150px">
             <el-dropdown-item
               class="sort-type-normal"
               :class="{ 'sort-type-checked': state.curSortType === 'time_asc' }"
               @click="sortTypeChange('time_asc')"
             >
-              <span>按照时间升序</span>
-              <el-icon><Check /></el-icon>
+              <span>按创建时间升序</span>
+              <el-icon style="margin-left: 4px"><Check /></el-icon>
             </el-dropdown-item>
             <el-dropdown-item
               class="sort-type-normal"
               :class="{ 'sort-type-checked': state.curSortType === 'time_desc' }"
               @click="sortTypeChange('time_desc')"
             >
-              <span>按照时间降序</span> <el-icon><Check /></el-icon>
+              <span>按创建时间降序</span> <el-icon style="margin-left: 8px"><Check /></el-icon>
             </el-dropdown-item>
             <el-divider style="margin: 12px 0" />
             <el-dropdown-item
