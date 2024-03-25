@@ -149,7 +149,8 @@ const list = [
       width: 300,
       height: 100,
       fontSize: 22,
-      fontWeight: 400,
+      fontWeight: 'normal',
+      fontStyle: 'normal',
       textAlign: 'center',
       color: '#000000'
     },
