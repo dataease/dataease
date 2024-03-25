@@ -2,7 +2,9 @@ package io.dataease.controller.handler;
 
 import io.dataease.controller.ResultHolder;
 import io.dataease.i18n.Translator;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.shiro.authc.AuthenticationException;
 import org.slf4j.LoggerFactory;
 import org.springframework.boot.web.servlet.error.ErrorAttributes;
 import org.springframework.boot.web.servlet.error.ErrorController;
@@ -49,7 +51,7 @@ public class GlobalExceptionHandler implements ErrorController {
         response.setStatus(code);
         String errorMessage = StringUtils.EMPTY;
         if (t != null) {
-            if (Logger.isDebugEnabled()) {
+            if (Logger.isDebugEnabled() && (ObjectUtils.isEmpty(t.getCause()) || !(t.getCause() instanceof AuthenticationException))) {
                 Logger.error("Fail to proceed " + errorAttributeMap.get("path"), t);
             }
             errorMessage = t.getMessage();

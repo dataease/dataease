@@ -92,8 +92,7 @@ public class JWTFilter extends BasicHttpAuthenticationFilter {
 
         if (isLoginAttempt(request, response) || ApiKeyHandler.isApiKeyCall(hRequest)) {
             try {
-                boolean loginSuccess = executeLogin(request, response);
-                return loginSuccess;
+                return executeLogin(request, response);
             } catch (Exception e) {
                 LogUtil.error(e);
                 if (e instanceof AuthenticationException && StringUtils.equals(e.getMessage(), expireMessage)) {
