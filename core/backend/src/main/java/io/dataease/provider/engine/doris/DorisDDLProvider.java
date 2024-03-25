@@ -99,6 +99,10 @@ public class DorisDDLProvider extends DDLProviderImpl {
             }
             switch (datasetTableField.getDeExtractType()) {
                 case 0:
+                    if (datasetTableField.getDataeaseName().equalsIgnoreCase("dataease_uuid")) {
+                        Column_Fields.append("VARCHAR(length)".replace("length", String.valueOf(size))).append(",`");
+                        break;
+                    }
                     if (keys != null && keys.contains(datasetTableField.getDataeaseName())) {
                         Column_Fields.append("VARCHAR(length)".replace("length", String.valueOf(size))).append(",`");
                     } else {
