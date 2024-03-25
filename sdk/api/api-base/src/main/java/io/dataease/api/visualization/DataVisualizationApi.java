@@ -66,7 +66,7 @@ public interface DataVisualizationApi {
 
     @PostMapping("/move")
     @DePermit(value = {"#p0.id+':manage'", "#p0.pid+':manage'"}, busiFlag = "#p0.type")
-    @Operation(summary = "移动可视化资")
+    @Operation(summary = "移动可视化资源")
     void move(@RequestBody DataVisualizationBaseRequest request);
 
     @PostMapping("/nameCheck")
