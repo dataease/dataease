@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, shallowRef, computed, reactive, watch, nextTick } from 'vue'
+import { ref, shallowRef, computed, reactive, watch } from 'vue'
 
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useRequestStoreWithOut } from '@/store/modules/request'
@@ -53,10 +53,6 @@ const expandFold = ref('fold')
 const handleExpandFold = () => {
   expandFold.value = expandFold.value === 'expand' ? 'fold' : 'expand'
 }
-
-const showTemplate = computed(() => {
-  return state.networkStatus && state.hasResult
-})
 
 const createAuth = computed(() => {
   return {

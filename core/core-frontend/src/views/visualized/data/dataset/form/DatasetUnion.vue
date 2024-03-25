@@ -163,14 +163,19 @@ const saveSqlNode = (val: SqlNode, cb) => {
         info: state.visualNode.info,
         tableName,
         type: 'sql'
-      }).then(res => {
-        ;((res as unknown as Field[]) || []).forEach(ele => {
-          ele.checked = true
-        })
-        state.nodeList[0].currentDsFields = cloneDeep(res)
-        cb?.()
-        confirmEditUnion()
       })
+        .then(res => {
+          nodeField.value = res as unknown as Field[]
+          nodeField.value.forEach(ele => {
+            ele.checked = true
+          })
+          state.nodeList[0].currentDsFields = cloneDeep(res)
+          cb?.()
+          confirmEditUnion()
+        })
+        .finally(() => {
+          editUnion.value = true
+        })
       confirm()
     }
     return
@@ -212,6 +217,12 @@ const changeNodeFields = val => {
 }
 
 const closeEditUnion = () => {
+  const [fir] = state.nodeList
+  if (fir.isShadow) {
+    delete fir.isShadow
+    state.nodeList = []
+    emits('addComplete')
+  }
   editUnion.value = false
 }
 let num = +new Date()
@@ -242,6 +253,10 @@ const delUpdateDsFields = (id, arr: Node[]) => {
 
 const confirmEditUnion = () => {
   delUpdateDsFields(currentNode.value.id, state.nodeList)
+  const [fir] = state.nodeList
+  if (fir.isShadow) {
+    delete fir.isShadow
+  }
   closeEditUnion()
   nextTick(() => {
     emits('updateAllfields')
@@ -675,6 +690,7 @@ const drop_handler = ev => {
     state.nodeList.push({
       tableName,
       type,
+      isShadow: true,
       datasourceId,
       id: guid(),
       ...extraData
@@ -688,13 +704,17 @@ const drop_handler = ev => {
       info: currentNode.value.info,
       tableName,
       type
-    }).then(res => {
-      ;((res as unknown as Field[]) || []).forEach(ele => {
-        ele.checked = true
-      })
-      state.nodeList[0].currentDsFields = cloneDeep(res)
-      confirmEditUnion()
     })
+      .then(res => {
+        nodeField.value = res as unknown as Field[]
+        nodeField.value.forEach(ele => {
+          ele.checked = true
+        })
+        state.nodeList[0].currentDsFields = cloneDeep(res)
+      })
+      .finally(() => {
+        editUnion.value = true
+      })
     nextTick(() => {
       emits('addComplete')
     })
@@ -945,7 +965,13 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
       </span>
     </template>
   </el-dialog>
-  <el-drawer v-model="editUnion" custom-class="union-item-drawer" size="600px" direction="rtl">
+  <el-drawer
+    :before-close="closeEditUnion"
+    v-model="editUnion"
+    custom-class="union-item-drawer"
+    size="600px"
+    direction="rtl"
+  >
     <template #header v-if="currentNode">
       <div class="info">
         <span class="name">{{ currentNode.tableName }}</span>

@@ -9,7 +9,7 @@ import {
   syncShapeItemStyle
 } from '@/utils/style'
 import $ from 'jquery'
-import { _$, deepCopy, isPreventDrop } from '@/utils/utils'
+import { _$, isPreventDrop } from '@/utils/utils'
 import ContextMenu from './ContextMenu.vue'
 import MarkLine from './MarkLine.vue'
 import Area from './Area.vue'
@@ -639,7 +639,7 @@ function findPositionX(item) {
   let pb = positionBox.value
   if (width <= 0) return
   // 查找组件最高位置索引 component 规则 y最新为1
-  componentData.value.forEach((component, index) => {
+  componentData.value.forEach(component => {
     const componentYIndex = component.y + component.sizeY - 2
     if (checkPointYIndex < componentYIndex) {
       checkPointYIndex = componentYIndex

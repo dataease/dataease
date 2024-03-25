@@ -3,8 +3,7 @@
 </template>
 
 <script setup lang="ts">
-import { computed, toRefs } from 'vue'
-const props = defineProps({
+defineProps({
   element: {
     type: Object,
     default() {
@@ -14,10 +13,6 @@ const props = defineProps({
     }
   }
 })
-
-const { element } = toRefs(props)
-
-const style = computed(() => element.value.style)
 </script>
 
 <style lang="less" scoped>

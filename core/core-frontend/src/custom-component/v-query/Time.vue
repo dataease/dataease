@@ -163,7 +163,7 @@ const isRange = computed(() => {
 })
 
 const showPopupRight = () => {
-  const [_, end] = selectValue.value || []
+  const end = selectValue.value?.length > 1 ? selectValue.value[1] : null
   if (!!end) {
     const time = new Date(end)
     currentDate.value = [

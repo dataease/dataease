@@ -280,7 +280,7 @@ const batchPreDelete = () => {
       templateIds: batchTemplateIds.value,
       categories: [state.currentTemplateId]
     }
-    batchDelete(params).then(rsp => {
+    batchDelete(params).then(() => {
       ElMessage({
         message: t('commons.delete_success'),
         type: 'success',
@@ -354,16 +354,8 @@ const handleCommand = (key, data) => {
   }
 }
 
-const handlerConfirm = option => {
-  //do handlerConfirm
-}
-
 const templateDeleteConfirm = template => {
   templateDeleteInfo(template.id)
-}
-
-const handleClick = (tab, event) => {
-  getTree()
 }
 
 const importRefresh = params => {
@@ -418,7 +410,7 @@ const templateDeleteInfo = id => {
       autofocus: false,
       showClose: false
     }).then(() => {
-      templateDelete(id, state.currentTemplateId).then(response => {
+      templateDelete(id, state.currentTemplateId).then(() => {
         ElMessage({
           message: t('commons.delete_success'),
           type: 'success',
@@ -461,10 +453,6 @@ const templateEdit = templateInfo => {
   state.templateDialog.templateId = templateInfo.id
 }
 
-const categoryClick = params => {
-  // do
-}
-
 const saveTemplateEdit = templateEditForm => {
   if (templateEditForm.name === '最近使用') {
     ElMessage({
@@ -476,7 +464,7 @@ const saveTemplateEdit = templateEditForm => {
   }
   templateEditFormRef.value.validate(valid => {
     if (valid) {
-      save({ ...templateEditForm }).then(response => {
+      save({ ...templateEditForm }).then(() => {
         ElMessage({
           message: '添加成功',
           type: 'success',
@@ -549,7 +537,7 @@ onMounted(() => {
   const erd = elementResizeDetectorMaker()
   const templateMainDom = document.getElementById('template-box')
   // 监听div变动事件
-  erd.listenTo(templateMainDom, element => {
+  erd.listenTo(templateMainDom, () => {
     nextTick(() => {
       const offsetWidth = templateMainDom.offsetWidth - 24
       const curSeparator = Math.trunc(offsetWidth / state.templateMiniWidth)

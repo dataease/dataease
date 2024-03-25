@@ -107,7 +107,7 @@
 </template>
 
 <script setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { watermarkFind, watermarkSave } from '@/api/watermark'
 import { ElMessage } from 'element-plus-secondary/es'
 import { personInfoApi } from '@/api/user'
@@ -159,7 +159,7 @@ const state = reactive({
   }
 })
 
-const enableChange = val => {
+const enableChange = () => {
   initWatermark()
 }
 
@@ -172,7 +172,7 @@ const cancel = () => {
   const params = {
     settingContent: JSON.stringify(state.watermarkForm)
   }
-  watermarkSave(params).then(rsp => {
+  watermarkSave(params).then(() => {
     //ignore
   })
   initWatermark()
@@ -182,7 +182,7 @@ const save = () => {
   const params = {
     settingContent: JSON.stringify(state.watermarkForm)
   }
-  watermarkSave(params).then(rsp => {
+  watermarkSave(params).then(() => {
     ElMessage.success('保存成功')
   })
 }

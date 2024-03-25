@@ -65,8 +65,8 @@
 </template>
 
 <script lang="ts" setup>
-import { save, nameCheck, find, findOne, categoryTemplateNameCheck } from '@/api/template'
-import { computed, onMounted, reactive, ref } from 'vue'
+import { save, nameCheck, findOne, categoryTemplateNameCheck } from '@/api/template'
+import { computed, reactive, ref } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -145,12 +145,6 @@ const classBackground = computed(() => {
     return {}
   }
 })
-
-const showCurrentTemplate = pid => {
-  find({ pid }).then(response => {
-    state.nameList = response.data
-  })
-}
 
 const cancel = () => {
   emits('closeEditTemplateDialog')
@@ -235,7 +229,7 @@ const importTemplate = () => {
         autofocus: false,
         showClose: false
       }).then(() => {
-        save(state.templateInfo).then(response => {
+        save(state.templateInfo).then(() => {
           ElMessage.success(t('覆盖成功'))
           emits('refresh', getRefreshPInfo())
           emits('closeEditTemplateDialog')
@@ -282,10 +276,6 @@ const goFile = () => {
 const doAddCategory = () => {
   emits('refresh', { optType: 'addCategory' })
 }
-
-onMounted(() => {
-  // showCurrentTemplate(props.pid)
-})
 
 if (props.templateId) {
   findOne(props.templateId).then(rsp => {

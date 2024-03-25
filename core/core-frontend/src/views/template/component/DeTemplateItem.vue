@@ -39,8 +39,6 @@
 <script setup lang="ts">
 import { imgUrlTrans } from '@/utils/imgUtils'
 import { computed, toRefs } from 'vue'
-import { useI18n } from '@/hooks/web/useI18n'
-const { t } = useI18n()
 const emits = defineEmits(['command'])
 
 const props = defineProps({
@@ -55,11 +53,7 @@ const props = defineProps({
   }
 })
 
-const { model, width, batchState } = toRefs(props)
-
-const dvTypeName = computed(() => {
-  return props.model.dvType === 'dashboard' ? '仪表板' : '数据大屏'
-})
+const { model, batchState } = toRefs(props)
 
 const classBackground = computed(() => {
   return {

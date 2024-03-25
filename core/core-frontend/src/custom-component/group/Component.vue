@@ -53,7 +53,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, dvInfo, searchCount, element, scale } = toRefs(props)
+const { propValue, dvInfo, element, scale } = toRefs(props)
 const customCanvasStyle = computed(() => {
   const result = sourceCanvasStyle
   result.scale = canvasStyleData.value.scale

@@ -34,7 +34,7 @@
       <el-row style="margin-top: 5px">
         <el-col :span="4" class="name-area">名称</el-col>
         <el-col :span="20">
-          <el-input v-model="state.dvCreateInfo.name" clearable size="mini" />
+          <el-input v-model="state.dvCreateInfo.name" clearable size="small" />
         </el-col>
       </el-row>
       <el-row v-if="state.inputType === 'new_inner_template'" class="preview">
@@ -52,8 +52,8 @@
         :style="classBackground"
       />
       <el-row class="root-class">
-        <el-button size="mini" @click="cancel()">{{ t('commons.cancel') }} </el-button>
-        <el-button type="primary" size="mini" :disabled="!saveStatus" @click="save()"
+        <el-button size="small" @click="cancel()">{{ t('commons.cancel') }} </el-button>
+        <el-button type="primary" size="small" :disabled="!saveStatus" @click="save()"
           >{{ t('commons.confirm') }}
         </el-button>
       </el-row>
@@ -119,7 +119,7 @@ const classBackground = computed(() => {
 
 watch(
   () => state.inputType,
-  val => {
+  () => {
     createInit()
   }
 )
@@ -211,7 +211,7 @@ const goFile = () => {
 const close = () => {
   state.dialogShow = false
 }
-const optInit = param => {
+const optInit = () => {
   state.dialogShow = true
   createInit()
 }

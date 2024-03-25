@@ -205,21 +205,21 @@ const state = reactive({
 
 watch(
   () => state.templateType,
-  value => {
+  () => {
     initTemplateShow()
   }
 )
 
 watch(
   () => state.searchText,
-  value => {
+  () => {
     initTemplateShow()
   }
 )
 
 watch(
   () => props.previewId,
-  value => {
+  () => {
     state.marketTemplatePreviewShowList.forEach(categoryTemplates => {
       categoryTemplates.contents.forEach(template => {
         if (props.previewId === template.id) {
@@ -232,7 +232,7 @@ watch(
 
 watch(
   () => state.templateSourceType,
-  value => {
+  () => {
     initTemplateShow()
   }
 )
@@ -260,27 +260,8 @@ const initMarketTemplate = () => {
     })
 }
 
-const getGroupTree = () => {
-  // do getGroupTree
-}
-
-const normalizer = node => {
-  // 去掉children=null的属性
-  if (node.children === null || node.children === 'null') {
-    delete node.children
-  }
-}
-
 const templateApply = template => {
   emits('templateApply', template)
-}
-
-const closeDialog = () => {
-  emits('closeDialog')
-}
-
-const handleClick = item => {
-  //handleClick
 }
 
 const initTemplateShow = () => {

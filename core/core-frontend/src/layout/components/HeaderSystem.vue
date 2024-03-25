@@ -94,7 +94,7 @@ const navigate = computed(() => appearanceStore.getNavigate)
 
   .system,
   .de-logo {
-    color: var(--ed-color-black) !important;
+    color: #3371ff !important;
   }
 }
 .header-flex {

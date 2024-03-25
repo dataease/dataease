@@ -39,7 +39,7 @@ const props = defineProps({
   }
 })
 
-const { view, showPosition, scale, terminal } = toRefs(props)
+const { view, scale, terminal } = toRefs(props)
 
 const dvMainStore = dvMainStoreWithOut()
 

@@ -15,7 +15,7 @@ import mobileHeader from '@/assets/img/mobile-header.png'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo } = storeToRefs(dvMainStore)
 const mobileLoading = ref(true)
-const mobileStyle = ref({})
+const mobileStyle = ref(null)
 const emits = defineEmits(['pcMode'])
 const snapshotStore = snapshotStoreWithOut()
 
@@ -62,7 +62,6 @@ const handleLoad = () => {
 const componentDataNotInMobile = computed(() => {
   return componentData.value.filter(ele => !ele.inMobile)
 })
-const openMobile = ref(false)
 
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
@@ -114,6 +113,11 @@ const saveCanvasWithCheckFromMobile = () => {
 }
 let canvasDataPreview = []
 const loadCanvasData = () => {
+  if (!dvInfo.value?.id) {
+    handleLoad()
+    mobileLoading.value = false
+    return
+  }
   findById(dvInfo.value.id, 'dashboard')
     .then(res => {
       const canvasInfo = res.data
@@ -132,16 +136,17 @@ const loadCanvasData = () => {
 const setMobileStyle = debounce(() => {
   const height = window.innerHeight
   if (height > 1032) {
-    mobileStyle.value = {}
+    mobileStyle.value = {
+      transform: 'translateY(-50%)'
+    }
     return
   }
   const scale = height / 1032
   mobileStyle.value = {
-    top: `${60 + scale * 40}px`,
-    transform: `scale(${scale})`,
+    transform: `scale(${scale}) translateY(-50%)`,
     transformOrigin: '0 0'
   }
-}, 500)
+}, 100)
 onMounted(() => {
   window.addEventListener('message', hanedleMessage)
   window.addEventListener('resize', setMobileStyle)
@@ -211,7 +216,7 @@ const save = () => {
         <el-button type="primary" @click="save">保存</el-button>
       </div>
     </div>
-    <div class="mobile-canvas" :style="mobileStyle">
+    <div class="mobile-canvas" :style="mobileStyle" v-if="mobileStyle">
       <div class="mobile-header">
         <img :src="mobileHeader" alt="" srcset="" />
       </div>
@@ -337,7 +342,7 @@ const save = () => {
     overflow: hidden;
     background-size: 100% 100% !important;
     position: absolute;
-    top: 80px;
+    top: calc(50% + 32px);
     left: calc(50% - 419px);
     background-image: url(../../assets/img/mobile-bg-pc.png);
     padding: 0 22px;
@@ -395,14 +400,14 @@ const save = () => {
       --ed-collapse-content-font-size: 12px;
     }
 
-    :deep(.ed-tabs) {
+    & > :deep(.ed-tabs) {
       --ed-tabs-header-height: 36px;
       border-top: 1px solid #1f232926;
       position: sticky;
       top: 38px;
       left: 0;
       background: #fff;
-      z-index: 21;
+      z-index: 25;
       .ed-tabs__header {
         padding-left: 8px;
         &::before {
@@ -419,6 +424,9 @@ const save = () => {
 
     :deep(.ed-tabs__item) {
       font-size: 12px;
+    }
+
+    :deep(.ed-tabs__item):not(.is-active) {
       color: #646a73;
     }
 
@@ -431,7 +439,7 @@ const save = () => {
       top: 0;
       left: 0;
       background: #fff;
-      z-index: 21;
+      z-index: 25;
     }
 
     .config-mobile-tab {
@@ -479,7 +487,7 @@ const save = () => {
       right: 12px;
       border: 2px solid #8f959e;
       border-radius: 4px;
-      z-index: 20;
+      z-index: 24;
       cursor: pointer;
       &:hover {
         border-color: var(--ed-color-primary-99, #3370ff99);

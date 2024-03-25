@@ -103,7 +103,7 @@ onMounted(() => {
   }
 
   .logo {
-    color: var(--ed-color-black) !important;
+    color: #3371ff !important;
   }
 }
 .header-flex {

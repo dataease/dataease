@@ -45,7 +45,7 @@
                       <el-input
                         v-if="curEditDataId === data.paramsInfoId"
                         v-model="data.paramName"
-                        size="mini"
+                        size="small"
                         :placeholder="$t('visualization.input_param_name')"
                         @blur="closeEdit"
                       />
@@ -91,7 +91,7 @@
                           v-model="targetViewInfo.targetViewId"
                           filterable
                           style="width: 100%"
-                          size="mini"
+                          size="small"
                           :placeholder="t('visualization.please_select')"
                           @change="viewInfoOnChange(targetViewInfo)"
                         >
@@ -125,7 +125,7 @@
                           filterable
                           :disabled="fieldIdDisabledCheck(targetViewInfo)"
                           style="width: 100%"
-                          size="mini"
+                          size="small"
                           :placeholder="t('visualization.please_select')"
                         >
                           <el-option
@@ -166,8 +166,8 @@
         </el-row>
       </el-row>
       <el-row class="root-class">
-        <el-button size="mini" @click="cancel()">{{ t('commons.cancel') }} </el-button>
-        <el-button type="primary" size="mini" @click="save()"
+        <el-button size="small" @click="cancel()">{{ t('commons.cancel') }} </el-button>
+        <el-button type="primary" size="small" @click="save()"
           >{{ t('commons.confirm') }}
         </el-button>
       </el-row>
@@ -190,9 +190,8 @@ import HandleMore from '@/components/handle-more/src/HandleMore.vue'
 import { fieldType } from '@/utils/attr'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo, componentData, canvasStyleData } = storeToRefs(dvMainStore)
+const { dvInfo, componentData } = storeToRefs(dvMainStore)
 const outerParamsInfoTree = ref(null)
-const emits = defineEmits(['outerParamsSetVisibleChange'])
 const { t } = useI18n()
 const curEditDataId = ref(null)
 
@@ -294,7 +293,6 @@ const initParams = () => {
       state.outerParamsInfoArray.forEach(outerParamsInfo => {
         state.mapOuterParamsInfoArray[outerParamsInfo.paramsInfoId] = outerParamsInfo
       })
-      const firstNode = state.outerParamsInfoArray[0]
       state.curNodeId = null
       nextTick(() => {
         // outerParamsInfoTree.value.setCurrentKey(firstNode.paramsInfoId)
@@ -317,7 +315,7 @@ const save = () => {
     })
     return
   }
-  updateOuterParamsSet(state.outerParams).then(rsp => {
+  updateOuterParamsSet(state.outerParams).then(() => {
     ElMessage({
       message: t('commons.save_success'),
       type: 'success',
@@ -360,18 +358,6 @@ const getPanelViewList = dvId => {
   })
 }
 
-const panelNodeClick = (data, node) => {
-  state.outerParamsInfo.targetViewInfoList = []
-  getPanelViewList(data.id)
-}
-
-const inputVal = value => {
-  if (!value) {
-    state.outerParamsInfo.targetViewInfoList = []
-    state.viewIdFieldArrayMap = {}
-    state.currentLinkPanelViewArray = []
-  }
-}
 const addOuterParamsField = () => {
   state.outerParamsInfo.targetViewInfoList.push({
     targetViewId: '',
@@ -380,13 +366,6 @@ const addOuterParamsField = () => {
 }
 const deleteOuterParamsField = index => {
   state.outerParamsInfo.targetViewInfoList.splice(index, 1)
-}
-
-const normalizer = node => {
-  // 去掉children=null的属性
-  if (node.children === null || node.children === 'null') {
-    delete node.children
-  }
 }
 
 const viewInfoOnChange = targetViewInfo => {
@@ -589,7 +568,7 @@ defineExpose({
   border-radius: 3px;
 }
 
-v-deep(.ed-popover) {
+:deep(.ed-popover) {
   height: 200px;
   overflow: auto;
 }
@@ -610,11 +589,11 @@ v-deep(.ed-popover) {
   overflow-y: auto;
 }
 
-v-deep(.vue-treeselect__control) {
+:deep(.vue-treeselect__control) {
   height: 28px;
 }
 
-v-deep(.vue-treeselect__single-value) {
+:deep(.vue-treeselect__single-value) {
   color: #606266;
   line-height: 28px !important;
 }
@@ -635,32 +614,32 @@ v-deep(.vue-treeselect__single-value) {
   text-align: center;
 }
 
-v-deep(.vue-treeselect__placeholder) {
+:deep(.vue-treeselect__placeholder) {
   line-height: 28px;
 }
 
-v-deep(.ed-tree--highlight-current .ed-tree-node.is-current > .ed-tree-node__content) {
+:deep(.ed-tree--highlight-current .ed-tree-node.is-current > .ed-tree-node__content) {
   background-color: #8dbbef !important;
 }
 
-.tree-content ::v-deep(.ed-input__inner) {
+.tree-content ::deep(.ed-input__inner) {
   background: transparent;
   border: 0px !important;
 }
 
-.params-class ::v-deep(.ed-dialog__title) {
+.params-class ::deep(.ed-dialog__title) {
   font-size: 14px;
 }
 
-.params-class ::v-deep(.ed-dialog__headerbtn) {
+.params-class ::deep(.ed-dialog__headerbtn) {
   z-index: 2;
 }
 
-.params-class ::v-deep(.ed-dialog__header) {
+.params-class ::deep(.ed-dialog__header) {
   padding: 20px 20px 0;
 }
 
-.params-class ::v-deep(.ed-dialog__body) {
+.params-class ::deep(.ed-dialog__body) {
   padding: 10px 20px 20px;
 }
 </style>

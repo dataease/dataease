@@ -13,7 +13,7 @@
 
 <script setup lang="ts">
 import TemplateMarket from '@/views/template-market/index.vue'
-import { nextTick, onMounted, reactive, ref } from 'vue'
+import { nextTick, reactive, ref } from 'vue'
 const templateMarketCreateRef = ref(null)
 
 const state = reactive({

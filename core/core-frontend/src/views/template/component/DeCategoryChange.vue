@@ -32,7 +32,7 @@
 </template>
 
 <script lang="ts" setup>
-import { onMounted, reactive, ref } from 'vue'
+import { onMounted, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { batchUpdate, findCategoriesByTemplateIds } from '@/api/template'
 import { ElMessage } from 'element-plus-secondary'
@@ -89,7 +89,7 @@ const saveChange = () => {
     ElMessage.warning('请选择分类')
     return false
   }
-  batchUpdate(params).then(rsp => {
+  batchUpdate(params).then(() => {
     ElMessage({
       message: '修改成功',
       type: 'success',
