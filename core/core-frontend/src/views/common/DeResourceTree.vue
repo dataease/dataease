@@ -558,9 +558,7 @@ defineExpose({
             <el-icon class="icon-screen-new color-dataV" style="font-size: 18px" v-else>
               <Icon name="icon_operation-analysis_outlined"></Icon>
             </el-icon>
-            <span :title="node.label" class="label-tooltip"
-              >{{ data.extraFlag }}{{ node.label }}</span
-            >
+            <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
 
             <div
               class="icon-more flex-align-center"

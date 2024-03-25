@@ -360,7 +360,7 @@ const templateDeleteConfirm = template => {
 
 const importRefresh = params => {
   if (params.optType === 'refresh') {
-    templateListRef.value.nodeClick({ id: params.refreshPid, name: params.refreshPid })
+    templateListRef.value.nodeClick({ id: params.refreshPid, name: params.refreshPName })
   } else {
     showTemplateEditDialog('new', null)
   }

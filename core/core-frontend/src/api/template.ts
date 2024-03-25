@@ -62,6 +62,13 @@ export function categoryTemplateNameCheck(data) {
   })
 }
 
+export function checkCategoryTemplateBatchNames(data) {
+  return request.post({
+    url: '/templateManage/categoryTemplateNameCheck',
+    data: data
+  })
+}
+
 export function batchDelete(data) {
   return request.post({
     url: '/templateManage/batchDelete',
