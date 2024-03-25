@@ -81,7 +81,7 @@
           <div class="geo-area">
             <div class="area-label"><span>上级区域</span></div>
             <div class="area-content">
-              <span>{{ selectedData.parentName }}</span>
+              <span>{{ selectedData.parentName || '-' }}</span>
               <span v-if="selectedData.pid" class="area-secondary">{{
                 '(' + selectedData.pid + ')'
               }}</span>
