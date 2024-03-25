@@ -217,7 +217,7 @@ public class CalciteProvider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                sql = String.format("SELECT COLNAME , TYPENAME , REMARKS FROM SYSCAT.COLUMNS WHERE TABSCHEMA = 'DB2INST1' AND TABNAME = 'MJQTEST' ", configuration.getSchema(), datasourceRequest.getTable());
+                sql = String.format("SELECT COLNAME , TYPENAME , REMARKS FROM SYSCAT.COLUMNS WHERE TABSCHEMA = '%s' AND TABNAME = '%s' ", configuration.getSchema(), datasourceRequest.getTable());
                 break;
             case sqlServer:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
