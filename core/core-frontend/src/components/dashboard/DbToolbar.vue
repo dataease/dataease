@@ -197,6 +197,10 @@ const openDataBoardSetting = () => {
 }
 
 const openMobileSetting = () => {
+  if (!dvInfo.value.id) {
+    ElMessage.warning('请先保存当前页面')
+    return
+  }
   useEmitt().emitter.emit('mobileConfig')
 }
 
