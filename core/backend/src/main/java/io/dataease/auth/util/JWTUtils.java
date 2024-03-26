@@ -1,8 +1,8 @@
 package io.dataease.auth.util;
 
 import com.auth0.jwt.JWT;
-import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.JWTCreator.Builder;
+import com.auth0.jwt.JWTVerifier;
 import com.auth0.jwt.algorithms.Algorithm;
 import com.auth0.jwt.interfaces.DecodedJWT;
 import com.auth0.jwt.interfaces.Verification;
@@ -10,7 +10,10 @@ import com.google.gson.Gson;
 import io.dataease.auth.entity.TokenInfo;
 import io.dataease.auth.entity.TokenInfo.TokenInfoBuilder;
 import io.dataease.commons.model.OnlineUserModel;
-import io.dataease.commons.utils.*;
+import io.dataease.commons.utils.CommonBeanFactory;
+import io.dataease.commons.utils.IPUtils;
+import io.dataease.commons.utils.ServletUtils;
+import io.dataease.commons.utils.TokenCacheUtils;
 import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -77,6 +80,13 @@ public class JWTUtils {
         return sign(tokenInfo, secret, true);
     }
 
+    public static Long getExpireTime() {
+        if (ObjectUtils.isEmpty(expireTime)) {
+            expireTime = Objects.requireNonNull(CommonBeanFactory.getBean(Environment.class)).getProperty("dataease.login_timeout", Long.class, 480L);
+        }
+        return expireTime * 60000L;
+    }
+
     private static boolean tokenValid(OnlineUserModel model) {
         String token = model.getToken();
         // 如果已经加入黑名单 则直接返回无效
@@ -84,10 +94,7 @@ public class JWTUtils {
         if (invalid) return false;
 
         Long loginTime = model.getLoginTime();
-        if (ObjectUtils.isEmpty(expireTime)) {
-            expireTime = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Long.class, 480L);
-        }
-        long expireTimeMillis = expireTime * 60000L;
+        long expireTimeMillis = getExpireTime();
         // 如果当前时间减去登录时间小于超时时间则说明token未过期 返回有效状态
         return System.currentTimeMillis() - loginTime < expireTimeMillis;
 
@@ -133,10 +140,7 @@ public class JWTUtils {
                 DataEaseException.throwException("MultiLoginError1");
             }
         }
-        if (ObjectUtils.isEmpty(expireTime)) {
-            expireTime = CommonBeanFactory.getBean(Environment.class).getProperty("dataease.login_timeout", Long.class, 480L);
-        }
-        long expireTimeMillis = expireTime * 60000L;
+        long expireTimeMillis = getExpireTime();
         Date date = new Date(System.currentTimeMillis() + expireTimeMillis);
         Algorithm algorithm = Algorithm.HMAC256(secret);
         Builder builder = JWT.create()
