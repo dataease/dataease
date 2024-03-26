@@ -3923,3 +3923,10 @@ export function handleTableEmptyStrategy(tableData, chart) {
   }
   return newData
 }
+
+export function parseJson(target) {
+  if (Object.prototype.toString.call(target) === '[object String]') {
+    return JSON.parse(target)
+  }
+  return JSON.parse(JSON.stringify(target))
+}
