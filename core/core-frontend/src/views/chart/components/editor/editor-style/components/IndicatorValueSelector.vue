@@ -12,6 +12,10 @@ import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { ElIcon, ElInput } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
+import { storeToRefs } from 'pinia'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
 
 const { t } = useI18n()
 
@@ -53,7 +57,8 @@ const fontSizeList = computed(() => {
   return arr
 })
 
-const changeTitleStyle = prop => {
+const changeLabelTitleStyleStyle = prop => {
+  console.log('changeLabelTitleStyleStyle===' + prop)
   emit('onIndicatorChange', state.indicatorValueForm, prop)
 }
 
@@ -95,7 +100,9 @@ onMounted(() => {
 watch(
   () => props.chart?.customAttr?.indicator,
   () => {
-    init()
+    if (!batchOptStatus.value) {
+      init()
+    }
   },
   { deep: true }
 )
@@ -125,7 +132,7 @@ defineExpose({ getFormData })
           :effect="themes"
           v-model="state.indicatorValueForm.fontFamily"
           :placeholder="t('chart.font_family')"
-          @change="changeTitleStyle('fontFamily')"
+          @change="changeLabelTitleStyleStyle('fontFamily')"
         >
           <el-option
             v-for="option in fontFamily"
@@ -143,7 +150,7 @@ defineExpose({ getFormData })
             v-model="state.indicatorValueForm.color"
             class="color-picker-style"
             :predefine="predefineColors"
-            @change="changeTitleStyle('color')"
+            @change="changeLabelTitleStyleStyle('color')"
             show-alpha
             is-custom
           />
@@ -156,7 +163,7 @@ defineExpose({ getFormData })
               v-model="state.indicatorValueForm.fontSize"
               :placeholder="t('chart.text_fontsize')"
               size="small"
-              @change="changeTitleStyle('fontSize')"
+              @change="changeLabelTitleStyleStyle('fontSize')"
             >
               <el-option
                 v-for="option in fontSizeList"
@@ -173,7 +180,7 @@ defineExpose({ getFormData })
             :effect="themes"
             v-model="state.indicatorValueForm.letterSpace"
             :placeholder="t('chart.quota_letter_space')"
-            @change="changeTitleStyle('letterSpace')"
+            @change="changeLabelTitleStyleStyle('letterSpace')"
           >
             <template #prefix>
               <el-icon>
@@ -196,7 +203,7 @@ defineExpose({ getFormData })
             :effect="themes"
             class="icon-checkbox"
             v-model="state.indicatorValueForm.isBolder"
-            @change="changeTitleStyle('isBolder')"
+            @change="changeLabelTitleStyleStyle('isBolder')"
           >
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
@@ -219,7 +226,7 @@ defineExpose({ getFormData })
             :effect="themes"
             class="icon-checkbox"
             v-model="state.indicatorValueForm.isItalic"
-            @change="changeTitleStyle('isItalic')"
+            @change="changeLabelTitleStyleStyle('isItalic')"
           >
             <el-tooltip :effect="toolTip" placement="top">
               <template #content>
@@ -244,7 +251,7 @@ defineExpose({ getFormData })
             :effect="themes"
             class="icon-radio-group"
             v-model="state.indicatorValueForm.hPosition"
-            @change="changeTitleStyle('hPosition')"
+            @change="changeLabelTitleStyleStyle('hPosition')"
           >
             <el-radio :effect="themes" label="left">
               <el-tooltip :effect="toolTip" placement="top">
@@ -309,7 +316,7 @@ defineExpose({ getFormData })
           :effect="themes"
           class="icon-radio-group"
           v-model="state.indicatorValueForm.vPosition"
-          @change="changeTitleStyle('vPosition')"
+          @change="changeLabelTitleStyleStyle('vPosition')"
         >
           <el-radio label="top">
             <el-tooltip :effect="toolTip" placement="top">
@@ -373,7 +380,7 @@ defineExpose({ getFormData })
           size="small"
           :effect="themes"
           v-model="state.indicatorValueForm.fontShadow"
-          @change="changeTitleStyle('fontShadow')"
+          @change="changeLabelTitleStyleStyle('fontShadow')"
         >
           {{ t('chart.font_shadow') }}
         </el-checkbox>
@@ -386,7 +393,7 @@ defineExpose({ getFormData })
           size="small"
           :effect="themes"
           v-model="state.indicatorValueForm.suffixEnable"
-          @change="changeTitleStyle('suffixEnable')"
+          @change="changeLabelTitleStyleStyle('suffixEnable')"
         >
           {{ t('chart.indicator_suffix') }}
         </el-checkbox>
@@ -399,7 +406,7 @@ defineExpose({ getFormData })
             v-model="state.indicatorValueForm.suffix"
             :placeholder="t('chart.indicator_suffix_placeholder')"
             maxlength="10"
-            @change="changeTitleStyle('suffix')"
+            @change="changeLabelTitleStyleStyle('suffix')"
           />
         </el-form-item>
 
@@ -409,7 +416,7 @@ defineExpose({ getFormData })
             :effect="themes"
             v-model="state.indicatorValueForm.suffixFontFamily"
             :placeholder="t('chart.font_family')"
-            @change="changeTitleStyle('suffixFontFamily')"
+            @change="changeLabelTitleStyleStyle('suffixFontFamily')"
           >
             <el-option
               v-for="option in fontFamily"
@@ -428,7 +435,7 @@ defineExpose({ getFormData })
               v-model="state.indicatorValueForm.suffixColor"
               class="color-picker-style"
               :predefine="predefineColors"
-              @change="changeTitleStyle('suffixColor')"
+              @change="changeLabelTitleStyleStyle('suffixColor')"
               is-custom
               show-alpha
             />
@@ -442,7 +449,7 @@ defineExpose({ getFormData })
                 v-model="state.indicatorValueForm.suffixFontSize"
                 :placeholder="t('chart.text_fontsize')"
                 size="small"
-                @change="changeTitleStyle('suffixFontSize')"
+                @change="changeLabelTitleStyleStyle('suffixFontSize')"
               >
                 <el-option
                   v-for="option in fontSizeList"
@@ -461,7 +468,7 @@ defineExpose({ getFormData })
               :effect="themes"
               v-model="state.indicatorValueForm.suffixLetterSpace"
               :placeholder="t('chart.quota_letter_space')"
-              @change="changeTitleStyle('suffixLetterSpace')"
+              @change="changeLabelTitleStyleStyle('suffixLetterSpace')"
             >
               <template #prefix>
                 <el-icon>
@@ -485,7 +492,7 @@ defineExpose({ getFormData })
               :effect="themes"
               class="icon-checkbox"
               v-model="state.indicatorValueForm.suffixIsBolder"
-              @change="changeTitleStyle('suffixIsBolder')"
+              @change="changeLabelTitleStyleStyle('suffixIsBolder')"
             >
               <el-tooltip :effect="toolTip" placement="top">
                 <template #content>
@@ -512,7 +519,7 @@ defineExpose({ getFormData })
               :effect="themes"
               class="icon-checkbox"
               v-model="state.indicatorValueForm.suffixIsItalic"
-              @change="changeTitleStyle('suffixIsItalic')"
+              @change="changeLabelTitleStyleStyle('suffixIsItalic')"
             >
               <el-tooltip :effect="toolTip" placement="top">
                 <template #content>
@@ -540,7 +547,7 @@ defineExpose({ getFormData })
             size="small"
             :effect="themes"
             v-model="state.indicatorValueForm.suffixFontShadow"
-            @change="changeTitleStyle('suffixFontShadow')"
+            @change="changeLabelTitleStyleStyle('suffixFontShadow')"
           >
             {{ t('chart.font_shadow') }}
           </el-checkbox>

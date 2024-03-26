@@ -80,11 +80,11 @@ const onChangeYAxisForm = (val, prop) => {
 }
 
 const onIndicatorChange = (val, prop) => {
-  batchOptChange('customAttr', 'indicator', val, prop)
+  batchOptChange('customAttr', 'indicator', val.indicatorValue, prop)
 }
 
 const onIndicatorNameChange = (val, prop) => {
-  batchOptChange('customAttr', 'indicatorName', val, prop)
+  batchOptChange('customAttr', 'indicatorName', val.indicatorName, prop)
 }
 
 const onChangeMiscStyleForm = (val, prop) => {
