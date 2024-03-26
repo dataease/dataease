@@ -25,8 +25,7 @@ export function setToken(token) {
 }
 export function setTokenExp(exp) {
   if (exp) {
-    // return Cookies.set(TokenExpKey, exp)
-    return Cookies.set(TokenExpKey, new Date().getTime() + 5000)
+    return Cookies.set(TokenExpKey, exp)
   }
   return null
 }
