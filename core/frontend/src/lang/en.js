@@ -169,6 +169,16 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    component: {
+      input: 'Input',
+      textarea: 'Textarea',
+      select: 'Select',
+      radio: 'Radio',
+      checkbox: 'Checkbox',
+      date: 'Date Picker',
+      dateRange: 'Date Range Picker',
+      add_component_hint: 'Click or drag the component on the left to add a field'
+    },
     consanguinity: 'Consanguinity',
     collapse_navigation: 'Collapse navigation',
     operate_cancelled: 'Operation cancelled',
@@ -578,6 +588,27 @@ export default {
     item: 'item',
     logic_filter: 'Condition Filter',
     enum_filter: 'Enum Filter'
+  },
+  data_fill: {
+    form: {
+      confirm_delete: 'Confirm delete? (The tables created in database will not be deleted)',
+      list: 'Form List',
+      record: 'Fill Record',
+      task_manage: 'Task Manage',
+      form_name: 'Form Name',
+      datasource: 'Datasource',
+      table: 'Table',
+      creator: 'Creator',
+      createTime: 'Create Time'
+    },
+    data: {
+      confirm_delete: 'Confirm delete?'
+    },
+    task: {
+      confirm_enable: 'Confirm enable task?',
+      confirm_disable: 'Confirm disable task?'
+    },
+    on_the_left: 'Please select a form on the left'
   },
   detabs: {
     custom_sort: 'Custom Sort',
@@ -2849,9 +2880,14 @@ export default {
     chart_data_range: 'View data range',
     panel_format: 'Panel format',
     simple_repeat: 'Simple repeat',
+    single_task: 'Single task',
     once_a_day: 'Once a day',
     once_a_week: 'Once a week',
     once_a_month: 'Once a month',
+    hour: 'Hour',
+    day: 'Day',
+    week: 'Week',
+    month: 'Month',
     complex_repeat: 'Complex repeat',
     pixel_tip: 'Please code custom pixel(such as 2560 * 1600) or select',
     task_type: 'Task type',

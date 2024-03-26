@@ -37,6 +37,9 @@ public class DeCleanerAnnotationHandler {
 
 
             switch (type.name()) {
+                case "DATA_FILL":
+                    catchProcess().cleanDataFiling(paramValue);
+                    break;
                 case "DATASOURCE":
                     catchProcess().cleanDataSource(paramValue);
                     break;

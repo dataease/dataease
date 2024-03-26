@@ -94,15 +94,27 @@ public abstract class DefaultJdbcProvider extends Provider {
         return list;
     }
 
-    public Statement getStatement(Connection connection, int queryTimeout) throws Exception{
-        if(connection == null){
+    public Statement getStatement(Connection connection, int queryTimeout) throws Exception {
+        if (connection == null) {
             throw new Exception("Failed to get connection!");
         }
         Statement stat = connection.createStatement();
-       try {
-           stat.setQueryTimeout(queryTimeout);
-       }catch (Exception e){
-       }
+        try {
+            stat.setQueryTimeout(queryTimeout);
+        } catch (Exception e) {
+        }
+        return stat;
+    }
+
+    public PreparedStatement getPreparedStatement(Connection connection, int queryTimeout, String sql) throws Exception {
+        if (connection == null) {
+            throw new Exception("Failed to get connection!");
+        }
+        PreparedStatement stat = connection.prepareStatement(sql);
+        try {
+            stat.setQueryTimeout(queryTimeout);
+        } catch (Exception e) {
+        }
         return stat;
     }
 
@@ -265,6 +277,7 @@ public abstract class DefaultJdbcProvider extends Provider {
 
     @Override
     public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
+        System.out.println("``````````` 进入获取表字段 default");
         List<TableField> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
 
@@ -380,6 +393,7 @@ public abstract class DefaultJdbcProvider extends Provider {
         }
         tableField.setRemarks(remarks);
         String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
+        tableField.setType(resultSet.getInt("DATA_TYPE"));
         tableField.setFieldType(dbType);
         if (dbType.equalsIgnoreCase("LONG")) {
             tableField.setFieldSize(65533);
@@ -412,6 +426,7 @@ public abstract class DefaultJdbcProvider extends Provider {
             field.setFieldName(l);
             field.setRemarks(l);
             field.setFieldType(t);
+            field.setType(metaData.getColumnType(j + 1));
             field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
             if (t.equalsIgnoreCase("LONG")) {
                 field.setFieldSize(65533);
@@ -522,22 +537,22 @@ public abstract class DefaultJdbcProvider extends Provider {
     }
 
     @Override
-    public void checkConfiguration(Datasource datasource)throws Exception{
-        if (StringUtils.isEmpty(datasource.getConfiguration())){
+    public void checkConfiguration(Datasource datasource) throws Exception {
+        if (StringUtils.isEmpty(datasource.getConfiguration())) {
             throw new Exception("Datasource configuration is empty");
         }
         try {
             JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasource.getConfiguration(), JdbcConfiguration.class);
-            if(jdbcConfiguration.getQueryTimeout() < 0){
-                throw new Exception("Querytimeout cannot be less than zero." );
+            if (jdbcConfiguration.getQueryTimeout() < 0) {
+                throw new Exception("Querytimeout cannot be less than zero.");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("Invalid configuration: " + e.getMessage());
         }
     }
 
 
-    public String dsVersion(DatasourceRequest datasourceRequest) throws Exception{
+    public String dsVersion(DatasourceRequest datasourceRequest) throws Exception {
         JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
         try (Connection con = getConnectionFromPool(datasourceRequest)) {
             return String.valueOf(con.getMetaData().getDatabaseMajorVersion());

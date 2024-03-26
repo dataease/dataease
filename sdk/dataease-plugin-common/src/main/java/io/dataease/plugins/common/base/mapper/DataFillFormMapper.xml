@@ -1,0 +1,409 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.plugins.common.base.mapper.DataFillFormMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.plugins.common.base.domain.DataFillForm">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="pid" jdbcType="VARCHAR" property="pid" />
+    <result column="level" jdbcType="INTEGER" property="level" />
+    <result column="node_type" jdbcType="VARCHAR" property="nodeType" />
+    <result column="table_name" jdbcType="VARCHAR" property="tableName" />
+    <result column="datasource" jdbcType="VARCHAR" property="datasource" />
+    <result column="create_index" jdbcType="BIT" property="createIndex" />
+    <result column="create_by" jdbcType="VARCHAR" property="createBy" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
+    <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs">
+    <result column="forms" jdbcType="LONGVARCHAR" property="forms" />
+    <result column="table_indexes" jdbcType="LONGVARCHAR" property="tableIndexes" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, `name`, pid, `level`, node_type, `table_name`, datasource, create_index, create_by, 
+    create_time, update_by, update_time
+  </sql>
+  <sql id="Blob_Column_List">
+    forms, table_indexes
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.DataFillFormExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from data_fill_form
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="io.dataease.plugins.common.base.domain.DataFillFormExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from data_fill_form
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from data_fill_form
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from data_fill_form
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.plugins.common.base.domain.DataFillFormExample">
+    delete from data_fill_form
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs">
+    insert into data_fill_form (id, `name`, pid, 
+      `level`, node_type, `table_name`, 
+      datasource, create_index, create_by, 
+      create_time, update_by, update_time, 
+      forms, table_indexes)
+    values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, 
+      #{level,jdbcType=INTEGER}, #{nodeType,jdbcType=VARCHAR}, #{tableName,jdbcType=VARCHAR}, 
+      #{datasource,jdbcType=VARCHAR}, #{createIndex,jdbcType=BIT}, #{createBy,jdbcType=VARCHAR}, 
+      #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
+      #{forms,jdbcType=LONGVARCHAR}, #{tableIndexes,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs">
+    insert into data_fill_form
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="pid != null">
+        pid,
+      </if>
+      <if test="level != null">
+        `level`,
+      </if>
+      <if test="nodeType != null">
+        node_type,
+      </if>
+      <if test="tableName != null">
+        `table_name`,
+      </if>
+      <if test="datasource != null">
+        datasource,
+      </if>
+      <if test="createIndex != null">
+        create_index,
+      </if>
+      <if test="createBy != null">
+        create_by,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="updateBy != null">
+        update_by,
+      </if>
+      <if test="updateTime != null">
+        update_time,
+      </if>
+      <if test="forms != null">
+        forms,
+      </if>
+      <if test="tableIndexes != null">
+        table_indexes,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null">
+        #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        #{level,jdbcType=INTEGER},
+      </if>
+      <if test="nodeType != null">
+        #{nodeType,jdbcType=VARCHAR},
+      </if>
+      <if test="tableName != null">
+        #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="datasource != null">
+        #{datasource,jdbcType=VARCHAR},
+      </if>
+      <if test="createIndex != null">
+        #{createIndex,jdbcType=BIT},
+      </if>
+      <if test="createBy != null">
+        #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forms != null">
+        #{forms,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="tableIndexes != null">
+        #{tableIndexes,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.plugins.common.base.domain.DataFillFormExample" resultType="java.lang.Long">
+    select count(*) from data_fill_form
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update data_fill_form
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.name != null">
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.pid != null">
+        pid = #{record.pid,jdbcType=VARCHAR},
+      </if>
+      <if test="record.level != null">
+        `level` = #{record.level,jdbcType=INTEGER},
+      </if>
+      <if test="record.nodeType != null">
+        node_type = #{record.nodeType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.tableName != null">
+        `table_name` = #{record.tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.datasource != null">
+        datasource = #{record.datasource,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createIndex != null">
+        create_index = #{record.createIndex,jdbcType=BIT},
+      </if>
+      <if test="record.createBy != null">
+        create_by = #{record.createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.updateBy != null">
+        update_by = #{record.updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="record.updateTime != null">
+        update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.forms != null">
+        forms = #{record.forms,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.tableIndexes != null">
+        table_indexes = #{record.tableIndexes,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update data_fill_form
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      pid = #{record.pid,jdbcType=VARCHAR},
+      `level` = #{record.level,jdbcType=INTEGER},
+      node_type = #{record.nodeType,jdbcType=VARCHAR},
+      `table_name` = #{record.tableName,jdbcType=VARCHAR},
+      datasource = #{record.datasource,jdbcType=VARCHAR},
+      create_index = #{record.createIndex,jdbcType=BIT},
+      create_by = #{record.createBy,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_by = #{record.updateBy,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      forms = #{record.forms,jdbcType=LONGVARCHAR},
+      table_indexes = #{record.tableIndexes,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update data_fill_form
+    set id = #{record.id,jdbcType=VARCHAR},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      pid = #{record.pid,jdbcType=VARCHAR},
+      `level` = #{record.level,jdbcType=INTEGER},
+      node_type = #{record.nodeType,jdbcType=VARCHAR},
+      `table_name` = #{record.tableName,jdbcType=VARCHAR},
+      datasource = #{record.datasource,jdbcType=VARCHAR},
+      create_index = #{record.createIndex,jdbcType=BIT},
+      create_by = #{record.createBy,jdbcType=VARCHAR},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      update_by = #{record.updateBy,jdbcType=VARCHAR},
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs">
+    update data_fill_form
+    <set>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="pid != null">
+        pid = #{pid,jdbcType=VARCHAR},
+      </if>
+      <if test="level != null">
+        `level` = #{level,jdbcType=INTEGER},
+      </if>
+      <if test="nodeType != null">
+        node_type = #{nodeType,jdbcType=VARCHAR},
+      </if>
+      <if test="tableName != null">
+        `table_name` = #{tableName,jdbcType=VARCHAR},
+      </if>
+      <if test="datasource != null">
+        datasource = #{datasource,jdbcType=VARCHAR},
+      </if>
+      <if test="createIndex != null">
+        create_index = #{createIndex,jdbcType=BIT},
+      </if>
+      <if test="createBy != null">
+        create_by = #{createBy,jdbcType=VARCHAR},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="updateBy != null">
+        update_by = #{updateBy,jdbcType=VARCHAR},
+      </if>
+      <if test="updateTime != null">
+        update_time = #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="forms != null">
+        forms = #{forms,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="tableIndexes != null">
+        table_indexes = #{tableIndexes,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs">
+    update data_fill_form
+    set `name` = #{name,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=VARCHAR},
+      `level` = #{level,jdbcType=INTEGER},
+      node_type = #{nodeType,jdbcType=VARCHAR},
+      `table_name` = #{tableName,jdbcType=VARCHAR},
+      datasource = #{datasource,jdbcType=VARCHAR},
+      create_index = #{createIndex,jdbcType=BIT},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      forms = #{forms,jdbcType=LONGVARCHAR},
+      table_indexes = #{tableIndexes,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.plugins.common.base.domain.DataFillForm">
+    update data_fill_form
+    set `name` = #{name,jdbcType=VARCHAR},
+      pid = #{pid,jdbcType=VARCHAR},
+      `level` = #{level,jdbcType=INTEGER},
+      node_type = #{nodeType,jdbcType=VARCHAR},
+      `table_name` = #{tableName,jdbcType=VARCHAR},
+      datasource = #{datasource,jdbcType=VARCHAR},
+      create_index = #{createIndex,jdbcType=BIT},
+      create_by = #{createBy,jdbcType=VARCHAR},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      update_by = #{updateBy,jdbcType=VARCHAR},
+      update_time = #{updateTime,jdbcType=TIMESTAMP}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>
