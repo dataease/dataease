@@ -94,15 +94,15 @@ public abstract class DefaultJdbcProvider extends Provider {
         return list;
     }
 
-    public Statement getStatement(Connection connection, int queryTimeout) throws Exception{
-        if(connection == null){
+    public Statement getStatement(Connection connection, int queryTimeout) throws Exception {
+        if (connection == null) {
             throw new Exception("Failed to get connection!");
         }
         Statement stat = connection.createStatement();
-       try {
-           stat.setQueryTimeout(queryTimeout);
-       }catch (Exception e){
-       }
+        try {
+            stat.setQueryTimeout(queryTimeout);
+        } catch (Exception e) {
+        }
         return stat;
     }
 
@@ -330,13 +330,15 @@ public abstract class DefaultJdbcProvider extends Provider {
                 || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name())) {
             return getConnection(datasourceRequest);
         }
-        DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
-        if (dataSource == null) {
-            handleDatasource(datasourceRequest, "add");
+        synchronized (datasourceRequest.getDatasource().getId()) {
+            DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+            if (dataSource == null) {
+                handleDatasource(datasourceRequest, "add");
+            }
+            dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+            Connection co = dataSource.getConnection();
+            return co;
         }
-        dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
-        Connection co = dataSource.getConnection();
-        return co;
     }
 
     @Override
@@ -522,22 +524,22 @@ public abstract class DefaultJdbcProvider extends Provider {
     }
 
     @Override
-    public void checkConfiguration(Datasource datasource)throws Exception{
-        if (StringUtils.isEmpty(datasource.getConfiguration())){
+    public void checkConfiguration(Datasource datasource) throws Exception {
+        if (StringUtils.isEmpty(datasource.getConfiguration())) {
             throw new Exception("Datasource configuration is empty");
         }
         try {
             JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasource.getConfiguration(), JdbcConfiguration.class);
-            if(jdbcConfiguration.getQueryTimeout() < 0){
-                throw new Exception("Querytimeout cannot be less than zero." );
+            if (jdbcConfiguration.getQueryTimeout() < 0) {
+                throw new Exception("Querytimeout cannot be less than zero.");
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             throw new Exception("Invalid configuration: " + e.getMessage());
         }
     }
 
 
-    public String dsVersion(DatasourceRequest datasourceRequest) throws Exception{
+    public String dsVersion(DatasourceRequest datasourceRequest) throws Exception {
         JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
         try (Connection con = getConnectionFromPool(datasourceRequest)) {
             return String.valueOf(con.getMetaData().getDatabaseMajorVersion());
