@@ -206,6 +206,21 @@
             </where>
         </if>
 
+        <if test="type == 13">
+            id, name
+            from data_fill_form
+            <where>
+                id in
+                <foreach collection="ids" item="id" index="index" open="(" separator="," close=")">
+                    #{id}
+                </foreach>
+                ORDER BY FIELD(id,
+                <foreach collection="ids" item="id" index="index" open="" separator="," close=")">
+                    #{id}
+                </foreach>
+            </where>
+        </if>
+
     </select>
 
 

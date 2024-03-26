@@ -12,14 +12,17 @@ public class AuthConstants {
     public final static String USER_LINK_NAME = "user_link";
     public final static String USER_DATASET_NAME = "user_dataset";
     public final static String USER_PANEL_NAME = "user_panel";
+    public final static String USER_DATA_FILL_NAME = "user_data_fill";
 
     public final static String ROLE_LINK_NAME = "role_link";
     public final static String ROLE_DATASET_NAME = "role_dataset";
     public final static String ROLE_PANEL_NAME = "role_panel";
+    public final static String ROLE_DATA_FILL_NAME = "role_data_fill";
 
     public final static String DEPT_LINK_NAME = "dept_link";
     public final static String DEPT_DATASET_NAME = "dept_dataset";
     public final static String DEPT_PANEL_NAME = "dept_panel";
+    public final static String DEPT_DATA_FILL_NAME = "dept_data_fill";
 
 
 

@@ -14,4 +14,7 @@ public class TableField {
     private boolean notNull;
     private boolean primaryKey;
 
+    //java.sql.Types
+    private Integer type;
+
 }

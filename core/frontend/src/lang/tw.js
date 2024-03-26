@@ -169,6 +169,16 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    component: {
+      input: '單行輸入',
+      textarea: '多行輸入',
+      select: '下拉框',
+      radio: '單選',
+      checkbox: '多選框',
+      date: '日期',
+      dateRange: '時間范圍',
+      add_component_hint: '點擊或拖拽左側組件添加字段'
+    },
     consanguinity: '血緣關係',
     collapse_navigation: '收起導航',
     operate_cancelled: '已取消操作',
@@ -578,6 +588,27 @@ export default {
     item: '項',
     logic_filter: '條件篩選',
     enum_filter: '枚舉篩選'
+  },
+  data_fill: {
+    form: {
+      confirm_delete: '確認刪除？(不會刪除已創建的數據庫表)',
+      list: '表單數據',
+      record: '提交記錄',
+      task_manage: '任務管理',
+      form_name: '表單名稱',
+      datasource: '數據源',
+      table: '數據庫表',
+      creator: '創建人',
+      createTime: '創建時間'
+    },
+    data: {
+      confirm_delete: '確認刪除?'
+    },
+    task: {
+      confirm_enable: '確認啟動任務？（單次任務會新建下發任務）',
+      confirm_disable: '確認停止任務？'
+    },
+    on_the_left: '請在左側選擇表單'
   },
   detabs: {
     custom_sort: '自定義排序',
@@ -2841,9 +2872,14 @@ export default {
     chart_data_range: '視圖數據範圍',
     panel_format: '儀表板格式',
     simple_repeat: '簡單重複',
+    single_task: '單次任務',
     once_a_day: '每天',
     once_a_week: '每周',
     once_a_month: '每月',
+    hour: '小時',
+    day: '天',
+    week: '周',
+    month: '月',
     complex_repeat: '複雜重複',
     pixel_tip: '可直接輸入分辨率(例如:2560 * 1600)或者選擇',
     task_type: '任務類型',

@@ -160,6 +160,7 @@ public class KylinDsProvider extends DefaultJdbcProvider {
         }
         tableField.setRemarks(remarks);
         String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
+        tableField.setType(resultSet.getInt("DATA_TYPE"));
         tableField.setFieldType(dbType);
         if (dbType.equalsIgnoreCase("LONG")) {
             tableField.setFieldSize(65533);

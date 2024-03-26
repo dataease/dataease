@@ -19,4 +19,6 @@ public class SysAuthConstants {
 
     public final static String AUTH_SOURCE_TYPE_DATASOURCE = "link";
 
+    public final static String AUTH_SOURCE_TYPE_DATA_FILLING = "data_fill";
+
 }
