@@ -12,9 +12,12 @@ import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { ElIcon } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
 
 const { t } = useI18n()
-
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
 const props = defineProps({
   chart: {
     type: Object,
@@ -92,7 +95,9 @@ onMounted(() => {
 watch(
   () => props.chart?.customAttr?.indicatorName,
   () => {
-    init()
+    if (!batchOptStatus.value) {
+      init()
+    }
   },
   { deep: true }
 )
