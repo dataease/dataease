@@ -23,6 +23,10 @@ import java.sql.*;
 import java.util.*;
 
 public abstract class DefaultJdbcProvider extends Provider {
+    public Map<String, DruidDataSource> getJdbcConnection() {
+        return jdbcConnection;
+    }
+
     protected Map<String, DruidDataSource> jdbcConnection = new HashMap<>();
     protected ExtendedJdbcClassLoader extendedJdbcClassLoader;
     private Map<String, ExtendedJdbcClassLoader> customJdbcClassLoaders = new HashMap<>();
