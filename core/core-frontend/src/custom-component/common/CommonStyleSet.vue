@@ -153,7 +153,7 @@
           </div>
         </el-tooltip>
         <template v-if="styleForm.textAlign">
-          <div class="m-divider"></div>
+          <div class="m-divider" :class="'custom-divider-' + themes"></div>
           <el-tooltip effect="dark" placement="bottom">
             <template #content>
               {{ t('chart.text_pos_left') }}
@@ -465,6 +465,14 @@ watch(
   width: 1px;
   height: 18px;
   background: rgba(31, 35, 41, 0.15);
+}
+
+.custom-divider-light {
+  background-color: rgba(31, 35, 41, 0.15);
+}
+
+.custom-divider-dark {
+  background-color: #757575;
 }
 .form-item {
   &.no-margin-bottom {
