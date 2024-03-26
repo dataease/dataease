@@ -90,7 +90,7 @@ public class DynamicMenuServiceImpl implements DynamicMenuService {
         dynamicMenuDto.setPermission(sysMenu.getPermission());
         dynamicMenuDto.setMenuSort(sysMenu.getMenuSort());
         dynamicMenuDto.setHidden(sysMenu.getHidden());
-        dynamicMenuDto.setIsPlugin(true);
+        dynamicMenuDto.setIsPlugin(!sysMenu.isUseBasicResource());
         dynamicMenuDto.setNoLayout(!!sysMenu.isNoLayout());
         return dynamicMenuDto;
     }

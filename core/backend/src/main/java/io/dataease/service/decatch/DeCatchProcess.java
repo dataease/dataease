@@ -62,6 +62,18 @@ public class DeCatchProcess {
             cleanCacheParent(resourceId.toString(), "link");
         });
     }
+    public void cleanDataFiling(Object pid) {
+        CurrentUserDto user = AuthUtils.getUser();
+        CacheUtils.remove(AuthConstants.USER_DATA_FILL_NAME, "user" + user.getUserId());
+        CacheUtils.remove(AuthConstants.DEPT_DATA_FILL_NAME, "dept" + user.getDeptId());
+        user.getRoles().forEach(role -> {
+            CacheUtils.remove(AuthConstants.ROLE_DATA_FILL_NAME, "role" + role.getId());
+        });
+
+        Optional.ofNullable(pid).ifPresent(resourceId -> {
+            cleanCacheParent(resourceId.toString(), "data_fill");
+        });
+    }
 
     private void cleanCacheParent(String pid, String type) {
         if (StringUtils.isBlank(pid) || StringUtils.isBlank(type)) {

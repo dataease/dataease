@@ -106,6 +106,18 @@ public abstract class DefaultJdbcProvider extends Provider {
         return stat;
     }
 
+    public PreparedStatement getPreparedStatement(Connection connection, int queryTimeout, String sql) throws Exception {
+        if (connection == null) {
+            throw new Exception("Failed to get connection!");
+        }
+        PreparedStatement stat = connection.prepareStatement(sql);
+        try {
+            stat.setQueryTimeout(queryTimeout);
+        } catch (Exception e) {
+        }
+        return stat;
+    }
+
     public void exec(DatasourceRequest datasourceRequest) throws Exception {
         try (Connection connection = getConnectionFromPool(datasourceRequest); Statement stat = connection.createStatement()) {
             Boolean result = stat.execute(datasourceRequest.getQuery());
@@ -265,6 +277,7 @@ public abstract class DefaultJdbcProvider extends Provider {
 
     @Override
     public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
+        System.out.println("``````````` 进入获取表字段 default");
         List<TableField> list = new LinkedList<>();
         try (Connection connection = getConnectionFromPool(datasourceRequest)) {
 
@@ -382,6 +395,7 @@ public abstract class DefaultJdbcProvider extends Provider {
         }
         tableField.setRemarks(remarks);
         String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
+        tableField.setType(resultSet.getInt("DATA_TYPE"));
         tableField.setFieldType(dbType);
         if (dbType.equalsIgnoreCase("LONG")) {
             tableField.setFieldSize(65533);
@@ -414,6 +428,7 @@ public abstract class DefaultJdbcProvider extends Provider {
             field.setFieldName(l);
             field.setRemarks(l);
             field.setFieldType(t);
+            field.setType(metaData.getColumnType(j + 1));
             field.setFieldSize(metaData.getColumnDisplaySize(j + 1));
             if (t.equalsIgnoreCase("LONG")) {
                 field.setFieldSize(65533);

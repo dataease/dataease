@@ -3,9 +3,13 @@ package io.dataease.plugins.common.entity;
 import java.io.Serializable;
 
 import lombok.Data;
+import lombok.experimental.Accessors;
 
 @Data
+@Accessors(chain = true)
 public class GlobalTaskEntity implements Serializable {
+
+    private static final long serialVersionUID = 4599805767414389668L;
 
     private Long taskId;
 

@@ -71,6 +71,10 @@ public class IndexController {
             if (StringUtils.isNotEmpty(fromLink)) {
                 url = url + "&fromLink=" + fromLink;
             }
+            String ticket = request.getParameter("ticket");
+            if (StringUtils.isNotEmpty(ticket)) {
+                url = url + "&ticket=" + ticket;
+            }
             response.sendRedirect(url);
         } catch (IOException e) {
             LogUtil.error(e.getMessage());

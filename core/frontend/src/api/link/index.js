@@ -50,6 +50,14 @@ export function switchEnablePwd(data) {
   })
 }
 
+export function switchEnableTicket(data) {
+  return request({
+    url: 'api/link/enableTicket',
+    method: 'post',
+    data
+  })
+}
+
 export function viewLinkLog(data) {
   return request({
     url: 'api/link/viewLog',

@@ -7,6 +7,7 @@
     <result column="ticket" jdbcType="VARCHAR" property="ticket" />
     <result column="exp" jdbcType="BIGINT" property="exp" />
     <result column="args" jdbcType="VARCHAR" property="args" />
+    <result column="access_time" jdbcType="BIGINT" property="accessTime" />
   </resultMap>
   <sql id="Example_Where_Clause">
     <where>
@@ -67,7 +68,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, uuid, ticket, `exp`, args
+    id, uuid, ticket, `exp`, args, access_time
   </sql>
   <select id="selectByExample" parameterType="io.dataease.plugins.common.base.domain.PanelLinkTicketExample" resultMap="BaseResultMap">
     select
@@ -101,9 +102,11 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.PanelLinkTicket">
     insert into panel_link_ticket (id, uuid, ticket, 
-      `exp`, args)
+      `exp`, args, access_time
+      )
     values (#{id,jdbcType=BIGINT}, #{uuid,jdbcType=VARCHAR}, #{ticket,jdbcType=VARCHAR}, 
-      #{exp,jdbcType=BIGINT}, #{args,jdbcType=VARCHAR})
+      #{exp,jdbcType=BIGINT}, #{args,jdbcType=VARCHAR}, #{accessTime,jdbcType=BIGINT}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.PanelLinkTicket">
     insert into panel_link_ticket
@@ -123,6 +126,9 @@
       <if test="args != null">
         args,
       </if>
+      <if test="accessTime != null">
+        access_time,
+      </if>
     </trim>
     <trim prefix="values (" suffix=")" suffixOverrides=",">
       <if test="id != null">
@@ -139,6 +145,9 @@
       </if>
       <if test="args != null">
         #{args,jdbcType=VARCHAR},
+      </if>
+      <if test="accessTime != null">
+        #{accessTime,jdbcType=BIGINT},
       </if>
     </trim>
   </insert>
@@ -166,6 +175,9 @@
       <if test="record.args != null">
         args = #{record.args,jdbcType=VARCHAR},
       </if>
+      <if test="record.accessTime != null">
+        access_time = #{record.accessTime,jdbcType=BIGINT},
+      </if>
     </set>
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -177,7 +189,8 @@
       uuid = #{record.uuid,jdbcType=VARCHAR},
       ticket = #{record.ticket,jdbcType=VARCHAR},
       `exp` = #{record.exp,jdbcType=BIGINT},
-      args = #{record.args,jdbcType=VARCHAR}
+      args = #{record.args,jdbcType=VARCHAR},
+      access_time = #{record.accessTime,jdbcType=BIGINT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -197,6 +210,9 @@
       <if test="args != null">
         args = #{args,jdbcType=VARCHAR},
       </if>
+      <if test="accessTime != null">
+        access_time = #{accessTime,jdbcType=BIGINT},
+      </if>
     </set>
     where id = #{id,jdbcType=BIGINT}
   </update>
@@ -205,7 +221,8 @@
     set uuid = #{uuid,jdbcType=VARCHAR},
       ticket = #{ticket,jdbcType=VARCHAR},
       `exp` = #{exp,jdbcType=BIGINT},
-      args = #{args,jdbcType=VARCHAR}
+      args = #{args,jdbcType=VARCHAR},
+      access_time = #{accessTime,jdbcType=BIGINT}
     where id = #{id,jdbcType=BIGINT}
   </update>
 </mapper>

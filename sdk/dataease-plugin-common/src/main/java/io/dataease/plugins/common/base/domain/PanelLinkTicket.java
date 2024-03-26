@@ -15,5 +15,7 @@ public class PanelLinkTicket implements Serializable {
 
     private String args;
 
+    private Long accessTime;
+
     private static final long serialVersionUID = 1L;
 }

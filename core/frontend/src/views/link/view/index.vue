@@ -39,6 +39,10 @@ export default {
     user: {
       type: String,
       default: null
+    },
+    ticketArgs: {
+      type: String,
+      default: null
     }
   },
   data() {
@@ -121,21 +125,36 @@ export default {
         const tempParam = localStorage.getItem('jumpInfoParam')
         // 添加外部参数
         const attachParamsEncode = this.$route.query.attachParams
-
+        let argsObject = null
+        try {
+          argsObject = JSON.parse(this.ticketArgs)
+        } catch (error) {
+          console.error(error)
+        }
+        const hasArgs = argsObject && Object.keys(argsObject)
         tempParam && loadingCount++
-        attachParamsEncode && loadingCount++
+        (attachParamsEncode || hasArgs) && loadingCount++
 
-        if (attachParamsEncode) {
+        if (attachParamsEncode || hasArgs) {
           try {
-            const Base64 = require('js-base64').Base64
-            const attachParam = JSON.parse(decodeURIComponent(Base64.decode(attachParamsEncode)))
-            getOuterParamsInfo(this.resourceId).then(rsp => {
-              if (--loadingCount === 0) {
-                this.show = true
-              }
-              this.$store.commit('setNowPanelOuterParamsInfo', rsp.data)
-              this.$store.commit('addOuterParamsFilter', attachParam)
-            })
+            let attachParam = null
+            if (attachParamsEncode) {
+              const Base64 = require('js-base64').Base64
+              attachParam = JSON.parse(decodeURIComponent(Base64.decode(attachParamsEncode)))
+            }
+            if (hasArgs) {
+              attachParam = Object.assign({}, attachParam, argsObject)
+            }
+            const hasAttachParam = attachParam && Object.keys(attachParam)
+            if (hasAttachParam) {
+              getOuterParamsInfo(this.resourceId).then(rsp => {
+                if (--loadingCount === 0) {
+                  this.show = true
+                }
+                this.$store.commit('setNowPanelOuterParamsInfo', rsp.data)
+                this.$store.commit('addOuterParamsFilter', attachParam)
+              })
+            }
           } catch (e) {
             if (--loadingCount === 0) {
               this.show = true

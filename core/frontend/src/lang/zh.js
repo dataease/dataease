@@ -169,6 +169,16 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    component: {
+      input: '单行输入',
+      textarea: '多行输入',
+      select: '下拉框',
+      radio: '单选',
+      checkbox: '多选框',
+      date: '日期',
+      dateRange: '时间范围',
+      add_component_hint: '点击或拖拽左侧组件添加字段'
+    },
     consanguinity: '血缘关系',
     collapse_navigation: '收起导航',
     operate_cancelled: '已取消操作',
@@ -577,6 +587,27 @@ export default {
     item: '项',
     logic_filter: '条件筛选',
     enum_filter: '枚举筛选'
+  },
+  data_fill: {
+    form: {
+      confirm_delete: '确认删除？(不会删除已创建的数据库表)',
+      list: '表单数据',
+      record: '提交记录',
+      task_manage: '任务管理',
+      form_name: '表单名称',
+      datasource: '数据源',
+      table: '数据库表',
+      creator: '创建人',
+      createTime: '创建时间'
+    },
+    data: {
+      confirm_delete: '确认删除?'
+    },
+    task: {
+      confirm_enable: '确认启动任务？（单次任务会新建下发任务）',
+      confirm_disable: '确认停止任务？'
+    },
+    on_the_left: '请在左侧选择表单'
   },
   detabs: {
     custom_sort: '自定义排序',
@@ -1468,7 +1499,7 @@ export default {
     line_type_dotted: '点',
     value_can_not_empty: '值不能为空',
     value_error: '值必须为数值',
-    threshold: '阈值',
+    threshold: '条件样式',
     threshold_range: '阈值区间',
     gauge_threshold_format_error: '格式错误',
     total_cfg: '总计配置',
@@ -1652,7 +1683,8 @@ export default {
     regression_pow: '幂函数',
     regression_loess: '局部加权',
     regression_algo: '算法',
-    trend_line: '趋势线'
+    trend_line: '趋势线',
+    field_enum: '枚举值'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
@@ -2843,9 +2875,14 @@ export default {
     chart_data_range: '视图数据范围',
     panel_format: '仪表板格式',
     simple_repeat: '简单重复',
+    single_task: '单次任务',
     once_a_day: '每天',
     once_a_week: '每周',
     once_a_month: '每月',
+    hour: '小时',
+    day: '天',
+    week: '周',
+    month: '月',
     complex_repeat: '复杂重复',
     pixel_tip: '可直接输入自定义分辨率(例如:2560 * 1600)或选择',
     task_type: '任务类型',
