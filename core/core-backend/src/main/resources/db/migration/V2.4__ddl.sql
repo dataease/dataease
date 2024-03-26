@@ -1,1 +1,1 @@
-INSERT INTO `per_menu_resource` (`id`, `name`, `pid`, `root_path`) VALUES (50, 'watermark', 7, '7');
+
