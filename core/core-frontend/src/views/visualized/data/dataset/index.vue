@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, shallowRef, computed, watch, onBeforeMount, nextTick } from 'vue'
+import { ref, reactive, shallowRef, computed, watch, onBeforeMount, nextTick, unref } from 'vue'
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import {
   ElIcon,
@@ -25,6 +25,7 @@ import { save } from '@/api/visualization/dataVisualization'
 import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import treeSort from '@/utils/treeSortUtils'
 
 import {
   DEFAULT_CANVAS_STYLE_DATA_LIGHT,
@@ -59,7 +60,8 @@ const router = useRouter()
 const route = useRoute()
 const { t } = useI18n()
 const state = reactive({
-  datasetTree: [] as BusiTreeNode[]
+  datasetTree: [] as BusiTreeNode[],
+  curSortType: 'time_desc'
 })
 
 const resourceGroupOpt = ref()
@@ -77,6 +79,13 @@ const resourceOptFinish = param => {
   if (param && param.opt === 'newLeaf') {
     resourceCreate(param.pid, param.name)
   }
+}
+
+let originResourceTree = []
+
+const sortTypeChange = sortType => {
+  state.datasetTree = treeSort(originResourceTree, sortType)
+  state.curSortType = sortType
 }
 
 const resourceCreate = (pid, name) => {
@@ -201,9 +210,11 @@ const getData = () => {
       if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
         rootManage.value = nodeData[0]['weight'] >= 7
         state.datasetTree = nodeData[0]['children'] || []
+        originResourceTree = cloneDeep(unref(state.datasetTree))
         return
       }
       state.datasetTree = nodeData
+      originResourceTree = cloneDeep(unref(state.datasetTree))
     })
     .finally(() => {
       dtLoading.value = false
@@ -439,6 +450,27 @@ const defaultTab = [
     name: 'structPreview'
   }
 ]
+
+const sortList = [
+  {
+    name: '按创建时间升序',
+    value: 'time_asc'
+  },
+  {
+    name: '按创建时间降序',
+    value: 'time_desc',
+    divided: true
+  },
+  {
+    name: '按照名称升序',
+    value: 'name_asc'
+  },
+  {
+    name: '按照名称降序',
+    value: 'name_desc'
+  }
+]
+
 const tablePanes = ref([])
 const tablePaneList = computed(() => {
   return nodeInfo.weight >= 7 ? [...defaultTab, ...tablePanes.value] : [...defaultTab]
@@ -545,6 +577,34 @@ const getMenuList = (val: boolean) => {
               </el-icon>
             </template>
           </el-input>
+          <el-dropdown @command="sortTypeChange" trigger="click">
+            <el-icon class="insert-filter filter-icon-span">
+              <Icon
+                v-show="state.curSortType.includes('asc')"
+                name="dv-sort-asc"
+                class="opt-icon"
+              ></Icon>
+              <Icon
+                v-show="state.curSortType.includes('desc')"
+                name="dv-sort-desc"
+                class="opt-icon"
+              ></Icon>
+            </el-icon>
+            <template #dropdown>
+              <el-dropdown-menu style="width: 246px">
+                <template :key="ele.value" v-for="ele in sortList">
+                  <el-dropdown-item
+                    class="ed-select-dropdown__item"
+                    :class="ele.value === state.curSortType && 'selected'"
+                    :command="ele.value"
+                  >
+                    {{ ele.name }}
+                  </el-dropdown-item>
+                  <li v-if="ele.divided" class="ed-dropdown-menu__item--divided"></li>
+                </template>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
 
         <el-scrollbar class="custom-tree">
@@ -727,6 +787,43 @@ const getMenuList = (val: boolean) => {
 
 <style lang="less" scoped>
 @import '@/style/mixin.less';
+.insert-filter {
+  display: inline-block;
+  font-weight: 400 !important;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--TextPrimary, #1f2329);
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  transition: 0.1s;
+  border-radius: 3px;
+
+  &:active {
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
+  }
+
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6;
+  }
+}
+
+.filter-icon-span {
+  border: 1px solid #dcdfe6;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  padding: 7px;
+  margin-left: 8px;
+}
 .dataset-manage {
   display: flex;
   width: 100%;
@@ -786,6 +883,7 @@ const getMenuList = (val: boolean) => {
 
       .search-bar {
         padding-bottom: 10px;
+        width: calc(100% - 40px);
       }
     }
   }
