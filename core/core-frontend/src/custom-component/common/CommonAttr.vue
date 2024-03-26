@@ -143,7 +143,7 @@ const stopEvent = e => {
         name="style"
         class="common-style-area"
       >
-        <common-style-set :element="element"></common-style-set>
+        <common-style-set :themes="themes" :element="element"></common-style-set>
       </el-collapse-item>
     </el-collapse>
   </div>
