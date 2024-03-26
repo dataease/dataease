@@ -2,68 +2,128 @@
   <el-row class="custom-row">
     <el-row class="custom-row-inner">
       <el-space wrap>
-        <el-form-item
-          v-if="styleForm.color"
-          class="form-item no-margin-bottom"
-          :class="'form-item-' + themes"
-        >
-          <el-color-picker
-            :title="t('chart.text_color')"
-            v-model="styleForm.color"
-            class="color-picker-style"
-            is-custom
-            :predefine="state.predefineColors"
-            @change="changeStyle"
-          />
-        </el-form-item>
-
-        <el-form-item
-          v-if="styleForm.fontSize"
-          class="form-item no-margin-bottom"
-          :class="'form-item-' + themes"
-        >
-          <el-select
-            style="width: 56px"
+        <el-tooltip v-if="styleForm.color" effect="dark" placement="bottom">
+          <template #content> {{ t('chart.text_color') }} </template>
+          <el-form-item
             :effect="themes"
-            :title="t('chart.text_fontsize')"
-            v-model="styleMounted.fontSize"
-            :placeholder="'大小'"
-            size="small"
-            @change="sizeChange('fontSize')"
+            class="form-item no-margin-bottom"
+            :class="'form-item-' + themes"
           >
-            <el-option
-              v-for="option in fontSizeList"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
+            <el-color-picker
+              :title="t('chart.text_color')"
+              v-model="styleForm.color"
+              class="color-picker-style"
+              is-custom
+              :predefine="state.predefineColors"
+              @change="changeStyle"
             />
-          </el-select>
-        </el-form-item>
+          </el-form-item>
+        </el-tooltip>
 
-        <el-form-item
-          v-if="styleForm.opacity"
-          class="form-item no-margin-bottom"
-          :class="'form-item-' + themes"
-        >
-          <el-select
-            style="width: 56px"
+        <el-tooltip v-if="styleForm.headFontColor" effect="dark" placement="bottom">
+          <template #content> 头部字体颜色 </template>
+          <el-form-item
             :effect="themes"
-            title="透明度"
-            v-model="styleForm.opacity"
-            placeholder="透明度"
-            size="small"
-            @change="sizeChange"
+            class="form-item no-margin-bottom"
+            :class="'form-item-' + themes"
           >
-            <el-option
-              v-for="option in opacitySizeList"
-              :key="option"
-              :label="option"
-              :value="option"
+            <el-color-picker
+              title="头部字体颜色"
+              v-model="styleForm.headFontColor"
+              class="color-picker-style"
+              is-custom
+              :predefine="state.predefineColors"
+              @change="changeStyle"
             />
-          </el-select>
-        </el-form-item>
-
-        <el-tooltip v-if="styleForm.fontWeight !== undefined" effect="dark" placement="top">
+          </el-form-item>
+        </el-tooltip>
+        <el-tooltip v-if="styleForm.headFontActiveColor" effect="dark" placement="bottom">
+          <template #content> 头部激活字体颜色 </template>
+          <el-form-item
+            :effect="themes"
+            class="form-item no-margin-bottom"
+            :class="'form-item-' + themes"
+          >
+            <el-color-picker
+              v-model="styleForm.headFontActiveColor"
+              class="color-picker-style"
+              is-custom
+              :predefine="state.predefineColors"
+              @change="changeStyle"
+            />
+          </el-form-item>
+        </el-tooltip>
+        <el-tooltip v-if="styleForm.fontSize" effect="dark" placement="bottom">
+          <template #content> {{ t('chart.text_fontsize') }} </template>
+          <el-form-item
+            :effect="themes"
+            class="form-item no-margin-bottom"
+            :class="'form-item-' + themes"
+          >
+            <el-select
+              style="width: 50px"
+              :effect="themes"
+              :title="t('chart.text_fontsize')"
+              v-model="styleMounted.fontSize"
+              :placeholder="'大小'"
+              size="small"
+              @change="sizeChange('fontSize')"
+            >
+              <el-option
+                v-for="option in fontSizeList"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-tooltip>
+        <el-tooltip v-if="styleForm.activeFontSize" effect="dark" placement="bottom">
+          <template #content> 激活字体大小 </template>
+          <el-form-item
+            class="form-item no-margin-bottom"
+            :effect="themes"
+            :class="'form-item-' + themes"
+          >
+            <el-select
+              style="width: 50px"
+              :effect="themes"
+              title="激活字体大小"
+              v-model="styleMounted.activeFontSize"
+              :placeholder="'大小'"
+              size="small"
+              @change="sizeChange('activeFontSize')"
+            >
+              <el-option
+                v-for="option in fontSizeList"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-tooltip>
+        <el-tooltip v-if="styleForm.opacity" effect="dark" placement="bottom">
+          <template #content> 透明度 </template>
+          <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+            <el-select
+              style="width: 50px"
+              :effect="themes"
+              v-model="styleForm.opacity"
+              placeholder="透明度"
+              size="small"
+              @change="sizeChange"
+            >
+              <el-option
+                v-for="option in opacitySizeList"
+                :key="option"
+                :label="option"
+                :value="option"
+              />
+            </el-select>
+          </el-form-item>
+        </el-tooltip>
+        <el-tooltip v-if="styleForm.fontWeight !== undefined" effect="dark" placement="bottom">
           <template #content>
             {{ t('chart.bolder') }}
           </template>
@@ -78,7 +138,7 @@
           </div>
         </el-tooltip>
 
-        <el-tooltip v-if="styleForm.fontStyle !== undefined" effect="dark" placement="top">
+        <el-tooltip v-if="styleForm.fontStyle !== undefined" effect="dark" placement="bottom">
           <template #content>
             {{ t('chart.italic') }}
           </template>
@@ -92,46 +152,98 @@
             </el-icon>
           </div>
         </el-tooltip>
-
-        <div class="m-divider"></div>
-
         <template v-if="styleForm.textAlign">
-          <el-tooltip effect="dark" placement="top">
+          <div class="m-divider"></div>
+          <el-tooltip effect="dark" placement="bottom">
             <template #content>
               {{ t('chart.text_pos_left') }}
             </template>
             <div
               class="icon-btn"
               :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'left' }"
-              @click="setPosition('left')"
+              @click="setPosition('textAlign', 'left')"
             >
               <el-icon>
                 <Icon name="icon_left-alignment_outlined" />
               </el-icon>
             </div>
           </el-tooltip>
-          <el-tooltip effect="dark" placement="top">
+          <el-tooltip effect="dark" placement="bottom">
             <template #content>
               {{ t('chart.text_pos_center') }}
             </template>
             <div
               class="icon-btn"
               :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'center' }"
-              @click="setPosition('center')"
+              @click="setPosition('textAlign', 'center')"
             >
               <el-icon>
                 <Icon name="icon_center-alignment_outlined" />
               </el-icon>
             </div>
           </el-tooltip>
-          <el-tooltip effect="dark" placement="top">
+          <el-tooltip effect="dark" placement="bottom">
             <template #content>
               {{ t('chart.text_pos_right') }}
             </template>
             <div
               class="icon-btn"
               :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'right' }"
-              @click="setPosition('right')"
+              @click="setPosition('textAlign', 'right')"
+            >
+              <el-icon>
+                <Icon name="icon_right-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+        </template>
+        <template v-if="styleForm.headHorizontalPosition">
+          <div class="m-divider"></div>
+          <el-tooltip effect="dark" placement="bottom">
+            <template #content>
+              {{ t('chart.text_pos_left') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: styleForm.headHorizontalPosition === 'left'
+              }"
+              @click="setPosition('headHorizontalPosition', 'left')"
+            >
+              <el-icon>
+                <Icon name="icon_left-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="bottom">
+            <template #content>
+              {{ t('chart.text_pos_center') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: styleForm.headHorizontalPosition === 'center'
+              }"
+              @click="setPosition('headHorizontalPosition', 'center')"
+            >
+              <el-icon>
+                <Icon name="icon_center-alignment_outlined" />
+              </el-icon>
+            </div>
+          </el-tooltip>
+          <el-tooltip effect="dark" placement="bottom">
+            <template #content>
+              {{ t('chart.text_pos_right') }}
+            </template>
+            <div
+              class="icon-btn"
+              :class="{
+                dark: themes === 'dark',
+                active: styleForm.headHorizontalPosition === 'right'
+              }"
+              @click="setPosition('headHorizontalPosition', 'right')"
             >
               <el-icon>
                 <Icon name="icon_right-alignment_outlined" />
@@ -173,6 +285,7 @@ const emits = defineEmits(['onTextChange'])
 const styleMounted = ref({
   opacity: 1,
   fontSize: 22,
+  activeFontSize: 22,
   fontWeight: 'normal',
   fontStyle: 'normal',
   textAlign: 'center',
@@ -237,8 +350,8 @@ const checkItalic = () => {
   changeStyle()
 }
 
-function setPosition(p: 'left' | 'center' | 'right') {
-  styleForm.value.textAlign = p
+function setPosition(key, p: 'left' | 'center' | 'right') {
+  styleForm.value[key] = p
   changeStyle()
 }
 
