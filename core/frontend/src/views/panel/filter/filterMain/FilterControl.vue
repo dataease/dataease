@@ -116,7 +116,7 @@
           style="padding-left: 10px;"
         >
         <el-popover popper-class="popover-more-parent" :visible-arrow="false" placement="bottom-start" :width="182" trigger="click">
-            <template #reference>
+            <template v-if="showMore" #reference>
               <div class="more-select-btn icon iconfont icon-icon-more">
                 {{ $t('panel.more') }}
               </div>
@@ -344,6 +344,9 @@ export default {
 
       const views = this.childViews.viewInfos.filter(view => tableIdList.includes(view.tableId))
       return views
+    },
+    showMore() {
+      return (this.widget.name && ['textSelectWidget', 'textSelectGridWidget', 'timeDateRangeWidget'].includes(this.widget.name)) || (this.widget.isTimeWidget && this.widget.isTimeWidget()) || this.showParams
     }
   },
   watch: {
