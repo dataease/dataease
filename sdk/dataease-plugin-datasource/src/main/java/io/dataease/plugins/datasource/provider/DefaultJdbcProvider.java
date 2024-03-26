@@ -343,13 +343,15 @@ public abstract class DefaultJdbcProvider extends Provider {
                 || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.hive.name())) {
             return getConnection(datasourceRequest);
         }
-        DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
-        if (dataSource == null) {
-            handleDatasource(datasourceRequest, "add");
+        synchronized (datasourceRequest.getDatasource().getId()) {
+            DruidDataSource dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+            if (dataSource == null) {
+                handleDatasource(datasourceRequest, "add");
+            }
+            dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
+            Connection co = dataSource.getConnection();
+            return co;
         }
-        dataSource = jdbcConnection.get(datasourceRequest.getDatasource().getId());
-        Connection co = dataSource.getConnection();
-        return co;
     }
 
     @Override
