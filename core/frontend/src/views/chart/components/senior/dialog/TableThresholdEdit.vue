@@ -393,6 +393,7 @@
 <script>
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
 import { post } from '@/api/dataset/dataset'
+import { parseJson } from '@/views/chart/chart/util'
 
 export default {
   name: 'TableThresholdEdit',
@@ -570,13 +571,20 @@ export default {
     init() {
       this.thresholdArr = JSON.parse(JSON.stringify(this.threshold))
       this.initFields()
-      this.thresholdArr && this.thresholdArr.forEach(ele => {
+      const enumFields = new Set([])
+      this.thresholdArr?.forEach(ele => {
         this.initOptions(ele)
         if (ele.conditions) {
           for (const item of ele.conditions) {
             this.initConditionField(item)
+            if (item.field === '2') {
+              enumFields.add(ele.fieldId)
+            }
           }
         }
+      })
+      enumFields.forEach(fieldId => {
+        this.getFieldEnumValues(fieldId)
       })
     },
     initConditionField(item) {
@@ -615,42 +623,17 @@ export default {
       }
     },
     initFields() {
-      // 暂时支持指标
       if (this.chart.type === 'table-info') {
-        if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
-          this.fields = JSON.parse(JSON.stringify(this.chart.xaxis))
-        } else {
-          this.fields = JSON.parse(this.chart.xaxis)
-        }
+        this.fields.splice(0, this.fields.length, ...parseJson(this.chart.xaxis))
       } else if (this.chart.type === 'table-pivot') {
-        const totalFields = []
-        if (Object.prototype.toString.call(this.chart.yaxis) === '[object Array]') {
-          totalFields.splice(totalFields.length, 0, ...JSON.parse(JSON.stringify(this.chart.yaxis)))
-        } else {
-          totalFields.splice(totalFields.length, 0, ...JSON.parse(this.chart.yaxis))
-        }
-        if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
-          totalFields.splice(totalFields.length, 0, ...JSON.parse(JSON.stringify(this.chart.xaxis)))
-        } else {
-          totalFields.splice(totalFields.length, 0, ...JSON.parse(this.chart.xaxis))
-        }
-        if (Object.prototype.toString.call(this.chart.xaxisExt) === '[object Array]') {
-          totalFields.splice(totalFields.length, 0, ...JSON.parse(JSON.stringify(this.chart.xaxisExt)))
-        } else {
-          totalFields.splice(totalFields.length, 0, ...JSON.parse(this.chart.xaxisExt))
-        }
-        this.fields.splice(0, this.fields.length, ...totalFields)
+        const yAxis = parseJson(this.chart.yaxis)
+        const xAxis = parseJson(this.chart.xaxis)
+        const xAxisExt = parseJson(this.chart.xaxisExt)
+        this.fields.splice(0, this.fields.length,  ...yAxis, ...xAxis, ...xAxisExt)
       } else {
-        if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
-          this.fields = this.fields.concat(JSON.parse(JSON.stringify(this.chart.xaxis)))
-        } else {
-          this.fields = this.fields.concat(JSON.parse(this.chart.xaxis))
-        }
-        if (Object.prototype.toString.call(this.chart.yaxis) === '[object Array]') {
-          this.fields = this.fields.concat(JSON.parse(JSON.stringify(this.chart.yaxis)))
-        } else {
-          this.fields = this.fields.concat(JSON.parse(this.chart.yaxis))
-        }
+        const yAxis = parseJson(this.chart.yaxis)
+        const xAxis = parseJson(this.chart.xaxis)
+        this.fields.splice(0, this.fields.length, ...yAxis, ...xAxis)
       }
 
       // 区分文本、数值、日期字段
@@ -720,21 +703,21 @@ export default {
           if (curField.field.deType === 1 && !['eq', 'not_eq'].includes(item.term)) {
             item.field = '0'
           }
-          this.getFieldEnumValues(curField.field)
+          this.getFieldEnumValues(curField.fieldId)
           break
         default:
           break
       }
       this.changeThreshold()
     },
-    getFieldEnumValues(field) {
-      if (this.fieldEnumValues[field.id]) {
+    getFieldEnumValues(fieldId) {
+      if (this.fieldEnumValues[fieldId]) {
         return
       }
-      const fieldType = this.getFieldType(field.id)
+      const fieldType = this.getFieldType(fieldId)
       if (fieldType) {
-        post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + field.id + '/' + fieldType, {}).then(response => {
-          this.$set(this.fieldEnumValues, field.id, response.data)
+        post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + fieldId + '/' + fieldType, {}).then(response => {
+          this.$set(this.fieldEnumValues, fieldId, response.data)
         })
       }
     },
@@ -781,7 +764,7 @@ export default {
           }
           if (ele.field === '2') {
             ele.enumValues?.splice(0)
-            this.getFieldEnumValues(item.field)
+            this.getFieldEnumValues(item.fieldId)
           }
         }
       })
