@@ -67,8 +67,8 @@
 <script>
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import { timeSection } from '@/utils'
-import dayjs from "dayjs";
-import { getThisStart, getLastStart, getAround } from "@/views/panel/filter/filterMain/time-format-dayjs.js";
+import dayjs from 'dayjs'
+import { getThisStart, getLastStart, getAround } from '@/views/panel/filter/filterMain/time-format-dayjs.js'
 import bus from '@/utils/bus'
 import customInput from '@/components/widget/deWidget/customInput'
 import { dateMap, years, seconds } from '@/components/widget/deWidget/serviceNameFn'
@@ -299,10 +299,10 @@ export default {
                 regularOrTrends === 'fixed'
                   ? regularOrTrendsValue[1]
                   : getAround(
-                      relativeToCurrentTypeRange,
-                      aroundRange === 'f' ? 'subtract' : 'add',
-                      timeNumRange
-                    )
+                    relativeToCurrentTypeRange,
+                    aroundRange === 'f' ? 'subtract' : 'add',
+                    timeNumRange
+                  )
               return (
                 timeStamp < +new Date(startTime) - 1000 ||
                 timeStamp > +new Date(endTime) ||
@@ -312,7 +312,7 @@ export default {
           },
           onPick: ({ minDate }) => {
             this.startWindowTime = +new Date(minDate)
-          },
+          }
         }
       }
       return null
@@ -352,7 +352,7 @@ export default {
     },
     'defaultoptions': function(val, old) {
       if (!this.element.options.attrs.default.isDynamic) {
-        this.values = this.fillValueDerfault()
+        this.values = this.fillValueDerfault(false)
         this.dateChange(this.values)
         return
       }
@@ -471,10 +471,10 @@ export default {
     },
     loadInit() {
       this.clearTime()
-      if (this.refreshHandler()) {
-        return
-      }
       const existLastValidFilters = this.$store.state.lastValidFilters && this.$store.state.lastValidFilters[this.element.id]
+      if (this.element.options.attrs.default?.isDynamic && !existLastValidFilters) {
+        return this.refreshHandler()
+      }
       if (this.element.options.value || existLastValidFilters) {
         this.values = this.fillValueDerfault()
         this.dateChange(this.values)
@@ -623,9 +623,9 @@ export default {
         return timeSection(parseFloat(value), this.componentType || this.element.options.attrs.type, this.labelFormat)
       }
     },
-    fillValueDerfault() {
+    fillValueDerfault(useLastFilter = true) {
       let defaultV = this.element.options.value === null ? '' : this.element.options.value.toString()
-      if (this.inDraw) {
+      if (this.inDraw && useLastFilter) {
         let lastFilters = null
         if (this.$store.state.lastValidFilters) {
           lastFilters = this.$store.state.lastValidFilters[this.element.id]

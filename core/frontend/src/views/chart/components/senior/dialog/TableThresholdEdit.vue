@@ -407,6 +407,7 @@ export default {
       required: true
     }
   },
+  inject: ['filedList'],
   data() {
     return {
       thresholdArr: [],
@@ -637,7 +638,8 @@ export default {
       }
 
       // 区分文本、数值、日期字段
-      this.fields.forEach(ele => {
+      const compareFields = this.chart.type === 'table-info' ? this.filedList() : this.fields
+      compareFields.forEach(ele => {
         // 视图字段和计数字段不可用
         if (ele.chartId || ele.id === 'count') {
           return
@@ -725,7 +727,8 @@ export default {
       if (!id) {
         return {}
       }
-      const fields = this.fields.filter(ele => {
+      const compareFields = this.chart.type === 'table-info' ? this.filedList() : this.fields
+      const fields = compareFields.filter(ele => {
         return ele.id === id
       })
       if (fields.length === 0) {
