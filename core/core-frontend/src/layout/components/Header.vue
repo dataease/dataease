@@ -14,13 +14,21 @@ import AccountOperator from '@/layout/components/AccountOperator.vue'
 import { isDesktop } from '@/utils/ModelUtil'
 import { XpackComponent } from '@/components/plugin'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
+import AiComponent from '@/layout/components/AiComponent.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { findBaseParams } from '@/api/aiComponent'
 const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
 const route = useRoute()
 
+const aiBaseUrl = ref(null)
 const handleIconClick = () => {
   if (route.path === '/workbranch/index') return
   push('/workbranch/index')
+}
+
+const handleAiClick = () => {
+  useEmitt().emitter.emit('aiComponentChange')
 }
 
 const desktop = isDesktop()
@@ -51,9 +59,19 @@ const initShowToolbox = () => {
 }
 const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const navigate = computed(() => appearanceStore.getNavigate)
+
+const initAiBase = async () => {
+  await findBaseParams().then(rsp => {
+    const params = rsp.data
+    if (params && params['ai.baseUrl']) {
+      aiBaseUrl.value = params['ai.baseUrl']
+    }
+  })
+}
 onMounted(() => {
   initShowSystem()
   initShowToolbox()
+  initAiBase()
 })
 </script>
 
@@ -78,10 +96,14 @@ onMounted(() => {
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
       <XpackComponent jsname="c3dpdGNoZXI=" />
+      <el-icon class="ai-icon" v-if="aiBaseUrl">
+        <Icon name="dv-ai" @click="handleAiClick" />
+      </el-icon>
       <ToolboxCfg v-if="showToolbox" />
       <TopDoc />
       <SystemCfg v-if="showSystem" />
       <AccountOperator />
+      <ai-component v-if="aiBaseUrl" :base-url="aiBaseUrl"></ai-component>
     </div>
   </el-header>
 </template>
@@ -181,5 +203,9 @@ onMounted(() => {
       color: var(--ed-color-black) !important;
     }
   }
+}
+
+.ai-icon {
+  font-size: 24px !important;
 }
 </style>
