@@ -1534,6 +1534,7 @@ export default {
     value_formatter_thousand_separator: 'Thousand Separator',
     value_formatter_example: 'Example',
     value_suffix: 'Value Suffix',
+    axis_label_length_limit: 'Length limit',
     unit_none: 'None',
     unit_thousand: 'Thousand',
     unit_ten_thousand: 'Ten Thousand',

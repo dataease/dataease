@@ -385,7 +385,8 @@ export const DEFAULT_YAXIS_STYLE = {
     color: '#333333',
     fontSize: '12',
     rotate: 0,
-    formatter: '{value}'
+    formatter: '{value}',
+    lengthLimit: 20
   },
   axisLine: {
     show: false,

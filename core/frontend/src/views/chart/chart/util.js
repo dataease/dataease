@@ -1082,7 +1082,8 @@ export const TYPE_CONFIGS = [
         'nameTextStyle',
         'splitLine',
         'axisForm',
-        'axisLabel'
+        'axisLabel',
+        'axisLabelLength'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1241,7 +1242,8 @@ export const TYPE_CONFIGS = [
         'nameTextStyle',
         'splitLine',
         'axisForm',
-        'axisLabel'
+        'axisLabel',
+        'axisLabelLength'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1317,7 +1319,8 @@ export const TYPE_CONFIGS = [
         'nameTextStyle',
         'splitLine',
         'axisForm',
-        'axisLabel'
+        'axisLabel',
+        'axisLabelLength'
       ],
       'title-selector-ant-v': [
         'show',

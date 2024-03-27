@@ -1531,6 +1531,7 @@ export default {
     value_formatter_suffix: '單位後綴',
     value_formatter_thousand_separator: '千分符',
     value_formatter_example: '示例',
+    axis_label_length_limit: '長度限制',
     unit_none: '無',
     unit_thousand: '千',
     unit_ten_thousand: '萬',
