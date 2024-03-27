@@ -16,3 +16,5 @@ CREATE TABLE `panel_link_ticket`
 
 ALTER TABLE `panel_link_mapping`
     ADD COLUMN `require_ticket` tinyint(1) NOT NULL DEFAULT 0 AFTER `uuid`;
+
+INSERT INTO `system_parameter` (`param_key`, `param_value`, `type`, `sort`) VALUES ('ai.baseUrl', 'https://maxkb.fit2cloud.com/ui/chat/5baa787163381fa2', 'text', 100);

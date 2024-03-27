@@ -45,6 +45,18 @@
       class="right-menu"
       style="color: var(--TopTextColor)"
     >
+      <div
+        v-if="aiBaseUrl"
+        style="height: 100%;padding: 0 8px;"
+        class="right-menu-item hover-effect"
+      >
+        <a style="font-size:24px;display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;">
+          <svg-icon
+            icon-class="dv-ai"
+            @click="handleAiClick"
+          />
+        </a>
+      </div>
       <notification class="right-menu-item hover-effect" />
       <lang-select class="right-menu-item hover-effect" />
       <div
@@ -105,6 +117,7 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+    <ai-component v-if="aiBaseUrl" :base-url="aiBaseUrl"/>
 
     <!--模板市场全屏显示框-->
     <el-dialog
@@ -137,9 +150,12 @@ import { pluginLoaded } from '@/api/user'
 import { initTheme } from '@/utils/ThemeUtil'
 import TemplateMarket from '@/views/panel/templateMarket'
 import { changeFavicon, inOtherPlatform } from '@/utils/index'
+import AiComponent from '@/layout/components/AiComponent'
+import { findBaseParams } from '@/api/ai/aiComponent'
 export default {
   name: 'Topbar',
   components: {
+    AiComponent,
     TemplateMarket,
     AppLink,
     Notification,
@@ -154,6 +170,7 @@ export default {
   },
   data() {
     return {
+      aiBaseUrl: null,
       uiInfo: null,
       logoUrl: null,
       axiosFinished: false,
@@ -252,6 +269,7 @@ export default {
       const drop = this.$refs['my-drop']
       drop && drop.show && drop.show()
     })
+    this.initAiBase()
   },
   beforeDestroy() {
     window.removeEventListener('beforeunload', (e) => this.beforeunloadHandler(e))
@@ -275,6 +293,17 @@ export default {
     })
   },
   methods: {
+    async initAiBase() {
+      await findBaseParams().then(rsp => {
+        const params = rsp.data
+        if (params && params['ai.baseUrl']) {
+          this.aiBaseUrl = params['ai.baseUrl']
+        }
+      })
+    },
+    handleAiClick() {
+      bus.$emit('aiComponentChange')
+    },
     beforeunloadHandler() {
       this.beforeUnload_time = new Date().getTime()
     },
