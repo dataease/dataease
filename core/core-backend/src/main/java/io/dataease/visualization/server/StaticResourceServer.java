@@ -43,9 +43,10 @@ public class StaticResourceServer implements StaticResourceApi {
             }
             String originName = file.getOriginalFilename();
             String newFileName = fileId + originName.substring(originName.lastIndexOf("."), originName.length());
-            Path uploadPath = Paths.get(staticDir.toString(), newFileName);
+            Path basePath = Paths.get(staticDir.toString());
             // create dir is absent
-            FileUtils.createIfAbsent(Paths.get(staticDir.toString()));
+            FileUtils.createIfAbsent(basePath);
+            Path uploadPath = basePath.resolve(newFileName);
             Files.createFile(uploadPath);
             file.transferTo(uploadPath);
         } catch (IOException e) {
@@ -82,9 +83,10 @@ public class StaticResourceServer implements StaticResourceApi {
     }
 
     public void saveSingleFileToServe(String fileName, String content) {
-        Path uploadPath = Paths.get(staticDir.toString(), fileName);
+        Path basePath = Paths.get(staticDir.toString());
+        Path uploadPath = basePath.resolve(fileName);
         try {
-            if (uploadPath.toFile().exists()) {
+            if (Files.exists(uploadPath)) {
                 LogUtil.info("file exists");
             } else {
                 if (StringUtils.isNotEmpty(content)) {
