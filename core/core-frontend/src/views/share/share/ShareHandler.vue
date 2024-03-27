@@ -5,13 +5,13 @@
     :content="t('visualization.share')"
     placement="top"
   >
-    <el-icon class="hover-icon hover-icon-in-table share-button-icon" @click="share">
+    <el-icon class="hover-icon hover-icon-in-table share-button-icon" @click.stop="share">
       <Icon name="icon_share-label_outlined"></Icon>
     </el-icon>
   </el-tooltip>
-  <el-button v-if="props.weight >= 7 && props.isButton" @click="share" icon="Share">{{
-    t('visualization.share')
-  }}</el-button>
+  <el-button v-if="props.weight >= 7 && props.isButton" @click.stop="share" icon="Share">
+    {{ t('visualization.share') }}</el-button
+  >
 
   <el-dialog
     v-if="dialogVisible && props.weight >= 7"

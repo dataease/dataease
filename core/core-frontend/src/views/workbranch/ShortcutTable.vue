@@ -325,7 +325,9 @@ const getEmptyDesc = (): string => {
               <el-tooltip effect="dark" content="新页面预览" placement="top">
                 <el-icon
                   class="hover-icon hover-icon-in-table"
-                  @click="preview(activeName === 'recent' ? scope.row.id : scope.row.resourceId)"
+                  @click.stop="
+                    preview(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
+                  "
                 >
                   <Icon name="icon_pc_outlined"></Icon>
                 </el-icon>
@@ -351,7 +353,7 @@ const getEmptyDesc = (): string => {
               >
                 <el-icon
                   class="hover-icon hover-icon-in-table"
-                  @click="executeCancelStore(scope.row)"
+                  @click.stop="executeCancelStore(scope.row)"
                 >
                   <Icon name="icon_cancel_store"></Icon>
                 </el-icon>
@@ -362,7 +364,7 @@ const getEmptyDesc = (): string => {
               <el-tooltip effect="dark" content="打开数据集" placement="top">
                 <el-icon
                   class="hover-icon hover-icon-in-table"
-                  @click="
+                  @click.stop="
                     openDataset(activeName === 'recent' ? scope.row.id : scope.row.resourceId)
                   "
                 >
