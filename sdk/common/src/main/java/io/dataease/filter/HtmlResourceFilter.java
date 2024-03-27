@@ -13,7 +13,7 @@ import java.io.IOException;
 @Component
 public class HtmlResourceFilter implements Filter, Ordered {
 
-    @Value("${dataease.http.cache:true}")
+    @Value("${dataease.http.cache:false}")
     private Boolean httpCache;
 
     @Override
@@ -28,7 +28,7 @@ public class HtmlResourceFilter implements Filter, Ordered {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        if(httpCache!=null && httpCache){
+        if(httpCache == null || !httpCache){
             // 禁用缓存
             httpResponse.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache");
             httpResponse.setHeader("Cache", "no-cache");
