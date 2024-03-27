@@ -368,7 +368,7 @@ const save = () => {
 
     .mobile-header {
       margin-top: 20px;
-      height: 44px;
+      height: 43px;
       display: flex;
       img {
         height: 100%;
