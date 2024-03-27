@@ -119,7 +119,7 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
   }
   fields.forEach(ele => {
     const f = nameMap[ele.dataeaseName]
-    if (f.hidden === true) {
+    if (!f || f.hidden === true) {
       return
     }
     columns.push(ele.dataeaseName)
