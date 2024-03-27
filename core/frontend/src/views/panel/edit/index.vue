@@ -15,7 +15,10 @@
       </el-col>
     </el-header>
     <de-container>
-      <de-aside-container close class="ms-aside-container">
+      <de-aside-container
+        close
+        class="ms-aside-container"
+      >
         <div
           v-show="showAside"
           style="width: 60px; left: 0px; top: 0px; bottom: 0px;  position: absolute"
@@ -1346,10 +1349,10 @@ export default {
           regularOrTrends === 'fixed'
             ? regularOrTrendsValue[1]
             : getAround(
-                relativeToCurrentTypeRange,
-                aroundRange === 'f' ? 'subtract' : 'add',
-                timeNumRange
-              )
+              relativeToCurrentTypeRange,
+              aroundRange === 'f' ? 'subtract' : 'add',
+              timeNumRange
+            )
         return (
           startWindowTime < +new Date(startTime) - 1000 ||
           timeStamp > +new Date(endTime) ||
@@ -1363,12 +1366,12 @@ export default {
         const { value, attrs } = this.currentFilterCom.options
         if (!!value && attrs.setTimeRange) {
           const [startWindowTime, timeStamp] = attrs.default.isDynamic ? ApplicationContext.getService('timeDateRangeWidget').dynamicDateFormNow(this.currentFilterCom) : value.split(',')
-          if(this.isInRange(attrs, +startWindowTime, dayjs(+timeStamp)
+          if (this.isInRange(attrs, +startWindowTime, dayjs(+timeStamp)
             .startOf('day')
             .valueOf())) {
-              this.openMessageSuccess(this.$t('time.filter_range'), 'error')
-              return
-            }
+            this.openMessageSuccess(this.$t('time.filter_range'), 'error')
+            return
+          }
         }
       }
       if (this.editType !== 'update') {

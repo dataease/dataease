@@ -76,7 +76,7 @@
             <el-select
               v-model="item.term"
               size="mini"
-              @change="changeThresholdField(item)"
+              @change="changeThresholdField(item, fieldItem)"
             >
               <el-option-group
                 v-for="(group,idx) in fieldItem.options"
@@ -99,10 +99,10 @@
               v-model="item.field"
               size="mini"
               style="margin-left: 10px;"
-              @change="changeThresholdField(item)"
+              @change="changeThresholdField(item, fieldItem)"
             >
               <el-option
-                v-for="opt in fieldTypeOptions"
+                v-for="opt in getFieldTypeOptions(fieldItem.field, item)"
                 :key="opt.value"
                 :label="opt.label"
                 :value="opt.value"
@@ -328,7 +328,26 @@
             </span>
 
           </el-col>
-
+          <el-col
+            v-if="item.field === '2'"
+            :span="12"
+            >
+            <el-select
+              v-if="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
+              v-model="item.enumValues"
+              size="mini"
+              style="margin-left: 10px; width: 100%"
+              multiple
+              clearable
+            >
+              <el-option
+                v-for="value in fieldEnumValues[fieldItem.fieldId]"
+                :key="value"
+                :value="value"
+                :label="value"
+              />
+            </el-select>
+          </el-col>
           <el-col
             :span="3"
             style="display: flex;align-items: center;justify-content: center;"
@@ -373,6 +392,8 @@
 
 <script>
 import { COLOR_PANEL } from '@/views/chart/chart/chart'
+import { post } from '@/api/dataset/dataset'
+import { parseJson } from '@/views/chart/chart/util'
 
 export default {
   name: 'TableThresholdEdit',
@@ -386,6 +407,7 @@ export default {
       required: true
     }
   },
+  inject: ['filedList'],
   data() {
     return {
       thresholdArr: [],
@@ -410,7 +432,8 @@ export default {
         max: '1',
         targetField: {},
         minField: {},
-        maxField: {}
+        maxField: {},
+        enumValues: []
       },
       summaryOptions: [{
         id: 'value',
@@ -530,9 +553,16 @@ export default {
       ],
       fieldTypeOptions: [
         { label: this.$t('chart.field_fixed'), value: '0' },
-        { label: this.$t('chart.field_dynamic'), value: '1' }
+        { label: this.$t('chart.field_dynamic'), value: '1' },
+        { label: this.$t('chart.field_enum'), value: '2' }
       ],
-      predefineColors: COLOR_PANEL
+      predefineColors: COLOR_PANEL,
+      fieldEnumValues: {}
+    }
+  },
+  computed: {
+    panelInfo() {
+      return this.$store.state.panel.panelInfo
     }
   },
   mounted() {
@@ -542,13 +572,20 @@ export default {
     init() {
       this.thresholdArr = JSON.parse(JSON.stringify(this.threshold))
       this.initFields()
-      this.thresholdArr && this.thresholdArr.forEach(ele => {
+      const enumFields = new Set([])
+      this.thresholdArr?.forEach(ele => {
         this.initOptions(ele)
         if (ele.conditions) {
           for (const item of ele.conditions) {
             this.initConditionField(item)
+            if (item.field === '2') {
+              enumFields.add(ele.fieldId)
+            }
           }
         }
+      })
+      enumFields.forEach(fieldId => {
+        this.getFieldEnumValues(fieldId)
       })
     },
     initConditionField(item) {
@@ -587,34 +624,22 @@ export default {
       }
     },
     initFields() {
-      // 暂时支持指标
       if (this.chart.type === 'table-info') {
-        if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
-          this.fields = JSON.parse(JSON.stringify(this.chart.xaxis))
-        } else {
-          this.fields = JSON.parse(this.chart.xaxis)
-        }
+        this.fields.splice(0, this.fields.length, ...parseJson(this.chart.xaxis))
       } else if (this.chart.type === 'table-pivot') {
-        if (Object.prototype.toString.call(this.chart.yaxis) === '[object Array]') {
-          this.fields = JSON.parse(JSON.stringify(this.chart.yaxis))
-        } else {
-          this.fields = JSON.parse(this.chart.yaxis)
-        }
+        const yAxis = parseJson(this.chart.yaxis)
+        const xAxis = parseJson(this.chart.xaxis)
+        const xAxisExt = parseJson(this.chart.xaxisExt)
+        this.fields.splice(0, this.fields.length,  ...yAxis, ...xAxis, ...xAxisExt)
       } else {
-        if (Object.prototype.toString.call(this.chart.xaxis) === '[object Array]') {
-          this.fields = this.fields.concat(JSON.parse(JSON.stringify(this.chart.xaxis)))
-        } else {
-          this.fields = this.fields.concat(JSON.parse(this.chart.xaxis))
-        }
-        if (Object.prototype.toString.call(this.chart.yaxis) === '[object Array]') {
-          this.fields = this.fields.concat(JSON.parse(JSON.stringify(this.chart.yaxis)))
-        } else {
-          this.fields = this.fields.concat(JSON.parse(this.chart.yaxis))
-        }
+        const yAxis = parseJson(this.chart.yaxis)
+        const xAxis = parseJson(this.chart.xaxis)
+        this.fields.splice(0, this.fields.length, ...yAxis, ...xAxis)
       }
 
       // 区分文本、数值、日期字段
-      this.fields.forEach(ele => {
+      const compareFields = this.chart.type === 'table-info' ? this.filedList() : this.fields
+      compareFields.forEach(ele => {
         // 视图字段和计数字段不可用
         if (ele.chartId || ele.id === 'count') {
           return
@@ -654,29 +679,56 @@ export default {
     changeThreshold() {
       this.$emit('onTableThresholdChange', this.thresholdArr)
     },
-    changeThresholdField(item) {
-      if (item.field === '1') {
-        if (item.term === 'between') {
-          item.minField.curField = this.getQuotaField(item.minField.fieldId)
-          item.maxField.curField = this.getQuotaField(item.maxField.fieldId)
+    changeThresholdField(item, curField) {
+      switch (item.field) {
+        case '0':
           item.targetField = {}
-        } else {
-          item.targetField.curField = this.getQuotaField(item.targetField.fieldId)
           item.minField = {}
           item.maxField = {}
-        }
-      } else {
-        item.targetField = {}
-        item.minField = {}
-        item.maxField = {}
+          break
+        case '1':
+          if (item.term === 'between') {
+            item.minField.curField = this.getQuotaField(item.minField.fieldId)
+            item.maxField.curField = this.getQuotaField(item.maxField.fieldId)
+            item.targetField = {}
+          } else {
+            item.targetField.curField = this.getQuotaField(item.targetField.fieldId)
+            item.minField = {}
+            item.maxField = {}
+          }
+          break
+        case '2':
+          if (!curField?.fieldId) {
+            break
+          }
+          // 时间类型只允许相等判断
+          if (curField.field.deType === 1 && !['eq', 'not_eq'].includes(item.term)) {
+            item.field = '0'
+          }
+          this.getFieldEnumValues(curField.fieldId)
+          break
+        default:
+          break
       }
       this.changeThreshold()
+    },
+    getFieldEnumValues(fieldId) {
+      if (this.fieldEnumValues[fieldId]) {
+        return
+      }
+      const fieldType = this.getFieldType(fieldId)
+      if (fieldType) {
+        post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + fieldId + '/' + fieldType, {}).then(response => {
+          this.$set(this.fieldEnumValues, fieldId, response.data)
+        })
+      }
     },
     getQuotaField(id) {
       if (!id) {
         return {}
       }
-      const fields = this.fields.filter(ele => {
+      const compareFields = this.chart.type === 'table-info' ? this.filedList() : this.fields
+      const fields = compareFields.filter(ele => {
         return ele.id === id
       })
       if (fields.length === 0) {
@@ -703,11 +755,60 @@ export default {
           }
         })
       }
-      // 清空 term
-      item.conditions && item.conditions.forEach(ele => {
+      // 重置 term 和 field
+      item.conditions?.forEach(ele => {
         ele.term = ''
+        if (item.field.groupType === 'q' && ele.field === '2') {
+          ele.field = '0'
+        }
+        if (item.field.groupType === 'd') {
+          if (this.chart.type === 'table-pivot' && ele.field === '1') {
+            ele.field = '0'
+          }
+          if (ele.field === '2') {
+            ele.enumValues?.splice(0)
+            this.getFieldEnumValues(item.fieldId)
+          }
+        }
       })
       this.changeThreshold()
+    },
+    getFieldType(fieldId) {
+      let index = -1
+      index = JSON.parse(this.chart.xaxis).findIndex(i => i.id === fieldId)
+      if (index !== -1) {
+        return 'xaxis'
+      }
+      index = JSON.parse(this.chart.xaxisExt).findIndex(i => i.id === fieldId)
+      if (index !== -1) {
+        return 'xaxisExt'
+      }
+    },
+    getFieldTypeOptions(field, condition) {
+      if (field.groupType === 'q') {
+        return [
+          { label: this.$t('chart.field_fixed'), value: '0' },
+          { label: this.$t('chart.field_dynamic'), value: '1' }
+        ]
+      }
+      if (field.deType === 1 && !['eq', 'not_eq'].includes(condition.term)) {
+        if (this.chart.type === 'table-pivot') {
+          return [
+            { label: this.$t('chart.field_fixed'), value: '0' }
+          ]
+        }
+        return [
+          { label: this.$t('chart.field_fixed'), value: '0' },
+          { label: this.$t('chart.field_dynamic'), value: '1' }
+        ]
+      }
+      if (this.chart.type === 'table-pivot') {
+        return [
+          { label: this.$t('chart.field_fixed'), value: '0' },
+          { label: this.$t('chart.field_enum'), value: '2' }
+        ]
+      }
+      return this.fieldTypeOptions
     }
   }
 }

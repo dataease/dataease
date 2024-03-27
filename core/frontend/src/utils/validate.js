@@ -20,3 +20,4 @@ export function validUsername(str) {
 }
 
 export const PHONE_REGEX = '^1[3|4|5|7|8][0-9]{9}$'
+export const EMAIL_REGEX = '^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$'

@@ -2,9 +2,9 @@
   <component
     :is="mode"
     v-if="element.options!== null && element.options.attrs!==null && show "
+    :id="element.id"
     ref="deSelect"
     v-model="value"
-    :id="element.id"
     :class-id="'visual-' + element.id + '-' + inDraw + '-' + inScreen"
     :collapse-tags="showNumber"
     :clearable="(inDraw || !selectFirst)"
@@ -22,7 +22,7 @@
     :flag="flag"
     :is-config="isConfig"
     :custom-style="customStyle"
-    :radioStyle="element.style"
+    :radio-style="element.style"
     @resetKeyWords="filterMethod"
     @change="changeValue"
     @focus="setOptionWidth"
@@ -319,7 +319,7 @@ export default {
       this.$refs.deSelect && this.$refs.deSelect.resetSelectAll && this.$refs.deSelect.resetSelectAll()
     },
 
-    searchWithKey: _.debounce(function () {
+    searchWithKey: _.debounce(function() {
       this.refreshOptions()
     }, 1000),
     filterMethod(key) {

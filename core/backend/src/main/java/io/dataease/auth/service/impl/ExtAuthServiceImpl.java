@@ -2,12 +2,12 @@ package io.dataease.auth.service.impl;
 
 import io.dataease.auth.entity.AuthItem;
 import io.dataease.auth.service.ExtAuthService;
-import io.dataease.commons.constants.SysAuthConstants;
-import io.dataease.plugins.common.base.domain.SysAuth;
-import io.dataease.ext.ExtAuthMapper;
 import io.dataease.commons.constants.AuthConstants;
+import io.dataease.commons.constants.SysAuthConstants;
 import io.dataease.commons.model.AuthURD;
 import io.dataease.commons.utils.LogUtil;
+import io.dataease.ext.ExtAuthMapper;
+import io.dataease.plugins.common.base.domain.SysAuth;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.cache.annotation.CacheEvict;
@@ -109,6 +109,16 @@ public class ExtAuthServiceImpl implements ExtAuthService {
         );
     }
 
+    @Cacheable(value = AuthConstants.USER_DATA_FILL_NAME, key = "'user' + #userId")
+    @Override
+    public List<AuthItem> dataFillingIdByUser(Long userId) {
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_USER,
+                userId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING
+        );
+    }
+
 
     @Cacheable(value = AuthConstants.ROLE_LINK_NAME, key = "'role' + #roleId")
     @Override
@@ -137,6 +147,16 @@ public class ExtAuthServiceImpl implements ExtAuthService {
                 SysAuthConstants.AUTH_TARGET_TYPE_ROLE,
                 roleId.toString(),
                 SysAuthConstants.AUTH_SOURCE_TYPE_PANEL
+        );
+    }
+
+    @Cacheable(value = AuthConstants.ROLE_DATA_FILL_NAME, key = "'role' + #roleId")
+    @Override
+    public List<AuthItem> dataFillingIdByRole(Long roleId) {
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_ROLE,
+                roleId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING
         );
     }
 
@@ -173,10 +193,22 @@ public class ExtAuthServiceImpl implements ExtAuthService {
         );
     }
 
+    @Cacheable(value = AuthConstants.DEPT_DATA_FILL_NAME, key = "'dept' + #deptId")
+    @Override
+    public List<AuthItem> dataFillingIdByDept(Long deptId) {
+        if (ObjectUtils.isEmpty(deptId)) return emptyResult;
+        return extAuthMapper.queryAuthItems(
+                SysAuthConstants.AUTH_TARGET_TYPE_DEPT,
+                deptId.toString(),
+                SysAuthConstants.AUTH_SOURCE_TYPE_DATA_FILLING
+        );
+    }
+
     @Caching(evict = {
             @CacheEvict(value = AuthConstants.USER_LINK_NAME, key = "'user' + #userId"),
             @CacheEvict(value = AuthConstants.USER_DATASET_NAME, key = "'user' + #userId"),
-            @CacheEvict(value = AuthConstants.USER_PANEL_NAME, key = "'user' + #userId")
+            @CacheEvict(value = AuthConstants.USER_PANEL_NAME, key = "'user' + #userId"),
+            @CacheEvict(value = AuthConstants.USER_DATA_FILL_NAME, key = "'user' + #userId")
     })
     public void clearUserResource(Long userId) {
         LogUtil.info("all permission resource of user {} is cleaning...", userId);
@@ -185,7 +217,8 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     @Caching(evict = {
             @CacheEvict(value = AuthConstants.DEPT_LINK_NAME, key = "'dept' + #deptId"),
             @CacheEvict(value = AuthConstants.DEPT_DATASET_NAME, key = "'dept' + #deptId"),
-            @CacheEvict(value = AuthConstants.DEPT_PANEL_NAME, key = "'dept' + #deptId")
+            @CacheEvict(value = AuthConstants.DEPT_PANEL_NAME, key = "'dept' + #deptId"),
+            @CacheEvict(value = AuthConstants.DEPT_DATA_FILL_NAME, key = "'dept' + #deptId")
     })
     public void clearDeptResource(Long deptId) {
         LogUtil.info("all permission resource of dept {} is cleaning...", deptId);
@@ -194,7 +227,8 @@ public class ExtAuthServiceImpl implements ExtAuthService {
     @Caching(evict = {
             @CacheEvict(value = AuthConstants.ROLE_LINK_NAME, key = "'role' + #roleId"),
             @CacheEvict(value = AuthConstants.ROLE_DATASET_NAME, key = "'role' + #roleId"),
-            @CacheEvict(value = AuthConstants.ROLE_PANEL_NAME, key = "'role' + #roleId")
+            @CacheEvict(value = AuthConstants.ROLE_PANEL_NAME, key = "'role' + #roleId"),
+            @CacheEvict(value = AuthConstants.ROLE_DATA_FILL_NAME, key = "'role' + #roleId")
     })
     public void clearRoleResource(Long roleId) {
         LogUtil.info("all permission resource of role {} is cleaning...", roleId);

@@ -2,6 +2,7 @@ import Cookies from 'js-cookie'
 import Config from '@/settings'
 import store from '@/store'
 const TokenKey = Config.TokenKey
+const TokenExpKey = Config.TokenExpKey
 
 const IdTokenKey = Config.IdTokenKey
 
@@ -22,11 +23,26 @@ export function getToken() {
 export function setToken(token) {
   return Cookies.set(TokenKey, token)
 }
+export function setTokenExp(exp) {
+  if (exp) {
+    return Cookies.set(TokenExpKey, exp)
+  }
+  return null
+}
+
+export function tokenExp() {
+  const exp = Cookies.get(TokenExpKey)
+  if (exp && exp > 3000) {
+    return new Date().getTime() > (exp - 3000)
+  }
+  return false
+}
 
 export function removeToken() {
   Cookies.remove(casSessionKey)
   Cookies.remove(IdTokenKey)
   Cookies.remove(AccessTokenKey)
+  Cookies.remove(TokenExpKey)
   return Cookies.remove(TokenKey)
 }
 

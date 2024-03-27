@@ -10,7 +10,7 @@
       />
     </el-tabs>
     <div
-      v-if="activeName === 'link'"
+      v-if="!showIndex"
       class="link"
     >
       <el-form
@@ -97,7 +97,12 @@
           class="auth-root-class"
         >
           <span slot="footer">
-
+            <el-button
+              v-if="valid"
+              plain
+              size="mini"
+              @click="openTicket"
+            >Ticket 设置</el-button>
             <el-button
               v-if="!form.enablePwd"
               v-clipboard:copy="form.uri"
@@ -123,42 +128,47 @@
     </div>
 
     <div
-      v-if="activeName === 'ticket'"
+      v-else
       class="ticket"
     >
       <div class="ticket-model">
-        <el-checkbox
-          v-model="requireTicket"
-          @change="requireTicketChange"
-        />
-        <span>ticket必选</span>
-        <el-tooltip
-          class="item"
-          effect="dark"
-          content="选择后原始公共链接无效，必须携带ticket参数"
-          placement="top"
-        >
-          <span class="check-tips"><i class="el-icon-warning" /></span>
-        </el-tooltip>
+        <div class="ticket-model-start">
+          <el-tooltip
+            class="item"
+            effect="dark"
+            content="返回公共链接设置页面"
+            placement="top"
+          >
+            <span class="back-tips">
+              <svg-icon
+                icon-class="icon_left_outlined"
+                @click="closeTicket"
+              />
+            </span>
+          </el-tooltip>
+          <span class="ticket-title">Ticket 设置</span>
+        </div>
+        <div class="ticket-model-end">
+          <el-checkbox
+            v-model="requireTicket"
+            @change="requireTicketChange"
+          />
+          <span>必选</span>
+        </div>
+
       </div>
       <div
         class="ticket-table"
       >
-        <div class="add-ticket">
-          <el-tooltip
-            class="item"
-            effect="dark"
-            content="创建"
-            placement="top"
-          >
-            <span>
-              <i
-                class="el-icon-circle-plus-outline"
-                @click="addRow()"
-              />
-            </span>
-          </el-tooltip>
+        <div class="text-add-ticket">
+          <el-button
+            class="de-text-btn mr2"
+            type="text"
+            icon="el-icon-plus"
+            @click="addRow"
+          >{{ $t("commons.create") }}</el-button>
         </div>
+
         <el-table
           :data="tableData"
           style="width: 100%"
@@ -167,11 +177,28 @@
           <el-table-column
             prop="ticket"
             label="ticket"
-            width="100"
+            width="120"
           >
             <template slot-scope="scope">
               <div class="ticket-row">
                 <span>{{ scope.row.ticket }}</span>
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  content="复制"
+                  placement="top"
+                >
+                  <span
+                    v-clipboard:copy="`${form.uri}?ticket=${scope.row.ticket}`"
+                    v-clipboard:success="onCopy"
+                    v-clipboard:error="onError"
+                    class="copy-i"
+                  >
+                    <svg-icon
+                      icon-class="de-icon-copy"
+                    />
+                  </span>
+                </el-tooltip>
                 <el-tooltip
                   class="item"
                   effect="dark"
@@ -180,7 +207,7 @@
                 >
                   <span class="refresh-i">
                     <i
-                      class="el-icon-refresh"
+                      class="el-icon-refresh-right"
                       @click="refreshTicket(scope.row)"
                     />
                   </span>
@@ -202,7 +229,12 @@
                 content="单位: 分钟，范围: [0-1440],0代表无期限，自首次使用ticket访问开始"
                 placement="top"
               >
-                <span class="check-tips"><i class="el-icon-warning" /></span>
+                <span class="check-tips">
+                  <svg-icon
+                    icon-class="de-icon-info"
+                    @click="closeTicket"
+                  />
+                </span>
               </el-tooltip>
             </template>
             <template slot-scope="scope">
@@ -222,18 +254,10 @@
               </span>
             </template>
           </el-table-column>
-          <el-table-column prop="args">
-            <template slot="header">
-              <span>参数</span>
-              <el-tooltip
-                class="item"
-                effect="dark"
-                content="最大长度200，配合仪表板外部参数使用，必须是json格式，例如: {&quot;arg1&quot;: &quot;value1&quot;}"
-                placement="top"
-              >
-                <span class="check-tips"><i class="el-icon-warning" /></span>
-              </el-tooltip>
-            </template>
+          <el-table-column
+            prop="args"
+            label="参数"
+          >
             <template slot-scope="scope">
               <el-input
                 v-if="scope.row.isEdit"
@@ -246,7 +270,7 @@
                 @change="val => validateArgs(val, scope.$index)"
               />
               <span v-else>
-                {{ scope.row.args }}
+                {{ scope.row.args || '-' }}
               </span>
             </template>
           </el-table-column>
@@ -321,6 +345,7 @@ export default {
   },
   data() {
     return {
+      showIndex: 0,
       requireTicket: false,
       uuid: '',
       tabList: [
@@ -376,21 +401,18 @@ export default {
       return window.location.origin
     }
   },
-  watch: {
-    valid(val) {
-      if (val) {
-        this.tabList.push({ name: 'ticket', 'label': 'Ticket设置' })
-      } else {
-        this.tabList.splice(1, 1)
-        this.activeName = 'link'
-      }
-    }
-  },
+
   created() {
     this.form = this.defaultForm
     this.currentGenerate()
   },
   methods: {
+    openTicket() {
+      this.showIndex = 1
+    },
+    closeTicket() {
+      this.showIndex = 0
+    },
     setExpRef(index) {
       return `expRef-${index}`
     },
@@ -455,6 +477,9 @@ export default {
       saveTicketApi(param).then(res => {
         row.ticket = res.data
       })
+    },
+    copyTicket(row) {
+      console.log(row)
     },
     deleteTicket(row, index) {
       const param = { ticket: row.ticket }
@@ -660,32 +685,23 @@ export default {
       padding: 0 20px !important;
       .ticket-model {
         display: flex;
-        padding: 8px 0px 8px 10px;
-        label {
-          margin-right: 8px;
-        }
-        .check-tips {
-          margin: 0 16px 0 4px;
-        }
-      }
-      .ticket-table {
-        padding: 10px 0 10px 8px;
-        height: 260px;
-        overflow-y: overlay;
-        position: relative;
-        .add-ticket {
-          position: absolute;
-          width: 20px;
-          height: 20px;
-          top: 18px;
-          right: 5px;
-          z-index: 9;
-          span {
-            width: 20px;
-            height: 20px;
-            line-height: 20px;
-            font-size: 16px;
-            padding: 2px;
+        justify-content: space-between;
+        padding: 0 10px;
+        .ticket-model-start {
+          display: flex;
+          color: #1F2329;
+          font-family: PingFang SC;
+          font-weight: 500;
+          font-size: 14px;
+          .ticket-title {
+            font-size: 14px;
+          }
+          .back-tips {
+            width: 22px;
+            margin-right: 4px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
             &:hover {
               background-color: rgba(51, 112, 255, .1);
               color: var(--primary);
@@ -693,12 +709,31 @@ export default {
             }
           }
         }
+
+        label {
+          margin-right: 8px;
+        }
+
+      }
+      .ticket-table {
+        padding: 10px 0 10px 8px;
+        height: 260px;
+        overflow-y: overlay;
+        position: relative;
         ::v-deep .error-msg {
           color: red;
           position: fixed;
           z-index: 9;
           font-size: 10px;
           height: 10px;
+        }
+        ::v-deep .check-tips {
+          margin-left: 4px;
+        }
+        .text-add-ticket {
+          width: 48px;
+          height: 22px;
+          gap: 4px;
         }
       }
 
@@ -725,9 +760,9 @@ export default {
       height: 16px;
       line-height: 16px;
       padding: 2px;
+      color: var(--primary);
       &:hover {
         background-color: rgba(51, 112, 255, .1);
-        color: var(--primary);
         cursor: pointer;
       }
     }
@@ -736,14 +771,14 @@ export default {
     display: flex;
     justify-content: space-between;
     align-items: center;
-    .refresh-i {
-      height: 17px;
+    .refresh-i,.copy-i {
+      height: 18px;
       width: 16px;
       line-height: 13px;
       padding: 2px;
+      color: var(--primary);
       &:hover {
         background-color: rgba(51, 112, 255, .1);
-        color: var(--primary);
         cursor: pointer;
       }
     }

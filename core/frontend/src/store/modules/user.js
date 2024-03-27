@@ -1,5 +1,5 @@
 import { login, logout, deLogout, getInfo, getUIinfo, languageApi } from '@/api/user'
-import { getToken, setToken, removeToken, setSysUI } from '@/utils/auth'
+import { getToken, setToken, removeToken, setSysUI, setTokenExp } from '@/utils/auth'
 import { resetRouter } from '@/router'
 import { format } from '@/utils/formatUi'
 import { getLanguage } from '@/lang/index'
@@ -82,6 +82,7 @@ const actions = {
         commit('SET_TOKEN', data.token)
         commit('SET_LOGIN_MSG', null)
         setToken(data.token)
+        setTokenExp(data.expireTime)
         let passwordModified = true
         if (Object.prototype.hasOwnProperty.call(data, 'passwordModified')) {
           passwordModified = data.passwordModified

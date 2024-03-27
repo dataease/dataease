@@ -22,6 +22,7 @@ import io.dataease.plugins.datasource.provider.DefaultJdbcProvider;
 import io.dataease.plugins.datasource.provider.ExtendedJdbcClassLoader;
 import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.plugins.datasource.query.QueryProvider;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 
@@ -76,6 +77,27 @@ public class JdbcProvider extends DefaultJdbcProvider {
         }
     }
 
+    public int execWithPreparedStatement(DatasourceRequest datasourceRequest) throws Exception {
+        JdbcConfiguration jdbcConfiguration = new Gson().fromJson(datasourceRequest.getDatasource().getConfiguration(), JdbcConfiguration.class);
+        int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
+        try (Connection connection = getConnectionFromPool(datasourceRequest); PreparedStatement stat = getPreparedStatement(connection, queryTimeout, datasourceRequest.getQuery())) {
+
+            if (CollectionUtils.isNotEmpty(datasourceRequest.getTableFieldWithValues())) {
+                for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
+                    stat.setObject(i + 1, datasourceRequest.getTableFieldWithValues().get(i).getValue(), datasourceRequest.getTableFieldWithValues().get(i).getType());
+                }
+            }
+
+            return stat.executeUpdate();
+
+        } catch (SQLException e) {
+            DataEaseException.throwException(e);
+        } catch (Exception e) {
+            DataEaseException.throwException(e);
+        }
+        return 0;
+    }
+
 
     @Override
     public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
@@ -110,6 +132,10 @@ public class JdbcProvider extends DefaultJdbcProvider {
             Set<String> primaryKeySet = new HashSet<>();
             while (primaryKeys.next()) {
                 String tableName = primaryKeys.getString("TABLE_NAME");
+                if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mariadb.name())) {
+                    //这里因为旧版mysql驱动问题，需要特殊处理
+                    tableName = tableName.replaceAll("`", "");
+                }
                 String database;
                 String schema = primaryKeys.getString("TABLE_SCHEM");
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name()) || datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.ck.name())
@@ -201,6 +227,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
         }
         tableField.setRemarks(remarks);
         String dbType = resultSet.getString("TYPE_NAME").toUpperCase();
+        tableField.setType(resultSet.getInt("DATA_TYPE"));
         tableField.setFieldType(dbType);
         if (dbType.equalsIgnoreCase("LONG")) {
             tableField.setFieldSize(65533);
@@ -398,7 +425,16 @@ public class JdbcProvider extends DefaultJdbcProvider {
         List<String[]> list = new LinkedList<>();
         JdbcConfiguration jdbcConfiguration = new Gson().fromJson(dsr.getDatasource().getConfiguration(), JdbcConfiguration.class);
         int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
-        try (Connection connection = getConnectionFromPool(dsr); Statement stat = getStatement(connection, queryTimeout); ResultSet rs = stat.executeQuery(dsr.getQuery())) {
+        try (Connection connection = getConnectionFromPool(dsr); PreparedStatement stat = getPreparedStatement(connection, queryTimeout, dsr.getQuery())) {
+
+            if (CollectionUtils.isNotEmpty(dsr.getTableFieldWithValues())) {
+                for (int i = 0; i < dsr.getTableFieldWithValues().size(); i++) {
+                    stat.setObject(i + 1, dsr.getTableFieldWithValues().get(i).getValue(), dsr.getTableFieldWithValues().get(i).getType());
+                }
+            }
+
+            ResultSet rs = stat.executeQuery();
+
             list = getDataResult(rs, dsr);
             if (dsr.isPageable() && (dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name()) || dsr.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.db2.name()))) {
                 Integer realSize = dsr.getPage() * dsr.getPageSize() < list.size() ? dsr.getPage() * dsr.getPageSize() : list.size();
@@ -584,13 +620,13 @@ public class JdbcProvider extends DefaultJdbcProvider {
             jdbcClassLoader = extendedJdbcClassLoader;
 
             DeDriver driver = deDriverMapper.selectByPrimaryKey("default-" + datasourceRequest.getDatasource().getType());
-            if(driver == null){
+            if (driver == null) {
                 for (DataSourceType value : SpringContextUtil.getApplicationContext().getBeansOfType(DataSourceType.class).values()) {
                     if (value.getType().equalsIgnoreCase(datasourceRequest.getDatasource().getType())) {
                         surpportVersions = value.getSurpportVersions();
                     }
                 }
-            }else {
+            } else {
                 surpportVersions = driver.getSurpportVersions();
             }
         } else {

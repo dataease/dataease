@@ -1039,6 +1039,18 @@ public class ChartViewService {
                 || StringUtils.containsIgnoreCase(view.getType(), "table-pivot")) {
             // 动态阈值
             dynamicAssistFields = getDynamicThresholdFields(view);
+            // 明细表非数据列字段要加进来
+            if (StringUtils.containsIgnoreCase(view.getType(), "table-info")) {
+                Set<String> fieldIds = xAxis.stream().map(ChartViewFieldDTO::getId).collect(Collectors.toSet());
+                List<ChartViewFieldDTO> finalXAxis = xAxis;
+                dynamicAssistFields.forEach(i -> {
+                    if (!fieldIds.contains(i.getFieldId())) {
+                        ChartViewFieldDTO fieldDTO = new ChartViewFieldDTO();
+                        BeanUtils.copyBean(fieldDTO, i.getCurField());
+                        finalXAxis.add(fieldDTO);
+                    }
+                });
+            }
             assistFields = getAssistFields(dynamicAssistFields, yAxis, xAxis);
         }
 
@@ -1289,6 +1301,9 @@ public class ChartViewService {
             }
 
             if (CollectionUtils.isNotEmpty(assistFields)) {
+                if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+                    datasourceRequest.setQuery(querySql);
+                }
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields, ds));
                 logger.info(datasourceAssistRequest.getQuery());
                 assistData = datasourceProvider.getData(datasourceAssistRequest);
@@ -2407,7 +2422,7 @@ public class ChartViewService {
             List<ChartSeniorThresholdDTO> conditions = gson.fromJson(itemConditions.toJSONString(), new TypeToken<List<ChartSeniorThresholdDTO>>() {
             }.getType());
             for (ChartSeniorThresholdDTO condition : conditions) {
-                if (StringUtils.equalsIgnoreCase(condition.getField(), "0")) {
+                if (StringUtils.equalsAnyIgnoreCase(condition.getField(), "0", "2")) {
                     continue;
                 }
 

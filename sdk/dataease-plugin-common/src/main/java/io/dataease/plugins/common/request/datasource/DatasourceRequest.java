@@ -6,6 +6,7 @@ import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -40,6 +41,18 @@ public class DatasourceRequest {
     private List<ChartViewFieldDTO> yAxis;
     private List<DatasetTableField> permissionFields;
     private boolean totalPageFlag;
+
+    private List<TableFieldWithValue> tableFieldWithValues;
+
+    @Getter
+    @Setter
+    @Accessors(chain = true)
+    public static class TableFieldWithValue {
+        private Object value;
+        private String filedName;
+        private String typeName;
+        private Integer type;
+    }
 
     private String rebuildSqlWithFragment(String sql) {
         if (!sql.toLowerCase().startsWith("with")) {

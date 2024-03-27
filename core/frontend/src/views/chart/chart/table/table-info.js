@@ -119,7 +119,7 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
   }
   fields.forEach(ele => {
     const f = nameMap[ele.dataeaseName]
-    if (f.hidden === true) {
+    if (!f || f.hidden === true) {
       return
     }
     columns.push(ele.dataeaseName)
@@ -159,10 +159,6 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
   }
 
   const customAttr = JSON.parse(chart.customAttr)
-  const sortIconMap = {
-    'asc': 'SortUp',
-    'desc': 'SortDown'
-  }
   // options
   const s2Options = {
     width: containerDom.offsetWidth,
@@ -180,7 +176,17 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
         padding: '4px 2px'
       }
     },
-    headerActionIcons: [
+    conditions: getConditions(chart),
+    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
+    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
+  }
+  // 表头排序
+  if (customAttr.size.tableHeaderSort) {
+    const sortIconMap = {
+      'asc': 'SortUp',
+      'desc': 'SortDown'
+    }
+    s2Options.headerActionIcons = [
       {
         iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
         belongsCell: 'colCell',
@@ -207,10 +213,7 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
           })
         }
       }
-    ],
-    conditions: getConditions(chart),
-    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
-    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
+    ]
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
@@ -417,7 +420,17 @@ export function baseTableNormal(container, chart, action, tableData, vueCom, res
         padding: '4px 2px'
       }
     },
-    headerActionIcons: [
+    conditions: getConditions(chart),
+    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
+    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
+  }
+  // 表头排序
+  if (customAttr.size.tableHeaderSort) {
+    const sortIconMap = {
+      'asc': 'SortUp',
+      'desc': 'SortDown'
+    }
+    s2Options.headerActionIcons = [
       {
         iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
         belongsCell: 'colCell',
@@ -444,10 +457,7 @@ export function baseTableNormal(container, chart, action, tableData, vueCom, res
           })
         }
       }
-    ],
-    conditions: getConditions(chart),
-    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
-    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
+    ]
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
@@ -766,12 +776,16 @@ function getConditions(chart) {
     // table item color
     let valueColor = DEFAULT_COLOR_CASE.tableFontColor
     let valueBgColor = DEFAULT_COLOR_CASE.tableItemBgColor
+    let headerColor = DEFAULT_COLOR_CASE.tableHeaderFontColor
+    let headerBgColor = DEFAULT_COLOR_CASE.tableHeaderBgColor
     if (chart.customAttr) {
       const customAttr = JSON.parse(chart.customAttr)
       // color
       if (customAttr.color) {
         const c = JSON.parse(JSON.stringify(customAttr.color))
         valueColor = c.tableFontColor
+        headerColor = c.tableHeaderFontColor
+        headerBgColor = c.tableHeaderBgColor
         const enableTableCrossBG = c.enableTableCrossBG
         if (!enableTableCrossBG) {
           valueBgColor = hexColorToRGBA(c.tableItemBgColor, c.alpha)
@@ -781,21 +795,35 @@ function getConditions(chart) {
       }
     }
 
+    const dimensionAxis = [...JSON.parse(chart.xaxis), ...JSON.parse(chart.xaxisExt)]
     const filedValueMap = getFieldValueMap(chart)
     for (let i = 0; i < conditions.length; i++) {
       const field = conditions[i]
+      let defaultTextColor = valueColor
+      let defaultBgColor = valueBgColor
+      if (chart.type === 'table-pivot') {
+        const index = dimensionAxis.findIndex(i => i.dataeaseName === field.field.dataeaseName)
+        defaultTextColor = index === -1 ? valueColor : headerColor
+        defaultBgColor = index === -1 ? valueBgColor : headerBgColor
+      }
       res.text.push({
         field: field.field.dataeaseName,
         mapping(value, rowData) {
+          if (rowData?.isTotals) {
+            return null
+          }
           return {
-            fill: mappingColor(value, valueColor, field, 'color', filedValueMap, rowData)
+            fill: mappingColor(value, defaultTextColor, field, 'color', filedValueMap, rowData)
           }
         }
       })
       res.background.push({
         field: field.field.dataeaseName,
         mapping(value, rowData) {
-          const fill = mappingColor(value, valueBgColor, field, 'backgroundColor', filedValueMap, rowData)
+          if (rowData?.isTotals) {
+            return null
+          }
+          const fill = mappingColor(value, defaultBgColor, field, 'backgroundColor', filedValueMap, rowData)
           if (fill) {
             return { fill }
           }
@@ -884,28 +912,62 @@ function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) 
       let tv
       if (t.field === '1') {
         tv = getValue(t.targetField, filedValueMap, rowData)
+      } else if (t.field === '2') {
+        tv = t.enumValues
       } else {
         tv = t.value
       }
       if (t.term === 'eq') {
-        if (value === tv) {
-          color = t[type]
-          flag = true
+        if (t.field === '2') {
+          const index = tv?.findIndex(v => v === value)
+          if (index !== -1) {
+            color = t[type]
+            flag = true
+          }
+        } else {
+          if (value === tv) {
+            color = t[type]
+            flag = true
+          }
         }
       } else if (t.term === 'not_eq') {
-        if (value !== tv) {
-          color = t[type]
-          flag = true
+        if (t.field === '2') {
+          const index = tv?.findIndex(v => v === value)
+          if (index === -1) {
+            color = t[type]
+            flag = true
+          }
+        } else {
+          if (value !== tv) {
+            color = t[type]
+            flag = true
+          }
         }
       } else if (t.term === 'like') {
-        if (value.includes(tv)) {
-          color = t[type]
-          flag = true
+        if (t.field === '2') {
+          const index = tv?.findIndex(v => value.includes(v))
+          if (index !== -1) {
+            color = t[type]
+            flag = true
+          }
+        } else {
+          if (value.includes(tv)) {
+            color = t[type]
+            flag = true
+          }
         }
       } else if (t.term === 'not like') {
-        if (!value.includes(tv)) {
-          color = t[type]
-          flag = true
+        if (t.field === '2') {
+          const index = tv?.findIndex(v => value.includes(v))
+          if (index === -1) {
+            color = t[type]
+            flag = true
+          }
+        } else {
+          if (!value.includes(tv)) {
+            color = t[type]
+            flag = true
+          }
         }
       } else if (t.term === 'null') {
         if (value === null || value === undefined || value === '') {
@@ -931,20 +993,41 @@ function mappingColor(value, defaultColor, field, type, filedValueMap, rowData) 
         if (fieldValue) {
           tv = new Date(fieldValue.replace(/-/g, '/') + ' GMT+8').getTime()
         }
+      } else if (t.field === '2') {
+        tv = []
+        t.enumValues?.forEach(v => {
+          tv.push(new Date(v.replace(/-/g, '/') + ' GMT+8').getTime())
+        })
       } else {
         tv = new Date(t.value.replace(/-/g, '/') + ' GMT+8').getTime()
       }
 
       const v = new Date(value.replace(/-/g, '/') + ' GMT+8').getTime()
       if (t.term === 'eq') {
-        if (v === tv) {
-          color = t[type]
-          flag = true
+        if (t.field === '2') {
+          const index = tv.findIndex(val => v === val)
+          if (index !== -1) {
+            color = t[type]
+            flag = true
+          }
+        } else {
+          if (v === tv) {
+            color = t[type]
+            flag = true
+          }
         }
       } else if (t.term === 'not_eq') {
-        if (v !== tv) {
-          color = t[type]
-          flag = true
+        if (t.field === '2') {
+          const index = tv.findIndex(val => v === val)
+          if (index === -1) {
+            color = t[type]
+            flag = true
+          }
+        } else {
+          if (v !== tv) {
+            color = t[type]
+            flag = true
+          }
         }
       } else if (t.term === 'lt') {
         if (v < tv) {

@@ -87,4 +87,16 @@ public class ProviderFactory implements ApplicationContextAware {
         }
     }
 
+
+    public static ExtDDLProvider gerExtDDLProvider(String type) {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(type);
+        switch (datasourceType) {
+            case mariadb:
+            case mysql:
+                return context.getBean("extMysqlDDLProvider", ExtDDLProvider.class);
+            default:
+                return context.getBean("defaultExtDDLProvider", ExtDDLProvider.class);
+        }
+    }
+
 }
