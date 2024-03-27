@@ -1293,20 +1293,21 @@ export function configPlotTrendLine(chart, plot) {
   })
   const trendResultData = {}
   const totalData = []
-  const trendLineMap = senior.trendLine.reduce((p, n) => {
+  const trendLineMap = senior.trendLine.reduce((p, n, i) => {
     const fieldData = originFieldDataMap[n.fieldId]
     if (!fieldData?.length) {
       return p
     }
     const regAlgo = REGRESSION_ALGO_MAP[n.algoType]()
-      .x((_, i) => i)
+      .x((_, i) => i + 1)
       .y(d => d)
     const result = regAlgo(fieldData)
-    trendResultData[n.fieldId] = result
+    const trendId = `${n.fieldId}|${i}`
+    trendResultData[trendId] = result
     result.forEach(item => {
-      totalData.push({ index: item[0], value: item[1], color: n.color, field: n.fieldId })
+      totalData.push({ trendId, index: item[0], value: item[1], color: n.color, field: n.fieldId })
     })
-    p[n.fieldId] = n
+    p[trendId] = n
     return p
   }, {})
   if (!totalData.length) {
@@ -1314,9 +1315,9 @@ export function configPlotTrendLine(chart, plot) {
   }
   const regLine = plot.chart.createView()
   plot.once('afterrender', () => {
-    for (const fieldId in trendResultData) {
-      const trendLine = trendLineMap[fieldId]
-      const trendData = trendResultData[fieldId]
+    for (const trendId in trendResultData) {
+      const trendLine = trendLineMap[trendId]
+      const trendData = trendResultData[trendId]
       regLine.annotation().text({
         content: trendLine.name,
         position: [0, trendData[0][1]],
@@ -1334,8 +1335,8 @@ export function configPlotTrendLine(chart, plot) {
     regLine.line()
       .position('index*value')
       .color('color', color => color)
-      .style('field',field => {
-        const trend = trendLineMap[field]
+      .style('trendId',trendId => {
+        const trend = trendLineMap[trendId]
         return {
           stroke: trend?.color ?? 'grey',
           lineDash: trend?.lineType ? getLineDash(trend.lineType) : [0, 0]
