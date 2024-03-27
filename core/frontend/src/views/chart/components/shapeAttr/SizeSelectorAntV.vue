@@ -414,6 +414,19 @@
         </el-form-item>
         <div v-if="(showProperty('showTableHeader') && sizeForm.showTableHeader) || chart.type === 'table-pivot'">
           <el-form-item
+            v-if="showProperty('tableHeaderSort')"
+            :label="$t('chart.table_header_sort')"
+            class="form-item"
+          >
+            <el-radio-group
+              v-model="sizeForm.tableHeaderSort"
+              @change="changeBarSizeCase('tableHeaderSort')"
+            >
+              <el-radio :label="true">{{ $t('commons.yes') }}</el-radio>
+              <el-radio :label="false">{{ $t('commons.no') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
             v-if="showProperty('tableTitleFontSize')"
             :label="$t('chart.table_title_fontsize')"
             class="form-item"
@@ -1771,6 +1784,7 @@ export default {
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
           this.sizeForm.showTableHeader = this.sizeForm.showTableHeader !== false
+          this.sizeForm.tableHeaderSort = this.sizeForm.tableHeaderSort !== false
           if (this.sizeForm.indexLabel === null || this.sizeForm.indexLabel === undefined) {
             this.sizeForm.indexLabel = DEFAULT_SIZE.indexLabel
           }
