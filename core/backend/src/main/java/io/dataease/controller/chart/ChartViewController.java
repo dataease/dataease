@@ -110,6 +110,13 @@ public class ChartViewController {
     }
 
     @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_MANAGE, paramIndex = 1)
+    @ApiOperation("复制")
+    @PostMapping("chartCopyWithId/{id}/{panelId}/{newId}")
+    public String chartCopyWithId(@PathVariable String id, @PathVariable String panelId, @PathVariable String newId) {
+        return chartViewService.chartCopy(id, newId,panelId);
+    }
+
+    @DePermission(type = DePermissionType.PANEL, level = ResourceAuthLevel.PANEL_LEVEL_MANAGE, paramIndex = 1)
     @ApiOperation("批量复制")
     @PostMapping("chartBatchCopy/{panelId}")
     public Map<String, String> chartBatchCopy(@RequestBody ChartCopyBatchRequest request, @PathVariable String panelId) {
