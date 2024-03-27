@@ -6,6 +6,7 @@ import GridTable from '@/components/gridTable/index.vue'
 import { getForm, searchFormMyTasks, searchTable } from '@/views/dataFilling/form/dataFilling'
 import EditFormData from '@/views/dataFilling/form/EditFormData.vue'
 import { forIn, includes, map, filter, forEach } from 'lodash-es'
+import { hasPermission } from '@/directive/Permission'
 
 export default {
   name: 'MyDataFillingJobs',
@@ -56,6 +57,9 @@ export default {
     this.searchTableMyTaskData()
   },
   methods: {
+    hasPermission(binding) {
+      return hasPermission(binding)
+    },
     changeKey(key) {
       this.currentKey = key
       if (key === 'finished') {
@@ -295,7 +299,9 @@ export default {
         v-model="activeName"
         class="tab-panel"
       >
-        <el-tab-pane name="my-tasks">
+        <el-tab-pane
+          name="my-tasks"
+        >
           <span slot="label">我的填报</span>
 
           <div style="padding:0 24px 16px">
@@ -311,8 +317,13 @@ export default {
           </div>
         </el-tab-pane>
 
-        <el-tab-pane name="forms">
-          <span slot="label">
+        <el-tab-pane
+          v-if="hasPermission(['data-filling-form:manage'])"
+          name="forms"
+        >
+          <span
+            slot="label"
+          >
             <router-link to="/data-filling/forms">
               表单管理
             </router-link>
