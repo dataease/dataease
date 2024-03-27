@@ -11,7 +11,8 @@ import {
   getAnalyse,
   setGradientColor,
   getMeta,
-  configPlotTooltipEvent
+  configPlotTooltipEvent,
+  configAxisLabelLengthLimit
 } from '@/views/chart/chart/common/common_antv'
 import { antVCustomColor, getColors, handleEmptyDataStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
 import { cloneDeep, find } from 'lodash-es'
@@ -251,8 +252,10 @@ export function hBaseBarOptionAntV(container, chart, action, isGroup, isStack) {
   const plot = new Bar(container, options)
 
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
+  // 处理纵轴标签长度限制
+  configAxisLabelLengthLimit(chart, plot)
   return plot
 }
 
