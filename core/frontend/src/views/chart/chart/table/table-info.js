@@ -159,10 +159,6 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
   }
 
   const customAttr = JSON.parse(chart.customAttr)
-  const sortIconMap = {
-    'asc': 'SortUp',
-    'desc': 'SortDown'
-  }
   // options
   const s2Options = {
     width: containerDom.offsetWidth,
@@ -180,7 +176,17 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
         padding: '4px 2px'
       }
     },
-    headerActionIcons: [
+    conditions: getConditions(chart),
+    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
+    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
+  }
+  // 表头排序
+  if (customAttr.size.tableHeaderSort) {
+    const sortIconMap = {
+      'asc': 'SortUp',
+      'desc': 'SortDown'
+    }
+    s2Options.headerActionIcons = [
       {
         iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
         belongsCell: 'colCell',
@@ -207,10 +213,7 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
           })
         }
       }
-    ],
-    conditions: getConditions(chart),
-    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
-    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
+    ]
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
@@ -417,7 +420,17 @@ export function baseTableNormal(container, chart, action, tableData, vueCom, res
         padding: '4px 2px'
       }
     },
-    headerActionIcons: [
+    conditions: getConditions(chart),
+    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
+    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
+  }
+  // 表头排序
+  if (customAttr.size.tableHeaderSort) {
+    const sortIconMap = {
+      'asc': 'SortUp',
+      'desc': 'SortDown'
+    }
+    s2Options.headerActionIcons = [
       {
         iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
         belongsCell: 'colCell',
@@ -444,10 +457,7 @@ export function baseTableNormal(container, chart, action, tableData, vueCom, res
           })
         }
       }
-    ],
-    conditions: getConditions(chart),
-    frozenColCount: customAttr.size.tableColumnFreezeHead ?? 0,
-    frozenRowCount: customAttr.size.tableRowFreezeHead ?? 0
+    ]
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {

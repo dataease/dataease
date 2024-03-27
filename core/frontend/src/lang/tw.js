@@ -1231,6 +1231,7 @@ export default {
     table_item_font_color: '表格字體',
     table_show_index: '顯示序號',
     table_show_table_header: '顯示表頭',
+    table_header_sort: '開啟表頭排序',
     stripe: '斑馬紋',
     start_angle: '起始角度',
     end_angle: '結束角度',

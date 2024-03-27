@@ -1232,6 +1232,7 @@ export default {
     table_item_font_color: 'Table Font',
     table_show_index: 'Show Index',
     table_show_table_header: 'Show Table Header',
+    table_header_sort: 'Enable table header sort',
     stripe: 'Zebra pattern',
     start_angle: 'Start Angle',
     end_angle: 'End Angle',
