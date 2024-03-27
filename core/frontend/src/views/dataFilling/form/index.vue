@@ -1,15 +1,15 @@
 <script>
 import DeContainer from '@/components/dataease/DeContainer.vue'
-import DeMainContainer from '@/components/dataease/DeMainContainer.vue'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer.vue'
 import NoSelect from './NoSelect.vue'
 import ViewTable from './ViewTable.vue'
 import { listForm, saveForm, updateForm, deleteForm, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
 import { cloneDeep } from 'lodash-es'
+import { hasPermission } from '@/directive/Permission'
 
 export default {
   name: 'DataFillingForm',
-  components: { DeAsideContainer, DeMainContainer, DeContainer, NoSelect, ViewTable },
+  components: { DeAsideContainer, DeContainer, NoSelect, ViewTable },
   data() {
     return {
       treeLoading: false,
@@ -38,6 +38,9 @@ export default {
     })
   },
   methods: {
+    hasPermission(binding) {
+      return hasPermission(binding)
+    },
     createFolder(folder) {
       this.folderForm.name = undefined
       this.folderForm.pid = folder.id
@@ -206,7 +209,10 @@ export default {
         v-model="activeName"
         class="tab-panel"
       >
-        <el-tab-pane name="my-tasks">
+        <el-tab-pane
+          v-if="hasPermission(['my-data-filling:manage'])"
+          name="my-tasks"
+        >
           <span slot="label">
             <router-link to="/data-filling/my-jobs">
               我的填报
@@ -214,7 +220,9 @@ export default {
           </span>
         </el-tab-pane>
 
-        <el-tab-pane name="forms">
+        <el-tab-pane
+          name="forms"
+        >
           <span slot="label">
             表单管理
           </span>
