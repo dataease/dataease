@@ -1,5 +1,6 @@
 package io.dataease.commons.filter;
 
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.core.Ordered;
 import org.springframework.http.HttpHeaders;
 import org.springframework.stereotype.Component;
@@ -16,6 +17,9 @@ public class HtmlResourceFilter implements Filter, Ordered {
         return 99;
     }
 
+    @Value("${dataease.http.cache:false}")
+    private Boolean httpCache;
+
     @Override
     public void init(FilterConfig filterConfig) throws ServletException {
         Filter.super.init(filterConfig);
@@ -24,11 +28,13 @@ public class HtmlResourceFilter implements Filter, Ordered {
     @Override
     public void doFilter(ServletRequest servletRequest, ServletResponse servletResponse, FilterChain filterChain) throws IOException, ServletException {
         HttpServletResponse httpResponse = (HttpServletResponse) servletResponse;
-        // 禁用缓存
-        httpResponse.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache");
-        httpResponse.setHeader("Cache", "no-cache");
-        httpResponse.setHeader(HttpHeaders.PRAGMA, "no-cache");
-        httpResponse.setHeader(HttpHeaders.EXPIRES, "0");
+        if(httpCache == null || !httpCache){
+            // 禁用缓存
+            httpResponse.setHeader(HttpHeaders.CACHE_CONTROL, "no-cache");
+            httpResponse.setHeader("Cache", "no-cache");
+            httpResponse.setHeader(HttpHeaders.PRAGMA, "no-cache");
+            httpResponse.setHeader(HttpHeaders.EXPIRES, "0");
+        }
         // 继续执行过滤器链
         filterChain.doFilter(servletRequest, httpResponse);
     }
