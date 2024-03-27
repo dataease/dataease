@@ -1,7 +1,7 @@
 import { Condition } from '@/components/widget/bean/Condition'
 import { ApplicationContext } from '@/utils/ApplicationContext'
 import store from '@/store'
-
+import bus from '@/utils/bus'
 /**
  * 判断两个conditions数组是否相同
  * @param {*} conditions1
@@ -167,6 +167,7 @@ export const buildAfterFilterLoaded = (originMap, p) => {
     if (conditions?.length) {
       conditions.forEach(condition => {
         if (condition instanceof Promise && condition.componentId === componentId && condition.cacheObj?.cb) {
+          bus.$emit('resolve-wait-condition', p)
           condition.cacheObj.cb(p)
         }
       })
