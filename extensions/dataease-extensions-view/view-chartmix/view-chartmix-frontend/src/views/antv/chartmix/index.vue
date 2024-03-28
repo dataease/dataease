@@ -375,7 +375,7 @@ export default {
 
         if (customAttr.tooltip) {
           params.tooltip = customAttr.tooltip.show ? {
-            showTitle: false,
+            showTitle: true,
             showMarkers: false,
             shared: true,
             // 内置：node 不显示 tooltip，edge 显示 tooltip
