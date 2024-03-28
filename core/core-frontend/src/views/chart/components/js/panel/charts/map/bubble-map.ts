@@ -91,9 +91,6 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         active: { stroke: 'green', lineWidth: 1 }
       },
       tooltip: {},
-      zoom: {
-        position: 'bottomright'
-      },
       legend: false,
       // 禁用线上地图数据
       customFetchGeoData: () => null
@@ -101,6 +98,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     options = this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
     const dotLayer = this.getDotLayer(chart, geoJson, drawOption)
+    this.configZoomButton(view)
     view.once('loaded', () => {
       view.addLayer(dotLayer)
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {

@@ -90,9 +90,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         active: { stroke: 'green', lineWidth: 1 }
       },
       tooltip: {},
-      zoom: {
-        position: 'bottomright'
-      },
       legend: {
         position: 'bottomleft'
       },
@@ -101,6 +98,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     }
     options = this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
+    this.configZoomButton(view)
     view.once('loaded', () => {
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
         const data = ev.feature.properties

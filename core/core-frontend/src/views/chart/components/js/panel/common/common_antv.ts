@@ -21,6 +21,11 @@ import {
   LIST_CLASS
 } from '@antv/l7plot-component/dist/esm/legend/category/constants'
 import substitute from '@antv/util/esm/substitute'
+import { Plot as L7Plot } from '@antv/l7plot/dist/esm/core/plot'
+import type { PlotOptions } from '@antv/l7plot/dist/esm/types'
+import { Zoom } from '@antv/l7'
+import { createL7Icon } from '@antv/l7-component/es/utils/icon'
+import { DOM } from '@antv/l7-utils'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -813,4 +818,48 @@ export function configL7Legend(): LegendOptions {
       return ''
     }
   }
+}
+class CustomZoom extends Zoom {
+  resetButtonGroup(container) {
+    DOM.clearChildren(container)
+    this['zoomInButton'] = this['createButton'](
+      this.controlOption.zoomInText,
+      this.controlOption.zoomInTitle,
+      'l7-button-control',
+      container,
+      this.zoomIn
+    )
+    const resetBtnIconText = createL7Icon('l7-icon-round')
+    this['createButton'](resetBtnIconText, 'Reset', 'l7-button-control', container, () => {
+      this.mapsService.setZoomAndCenter(
+        this.controlOption['initZoom'],
+        this.controlOption['center']
+      )
+    })
+    if (this.controlOption.showZoom) {
+      this['zoomNumDiv'] = this['createButton'](
+        '0',
+        '',
+        'l7-button-control l7-control-zoom__number',
+        container
+      )
+    }
+    this['zoomOutButton'] = this['createButton'](
+      this.controlOption.zoomOutText,
+      this.controlOption.zoomOutTitle,
+      'l7-button-control',
+      container,
+      this.zoomOut
+    )
+    this['updateDisabled']()
+  }
+}
+export function configL7Zoom(plot: L7Plot<PlotOptions>) {
+  plot.once('loaded', () => {
+    const zoomOptions = {
+      initZoom: plot.scene.getZoom(),
+      center: plot.scene.getCenter()
+    } as any
+    plot.scene.addControl(new CustomZoom(zoomOptions))
+  })
 }
