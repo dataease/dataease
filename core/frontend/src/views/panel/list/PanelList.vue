@@ -26,6 +26,62 @@
               />
             </el-select>
           </el-input>
+          <el-dropdown trigger="click" @command="sortTypeChange">
+            <div class="insert-filter filter-icon-span">
+              <svg-icon
+                v-show="curSortType.includes('asc')"
+                class="opt-icon"
+                icon-class="dv-sort-asc"
+              />
+              <svg-icon
+                v-show="curSortType.includes('desc')"
+                class="opt-icon"
+                icon-class="dv-sort-desc"
+              />
+            </div>
+            <template #dropdown>
+              <el-dropdown-menu style="width: 160px">
+                <el-dropdown-item
+                  class="sort-type-normal"
+                  :class="{ 'sort-type-checked': curSortType === 'time_asc' }"
+                  :command="beforeClickItem('time_asc')"
+                >
+                  <span>按创建时间升序</span>
+                  <i style="margin-left: 4px; line-height: 32px"
+                    class="el-icon-check"
+                  />
+                </el-dropdown-item>
+                <el-dropdown-item
+                  class="sort-type-normal"
+                  :class="{ 'sort-type-checked': curSortType === 'time_desc' }"
+                  :command="beforeClickItem('time_desc')"
+                >
+                  <span>按创建时间降序</span><i style="margin-left: 4px; line-height: 32px"
+                                         class="el-icon-check"
+                />
+                </el-dropdown-item>
+                <el-divider class="custom-driver"/>
+                <el-dropdown-item
+                  class="sort-type-normal"
+                  :class="{ 'sort-type-checked': curSortType === 'name_asc' }"
+                  :command="beforeClickItem('name_asc')"
+                >
+                  <span>按照名称升序</span><i style="margin-left: 4px; line-height: 32px"
+                                        class="el-icon-check"
+                />
+                </el-dropdown-item>
+                <el-dropdown-item
+                  class="sort-type-normal"
+                  :class="{ 'sort-type-checked': curSortType === 'name_desc' }"
+                  :command="beforeClickItem('name_desc')"
+                >
+                  <span>按照名称降序</span><i style="margin-left: 4px; line-height: 32px"
+                                        class="el-icon-check"
+                />
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </el-col>
       </el-row>
       <el-row class="de-tree">
@@ -459,7 +515,8 @@ import { DEFAULT_COMMON_CANVAS_STYLE_STRING } from '@/views/panel/panel'
 import TreeSelector from '@/components/treeSelector'
 import { queryAuthModel } from '@/api/authModel/authModel'
 import msgCfm from '@/components/msgCfm/index'
-import { updateCacheTree } from '@/components/canvas/utils/utils'
+import { deepCopy, updateCacheTree } from '@/components/canvas/utils/utils'
+import treeSort from '@/utils/treeSortUtils'
 
 export default {
   name: 'PanelList',
@@ -467,6 +524,8 @@ export default {
   mixins: [msgCfm],
   data() {
     return {
+      originResourceTree: [],
+      curSortType: 'time_desc',
       lastActiveDefaultPanelId: null, // 激活的节点 在这个节点下面动态放置子节点
       responseSource: 'panelQuery',
       defaultExpansion: false,
@@ -595,7 +654,7 @@ export default {
   },
   watch: {
     // 切换展示页面后 重新点击一下当前节点
-    '$store.state.panel.mainActiveName': function(newVal, oldVal) {
+    '$store.panel.mainActiveName': function(newVal, oldVal) {
       if (newVal === 'PanelMain' && this.lastActiveNodeData) {
         this.activeNodeAndClickOnly(this.lastActiveNodeData)
       }
@@ -637,6 +696,15 @@ export default {
     }
   },
   methods: {
+    beforeClickItem(type) {
+      return {
+        sortType: type
+      }
+    },
+    sortTypeChange(params) {
+      this.tData = treeSort(this.originResourceTree, params.sortType)
+      this.curSortType = params.sortType
+    },
     activeLastNode() {
       this.$nextTick(() => {
         document.querySelector('.is-current').firstChild.click()
@@ -674,8 +742,8 @@ export default {
         updateCacheTree(this.editPanel.optType,
           panelInfo.panelType === 'system' ? 'panel-default-tree' : 'panel-main-tree', panelInfo,
           panelInfo.panelType === 'system' ? this.defaultData : this.tData)
-        if (this.editPanel.optType === 'rename' && panelInfo.id === this.$store.state.panel.panelInfo.id) {
-          this.$store.state.panel.panelInfo.name = panelInfo.name
+        if (this.editPanel.optType === 'rename' && panelInfo.id === this.$store.panel.panelInfo.id) {
+          this.$store.panel.panelInfo.name = panelInfo.name
         }
         // 默认展开 同时点击 新增的节点
         if (
@@ -852,7 +920,7 @@ export default {
     },
 
     delete(data) {
-      const title = data.source ? 'commons.cancel_this_dashboard':(data.nodeType === 'folder' ? 'commons.delete_this_folder' : 'commons.delete_this_dashboard')
+      const title = data.source ? 'commons.cancel_this_dashboard' : (data.nodeType === 'folder' ? 'commons.delete_this_folder' : 'commons.delete_this_dashboard')
       const params = {
         title: title,
         type: 'danger',
@@ -899,11 +967,13 @@ export default {
       const userCache = modelInfo && cache
       if (userCache) {
         this.tData = JSON.parse(modelInfo)
+        this.originResourceTree = deepCopy(this.tData)
       }
       groupTree(this.groupForm, !userCache).then((res) => {
         localStorage.setItem('panel-main-tree', JSON.stringify(res.data || []))
         if (!userCache) {
           this.tData = res.data || []
+          this.originResourceTree = deepCopy(this.tData)
         }
         if (this.responseSource === 'appApply') {
           this.fromAppActive()
@@ -1185,6 +1255,7 @@ export default {
 }
 
 .main-area-input {
+  width: calc(100% - 40px);
   ::v-deep.el-input-group__append {
     width: 70px;
     background: transparent;
@@ -1248,5 +1319,70 @@ export default {
 }
 .link-dialog ::v-deep .el-dialog__headerbtn {
   z-index: 1;
+}
+
+.insert-filter {
+  display: inline-block;
+  font-weight: 400 !important;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--TextPrimary, #1f2329);
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  transition: 0.1s;
+  border-radius: 3px;
+
+  &:active {
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
+  }
+
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6;
+  }
+}
+
+.filter-icon-span {
+  border: 1px solid #dcdfe6;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  padding: 7px;
+  margin-left: 8px;
+}
+
+.menu-outer-dv_popper {
+  width: 140px;
+  margin-top: -2px !important;
+
+  .ed-icon {
+    border-radius: 4px;
+  }
+}
+
+.sort-type-normal {
+  display: flex;
+  i {
+    display: none;
+  }
+}
+
+.sort-type-checked {
+  color: #3370ff;
+  i {
+    display: block;
+  }
+}
+
+.custom-driver {
+  margin: 12px 0
 }
 </style>

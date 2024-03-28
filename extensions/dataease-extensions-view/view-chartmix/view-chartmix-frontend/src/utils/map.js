@@ -60,6 +60,10 @@ export const DEFAULT_LABEL = {
   position: 'middle',
   color: '#000000',
   fontSize: '10',
+  subShow: true,
+  subPosition: 'middle',
+  subColor: '#000000',
+  subFontSize: '10',
   formatter: '{c}',
   gaugeFormatter: '{value}',
   labelLine: {
