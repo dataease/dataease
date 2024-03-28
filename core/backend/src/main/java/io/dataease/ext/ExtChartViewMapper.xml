@@ -613,7 +613,7 @@
 
     <delete id="deleteNoUseView">
         delete from chart_view
-        where scene_id = #{panelId}
+        where scene_id = #{panelId} and create_time &lt; ( unix_timestamp()- 30 ) * 1000
         <if test="viewIds != null and viewIds.size() > 0">
             and id not in
             <foreach collection="viewIds" item="viewId" open='(' separator=',' close=')'>
