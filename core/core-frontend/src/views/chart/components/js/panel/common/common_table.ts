@@ -632,7 +632,8 @@ class SortTooltip extends BaseTooltip {
         left: `${this.position?.x}px`,
         top: `${this.position?.y}px`,
         pointerEvents: enterable ? 'all' : 'none',
-        zIndex: 9999
+        zIndex: 9999,
+        position: 'absolute'
       },
       visible: true
     })
@@ -645,6 +646,9 @@ export function configTooltip(option: S2Options) {
   }
   option.tooltip = {
     ...option.tooltip,
+    adjustPosition: ({ event }) => {
+      return getTooltipPosition(event)
+    },
     renderTooltip: sheet => new SortTooltip(sheet)
   }
   option.headerActionIcons = [
@@ -705,4 +709,31 @@ export function copyContent(s2Instance, event, fieldMeta) {
   if (content) {
     copyString(content, true)
   }
+}
+
+function getTooltipPosition(event) {
+  const s2Instance = event.s2Instance
+  const { x, y } = event
+  const result = { x: x + 15, y: y + 10 }
+  if (!s2Instance) {
+    return result
+  }
+  const { height, width } = s2Instance.getCanvasElement().getBoundingClientRect()
+  const { offsetHeight, offsetWidth } = s2Instance.tooltip.getContainer()
+  if (offsetWidth > width) {
+    result.x = 0
+  }
+  if (offsetHeight > height) {
+    result.y = 0
+  }
+  if (!(result.x || result.y)) {
+    return result
+  }
+  if (result.x && result.x + offsetWidth > width) {
+    result.x -= result.x + offsetWidth - width
+  }
+  if (result.y && result.y + offsetHeight > height) {
+    result.y -= offsetHeight + 15
+  }
+  return result
 }

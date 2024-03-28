@@ -1,6 +1,7 @@
 import '@/style/index.less'
 import '@/plugins/svg-icon'
 import 'normalize.css/normalize.css'
+import '@antv/s2/dist/style.min.css'
 import { setupI18n } from '@/plugins/vue-i18n'
 import { setupStore } from '@/store'
 import { setupElementPlus } from '@/plugins/element-plus'

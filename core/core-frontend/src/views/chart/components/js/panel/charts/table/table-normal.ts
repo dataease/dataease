@@ -102,7 +102,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
       height: containerDom.offsetHeight,
       showSeriesNumber: customAttr.tableHeader.showIndex,
       style: this.configStyle(chart),
-      conditions: this.configConditions(chart)
+      conditions: this.configConditions(chart),
+      tooltip: {
+        getContainer: () => containerDom
+      }
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
