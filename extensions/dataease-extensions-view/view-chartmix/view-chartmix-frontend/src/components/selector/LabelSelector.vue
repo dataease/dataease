@@ -2,6 +2,9 @@
   <div style="width: 100%;">
     <el-col>
       <el-form ref="labelForm" :model="labelForm" label-width="80px" size="mini">
+
+        <el-divider content-position="left"><span style="font-size: 12px">主轴标签</span></el-divider>
+
         <el-form-item :label="$t('chart.show')" class="form-item">
           <el-checkbox v-model="labelForm.show" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
         </el-form-item>
@@ -44,39 +47,52 @@
               />
             </el-select>
           </el-form-item>
-          <!--          <el-form-item :label="$t('chart.label')" class="form-item">
-                      <el-select v-model="values" :placeholder="$t('commons.please_select')" multiple collapse-tags
-                                 @change="changeFields">
-                        <el-option-group
-                          v-for="group in fieldOptions"
-                          :key="group.label"
-                          :label="group.label"
-                        >
-                          <el-option
-                            v-for="item in group.options"
-                            :key="item.id"
-                            :label="item.name"
-                            :value="item.id"
-                            :disabled="item.disabled">
-                          </el-option>
-                        </el-option-group>
-                      </el-select>
-                    </el-form-item>
-                    <el-form-item class="form-item">
-                      <span slot="label">
-                        <span class="span-box">
-                          <span>{{ $t('chart.content_formatter') }}</span>
-                          <el-tooltip class="item" effect="dark" placement="bottom">
-                            <div slot="content">
-                              {{ $t('plugin_view_chartmix.tooltip_format_tip') }}
-                            </div>
-                            <i class="el-icon-info" style="cursor: pointer;"/>
-                          </el-tooltip>
-                        </span>
-                      </span>
-                      <el-input v-model="labelForm.labelTemplate" type="textarea" :placeholder="defaultPlaceholder"
-                                :autosize="{ minRows: 4, maxRows: 4}" @blur="changeLabelAttr"/>
-                    </el-form-item>-->
+        </div>
+
+        <el-divider content-position="left"><span style="font-size: 12px">副轴标签</span></el-divider>
+
+        <el-form-item :label="$t('chart.show')" class="form-item">
+          <el-checkbox v-model="labelForm.subShow" @change="changeLabelAttr">{{ $t('chart.show') }}</el-checkbox>
+        </el-form-item>
+        <div v-show="labelForm.subShow">
+          <el-form-item :label="$t('chart.text_fontsize')" class="form-item">
+            <el-select v-model="labelForm.subFontSize" :placeholder="$t('chart.text_fontsize')" size="mini"
+                       @change="changeLabelAttr">
+              <el-option v-for="option in fontSize" :key="option.value" :label="option.name" :value="option.value"/>
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="$t('chart.text_color')" class="form-item">
+            <el-color-picker v-model="labelForm.subColor" class="color-picker-style" :predefine="predefineColors"
+                             @change="changeLabelAttr"/>
+          </el-form-item>
+          <el-form-item
+            class="form-item"
+          >
+            <template #label>
+              {{ $t('chart.label_position') }}
+              <el-tooltip
+                effect="dark"
+                content="仅对柱状图生效"
+              >
+                <i
+                  class="el-icon-info"
+                  style="cursor: pointer;"
+                />
+              </el-tooltip>
+            </template>
+            <el-select
+              v-model="labelForm.subPosition"
+              :placeholder="$t('chart.label_position')"
+              @change="changeLabelAttr"
+            >
+              <el-option
+                v-for="option in labelPositionV"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
         </div>
       </el-form>
 
@@ -85,7 +101,7 @@
 </template>
 
 <script>
-import {COLOR_PANEL, DEFAULT_LABEL, getDefaultTemplate} from '@/utils/map'
+import {COLOR_PANEL, DEFAULT_LABEL, getDefaultTemplate} from '../../utils/map'
 
 export default {
   name: 'LabelSelector',
@@ -195,6 +211,13 @@ export default {
           if (!this.labelForm.labelLine) {
             this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
           }
+          if (this.labelForm.subShow === undefined) {
+            this.labelForm.subShow = DEFAULT_LABEL.subShow
+            this.labelForm.subPosition = DEFAULT_LABEL.subPosition
+            this.labelForm.subColor = DEFAULT_LABEL.subColor
+            this.labelForm.subFontSize = DEFAULT_LABEL.subFontSize
+          }
+
           if (!customAttr.label.initialized) {
             this.changeLabelAttr();
           }
@@ -270,6 +293,7 @@ export default {
 .form-item ::v-deep .el-checkbox__label {
   font-size: 12px;
 }
+
 .form-item ::v-deep .el-radio__label {
   font-size: 12px;
 }
