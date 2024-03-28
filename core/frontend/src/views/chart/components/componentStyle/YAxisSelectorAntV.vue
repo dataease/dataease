@@ -266,6 +266,20 @@
               />
             </el-form-item>
             <el-form-item
+              v-show="showProperty('axisLabelLength')"
+              :label="$t('chart.axis_label_length_limit')"
+              class="form-item"
+            >
+                <el-input-number
+                  v-model="axisForm.axisLabel.lengthLimit"
+                  :precision="0"
+                  :min="1"
+                  :max="50"
+                  size="mini"
+                  @change="changeYAxisStyle('axisLabel')"
+                />
+            </el-form-item>
+            <el-form-item
               :label="$t('chart.axis_label_rotate')"
               class="form-item form-item-slider"
             >
@@ -457,6 +471,7 @@ export default {
           if (!this.axisForm.splitLine.dashStyle) {
             this.axisForm.splitLine.dashStyle = JSON.parse(JSON.stringify(DEFAULT_YAXIS_STYLE.splitLine.dashStyle))
           }
+          this.axisForm.axisLabel.lengthLimit = this.axisForm.axisLabel.lengthLimit ?? DEFAULT_YAXIS_STYLE.axisLabel.lengthLimit
         }
       }
     },

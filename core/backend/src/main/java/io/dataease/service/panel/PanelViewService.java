@@ -131,8 +131,12 @@ public class PanelViewService {
                 //将视图从cache表中更新到正式表中
                 viewIds = panelViewInsertDTOList.stream().map(panelView -> panelView.getChartViewId()).collect(Collectors.toList());
             }
-            extChartViewMapper.deleteCacheWithPanel(viewIds, panelId);
-            extChartViewMapper.deleteNoUseView(viewIds, panelId);
+            // viewIds 不存在时 不执行删除缓存防止误删情况
+            if(CollectionUtils.isNotEmpty(viewIds)){
+                extChartViewMapper.deleteCacheWithPanel(viewIds, panelId);
+                extChartViewMapper.deleteNoUseView(viewIds, panelId);
+            }
+
         }
         panelGroup.setMobileLayout(mobileLayout);
         return viewIds;

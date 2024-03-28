@@ -20,7 +20,7 @@ function checkPermission(el, binding) {
 }
 
 export function hasPermission(binding) {
-  const { value } = binding
+  const value = binding
   // 我们是基于资源授鉴权 不用角色 因为后期可能有对部门授权 对 人员授权
   const permissions = store.getters && store.getters.permissions
   if (value && value instanceof Array) {
@@ -30,7 +30,6 @@ export function hasPermission(binding) {
       const result = permissions.includes(needP)
       return result
     })
-    console.log(needPermissions, hasPermission)
     return hasPermission
   } else {
     return false
