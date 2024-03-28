@@ -92,7 +92,9 @@ const navigate = computed(() => appearanceStore.getNavigate)
     border-color: #1f232926 !important;
   }
 
-  .system,
+  .system {
+    color: #000 !important;
+  }
   .de-logo {
     color: #3371ff !important;
   }
