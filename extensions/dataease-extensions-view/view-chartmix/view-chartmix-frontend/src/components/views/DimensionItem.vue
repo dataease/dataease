@@ -78,7 +78,7 @@
               @command="sort"
             >
               <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
+                <span class="inline-menu-text">
                   <i class="el-icon-sort"/>
                   <span>{{ $t('chart.sort') }}</span>
                   <span class="summary-span-item">({{ $t('chart.' + item.sort) }})</span>
@@ -107,7 +107,7 @@
                         @command="dateStyle"
                       >
                         <span class="el-dropdown-link inner-dropdown-menu">
-                          <span>
+                          <span  class="inline-menu-text">
                             <i class="el-icon-c-scale-to-original"/>
                             <span>{{ $t('chart.dateStyle') }}</span>
                             <span class="summary-span-item">({{ $t('chart.' + item.dateStyle) }})</span>
@@ -149,7 +149,7 @@
                         @command="datePattern"
                       >
                         <span class="el-dropdown-link inner-dropdown-menu">
-                          <span>
+                          <span class="inline-menu-text">
                             <i class="el-icon-timer"/>
                             <span>{{ $t('chart.datePattern') }}</span>
                             <span class="summary-span-item">({{ $t('chart.' + item.datePattern) }})</span>
@@ -419,5 +419,10 @@ span {
 .summary-span-item {
   margin-left: 4px;
   color: #878d9f;
+}
+.inline-menu-text {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>
