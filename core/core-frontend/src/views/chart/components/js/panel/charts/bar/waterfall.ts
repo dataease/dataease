@@ -127,37 +127,6 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
           fill: setGradientColor(hexColorToRGBA(totalColorRgba, alpha), gradient, 270)
         }
       },
-      legend: {
-        items: [
-          {
-            name: '增加',
-            value: '',
-            marker: {
-              style: {
-                fill: setGradientColor(hexColorToRGBA(risingColorRgba, alpha), gradient, 270)
-              }
-            }
-          },
-          {
-            name: '减少',
-            value: '',
-            marker: {
-              style: {
-                fill: setGradientColor(hexColorToRGBA(fallingColorRgba, alpha), gradient, 270)
-              }
-            }
-          },
-          {
-            name: '合计',
-            value: '',
-            marker: {
-              style: {
-                fill: setGradientColor(hexColorToRGBA(totalColorRgba, alpha), gradient, 270)
-              }
-            }
-          }
-        ]
-      },
       risingFill: setGradientColor(hexColorToRGBA(risingColorRgba, alpha), gradient, 270),
       fallingFill: setGradientColor(hexColorToRGBA(fallingColorRgba, alpha), gradient, 270)
     }
@@ -256,9 +225,55 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     }
   }
 
+  protected configLegend(chart: Chart, options: WaterfallOptions): WaterfallOptions {
+    const tmp = super.configLegend(chart, options)
+    if (!tmp.legend) {
+      return tmp
+    }
+    const customAttr = parseJson(chart.customAttr)
+    const { colors, gradient, alpha } = customAttr.basicStyle
+    const [risingColorRgba, fallingColorRgba, totalColorRgba] = colors
+    return {
+      ...tmp,
+      legend: {
+        ...tmp.legend,
+        items: [
+          {
+            name: '增加',
+            value: '',
+            marker: {
+              style: {
+                fill: setGradientColor(hexColorToRGBA(risingColorRgba, alpha), gradient, 270)
+              }
+            }
+          },
+          {
+            name: '减少',
+            value: '',
+            marker: {
+              style: {
+                fill: setGradientColor(hexColorToRGBA(fallingColorRgba, alpha), gradient, 270)
+              }
+            }
+          },
+          {
+            name: '合计',
+            value: '',
+            marker: {
+              style: {
+                fill: setGradientColor(hexColorToRGBA(totalColorRgba, alpha), gradient, 270)
+              }
+            }
+          }
+        ]
+      }
+    }
+  }
+
   protected setupOptions(chart: Chart, options: WaterfallOptions): WaterfallOptions {
     return flow(
       this.configTheme,
+      this.configLegend,
       this.configBasicStyle,
       this.configLabel,
       this.configTooltip,
