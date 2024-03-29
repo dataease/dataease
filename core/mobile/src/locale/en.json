@@ -37,7 +37,10 @@
     "home": {
         "tab1": "My Favorites",
         "tab2": "Recent",
-        "tab3": "Share With Me"
+        "tab3": "Share With Me",
+        "empty_tips_1": "No favorite dashboards yet!",
+        "empty_tips_2": "No browsing history yet!",
+        "empty_tips_3": "No dashboards shared with me yet!"
     },
     "dir": {
         "searchHistory": "Search History",
