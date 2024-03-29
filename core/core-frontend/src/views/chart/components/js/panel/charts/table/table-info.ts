@@ -16,6 +16,10 @@ export class TableInfo extends S2ChartView<TableSheet> {
   properties = TABLE_EDITOR_PROPERTY
   propertyInner = {
     ...TABLE_EDITOR_PROPERTY_INNER,
+    'table-header-selector': [
+      ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
+      'tableHeaderSort'
+    ],
     'basic-style-selector': [
       'tableColumnMode',
       'tableBorderColor',
@@ -131,6 +135,8 @@ export class TableInfo extends S2ChartView<TableSheet> {
     }
     // tooltip
     this.configTooltip(s2Options)
+    // header interaction
+    this.configHeaderInteraction(chart, s2Options)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 

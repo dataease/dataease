@@ -13,7 +13,13 @@ const { t } = useI18n()
  */
 export class TableNormal extends S2ChartView<TableSheet> {
   properties = TABLE_EDITOR_PROPERTY
-  propertyInner = TABLE_EDITOR_PROPERTY_INNER
+  propertyInner = {
+    ...TABLE_EDITOR_PROPERTY_INNER,
+    'table-header-selector': [
+      ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
+      'tableHeaderSort'
+    ]
+  }
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
   axisConfig: AxisConfig = {
     xAxis: {
@@ -125,6 +131,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // tooltip
     this.configTooltip(s2Options)
+    // header interaction
+    this.configHeaderInteraction(chart, s2Options)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 

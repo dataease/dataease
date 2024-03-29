@@ -221,6 +221,10 @@ declare interface ChartTableHeaderAttr {
    * 序号表头名称
    */
   indexLabel: string
+  /**
+   * 表头排序开关
+   */
+  tableHeaderSort: boolean
 }
 /**
  * 单元格属性

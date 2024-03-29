@@ -5,6 +5,7 @@ import {
 } from '@/views/chart/components/js/panel/types'
 import { S2Theme, SpreadSheet, Style, S2Options } from '@antv/s2'
 import {
+  configHeaderInteraction,
   configTooltip,
   getConditions,
   getCustomTheme,
@@ -42,6 +43,10 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
 
   protected configTooltip(option: S2Options) {
     configTooltip(option)
+  }
+
+  protected configHeaderInteraction(chart: Chart, option: S2Options) {
+    configHeaderInteraction(chart, option)
   }
 
   protected configConditions(chart: Chart) {
