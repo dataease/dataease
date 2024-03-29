@@ -1076,7 +1076,9 @@ public class ChartViewService {
                 xAxis.addAll(xAxisExtList);
             }
             fieldMap.put("xAxis", xAxis);
-            fieldMap.put("xAxisExt", xAxisExt);
+            if (!StringUtils.equals(view.getType(), "race-bar")) {
+                fieldMap.put("xAxisExt", xAxisExt);
+            }
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("yAxis", yAxis);
