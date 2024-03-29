@@ -3,13 +3,18 @@ import _ from 'lodash'
 
 export default function treeSort(tree: BusiTreeNode[], sortType: string) {
   const result = _.cloneDeep(tree)
-  sortPer(result, sortType)
-  _.forEach(result, node => {
+  sortCircle(result, sortType)
+  return result
+}
+
+export function sortCircle(tree: BusiTreeNode[], sortType: string) {
+  sortPer(tree, sortType)
+  _.forEach(tree, node => {
     if (node.children && node.children.length > 0) {
-      sortPer(node.children, sortType)
+      sortCircle(node.children, sortType)
     }
   })
-  return result
+  return tree
 }
 
 export const sortPer = (subTree: BusiTreeNode[], sortType: string) => {
