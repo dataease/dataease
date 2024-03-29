@@ -395,6 +395,10 @@ public class PanelLinkService {
             return ticketDto;
         }
         Long exp = linkTicket.getExp();
+        if (ObjectUtils.isEmpty(exp) || exp.equals(0L)) {
+            ticketDto.setTicketExp(false);
+            return ticketDto;
+        }
         long expTime = exp * 60L * 1000L;
         long time = now - accessTime;
         ticketDto.setTicketExp(time > expTime);
