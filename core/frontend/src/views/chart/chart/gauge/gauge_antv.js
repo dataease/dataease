@@ -2,7 +2,8 @@ import { getPadding, getTheme, setGradientColor } from '@/views/chart/chart/comm
 import { Gauge } from '@antv/g2plot'
 import { DEFAULT_LABEL, DEFAULT_SIZE, DEFAULT_THRESHOLD } from '@/views/chart/chart/chart'
 import { getScaleValue } from '@/components/canvas/utils/style'
-import { valueFormatter } from '@/views/chart/chart/formatter'
+import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
+import { parseJson } from '@/views/chart/chart/util'
 
 let labelFormatter = null
 
@@ -14,14 +15,6 @@ export function baseGaugeOptionAntV(container, chart, action, scale = 1) {
   const data = chart.data.series[0].data[0]
   // size
   let customAttr = {}
-  let axisLabel = {
-    style: {
-      fontSize: getScaleValue(14, scale) // 刻度值字体大小
-    },
-    formatter: function(v) {
-      return v === '0' ? v : (v * 100 + '%')
-    }
-  }
   if (chart.customAttr) {
     customAttr = JSON.parse(chart.customAttr)
     if (customAttr.size) {
@@ -41,10 +34,24 @@ export function baseGaugeOptionAntV(container, chart, action, scale = 1) {
       }
       startAngel = parseInt(size.gaugeStartAngle) * Math.PI / 180
       endAngel = parseInt(size.gaugeEndAngle) * Math.PI / 180
-      if (customAttr.size.gaugeAxisLine === false) {
-        axisLabel = false
-      }
     }
+  }
+  let axisLabel = {
+    style: {
+      fontSize: getScaleValue(14, scale) // 刻度值字体大小
+    },
+    formatter: function(v) {
+      const gaugePercentLabel = customAttr?.size?.gaugePercentLabel
+      if (gaugePercentLabel === false) {
+        const yAxis = parseJson(chart.yaxis)?.[0]
+        const formatter = yAxis?.formatterCfg ?? formatterItem
+        return valueFormatter(v * max, formatter)
+      }
+      return v === '0' ? v : (v * 100 + '%')
+    }
+  }
+  if (customAttr.size.gaugeAxisLine === false) {
+    axisLabel = false
   }
   const per = (parseFloat(data) - parseFloat(min)) / (parseFloat(max) - parseFloat(min))
   // label

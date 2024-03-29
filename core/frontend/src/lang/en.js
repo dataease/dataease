@@ -1681,6 +1681,7 @@ export default {
     map_line_color_target_color: 'End Color',
     map_line_theta_offset: 'Radian',
     gauge_axis_label: 'Axis Label',
+    gauge_percentage_tick: 'Percentage tick',
     word_size_range: 'Word Size Range',
     word_spacing: 'Word Spacing',
     axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one',

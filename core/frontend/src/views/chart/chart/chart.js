@@ -124,6 +124,7 @@ export const DEFAULT_SIZE = {
   gaugeEndAngle: -45,
   gaugeAxisLine: true,
   gaugeTickCount: 5,
+  gaugePercentLabel: true,
   dimensionFontSize: 18,
   quotaFontSize: 18,
   spaceSplit: 10,

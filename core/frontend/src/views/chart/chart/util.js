@@ -323,7 +323,8 @@ export const TYPE_CONFIGS = [
         'gaugeStartAngle',
         'gaugeEndAngle',
         'gaugeTickCount',
-        'gaugeAxisLine'
+        'gaugeAxisLine',
+        'gaugePercentLabel'
       ],
       'label-selector-ant-v': [
         'labelGauge'
