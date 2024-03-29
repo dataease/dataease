@@ -26,7 +26,10 @@
               />
             </el-select>
           </el-input>
-          <el-dropdown trigger="click" @command="sortTypeChange">
+          <el-dropdown
+            trigger="click"
+            @command="sortTypeChange"
+          >
             <div class="insert-filter filter-icon-span">
               <svg-icon
                 v-show="curSortType.includes('asc')"
@@ -47,7 +50,8 @@
                   :command="beforeClickItem('time_asc')"
                 >
                   <span>按创建时间升序</span>
-                  <i style="margin-left: 4px; line-height: 32px"
+                  <i
+                    style="margin-left: 4px; line-height: 32px"
                     class="el-icon-check"
                   />
                 </el-dropdown-item>
@@ -56,28 +60,31 @@
                   :class="{ 'sort-type-checked': curSortType === 'time_desc' }"
                   :command="beforeClickItem('time_desc')"
                 >
-                  <span>按创建时间降序</span><i style="margin-left: 4px; line-height: 32px"
-                                         class="el-icon-check"
-                />
+                  <span>按创建时间降序</span><i
+                    style="margin-left: 4px; line-height: 32px"
+                    class="el-icon-check"
+                  />
                 </el-dropdown-item>
-                <el-divider class="custom-driver"/>
+                <el-divider class="custom-driver" />
                 <el-dropdown-item
                   class="sort-type-normal"
                   :class="{ 'sort-type-checked': curSortType === 'name_asc' }"
                   :command="beforeClickItem('name_asc')"
                 >
-                  <span>按照名称升序</span><i style="margin-left: 4px; line-height: 32px"
-                                        class="el-icon-check"
-                />
+                  <span>按照名称升序</span><i
+                    style="margin-left: 4px; line-height: 32px"
+                    class="el-icon-check"
+                  />
                 </el-dropdown-item>
                 <el-dropdown-item
                   class="sort-type-normal"
                   :class="{ 'sort-type-checked': curSortType === 'name_desc' }"
                   :command="beforeClickItem('name_desc')"
                 >
-                  <span>按照名称降序</span><i style="margin-left: 4px; line-height: 32px"
-                                        class="el-icon-check"
-                />
+                  <span>按照名称降序</span><i
+                    style="margin-left: 4px; line-height: 32px"
+                    class="el-icon-check"
+                  />
                 </el-dropdown-item>
               </el-dropdown-menu>
             </template>
@@ -526,6 +533,7 @@ export default {
     return {
       originResourceTree: [],
       curSortType: 'time_desc',
+      localSortParams: null,
       lastActiveDefaultPanelId: null, // 激活的节点 在这个节点下面动态放置子节点
       responseSource: 'panelQuery',
       defaultExpansion: false,
@@ -673,6 +681,7 @@ export default {
   beforeDestroy() {
   },
   mounted() {
+    this.loadInit()
     this.clearCanvas()
     this.initCache()
     const routerParam = this.$router.currentRoute.params
@@ -696,14 +705,23 @@ export default {
     }
   },
   methods: {
+    loadInit() {
+      const historyLocalSortType = localStorage.getItem('TreeSort-panel')
+      if (historyLocalSortType) {
+        this.localSortParams = { sortType: historyLocalSortType }
+      } else {
+        this.localSortParams = { sortType: this.curSortType }
+      }
+    },
     beforeClickItem(type) {
       return {
         sortType: type
       }
     },
     sortTypeChange(params) {
-      this.tData = treeSort(this.originResourceTree, params.sortType)
+      this.tData = treeSort(this.originResourceTree, this.curSortType, params.sortType)
       this.curSortType = params.sortType
+      localStorage.setItem('TreeSort-panel', this.curSortType)
     },
     activeLastNode() {
       this.$nextTick(() => {
@@ -745,6 +763,7 @@ export default {
         if (this.editPanel.optType === 'rename' && panelInfo.id === this.$store.panel.panelInfo.id) {
           this.$store.panel.panelInfo.name = panelInfo.name
         }
+        this.originResourceTree = deepCopy(this.tData)
         // 默认展开 同时点击 新增的节点
         if (
           panelInfo &&
@@ -933,6 +952,7 @@ export default {
             })
             this.clearCanvas()
             updateCacheTree('delete', 'panel-main-tree', data.id, this.tData)
+            this.originResourceTree = deepCopy(this.tData)
             this.defaultTree(false)
           })
         }
@@ -966,14 +986,14 @@ export default {
       const modelInfo = localStorage.getItem('panel-main-tree')
       const userCache = modelInfo && cache
       if (userCache) {
-        this.tData = JSON.parse(modelInfo)
-        this.originResourceTree = deepCopy(this.tData)
+        this.originResourceTree = JSON.parse(modelInfo)
+        this.sortTypeChange(this.localSortParams)
       }
       groupTree(this.groupForm, !userCache).then((res) => {
         localStorage.setItem('panel-main-tree', JSON.stringify(res.data || []))
         if (!userCache) {
-          this.tData = res.data || []
-          this.originResourceTree = deepCopy(this.tData)
+          this.originResourceTree = res.data || []
+          this.sortTypeChange(this.localSortParams)
         }
         if (this.responseSource === 'appApply') {
           this.fromAppActive()
@@ -1192,6 +1212,7 @@ export default {
       this.moveInfo['optType'] = 'move'
       panelMove(this.moveInfo).then((response) => {
         updateCacheTree('move', 'panel-main-tree', response.data, this.tData)
+        this.originResourceTree = deepCopy(this.tData)
         this.closeMoveGroup()
       })
     },
