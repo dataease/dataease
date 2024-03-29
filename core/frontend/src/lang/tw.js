@@ -1673,6 +1673,7 @@ export default {
     map_line_color_target_color: '結束顏色',
     map_line_theta_offset: '弧度',
     gauge_axis_label: '刻度標籤',
+    gauge_percentage_tick: '百分比刻度',
     word_size_range: '字號區間',
     word_spacing: '文字間隔',
     axis_multi_select_tip: '按住 Ctrl/Cmd 鍵或者 Shift 鍵再點擊可多選',

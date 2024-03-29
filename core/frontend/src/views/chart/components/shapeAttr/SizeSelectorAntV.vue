@@ -916,6 +916,16 @@
             @change="changeBarSizeCase('gaugeAxisLine')"
           />
         </el-form-item>
+        <el-form-item
+          v-if="showProperty('gaugePercentLabel') && sizeForm.gaugeAxisLine"
+          :label="$t('chart.gauge_percentage_tick')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.gaugePercentLabel"
+            @change="changeBarSizeCase('gaugePercentLabel')"
+          />
+        </el-form-item>
         <!--        <el-form-item v-if="showProperty('gaugeTickCount')" :label="$t('chart.tick_count')" class="form-item form-item-slider">-->
         <!--          <el-input-number v-model="sizeForm.gaugeTickCount" :min="1" :step="1" :precision="0" size="mini" @change="changeBarSizeCase('gaugeTickCount')" />-->
         <!--        </el-form-item>-->
@@ -1837,7 +1847,7 @@ export default {
           }
           this.sizeForm.wordSizeRange = this.sizeForm.wordSizeRange ?? DEFAULT_SIZE.wordSizeRange
           this.sizeForm.wordSpacing = this.sizeForm.wordSpacing ?? DEFAULT_SIZE.wordSpacing
-
+          this.sizeForm.gaugePercentLabel = this.sizeForm.gaugePercentLabel === false ? false : DEFAULT_SIZE.gaugePercentLabel
           if (this.chart.type !== 'table-pivot') {
             let { xaxis, yaxis } = this.chart
             if (!(xaxis instanceof Object)) {
