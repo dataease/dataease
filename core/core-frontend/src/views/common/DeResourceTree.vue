@@ -218,11 +218,13 @@ const getTree = async () => {
     dvMainStore.resetDvInfo()
   }
   if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-    state.resourceTree = nodeData[0]['children'] || []
+    state.originResourceTree = nodeData[0]['children'] || []
+    sortTypeChange(state.curSortType)
     afterTreeInit()
     return
   }
-  state.resourceTree = nodeData
+  state.originResourceTree = nodeData
+  sortTypeChange(state.curSortType)
   afterTreeInit()
 }
 
@@ -243,7 +245,6 @@ function flatTree(tree: BusiTreeNode[]) {
 }
 
 const afterTreeInit = () => {
-  state.originResourceTree = _.cloneDeep(state.resourceTree)
   mounted.value = true
   if (selectedNodeKey.value && returnMounted.value) {
     expandedArray.value = getDefaultExpandedKeys()
@@ -323,9 +324,6 @@ const addOperation = (
     }
     initOpenHandler(newWindow)
   } else if (cmd === 'newFromTemplate') {
-    // state.templateCreatePid = data?.id
-    // // newFromTemplate
-    // resourceCreateOpt.value.optInit()
     const params = {
       curPosition: 'create',
       pid: data?.id,
@@ -395,6 +393,7 @@ const getDefaultExpandedKeys = () => {
 const sortTypeChange = sortType => {
   state.resourceTree = treeSort(state.originResourceTree, sortType)
   state.curSortType = sortType
+  wsCache.set('TreeSort-' + curCanvasType.value, state.curSortType)
 }
 
 watch(filterText, val => {
@@ -411,7 +410,15 @@ const initOpenHandler = newWindow => {
     openHandler.value.invokeMethod(pm)
   }
 }
+
+const loadInit = () => {
+  const historyTreeSort = wsCache.get('TreeSort-' + curCanvasType.value)
+  if (historyTreeSort) {
+    state.curSortType = historyTreeSort
+  }
+}
 onMounted(() => {
+  loadInit()
   getTree()
 })
 

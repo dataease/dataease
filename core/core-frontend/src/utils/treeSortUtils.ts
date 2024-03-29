@@ -18,8 +18,6 @@ export const sortPer = (subTree: BusiTreeNode[], sortType: string) => {
   } else if (sortType === 'name_asc') {
     subTree.sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN', { sensitivity: 'accent' }))
   } else if (sortType === 'time_asc') {
-    return subTree.reverse()
-  } else {
-    return subTree
+    subTree.reverse()
   }
 }
