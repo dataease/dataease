@@ -329,7 +329,8 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   tableHeaderBgColor: '#6D9A49',
   tableHeaderFontColor: '#000000',
   tableTitleFontSize: 12,
-  tableTitleHeight: 36
+  tableTitleHeight: 36,
+  tableHeaderSort: false
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFontColor: '#000000',

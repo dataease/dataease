@@ -83,7 +83,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       columns.push(ele.dataeaseName)
       meta.push({
         field: ele.dataeaseName,
-        name: ele.name,
+        name: ele.chartShowName ?? ele.name,
         formatter: value => {
           if (!f) {
             return value

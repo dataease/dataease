@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { computed, reactive, ref, shallowRef, nextTick, watch, onMounted } from 'vue'
+import { computed, unref, reactive, ref, shallowRef, nextTick, watch, onMounted } from 'vue'
 import { dsTypes } from '@/views/visualized/data/datasource/form/option'
 import type { TabPaneName, ElMessageBoxOptions } from 'element-plus-secondary'
 import { ElIcon, ElMessageBox, ElMessage, ElScrollbar, ElAside } from 'element-plus-secondary'
@@ -41,6 +41,7 @@ import type { BusiTreeNode, BusiTreeRequest } from '@/models/tree/TreeNode'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { cloneDeep } from 'lodash-es'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import treeSort from '@/utils/treeSortUtils'
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
   fieldShortName: string
@@ -61,6 +62,7 @@ const state = reactive({
     pageSize: 10,
     total: 0
   },
+  curSortType: 'time_desc',
   filterTable: []
 })
 
@@ -157,6 +159,12 @@ const selectDataset = row => {
     })
 }
 
+let originResourceTree = []
+
+const sortTypeChange = sortType => {
+  state.datasourceTree = treeSort(originResourceTree, sortType)
+  state.curSortType = sortType
+}
 const handleSizeChange = pageSize => {
   state.paginationConfig.currentPage = 1
   state.paginationConfig.pageSize = pageSize
@@ -382,8 +390,10 @@ const listDs = () => {
       if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
         rootManage.value = nodeData[0]['weight'] >= 7
         state.datasourceTree = nodeData[0]['children'] || []
+        originResourceTree = cloneDeep(unref(state.datasourceTree))
         return
       }
+      originResourceTree = cloneDeep(unref(state.datasourceTree))
       state.datasourceTree = nodeData
     })
     .finally(() => {
@@ -414,7 +424,25 @@ const dfsDatasourceTree = (ds, id) => {
 listDs()
 
 const creatDsFolder = ref()
-
+const sortList = [
+  {
+    name: '按创建时间升序',
+    value: 'time_asc'
+  },
+  {
+    name: '按创建时间降序',
+    value: 'time_desc',
+    divided: true
+  },
+  {
+    name: '按照名称升序',
+    value: 'name_asc'
+  },
+  {
+    name: '按照名称降序',
+    value: 'name_desc'
+  }
+]
 const tableData = shallowRef([])
 const tabData = shallowRef([])
 const handleNodeClick = data => {
@@ -752,6 +780,34 @@ const getMenuList = (val: boolean) => {
               </el-icon>
             </template>
           </el-input>
+          <el-dropdown @command="sortTypeChange" trigger="click">
+            <el-icon class="insert-filter filter-icon-span">
+              <Icon
+                v-show="state.curSortType.includes('asc')"
+                name="dv-sort-asc"
+                class="opt-icon"
+              ></Icon>
+              <Icon
+                v-show="state.curSortType.includes('desc')"
+                name="dv-sort-desc"
+                class="opt-icon"
+              ></Icon>
+            </el-icon>
+            <template #dropdown>
+              <el-dropdown-menu style="width: 246px">
+                <template :key="ele.value" v-for="ele in sortList">
+                  <el-dropdown-item
+                    class="ed-select-dropdown__item"
+                    :class="ele.value === state.curSortType && 'selected'"
+                    :command="ele.value"
+                  >
+                    {{ ele.name }}
+                  </el-dropdown-item>
+                  <li v-if="ele.divided" class="ed-dropdown-menu__item--divided"></li>
+                </template>
+              </el-dropdown-menu>
+            </template>
+          </el-dropdown>
         </div>
         <el-scrollbar @scroll="handleScroll" ref="scrollbarRef" class="custom-tree">
           <el-tree
@@ -1408,6 +1464,43 @@ const getMenuList = (val: boolean) => {
 <style lang="less" scoped>
 @import '@/style/mixin.less';
 
+.insert-filter {
+  display: inline-block;
+  font-weight: 400 !important;
+  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+  line-height: 1;
+  white-space: nowrap;
+  cursor: pointer;
+  color: var(--TextPrimary, #1f2329);
+  -webkit-appearance: none;
+  text-align: center;
+  box-sizing: border-box;
+  outline: 0;
+  margin: 0;
+  transition: 0.1s;
+  border-radius: 3px;
+
+  &:active {
+    color: #000;
+    border-color: #3a8ee6;
+    background-color: red;
+    outline: 0;
+  }
+
+  &:hover {
+    background-color: rgba(31, 35, 41, 0.1);
+    color: #3a8ee6;
+  }
+}
+
+.filter-icon-span {
+  border: 1px solid #dcdfe6;
+  width: 32px;
+  height: 32px;
+  border-radius: 4px;
+  padding: 7px;
+  margin-left: 8px;
+}
 .datasource-manage {
   display: flex;
   width: 100%;
@@ -1467,6 +1560,7 @@ const getMenuList = (val: boolean) => {
 
       .search-bar {
         padding-bottom: 10px;
+        width: calc(100% - 40px);
       }
     }
   }

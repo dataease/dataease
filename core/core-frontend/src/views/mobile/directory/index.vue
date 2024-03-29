@@ -81,6 +81,13 @@ const dataClick = val => {
   directId.value.push(val.id)
 }
 
+const handleDir = index => {
+  if (index === directId.value.length - 1) return
+  directId.value = directId.value.slice(0, index + 1)
+  directName.value = directName.value.slice(0, index + 1)
+  activeDirectName.value = directName.value[directName.value.length - 1]
+}
+
 const getTree = async () => {
   const request = { busiFlag: 'dashboard' } as BusiTreeRequest
   await interactiveStore.setInteractive(request)
@@ -127,8 +134,10 @@ onMounted(() => {
             <Icon name="icon_right_outlined"></Icon>
           </el-icon>
         </div>
-        <div v-for="(ele, index) in [...directName]" :key="ele">
-          <span class="label">{{ ele }}</span>
+        <div v-for="(ele, index) in [...directName]" @click="handleDir(index)" :key="ele">
+          <span class="label ellipsis" :class="index !== directName.length - 1 && 'primary-name'">{{
+            ele
+          }}</span>
           <el-icon v-if="index !== directName.length - 1">
             <Icon name="icon_right_outlined"></Icon>
           </el-icon>
@@ -168,16 +177,20 @@ onMounted(() => {
     padding: 12px 16px;
     color: #646a73;
     display: flex;
+    width: 100%;
+    overflow-x: auto;
     align-items: center;
     & > div {
       display: flex;
       align-items: center;
+      white-space: nowrap;
     }
 
     .label {
       font-size: 14px;
       font-weight: 400;
       line-height: 20px;
+      max-width: 250px;
     }
 
     .ed-icon {

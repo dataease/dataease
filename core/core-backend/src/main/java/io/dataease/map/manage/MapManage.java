@@ -109,6 +109,7 @@ public class MapManage {
     @CacheEvict(cacheNames = WORLD_MAP_CACHE, key = "'world_map'")
     @Transactional
     public void saveMapGeo(GeometryNodeCreator request, MultipartFile file) {
+        validateCode(request.getCode());
         if (ObjectUtils.isEmpty(file) || file.isEmpty()) {
             DEException.throwException("geometry file is require");
         }
@@ -154,6 +155,7 @@ public class MapManage {
     @CacheEvict(cacheNames = WORLD_MAP_CACHE, key = "'world_map'")
     @Transactional
     public void deleteGeo(String code) {
+        validateCode(code);
         if (!StringUtils.startsWith(code, GEO_PREFIX)) {
             DEException.throwException("内置Geometry，禁止删除");
         }
@@ -209,5 +211,20 @@ public class MapManage {
         return code.substring(0, 3);
     }
 
+    public void validateCode(String code) {
+        if (StringUtils.isBlank(code)) DEException.throwException("区域编码不能为空");
+        String busiGeoCode = getBusiGeoCode(code);
+        if (!isNumeric(busiGeoCode)) {
+            DEException.throwException("有效区域编码只能是数字");
+        }
+    }
 
+    public boolean isNumeric(String str) {
+        for (int i = str.length(); --i >= 0; ) {
+            int chr = str.charAt(i);
+            if (chr < 48 || chr > 57)
+                return false;
+        }
+        return true;
+    }
 }

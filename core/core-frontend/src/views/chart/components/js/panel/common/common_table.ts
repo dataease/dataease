@@ -632,24 +632,60 @@ class SortTooltip extends BaseTooltip {
         left: `${this.position?.x}px`,
         top: `${this.position?.y}px`,
         pointerEvents: enterable ? 'all' : 'none',
-        zIndex: 9999
+        zIndex: 9999,
+        position: 'absolute'
       },
       visible: true
     })
   }
 }
-export function configTooltip(option: S2Options) {
+const SORT_DEFAULT =
+  '<svg t="1711681787276" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4355" width="200" height="200"><path d="M922.345786 372.183628l-39.393195 38.687114L676.138314 211.079416l0 683.909301-54.713113 0L621.425202 129.010259l53.320393 0L922.345786 372.183628zM349.254406 894.989741 101.654214 651.815349l39.393195-38.687114 206.814276 199.792349L347.861686 129.010259l54.713113 0 0 765.978459L349.254406 894.988718z" fill="{fill}" p-id="4356"></path></svg>'
+const SORT_UP =
+  '<svg t="1711682928245" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11756" width="200" height="200"><path d="M960 704L512 256 64 704z" fill="{fill}" p-id="11757"></path></svg>'
+const SORT_DOWN =
+  '<svg t="1711681879346" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4655" width="200" height="200"><path d="M64 320l448 448 448-448z" fill="{fill}" p-id="4656"></path></svg>'
+
+function svg2Base64(svg) {
+  return `data:image/svg+xml;charset=utf-8;base64,${btoa(svg)}`
+}
+
+export function configHeaderInteraction(chart: Chart, option: S2Options) {
+  const { tableHeaderFontColor, tableHeaderSort } = parseJson(chart.customAttr).tableHeader
+  if (!tableHeaderSort) {
+    return
+  }
+  const iconColor = tableHeaderFontColor ?? '#666'
+  const sortDefault = svg2Base64(SORT_DEFAULT.replace('{fill}', iconColor))
+  const sortUp = svg2Base64(SORT_UP.replace('{fill}', iconColor))
+  const sortDown = svg2Base64(SORT_DOWN.replace('{fill}', iconColor))
+  // 防止缓存
+  const randomSuffix = Math.random()
   const sortIconMap = {
-    asc: 'SortUp',
-    desc: 'SortDown'
+    asc: `customSortUp${randomSuffix}`,
+    desc: `customSortDown${randomSuffix}`
   }
-  option.tooltip = {
-    ...option.tooltip,
-    renderTooltip: sheet => new SortTooltip(sheet)
-  }
+  option.customSVGIcons = [
+    {
+      name: `customSortDefault${randomSuffix}`,
+      svg: sortDefault
+    },
+    {
+      name: `customSortUp${randomSuffix}`,
+      svg: sortUp
+    },
+    {
+      name: `customSortDown${randomSuffix}`,
+      svg: sortDown
+    }
+  ]
   option.headerActionIcons = [
     {
-      iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
+      iconNames: [
+        `customSortDefault${randomSuffix}`,
+        `customSortUp${randomSuffix}`,
+        `customSortDown${randomSuffix}`
+      ],
       belongsCell: 'colCell',
       displayCondition: (meta, iconName) => {
         if (meta.field === SERIES_NUMBER_FIELD) {
@@ -660,7 +696,7 @@ export function configTooltip(option: S2Options) {
         if (sortType) {
           return iconName === sortIconMap[sortType]
         }
-        return iconName === 'GroupAsc'
+        return iconName === `customSortDefault${randomSuffix}`
       },
       onClick: props => {
         const { meta, event } = props
@@ -675,6 +711,16 @@ export function configTooltip(option: S2Options) {
       }
     }
   ]
+}
+
+export function configTooltip(option: S2Options) {
+  option.tooltip = {
+    ...option.tooltip,
+    adjustPosition: ({ event }) => {
+      return getTooltipPosition(event)
+    },
+    renderTooltip: sheet => new SortTooltip(sheet)
+  }
 }
 
 export function copyContent(s2Instance, event, fieldMeta) {
@@ -705,4 +751,31 @@ export function copyContent(s2Instance, event, fieldMeta) {
   if (content) {
     copyString(content, true)
   }
+}
+
+function getTooltipPosition(event) {
+  const s2Instance = event.s2Instance
+  const { x, y } = event
+  const result = { x: x + 15, y: y + 10 }
+  if (!s2Instance) {
+    return result
+  }
+  const { height, width } = s2Instance.getCanvasElement().getBoundingClientRect()
+  const { offsetHeight, offsetWidth } = s2Instance.tooltip.getContainer()
+  if (offsetWidth > width) {
+    result.x = 0
+  }
+  if (offsetHeight > height) {
+    result.y = 0
+  }
+  if (!(result.x || result.y)) {
+    return result
+  }
+  if (result.x && result.x + offsetWidth > width) {
+    result.x -= result.x + offsetWidth - width
+  }
+  if (result.y && result.y + offsetHeight > height) {
+    result.y -= offsetHeight + 15
+  }
+  return result
 }

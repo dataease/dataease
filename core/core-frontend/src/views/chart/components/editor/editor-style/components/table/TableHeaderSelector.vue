@@ -236,6 +236,21 @@ onMounted(() => {
         @blur="changeTableHeader('indexLabel')"
       />
     </el-form-item>
+    <el-form-item
+      :label="t('chart.table_show_index')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('tableHeaderSort')"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.tableHeaderForm.tableHeaderSort"
+        @change="changeTableHeader('tableHeaderSort')"
+      >
+        {{ t('chart.table_header_sort') }}
+      </el-checkbox>
+    </el-form-item>
   </el-form>
 </template>
 

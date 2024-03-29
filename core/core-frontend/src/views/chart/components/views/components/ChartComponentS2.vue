@@ -404,7 +404,7 @@ const autoHeightStyle = computed(() => {
       @trackClick="trackClick"
     />
     <div v-if="!isError" class="canvas-content">
-      <div style="height: 100%" :id="containerId"></div>
+      <div style="position: relative; height: 100%" :id="containerId"></div>
     </div>
     <el-row :style="autoHeightStyle" v-if="showPage && !isError">
       <div :style="autoStyle" class="table-page-info">

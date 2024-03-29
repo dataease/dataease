@@ -48,11 +48,47 @@ const findName = () => {
     }
   }
 }
+
+let directIdCopy = []
+let directNameCopy = []
+
+const dfsOrgTree = (arr, depth) => {
+  arr.forEach(item => {
+    const { name, id } = item
+    if (depth <= directIdCopy.length) {
+      if (depth < directIdCopy.length) {
+        directIdCopy = directIdCopy.slice(0, depth)
+        directNameCopy = directNameCopy.slice(0, depth)
+      }
+      directIdCopy.splice(directIdCopy.length - 1, 1, id)
+      directNameCopy.splice(directNameCopy.length - 1, 1, name)
+    } else {
+      directIdCopy.push(id)
+      directNameCopy.push(name)
+    }
+
+    let nextDepth = depth + 1
+
+    if (id === userStore.getOid) {
+      directName.value = [...directNameCopy]
+      directId.value = [...directIdCopy]
+      nextDepth = 999
+    }
+    if (item?.children?.length && nextDepth !== 999) {
+      dfsOrgTree(item?.children, nextDepth)
+    }
+  })
+}
+
 onMounted(() => {
   mountedOrg().then(res => {
     orgOption = res.data as OrgTreeNode[]
     tableData.value = res.data as OrgTreeNode[]
     findName()
+    dfsOrgTree(orgOption, 1)
+    directName.value.pop()
+    directId.value.pop()
+    activeDirectName.value = directName.value[directName.value.length - 1]
   })
 })
 
@@ -82,6 +118,13 @@ const orgCellClick = (type, val) => {
     activeDirectName.value = val.name
     directId.value.push(val.id)
   }
+}
+
+const handleDir = index => {
+  if (index === directId.value.length - 1) return
+  directId.value = directId.value.slice(0, index + 1)
+  directName.value = directName.value.slice(0, index + 1)
+  activeDirectName.value = directName.value[directName.value.length - 1]
 }
 
 const tableData = ref([])
@@ -134,8 +177,13 @@ const activeTableData = computed(() => {
         @click-left="onClickLeft"
       />
       <div class="grey">
-        <div class="flex-align-center" v-for="(ele, index) in directName" :key="ele">
-          <span :class="ele !== activeDirectName && 'active'">{{ ele }}</span>
+        <div
+          @click="handleDir(index)"
+          class="flex-align-center"
+          v-for="(ele, index) in directName"
+          :key="ele"
+        >
+          <span class="ellipsis" :class="ele !== activeDirectName && 'active'">{{ ele }}</span>
           <el-icon v-if="directName.length > 1 && index !== directName.length - 1">
             <Icon name="icon_right_outlined"></Icon>
           </el-icon>
@@ -201,6 +249,14 @@ const activeTableData = computed(() => {
     line-height: 20px;
     display: flex;
     align-items: center;
+
+    & > div {
+      white-space: nowrap;
+    }
+
+    .ellipsis {
+      max-width: 250px;
+    }
 
     .active {
       color: var(--ed-color-primary);

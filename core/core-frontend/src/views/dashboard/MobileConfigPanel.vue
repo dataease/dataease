@@ -208,8 +208,14 @@ const save = () => {
         <span class="open-mobile">开启移动端</span>
         <el-switch size="small" v-model="dvInfo.mobileLayout" />
         <span class="open-mobile-line"></span>
-        <el-tooltip effect="dark" content="切换至PC端布局" placement="bottom">
-          <el-icon @click="handleBack">
+        <el-tooltip
+          :show-arrow="false"
+          :offset="9"
+          effect="dark"
+          content="切换至PC端布局"
+          placement="bottom"
+        >
+          <el-icon @click="handleBack" class="switch-pc">
             <Icon name="icon_pc_outlined" />
           </el-icon>
         </el-tooltip>
@@ -296,7 +302,26 @@ const save = () => {
     .mobile-save {
       display: flex;
       align-items: center;
+      .switch-pc {
+        &::after {
+          content: '';
+          border-radius: 4px;
+          display: none;
+          position: absolute;
+          width: calc(100% + 10px);
+          height: calc(100% + 10px);
+          top: -5px;
+          left: -5px;
+        }
 
+        &:hover {
+          &::after {
+            display: block;
+            background: rgba(255, 255, 255, 0.1);
+          }
+        }
+        position: relative;
+      }
       .open-mobile-line {
         background: #ffffff4d;
         width: 1px;
@@ -349,7 +374,7 @@ const save = () => {
 
     .mobile-header {
       margin-top: 20px;
-      height: 44px;
+      height: 43px;
       display: flex;
       img {
         height: 100%;

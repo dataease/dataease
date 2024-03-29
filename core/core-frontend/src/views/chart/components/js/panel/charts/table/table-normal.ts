@@ -13,7 +13,13 @@ const { t } = useI18n()
  */
 export class TableNormal extends S2ChartView<TableSheet> {
   properties = TABLE_EDITOR_PROPERTY
-  propertyInner = TABLE_EDITOR_PROPERTY_INNER
+  propertyInner = {
+    ...TABLE_EDITOR_PROPERTY_INNER,
+    'table-header-selector': [
+      ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
+      'tableHeaderSort'
+    ]
+  }
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
   axisConfig: AxisConfig = {
     xAxis: {
@@ -102,7 +108,10 @@ export class TableNormal extends S2ChartView<TableSheet> {
       height: containerDom.offsetHeight,
       showSeriesNumber: customAttr.tableHeader.showIndex,
       style: this.configStyle(chart),
-      conditions: this.configConditions(chart)
+      conditions: this.configConditions(chart),
+      tooltip: {
+        getContainer: () => containerDom
+      }
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
     if (s2Options.showSeriesNumber) {
@@ -122,6 +131,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // tooltip
     this.configTooltip(s2Options)
+    // header interaction
+    this.configHeaderInteraction(chart, s2Options)
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 
