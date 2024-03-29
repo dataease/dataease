@@ -5,11 +5,11 @@
     :content="t('visualization.share')"
     placement="top"
   >
-    <el-icon class="hover-icon hover-icon-in-table share-button-icon" @click="share">
+    <el-icon class="hover-icon hover-icon-in-table share-button-icon" @click.stop="share">
       <Icon name="icon_share-label_outlined"></Icon>
     </el-icon>
   </el-tooltip>
-  <el-button v-if="props.weight >= 7 && props.isButton" @click="share" icon="Share">{{
+  <el-button v-if="props.weight >= 7 && props.isButton" @click.stop="share" icon="Share">{{
     t('visualization.share')
   }}</el-button>
 
@@ -66,7 +66,7 @@
           <div class="inline-share-item" v-if="state.detailInfo.pwd">
             <el-input v-model="state.detailInfo.pwd" readonly size="small">
               <template #append>
-                <div @click="resetPwd" class="share-reset-container">
+                <div @click.stop="resetPwd" class="share-reset-container">
                   <span>{{ t('commons.reset') }}</span>
                 </div>
               </template>
@@ -77,7 +77,7 @@
     </div>
     <template #footer>
       <span class="dialog-footer">
-        <el-button :disabled="!shareEnable || expError" type="primary" @click="copyInfo">
+        <el-button :disabled="!shareEnable || expError" type="primary" @click.stop="copyInfo">
           {{ t('visualization.copy_link') }}
         </el-button>
       </span>
