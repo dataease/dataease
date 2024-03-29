@@ -747,7 +747,12 @@ function getConditions(chart) {
       res.text.push({
         field: field.field.dataeaseName,
         mapping(value, rowData) {
+          // 总计小计
           if (rowData?.isTotals) {
+            return null
+          }
+          // 表头
+          if (rowData?.id && rowData?.field === rowData.id) {
             return null
           }
           return {
@@ -759,6 +764,9 @@ function getConditions(chart) {
         field: field.field.dataeaseName,
         mapping(value, rowData) {
           if (rowData?.isTotals) {
+            return null
+          }
+          if (rowData?.id && rowData?.field === rowData.id) {
             return null
           }
           const fill = mappingColor(value, defaultBgColor, field, 'backgroundColor', filedValueMap, rowData)

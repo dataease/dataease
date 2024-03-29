@@ -719,7 +719,7 @@ export default {
       const fieldType = this.getFieldType(fieldId)
       if (fieldType) {
         post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + fieldId + '/' + fieldType, {}).then(response => {
-          this.$set(this.fieldEnumValues, fieldId, response.data)
+          this.$set(this.fieldEnumValues, fieldId, response.data?.filter(i => i && i.trim()))
         })
       }
     },
