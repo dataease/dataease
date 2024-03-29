@@ -2,127 +2,91 @@
   <el-row class="custom-row">
     <el-row class="custom-row-inner">
       <el-space wrap>
-        <el-tooltip v-if="styleForm.color" effect="dark" placement="bottom">
-          <template #content> {{ t('chart.text_color') }} </template>
-          <el-form-item
-            :effect="themes"
-            class="form-item no-margin-bottom"
-            :class="'form-item-' + themes"
+        <template v-for="styleColorKey in styleColorKeyArray">
+          <el-tooltip
+            :key="styleColorKey.value"
+            v-if="styleForm[styleColorKey.value] !== undefined"
+            effect="dark"
+            placement="bottom"
           >
-            <el-color-picker
-              :title="t('chart.text_color')"
-              v-model="styleForm.color"
-              class="color-picker-style"
-              is-custom
-              :predefine="state.predefineColors"
-              @change="changeStyle"
-            />
-          </el-form-item>
-        </el-tooltip>
+            <template #content> {{ styleColorKey.label }} </template>
+            <el-form-item
+              :effect="themes"
+              class="form-item no-margin-bottom"
+              :class="'form-item-' + themes"
+            >
+              <el-color-picker
+                :title="t('chart.text_color')"
+                v-model="styleForm[styleColorKey.value]"
+                class="color-picker-style"
+                is-custom
+                :predefine="state.predefineColors"
+                @change="changeStyle"
+              />
+            </el-form-item>
+          </el-tooltip>
+        </template>
 
-        <el-tooltip v-if="styleForm.headFontColor" effect="dark" placement="bottom">
-          <template #content> 头部字体颜色 </template>
-          <el-form-item
-            :effect="themes"
-            class="form-item no-margin-bottom"
-            :class="'form-item-' + themes"
+        <template v-for="styleOptionMountedKey in styleOptionMountedKeyArray">
+          <el-tooltip
+            :key="styleOptionMountedKey.value"
+            v-if="styleForm[styleOptionMountedKey.value] !== undefined"
+            effect="dark"
+            placement="bottom"
           >
-            <el-color-picker
-              title="头部字体颜色"
-              v-model="styleForm.headFontColor"
-              class="color-picker-style"
-              is-custom
-              :predefine="state.predefineColors"
-              @change="changeStyle"
-            />
-          </el-form-item>
-        </el-tooltip>
-        <el-tooltip v-if="styleForm.headFontActiveColor" effect="dark" placement="bottom">
-          <template #content> 头部激活字体颜色 </template>
-          <el-form-item
-            :effect="themes"
-            class="form-item no-margin-bottom"
-            :class="'form-item-' + themes"
-          >
-            <el-color-picker
-              v-model="styleForm.headFontActiveColor"
-              class="color-picker-style"
-              is-custom
-              :predefine="state.predefineColors"
-              @change="changeStyle"
-            />
-          </el-form-item>
-        </el-tooltip>
-        <el-tooltip v-if="styleForm.fontSize" effect="dark" placement="bottom">
-          <template #content> {{ t('chart.text_fontsize') }} </template>
-          <el-form-item
-            :effect="themes"
-            class="form-item no-margin-bottom"
-            :class="'form-item-' + themes"
-          >
-            <el-select
-              style="width: 50px"
+            <template #content> {{ styleOptionMountedKey.label }} </template>
+            <el-form-item
               :effect="themes"
-              :title="t('chart.text_fontsize')"
-              v-model="styleMounted.fontSize"
-              :placeholder="'大小'"
-              size="small"
-              @change="sizeChange('fontSize')"
+              class="form-item no-margin-bottom"
+              :class="'form-item-' + themes"
             >
-              <el-option
-                v-for="option in fontSizeList"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-tooltip>
-        <el-tooltip v-if="styleForm.activeFontSize" effect="dark" placement="bottom">
-          <template #content> 激活字体大小 </template>
-          <el-form-item
-            class="form-item no-margin-bottom"
+              <el-select
+                style="width: 50px"
+                :effect="themes"
+                v-model="styleMounted[styleOptionMountedKey.value]"
+                size="small"
+                @change="sizeChange(styleOptionMountedKey.value)"
+              >
+                <el-option
+                  class="custom-style-option"
+                  v-for="option in styleOptionMountedKey.customOption"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-tooltip>
+        </template>
+
+        <template v-for="styleOptionKey in styleOptionKeyArray">
+          <el-tooltip
+            :key="styleOptionKey.value"
+            v-if="styleForm[styleOptionKey.value] !== undefined"
             :effect="themes"
-            :class="'form-item-' + themes"
+            placement="bottom"
           >
-            <el-select
-              style="width: 50px"
-              :effect="themes"
-              title="激活字体大小"
-              v-model="styleMounted.activeFontSize"
-              :placeholder="'大小'"
-              size="small"
-              @change="sizeChange('activeFontSize')"
-            >
-              <el-option
-                v-for="option in fontSizeList"
-                :key="option.value"
-                :label="option.name"
-                :value="option.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-tooltip>
-        <el-tooltip v-if="styleForm.opacity" effect="dark" placement="bottom">
-          <template #content> 透明度 </template>
-          <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
-            <el-select
-              style="width: 50px"
-              :effect="themes"
-              v-model="styleForm.opacity"
-              placeholder="透明度"
-              size="small"
-              @change="sizeChange"
-            >
-              <el-option
-                v-for="option in opacitySizeList"
-                :key="option"
-                :label="option"
-                :value="option"
-              />
-            </el-select>
-          </el-form-item>
-        </el-tooltip>
+            <template #content> {{ styleOptionKey.label }} </template>
+            <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+              <el-select
+                :style="{ width: styleOptionKey.width }"
+                :effect="themes"
+                v-model="styleForm[styleOptionKey.value]"
+                placeholder="透明度"
+                size="small"
+                @change="changeStyle"
+              >
+                <el-option
+                  class="custom-style-option"
+                  v-for="option in styleOptionKey.customOption"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-tooltip>
+        </template>
         <el-tooltip v-if="styleForm.fontWeight !== undefined" effect="dark" placement="bottom">
           <template #content>
             {{ t('chart.bolder') }}
@@ -292,7 +256,18 @@ const styleMounted = ref({
   color: '#000000'
 })
 
-const opacitySizeList = [0.1, 0.2, 0.3, 0.4, 0.5, 0.6, 0.7, 0.8, 0.9, 1]
+const opacitySizeList = [
+  { name: '0.1', value: 0.1 },
+  { name: '0.2', value: 0.2 },
+  { name: '0.3', value: 0.3 },
+  { name: '0.4', value: 0.4 },
+  { name: '0.5', value: 0.5 },
+  { name: '0.6', value: 0.6 },
+  { name: '0.7', value: 0.7 },
+  { name: '0.8', value: 0.8 },
+  { name: '0.9', value: 0.9 },
+  { name: '1', value: 1 }
+]
 
 const styleForm = computed<any>(() => element.value.style)
 const state = reactive({
@@ -300,16 +275,67 @@ const state = reactive({
   isSetting: false,
   predefineColors: COLOR_PANEL
 })
+
+const styleColorKeyArray = [
+  { value: 'color', label: '颜色' },
+  { value: 'borderColor', label: '边框颜色' },
+  { value: 'headFontColor', label: '头部字体颜色' },
+  { value: 'headFontActiveColor', label: '激活字体颜色' },
+  { value: 'backgroundColor', label: '背景色' }
+]
+
 const fontSizeList = computed(() => {
   const arr = []
-  for (let i = 10; i <= 60; i = i + 2) {
+  for (let i = 10; i <= 60; i = i + 1) {
     arr.push({
       name: i + '',
-      value: i + ''
+      value: i
     })
   }
   return arr
 })
+
+const borderWidthList = computed(() => {
+  const arr = []
+  for (let i = 0; i <= 20; i = i + 1) {
+    arr.push({
+      name: i + '',
+      value: i
+    })
+  }
+  return arr
+})
+
+const borderRadiusList = computed(() => {
+  const arr = []
+  for (let i = 0; i <= 50; i = i + 1) {
+    arr.push({
+      name: i + '',
+      value: i
+    })
+  }
+  return arr
+})
+
+const borderStyleList = [
+  { name: '实线', value: 'solid' },
+  { name: '虚线', value: 'dashed' },
+  { name: '点线', value: 'dotted' }
+]
+
+//大小随画布缩放动态变化
+const styleOptionMountedKeyArray = [
+  { value: 'fontSize', label: '字体大小', customOption: fontSizeList.value },
+  { value: 'activeFontSize', label: '激活字体大小', customOption: fontSizeList.value }
+]
+
+//大小不变
+const styleOptionKeyArray = [
+  { value: 'opacity', label: '透明度', customOption: opacitySizeList, width: '50px' },
+  { value: 'borderWidth', label: '边框宽度', customOption: borderWidthList.value, width: '50px' },
+  { value: 'borderRadius', label: '圆角', customOption: borderRadiusList.value, width: '50px' },
+  { value: 'borderStyle', label: '边框样式', customOption: borderStyleList, width: '60px' }
+]
 
 const styleInit = () => {
   if (curComponent.value) {
@@ -366,6 +392,12 @@ watch(
   }
 )
 </script>
+
+<style lang="less">
+.custom-style-option::after {
+  display: none;
+}
+</style>
 
 <style scoped lang="less">
 .custom-item-text {
@@ -479,7 +511,6 @@ watch(
     margin-bottom: 0 !important;
   }
 }
-
 .custom-row-inner {
   margin: 8px 0px 24px;
 }
