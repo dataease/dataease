@@ -223,7 +223,7 @@ const list = [
     style: {
       width: 600,
       height: 300,
-      color: ''
+      color: 'rgb(255, 255, 255,1)'
     }
   },
   {
