@@ -43,6 +43,10 @@ const iconMap = {
   datasource: 'icon_database_outlined'
 }
 
+const jumpActiveCheck = row => {
+  return row && ['dashboard', 'panel', 'dataV', 'screen'].includes(row.type)
+}
+
 const handleClick = (ele: TabsPaneContext) => {
   if (ele.paneName === 'recent' || ele.paneName === 'store') {
     loading.value = true
@@ -276,7 +280,7 @@ const getEmptyDesc = (): string => {
       >
         <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
           <template v-slot:default="scope">
-            <div class="name-content">
+            <div class="name-content" :class="{ 'jump-active': jumpActiveCheck(scope.row) }">
               <el-icon :class="`main-color color-${scope.row.type}`">
                 <Icon :name="iconMap[scope.row.type]" />
               </el-icon>
@@ -287,7 +291,7 @@ const getEmptyDesc = (): string => {
               <el-icon
                 v-if="activeName === 'recent' && ['screen', 'panel'].includes(scope.row.type)"
                 class="custom-icon"
-                @click="executeStore(scope.row)"
+                @click.stop="executeStore(scope.row)"
                 :style="{ color: scope.row.favorite ? '#FFC60A' : '#646A73' }"
               >
                 <icon
@@ -306,16 +310,18 @@ const getEmptyDesc = (): string => {
           :label="item.label"
         >
           <template #default="scope">
-            <span v-if="item.type && item.type === 'time'">{{
-              formatterTime(null, null, scope.row[item.field])
-            }}</span>
-            <span v-else-if="item.field && item.field === 'type'">{{
-              typeMap[scope.row[item.field]]
-            }}</span>
-            <span v-else-if="desktop && item.field && item.field.endsWith('tor')">{{
-              userStore.getName
-            }}</span>
-            <span v-else>{{ scope.row[item.field] }}</span>
+            <span :class="{ 'jump-active': jumpActiveCheck(scope.row) }">
+              <span v-if="item.type && item.type === 'time'">{{
+                formatterTime(null, null, scope.row[item.field])
+              }}</span>
+              <span v-else-if="item.field && item.field === 'type'">{{
+                typeMap[scope.row[item.field]]
+              }}</span>
+              <span v-else-if="desktop && item.field && item.field.endsWith('tor')">{{
+                userStore.getName
+              }}</span>
+              <span v-else>{{ scope.row[item.field] }}</span>
+            </span>
           </template>
         </el-table-column>
 
@@ -457,6 +463,10 @@ const getEmptyDesc = (): string => {
     margin-top: 0px;
     line-height: 20px !important;
   }
+}
+
+.jump-active {
+  cursor: pointer;
 }
 </style>
 <style lang="less">
