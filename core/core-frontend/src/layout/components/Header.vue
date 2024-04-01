@@ -96,7 +96,7 @@ onMounted(() => {
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
       <XpackComponent jsname="c3dpdGNoZXI=" />
-      <el-icon class="ai-icon" v-if="aiBaseUrl">
+      <el-icon style="margin: 0 10px" class="ai-icon" v-if="aiBaseUrl">
         <Icon name="dv-ai" @click="handleAiClick" />
       </el-icon>
       <ToolboxCfg v-if="showToolbox" />
