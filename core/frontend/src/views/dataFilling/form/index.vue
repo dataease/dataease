@@ -194,6 +194,11 @@ export default {
           this.displayFormData = res.data
         })
       }
+    },
+    tabClick() {
+      if (this.activeName === 'my-tasks') {
+        this.$router.push('/data-filling/my-jobs')
+      }
     }
   }
 }
@@ -208,15 +213,14 @@ export default {
       <el-tabs
         v-model="activeName"
         class="tab-panel"
+        @tab-click="tabClick"
       >
         <el-tab-pane
           v-if="hasPermission(['my-data-filling:manage'])"
           name="my-tasks"
         >
           <span slot="label">
-            <router-link to="/data-filling/my-jobs">
-              我的填报
-            </router-link>
+            我的填报
           </span>
         </el-tab-pane>
 
