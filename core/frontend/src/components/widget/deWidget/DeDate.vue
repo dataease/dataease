@@ -341,6 +341,12 @@ export default {
     if (this.inDraw) {
       bus.$on("reset-default-value", this.resetDefaultValue);
     }
+    const _this = this
+    window.addEventListener('message', function(event) {
+      if (event.data === 'closeFilterComponent') {
+        _this.$refs.dateRef.hidePicker()
+      }
+    })
   },
   beforeDestroy() {
     this.clearTime();
