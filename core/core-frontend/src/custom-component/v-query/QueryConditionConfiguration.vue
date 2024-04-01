@@ -798,7 +798,8 @@ const relativeToCurrentList = computed(() => {
 })
 
 const dynamicTime = computed(() => {
-  return curComponent.value.timeType === 'dynamic'
+  const { displayType, timeType } = curComponent.value
+  return timeType === 'dynamic' && [1, 7].includes(+displayType)
 })
 
 const relativeToCurrentTypeList = computed(() => {
