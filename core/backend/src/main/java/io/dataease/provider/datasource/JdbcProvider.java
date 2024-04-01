@@ -428,9 +428,8 @@ public class JdbcProvider extends DefaultJdbcProvider {
         JdbcConfiguration jdbcConfiguration = new Gson().fromJson(dsr.getDatasource().getConfiguration(), JdbcConfiguration.class);
         int queryTimeout = jdbcConfiguration.getQueryTimeout() > 0 ? jdbcConfiguration.getQueryTimeout() : 0;
         try (Connection connection = getConnectionFromPool(dsr); PreparedStatement stat = getPreparedStatement(connection, queryTimeout, dsr.getQuery())) {
-
+            LogUtil.info("getData sql: " + dsr.getQuery());
             if (CollectionUtils.isNotEmpty(dsr.getTableFieldWithValues())) {
-                LogUtil.info("getData sql: " + dsr.getQuery());
                 for (int i = 0; i < dsr.getTableFieldWithValues().size(); i++) {
                     stat.setObject(i + 1, dsr.getTableFieldWithValues().get(i).getValue(), dsr.getTableFieldWithValues().get(i).getType());
                     LogUtil.info("getData param[" + (i + 1) + "]: " + dsr.getTableFieldWithValues().get(i).getValue());

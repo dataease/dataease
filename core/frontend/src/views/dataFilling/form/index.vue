@@ -482,6 +482,13 @@ export default {
 </template>
 
 <style  lang="scss" scoped>
+.ms-aside-container {
+  height: calc(100vh - 56px);
+  padding: 0px;
+  min-width: 260px;
+  max-width: 460px;
+}
+
 .tab-panel {
   height: 100%;
   overflow-y: auto;
