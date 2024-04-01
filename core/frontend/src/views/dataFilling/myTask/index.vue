@@ -282,6 +282,11 @@ export default {
       } else {
         this.searchTableMyTaskData()
       }
+    },
+    tabClick() {
+      if (this.activeName === 'forms') {
+        this.$router.push('/data-filling/forms')
+      }
     }
 
   }
@@ -298,6 +303,7 @@ export default {
       <el-tabs
         v-model="activeName"
         class="tab-panel"
+        @tab-click="tabClick"
       >
         <el-tab-pane
           name="my-tasks"
@@ -324,9 +330,7 @@ export default {
           <span
             slot="label"
           >
-            <router-link to="/data-filling/forms">
-              表单管理
-            </router-link>
+            表单管理
           </span>
         </el-tab-pane>
       </el-tabs>
