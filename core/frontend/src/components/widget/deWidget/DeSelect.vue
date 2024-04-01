@@ -108,7 +108,7 @@ export default {
   computed: {
     mode() {
       let result = 'el-select'
-      if (this.element.style.showMode && this.element.style.showMode === 'radio' && !this.element.options.attrs.multiple && !this.isConfig) {
+      if (this.element.style.showMode && this.element.style.showMode === 'radio' && !this.element.options.attrs.multiple && !this.isConfig && this.element.options.attrs.required) {
         return 'DeRadio'
       }
       if (this.element.options && this.element.options.attrs && this.element.options.attrs.visual) {

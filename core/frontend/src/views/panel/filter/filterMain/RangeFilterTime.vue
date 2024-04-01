@@ -161,6 +161,7 @@
         <el-input-number
           v-model="timeRange.maximumSingleQuery"
           :min="1"
+          step-strictly
           size="small"
           controls-position="right"
         />

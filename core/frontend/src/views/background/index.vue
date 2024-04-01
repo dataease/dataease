@@ -236,7 +236,7 @@
         </el-col>
       </el-row>
 
-      <template v-if="this.curComponent.component === 'de-select' && !this.curComponent.options.attrs.multiple">
+      <template v-if="this.curComponent.component === 'de-select' && !this.curComponent.options.attrs.multiple && this.curComponent.options.attrs.required">
         <el-row
           style="height: 40px;overflow: hidden;"
         >
@@ -299,7 +299,8 @@
           <el-input-number
             v-model="curComponent.style.showNum"
             :min="1"
-            :max="10"
+            step-strictly
+            :max="20"
             controls-position="right"
             size="small"
           />

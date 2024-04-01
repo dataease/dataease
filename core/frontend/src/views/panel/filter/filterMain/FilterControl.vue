@@ -520,7 +520,6 @@ export default {
     margin-right: -4px;
     margin-left: 6px;
     border-radius: 4px;
-    color: #3370FF;
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
@@ -528,6 +527,7 @@ export default {
     justify-content: center;
     &:hover {
       background: #3370FF1A;
+      color: #3370FF;
     }
 
     &.icon-icon-more::before {
