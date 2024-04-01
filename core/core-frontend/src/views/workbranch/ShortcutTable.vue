@@ -432,6 +432,10 @@ const getEmptyDesc = (): string => {
     margin-top: 16px;
     height: calc(100% - 110px);
 
+    :deep(.ed-table__row):hover {
+      cursor: pointer;
+    }
+
     .name-content {
       display: flex;
       align-items: center;
