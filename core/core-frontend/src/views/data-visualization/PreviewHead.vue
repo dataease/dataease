@@ -7,6 +7,7 @@ import DvDetailInfo from '@/views/common/DvDetailInfo.vue'
 import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
 import { ref, watch, computed } from 'vue'
 import ShareVisualHead from '@/views/share/share/ShareVisualHead.vue'
+import { XpackComponent } from '@/components/plugin'
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -16,7 +17,8 @@ const { t } = useI18n()
 const favorited = ref(false)
 const preview = () => {
   const url = '#/preview?dvId=' + dvInfo.value.id
-  window.open(url, '_blank')
+  const newWindow = window.open(url, '_blank')
+  initOpenHandler(newWindow)
 }
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
@@ -33,7 +35,8 @@ const downloadAsAppTemplate = downloadType => {
 
 const dvEdit = () => {
   const baseUrl = dvInfo.value.type === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
-  window.open(baseUrl + dvInfo.value.id, '_blank')
+  const newWindow = window.open(baseUrl + dvInfo.value.id, '_blank')
+  initOpenHandler(newWindow)
 }
 
 const executeStore = () => {
@@ -58,6 +61,17 @@ watch(
     storeQuery()
   }
 )
+
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
+}
 </script>
 
 <template>
@@ -147,6 +161,7 @@ watch(
       </el-dropdown>
     </div>
   </div>
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less">

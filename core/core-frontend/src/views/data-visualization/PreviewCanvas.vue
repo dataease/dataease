@@ -9,6 +9,7 @@ import { Base64 } from 'js-base64'
 import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { XpackComponent } from '@/components/plugin'
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
 const state = reactive({
@@ -92,8 +93,10 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     }
   )
 }
-
-onMounted(() => {
+let p = null
+const XpackLoaded = () => p(true)
+onMounted(async () => {
+  await new Promise(r => (p = r))
   const { dvId, dvType } = router.currentRoute.value.query
   if (dvId) {
     loadCanvasDataAsync(dvId, dvType)
@@ -118,6 +121,11 @@ defineExpose({
       :cur-gap="state.curPreviewGap"
     ></de-preview>
   </div>
+  <XpackComponent
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
+    @loaded="XpackLoaded"
+    @load-fail="XpackLoaded"
+  />
 </template>
 
 <style lang="less">
