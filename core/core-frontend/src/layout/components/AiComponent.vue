@@ -62,5 +62,6 @@ onMounted(() => {
   height: 50%;
   min-height: 450px;
   max-height: 600px;
+  box-shadow: 0px 6px 24px 0px #1f232914;
 }
 </style>
