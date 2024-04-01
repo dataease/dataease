@@ -84,6 +84,7 @@
             :panel-info="panelInfo"
             :in-screen="inScreen"
             :show-position="showPosition"
+            :user-id="userId"
           />
         </div>
 
@@ -280,6 +281,10 @@ export default {
     terminal: {
       type: String,
       default: 'pc'
+    },
+    userId: {
+      type: String,
+      require: false
     }
   },
   data() {
