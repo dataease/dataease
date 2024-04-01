@@ -20,7 +20,7 @@ interface OrgTreeNode {
 }
 const userStore = useUserStoreWithOut()
 const { push } = useRouter()
-const navBarTitle = ref('请选择')
+const navBarTitle = ref('组织')
 const name = ref('')
 const showNavBar = ref(true)
 const logout = async () => {
@@ -110,6 +110,13 @@ const onClickLeft = () => {
   }
 }
 
+const clearOrg = () => {
+  if (!directName.value.length) return
+  directName.value = []
+  activeDirectName.value = ''
+  directId.value = []
+}
+
 const orgCellClick = (type, val) => {
   if (type !== 'right') {
     switchHandler(val.id)
@@ -177,6 +184,12 @@ const activeTableData = computed(() => {
         @click-left="onClickLeft"
       />
       <div class="grey">
+        <div @click="clearOrg" class="flex-align-center">
+          <span class="ellipsis" :class="!!directName.length && 'active'">组织</span>
+          <el-icon v-if="!!directName.length">
+            <Icon name="icon_right_outlined"></Icon>
+          </el-icon>
+        </div>
         <div
           @click="handleDir(index)"
           class="flex-align-center"
@@ -188,7 +201,6 @@ const activeTableData = computed(() => {
             <Icon name="icon_right_outlined"></Icon>
           </el-icon>
         </div>
-        <span v-if="!directName.length">请选择组织</span>
       </div>
       <OrgCell
         @click="type => orgCellClick(type, ele)"
