@@ -42,6 +42,9 @@ export default {
     }
   },
   time: {
+    end_time_start_time: '結束時間必須大於或等於開始時間',
+    passing_parameters: '空數據不支持傳參數',
+    not_supported: '綁定參數後，不支持傳空數據',
     set_time_filtering_range: '設定時間篩選範圍',
     filter_range: '預設值超出日期篩選範圍內，請重新設定！',
     interval_type: '區間類型',

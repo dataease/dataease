@@ -300,6 +300,7 @@ export default {
         relativeToCurrentType,
         around,
         intervalType,
+        relativeToCurrent,
         timeNumRange,
         relativeToCurrentTypeRange,
         aroundRange,
@@ -307,6 +308,7 @@ export default {
       return {
         timeNum,
         relativeToCurrentType,
+        relativeToCurrent,
         around,
         intervalType,
         timeNumRange,
@@ -421,10 +423,36 @@ export default {
       }
     },
     closeFilter() {
-      this.timeRange = cloneDeep(defaultObj);
+      this.timeRange = cloneDeep(this.timeRangeData);
       this.$emit("changeData", null);
     },
     changeFilter() {
+      const {
+        timeNum,
+        relativeToCurrentType,
+        around,
+        intervalType,
+        timeNumRange,
+        regularOrTrends,
+        relativeToCurrentTypeRange,
+        aroundRange,
+      } = this.timeRange;
+      if (intervalType === "timeInterval" && regularOrTrends === 'dynamic') {
+        const startTime = getAround(
+          relativeToCurrentType,
+          around === "f" ? "subtract" : "add",
+          timeNum,
+        );
+        const endTime = getAround(
+          relativeToCurrentTypeRange,
+          aroundRange === "f" ? "subtract" : "add",
+          timeNumRange,
+        );
+        if (+endTime < +startTime) {
+          this.$message.error(this.$t('time.end_time_start_time'));
+          return;
+        }
+      }
       this.$emit("changeData", cloneDeep(this.timeRange));
     },
   },
