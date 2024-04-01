@@ -127,7 +127,7 @@ export default {
         }
       ).then(() => {
         deleteForm(data.id).then((response) => {
-          if (this.displayFormData.id === data.id) {
+          if (this.displayFormData && this.displayFormData.id === data.id) {
             this.displayFormData = undefined
           }
           listForm({}).then(res => {
