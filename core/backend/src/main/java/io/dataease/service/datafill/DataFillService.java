@@ -158,6 +158,10 @@ public class DataFillService {
 
         Assert.notNull(dataFillForm.getId(), "id cannot be null");
 
+        DataFillFormWithBLOBs form = dataFillFormMapper.selectByPrimaryKey(dataFillForm.getId());
+        //todo 改变文件夹位置
+        checkName(dataFillForm.getId(), dataFillForm.getName(), form.getPid(), form.getLevel(), form.getNodeType(), DataFillConstants.OPT_TYPE_UPDATE);
+
         dataFillForm.setUpdateTime(new Date());
         dataFillFormMapper.updateByPrimaryKeySelective(dataFillForm);
 
