@@ -498,6 +498,7 @@ const handleBeforeClose = () => {
   inputCom.value?.mult?.handleClickOutside?.()
   handleDialogClick()
   dialogVisible.value = false
+  visiblePopover.value = false
 }
 
 const confirmClick = () => {
@@ -1408,12 +1409,34 @@ defineExpose({
           </div>
           <div class="list-item" v-if="+curComponent.displayType === 0">
             <div class="label">
-              <el-checkbox v-model="curComponent.showEmpty" label="选项值包含空数据" />
+              <el-tooltip
+                effect="dark"
+                content="绑定参数后，不支持传空数据"
+                :disabled="!curComponent.parametersCheck"
+                placement="top"
+              >
+                <el-checkbox
+                  :disabled="curComponent.parametersCheck"
+                  v-model="curComponent.showEmpty"
+                  label="选项值包含空数据"
+                />
+              </el-tooltip>
             </div>
           </div>
           <div class="list-item">
             <div class="label">
-              <el-checkbox v-model="curComponent.parametersCheck" label="绑定参数" />
+              <el-tooltip
+                effect="dark"
+                content="空数据不支持传参数"
+                :disabled="!curComponent.showEmpty"
+                placement="top"
+              >
+                <el-checkbox
+                  :disabled="curComponent.showEmpty"
+                  v-model="curComponent.parametersCheck"
+                  label="绑定参数"
+                />
+              </el-tooltip>
             </div>
             <template v-if="curComponent.parametersCheck">
               <div v-if="curComponent.displayType !== '7'" class="parameters">
@@ -1701,8 +1724,10 @@ defineExpose({
     border-radius: 4px;
     border: 1px solid #dee0e3;
     display: flex;
-    .ed-checkbox__label:hover {
-      color: #1f2329;
+    .ed-checkbox:not(.is-disabled) {
+      .ed-checkbox__label:hover {
+        color: #1f2329;
+      }
     }
     .query-condition-list {
       height: 100%;
