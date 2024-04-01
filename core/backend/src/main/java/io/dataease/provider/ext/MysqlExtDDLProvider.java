@@ -288,9 +288,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         }
 
         if (primaryKeyField != null) {
-            str.append("constraint ")
+            str.append("constraint `")
                     .append(table)
-                    .append("_pk ")
+                    .append("_pk` ")
                     .append("PRIMARY KEY (")
                     .append("`")
                     .append(primaryKeyField.getColumnName())
