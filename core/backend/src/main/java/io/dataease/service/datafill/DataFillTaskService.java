@@ -94,6 +94,7 @@ public class DataFillTaskService {
         if (request.getId() == null) {
             insert = true;
             request.setFormId(formId);
+            request.setCreateTime(new Date());
         }
 
         if (insert) {
@@ -197,7 +198,8 @@ public class DataFillTaskService {
         Date endTime = null;
 
         if (dataFillTask.getRateType() == -1) {
-            startTime = dataFillTask.getPublishStartTime();
+            //startTime = dataFillTask.getPublishStartTime();
+            startTime = new Date();
             endTime = dataFillTask.getPublishEndTime();
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
