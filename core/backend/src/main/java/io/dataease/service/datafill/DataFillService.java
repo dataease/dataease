@@ -262,9 +262,13 @@ public class DataFillService {
             dataFillFormMapper.deleteByExample(example);
         }
 
-        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM, dataFillForm.getId(), dataFillForm.getPid(), null, null);
+        if (dataFillForm != null) {
 
-        dataFillTaskService.deleteTaskByFormId(id);
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM, dataFillForm.getId(), dataFillForm.getPid(), null, null);
+
+            dataFillTaskService.deleteTaskByFormId(id);
+
+        }
     }
 
     public List<ExtTableField> listFields(String id) throws Exception {
