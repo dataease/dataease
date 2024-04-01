@@ -42,6 +42,9 @@ export default {
     }
   },
   time: {
+    end_time_start_time: 'The end time must be greater than or equal to the start time',
+    passing_parameters: 'Empty data does not support passing parameters',
+    not_supported: 'After binding parameters, passing empty data is not supported',
     set_time_filtering_range: 'Set time filtering range',
     filter_range: 'The default value is outside the date filtering range, please reset it!',
     interval_type: 'Interval type',

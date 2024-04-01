@@ -46,6 +46,9 @@ export default {
     upload_limit_size: '图片大小不超过'
   },
   time: {
+    end_time_start_time: '结束时间必须大于或等于开始时间',
+    passing_parameters: '空数据不支持传参数',
+    not_supported: '空数据不支持传参数',
     set_time_filtering_range: '设置时间筛选范围',
     filter_range: '默认值超出日期筛选范围内，请重新设置!',
     interval_type: '区间类型',
