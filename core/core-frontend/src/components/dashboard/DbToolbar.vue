@@ -25,6 +25,7 @@ import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
+import { XpackComponent } from '@/components/plugin'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -102,7 +103,8 @@ const previewOuter = () => {
   }
   canvasSave(() => {
     const url = '#/preview?dvId=' + dvInfo.value.id
-    window.open(url, '_blank')
+    const newWindow = window.open(url, '_blank')
+    initOpenHandler(newWindow)
   })
 }
 
@@ -323,6 +325,17 @@ const onDvNameChange = () => {
 }
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
+}
 </script>
 
 <template>
@@ -574,6 +587,7 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
     />
     <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
   </div>
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less" scoped>
