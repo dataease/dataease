@@ -662,7 +662,7 @@ export default {
   },
   watch: {
     // 切换展示页面后 重新点击一下当前节点
-    '$store.panel.mainActiveName': function(newVal, oldVal) {
+    '$store.state.panel.mainActiveName': function(newVal, oldVal) {
       if (newVal === 'PanelMain' && this.lastActiveNodeData) {
         this.activeNodeAndClickOnly(this.lastActiveNodeData)
       }
