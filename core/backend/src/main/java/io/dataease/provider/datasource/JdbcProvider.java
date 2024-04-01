@@ -83,8 +83,10 @@ public class JdbcProvider extends DefaultJdbcProvider {
         try (Connection connection = getConnectionFromPool(datasourceRequest); PreparedStatement stat = getPreparedStatement(connection, queryTimeout, datasourceRequest.getQuery())) {
 
             if (CollectionUtils.isNotEmpty(datasourceRequest.getTableFieldWithValues())) {
+                LogUtil.info("execWithPreparedStatement sql: " + datasourceRequest.getQuery());
                 for (int i = 0; i < datasourceRequest.getTableFieldWithValues().size(); i++) {
                     stat.setObject(i + 1, datasourceRequest.getTableFieldWithValues().get(i).getValue(), datasourceRequest.getTableFieldWithValues().get(i).getType());
+                    LogUtil.info("execWithPreparedStatement param[" + (i + 1) + "]: " + datasourceRequest.getTableFieldWithValues().get(i).getValue());
                 }
             }
 
@@ -428,8 +430,10 @@ public class JdbcProvider extends DefaultJdbcProvider {
         try (Connection connection = getConnectionFromPool(dsr); PreparedStatement stat = getPreparedStatement(connection, queryTimeout, dsr.getQuery())) {
 
             if (CollectionUtils.isNotEmpty(dsr.getTableFieldWithValues())) {
+                LogUtil.info("getData sql: " + dsr.getQuery());
                 for (int i = 0; i < dsr.getTableFieldWithValues().size(); i++) {
                     stat.setObject(i + 1, dsr.getTableFieldWithValues().get(i).getValue(), dsr.getTableFieldWithValues().get(i).getType());
+                    LogUtil.info("getData param[" + (i + 1) + "]: " + dsr.getTableFieldWithValues().get(i).getValue());
                 }
             }
 
