@@ -250,7 +250,20 @@ public class SqlserverQueryProvider extends QueryProvider {
             }
         }
         if (ObjectUtils.isNotEmpty(limit)) {
-            SQLObj limitFiled = SQLObj.builder().limitFiled(" top " + limit + " ").build();
+            String topKeyWord = " top ";
+            if (needDistinct(sortFields, limit)) {
+                topKeyWord = " distinct top ";
+                st_sql.remove("groups");
+                xOrders.forEach(f -> {
+                    if (xFields.stream().noneMatch(x -> x.getFieldName().equals(f.getOrderField()))) {
+                        String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, xFields.size());
+                        SQLObj tField = SQLObj.builder().fieldName(f.getOrderField()).fieldAlias(fieldAlias).build();
+                        xFields.add(tField);
+                    }
+                });
+                st_sql.add("groups", xFields);
+            }
+            SQLObj limitFiled = SQLObj.builder().limitFiled(topKeyWord + limit + " ").build();
             st_sql.add("limitFiled", limitFiled);
         }
 
