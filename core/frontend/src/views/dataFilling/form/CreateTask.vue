@@ -126,7 +126,7 @@
                 style="padding-top: 28px; padding-bottom: 0"
               >
                 <span
-                  class="perfix"
+                  class="prefix"
                   style="margin-bottom: 28px; "
                 >任务下发时间</span>
                 <el-form-item
@@ -149,7 +149,7 @@
                 style="padding-top: 0; padding-bottom: 0"
               >
                 <span
-                  class="perfix"
+                  class="prefix"
                   style="margin-bottom: 28px"
                 >填报截止时间</span>
                 <el-form-item
@@ -218,7 +218,7 @@
                 <span class="tail">{{ $t('cron.every_exec') }}</span>
               </div>
               <div class="rate-type-time second-row">
-                <span class="perfix">在任务下发</span>
+                <span class="prefix">在任务下发</span>
                 <el-input-number
                   v-model.number="form.publishRangeTime"
                   class="w140"
@@ -930,7 +930,7 @@ export default {
     width: 160px !important;
   }
 
-  .perfix {
+  .prefix {
     font-family: PingFang SC;
     font-size: 14px;
     font-weight: 400;
