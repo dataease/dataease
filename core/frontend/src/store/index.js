@@ -154,6 +154,7 @@ const data = {
     },
     previewVisible: false,
     previewComponentData: [],
+    sourceComponentData: [],
     currentCanvasNewId: [],
     lastViewRequestInfo: {},
     multiplexingStyleAdapt: true, // 复用样式跟随主题
@@ -260,6 +261,9 @@ const data = {
     },
     setPreviewComponentData(state, previewComponentData = []) {
       Vue.set(state, 'previewComponentData', previewComponentData)
+    },
+    setSourceComponentData(state, sourceComponentData = []) {
+      Vue.set(state, 'sourceComponentData', sourceComponentData)
     },
     setComponentViewsData(state, componentViewsData = {}) {
       Vue.set(state, 'componentViewsData', componentViewsData)
