@@ -1,6 +1,7 @@
 <template>
   <div
     v-loading="loadingFlag"
+    element-loading-background="rgba(0,0,0,0)"
     :class="[
       {
         ['active']: active
