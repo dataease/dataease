@@ -601,7 +601,14 @@ export default {
       datasource: '数据源',
       table: '数据库表',
       creator: '创建人',
-      createTime: '创建时间'
+      createTime: '创建时间',
+      operation: '操作',
+      operator: '操作人',
+      operate_time: '操作时间',
+      modify: '修改',
+      show: '查看',
+      delete: '删除',
+      show_data: '查看数据'
     },
     data: {
       confirm_delete: '确认删除?'
@@ -610,7 +617,8 @@ export default {
       confirm_enable: '确认启动任务？（单次任务会新建下发任务）',
       confirm_disable: '确认停止任务？'
     },
-    on_the_left: '请在左侧选择表单'
+    on_the_left: '请在左侧选择表单',
+    search_by_commit_name: '根据操作人名称搜索'
   },
   detabs: {
     custom_sort: '自定义排序',
