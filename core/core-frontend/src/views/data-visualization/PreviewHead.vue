@@ -125,7 +125,7 @@ const initOpenHandler = newWindow => {
         编辑</el-button
       >
       <el-dropdown trigger="click">
-        <el-icon style="margin-left: 8px" class="hover-icon">
+        <el-icon :style="{ color: '#1f2329 !important', marginLeft: '8px' }" class="hover-icon">
           <Icon name="dv-head-more"></Icon>
         </el-icon>
         <template #dropdown>

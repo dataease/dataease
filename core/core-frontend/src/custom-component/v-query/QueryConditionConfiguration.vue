@@ -474,6 +474,12 @@ const validate = () => {
       return true
     }
 
+    if (!ele.defaultValueCheck) {
+      const isMultiple = +ele.displayType === 7 || ele.multiple
+      ele.selectValue = isMultiple ? [] : undefined
+      ele.defaultValue = isMultiple ? [] : undefined
+    }
+
     let displayTypeField = null
     if (
       ele.checkedFields.some(id => {

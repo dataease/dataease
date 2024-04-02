@@ -390,6 +390,30 @@ const getDefaultExpandedKeys = () => {
   }
 }
 
+const sortList = [
+  {
+    name: '按创建时间升序',
+    value: 'time_asc'
+  },
+  {
+    name: '按创建时间降序',
+    value: 'time_desc',
+    divided: true
+  },
+  {
+    name: '按照名称升序',
+    value: 'name_asc'
+  },
+  {
+    name: '按照名称降序',
+    value: 'name_desc'
+  }
+]
+
+const sortTypeTip = computed(() => {
+  return sortList.find(ele => ele.value === state.curSortType).name
+})
+
 const sortTypeChange = sortType => {
   state.resourceTree = treeSort(state.originResourceTree, sortType)
   state.curSortType = sortType
@@ -488,51 +512,35 @@ defineExpose({
           </el-icon>
         </template>
       </el-input>
-      <el-dropdown trigger="click">
-        <el-icon class="insert-filter filter-icon-span">
-          <Icon
-            v-show="state.curSortType.includes('asc')"
-            name="dv-sort-asc"
-            class="opt-icon"
-          ></Icon>
-          <Icon
-            v-show="state.curSortType.includes('desc')"
-            name="dv-sort-desc"
-            class="opt-icon"
-          ></Icon>
+      <el-dropdown @command="sortTypeChange" trigger="click">
+        <el-icon class="filter-icon-span">
+          <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
+            <Icon
+              v-if="state.curSortType.includes('asc')"
+              name="dv-sort-asc"
+              class="opt-icon"
+            ></Icon>
+          </el-tooltip>
+          <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
+            <Icon
+              v-show="state.curSortType.includes('desc')"
+              name="dv-sort-desc"
+              class="opt-icon"
+            ></Icon>
+          </el-tooltip>
         </el-icon>
         <template #dropdown>
-          <el-dropdown-menu style="width: 150px">
-            <el-dropdown-item
-              class="sort-type-normal"
-              :class="{ 'sort-type-checked': state.curSortType === 'time_asc' }"
-              @click="sortTypeChange('time_asc')"
-            >
-              <span>按创建时间升序</span>
-              <el-icon style="margin-left: 4px"><Check /></el-icon>
-            </el-dropdown-item>
-            <el-dropdown-item
-              class="sort-type-normal"
-              :class="{ 'sort-type-checked': state.curSortType === 'time_desc' }"
-              @click="sortTypeChange('time_desc')"
-            >
-              <span>按创建时间降序</span> <el-icon style="margin-left: 8px"><Check /></el-icon>
-            </el-dropdown-item>
-            <el-divider style="margin: 12px 0" />
-            <el-dropdown-item
-              class="sort-type-normal"
-              :class="{ 'sort-type-checked': state.curSortType === 'name_asc' }"
-              @click="sortTypeChange('name_asc')"
-            >
-              <span>按照名称升序</span><el-icon><Check /></el-icon>
-            </el-dropdown-item>
-            <el-dropdown-item
-              class="sort-type-normal"
-              :class="{ 'sort-type-checked': state.curSortType === 'name_desc' }"
-              @click="sortTypeChange('name_desc')"
-            >
-              <span>按照名称降序</span><el-icon><Check /></el-icon>
-            </el-dropdown-item>
+          <el-dropdown-menu style="width: 246px">
+            <template :key="ele.value" v-for="ele in sortList">
+              <el-dropdown-item
+                class="ed-select-dropdown__item"
+                :class="ele.value === state.curSortType && 'selected'"
+                :command="ele.value"
+              >
+                {{ ele.name }}
+              </el-dropdown-item>
+              <li v-if="ele.divided" class="ed-dropdown-menu__item--divided"></li>
+            </template>
           </el-dropdown-menu>
         </template>
       </el-dropdown>
@@ -614,42 +622,27 @@ defineExpose({
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 <style lang="less" scoped>
-.insert-filter {
-  display: inline-block;
-  font-weight: 400 !important;
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
-  line-height: 1;
-  white-space: nowrap;
-  cursor: pointer;
-  color: var(--TextPrimary, #1f2329);
-  -webkit-appearance: none;
-  text-align: center;
-  box-sizing: border-box;
-  outline: 0;
-  margin: 0;
-  transition: 0.1s;
-  border-radius: 3px;
-
-  &:active {
-    color: #000;
-    border-color: #3a8ee6;
-    background-color: red;
-    outline: 0;
-  }
-
-  &:hover {
-    background-color: rgba(31, 35, 41, 0.1);
-    color: #3a8ee6;
-  }
-}
-
 .filter-icon-span {
-  border: 1px solid #dcdfe6;
+  border: 1px solid #bbbfc4;
   width: 32px;
   height: 32px;
   border-radius: 4px;
-  padding: 7px;
+  color: #1f2329;
+  padding: 8px;
   margin-left: 8px;
+  font-size: 16px;
+  cursor: pointer;
+
+  .opt-icon:focus {
+    outline: none !important;
+  }
+  &:hover {
+    background: #f5f6f7;
+  }
+
+  &:active {
+    background: #eff0f1;
+  }
 }
 .resource-tree {
   padding: 16px 0 0;
@@ -689,7 +682,7 @@ defineExpose({
   }
   .search-bar {
     padding-bottom: 10px;
-    width: calc(100% - 50px);
+    width: calc(100% - 40px);
   }
 }
 .title-area {
