@@ -222,8 +222,13 @@
                 <el-input-number
                   v-model.number="form.publishRangeTime"
                   class="w140"
-                  min="1"
-                  step="1"
+                  :min="1"
+                  :max="100"
+                  :step="1"
+                  :precision="0"
+                  @change="onPublishRangeTimeChange(form)"
+                  @blur="onPublishRangeTimeChange(form)"
+                  @keyup.enter.native="onPublishRangeTimeChange(form)"
                 />
                 <el-select
                   v-model="form.publishRangeTimeType"
@@ -799,6 +804,13 @@ export default {
         return callback(new Error('收件人、角色、组织至少选择一项'))
       }
       return callback()
+    },
+    onPublishRangeTimeChange(form) {
+      if (!form.publishRangeTime) {
+        this.$nextTick(() => {
+          form.publishRangeTime = 1
+        })
+      }
     }
   }
 }

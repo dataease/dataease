@@ -171,12 +171,21 @@ export default {
   methods: {
     getTypeOptions(formOption) {
       const _options = []
-      if (formOption.type !== 'date' && formOption.type !== 'dateRange' && formOption.settings.inputType !== 'number' && formOption.type !== 'textarea') {
+      if (formOption.type !== 'date' &&
+        formOption.type !== 'dateRange' &&
+        formOption.settings.inputType !== 'number' &&
+        formOption.type !== 'textarea' &&
+        formOption.type !== 'checkbox' &&
+        !(formOption.type === 'select' && formOption.settings.multiple)
+      ) {
         _options.push({ value: 'nvarchar', label: '字符串' })
       }
-      if (formOption.type === 'textarea') {
+      if (formOption.type === 'checkbox' ||
+        formOption.type === 'select' && formOption.settings.multiple ||
+        formOption.type === 'textarea') {
         _options.push({ value: 'text', label: '长文本' })
       }
+
       if (formOption.type === 'input' && formOption.settings.inputType === 'number') {
         _options.push({ value: 'number', label: '整型数字' })
         _options.push({ value: 'decimal', label: '小数数字' })

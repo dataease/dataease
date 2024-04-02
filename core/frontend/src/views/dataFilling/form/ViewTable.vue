@@ -656,7 +656,7 @@ export default {
                   obj[key] = undefined
                 }
               } else {
-                obj[key] = value
+                obj[key] = value === null ? undefined : value
               }
             })
             _data.push({
