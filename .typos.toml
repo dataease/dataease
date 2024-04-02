@@ -4,5 +4,8 @@ Referer = "Referer"
 Encryp = "Encryp"
 OT = "OT"
 Wheres = "Wheres"
+ws = "ws"
+guid = "guid"
+yoy = "yoy"
 [files]
 extend-exclude = ["mapFiles/**"]
