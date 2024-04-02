@@ -52,6 +52,24 @@ export default {
       }
     }
   },
+  watch: {
+    currentKey: {
+      handler(newVal, oldVla) {
+        if (newVal !== oldVla) {
+          this.myTaskName = ''
+          this.finishedTaskName = ''
+          this.expiredTaskName = ''
+        }
+        if (newVal === 'finished') {
+          this.searchTableFinishedTaskData()
+        } else if (newVal === 'expired') {
+          this.searchTableExpiredTaskData()
+        } else {
+          this.searchTableMyTaskData()
+        }
+      }
+    }
+  },
   mounted() {
     this.currentKey = 'todo'
     this.searchTableMyTaskData()
@@ -62,12 +80,17 @@ export default {
     },
     changeKey(key) {
       this.currentKey = key
-      if (key === 'finished') {
-        this.searchTableFinishedTaskData()
-      } else if (key === 'expired') {
-        this.searchTableExpiredTaskData()
+    },
+    entryKey(type) {
+      if (type === 'finished') {
+        this.$refs.search2.focus()
+        this.$refs.search2.blur()
+      } else if (type === 'expired') {
+        this.$refs.search3.focus()
+        this.$refs.search3.blur()
       } else {
-        this.searchTableMyTaskData()
+        this.$refs.search1.focus()
+        this.$refs.search1.blur()
       }
     },
     searchTableMyTaskData() {
@@ -348,7 +371,7 @@ export default {
               :offset="16"
             >
               <el-input
-                ref="search"
+                ref="search1"
                 v-model="myTaskName"
                 :placeholder="$t('commons.search_by_name')"
                 prefix-icon="el-icon-search"
@@ -356,7 +379,8 @@ export default {
                 size="small"
                 clearable
                 @blur="searchTableMyTaskData"
-                @clear="searchTableMyTaskData"
+                @clear="entryKey('todo')"
+                @keyup.enter.native="entryKey('todo')"
               />
             </el-col>
           </el-row>
@@ -440,15 +464,16 @@ export default {
               :offset="16"
             >
               <el-input
-                ref="search"
+                ref="search2"
                 v-model="finishedTaskName"
                 :placeholder="$t('commons.search_by_name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
                 clearable
-                @blur="searchTableMyTaskData"
-                @clear="searchTableMyTaskData"
+                @blur="searchTableFinishedTaskData"
+                @clear="entryKey('finished')"
+                @keyup.enter.native="entryKey('finished')"
               />
             </el-col>
           </el-row>
@@ -529,15 +554,16 @@ export default {
               :offset="16"
             >
               <el-input
-                ref="search"
+                ref="search3"
                 v-model="expiredTaskName"
                 :placeholder="$t('commons.search_by_name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
                 clearable
-                @blur="searchTableMyTaskData"
-                @clear="searchTableMyTaskData"
+                @blur="searchTableExpiredTaskData"
+                @clear="entryKey('expired')"
+                @keyup.enter.native="entryKey('expired')"
               />
             </el-col>
           </el-row>
