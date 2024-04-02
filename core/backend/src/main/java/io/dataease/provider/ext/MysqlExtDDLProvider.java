@@ -27,6 +27,11 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
     private static final String dropTableSql = "DROP TABLE IF EXISTS `TABLE_NAME`";
 
     @Override
+    public String getLowerCaseTaleNames() {
+        return "SHOW VARIABLES LIKE 'lower_case_table_names'";
+    }
+
+    @Override
     public String dropTableSql(String table) {
         return dropTableSql.replace("TABLE_NAME", table);
     }

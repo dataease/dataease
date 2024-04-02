@@ -103,8 +103,12 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
     @Override
     public List<TableField> getTableFields(DatasourceRequest datasourceRequest) throws Exception {
+        String requestTableName = datasourceRequest.getTable();
+        if (datasourceRequest.isLowerCaseTaleNames()) {
+            requestTableName = requestTableName.toLowerCase();
+        }
         if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("mongo")) {
-            datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
+            datasourceRequest.setQuery("select * from " + requestTableName);
             return fetchResultField(datasourceRequest);
         }
         List<TableField> list = new LinkedList<>();
@@ -117,7 +121,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 }
             }
             DatabaseMetaData databaseMetaData = connection.getMetaData();
-            String tableNamePattern = datasourceRequest.getTable();
+            String tableNamePattern = requestTableName;
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.mysql.name())) {
                 if (databaseMetaData.getDriverMajorVersion() < 8) {
                     tableNamePattern = String.format(MySQLConstants.KEYWORD_TABLE, tableNamePattern);
@@ -146,22 +150,25 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 } else {
                     database = primaryKeys.getString("TABLE_CAT");
                 }
+                if (datasourceRequest.isLowerCaseTaleNames()) {
+                    tableName = tableName.toLowerCase();
+                }
                 //获取主键的名称
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name())) {
-                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                    if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
                         primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
                     }
                 } else if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())) {
-                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest)) && schema.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                    if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDatabase(datasourceRequest)) && schema.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
                         primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
                     }
                 } else {
                     if (database != null) {
-                        if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                        if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
                             primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
                         }
                     } else {
-                        if (tableName.equals(datasourceRequest.getTable())) {
+                        if (tableName.equals(requestTableName)) {
                             primaryKeySet.add(primaryKeys.getString("COLUMN_NAME"));
                         }
                     }
@@ -179,24 +186,27 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 } else {
                     database = resultSet.getString("TABLE_CAT");
                 }
+                if (datasourceRequest.isLowerCaseTaleNames()) {
+                    tableName = tableName.toLowerCase();
+                }
                 if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.pg.name())) {
-                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                    if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
                         TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
                         list.add(tableField);
                     }
                 } else if (datasourceRequest.getDatasource().getType().equalsIgnoreCase(DatasourceTypes.sqlServer.name())) {
-                    if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest)) && schema.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
+                    if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDatabase(datasourceRequest)) && schema.equalsIgnoreCase(getDsSchema(datasourceRequest))) {
                         TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
                         list.add(tableField);
                     }
                 } else {
                     if (database != null) {
-                        if (tableName.equals(datasourceRequest.getTable()) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
+                        if (tableName.equals(requestTableName) && database.equalsIgnoreCase(getDatabase(datasourceRequest))) {
                             TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
                             list.add(tableField);
                         }
                     } else {
-                        if (tableName.equals(datasourceRequest.getTable())) {
+                        if (tableName.equals(requestTableName)) {
                             TableField tableField = getTableFiled(resultSet, datasourceRequest, primaryKeySet);
                             list.add(tableField);
                         }
@@ -209,7 +219,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
             DataEaseException.throwException(e);
         } catch (Exception e) {
             if (datasourceRequest.getDatasource().getType().equalsIgnoreCase("ds_doris") || datasourceRequest.getDatasource().getType().equalsIgnoreCase("StarRocks")) {
-                datasourceRequest.setQuery("select * from " + datasourceRequest.getTable());
+                datasourceRequest.setQuery("select * from " + requestTableName);
                 return fetchResultField(datasourceRequest);
             } else {
                 DataEaseException.throwException(Translator.get("i18n_datasource_connect_error") + e.getMessage());
