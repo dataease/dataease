@@ -226,13 +226,14 @@ onUnmounted(() => {
       >
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
-      <view-editor
-        v-show="viewEditorShow"
-        :themes="'light'"
-        :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
-        :dataset-tree="state.datasetTree"
-        :class="{ 'preview-aside': editMode === 'preview' }"
-      ></view-editor>
+      <div v-show="viewEditorShow" style="height: 100%">
+        <view-editor
+          :themes="'light'"
+          :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
+          :dataset-tree="state.datasetTree"
+          :class="{ 'preview-aside': editMode === 'preview' }"
+        ></view-editor>
+      </div>
       <dv-sidebar
         v-if="batchOptStatus"
         :theme-info="'light'"
