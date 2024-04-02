@@ -10,13 +10,15 @@
               v-for="ele in intervalTypeList"
               :key="ele.value"
               :label="ele.value"
-              >{{ $t(`time.${ele.label}`) }}</el-radio
-            >
+            >{{ $t(`time.${ele.label}`) }}</el-radio>
           </el-radio-group>
         </div>
       </div>
     </div>
-    <div class="list-item" v-if="timeRange.intervalType !== 'none'">
+    <div
+      v-if="timeRange.intervalType !== 'none'"
+      class="list-item"
+    >
       <div class="label">{{ $t(`time.${regularOrTrendsTitle}`) }}</div>
       <div class="setting-content">
         <div class="setting">
@@ -33,7 +35,10 @@
               {{ $t("time.relative_to_current") }}
             </div>
             <div class="setting-value select">
-              <el-select size="small" v-model="timeRange.relativeToCurrent">
+              <el-select
+                v-model="timeRange.relativeToCurrent"
+                size="small"
+              >
                 <el-option
                   v-for="item in relativeToCurrentList"
                   :key="item.value"
@@ -43,7 +48,10 @@
               </el-select>
             </div>
           </div>
-          <div class="setting" v-if="timeRange.relativeToCurrent === 'custom'">
+          <div
+            v-if="timeRange.relativeToCurrent === 'custom'"
+            class="setting"
+          >
             <div class="setting-input">
               <el-input-number
                 v-model="timeRange.timeNum"
@@ -51,7 +59,10 @@
                 :min="0"
                 controls-position="right"
               />
-              <el-select size="small" v-model="timeRange.relativeToCurrentType">
+              <el-select
+                v-model="timeRange.relativeToCurrentType"
+                size="small"
+              >
                 <el-option
                   v-for="item in relativeToCurrentTypeList"
                   :key="item.value"
@@ -59,7 +70,10 @@
                   :value="item.value"
                 />
               </el-select>
-              <el-select size="small" v-model="timeRange.around">
+              <el-select
+                v-model="timeRange.around"
+                size="small"
+              >
                 <el-option
                   v-for="item in aroundList"
                   :key="item.value"
@@ -82,7 +96,10 @@
                 :min="0"
                 controls-position="right"
               />
-              <el-select size="small" v-model="timeRange.relativeToCurrentType">
+              <el-select
+                v-model="timeRange.relativeToCurrentType"
+                size="small"
+              >
                 <el-option
                   v-for="item in relativeToCurrentTypeList"
                   :key="item.value"
@@ -90,7 +107,10 @@
                   :value="item.value"
                 />
               </el-select>
-              <el-select size="small" v-model="timeRange.around">
+              <el-select
+                v-model="timeRange.around"
+                size="small"
+              >
                 <el-option
                   v-for="item in aroundList"
                   :key="item.value"
@@ -109,7 +129,10 @@
                 :min="0"
                 controls-position="right"
               />
-              <el-select size="small" v-model="timeRange.relativeToCurrentTypeRange">
+              <el-select
+                v-model="timeRange.relativeToCurrentTypeRange"
+                size="small"
+              >
                 <el-option
                   v-for="item in relativeToCurrentTypeList"
                   :key="item.value"
@@ -117,7 +140,10 @@
                   :value="item.value"
                 />
               </el-select>
-              <el-select size="small" v-model="timeRange.aroundRange">
+              <el-select
+                v-model="timeRange.aroundRange"
+                size="small"
+              >
                 <el-option
                   v-for="item in aroundList"
                   :key="item.value"
@@ -129,15 +155,21 @@
           </div>
         </template>
       </div>
-      <div class="parameters" :class="dynamicTime && 'setting'">
-        <div class="setting-label" v-if="dynamicTime">
+      <div
+        class="parameters"
+        :class="dynamicTime && 'setting'"
+      >
+        <div
+          v-if="dynamicTime"
+          class="setting-label"
+        >
           {{ $t("time.preview") }}
         </div>
         <div :class="dynamicTime ? 'setting-value' : 'w100'">
           <el-date-picker
-            :disabled="timeRange.regularOrTrends !== 'fixed'"
-            v-model="timeRange.regularOrTrendsValue"
             :key="timeInterval"
+            v-model="timeRange.regularOrTrendsValue"
+            :disabled="timeRange.regularOrTrends !== 'fixed'"
             :type="timeInterval"
             size="small"
             :start-placeholder="$t('dataset.start_time')"
@@ -169,103 +201,108 @@
       </div>
     </div>
     <div class="popover-foot">
-      <de-btn secondary @click="closeFilter">{{ $t("chart.cancel") }} </de-btn>
-      <de-btn type="primary" @click="changeFilter"
-        >{{ $t("chart.confirm") }}
+      <de-btn
+        secondary
+        @click="closeFilter"
+      >{{ $t("chart.cancel") }} </de-btn>
+      <de-btn
+        type="primary"
+        @click="changeFilter"
+      >{{ $t("chart.confirm") }}
       </de-btn>
     </div>
   </div>
 </template>
 
 <script>
-import { getThisStart, getLastStart, getAround } from "./time-format-dayjs";
-import { cloneDeep } from "lodash-es";
+import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
+import { cloneDeep } from 'lodash-es'
 const intervalTypeList = [
   {
-    label: "nothing",
-    value: "none",
+    label: 'nothing',
+    value: 'none'
   },
   {
-    label: "starting_from",
-    value: "start",
+    label: 'starting_from',
+    value: 'start'
   },
   {
-    label: "end_at",
-    value: "end",
+    label: 'end_at',
+    value: 'end'
   },
   {
-    label: "time_interval",
-    value: "timeInterval",
-  },
-];
+    label: 'time_interval',
+    value: 'timeInterval'
+  }
+]
 const aroundList = [
   {
-    label: "ago",
-    value: "f",
+    label: 'ago',
+    value: 'f'
   },
   {
-    label: "after",
-    value: "b",
-  },
-];
+    label: 'after',
+    value: 'b'
+  }
+]
 const relativeToCurrentTypeList = [
   {
-    label: "year",
-    value: "year",
+    label: 'year',
+    value: 'year'
   },
   {
-    label: "month",
-    value: "month",
+    label: 'month',
+    value: 'month'
   },
   {
-    label: "day",
-    value: "day",
-  },
-];
+    label: 'day',
+    value: 'day'
+  }
+]
 
 const relativeToCurrentList = [
   {
-    label: "today",
-    value: "today",
+    label: 'today',
+    value: 'today'
   },
   {
-    label: "yesterday",
-    value: "yesterday",
+    label: 'yesterday',
+    value: 'yesterday'
   },
   {
-    label: "at_the_beginning_of_the_month",
-    value: "monthBeginning",
+    label: 'at_the_beginning_of_the_month',
+    value: 'monthBeginning'
   },
   {
-    label: "at_the_beginning_of_the_year",
-    value: "yearBeginning",
+    label: 'at_the_beginning_of_the_year',
+    value: 'yearBeginning'
   },
   {
-    label: "custom",
-    value: "custom",
-  },
-];
+    label: 'custom',
+    value: 'custom'
+  }
+]
 
 const defaultObj = {
-  intervalType: "none",
+  intervalType: 'none',
   dynamicWindow: false,
   maximumSingleQuery: 0,
-  regularOrTrends: "fixed",
-  regularOrTrendsValue: "",
-  relativeToCurrent: "custom",
+  regularOrTrends: 'fixed',
+  regularOrTrendsValue: '',
+  relativeToCurrent: 'custom',
   timeNum: 0,
-  relativeToCurrentType: "year",
-  around: "f",
+  relativeToCurrentType: 'year',
+  around: 'f',
   timeNumRange: 0,
-  relativeToCurrentTypeRange: "year",
-  aroundRange: "f",
-};
+  relativeToCurrentTypeRange: 'year',
+  aroundRange: 'f'
+}
 export default {
   props: {
     timeRangeData: {
       type: Object,
-      defalut: () => defaultObj,
-    },
+      default: () => defaultObj
+    }
   },
   data() {
     return {
@@ -274,24 +311,20 @@ export default {
       aroundList,
       relativeToCurrentList,
       timeRange: {
-        intervalType: "none",
+        intervalType: 'none',
         dynamicWindow: false,
         maximumSingleQuery: 0,
-        regularOrTrends: "fixed",
-        regularOrTrendsValue: "",
-        relativeToCurrent: "custom",
+        regularOrTrends: 'fixed',
+        regularOrTrendsValue: '',
+        relativeToCurrent: 'custom',
         timeNum: 0,
-        relativeToCurrentType: "year",
-        around: "f",
+        relativeToCurrentType: 'year',
+        around: 'f',
         timeNumRange: 0,
-        relativeToCurrentTypeRange: "year",
-        aroundRange: "f",
-      },
-    };
-  },
-  created() {
-    this.timeRange = cloneDeep(this.timeRangeData);
-    this.init();
+        relativeToCurrentTypeRange: 'year',
+        aroundRange: 'f'
+      }
+    }
   },
   computed: {
     timeConfig() {
@@ -303,8 +336,8 @@ export default {
         relativeToCurrent,
         timeNumRange,
         relativeToCurrentTypeRange,
-        aroundRange,
-      } = this.timeRange;
+        aroundRange
+      } = this.timeRange
       return {
         timeNum,
         relativeToCurrentType,
@@ -313,30 +346,34 @@ export default {
         intervalType,
         timeNumRange,
         relativeToCurrentTypeRange,
-        aroundRange,
-      };
+        aroundRange
+      }
     },
     regularOrTrendsTitle() {
       return intervalTypeList.find(
-        (ele) => ele.value === this.timeRange.intervalType,
-      ).label;
+        (ele) => ele.value === this.timeRange.intervalType
+      ).label
     },
     dynamicTime() {
-      return this.timeRange.regularOrTrends !== "fixed";
+      return this.timeRange.regularOrTrends !== 'fixed'
     },
     timeInterval() {
-      return this.timeRange.intervalType === "timeInterval"
-        ? "daterange"
-        : "date";
-    },
+      return this.timeRange.intervalType === 'timeInterval'
+        ? 'daterange'
+        : 'date'
+    }
   },
   watch: {
     timeConfig: {
       handler() {
-        this.init();
+        this.init()
       },
-      deep: true,
-    },
+      deep: true
+    }
+  },
+  created() {
+    this.timeRange = cloneDeep(this.timeRangeData)
+    this.init()
   },
   methods: {
     init() {
@@ -350,81 +387,79 @@ export default {
         timeNumRange,
         relativeToCurrentTypeRange,
         aroundRange,
-        regularOrTrends,
-      } = this.timeRange;
-      if (regularOrTrends === "fixed") {
-        if (intervalType === "timeInterval") {
+        regularOrTrends
+      } = this.timeRange
+      if (regularOrTrends === 'fixed') {
+        if (intervalType === 'timeInterval') {
           if (
             Array.isArray(regularOrTrendsValue) &&
             !!regularOrTrendsValue.length
-          )
-            return;
+          ) { return }
           this.timeRange.regularOrTrendsValue = [
-            getAround(relativeToCurrentType, "add", 0),
-            getAround(relativeToCurrentType, "add", 1),
-          ];
-          return;
+            getAround(relativeToCurrentType, 'add', 0),
+            getAround(relativeToCurrentType, 'add', 1)
+          ]
+          return
         }
-        if (!Array.isArray(regularOrTrendsValue) && !!regularOrTrendsValue)
-          return;
-        this.timeRange.regularOrTrendsValue = new Date();
-        return;
+        if (!Array.isArray(regularOrTrendsValue) && !!regularOrTrendsValue) { return }
+        this.timeRange.regularOrTrendsValue = new Date()
+        return
       }
-      if (intervalType === "timeInterval") {
+      if (intervalType === 'timeInterval') {
         const startTime = getAround(
           relativeToCurrentType,
-          around === "f" ? "subtract" : "add",
-          timeNum,
-        );
+          around === 'f' ? 'subtract' : 'add',
+          timeNum
+        )
         const endTime = getAround(
           relativeToCurrentTypeRange,
-          aroundRange === "f" ? "subtract" : "add",
-          timeNumRange,
-        );
-        this.timeRange.regularOrTrendsValue = [startTime, endTime];
-        return;
+          aroundRange === 'f' ? 'subtract' : 'add',
+          timeNumRange
+        )
+        this.timeRange.regularOrTrendsValue = [startTime, endTime]
+        return
       }
-      if (relativeToCurrent === "custom") {
+      if (relativeToCurrent === 'custom') {
         this.timeRange.regularOrTrendsValue = getAround(
           relativeToCurrentType,
-          around === "f" ? "subtract" : "add",
-          timeNum,
-        );
+          around === 'f' ? 'subtract' : 'add',
+          timeNum
+        )
       } else {
         switch (relativeToCurrent) {
-          case "thisYear":
-            this.timeRange.regularOrTrendsValue = getThisStart("year");
-            break;
-          case "lastYear":
-            this.timeRange.regularOrTrendsValue = getLastStart("year");
-            break;
-          case "thisMonth":
-            this.timeRange.regularOrTrendsValue = getThisStart("month");
-            break;
-          case "lastMonth":
-            this.timeRange.regularOrTrendsValue = getLastStart("month");
-            break;
-          case "today":
-            this.timeRange.regularOrTrendsValue = getThisStart("day");
-            break;
-          case "yesterday":
-            this.timeRange.regularOrTrendsValue = getLastStart("day");
-            break;
-          case "monthBeginning":
-            this.timeRange.regularOrTrendsValue = getThisStart("month");
-            break;
-          case "yearBeginning":
-            this.timeRange.regularOrTrendsValue = getThisStart("year");
-            break;
+          case 'thisYear':
+            this.timeRange.regularOrTrendsValue = getThisStart('year')
+            break
+          case 'lastYear':
+            this.timeRange.regularOrTrendsValue = getLastStart('year')
+            break
+          case 'thisMonth':
+            this.timeRange.regularOrTrendsValue = getThisStart('month')
+            break
+          case 'lastMonth':
+            this.timeRange.regularOrTrendsValue = getLastStart('month')
+            break
+          case 'today':
+            this.timeRange.regularOrTrendsValue = getThisStart('day')
+            break
+          case 'yesterday':
+            this.timeRange.regularOrTrendsValue = getLastStart('day')
+            break
+          case 'monthBeginning':
+            this.timeRange.regularOrTrendsValue = getThisStart('month')
+            break
+          case 'yearBeginning':
+            this.timeRange.regularOrTrendsValue = getThisStart('year')
+            break
 
           default:
-            break;
+            break
         }
       }
     },
     closeFilter() {
-      this.timeRange = cloneDeep(this.timeRangeData);
-      this.$emit("changeData", null);
+      this.timeRange = cloneDeep(this.timeRangeData)
+      this.$emit('changeData', null)
     },
     changeFilter() {
       const {
@@ -435,28 +470,28 @@ export default {
         timeNumRange,
         regularOrTrends,
         relativeToCurrentTypeRange,
-        aroundRange,
-      } = this.timeRange;
-      if (intervalType === "timeInterval" && regularOrTrends === 'dynamic') {
+        aroundRange
+      } = this.timeRange
+      if (intervalType === 'timeInterval' && regularOrTrends === 'dynamic') {
         const startTime = getAround(
           relativeToCurrentType,
-          around === "f" ? "subtract" : "add",
-          timeNum,
-        );
+          around === 'f' ? 'subtract' : 'add',
+          timeNum
+        )
         const endTime = getAround(
           relativeToCurrentTypeRange,
-          aroundRange === "f" ? "subtract" : "add",
-          timeNumRange,
-        );
+          aroundRange === 'f' ? 'subtract' : 'add',
+          timeNumRange
+        )
         if (+endTime < +startTime) {
-          this.$message.error(this.$t('time.end_time_start_time'));
-          return;
+          this.$message.error(this.$t('time.end_time_start_time'))
+          return
         }
       }
-      this.$emit("changeData", cloneDeep(this.timeRange));
-    },
-  },
-};
+      this.$emit('changeData', cloneDeep(this.timeRange))
+    }
+  }
+}
 </script>
 <style lang="less">
 .set-time-filtering-range {
