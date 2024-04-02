@@ -263,4 +263,8 @@ public abstract class QueryProvider {
         }
         return "'%" + value + "%'";
     }
+
+    public boolean needDistinct(List<DeSortField> sortFields, Long limit) {
+        return CollectionUtils.isNotEmpty(sortFields) && ObjectUtils.isNotEmpty(limit);
+    }
 }
