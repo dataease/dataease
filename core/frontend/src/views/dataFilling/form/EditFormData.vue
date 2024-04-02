@@ -1,5 +1,5 @@
 <script>
-import { forEach, find, concat, cloneDeep } from 'lodash-es'
+import { forEach, find, concat, cloneDeep, floor } from 'lodash-es'
 import { PHONE_REGEX, EMAIL_REGEX } from '@/utils/validate'
 import { newFormRowData, saveFormRowData, userFillFormData } from '@/views/dataFilling/form/dataFilling'
 
@@ -123,6 +123,17 @@ export default {
     closeDrawer() {
       this.$emit('update:showDrawer', false)
     },
+    onNumberChange(item) {
+      let value
+      if (item.settings.mapping.type === 'number') {
+        value = floor(item.value, 0)
+      } else {
+        value = floor(item.value, 8)
+      }
+      this.$nextTick(() => {
+        item.value = value
+      })
+    },
     doSave() {
       this.$refs['mForm'].validate((valid) => {
         if (valid) {
@@ -235,6 +246,8 @@ export default {
               :readonly="readonly"
               :placeholder="item.settings.placeholder"
               size="small"
+              :show-word-limit="item.value !== undefined && item.value.length > 250"
+              maxlength="255"
             />
             <el-input-number
               v-if="item.type === 'input' && item.settings.inputType === 'number'"
@@ -244,7 +257,13 @@ export default {
               :placeholder="item.settings.placeholder"
               style="width: 100%"
               controls-position="right"
+              :precision="item.settings.mapping.type === 'number' ? 0 : undefined"
               size="small"
+              :min="-999999999999"
+              :max="999999999999"
+              @change="onNumberChange(item)"
+              @blur="onNumberChange(item)"
+              @keyup.enter.native="onNumberChange(item)"
             />
             <el-input
               v-else-if="item.type === 'textarea'"

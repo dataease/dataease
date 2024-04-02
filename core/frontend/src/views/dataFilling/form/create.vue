@@ -312,6 +312,9 @@ export default {
         item.value = []
       } else {
         item.value = undefined
+        if (item.settings.mapping.type === 'text') {
+          item.settings.mapping.type = undefined
+        }
       }
     },
     getRules(item) {
@@ -556,8 +559,8 @@ export default {
                   >
                     <el-input
                       v-if="item.type === 'input' && item.settings.inputType !== 'number'"
-                      v-model="item.value"
                       :key="item.id + item.settings.inputType"
+                      v-model="item.value"
                       :type="item.settings.inputType"
                       :required="item.settings.required"
                       :placeholder="item.settings.placeholder"
@@ -565,8 +568,8 @@ export default {
                     />
                     <el-input-number
                       v-if="item.type === 'input' && item.settings.inputType === 'number'"
-                      v-model="item.value"
                       :key="item.id + item.settings.inputType"
+                      v-model="item.value"
                       :required="item.settings.required"
                       :placeholder="item.settings.placeholder"
                       style="width: 100%"
@@ -575,8 +578,8 @@ export default {
                     />
                     <el-input
                       v-else-if="item.type === 'textarea'"
-                      v-model="item.value"
                       :key="item.id + 'textarea'"
+                      v-model="item.value"
                       type="textarea"
                       :required="item.settings.required"
                       :placeholder="item.settings.placeholder"
@@ -584,8 +587,8 @@ export default {
                     />
                     <el-select
                       v-else-if="item.type === 'select'"
-                      v-model="item.value"
                       :key="item.id + 'select'"
+                      v-model="item.value"
                       :required="item.settings.required"
                       :placeholder="item.settings.placeholder"
                       style="width: 100%"
@@ -602,8 +605,8 @@ export default {
                     </el-select>
                     <el-radio-group
                       v-else-if="item.type === 'radio'"
-                      v-model="item.value"
                       :key="item.id + 'radio'"
+                      v-model="item.value"
                       :required="item.settings.required"
                       style="width: 100%"
                       size="small"
@@ -617,8 +620,8 @@ export default {
                     </el-radio-group>
                     <el-checkbox-group
                       v-else-if="item.type === 'checkbox'"
-                      v-model="item.value"
                       :key="item.id + 'checkbox'"
+                      v-model="item.value"
                       :required="item.settings.required"
                       size="small"
                     >
@@ -631,8 +634,8 @@ export default {
                     </el-checkbox-group>
                     <el-date-picker
                       v-else-if="item.type === 'date' && !item.settings.enableTime"
-                      v-model="item.value"
                       :key="item.id + 'date'"
+                      v-model="item.value"
                       :required="item.settings.required"
                       type="date"
                       :placeholder="item.settings.placeholder"
@@ -641,8 +644,8 @@ export default {
                     />
                     <el-date-picker
                       v-else-if="item.type === 'date' && item.settings.enableTime"
-                      v-model="item.value"
                       :key="item.id + 'dateEnableTime'"
+                      v-model="item.value"
                       :required="item.settings.required"
                       type="datetime"
                       :placeholder="item.settings.placeholder"
@@ -651,9 +654,9 @@ export default {
                     />
                     <el-date-picker
                       v-else-if="item.type === 'dateRange' && !item.settings.enableTime"
+                      :key="item.id + 'dateRangeEnableTime'"
                       v-model="item.value"
                       :required="item.settings.required"
-                      :key="item.id + 'dateRangeEnableTime'"
                       type="daterange"
                       :range-separator="item.settings.rangeSeparator"
                       :start-placeholder="item.settings.startPlaceholder"
@@ -663,9 +666,9 @@ export default {
                     />
                     <el-date-picker
                       v-else-if="item.type === 'dateRange' && item.settings.enableTime"
+                      :key="item.id + 'datetimerangeRangeEnableTime'"
                       v-model="item.value"
                       :required="item.settings.required"
-                      :key="item.id + 'datetimerangeRangeEnableTime'"
                       type="datetimerange"
                       :range-separator="item.settings.rangeSeparator"
                       :start-placeholder="item.settings.startPlaceholder"
