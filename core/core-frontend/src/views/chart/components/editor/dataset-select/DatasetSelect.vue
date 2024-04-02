@@ -5,11 +5,8 @@ import { Plus, Search } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import _ from 'lodash'
-import { useRouter } from 'vue-router'
 import { getDatasetTree } from '@/api/dataset'
 import { ElFormItem, FormInstance } from 'element-plus-secondary'
-
-const { resolve } = useRouter()
 
 const props = withDefaults(
   defineProps<{
@@ -44,7 +41,12 @@ const initDataset = () => {
     })
 }
 
-const emits = defineEmits(['update:modelValue', 'update:stateObj', 'onDatasetChange'])
+const emits = defineEmits([
+  'update:modelValue',
+  'update:stateObj',
+  'onDatasetChange',
+  'addDsWindow'
+])
 
 const _modelValue = computed({
   get() {
@@ -151,8 +153,7 @@ const refresh = () => {
   initDataset()
 }
 const addDataset = () => {
-  const { href } = resolve('/dataset-form')
-  window.open(href, '_blank')
+  emits('addDsWindow')
 }
 
 const datasetSelectorPopover = ref()
