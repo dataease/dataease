@@ -625,7 +625,9 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (['tablePageMode', 'tablePageSize'].includes(propertyInfo.subProp)) {
             useEmitt().emitter.emit('calcData-' + viewId, viewInfo)
           } else {
-            useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+            setTimeout(() => {
+              useEmitt().emitter.emit('renderChart-' + viewId, viewInfo)
+            }, 0)
           }
         })
       } else {
