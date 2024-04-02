@@ -70,33 +70,38 @@
     </resultMap>
 
     <select id="getLinkJumpInfo" resultMap="LinkJumpInfoMap">
-        SELECT core_dataset_table_field.id AS source_field_id, core_dataset_table_field.de_type AS source_de_type, core_dataset_table_field.NAME AS source_field_name, visualization_link_jump_info.id,
-               visualization_link_jump_info.link_jump_id,
-               visualization_link_jump_info.link_type,
-               visualization_link_jump_info.jump_type,
-               visualization_link_jump_info.target_dv_id,
-               visualization_link_jump_info.content,
-               visualization_link_jump_info.target_dv_id             AS publicJumpId,
-               ifnull(visualization_link_jump_info.checked, 0)       AS checked,
-               ifnull(visualization_link_jump_info.attach_params, 0) AS attach_params,
-               visualization_link_jump_target_view_info.target_view_id,
-               visualization_link_jump_target_view_info.target_field_id,
-               visualization_link_jump_target_view_info.source_field_active_id
-        FROM core_chart_view
-                 LEFT JOIN core_dataset_table_field
-                           ON core_chart_view.table_id = core_dataset_table_field.dataset_group_id
-                 LEFT JOIN visualization_link_jump
-                           ON core_chart_view.id = visualization_link_jump.source_view_id and
-                              visualization_link_jump.id = #{id}
-                 LEFT JOIN visualization_link_jump_info
-                           ON visualization_link_jump.id = visualization_link_jump_info.link_jump_id
-                               AND core_dataset_table_field.id = visualization_link_jump_info.source_field_id
-                 LEFT JOIN visualization_link_jump_target_view_info
-                           ON visualization_link_jump_info.id =
-                              visualization_link_jump_target_view_info.link_jump_info_id
-        WHERE core_chart_view.id = #{source_view_id}
-          and core_chart_view.type != 'VQuery'
-        ORDER BY CONVERT (core_dataset_table_field.NAME using gbk)
+        SELECT
+            core_dataset_table_field.id AS source_field_id,
+            core_dataset_table_field.de_type AS source_de_type,
+            core_dataset_table_field.NAME AS source_field_name,
+            visualization_link_jump_info.id,
+            visualization_link_jump_info.link_jump_id,
+            visualization_link_jump_info.link_type,
+            visualization_link_jump_info.jump_type,
+            visualization_link_jump_info.target_dv_id,
+            visualization_link_jump_info.content,
+            xpack_share.uuid AS publicJumpId,
+            ifnull( visualization_link_jump_info.checked, 0 ) AS checked,
+            ifnull( visualization_link_jump_info.attach_params, 0 ) AS attach_params,
+            visualization_link_jump_target_view_info.target_view_id,
+            visualization_link_jump_target_view_info.target_field_id,
+            visualization_link_jump_target_view_info.source_field_active_id
+        FROM
+            core_chart_view
+                LEFT JOIN core_dataset_table_field ON core_chart_view.table_id = core_dataset_table_field.dataset_group_id
+                LEFT JOIN visualization_link_jump ON core_chart_view.id = visualization_link_jump.source_view_id
+                AND visualization_link_jump.id = #{id}
+                LEFT JOIN visualization_link_jump_info ON visualization_link_jump.id = visualization_link_jump_info.link_jump_id
+                AND core_dataset_table_field.id = visualization_link_jump_info.source_field_id
+                LEFT JOIN visualization_link_jump_target_view_info ON visualization_link_jump_info.id = visualization_link_jump_target_view_info.link_jump_info_id
+                LEFT JOIN xpack_share ON xpack_share.creator = #{uid}
+                AND visualization_link_jump_info.target_dv_id = xpack_share.resource_id
+        WHERE
+            core_chart_view.id = #{source_view_id}
+          AND core_chart_view.type != 'VQuery'
+        ORDER BY
+            CONVERT (
+            core_dataset_table_field.NAME USING gbk)
     </select>
 
     <select id="queryWithDvId" resultMap="BaseResultMapDTO">

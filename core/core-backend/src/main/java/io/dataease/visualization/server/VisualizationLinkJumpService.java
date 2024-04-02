@@ -71,7 +71,6 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
 
     //获取仪表板的跳转信息
     @Override
-    @XpackInteract(value = "visualizationLinkJumpService", original = true)
     public VisualizationLinkJumpBaseResponse queryVisualizationJumpInfo(Long dvId) {
         Map<String, VisualizationLinkJumpInfoDTO> resultBase = new HashMap<>();
         List<VisualizationLinkJumpDTO> resultLinkJumpList = extVisualizationLinkJumpMapper.queryWithDvId(dvId, AuthUtils.getUser().getUserId());
