@@ -9,6 +9,7 @@ import io.dataease.controller.request.datafill.DataFillUserTaskSearchRequest;
 import io.dataease.dto.datafill.DataFillTaskDTO;
 import io.dataease.dto.datafill.DataFillUserTaskDTO;
 import io.dataease.ext.ExtDataFillFormMapper;
+import io.dataease.i18n.Translator;
 import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.job.sechedule.strategy.TaskHandler;
 import io.dataease.job.sechedule.strategy.TaskStrategyFactory;
@@ -97,9 +98,21 @@ public class DataFillTaskService {
             request.setCreateTime(new Date());
         }
 
+        DataFillTaskExample example = new DataFillTaskExample();
+        DataFillTaskExample.Criteria criteria = example.createCriteria()
+                .andFormIdEqualTo(formId)
+                .andNameEqualTo(request.getName());
+
         if (insert) {
+            if (dataFillTaskMapper.countByExample(example) > 0) {
+                DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXIST"));
+            }
             dataFillTaskMapper.insertSelective(request);
         } else {
+            criteria.andIdNotEqualTo(request.getId());
+            if (dataFillTaskMapper.countByExample(example) > 0) {
+                DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXIST"));
+            }
             dataFillTaskMapper.updateByPrimaryKeySelective(request);
         }
 
