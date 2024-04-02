@@ -39,7 +39,7 @@ import {
 import type { Table } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
 import { cloneDeep, debounce } from 'lodash-es'
-
+import { XpackComponent } from '@/components/plugin'
 interface DragEvent extends MouseEvent {
   dataTransfer: DataTransfer
 }
@@ -573,8 +573,10 @@ const getTableName = async (datasourceId, tableName) => {
     searchTable.value = tableName
   }
 }
-
-const initEdite = () => {
+let p = null
+const XpackLoaded = () => p(true)
+const initEdite = async () => {
+  await new Promise(r => (p = r))
   const { id, datasourceId, tableName } = route.query
   const { id: copyId } = route.params
   if (datasourceId) {
@@ -1896,6 +1898,11 @@ const getDsIconName = data => {
       </el-button>
     </template>
   </el-dialog>
+  <XpackComponent
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
+    @loaded="XpackLoaded"
+    @load-fail="XpackLoaded"
+  />
 </template>
 
 <style lang="less" scoped>

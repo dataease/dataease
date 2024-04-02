@@ -23,7 +23,7 @@ const { start, done } = useNProgress()
 const { loadStart, loadDone } = usePageLoading()
 
 const whiteList = ['/login', '/de-link', '/chart-view'] // 不重定向白名单
-const embeddedWindowWhiteList = ['/dvCanvas', '/dashboard', '/preview']
+const embeddedWindowWhiteList = ['/dvCanvas', '/dashboard', '/preview', '/dataset-embedded-form']
 const embeddedRouteWhiteList = ['/dataset-embedded', '/dataset-form', '/dataset-embedded-form']
 router.beforeEach(async (to, from, next) => {
   start()

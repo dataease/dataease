@@ -51,7 +51,9 @@ import { useDraggable } from '@vueuse/core'
 import { set, concat, keys } from 'lodash-es'
 import { Field, getFieldByDQ } from '@/api/chart'
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
-
+import { XpackComponent } from '@/components/plugin'
+import { useEmbedded } from '@/store/modules/embedded'
+const embeddedStore = useEmbedded()
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse, curComponent, componentData, editMode } = storeToRefs(dvMainStore)
@@ -977,15 +979,34 @@ const saveResultFilter = () => {
 const collapseChange = type => {
   canvasCollapse.value[type] = !canvasCollapse.value[type]
 }
-
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
+}
+const addDsWindow = () => {
+  const path =
+    embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded-form' : '/dataset-form'
+  let routeData = router.resolve(path)
+  const newWindow = window.open(routeData.href, '_blank')
+  initOpenHandler(newWindow)
+}
 const editDs = () => {
+  const path =
+    embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded-form' : '/dataset-form'
   let routeData = router.resolve({
-    path: '/dataset-form',
+    path: path,
     query: {
       id: view.value.tableId
     }
   })
-  window.open(routeData.href, '_blank')
+  const newWindow = window.open(routeData.href, '_blank')
+  initOpenHandler(newWindow)
 }
 
 const showQuotaEditCompare = item => {
@@ -1846,6 +1867,7 @@ const onRefreshChange = val => {
                 :state-obj="state"
                 v-model="view.tableId"
                 :themes="themes"
+                @add-ds-window="addDsWindow"
                 @onDatasetChange="recordSnapshotInfo('calcData')"
               />
               <el-tooltip :effect="toolTip" content="编辑数据集" placement="top">
@@ -2211,6 +2233,7 @@ const onRefreshChange = val => {
       </template>
     </el-dialog>
   </div>
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less" scoped>
