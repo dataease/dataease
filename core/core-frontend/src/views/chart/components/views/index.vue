@@ -595,7 +595,7 @@ const iconSize = computed<string>(() => {
 </script>
 
 <template>
-  <div class="chart-area" v-loading="loadingFlag">
+  <div class="chart-area" v-loading="loadingFlag" element-loading-background="rgba(0,0,0,0)">
     <div
       class="title-container"
       :style="{ 'justify-content': titleAlign, 'margin-bottom': marginBottom }"
