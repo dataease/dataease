@@ -121,8 +121,6 @@ public class OracleQueryProvider extends QueryProvider {
 
         setSchema(tableObj, ds);
         List<SQLObj> xFields = xFields(table, fields);
-
-
         STGroup stg = new STGroupFile(SQLConstants.SQL_TEMPLATE);
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", isGroup);
@@ -151,6 +149,17 @@ public class OracleQueryProvider extends QueryProvider {
         }
         if (ObjectUtils.isNotEmpty(xOrders)) {
             st_sql.add("orders", xOrders);
+            if (needDistinct(sortFields, limit)) {
+                st_sql.remove("groups");
+                xOrders.forEach(f -> {
+                    if (xFields.stream().noneMatch(x -> x.getFieldName().equals(f.getOrderField()))) {
+                        String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_X_PREFIX, xFields.size());
+                        SQLObj tField = SQLObj.builder().fieldName(f.getOrderField()).fieldAlias(fieldAlias).build();
+                        xFields.add(tField);
+                    }
+                });
+                st_sql.add("groups", xFields);
+            }
         }
         if (ObjectUtils.isNotEmpty(limit)) {
             ChartViewWithBLOBs view = new ChartViewWithBLOBs();
