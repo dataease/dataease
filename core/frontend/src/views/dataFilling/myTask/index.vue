@@ -54,8 +54,8 @@ export default {
   },
   watch: {
     currentKey: {
-      handler(newVal, oldVla) {
-        if (newVal !== oldVla) {
+      handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
           this.myTaskName = ''
           this.finishedTaskName = ''
           this.expiredTaskName = ''
@@ -436,7 +436,7 @@ export default {
             </el-table-column>
             <el-table-column
               key="id"
-              label="操作"
+              :label="$t('data_fill.form.operation')"
               prop="id"
             >
               <template slot-scope="scope">
@@ -520,7 +520,7 @@ export default {
             </el-table-column>
             <el-table-column
               key="id"
-              label="操作"
+              :label="$t('data_fill.form.operation')"
               prop="id"
             >
               <template slot-scope="scope">

@@ -602,7 +602,14 @@ export default {
       datasource: '數據源',
       table: '數據庫表',
       creator: '創建人',
-      createTime: '創建時間'
+      createTime: '創建時間',
+      operation: '操作',
+      operator: '操作人',
+      operate_time: '操作時間',
+      modify: '修改',
+      show: '查看',
+      delete: '刪除',
+      show_data: '查看數據'
     },
     data: {
       confirm_delete: '確認刪除?'
@@ -611,7 +618,9 @@ export default {
       confirm_enable: '確認啟動任務？（單次任務會新建下發任務）',
       confirm_disable: '確認停止任務？'
     },
-    on_the_left: '請在左側選擇表單'
+    on_the_left: '請在左側選擇表單',
+    search_by_commit_name: '根據操作人名稱搜索'
+
   },
   detabs: {
     custom_sort: '自定義排序',

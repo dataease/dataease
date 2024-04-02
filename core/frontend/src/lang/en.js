@@ -602,7 +602,14 @@ export default {
       datasource: 'Datasource',
       table: 'Table',
       creator: 'Creator',
-      createTime: 'Create Time'
+      createTime: 'Create Time',
+      operation: 'Operation',
+      operator: 'Operator',
+      operate_time: 'Operate Time',
+      modify: 'Modify',
+      show: 'Show',
+      delete: 'Delete',
+      show_data: 'Show Data'
     },
     data: {
       confirm_delete: 'Confirm delete?'
@@ -611,7 +618,8 @@ export default {
       confirm_enable: 'Confirm enable task?',
       confirm_disable: 'Confirm disable task?'
     },
-    on_the_left: 'Please select a form on the left'
+    on_the_left: 'Please select a form on the left',
+    search_by_commit_name: 'Search by operator name'
   },
   detabs: {
     custom_sort: 'Custom Sort',

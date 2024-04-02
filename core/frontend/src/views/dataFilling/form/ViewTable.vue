@@ -181,7 +181,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="操作"
+              :label="$t('data_fill.form.operation')"
               width="160"
               fixed="right"
             >
@@ -190,19 +190,19 @@
                   type="text"
                   @click="updateRow(scope.row.data)"
                 >
-                  修改
+                  {{ $t('data_fill.form.modify') }}
                 </el-button>
                 <el-button
                   type="text"
                   @click="openRow(scope.row.data)"
                 >
-                  查看
+                  {{ $t('data_fill.form.show') }}
                 </el-button>
                 <el-button
                   type="text"
                   @click="deleteRow(scope.row.data[paginationConfig.key])"
                 >
-                  删除
+                  {{ $t('data_fill.form.delete') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -223,15 +223,16 @@
               :offset="16"
             >
               <el-input
-                ref="search"
+                ref="search2"
                 v-model="operateName"
-                :placeholder="$t('user.search_by_name')"
+                :placeholder="$t('data_fill.search_by_commit_name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
                 clearable
                 @blur="searchTableRecordData"
-                @clear="searchTableRecordData"
+                @clear="entryKey('record')"
+                @keyup.enter.native="entryKey('record')"
               />
             </el-col>
           </el-row>
@@ -251,7 +252,7 @@
             <el-table-column
               key="operate"
               prop="operate"
-              label="操作"
+              :label="$t('data_fill.form.operation')"
             >
               <template slot-scope="scope">
                 <template v-if="scope.row.operate === 'INSERT'">
@@ -271,7 +272,7 @@
             <el-table-column
               key="commitByName"
               prop="commitByName"
-              label="操作人"
+              :label="$t('data_fill.form.operator')"
             >
               <template slot-scope="scope">
                 {{ scope.row.commitByName ? scope.row.commitByName: scope.row.commitBy }}
@@ -280,7 +281,7 @@
             <el-table-column
               key="commitTime"
               prop="commitTime"
-              label="操作时间"
+              :label="$t('data_fill.form.operate_time')"
             >
               <template slot-scope="scope">
                 {{ new Date(scope.row.commitTime).format("yyyy-MM-dd hh:mm:ss") }}
@@ -288,7 +289,7 @@
             </el-table-column>
             <el-table-column
               key="id"
-              label="操作"
+              :label="$t('data_fill.form.operation')"
               prop="id"
             >
               <template slot-scope="scope">
@@ -297,7 +298,7 @@
                   type="text"
                   @click="showData(scope.row)"
                 >
-                  查看数据
+                  {{ $t('data_fill.form.show_data') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -325,7 +326,7 @@
               :offset="8"
             >
               <el-input
-                ref="search"
+                ref="search3"
                 v-model="taskName"
                 :placeholder="$t('commons.search_by_name')"
                 prefix-icon="el-icon-search"
@@ -333,7 +334,8 @@
                 size="small"
                 clearable
                 @blur="searchFormTaskData"
-                @clear="searchFormTaskData"
+                @clear="entryKey('task')"
+                @keyup.enter.native="entryKey('task')"
               />
             </el-col>
           </el-row>
@@ -400,7 +402,7 @@
             </el-table-column>
             <el-table-column
               key="id"
-              label="操作"
+              :label="$t('data_fill.form.operation')"
               prop="id"
             >
               <template slot-scope="scope">
@@ -602,13 +604,31 @@ export default {
         this.tasks = []
       }
       this.initTable(this.param.id)
+    },
+    tabActive: function(newVal, oldVal) {
+      this.resetPage()
+      if (newVal === 'record') {
+        this.searchTableRecordData()
+      } else if (newVal === 'task') {
+        this.searchFormTaskData()
+      } else {
+        this.searchTableData()
+      }
     }
   },
   mounted() {
     this.initTable(this.param.id)
   },
   methods: {
-
+    entryKey(type) {
+      if (type === 'record') {
+        this.$refs.search2.focus()
+        this.$refs.search2.blur()
+      } else if (type === 'task') {
+        this.$refs.search3.focus()
+        this.$refs.search3.blur()
+      }
+    },
     initTable(id) {
       this.resetPage()
       this.searchTableData()
@@ -712,6 +732,7 @@ export default {
 
     resetPage() {
       this.operateName = ''
+      this.taskName = ''
       this.paginationConfig = {
         currentPage: 1,
         pageSize: 10,
@@ -734,12 +755,12 @@ export default {
       /* if (this.tabActive === 'dataPreview') {
         this.initTable(this.param.id)
       }*/
-      if (this.tabActive === 'record') {
+      /* if (this.tabActive === 'record') {
         this.searchTableRecordData()
       }
       if (this.tabActive === 'task') {
         this.searchFormTaskData()
-      }
+      }*/
     },
 
     showData(row) {
