@@ -573,10 +573,8 @@ const getTableName = async (datasourceId, tableName) => {
     searchTable.value = tableName
   }
 }
-let p = null
-const XpackLoaded = () => p(true)
-const initEdite = async () => {
-  await new Promise(r => (p = r))
+
+const initEdite = () => {
   const { id, datasourceId, tableName } = route.query
   const { id: copyId } = route.params
   if (datasourceId) {
@@ -609,8 +607,6 @@ const initEdite = async () => {
       loading.value = false
     })
 }
-
-initEdite()
 
 const joinEditor = (arr: []) => {
   state.editArr = cloneDeep(arr)
@@ -853,7 +849,12 @@ const saveAndBack = () => {
   pushDataset()
 }
 
-onMounted(() => {
+let p = null
+const XpackLoaded = () => p(true)
+onMounted(async () => {
+  await new Promise(r => (p = r))
+  initEdite()
+  getDatasource()
   useEmitt({
     name: 'onDatasetSave',
     callback: saveAndBack
@@ -879,8 +880,6 @@ const getDatasource = () => {
     }
   })
 }
-
-getDatasource()
 
 const resetDfsFields = (arr, idMap) => {
   for (let i in arr) {
