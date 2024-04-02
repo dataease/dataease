@@ -2890,7 +2890,7 @@ export default {
     chart_data: 'View data',
     panel_preview: 'Preview report',
     preview: 'Preview',
-    emial_preview: 'Report preview',
+    email_preview: 'Report preview',
     chart_data_range: 'View data range',
     panel_format: 'Panel format',
     simple_repeat: 'Simple repeat',

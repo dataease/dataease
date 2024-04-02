@@ -2885,7 +2885,7 @@ export default {
     chart_data: '视图数据',
     panel_preview: '预览报告',
     preview: '预览',
-    emial_preview: '报告预览',
+    email_preview: '报告预览',
     chart_data_range: '视图数据范围',
     panel_format: '仪表板格式',
     simple_repeat: '简单重复',

@@ -2883,7 +2883,7 @@ export default {
     chart_data: '視圖數據',
     panel_preview: '預覽報告',
     preview: '預覽',
-    emial_preview: '報告預覽',
+    email_preview: '報告預覽',
     chart_data_range: '視圖數據範圍',
     panel_format: '儀表板格式',
     simple_repeat: '簡單重複',
