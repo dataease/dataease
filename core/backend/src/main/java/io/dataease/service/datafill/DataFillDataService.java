@@ -11,6 +11,7 @@ import io.dataease.ext.ExtDataFillFormMapper;
 import io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DataFillFormMapper;
+import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datafill.ExtTableField;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.exception.DataEaseException;
@@ -76,6 +77,23 @@ public class DataFillDataService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setTable(dataFillForm.getTableName());
+
+        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
+
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(ds.getType());
+        switch (datasourceType) {
+            case mysql:
+            case mariadb:
+                String checkLowerCaseSql = extDDLProvider.getLowerCaseTaleNames();
+                datasourceRequest.setQuery(checkLowerCaseSql);
+                List<String[]> checkLowerCaseData = datasourceProvider.getData(datasourceRequest);
+                long lowCase = NumberUtils.toLong(checkLowerCaseData.get(0)[1]);
+                datasourceRequest.setLowerCaseTaleNames(lowCase > 0);
+                break;
+            default:
+                datasourceRequest.setLowerCaseTaleNames(true);
+        }
+
         List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
         Map<String, ExtTableField.BaseType> extTableFieldTypeMap = new HashMap<>();
         Map<String, TableField> tableFieldMap = new HashMap<>();
@@ -125,7 +143,6 @@ public class DataFillDataService {
             }
         }
 
-        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
         String whereSql = "";
         if (StringUtils.isNoneBlank(searchRequest.getPrimaryKeyValue())) {

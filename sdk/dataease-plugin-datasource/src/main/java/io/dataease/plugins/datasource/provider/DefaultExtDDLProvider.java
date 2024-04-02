@@ -66,4 +66,9 @@ public class DefaultExtDDLProvider extends ExtDDLProvider {
     public String whereSql(String tableName, List<TableField> searchFields) {
         return null;
     }
+
+    @Override
+    public String getLowerCaseTaleNames() {
+        return null;
+    }
 }
