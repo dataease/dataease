@@ -471,6 +471,10 @@ const sortList = [
   }
 ]
 
+const sortTypeTip = computed(() => {
+  return sortList.find(ele => ele.value === state.curSortType).name
+})
+
 const tablePanes = ref([])
 const tablePaneList = computed(() => {
   return nodeInfo.weight >= 7 ? [...defaultTab, ...tablePanes.value] : [...defaultTab]
@@ -578,17 +582,21 @@ const getMenuList = (val: boolean) => {
             </template>
           </el-input>
           <el-dropdown @command="sortTypeChange" trigger="click">
-            <el-icon class="insert-filter filter-icon-span">
-              <Icon
-                v-show="state.curSortType.includes('asc')"
-                name="dv-sort-asc"
-                class="opt-icon"
-              ></Icon>
-              <Icon
-                v-show="state.curSortType.includes('desc')"
-                name="dv-sort-desc"
-                class="opt-icon"
-              ></Icon>
+            <el-icon class="filter-icon-span">
+              <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
+                <Icon
+                  v-if="state.curSortType.includes('asc')"
+                  name="dv-sort-asc"
+                  class="opt-icon"
+                ></Icon>
+              </el-tooltip>
+              <el-tooltip :offset="16" effect="dark" :content="sortTypeTip" placement="top">
+                <Icon
+                  v-show="state.curSortType.includes('desc')"
+                  name="dv-sort-desc"
+                  class="opt-icon"
+                ></Icon>
+              </el-tooltip>
             </el-icon>
             <template #dropdown>
               <el-dropdown-menu style="width: 246px">
@@ -787,42 +795,28 @@ const getMenuList = (val: boolean) => {
 
 <style lang="less" scoped>
 @import '@/style/mixin.less';
-.insert-filter {
-  display: inline-block;
-  font-weight: 400 !important;
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
-  line-height: 1;
-  white-space: nowrap;
-  cursor: pointer;
-  color: var(--TextPrimary, #1f2329);
-  -webkit-appearance: none;
-  text-align: center;
-  box-sizing: border-box;
-  outline: 0;
-  margin: 0;
-  transition: 0.1s;
-  border-radius: 3px;
-
-  &:active {
-    color: #000;
-    border-color: #3a8ee6;
-    background-color: red;
-    outline: 0;
-  }
-
-  &:hover {
-    background-color: rgba(31, 35, 41, 0.1);
-    color: #3a8ee6;
-  }
-}
 
 .filter-icon-span {
-  border: 1px solid #dcdfe6;
+  border: 1px solid #bbbfc4;
   width: 32px;
   height: 32px;
   border-radius: 4px;
-  padding: 7px;
+  color: #1f2329;
+  padding: 8px;
   margin-left: 8px;
+  font-size: 16px;
+  cursor: pointer;
+
+  .opt-icon:focus {
+    outline: none !important;
+  }
+  &:hover {
+    background: #f5f6f7;
+  }
+
+  &:active {
+    background: #eff0f1;
+  }
 }
 .dataset-manage {
   display: flex;
