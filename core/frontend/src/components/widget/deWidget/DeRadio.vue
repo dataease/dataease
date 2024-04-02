@@ -8,6 +8,7 @@
       <el-radio
         :key="item.id + 'radio'"
         :label="item.text"
+        class="is-custom-select"
         :value="item.id"
         v-if="radioStyle.showStyle === 'single'"
         :disabled="itemDisabled"
@@ -16,6 +17,7 @@
         v-else
         :disabled="itemDisabled"
         :key="item.id + 'tab'"
+        class="is-custom-select"
         :label="item.text"
         :value="item.id"
       />
