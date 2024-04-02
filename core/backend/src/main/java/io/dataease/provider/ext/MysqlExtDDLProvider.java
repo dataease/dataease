@@ -267,7 +267,7 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
                     if (field.getAccuracy() != null && field.getAccuracy() >= 0) {
                         str.append(field.getAccuracy());
                     } else {
-                        str.append(4);
+                        str.append(8);
                     }
                     str.append(") ");
                     break;
