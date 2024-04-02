@@ -296,7 +296,7 @@ const canvasPropertiesShow = computed(
   () => !curComponent.value || ['GroupArea'].includes(curComponent.value.component)
 )
 const viewsPropertiesShow = computed(
-  () => curComponent.value && ['UserView'].includes(curComponent.value.component)
+  () => !!(curComponent.value && ['UserView'].includes(curComponent.value.component))
 )
 eventBus.on('handleNew', handleNew)
 </script>
@@ -372,13 +372,14 @@ eventBus.on('handleNew', handleNew)
         >
           <canvas-attr></canvas-attr>
         </dv-sidebar>
-        <editor
-          v-show="viewsPropertiesShow"
-          :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
-          themes="dark"
-          :dataset-tree="state.datasetTree"
-          :class="{ 'preview-aside': editMode === 'preview' }"
-        ></editor>
+        <div v-show="viewsPropertiesShow" style="height: 100%">
+          <editor
+            :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
+            themes="dark"
+            :dataset-tree="state.datasetTree"
+            :class="{ 'preview-aside': editMode === 'preview' }"
+          ></editor>
+        </div>
       </div>
     </el-container>
   </div>
