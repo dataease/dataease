@@ -153,7 +153,6 @@ watch(
       canEdit.value = false
       reShow()
       myValue.value = assignment(element.value.propValue.textValue)
-      ed.setContent(myValue.value)
     }
   }
 )
@@ -212,6 +211,9 @@ const assignment = content => {
     })
   }
   content = content.replace('class="base-selected"', '')
+  //De 本地跳转失效问题
+  content = content.replace(/href="#\//g, 'href="/#/')
+  content = content.replace(/href=\\"#\//g, 'href=\\"/#/')
   resetSelect()
   return content
 }
