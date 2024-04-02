@@ -60,6 +60,21 @@ public class DataFillDataService {
 
     private final static Gson gson = new Gson();
 
+    public static void setLowerCaseRequest(Datasource ds, Provider datasourceProvider, ExtDDLProvider extDDLProvider, DatasourceRequest datasourceRequest) throws Exception {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(ds.getType());
+        switch (datasourceType) {
+            case mysql:
+            case mariadb:
+                String checkLowerCaseSql = extDDLProvider.getLowerCaseTaleNames();
+                datasourceRequest.setQuery(checkLowerCaseSql);
+                List<String[]> checkLowerCaseData = datasourceProvider.getData(datasourceRequest);
+                long lowCase = NumberUtils.toLong(checkLowerCaseData.get(0)[1]);
+                datasourceRequest.setLowerCaseTaleNames(lowCase > 0);
+                break;
+            default:
+                datasourceRequest.setLowerCaseTaleNames(true);
+        }
+    }
 
     public DataFillFormTableDataResponse listData(DataFillFormTableDataRequest searchRequest) throws Exception {
 
@@ -80,19 +95,7 @@ public class DataFillDataService {
 
         ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
-        DatasourceTypes datasourceType = DatasourceTypes.valueOf(ds.getType());
-        switch (datasourceType) {
-            case mysql:
-            case mariadb:
-                String checkLowerCaseSql = extDDLProvider.getLowerCaseTaleNames();
-                datasourceRequest.setQuery(checkLowerCaseSql);
-                List<String[]> checkLowerCaseData = datasourceProvider.getData(datasourceRequest);
-                long lowCase = NumberUtils.toLong(checkLowerCaseData.get(0)[1]);
-                datasourceRequest.setLowerCaseTaleNames(lowCase > 0);
-                break;
-            default:
-                datasourceRequest.setLowerCaseTaleNames(true);
-        }
+        setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
 
         List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
         Map<String, ExtTableField.BaseType> extTableFieldTypeMap = new HashMap<>();
@@ -249,6 +252,9 @@ public class DataFillDataService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setTable(dataFillForm.getTableName());
+
+        setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
+
         List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest).stream().filter(TableField::isPrimaryKey).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(tableFields)) {
             throw new RuntimeException("没有主键");
@@ -291,10 +297,14 @@ public class DataFillDataService {
 
         Datasource ds = datasource.get(dataFillForm.getDatasource());
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setTable(dataFillForm.getTableName());
+
+        setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
+
         List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
 
         Map<String, TableField> tableFieldMap = new HashMap<>();
@@ -365,8 +375,6 @@ public class DataFillDataService {
                 }
             }
         }
-
-        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
         if (CollectionUtils.isNotEmpty(uniqueFields)) {
             for (DatasourceRequest.TableFieldWithValue uniqueField : uniqueFields) {
