@@ -179,11 +179,26 @@ const backToMain = () => {
       autofocus: false,
       showClose: false
     }).then(() => {
-      window.open(url, '_self')
+      backHandler(url)
     })
   } else {
-    window.open(url, '_self')
+    backHandler(url)
   }
+}
+
+const backHandler = (url: string) => {
+  if (window['dataease-embedded-host'] && openHandler?.value) {
+    const pm = {
+      methodName: 'interactive',
+      args: {
+        eventName: 'de-dashboard-editor-back',
+        args: 'Just a demo that descript dataease embedded interactive'
+      }
+    }
+    openHandler.value.invokeMethod(pm)
+    return
+  }
+  window.open(url, '_self')
 }
 
 const multiplexingCanvasOpen = () => {
