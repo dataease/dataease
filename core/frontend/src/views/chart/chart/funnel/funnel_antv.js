@@ -41,6 +41,7 @@ export function baseFunnelOptionAntV(container, chart, action) {
     tooltip: tooltip,
     legend: legend,
     conversionTag,
+    maxSize: conversionTag ? 0.8 : 1,
     interactions: [
       {
         type: 'legend-active', cfg: {
