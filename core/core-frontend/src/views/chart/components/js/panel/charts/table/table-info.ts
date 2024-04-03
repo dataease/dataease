@@ -1,4 +1,4 @@
-import { S2Event, S2Options, TableColCell, TableDataCell, TableSheet } from '@antv/s2'
+import { S2Event, S2Options, TableColCell, TableDataCell, TableSheet, ViewMeta } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
@@ -143,13 +143,13 @@ export class TableInfo extends S2ChartView<TableSheet> {
     // click
     newChart.on(S2Event.DATA_CELL_CLICK, ev => {
       const cell = newChart.getCell(ev.target)
-      const meta = cell.getMeta()
+      const meta = cell.getMeta() as ViewMeta
       const nameIdMap = fields.reduce((pre, next) => {
         pre[next['dataeaseName']] = next['id']
         return pre
       }, {})
 
-      const rowData = chart.data.tableRow[meta.rowIndex] as any
+      const rowData = newChart.dataSet.getRowData(meta)
       const dimensionList = []
       for (const key in rowData) {
         if (nameIdMap[key]) {
