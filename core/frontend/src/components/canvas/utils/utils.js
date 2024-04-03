@@ -310,7 +310,6 @@ export function getNowCanvasComponentData(canvasId, showPosition) {
   if (showPosition && (showPosition.includes('email-task') || showPosition.includes('multiplexing'))) {
     return store.state.previewComponentData.filter(item => item.canvasId === canvasId)
   } else if (showPosition === 'preview') {
-    console.log('test===' + JSON.stringify(deepCopy(store.state.sourceComponentData.filter(item => item.canvasId === canvasId))))
     return deepCopy(store.state.sourceComponentData.filter(item => item.canvasId === canvasId))
   } else {
     return store.state.componentData.filter(item => item.canvasId === canvasId)
