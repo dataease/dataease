@@ -88,6 +88,15 @@ const handleDir = index => {
   activeDirectName.value = directName.value[directName.value.length - 1]
 }
 
+const dfsTableData = arr => {
+  return arr.filter(ele => {
+    if (!!ele.children?.length) {
+      ele.children = dfsTableData(ele.children)
+    }
+    return ele.extraFlag === 1 || ele.children?.length
+  })
+}
+
 const getTree = async () => {
   const request = { busiFlag: 'dashboard' } as BusiTreeRequest
   await interactiveStore.setInteractive(request)
@@ -99,10 +108,10 @@ const getTree = async () => {
     dvMainStore.resetDvInfo()
   }
   if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
-    tableData.value = nodeData[0]['children'] || []
+    tableData.value = dfsTableData(nodeData[0]['children'] || [])
     return
   }
-  tableData.value = nodeData
+  tableData.value = dfsTableData(nodeData)
 }
 
 onMounted(() => {

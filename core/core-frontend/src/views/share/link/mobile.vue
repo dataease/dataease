@@ -5,7 +5,7 @@
     <PwdTips v-else-if="!loading && !pwdValid" />
     <de-preview
       ref="dashboardPreview"
-      v-if="state.canvasStylePreview && dataInitState"
+      v-else-if="state.canvasStylePreview && dataInitState"
       :component-data="state.canvasDataPreview"
       :canvas-style-data="state.canvasStylePreview"
       :canvas-view-info="state.canvasViewInfoPreview"
@@ -33,7 +33,8 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: {
-    name: ''
+    name: '',
+    mobileLayout: false
   },
   curPreviewGap: 0
 })
@@ -58,6 +59,11 @@ const loadCanvasData = (dvId, weight?) => {
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
       dataInitState.value = true
+      if (!state.dvInfo.mobileLayout) {
+        const href = window.location.href.replace('/de-link', '/pc/de-link')
+        window.location.href = href
+        return
+      }
       nextTick(() => {
         document.title = dvInfo.name
         dashboardPreview.value.restore()

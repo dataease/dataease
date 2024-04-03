@@ -39,6 +39,13 @@ export const routes: AppRouteRecordRaw[] = [
     component: () => import('@/views/share/link/mobile.vue')
   },
   {
+    path: '/pc/de-link/:uuid',
+    name: 'linkPc',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/share/link/index.vue')
+  },
+  {
     path: '/panel/mobile',
     name: 'mobile',
     hidden: true,
