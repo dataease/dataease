@@ -67,7 +67,6 @@ export default {
   },
   methods: {
     handlerInputStyle(type, newValue) {
-      if (this.element.style.showMode && this.element.style.showMode === 'radio') return
       let nodeCache = ''
       this.styleAttrs.forEach(ele => {
         if (!nodeCache) {
