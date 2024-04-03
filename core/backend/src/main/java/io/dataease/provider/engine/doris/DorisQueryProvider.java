@@ -40,7 +40,6 @@ import javax.annotation.Resource;
 import java.text.MessageFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
-import java.util.concurrent.atomic.AtomicInteger;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 import java.util.stream.Collectors;
@@ -109,14 +108,13 @@ public class DorisQueryProvider extends QueryProvider {
                 .build();
         List<SQLObj> xFields = new ArrayList<>();
         List<String> fieldList = fields.stream().map(DatasetTableField::getId).collect(Collectors.toList());
-        AtomicInteger sortIndex = new AtomicInteger(-1);
         if (CollectionUtils.isNotEmpty(sortFields)) {
             sortFields.forEach(item -> {
-                sortIndex.set(fieldList.indexOf(item.getId()));
-                if (sortIndex.get() == -1) {
+                int indexOf = fieldList.indexOf(item.getId());
+                if (indexOf == -1) {
                     fields.add(item);
                 } else {
-                    fields.set(sortIndex.get(), item);
+                    fields.set(indexOf, item);
                 }
             });
         }
@@ -219,19 +217,6 @@ public class DorisQueryProvider extends QueryProvider {
         st.add("table", tableSQL);
         if (CollectionUtils.isNotEmpty(xOrders)) {
             st.add("orders", xOrders);
-        }
-        if (CollectionUtils.isNotEmpty(xFields)) {
-            List<SQLObj> finallyFields = new ArrayList<>();
-            for (int i = 0; i < xFields.size(); i++) {
-                if (CollectionUtils.isNotEmpty(xOrders) && sortIndex.get() == -1 && i == xFields.size() - 1) {
-                    continue;
-                }
-                SQLObj f = xFields.get(i);
-                String prefix = finallyFields.isEmpty() ? " DISTINCT " : "";
-                f.setFieldName(prefix + String.format(MySQLConstants.KEYWORD_FIX, tableSQL.getTableAlias(), f.getFieldAlias()));
-                finallyFields.add(f);
-            }
-            st.add("groups", finallyFields);
         }
         if (ObjectUtils.isNotEmpty(limit)) {
             return st.render() + " LIMIT 0," + limit;
