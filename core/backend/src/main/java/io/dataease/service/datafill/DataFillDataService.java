@@ -333,18 +333,18 @@ public class DataFillDataService {
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                 String name1 = field.getSettings().getMapping().getColumnName1();
                 String name2 = field.getSettings().getMapping().getColumnName2();
-                if (tableFieldMap.containsKey(name1) && data.containsKey(name1) && data.get(name1) != null) {
+                if (tableFieldMap.containsKey(name1)) {
                     DatasourceRequest.TableFieldWithValue value1 = new DatasourceRequest.TableFieldWithValue()
-                            .setValue(new java.sql.Date((long) data.get(name1)))
+                            .setValue(data.get(name1) != null ? new java.sql.Date((long) data.get(name1)) : null)
                             .setFiledName(name1)
                             .setTypeName(tableFieldMap.get(name1).getFieldType())
                             .setType(tableFieldMap.get(name1).getType());
                     searchFields.add(value1);
                     extTableFields.put(name1, field);
                 }
-                if (tableFieldMap.containsKey(name2) && data.containsKey(name2) && data.get(name2) != null) {
+                if (tableFieldMap.containsKey(name2)) {
                     DatasourceRequest.TableFieldWithValue value2 = new DatasourceRequest.TableFieldWithValue()
-                            .setValue(new java.sql.Date((long) data.get(name2)))
+                            .setValue(data.get(name2) != null ? new java.sql.Date((long) data.get(name2)) : null)
                             .setFiledName(name2)
                             .setTypeName(tableFieldMap.get(name2).getFieldType())
                             .setType(tableFieldMap.get(name2).getType());
@@ -353,7 +353,7 @@ public class DataFillDataService {
                 }
             } else {
                 String name = field.getSettings().getMapping().getColumnName();
-                if (tableFieldMap.containsKey(name) && data.containsKey(name) && data.get(name) != null) {
+                if (tableFieldMap.containsKey(name)) {
                     DatasourceRequest.TableFieldWithValue value = new DatasourceRequest.TableFieldWithValue()
                             .setValue(data.get(name))
                             .setFiledName(name)
@@ -361,14 +361,14 @@ public class DataFillDataService {
                             .setType(tableFieldMap.get(name).getType());
 
                     if (StringUtils.equalsIgnoreCase(field.getType(), "date")) {
-                        value.setValue(new java.sql.Date((long) data.get(name)));
+                        value.setValue(data.get(name) != null ? new java.sql.Date((long) data.get(name)) : null);
                     }
                     searchFields.add(value);
 
                     extTableFields.put(name, field);
 
                     // 关于unique的字段判断
-                    if (field.getSettings().isUnique()) {
+                    if (field.getSettings().isUnique() && data.get(name) != null) {
 
                         uniqueFields.add(value);
                     }
