@@ -316,6 +316,9 @@ const onDrillFilters = param => {
 const windowsJump = (url, jumpType) => {
   try {
     window.open(url, jumpType)
+    if (jumpType === '_self') {
+      location.reload()
+    }
   } catch (e) {
     ElMessage.error(t('visualization.url_check_error') + ':' + url)
   }
