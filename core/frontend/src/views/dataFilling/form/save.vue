@@ -142,6 +142,7 @@ export default {
     }
   },
   mounted() {
+    this.loading = true
     this.formData = this.form
 
     forEach(this.formData.forms, f => {
@@ -150,23 +151,24 @@ export default {
         f.settings.mapping.type = f.settings.mapping.typeOptions[0].value
       }
     })
+    const p1 = listDatasourceType()
+    const p2 = listDatasource()
+    const p3 = listForm({ nodeType: 'folder' })
 
-    listDatasourceType().then(res => {
-      this.allDatasourceTypes = res.data
-    })
+    Promise.all([p1, p2, p3]).then((val) => {
+      this.allDatasourceTypes = val[0].data
 
-    listDatasource().then(res => {
-      this.allDatasourceList = res.data
-    })
+      this.allDatasourceList = val[1].data
 
-    listForm({ nodeType: 'folder' }).then(res => {
-      this.folders = res.data || []
+      this.folders = val[2].data || []
       if (this.formData.folder) {
         this.$nextTick(() => {
           this.$refs.tree.setCurrentKey(this.formData.folder)
           this.$refs.tree.setCheckedKeys([this.formData.folder])
         })
       }
+    }).finally(() => {
+      this.loading = false
     })
   },
   methods: {
