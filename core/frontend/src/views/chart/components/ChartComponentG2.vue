@@ -32,6 +32,7 @@
       </div>
     </span>
     <div
+      ref="chart"
       :id="chartId"
       style="width: 100%;overflow: hidden;"
       :style="{height:chartHeight}"
@@ -43,7 +44,7 @@
 import { baseLiquid } from '@/views/chart/chart/liquid/liquid'
 import { uuid } from 'vue-uuid'
 import ViewTrackBar from '@/components/canvas/components/editor/ViewTrackBar'
-import { getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
+import { adjustPosition, getRemark, hexColorToRGBA } from '@/views/chart/chart/util'
 import { baseBarOptionAntV, hBaseBarOptionAntV, baseBidirectionalBarOptionAntV, timeRangeBarOptionAntV } from '@/views/chart/chart/bar/bar_antv'
 import { baseAreaOptionAntV, baseLineOptionAntV } from '@/views/chart/chart/line/line_antv'
 import { basePieOptionAntV, basePieRoseOptionAntV } from '@/views/chart/chart/pie/pie_antv'
@@ -345,9 +346,27 @@ export default {
       }
       if (this.trackMenu.length < 2) { // 只有一个事件直接调用
         this.trackClick(this.trackMenu[0])
-      } else { // 视图关联多个事件
-        this.trackBarStyle.left = param.x + 'px'
-        this.trackBarStyle.top = (param.y + 10) + 'px'
+      } else {
+        // 视图关联多个事件
+        const menuDom = this.$refs.viewTrack.$el.getElementsByClassName("track-menu")?.[0]
+        const chartDom = this.$refs.chart
+        let position = {
+          x: param.x,
+          y: param.y
+        }
+        const offset = {
+          x: 0,
+          y: 10
+        }
+        const initSize = {
+          width: 80,
+          height: 76
+        }
+        if (menuDom && chartDom) {
+          position = adjustPosition(menuDom, chartDom, param, offset, initSize)
+        }
+        this.trackBarStyle.left = position.x + 'px'
+        this.trackBarStyle.top = position.y + 'px'
         this.$refs.viewTrack.trackButtonClick()
       }
     },
