@@ -164,7 +164,12 @@ watch(
       <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
         <template v-slot:default="scope">
           <div class="name-content">
-            <el-icon class="main-color"> <Icon name="icon_dashboard_outlined" /> </el-icon>
+            <el-icon style="margin-right: 12px; font-size: 18px" v-if="scope.row.extFlag">
+              <Icon name="dv-dashboard-spine-mobile"></Icon>
+            </el-icon>
+            <el-icon class="main-color" v-else>
+              <Icon name="icon_dashboard_outlined" />
+            </el-icon>
             <el-tooltip placement="top">
               <template #content>{{ scope.row.name }}</template>
               <span class="ellipsis" style="max-width: 250px">{{ scope.row.name }}</span>

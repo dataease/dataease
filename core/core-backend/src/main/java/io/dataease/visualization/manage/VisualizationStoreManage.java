@@ -89,7 +89,7 @@ public class VisualizationStoreManage {
                 new VisualizationStoreVO(
                         po.getStoreId(), po.getResourceId(), po.getName(),
                         po.getType(), String.valueOf(po.getCreator()), ObjectUtils.isEmpty(po.getEditor()) ? null : String.valueOf(po.getEditor()),
-                        po.getEditTime(), 9)).toList();
+                        po.getEditTime(), 9,po.getExtFlag())).toList();
     }
 
     public IPage<StorePO> queryStorePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {

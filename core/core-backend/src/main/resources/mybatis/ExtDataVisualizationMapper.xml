@@ -143,6 +143,7 @@
                `canvas_style_data`,
                `component_data`,
                `mobile_layout`,
+               `mobile_layout` as ext_flag,
                `status`,
                `self_watermark_status`,
                `sort`,
@@ -165,6 +166,7 @@
         SELECT dvResource.id,
                dvResource.resource_id,
                dvResource.name,
+               dvResource.ext_flag,
                dvResource.type,
                dvResource.creator,
                core_opt_recent.uid  AS last_editor,
@@ -180,6 +182,7 @@
         FROM (SELECT core_dataset_group.id,
                      core_dataset_group.id        AS resource_id,
                      core_dataset_group.NAME,
+                     0 as ext_flag,
                      'dataset'                    AS type,
                      core_dataset_group.create_by AS creator
               FROM core_dataset_group
@@ -188,6 +191,7 @@
               SELECT core_datasource.id,
                      core_datasource.id        AS resource_id,
                      core_datasource.NAME,
+                     0 as ext_flag,
                      'datasource'              AS type,
                      core_datasource.create_by AS creator
               FROM core_datasource
@@ -197,6 +201,7 @@
                   data_visualization_info.id,
                   data_visualization_info.id AS resource_id,
                   data_visualization_info.NAME,
+                  data_visualization_info.`mobile_layout` as ext_flag,
                   (
                   CASE
                   data_visualization_info.type

@@ -65,6 +65,10 @@ public class DataVisualizationVO implements Serializable {
      * 移动端布局
      */
     private Boolean mobileLayout;
+    /**
+     * 移动端布局
+     */
+    private Integer extFlag;
 
     /**
      * 状态 0-未发布 1-已发布

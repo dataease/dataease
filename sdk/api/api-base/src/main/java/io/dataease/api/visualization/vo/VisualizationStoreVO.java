@@ -33,4 +33,6 @@ public class VisualizationStoreVO implements Serializable {
     private Long lastEditTime;
 
     private int weight;
+
+    private Integer extFlag;
 }
