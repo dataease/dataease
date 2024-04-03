@@ -123,7 +123,7 @@ export default {
         styleEle.id = `radio-style${this.id}`;
         document.querySelector("head").appendChild(styleEle);
       }
-      styleEle.innerHTML = `#component${this.id} {\n  background-color: transparent !important; \n  } #component${this.id} .el-radio-button:not(.is-active) .el-radio-button__inner {\n  color: ${this.radioStyle.wordColor}; \n border-color: ${this.radioStyle.brColor}; \n background-color: ${this.radioStyle.innerBgColor}; \n  } #component${this.id} .el-radio:not(.is-check) .el-radio__label {\n  color: ${this.radioStyle.wordColor}; \n }`;
+      styleEle.innerHTML = `#component${this.id} .el-radio-button:not(.is-active) .el-radio-button__inner {\n  color: ${this.radioStyle.wordColor}; \n border-color: ${this.radioStyle.brColor}; \n background-color: ${this.radioStyle.innerBgColor}; \n  } #component${this.id} .el-radio:not(.is-check) .el-radio__label {\n  color: ${this.radioStyle.wordColor}; \n }`;
     },
     resetList(arrays) {
       if (Array.isArray(arrays)) {
