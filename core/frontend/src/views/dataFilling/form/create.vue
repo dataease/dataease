@@ -729,13 +729,28 @@ export default {
                     style="color: red"
                   >*</span>
                 </template>
-                <el-input
+                <el-select
+                  v-model="selectedComponentItem.settings.rangeSeparator"
+                  style="width: 100%"
+                  required
+                >
+                  <el-option
+                    label="-"
+                    value="-"
+                  />
+                  <el-option
+                    label="~"
+                    value="~"
+                  />
+                </el-select>
+
+                <!--                <el-input
                   v-model.trim="selectedComponentItem.settings.rangeSeparator"
                   required
                   size="small"
-                  maxlength="10"
+                  maxlength="3"
                   show-word-limit
-                />
+                />-->
               </el-form-item>
 
               <el-form-item
