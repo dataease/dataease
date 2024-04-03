@@ -35,4 +35,6 @@ public class VisualizationResourcePO implements Serializable {
     private Boolean favorite;
 
     private int weight;
+
+    private Integer extFlag;
 }

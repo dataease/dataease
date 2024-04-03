@@ -24,4 +24,6 @@ public class StorePO implements Serializable {
 
     private String name;
 
+    private Integer extFlag;
+
 }
