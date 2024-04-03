@@ -86,6 +86,7 @@ export default {
       callback()
     }
     return {
+      loading: false,
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       duplicateRule: { validator: checkDuplicateNameValidator, trigger: 'blur' },
       duplicateIndexRule: { validator: checkDuplicateIndexNameValidator, trigger: 'blur' },
@@ -249,6 +250,7 @@ export default {
       return data.name.indexOf(value) !== -1
     },
     doSave() {
+      this.loading = true
       this.$refs['mRightForm'].validate((valid) => {
         if (valid) {
           const data = {
@@ -265,8 +267,11 @@ export default {
           saveForm(data).then(res => {
             this.closeSave()
             this.$router.replace({ name: 'data-filling-form', query: { id: res.data }})
+          }).finally(() => {
+            this.loading = false
           })
         } else {
+          this.loading = false
           return false
         }
       })
@@ -276,7 +281,10 @@ export default {
 </script>
 
 <template>
-  <el-container class="DataFillingFormSave">
+  <el-container
+    v-loading="loading"
+    class="DataFillingFormSave"
+  >
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">

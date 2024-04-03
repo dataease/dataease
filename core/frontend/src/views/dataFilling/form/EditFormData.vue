@@ -60,6 +60,7 @@ export default {
       callback()
     }
     return {
+      loading: false,
       formData: {},
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       dateRangeRequiredRule: { validator: checkDateRangeRequireValidator, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
@@ -135,6 +136,7 @@ export default {
       })
     },
     doSave() {
+      this.loading = true
       this.$refs['mForm'].validate((valid) => {
         if (valid) {
           const _data = {}
@@ -167,20 +169,28 @@ export default {
           if (this.userTaskId) {
             userFillFormData(this.userTaskId, _data).then(res => {
               this.$emit('save-success')
+            }).finally(() => {
+              this.loading = false
             })
           } else {
             if (this.id !== undefined) {
               // update
               saveFormRowData(this.formId, this.id, _data).then(res => {
                 this.$emit('save-success')
+              }).finally(() => {
+                this.loading = false
               })
             } else {
               // insert
               newFormRowData(this.formId, _data).then(res => {
                 this.$emit('save-success')
+              }).finally(() => {
+                this.loading = false
               })
             }
           }
+        } else {
+          this.loading = false
         }
       })
     }
@@ -190,7 +200,10 @@ export default {
 </script>
 
 <template>
-  <el-container class="DataFillingSave">
+  <el-container
+    v-loading="loading"
+    class="DataFillingSave"
+  >
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">

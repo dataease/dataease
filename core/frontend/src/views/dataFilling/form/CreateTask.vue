@@ -1,5 +1,8 @@
 <template>
-  <el-container class="DataFillingSave">
+  <el-container
+    v-loading="loading"
+    class="DataFillingSave"
+  >
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">
@@ -320,6 +323,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       showTable: false,
       showMedia: false,
       formType: 'add',
@@ -549,6 +553,8 @@ export default {
     },
 
     save() {
+      this.loading = true
+
       const request = this.form
 
       request.rateType = -1
@@ -609,8 +615,11 @@ export default {
 
           saveFormTasks(this.formId, param.request).then(res => {
             this.$emit('save-success')
+          }).finally(() => {
+            this.loading = false
           })
         } else {
+          this.loading = false
           return false
         }
       })
