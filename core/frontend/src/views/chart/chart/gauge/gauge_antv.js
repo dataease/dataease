@@ -45,7 +45,8 @@ export function baseGaugeOptionAntV(container, chart, action, scale = 1) {
       if (gaugePercentLabel === false) {
         const yAxis = parseJson(chart.yaxis)?.[0]
         const formatter = yAxis?.formatterCfg ?? formatterItem
-        return valueFormatter(v * max, formatter)
+        const val = v === '0' ? min : v === '1' ? max : min + (max - min) * v
+        return valueFormatter(val, formatter)
       }
       return v === '0' ? v : (v * 100 + '%')
     }
