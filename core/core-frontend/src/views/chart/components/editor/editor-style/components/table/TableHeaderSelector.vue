@@ -237,7 +237,6 @@ onMounted(() => {
       />
     </el-form-item>
     <el-form-item
-      :label="t('chart.table_show_index')"
       class="form-item"
       :class="'form-item-' + themes"
       v-if="showProperty('tableHeaderSort')"
