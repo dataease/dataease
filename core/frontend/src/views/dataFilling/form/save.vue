@@ -401,6 +401,7 @@ export default {
           </template>
           <el-select
             v-model="formData.datasource"
+            filterable
             size="small"
             style="width: 100%"
           >
