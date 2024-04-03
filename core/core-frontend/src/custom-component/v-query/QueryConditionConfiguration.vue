@@ -220,6 +220,7 @@ const setTypeChange = () => {
 }
 
 const cancelClick = () => {
+  visiblePopover.value = false
   dialogVisible.value = false
 }
 
@@ -510,6 +511,7 @@ const handleBeforeClose = () => {
 const confirmClick = () => {
   if (validate()) return
   inputCom.value?.mult?.handleClickOutside?.()
+  visiblePopover.value = false
   dialogVisible.value = false
   conditions.value.forEach(ele => {
     curComponent.value = ele
