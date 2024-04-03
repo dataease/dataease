@@ -44,7 +44,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
+const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick', 'resetLoading'])
 
 const { view, showPosition, scale, terminal } = toRefs(props)
 
@@ -92,22 +92,21 @@ const calcData = async (view, callback) => {
             }
           }
           dvMainStore.setViewDataDetails(view.id, chartData.value)
-          await renderChart(res)
-          callback?.()
+          await renderChart(res, callback)
         }
       })
       .catch(() => {
         callback?.()
       })
   } else {
-    if (view.type === 'map') {
-      await renderChart(view)
+    if (['bubble-map', 'map'].includes(view.type)) {
+      await renderChart(view, callback)
     }
     callback?.()
   }
 }
 let curView
-const renderChart = async view => {
+const renderChart = async (view, callback?) => {
   if (!view) {
     return
   }
@@ -123,10 +122,11 @@ const renderChart = async view => {
   recursionTransObj(customStyleTrans, chart.customStyle, scale.value, terminal.value)
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
-      await renderL7Plot(chart, chartView as L7PlotChartView<any, any>)
+      await renderL7Plot(chart, chartView as L7PlotChartView<any, any>, callback)
       break
     case ChartLibraryType.G2_PLOT:
       renderG2Plot(chart, chartView as G2PlotChartView<any, any>)
+      callback?.()
       break
     default:
       break
@@ -150,24 +150,30 @@ const country = ref('')
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const chartContainer = ref<HTMLElement>(null)
-const renderL7Plot = async (chart, chartView: L7PlotChartView<any, any>) => {
+let mapTimer: number
+const renderL7Plot = async (chart, chartView: L7PlotChartView<any, any>, callback) => {
   const map = parseJson(chart.customAttr).map
   let areaId = map.id
   country.value = areaId.slice(0, 3)
   if (dynamicAreaId.value) {
     areaId = dynamicAreaId.value
   }
-  myChart?.destroy()
-  if (chartContainer.value) {
-    chartContainer.value.textContent = ''
-  }
-  myChart = await chartView.drawChart({
-    chartObj: myChart,
-    container: containerId,
-    chart,
-    areaId,
-    action
-  })
+  mapTimer && clearTimeout(mapTimer)
+  mapTimer = setTimeout(async () => {
+    myChart?.destroy()
+    if (chartContainer.value) {
+      chartContainer.value.textContent = ''
+    }
+    myChart = await chartView.drawChart({
+      chartObj: myChart,
+      container: containerId,
+      chart,
+      areaId,
+      action
+    })
+    callback?.()
+    emit('resetLoading')
+  }, 500)
 }
 
 const action = param => {
@@ -265,7 +271,6 @@ defineExpose({
 let resizeObserver
 const TOLERANCE = 0.01
 const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map']
-let mapTimer: number
 onMounted(() => {
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom
@@ -280,10 +285,11 @@ onMounted(() => {
     if (Math.abs(widthOffsetPercent) < TOLERANCE && Math.abs(heightOffsetPercent) < TOLERANCE) {
       return
     }
+    if (myChart && preSize[1] > 1) {
+      renderChart(curView)
+    }
     preSize[0] = size.inlineSize
     preSize[1] = size.blockSize
-    mapTimer && clearTimeout(mapTimer)
-    mapTimer = setTimeout(() => renderChart(curView), 500)
   })
   resizeObserver.observe(containerDom)
 })
