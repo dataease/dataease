@@ -1409,10 +1409,10 @@ export function configAxisLabelLengthLimit(chart, plot) {
     if (initPosition.top + offsetHeight > height) {
       initPosition.top -= (offsetHeight + 15)
     }
-    labelTooltipDom.style.left = initPosition.left + 'px'
-    labelTooltipDom.style.top = initPosition.top + 'px'
+    labelTooltipDom.style.left = `${initPosition.left}px`
+    labelTooltipDom.style.top = `${initPosition.top}px`
     labelTooltipDom.style.color = color
-    labelTooltipDom.style.fontSize = fontSize
+    labelTooltipDom.style.fontSize = `${fontSize}px`
   })
   plot.on('axis-label:mouseleave', (e) => {
     const field = e.target.cfg.delegateObject.component.cfg.field
