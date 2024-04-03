@@ -192,6 +192,7 @@ const data = {
       if (style) {
         style['selfAdaption'] = true
       }
+      style.panel['alpha'] = style.panel['alpha'] === undefined ? 100 : style.panel['alpha']
       state.canvasStyleData = style
     },
 
