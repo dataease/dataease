@@ -189,7 +189,7 @@ const backToMain = () => {
 const backHandler = (url: string) => {
   if (window['dataease-embedded-host'] && openHandler?.value) {
     const pm = {
-      methodName: 'embeddedInterative',
+      methodName: 'embeddedInteractive',
       args: {
         eventName: 'de-dashboard-editor-back',
         args: 'Just a demo that descript dataease embedded interactive'
