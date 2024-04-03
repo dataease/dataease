@@ -14,6 +14,7 @@ public interface XpackShareExtMapper {
             select
             s.id as share_id,
             v.id as resource_id,
+            v.mobile_layout as ext_flag,
             v.type,
             s.creator,
             s.time,

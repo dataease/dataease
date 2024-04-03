@@ -18,7 +18,8 @@ public interface CoreStoreExtMapper {
             v.create_by as creator,
             v.update_by as editor,
             v.update_time as edit_time,
-            v.name
+            v.name,
+            v.mobile_layout as ext_flag
             from core_store s
             left join data_visualization_info v on s.resource_id = v.id
             ${ew.customSqlSegment}

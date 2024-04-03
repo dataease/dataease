@@ -36,4 +36,6 @@ public class XpackShareGridVO implements Serializable {
     @Schema(description = "权重")
     private Integer weight;
 
+    private Integer extFlag;
+
 }
