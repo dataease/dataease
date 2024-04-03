@@ -679,6 +679,7 @@ const iconSize = computed<string>(() => {
         @onChartClick="chartClick"
         @onDrillFilters="onDrillFilters"
         @onJumpClick="jumpClick"
+        @resetLoading="() => (loading = false)"
       />
       <chart-component-s2
         :view="view"
