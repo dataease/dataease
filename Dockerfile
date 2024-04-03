@@ -14,6 +14,6 @@ ADD core/core-backend/target/CoreApplication.jar /opt/apps/app.jar
 
 ENV JAVA_APP_JAR=/opt/apps/app.jar
 
-HEALTHCHECK --interval=15s --timeout=5s --retries=20 --start-period=30s CMD curl -f 127.0.0.1:8100
+HEALTHCHECK --interval=15s --timeout=5s --retries=20 --start-period=30s CMD nc -zv 127.0.0.1 8100
 
 CMD java -Xmx1024m -XX:+HeapDumpOnOutOfMemoryError -XX:HeapDumpPath=/opt/dataease2.0/logs/dump.hprof -jar /opt/apps/app.jar
