@@ -7,20 +7,20 @@
     <template v-for="item in options">
       <el-radio
         :key="item.id + 'radio'"
-        :label="item.text"
+        :label="item.id"
         class="is-custom-select"
-        :value="item.id"
         v-if="radioStyle.showStyle === 'single'"
         :disabled="itemDisabled"
-      />
+        >{{ item.text }}</el-radio
+      >
       <el-radio-button
         v-else
         :disabled="itemDisabled"
         :key="item.id + 'tab'"
         class="is-custom-select"
-        :label="item.text"
-        :value="item.id"
-      />
+        :label="item.id"
+        >{{ item.text }}</el-radio-button
+      >
     </template>
   </el-radio-group>
 </template>

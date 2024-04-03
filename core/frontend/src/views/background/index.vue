@@ -300,7 +300,7 @@
             v-model="curComponent.style.showNum"
             :min="1"
             step-strictly
-            :max="20"
+            :max="10"
             controls-position="right"
             size="small"
           />
