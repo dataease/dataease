@@ -16,6 +16,7 @@ import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { canvasSave } from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
+import { XpackComponent } from '@/components/plugin'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -121,12 +122,27 @@ const backToMain = () => {
       autofocus: false,
       showClose: false
     }).then(() => {
-      window.open(url, '_self')
+      backHandler(url)
     })
   } else {
-    window.open(url, '_self')
+    backHandler(url)
   }
 }
+const backHandler = (url: string) => {
+  if (window['dataease-embedded-host'] && openHandler?.value) {
+    const pm = {
+      methodName: 'interactive',
+      args: {
+        eventName: 'de-dashboard-editor-back',
+        args: 'Just a demo that descript dataease embedded interactive'
+      }
+    }
+    openHandler.value.invokeMethod(pm)
+    return
+  }
+  window.open(url, '_self')
+}
+const openHandler = ref(null)
 
 const onDvNameChange = () => {
   snapshotStore.recordSnapshotCache()
@@ -252,6 +268,7 @@ eventBus.on('clearCanvas', clearCanvas)
       ref="resourceGroupOpt"
     />
   </div>
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less" scoped>
