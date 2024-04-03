@@ -3936,3 +3936,26 @@ export function parseJson(target) {
   }
   return JSON.parse(JSON.stringify(target))
 }
+
+export function adjustPosition(targetDom, parentDom, clickPosition, offset, initSize) {
+  const { clientHeight: targetHeight, clientWidth: targetWidth } = targetDom
+  const { clientHeight: parentHeight, clientWidth: parentWidth } = parentDom
+  const { x, y } = clickPosition
+  const { x: offsetX, y: offsetY } = offset
+  const result = {
+    x: offsetX ? x + offsetX : x,
+    y: offsetY ? y + offsetY : y
+  }
+  const width = targetWidth ? targetWidth : initSize.width
+  const height = targetHeight ? targetHeight : initSize.height
+  if ( result.x + width > parentWidth ) {
+    result.x = parentWidth - width
+  }
+  if (result.y + height > parentHeight) {
+    result.y = parentHeight - height
+  }
+  if (result.y - height < 0) {
+    result.y = height
+  }
+  return result
+}
