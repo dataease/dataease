@@ -36,5 +36,5 @@ CREATE TABLE `visualization_outer_params_target_view_info` (
 
 ALTER TABLE `data_visualization_info`
     MODIFY COLUMN `mobile_layout` tinyint NULL DEFAULT 0 COMMENT '移动端布局0-关闭 1-开启';
-
+update data_visualization_info set mobile_layout = 0;
 INSERT INTO `core_sys_setting` (`id`, `pkey`, `pval`, `type`, `sort`) VALUES (3, 'ai.baseUrl', 'https://maxkb.fit2cloud.com/ui/chat/2ddd8b594ce09dbb', 'text', 0);
