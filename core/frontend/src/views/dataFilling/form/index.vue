@@ -386,6 +386,7 @@ export default {
       class="m-dialog"
     >
       <el-container
+        v-if="showFolderCreateForm"
         style="width: 100%"
         direction="vertical"
       >
