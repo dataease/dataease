@@ -21,7 +21,7 @@ export function sortPer(subTree, hisSortType, sortType) {
     subTree.sort((a, b) => b.name.localeCompare(a.name, 'zh-Hans-CN', { sensitivity: 'accent' }))
   } else if (sortType === 'name_asc') {
     subTree.sort((a, b) => a.name.localeCompare(b.name, 'zh-Hans-CN', { sensitivity: 'accent' }))
-  } else if (sortType.indexOf('time') !== -1 && hisSortType !== sortType) {
+  } else if (sortType === 'time_asc') {
     subTree.reverse()
   }
 }
