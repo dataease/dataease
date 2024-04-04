@@ -8,19 +8,15 @@ import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.CodingUtil;
 import io.dataease.commons.utils.DeLogUtils;
 import io.dataease.commons.utils.ServletUtils;
-import io.dataease.controller.request.panel.link.EnablePwdRequest;
-import io.dataease.controller.request.panel.link.LinkRequest;
-import io.dataease.controller.request.panel.link.OverTimeRequest;
-import io.dataease.controller.request.panel.link.PasswordRequest;
+import io.dataease.controller.request.panel.link.*;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.dto.panel.link.GenerateDto;
+import io.dataease.dto.panel.link.TicketDto;
 import io.dataease.ext.ExtPanelGroupMapper;
 import io.dataease.ext.ExtPanelLinkMapper;
 import io.dataease.plugins.common.base.domain.*;
-import io.dataease.plugins.common.base.mapper.PanelGroupMapper;
-import io.dataease.plugins.common.base.mapper.PanelLinkMapper;
-import io.dataease.plugins.common.base.mapper.PanelLinkMappingMapper;
-import io.dataease.plugins.common.base.mapper.PanelWatermarkMapper;
+import io.dataease.plugins.common.base.mapper.*;
+import io.dataease.plugins.common.exception.DataEaseException;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -55,6 +51,9 @@ public class PanelLinkService {
     private PanelWatermarkMapper panelWatermarkMapper;
     @Resource
     private ExtPanelGroupMapper extPanelGroupMapper;
+
+    @Resource
+    private PanelLinkTicketMapper panelLinkTicketMapper;
 
     @Transactional
     public void changeValid(LinkRequest request) {
@@ -130,14 +129,26 @@ public class PanelLinkService {
         }
     }
 
-    public String getMappingUuid(PanelLink link) {
+    public PanelLinkMapping getMapping(PanelLink link) {
         String resourceId = link.getResourceId();
         Long userId = link.getUserId();
         PanelLinkMappingExample example = new PanelLinkMappingExample();
         example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(userId);
         List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
-        if (CollectionUtils.isNotEmpty(mappings)) return mappings.get(0).getUuid();
+        if (CollectionUtils.isNotEmpty(mappings)) return mappings.get(0);
         return null;
+    }
+
+    public List<PanelLinkTicket> queryTicket(String resourceId) {
+        Long userId = AuthUtils.getUser().getUserId();
+        PanelLinkMappingExample example = new PanelLinkMappingExample();
+        example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(userId);
+        List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
+        PanelLinkMapping mapping = mappings.get(0);
+        String uuid = mapping.getUuid();
+        PanelLinkTicketExample exampleTicket = new PanelLinkTicketExample();
+        exampleTicket.createCriteria().andUuidEqualTo(uuid);
+        return panelLinkTicketMapper.selectByExample(exampleTicket);
     }
 
     @Transactional
@@ -152,7 +163,6 @@ public class PanelLinkService {
             one.setEnablePwd(false);
             mapper.insert(one);
         }
-
         PanelLinkMappingExample example = new PanelLinkMappingExample();
         example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(AuthUtils.getUser().getUserId());
         List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
@@ -162,11 +172,12 @@ public class PanelLinkService {
             mapping.setResourceId(resourceId);
             mapping.setUserId(AuthUtils.getUser().getUserId());
             mapping.setUuid(CodingUtil.shortUuid());
+            mapping.setRequireTicket(false);
             panelLinkMappingMapper.insert(mapping);
         } else {
             mapping = mappings.get(0);
         }
-        return convertDto(one, mapping.getUuid());
+        return convertDto(one, mapping.getUuid(), mapping.getRequireTicket());
     }
 
     public void deleteByResourceId(String resourceId) {
@@ -205,13 +216,14 @@ public class PanelLinkService {
         return linkParam;
     }
 
-    private GenerateDto convertDto(PanelLink link, String uuid) {
+    private GenerateDto convertDto(PanelLink link, String uuid, boolean requireTicket) {
         GenerateDto result = new GenerateDto();
         result.setValid(link.getValid());
         result.setEnablePwd(link.getEnablePwd());
         result.setPwd(link.getPwd());
         result.setUri(BASEURL + buildLinkParam(link, uuid));
         result.setOverTime(link.getOverTime());
+        result.setRequireTicket(requireTicket);
         return result;
     }
 
@@ -272,6 +284,62 @@ public class PanelLinkService {
         return contextPath + SHORT_URL_PREFIX + (StringUtils.isBlank(uuid) ? mapping.getId() : uuid);
     }
 
+    public String saveTicket(TicketCreator creator) {
+        String ticket = creator.getTicket();
+        if (StringUtils.isNotBlank(ticket)) {
+            PanelLinkTicket ticketEntity = getByTicket(ticket);
+            if (ObjectUtils.isNotEmpty(ticketEntity)) {
+                PanelLinkTicketExample example = new PanelLinkTicketExample();
+                example.createCriteria().andTicketEqualTo(ticket);
+                if (creator.isGenerateNew()) {
+                    ticketEntity.setAccessTime(null);
+                    ticketEntity.setTicket(CodingUtil.shortUuid());
+                }
+                ticketEntity.setArgs(creator.getArgs());
+                ticketEntity.setExp(creator.getExp());
+                ticketEntity.setUuid(creator.getUuid());
+                panelLinkTicketMapper.updateByExample(ticketEntity, example);
+                return ticketEntity.getTicket();
+            }
+        }
+        ticket = CodingUtil.shortUuid();
+        PanelLinkTicket linkTicket = new PanelLinkTicket();
+        linkTicket.setTicket(ticket);
+        linkTicket.setArgs(creator.getArgs());
+        linkTicket.setExp(creator.getExp());
+        linkTicket.setUuid(creator.getUuid());
+        panelLinkTicketMapper.insert(linkTicket);
+        return ticket;
+    }
+
+    public void deleteTicket(TicketDelRequest request) {
+        String ticket = request.getTicket();
+        if (StringUtils.isBlank(ticket)) {
+            DataEaseException.throwException("ticket为必填参数");
+        }
+        PanelLinkTicketExample example = new PanelLinkTicketExample();
+        example.createCriteria().andTicketEqualTo(ticket);
+        panelLinkTicketMapper.deleteByExample(example);
+    }
+
+    public void switchRequire(TicketSwitchRequest request) {
+        String resourceId = request.getResourceId();
+        Boolean require = request.getRequire();
+        PanelLinkMappingExample example = new PanelLinkMappingExample();
+        example.createCriteria().andResourceIdEqualTo(resourceId).andUserIdEqualTo(AuthUtils.getUser().getUserId());
+        PanelLinkMapping mapping = new PanelLinkMapping();
+        mapping.setRequireTicket(require);
+        panelLinkMappingMapper.updateByExampleSelective(mapping, example);
+    }
+
+    public PanelLinkTicket getByTicket(String ticket) {
+        PanelLinkTicketExample example = new PanelLinkTicketExample();
+        example.createCriteria().andTicketEqualTo(ticket);
+        List<PanelLinkTicket> tickets = panelLinkTicketMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(tickets)) return null;
+        return tickets.get(0);
+    }
+
     public String getUrlByIndex(Long index) {
         PanelLinkMapping mapping = panelLinkMappingMapper.selectByPrimaryKey(index);
 
@@ -281,7 +349,7 @@ public class PanelLinkService {
         if (StringUtils.isNotBlank(mapping.getUuid())) {
             one.setResourceId("error-resource-id");
         }
-        return convertDto(one, mapping.getUuid()).getUri();
+        return convertDto(one, mapping.getUuid(), mapping.getRequireTicket()).getUri();
     }
 
     public String getUrlByUuid(String uuid) {
@@ -297,6 +365,43 @@ public class PanelLinkService {
         String resourceId = mapping.getResourceId();
         Long userId = mapping.getUserId();
         PanelLink one = findOne(resourceId, userId);
-        return convertDto(one, uuid).getUri();
+        return convertDto(one, uuid, mapping.getRequireTicket()).getUri();
+    }
+
+    public TicketDto validateTicket(String ticket, PanelLinkMapping mapping) {
+        String uuid = mapping.getUuid();
+        TicketDto ticketDto = new TicketDto();
+        if (StringUtils.isBlank(ticket)) {
+            ticketDto.setTicketValid(!mapping.getRequireTicket());
+            return ticketDto;
+        }
+        PanelLinkTicketExample example = new PanelLinkTicketExample();
+        example.createCriteria().andTicketEqualTo(ticket).andUuidEqualTo(uuid);
+        List<PanelLinkTicket> tickets = panelLinkTicketMapper.selectByExample(example);
+        if (CollectionUtils.isEmpty(tickets)) {
+            ticketDto.setTicketValid(false);
+            return ticketDto;
+        }
+        PanelLinkTicket linkTicket = tickets.get(0);
+        ticketDto.setTicketValid(true);
+        ticketDto.setArgs(linkTicket.getArgs());
+        Long accessTime = linkTicket.getAccessTime();
+        long now = System.currentTimeMillis();
+        if (ObjectUtils.isEmpty(accessTime)) {
+            accessTime = now;
+            ticketDto.setTicketExp(false);
+            linkTicket.setAccessTime(accessTime);
+            panelLinkTicketMapper.updateByPrimaryKey(linkTicket);
+            return ticketDto;
+        }
+        Long exp = linkTicket.getExp();
+        if (ObjectUtils.isEmpty(exp) || exp.equals(0L)) {
+            ticketDto.setTicketExp(false);
+            return ticketDto;
+        }
+        long expTime = exp * 60L * 1000L;
+        long time = now - accessTime;
+        ticketDto.setTicketExp(time > expTime);
+        return ticketDto;
     }
 }

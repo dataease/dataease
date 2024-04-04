@@ -1,0 +1,455 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.plugins.common.base.mapper.DataFillTaskMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.plugins.common.base.domain.DataFillTask">
+    <id column="id" jdbcType="BIGINT" property="id" />
+    <result column="name" jdbcType="VARCHAR" property="name" />
+    <result column="form_id" jdbcType="VARCHAR" property="formId" />
+    <result column="start_time" jdbcType="TIMESTAMP" property="startTime" />
+    <result column="end_time" jdbcType="TIMESTAMP" property="endTime" />
+    <result column="rate_type" jdbcType="INTEGER" property="rateType" />
+    <result column="rate_val" jdbcType="VARCHAR" property="rateVal" />
+    <result column="publish_start_time" jdbcType="TIMESTAMP" property="publishStartTime" />
+    <result column="publish_end_time" jdbcType="TIMESTAMP" property="publishEndTime" />
+    <result column="publish_range_time_type" jdbcType="INTEGER" property="publishRangeTimeType" />
+    <result column="publish_range_time" jdbcType="INTEGER" property="publishRangeTime" />
+    <result column="creator" jdbcType="BIGINT" property="creator" />
+    <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
+    <result column="status" jdbcType="BIT" property="status" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.DataFillTaskWithBLOBs">
+    <result column="reci_users" jdbcType="LONGVARCHAR" property="reciUsers" />
+    <result column="role_list" jdbcType="LONGVARCHAR" property="roleList" />
+    <result column="org_list" jdbcType="LONGVARCHAR" property="orgList" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, `name`, form_id, start_time, end_time, rate_type, rate_val, publish_start_time, 
+    publish_end_time, publish_range_time_type, publish_range_time, creator, create_time, 
+    `status`
+  </sql>
+  <sql id="Blob_Column_List">
+    reci_users, role_list, org_list
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.DataFillTaskExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from data_fill_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="io.dataease.plugins.common.base.domain.DataFillTaskExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from data_fill_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.Long" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from data_fill_task
+    where id = #{id,jdbcType=BIGINT}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.Long">
+    delete from data_fill_task
+    where id = #{id,jdbcType=BIGINT}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.plugins.common.base.domain.DataFillTaskExample">
+    delete from data_fill_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" keyColumn="id" keyProperty="id" parameterType="io.dataease.plugins.common.base.domain.DataFillTaskWithBLOBs" useGeneratedKeys="true">
+    insert into data_fill_task (`name`, form_id, start_time, 
+      end_time, rate_type, rate_val, 
+      publish_start_time, publish_end_time, publish_range_time_type, 
+      publish_range_time, creator, create_time, 
+      `status`, reci_users, role_list, 
+      org_list)
+    values (#{name,jdbcType=VARCHAR}, #{formId,jdbcType=VARCHAR}, #{startTime,jdbcType=TIMESTAMP}, 
+      #{endTime,jdbcType=TIMESTAMP}, #{rateType,jdbcType=INTEGER}, #{rateVal,jdbcType=VARCHAR}, 
+      #{publishStartTime,jdbcType=TIMESTAMP}, #{publishEndTime,jdbcType=TIMESTAMP}, #{publishRangeTimeType,jdbcType=INTEGER}, 
+      #{publishRangeTime,jdbcType=INTEGER}, #{creator,jdbcType=BIGINT}, #{createTime,jdbcType=TIMESTAMP}, 
+      #{status,jdbcType=BIT}, #{reciUsers,jdbcType=LONGVARCHAR}, #{roleList,jdbcType=LONGVARCHAR}, 
+      #{orgList,jdbcType=LONGVARCHAR})
+  </insert>
+  <insert id="insertSelective" keyColumn="id" keyProperty="id" parameterType="io.dataease.plugins.common.base.domain.DataFillTaskWithBLOBs" useGeneratedKeys="true">
+    insert into data_fill_task
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        `name`,
+      </if>
+      <if test="formId != null">
+        form_id,
+      </if>
+      <if test="startTime != null">
+        start_time,
+      </if>
+      <if test="endTime != null">
+        end_time,
+      </if>
+      <if test="rateType != null">
+        rate_type,
+      </if>
+      <if test="rateVal != null">
+        rate_val,
+      </if>
+      <if test="publishStartTime != null">
+        publish_start_time,
+      </if>
+      <if test="publishEndTime != null">
+        publish_end_time,
+      </if>
+      <if test="publishRangeTimeType != null">
+        publish_range_time_type,
+      </if>
+      <if test="publishRangeTime != null">
+        publish_range_time,
+      </if>
+      <if test="creator != null">
+        creator,
+      </if>
+      <if test="createTime != null">
+        create_time,
+      </if>
+      <if test="status != null">
+        `status`,
+      </if>
+      <if test="reciUsers != null">
+        reci_users,
+      </if>
+      <if test="roleList != null">
+        role_list,
+      </if>
+      <if test="orgList != null">
+        org_list,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="name != null">
+        #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="formId != null">
+        #{formId,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null">
+        #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rateType != null">
+        #{rateType,jdbcType=INTEGER},
+      </if>
+      <if test="rateVal != null">
+        #{rateVal,jdbcType=VARCHAR},
+      </if>
+      <if test="publishStartTime != null">
+        #{publishStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishEndTime != null">
+        #{publishEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishRangeTimeType != null">
+        #{publishRangeTimeType,jdbcType=INTEGER},
+      </if>
+      <if test="publishRangeTime != null">
+        #{publishRangeTime,jdbcType=INTEGER},
+      </if>
+      <if test="creator != null">
+        #{creator,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        #{status,jdbcType=BIT},
+      </if>
+      <if test="reciUsers != null">
+        #{reciUsers,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="roleList != null">
+        #{roleList,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="orgList != null">
+        #{orgList,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.plugins.common.base.domain.DataFillTaskExample" resultType="java.lang.Long">
+    select count(*) from data_fill_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update data_fill_task
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=BIGINT},
+      </if>
+      <if test="record.name != null">
+        `name` = #{record.name,jdbcType=VARCHAR},
+      </if>
+      <if test="record.formId != null">
+        form_id = #{record.formId,jdbcType=VARCHAR},
+      </if>
+      <if test="record.startTime != null">
+        start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.endTime != null">
+        end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.rateType != null">
+        rate_type = #{record.rateType,jdbcType=INTEGER},
+      </if>
+      <if test="record.rateVal != null">
+        rate_val = #{record.rateVal,jdbcType=VARCHAR},
+      </if>
+      <if test="record.publishStartTime != null">
+        publish_start_time = #{record.publishStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.publishEndTime != null">
+        publish_end_time = #{record.publishEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.publishRangeTimeType != null">
+        publish_range_time_type = #{record.publishRangeTimeType,jdbcType=INTEGER},
+      </if>
+      <if test="record.publishRangeTime != null">
+        publish_range_time = #{record.publishRangeTime,jdbcType=INTEGER},
+      </if>
+      <if test="record.creator != null">
+        creator = #{record.creator,jdbcType=BIGINT},
+      </if>
+      <if test="record.createTime != null">
+        create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="record.status != null">
+        `status` = #{record.status,jdbcType=BIT},
+      </if>
+      <if test="record.reciUsers != null">
+        reci_users = #{record.reciUsers,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.roleList != null">
+        role_list = #{record.roleList,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="record.orgList != null">
+        org_list = #{record.orgList,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update data_fill_task
+    set id = #{record.id,jdbcType=BIGINT},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      form_id = #{record.formId,jdbcType=VARCHAR},
+      start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      rate_type = #{record.rateType,jdbcType=INTEGER},
+      rate_val = #{record.rateVal,jdbcType=VARCHAR},
+      publish_start_time = #{record.publishStartTime,jdbcType=TIMESTAMP},
+      publish_end_time = #{record.publishEndTime,jdbcType=TIMESTAMP},
+      publish_range_time_type = #{record.publishRangeTimeType,jdbcType=INTEGER},
+      publish_range_time = #{record.publishRangeTime,jdbcType=INTEGER},
+      creator = #{record.creator,jdbcType=BIGINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      `status` = #{record.status,jdbcType=BIT},
+      reci_users = #{record.reciUsers,jdbcType=LONGVARCHAR},
+      role_list = #{record.roleList,jdbcType=LONGVARCHAR},
+      org_list = #{record.orgList,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update data_fill_task
+    set id = #{record.id,jdbcType=BIGINT},
+      `name` = #{record.name,jdbcType=VARCHAR},
+      form_id = #{record.formId,jdbcType=VARCHAR},
+      start_time = #{record.startTime,jdbcType=TIMESTAMP},
+      end_time = #{record.endTime,jdbcType=TIMESTAMP},
+      rate_type = #{record.rateType,jdbcType=INTEGER},
+      rate_val = #{record.rateVal,jdbcType=VARCHAR},
+      publish_start_time = #{record.publishStartTime,jdbcType=TIMESTAMP},
+      publish_end_time = #{record.publishEndTime,jdbcType=TIMESTAMP},
+      publish_range_time_type = #{record.publishRangeTimeType,jdbcType=INTEGER},
+      publish_range_time = #{record.publishRangeTime,jdbcType=INTEGER},
+      creator = #{record.creator,jdbcType=BIGINT},
+      create_time = #{record.createTime,jdbcType=TIMESTAMP},
+      `status` = #{record.status,jdbcType=BIT}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.plugins.common.base.domain.DataFillTaskWithBLOBs">
+    update data_fill_task
+    <set>
+      <if test="name != null">
+        `name` = #{name,jdbcType=VARCHAR},
+      </if>
+      <if test="formId != null">
+        form_id = #{formId,jdbcType=VARCHAR},
+      </if>
+      <if test="startTime != null">
+        start_time = #{startTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="endTime != null">
+        end_time = #{endTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="rateType != null">
+        rate_type = #{rateType,jdbcType=INTEGER},
+      </if>
+      <if test="rateVal != null">
+        rate_val = #{rateVal,jdbcType=VARCHAR},
+      </if>
+      <if test="publishStartTime != null">
+        publish_start_time = #{publishStartTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishEndTime != null">
+        publish_end_time = #{publishEndTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="publishRangeTimeType != null">
+        publish_range_time_type = #{publishRangeTimeType,jdbcType=INTEGER},
+      </if>
+      <if test="publishRangeTime != null">
+        publish_range_time = #{publishRangeTime,jdbcType=INTEGER},
+      </if>
+      <if test="creator != null">
+        creator = #{creator,jdbcType=BIGINT},
+      </if>
+      <if test="createTime != null">
+        create_time = #{createTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="status != null">
+        `status` = #{status,jdbcType=BIT},
+      </if>
+      <if test="reciUsers != null">
+        reci_users = #{reciUsers,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="roleList != null">
+        role_list = #{roleList,jdbcType=LONGVARCHAR},
+      </if>
+      <if test="orgList != null">
+        org_list = #{orgList,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.DataFillTaskWithBLOBs">
+    update data_fill_task
+    set `name` = #{name,jdbcType=VARCHAR},
+      form_id = #{formId,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      rate_type = #{rateType,jdbcType=INTEGER},
+      rate_val = #{rateVal,jdbcType=VARCHAR},
+      publish_start_time = #{publishStartTime,jdbcType=TIMESTAMP},
+      publish_end_time = #{publishEndTime,jdbcType=TIMESTAMP},
+      publish_range_time_type = #{publishRangeTimeType,jdbcType=INTEGER},
+      publish_range_time = #{publishRangeTime,jdbcType=INTEGER},
+      creator = #{creator,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      `status` = #{status,jdbcType=BIT},
+      reci_users = #{reciUsers,jdbcType=LONGVARCHAR},
+      role_list = #{roleList,jdbcType=LONGVARCHAR},
+      org_list = #{orgList,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.plugins.common.base.domain.DataFillTask">
+    update data_fill_task
+    set `name` = #{name,jdbcType=VARCHAR},
+      form_id = #{formId,jdbcType=VARCHAR},
+      start_time = #{startTime,jdbcType=TIMESTAMP},
+      end_time = #{endTime,jdbcType=TIMESTAMP},
+      rate_type = #{rateType,jdbcType=INTEGER},
+      rate_val = #{rateVal,jdbcType=VARCHAR},
+      publish_start_time = #{publishStartTime,jdbcType=TIMESTAMP},
+      publish_end_time = #{publishEndTime,jdbcType=TIMESTAMP},
+      publish_range_time_type = #{publishRangeTimeType,jdbcType=INTEGER},
+      publish_range_time = #{publishRangeTime,jdbcType=INTEGER},
+      creator = #{creator,jdbcType=BIGINT},
+      create_time = #{createTime,jdbcType=TIMESTAMP},
+      `status` = #{status,jdbcType=BIT}
+    where id = #{id,jdbcType=BIGINT}
+  </update>
+</mapper>

@@ -1,0 +1,267 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.ext.ExtDataFillFormMapper">
+
+    <resultMap id="BaseResultMapDTO" type="io.dataease.dto.datafill.DataFillFormDTO"
+               extends="io.dataease.plugins.common.base.mapper.DataFillFormMapper.BaseResultMap">
+        <result column="label" property="label"/>
+        <result column="privileges" property="privileges"/>
+    </resultMap>
+
+
+    <select id="search" resultMap="BaseResultMapDTO">
+        select
+        id, `name`, ifnull(pid, 0) as pid, `level`, node_type, `table_name`, datasource, create_index, create_by,
+        create_time, update_by, update_time,
+        `name` as label,
+        authInfo.privileges as `privileges`
+        from (select GET_V_AUTH_MODEL_ID_P_USE (#{userId}, 'data_fill') cids) t, data_fill_form
+        left join (
+        SELECT
+        auth_source,
+        group_concat( DISTINCT sys_auth_detail.privilege_extend ) as `privileges`
+        FROM
+        (
+        `sys_auth`
+        LEFT JOIN `sys_auth_detail` ON ((
+        `sys_auth`.`id` = `sys_auth_detail`.`auth_id`
+        )))
+        WHERE
+        sys_auth_detail.privilege_value = 1
+        AND sys_auth.auth_source_type = 'data_fill'
+        AND (
+        (
+        sys_auth.auth_target_type = 'dept'
+        AND sys_auth.auth_target IN ( SELECT dept_id FROM sys_user WHERE user_id = #{userId} )
+        )
+        OR (
+        sys_auth.auth_target_type = 'user'
+        AND sys_auth.auth_target = #{userId}
+        )
+        OR (
+        sys_auth.auth_target_type = 'role'
+        AND sys_auth.auth_target IN ( SELECT role_id FROM sys_users_roles WHERE user_id = #{userId} )
+        )
+        )
+        GROUP BY
+        `sys_auth`.`auth_source`
+        ) authInfo
+        on data_fill_form.id = authInfo.auth_source
+        <where>
+            FIND_IN_SET(data_fill_form.id, cids)
+            <if test="id != null">
+                and data_fill_form.id = #{id,jdbcType=VARCHAR}
+            </if>
+            <if test="name != null and name != ''">
+                and data_fill_form.`name` like CONCAT('%', #{name},'%')
+            </if>
+            <if test="pid != null">
+                and data_fill_form.pid = #{pid,jdbcType=VARCHAR}
+            </if>
+            <if test="nodeType != null">
+                and data_fill_form.node_type = #{nodeType,jdbcType=VARCHAR}
+            </if>
+            <if test="level != null">
+                and data_fill_form.`level` = #{level,jdbcType=INTEGER}
+            </if>
+
+            <if test="createBy != null">
+                and data_fill_form.create_by = #{createBy,jdbcType=VARCHAR},
+            </if>
+            <if test="createTime != null">
+                and data_fill_form.create_time = #{createTime,jdbcType=TIMESTAMP},
+            </if>
+            <if test="updateBy != null">
+                and data_fill_form.update_by = #{updateBy,jdbcType=VARCHAR},
+            </if>
+            <if test="updateTime != null">
+                and data_fill_form.update_time = #{updateTime,jdbcType=TIMESTAMP},
+            </if>
+
+
+            <if test="excludedId != null">
+                and data_fill_form.id != #{excludedId,jdbcType=VARCHAR}
+            </if>
+
+            <if test="ids != null and ids.size() > 0">
+                and id in
+                <foreach collection="ids" item="item" separator="," open="(" close=")">
+                    #{item}
+                </foreach>
+            </if>
+        </where>
+        ORDER BY CONVERT(`name` using gbk)
+    </select>
+
+    <select id="searchChildrenIds" resultType="java.util.Map">
+        select GET_V_AUTH_MODEL_WITH_CHILDREN(#{id}, #{type}) ids
+    </select>
+
+
+    <resultMap id="BaseResultMapLogDTO" type="io.dataease.dto.datafill.DataFillCommitLogDTO"
+               extends="io.dataease.plugins.common.base.mapper.DataFillCommitLogMapper.BaseResultMap">
+        <result column="nick_name" property="commitByName"/>
+    </resultMap>
+
+    <select id="selectDataFillLogs" resultMap="BaseResultMapLogDTO">
+        SELECT t1.id,
+             t1.form_id,
+             t1.data_id,
+             t1.operate,
+             t1.commit_by,
+             t1.commit_time,
+             t2.nick_name
+        FROM (SELECT * FROM data_fill_commit_log
+            WHERE form_id = #{formId} ) t1
+        LEFT JOIN (SELECT username, nick_name FROM sys_user) t2 ON t1.commit_by = t2.username
+        <where>
+        <if test="commitByName != null" >
+           AND t2.nick_name LIKE CONCAT('%',#{commitByName},'%')
+        </if>
+        </where>
+        ORDER BY t1.commit_time DESC
+    </select>
+
+    <select id="selectLatestLogByFormDataIds" resultMap="BaseResultMapLogDTO">
+        SELECT t3.id,
+               t3.form_id,
+               t3.data_id,
+               t3.operate,
+               t3.commit_by,
+               t3.commit_time,
+               t4.nick_name
+        FROM (SELECT t1.id,
+                     t1.form_id,
+                     t1.data_id,
+                     t1.operate,
+                     t1.commit_by,
+                     t1.commit_time
+              FROM (SELECT * FROM data_fill_commit_log
+                    WHERE form_id = #{formId}
+                    <if test="dataIds != null and dataIds.size() > 0">
+                        AND data_id in
+                        <foreach collection="dataIds" item="item" separator="," open="(" close=")">
+                            #{item}
+                        </foreach>
+                    </if>
+                    ) t1
+                       INNER JOIN (SELECT MAX(commit_time) AS commit_time, form_id, data_id
+                                   FROM data_fill_commit_log
+                                   GROUP BY form_id, data_id) t2
+                                  ON t1.form_id = t2.form_id AND t1.commit_time = t2.commit_time AND t1.data_id = t2.data_id) t3
+                 LEFT JOIN (SELECT username, nick_name FROM sys_user) t4 ON t3.commit_by = t4.username
+    </select>
+
+    <resultMap id="BaseResultMapTaskDTO" type="io.dataease.dto.datafill.DataFillTaskDTO"
+               extends="io.dataease.plugins.common.base.mapper.DataFillTaskMapper.ResultMapWithBLOBs">
+        <result column="formName" property="formName"/>
+        <result column="nick_name" property="creatorName"/>
+    </resultMap>
+
+    <select id="selectDataFillTasks" resultMap="BaseResultMapTaskDTO">
+        SELECT t1.id, t1.`name`, t1.form_id, t1.start_time, t1.end_time, t1.rate_type, t1.rate_val, t1.publish_start_time,
+        t1.publish_end_time, t1.publish_range_time_type, t1.publish_range_time, t1.creator, t1.create_time,
+        t1.`status`,
+        t1.reci_users, t1.role_list, t1.org_list,
+        t2.nick_name, t3.`name` AS formName
+        FROM (SELECT * FROM data_fill_task
+        WHERE form_id = #{formId}
+        <if test="id != null">
+            and `id` = #{id,jdbcType=VARCHAR}
+        </if>
+        <if test="name != null" >
+            AND `name` LIKE CONCAT('%',#{name},'%')
+        </if>
+        ) t1
+        LEFT JOIN (SELECT user_id, nick_name FROM sys_user) t2 ON t1.creator = t2.user_id
+        LEFT JOIN (SELECT name, id FROM data_fill_form) t3 ON t1.form_id = t3.id
+        WHERE 1 = 1
+        ORDER BY t1.create_time DESC
+    </select>
+
+    <select id="selectActiveDataFillTasks" resultMap="io.dataease.plugins.common.base.mapper.DataFillTaskMapper.BaseResultMap">
+        SELECT
+            <include refid="io.dataease.plugins.common.base.mapper.DataFillTaskMapper.Base_Column_List" />
+        FROM data_fill_task
+        WHERE status = 1
+        AND ((rate_type = -1 AND publish_start_time &lt;= current_timestamp AND (publish_end_time is null OR
+        publish_end_time &gt;= current_timestamp))
+        OR
+        (rate_type != -1 AND start_time &lt;= current_timestamp AND (end_time is null OR end_time &gt;=
+        current_timestamp))
+        )
+    </select>
+
+    <resultMap id="BaseResultMapUserTaskDTO" type="io.dataease.dto.datafill.DataFillUserTaskDTO"
+               extends="io.dataease.plugins.common.base.mapper.DataFillUserTaskMapper.BaseResultMap">
+        <result column="taskName" property="taskName"/>
+        <result column="formName" property="formName"/>
+        <result column="creator" property="creator"/>
+        <result column="creatorName" property="creatorName"/>
+    </resultMap>
+
+    <select id="listTodoUserTask" resultMap="BaseResultMapUserTaskDTO">
+        SELECT
+        t1.id, t1.task_id, t1.form_id, t1.value_id, t1.`user`, t1.start_time, t1.end_time, t1.finish_time,
+        t2.`name` AS formName, t3.`name` AS taskName, t3.`creator`, t4.`nick_name` AS creatorName
+        FROM
+        (SELECT
+            <include refid="io.dataease.plugins.common.base.mapper.DataFillUserTaskMapper.Base_Column_List" />
+        FROM data_fill_user_task
+        WHERE user = #{userId}
+        AND finish_time IS NULL
+        AND start_time &lt;= #{current} AND (end_time IS NULL OR end_time &gt;= #{current})) t1
+        LEFT JOIN (SELECT id, `name` FROM data_fill_form) t2 ON t1.form_id = t2.id
+        LEFT JOIN (SELECT id, `name`, `creator` FROM data_fill_task) t3 ON t1.task_id = t3.id
+        LEFT JOIN (SELECT user_id, nick_name FROM sys_user) t4 ON t3.creator = t4.user_id
+        <where>
+            <if test="taskName != null" >
+                AND t3.`name` LIKE CONCAT('%',#{taskName},'%')
+            </if>
+        </where>
+        ORDER BY t1.end_time, t1.start_time
+    </select>
+
+    <select id="listFinishedUserTask" resultMap="BaseResultMapUserTaskDTO">
+        SELECT
+        t1.id, t1.task_id, t1.form_id, t1.value_id, t1.`user`, t1.start_time, t1.end_time, t1.finish_time,
+        t2.`name` AS formName, t3.`name` AS taskName, t3.`creator`, t4.`nick_name` AS creatorName
+        FROM
+        (SELECT
+            <include refid="io.dataease.plugins.common.base.mapper.DataFillUserTaskMapper.Base_Column_List" />
+        FROM data_fill_user_task
+        WHERE user = #{userId}
+        AND finish_time IS NOT NULL) t1
+        LEFT JOIN (SELECT id, `name` FROM data_fill_form) t2 ON t1.form_id = t2.id
+        LEFT JOIN (SELECT id, `name`, `creator` FROM data_fill_task) t3 ON t1.task_id = t3.id
+        LEFT JOIN (SELECT user_id, nick_name FROM sys_user) t4 ON t3.creator = t4.user_id
+        <where>
+            <if test="taskName != null" >
+                AND t3.`name` LIKE CONCAT('%',#{taskName},'%')
+            </if>
+        </where>
+        ORDER BY t1.finish_time DESC, t1.end_time DESC, t1.start_time
+    </select>
+
+    <select id="listExpiredUserTask" resultMap="BaseResultMapUserTaskDTO">
+        SELECT
+        t1.id, t1.task_id, t1.form_id, t1.value_id, t1.`user`, t1.start_time, t1.end_time, t1.finish_time,
+        t2.`name` AS formName, t3.`name` AS taskName, t3.`creator`, t4.`nick_name` AS creatorName
+        FROM
+        (SELECT
+        <include refid="io.dataease.plugins.common.base.mapper.DataFillUserTaskMapper.Base_Column_List" />
+        FROM data_fill_user_task
+        WHERE user = #{userId}
+        AND end_time &lt;= #{current}) t1
+        LEFT JOIN (SELECT id, `name` FROM data_fill_form) t2 ON t1.form_id = t2.id
+        LEFT JOIN (SELECT id, `name`, `creator` FROM data_fill_task) t3 ON t1.task_id = t3.id
+        LEFT JOIN (SELECT user_id, nick_name FROM sys_user) t4 ON t3.creator = t4.user_id
+        <where>
+            <if test="taskName != null" >
+                AND t3.`name` LIKE CONCAT('%',#{taskName},'%')
+            </if>
+        </where>
+        ORDER BY t1.end_time DESC, t1.start_time
+    </select>
+
+</mapper>

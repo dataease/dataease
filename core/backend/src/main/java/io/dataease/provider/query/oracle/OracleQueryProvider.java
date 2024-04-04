@@ -1550,7 +1550,7 @@ public class OracleQueryProvider extends QueryProvider {
                 }
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "like")) {
                 String keyword = value.get(0).toUpperCase();
-                whereValue = "'%" + keyword + "%'";
+                whereValue = formatLikeValue(keyword);
                 whereName = "upper(" + whereName + ")";
             } else if (StringUtils.containsIgnoreCase(request.getOperator(), "between")) {
                 if (request.getDatasetTableField().getDeType() == 1) {
@@ -1605,8 +1605,12 @@ public class OracleQueryProvider extends QueryProvider {
         switch (dateStyle) {
             case "y":
                 return "YYYY";
+            case "y_Q":
+                return "YYYY" + split + "\"Q\"Q";
             case "y_M":
                 return "YYYY" + split + "MM";
+            case "y_W":
+                return "YYYY" + split + "\"W\"IW";
             case "y_M_d":
                 return "YYYY" + split + "MM" + split + "DD";
             case "H_m_s":

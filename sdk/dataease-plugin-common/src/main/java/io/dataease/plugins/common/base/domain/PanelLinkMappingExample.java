@@ -363,6 +363,66 @@ public class PanelLinkMappingExample {
             addCriterion("uuid not between", value1, value2, "uuid");
             return (Criteria) this;
         }
+
+        public Criteria andRequireTicketIsNull() {
+            addCriterion("require_ticket is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketIsNotNull() {
+            addCriterion("require_ticket is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketEqualTo(Boolean value) {
+            addCriterion("require_ticket =", value, "requireTicket");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketNotEqualTo(Boolean value) {
+            addCriterion("require_ticket <>", value, "requireTicket");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketGreaterThan(Boolean value) {
+            addCriterion("require_ticket >", value, "requireTicket");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("require_ticket >=", value, "requireTicket");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketLessThan(Boolean value) {
+            addCriterion("require_ticket <", value, "requireTicket");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketLessThanOrEqualTo(Boolean value) {
+            addCriterion("require_ticket <=", value, "requireTicket");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketIn(List<Boolean> values) {
+            addCriterion("require_ticket in", values, "requireTicket");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketNotIn(List<Boolean> values) {
+            addCriterion("require_ticket not in", values, "requireTicket");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketBetween(Boolean value1, Boolean value2) {
+            addCriterion("require_ticket between", value1, value2, "requireTicket");
+            return (Criteria) this;
+        }
+
+        public Criteria andRequireTicketNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("require_ticket not between", value1, value2, "requireTicket");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

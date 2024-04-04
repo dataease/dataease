@@ -3,6 +3,7 @@ import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } fro
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { $success } from '@/utils/message'
 import i18n from '@/lang'
+import { cloneDeep } from 'lodash'
 
 export function componentStyle(chart_option, chart) {
   let xAxisLabelFormatter = null
@@ -421,5 +422,31 @@ export const copyString = (content, notify) => {
     if (notify) {
       $success(i18n.t('commons.copy_success'))
     }
+  })
+}
+
+export const configTopN = (data, chart) => {
+  if (!data?.length) {
+    return
+  }
+  const color = JSON.parse(chart.customAttr).color
+  if (!color.calcTopN || data.length <= color.topN) {
+    return
+  }
+  data.sort((a, b) => b.value - a.value)
+  const otherItems = data.splice(color.topN)
+  const initOtherItem = {
+    ...cloneDeep(data[0]),
+    name: i18n.t('datasource.other'),
+    value: 0,
+  }
+  otherItems.reduce((p, n) => {
+    p.value += n.value ?? 0
+    return p
+  }, initOtherItem)
+  data.push(initOtherItem)
+  data.forEach((item, i) => {
+    const curColor = color.colors[i % color.colors.length]
+    item.itemStyle.color = hexColorToRGBA(curColor, color.alpha)
   })
 }

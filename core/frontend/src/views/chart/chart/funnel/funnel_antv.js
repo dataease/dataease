@@ -9,7 +9,7 @@ import {
 import { Funnel } from '@antv/g2plot'
 import { antVCustomColor } from '@/views/chart/chart/util'
 
-export function baseFunnelOptionAntV(plot, container, chart, action) {
+export function baseFunnelOptionAntV(container, chart, action) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -19,6 +19,17 @@ export function baseFunnelOptionAntV(plot, container, chart, action) {
   const legend = getLegend(chart)
   // data
   const data = chart.data.data
+  // conversion tag
+  const labelAttr = JSON.parse(chart.customAttr).label
+  let conversionTag = labelAttr.showConversion
+  if (conversionTag) {
+    conversionTag = {
+      formatter: datum => {
+        const rate = ((datum[Funnel.CONVERSATION_FIELD][1] / datum[Funnel.CONVERSATION_FIELD][0]) * 100).toFixed(2)
+        return `${labelAttr.conversionLabel ?? ''}${rate}%`;
+      }
+    }
+  }
   // options
   const options = {
     theme: theme,
@@ -29,7 +40,8 @@ export function baseFunnelOptionAntV(plot, container, chart, action) {
     label: label,
     tooltip: tooltip,
     legend: legend,
-    conversionTag: false,
+    conversionTag,
+    maxSize: conversionTag ? 0.8 : 1,
     interactions: [
       {
         type: 'legend-active', cfg: {
@@ -53,13 +65,8 @@ export function baseFunnelOptionAntV(plot, container, chart, action) {
   // custom color
   options.color = antVCustomColor(chart)
 
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Funnel(container, options)
+  const plot = new Funnel(container, options)
 
-  plot.off('interval:click')
   plot.on('interval:click', action)
 // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)

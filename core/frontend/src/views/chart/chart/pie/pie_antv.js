@@ -9,8 +9,9 @@ import {
 
 import { Pie, Rose } from '@antv/g2plot'
 import { antVCustomColor } from '@/views/chart/chart/util'
+import { configTopN } from '@/views/chart/chart/common/common_antv'
 
-export function basePieOptionAntV(plot, container, chart, action) {
+export function basePieOptionAntV(container, chart, action) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -30,6 +31,7 @@ export function basePieOptionAntV(plot, container, chart, action) {
     label: label,
     tooltip: tooltip,
     legend: legend,
+    animation: false,
     pieStyle: {
       lineWidth: 0
     },
@@ -82,21 +84,17 @@ export function basePieOptionAntV(plot, container, chart, action) {
   }
   // custom color
   options.color = antVCustomColor(chart)
+  // topN
+  configTopN(data, chart)
+  const plot = new Pie(container, options)
 
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Pie(container, options)
-
-  plot.off('interval:click')
   plot.on('interval:click', action)
 // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }
 
-export function basePieRoseOptionAntV(plot, container, chart, action) {
+export function basePieRoseOptionAntV(container, chart, action) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -161,13 +159,8 @@ export function basePieRoseOptionAntV(plot, container, chart, action) {
   // custom color
   options.color = antVCustomColor(chart)
 
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Rose(container, options)
+  const plot = new Rose(container, options)
 
-  plot.off('interval:click')
   plot.on('interval:click', action)
 // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)

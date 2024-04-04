@@ -16,7 +16,7 @@ import {
 import { Scatter } from '@antv/g2plot'
 import { antVCustomColor } from '@/views/chart/chart/util'
 
-export function baseScatterOptionAntV(plot, container, chart, action) {
+export function baseScatterOptionAntV(container, chart, action) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -87,11 +87,7 @@ export function baseScatterOptionAntV(plot, container, chart, action) {
   // custom color
   options.color = antVCustomColor(chart)
 
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Scatter(container, options)
+  const plot = new Scatter(container, options)
 
   plot.off('point:click')
   plot.on('point:click', action)

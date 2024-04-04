@@ -175,6 +175,25 @@
           >
             <span>{{ $t('chart.show_name_set') }}</span>
           </el-dropdown-item>
+          <div v-if="chart.type === 'table-info'">
+            <el-dropdown-item
+              v-if="item.hidden"
+              icon="el-icon-view"
+              :command="beforeClickItem('show')"
+            >
+              <span>{{ $t('chart.show') }}</span>
+            </el-dropdown-item>
+            <el-dropdown-item
+              v-else
+              :command="beforeClickItem('hide')"
+            >
+              <svg-icon
+                style="margin-right: 5px"
+                icon-class="hide"
+              />
+              <span>{{ $t('chart.hide') }}</span>
+            </el-dropdown-item>
+          </div>
           <el-dropdown-item
             icon="el-icon-delete"
             divided
@@ -280,6 +299,10 @@ export default {
         case 'formatter':
           this.valueFormatter()
           break
+        case 'show':
+        case 'hide':
+          this.toggleItem(param.type === 'hide')
+          break
         default:
           break
       }
@@ -350,12 +373,17 @@ export default {
       this.item.formatterType = 'dimension'
       this.$emit('valueFormatter', this.item)
     },
-
+    toggleItem(status) {
+      this.item.hidden = status
+      this.$emit('onDimensionItemChange', this.item)
+    },
     getDateExtStatus() {
       if (this.chart) {
         this.showDateExt = this.chart.datasourceType === 'mysql' ||
           this.chart.datasourceType === 'ds_doris' ||
           this.chart.datasourceType === 'StarRocks' ||
+          this.chart.datasourceType === 'ck' ||
+          this.chart.datasourceType === 'oracle' ||
           this.chart.datasetMode === 1
       } else {
         this.showDateExt = false

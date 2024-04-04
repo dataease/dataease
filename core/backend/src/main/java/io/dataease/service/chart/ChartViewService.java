@@ -73,6 +73,7 @@ import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.concurrent.atomic.AtomicReference;
 import java.util.concurrent.locks.ReentrantLock;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
@@ -730,7 +731,11 @@ public class ChartViewService {
                 }
                 if (chartExtRequest.getPageSize() == null) {
                     String pageSize = (String) mapSize.get("tablePageSize");
-                    chartExtRequest.setPageSize(Math.min(Long.parseLong(pageSize), view.getResultCount().longValue()));
+                    if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
+                        chartExtRequest.setPageSize(Math.min(Long.parseLong(pageSize), view.getResultCount().longValue()));
+                    } else {
+                        chartExtRequest.setPageSize(Long.parseLong(pageSize));
+                    }
                 }
             } else {
                 if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
@@ -1034,6 +1039,18 @@ public class ChartViewService {
                 || StringUtils.containsIgnoreCase(view.getType(), "table-pivot")) {
             // 动态阈值
             dynamicAssistFields = getDynamicThresholdFields(view);
+            // 明细表非数据列字段要加进来
+            if (StringUtils.containsIgnoreCase(view.getType(), "table-info")) {
+                Set<String> fieldIds = xAxis.stream().map(ChartViewFieldDTO::getId).collect(Collectors.toSet());
+                List<ChartViewFieldDTO> finalXAxis = xAxis;
+                dynamicAssistFields.forEach(i -> {
+                    if (!fieldIds.contains(i.getFieldId())) {
+                        ChartViewFieldDTO fieldDTO = new ChartViewFieldDTO();
+                        BeanUtils.copyBean(fieldDTO, i.getCurField());
+                        finalXAxis.add(fieldDTO);
+                    }
+                });
+            }
             assistFields = getAssistFields(dynamicAssistFields, yAxis, xAxis);
         }
 
@@ -1059,7 +1076,9 @@ public class ChartViewService {
                 xAxis.addAll(xAxisExtList);
             }
             fieldMap.put("xAxis", xAxis);
-            fieldMap.put("xAxisExt", xAxisExt);
+            if (!StringUtils.equals(view.getType(), "race-bar")) {
+                fieldMap.put("xAxisExt", xAxisExt);
+            }
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("yAxis", yAxis);
@@ -1258,11 +1277,10 @@ public class ChartViewService {
                 datasourceRequest.setQuery(qp.getSQLScatter(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extBubble, extStack, ds, view));
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 querySql = qp.getSQLWithPage(true, tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view, pageInfo);
+                datasourceRequest.setQuery(querySql);
                 totalPageSql = qp.getResultCount(true, tableName, xAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view);
             } else if (StringUtils.equalsIgnoreCase("bar-time-range", view.getType())) {
-
                 datasourceRequest.setQuery(qp.getSQLRangeBar(tableName, xAxisBase, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, extStack, ds, view));
-
             } else {
                 datasourceRequest.setQuery(qp.getSQL(tableName, xAxis, yAxis, fieldCustomFilter, rowPermissionsTree, extFilterList, ds, view));
                 if (containDetailField(view) && CollectionUtils.isNotEmpty(viewFields)) {
@@ -1285,6 +1303,9 @@ public class ChartViewService {
             }
 
             if (CollectionUtils.isNotEmpty(assistFields)) {
+                if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
+                    datasourceRequest.setQuery(querySql);
+                }
                 datasourceAssistRequest.setQuery(assistSQL(datasourceRequest.getQuery(), assistFields, ds));
                 logger.info(datasourceAssistRequest.getQuery());
                 assistData = datasourceProvider.getData(datasourceAssistRequest);
@@ -1328,9 +1349,9 @@ public class ChartViewService {
             data = resultCustomSort(xAxis, data);
         }
         // 如果是表格导出查询 则在此处直接就可以返回
-        if(chartExtRequest.getExcelExportFlag()){
+        if (chartExtRequest.getExcelExportFlag()) {
             Map<String, Object> sourceInfo = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
-            sourceInfo.put("sourceData",data);
+            sourceInfo.put("sourceData", data);
             view.setData(sourceInfo);
             return view;
         }
@@ -1398,7 +1419,7 @@ public class ChartViewService {
                             String cValue = item[dataIndex];
 
                             // 获取计算后的时间，并且与所有维度拼接
-                            String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern());
+                            String lastTime = calcLastTime(cTime, compareCalc.getType(), timeField.getDateStyle(), timeField.getDatePattern(), ds);
                             String[] dimension = Arrays.copyOfRange(item, 0, checkedField.size());
                             dimension[timeIndex] = lastTime;
 
@@ -1446,6 +1467,86 @@ public class ChartViewService {
                         item[dataIndex] = new BigDecimal(cValue)
                                 .divide(sum, 8, RoundingMode.HALF_UP)
                                 .toString();
+                    }
+                } else if (StringUtils.equalsIgnoreCase(compareCalc.getType(), "accumulate")) {
+                    // 累加
+                    if (data.isEmpty()) {
+                        break;
+                    }
+                    if (StringUtils.containsAny(view.getType(), "group", "stack")) {
+                        if (xAxisBase.isEmpty()) {
+                            break;
+                        }
+                        if (StringUtils.containsIgnoreCase(view.getType(), "stack") && extStack.isEmpty()) {
+                            break;
+                        }
+                        if (StringUtils.containsIgnoreCase(view.getType(), "group") && xAxisExt.isEmpty()) {
+                            break;
+                        }
+                        final Map<String, Integer> mainIndexMap = new HashMap<>();
+                        final List<List<String[]>> mainMatrix = new ArrayList<>();
+                        List<ChartViewFieldDTO> finalXAxisBase = xAxisBase;
+                        data.forEach(item -> {
+                            String[] mainAxisArr = Arrays.copyOfRange(item, 0, finalXAxisBase.size());
+                            String mainAxis = StringUtils.join(mainAxisArr, '-');
+                            Integer index = mainIndexMap.get(mainAxis);
+                            if (index == null) {
+                                mainIndexMap.put(mainAxis, mainMatrix.size());
+                                List<String[]> tmp = new ArrayList<>();
+                                tmp.add(item);
+                                mainMatrix.add(tmp);
+                            } else {
+                                List<String[]> tmp = mainMatrix.get(index);
+                                tmp.add(item);
+                            }
+                        });
+                        int finalDataIndex = dataIndex;
+                        int subEndIndex = finalXAxisBase.size();
+                        if (StringUtils.containsIgnoreCase(view.getType(), "group")) {
+                            subEndIndex += xAxisExt.size();
+                        }
+                        if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                            subEndIndex += extStack.size();
+                        }
+                        int finalSubEndIndex = subEndIndex;
+                        //滑动累加
+                        for (int k = 1; k < mainMatrix.size(); k++) {
+                            List<String[]> preDataItems = mainMatrix.get(k - 1);
+                            List<String[]> curDataItems = mainMatrix.get(k);
+                            Map<String, BigDecimal> preDataMap = new HashMap<>();
+                            preDataItems.forEach(preDataItem -> {
+                                String[] groupStackAxisArr = Arrays.copyOfRange(preDataItem, finalXAxisBase.size(), finalSubEndIndex);
+                                String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
+                                String preVal = preDataItem[finalDataIndex];
+                                if (StringUtils.isBlank(preVal)) {
+                                    preVal = "0";
+                                }
+                                preDataMap.put(groupStackAxis, new BigDecimal(preVal));
+                            });
+                            curDataItems.forEach(curDataItem -> {
+                                String[] groupStackAxisArr = Arrays.copyOfRange(curDataItem, finalXAxisBase.size(), finalSubEndIndex);
+                                String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
+                                BigDecimal preValue = preDataMap.get(groupStackAxis);
+                                if (preValue != null) {
+                                    curDataItem[finalDataIndex] = new BigDecimal(curDataItem[finalDataIndex])
+                                            .add(preValue)
+                                            .toString();
+                                }
+                            });
+                        }
+                    } else {
+                        final int index = dataIndex;
+                        final AtomicReference<BigDecimal> accumValue = new AtomicReference<>(new BigDecimal(0));
+                        data.forEach(item -> {
+                            String val = item[index];
+                            BigDecimal curAccumValue = accumValue.get();
+                            if (!StringUtils.isBlank(val)) {
+                                BigDecimal curVal = new BigDecimal(val);
+                                curAccumValue = curAccumValue.add(curVal);
+                                accumValue.set(curAccumValue);
+                            }
+                            item[index] = curAccumValue.toString();
+                        });
                     }
                 }
             }
@@ -1684,11 +1785,14 @@ public class ChartViewService {
                 return StringUtils.equalsIgnoreCase(calcType, "day_mom")
                         || StringUtils.equalsIgnoreCase(calcType, "month_yoy")
                         || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
+            case "y_W":
+                return StringUtils.equalsIgnoreCase(calcType, "week_mom")
+                        || StringUtils.equalsIgnoreCase(calcType, "year_yoy");
         }
         return false;
     }
 
-    private String calcLastTime(String cTime, String type, String dateStyle, String datePattern) {
+    private String calcLastTime(String cTime, String type, String dateStyle, String datePattern, Datasource ds) {
         try {
             String lastTime = null;
             Calendar calendar = Calendar.getInstance();
@@ -1722,6 +1826,12 @@ public class ChartViewService {
                         simpleDateFormat = new SimpleDateFormat("yyyy/MM/dd");
                     } else {
                         simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd");
+                    }
+                } else if (StringUtils.equalsIgnoreCase(dateStyle, "y_W")) {
+                    if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/'W'w");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-'W'w");
                     }
                 }
                 Date date = simpleDateFormat.parse(cTime);
@@ -1757,6 +1867,26 @@ public class ChartViewService {
                 Date date = simpleDateFormat.parse(cTime);
                 calendar.setTime(date);
                 calendar.add(Calendar.MONTH, -1);
+                lastTime = simpleDateFormat.format(calendar.getTime());
+            } else if (StringUtils.equalsIgnoreCase(type, ChartConstants.WEEK_MOM)) {
+                SimpleDateFormat simpleDateFormat = null;
+                if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+                    if (StringUtils.equalsIgnoreCase(ds.getType(), "ck")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/'W'w");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy/'W'ww");
+                    }
+                } else {
+                    if (StringUtils.equalsIgnoreCase(ds.getType(), "ck")) {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-'W'w");
+                    } else {
+                        simpleDateFormat = new SimpleDateFormat("yyyy-'W'ww");
+                    }
+                }
+                Date date = simpleDateFormat.parse(cTime);
+                calendar.setTime(date);
+                calendar.add(Calendar.DAY_OF_YEAR, 6);// 加6天用一周最后一天计算周，可避免跨年的问题
+                calendar.add(Calendar.WEEK_OF_YEAR, -1);
                 lastTime = simpleDateFormat.format(calendar.getTime());
             }
             return lastTime;
@@ -2302,7 +2432,7 @@ public class ChartViewService {
             List<ChartSeniorThresholdDTO> conditions = gson.fromJson(itemConditions.toJSONString(), new TypeToken<List<ChartSeniorThresholdDTO>>() {
             }.getType());
             for (ChartSeniorThresholdDTO condition : conditions) {
-                if (StringUtils.equalsIgnoreCase(condition.getField(), "0")) {
+                if (StringUtils.equalsAnyIgnoreCase(condition.getField(), "0", "2")) {
                     continue;
                 }
 

@@ -151,11 +151,6 @@
                 @change="saveEdit(scope.row)"
               >
                 <template slot-scope="{ node, data }">
-                  <span
-                    v-if="node.level === 2 && data.label === 'yyyy-MM-dd'"
-                    class="format-title"
-                    :style="popPosition"
-                  >{{ $t('chart.date_format') }}</span>
                   <span>
                     <svg-icon
                       v-if="data.value === 0"
@@ -506,11 +501,6 @@
                 @change="saveEdit(scope.row)"
               >
                 <template slot-scope="{ node, data }">
-                  <span
-                    v-if="node.level === 2 && data.label === 'yyyy-MM-dd'"
-                    class="format-title"
-                    :style="popPosition"
-                  >{{ $t('chart.date_format') }}</span>
                   <span>
                     <svg-icon
                       v-if="data.value === 0"

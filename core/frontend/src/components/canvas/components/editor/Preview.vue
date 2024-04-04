@@ -260,7 +260,7 @@ export default {
     showPosition: {
       type: String,
       required: false,
-      default: 'NotProvided'
+      default: 'preview'
     },
     panelInfo: {
       type: Object,
@@ -313,7 +313,7 @@ export default {
       scaleWidth: '100',
       scaleHeight: '100',
       timer: null,
-      componentDataShow: null,
+      componentDataShow: [],
       mainWidth: '100%',
       mainHeight: '100%',
       searchCount: 0,
@@ -828,26 +828,21 @@ export default {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
         componentData.forEach(component => {
-          if (!this.isMainCanvas() && component.type === 'custom' && component.options?.attrs?.selectFirst && this.format(component.style.width, this.scaleWidth) < 80) {
-            // do continue
-          } else {
-            Object.keys(component.style).forEach(key => {
-              if (this.needToChangeHeight.includes(key)) {
-                component.style[key] = this.format(component.style[key], this.scaleHeight)
+          Object.keys(component.style).forEach(key => {
+            if (this.needToChangeHeight.includes(key)) {
+              component.style[key] = this.format(component.style[key], this.scaleHeight)
+            }
+            if (this.needToChangeWidth.includes(key)) {
+              component.style[key] = this.format(component.style[key], this.scaleWidth)
+            }
+            if (this.needToChangeInnerWidth.includes(key)) {
+              if ((key === 'fontSize' || key === 'activeFontSize') && (this.terminal === 'mobile' || ['custom'].includes(component.type))) {
+                // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
+              } else {
+                component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth)
               }
-              if (this.needToChangeWidth.includes(key)) {
-                component.style[key] = this.format(component.style[key], this.scaleWidth)
-              }
-              if (this.needToChangeInnerWidth.includes(key)) {
-                if ((key === 'fontSize' || key === 'activeFontSize') && (this.terminal === 'mobile' || ['custom'].includes(component.type))) {
-                  // do nothing 移动端字符大小无需按照比例缩放，当前保持不变(包括 v-text 和 过滤组件)
-                } else {
-                  component.style[key] = this.formatPoint(component.style[key], this.previewCanvasScale.scalePointWidth)
-                }
-              }
-            })
-          }
-
+            }
+          })
           const maxWidth = this.canvasStyleData.width * this.scaleWidth / 100
           if (component.style['width'] > maxWidth) {
             component.style['width'] = maxWidth

@@ -414,6 +414,19 @@
         </el-form-item>
         <div v-if="(showProperty('showTableHeader') && sizeForm.showTableHeader) || chart.type === 'table-pivot'">
           <el-form-item
+            v-if="showProperty('tableHeaderSort')"
+            :label="$t('chart.table_header_sort')"
+            class="form-item"
+          >
+            <el-radio-group
+              v-model="sizeForm.tableHeaderSort"
+              @change="changeBarSizeCase('tableHeaderSort')"
+            >
+              <el-radio :label="true">{{ $t('commons.yes') }}</el-radio>
+              <el-radio :label="false">{{ $t('commons.no') }}</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item
             v-if="showProperty('tableTitleFontSize')"
             :label="$t('chart.table_title_fontsize')"
             class="form-item"
@@ -901,6 +914,16 @@
           <el-checkbox
             v-model="sizeForm.gaugeAxisLine"
             @change="changeBarSizeCase('gaugeAxisLine')"
+          />
+        </el-form-item>
+        <el-form-item
+          v-if="showProperty('gaugePercentLabel') && sizeForm.gaugeAxisLine"
+          :label="$t('chart.gauge_percentage_tick')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="sizeForm.gaugePercentLabel"
+            @change="changeBarSizeCase('gaugePercentLabel')"
           />
         </el-form-item>
         <!--        <el-form-item v-if="showProperty('gaugeTickCount')" :label="$t('chart.tick_count')" class="form-item form-item-slider">-->
@@ -1771,6 +1794,7 @@ export default {
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
           this.sizeForm.showTableHeader = this.sizeForm.showTableHeader !== false
+          this.sizeForm.tableHeaderSort = this.sizeForm.tableHeaderSort !== false
           if (this.sizeForm.indexLabel === null || this.sizeForm.indexLabel === undefined) {
             this.sizeForm.indexLabel = DEFAULT_SIZE.indexLabel
           }
@@ -1823,7 +1847,7 @@ export default {
           }
           this.sizeForm.wordSizeRange = this.sizeForm.wordSizeRange ?? DEFAULT_SIZE.wordSizeRange
           this.sizeForm.wordSpacing = this.sizeForm.wordSpacing ?? DEFAULT_SIZE.wordSpacing
-
+          this.sizeForm.gaugePercentLabel = this.sizeForm.gaugePercentLabel === false ? false : DEFAULT_SIZE.gaugePercentLabel
           if (this.chart.type !== 'table-pivot') {
             let { xaxis, yaxis } = this.chart
             if (!(xaxis instanceof Object)) {

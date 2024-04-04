@@ -27,3 +27,8 @@ export const compareDayList = [
   { name: 'month_yoy', value: 'month_yoy' },
   { name: 'year_yoy', value: 'year_yoy' }
 ]
+
+export const compareWeekList = [
+  { name: 'week_mom', value: 'week_mom' },
+  { name: 'year_yoy', value: 'year_yoy' }
+]

@@ -9,9 +9,12 @@ import io.dataease.controller.panel.api.LinkApi;
 import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.panel.link.*;
 import io.dataease.dto.panel.link.GenerateDto;
+import io.dataease.dto.panel.link.TicketDto;
 import io.dataease.dto.panel.link.ValidateDto;
 import io.dataease.plugins.common.base.domain.PanelGroupWithBLOBs;
 import io.dataease.plugins.common.base.domain.PanelLink;
+import io.dataease.plugins.common.base.domain.PanelLinkMapping;
+import io.dataease.plugins.common.base.domain.PanelLinkTicket;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.panel.PanelLinkService;
 import org.apache.commons.lang3.ObjectUtils;
@@ -27,6 +30,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletRequest;
 import java.net.URLDecoder;
 import java.nio.charset.StandardCharsets;
+import java.util.List;
 import java.util.Map;
 
 @RestController
@@ -65,6 +69,11 @@ public class LinkServer implements LinkApi {
     }
 
     @Override
+    public List<PanelLinkTicket> queryTicket(@PathVariable("resourceId") String resourceId) {
+        return panelLinkService.queryTicket(resourceId);
+    }
+
+    @Override
     public ValidateDto validate(@RequestBody LinkValidateRequest request) throws Exception {
         String link = request.getLink();
         link = URLDecoder.decode(link, StandardCharsets.UTF_8);
@@ -88,7 +97,8 @@ public class LinkServer implements LinkApi {
             dto.setValid(false);
             return dto;
         }
-        String mappingUuid = panelLinkService.getMappingUuid(one);
+        PanelLinkMapping mapping = panelLinkService.getMapping(one);
+        String mappingUuid = mapping.getUuid();
         if (!StringUtils.equals(uuid, mappingUuid)) {
             dto.setValid(false);
             return dto;
@@ -97,6 +107,10 @@ public class LinkServer implements LinkApi {
         dto.setEnablePwd(one.getEnablePwd());
         dto.setPassPwd(panelLinkService.validateHeads(one));
         dto.setExpire(panelLinkService.isExpire(one));
+
+        String ticketText = request.getTicket();
+        TicketDto ticketDto = panelLinkService.validateTicket(ticketText, mapping);
+        dto.setTicket(ticketDto);
         return dto;
     }
 
@@ -140,5 +154,20 @@ public class LinkServer implements LinkApi {
         PanelGroupWithBLOBs panelGroupWithBLOBs = panelLinkService.resourceInfo(panelId, String.valueOf(userId));
         String pid = panelGroupWithBLOBs.getPid();
         DeLogUtils.save(operateType, SysLogConstants.SOURCE_TYPE.LINK, panelId, pid, userId, SysLogConstants.SOURCE_TYPE.USER);
+    }
+
+    @Override
+    public String saveTicket(TicketCreator creator) {
+        return panelLinkService.saveTicket(creator);
+    }
+
+    @Override
+    public void deleteTicket(TicketDelRequest request) {
+        panelLinkService.deleteTicket(request);
+    }
+
+    @Override
+    public void switchRequire(TicketSwitchRequest request) {
+        panelLinkService.switchRequire(request);
     }
 }

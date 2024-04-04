@@ -11,12 +11,13 @@ import {
   getAnalyse,
   setGradientColor,
   getMeta,
-  configPlotTooltipEvent
+  configPlotTooltipEvent,
+  configAxisLabelLengthLimit
 } from '@/views/chart/chart/common/common_antv'
 import { antVCustomColor, getColors, handleEmptyDataStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
 import { cloneDeep, find } from 'lodash-es'
 
-export function baseBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
+export function baseBarOptionAntV(container, chart, action, isGroup, isStack) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -132,19 +133,15 @@ export function baseBarOptionAntV(plot, container, chart, action, isGroup, isSta
   }
 
   // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Column(container, options)
+  const plot = new Column(container, options)
 
-  plot.off('interval:click')
   plot.on('interval:click', action)
   // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }
 
-export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
+export function hBaseBarOptionAntV(container, chart, action, isGroup, isStack) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -252,20 +249,17 @@ export function hBaseBarOptionAntV(plot, container, chart, action, isGroup, isSt
     handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   }
 
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Bar(container, options)
+  const plot = new Bar(container, options)
 
-  plot.off('interval:click')
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
+  // 处理纵轴标签长度限制
+  configAxisLabelLengthLimit(chart, plot)
   return plot
 }
 
-export function timeRangeBarOptionAntV(plot, container, chart, action) {
+export function timeRangeBarOptionAntV(container, chart, action) {
   const ifAggregate = !!chart.aggregate
 
   // theme
@@ -446,11 +440,7 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
     handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   }
 
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new Bar(container, options)
+  const plot = new Bar(container, options)
 
   plot.off('interval:click')
   plot.on('interval:click', action)
@@ -459,7 +449,7 @@ export function timeRangeBarOptionAntV(plot, container, chart, action) {
   return plot
 }
 
-export function baseBidirectionalBarOptionAntV(plot, container, chart, action, isGroup, isStack) {
+export function baseBidirectionalBarOptionAntV(container, chart, action, isGroup, isStack) {
   // theme
   const theme = getTheme(chart)
   // attr
@@ -542,13 +532,8 @@ export function baseBidirectionalBarOptionAntV(plot, container, chart, action, i
   if (meta) {
     options.meta = meta
   }
-  // 开始渲染
-  if (plot) {
-    plot.destroy()
-  }
-  plot = new BidirectionalBar(container, options)
+  const plot = new BidirectionalBar(container, options)
 
-  plot.off('interval:click')
   plot.on('interval:click', action)
 // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)

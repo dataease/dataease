@@ -78,7 +78,7 @@
               @command="sort"
             >
               <span class="el-dropdown-link inner-dropdown-menu">
-                <span>
+                <span class="inline-menu-text">
                   <i class="el-icon-sort"/>
                   <span>{{ $t('chart.sort') }}</span>
                   <span class="summary-span-item">({{ $t('chart.' + item.sort) }})</span>
@@ -89,15 +89,15 @@
                 <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
                 <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
-<!--                <el-dropdown-item
-                  v-show="!item.chartId && (item.deType === 0 || item.deType === 5)"
-                  :command="beforeSort('custom_sort')"
-                >{{ $t('chart.custom_sort') }}...</el-dropdown-item>-->
+                <!--                <el-dropdown-item
+                                  v-show="!item.chartId && (item.deType === 0 || item.deType === 5)"
+                                  :command="beforeSort('custom_sort')"
+                                >{{ $t('chart.custom_sort') }}...</el-dropdown-item>-->
               </el-dropdown-menu>
             </el-dropdown>
           </el-dropdown-item>
-          <!--          <el-dropdown-item
-                      v-show="item.deType === 1"
+                    <el-dropdown-item
+                      v-if="item.deType === 1"
                       divided
                     >
                       <el-dropdown
@@ -107,12 +107,12 @@
                         @command="dateStyle"
                       >
                         <span class="el-dropdown-link inner-dropdown-menu">
-                          <span>
+                          <span  class="inline-menu-text">
                             <i class="el-icon-c-scale-to-original"/>
                             <span>{{ $t('chart.dateStyle') }}</span>
                             <span class="summary-span-item">({{ $t('chart.' + item.dateStyle) }})</span>
                           </span>
-                          <i class="el-icon-arrow-right el-icon&#45;&#45;right"/>
+                          <i class="el-icon-arrow-right el-icon--right"/>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item :command="beforeDateStyle('y')">{{ $t('chart.y') }}</el-dropdown-item>
@@ -125,12 +125,16 @@
                             v-if="showDateExt"
                             :command="beforeDateStyle('y_W')"
                           >{{ $t('chart.y_W') }}</el-dropdown-item>
-                          <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{ $t('chart.y_M_d') }}</el-dropdown-item>
+                          <el-dropdown-item :command="beforeDateStyle('y_M_d')">{{
+                              $t('chart.y_M_d')
+                            }}</el-dropdown-item>
                           <el-dropdown-item
                             :command="beforeDateStyle('H_m_s')"
                             divided
                           >{{ $t('chart.H_m_s') }}</el-dropdown-item>
-                          <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m')">{{ $t('chart.y_M_d_H_m') }}</el-dropdown-item>
+                          <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m')">{{
+                              $t('chart.y_M_d_H_m')
+                            }}</el-dropdown-item>
                           <el-dropdown-item :command="beforeDateStyle('y_M_d_H_m_s')">{{
                               $t('chart.y_M_d_H_m_s')
                             }}</el-dropdown-item>
@@ -145,12 +149,12 @@
                         @command="datePattern"
                       >
                         <span class="el-dropdown-link inner-dropdown-menu">
-                          <span>
+                          <span class="inline-menu-text">
                             <i class="el-icon-timer"/>
                             <span>{{ $t('chart.datePattern') }}</span>
                             <span class="summary-span-item">({{ $t('chart.' + item.datePattern) }})</span>
                           </span>
-                          <i class="el-icon-arrow-right el-icon&#45;&#45;right"/>
+                          <i class="el-icon-arrow-right el-icon--right"/>
                         </span>
                         <el-dropdown-menu slot="dropdown">
                           <el-dropdown-item :command="beforeDatePattern('date_sub')">{{
@@ -170,7 +174,7 @@
                       :command="beforeClickItem('formatter')"
                     >
                       <span>{{ $t('chart.value_formatter') }}...</span>
-                    </el-dropdown-item>-->
+                    </el-dropdown-item>
           <el-dropdown-item
             icon="el-icon-edit-outline"
             :command="beforeClickItem('rename')"
@@ -415,5 +419,10 @@ span {
 .summary-span-item {
   margin-left: 4px;
   color: #878d9f;
+}
+.inline-menu-text {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>

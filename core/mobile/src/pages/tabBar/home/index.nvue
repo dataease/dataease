@@ -17,6 +17,9 @@
 					<view class="loading-more" v-if="tab.isLoading">
 						<text class="loading-more-text">{{tab.loadingText}}</text>
 					</view>
+                    <view v-else-if="!tab.data.length" class="mobile-empty">
+                        <text class="loading-more-text">{{emptyTextList[tabIndex]}}</text>
+                    </view>
 				</scroll-view>
 
 				<!-- #endif -->
@@ -63,7 +66,8 @@
                 showTips: false,
                 navigateFlag: false,
                 pulling: false,
-                refreshIcon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAB5QTFRFcHBw3Nzct7e39vb2ycnJioqK7e3tpqam29vb////D8oK7wAAAAp0Uk5T////////////ALLMLM8AAABxSURBVHja7JVBDoAgDASrjqj//7CJBi90iyYeOHTPMwmFZrHjYyyFYYUy1bwUZqtJIYVxhf1a6u0R7iUvWsCcrEtwJHp8MwMdvh2amHduiZD3rpWId9+BgPd7Cc2LIkPyqvlQvKxKBJ//Qwq/CacAAwDUv0a0YuKhzgAAAABJRU5ErkJggg=="
+                refreshIcon: "data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAADAAAAAwCAMAAABg3Am1AAAAGXRFWHRTb2Z0d2FyZQBBZG9iZSBJbWFnZVJlYWR5ccllPAAAAB5QTFRFcHBw3Nzct7e39vb2ycnJioqK7e3tpqam29vb////D8oK7wAAAAp0Uk5T////////////ALLMLM8AAABxSURBVHja7JVBDoAgDASrjqj//7CJBi90iyYeOHTPMwmFZrHjYyyFYYUy1bwUZqtJIYVxhf1a6u0R7iUvWsCcrEtwJHp8MwMdvh2amHduiZD3rpWId9+BgPd7Cc2LIkPyqvlQvKxKBJ//Qwq/CacAAwDUv0a0YuKhzgAAAABJRU5ErkJggg==",
+                emptyTextList: [this.$t('home.empty_tips_1'), this.$t('home.empty_tips_2'), this.$t('home.empty_tips_3')]
             }
         },
 		computed: {
@@ -428,5 +432,11 @@
     .loading-more-text {
         font-size: 28rpx;
         color: #999;
+    }
+    .mobile-empty {
+        height: 100%;
+        justify-content: center;
+        align-items: center;
+        display: flex;
     }
 </style>

@@ -6,6 +6,7 @@ import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import lombok.Getter;
 import lombok.Setter;
+import lombok.experimental.Accessors;
 
 import java.util.List;
 import java.util.regex.Matcher;
@@ -16,7 +17,7 @@ import java.util.regex.Pattern;
 @Setter
 public class DatasourceRequest {
     private final String REG_WITH_SQL_FRAGMENT = "((?i)WITH[\\s\\S]+(?i)AS?\\s*\\([\\s\\S]+\\))\\s*(?i)SELECT";
-    private  Pattern WITH_SQL_FRAGMENT = Pattern.compile(REG_WITH_SQL_FRAGMENT);
+    private Pattern WITH_SQL_FRAGMENT = Pattern.compile(REG_WITH_SQL_FRAGMENT);
 
     protected String query;
 
@@ -40,6 +41,19 @@ public class DatasourceRequest {
     private List<ChartViewFieldDTO> yAxis;
     private List<DatasetTableField> permissionFields;
     private boolean totalPageFlag;
+
+    private List<TableFieldWithValue> tableFieldWithValues;
+    private boolean lowerCaseTaleNames;
+
+    @Getter
+    @Setter
+    @Accessors(chain = true)
+    public static class TableFieldWithValue {
+        private Object value;
+        private String filedName;
+        private String typeName;
+        private Integer type;
+    }
 
     private String rebuildSqlWithFragment(String sql) {
         if (!sql.toLowerCase().startsWith("with")) {

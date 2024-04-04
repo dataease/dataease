@@ -68,7 +68,8 @@ export const TYPE_CONFIGS = [
         'indexLabel',
         'tableColTooltip',
         'tableCellTooltip',
-        'showTableHeader'
+        'showTableHeader',
+        'tableHeaderSort'
       ],
       'title-selector-ant-v': [
         'show',
@@ -123,7 +124,8 @@ export const TYPE_CONFIGS = [
         'tableColTooltip',
         'tableCellTooltip',
         'showTableHeader',
-        'tableFreeze'
+        'tableFreeze',
+        'tableHeaderSort'
       ],
       'title-selector-ant-v': [
         'show',
@@ -321,7 +323,8 @@ export const TYPE_CONFIGS = [
         'gaugeStartAngle',
         'gaugeEndAngle',
         'gaugeTickCount',
-        'gaugeAxisLine'
+        'gaugeAxisLine',
+        'gaugePercentLabel'
       ],
       'label-selector-ant-v': [
         'labelGauge'
@@ -1080,7 +1083,8 @@ export const TYPE_CONFIGS = [
         'nameTextStyle',
         'splitLine',
         'axisForm',
-        'axisLabel'
+        'axisLabel',
+        'axisLabelLength'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1239,7 +1243,8 @@ export const TYPE_CONFIGS = [
         'nameTextStyle',
         'splitLine',
         'axisForm',
-        'axisLabel'
+        'axisLabel',
+        'axisLabelLength'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1315,7 +1320,8 @@ export const TYPE_CONFIGS = [
         'nameTextStyle',
         'splitLine',
         'axisForm',
-        'axisLabel'
+        'axisLabel',
+        'axisLabelLength'
       ],
       'title-selector-ant-v': [
         'show',
@@ -1359,7 +1365,8 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
-        'alpha'
+        'alpha',
+        'topN'
       ],
       'size-selector-ant-v': [
         'pieOuterRadius'
@@ -1418,7 +1425,8 @@ export const TYPE_CONFIGS = [
         'value',
         'colorPanel',
         'customColor',
-        'alpha'
+        'alpha',
+        'topN'
       ],
       'size-selector-ant-v': [
         'pieInnerRadius',
@@ -1983,7 +1991,9 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-h'
+        'position-h',
+        'conversion',
+        'conversionLabel'
       ],
       'tooltip-selector-ant-v': [
         'show',
@@ -2937,7 +2947,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'value',
         'custom',
-        'alpha'
+        'alpha',
+        'topN'
       ],
       'size-selector': [
         'pieOuterRadius'
@@ -2995,7 +3006,8 @@ export const TYPE_CONFIGS = [
       'color-selector': [
         'value',
         'custom',
-        'alpha'
+        'alpha',
+        'topN'
       ],
       'size-selector': [
         'pieInnerRadius',
@@ -3653,7 +3665,7 @@ export function getColors(chart, colors, reset) {
     if (chart.data) {
       const data = chart.data.data
       const s = []
-      data.forEach((cur) => {
+      data?.forEach((cur) => {
         if (s.indexOf(cur.category) < 0) {
           s.push(cur.category)
         }
@@ -3772,6 +3784,7 @@ export function handleEmptyDataStrategy(strategy, chart, data, options) {
 function handleBreakLineMultiDimension(chart, data) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
+  const catQuotaMap = {}
   for (let i = 0; i < data.length; i++) {
     const item = data[i]
     const dimensionInfo = dimensionInfoMap.get(item.field)
@@ -3781,6 +3794,9 @@ function handleBreakLineMultiDimension(chart, data) {
       dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
     }
     subDimensionSet.add(item.category)
+    if (!catQuotaMap[item.category]) {
+      catQuotaMap[item.category] = item.quotaList
+    }
   }
   // Map 是按照插入顺序排序的，所以插入索引往后推
   let insertCount = 0
@@ -3792,7 +3808,8 @@ function handleBreakLineMultiDimension(chart, data) {
           data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, {
             field,
             value: null,
-            category: dimension
+            category: dimension,
+            quotaList: catQuotaMap[dimension]
           })
         }
         subInsertIndex++
@@ -3805,6 +3822,7 @@ function handleBreakLineMultiDimension(chart, data) {
 function handleSetZeroMultiDimension(chart, data) {
   const dimensionInfoMap = new Map()
   const subDimensionSet = new Set()
+  const catQuotaMap = {}
   for (let i = 0; i < data.length; i++) {
     const item = data[i]
     if (item.value === null) {
@@ -3817,6 +3835,9 @@ function handleSetZeroMultiDimension(chart, data) {
       dimensionInfoMap.set(item.field, { set: new Set([item.category]), index: i })
     }
     subDimensionSet.add(item.category)
+    if (!catQuotaMap[item.category]) {
+      catQuotaMap[item.category] = item.quotaList
+    }
   }
   let insertCount = 0
   dimensionInfoMap.forEach((dimensionInfo, field) => {
@@ -3827,7 +3848,8 @@ function handleSetZeroMultiDimension(chart, data) {
           data.splice(dimensionInfo.index + insertCount + subInsertIndex, 0, {
             field,
             value: 0,
-            category: dimension
+            category: dimension,
+            quotaList: catQuotaMap[dimension]
           })
         }
         subInsertIndex++
@@ -3906,4 +3928,34 @@ export function handleTableEmptyStrategy(tableData, chart) {
     }
   }
   return newData
+}
+
+export function parseJson(target) {
+  if (Object.prototype.toString.call(target) === '[object String]') {
+    return JSON.parse(target)
+  }
+  return JSON.parse(JSON.stringify(target))
+}
+
+export function adjustPosition(targetDom, parentDom, clickPosition, offset, initSize) {
+  const { clientHeight: targetHeight, clientWidth: targetWidth } = targetDom
+  const { clientHeight: parentHeight, clientWidth: parentWidth } = parentDom
+  const { x, y } = clickPosition
+  const { x: offsetX, y: offsetY } = offset
+  const result = {
+    x: offsetX ? x + offsetX : x,
+    y: offsetY ? y + offsetY : y
+  }
+  const width = targetWidth ? targetWidth : initSize.width
+  const height = targetHeight ? targetHeight : initSize.height
+  if ( result.x + width > parentWidth ) {
+    result.x = parentWidth - width
+  }
+  if (result.y + height > parentHeight) {
+    result.y = parentHeight - height
+  }
+  if (result.y - height < 0) {
+    result.y = height
+  }
+  return result
 }

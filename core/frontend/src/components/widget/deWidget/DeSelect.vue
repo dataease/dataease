@@ -2,6 +2,7 @@
   <component
     :is="mode"
     v-if="element.options!== null && element.options.attrs!==null && show "
+    :id="element.id"
     ref="deSelect"
     v-model="value"
     :class-id="'visual-' + element.id + '-' + inDraw + '-' + inScreen"
@@ -21,6 +22,7 @@
     :flag="flag"
     :is-config="isConfig"
     :custom-style="customStyle"
+    :radio-style="element.style"
     @resetKeyWords="filterMethod"
     @change="changeValue"
     @focus="setOptionWidth"
@@ -47,6 +49,7 @@
 
 <script>
 import ElVisualSelect from '@/components/elVisualSelect'
+import DeRadio from './DeRadio.vue'
 import { linkMultFieldValues, multFieldValues } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { isSameVueObj, mergeCustomSortOption } from '@/utils'
@@ -54,8 +57,9 @@ import { getLinkToken, getToken } from '@/utils/auth'
 import customInput from '@/components/widget/deWidget/customInput'
 import { textSelectWidget } from '@/components/widget/deWidget/serviceNameFn.js'
 import { uuid } from 'vue-uuid'
+import _ from 'lodash'
 export default {
-  components: { ElVisualSelect },
+  components: { ElVisualSelect, DeRadio },
   mixins: [customInput],
   props: {
     canvasId: {
@@ -96,7 +100,6 @@ export default {
       onFocus: false,
       keyWord: '',
       separator: ',',
-      timeMachine: null,
       changeIndex: 0,
       flag: uuid.v1(),
       hasDestroy: false
@@ -105,6 +108,9 @@ export default {
   computed: {
     mode() {
       let result = 'el-select'
+      if (this.element.style.showMode && this.element.style.showMode === 'radio' && !this.element.options.attrs.multiple && !this.isConfig && this.element.options.attrs.required) {
+        return 'DeRadio'
+      }
       if (this.element.options && this.element.options.attrs && this.element.options.attrs.visual) {
         result = 'el-visual-select'
       }
@@ -313,29 +319,18 @@ export default {
       this.$refs.deSelect && this.$refs.deSelect.resetSelectAll && this.$refs.deSelect.resetSelectAll()
     },
 
-    searchWithKey(index) {
-      this.timeMachine = setTimeout(() => {
-        if (index === this.changeIndex) {
-          this.refreshOptions()
-        }
-        this.destroyTimeMachine()
-      }, 1500)
-    },
-    destroyTimeMachine() {
-      this.timeMachine && clearTimeout(this.timeMachine)
-      this.timeMachine = null
-    },
+    searchWithKey: _.debounce(function() {
+      this.refreshOptions()
+    }, 1000),
     filterMethod(key) {
-      if (key === this.keyWord) {
+      if (!key && !this.keyWord) {
+        this.keyWord = key
         return
       }
       this.keyWord = key
-      this.destroyTimeMachine()
-      this.changeIndex++
-      this.searchWithKey(this.changeIndex)
+      this.searchWithKey()
     },
     refreshOptions() {
-      // this.data = []
       let method = multFieldValues
       const token = this.$store.getters.token || getToken()
       const linkToken = this.$store.getters.linkToken || getLinkToken()
@@ -564,7 +559,7 @@ export default {
       })
     },
     filterInvalidValue(data) {
-      if (this.value === null) {
+      if (this.value === null || !!this.keyWord) {
         return
       }
       if (!data.length) {

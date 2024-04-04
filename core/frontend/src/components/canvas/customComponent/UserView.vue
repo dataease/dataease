@@ -1,6 +1,7 @@
 <template>
   <div
     v-loading="loadingFlag"
+    element-loading-background="rgba(0,0,0,0)"
     :class="[
       {
         ['active']: active
@@ -354,6 +355,7 @@ export default {
   },
   data() {
     return {
+      unReadyList: [],
       dialogLoading: false,
       imageDownloading: false,
       innerRefreshTimer: null,
@@ -653,6 +655,7 @@ export default {
   },
   mounted() {
     bus.$on('tab-canvas-change', this.tabSwitch)
+    bus.$on('resolve-wait-condition', this.resolveWaitCondition)
     this.bindPluginEvent()
   },
 
@@ -674,15 +677,16 @@ export default {
     bus.$off('onThemeAttrChange', this.optFromBatchSingleProp)
     bus.$off('clear_panel_linkage', this.clearPanelLinkage)
     bus.$off('tab-canvas-change', this.tabSwitch)
+    bus.$off('resolve-wait-condition', this.resolveWaitCondition)
   },
   created() {
     this.refId = uuid.v1
     if (this.element && this.element.propValue && this.element.propValue.viewId) {
       const group = this.groupFilter(this.filters)
-      const unReadyList = group.unReady
+      this.unReadyList = group.unReady
       const readyList = group.ready
-      if (unReadyList.length) {
-        Promise.all(this.filters.filter(f => f instanceof Promise)).then(fList => {
+      if (this.unReadyList.length) {
+        Promise.all(this.unReadyList.filter(f => f instanceof Promise)).then(fList => {
           this.filter.filter = readyList.concat(fList)
           this.getData(this.element.propValue.viewId, false)
         })
@@ -692,6 +696,11 @@ export default {
     }
   },
   methods: {
+    resolveWaitCondition(p) {
+      this.unReadyList.filter(f => f instanceof Promise && f.componentId === p.componentId).map(f => {
+        f.cacheObj.cb(p)
+      })
+    },
     groupFilter(filters) {
       const result = {
         ready: [],
@@ -946,6 +955,7 @@ export default {
         }
         if (this.isFirstLoad) {
           this.element.filters = this.filter.filter?.length ? JSON.parse(JSON.stringify(this.filter.filter)) : []
+          this.$store.commit('setViewInitFilter', this.element)
         }
         method(id, this.panelInfo.id, requestInfo).then(response => {
           try {

@@ -13,5 +13,7 @@ public class PanelLinkMapping implements Serializable {
 
     private String uuid;
 
+    private Boolean requireTicket;
+
     private static final long serialVersionUID = 1L;
 }

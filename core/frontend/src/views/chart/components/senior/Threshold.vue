@@ -329,6 +329,10 @@
                   v-if="item.field === '1'"
                   :title="$t('chart.field_dynamic')"
                 >{{ $t('chart.field_dynamic') }}</span>
+                <span
+                  v-if="item.field === '2'"
+                  :title="$t('chart.field_enum')"
+                >{{ $t('chart.field_enum') }}</span>
               </el-col>
               <el-col
                 v-if="item.term.includes('null') || item.term.includes('empty')"
@@ -368,6 +372,27 @@
                 </span>
 
                 <span v-else>&nbsp;</span>
+              </el-col>
+              <el-col
+                v-if="item.field === '2'"
+                :span="10"
+              >
+                <div
+                  v-if="item.enumValues && item.enumValues.length"
+                  style="display: flex; box-sizing: border-box; justify-content: start; align-items: center; overflow: hidden"
+                >
+                  <span style="display: inline"> {{ item.enumValues.join(',') }}</span>
+                  <el-tooltip
+                    v-if="item.enumValues && item.enumValues.length"
+                  >
+                    <i class="el-icon-info"></i>
+                    <template v-slot:content>
+                      <div style="max-width: 200px">
+                        {{ item.enumValues.join(',') }}
+                      </div>
+                    </template>
+                  </el-tooltip>
+                </div>
               </el-col>
 
               <el-col :span="2">

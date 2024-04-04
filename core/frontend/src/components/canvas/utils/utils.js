@@ -179,10 +179,12 @@ export function panelDataPrepare(componentData, componentStyle, callback) {
   })
   // 初始化密度为最高密度
   componentStyle.aidedDesign.matrixBase = 4
-  callback({
+  const result = {
     'componentData': resetID(componentData),
     'componentStyle': componentStyle
-  })
+  }
+  store.state.sourceComponentData = deepCopy(result.componentData)
+  callback(result)
 }
 
 export function resetID(data) {
@@ -307,6 +309,8 @@ export function imgUrlTrans(url) {
 export function getNowCanvasComponentData(canvasId, showPosition) {
   if (showPosition && (showPosition.includes('email-task') || showPosition.includes('multiplexing'))) {
     return store.state.previewComponentData.filter(item => item.canvasId === canvasId)
+  } else if (showPosition === 'preview') {
+    return deepCopy(store.state.sourceComponentData.filter(item => item.canvasId === canvasId))
   } else {
     return store.state.componentData.filter(item => item.canvasId === canvasId)
   }

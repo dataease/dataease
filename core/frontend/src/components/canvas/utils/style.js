@@ -124,7 +124,8 @@ export const customAttrTrans = {
     'quotaSuffixFontSize'
   ],
   'label': [
-    'fontSize'
+    'fontSize',
+    'subFontSize'
   ],
   'tooltip': {
     'textStyle': ['fontSize']

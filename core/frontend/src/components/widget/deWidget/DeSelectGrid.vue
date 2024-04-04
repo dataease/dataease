@@ -27,6 +27,7 @@
       >
         <el-checkbox
           v-model="checkAll"
+          class="is-tree-select"
           :indeterminate="isIndeterminate"
           @change="handleCheckAllChange"
         >
@@ -38,6 +39,7 @@
         >
           <template v-for="item in dataWithEmpty">
             <el-checkbox
+              class="is-tree-select"
               :key="item.id"
               :label="item.id"
             >{{ item.label || item.id }}

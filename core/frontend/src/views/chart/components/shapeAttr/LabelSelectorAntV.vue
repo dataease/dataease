@@ -15,7 +15,7 @@
           <el-checkbox
             v-model="labelForm.show"
             @change="changeLabelAttr('show')"
-          >{{ $t('chart.show') }}</el-checkbox>
+          ></el-checkbox>
         </el-form-item>
         <div v-show="labelForm.show">
           <el-form-item
@@ -140,6 +140,27 @@
             </el-radio-group>
           </el-form-item>
         </div>
+        <el-form-item
+          v-show="showProperty('conversion')"
+          :label="$t('chart.show_conversion')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="labelForm.showConversion"
+            @change="changeLabelAttr('showConversion')"
+          ></el-checkbox>
+        </el-form-item>
+        <el-form-item
+          v-show="labelForm.showConversion && showProperty('conversionLabel')"
+          :label="$t('chart.conversion_label')"
+          class="form-item"
+        >
+          <el-input
+            v-model="labelForm.conversionLabel"
+            :maxlength="20"
+            @change="changeLabelAttr('conversionLabel')"
+          ></el-input>
+        </el-form-item>
       </el-form>
 
       <el-form

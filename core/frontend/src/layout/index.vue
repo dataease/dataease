@@ -13,7 +13,7 @@
 
     <de-container :style="mainStyle">
       <de-aside-container
-        v-if="!sidebar.hide"
+        v-if="showSideBar"
         :is-collapse-width="sideWidth"
         type="system"
         class="le-aside-container"
@@ -65,8 +65,6 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer'
 import bus from '@/utils/bus'
 import { showMultiLoginMsg } from '@/utils/index'
 
-import { needModifyPwd, removePwdTips } from '@/api/user'
-
 export default {
   name: 'Layout',
   components: {
@@ -101,7 +99,11 @@ export default {
       return this.$store.state.settings.showSettings
     },
     fullHeightFlag() {
-      return this.$route.path.indexOf('panel') > -1 && (this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit')
+      const path = this.$route.path
+      return (path.indexOf('panel') > -1 && (this.componentName === 'PanelEdit' || this.componentName === 'ChartEdit')) || (path.indexOf('/data-filling/create') > -1)
+    },
+    showSideBar() {
+      return !this.sidebar.hide && this.$route.path.indexOf('data-filling') === -1
     },
     mainStyle() {
       if (this.fullHeightFlag) {
@@ -154,20 +156,13 @@ export default {
       bus.$emit('sys-logout')
     },
     panelSwitchComponent(c) {
+      console.log(c)
       this.componentName = c.name
     },
     handleClickOutside() {
       this.$store.dispatch('app/closeSideBar', { withoutAnimation: false })
-    },
-    doNotNoti() {
-      this.buttonDisable = true
-      removePwdTips().then(res => {
-        this.showTips = false
-        this.buttonDisable = false
-      }).catch(e => {
-        this.buttonDisable = false
-      })
     }
+
   }
 }
 </script>

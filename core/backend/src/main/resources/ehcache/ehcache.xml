@@ -221,6 +221,40 @@
             timeToLiveSeconds="3600"
             memoryStoreEvictionPolicy="LRU"
     />
+    <!--数据填报缓存-->
+    <cache
+            name="user_data_fill"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <cache
+            name="role_data_fill"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
+    <cache
+            name="dept_data_fill"
+            eternal="false"
+            maxElementsInMemory="100"
+            maxElementsOnDisk="1000"
+            overflowToDisk="true"
+            diskPersistent="true"
+            timeToIdleSeconds="1800"
+            timeToLiveSeconds="3600"
+            memoryStoreEvictionPolicy="LRU"
+    />
 
     <!--组织授权数据源缓存-->
     <cache

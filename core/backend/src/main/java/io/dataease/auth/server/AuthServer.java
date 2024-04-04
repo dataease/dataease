@@ -26,7 +26,6 @@ import io.dataease.plugins.xpack.ldap.dto.response.ValidateResult;
 import io.dataease.plugins.xpack.ldap.service.LdapXpackService;
 import io.dataease.plugins.xpack.oidc.service.OidcXpackService;
 import io.dataease.service.sys.SysUserService;
-
 import io.dataease.service.system.SystemParameterService;
 import io.dataease.websocket.entity.WsMessage;
 import io.dataease.websocket.service.WsService;
@@ -38,14 +37,13 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RestController;
 
+import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
+import javax.servlet.http.HttpSession;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
-import javax.annotation.Resource;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpSession;
 
 @RestController
 public class AuthServer implements AuthApi {
@@ -203,11 +201,12 @@ public class AuthServer implements AuthApi {
                 result.put("defaultPwd", DEFAULT_PWD);
             }
         }
-
+        Long expireTime = System.currentTimeMillis() + JWTUtils.getExpireTime();
         TokenInfo tokenInfo = TokenInfo.builder().userId(user.getUserId()).username(username).build();
         String token = JWTUtils.sign(tokenInfo, realPwd);
         // 记录token操作时间
         result.put("token", token);
+        result.put("expireTime", expireTime);
         ServletUtils.setToken(token);
         DeLogUtils.save(SysLogConstants.OPERATE_TYPE.LOGIN, SysLogConstants.SOURCE_TYPE.USER, user.getUserId(), null, null, null);
         authUserService.unlockAccount(username, ObjectUtils.isEmpty(loginType) ? 0 : loginType);

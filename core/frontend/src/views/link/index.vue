@@ -14,11 +14,16 @@
       v-if="showIndex===2"
       :resource-id="resourceId"
       :user="userId"
+      :ticket-args="ticketArgs"
     />
     <link-expire
       v-if="showIndex===3"
       :resource-id="resourceId"
       :user="userId"
+    />
+    <ticket-error
+      v-if="showIndex === 4 || showIndex === 5"
+      :show-index="showIndex"
     />
   </div>
 </template>
@@ -29,9 +34,10 @@ import LinkView from './view'
 import LinkError from './error'
 import LinkPwd from './pwd'
 import LinkExpire from './overtime'
+import TicketError from './ticket'
 export default {
   components: {
-    LinkError, LinkPwd, LinkView, LinkExpire
+    LinkError, LinkPwd, LinkView, LinkExpire, TicketError
   },
 
   data() {
@@ -41,7 +47,9 @@ export default {
       PARAMKEY: 'link',
       link: null,
       user: null,
-      showIndex: -1
+      showIndex: -1,
+      ticket: null,
+      ticketArgs: null
     }
   },
   created() {
@@ -53,6 +61,7 @@ export default {
       this.$store.commit('setPublicLinkStatus', true)
       this.link = this.$route.query.link
       this.user = this.$route.query.user
+      this.ticket = this.$route.query.ticket
       if (!this.link) {
         this.link = getQueryVariable(this.PARAMKEY)
       }
@@ -64,10 +73,16 @@ export default {
         return
       }
       const params = this.user ? { link: encodeURIComponent(this.link), user: encodeURIComponent(this.user) } : { link: encodeURIComponent(this.link) }
+      if (this.ticket) {
+        params['ticket'] = this.ticket
+      }
+      this.ticketArgs = null
       validate(params).then(res => {
         const { resourceId, valid, enablePwd, passPwd, expire, userId } = res.data
+        const ticketDto = res.data.ticket
         this.resourceId = resourceId
         this.userId = userId
+        this.ticketArgs = ticketDto?.args
         // 如果链接无效 直接显示无效页面
         if (!valid || !resourceId) {
           this.showError()
@@ -81,6 +96,15 @@ export default {
 
         if (enablePwd && !passPwd) {
           this.showPwd()
+          return
+        }
+
+        if (!ticketDto?.ticketValid) {
+          this.showTicketError()
+          return
+        }
+        if (ticketDto?.ticketExp) {
+          this.showTicketExpire()
           return
         }
 
@@ -107,6 +131,12 @@ export default {
     },
     showExpire() {
       this.showIndex = 3
+    },
+    showTicketError() {
+      this.showIndex = 4
+    },
+    showTicketExpire() {
+      this.showIndex = 5
     }
   }
 }

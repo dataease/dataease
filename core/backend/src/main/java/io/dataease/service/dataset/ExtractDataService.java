@@ -567,8 +567,8 @@ public class ExtractDataService {
         } catch (Exception e) {
             throw e;
         } finally {
-//            File deleteFile = new File(root_path + datasetTable.getId() + ".sh");
-//            FileUtils.forceDelete(deleteFile);
+            File deleteFile = new File(root_path + datasetTable.getId() + ".sh");
+            FileUtils.forceDelete(deleteFile);
         }
 
     }

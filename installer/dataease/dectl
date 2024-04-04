@@ -212,7 +212,7 @@ function _clear_component_docker_images() {
    component_version=$(echo ${component_image_defined} | awk -F"${component}:" '{print $2}' | uniq)
    component_image=$(echo ${component_image_defined} | awk -F'image: ' '{print $2}' | awk -F':' '{print $1}')
 
-   if test -z $(docker images | grep "dataease" | grep "$component_image" | grep -v " $component_version "); then
+   if [[ $(docker images | grep "dataease" | grep "$component_image" | grep -v " $component_version ") == 0 ]]; then
       echo "$component_image 不存在旧版本镜像"
    else
       echo "清理${component}镜像"

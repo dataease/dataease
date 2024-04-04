@@ -40,7 +40,9 @@ export const DEFAULT_COLOR_CASE = {
   mapLineGradient: false,
   mapLineSourceColor: '#146C94',
   mapLineTargetColor: '#576CBC',
-  quotaSuffixColor: '#5470c6'
+  quotaSuffixColor: '#5470c6',
+  calcTopN: false,
+  topN: 5
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -65,7 +67,9 @@ export const DEFAULT_COLOR_CASE_DARK = {
   mapLineGradient: false,
   mapLineSourceColor: '#2F58CD',
   mapLineTargetColor: '#3795BD',
-  quotaSuffixColor: '#5470c6'
+  quotaSuffixColor: '#5470c6',
+  calcTopN: false,
+  topN: 5
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -120,6 +124,7 @@ export const DEFAULT_SIZE = {
   gaugeEndAngle: -45,
   gaugeAxisLine: true,
   gaugeTickCount: 5,
+  gaugePercentLabel: true,
   dimensionFontSize: 18,
   quotaFontSize: 18,
   spaceSplit: 10,
@@ -177,7 +182,8 @@ export const DEFAULT_SIZE = {
   quotaSuffixFontShadow: false,
   tableColumnFreezeHead: 0,
   tableColumnFreezeTail: 0,
-  tableRowFreezeHead: 0
+  tableRowFreezeHead: 0,
+  tableHeaderSort: false
 }
 export const DEFAULT_SUSPENSION = {
   show: true
@@ -205,7 +211,9 @@ export const DEFAULT_LABEL = {
     thousandSeparator: true// 千分符
   },
   reserveDecimalCount: 2,
-  labelContent: ['dimension', 'proportion']
+  labelContent: ['dimension', 'proportion'],
+  showConversion: false,
+  conversionLabel: '转换率'
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
@@ -378,7 +386,8 @@ export const DEFAULT_YAXIS_STYLE = {
     color: '#333333',
     fontSize: '12',
     rotate: 0,
-    formatter: '{value}'
+    formatter: '{value}',
+    lengthLimit: 20
   },
   axisLine: {
     show: false,
@@ -1228,7 +1237,7 @@ export const CHART_FONT_LETTER_SPACE = [
 
 export const NOT_SUPPORT_PAGE_DATASET = ['kylin', 'sqlServer_all', 'es', 'presto', 'StarRocks']
 
-export const SUPPORT_Y_M = ['y', 'y_M', 'y_M_d']
+export const SUPPORT_Y_M = ['y', 'y_M', 'y_M_d', 'y_W']
 
 export const DEFAULT_MAP = {
   mapPitch: 0,

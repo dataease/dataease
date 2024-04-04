@@ -175,7 +175,6 @@ export default {
       },
       tableData: [],
       showPage: false,
-      scrollTimer: null,
       scrollTop: 0,
       remarkCfg: {
         show: false,
@@ -239,7 +238,6 @@ export default {
     this.preDraw()
   },
   beforeDestroy() {
-    clearInterval(this.scrollTimer)
     window.removeEventListener('resize', this.chartResize)
     this.myChart?.facet.timer?.stop()
     this.myChart?.destroy?.()
@@ -333,11 +331,8 @@ export default {
       if (this.chart.type === 'table-pivot') {
         rowData = { ...meta.rowQuery, ...meta.colQuery }
         rowData[meta.valueField] = meta.fieldValue
-      } else if (this.showPage && (this.chart.datasetMode === 1 || (this.chart.datasetMode === 0 && this.not_support_page_dataset.includes(this.chart.datasourceType)))) {
-        const rowIndex = (this.currentPage.page - 1) * this.currentPage.pageSize + meta.rowIndex
-        rowData = this.chart.data.tableRow[rowIndex]
       } else {
-        rowData = this.chart.data.tableRow[meta.rowIndex]
+        rowData = this.myChart.dataSet.getRowData(meta)
       }
       const dimensionList = []
       for (const key in rowData) {
@@ -524,7 +519,6 @@ export default {
     },
 
     initScroll() {
-      clearTimeout(this.scrollTimer)
       const customAttr = JSON.parse(this.chart.customAttr)
       const senior = JSON.parse(this.chart.senior)
       if (senior?.scrollCfg?.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {

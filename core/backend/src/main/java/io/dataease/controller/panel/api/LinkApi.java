@@ -8,11 +8,13 @@ import io.dataease.controller.request.panel.PanelViewLogRequest;
 import io.dataease.controller.request.panel.link.*;
 import io.dataease.dto.panel.link.GenerateDto;
 import io.dataease.dto.panel.link.ValidateDto;
+import io.dataease.plugins.common.base.domain.PanelLinkTicket;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
 import springfox.documentation.annotations.ApiIgnore;
 
+import java.util.List;
 import java.util.Map;
 
 @Api(tags = "仪表板：链接管理")
@@ -45,6 +47,11 @@ public interface LinkApi {
     @PostMapping("/currentGenerate/{resourceId}")
     GenerateDto currentGenerate(String resourceId);
 
+    @DePermission(type = DePermissionType.PANEL)
+    @ApiOperation("当前ticket信息")
+    @PostMapping("/currentTicket/{resourceId}")
+    List<PanelLinkTicket> queryTicket(String resourceId);
+
     @ApiOperation("验证访问")
     @PostMapping("/validate")
     ValidateDto validate(LinkValidateRequest request) throws Exception;
@@ -70,5 +77,15 @@ public interface LinkApi {
     @PostMapping("/viewLog")
     void viewLinkLog(@RequestBody LinkViewLogRequest request);
 
+    @ApiOperation("保存ticket")
+    @PostMapping("/saveTicket")
+    String saveTicket(@RequestBody TicketCreator creator);
 
+    @ApiOperation("删除ticket")
+    @PostMapping("/delTicket")
+    void deleteTicket(@RequestBody TicketDelRequest request);
+
+    @ApiOperation("切换是否必填ticket")
+    @PostMapping("/enableTicket")
+    void switchRequire(@RequestBody TicketSwitchRequest request);
 }

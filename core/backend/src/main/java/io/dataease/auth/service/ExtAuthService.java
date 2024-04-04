@@ -15,19 +15,33 @@ public interface ExtAuthService {
     AuthURD resourceTarget(String resourceId);
 
     List<AuthItem> dataSourceIdByUser(Long userId);
+
     List<AuthItem> dataSetIdByUser(Long userId);
+
     List<AuthItem> panelIdByUser(Long userId);
 
+    List<AuthItem> dataFillingIdByUser(Long userId);
+
     List<AuthItem> dataSourceIdByRole(Long roleId);
+
     List<AuthItem> dataSetIdByRole(Long roleId);
+
     List<AuthItem> panelIdByRole(Long roleId);
 
+    List<AuthItem> dataFillingIdByRole(Long roleId);
+
     List<AuthItem> dataSourceIdByDept(Long deptId);
+
     List<AuthItem> dataSetIdByDept(Long deptId);
+
     List<AuthItem> panelIdByDept(Long deptId);
 
+    List<AuthItem> dataFillingIdByDept(Long deptId);
+
     void clearUserResource(Long userId);
+
     void clearDeptResource(Long deptId);
+
     void clearRoleResource(Long roleId);
 
     List<String> parentResource(String resourceId, String type);
