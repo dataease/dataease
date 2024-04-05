@@ -98,22 +98,30 @@ public class DataFillTaskService {
             request.setCreateTime(new Date());
         }
 
-        DataFillTaskExample example = new DataFillTaskExample();
-        DataFillTaskExample.Criteria criteria = example.createCriteria()
-                .andFormIdEqualTo(formId)
-                .andNameEqualTo(request.getName());
+        if (StringUtils.isNotBlank(request.getName())) {
+            DataFillTaskExample example = new DataFillTaskExample();
+            DataFillTaskExample.Criteria criteria = example.createCriteria()
+                    .andFormIdEqualTo(formId)
+                    .andNameEqualTo(request.getName());
 
-        if (insert) {
-            if (dataFillTaskMapper.countByExample(example) > 0) {
-                DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXIST"));
+            if (insert) {
+                if (dataFillTaskMapper.countByExample(example) > 0) {
+                    DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXIST"));
+                }
+                dataFillTaskMapper.insertSelective(request);
+            } else {
+                criteria.andIdNotEqualTo(request.getId());
+                if (dataFillTaskMapper.countByExample(example) > 0) {
+                    DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXIST"));
+                }
+                dataFillTaskMapper.updateByPrimaryKeySelective(request);
             }
-            dataFillTaskMapper.insertSelective(request);
         } else {
-            criteria.andIdNotEqualTo(request.getId());
-            if (dataFillTaskMapper.countByExample(example) > 0) {
-                DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXIST"));
+            if (insert) {
+                dataFillTaskMapper.insertSelective(request);
+            } else {
+                dataFillTaskMapper.updateByPrimaryKeySelective(request);
             }
-            dataFillTaskMapper.updateByPrimaryKeySelective(request);
         }
 
         DataFillTaskWithBLOBs task = dataFillTaskMapper.selectByPrimaryKey(request.getId());
