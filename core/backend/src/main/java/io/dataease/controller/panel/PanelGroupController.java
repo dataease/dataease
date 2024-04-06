@@ -18,6 +18,7 @@ import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.panel.PanelExport2App;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.plugins.common.base.domain.PanelGroup;
+import io.dataease.service.exportCenter.ExportCenterService;
 import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,6 +51,8 @@ public class PanelGroupController {
     private PanelGroupService panelGroupService;
     @Resource
     private ExtAuthServiceImpl authService;
+    @Resource
+    private ExportCenterService exportCenterService;
 
     @ApiOperation("查询树")
     @PostMapping("/tree")
@@ -170,7 +173,7 @@ public class PanelGroupController {
     @DePermissionProxy(value = "proxy")
     @I18n
     public void innerExportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
-        panelGroupService.exportPanelViewDetails(request, response);
+        exportCenterService.addTask(request.getViewId(), "chart", request);
     }
 
     @ApiOperation("更新仪表板状态")

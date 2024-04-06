@@ -27,22 +27,36 @@
         style="width: 100%"
       >
         <el-table-column type="selection" width="50"> </el-table-column>
-        <el-table-column prop="name" label="文件名" width="320">
+        <el-table-column prop="fileName" label="文件名" width="320">
           <template slot-scope="scope">
             <div class="name-excel">
               <svg-icon style="font-size: 24px;" icon-class="icon_file-excel_colorful"> </svg-icon>
-              <span style="margin-left: 8px">{{ scope.row.name }}</span>
+              <span style="margin-left: 8px">{{ scope.row.fileName }}</span>
             </div>
           </template>
         </el-table-column>
-        <el-table-column prop="object" label="导出对象" width="200">
+        <el-table-column prop="exportFromName" label="导出对象" width="200">
         </el-table-column>
-        <el-table-column prop="origin" width="120" label="导出来源">
+        <el-table-column prop="exportFromType" width="120" label="导出来源">
+          <template slot-scope="scope">
+            <span v-if="scope.row.exportFromType === 'dataset'">数据集</span>
+            <span v-if="scope.row.exportFromType === 'chart'">视图</span>
+          </template>
         </el-table-column>
-        <el-table-column prop="time" width="180" label="导出时间">
+        <el-table-column prop="exportTime" width="180" label="导出时间">
+          <template slot-scope="scope">
+            <span>{{ scope.row.exportTime | timestampFormatDate }}</span>
+          </template>
         </el-table-column>
         <el-table-column prop="operate" width="80" label="操作">
           <template slot-scope="scope">
+            <el-button v-if="activeName === 'SUCCESS'" type="text" size="mini" @click="downloadClick(scope.row)">
+              <div class="download-export">
+                <svg-icon
+                  icon-class="icon_download_outlined"
+                />
+              </div>
+            </el-button>
             <el-button type="text" size="mini" @click="deleteField(scope.row)"
               >{{ $t("dataset.delete") }}
             </el-button>
@@ -63,11 +77,13 @@
 <script>
 import msgCfm from "@/components/msgCfm/index";
 import { Button } from "element-ui";
+import request from "@/utils/request";
+import {downloadFile, post} from '@/api/dataset/dataset'
 export default {
   mixins: [msgCfm],
   data() {
     return {
-      activeName: "all",
+      activeName: "IN_PROGRESS",
       multipleSelection: [],
       errImg: require("@/assets/none-data.png"),
       tableData: [{ name: "附件名称" }],
@@ -75,31 +91,83 @@ export default {
       description: this.$t("暂无任务"),
       tabList: [
         {
-          label: "导出中(3)",
-          name: "ing",
+          label: "导出中(0)",
+          name: "IN_PROGRESS",
         },
         {
-          label: "成功(3)",
-          name: "success",
+          label: "成功(0)",
+          name: "SUCCESS",
         },
         {
-          label: "失败(3)",
-          name: "fail",
+          label: "失败(0)",
+          name: "FAILED",
         },
         {
-          label: "全部(3)",
-          name: "all",
+          label: "全部(0)",
+          name: "ALL",
         },
       ],
     };
+  },
+  created() {
+    this.handleClick()
   },
   methods: {
     init() {
       this.drawer = true;
     },
-    handleClick() {},
-    deleteField() {
-      this.tableData = [];
+    handleClick() {
+      request({
+        url: '/exportCenter/exportTasks/' + this.activeName,
+        method: 'post'
+      }).then(
+        (res) => {
+          this.tabList.forEach( item => {
+            if(item.name === 'ALL'){
+              item.label = '全部' + '(' + res.data.length + ')'
+            }
+            if(item.name === 'IN_PROGRESS'){
+              item.label = '导出中' + '(' + res.data.filter(task => task.exportStatus === 'IN_PROGRESS').length + ')'
+            }
+            if(item.name === 'SUCCESS'){
+              item.label = '成功' + '(' + res.data.filter(task => task.exportStatus === 'SUCCESS').length + ')'
+            }
+            if(item.name === 'FAILED'){
+              item.label = '失败' + '(' + res.data.filter(task => task.exportStatus === 'FAILED').length + ')'
+            }
+          })
+          if(this.activeName === 'ALL'){
+            this.tableData = res.data
+          }else {
+            this.tableData = res.data.filter(task => task.exportStatus === this.activeName)
+          }
+        }
+      )
+    },
+    downloadClick(item) {
+      downloadFile(item.id).then((res) => {
+        const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = item.fileName // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      }).finally(() => {
+        this.exportDatasetLoading = false
+      })
+    },
+
+    deleteField(item) {
+      request({
+        url: '/exportCenter/delete/' + item.id,
+        method: 'get'
+      }).then(
+        (res) => {
+         this.handleClick()
+        }
+      )
       this.openMessageSuccess("commons.delete_success");
     },
     handleSelectionChange(val) {
@@ -143,40 +211,19 @@ export default {
         customClass,
       });
     },
-    openMessageSuccess(text, type, cb) {
-      const h = this.$createElement;
-      const iconClass = `el-icon-${type || "success"}`;
-      const customClass = `de-message-${type || "success"} de-message-export`;
-      this.$message({
-        message: h("p", null, [
-          h("span", null, text),
-          h(
-            Button,
-            {
-              props: {
-                type: "text",
-                size: "mini",
-              },
-              class: "btn-text",
-              on: {
-                click: () => {
-                  cb();
-                },
-              },
-            },
-            "数据导出中心",
-          ),
-        ]),
-        iconClass,
-        showClose: true,
-        customClass,
-      });
-    },
     delAll() {
-      this.openMessageLoading(this.handleClick);
-      this.openMessageSuccess( '第二个文件名称 导出失败，前往', 'error',this.handleClick);
-      this.openMessageSuccess( '第二个文件名称 导出成功，前往', 'success',this.handleClick);
+      post(
+        '/exportCenter/delete',
+        this.multipleSelection.map((ele) => ele.id),
+        false
+      ).then(
+        (res) => {
+          this.handleClick()
+        }
+      )
+      this.openMessageSuccess("commons.delete_success");
     },
+
     handleClose() {
       this.drawer = false;
     },

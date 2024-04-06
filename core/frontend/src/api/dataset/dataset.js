@@ -290,6 +290,15 @@ export function exportDataset(data) {
     method: 'post',
     data: data,
     loading: true,
+  })
+}
+
+export function downloadFile(id) {
+  // 初始化仪表板视图缓存
+  return request({
+    url: 'exportCenter/download/' + id,
+    method: 'get',
+    loading: true,
     responseType: 'blob'
   })
 }

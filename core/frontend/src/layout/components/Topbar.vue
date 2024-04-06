@@ -50,6 +50,7 @@
           @click="downloadClick"
           icon-class="icon_download_outlined"
         />
+      </div>
       <div
         v-if="aiBaseUrl"
         style="height: 100%;padding: 0 8px;"
@@ -61,7 +62,6 @@
             @click="handleAiClick"
           />
         </a>
-
       </div>
       <notification class="right-menu-item hover-effect" />
       <lang-select class="right-menu-item hover-effect" />
@@ -127,7 +127,6 @@
     <ExportExcel ref="ExportExcelRef"></ExportExcel>
 
     <ai-component v-if="aiBaseUrl" :base-url="aiBaseUrl"/>
-
 
     <!--模板市场全屏显示框-->
     <el-dialog

@@ -2,17 +2,17 @@ package io.dataease.service.exportCenter;
 
 
 import com.google.gson.Gson;
-import io.dataease.commons.constants.JobStatus;
-import io.dataease.commons.utils.AuthUtils;
-import io.dataease.commons.utils.CommonBeanFactory;
-import io.dataease.commons.utils.LogUtil;
-import io.dataease.commons.utils.TableUtils;
-import io.dataease.controller.dataset.request.DataSetTaskInstanceGridRequest;
+import io.dataease.commons.constants.SysLogConstants;
+import io.dataease.commons.utils.*;
+import io.dataease.controller.request.chart.ChartExtRequest;
 import io.dataease.controller.request.dataset.DataSetExportRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
+import io.dataease.controller.request.panel.PanelViewDetailsRequest;
+import io.dataease.controller.request.panel.ViewDetailField;
+import io.dataease.dto.ExportTaskDTO;
+import io.dataease.dto.chart.ChartViewDTO;
 import io.dataease.dto.dataset.DataSetPreviewPage;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
-import io.dataease.dto.dataset.DataSetTaskLogDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
@@ -25,30 +25,36 @@ import io.dataease.plugins.common.exception.DataEaseException;
 import io.dataease.plugins.common.request.datasource.DatasourceRequest;
 import io.dataease.plugins.common.request.permission.DataSetRowPermissionsTreeDTO;
 import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeObj;
+import io.dataease.plugins.common.util.FileUtil;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.plugins.datasource.query.QueryProvider;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.datasource.JdbcProvider;
+import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.chart.util.ChartDataBuild;
 import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
+import io.dataease.service.panel.PanelGroupService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
+import org.apache.poi.hssf.usermodel.HSSFClientAnchor;
+import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
+import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import org.springframework.util.Base64Utils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
+import java.io.*;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -63,7 +69,7 @@ public class ExportCenterService {
     private ExportTaskMapper exportTaskMapper;
     @Value("${export.dataset.limit:100000}")
     private int limit;
-
+    private final static String DATA_URL_TITLE = "data:image/jpeg;base64,";
     private static final String exportData_path = "/opt/dataease/data/exportData/";
 
     @Value("${extract.page.size:50000}")
@@ -89,7 +95,12 @@ public class ExportCenterService {
     private DatasourceService datasourceService;
     @Resource
     private PermissionService permissionService;
-
+    @Resource
+    private ChartViewService chartViewService;
+    @Resource
+    private DataSetGroupService dataSetGroupService;
+    @Resource
+    private PanelGroupService panelGroupService;
     private int corePoolSize = 10;
     private int keepAliveSeconds = 600;
 
@@ -99,17 +110,306 @@ public class ExportCenterService {
         scheduledThreadPoolExecutor.setKeepAliveTime(keepAliveSeconds, TimeUnit.SECONDS);
     }
 
-    public List<ExportTask> exportTasks(String status) {
+    public void download(String id, HttpServletResponse response) throws Exception {
+        ExportTask exportTask = exportTaskMapper.selectByPrimaryKey(id);
+        OutputStream outputStream = response.getOutputStream();
+        response.setContentType("application/vnd.ms-excel");
+        //文件名称
+        response.setHeader("Content-disposition", "attachment;filename=" + exportTask.getFileName());
+
+        XSSFWorkbook wb = new XSSFWorkbook(exportData_path + id + "/" + exportTask.getFileName());
+        wb.write(outputStream);
+        outputStream.flush();
+        outputStream.close();
+    }
+
+    public void delete(String id) {
+        FileUtil.deleteDirectoryRecursively(exportData_path + id);
+        exportTaskMapper.deleteByPrimaryKey(id);
+    }
+
+    public void delete(List<String> ids) {
+        ids.forEach(id -> {
+            delete(id);
+        });
+    }
+
+    public List<ExportTaskDTO> exportTasks(String status) {
         if (!STATUS.contains(status)) {
             DataEaseException.throwException("Invalid status: " + status);
         }
         ExportTaskExample exportTaskExample = new ExportTaskExample();
         ExportTaskExample.Criteria criteria = exportTaskExample.createCriteria();
-        if (!status.equalsIgnoreCase("ALL")) {
-            criteria.andExportStatusEqualTo(status);
-        }
         criteria.andUserIdEqualTo(AuthUtils.getUser().getUserId());
-        return exportTaskMapper.selectByExample(exportTaskExample);
+        List<ExportTask> exportTasks = exportTaskMapper.selectByExample(exportTaskExample);
+        List<ExportTaskDTO> result = new ArrayList<>();
+        exportTasks.forEach(exportTask -> {
+            ExportTaskDTO exportTaskDTO = new ExportTaskDTO();
+            BeanUtils.copyBean(exportTaskDTO, exportTask);
+            if (status.equalsIgnoreCase("ALL")) {
+                setExportFromName(exportTaskDTO);
+            }
+            if (status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
+                setExportFromName(exportTaskDTO);
+            }
+            result.add(exportTaskDTO);
+        });
+
+        return result;
+    }
+
+    private void setExportFromName(ExportTaskDTO exportTaskDTO) {
+        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
+
+            exportTaskDTO.setExportFromName(panelGroupService.getAbsPath(exportTaskDTO.getExportFrom()));
+        }
+        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("dataset")) {
+            exportTaskDTO.setExportFromName(dataSetGroupService.getAbsPath(exportTaskDTO.getExportFrom()));
+        }
+    }
+
+    public void exportTableDetails(PanelViewDetailsRequest request, Workbook wb, CellStyle cellStyle, Sheet detailsSheet) throws IOException {
+        List<Object[]> details = request.getDetails();
+        Integer[] excelTypes = request.getExcelTypes();
+        if (CollectionUtils.isNotEmpty(details)) {
+            for (int i = 0; i < details.size(); i++) {
+                Row row = detailsSheet.createRow(i);
+                Object[] rowData = details.get(i);
+                if (rowData != null) {
+                    for (int j = 0; j < rowData.length; j++) {
+                        Cell cell = row.createCell(j);
+                        if (i == 0) {// 头部
+                            cell.setCellValue(String.valueOf(rowData[j]));
+                            cell.setCellStyle(cellStyle);
+                            //设置列的宽度
+                            detailsSheet.setColumnWidth(j, 255 * 20);
+                        } else {
+                            try {
+                                // with DataType
+                                if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && rowData[j] != null) {
+                                    cell.setCellValue(Double.valueOf(rowData[j].toString()));
+                                } else {
+                                    cell.setCellValue(String.valueOf(rowData[j]));
+                                }
+                            } catch (Exception e) {
+                                LogUtil.warn("export excel data transform error");
+                            }
+                        }
+                    }
+                }
+            }
+        }
+    }
+
+    public void findExcelData(PanelViewDetailsRequest request) {
+        ChartViewWithBLOBs viewInfo = chartViewService.get(request.getViewId());
+        request.setDownloadType(viewInfo.getType());
+        if ("table-info".equals(viewInfo.getType())) {
+            try {
+                ChartExtRequest componentFilterInfo = request.getComponentFilterInfo();
+                componentFilterInfo.setGoPage(1L);
+                componentFilterInfo.setPageSize(Long.valueOf(limit));
+                componentFilterInfo.setExcelExportFlag(true);
+                componentFilterInfo.setProxy(request.getProxy());
+                componentFilterInfo.setUser(request.getUserId());
+                ChartViewDTO chartViewInfo = chartViewService.getData(request.getViewId(), componentFilterInfo);
+                List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
+                request.setDetails(tableRow);
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        }
+
+    }
+
+    public void addTask(String exportFrom, String exportFromType, PanelViewDetailsRequest request) {
+        ExportTask exportTask = new ExportTask();
+        exportTask.setId(UUID.randomUUID().toString());
+        exportTask.setUserId(AuthUtils.getUser().getUserId());
+        exportTask.setExportFrom(exportFrom);
+        exportTask.setExportFromType(exportFromType);
+        exportTask.setExportStatus("PENDING");
+        exportTask.setFileName(request.getViewName() + ".xlsx");
+        exportTask.setExportPogress("0");
+        exportTask.setExportTime(System.currentTimeMillis());
+        exportTaskMapper.insert(exportTask);
+
+        String dataPath = exportData_path + exportTask.getId();
+        File directory = new File(dataPath);
+        boolean isCreated = directory.mkdir();
+
+        scheduledThreadPoolExecutor.execute(() -> {
+            try {
+                exportTask.setExportStatus("IN_PROGRESS");
+                exportTaskMapper.updateByPrimaryKey(exportTask);
+
+                findExcelData(request);
+                String snapshot = request.getSnapshot();
+                List<Object[]> details = request.getDetails();
+                Integer[] excelTypes = request.getExcelTypes();
+                details.add(0, request.getHeader());
+                Workbook wb = new SXSSFWorkbook();
+                //明细sheet
+                Sheet detailsSheet = wb.createSheet("数据");
+
+                //给单元格设置样式
+                CellStyle cellStyle = wb.createCellStyle();
+                Font font = wb.createFont();
+                //设置字体大小
+                font.setFontHeightInPoints((short) 12);
+                //设置字体加粗
+                font.setBold(true);
+                //给字体设置样式
+                cellStyle.setFont(font);
+                //设置单元格背景颜色
+                cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
+                //设置单元格填充样式(使用纯色背景颜色填充)
+                cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+                if ("table-info".equals(request.getDownloadType())) {
+                    exportTableDetails(request, wb, cellStyle, detailsSheet);
+                } else {
+                    Boolean mergeHead = false;
+                    ViewDetailField[] detailFields = request.getDetailFields();
+                    if (ArrayUtils.isNotEmpty(detailFields)) {
+                        cellStyle.setBorderTop(BorderStyle.THIN);
+                        cellStyle.setBorderRight(BorderStyle.THIN);
+                        cellStyle.setBorderBottom(BorderStyle.THIN);
+                        cellStyle.setBorderLeft(BorderStyle.THIN);
+                        String[] detailField = Arrays.stream(detailFields).map(field -> field.getName()).collect(Collectors.toList()).toArray(new String[detailFields.length]);
+                        Object[] header = request.getHeader();
+                        Row row = detailsSheet.createRow(0);
+                        int headLen = header.length;
+                        int detailFieldLen = detailField.length;
+                        for (int i = 0; i < headLen; i++) {
+                            Cell cell = row.createCell(i);
+                            cell.setCellValue(header[i].toString());
+                            if (i < headLen - 1) {
+                                CellRangeAddress cellRangeAddress = new CellRangeAddress(0, 1, i, i);
+                                detailsSheet.addMergedRegion(cellRangeAddress);
+                            } else {
+                                for (int j = i + 1; j < detailFieldLen + i; j++) {
+                                    row.createCell(j).setCellStyle(cellStyle);
+                                }
+                                CellRangeAddress cellRangeAddress = new CellRangeAddress(0, 0, i, i + detailFieldLen - 1);
+                                detailsSheet.addMergedRegion(cellRangeAddress);
+                            }
+                            cell.setCellStyle(cellStyle);
+                            detailsSheet.setColumnWidth(i, 255 * 20);
+                        }
+
+                        Row detailRow = detailsSheet.createRow(1);
+                        for (int i = 0; i < headLen - 1; i++) {
+                            Cell cell = detailRow.createCell(i);
+                            cell.setCellStyle(cellStyle);
+                        }
+                        for (int i = 0; i < detailFieldLen; i++) {
+                            int colIndex = headLen - 1 + i;
+                            Cell cell = detailRow.createCell(colIndex);
+                            cell.setCellValue(detailField[i]);
+                            cell.setCellStyle(cellStyle);
+                            detailsSheet.setColumnWidth(colIndex, 255 * 20);
+                        }
+                        details.add(1, detailField);
+                        mergeHead = true;
+                    }
+                    if (CollectionUtils.isNotEmpty(details) && (!mergeHead || details.size() > 2)) {
+                        int realDetailRowIndex = 2;
+                        for (int i = (mergeHead ? 2 : 0); i < details.size(); i++) {
+                            Row row = detailsSheet.createRow(realDetailRowIndex > 2 ? realDetailRowIndex : i);
+                            Object[] rowData = details.get(i);
+                            if (rowData != null) {
+                                for (int j = 0; j < rowData.length; j++) {
+                                    Object cellValObj = rowData[j];
+                                    if (mergeHead && j == rowData.length - 1 && (cellValObj.getClass().isArray() || cellValObj instanceof ArrayList)) {
+                                        Object[] detailRowArray = ((List<Object>) cellValObj).toArray(new Object[((List<?>) cellValObj).size()]);
+                                        int detailRowArrayLen = detailRowArray.length;
+                                        int temlJ = j;
+                                        while (detailRowArrayLen > 1 && temlJ-- > 0) {
+                                            CellRangeAddress cellRangeAddress = new CellRangeAddress(realDetailRowIndex, realDetailRowIndex + detailRowArrayLen - 1, temlJ, temlJ);
+                                            detailsSheet.addMergedRegion(cellRangeAddress);
+                                        }
+
+                                        for (int k = 0; k < detailRowArrayLen; k++) {
+                                            List<Object> detailRows = (List<Object>) detailRowArray[k];
+                                            Row curRow = row;
+                                            if (k > 0) {
+                                                curRow = detailsSheet.createRow(realDetailRowIndex + k);
+                                            }
+
+                                            for (int l = 0; l < detailRows.size(); l++) {
+                                                Object col = detailRows.get(l);
+                                                Cell cell = curRow.createCell(j + l);
+                                                cell.setCellValue(col.toString());
+                                            }
+                                        }
+                                        realDetailRowIndex += detailRowArrayLen;
+                                        break;
+                                    }
+
+                                    Cell cell = row.createCell(j);
+                                    if (i == 0) {// 头部
+                                        cell.setCellValue(cellValObj.toString());
+                                        cell.setCellStyle(cellStyle);
+                                        //设置列的宽度
+                                        detailsSheet.setColumnWidth(j, 255 * 20);
+                                    } else if (cellValObj != null) {
+                                        try {
+                                            // with DataType
+                                            if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
+                                                cell.setCellValue(Double.valueOf(cellValObj.toString()));
+                                            } else {
+                                                cell.setCellValue(cellValObj.toString());
+                                            }
+                                        } catch (Exception e) {
+                                            LogUtil.warn("export excel data transform error");
+                                        }
+                                    }
+
+
+                                }
+                            }
+                        }
+                    }
+                    if (StringUtils.isNotEmpty(snapshot)) {
+                        //截图sheet 1px ≈ 2.33dx ≈ 0.48 dy  8*24 个单元格
+                        Sheet snapshotSheet = wb.createSheet("图表");
+                        short reDefaultRowHeight = (short) Math.round(request.getSnapshotHeight() * 3.5 / 8);
+                        int reDefaultColumnWidth = (int) Math.round(request.getSnapshotWidth() * 0.25 / 24);
+                        snapshotSheet.setDefaultColumnWidth(reDefaultColumnWidth);
+                        snapshotSheet.setDefaultRowHeight(reDefaultRowHeight);
+
+                        //画图的顶级管理器，一个sheet只能获取一个（一定要注意这点）i
+                        Drawing patriarch = snapshotSheet.createDrawingPatriarch();
+                        HSSFClientAnchor anchor = new HSSFClientAnchor(0, 0, reDefaultColumnWidth, reDefaultColumnWidth, (short) 0, 0, (short) 8, 24);
+                        anchor.setAnchorType(ClientAnchor.AnchorType.DONT_MOVE_DO_RESIZE);
+                        patriarch.createPicture(anchor, wb.addPicture(Base64Utils.decodeFromString(snapshot.replace(DATA_URL_TITLE, "")), HSSFWorkbook.PICTURE_TYPE_JPEG));
+                    }
+                }
+
+
+                try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + request.getViewName() + ".xlsx")) {
+                    wb.write(outputStream);
+                }
+                wb.close();
+
+                if (ObjectUtils.isNotEmpty(AuthUtils.getUser())) {
+                    String viewId = request.getViewId();
+                    ChartViewWithBLOBs chartViewWithBLOBs = chartViewService.get(viewId);
+                    String pid = chartViewWithBLOBs.getSceneId();
+                    DeLogUtils.save(SysLogConstants.OPERATE_TYPE.EXPORT, SysLogConstants.SOURCE_TYPE.VIEW, viewId, pid, null, null);
+                }
+
+                exportTask.setExportPogress("100");
+                exportTask.setExportStatus("SUCCESS");
+            } catch (Exception e) {
+                e.printStackTrace();
+                exportTask.setExportStatus("FAILED");
+            } finally {
+                exportTaskMapper.updateByPrimaryKey(exportTask);
+            }
+        });
+
+
     }
 
     public void addTask(String exportFrom, String exportFromType, DataSetExportRequest request) {
@@ -140,11 +440,8 @@ public class ExportCenterService {
                     permissionsTreeService.getField(tree);
                 }
                 Datasource datasource = datasourceService.get(request.getDataSourceId());
-
                 Integer totalCount = getTotal(request, limit, tree);
-
                 if (totalCount == null) {
-
                     Workbook wb = new SXSSFWorkbook();
                     // Sheet
                     Sheet detailsSheet = wb.createSheet("数据");
@@ -161,7 +458,6 @@ public class ExportCenterService {
                     cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
                     //设置单元格填充样式(使用纯色背景颜色填充)
                     cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-
                     int pageSize = (datasource != null && StringUtils.equalsIgnoreCase(datasource.getType(), "es")) ? 10000 : limit;
                     request.setRow(String.valueOf(pageSize));
                     Map<String, Object> previewData = dataSetTableService.getPreviewData(request, 1, pageSize, null, tree);
@@ -171,10 +467,8 @@ public class ExportCenterService {
                     for (DatasetTableField field : fields) {
                         header.add(field.getName());
                     }
-
                     List<List<String>> details = new ArrayList<>();
                     details.add(header);
-
                     for (Map<String, Object> obj : data) {
                         List<String> row = new ArrayList<>();
                         for (DatasetTableField field : fields) {
@@ -222,14 +516,12 @@ public class ExportCenterService {
                     for (Integer p = 1; p < totalPage + 1; p++) {
                         Integer offset = p * extractPageSize;
                         Integer all = offset + extractPageSize;
-
                         Map<String, Object> previewData = getPreviewData(request, p, extractPageSize, all, null, tree);
-
                         Workbook wb = null;
                         Sheet detailsSheet = null;
                         CellStyle cellStyle = null;
                         FileInputStream fis = null;
-                        if (p == 0L) {
+                        if (p == 1L) {
                             wb = new SXSSFWorkbook();
                             // Sheet
                             detailsSheet = wb.createSheet("数据");
@@ -253,7 +545,7 @@ public class ExportCenterService {
                             }
                             details.add(header);
                         } else {
-                            fis = new FileInputStream("existing_file.xlsx");
+                            fis = new FileInputStream(dataPath + "/" + request.getFilename() + ".xlsx");
                             wb = new XSSFWorkbook(fis); // 假设这是个.xlsx格式的文件
                             detailsSheet = wb.getSheetAt(0);
                         }
@@ -305,19 +597,15 @@ public class ExportCenterService {
                             fis.close();
                             wb.close();
                         }
-
-
                         exportTask.setExportStatus("IN_PROGRESS");
-                        double exportRogress = (double) (p / totalCount);
+                        double exportRogress = (double) ((double) p / (double) totalCount);
                         DecimalFormat df = new DecimalFormat("#.##");
                         String formattedResult = df.format(exportRogress * 100);
                         exportTask.setExportPogress(formattedResult);
                         exportTaskMapper.updateByPrimaryKey(exportTask);
-
-
                     }
-
                 }
+                exportTask.setExportPogress("100");
                 exportTask.setExportStatus("SUCCESS");
             } catch (Exception e) {
                 exportTask.setExportStatus("FAILED");
@@ -377,7 +665,7 @@ public class ExportCenterService {
                 String table = dataTableInfoDTO.getTable();
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 try {
-                    String totalSql = qp.getTotalCount(false, qp.createQuerySQL(table, fields, false, ds, null, rowPermissionsTree), ds);
+                    String totalSql = qp.getTotalCount(false, qp.createQueryTableWithLimit(table, fields, limit, false, ds, null, rowPermissionsTree), ds);
                     if (totalSql == null) {
                         return null;
                     }
@@ -404,7 +692,7 @@ public class ExportCenterService {
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
 
                 try {
-                    String totalSql = qp.getTotalCount(false, qp.createQuerySQL(table, fields, false, ds, null, rowPermissionsTree), ds);
+                    String totalSql = qp.getTotalCount(false, qp.createQueryTableWithLimit(table, fields, limit, false, ds, null, rowPermissionsTree), ds);
                     if (totalSql == null) {
                         return null;
                     }
@@ -433,7 +721,7 @@ public class ExportCenterService {
                 sql = dataSetTableService.handleVariableDefaultValue(sql, datasetTable.getSqlVariableDetails(), ds.getType(), false);
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 try {
-                    String totalSql = qp.getTotalCount(false, qp.createQuerySQLAsTmp(sql, fields, false, null, rowPermissionsTree), ds);
+                    String totalSql = qp.getTotalCount(false, qp.createQuerySqlWithLimit(sql, fields, limit, false, null, rowPermissionsTree), ds);
                     if (totalSql == null) {
                         return null;
                     }
@@ -454,10 +742,8 @@ public class ExportCenterService {
                 datasourceRequest.setDatasource(ds);
                 String table = TableUtils.tableName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
-
-
                 try {
-                    String totalSql = qp.getTotalCount(true, qp.createQuerySQL(table, fields, false, ds, null, rowPermissionsTree), ds);
+                    String totalSql = qp.getTotalCount(false, qp.createQueryTableWithLimit(table, fields, limit, false, ds, null, rowPermissionsTree), ds);
                     if (totalSql == null) {
                         return null;
                     }
@@ -480,7 +766,7 @@ public class ExportCenterService {
             String table = TableUtils.tableName(dataSetTableRequest.getId());
             QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
             try {
-                String totalSql = qp.getTotalCount(true, qp.createQuerySQL(table, fields, false, ds, null, rowPermissionsTree), ds);
+                String totalSql = qp.getTotalCount(false, qp.createQueryTableWithLimit(table, fields, limit, false, ds, null, rowPermissionsTree), ds);
                 if (totalSql == null) {
                     return null;
                 }
@@ -563,7 +849,7 @@ public class ExportCenterService {
                 }
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 try {
-                    String totalSql = qp.getTotalCount(true, qp.createQuerySQLAsTmp(sql, fields, false, null, rowPermissionsTree), ds);
+                    String totalSql = qp.getTotalCount(false, qp.createQuerySqlWithLimit(sql, fields, limit, false, null, rowPermissionsTree), ds);
                     if (totalSql == null) {
                         return null;
                     }
@@ -581,7 +867,7 @@ public class ExportCenterService {
                 String table = TableUtils.tableName(dataSetTableRequest.getId());
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 try {
-                    String totalSql = qp.getTotalCount(true, qp.createQuerySQL(table, fields, false, ds, null, rowPermissionsTree), ds);
+                    String totalSql = qp.getTotalCount(false, qp.createQueryTableWithLimit(table, fields, limit, false, ds, null, rowPermissionsTree), ds);
                     if (totalSql == null) {
                         return null;
                     }
@@ -705,7 +991,7 @@ public class ExportCenterService {
                 datasourceRequest.setQuery(qp.createQuerySQLWithPage(sql, fields, page, pageSize, realSize, false, null, rowPermissionsTree));
                 map.put("sql", java.util.Base64.getEncoder().encodeToString(datasourceRequest.getQuery().getBytes()));
                 datasourceRequest.setPage(page);
-                datasourceRequest.setFetchSize(Integer.parseInt(dataSetTableRequest.getRow()));
+                datasourceRequest.setFetchSize(limit);
                 datasourceRequest.setPageSize(pageSize);
                 datasourceRequest.setRealSize(realSize);
                 datasourceRequest.setPreviewData(true);

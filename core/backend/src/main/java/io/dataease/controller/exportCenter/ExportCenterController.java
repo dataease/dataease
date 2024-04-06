@@ -1,17 +1,11 @@
 package io.dataease.controller.exportCenter;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-
-import io.dataease.controller.request.dataset.DataSetExportRequest;
-
-import io.dataease.plugins.common.base.domain.ExportTask;
-
+import io.dataease.dto.ExportTaskDTO;
 import io.dataease.service.exportCenter.ExportCenterService;
-
 import org.springframework.web.bind.annotation.*;
-
 import javax.annotation.Resource;
-
+import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
 @ApiSupport(order = 31)
@@ -25,14 +19,23 @@ public class ExportCenterController {
 
 
     @PostMapping("/exportTasks/{status}")
-    public List<ExportTask> exportTasks(@PathVariable String status) {
+    public List<ExportTaskDTO> exportTasks(@PathVariable String status) {
         return exportCenterService.exportTasks(status);
     }
 
 
-    @PostMapping("/exportTasks/{status}")
-    public void  addTask(String exportFrom, String exportFromType, DataSetExportRequest request){
-
+    @GetMapping("/delete/{id}")
+    public void  delete(@PathVariable String id){
+        exportCenterService.delete(id);
     }
 
+    @PostMapping("/delete")
+    public void  delete(@RequestBody List<String> ids){
+        exportCenterService.delete(ids);
+    }
+
+    @GetMapping("/download/{id}")
+    public void download(@PathVariable String id, HttpServletResponse response) throws Exception {
+        exportCenterService.download(id, response);
+    }
 }

@@ -259,6 +259,7 @@ import { pluginLoaded } from '@/api/user'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import UpdateRecords from './UpdateRecords'
 import rowAuth from './components/rowAuth.vue'
+import {Button} from "element-ui";
 
 export default {
   name: 'ViewTable',
@@ -489,6 +490,35 @@ export default {
     closeExport() {
       this.showExport = false
     },
+    openMessageSuccess(text, type, cb) {
+      const h = this.$createElement;
+      const iconClass = `el-icon-${type || "success"}`;
+      const customClass = `de-message-${type || "success"} de-message-export`;
+      this.$message({
+        message: h("p", null, [
+          h("span", null, text),
+          h(
+            Button,
+            {
+              props: {
+                type: "text",
+                size: "mini",
+              },
+              class: "btn-text",
+              on: {
+                click: () => {
+                  cb();
+                },
+              },
+            },
+            "数据导出中心",
+          ),
+        ]),
+        iconClass,
+        showClose: true,
+        customClass,
+      });
+    },
     exportDatasetRequest() {
       this.$refs['exportForm'].validate((valid) => {
         if (valid) {
@@ -507,16 +537,10 @@ export default {
             this.table.expressionTree = JSON.stringify({ items, logic })
             this.exportDatasetLoading = true
             exportDataset(this.table).then((res) => {
-              const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
-              const link = document.createElement('a')
-              link.style.display = 'none'
-              link.href = URL.createObjectURL(blob)
-              link.download = this.exportForm.name + '.xlsx' // 下载的文件名
-              document.body.appendChild(link)
-              link.click()
-              document.body.removeChild(link)
+              this.openMessageSuccess('后台导出中', 'info')
             }).finally(() => {
               this.exportDatasetLoading = false
+              this.showExport = false
             })
           }
         } else {
