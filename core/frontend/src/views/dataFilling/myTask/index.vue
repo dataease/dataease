@@ -120,29 +120,29 @@ export default {
     myTaskHandleSizeChange(pageSize) {
       this.myTaskPaginationConfig.currentPage = 1
       this.myTaskPaginationConfig.pageSize = pageSize
-      this.searchTableData()
+      this.searchTableMyTaskData()
     },
     myTaskHandleCurrentChange(currentPage) {
       this.myTaskPaginationConfig.currentPage = currentPage
-      this.searchTableData()
+      this.searchTableMyTaskData()
     },
     finishedTaskHandleSizeChange(pageSize) {
       this.finishedTaskPaginationConfig.currentPage = 1
       this.finishedTaskPaginationConfig.pageSize = pageSize
-      this.searchTableData()
+      this.searchTableFinishedTaskData()
     },
     finishedTaskHandleCurrentChange(currentPage) {
       this.finishedTaskPaginationConfig.currentPage = currentPage
-      this.searchTableData()
+      this.searchTableFinishedTaskData()
     },
     expiredTaskHandleSizeChange(pageSize) {
       this.expiredTaskPaginationConfig.currentPage = 1
       this.expiredTaskPaginationConfig.pageSize = pageSize
-      this.searchTableData()
+      this.searchTableExpiredTaskData()
     },
     expiredTaskHandleCurrentChange(currentPage) {
       this.expiredTaskPaginationConfig.currentPage = currentPage
-      this.searchTableData()
+      this.searchTableExpiredTaskData()
     },
     getRestTime(time) {
       if (!time) {
