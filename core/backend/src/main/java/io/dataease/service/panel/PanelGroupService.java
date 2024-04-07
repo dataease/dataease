@@ -1225,4 +1225,43 @@ public class PanelGroupService {
         }
 
     }
+
+
+    public String getAbsPath(String id) {
+        ChartViewWithBLOBs chartViewWithBLOBs = chartViewMapper.selectByPrimaryKey(id);
+        if (chartViewWithBLOBs == null) {
+            return null;
+        }
+        if (chartViewWithBLOBs.getSceneId() == null) {
+            return chartViewWithBLOBs.getName();
+        }
+        List<PanelGroupWithBLOBs> parents = getParents(chartViewWithBLOBs.getSceneId());
+        StringBuilder stringBuilder = new StringBuilder();
+        parents.forEach(ele -> {
+            if (ObjectUtils.isNotEmpty(ele)) {
+                stringBuilder.append(ele.getName()).append("/");
+            }
+        });
+        stringBuilder.append(chartViewWithBLOBs.getName());
+        return stringBuilder.toString();
+    }
+
+    public List<PanelGroupWithBLOBs> getParents(String id) {
+        List<PanelGroupWithBLOBs> list = new ArrayList<>();
+        PanelGroupWithBLOBs panelGroupWithBLOBs = panelGroupMapper.selectByPrimaryKey(id);
+        list.add(panelGroupWithBLOBs);
+        getParent(list, panelGroupWithBLOBs);
+        Collections.reverse(list);
+        return list;
+    }
+
+    public void getParent(List<PanelGroupWithBLOBs> list, PanelGroupWithBLOBs panelGroupWithBLOBs) {
+        if (ObjectUtils.isNotEmpty(panelGroupWithBLOBs)) {
+            if (StringUtils.isNotEmpty(panelGroupWithBLOBs.getPid()) && !panelGroupWithBLOBs.getPid().equalsIgnoreCase("panel_list")) {
+                PanelGroupWithBLOBs d = panelGroupMapper.selectByPrimaryKey(panelGroupWithBLOBs.getPid());
+                list.add(d);
+                getParent(list, d);
+            }
+        }
+    }
 }

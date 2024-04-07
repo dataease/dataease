@@ -45,6 +45,12 @@
       class="right-menu"
       style="color: var(--TopTextColor)"
     >
+      <div class="download-export">
+        <svg-icon
+          @click="downloadClick"
+          icon-class="icon_download_outlined"
+        />
+      </div>
       <div
         v-if="aiBaseUrl"
         style="height: 100%;padding: 0 8px;"
@@ -117,6 +123,9 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
+
+    <ExportExcel ref="ExportExcelRef"></ExportExcel>
+
     <ai-component v-if="aiBaseUrl" :base-url="aiBaseUrl"/>
 
     <!--模板市场全屏显示框-->
@@ -139,6 +148,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import ExportExcel from '@/views/dataset/exportExcel/index.vue'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
@@ -159,8 +169,8 @@ export default {
     TemplateMarket,
     AppLink,
     Notification,
-    LangSelect
-
+    LangSelect,
+    ExportExcel
   },
   props: {
     showTips: {
@@ -307,13 +317,15 @@ export default {
     beforeunloadHandler() {
       this.beforeUnload_time = new Date().getTime()
     },
+    downloadClick() {
+      this.$refs.ExportExcelRef.init()
+    },
     unloadHandler(e) {
       this.gap_time = new Date().getTime() - this.beforeUnload_time
       if (this.gap_time <= 5) {
         // this.logout().then(res => {})
       }
     },
-
     // 通过当前路径找到二级菜单对应项，存到store，用来渲染左侧菜单
     initCurrentRoutes() {
       const {
@@ -460,6 +472,20 @@ export default {
 
 </script>
 <style lang="scss" scoped>
+.download-export {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  color: #646A73;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+
+  &:hover {
+    background: #1F23291A;
+  }
+}
 .el-dropdown-link {
   cursor: pointer;
   color: #1e212a;

@@ -512,7 +512,7 @@ public class DatasourceService {
 
     public void updateDatasourceStatus() {
         List<Datasource> datasources = datasourceMapper.selectByExampleWithBLOBs(new DatasourceExample());
-        datasources.forEach(datasource -> checkAndUpdateDatasourceStatus(datasource, true));
+        datasources.parallelStream().forEach(datasource -> checkAndUpdateDatasourceStatus(datasource, true));
     }
 
     public ApiDefinition checkApiDatasource(ApiDefinition apiDefinition) throws Exception {

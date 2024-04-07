@@ -7,6 +7,7 @@ import io.dataease.plugins.common.base.domain.DatasetTableTask;
 import io.dataease.commons.constants.ScheduleType;
 import io.dataease.service.ScheduleService;
 import io.dataease.service.dataset.DataSetTableTaskService;
+import io.dataease.service.exportCenter.ExportCenterService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.boot.context.event.ApplicationReadyEvent;
 import org.springframework.context.ApplicationListener;
@@ -21,6 +22,8 @@ import java.util.List;
 public class AppStartListener implements ApplicationListener<ApplicationReadyEvent> {
     @Resource
     private ScheduleService scheduleService;
+    @Resource
+    private ExportCenterService exportCenterService;
     @Resource
     private DataSetTableTaskService dataSetTableTaskService;
 
@@ -51,5 +54,6 @@ public class AppStartListener implements ApplicationListener<ApplicationReadyEve
                 e.printStackTrace();
             }
         }
+        exportCenterService.reInitExportTask();
     }
 }
