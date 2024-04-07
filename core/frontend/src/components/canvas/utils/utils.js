@@ -15,7 +15,6 @@ import Vue from 'vue'
 import { exportDetails, innerExportDetails } from '@/api/panel/panel'
 import { getLinkToken, getToken } from '@/utils/auth'
 import { toPngUrl } from '@/utils/CanvasUtils'
-import {Button} from "element-ui";
 
 export function deepCopy(target) {
   if (typeof target === 'object' && target !== null) {

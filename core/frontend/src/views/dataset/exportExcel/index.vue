@@ -33,7 +33,9 @@
               <svg-icon style="font-size: 24px;" icon-class="icon_file-excel_colorful"> </svg-icon>
               <span style="margin-left: 8px">{{ scope.row.fileName }}</span>
             </div>
+            <el-progress v-show="activeName==='IN_PROGRESS'" :percentage="scope.row.exportPogress"></el-progress>
           </template>
+
         </el-table-column>
         <el-table-column prop="exportFromName" label="导出对象" width="200">
         </el-table-column>
@@ -115,6 +117,12 @@ export default {
   methods: {
     init() {
       this.drawer = true;
+      this.handleClick()
+      this.timer = setInterval(() => {
+        if(this.activeName === 'IN_PROGRESS'){
+          this.handleClick()
+        }
+      }, 5000);
     },
     handleClick() {
       request({
@@ -226,6 +234,7 @@ export default {
 
     handleClose() {
       this.drawer = false;
+      clearInterval(this.timer);
     },
   },
 };
