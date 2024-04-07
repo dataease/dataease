@@ -679,7 +679,7 @@ export default {
     },
 
     searchFormTaskData() {
-      searchFormTasks(this.param.id, { name: this.taskName }, this.recordPaginationConfig.currentPage, this.recordPaginationConfig.pageSize).then(res => {
+      searchFormTasks(this.param.id, { name: this.taskName }, this.taskPaginationConfig.currentPage, this.taskPaginationConfig.pageSize).then(res => {
         if (res.data) {
           this.taskPaginationConfig.total = res.data.itemCount
           this.tasks = res.data.listObject
@@ -716,7 +716,7 @@ export default {
     taskHandleSizeChange(pageSize) {
       this.taskPaginationConfig.currentPage = 1
       this.taskPaginationConfig.pageSize = pageSize
-      this.searchTableRecordData()
+      this.searchFormTaskData()
     },
     taskHandleCurrentChange(currentPage) {
       this.taskPaginationConfig.currentPage = currentPage
