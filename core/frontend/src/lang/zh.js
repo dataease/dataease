@@ -46,6 +46,7 @@ export default {
     upload_limit_size: '图片大小不超过'
   },
   time: {
+    dropdown_display_must: '当前组件的展示风格为平铺，如果设为非必填，那么组件的展示风格将切换为下拉展示。',
     end_time_start_time: '结束时间必须大于或等于开始时间',
     passing_parameters: '空数据不支持传参数',
     not_supported: '空数据不支持传参数',

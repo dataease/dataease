@@ -42,6 +42,7 @@ export default {
     }
   },
   time: {
+    dropdown_display_must: 'The display style of the current component is tiled. If it is not mandatory, the display style of the component will switch to dropdown display',
     end_time_start_time: 'The end time must be greater than or equal to the start time',
     passing_parameters: 'Empty data does not support passing parameters',
     not_supported: 'After binding parameters, passing empty data is not supported',
