@@ -58,9 +58,12 @@
     <el-dialog
       :visible.sync="dialogVisible"
       append-to-body
+      :show-close="false"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
       :before-close="sureRequired"
     >
-    当前组件的展示风格为平铺，如果设为非必填，那么组件的展示风格将切换为下拉展示。
+    {{ $t('time.dropdown_display_must') }}
       <div style="text-align: end;margin-top: 16px;">
         <span slot="footer">
           <el-button

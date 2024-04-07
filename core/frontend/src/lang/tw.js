@@ -42,6 +42,7 @@ export default {
     }
   },
   time: {
+    dropdown_display_must: '當前組件的展示風格為平鋪，如果設為非必填，那麼組件的展示風格將切換為下拉展示。',
     end_time_start_time: '結束時間必須大於或等於開始時間',
     passing_parameters: '空數據不支持傳參數',
     not_supported: '綁定參數後，不支持傳空數據',

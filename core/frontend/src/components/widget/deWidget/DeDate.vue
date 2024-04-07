@@ -254,7 +254,7 @@ export default {
               const param = cut.callBack();
               this.startWindowTime = param[0]
               const disabled = param.some(ele => {
-                return this.disabledDate(ele)
+                return this.disabledDate(ele - 1000)
               })
               this.startWindowTime = 0
               if (disabled) return
