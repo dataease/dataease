@@ -37,6 +37,5 @@ public class CHConfiguration extends JdbcConfiguration {
                     .replace("DATABASE", getDataBase().trim())
                     .replace("EXTRA_PARAMS", getExtraParams().trim());
         }
-
     }
 }
