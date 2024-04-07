@@ -16,15 +16,21 @@ public interface ExportTaskMapper {
 
     int insertSelective(ExportTask record);
 
+    List<ExportTask> selectByExampleWithBLOBs(ExportTaskExample example);
+
     List<ExportTask> selectByExample(ExportTaskExample example);
 
     ExportTask selectByPrimaryKey(String id);
 
     int updateByExampleSelective(@Param("record") ExportTask record, @Param("example") ExportTaskExample example);
 
+    int updateByExampleWithBLOBs(@Param("record") ExportTask record, @Param("example") ExportTaskExample example);
+
     int updateByExample(@Param("record") ExportTask record, @Param("example") ExportTaskExample example);
 
     int updateByPrimaryKeySelective(ExportTask record);
+
+    int updateByPrimaryKeyWithBLOBs(ExportTask record);
 
     int updateByPrimaryKey(ExportTask record);
 }

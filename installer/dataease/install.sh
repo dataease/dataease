@@ -162,7 +162,9 @@ mkdir -p ${DE_RUN_BASE}/data/kettle
 mkdir -p ${DE_RUN_BASE}/data/fe
 mkdir -p ${DE_RUN_BASE}/data/be
 mkdir -p ${DE_RUN_BASE}/data/mysql
+mkdir -p ${DE_RUN_BASE}/data/exportData
 mkdir -p ${DE_RUN_BASE}/data/static-resource
+mkdir -p ${DE_RUN_BASE}/custom-drivers
 mkdir -p ${DE_RUN_BASE}/custom-drivers
 mkdir -p ${DE_RUN_BASE}/data/business
 

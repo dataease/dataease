@@ -52,7 +52,7 @@
         </el-table-column>
         <el-table-column prop="operate" width="80" label="操作">
           <template slot-scope="scope">
-            <el-button v-if="activeName === 'SUCCESS'" type="text" size="mini" @click="downloadClick(scope.row)">
+            <el-button v-if="scope.row.exportStatus === 'SUCCESS'" type="text" size="mini" @click="downloadClick(scope.row)">
               <div class="download-export">
                 <svg-icon
                   icon-class="icon_download_outlined"
@@ -105,6 +105,10 @@ export default {
           name: "FAILED",
         },
         {
+          label: "等待中(0)",
+          name: "PENDING",
+        },
+        {
           label: "全部(0)",
           name: "ALL",
         },
@@ -142,6 +146,9 @@ export default {
             }
             if(item.name === 'FAILED'){
               item.label = '失败' + '(' + res.data.filter(task => task.exportStatus === 'FAILED').length + ')'
+            }
+            if(item.name === 'PENDING'){
+              item.label = '等待中' + '(' + res.data.filter(task => task.exportStatus === 'PENDING').length + ')'
             }
           })
           if(this.activeName === 'ALL'){

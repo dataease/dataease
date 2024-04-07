@@ -23,5 +23,9 @@ public class ExportTask implements Serializable {
 
     private String exportPogress;
 
+    private String exportMachineName;
+
+    private String params;
+
     private static final long serialVersionUID = 1L;
 }

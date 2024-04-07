@@ -9,5 +9,7 @@ CREATE TABLE `export_task` (
            `export_from_type` varchar(255) DEFAULT NULL,
            `export_time` bigint(20) DEFAULT NULL,
            `export_pogress` varchar(255)  DEFAULT NULL,
+           `export_machine_name` varchar(512)  DEFAULT NULL,
+           `params`  longtext NOT NULL COMMENT '过滤参数',
            PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;

@@ -703,6 +703,76 @@ public class ExportTaskExample {
             addCriterion("export_pogress not between", value1, value2, "exportPogress");
             return (Criteria) this;
         }
+
+        public Criteria andExportMachineNameIsNull() {
+            addCriterion("export_machine_name is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameIsNotNull() {
+            addCriterion("export_machine_name is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameEqualTo(String value) {
+            addCriterion("export_machine_name =", value, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameNotEqualTo(String value) {
+            addCriterion("export_machine_name <>", value, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameGreaterThan(String value) {
+            addCriterion("export_machine_name >", value, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameGreaterThanOrEqualTo(String value) {
+            addCriterion("export_machine_name >=", value, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameLessThan(String value) {
+            addCriterion("export_machine_name <", value, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameLessThanOrEqualTo(String value) {
+            addCriterion("export_machine_name <=", value, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameLike(String value) {
+            addCriterion("export_machine_name like", value, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameNotLike(String value) {
+            addCriterion("export_machine_name not like", value, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameIn(List<String> values) {
+            addCriterion("export_machine_name in", values, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameNotIn(List<String> values) {
+            addCriterion("export_machine_name not in", values, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameBetween(String value1, String value2) {
+            addCriterion("export_machine_name between", value1, value2, "exportMachineName");
+            return (Criteria) this;
+        }
+
+        public Criteria andExportMachineNameNotBetween(String value1, String value2) {
+            addCriterion("export_machine_name not between", value1, value2, "exportMachineName");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

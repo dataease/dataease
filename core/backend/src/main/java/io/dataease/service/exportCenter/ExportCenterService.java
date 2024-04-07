@@ -55,6 +55,7 @@ import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
+import java.net.InetAddress;
 import java.text.DecimalFormat;
 import java.util.*;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
@@ -222,6 +223,39 @@ public class ExportCenterService {
 
     }
 
+    public void reInitExportTask() {
+        ExportTaskExample exportTaskExample = new ExportTaskExample();
+        ExportTaskExample.Criteria criteria = exportTaskExample.createCriteria();
+        criteria.andExportMachineNameEqualTo(hostName()).andExportStatusEqualTo("IN_PROGRESS");
+        ExportTask record = new ExportTask();
+        record.setExportStatus("FAILED");
+        exportTaskMapper.updateByExampleSelective(record, exportTaskExample);
+        exportTaskExample.clear();
+        criteria = exportTaskExample.createCriteria();
+        criteria.andExportMachineNameEqualTo(hostName()).andExportStatusEqualTo("PENDING");
+        exportTaskMapper.selectByExampleWithBLOBs(exportTaskExample).parallelStream().forEach(exportTask -> {
+            if(exportTask.getExportFromType().equalsIgnoreCase("dataset")){
+                DataSetExportRequest request = new Gson().fromJson(exportTask.getParams(), DataSetExportRequest.class);
+                startDatasetTask(exportTask, request);
+            }
+            if(exportTask.getExportFromType().equalsIgnoreCase("chart")){
+                PanelViewDetailsRequest request = new Gson().fromJson(exportTask.getParams(), PanelViewDetailsRequest.class);
+                startViewTask(exportTask, request);
+            }
+        });
+    }
+
+    private String hostName() {
+        String hostname = null;
+        try {
+            InetAddress localMachine = InetAddress.getLocalHost();
+            hostname = localMachine.getHostName();
+        } catch (Exception e) {
+            DataEaseException.throwException("请设置主机名！");
+        }
+        return hostname;
+    }
+
     public void addTask(String exportFrom, String exportFromType, PanelViewDetailsRequest request) {
         ExportTask exportTask = new ExportTask();
         exportTask.setId(UUID.randomUUID().toString());
@@ -232,8 +266,13 @@ public class ExportCenterService {
         exportTask.setFileName(request.getViewName() + ".xlsx");
         exportTask.setExportPogress("0");
         exportTask.setExportTime(System.currentTimeMillis());
+        exportTask.setParams(new Gson().toJson(request));
+        exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
+        startViewTask(exportTask, request);
+    }
 
+    private void startViewTask(ExportTask exportTask, PanelViewDetailsRequest request){
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
@@ -408,10 +447,7 @@ public class ExportCenterService {
                 exportTaskMapper.updateByPrimaryKey(exportTask);
             }
         });
-
-
     }
-
     public void addTask(String exportFrom, String exportFromType, DataSetExportRequest request) {
         ExportTask exportTask = new ExportTask();
         exportTask.setId(UUID.randomUUID().toString());
@@ -422,13 +458,17 @@ public class ExportCenterService {
         exportTask.setFileName(request.getFilename() + ".xlsx");
         exportTask.setExportPogress("0");
         exportTask.setExportTime(System.currentTimeMillis());
+        exportTask.setParams(new Gson().toJson(request));
+        exportTask.setExportMachineName(hostName());
         exportTaskMapper.insert(exportTask);
+        startDatasetTask(exportTask, request);
 
+    }
+
+    private void startDatasetTask(ExportTask exportTask, DataSetExportRequest request){
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-
-
         scheduledThreadPoolExecutor.execute(() -> {
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
@@ -613,8 +653,6 @@ public class ExportCenterService {
                 exportTaskMapper.updateByPrimaryKey(exportTask);
             }
         });
-
-
     }
 
     public Boolean checkEngineTableIsExists(String id) throws Exception {
