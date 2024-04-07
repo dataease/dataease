@@ -2201,7 +2201,13 @@ public class ChartViewService {
         List<SqlVariableDetails> sqlVariables = gson.fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
         }.getType());
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
+
+
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
+                if (CollectionUtils.isNotEmpty(chartExtFilterRequest.getValue())) {
+                    List<String> collect = chartExtFilterRequest.getValue().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
+                    chartExtFilterRequest.setValue(collect);
+                }
                 if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
                     continue;
                 }
