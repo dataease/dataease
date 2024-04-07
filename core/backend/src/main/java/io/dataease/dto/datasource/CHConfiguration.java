@@ -5,6 +5,10 @@ import lombok.Getter;
 import lombok.Setter;
 import org.apache.commons.lang3.StringUtils;
 
+import java.net.URLDecoder;
+import java.util.Arrays;
+import java.util.List;
+
 @Getter
 @Setter
 public class CHConfiguration extends JdbcConfiguration {
