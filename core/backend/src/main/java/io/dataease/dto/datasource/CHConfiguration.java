@@ -11,14 +11,22 @@ public class CHConfiguration extends JdbcConfiguration {
 
     private String driver = "ru.yandex.clickhouse.ClickHouseDriver";
     private String extraParams = "";
+    private List<String> illegalParameters = Arrays.asList("localFile");
 
     public String getJdbc() {
-        if(StringUtils.isEmpty(extraParams.trim())){
+        if (StringUtils.isEmpty(extraParams.trim())) {
             return "jdbc:clickhouse://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
                     .replace("DATABASE", getDataBase().trim());
-        }else {
+        } else {
+            for (String illegalParameter : getIllegalParameters()) {
+                if (getExtraParams().toLowerCase().contains(illegalParameter.toLowerCase()) ||
+                        URLDecoder.decode(getExtraParams()).toLowerCase().contains(illegalParameter.toLowerCase())) {
+                    throw new RuntimeException("Illegal parameter: " + illegalParameter);
+                }
+            }
+
             return "jdbc:clickhouse://HOSTNAME:PORT/DATABASE?EXTRA_PARAMS"
                     .replace("HOSTNAME", getHost().trim())
                     .replace("PORT", getPort().toString().trim())
