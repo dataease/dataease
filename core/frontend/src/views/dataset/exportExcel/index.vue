@@ -189,36 +189,6 @@ export default {
       };
       this.handlerConfirm(options);
     },
-    openMessageLoading(cb) {
-      const h = this.$createElement;
-      const iconClass = `el-icon-loading`;
-      const customClass = `de-message-loading de-message-export`;
-      this.$message({
-        message: h("p", null, [
-          "后台导出中,可前往",
-          h(
-            Button,
-            {
-              props: {
-                type: "text",
-                size: "mini",
-              },
-              class: "btn-text",
-              on: {
-                click: () => {
-                  cb();
-                },
-              },
-            },
-            "数据导出中心",
-          ),
-          "查看进度,进行下载、暂停等操作",
-        ]),
-        iconClass,
-        showClose: true,
-        customClass,
-      });
-    },
     delAll() {
       post(
         '/exportCenter/delete',

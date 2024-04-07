@@ -537,7 +537,7 @@ export default {
             this.table.expressionTree = JSON.stringify({ items, logic })
             this.exportDatasetLoading = true
             exportDataset(this.table).then((res) => {
-              this.openMessageSuccess('后台导出中', 'info')
+              this.openMessageSuccess('后台导出中，查看进度可前往', 'info')
             }).finally(() => {
               this.exportDatasetLoading = false
               this.showExport = false

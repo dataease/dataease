@@ -318,7 +318,6 @@ export default {
       this.beforeUnload_time = new Date().getTime()
     },
     downloadClick() {
-      console.log('this.$refs.ExportExcelRef', this.$refs.ExportExcelRef)
       this.$refs.ExportExcelRef.init()
     },
     unloadHandler(e) {
@@ -327,7 +326,6 @@ export default {
         // this.logout().then(res => {})
       }
     },
-
     // 通过当前路径找到二级菜单对应项，存到store，用来渲染左侧菜单
     initCurrentRoutes() {
       const {
