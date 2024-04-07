@@ -151,12 +151,18 @@ const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const chartContainer = ref<HTMLElement>(null)
 let mapTimer: number
-const renderL7Plot = async (chart, chartView: L7PlotChartView<any, any>, callback) => {
+const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any>, callback) => {
   const map = parseJson(chart.customAttr).map
   let areaId = map.id
   country.value = areaId.slice(0, 3)
   if (dynamicAreaId.value) {
-    areaId = dynamicAreaId.value
+    // 世界下钻到国家，切换路径
+    if (country.value === '000' && dynamicAreaId.value.startsWith('000')) {
+      country.value = dynamicAreaId.value.slice(3)
+      areaId = country.value
+    } else {
+      areaId = dynamicAreaId.value
+    }
   }
   mapTimer && clearTimeout(mapTimer)
   mapTimer = setTimeout(async () => {
