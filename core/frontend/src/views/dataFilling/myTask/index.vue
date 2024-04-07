@@ -52,6 +52,24 @@ export default {
       }
     }
   },
+  watch: {
+    currentKey: {
+      handler(newVal, oldVal) {
+        if (newVal !== oldVal) {
+          this.myTaskName = ''
+          this.finishedTaskName = ''
+          this.expiredTaskName = ''
+        }
+        if (newVal === 'finished') {
+          this.searchTableFinishedTaskData()
+        } else if (newVal === 'expired') {
+          this.searchTableExpiredTaskData()
+        } else {
+          this.searchTableMyTaskData()
+        }
+      }
+    }
+  },
   mounted() {
     this.currentKey = 'todo'
     this.searchTableMyTaskData()
@@ -62,12 +80,17 @@ export default {
     },
     changeKey(key) {
       this.currentKey = key
-      if (key === 'finished') {
-        this.searchTableFinishedTaskData()
-      } else if (key === 'expired') {
-        this.searchTableExpiredTaskData()
+    },
+    entryKey(type) {
+      if (type === 'finished') {
+        this.$refs.search2.focus()
+        this.$refs.search2.blur()
+      } else if (type === 'expired') {
+        this.$refs.search3.focus()
+        this.$refs.search3.blur()
       } else {
-        this.searchTableMyTaskData()
+        this.$refs.search1.focus()
+        this.$refs.search1.blur()
       }
     },
     searchTableMyTaskData() {
@@ -97,29 +120,29 @@ export default {
     myTaskHandleSizeChange(pageSize) {
       this.myTaskPaginationConfig.currentPage = 1
       this.myTaskPaginationConfig.pageSize = pageSize
-      this.searchTableData()
+      this.searchTableMyTaskData()
     },
     myTaskHandleCurrentChange(currentPage) {
       this.myTaskPaginationConfig.currentPage = currentPage
-      this.searchTableData()
+      this.searchTableMyTaskData()
     },
     finishedTaskHandleSizeChange(pageSize) {
       this.finishedTaskPaginationConfig.currentPage = 1
       this.finishedTaskPaginationConfig.pageSize = pageSize
-      this.searchTableData()
+      this.searchTableFinishedTaskData()
     },
     finishedTaskHandleCurrentChange(currentPage) {
       this.finishedTaskPaginationConfig.currentPage = currentPage
-      this.searchTableData()
+      this.searchTableFinishedTaskData()
     },
     expiredTaskHandleSizeChange(pageSize) {
       this.expiredTaskPaginationConfig.currentPage = 1
       this.expiredTaskPaginationConfig.pageSize = pageSize
-      this.searchTableData()
+      this.searchTableExpiredTaskData()
     },
     expiredTaskHandleCurrentChange(currentPage) {
       this.expiredTaskPaginationConfig.currentPage = currentPage
-      this.searchTableData()
+      this.searchTableExpiredTaskData()
     },
     getRestTime(time) {
       if (!time) {
@@ -246,7 +269,7 @@ export default {
                     obj[key] = undefined
                   }
                 } else {
-                  obj[key] = value
+                  obj[key] = value === null ? undefined : value
                 }
               })
 
@@ -282,6 +305,11 @@ export default {
       } else {
         this.searchTableMyTaskData()
       }
+    },
+    tabClick() {
+      if (this.activeName === 'forms') {
+        this.$router.push('/data-filling/forms')
+      }
     }
 
   }
@@ -298,6 +326,7 @@ export default {
       <el-tabs
         v-model="activeName"
         class="tab-panel"
+        @tab-click="tabClick"
       >
         <el-tab-pane
           name="my-tasks"
@@ -324,9 +353,7 @@ export default {
           <span
             slot="label"
           >
-            <router-link to="/data-filling/forms">
-              表单管理
-            </router-link>
+            表单管理
           </span>
         </el-tab-pane>
       </el-tabs>
@@ -344,7 +371,7 @@ export default {
               :offset="16"
             >
               <el-input
-                ref="search"
+                ref="search1"
                 v-model="myTaskName"
                 :placeholder="$t('commons.search_by_name')"
                 prefix-icon="el-icon-search"
@@ -352,7 +379,8 @@ export default {
                 size="small"
                 clearable
                 @blur="searchTableMyTaskData"
-                @clear="searchTableMyTaskData"
+                @clear="entryKey('todo')"
+                @keyup.enter.native="entryKey('todo')"
               />
             </el-col>
           </el-row>
@@ -408,7 +436,7 @@ export default {
             </el-table-column>
             <el-table-column
               key="id"
-              label="操作"
+              :label="$t('data_fill.form.operation')"
               prop="id"
             >
               <template slot-scope="scope">
@@ -436,15 +464,16 @@ export default {
               :offset="16"
             >
               <el-input
-                ref="search"
+                ref="search2"
                 v-model="finishedTaskName"
                 :placeholder="$t('commons.search_by_name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
                 clearable
-                @blur="searchTableMyTaskData"
-                @clear="searchTableMyTaskData"
+                @blur="searchTableFinishedTaskData"
+                @clear="entryKey('finished')"
+                @keyup.enter.native="entryKey('finished')"
               />
             </el-col>
           </el-row>
@@ -491,7 +520,7 @@ export default {
             </el-table-column>
             <el-table-column
               key="id"
-              label="操作"
+              :label="$t('data_fill.form.operation')"
               prop="id"
             >
               <template slot-scope="scope">
@@ -525,15 +554,16 @@ export default {
               :offset="16"
             >
               <el-input
-                ref="search"
+                ref="search3"
                 v-model="expiredTaskName"
                 :placeholder="$t('commons.search_by_name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
                 clearable
-                @blur="searchTableMyTaskData"
-                @clear="searchTableMyTaskData"
+                @blur="searchTableExpiredTaskData"
+                @clear="entryKey('expired')"
+                @keyup.enter.native="entryKey('expired')"
               />
             </el-col>
           </el-row>
@@ -611,6 +641,12 @@ export default {
 </template>
 
 <style  lang="scss" scoped>
+.ms-aside-container {
+  height: calc(100vh - 56px);
+  padding: 0px;
+  min-width: 260px;
+  max-width: 460px;
+}
 
 .view-table {
   background: rgba(255, 255, 255, 1);

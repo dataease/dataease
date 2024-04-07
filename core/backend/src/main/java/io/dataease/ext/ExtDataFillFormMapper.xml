@@ -219,7 +219,7 @@
                 AND t3.`name` LIKE CONCAT('%',#{taskName},'%')
             </if>
         </where>
-        ORDER BY t1.end_time DESC, t1.start_time
+        ORDER BY t1.end_time, t1.start_time
     </select>
 
     <select id="listFinishedUserTask" resultMap="BaseResultMapUserTaskDTO">

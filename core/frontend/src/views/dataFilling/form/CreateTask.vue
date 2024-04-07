@@ -1,5 +1,8 @@
 <template>
-  <el-container class="DataFillingSave">
+  <el-container
+    v-loading="loading"
+    class="DataFillingSave"
+  >
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">
@@ -126,7 +129,7 @@
                 style="padding-top: 28px; padding-bottom: 0"
               >
                 <span
-                  class="perfix"
+                  class="prefix"
                   style="margin-bottom: 28px; "
                 >任务下发时间</span>
                 <el-form-item
@@ -149,7 +152,7 @@
                 style="padding-top: 0; padding-bottom: 0"
               >
                 <span
-                  class="perfix"
+                  class="prefix"
                   style="margin-bottom: 28px"
                 >填报截止时间</span>
                 <el-form-item
@@ -218,12 +221,17 @@
                 <span class="tail">{{ $t('cron.every_exec') }}</span>
               </div>
               <div class="rate-type-time second-row">
-                <span class="perfix">在任务下发</span>
+                <span class="prefix">在任务下发</span>
                 <el-input-number
                   v-model.number="form.publishRangeTime"
                   class="w140"
-                  min="1"
-                  step="1"
+                  :min="1"
+                  :max="100"
+                  :step="1"
+                  :precision="0"
+                  @change="onPublishRangeTimeChange(form)"
+                  @blur="onPublishRangeTimeChange(form)"
+                  @keyup.enter.native="onPublishRangeTimeChange(form)"
                 />
                 <el-select
                   v-model="form.publishRangeTimeType"
@@ -315,6 +323,7 @@ export default {
   },
   data() {
     return {
+      loading: false,
       showTable: false,
       showMedia: false,
       formType: 'add',
@@ -544,6 +553,8 @@ export default {
     },
 
     save() {
+      this.loading = true
+
       const request = this.form
 
       request.rateType = -1
@@ -604,8 +615,11 @@ export default {
 
           saveFormTasks(this.formId, param.request).then(res => {
             this.$emit('save-success')
+          }).finally(() => {
+            this.loading = false
           })
         } else {
+          this.loading = false
           return false
         }
       })
@@ -799,6 +813,13 @@ export default {
         return callback(new Error('收件人、角色、组织至少选择一项'))
       }
       return callback()
+    },
+    onPublishRangeTimeChange(form) {
+      if (!form.publishRangeTime) {
+        this.$nextTick(() => {
+          form.publishRangeTime = 1
+        })
+      }
     }
   }
 }
@@ -930,7 +951,7 @@ export default {
     width: 160px !important;
   }
 
-  .perfix {
+  .prefix {
     font-family: PingFang SC;
     font-size: 14px;
     font-weight: 400;

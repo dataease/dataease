@@ -32,4 +32,6 @@ public abstract class ExtDDLProvider {
     public abstract String checkUniqueValueSql(String tableName, DatasourceRequest.TableFieldWithValue field, DatasourceRequest.TableFieldWithValue pk);
 
     public abstract String whereSql(String tableName, List<TableField> searchFields);
+
+    public abstract String getLowerCaseTaleNames();
 }

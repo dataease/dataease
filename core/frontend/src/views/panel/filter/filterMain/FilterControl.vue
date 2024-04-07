@@ -122,11 +122,21 @@
               </div>
             </template>
             <div class="check-item">
-              <el-checkbox
-                v-if="widget.name && ['textSelectWidget', 'textSelectGridWidget'].includes(widget.name)"
-                v-model="attrs.showEmpty"
-              >{{ $t('panel.show_empty') }}
-              </el-checkbox>
+              <el-tooltip
+                class="box-item"
+                effect="dark"
+                :content="$t('time.passing_parameters')"
+                placement="top"
+                manual
+                v-model="visibleShowEmpty"
+              >
+                <el-checkbox
+                  v-if="widget.name && ['textSelectWidget', 'textSelectGridWidget'].includes(widget.name)"
+                  :disabled="attrs.enableParameters"
+                  v-model="attrs.showEmpty"
+                ><span @mouseenter="handlerVisibleShowEmpty" @mouseleave="handlerVisibleShowEmpty">{{ $t('panel.show_empty') }}</span>
+                </el-checkbox>
+              </el-tooltip>
             </div>
             <div class="check-item">
               <el-checkbox
@@ -184,13 +194,22 @@
               </el-popover>
             </div>
             <div class="check-item">
-              <el-checkbox
-                v-if="showParams"
-                v-model="attrs.enableParameters"
-                @change="enableParametersChange"
-              ><span>
-                {{ $t('panel.binding_parameters') }} </span>
-              </el-checkbox>
+              <el-tooltip
+                manual
+                v-model="visibleEnableParameters"
+              >
+              <template #content>
+                <span>{{ $t('time.not_supported') }}</span>
+              </template>
+                <el-checkbox
+                  v-if="showParams"
+                  :disabled="attrs.showEmpty"
+                  v-model="attrs.enableParameters"
+                  @change="enableParametersChange"
+                ><span @mouseenter="handlerVisibleEnableParameters" @mouseleave="handlerVisibleEnableParameters">
+                  {{ $t('panel.binding_parameters') }} </span>
+                </el-checkbox>
+              </el-tooltip>
               <el-popover
                 placement="bottom-end"
                 :disabled="!attrs.enableParameters"
@@ -320,6 +339,8 @@ export default {
         { label: this.$t('dataset.start_time'), name: 'start' },
         { label: this.$t('dataset.end_time'), name: 'end' }
       ],
+      visibleEnableParameters: false,
+      visibleShowEmpty: false,
       showParams: false,
       isRangeParamWidget: false,
       attrs: null,
@@ -422,6 +443,16 @@ export default {
     }
   },
   methods: {
+    handlerVisibleEnableParameters() {
+      if (this.attrs.showEmpty) {
+        this.visibleEnableParameters = !this.visibleEnableParameters
+      }
+    },
+    handlerVisibleShowEmpty() {
+      if (this.attrs.enableParameters) {
+        this.visibleShowEmpty = !this.visibleShowEmpty
+      }
+    },
     changeDynamicParams(val, name) {
       const start = this.attrs.startParameters ? JSON.parse(JSON.stringify(this.attrs.startParameters)) : []
 
@@ -520,7 +551,6 @@ export default {
     margin-right: -4px;
     margin-left: 6px;
     border-radius: 4px;
-    color: #3370FF;
     font-size: 14px;
     font-weight: 400;
     line-height: 22px;
@@ -528,6 +558,7 @@ export default {
     justify-content: center;
     &:hover {
       background: #3370FF1A;
+      color: #3370FF;
     }
 
     &.icon-icon-more::before {

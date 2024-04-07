@@ -38,7 +38,10 @@
     "home": {
         "tab1": "我的收藏",
         "tab2": "最近瀏覽",
-        "tab3": "分享給我"
+        "tab3": "分享給我",
+        "empty_tips_1": "暫無收藏的儀表板!",
+        "empty_tips_2": "暫無瀏覽記錄!",
+        "empty_tips_3": "暫無分享給我的儀表板!"
     },
     "dir": {
         "searchPlaceholder": "請輸入儀表板名稱",

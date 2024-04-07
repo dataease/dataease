@@ -46,6 +46,10 @@ export default {
     upload_limit_size: '图片大小不超过'
   },
   time: {
+    dropdown_display_must: '当前组件的展示风格为平铺，如果设为非必填，那么组件的展示风格将切换为下拉展示。',
+    end_time_start_time: '结束时间必须大于或等于开始时间',
+    passing_parameters: '空数据不支持传参数',
+    not_supported: '空数据不支持传参数',
     set_time_filtering_range: '设置时间筛选范围',
     filter_range: '默认值超出日期筛选范围内，请重新设置!',
     interval_type: '区间类型',
@@ -598,7 +602,14 @@ export default {
       datasource: '数据源',
       table: '数据库表',
       creator: '创建人',
-      createTime: '创建时间'
+      createTime: '创建时间',
+      operation: '操作',
+      operator: '操作人',
+      operate_time: '操作时间',
+      modify: '修改',
+      show: '查看',
+      delete: '删除',
+      show_data: '查看数据'
     },
     data: {
       confirm_delete: '确认删除?'
@@ -607,7 +618,8 @@ export default {
       confirm_enable: '确认启动任务？（单次任务会新建下发任务）',
       confirm_disable: '确认停止任务？'
     },
-    on_the_left: '请在左侧选择表单'
+    on_the_left: '请在左侧选择表单',
+    search_by_commit_name: '根据操作人名称搜索'
   },
   detabs: {
     custom_sort: '自定义排序',
@@ -1531,6 +1543,7 @@ export default {
     value_formatter_suffix: '单位后缀',
     value_formatter_thousand_separator: '千分符',
     value_formatter_example: '示例',
+    axis_label_length_limit: '长度限制',
     unit_none: '无',
     unit_thousand: '千',
     unit_ten_thousand: '万',
@@ -1672,6 +1685,7 @@ export default {
     map_line_color_target_color: '结束颜色',
     map_line_theta_offset: '弧度',
     gauge_axis_label: '刻度标签',
+    gauge_percentage_tick: '百分比刻度',
     word_size_range: '字号区间',
     word_spacing: '文字间隔',
     axis_multi_select_tip: '按住 Ctrl/Cmd 键或者 Shift 键再点击可多选',
@@ -2872,7 +2886,7 @@ export default {
     chart_data: '视图数据',
     panel_preview: '预览报告',
     preview: '预览',
-    emial_preview: '报告预览',
+    email_preview: '报告预览',
     chart_data_range: '视图数据范围',
     panel_format: '仪表板格式',
     simple_repeat: '简单重复',

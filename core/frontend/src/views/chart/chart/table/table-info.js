@@ -182,38 +182,7 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
   }
   // 表头排序
   if (customAttr.size.tableHeaderSort) {
-    const sortIconMap = {
-      'asc': 'SortUp',
-      'desc': 'SortDown'
-    }
-    s2Options.headerActionIcons = [
-      {
-        iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
-        belongsCell: 'colCell',
-        displayCondition: (meta, iconName) => {
-          if (meta.field === SERIES_NUMBER_FIELD) {
-            return false
-          }
-          const sortMethodMap = meta.spreadsheet.store.get('sortMethodMap')
-          const sortType = sortMethodMap?.[meta.field]
-          if (sortType) {
-            return iconName === sortIconMap[sortType]
-          }
-          return iconName === 'GroupAsc'
-        },
-        onClick: (props) => {
-          const { meta, event } = props
-          meta.spreadsheet.showTooltip({
-            position: {
-              x: event.clientX,
-              y: event.clientY
-            },
-            event,
-            ...props
-          })
-        }
-      }
-    ]
+    configHeaderSort(chart, s2Options)
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
@@ -426,38 +395,7 @@ export function baseTableNormal(container, chart, action, tableData, vueCom, res
   }
   // 表头排序
   if (customAttr.size.tableHeaderSort) {
-    const sortIconMap = {
-      'asc': 'SortUp',
-      'desc': 'SortDown'
-    }
-    s2Options.headerActionIcons = [
-      {
-        iconNames: ['GroupAsc', 'SortUp', 'SortDown'],
-        belongsCell: 'colCell',
-        displayCondition: (meta, iconName) => {
-          if (meta.field === SERIES_NUMBER_FIELD) {
-            return false
-          }
-          const sortMethodMap = meta.spreadsheet.store.get('sortMethodMap')
-          const sortType = sortMethodMap?.[meta.field]
-          if (sortType) {
-            return iconName === sortIconMap[sortType]
-          }
-          return iconName === 'GroupAsc'
-        },
-        onClick: (props) => {
-          const { meta, event } = props
-          meta.spreadsheet.showTooltip({
-            position: {
-              x: event.clientX,
-              y: event.clientY
-            },
-            event,
-            ...props
-          })
-        }
-      }
-    ]
+    configHeaderSort(chart, s2Options)
   }
   // 开启序号之后，第一列就是序号列，修改 label 即可
   if (s2Options.showSeriesNumber) {
@@ -809,7 +747,12 @@ function getConditions(chart) {
       res.text.push({
         field: field.field.dataeaseName,
         mapping(value, rowData) {
+          // 总计小计
           if (rowData?.isTotals) {
+            return null
+          }
+          // 表头
+          if (rowData?.id && rowData?.field === rowData.id) {
             return null
           }
           return {
@@ -821,6 +764,9 @@ function getConditions(chart) {
         field: field.field.dataeaseName,
         mapping(value, rowData) {
           if (rowData?.isTotals) {
+            return null
+          }
+          if (rowData?.id && rowData?.field === rowData.id) {
             return null
           }
           const fill = mappingColor(value, defaultBgColor, field, 'backgroundColor', filedValueMap, rowData)
@@ -1210,4 +1156,71 @@ function copyContent(s2Instance, event, fieldMeta) {
   if (content) {
     copyString(content, true)
   }
+}
+
+const SORT_DEFAULT = '<svg t="1711681787276" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4355" width="200" height="200"><path d="M922.345786 372.183628l-39.393195 38.687114L676.138314 211.079416l0 683.909301-54.713113 0L621.425202 129.010259l53.320393 0L922.345786 372.183628zM349.254406 894.989741 101.654214 651.815349l39.393195-38.687114 206.814276 199.792349L347.861686 129.010259l54.713113 0 0 765.978459L349.254406 894.988718z" fill="{fill}" p-id="4356"></path></svg>'
+const SORT_UP = '<svg t="1711682928245" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="11756" width="200" height="200"><path d="M960 704L512 256 64 704z" fill="{fill}" p-id="11757"></path></svg>'
+const SORT_DOWN = '<svg t="1711681879346" class="icon" viewBox="0 0 1024 1024" version="1.1" xmlns="http://www.w3.org/2000/svg" p-id="4655" width="200" height="200"><path d="M64 320l448 448 448-448z" fill="{fill}" p-id="4656"></path></svg>'
+
+function configHeaderSort(chart, options) {
+  const { tableHeaderFontColor } = JSON.parse(chart.customAttr).color
+  const iconColor = tableHeaderFontColor ?? '#666'
+  const sortDefault = svg2Base64(SORT_DEFAULT.replace('{fill}', iconColor))
+  const sortUp = svg2Base64(SORT_UP.replace('{fill}', iconColor))
+  const sortDown = svg2Base64(SORT_DOWN.replace('{fill}', iconColor))
+  const randomSuffix = Math.random()
+  const sortIconMap = {
+    'asc': `customSortUp${randomSuffix}`,
+    'desc': `customSortDown${randomSuffix}`
+  }
+  options.customSVGIcons = [
+    {
+      name: `customSortDefault${randomSuffix}`,
+      svg: sortDefault
+    },
+    {
+      name: `customSortUp${randomSuffix}`,
+      svg: sortUp
+    },
+    {
+      name: `customSortDown${randomSuffix}`,
+      svg: sortDown
+    }
+  ]
+  options.headerActionIcons = [
+    {
+      iconNames: [
+        `customSortDefault${randomSuffix}`,
+        `customSortUp${randomSuffix}`,
+        `customSortDown${randomSuffix}`
+      ],
+      belongsCell: 'colCell',
+      displayCondition: (meta, iconName) => {
+        if (meta.field === SERIES_NUMBER_FIELD) {
+          return false
+        }
+        const sortMethodMap = meta.spreadsheet.store.get('sortMethodMap')
+        const sortType = sortMethodMap?.[meta.field]
+        if (sortType) {
+          return iconName === sortIconMap[sortType]
+        }
+        return iconName === `customSortDefault${randomSuffix}`
+      },
+      onClick: (props) => {
+        const { meta, event } = props
+        meta.spreadsheet.showTooltip({
+          position: {
+            x: event.clientX,
+            y: event.clientY
+          },
+          event,
+          ...props
+        })
+      }
+    }
+  ]
+}
+
+function svg2Base64(svg) {
+  return `data:image/svg+xml;charset=utf-8;base64,${btoa(svg)}`
 }

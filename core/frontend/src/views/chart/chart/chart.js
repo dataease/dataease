@@ -124,6 +124,7 @@ export const DEFAULT_SIZE = {
   gaugeEndAngle: -45,
   gaugeAxisLine: true,
   gaugeTickCount: 5,
+  gaugePercentLabel: true,
   dimensionFontSize: 18,
   quotaFontSize: 18,
   spaceSplit: 10,
@@ -385,7 +386,8 @@ export const DEFAULT_YAXIS_STYLE = {
     color: '#333333',
     fontSize: '12',
     rotate: 0,
-    formatter: '{value}'
+    formatter: '{value}',
+    lengthLimit: 20
   },
   axisLine: {
     show: false,

@@ -1,5 +1,6 @@
 package io.dataease.service.ai;
 
+import io.dataease.commons.utils.UrlTestUtils;
 import io.dataease.service.system.SystemParameterService;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
@@ -23,7 +24,7 @@ public class AiBaseService {
         String baseUrl = parameterService.getValue("ai.baseUrl");
         Map<String,String> result = new HashMap<>();
 
-        if(StringUtils.isNotEmpty(baseUrl)){
+        if(StringUtils.isNotEmpty(baseUrl) && UrlTestUtils.isURLAvailable(baseUrl)){
             result.put("ai.baseUrl",baseUrl);
 
         }

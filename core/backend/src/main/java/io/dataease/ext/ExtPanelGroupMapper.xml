@@ -199,7 +199,7 @@
                 and panel_group.level = #{level}
             </if>
         </where>
-        ORDER BY panel_group.node_type desc, CONVERT(panel_group.name using gbk)
+        ORDER BY panel_group.create_time desc
     </select>
 
     <delete id="deleteLinkDefaultCircle">

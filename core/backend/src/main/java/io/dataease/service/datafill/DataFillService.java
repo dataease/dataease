@@ -4,7 +4,10 @@ import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.service.AuthUserService;
-import io.dataease.commons.constants.*;
+import io.dataease.commons.constants.DataFillConstants;
+import io.dataease.commons.constants.DePermissionType;
+import io.dataease.commons.constants.SysAuthConstants;
+import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.datafill.DataFillFormRequest;
@@ -12,7 +15,6 @@ import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.datafill.DataFillFormDTO;
 import io.dataease.ext.ExtDataFillFormMapper;
 import io.dataease.i18n.Translator;
-import io.dataease.listener.util.CacheUtils;
 import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.DataFillFormMapper;
 import io.dataease.plugins.common.base.mapper.DataFillUserTaskMapper;
@@ -158,6 +160,10 @@ public class DataFillService {
 
         Assert.notNull(dataFillForm.getId(), "id cannot be null");
 
+        DataFillFormWithBLOBs form = dataFillFormMapper.selectByPrimaryKey(dataFillForm.getId());
+        //todo 改变文件夹位置
+        checkName(dataFillForm.getId(), dataFillForm.getName(), form.getPid(), form.getLevel(), form.getNodeType(), DataFillConstants.OPT_TYPE_UPDATE);
+
         dataFillForm.setUpdateTime(new Date());
         dataFillFormMapper.updateByPrimaryKeySelective(dataFillForm);
 
@@ -262,9 +268,13 @@ public class DataFillService {
             dataFillFormMapper.deleteByExample(example);
         }
 
-        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM, dataFillForm.getId(), dataFillForm.getPid(), null, null);
+        if (dataFillForm != null) {
 
-        dataFillTaskService.deleteTaskByFormId(id);
+            DeLogUtils.save(SysLogConstants.OPERATE_TYPE.DELETE, SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM, dataFillForm.getId(), dataFillForm.getPid(), null, null);
+
+            dataFillTaskService.deleteTaskByFormId(id);
+
+        }
     }
 
     public List<ExtTableField> listFields(String id) throws Exception {
@@ -309,10 +319,14 @@ public class DataFillService {
 
             Datasource ds = datasource.get(dataFillForm.getDatasource());
             Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+            ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDatasource(ds);
             datasourceRequest.setTable(dataFillForm.getTableName());
+
+            DataFillDataService.setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
+
             List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
 
             for (TableField tableField : tableFields) {

@@ -1076,7 +1076,9 @@ public class ChartViewService {
                 xAxis.addAll(xAxisExtList);
             }
             fieldMap.put("xAxis", xAxis);
-            fieldMap.put("xAxisExt", xAxisExt);
+            if (!StringUtils.equals(view.getType(), "race-bar")) {
+                fieldMap.put("xAxisExt", xAxisExt);
+            }
             fieldMap.put("extStack", extStack);
             fieldMap.put("extBubble", extBubble);
             fieldMap.put("yAxis", yAxis);
@@ -1515,7 +1517,11 @@ public class ChartViewService {
                             preDataItems.forEach(preDataItem -> {
                                 String[] groupStackAxisArr = Arrays.copyOfRange(preDataItem, finalXAxisBase.size(), finalSubEndIndex);
                                 String groupStackAxis = StringUtils.join(groupStackAxisArr, '-');
-                                preDataMap.put(groupStackAxis, new BigDecimal(preDataItem[finalDataIndex]));
+                                String preVal = preDataItem[finalDataIndex];
+                                if (StringUtils.isBlank(preVal)) {
+                                    preVal = "0";
+                                }
+                                preDataMap.put(groupStackAxis, new BigDecimal(preVal));
                             });
                             curDataItems.forEach(curDataItem -> {
                                 String[] groupStackAxisArr = Arrays.copyOfRange(curDataItem, finalXAxisBase.size(), finalSubEndIndex);
@@ -1532,10 +1538,14 @@ public class ChartViewService {
                         final int index = dataIndex;
                         final AtomicReference<BigDecimal> accumValue = new AtomicReference<>(new BigDecimal(0));
                         data.forEach(item -> {
-                            BigDecimal curVal = new BigDecimal(item[index]);
-                            BigDecimal curAccumValue = accumValue.get().add(curVal);
+                            String val = item[index];
+                            BigDecimal curAccumValue = accumValue.get();
+                            if (!StringUtils.isBlank(val)) {
+                                BigDecimal curVal = new BigDecimal(val);
+                                curAccumValue = curAccumValue.add(curVal);
+                                accumValue.set(curAccumValue);
+                            }
                             item[index] = curAccumValue.toString();
-                            accumValue.set(curAccumValue);
                         });
                     }
                 }
@@ -2191,7 +2201,13 @@ public class ChartViewService {
         List<SqlVariableDetails> sqlVariables = gson.fromJson(table.getSqlVariableDetails(), new TypeToken<List<SqlVariableDetails>>() {
         }.getType());
         if (requestList != null && CollectionUtils.isNotEmpty(requestList.getFilter())) {
+
+
             for (ChartExtFilterRequest chartExtFilterRequest : requestList.getFilter()) {
+                if (CollectionUtils.isNotEmpty(chartExtFilterRequest.getValue())) {
+                    List<String> collect = chartExtFilterRequest.getValue().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
+                    chartExtFilterRequest.setValue(collect);
+                }
                 if (CollectionUtils.isEmpty(chartExtFilterRequest.getValue())) {
                     continue;
                 }

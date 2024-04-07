@@ -242,6 +242,7 @@ export default {
         // 主题变更
         this.canvasStyleData.chartInfo.chartCommonStyle.backgroundColorSelect = true
         this.canvasStyleData.panel.backgroundType = 'color'
+        this.canvasStyleData.panel['alpha'] = 100
         if (this.overallSettingForm.panel.themeColor === 'light') {
           this.canvasStyleData.panel.color = deepCopy(LIGHT_THEME_PANEL_BACKGROUND)
           this.canvasStyleData.chartInfo.chartCommonStyle.color = deepCopy(LIGHT_THEME_COMPONENT_BACKGROUND)

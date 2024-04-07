@@ -833,7 +833,7 @@ div:focus {
   color: #1F2329 !important;
 }
 
-.el-radio__input.is-checked:not(.is-disabled)+.el-radio__label {
+.el-radio:not(.is-custom-select) .el-radio__input.is-checked:not(.is-disabled)+.el-radio__label {
   color: var(--deTextPrimary, #1F2329) !important;
 }
 

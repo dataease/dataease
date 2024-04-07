@@ -312,6 +312,9 @@ export default {
         item.value = []
       } else {
         item.value = undefined
+        if (item.settings.mapping.type === 'text') {
+          item.settings.mapping.type = undefined
+        }
       }
     },
     getRules(item) {
@@ -556,6 +559,7 @@ export default {
                   >
                     <el-input
                       v-if="item.type === 'input' && item.settings.inputType !== 'number'"
+                      :key="item.id + item.settings.inputType"
                       v-model="item.value"
                       :type="item.settings.inputType"
                       :required="item.settings.required"
@@ -564,6 +568,7 @@ export default {
                     />
                     <el-input-number
                       v-if="item.type === 'input' && item.settings.inputType === 'number'"
+                      :key="item.id + item.settings.inputType"
                       v-model="item.value"
                       :required="item.settings.required"
                       :placeholder="item.settings.placeholder"
@@ -573,6 +578,7 @@ export default {
                     />
                     <el-input
                       v-else-if="item.type === 'textarea'"
+                      :key="item.id + 'textarea'"
                       v-model="item.value"
                       type="textarea"
                       :required="item.settings.required"
@@ -581,6 +587,7 @@ export default {
                     />
                     <el-select
                       v-else-if="item.type === 'select'"
+                      :key="item.id + 'select'"
                       v-model="item.value"
                       :required="item.settings.required"
                       :placeholder="item.settings.placeholder"
@@ -598,6 +605,7 @@ export default {
                     </el-select>
                     <el-radio-group
                       v-else-if="item.type === 'radio'"
+                      :key="item.id + 'radio'"
                       v-model="item.value"
                       :required="item.settings.required"
                       style="width: 100%"
@@ -612,6 +620,7 @@ export default {
                     </el-radio-group>
                     <el-checkbox-group
                       v-else-if="item.type === 'checkbox'"
+                      :key="item.id + 'checkbox'"
                       v-model="item.value"
                       :required="item.settings.required"
                       size="small"
@@ -625,6 +634,7 @@ export default {
                     </el-checkbox-group>
                     <el-date-picker
                       v-else-if="item.type === 'date' && !item.settings.enableTime"
+                      :key="item.id + 'date'"
                       v-model="item.value"
                       :required="item.settings.required"
                       type="date"
@@ -634,6 +644,7 @@ export default {
                     />
                     <el-date-picker
                       v-else-if="item.type === 'date' && item.settings.enableTime"
+                      :key="item.id + 'dateEnableTime'"
                       v-model="item.value"
                       :required="item.settings.required"
                       type="datetime"
@@ -643,6 +654,7 @@ export default {
                     />
                     <el-date-picker
                       v-else-if="item.type === 'dateRange' && !item.settings.enableTime"
+                      :key="item.id + 'dateRangeEnableTime'"
                       v-model="item.value"
                       :required="item.settings.required"
                       type="daterange"
@@ -654,6 +666,7 @@ export default {
                     />
                     <el-date-picker
                       v-else-if="item.type === 'dateRange' && item.settings.enableTime"
+                      :key="item.id + 'datetimerangeRangeEnableTime'"
                       v-model="item.value"
                       :required="item.settings.required"
                       type="datetimerange"
@@ -716,13 +729,28 @@ export default {
                     style="color: red"
                   >*</span>
                 </template>
-                <el-input
+                <el-select
+                  v-model="selectedComponentItem.settings.rangeSeparator"
+                  style="width: 100%"
+                  required
+                >
+                  <el-option
+                    label="-"
+                    value="-"
+                  />
+                  <el-option
+                    label="~"
+                    value="~"
+                  />
+                </el-select>
+
+                <!--                <el-input
                   v-model.trim="selectedComponentItem.settings.rangeSeparator"
                   required
                   size="small"
-                  maxlength="10"
+                  maxlength="3"
                   show-word-limit
-                />
+                />-->
               </el-form-item>
 
               <el-form-item

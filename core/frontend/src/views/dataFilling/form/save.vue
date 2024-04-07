@@ -86,6 +86,7 @@ export default {
       callback()
     }
     return {
+      loading: false,
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       duplicateRule: { validator: checkDuplicateNameValidator, trigger: 'blur' },
       duplicateIndexRule: { validator: checkDuplicateIndexNameValidator, trigger: 'blur' },
@@ -141,6 +142,7 @@ export default {
     }
   },
   mounted() {
+    this.loading = true
     this.formData = this.form
 
     forEach(this.formData.forms, f => {
@@ -149,34 +151,44 @@ export default {
         f.settings.mapping.type = f.settings.mapping.typeOptions[0].value
       }
     })
+    const p1 = listDatasourceType()
+    const p2 = listDatasource()
+    const p3 = listForm({ nodeType: 'folder' })
 
-    listDatasourceType().then(res => {
-      this.allDatasourceTypes = res.data
-    })
+    Promise.all([p1, p2, p3]).then((val) => {
+      this.allDatasourceTypes = val[0].data
 
-    listDatasource().then(res => {
-      this.allDatasourceList = res.data
-    })
+      this.allDatasourceList = val[1].data
 
-    listForm({ nodeType: 'folder' }).then(res => {
-      this.folders = res.data || []
+      this.folders = val[2].data || []
       if (this.formData.folder) {
         this.$nextTick(() => {
           this.$refs.tree.setCurrentKey(this.formData.folder)
           this.$refs.tree.setCheckedKeys([this.formData.folder])
         })
       }
+    }).finally(() => {
+      this.loading = false
     })
   },
   methods: {
     getTypeOptions(formOption) {
       const _options = []
-      if (formOption.type !== 'date' && formOption.type !== 'dateRange' && formOption.settings.inputType !== 'number' && formOption.type !== 'textarea') {
+      if (formOption.type !== 'date' &&
+        formOption.type !== 'dateRange' &&
+        formOption.settings.inputType !== 'number' &&
+        formOption.type !== 'textarea' &&
+        formOption.type !== 'checkbox' &&
+        !(formOption.type === 'select' && formOption.settings.multiple)
+      ) {
         _options.push({ value: 'nvarchar', label: '字符串' })
       }
-      if (formOption.type === 'textarea') {
+      if (formOption.type === 'checkbox' ||
+        formOption.type === 'select' && formOption.settings.multiple ||
+        formOption.type === 'textarea') {
         _options.push({ value: 'text', label: '长文本' })
       }
+
       if (formOption.type === 'input' && formOption.settings.inputType === 'number') {
         _options.push({ value: 'number', label: '整型数字' })
         _options.push({ value: 'decimal', label: '小数数字' })
@@ -240,6 +252,7 @@ export default {
       return data.name.indexOf(value) !== -1
     },
     doSave() {
+      this.loading = true
       this.$refs['mRightForm'].validate((valid) => {
         if (valid) {
           const data = {
@@ -256,8 +269,11 @@ export default {
           saveForm(data).then(res => {
             this.closeSave()
             this.$router.replace({ name: 'data-filling-form', query: { id: res.data }})
+          }).finally(() => {
+            this.loading = false
           })
         } else {
+          this.loading = false
           return false
         }
       })
@@ -267,7 +283,10 @@ export default {
 </script>
 
 <template>
-  <el-container class="DataFillingFormSave">
+  <el-container
+    v-loading="loading"
+    class="DataFillingFormSave"
+  >
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">
@@ -392,6 +411,7 @@ export default {
           </template>
           <el-select
             v-model="formData.datasource"
+            filterable
             size="small"
             style="width: 100%"
           >

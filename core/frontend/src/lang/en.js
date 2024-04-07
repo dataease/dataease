@@ -42,6 +42,10 @@ export default {
     }
   },
   time: {
+    dropdown_display_must: 'The display style of the current component is tiled. If it is not mandatory, the display style of the component will switch to dropdown display',
+    end_time_start_time: 'The end time must be greater than or equal to the start time',
+    passing_parameters: 'Empty data does not support passing parameters',
+    not_supported: 'After binding parameters, passing empty data is not supported',
     set_time_filtering_range: 'Set time filtering range',
     filter_range: 'The default value is outside the date filtering range, please reset it!',
     interval_type: 'Interval type',
@@ -599,7 +603,14 @@ export default {
       datasource: 'Datasource',
       table: 'Table',
       creator: 'Creator',
-      createTime: 'Create Time'
+      createTime: 'Create Time',
+      operation: 'Operation',
+      operator: 'Operator',
+      operate_time: 'Operate Time',
+      modify: 'Modify',
+      show: 'Show',
+      delete: 'Delete',
+      show_data: 'Show Data'
     },
     data: {
       confirm_delete: 'Confirm delete?'
@@ -608,7 +619,8 @@ export default {
       confirm_enable: 'Confirm enable task?',
       confirm_disable: 'Confirm disable task?'
     },
-    on_the_left: 'Please select a form on the left'
+    on_the_left: 'Please select a form on the left',
+    search_by_commit_name: 'Search by operator name'
   },
   detabs: {
     custom_sort: 'Custom Sort',
@@ -1534,6 +1546,7 @@ export default {
     value_formatter_thousand_separator: 'Thousand Separator',
     value_formatter_example: 'Example',
     value_suffix: 'Value Suffix',
+    axis_label_length_limit: 'Length limit',
     unit_none: 'None',
     unit_thousand: 'Thousand',
     unit_ten_thousand: 'Ten Thousand',
@@ -1680,6 +1693,7 @@ export default {
     map_line_color_target_color: 'End Color',
     map_line_theta_offset: 'Radian',
     gauge_axis_label: 'Axis Label',
+    gauge_percentage_tick: 'Percentage tick',
     word_size_range: 'Word Size Range',
     word_spacing: 'Word Spacing',
     axis_multi_select_tip: 'Hold down the Ctrl/Cmd or Shift key and click to select more than one',
@@ -2877,7 +2891,7 @@ export default {
     chart_data: 'View data',
     panel_preview: 'Preview report',
     preview: 'Preview',
-    emial_preview: 'Report preview',
+    email_preview: 'Report preview',
     chart_data_range: 'View data range',
     panel_format: 'Panel format',
     simple_repeat: 'Simple repeat',

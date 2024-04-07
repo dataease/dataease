@@ -27,6 +27,11 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
     private static final String dropTableSql = "DROP TABLE IF EXISTS `TABLE_NAME`";
 
     @Override
+    public String getLowerCaseTaleNames() {
+        return "SHOW VARIABLES LIKE 'lower_case_table_names'";
+    }
+
+    @Override
     public String dropTableSql(String table) {
         return dropTableSql.replace("TABLE_NAME", table);
     }
@@ -262,7 +267,7 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
                     if (field.getAccuracy() != null && field.getAccuracy() >= 0) {
                         str.append(field.getAccuracy());
                     } else {
-                        str.append(4);
+                        str.append(8);
                     }
                     str.append(") ");
                     break;
@@ -288,9 +293,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         }
 
         if (primaryKeyField != null) {
-            str.append("constraint ")
+            str.append("constraint `")
                     .append(table)
-                    .append("_pk ")
+                    .append("_pk` ")
                     .append("PRIMARY KEY (")
                     .append("`")
                     .append(primaryKeyField.getColumnName())

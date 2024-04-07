@@ -216,7 +216,7 @@
             <span>{{ $t('chart.filter') }}...</span>
           </el-dropdown-item>
           <el-dropdown-item
-            v-if="chart.render === 'antv' && chart.type !== 'gauge' && chart.type !== 'liquid' && chart.type !== 'bar-time-range'"
+            v-if="chart.render === 'antv' && chart.type !== 'liquid' && chart.type !== 'bar-time-range'"
             icon="el-icon-notebook-2"
             divided
             :command="beforeClickItem('formatter')"

@@ -37,7 +37,10 @@
     "home": {
         "tab1": "我的收藏",
         "tab2": "最近浏览",
-        "tab3": "分享给我"
+        "tab3": "分享给我",
+        "empty_tips_1": "暂无收藏的仪表板!",
+        "empty_tips_2": "暂无浏览记录!",
+        "empty_tips_3": "暂无分享给我的仪表板!"
     },
     "dir": {
         "searchPlaceholder": "请输入仪表板名称",

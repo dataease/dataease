@@ -127,7 +127,7 @@ export default {
         }
       ).then(() => {
         deleteForm(data.id).then((response) => {
-          if (this.displayFormData.id === data.id) {
+          if (this.displayFormData && this.displayFormData.id === data.id) {
             this.displayFormData = undefined
           }
           listForm({}).then(res => {
@@ -194,6 +194,11 @@ export default {
           this.displayFormData = res.data
         })
       }
+    },
+    tabClick() {
+      if (this.activeName === 'my-tasks') {
+        this.$router.push('/data-filling/my-jobs')
+      }
     }
   }
 }
@@ -208,15 +213,14 @@ export default {
       <el-tabs
         v-model="activeName"
         class="tab-panel"
+        @tab-click="tabClick"
       >
         <el-tab-pane
           v-if="hasPermission(['my-data-filling:manage'])"
           name="my-tasks"
         >
           <span slot="label">
-            <router-link to="/data-filling/my-jobs">
-              我的填报
-            </router-link>
+            我的填报
           </span>
         </el-tab-pane>
 
@@ -382,6 +386,7 @@ export default {
       class="m-dialog"
     >
       <el-container
+        v-if="showFolderCreateForm"
         style="width: 100%"
         direction="vertical"
       >
@@ -482,6 +487,13 @@ export default {
 </template>
 
 <style  lang="scss" scoped>
+.ms-aside-container {
+  height: calc(100vh - 56px);
+  padding: 0px;
+  min-width: 260px;
+  max-width: 460px;
+}
+
 .tab-panel {
   height: 100%;
   overflow-y: auto;

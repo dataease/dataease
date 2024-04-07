@@ -11,6 +11,7 @@ import io.dataease.ext.ExtDataFillFormMapper;
 import io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DataFillFormMapper;
+import io.dataease.plugins.common.constants.DatasourceTypes;
 import io.dataease.plugins.common.dto.datafill.ExtTableField;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.plugins.common.exception.DataEaseException;
@@ -59,6 +60,21 @@ public class DataFillDataService {
 
     private final static Gson gson = new Gson();
 
+    public static void setLowerCaseRequest(Datasource ds, Provider datasourceProvider, ExtDDLProvider extDDLProvider, DatasourceRequest datasourceRequest) throws Exception {
+        DatasourceTypes datasourceType = DatasourceTypes.valueOf(ds.getType());
+        switch (datasourceType) {
+            case mysql:
+            case mariadb:
+                String checkLowerCaseSql = extDDLProvider.getLowerCaseTaleNames();
+                datasourceRequest.setQuery(checkLowerCaseSql);
+                List<String[]> checkLowerCaseData = datasourceProvider.getData(datasourceRequest);
+                long lowCase = NumberUtils.toLong(checkLowerCaseData.get(0)[1]);
+                datasourceRequest.setLowerCaseTaleNames(lowCase > 0);
+                break;
+            default:
+                datasourceRequest.setLowerCaseTaleNames(true);
+        }
+    }
 
     public DataFillFormTableDataResponse listData(DataFillFormTableDataRequest searchRequest) throws Exception {
 
@@ -76,6 +92,11 @@ public class DataFillDataService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setTable(dataFillForm.getTableName());
+
+        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
+
+        setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
+
         List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
         Map<String, ExtTableField.BaseType> extTableFieldTypeMap = new HashMap<>();
         Map<String, TableField> tableFieldMap = new HashMap<>();
@@ -125,7 +146,6 @@ public class DataFillDataService {
             }
         }
 
-        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
         String whereSql = "";
         if (StringUtils.isNoneBlank(searchRequest.getPrimaryKeyValue())) {
@@ -232,6 +252,9 @@ public class DataFillDataService {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setTable(dataFillForm.getTableName());
+
+        setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
+
         List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest).stream().filter(TableField::isPrimaryKey).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(tableFields)) {
             throw new RuntimeException("没有主键");
@@ -274,10 +297,14 @@ public class DataFillDataService {
 
         Datasource ds = datasource.get(dataFillForm.getDatasource());
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(ds);
         datasourceRequest.setTable(dataFillForm.getTableName());
+
+        setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
+
         List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
 
         Map<String, TableField> tableFieldMap = new HashMap<>();
@@ -306,18 +333,18 @@ public class DataFillDataService {
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                 String name1 = field.getSettings().getMapping().getColumnName1();
                 String name2 = field.getSettings().getMapping().getColumnName2();
-                if (tableFieldMap.containsKey(name1) && data.containsKey(name1) && data.get(name1) != null) {
+                if (tableFieldMap.containsKey(name1)) {
                     DatasourceRequest.TableFieldWithValue value1 = new DatasourceRequest.TableFieldWithValue()
-                            .setValue(new java.sql.Date((long) data.get(name1)))
+                            .setValue(data.get(name1) != null ? new java.sql.Date((long) data.get(name1)) : null)
                             .setFiledName(name1)
                             .setTypeName(tableFieldMap.get(name1).getFieldType())
                             .setType(tableFieldMap.get(name1).getType());
                     searchFields.add(value1);
                     extTableFields.put(name1, field);
                 }
-                if (tableFieldMap.containsKey(name2) && data.containsKey(name2) && data.get(name2) != null) {
+                if (tableFieldMap.containsKey(name2)) {
                     DatasourceRequest.TableFieldWithValue value2 = new DatasourceRequest.TableFieldWithValue()
-                            .setValue(new java.sql.Date((long) data.get(name2)))
+                            .setValue(data.get(name2) != null ? new java.sql.Date((long) data.get(name2)) : null)
                             .setFiledName(name2)
                             .setTypeName(tableFieldMap.get(name2).getFieldType())
                             .setType(tableFieldMap.get(name2).getType());
@@ -326,7 +353,7 @@ public class DataFillDataService {
                 }
             } else {
                 String name = field.getSettings().getMapping().getColumnName();
-                if (tableFieldMap.containsKey(name) && data.containsKey(name) && data.get(name) != null) {
+                if (tableFieldMap.containsKey(name)) {
                     DatasourceRequest.TableFieldWithValue value = new DatasourceRequest.TableFieldWithValue()
                             .setValue(data.get(name))
                             .setFiledName(name)
@@ -334,22 +361,20 @@ public class DataFillDataService {
                             .setType(tableFieldMap.get(name).getType());
 
                     if (StringUtils.equalsIgnoreCase(field.getType(), "date")) {
-                        value.setValue(new java.sql.Date((long) data.get(name)));
+                        value.setValue(data.get(name) != null ? new java.sql.Date((long) data.get(name)) : null);
                     }
                     searchFields.add(value);
 
                     extTableFields.put(name, field);
 
                     // 关于unique的字段判断
-                    if (field.getSettings().isUnique()) {
+                    if (field.getSettings().isUnique() && data.get(name) != null) {
 
                         uniqueFields.add(value);
                     }
                 }
             }
         }
-
-        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
         if (CollectionUtils.isNotEmpty(uniqueFields)) {
             for (DatasourceRequest.TableFieldWithValue uniqueField : uniqueFields) {

@@ -2569,6 +2569,9 @@ export default {
             }
           }
         }
+        if (view.type === 'table-info' && ele.groupType === 'q') {
+          ele.compareCalc = compareItem
+        }
       })
       if (equalsAny(view.type, 'table-pivot', 'bar-group', 'bar-group-stack', 'flow-map', 'race-bar') ||
         (view.render === 'antv' && (view.type === 'line' || view.type === 'scatter' || view.type === 'bar-time-range'))) {

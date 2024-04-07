@@ -9,6 +9,7 @@ import io.dataease.controller.request.datafill.DataFillUserTaskSearchRequest;
 import io.dataease.dto.datafill.DataFillTaskDTO;
 import io.dataease.dto.datafill.DataFillUserTaskDTO;
 import io.dataease.ext.ExtDataFillFormMapper;
+import io.dataease.i18n.Translator;
 import io.dataease.job.sechedule.ScheduleManager;
 import io.dataease.job.sechedule.strategy.TaskHandler;
 import io.dataease.job.sechedule.strategy.TaskStrategyFactory;
@@ -94,12 +95,33 @@ public class DataFillTaskService {
         if (request.getId() == null) {
             insert = true;
             request.setFormId(formId);
+            request.setCreateTime(new Date());
         }
 
-        if (insert) {
-            dataFillTaskMapper.insertSelective(request);
+        if (StringUtils.isNotBlank(request.getName())) {
+            DataFillTaskExample example = new DataFillTaskExample();
+            DataFillTaskExample.Criteria criteria = example.createCriteria()
+                    .andFormIdEqualTo(formId)
+                    .andNameEqualTo(request.getName());
+
+            if (insert) {
+                if (dataFillTaskMapper.countByExample(example) > 0) {
+                    DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXIST"));
+                }
+                dataFillTaskMapper.insertSelective(request);
+            } else {
+                criteria.andIdNotEqualTo(request.getId());
+                if (dataFillTaskMapper.countByExample(example) > 0) {
+                    DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXIST"));
+                }
+                dataFillTaskMapper.updateByPrimaryKeySelective(request);
+            }
         } else {
-            dataFillTaskMapper.updateByPrimaryKeySelective(request);
+            if (insert) {
+                dataFillTaskMapper.insertSelective(request);
+            } else {
+                dataFillTaskMapper.updateByPrimaryKeySelective(request);
+            }
         }
 
         DataFillTaskWithBLOBs task = dataFillTaskMapper.selectByPrimaryKey(request.getId());
@@ -197,7 +219,8 @@ public class DataFillTaskService {
         Date endTime = null;
 
         if (dataFillTask.getRateType() == -1) {
-            startTime = dataFillTask.getPublishStartTime();
+            //startTime = dataFillTask.getPublishStartTime();
+            startTime = new Date();
             endTime = dataFillTask.getPublishEndTime();
         } else {
             SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");

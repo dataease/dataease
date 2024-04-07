@@ -42,6 +42,10 @@ export default {
     }
   },
   time: {
+    dropdown_display_must: '當前組件的展示風格為平鋪，如果設為非必填，那麼組件的展示風格將切換為下拉展示。',
+    end_time_start_time: '結束時間必須大於或等於開始時間',
+    passing_parameters: '空數據不支持傳參數',
+    not_supported: '綁定參數後，不支持傳空數據',
     set_time_filtering_range: '設定時間篩選範圍',
     filter_range: '預設值超出日期篩選範圍內，請重新設定！',
     interval_type: '區間類型',
@@ -599,7 +603,14 @@ export default {
       datasource: '數據源',
       table: '數據庫表',
       creator: '創建人',
-      createTime: '創建時間'
+      createTime: '創建時間',
+      operation: '操作',
+      operator: '操作人',
+      operate_time: '操作時間',
+      modify: '修改',
+      show: '查看',
+      delete: '刪除',
+      show_data: '查看數據'
     },
     data: {
       confirm_delete: '確認刪除?'
@@ -608,7 +619,9 @@ export default {
       confirm_enable: '確認啟動任務？（單次任務會新建下發任務）',
       confirm_disable: '確認停止任務？'
     },
-    on_the_left: '請在左側選擇表單'
+    on_the_left: '請在左側選擇表單',
+    search_by_commit_name: '根據操作人名稱搜索'
+
   },
   detabs: {
     custom_sort: '自定義排序',
@@ -1531,6 +1544,7 @@ export default {
     value_formatter_suffix: '單位後綴',
     value_formatter_thousand_separator: '千分符',
     value_formatter_example: '示例',
+    axis_label_length_limit: '長度限制',
     unit_none: '無',
     unit_thousand: '千',
     unit_ten_thousand: '萬',
@@ -1672,6 +1686,7 @@ export default {
     map_line_color_target_color: '結束顏色',
     map_line_theta_offset: '弧度',
     gauge_axis_label: '刻度標籤',
+    gauge_percentage_tick: '百分比刻度',
     word_size_range: '字號區間',
     word_spacing: '文字間隔',
     axis_multi_select_tip: '按住 Ctrl/Cmd 鍵或者 Shift 鍵再點擊可多選',
@@ -2869,7 +2884,7 @@ export default {
     chart_data: '視圖數據',
     panel_preview: '預覽報告',
     preview: '預覽',
-    emial_preview: '報告預覽',
+    email_preview: '報告預覽',
     chart_data_range: '視圖數據範圍',
     panel_format: '儀表板格式',
     simple_repeat: '簡單重複',
