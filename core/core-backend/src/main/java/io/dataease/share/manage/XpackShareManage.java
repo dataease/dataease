@@ -82,12 +82,13 @@ public class XpackShareManage {
         xpackShareMapper.updateById(originData);
     }
 
-    public void editPwd(Long resourceId, String pwd) {
+    public void editPwd(Long resourceId, String pwd, Boolean autoPwd) {
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isEmpty(originData)) {
             DEException.throwException("share instance not exist");
         }
         originData.setPwd(pwd);
+        originData.setAutoPwd(ObjectUtils.isEmpty(autoPwd) || autoPwd);
         xpackShareMapper.updateById(originData);
     }
 
@@ -169,8 +170,7 @@ public class XpackShareManage {
         if (StringUtils.isBlank(xpackShare.getPwd())) return true;
         if (StringUtils.isBlank(ciphertext)) return false;
         String text = RsaUtils.decryptStr(ciphertext);
-        int len = text.length();
-        int splitIndex = len - 4;
+        int splitIndex = 8;
         String pwd = text.substring(splitIndex);
         String uuid = text.substring(0, splitIndex);
         return StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
@@ -178,8 +178,7 @@ public class XpackShareManage {
 
     public boolean validatePwd(XpackSharePwdValidator validator) {
         String ciphertext = RsaUtils.decryptStr(validator.getCiphertext());
-        int len = ciphertext.length();
-        int splitIndex = len - 4;
+        int splitIndex = 8;
         String pwd = ciphertext.substring(splitIndex);
         String uuid = ciphertext.substring(0, splitIndex);
         QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();

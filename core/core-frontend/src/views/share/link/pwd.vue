@@ -15,7 +15,8 @@
                 <el-form-item label="" prop="password">
                   <CustomPassword
                     v-model="form.password"
-                    maxlength="4"
+                    maxlength="10"
+                    minlength="4"
                     show-password
                     class="real-input"
                     :placeholder="t('pblink.input_placeholder')"
@@ -64,7 +65,7 @@ const rule = reactive<FormRules>({
     { required: true, message: t('pblink.key_pwd'), trigger: 'blur' },
     {
       required: true,
-      pattern: /^[a-zA-Z0-9]{4}$/,
+      pattern: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{4,10}$/,
       message: t('pblink.pwd_format_error'),
       trigger: 'blur'
     }

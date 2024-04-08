@@ -27,4 +27,6 @@ public class XpackShareVO implements Serializable {
     private String uuid;
     @Schema(description = "分享密码")
     private String pwd;
+    @Schema(description = "自动生成密码")
+    private Boolean autoPwd = true;
 }

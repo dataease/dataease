@@ -20,6 +20,7 @@
     v-model="dialogVisible"
     :close-on-click-modal="true"
     :append-to-body="true"
+    :before-close="beforeClose"
     title="公共链接分享"
     width="480px"
     :show-close="false"
@@ -62,12 +63,34 @@
             @change="pwdEnableSwitcher"
             :label="t('visualization.passwd_protect')"
           />
-
-          <div class="inline-share-item" v-if="state.detailInfo.pwd">
-            <el-input v-model="state.detailInfo.pwd" readonly size="small">
+          <div class="auto-pwd-container" v-if="passwdEnable">
+            <el-checkbox
+              :disabled="!shareEnable"
+              v-model="state.detailInfo.autoPwd"
+              @change="autoEnableSwitcher"
+              :label="t('visualization.auto_pwd')"
+            />
+          </div>
+          <div class="inline-share-item" v-if="passwdEnable">
+            <el-input
+              ref="pwdRef"
+              v-model="state.detailInfo.pwd"
+              :readonly="state.detailInfo.autoPwd"
+              size="small"
+              @blur="validatePwdFormat"
+            >
               <template #append>
-                <div @click.stop="resetPwd" class="share-reset-container">
-                  <span>{{ t('commons.reset') }}</span>
+                <div class="share-pwd-opt">
+                  <div
+                    v-if="state.detailInfo.autoPwd"
+                    @click.stop="resetPwd"
+                    class="share-reset-container"
+                  >
+                    <span>{{ t('commons.reset') }}</span>
+                  </div>
+                  <div @click.stop="copyPwd" class="share-reset-container">
+                    <span>{{ t('commons.copy') }}</span>
+                  </div>
                 </div>
               </template>
             </el-input>
@@ -87,7 +110,7 @@
 
 <script lang="ts" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { ref, reactive, onMounted, computed } from 'vue'
+import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import request from '@/config/axios'
 import { propTypes } from '@/utils/propTypes'
 import { ShareInfo, SHARE_BASE, shortcuts } from './option'
@@ -102,6 +125,7 @@ const props = defineProps({
   weight: propTypes.number.def(0),
   isButton: propTypes.bool.def(false)
 })
+const pwdRef = ref(null)
 const loadingInstance = ref<any>(null)
 const dialogVisible = ref(false)
 const overTimeEnable = ref(false)
@@ -114,7 +138,8 @@ const state = reactive({
     id: '',
     uuid: '',
     pwd: '',
-    exp: 0
+    exp: 0,
+    autoPwd: true
   } as ShareInfo
 })
 const emits = defineEmits(['loaded'])
@@ -122,7 +147,22 @@ const shareTips = computed(
   () =>
     `开启后，用户可以通过该链接访问${props.resourceType === 'dashboard' ? '仪表板' : '数据大屏'}`
 )
-
+const copyPwd = async () => {
+  if (shareEnable.value && passwdEnable.value) {
+    if (!state.detailInfo.autoPwd && existErrorMsg()) {
+      ElMessage.warning('密码格式错误，请重新填写！')
+      return
+    }
+    try {
+      await toClipboard(state.detailInfo.pwd)
+      ElMessage.success(t('common.copy_success'))
+    } catch (e) {
+      ElMessage.warning(t('common.copy_unsupported'))
+    }
+  } else {
+    ElMessage.warning(t('common.copy_unsupported'))
+  }
+}
 const copyInfo = async () => {
   if (shareEnable.value) {
     try {
@@ -220,22 +260,88 @@ const expChangeHandler = exp => {
     loadShareInfo()
   })
 }
-
+const beforeClose = done => {
+  if (validatePwdFormat()) {
+    done()
+  }
+}
+const validatePwdFormat = () => {
+  if (!shareEnable.value || state.detailInfo.autoPwd) {
+    showPageError(null)
+    return true
+  }
+  const val = state.detailInfo.pwd
+  if (!val) {
+    showPageError('密码不能为空，请重新输入！')
+    return false
+  }
+  const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{4,10}$/
+  if (!regex.test(val)) {
+    showPageError('密码必须是包含数字、字母、特殊字符[!@#$%^&*()_+]的4-10位字符串')
+    return false
+  }
+  showPageError(null)
+  resetPwdHandler(val, false)
+  return true
+}
+const showPageError = msg => {
+  const domRef = pwdRef
+  if (!domRef.value) {
+    return
+  }
+  const e = domRef.value.input
+  if (!msg) {
+    e.style = null
+    e.style.borderColor = null
+    const child = e.parentElement.querySelector('.link-pwd-error-msg')
+    if (child) {
+      e.parentElement['style'] = null
+      e.parentElement.removeChild(child)
+    }
+  } else {
+    e.style.color = 'red'
+    e.style.borderColor = 'red'
+    e.parentElement['style']['box-shadow'] = '0 0 0 1px red inset'
+    const child = e.parentElement.querySelector('.link-pwd-error-msg')
+    if (!child) {
+      const errorDom = document.createElement('div')
+      errorDom.className = 'link-pwd-error-msg'
+      errorDom.innerText = msg
+      e.parentElement.appendChild(errorDom)
+    } else {
+      child.innerText = msg
+    }
+  }
+}
+const existErrorMsg = () => {
+  return document.getElementsByClassName('link-pwd-error-msg')?.length
+}
+const autoEnableSwitcher = val => {
+  if (val) {
+    showPageError(null)
+    resetPwd()
+  } else {
+    state.detailInfo.pwd = ''
+    nextTick(() => {
+      pwdRef.value.input.focus()
+    })
+  }
+}
 const pwdEnableSwitcher = val => {
   let pwd = ''
   if (val) {
     pwd = getUuid()
   }
-  resetPwdHandler(pwd)
+  resetPwdHandler(pwd, true)
 }
 const resetPwd = () => {
   const pwd = getUuid()
-  resetPwdHandler(pwd)
+  resetPwdHandler(pwd, true)
 }
-const resetPwdHandler = (pwd?: string) => {
+const resetPwdHandler = (pwd?: string, autoPwd?: boolean) => {
   const resourceId = props.resourceId
   const url = '/share/editPwd'
-  const data = { resourceId, pwd }
+  const data = { resourceId, pwd, autoPwd }
   request.post({ url, data }).then(() => {
     loadShareInfo()
   })
@@ -314,6 +420,9 @@ onMounted(() => {
     }
   }
   .pwd-container {
+    .auto-pwd-container {
+      padding: 0 25px 6px;
+    }
     .ed-checkbox {
       margin-right: 10px;
     }
@@ -322,23 +431,40 @@ onMounted(() => {
       width: 220px;
 
       :deep(.ed-input-group__append) {
-        width: 45px !important;
+        width: initial !important;
         background: none;
         color: #1f2329;
         padding: 0px 0px !important;
-        .share-reset-container {
-          width: 100%;
+        .share-pwd-opt {
           display: flex;
-          justify-content: center;
+          padding: 1px;
+          .share-reset-container {
+            &:not(:first-child) {
+              border-left: 1px solid var(--ed-input-border-color) !important;
+            }
+            width: 45px;
+            display: flex;
+            justify-content: center;
+            &:hover {
+              cursor: pointer;
+              background-color: #f5f6f7;
+            }
+            &:active {
+              cursor: pointer;
+              background-color: #eff0f1;
+            }
+          }
         }
-        &:hover {
-          cursor: pointer;
-          background-color: #f5f6f7;
-        }
-        &:active {
-          cursor: pointer;
-          background-color: #eff0f1;
-        }
+      }
+      :deep(.link-pwd-error-msg) {
+        color: red;
+        position: absolute;
+        z-index: 9;
+        font-size: 10px;
+        height: 10px;
+        top: 21px;
+        width: 350px;
+        left: 0px;
       }
     }
   }

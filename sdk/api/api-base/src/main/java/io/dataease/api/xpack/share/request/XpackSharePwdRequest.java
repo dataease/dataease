@@ -20,4 +20,6 @@ public class XpackSharePwdRequest implements Serializable {
 
     @Schema(description = "密码")
     private String pwd;
+    @Schema(description = "自动生成密码")
+    private Boolean autoPwd = true;
 }
