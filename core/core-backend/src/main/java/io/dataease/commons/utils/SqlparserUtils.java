@@ -55,7 +55,7 @@ public class SqlparserUtils {
         }
         // 递归遍历语法树
         getDependencies(sqlNode, false);
-        return sqlNode.toString().replaceAll("`", "");
+        return sqlNode.toString();
     }
 
     private static void getDependencies(SqlNode sqlNode, Boolean fromOrJoin) {
