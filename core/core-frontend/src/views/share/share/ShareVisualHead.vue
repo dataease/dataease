@@ -27,8 +27,27 @@
         <el-switch size="small" v-model="shareEnable" @change="enableSwitcher" />
         {{ shareTips }}
       </div>
-      <div v-if="shareEnable" class="text share-padding">
+      <!-- <div v-if="shareEnable" class="text share-padding">
         <el-input v-model="linkAddr" disabled />
+      </div> -->
+      <div v-if="shareEnable" class="custom-link-line share-padding">
+        <el-input
+          ref="linkUuidRef"
+          placeholder=""
+          v-model="state.detailInfo.uuid"
+          :disabled="!linkCustom"
+          @blur="finishEditUuid"
+        >
+          <template #prefix>
+            {{ formatLinkBase() }}
+          </template>
+        </el-input>
+        <el-button v-if="linkCustom" text @click.stop="finishEditUuid">完成</el-button>
+        <el-button v-else @click.stop="editUuid" size="default" plain>
+          <template #icon>
+            <icon name="icon_admin_outlined"></icon>
+          </template>
+        </el-button>
       </div>
       <div v-if="shareEnable" class="exp-container share-padding">
         <el-checkbox
@@ -129,6 +148,8 @@ const passwdEnable = ref(false)
 const shareEnable = ref(false)
 const linkAddr = ref('')
 const expError = ref(false)
+const linkCustom = ref(false)
+const linkUuidRef = ref(null)
 const state = reactive({
   detailInfo: {
     id: '',
@@ -145,8 +166,10 @@ watch(
     popoverVisible.value = false
   }
 )
-const hideShare = () => {
-  if (validatePwdFormat()) {
+const hideShare = async () => {
+  const pwdValid = validatePwdFormat()
+  const uuidValid = await validateUuid()
+  if (pwdValid && uuidValid) {
     popoverVisible.value = false
     return
   }
@@ -170,6 +193,10 @@ const shareTips = computed(
 const copyInfo = async () => {
   if (shareEnable.value) {
     try {
+      if (existErrorMsg('link-uuid-error-msg')) {
+        ElMessage.warning('链接格式错误，请重新填写！')
+        return
+      }
       await toClipboard(linkAddr.value)
       ElMessage.success(t('common.copy_success'))
     } catch (e) {
@@ -233,6 +260,9 @@ const enableSwitcher = () => {
 }
 
 const formatLinkAddr = () => {
+  linkAddr.value = formatLinkBase() + state.detailInfo.uuid
+}
+const formatLinkBase = () => {
   let prefix = '/'
   if (window.DataEaseBi?.baseUrl) {
     prefix = window.DataEaseBi.baseUrl + '#'
@@ -240,7 +270,7 @@ const formatLinkAddr = () => {
     const href = window.location.href
     prefix = href.substring(0, href.indexOf('#') + 1)
   }
-  linkAddr.value = prefix + SHARE_BASE + state.detailInfo.uuid
+  return prefix + SHARE_BASE
 }
 
 const expEnableSwitcher = val => {
@@ -316,25 +346,27 @@ const getUuid = () => {
 
 const validatePwdFormat = () => {
   if (!shareEnable.value || !passwdEnable.value || state.detailInfo.autoPwd) {
-    showPageError(null)
+    showPageError(null, pwdRef)
     return true
   }
   const val = state.detailInfo.pwd
   if (!val) {
-    showPageError('密码不能为空，请重新输入！')
+    showPageError('密码不能为空，请重新输入！', pwdRef)
     return false
   }
   const regex = /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{4,10}$/
   if (!regex.test(val)) {
-    showPageError('密码必须是包含数字、字母、特殊字符[!@#$%^&*()_+]的4-10位字符串')
+    showPageError('密码必须是包含数字、字母、特殊字符[!@#$%^&*()_+]的4-10位字符串', pwdRef)
     return false
   }
-  showPageError(null)
+  showPageError(null, pwdRef)
   resetPwdHandler(val, false)
   return true
 }
-const showPageError = msg => {
-  const domRef = pwdRef
+const showPageError = (msg, target, className?: string) => {
+  className = className || 'link-pwd-error-msg'
+  const fullClassName = `.${className}`
+  const domRef = target || pwdRef
   if (!domRef.value) {
     return
   }
@@ -342,7 +374,7 @@ const showPageError = msg => {
   if (!msg) {
     e.style = null
     e.style.borderColor = null
-    const child = e.parentElement.querySelector('.link-pwd-error-msg')
+    const child = e.parentElement.querySelector(fullClassName)
     if (child) {
       e.parentElement['style'] = null
       e.parentElement.removeChild(child)
@@ -351,10 +383,10 @@ const showPageError = msg => {
     e.style.color = 'red'
     e.style.borderColor = 'red'
     e.parentElement['style']['box-shadow'] = '0 0 0 1px red inset'
-    const child = e.parentElement.querySelector('.link-pwd-error-msg')
+    const child = e.parentElement.querySelector(fullClassName)
     if (!child) {
       const errorDom = document.createElement('div')
-      errorDom.className = 'link-pwd-error-msg'
+      errorDom.className = className
       errorDom.innerText = msg
       e.parentElement.appendChild(errorDom)
     } else {
@@ -362,12 +394,12 @@ const showPageError = msg => {
     }
   }
 }
-const existErrorMsg = () => {
-  return document.getElementsByClassName('link-pwd-error-msg')?.length
+const existErrorMsg = (className: string) => {
+  return document.getElementsByClassName(className)?.length
 }
 const autoEnableSwitcher = val => {
   if (val) {
-    showPageError(null)
+    showPageError(null, pwdRef)
     resetPwd()
   } else {
     state.detailInfo.pwd = ''
@@ -379,7 +411,7 @@ const autoEnableSwitcher = val => {
 
 const copyPwd = async () => {
   if (shareEnable.value && passwdEnable.value) {
-    if (!state.detailInfo.autoPwd && existErrorMsg()) {
+    if (!state.detailInfo.autoPwd && existErrorMsg('link-pwd-error-msg')) {
       ElMessage.warning('密码格式错误，请重新填写！')
       return
     }
@@ -392,6 +424,43 @@ const copyPwd = async () => {
   } else {
     ElMessage.warning(t('common.copy_unsupported'))
   }
+}
+const editUuid = () => {
+  linkCustom.value = true
+  nextTick(() => {
+    if (linkUuidRef?.value) {
+      linkUuidRef.value.input.focus()
+    }
+  })
+}
+const validateUuid = async () => {
+  const val = state.detailInfo.uuid
+  const className = 'link-uuid-error-msg'
+  if (!val) {
+    showPageError('不能为空！', linkUuidRef, className)
+    return false
+  }
+  const regex = /^[a-zA-Z0-9]{8,16}$/
+  const result = regex.test(val)
+  if (!result) {
+    showPageError('仅支持8-16位(字母数字)，请重新输入！', linkUuidRef, className)
+  } else {
+    const msg = await uuidValidateApi(val)
+    showPageError(msg, linkUuidRef, className)
+    return !msg
+  }
+  return result
+}
+
+const uuidValidateApi = async val => {
+  const url = '/share/editUuid'
+  const data = { resourceId: props.resourceId, uuid: val }
+  const res = await request.post({ url, data })
+  return res.data
+}
+const finishEditUuid = async () => {
+  const uuidValid = await validateUuid()
+  linkCustom.value = !uuidValid
 }
 
 const execute = () => {
@@ -435,6 +504,27 @@ defineExpose({
   }
   .text {
     padding-bottom: 5px !important;
+  }
+  .custom-link-line {
+    display: flex;
+    margin-bottom: 16px;
+    align-items: center;
+    button {
+      width: 40px;
+      min-width: 40px;
+      margin-left: 8px;
+      height: 100%;
+    }
+    :deep(.link-uuid-error-msg) {
+      color: red;
+      position: absolute;
+      z-index: 9;
+      font-size: 10px;
+      height: 10px;
+      top: 25px;
+      width: 350px;
+      left: 0px;
+    }
   }
 }
 .inline-share-item-picker {

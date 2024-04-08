@@ -1,10 +1,7 @@
 package io.dataease.api.xpack.share;
 
-import io.dataease.api.xpack.share.request.XpackShareExpRequest;
-import io.dataease.api.xpack.share.request.XpackShareProxyRequest;
-import io.dataease.api.xpack.share.request.XpackSharePwdRequest;
+import io.dataease.api.xpack.share.request.*;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
-import io.dataease.api.xpack.share.request.XpackSharePwdValidator;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
 import io.dataease.api.xpack.share.vo.XpackShareVO;
@@ -61,4 +58,8 @@ public interface XpackShareApi {
     @Operation(summary = "", hidden = true)
     @GetMapping("/queryRelationByUserId/{uid}")
     Map<String, String> queryRelationByUserId(@PathVariable("uid") Long uid);
+
+    @Operation(summary = "编辑分享uuid")
+    @PostMapping("/editUuid")
+    String editUuid(@RequestBody XpackShareUuidEditor editor);
 }
