@@ -49,6 +49,7 @@ public class FieldUtils {
             case "UINT32":
             case "UINT64":
                 return 2;// 整型
+            case "NUMBER":
             case "FLOAT":
             case "DOUBLE":
             case "DECIMAL":
