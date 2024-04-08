@@ -2519,11 +2519,18 @@ export const TYPE_CONFIGS = [
         'mix'
       ],
       'label-selector': [
+        'mainLabel',
         'show',
         'fontSize',
         'color',
         'position-v',
-        'formatter'
+        'formatter',
+        'subLabel',
+        'subShow',
+        'subFontSize',
+        'subColor',
+        'sub-position-v',
+        'subFormatter'
       ],
       'tooltip-selector': [
         'show',

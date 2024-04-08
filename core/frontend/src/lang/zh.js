@@ -1699,7 +1699,9 @@ export default {
     regression_loess: '局部加权',
     regression_algo: '算法',
     trend_line: '趋势线',
-    field_enum: '枚举值'
+    field_enum: '枚举值',
+    main_axis_label: '主轴标签',
+    sub_axis_label: '副轴标签'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
