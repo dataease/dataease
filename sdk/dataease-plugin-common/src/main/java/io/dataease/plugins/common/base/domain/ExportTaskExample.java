@@ -364,6 +364,76 @@ public class ExportTaskExample {
             return (Criteria) this;
         }
 
+        public Criteria andFileSizeUnitIsNull() {
+            addCriterion("file_size_unit is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitIsNotNull() {
+            addCriterion("file_size_unit is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitEqualTo(String value) {
+            addCriterion("file_size_unit =", value, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitNotEqualTo(String value) {
+            addCriterion("file_size_unit <>", value, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitGreaterThan(String value) {
+            addCriterion("file_size_unit >", value, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitGreaterThanOrEqualTo(String value) {
+            addCriterion("file_size_unit >=", value, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitLessThan(String value) {
+            addCriterion("file_size_unit <", value, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitLessThanOrEqualTo(String value) {
+            addCriterion("file_size_unit <=", value, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitLike(String value) {
+            addCriterion("file_size_unit like", value, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitNotLike(String value) {
+            addCriterion("file_size_unit not like", value, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitIn(List<String> values) {
+            addCriterion("file_size_unit in", values, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitNotIn(List<String> values) {
+            addCriterion("file_size_unit not in", values, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitBetween(String value1, String value2) {
+            addCriterion("file_size_unit between", value1, value2, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
+        public Criteria andFileSizeUnitNotBetween(String value1, String value2) {
+            addCriterion("file_size_unit not between", value1, value2, "fileSizeUnit");
+            return (Criteria) this;
+        }
+
         public Criteria andExportFromIsNull() {
             addCriterion("export_from is null");
             return (Criteria) this;
