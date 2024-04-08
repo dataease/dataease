@@ -44,7 +44,7 @@ public class XpackShareServer implements XpackShareApi {
 
     @Override
     public void editPwd(XpackSharePwdRequest request) {
-        xpackShareManage.editPwd(request.getResourceId(), request.getPwd());
+        xpackShareManage.editPwd(request.getResourceId(), request.getPwd(), request.getAutoPwd());
     }
 
     @Override

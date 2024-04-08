@@ -1884,6 +1884,7 @@ export default {
     copy_short_link: '复制短链接',
     copy_short_link_passwd: '复制短链接及密码',
     passwd_protect: '密码保护',
+    auto_pwd: '自动生成密码',
     link: '链接',
     over_time: '有效期',
     link_expire: '链接已过期！',

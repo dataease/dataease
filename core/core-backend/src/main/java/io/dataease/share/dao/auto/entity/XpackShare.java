@@ -5,11 +5,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ * 公共链接
  * </p>
  *
  * @author fit2cloud
- * @since 2023-09-22
+ * @since 2024-04-07
  */
 @TableName("xpack_share")
 public class XpackShare implements Serializable {
@@ -60,6 +60,11 @@ public class XpackShare implements Serializable {
      * 业务类型
      */
     private Integer type;
+
+    /**
+     * 自动生成密码
+     */
+    private Boolean autoPwd;
 
     public Long getId() {
         return id;
@@ -133,6 +138,14 @@ public class XpackShare implements Serializable {
         this.type = type;
     }
 
+    public Boolean getAutoPwd() {
+        return autoPwd;
+    }
+
+    public void setAutoPwd(Boolean autoPwd) {
+        this.autoPwd = autoPwd;
+    }
+
     @Override
     public String toString() {
         return "XpackShare{" +
@@ -145,6 +158,7 @@ public class XpackShare implements Serializable {
         ", resourceId = " + resourceId +
         ", oid = " + oid +
         ", type = " + type +
+        ", autoPwd = " + autoPwd +
         "}";
     }
 }

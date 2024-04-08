@@ -3,6 +3,7 @@ export interface ShareInfo {
   exp?: number
   uuid: string
   pwd?: string
+  autoPwd: boolean
 }
 
 export const SHARE_BASE = '/de-link/'
