@@ -6,6 +6,7 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.xpack.share.request.XpackShareProxyRequest;
 import io.dataease.api.xpack.share.request.XpackSharePwdValidator;
+import io.dataease.api.xpack.share.request.XpackShareUuidEditor;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
 import io.dataease.auth.bo.TokenUserBO;
@@ -31,6 +32,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Component("xpackShareManage")
@@ -70,6 +73,35 @@ public class XpackShareManage {
         xpackShareMapper.insert(xpackShare);
     }
 
+    public String editUuid(XpackShareUuidEditor editor) {
+        Long resourceId = editor.getResourceId();
+        String uuid = editor.getUuid();
+        XpackShare originData = queryByResource(resourceId);
+        if (ObjectUtils.isEmpty(originData)) {
+            return "公共链接不存在，请先创建！";
+        }
+        if (StringUtils.isBlank(uuid)) {
+            return "不能为空！";
+        }
+        if (StringUtils.equals(uuid, originData.getUuid())) {
+            return "";
+        }
+        QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("uuid", uuid);
+        if (xpackShareMapper.selectCount(queryWrapper) > 0) {
+            return "已存在相同的链接，请重新输入！";
+        }
+        String regex = "^[a-zA-Z0-9]{8,16}$";
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(uuid);
+        if (!matcher.matches()) {
+            return "仅支持8-16位(字母数字)，请重新输入！";
+        }
+        originData.setUuid(uuid);
+        xpackShareMapper.updateById(originData);
+        return "";
+    }
+
     public void editExp(Long resourceId, Long exp) {
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isEmpty(originData)) {
@@ -91,6 +123,8 @@ public class XpackShareManage {
         originData.setAutoPwd(ObjectUtils.isEmpty(autoPwd) || autoPwd);
         xpackShareMapper.updateById(originData);
     }
+
+
 
     public IPage<XpackSharePO> querySharePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();
@@ -170,16 +204,16 @@ public class XpackShareManage {
         if (StringUtils.isBlank(xpackShare.getPwd())) return true;
         if (StringUtils.isBlank(ciphertext)) return false;
         String text = RsaUtils.decryptStr(ciphertext);
-        int splitIndex = 8;
-        String pwd = text.substring(splitIndex);
+        int splitIndex = text.indexOf(",");
+        String pwd = text.substring(splitIndex + 1);
         String uuid = text.substring(0, splitIndex);
         return StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
     }
 
     public boolean validatePwd(XpackSharePwdValidator validator) {
         String ciphertext = RsaUtils.decryptStr(validator.getCiphertext());
-        int splitIndex = 8;
-        String pwd = ciphertext.substring(splitIndex);
+        int splitIndex = ciphertext.indexOf(",");
+        String pwd = ciphertext.substring(splitIndex + 1);
         String uuid = ciphertext.substring(0, splitIndex);
         QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("uuid", uuid);

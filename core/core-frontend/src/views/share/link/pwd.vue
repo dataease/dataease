@@ -50,6 +50,8 @@ import { rsaEncryp } from '@/utils/encryption'
 import { useCache } from '@/hooks/web/useCache'
 import { queryDekey } from '@/api/login'
 import { CustomPassword } from '@/components/custom-password'
+import { useRoute } from 'vue-router'
+const route = useRoute()
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
 
@@ -76,15 +78,9 @@ const refresh = async (formEl: FormInstance | undefined) => {
   if (!formEl) return
   await formEl.validate((valid, fields) => {
     if (valid) {
-      const curLocation = window.location.href
-      const paramIndex = curLocation.indexOf('?')
-      const uuidIndex = curLocation.indexOf('de-link/') + 8
-      const uuid = curLocation.substring(
-        uuidIndex,
-        paramIndex !== -1 ? paramIndex : curLocation.length
-      )
+      const uuid = route.params.uuid
       const pwd = form.value.password
-      const text = uuid + pwd
+      const text = `${uuid},${pwd}`
       const ciphertext = rsaEncryp(text)
       request.post({ url: '/share/validate', data: { ciphertext } }).then(res => {
         if (res.data) {
@@ -100,6 +96,7 @@ const refresh = async (formEl: FormInstance | undefined) => {
   })
 }
 onMounted(() => {
+  debugger
   if (!wsCache.get(appStore.getDekey)) {
     queryDekey()
       .then(res => {

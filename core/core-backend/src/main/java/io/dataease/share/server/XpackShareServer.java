@@ -2,10 +2,7 @@ package io.dataease.share.server;
 
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.xpack.share.XpackShareApi;
-import io.dataease.api.xpack.share.request.XpackShareExpRequest;
-import io.dataease.api.xpack.share.request.XpackShareProxyRequest;
-import io.dataease.api.xpack.share.request.XpackSharePwdRequest;
-import io.dataease.api.xpack.share.request.XpackSharePwdValidator;
+import io.dataease.api.xpack.share.request.*;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
 import io.dataease.api.xpack.share.vo.XpackShareVO;
@@ -70,7 +67,12 @@ public class XpackShareServer implements XpackShareApi {
     }
 
     @Override
-    public Map<String, String> queryRelationByUserId(@PathVariable("uid") Long uid) {
+    public Map<String, String> queryRelationByUserId(Long uid) {
         return xpackShareManage.queryRelationByUserId(uid);
+    }
+
+    @Override
+    public String editUuid(XpackShareUuidEditor editor) {
+        return xpackShareManage.editUuid(editor);
     }
 }
