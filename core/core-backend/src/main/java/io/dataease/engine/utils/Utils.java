@@ -1,9 +1,11 @@
 package io.dataease.engine.utils;
 
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.ObjectUtils;
@@ -217,6 +219,15 @@ public class Utils {
         List<String> strings = Arrays.asList(list);
         List<String> collect = strings.stream().filter(dsList::contains).collect(Collectors.toList());
         return ObjectUtils.isNotEmpty(collect);
+    }
+
+    public static boolean isCrossDs(Map<Long, DatasourceSchemaDTO> dsMap) {
+        return dsMap.size() != 1;
+    }
+
+    public static String replaceSchemaAlias(String sql, Map<Long, DatasourceSchemaDTO> dsMap) {
+        DatasourceSchemaDTO value = dsMap.entrySet().iterator().next().getValue();
+        return sql.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + value.getSchemaAlias() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX + "\\.", "");
     }
 
     public static long allDateFormat2Long(String value) {

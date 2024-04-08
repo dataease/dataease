@@ -28,6 +28,7 @@ import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Field2SQLObj;
@@ -94,27 +95,32 @@ public class DatasetDataManage {
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
+            String sql;
             if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
                 // add table schema
-                datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
+                sql = TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0";
+                // replace schema alias, trans dialect
+                sql = Utils.replaceSchemaAlias(sql, datasourceRequest.getDsList());
+                sql = SqlUtils.transSqlDialect(sql, datasourceRequest.getDsList());
             } else {
                 // parser sql params and replace default value
-                String sql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, false, null);
+                String originSql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, false, null);
                 // add sql table schema
-                sql = SqlUtils.addSchema(sql, datasourceSchemaDTO.getSchemaAlias());
-                sql = SQLUtils.buildOriginPreviewSql(sql, 0, 0);
-                datasourceRequest.setQuery(sql);
+
+                sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
+                sql = SqlUtils.transSqlDialect(sql, datasourceRequest.getDsList());
+                // replace placeholder
+                sql = SqlUtils.replaceTablePlaceHolder(sql, originSql);
             }
+            datasourceRequest.setQuery(sql.replaceAll("\r\n", " ")
+                    .replaceAll("\n", " "));
             logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
             // 获取数据源表的原始字段
-            if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)
-                    && !StringUtils.equalsIgnoreCase("excel", coreDatasource.getType())
-                    && !StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
-                datasourceRequest.setDatasource(coreDatasource);
+            if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
                 datasourceRequest.setTable(tableInfoDTO.getTable());
                 tableFields = calciteProvider.fetchTableField(datasourceRequest);
             } else {
-                tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+                tableFields = calciteProvider.fetchTableField(datasourceRequest);
             }
         } else {
             // excel,api
@@ -125,9 +131,13 @@ public class DatasetDataManage {
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
-            datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0");
+            String sql = TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0";
+            // replace schema alias, trans dialect
+            sql = Utils.replaceSchemaAlias(sql, datasourceRequest.getDsList());
+            sql = SqlUtils.transSqlDialect(sql, datasourceRequest.getDsList());
+            datasourceRequest.setQuery(sql);
             logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
-            tableFields = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+            tableFields = calciteProvider.fetchTableField(datasourceRequest);
         }
         return transFields(tableFields, true);
     }
@@ -175,6 +185,10 @@ public class DatasetDataManage {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        if (!crossDs) {
+            sql = Utils.replaceSchemaAlias(sql, dsMap);
+        }
 
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
         TokenUserBO user = AuthUtils.getUser();
@@ -184,7 +198,7 @@ public class DatasetDataManage {
 
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
-        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
+        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
         Field2SQLObj.field2sqlObj(sqlMeta, fields);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields);
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
@@ -194,6 +208,7 @@ public class DatasetDataManage {
         } else {
             querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, start, count);
         }
+        querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("calcite data preview sql: " + querySQL);
 
         // 通过数据源请求数据
@@ -230,9 +245,9 @@ public class DatasetDataManage {
         String sql = (String) sqlMap.get("sql");
 
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-        List<String> dsList = new ArrayList<>();
-        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
-            dsList.add(next.getValue().getType());
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        if (!crossDs) {
+            sql = Utils.replaceSchemaAlias(sql, dsMap);
         }
 
         String querySQL = "SELECT COUNT(*) FROM (" + sql + ") t_a_0";
@@ -277,7 +292,7 @@ public class DatasetDataManage {
         return map;
     }
 
-    public Map<String, Object> previewSql(PreviewSqlDTO dto) {
+    public Map<String, Object> previewSql(PreviewSqlDTO dto) throws DEException {
         CoreDatasource coreDatasource = coreDatasourceMapper.selectById(dto.getDatasourceId());
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         if (coreDatasource.getType().equalsIgnoreCase("API") || coreDatasource.getType().equalsIgnoreCase("Excel")) {
@@ -288,27 +303,35 @@ public class DatasetDataManage {
         String alias = String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId());
         datasourceSchemaDTO.setSchemaAlias(alias);
         // parser sql params and replace default value
-        String sql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true, true, null);
-        sql = SqlUtils.addSchema(sql, alias);
+        String originSql = SqlparserUtils.handleVariableDefaultValue(datasetSQLManage.subPrefixSuffixChar(new String(Base64.getDecoder().decode(dto.getSql()))), dto.getSqlVariableDetails(), true, true, null);
 
         Map<Long, DatasourceSchemaDTO> dsMap = new LinkedHashMap<>();
         dsMap.put(datasourceSchemaDTO.getId(), datasourceSchemaDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);
         // sql 作为临时表，外层加上limit
+        String sql;
         if (Utils.isNeedOrder(List.of(datasourceSchemaDTO.getType()))) {
             // 先根据sql获取表字段
-            String sqlField = SQLUtils.buildOriginPreviewSql(sql, 0, 0);
+            String sqlField = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
+
+            sqlField = SqlUtils.transSqlDialect(sqlField, datasourceRequest.getDsList());
+            // replace placeholder
+            sqlField = SqlUtils.replaceTablePlaceHolder(sqlField, originSql);
             datasourceRequest.setQuery(sqlField);
             // 获取数据源表的原始字段
-            List<TableField> list = (List<TableField>) calciteProvider.fetchResultField(datasourceRequest).get("fields");
+            List<TableField> list = calciteProvider.fetchTableField(datasourceRequest);
             if (ObjectUtils.isEmpty(list)) {
                 return null;
             }
-            sql = SQLUtils.buildOriginPreviewSqlWithOrderBy(sql, 100, 0, String.format(SQLConstants.FIELD_DOT, list.get(0).getOriginName()) + " ASC ");
+            sql = SQLUtils.buildOriginPreviewSqlWithOrderBy(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 100, 0, String.format(SQLConstants.FIELD_DOT, list.get(0).getOriginName()) + " ASC ");
         } else {
-            sql = SQLUtils.buildOriginPreviewSql(sql, 100, 0);
+            sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 100, 0);
         }
+        sql = SqlUtils.transSqlDialect(sql, datasourceRequest.getDsList());
+        // replace placeholder
+        sql = SqlUtils.replaceTablePlaceHolder(sql, originSql);
+
         logger.info("calcite data preview sql: " + sql);
         datasourceRequest.setQuery(sql);
         Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
@@ -331,7 +354,7 @@ public class DatasetDataManage {
                 String[] row = dataList.get(i);
                 LinkedHashMap<String, Object> obj = new LinkedHashMap<>();
                 if (row.length > 0) {
-                    for (int j = 0; j < row.length; j++) {
+                    for (int j = 0; j < fields.size(); j++) {
                         if (desensitizationList.keySet().contains(fields.get(j).getDataeaseName())) {
                             obj.put(fields.get(j).getDataeaseName(), ChartDataBuild.desensitizationValue(desensitizationList.get(fields.get(j).getDataeaseName()), String.valueOf(row[j])));
                         } else {
@@ -402,9 +425,15 @@ public class DatasetDataManage {
 
             allFields.addAll(datasetGroupInfoDTO.getAllFields());
 
+            Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+            boolean crossDs = Utils.isCrossDs(dsMap);
+            if (!crossDs) {
+                sql = Utils.replaceSchemaAlias(sql, dsMap);
+            }
+
             // build query sql
             SQLMeta sqlMeta = new SQLMeta();
-            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
+            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
             // 计算字段先完成内容替换
             if (Objects.equals(field.getExtField(), ExtFieldConstant.EXT_CALC)) {
                 String originField = Utils.calcFieldRegex(field.getOriginName(), sqlMeta.getTable(), allFields);
@@ -427,7 +456,6 @@ public class DatasetDataManage {
             }
             buildFieldName(sqlMap, fields);
 
-            Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
             List<String> dsList = new ArrayList<>();
             for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
                 dsList.add(next.getValue().getType());
@@ -444,6 +472,7 @@ public class DatasetDataManage {
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields);
             Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
             String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
+            querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
 
             // 通过数据源请求数据
             // 调用数据源的calcite获得data

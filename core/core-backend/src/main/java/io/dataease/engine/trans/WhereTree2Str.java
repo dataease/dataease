@@ -8,15 +8,13 @@ import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Map;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Author Junjun
@@ -31,6 +29,7 @@ public class WhereTree2Str {
             return;
         }
         List<String> res = new ArrayList<>();
+        Map<String, String> fieldsDialect = new HashMap<>();
         // permission trees
         // 解析每个tree，然后多个tree之间用and拼接
         // 每个tree，如果是sub tree节点，则使用递归合并成一组条件
@@ -39,15 +38,16 @@ public class WhereTree2Str {
             if (ObjectUtils.isEmpty(tree)) {
                 continue;
             }
-            String treeExp = transTreeToWhere(tableObj, tree, originFields);
+            String treeExp = transTreeToWhere(tableObj, tree, originFields, fieldsDialect);
             if (StringUtils.isNotEmpty(treeExp)) {
                 res.add(treeExp);
             }
         }
         meta.setWhereTrees(CollectionUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null);
+        meta.setWhereTreesDialect(fieldsDialect);
     }
 
-    private static String transTreeToWhere(SQLObj tableObj, DatasetRowPermissionsTreeObj tree, List<DatasetTableFieldDTO> originFields) {
+    private static String transTreeToWhere(SQLObj tableObj, DatasetRowPermissionsTreeObj tree, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect) {
         if (ObjectUtils.isEmpty(tree)) {
             return null;
         }
@@ -60,10 +60,10 @@ public class WhereTree2Str {
                 String exp = null;
                 if (StringUtils.equalsIgnoreCase(item.getType(), "item")) {
                     // 单个item拼接SQL，最后根据logic汇总
-                    exp = transTreeItem(tableObj, item, originFields);
+                    exp = transTreeItem(tableObj, item, originFields, fieldsDialect);
                 } else if (StringUtils.equalsIgnoreCase(item.getType(), "tree")) {
                     // 递归tree
-                    exp = transTreeToWhere(tableObj, item.getSubTree(), originFields);
+                    exp = transTreeToWhere(tableObj, item.getSubTree(), originFields, fieldsDialect);
                 }
                 if (StringUtils.isNotEmpty(exp)) {
                     list.add(exp);
@@ -73,7 +73,7 @@ public class WhereTree2Str {
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" " + logic + " ", list) + ")" : null;
     }
 
-    public static String transTreeItem(SQLObj tableObj, DatasetRowPermissionsTreeItem item, List<DatasetTableFieldDTO> originFields) {
+    public static String transTreeItem(SQLObj tableObj, DatasetRowPermissionsTreeItem item, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect) {
         String res = null;
         DatasetTableFieldDTO field = item.getField();
         if (ObjectUtils.isEmpty(field)) {
@@ -83,7 +83,10 @@ public class WhereTree2Str {
         String originName;
         if (ObjectUtils.isNotEmpty(field.getExtField()) && Objects.equals(field.getExtField(), ExtFieldConstant.EXT_CALC)) {
             // 解析origin name中有关联的字段生成sql表达式
-            originName = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields);
+            String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields);
+            // 给计算字段处加一个占位符，后续SQL方言转换后再替换
+            originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
+            fieldsDialect.put(originName, calcFieldExp);
         } else if (ObjectUtils.isNotEmpty(field.getExtField()) && Objects.equals(field.getExtField(), ExtFieldConstant.EXT_COPY)) {
             originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
         } else {

@@ -7,14 +7,13 @@ import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Author Junjun
@@ -28,13 +27,17 @@ public class Dimension2SQLObj {
         }
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
+        Map<String, String> fieldsDialect = new HashMap<>();
         if (!CollectionUtils.isEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 ChartViewFieldDTO x = fields.get(i);
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    originField = Utils.calcFieldRegex(x.getOriginName(), tableObj, originFields);
+                    String calcFieldExp = Utils.calcFieldRegex(x.getOriginName(), tableObj, originFields);
+                    // 给计算字段处加一个占位符，后续SQL方言转换后再替换
+                    originField = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, x.getId());
+                    fieldsDialect.put(originField, calcFieldExp);
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_COPY)) {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getDataeaseName());
                 } else {
@@ -56,6 +59,7 @@ public class Dimension2SQLObj {
         }
         meta.setXFields(xFields);
         meta.setXOrders(xOrders);
+        meta.setXFieldsDialect(fieldsDialect);
     }
 
     private static SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {

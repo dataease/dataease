@@ -878,7 +878,7 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     @Override
-    public Map<String, Object> previewDataWithLimit(Map<String, Object> req) {
+    public Map<String, Object> previewDataWithLimit(Map<String, Object> req) throws DEException {
         String tableName = req.get("table").toString();
         Long id = Long.valueOf(req.get("id").toString());
         if (ObjectUtils.isEmpty(tableName) || ObjectUtils.isEmpty(id)) {
