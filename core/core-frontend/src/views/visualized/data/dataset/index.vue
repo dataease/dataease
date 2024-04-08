@@ -494,7 +494,7 @@ const changeSideTreeStatus = val => {
 
 const filterNode = (value: string, data: BusiTreeNode) => {
   if (!value) return true
-  return data.name?.includes(value)
+  return data.name?.toLowerCase().includes(value.toLowerCase())
 }
 const mouseenter = () => {
   appStore.setArrowSide(true)

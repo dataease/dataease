@@ -84,6 +84,7 @@ const currentField = ref({
   name: '',
   idArr: []
 })
+let isUpdate = false
 
 const fieldTypes = index => {
   return [
@@ -94,6 +95,10 @@ const fieldTypes = index => {
     t('dataset.value'),
     t('dataset.location')
   ][index]
+}
+
+const changeUpdate = () => {
+  isUpdate = true
 }
 
 const fieldOptions = [
@@ -230,7 +235,7 @@ const pushDataset = () => {
 }
 
 const backToMain = () => {
-  if (!nodeInfo.id) {
+  if (isUpdate) {
     ElMessageBox.confirm('数据集未保存,确认退出吗?', {
       confirmButtonText: t('dataset.confirm'),
       cancelButtonText: t('common.cancel'),
@@ -307,7 +312,7 @@ const confirmCustomTime = () => {
 }
 
 watch(searchTable, val => {
-  state.tableData = tableList.filter(ele => ele.name.includes(val))
+  state.tableData = tableList.filter(ele => ele.name.toLowerCase().includes(val.toLowerCase()))
 })
 const editeSave = () => {
   const union = []
@@ -321,6 +326,7 @@ const editeSave = () => {
     nodeType: 'dataset'
   })
     .then(() => {
+      isUpdate = false
       ElMessage.success('保存成功')
       if (willBack) {
         pushDataset()
@@ -332,6 +338,7 @@ const editeSave = () => {
 }
 
 const handleFieldMore = (ele, type) => {
+  changeUpdate()
   if (tabActive.value === 'manage') {
     dimensionsSelection.value = dimensionsTable.value.getSelectionRows().map(ele => ele.id)
     quotaSelection.value = quotaTable.value.getSelectionRows().map(ele => ele.id)
@@ -654,7 +661,6 @@ const addComplete = () => {
 }
 
 const state = reactive({
-  nameList: [],
   nodeNameList: [],
   editArr: [],
   nodeList: [],
@@ -1067,7 +1073,10 @@ const cascaderChangeArr = val => {
   })
   recoverSelection()
 }
-
+const filterNode = (value: string, data: BusiTreeNode) => {
+  if (!value) return true
+  return data.name?.toLowerCase().includes(value.toLowerCase())
+}
 const recoverSelection = () => {
   nextTick(() => {
     quota.value.forEach(ele => {
@@ -1228,6 +1237,7 @@ const getDsIconName = data => {
             @change="dsChange"
             :placeholder="t('dataset.pls_slc_data_source')"
             class="ds-list"
+            :filter-node-method="filterNode"
             filterable
             popper-class="tree-select-ds_popper"
             v-model="dataSource"
@@ -1294,16 +1304,11 @@ const getDsIconName = data => {
           </div>
           <template v-for="ele in state.tableData" :key="ele.name">
             <div
-              :class="[
-                {
-                  'not-allow': state.nodeNameList.includes(`${ele.tableName}${dataSource}`)
-                }
-              ]"
               class="list-item_primary"
               :title="ele.name"
               @dragstart="$event => dragstart($event, ele)"
               @dragend="maskShow = false"
-              :draggable="!state.nodeNameList.includes(`${ele.tableName}${dataSource}`)"
+              :draggable="true"
               @click="setActiveName(ele)"
             >
               <el-icon class="icon-color">
@@ -1317,6 +1322,7 @@ const getDsIconName = data => {
       <div class="drag-right" :style="{ width: `calc(100vw - ${showLeft ? LeftWidth : 0}px)` }">
         <dataset-union
           @join-editor="joinEditor"
+          @changeUpdate="changeUpdate"
           :maskShow="maskShow"
           :dragHeight="dragHeight"
           :getDsName="getDsName"

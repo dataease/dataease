@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, ref, nextTick, inject, type Ref } from 'vue'
+import { reactive, computed, ref, nextTick, inject, type Ref, watch } from 'vue'
 import AddSql from './AddSql.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import zeroNodeImg from '@/assets/img/drag.png'
@@ -108,9 +108,22 @@ const dfsNodeNameList = (list, arr) => {
   })
 }
 
+let isUpdate = false
+
+watch(
+  () => state.nodeList,
+  () => {
+    if (isUpdate) {
+      emits('changeUpdate')
+    }
+  },
+  { deep: true }
+)
+
 const initState = nodeList => {
   Object.assign(state.nodeList, nodeList)
   nextTick(() => {
+    isUpdate = true
     emits('addComplete')
   })
 }
@@ -775,7 +788,7 @@ const defaultParam = {
 }
 const dfsNodeListRename = arr => {
   arr.some(ele => {
-    if (ele.id === renameParam.id) {
+    if (ele.id === renameParam.id && ele.tableName !== renameParam.name) {
       ele.tableName = renameParam.name
       return true
     }
@@ -829,7 +842,7 @@ const handleActiveNode = ele => {
   handleCommand(ele, 'editerField')
 }
 
-const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields'])
+const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'changeUpdate'])
 </script>
 
 <template>

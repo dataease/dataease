@@ -44,6 +44,12 @@ const creatDsFolder = ref()
 const router = useRouter()
 const { wsCache } = useCache()
 const dsLoading = ref(false)
+let isFormUpdate = false
+let isForm2Update = false
+let isUpdate = false
+const changeUpdate = val => {
+  isUpdate = val
+}
 const state = reactive({
   datasourceTree: []
 })
@@ -302,6 +308,7 @@ const typeTitle = computed(() => {
 })
 
 const saveDS = () => {
+  isUpdate = false
   const request = JSON.parse(JSON.stringify(form)) as unknown as Omit<
     Form,
     'configuration' | 'apiConfiguration'
@@ -429,6 +436,26 @@ const visible = ref(false)
 const editDs = ref(false)
 const pid = ref('0')
 
+watch(
+  () => form,
+  () => {
+    if (isFormUpdate) {
+      changeUpdate(true)
+    }
+  },
+  { deep: true }
+)
+
+watch(
+  () => form2,
+  () => {
+    if (isForm2Update) {
+      changeUpdate(true)
+    }
+  },
+  { deep: true }
+)
+
 const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
   editDs.value = !!nodeInfo
   showFinishPage.value = false
@@ -449,6 +476,10 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
   activeApiStep.value = activeStep.value
 
   visible.value = true
+  nextTick(() => {
+    isForm2Update = true
+    isFormUpdate = true
+  })
   if (!!nodeInfo) {
     nextTick(() => {
       currentDsType.value = nodeInfo.type
@@ -477,7 +508,7 @@ const beforeClose = () => {
     emits('refresh')
     wsCache.set('ds-new-success', false)
   }
-  if (!showFinishPage.value && (editDs.value || activeStep.value !== 0)) {
+  if (!showFinishPage.value && ((!editDs.value && activeStep.value !== 0) || isUpdate)) {
     ElMessageBox.confirm(t('chart.tips'), {
       confirmButtonType: 'primary',
       tip: '你填写的信息未保存，确认退出吗？',
@@ -625,7 +656,7 @@ defineExpose({
         </div>
       </div>
       <div class="editor-footer" v-loading="dsLoading">
-        <el-button secondary @click="visible = false"> {{ t('common.cancel') }}</el-button>
+        <el-button secondary @click="beforeClose"> {{ t('common.cancel') }}</el-button>
         <el-button
           v-show="!(activeStep === 0 || (editDs && activeApiStep <= 1))"
           secondary
