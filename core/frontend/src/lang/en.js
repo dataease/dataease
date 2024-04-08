@@ -1707,7 +1707,9 @@ export default {
     regression_loess: 'LOESS',
     regression_algo: 'Algorithm',
     trend_line: 'Trend Line',
-    field_enum: 'Enumeration values'
+    field_enum: 'Enumeration values',
+    main_axis_label: 'Main Axis Label',
+    sub_axis_label: 'Sub Axis Label'
   },
   dataset: {
     scope_edit: 'Effective only when editing',

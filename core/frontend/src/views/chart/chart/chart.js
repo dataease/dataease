@@ -199,10 +199,15 @@ export const DEFAULT_LABEL = {
   color: '#909399',
   fontSize: '10',
   formatter: '{c}',
-  gaugeFormatter: '{value}',
+  subShow: false,
+  subPosition: 'top',
+  subColor: '#909399',
+  subFontSize: '10',
+  subFormatter: '{c}',
   labelLine: {
     show: true
   },
+  gaugeFormatter: '{value}',
   gaugeLabelFormatter: {
     type: 'value', // auto,value,percent
     unit: 1, // 换算单位

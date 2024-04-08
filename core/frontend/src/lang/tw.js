@@ -1700,7 +1700,9 @@ export default {
     regression_loess: '局部加權',
     regression_algo: '算法',
     trend_line: '趨勢線',
-    field_enum: '枚舉值'
+    field_enum: '枚舉值',
+    main_axis_label: '主軸標籤',
+    sub_axis_label: '副軸標籤'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
