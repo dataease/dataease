@@ -139,7 +139,6 @@ export default {
       this.handleClick()
       this.timer = setInterval(() => {
         if(this.activeName === 'IN_PROGRESS'){
-          console.log(this.activeName)
           post(
             '/exportCenter/exportTasks/' + this.activeName,{}, true
           ).then(
