@@ -6,11 +6,13 @@ import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -25,6 +27,7 @@ public class CustomWhere2Str {
             return;
         }
         List<String> res = new ArrayList<>();
+        Map<String, String> fieldsDialect = new HashMap<>();
         if (ObjectUtils.isNotEmpty(fields)) {
             for (ChartFieldCustomFilterDTO request : fields) {
                 List<SQLObj> list = new ArrayList<>();
@@ -37,7 +40,10 @@ public class CustomWhere2Str {
                 String originName;
                 if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    originName = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields);
+                    String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields);
+                    // 给计算字段处加一个占位符，后续SQL方言转换后再替换
+                    originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
+                    fieldsDialect.put(originName, calcFieldExp);
                 } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
                     originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
                 } else {
@@ -137,6 +143,7 @@ public class CustomWhere2Str {
             }
             meta.setCustomWheres(ObjectUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null);
         }
+        meta.setCustomWheresDialect(fieldsDialect);
     }
 
 

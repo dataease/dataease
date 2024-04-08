@@ -7,14 +7,13 @@ import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
+import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 /**
  * @Author Junjun
@@ -29,13 +28,17 @@ public class Quota2SQLObj {
         List<SQLObj> yFields = new ArrayList<>();
         List<String> yWheres = new ArrayList<>();
         List<SQLObj> yOrders = new ArrayList<>();
+        Map<String, String> fieldsDialect = new HashMap<>();
         if (!CollectionUtils.isEmpty(fields)) {
             for (int i = 0; i < fields.size(); i++) {
                 ChartViewFieldDTO y = fields.get(i);
                 String originField;
                 if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    originField = Utils.calcFieldRegex(y.getOriginName(), tableObj, originFields);
+                    String calcFieldExp = Utils.calcFieldRegex(y.getOriginName(), tableObj, originFields);
+                    // 给计算字段处加一个占位符，后续SQL方言转换后再替换
+                    originField = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, y.getId());
+                    fieldsDialect.put(originField, calcFieldExp);
                 } else if (ObjectUtils.isNotEmpty(y.getExtField()) && Objects.equals(y.getExtField(), ExtFieldConstant.EXT_COPY)) {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), y.getDataeaseName());
                 } else {
@@ -62,6 +65,7 @@ public class Quota2SQLObj {
         meta.setYFields(yFields);
         meta.setYWheres(yWheres);
         meta.setYOrders(yOrders);
+        meta.setYFieldsDialect(fieldsDialect);
     }
 
     private static SQLObj getYFields(ChartViewFieldDTO y, String originField, String fieldAlias) {

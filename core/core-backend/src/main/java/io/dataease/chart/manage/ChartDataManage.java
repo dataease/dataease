@@ -16,6 +16,7 @@ import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.manage.PermissionManage;
+import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
@@ -423,6 +424,10 @@ public class ChartDataManage {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        if (!crossDs) {
+            sql = Utils.replaceSchemaAlias(sql, dsMap);
+        }
 
         // 调用数据源的calcite获得data
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -494,7 +499,7 @@ public class ChartDataManage {
             }
 
             SQLMeta sqlMeta = new SQLMeta();
-            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
+            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
             CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields));
             ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, transFields(allFields));
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields));
@@ -538,6 +543,7 @@ public class ChartDataManage {
             }
 
             if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase((String) mapSize.get("tablePageMode"), "page")) {
+                totalPageSql = SqlUtils.rebuildSQL(totalPageSql, sqlMeta, crossDs, dsMap);
                 datasourceRequest.setQuery(totalPageSql);
                 datasourceRequest.setTotalPageFlag(true);
                 List<String[]> tmpData = (List<String[]>) calciteProvider.fetchResultField(datasourceRequest).get("data");
@@ -548,6 +554,7 @@ public class ChartDataManage {
                 totalPage = (totalItems / pageInfo.getPageSize()) + (totalItems % pageInfo.getPageSize() > 0 ? 1 : 0);
             }
 
+            querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(querySql);
             logger.info("calcite chart sql: " + querySql);
 
@@ -1266,6 +1273,10 @@ public class ChartDataManage {
             dsList.add(next.getValue().getType());
         }
         boolean needOrder = Utils.isNeedOrder(dsList);
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        if (!crossDs) {
+            sql = Utils.replaceSchemaAlias(sql, dsMap);
+        }
 
         // 调用数据源的calcite获得data
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -1287,7 +1298,7 @@ public class ChartDataManage {
             }
 
             SQLMeta sqlMeta = new SQLMeta();
-            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")");
+            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields));
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
@@ -1316,6 +1327,7 @@ public class ChartDataManage {
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             }
 
+            querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(querySql);
             logger.info("calcite chart get field enum sql: " + querySql);
 

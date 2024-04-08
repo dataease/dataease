@@ -1,13 +1,21 @@
 package io.dataease.dataset.utils;
 
 import com.google.common.collect.ImmutableList;
+import io.dataease.api.dataset.union.model.SQLMeta;
+import io.dataease.api.ds.vo.DatasourceConfiguration;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
+import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.exception.DEException;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.*;
+import org.apache.calcite.sql.dialect.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
+import org.apache.commons.collections4.MapUtils;
 
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
 
 import static org.apache.calcite.sql.SqlKind.*;
 
@@ -38,7 +46,7 @@ public class SqlUtils {
         String sqlRender = sqlNode.toString();
         // 处理sql中多余的`都替换成1个
         sqlRender = sqlRender.replaceAll("(`+)", "`");
-        return sqlRender;
+        return sqlRender.replaceAll("`", "");
     }
 
     private static void addTableSchema(SqlNode sqlNode, Boolean fromOrJoin, String schema, SqlParser.Config config) {
@@ -106,5 +114,106 @@ public class SqlUtils {
         } catch (Exception e) {
             DEException.throwException("使用 Calcite 进行语法分析发生了异常:" + e);
         }
+    }
+
+    public static String rebuildSQL(String sql, SQLMeta sqlMeta, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap) {
+        if (crossDs) {
+            return sql;
+        }
+
+        String s = transSqlDialect(sql, dsMap);
+        String tableDialect = sqlMeta.getTableDialect();
+        s = replaceTablePlaceHolder(s, tableDialect);
+        return replaceCalcFieldPlaceHolder(s, sqlMeta);
+    }
+
+    public static String transSqlDialect(String sql, Map<Long, DatasourceSchemaDTO> dsMap) throws DEException {
+        try {
+            DatasourceSchemaDTO value = dsMap.entrySet().iterator().next().getValue();
+
+            SqlParser parser = SqlParser.create(sql, SqlParser.Config.DEFAULT.withLex(Lex.JAVA));
+            SqlNode sqlNode = parser.parseStmt();
+            return sqlNode.toSqlString(getDialect(value)).toString();
+        } catch (Exception e) {
+            DEException.throwException(e.getMessage());
+        }
+        return null;
+    }
+
+    public static String replaceTablePlaceHolder(String s, String placeholder) {
+        s = s.replaceAll("\r\n", " ")
+                .replaceAll("\n", " ")
+                .replaceAll(SqlPlaceholderConstants.TABLE_PLACEHOLDER_REGEX, placeholder)
+                .replaceAll("ASYMMETRIC", "")
+                .replaceAll("SYMMETRIC", "");
+        return s;
+    }
+
+    public static String replaceCalcFieldPlaceHolder(String s, SQLMeta sqlMeta) {
+        Map<String, String> fieldsDialect = new HashMap<>();
+        if (MapUtils.isNotEmpty(sqlMeta.getXFieldsDialect())) {
+            fieldsDialect.putAll(sqlMeta.getXFieldsDialect());
+        }
+        if (MapUtils.isNotEmpty(sqlMeta.getYFieldsDialect())) {
+            fieldsDialect.putAll(sqlMeta.getYFieldsDialect());
+        }
+        if (MapUtils.isNotEmpty(sqlMeta.getCustomWheresDialect())) {
+            fieldsDialect.putAll(sqlMeta.getCustomWheresDialect());
+        }
+        if (MapUtils.isNotEmpty(sqlMeta.getExtWheresDialect())) {
+            fieldsDialect.putAll(sqlMeta.getExtWheresDialect());
+        }
+        if (MapUtils.isNotEmpty(sqlMeta.getWhereTreesDialect())) {
+            fieldsDialect.putAll(sqlMeta.getWhereTreesDialect());
+        }
+
+        if (MapUtils.isNotEmpty(fieldsDialect)) {
+            for (Map.Entry<String, String> ele : fieldsDialect.entrySet()) {
+                s = s.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + ele.getKey() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, ele.getValue());
+            }
+        }
+        return s;
+    }
+
+    private static SqlDialect getDialect(DatasourceSchemaDTO coreDatasource) {
+        SqlDialect sqlDialect = null;
+        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
+        switch (datasourceType) {
+            case mysql:
+            case mongo:
+            case StarRocks:
+            case doris:
+            case TiDB:
+            case mariadb:
+                sqlDialect = MysqlSqlDialect.DEFAULT;
+                break;
+            case impala:
+                sqlDialect = ImpalaSqlDialect.DEFAULT;
+                break;
+            case sqlServer:
+                sqlDialect = MssqlSqlDialect.DEFAULT;
+                break;
+            case oracle:
+                sqlDialect = OracleSqlDialect.DEFAULT;
+                break;
+            case db2:
+                sqlDialect = Db2SqlDialect.DEFAULT;
+                break;
+            case pg:
+                sqlDialect = PostgresqlSqlDialect.DEFAULT;
+                break;
+            case redshift:
+                sqlDialect = RedshiftSqlDialect.DEFAULT;
+                break;
+            case ck:
+                sqlDialect = ClickHouseSqlDialect.DEFAULT;
+                break;
+            case h2:
+                sqlDialect = H2SqlDialect.DEFAULT;
+                break;
+            default:
+                sqlDialect = MysqlSqlDialect.DEFAULT;
+        }
+        return sqlDialect;
     }
 }

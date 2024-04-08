@@ -35,6 +35,7 @@ import org.springframework.util.CollectionUtils;
 
 import java.io.File;
 import java.io.IOException;
+import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
@@ -147,6 +148,11 @@ public class CalciteProvider {
     }
 
     public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException {
+        // 不跨数据源
+        if (datasourceRequest.getDsList().size() == 1) {
+            return jdbcFetchResultField(datasourceRequest);
+        }
+
         List<TableField> datasetTableFields = new ArrayList<>();
         List<String[]> list = new LinkedList<>();
         PreparedStatement statement = null;
@@ -189,6 +195,119 @@ public class CalciteProvider {
         map.put("fields", datasetTableFields);
         map.put("data", list);
         return map;
+    }
+
+    public Map<String, Object> jdbcFetchResultField(DatasourceRequest datasourceRequest) throws DEException {
+        DatasourceSchemaDTO value = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
+        datasourceRequest.setDatasource(value);
+
+        DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
+
+        Map<String, Object> map = new LinkedHashMap<>();
+        List<TableField> fieldList = new ArrayList<>();
+        List<String[]> dataList = new LinkedList<>();
+
+        // schema
+        ResultSet resultSet = null;
+        try (Connection con = getConnection(datasourceRequest.getDatasource());
+             Statement statement = getStatement(con, datasourceConfiguration.getQueryTimeout())) {
+            if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceType.oracle) {
+                statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+            }
+            resultSet = statement.executeQuery(datasourceRequest.getQuery());
+            fieldList = getField(resultSet, datasourceRequest);
+            dataList = getData(resultSet, datasourceRequest);
+        } catch (SQLException e) {
+            DEException.throwException("SQL ERROR: " + e.getMessage());
+        } catch (Exception e) {
+            DEException.throwException("Data source connection exception: " + e.getMessage());
+        } finally {
+            if (resultSet != null) {
+                try {
+                    resultSet.close();
+                } catch (SQLException e) {
+                    e.printStackTrace();
+                }
+            }
+        }
+
+        map.put("fields", fieldList);
+        map.put("data", dataList);
+        return map;
+    }
+
+    private List<TableField> getField(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
+        List<TableField> fieldList = new ArrayList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        for (int j = 0; j < columnCount; j++) {
+            String f = metaData.getColumnName(j + 1);
+            if (StringUtils.equalsIgnoreCase(f, "DE_ROWNUM")) {
+                continue;
+            }
+            String l = StringUtils.isNotEmpty(metaData.getColumnLabel(j + 1)) ? metaData.getColumnLabel(j + 1) : f;
+            String t = metaData.getColumnTypeName(j + 1).toUpperCase();
+            TableField field = new TableField();
+            field.setOriginName(l);
+            field.setName(l);
+            field.setFieldType(t);
+            field.setType(t);
+            fieldList.add(field);
+        }
+        return fieldList;
+    }
+
+    private List<String[]> getData(ResultSet rs, DatasourceRequest datasourceRequest) throws Exception {
+        String charset = null;
+        String targetCharset = "UTF-8";
+        if (datasourceRequest != null && datasourceRequest.getDatasource().getType().equalsIgnoreCase("oracle")) {
+            DatasourceConfiguration jdbcConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
+
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getCharset()) && !jdbcConfiguration.getCharset().equalsIgnoreCase("Default")) {
+                charset = jdbcConfiguration.getCharset();
+            }
+            if (StringUtils.isNotEmpty(jdbcConfiguration.getTargetCharset()) && !jdbcConfiguration.getTargetCharset().equalsIgnoreCase("Default")) {
+                targetCharset = jdbcConfiguration.getTargetCharset();
+            }
+        }
+        List<String[]> list = new LinkedList<>();
+        ResultSetMetaData metaData = rs.getMetaData();
+        int columnCount = metaData.getColumnCount();
+        while (rs.next()) {
+            String[] row = new String[columnCount];
+            for (int j = 0; j < columnCount; j++) {
+                int columnType = metaData.getColumnType(j + 1);
+                switch (columnType) {
+                    case Types.DATE:
+                        if (rs.getDate(j + 1) != null) {
+                            row[j] = rs.getDate(j + 1).toString();
+                        }
+                        break;
+                    case Types.BOOLEAN:
+                        row[j] = rs.getBoolean(j + 1) ? "1" : "0";
+                        break;
+                    case Types.NUMERIC:
+                        BigDecimal bigDecimal = rs.getBigDecimal(j + 1);
+                        row[j] = bigDecimal == null ? null : bigDecimal.toString();
+                        break;
+                    default:
+                        if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
+                            row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
+                        } else {
+                            if (charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))) {
+                                String originStr = new String(rs.getString(j + 1).getBytes(charset), targetCharset);
+                                row[j] = new String(originStr.getBytes("UTF-8"), "UTF-8");
+                            } else {
+                                row[j] = rs.getString(j + 1);
+                            }
+                        }
+
+                        break;
+                }
+            }
+            list.add(row);
+        }
+        return list;
     }
 
     private String getTableFiledSql(DatasourceRequest datasourceRequest) {
@@ -295,7 +414,8 @@ public class CalciteProvider {
     private TableField getTableFieldDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
         TableField tableField = new TableField();
         tableField.setOriginName(resultSet.getString(1));
-        tableField.setType(resultSet.getString(2));
+        tableField.setType(resultSet.getString(2).toUpperCase());
+        tableField.setFieldType(tableField.getType());
         int deType = FieldUtils.transType2DeType(tableField.getType());
         tableField.setDeExtractType(deType);
         tableField.setDeType(deType);
@@ -306,24 +426,57 @@ public class CalciteProvider {
 
     public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException {
         List<TableField> datasetTableFields = new ArrayList<>();
-        try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest))) {
-            while (resultSet.next()) {
-                datasetTableFields.add(getTableFieldDesc(datasourceRequest, resultSet));
-            }
-        } catch (Exception e) {
-            DEException.throwException(e.getMessage());
-        }
+        DatasourceSchemaDTO datasourceSchemaDTO = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
+        datasourceRequest.setDatasource(datasourceSchemaDTO);
 
-        List<TableField> tableFields = (List<TableField>) fetchResultField(datasourceRequest).get("fields");
-        for (TableField tableField : tableFields) {
-            for (TableField datasetTableField : datasetTableFields) {
-                if(tableField.getOriginName().equalsIgnoreCase(datasetTableField.getOriginName())){
-                    tableField.setName(datasetTableField.getName());
+        DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
+
+        String table = datasourceRequest.getTable();
+        if (StringUtils.isEmpty(table)) {
+            ResultSet resultSet = null;
+            try (Connection con = getConnection(datasourceRequest.getDatasource());
+                 Statement statement = getStatement(con, 30)) {
+                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceType.oracle) {
+                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                }
+                resultSet = statement.executeQuery(datasourceRequest.getQuery());
+                datasetTableFields.addAll(getField(resultSet, datasourceRequest));
+            } catch (Exception e) {
+                DEException.throwException(e.getMessage());
+            } finally {
+                if (resultSet != null) {
+                    try {
+                        resultSet.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            ResultSet resultSet = null;
+            try (Connection con = getConnection(datasourceRequest.getDatasource());
+                 Statement statement = getStatement(con, 30)) {
+                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceType.oracle) {
+                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                }
+                resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
+                while (resultSet.next()) {
+                    datasetTableFields.add(getTableFieldDesc(datasourceRequest, resultSet));
+                }
+            } catch (Exception e) {
+                DEException.throwException(e.getMessage());
+            } finally {
+                if (resultSet != null) {
+                    try {
+                        resultSet.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
                 }
             }
         }
 
-        return tableFields;
+        return datasetTableFields;
     }
 
 
