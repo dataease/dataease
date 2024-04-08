@@ -157,6 +157,7 @@
       </el-row>
     </el-row>
   </el-row>
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <script setup lang="ts">
@@ -426,15 +427,27 @@ const apply = () => {
         templateData.type === 'dataV'
           ? '#/dvCanvas?opt=create&createType=template'
           : '#/dashboard?opt=create&createType=template'
+      let newWindow = null
       if (state.pid) {
-        window.open(baseUrl + `&pid=${state.pid}`, '_blank')
+        newWindow = window.open(baseUrl + `&pid=${state.pid}`, '_blank')
       } else {
-        window.open(baseUrl, '_blank')
+        newWindow = window.open(baseUrl, '_blank')
       }
+      initOpenHandler(newWindow)
     })
     .catch(() => {
       state.loading = false
     })
+}
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
 }
 
 const initTemplateShow = () => {
