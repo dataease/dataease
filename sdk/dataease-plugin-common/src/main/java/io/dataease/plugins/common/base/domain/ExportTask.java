@@ -13,6 +13,8 @@ public class ExportTask implements Serializable {
 
     private Double fileSize;
 
+    private String fileSizeUnit;
+
     private String exportFrom;
 
     private String exportStatus;

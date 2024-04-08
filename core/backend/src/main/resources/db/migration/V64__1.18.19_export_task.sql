@@ -4,6 +4,7 @@ CREATE TABLE `export_task` (
            `user_id`     bigint(20)       NOT NULL ,
            `file_name` varchar(2048) DEFAULT NULL,
            `file_size` DOUBLE DEFAULT NULL,
+           `file_size_unit` varchar(255)  DEFAULT NULL,
            `export_from` varchar(255) DEFAULT NULL,
            `export_status` varchar(255) DEFAULT NULL,
            `export_from_type` varchar(255) DEFAULT NULL,

@@ -117,11 +117,16 @@ public class ExportCenterService {
         response.setContentType("application/vnd.ms-excel");
         //文件名称
         response.setHeader("Content-disposition", "attachment;filename=" + exportTask.getFileName());
-
-        XSSFWorkbook wb = new XSSFWorkbook(exportData_path + id + "/" + exportTask.getFileName());
-        wb.write(outputStream);
+        InputStream fileInputStream =  new FileInputStream(exportData_path + id + "/" + exportTask.getFileName());
+        byte[] buffer = new byte[4096];
+        int bytesRead;
+        while ((bytesRead = fileInputStream.read(buffer)) != -1) {
+            outputStream.write(buffer, 0, bytesRead);
+        }
         outputStream.flush();
         outputStream.close();
+        fileInputStream.close();
+        response.flushBuffer();
     }
 
     public void delete(String id) {
@@ -135,6 +140,23 @@ public class ExportCenterService {
         });
     }
 
+    public void retry(String id){
+        ExportTask exportTask = exportTaskMapper.selectByPrimaryKey(id);
+        exportTask.setExportStatus("PENDING");
+        exportTask.setExportPogress("0");
+        exportTask.setExportMachineName(hostName());
+        exportTask.setExportTime(System.currentTimeMillis());
+        exportTaskMapper.updateByPrimaryKey(exportTask);
+        FileUtil.deleteDirectoryRecursively(exportData_path + id);
+        if(exportTask.getExportFromType().equalsIgnoreCase("dataset")){
+            DataSetExportRequest request = new Gson().fromJson(exportTask.getParams(), DataSetExportRequest.class);
+            startDatasetTask(exportTask, request);
+        }
+        if(exportTask.getExportFromType().equalsIgnoreCase("chart")){
+            PanelViewDetailsRequest request = new Gson().fromJson(exportTask.getParams(), PanelViewDetailsRequest.class);
+            startViewTask(exportTask, request);
+        }
+    }
     public List<ExportTaskDTO> exportTasks(String status) {
         if (!STATUS.contains(status)) {
             DataEaseException.throwException("Invalid status: " + status);
@@ -161,7 +183,6 @@ public class ExportCenterService {
 
     private void setExportFromName(ExportTaskDTO exportTaskDTO) {
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
-
             exportTaskDTO.setExportFromName(panelGroupService.getAbsPath(exportTaskDTO.getExportFrom()));
         }
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("dataset")) {
@@ -440,6 +461,8 @@ public class ExportCenterService {
 
                 exportTask.setExportPogress("100");
                 exportTask.setExportStatus("SUCCESS");
+
+                setFileSize(dataPath + "/" + dataPath + "/" + request.getViewName() + ".xlsx", exportTask);
             } catch (Exception e) {
                 e.printStackTrace();
                 exportTask.setExportStatus("FAILED");
@@ -647,12 +670,34 @@ public class ExportCenterService {
                 }
                 exportTask.setExportPogress("100");
                 exportTask.setExportStatus("SUCCESS");
+                setFileSize(dataPath + "/" + request.getFilename() + ".xlsx", exportTask);
             } catch (Exception e) {
                 exportTask.setExportStatus("FAILED");
             } finally {
                 exportTaskMapper.updateByPrimaryKey(exportTask);
             }
         });
+    }
+
+    private void setFileSize(String filePath, ExportTask exportTask ){
+        File file = new File(filePath);
+        long length = file.length();
+        String unit = "Mb";
+        Double size = 0.0;
+        if((double) length/1024/1024 > 1){
+            if((double) length/1024/1024 > 1){
+                unit = "Gb";
+                size = Double.valueOf(String.format("%.2f", (double) length/1024/1024/1024));
+            }else {
+                size = Double.valueOf(String.format("%.2f", (double) length/1024/1024));
+            }
+
+        }else {
+            unit = "Kb";
+            size = Double.valueOf(String.format("%.2f", (double) length/1024));
+        }
+        exportTask.setFileSize(size);
+        exportTask.setFileSizeUnit(unit);
     }
 
     public Boolean checkEngineTableIsExists(String id) throws Exception {
@@ -1179,8 +1224,6 @@ public class ExportCenterService {
 
                     DataEaseException.throwException(Translator.get("i18n_ds_error") + "->" + e.getMessage());
                 }
-
-
             }
         }
 

@@ -33,6 +33,13 @@
               <svg-icon style="font-size: 24px;" icon-class="icon_file-excel_colorful"> </svg-icon>
               <span style="margin-left: 8px">{{ scope.row.fileName }}</span>
             </div>
+            <div v-show="activeName==='FAILED'">
+              <span style="margin-left: 8px" :style="{ color: 'red' }">导出失败</span>
+              <hr class="red-line" />
+            </div>
+            <div v-show="scope.row.exportStatus==='SUCCESS'">
+              <span style="margin-left: 8px">{{scope.row.fileSize}}{{scope.row.fileSizeUnit}}</span>
+            </div>
             <el-progress v-show="activeName==='IN_PROGRESS'" :percentage="scope.row.exportPogress"></el-progress>
           </template>
 
@@ -59,8 +66,15 @@
                 />
               </div>
             </el-button>
-            <el-button type="text" size="mini" @click="deleteField(scope.row)"
-              >{{ $t("dataset.delete") }}
+            <el-button v-if="scope.row.exportStatus === 'FAILED'" type="text" size="mini" @click="retry(scope.row)">
+              <div class="download-export">
+                <i class="el-icon-refresh-right"></i>
+              </div>
+            </el-button>
+            <el-button type="text" size="mini" @click="deleteField(scope.row)">
+              <div class="download-export">
+                <i class="el-icon-delete"></i>
+              </div>
             </el-button>
           </template>
         </el-table-column>
@@ -85,7 +99,7 @@ export default {
   mixins: [msgCfm],
   data() {
     return {
-      activeName: "IN_PROGRESS",
+      activeName: "ALL",
       multipleSelection: [],
       errImg: require("@/assets/none-data.png"),
       tableData: [{ name: "附件名称" }],
@@ -113,6 +127,7 @@ export default {
           name: "ALL",
         },
       ],
+      loading : false
     };
   },
   created() {
@@ -124,15 +139,46 @@ export default {
       this.handleClick()
       this.timer = setInterval(() => {
         if(this.activeName === 'IN_PROGRESS'){
-          this.handleClick()
+          console.log(this.activeName)
+          post(
+            '/exportCenter/exportTasks/' + this.activeName,{}, true
+          ).then(
+            (res) => {
+              this.tabList.forEach( item => {
+                if(item.name === 'ALL'){
+                  item.label = '全部' + '(' + res.data.length + ')'
+                }
+                if(item.name === 'IN_PROGRESS'){
+                  item.label = '导出中' + '(' + res.data.filter(task => task.exportStatus === 'IN_PROGRESS').length + ')'
+                }
+                if(item.name === 'SUCCESS'){
+                  item.label = '成功' + '(' + res.data.filter(task => task.exportStatus === 'SUCCESS').length + ')'
+                }
+                if(item.name === 'FAILED'){
+                  item.label = '失败' + '(' + res.data.filter(task => task.exportStatus === 'FAILED').length + ')'
+                }
+                if(item.name === 'PENDING'){
+                  item.label = '等待中' + '(' + res.data.filter(task => task.exportStatus === 'PENDING').length + ')'
+                }
+              })
+              if(this.activeName === 'ALL'){
+                this.tableData = res.data
+              }else {
+                this.tableData = res.data.filter(task => task.exportStatus === this.activeName)
+              }
+            },
+          )
         }
       }, 5000);
     },
+    format(percentage) {
+      return '';
+    },
     handleClick() {
-      request({
-        url: '/exportCenter/exportTasks/' + this.activeName,
-        method: 'post'
-      }).then(
+      this.tableData = []
+      post(
+        '/exportCenter/exportTasks/' + this.activeName,{}, true
+      ).then(
         (res) => {
           this.tabList.forEach( item => {
             if(item.name === 'ALL'){
@@ -156,7 +202,8 @@ export default {
           }else {
             this.tableData = res.data.filter(task => task.exportStatus === this.activeName)
           }
-        }
+        },
+
       )
     },
     downloadClick(item) {
@@ -174,6 +221,16 @@ export default {
       })
     },
 
+    retry(item) {
+      post(
+        '/exportCenter/retry/' + item.id,{},
+        true
+      ).then(
+        (res) => {
+          this.handleClick()
+        }
+      )
+    },
     deleteField(item) {
       request({
         url: '/exportCenter/delete/' + item.id,
@@ -197,10 +254,14 @@ export default {
       this.handlerConfirm(options);
     },
     delAll() {
+      if(this.multipleSelection.length === 0 ){
+        this.openMessageSuccess("请选择", 'error')
+        return
+      }
       post(
         '/exportCenter/delete',
         this.multipleSelection.map((ele) => ele.id),
-        false
+        true
       ).then(
         (res) => {
           this.handleClick()
@@ -247,6 +308,11 @@ export default {
 
     th.el-table__cell.is-leaf {
       border-color: #1f232926;
+    }
+
+    .red-line {
+      border: 2px solid red;
+      margin: 10px 0;
     }
   }
 }

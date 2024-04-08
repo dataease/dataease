@@ -38,4 +38,10 @@ public class ExportCenterController {
     public void download(@PathVariable String id, HttpServletResponse response) throws Exception {
         exportCenterService.download(id, response);
     }
+
+    @PostMapping("/retry/{id}")
+    public void  retry(@PathVariable String id){
+        exportCenterService.retry(id);
+    }
+
 }

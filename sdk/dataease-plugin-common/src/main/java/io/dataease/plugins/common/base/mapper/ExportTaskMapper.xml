@@ -6,6 +6,7 @@
     <result column="user_id" jdbcType="BIGINT" property="userId" />
     <result column="file_name" jdbcType="VARCHAR" property="fileName" />
     <result column="file_size" jdbcType="DOUBLE" property="fileSize" />
+    <result column="file_size_unit" jdbcType="VARCHAR" property="fileSizeUnit" />
     <result column="export_from" jdbcType="VARCHAR" property="exportFrom" />
     <result column="export_status" jdbcType="VARCHAR" property="exportStatus" />
     <result column="export_from_type" jdbcType="VARCHAR" property="exportFromType" />
@@ -75,7 +76,7 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, user_id, file_name, file_size, export_from, export_status, export_from_type, 
+    id, user_id, file_name, file_size, file_size_unit, export_from, export_status, export_from_type, 
     export_time, export_pogress, export_machine_name
   </sql>
   <sql id="Blob_Column_List">
@@ -131,13 +132,15 @@
   </delete>
   <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.ExportTask">
     insert into export_task (id, user_id, file_name, 
-      file_size, export_from, export_status, 
-      export_from_type, export_time, export_pogress, 
-      export_machine_name, params)
+      file_size, file_size_unit, export_from, 
+      export_status, export_from_type, export_time, 
+      export_pogress, export_machine_name, params
+      )
     values (#{id,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{fileName,jdbcType=VARCHAR}, 
-      #{fileSize,jdbcType=DOUBLE}, #{exportFrom,jdbcType=VARCHAR}, #{exportStatus,jdbcType=VARCHAR}, 
-      #{exportFromType,jdbcType=VARCHAR}, #{exportTime,jdbcType=BIGINT}, #{exportPogress,jdbcType=VARCHAR}, 
-      #{exportMachineName,jdbcType=VARCHAR}, #{params,jdbcType=LONGVARCHAR})
+      #{fileSize,jdbcType=DOUBLE}, #{fileSizeUnit,jdbcType=VARCHAR}, #{exportFrom,jdbcType=VARCHAR}, 
+      #{exportStatus,jdbcType=VARCHAR}, #{exportFromType,jdbcType=VARCHAR}, #{exportTime,jdbcType=BIGINT}, 
+      #{exportPogress,jdbcType=VARCHAR}, #{exportMachineName,jdbcType=VARCHAR}, #{params,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.ExportTask">
     insert into export_task
@@ -153,6 +156,9 @@
       </if>
       <if test="fileSize != null">
         file_size,
+      </if>
+      <if test="fileSizeUnit != null">
+        file_size_unit,
       </if>
       <if test="exportFrom != null">
         export_from,
@@ -188,6 +194,9 @@
       </if>
       <if test="fileSize != null">
         #{fileSize,jdbcType=DOUBLE},
+      </if>
+      <if test="fileSizeUnit != null">
+        #{fileSizeUnit,jdbcType=VARCHAR},
       </if>
       <if test="exportFrom != null">
         #{exportFrom,jdbcType=VARCHAR},
@@ -233,6 +242,9 @@
       <if test="record.fileSize != null">
         file_size = #{record.fileSize,jdbcType=DOUBLE},
       </if>
+      <if test="record.fileSizeUnit != null">
+        file_size_unit = #{record.fileSizeUnit,jdbcType=VARCHAR},
+      </if>
       <if test="record.exportFrom != null">
         export_from = #{record.exportFrom,jdbcType=VARCHAR},
       </if>
@@ -265,6 +277,7 @@
       user_id = #{record.userId,jdbcType=BIGINT},
       file_name = #{record.fileName,jdbcType=VARCHAR},
       file_size = #{record.fileSize,jdbcType=DOUBLE},
+      file_size_unit = #{record.fileSizeUnit,jdbcType=VARCHAR},
       export_from = #{record.exportFrom,jdbcType=VARCHAR},
       export_status = #{record.exportStatus,jdbcType=VARCHAR},
       export_from_type = #{record.exportFromType,jdbcType=VARCHAR},
@@ -282,6 +295,7 @@
       user_id = #{record.userId,jdbcType=BIGINT},
       file_name = #{record.fileName,jdbcType=VARCHAR},
       file_size = #{record.fileSize,jdbcType=DOUBLE},
+      file_size_unit = #{record.fileSizeUnit,jdbcType=VARCHAR},
       export_from = #{record.exportFrom,jdbcType=VARCHAR},
       export_status = #{record.exportStatus,jdbcType=VARCHAR},
       export_from_type = #{record.exportFromType,jdbcType=VARCHAR},
@@ -303,6 +317,9 @@
       </if>
       <if test="fileSize != null">
         file_size = #{fileSize,jdbcType=DOUBLE},
+      </if>
+      <if test="fileSizeUnit != null">
+        file_size_unit = #{fileSizeUnit,jdbcType=VARCHAR},
       </if>
       <if test="exportFrom != null">
         export_from = #{exportFrom,jdbcType=VARCHAR},
@@ -333,6 +350,7 @@
     set user_id = #{userId,jdbcType=BIGINT},
       file_name = #{fileName,jdbcType=VARCHAR},
       file_size = #{fileSize,jdbcType=DOUBLE},
+      file_size_unit = #{fileSizeUnit,jdbcType=VARCHAR},
       export_from = #{exportFrom,jdbcType=VARCHAR},
       export_status = #{exportStatus,jdbcType=VARCHAR},
       export_from_type = #{exportFromType,jdbcType=VARCHAR},
@@ -347,6 +365,7 @@
     set user_id = #{userId,jdbcType=BIGINT},
       file_name = #{fileName,jdbcType=VARCHAR},
       file_size = #{fileSize,jdbcType=DOUBLE},
+      file_size_unit = #{fileSizeUnit,jdbcType=VARCHAR},
       export_from = #{exportFrom,jdbcType=VARCHAR},
       export_status = #{exportStatus,jdbcType=VARCHAR},
       export_from_type = #{exportFromType,jdbcType=VARCHAR},
