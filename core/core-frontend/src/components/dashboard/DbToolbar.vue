@@ -26,6 +26,7 @@ import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 import { XpackComponent } from '@/components/plugin'
+import DbMoreComGroup from '@/custom-component/component-group/DbMoreComGroup.vue'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -445,15 +446,18 @@ const initOpenHandler = newWindow => {
           >
             <media-group themes="light" :dv-model="dvModel"></media-group>
           </component-group>
+          <component-group themes="light" is-label :base-width="115" icon-name="dv-tab" title="Tab">
+            <tabs-group themes="light" :dv-model="dvModel"></tabs-group>
+          </component-group>
           <component-group
-            show-split-line
             themes="light"
+            show-split-line
             is-label
             :base-width="115"
-            icon-name="dv-tab"
-            title="Tab"
+            icon-name="dv-more-com"
+            title="更多"
           >
-            <tabs-group themes="light" :dv-model="dvModel"></tabs-group>
+            <db-more-com-group themes="light" :dv-model="dvModel"></db-more-com-group>
           </component-group>
           <component-button-label
             icon-name="icon_copy_filled"

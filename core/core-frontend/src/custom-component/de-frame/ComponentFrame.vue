@@ -24,8 +24,6 @@
     </div>
     <div v-else class="info-class">
       <span>{{ t('visualization.link_add_tips_pre') }}</span>
-      <el-icon><Link /></el-icon>
-      <span>{{ t('visualization.web_add_tips_suf') }}</span>
     </div>
   </el-row>
 </template>

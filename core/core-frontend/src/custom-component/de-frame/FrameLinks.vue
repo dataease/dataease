@@ -1,38 +1,38 @@
 <template>
-  <el-popover ref="popover" width="400" trigger="click">
-    <el-row>
-      <el-form ref="form" size="mini" label-width="70px">
-        <el-form-item :label="'Tips:'">
-          <span style="color: #909399; font-size: 8px; margin-left: 3px">
-            {{ t('visualization.web_set_tips') }}
+  <el-row>
+    <el-form ref="form" size="small" style="width: 100%">
+      <el-form-item>
+        <template #label>
+          <span class="data-area-label">
+            <span style="margin-right: 4px">
+              {{ t('visualization.web_url') }}
+            </span>
+            <el-tooltip class="item" :effect="toolTip" placement="bottom">
+              <template #content>
+                <div>
+                  {{ t('visualization.web_set_tips') }}
+                </div>
+              </template>
+              <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+                <Icon name="icon_info_outlined" />
+              </el-icon>
+            </el-tooltip>
           </span>
-        </el-form-item>
-        <el-form-item :label="t('visualization.web_url')">
-          <el-input v-model="state.linkInfoTemp.src" />
-        </el-form-item>
-        <el-form-item>
-          <el-button type="primary" @click="onSubmit">{{ t('visualization.confirm') }}</el-button>
-          <el-button @click="onClose">{{ t('visualization.cancel') }}</el-button>
-        </el-form-item>
-      </el-form>
-    </el-row>
-    <template #reference>
-      <span>
-        ICON
-        <i class="icon iconfont icon-chaolianjie" />
-      </span>
-    </template>
-  </el-popover>
+        </template>
+        <el-input v-model="state.linkInfoTemp.src" @blur="onBlur" />
+      </el-form-item>
+    </el-form>
+  </el-row>
 </template>
 
 <script setup lang="ts">
-import { reactive, ref, toRefs, watch } from 'vue'
+import { reactive, ref, toRefs, watch, computed } from 'vue'
 import { dvMainStoreWithOut } from '../../store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia/dist/pinia'
 import { checkAddHttp, deepCopy } from '../../utils/utils'
 import { snapshotStoreWithOut } from '../../store/modules/data-visualization/snapshot'
-import eventBus from '../../utils/eventBus'
 import { useI18n } from '../../hooks/web/useI18n'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent, curActiveTabInner } = storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
@@ -41,19 +41,26 @@ const popover = ref(null)
 const { t } = useI18n()
 
 const props = defineProps({
-  linkInfo: {
+  canvasId: {
+    type: String,
+    require: true
+  },
+  frameLinks: {
     type: Object,
     required: true
   },
-  // 属性所属组件位置
-  attrPosition: {
+  themes: {
     type: String,
-    required: false,
-    default: 'panel'
+    required: true,
+    default: 'dark'
   }
 })
 
-const { linkInfo, attrPosition } = toRefs(props)
+const { frameLinks } = toRefs(props)
+
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 
 const state = reactive({
   linkInfoTemp: null,
@@ -63,30 +70,17 @@ const state = reactive({
 })
 
 const init = () => {
-  state.linkInfoTemp = deepCopy(linkInfo.value)
+  state.linkInfoTemp = deepCopy(frameLinks.value)
 }
-const onSubmit = () => {
+const onBlur = () => {
   state.linkInfoTemp.src = checkAddHttp(state.linkInfoTemp.src)
-  if (attrPosition.value === 'panel') {
-    curComponent.value.frameLinks = state.linkInfoTemp
-  } else {
-    curActiveTabInner.value.frameLinks = state.linkInfoTemp
-  }
+  curComponent.value.frameLinks.src = state.linkInfoTemp.src
   snapshotStore.recordSnapshotCache()
-  eventBus.emit('frameLinksChange-' + curComponent.value.id)
-  popoverClose()
+  useEmitt().emitter.emit('frameLinksChange-' + curComponent.value.id)
 }
-const onClose = () => {
-  emits('close')
-  popoverClose()
-}
-const popoverClose = () => {
-  popover.value.showPopper = false
-}
-
 init()
 watch(
-  linkInfo,
+  frameLinks.value,
   () => {
     init()
   },
@@ -130,8 +124,24 @@ watch(
   border-radius: 3px;
 }
 
-:deep(.ed-popover) {
-  height: 200px;
-  overflow: auto;
+.tips-class {
+  color: #909399;
+  font-size: 8px;
+  margin-left: 3px;
+}
+
+.hint-icon {
+  cursor: pointer;
+  font-size: 14px;
+  color: #646a73;
+
+  &.hint-icon--dark {
+    color: #a6a6a6;
+  }
+}
+.data-area-label {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>
