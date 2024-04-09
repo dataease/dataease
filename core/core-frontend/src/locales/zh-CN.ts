@@ -1093,7 +1093,10 @@ export default {
     value_min_max_invalid: '最小值必须小于最大值',
     add_assist_line: '添加辅助线',
     add_threshold: '添加阈值',
-    add_condition: '添加条件'
+    add_condition: '添加条件',
+    chart_quadrant: '象限图',
+    quadrant: '象限',
+    font_size: '字号'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

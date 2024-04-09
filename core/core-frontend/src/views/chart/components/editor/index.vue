@@ -803,6 +803,10 @@ const onTableColumnWidthChange = val => {
 const onExtTooltipChange = val => {
   view.value.extTooltip = val
 }
+const onChangeQuadrantForm = val => {
+  view.value.customAttr.quadrant = val
+  renderChart(view.value)
+}
 
 const showRename = val => {
   recordSnapshotInfo('render')
@@ -1799,6 +1803,7 @@ const onRefreshChange = val => {
                       @onTableTotalChange="onTableTotalChange"
                       @onChangeMiscStyleForm="onChangeMiscStyleForm"
                       @onExtTooltipChange="onExtTooltipChange"
+                      @onChangeQuadrantForm="onChangeQuadrantForm"
                     />
                   </el-scrollbar>
                 </el-container>

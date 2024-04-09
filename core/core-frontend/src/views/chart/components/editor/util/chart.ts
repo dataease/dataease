@@ -665,6 +665,66 @@ export const DEFAULT_SCROLL: ScrollCfg = {
   step: 50
 }
 
+export const DEFAULT_QUADRANT_STYLE: QuadrantAttr = {
+  lineStyle: {
+    stroke: '#aaa',
+    lineWidth: 1,
+    opacity: 0.5
+  },
+  regionStyle: [
+    {
+      fill: '#fdfcfc',
+      fillOpacity: 0.5
+    },
+    {
+      fill: '#fafdfa',
+      fillOpacity: 0.5
+    },
+    {
+      fill: '#fdfcfc',
+      fillOpacity: 0.5
+    },
+    {
+      fill: '#fafdfa',
+      fillOpacity: 0.5
+    }
+  ],
+  labels: [
+    {
+      content: '',
+      style: {
+        fill: '#000000',
+        fillOpacity: 0.5,
+        fontSize: 14
+      }
+    },
+    {
+      content: '',
+      style: {
+        fill: '#000000',
+        fillOpacity: 0.5,
+        fontSize: 14
+      }
+    },
+    {
+      content: '',
+      style: {
+        fill: '#000000',
+        fillOpacity: 0.5,
+        fontSize: 14
+      }
+    },
+    {
+      content: '',
+      style: {
+        fill: '#000000',
+        fillOpacity: 0.5,
+        fontSize: 14
+      }
+    }
+  ]
+}
+
 export const COLOR_PANEL = [
   '#FF4500',
   '#FF8C00',
@@ -1227,6 +1287,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'funnel',
         title: t('chart.chart_funnel'),
         icon: 'funnel'
+      },
+      {
+        render: 'antv',
+        category: 'distribute',
+        value: 'quadrant',
+        title: t('chart.chart_quadrant'),
+        icon: 'scatter'
       }
     ]
   },

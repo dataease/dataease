@@ -3,26 +3,20 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 
 import { storeToRefs } from 'pinia'
-import {onMounted, reactive} from "vue";
+import { onMounted, reactive } from 'vue'
 
-
-
-const state = reactive({
-
-})
+const state = reactive({})
 
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
 const { curComponent } = storeToRefs(dvMainStore)
-
 </script>
 
 <template>
   <el-collapse-item :effect="themes" title="位置" name="position" v-if="!dashboardActive">
     <component-position :themes="themes" />
   </el-collapse-item>
-
 </template>
 
 <style lang="less" scoped>
