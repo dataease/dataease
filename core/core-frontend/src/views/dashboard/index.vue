@@ -152,8 +152,11 @@ onMounted(async () => {
       // 从模板新建
       if (createType === 'template') {
         const deTemplateDataStr = wsCache.get(`de-template-data`)
-        const deTemplateData = JSON.parse(deTemplateDataStr)
-        wsCache.delete('de-template-data')
+        let deTemplateData = JSON.parse(deTemplateDataStr)
+        // wsCache.delete('de-template-data')
+        if (!deTemplateData) {
+          deTemplateData = JSON.parse(localStorage.getItem('de-template-data-1'))
+        }
         dvMainStore.setComponentData(JSON.parse(deTemplateData['componentData']))
         dvMainStore.setCanvasStyle(JSON.parse(deTemplateData['canvasStyleData']))
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
