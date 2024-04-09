@@ -48,6 +48,7 @@ import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
@@ -58,6 +59,7 @@ import java.io.*;
 import java.net.InetAddress;
 import java.text.DecimalFormat;
 import java.util.*;
+import java.util.concurrent.Future;
 import java.util.concurrent.ScheduledThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 import java.util.stream.Collectors;
@@ -104,11 +106,23 @@ public class ExportCenterService {
     private PanelGroupService panelGroupService;
     private int corePoolSize = 10;
     private int keepAliveSeconds = 600;
+    private Map<String, Future> Running_Task = new HashMap<>();
 
     @PostConstruct
     public void init() {
         scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(corePoolSize);
         scheduledThreadPoolExecutor.setKeepAliveTime(keepAliveSeconds, TimeUnit.SECONDS);
+    }
+
+    @Scheduled(fixedRate = 5000)
+    public void checkRunningTask() {
+        Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Future> entry = iterator.next();
+            if (entry.getValue().isDone()) {
+                iterator.remove();
+            }
+        }
     }
 
     public void download(String id, HttpServletResponse response) throws Exception {
@@ -117,7 +131,7 @@ public class ExportCenterService {
         response.setContentType("application/vnd.ms-excel");
         //文件名称
         response.setHeader("Content-disposition", "attachment;filename=" + exportTask.getFileName());
-        InputStream fileInputStream =  new FileInputStream(exportData_path + id + "/" + exportTask.getFileName());
+        InputStream fileInputStream = new FileInputStream(exportData_path + id + "/" + exportTask.getFileName());
         byte[] buffer = new byte[4096];
         int bytesRead;
         while ((bytesRead = fileInputStream.read(buffer)) != -1) {
@@ -130,6 +144,15 @@ public class ExportCenterService {
     }
 
     public void delete(String id) {
+        Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
+        while (iterator.hasNext()) {
+            Map.Entry<String, Future> entry = iterator.next();
+            if (entry.getKey().equalsIgnoreCase(id)) {
+                entry.getValue().cancel(true);
+                iterator.remove();
+            }
+        }
+
         FileUtil.deleteDirectoryRecursively(exportData_path + id);
         exportTaskMapper.deleteByPrimaryKey(id);
     }
@@ -140,7 +163,7 @@ public class ExportCenterService {
         });
     }
 
-    public void retry(String id){
+    public void retry(String id) {
         ExportTask exportTask = exportTaskMapper.selectByPrimaryKey(id);
         exportTask.setExportStatus("PENDING");
         exportTask.setExportPogress("0");
@@ -148,15 +171,16 @@ public class ExportCenterService {
         exportTask.setExportTime(System.currentTimeMillis());
         exportTaskMapper.updateByPrimaryKey(exportTask);
         FileUtil.deleteDirectoryRecursively(exportData_path + id);
-        if(exportTask.getExportFromType().equalsIgnoreCase("dataset")){
+        if (exportTask.getExportFromType().equalsIgnoreCase("dataset")) {
             DataSetExportRequest request = new Gson().fromJson(exportTask.getParams(), DataSetExportRequest.class);
             startDatasetTask(exportTask, request);
         }
-        if(exportTask.getExportFromType().equalsIgnoreCase("chart")){
+        if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
             PanelViewDetailsRequest request = new Gson().fromJson(exportTask.getParams(), PanelViewDetailsRequest.class);
             startViewTask(exportTask, request);
         }
     }
+
     public List<ExportTaskDTO> exportTasks(String status) {
         if (!STATUS.contains(status)) {
             DataEaseException.throwException("Invalid status: " + status);
@@ -255,11 +279,11 @@ public class ExportCenterService {
         criteria = exportTaskExample.createCriteria();
         criteria.andExportMachineNameEqualTo(hostName()).andExportStatusEqualTo("PENDING");
         exportTaskMapper.selectByExampleWithBLOBs(exportTaskExample).parallelStream().forEach(exportTask -> {
-            if(exportTask.getExportFromType().equalsIgnoreCase("dataset")){
+            if (exportTask.getExportFromType().equalsIgnoreCase("dataset")) {
                 DataSetExportRequest request = new Gson().fromJson(exportTask.getParams(), DataSetExportRequest.class);
                 startDatasetTask(exportTask, request);
             }
-            if(exportTask.getExportFromType().equalsIgnoreCase("chart")){
+            if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
                 PanelViewDetailsRequest request = new Gson().fromJson(exportTask.getParams(), PanelViewDetailsRequest.class);
                 startViewTask(exportTask, request);
             }
@@ -293,12 +317,11 @@ public class ExportCenterService {
         startViewTask(exportTask, request);
     }
 
-    private void startViewTask(ExportTask exportTask, PanelViewDetailsRequest request){
+    private void startViewTask(ExportTask exportTask, PanelViewDetailsRequest request) {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-
-        scheduledThreadPoolExecutor.execute(() -> {
+        Future future = scheduledThreadPoolExecutor.submit(() -> {
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateByPrimaryKey(exportTask);
@@ -470,7 +493,9 @@ public class ExportCenterService {
                 exportTaskMapper.updateByPrimaryKey(exportTask);
             }
         });
+        Running_Task.put(exportTask.getId(), future);
     }
+
     public void addTask(String exportFrom, String exportFromType, DataSetExportRequest request) {
         ExportTask exportTask = new ExportTask();
         exportTask.setId(UUID.randomUUID().toString());
@@ -488,11 +513,11 @@ public class ExportCenterService {
 
     }
 
-    private void startDatasetTask(ExportTask exportTask, DataSetExportRequest request){
+    private void startDatasetTask(ExportTask exportTask, DataSetExportRequest request) {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-        scheduledThreadPoolExecutor.execute(() -> {
+        Future future = scheduledThreadPoolExecutor.submit(() -> {
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateByPrimaryKey(exportTask);
@@ -677,24 +702,25 @@ public class ExportCenterService {
                 exportTaskMapper.updateByPrimaryKey(exportTask);
             }
         });
+        Running_Task.put(exportTask.getId(), future);
     }
 
-    private void setFileSize(String filePath, ExportTask exportTask ){
+    private void setFileSize(String filePath, ExportTask exportTask) {
         File file = new File(filePath);
         long length = file.length();
         String unit = "Mb";
         Double size = 0.0;
-        if((double) length/1024/1024 > 1){
-            if((double) length/1024/1024/1024 > 1){
+        if ((double) length / 1024 / 1024 > 1) {
+            if ((double) length / 1024 / 1024 / 1024 > 1) {
                 unit = "Gb";
-                size = Double.valueOf(String.format("%.2f", (double) length/1024/1024/1024));
-            }else {
-                size = Double.valueOf(String.format("%.2f", (double) length/1024/1024));
+                size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024 / 1024));
+            } else {
+                size = Double.valueOf(String.format("%.2f", (double) length / 1024 / 1024));
             }
 
-        }else {
+        } else {
             unit = "Kb";
-            size = Double.valueOf(String.format("%.2f", (double) length/1024));
+            size = Double.valueOf(String.format("%.2f", (double) length / 1024));
         }
         exportTask.setFileSize(size);
         exportTask.setFileSizeUnit(unit);
