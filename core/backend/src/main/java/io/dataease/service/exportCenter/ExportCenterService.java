@@ -685,7 +685,7 @@ public class ExportCenterService {
         String unit = "Mb";
         Double size = 0.0;
         if((double) length/1024/1024 > 1){
-            if((double) length/1024/1024 > 1){
+            if((double) length/1024/1024/1024 > 1){
                 unit = "Gb";
                 size = Double.valueOf(String.format("%.2f", (double) length/1024/1024/1024));
             }else {
