@@ -2,6 +2,8 @@ package io.dataease.commons.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.dto.SqlVariableDetails;
+import io.dataease.api.ds.vo.DatasourceConfiguration;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.JsonUtil;
@@ -17,6 +19,7 @@ import org.checkerframework.checker.nullness.qual.Nullable;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
+import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -117,7 +120,7 @@ public class SqlparserUtils {
         };
     }
 
-    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters) {
+    public static String handleVariableDefaultValue(String sql, String sqlVariableDetails, boolean isEdit, boolean isFromDataSet, List<SqlVariableDetails> parameters, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         if (StringUtils.isEmpty(sql)) {
             DEException.throwException(Translator.get("i18n_sql_not_empty"));
         }
@@ -165,6 +168,23 @@ public class SqlparserUtils {
 
         try {
             sql = removeVariables(sql);
+
+            // replace keyword '`'
+            if (!isCross) {
+                Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+                DatasourceSchemaDTO value = next.getValue();
+                DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(value.getType());
+                String prefix = datasourceType.getPrefix();
+                String suffix = datasourceType.getSuffix();
+
+                Pattern pattern = Pattern.compile("(`.*?`)");
+                Matcher matcher = pattern.matcher(sql);
+                while (matcher.find()) {
+                    String group = matcher.group();
+                    String info = group.substring(1, group.length() - 1);
+                    sql = sql.replaceAll(group, prefix + info + suffix);
+                }
+            }
         } catch (Exception e) {
             e.printStackTrace();
         }
