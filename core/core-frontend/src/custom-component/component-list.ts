@@ -73,7 +73,7 @@ export const commonAttr = {
   maintainRadio: false, // 布局时保持宽高比例
   aspectRatio: 1, // 锁定时的宽高比例
   isShow: true, // 是否显示组件
-  collapseName: ['position', 'background', 'style', 'picture'], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
+  collapseName: ['position', 'background', 'style', 'picture', 'frameLinks'], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
     duration: 0, // 过渡持续时间
     data: [
@@ -145,22 +145,23 @@ const list = [
     matrixStyle: {}
   },
   {
-    id: '30002',
-    component: 'de-frame',
-    type: 'de-frame',
-    label: '',
-    icon: 'iconfont icon-iframe',
-    defaultClass: 'text-filter',
+    component: 'DeFrame',
+    name: '网页',
+    label: '网页',
+    innerType: 'DeFrame',
+    editing: false,
+    canvasActive: false,
+    icon: 'db-more-web',
     hyperlinks: HYPERLINKS,
-    style: {
-      width: 400,
-      height: 200
-    },
     frameLinks: FRAMELINKS,
     x: 1,
     y: 1,
-    sizeX: 10,
-    sizeY: 5,
+    sizeX: 18,
+    sizeY: 7,
+    style: {
+      width: 600,
+      height: 300
+    },
     matrixStyle: {}
   },
   {
