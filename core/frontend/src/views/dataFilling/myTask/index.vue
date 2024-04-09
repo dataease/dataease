@@ -15,9 +15,9 @@ export default {
     return {
       activeName: 'my-tasks',
       types: [
-        { key: 'todo', name: '代办项' },
-        { key: 'finished', name: '已完成' },
-        { key: 'expired', name: '已过期' }
+        { key: 'todo', name: this.$t('data_fill.task.todo') },
+        { key: 'finished', name: this.$t('data_fill.task.finished') },
+        { key: 'expired', name: this.$t('data_fill.task.expired') }
       ],
       currentKey: 'todo',
       showDrawer: false,
@@ -146,13 +146,13 @@ export default {
     },
     getRestTime(time) {
       if (!time) {
-        return '不限时'
+        return this.$t('data_fill.task.no_time_limit')
       }
       const _time = new Date(time).getTime()
       const current = new Date().getTime()
 
       if (_time < current) {
-        return '已过期'
+        return this.$t('data_fill.task.expired')
       }
       const dateDiff = _time - current
 
@@ -170,25 +170,25 @@ export default {
       const seconds = Math.round(leave3 / 1000)
 
       if (yearDiff > 0 || monthDiff > 0) {
-        const yearStr = yearDiff > 0 ? yearDiff + '年' : ''
-        const monthStr = monthDiff > 0 ? monthDiff + '月' : ''
+        const yearStr = yearDiff > 0 ? yearDiff + this.$t('cron.year') : ''
+        const monthStr = monthDiff > 0 ? monthDiff + this.$t('cron.month') : ''
         return yearStr + monthStr
       }
 
-      const dayStr = dayDiff > 0 ? dayDiff + '天' : ''
-      const hourStr = hours > 0 ? hours + '小时' : ''
+      const dayStr = dayDiff > 0 ? dayDiff + this.$t('cron.day') : ''
+      const hourStr = hours > 0 ? hours + this.$t('cron.hour') : ''
 
       if (dayDiff > 0) {
         return dayStr + hourStr
       }
 
-      const minuteStr = minutes > 0 ? minutes + '分钟' : ''
+      const minuteStr = minutes > 0 ? minutes + this.$t('cron.minute') : ''
 
       if (hours > 0) {
         return hourStr + minuteStr
       }
 
-      const secondsStr = seconds > 0 ? seconds + '秒' : ''
+      const secondsStr = seconds > 0 ? seconds + this.$t('cron.second') : ''
 
       return minuteStr + secondsStr
     },
@@ -199,7 +199,7 @@ export default {
         this.drawerReadonly = false
       }
 
-      this.createTitle = '数据填报'
+      this.createTitle = this.$t('data_fill.data_fill')
       this.forms = []
 
       this.selectedFormId = row.formId
@@ -255,7 +255,7 @@ export default {
               const obj = {}
               if (res.data.data.length === 0) {
                 this.$message({
-                  message: 'ID为[' + row.valueId + ']的数据不存在',
+                  message: this.$t('data_fill.data.id_is') + row.valueId + this.$t('data_fill.data.data_not_found'),
                   type: 'warning',
                   showClose: true
                 })
@@ -331,7 +331,7 @@ export default {
         <el-tab-pane
           name="my-tasks"
         >
-          <span slot="label">我的填报</span>
+          <span slot="label">{{ $t('data_fill.my_job') }}</span>
 
           <div style="padding:0 24px 16px">
             <div
@@ -353,7 +353,7 @@ export default {
           <span
             slot="label"
           >
-            表单管理
+            {{ $t('data_fill.form_manage') }}
           </span>
         </el-tab-pane>
       </el-tabs>
@@ -373,7 +373,7 @@ export default {
               <el-input
                 ref="search1"
                 v-model="myTaskName"
-                :placeholder="$t('commons.search_by_name')"
+                :placeholder="$t('data_fill.task.task_name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
@@ -400,12 +400,12 @@ export default {
             <el-table-column
               key="taskName"
               prop="taskName"
-              label="任务名称"
+              :label="$t('data_fill.task.task_name')"
             />
             <el-table-column
               key="restTime"
               prop="restTime"
-              label="任务有效期"
+              :label="$t('data_fill.task.task_remain_time')"
             >
               <template slot-scope="scope">
                 {{ getRestTime(scope.row.endTime) }}
@@ -414,7 +414,7 @@ export default {
             <el-table-column
               key="endTime"
               prop="endTime"
-              label="任务截止时间"
+              :label="$t('data_fill.task.task_end_time')"
             >
               <template slot-scope="scope">
                 {{ scope.row.endTime ? new Date(scope.row.endTime).format("yyyy-MM-dd hh:mm:ss") : '-' }}
@@ -423,12 +423,12 @@ export default {
             <el-table-column
               key="creatorName"
               prop="creatorName"
-              label="任务下发人"
+              :label="$t('data_fill.task.task_sender')"
             />
             <el-table-column
               key="startTime"
               prop="startTime"
-              label="任务下发时间"
+              :label="$t('data_fill.task.task_distribute_time')"
             >
               <template slot-scope="scope">
                 {{ new Date(scope.row.startTime).format("yyyy-MM-dd hh:mm:ss") }}
@@ -444,7 +444,7 @@ export default {
                   type="text"
                   @click="editForm(scope.row)"
                 >
-                  立即填报
+                  {{ $t('data_fill.task.start_filling') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -466,7 +466,7 @@ export default {
               <el-input
                 ref="search2"
                 v-model="finishedTaskName"
-                :placeholder="$t('commons.search_by_name')"
+                :placeholder="$t('data_fill.task.task_name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
@@ -493,12 +493,12 @@ export default {
             <el-table-column
               key="taskName"
               prop="taskName"
-              label="任务名称"
+              :label="$t('data_fill.task.task_name')"
             />
             <el-table-column
               key="finishTime"
               prop="finishTime"
-              label="任务完成时间"
+              :label="$t('data_fill.task.task_finished_time')"
             >
               <template slot-scope="scope">
                 {{ new Date(scope.row.finishTime).format("yyyy-MM-dd hh:mm:ss") }}
@@ -507,12 +507,12 @@ export default {
             <el-table-column
               key="creatorName"
               prop="creatorName"
-              label="任务下发人"
+              :label="$t('data_fill.task.task_sender')"
             />
             <el-table-column
               key="startTime"
               prop="startTime"
-              label="任务下发时间"
+              :label="$t('data_fill.task.task_distribute_time')"
             >
               <template slot-scope="scope">
                 {{ new Date(scope.row.startTime).format("yyyy-MM-dd hh:mm:ss") }}
@@ -528,13 +528,13 @@ export default {
                   type="text"
                   @click="editForm(scope.row)"
                 >
-                  编辑数据
+                  {{ $t('data_fill.task.edit_data') }}
                 </el-button>
                 <el-button
                   type="text"
                   @click="showForm(scope.row)"
                 >
-                  查看数据
+                  {{ $t('data_fill.task.show_data') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -556,7 +556,7 @@ export default {
               <el-input
                 ref="search3"
                 v-model="expiredTaskName"
-                :placeholder="$t('commons.search_by_name')"
+                :placeholder="$t('data_fill.task.task_name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
@@ -583,12 +583,12 @@ export default {
             <el-table-column
               key="taskName"
               prop="taskName"
-              label="任务名称"
+              :label="$t('data_fill.task.task_name')"
             />
             <el-table-column
               key="endTime"
               prop="endTime"
-              label="任务过期时间"
+              :label="$t('data_fill.task.task_expiration_time')"
             >
               <template slot-scope="scope">
                 {{ scope.row.endTime ? new Date(scope.row.endTime).format("yyyy-MM-dd hh:mm:ss") : '-' }}
@@ -597,12 +597,12 @@ export default {
             <el-table-column
               key="creatorName"
               prop="creatorName"
-              label="任务下发人"
+              :label="$t('data_fill.task.task_sender')"
             />
             <el-table-column
               key="startTime"
               prop="startTime"
-              label="任务下发时间"
+              :label="$t('data_fill.task.task_distribute_time')"
             >
               <template slot-scope="scope">
                 {{ new Date(scope.row.startTime).format("yyyy-MM-dd hh:mm:ss") }}

@@ -46,16 +46,16 @@ export default {
   data() {
     const checkDateRangeRequireValidator = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.required')))
       }
       if (value.length < 2) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.required')))
       }
       if (!value[0]) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.required')))
       }
       if (!value[1]) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.required')))
       }
       callback()
     }
@@ -65,16 +65,16 @@ export default {
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       dateRangeRequiredRule: { validator: checkDateRangeRequireValidator, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       inputTypes: [
-        { type: 'text', name: '普通文本', rules: [] },
-        { type: 'number', name: '数字', rules: [] },
+        { type: 'text', name: this.$t('data_fill.form.text'), rules: [] },
+        { type: 'number', name: this.$t('data_fill.form.number'), rules: [] },
         {
           type: 'tel',
-          name: '手机号',
+          name: this.$t('data_fill.form.tel'),
           rules: [{ pattern: PHONE_REGEX, message: this.$t('user.mobile_number_format_is_incorrect'), trigger: ['blur', 'change'] }]
         },
         {
           type: 'email',
-          name: '邮箱',
+          name: this.$t('data_fill.form.email'),
           rules: [{ pattern: EMAIL_REGEX, message: this.$t('user.email_format_is_incorrect'), trigger: ['blur', 'change'] }]
         }
       ]
@@ -207,7 +207,7 @@ export default {
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">
-          {{ title? title: (readonly? '查看数据': '编辑数据') }}
+          {{ title? title: (readonly? $t('data_fill.task.show_data'): $t('data_fill.task.edit_data')) }}
         </span>
       </div>
 
@@ -386,12 +386,12 @@ export default {
     <el-footer
       class="de-footer"
     >
-      <el-button @click="closeDrawer">取消</el-button>
+      <el-button @click="closeDrawer">{{ $t("commons.cancel") }}</el-button>
       <el-button
         v-if="!readonly"
         type="primary"
         @click="doSave"
-      >保存
+      >{{ $t("commons.confirm") }}
       </el-button>
     </el-footer>
   </el-container>

@@ -8,6 +8,7 @@ import io.dataease.controller.request.datafill.DataFillFormTableDataRequest;
 import io.dataease.controller.response.datafill.DataFillFormTableDataResponse;
 import io.dataease.dto.datafill.DataFillCommitLogDTO;
 import io.dataease.ext.ExtDataFillFormMapper;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs;
 import io.dataease.plugins.common.base.domain.Datasource;
 import io.dataease.plugins.common.base.mapper.DataFillFormMapper;
@@ -257,7 +258,7 @@ public class DataFillDataService {
 
         List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest).stream().filter(TableField::isPrimaryKey).collect(Collectors.toList());
         if (CollectionUtils.isEmpty(tableFields)) {
-            throw new RuntimeException("没有主键");
+            throw new RuntimeException(Translator.get("I18N_DATA_FILL_NO_PRIMARY_KEY"));
         }
         TableField key = tableFields.get(0);
 
