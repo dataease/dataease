@@ -424,8 +424,6 @@ const apply = () => {
       const templateData = response.data
       // do create
       wsCache.set(`de-template-data`, JSON.stringify(templateData))
-      wsCache.set(`de-template-data-2`, templateData)
-      localStorage.setItem('de-template-data-1', JSON.stringify(templateData))
       const baseUrl =
         templateData.type === 'dataV'
           ? '#/dvCanvas?opt=create&createType=template'
