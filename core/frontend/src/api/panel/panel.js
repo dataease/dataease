@@ -265,8 +265,7 @@ export function innerExportDetails(data) {
     url: 'panel/group/innerExportDetails',
     method: 'post',
     data: data,
-    loading: true,
-    responseType: 'blob'
+    loading: true
   })
 }
 

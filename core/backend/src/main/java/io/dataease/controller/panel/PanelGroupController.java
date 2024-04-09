@@ -172,7 +172,7 @@ public class PanelGroupController {
     @PostMapping("/innerExportDetails")
     @DePermissionProxy(value = "proxy")
     @I18n
-    public void innerExportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
+    public void innerExportDetails(@RequestBody PanelViewDetailsRequest request) throws IOException {
         exportCenterService.addTask(request.getViewId(), "chart", request);
     }
 
