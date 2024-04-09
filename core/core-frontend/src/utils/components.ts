@@ -25,6 +25,8 @@ import DeTimeClock from '@/custom-component/de-time-clock/Component.vue'
 import DeTimeClockAttr from '@/custom-component/de-time-clock/Attr.vue'
 import GroupArea from '@/custom-component/group-area/Component.vue'
 import GroupAreaAttr from '@/custom-component/group-area/Attr.vue'
+import DeFrame from '@/custom-component/de-frame/ComponentFrame.vue'
+import DeFrameAttr from '@/custom-component/de-frame/Attr.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -52,7 +54,9 @@ export const componentsMap = {
   DeTimeClock: DeTimeClock,
   DeTimeClockAttr: DeTimeClockAttr,
   GroupArea: GroupArea,
-  GroupAreaAttr: GroupAreaAttr
+  GroupAreaAttr: GroupAreaAttr,
+  DeFrame: DeFrame,
+  DeFrameAttr: DeFrameAttr
 }
 
 export default function findComponent(key) {
