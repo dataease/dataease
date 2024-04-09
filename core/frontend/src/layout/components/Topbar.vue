@@ -275,6 +275,7 @@ export default {
     bus.$on('set-top-text-info', this.setTopTextInfo)
     bus.$on('set-top-text-active-info', this.setTopTextActiveInfo)
     bus.$on('sys-logout', this.logout)
+    bus.$on('data-export-center', this.dataExportCenter)
     this.showTips && this.$nextTick(() => {
       const drop = this.$refs['my-drop']
       drop && drop.show && drop.show()
@@ -285,6 +286,7 @@ export default {
     window.removeEventListener('beforeunload', (e) => this.beforeunloadHandler(e))
     window.removeEventListener('unload', (e) => this.unloadHandler(e))
 
+    bus.$off('data-export-center', this.dataExportCenter)
     bus.$off('set-top-menu-info', this.setTopMenuInfo)
     bus.$off('set-top-menu-active-info', this.setTopMenuActiveInfo)
     bus.$off('set-top-text-info', this.setTopTextInfo)
@@ -303,6 +305,9 @@ export default {
     })
   },
   methods: {
+    dataExportCenter() {
+      this.downloadClick()
+    },
     async initAiBase() {
       await findBaseParams().then(rsp => {
         const params = rsp.data

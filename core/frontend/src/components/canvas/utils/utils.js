@@ -533,9 +533,9 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
   }
   method(request).then((res) => {
     loadingWrapper && (loadingWrapper.val = false)
-    callBack && callBack()
-  }).catch(() => {
+    callBack && callBack(res)
+  }).catch((error) => {
     loadingWrapper && (loadingWrapper.val = false)
-    callBack && callBack()
+    callBack && callBack(error)
   })
 }
