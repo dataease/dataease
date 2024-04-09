@@ -8,6 +8,18 @@ export const commonStyle = {
   opacity: 1
 }
 
+// 超链接配置
+export const HYPERLINKS = {
+  openMode: '_blank',
+  enable: false,
+  content: 'http://'
+}
+
+// 嵌套页面信息
+export const FRAMELINKS = {
+  src: ''
+}
+
 export const defaultStyleValue = {
   ...commonStyle,
   color: '',
@@ -130,6 +142,25 @@ const list = [
       width: 600,
       height: 300
     },
+    matrixStyle: {}
+  },
+  {
+    id: '30002',
+    component: 'de-frame',
+    type: 'de-frame',
+    label: '',
+    icon: 'iconfont icon-iframe',
+    defaultClass: 'text-filter',
+    hyperlinks: HYPERLINKS,
+    style: {
+      width: 400,
+      height: 200
+    },
+    frameLinks: FRAMELINKS,
+    x: 1,
+    y: 1,
+    sizeX: 10,
+    sizeY: 5,
     matrixStyle: {}
   },
   {
