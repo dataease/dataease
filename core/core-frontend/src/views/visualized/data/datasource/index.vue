@@ -1029,7 +1029,7 @@ const getMenuList = (val: boolean) => {
                 <template #default="scope">
                   <div class="flex-align-center">
                     <template v-if="scope.row.status === 'Completed'">
-                      <el-icon>
+                      <el-icon style="margin-right: 8px">
                         <icon name="icon_succeed_filled"></icon>
                       </el-icon>
                       {{ t('dataset.completed') }}
@@ -1038,7 +1038,7 @@ const getMenuList = (val: boolean) => {
                       {{ t('dataset.underway') }}
                     </template>
                     <template v-if="scope.row.status === 'Error' || scope.row.status === 'Warning'">
-                      <el-icon>
+                      <el-icon style="margin-right: 8px">
                         <icon class="field-icon-red" name="icon_close_filled"></icon>
                       </el-icon>
                       {{ t('dataset.error') }}
@@ -1425,7 +1425,7 @@ const getMenuList = (val: boolean) => {
           <template #default="scope">
             <div class="flex-align-center">
               <template v-if="scope.row.taskStatus === 'Completed'">
-                <el-icon>
+                <el-icon style="margin-right: 8px">
                   <icon name="icon_succeed_filled"></icon>
                 </el-icon>
                 {{ t('dataset.completed') }}
@@ -1437,7 +1437,7 @@ const getMenuList = (val: boolean) => {
               <template
                 v-if="scope.row.taskStatus === 'Error' || scope.row.taskStatus === 'Warning'"
               >
-                <el-icon>
+                <el-icon style="margin-right: 8px">
                   <icon class="field-icon-red" name="icon_close_filled"></icon>
                 </el-icon>
                 {{ t('dataset.error') }}
@@ -1665,6 +1665,7 @@ const getMenuList = (val: boolean) => {
       border-radius: 2px;
       padding: 1px 6px;
       height: 24px;
+      font-size: 14px;
     }
 
     .error-color {
