@@ -21,6 +21,7 @@ import TableTotalSelector from '@/views/chart/components/editor/editor-style/com
 import MiscStyleSelector from '@/views/chart/components/editor/editor-style/components/MiscStyleSelector.vue'
 import IndicatorValueSelector from '@/views/chart/components/editor/editor-style/components/IndicatorValueSelector.vue'
 import IndicatorNameSelector from '@/views/chart/components/editor/editor-style/components/IndicatorNameSelector.vue'
+import QuadrantSelector from '@/views/chart/components/editor/editor-style/components/QuadrantSelector.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -87,7 +88,8 @@ const emit = defineEmits([
   'onChangeMiscStyleForm',
   'onExtTooltipChange',
   'onIndicatorChange',
-  'onIndicatorNameChange'
+  'onIndicatorNameChange',
+  'onChangeQuadrantForm'
 ])
 
 const indicatorValueRef = ref()
@@ -161,6 +163,9 @@ const onChangeMiscStyleForm = (val, prop) => {
 
 const onExtTooltipChange = val => {
   emit('onExtTooltipChange', val)
+}
+const onChangeQuadrantForm = val => {
+  emit('onChangeQuadrantForm', val)
 }
 watch(
   () => props.chart.id,
@@ -384,6 +389,20 @@ watch(
               :themes="themes"
               :chart="chart"
               @onTableTotalChange="onTableTotalChange"
+            />
+          </el-collapse-item>
+          <el-collapse-item
+            :effect="themes"
+            name="quadrant"
+            :title="t('chart.quadrant')"
+            v-if="showProperties('quadrant-selector')"
+          >
+            <quadrant-selector
+              class="attr-selector"
+              :property-inner="propertyInnerAll['quadrant-selector']"
+              :themes="themes"
+              :chart="chart"
+              @onChangeQuadrantForm="onChangeQuadrantForm"
             />
           </el-collapse-item>
         </el-collapse>

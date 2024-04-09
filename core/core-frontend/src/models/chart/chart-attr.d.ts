@@ -34,6 +34,10 @@ declare interface ChartAttr {
    * 地图设置
    */
   map: MapCfg
+  /**
+   * 象限设置
+   */
+  quadrant: QuadrantAttr
 }
 /**
  * 基础样式设置
@@ -643,4 +647,58 @@ declare interface MapCfg {
    * 区域id
    */
   id: string
+}
+
+/**
+ * 象限属性
+ */
+declare interface QuadrantAttr {
+  lineStyle: QuadrantLineStyle
+  regionStyle: QuadrantCommonStyle[]
+  labels: QuadrantLabelConf[]
+}
+
+/**
+ * 象限图label配置
+ */
+declare interface QuadrantLabelConf {
+  content: string
+  style: QuadrantCommonStyle
+}
+
+/**
+ * 象限公共样式
+ */
+declare interface QuadrantCommonStyle {
+  /**
+   * 颜色
+   */
+  fill: string
+  /**
+   * 透明度
+   */
+  fillOpacity: number
+
+  /**
+   * 字体大小
+   */
+  fontSize?: number
+}
+
+/**
+ * 象限分割线样式
+ */
+declare interface QuadrantLineStyle {
+  /**
+   * 颜色
+   */
+  stroke: string
+  /**
+   * 宽度
+   */
+  lineWidth: number
+  /**
+   * 透明度
+   */
+  opacity: number
 }

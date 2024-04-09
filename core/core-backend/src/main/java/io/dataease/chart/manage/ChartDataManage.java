@@ -527,6 +527,20 @@ public class ChartDataManage {
                 String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                 querySql = originSql + limit;
                 totalPageSql = "SELECT COUNT(*) FROM (" + originSql + ") COUNT_TEMP";
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "quadrant")) {
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                yAxis.addAll(extBubble);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                if (containDetailField(view) && ObjectUtils.isNotEmpty(viewFields)) {
+                    detailFieldList.addAll(xAxis);
+                    detailFieldList.addAll(viewFields);
+
+                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, detailFieldList, transFields(allFields));
+                    String originSql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
+                    String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
+                    detailFieldSql = originSql + limit;
+                }
             } else {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
@@ -733,6 +747,8 @@ public class ChartDataManage {
                 mapChart = ChartDataBuild.transMixChartDataAntV(xAxis, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "label")) {
                 mapChart = ChartDataBuild.transLabelChartData(xAxis, yAxis, view, data, isDrill);
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "quadrant")) {
+                mapChart = ChartDataBuild.transQuadrantDataAntV(xAxis, yAxis, view, data, extBubble, isDrill);
             } else {
                 mapChart = ChartDataBuild.transChartDataAntV(xAxis, yAxis, view, data, isDrill);
             }

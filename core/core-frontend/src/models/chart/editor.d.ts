@@ -22,6 +22,7 @@ declare type EditorProperty =
   | 'linkage'
   | 'indicator-value-selector'
   | 'indicator-name-selector'
+  | 'quadrant-selector'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }
