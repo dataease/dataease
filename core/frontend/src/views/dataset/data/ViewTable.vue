@@ -260,6 +260,7 @@ import PluginCom from '@/views/system/plugin/PluginCom'
 import UpdateRecords from './UpdateRecords'
 import rowAuth from './components/rowAuth.vue'
 import {Button} from "element-ui";
+import bus from '@/utils/bus'
 
 export default {
   name: 'ViewTable',
@@ -490,13 +491,13 @@ export default {
     closeExport() {
       this.showExport = false
     },
-    openMessageSuccess(text, type, cb) {
+    openMessageLoading(cb) {
       const h = this.$createElement;
-      const iconClass = `el-icon-${type || "success"}`;
-      const customClass = `de-message-${type || "success"} de-message-export`;
+      const iconClass = `el-icon-loading`;
+      const customClass = `de-message-loading de-message-export`;
       this.$message({
         message: h("p", null, [
-          h("span", null, text),
+          "后台导出中,可前往",
           h(
             Button,
             {
@@ -513,11 +514,15 @@ export default {
             },
             "数据导出中心",
           ),
+          "查看进度,进行下载、暂停等操作",
         ]),
         iconClass,
         showClose: true,
         customClass,
       });
+    },
+    callbackExport() {
+      bus.$emit('data-export-center')
     },
     exportDatasetRequest() {
       this.$refs['exportForm'].validate((valid) => {
@@ -537,7 +542,7 @@ export default {
             this.table.expressionTree = JSON.stringify({ items, logic })
             this.exportDatasetLoading = true
             exportDataset(this.table).then((res) => {
-              this.openMessageSuccess('后台导出中，查看进度可前往', 'info')
+              this.openMessageLoading(this.callbackExport)
             }).finally(() => {
               this.exportDatasetLoading = false
               this.showExport = false

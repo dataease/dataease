@@ -2,6 +2,7 @@
   <el-drawer
     custom-class="de-user-drawer de-export-excel"
     title="数据导出中心"
+    v-loading="drawerLoading"
     :visible.sync="drawer"
     direction="rtl"
     size="1000px"
@@ -27,22 +28,19 @@
         style="width: 100%"
       >
         <el-table-column type="selection" width="50"> </el-table-column>
-        <el-table-column prop="fileName" label="文件名" width="320">
+        <el-table-column prop="fileName" label="文件名" width="332">
           <template slot-scope="scope">
             <div class="name-excel">
               <svg-icon style="font-size: 24px;" icon-class="icon_file-excel_colorful"> </svg-icon>
-              <span style="margin-left: 8px">{{ scope.row.fileName }}</span>
+              <div class="name-content">
+                <div class="fileName">{{ scope.row.fileName }}</div>
+                <div class="failed" v-if="activeName==='FAILED'">导出失败</div>
+                <div class="sucess" v-if="scope.row.exportStatus==='SUCCESS'">{{scope.row.fileSize}}{{scope.row.fileSizeUnit}}</div>
+              </div>
             </div>
-            <div v-show="activeName==='FAILED'">
-              <span style="margin-left: 8px" :style="{ color: 'red' }">导出失败</span>
-              <hr class="red-line" />
-            </div>
-            <div v-show="scope.row.exportStatus==='SUCCESS'">
-              <span style="margin-left: 8px">{{scope.row.fileSize}}{{scope.row.fileSizeUnit}}</span>
-            </div>
-            <el-progress v-show="activeName==='IN_PROGRESS'" :percentage="scope.row.exportPogress"></el-progress>
+            <div v-if="activeName==='FAILED'" class="red-line" />
+            <el-progress v-if="activeName==='IN_PROGRESS'" :percentage="+scope.row.exportPogress"></el-progress>
           </template>
-
         </el-table-column>
         <el-table-column prop="exportFromName" label="导出对象" width="200">
         </el-table-column>
@@ -57,7 +55,7 @@
             <span>{{ scope.row.exportTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="operate" width="80" label="操作">
+        <el-table-column fixed="right" prop="operate" width="80" label="操作">
           <template slot-scope="scope">
             <el-button v-if="scope.row.exportStatus === 'SUCCESS'" type="text" size="mini" @click="downloadClick(scope.row)">
               <div class="download-export">
@@ -92,7 +90,6 @@
 </template>
 <script>
 import msgCfm from "@/components/msgCfm/index";
-import { Button } from "element-ui";
 import request from "@/utils/request";
 import {downloadFile, post} from '@/api/dataset/dataset'
 export default {
@@ -104,6 +101,7 @@ export default {
       errImg: require("@/assets/none-data.png"),
       tableData: [{ name: "附件名称" }],
       drawer: false,
+      drawerLoading: false,
       description: this.$t("暂无任务"),
       tabList: [
         {
@@ -175,8 +173,9 @@ export default {
     },
     handleClick() {
       this.tableData = []
+      this.drawerLoading = true
       post(
-        '/exportCenter/exportTasks/' + this.activeName,{}, true
+        '/exportCenter/exportTasks/' + this.activeName,{}, false
       ).then(
         (res) => {
           this.tabList.forEach( item => {
@@ -203,7 +202,9 @@ export default {
           }
         },
 
-      )
+      ).finally(() => {
+        this.drawerLoading = false
+      })
     },
     downloadClick(item) {
       downloadFile(item.id).then((res) => {
@@ -288,8 +289,18 @@ export default {
     }
   }
 
+  .download-export {
+    font-size: 16px;
+  }
+
   .table-container {
     margin-top: 16px;
+
+    .el-table .cell {
+      padding-left: 12px;
+      padding-right: 12px;
+    }
+
     &.hidden-bottom {
       .el-table::before {
         display: none;
@@ -299,6 +310,33 @@ export default {
     .name-excel {
       display: flex;
       align-items: center;
+      .name-content {
+        max-width: 280px;
+        margin-left: 4px;
+        .fileName {
+          overflow: hidden;
+          white-space: nowrap;
+          text-overflow: ellipsis;
+          width: 100%;
+          font-size: 14px;
+          font-weight: 400;
+          line-height: 22px;
+        }
+
+        .failed {
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 20px;
+          color: #F54A45;
+        }
+
+        .sucess {
+          font-size: 12px;
+          font-weight: 400;
+          line-height: 20px;
+          color: #8F959E;
+        }
+      }
     }
 
     .el-table__header {
@@ -310,8 +348,12 @@ export default {
     }
 
     .red-line {
-      border: 2px solid red;
-      margin: 10px 0;
+      width: 100%;
+      height: 4px;
+      background: #F54A45;
+      position: absolute;
+      left: 0;
+      bottom: 0;
     }
   }
 }

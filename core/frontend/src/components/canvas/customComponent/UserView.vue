@@ -239,6 +239,7 @@ import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
+import { Button } from "element-ui";
 import bus from '@/utils/bus'
 import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
@@ -755,9 +756,78 @@ export default {
         this.getData(this.element.propValue.viewId, false)
       }
     },
+    exportData() {
+      bus.$emit('data-export-center')
+    },
+    openMessageLoading(cb) {
+      const h = this.$createElement;
+      const iconClass = `el-icon-loading`;
+      const customClass = `de-message-loading de-message-export`;
+      this.$message({
+        message: h("p", null, [
+          "后台导出中,可前往",
+          h(
+            Button,
+            {
+              props: {
+                type: "text",
+                size: "mini",
+              },
+              class: "btn-text",
+              on: {
+                click: () => {
+                  cb();
+                },
+              },
+            },
+            "数据导出中心",
+          ),
+          "查看进度,进行下载、暂停等操作",
+        ]),
+        iconClass,
+        showClose: true,
+        customClass,
+      });
+    },
+    openMessageSuccess(text, type, cb) {
+      const h = this.$createElement;
+      const iconClass = `el-icon-${type || "success"}`;
+      const customClass = `de-message-${type || "success"} de-message-export`;
+      this.$message({
+        message: h("p", null, [
+          h("span", null, text),
+          h(
+            Button,
+            {
+              props: {
+                type: "text",
+                size: "mini",
+              },
+              class: "btn-text",
+              on: {
+                click: () => {
+                  cb();
+                },
+              },
+            },
+            "数据导出中心",
+          ),
+        ]),
+        iconClass,
+        showClose: true,
+        customClass,
+      });
+    },
     exportExcel() {
       this.dialogLoading = true
-      this.$refs['userViewDialog'].exportExcel(() => {
+      this.$refs['userViewDialog'].exportExcel((val) => {
+        if (val && val.success) {
+          this.openMessageLoading(this.exportData)
+        }
+
+        if (val && val.success === false) {
+          this.openMessageSuccess( `${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error',this.exportData);
+        }
         this.dialogLoading = false
       })
     },
