@@ -172,6 +172,7 @@ import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.v
 import { imgUrlTrans } from '@/utils/imgUtils'
 import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
+import { XpackComponent } from '@/components/plugin'
 const { t } = useI18n()
 const { wsCache } = useCache()
 
