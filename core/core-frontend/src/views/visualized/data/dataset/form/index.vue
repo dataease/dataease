@@ -236,7 +236,7 @@ const pushDataset = () => {
 
 const backToMain = () => {
   if (isUpdate) {
-    ElMessageBox.confirm('数据集未保存,确认退出吗?', {
+    ElMessageBox.confirm('当前的更改尚未保存,确定退出吗?', {
       confirmButtonText: t('dataset.confirm'),
       cancelButtonText: t('common.cancel'),
       showCancelButton: true,

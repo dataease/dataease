@@ -1145,6 +1145,8 @@ defineExpose({
     border-radius: 2px;
     padding: 1px 6px;
     height: 24px;
+    font-size: 14px;
+
     &.invalid {
       color: #646a73;
       background: rgba(31, 35, 41, 0.1);

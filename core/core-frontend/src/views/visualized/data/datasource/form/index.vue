@@ -509,9 +509,11 @@ const beforeClose = () => {
     wsCache.set('ds-new-success', false)
   }
   if (!showFinishPage.value && ((!editDs.value && activeStep.value !== 0) || isUpdate)) {
-    ElMessageBox.confirm(t('chart.tips'), {
+    ElMessageBox.confirm('当前的更改尚未保存,确定退出吗?', {
+      confirmButtonText: t('dataset.confirm'),
+      cancelButtonText: t('common.cancel'),
+      showCancelButton: true,
       confirmButtonType: 'primary',
-      tip: '你填写的信息未保存，确认退出吗？',
       type: 'warning',
       autofocus: false,
       showClose: false

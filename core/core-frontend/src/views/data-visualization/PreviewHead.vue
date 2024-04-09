@@ -125,15 +125,7 @@ const initOpenHandler = newWindow => {
         编辑</el-button
       >
       <el-dropdown trigger="click">
-        <el-icon
-          :style="{
-            color: '#1f2329 !important',
-            marginLeft: '8px',
-            height: '20px !important',
-            width: '20px !important'
-          }"
-          class="hover-icon"
-        >
+        <el-icon class="head-more-icon">
           <Icon name="dv-head-more"></Icon>
         </el-icon>
         <template #dropdown>
@@ -198,6 +190,26 @@ const initOpenHandler = newWindow => {
     justify-content: right;
     align-items: center;
     flex: 1;
+    .head-more-icon {
+      color: #1f2329;
+      margin-left: 12px;
+      cursor: pointer;
+      font-size: 20px;
+      border-radius: 4px;
+      position: relative;
+      &:hover {
+        &::after {
+          content: '';
+          position: absolute;
+          top: -4px;
+          left: -4px;
+          border-radius: 4px;
+          height: 28px;
+          width: 28px;
+          background: #1f23291a;
+        }
+      }
+    }
   }
 }
 .info-tips {

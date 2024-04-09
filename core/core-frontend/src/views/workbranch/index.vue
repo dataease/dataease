@@ -605,6 +605,10 @@ initMarketTemplate()
           line-height: 22px;
           border-radius: 4px;
 
+          button {
+            cursor: pointer;
+          }
+
           .flex-center {
             padding: 0 4px;
             color: #646a73;
