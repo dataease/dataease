@@ -220,7 +220,7 @@ export default {
           name="my-tasks"
         >
           <span slot="label">
-            我的填报
+            {{ $t('data_fill.my_job') }}
           </span>
         </el-tab-pane>
 
@@ -228,13 +228,13 @@ export default {
           name="forms"
         >
           <span slot="label">
-            表单管理
+            {{ $t('data_fill.form_manage') }}
           </span>
 
           <div style="padding-left: 20px;padding-right: 20px;">
 
             <div style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
-              填报表单
+              {{ $t('data_fill.form.form_list_name') }}
               <el-button
                 icon="el-icon-plus"
                 type="text"
@@ -246,7 +246,7 @@ export default {
               v-if="!formList.length && !treeLoading"
               class="no-tdata"
             >
-              暂无表单，点击
+              {{ $t('data_fill.form.no_form') }}
               <span
                 class="no-tdata-new"
                 @click="() => createFolder({id: '0', level: 0, firstFolder: true})"
@@ -308,16 +308,16 @@ export default {
                             :command="beforeData('folder',data)"
                           >
                             <svg-icon icon-class="scene" />
-                            <span style="margin-left: 5px">新建文件夹</span>
+                            <span style="margin-left: 5px">{{ $t('data_fill.new_folder') }}</span>
                           </el-dropdown-item>
                           <el-dropdown-item
                             :command="beforeData('form',data)"
                           >
                             <svg-icon
-                              icon-class="panel"
+                              icon-class="form"
                               class="ds-icon-scene"
                             />
-                            <span>新建表单</span>
+                            <span>{{ $t('data_fill.form.create_form') }}</span>
                           </el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
@@ -379,7 +379,7 @@ export default {
     <el-dialog
       v-dialogDrag
       append-to-body
-      title="新建文件夹"
+      :title="$t('data_fill.new_folder')"
       :visible.sync="showFolderCreateForm"
       :show-close="true"
       width="600px"
@@ -404,7 +404,7 @@ export default {
               :rules="[requiredRule]"
             >
               <template #label>
-                名称
+                {{ $t('data_fill.form.name') }}
                 <span
                   style="color: red"
                 >*</span>
@@ -420,11 +420,11 @@ export default {
           </el-main>
         </el-form>
         <el-footer class="de-footer">
-          <el-button @click="closeSaveFolder">取消</el-button>
+          <el-button @click="closeSaveFolder">{{ $t("commons.cancel") }}</el-button>
           <el-button
             type="primary"
             @click="doSaveFolder"
-          >保存
+          >{{ $t("commons.confirm") }}
           </el-button>
         </el-footer>
       </el-container>
@@ -433,7 +433,7 @@ export default {
     <el-dialog
       v-dialogDrag
       append-to-body
-      title="重命名"
+      :title="$t('data_fill.form.rename')"
       :visible.sync="showUpdateName"
       :show-close="true"
       width="600px"
@@ -457,7 +457,7 @@ export default {
               :rules="[requiredRule]"
             >
               <template #label>
-                名称
+                {{ $t('data_fill.form.name') }}
                 <span
                   style="color: red"
                 >*</span>
@@ -473,11 +473,11 @@ export default {
           </el-main>
         </el-form>
         <el-footer class="de-footer">
-          <el-button @click="closeUpdateForm">取消</el-button>
+          <el-button @click="closeUpdateForm">{{ $t("commons.cancel") }}</el-button>
           <el-button
             type="primary"
             @click="doUpdateForm"
-          >保存
+          >{{ $t("commons.confirm") }}
           </el-button>
         </el-footer>
       </el-container>

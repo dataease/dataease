@@ -106,7 +106,7 @@
             icon="el-icon-plus"
             size="small"
             @click="addData"
-          >添加数据</el-button>
+          >{{ $t('data_fill.data.add_data') }}</el-button>
         </div>
         <div style="flex: 1">
           <grid-table
@@ -132,8 +132,8 @@
                 slot-scope="scope"
               >
                 {{ c.label }}
-                <span v-if="c.rangeIndex === 0">(开始)</span>
-                <span v-if="c.rangeIndex === 1">(结束)</span>
+                <span v-if="c.rangeIndex === 0">({{ $t('data_fill.data.start') }})</span>
+                <span v-if="c.rangeIndex === 1">({{ $t('data_fill.data.end') }})</span>
               </template>
               <template slot-scope="scope">
                 <span
@@ -163,7 +163,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="最近提交人"
+              :label="$t('data_fill.data.recent_committer')"
               fixed="right"
               width="100"
             >
@@ -172,7 +172,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="最近提交时间"
+              :label="$t('data_fill.data.recent_commit_time')"
               fixed="right"
               width="160"
             >
@@ -225,7 +225,7 @@
               <el-input
                 ref="search2"
                 v-model="operateName"
-                :placeholder="$t('data_fill.search_by_commit_name')"
+                :placeholder="$t('data_fill.form.operator')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
@@ -256,13 +256,13 @@
             >
               <template slot-scope="scope">
                 <template v-if="scope.row.operate === 'INSERT'">
-                  插入数据
+                  {{ $t('data_fill.data.insert_data') }}
                 </template>
                 <template v-else-if="scope.row.operate === 'UPDATE'">
-                  更新数据
+                  {{ $t('data_fill.data.update_data') }}
                 </template>
                 <template v-else-if="scope.row.operate === 'DELETE'">
-                  删除数据
+                  {{ $t('data_fill.data.delete_data') }}
                 </template>
                 <template v-else>
                   {{ scope.row.operate }}
@@ -319,7 +319,7 @@
                 icon="el-icon-plus"
                 size="small"
                 @click="addTask"
-              >添加任务</el-button>
+              >{{ $t('data_fill.task.add_task') }}</el-button>
             </el-col>
             <el-col
               :span="8"
@@ -328,7 +328,7 @@
               <el-input
                 ref="search3"
                 v-model="taskName"
-                :placeholder="$t('commons.search_by_name')"
+                :placeholder="$t('data_fill.task.name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
@@ -355,7 +355,7 @@
             <el-table-column
               key="name"
               prop="name"
-              label="名称"
+              :label="$t('data_fill.task.name')"
             >
               <template slot-scope="scope">
                 {{ scope.row.name }}
@@ -364,7 +364,7 @@
             <el-table-column
               key="rateType"
               prop="rateType"
-              label="任务下发模式"
+              :label="$t('data_fill.task.rate_type')"
             >
               <template slot-scope="scope">
                 {{ scope.row.rateType === -1 ? $t('emailtask.single_task') : $t('emailtask.simple_repeat') }}
@@ -373,7 +373,7 @@
             <el-table-column
               key="status"
               prop="status"
-              label="任务状态"
+              :label="$t('data_fill.task.task_status')"
             >
               <template slot-scope="scope">
                 <span :class="['de-status', `de-${taskStatusFormatter(scope.row.status)}`]">{{
@@ -385,7 +385,7 @@
             <el-table-column
               key="creatorName"
               prop="creatorName"
-              label="创建人"
+              :label="$t('data_fill.task.creator')"
             >
               <template slot-scope="scope">
                 {{ scope.row.creatorName }}
@@ -394,7 +394,7 @@
             <el-table-column
               key="createTime"
               prop="createTime"
-              label="创建时间"
+              :label="$t('data_fill.task.create_time')"
             >
               <template slot-scope="scope">
                 {{ new Date(scope.row.createTime).format("yyyy-MM-dd hh:mm:ss") }}
@@ -410,27 +410,27 @@
                   type="text"
                   @click="editTask(scope.row)"
                 >
-                  编辑
+                  {{ $t('data_fill.task.edit') }}
                 </el-button>
                 <el-button
                   v-if="!scope.row.status"
                   type="text"
                   @click="enableTask(scope.row)"
                 >
-                  启动
+                  {{ $t('data_fill.task.start') }}
                 </el-button>
                 <el-button
                   v-if="scope.row.status"
                   type="text"
                   @click="disableTask(scope.row)"
                 >
-                  停止
+                  {{ $t('data_fill.task.stop') }}
                 </el-button>
                 <el-button
                   type="text"
                   @click="deleteTask(scope.row)"
                 >
-                  删除
+                  {{ $t('data_fill.task.delete') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -773,7 +773,7 @@ export default {
           const obj = {}
           if (res.data.data.length === 0) {
             this.$message({
-              message: 'ID为[' + row.dataId + ']的数据不存在',
+              message: this.$t('data_fill.data.id_is') + row.dataId + this.$t('data_fill.data.data_not_found'),
               type: 'warning',
               showClose: true
             })
@@ -817,7 +817,7 @@ export default {
 
       this.showDrawer = true
       this.drawerReadonly = false
-      this.createTitle = '添加数据'
+      this.createTitle = this.$t('data_fill.data.add_data')
     },
     deleteRow(id) {
       this.$confirm(

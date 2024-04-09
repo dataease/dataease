@@ -296,16 +296,16 @@ public class DataFillService {
         DataFillUserTask task = dataFillUserTaskMapper.selectByPrimaryKey(userTaskId);
 
         if (task == null) {
-            DataEaseException.throwException("任务不存在");
+            DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_NOT_EXIST"));
         }
 
         if (!AuthUtils.getUser().getUserId().equals(task.getUser())) {
-            DataEaseException.throwException("当前用户非任务用户");
+            DataEaseException.throwException(Translator.get("I18N_DATA_FILL_USER_NOT_TASK_USER"));
         }
 
         if (task.getEndTime() != null) {
             if (task.getEndTime().getTime() < System.currentTimeMillis()) {
-                DataEaseException.throwException("已经超过了任务截止时间");
+                DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXPIRED"));
             }
         }
 
