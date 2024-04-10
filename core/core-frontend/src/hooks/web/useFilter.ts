@@ -106,6 +106,56 @@ export const useFilter = (curComponentId: string, firstLoad = false) => {
   }
 }
 
+const getResult = (
+  conditionType,
+  defaultConditionValueF,
+  defaultConditionValueS,
+  conditionValueF,
+  conditionValueS,
+  firstLoad
+) => {
+  const valueF = firstLoad ? defaultConditionValueF : conditionValueF
+  const valueS = firstLoad ? defaultConditionValueS : conditionValueS
+  if (conditionType === 0) {
+    return valueF === '' ? [] : valueF
+  }
+  return [valueF || '', valueS || ''].filter(ele => ele !== '')
+}
+
+const getOperator = (
+  displayType,
+  multiple,
+  conditionType,
+  defaultConditionValueOperatorF,
+  defaultConditionValueF,
+  defaultConditionValueOperatorS,
+  defaultConditionValueS,
+  conditionValueOperatorF,
+  conditionValueF,
+  conditionValueOperatorS,
+  conditionValueS,
+  firstLoad
+) => {
+  const valueF = firstLoad ? defaultConditionValueF : conditionValueF
+  const valueS = firstLoad ? defaultConditionValueS : conditionValueS
+  const operatorF = firstLoad ? defaultConditionValueOperatorF : conditionValueOperatorF
+  const operatorS = firstLoad ? defaultConditionValueOperatorS : conditionValueOperatorS
+  if (displayType === '8') {
+    if (conditionType === 0) {
+      return defaultConditionValueOperatorF
+    }
+    const operatorArr = [valueF === '' ? '' : operatorF, valueS === '' ? '' : operatorS].filter(
+      ele => ele !== ''
+    )
+    if (operatorArr.length === 2) {
+      return operatorArr.join(`-${conditionType === 1 ? 'and' : 'or'}-`)
+    }
+    return valueF === '' ? operatorS : operatorF
+  }
+
+  return [1, 7].includes(+displayType) ? 'between' : multiple ? 'in' : 'eq'
+}
+
 export const searchQuery = (queryComponentList, filter, curComponentId, firstLoad) => {
   queryComponentList.forEach(ele => {
     if (!!ele.propValue?.length) {
@@ -122,6 +172,15 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               timeGranularityMultiple,
               parametersStart,
               parametersEnd,
+              conditionType = 0,
+              defaultConditionValueOperatorF = 'eq',
+              defaultConditionValueF = '',
+              defaultConditionValueOperatorS = 'like',
+              defaultConditionValueS = '',
+              conditionValueOperatorF = 'eq',
+              conditionValueF = '',
+              conditionValueOperatorS = 'like',
+              conditionValueS = '',
               defaultValueCheck,
               timeType = 'fixed',
               defaultValue,
@@ -173,6 +232,15 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 item.defaultValue = [startTime, endTime]
                 item.selectValue = [startTime, endTime]
               }
+            } else if (displayType === '8') {
+              selectValue = getResult(
+                conditionType,
+                defaultConditionValueF,
+                defaultConditionValueS,
+                conditionValueF,
+                conditionValueS,
+                firstLoad
+              )
             } else {
               selectValue = getValueByDefaultValueCheckOrFirstLoad(
                 defaultValueCheck,
@@ -184,19 +252,34 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             }
             if (
               !!selectValue?.length ||
+              displayType === '8' ||
               Object.prototype.toString.call(selectValue) === '[object Date]'
             ) {
-              const values = forMatterValue(
+              const result = forMatterValue(
                 +displayType,
                 selectValue,
                 timeGranularity,
                 timeGranularityMultiple
               )
+              const operator = getOperator(
+                displayType,
+                multiple,
+                conditionType,
+                defaultConditionValueOperatorF,
+                defaultConditionValueF,
+                defaultConditionValueOperatorS,
+                defaultConditionValueS,
+                conditionValueOperatorF,
+                conditionValueF,
+                conditionValueOperatorS,
+                conditionValueS,
+                firstLoad
+              )
               filter.push({
                 componentId: ele.id,
                 fieldId: item.checkedFieldsMap[curComponentId],
-                operator: [1, 7].includes(+displayType) ? 'between' : multiple ? 'in' : 'eq',
-                value: values,
+                operator,
+                value: result,
                 parameters: parametersCheck
                   ? +displayType === 7
                     ? [
