@@ -188,6 +188,7 @@ public class ExportCenterService {
         ExportTaskExample exportTaskExample = new ExportTaskExample();
         ExportTaskExample.Criteria criteria = exportTaskExample.createCriteria();
         criteria.andUserIdEqualTo(AuthUtils.getUser().getUserId());
+        exportTaskExample.setOrderByClause(" export_time desc  ");
         List<ExportTask> exportTasks = exportTaskMapper.selectByExample(exportTaskExample);
         List<ExportTaskDTO> result = new ArrayList<>();
         exportTasks.forEach(exportTask -> {

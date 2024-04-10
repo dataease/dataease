@@ -782,7 +782,7 @@ export default {
             },
             "数据导出中心",
           ),
-          "查看进度,进行下载、暂停等操作",
+          "查看进度,进行下载",
         ]),
         iconClass,
         showClose: true,

@@ -17,8 +17,8 @@
         :name="tab.name"
       ></el-tab-pane>
     </el-tabs>
-    <de-btn secondary icon="el-icon-delete" @click="delAll"
-      >{{ $t("全部删除") }}
+    <de-btn secondary icon="el-icon-delete" @click="delAll" :disabled="multipleSelection.length === 0"
+      >{{ $t("删除") }}
     </de-btn>
     <div class="table-container" :class="!tableData.length && 'hidden-bottom'">
       <el-table
