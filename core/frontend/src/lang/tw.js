@@ -538,6 +538,7 @@ export default {
     confirm: '確 定'
   },
   deDataset: {
+    goto:', 前往 ',
     search_by_name: '通過名稱搜索',
     new_folder: '新建資料夾',
     search_fields: '搜索欄位',
@@ -3098,5 +3099,15 @@ export default {
     geometry: '地理信息',
     onlinemap: '在線地圖',
     empty_desc: '暫無在線地圖key'
+  },
+  data_export:{
+    export_center: '資料匯出中心',
+    export_info: '查看進度，進行下載',
+    exporting: '後台匯出中,可前往',
+    del_all: '全部刪除',
+    export_failed: '匯出失敗',
+    export_from: '匯出來源',
+    export_obj: '匯出對象',
+    export_time: '匯出時間'
   }
 }

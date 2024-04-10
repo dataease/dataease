@@ -1704,6 +1704,7 @@ export default {
     sub_axis_label: '副轴标签'
   },
   dataset: {
+    goto:', 前往 ',
     scope_edit: '仅编辑时生效',
     scope_all: '数据集预览时全局生效',
     spend_time: '耗时',
@@ -3100,5 +3101,15 @@ export default {
     geometry: '地理信息',
     onlinemap: '在线地图',
     empty_desc: '暂无在线地图key'
+  },
+  data_export:{
+    export_center: '数据导出中心',
+    export_info: '查看进度，进行下载',
+    exporting: '后台导出中,可前往',
+    del_all: '全部删除',
+    export_failed: '导出失败',
+    export_from: '导出来源',
+    export_obj: '导出对象',
+    export_time: '导出时间'
   }
 }

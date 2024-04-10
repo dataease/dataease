@@ -15,6 +15,7 @@ import io.dataease.dto.dataset.DataSetPreviewPage;
 import io.dataease.dto.dataset.DataSetTableUnionDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.*;
+import io.dataease.plugins.common.base.mapper.ChartViewMapper;
 import io.dataease.plugins.common.base.mapper.DatasetTableMapper;
 import io.dataease.plugins.common.base.mapper.DatasourceMapper;
 import io.dataease.plugins.common.base.mapper.ExportTaskMapper;
@@ -37,6 +38,8 @@ import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.panel.PanelGroupService;
+import io.dataease.websocket.entity.WsMessage;
+import io.dataease.websocket.service.WsService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -47,6 +50,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
@@ -68,6 +72,8 @@ import java.util.stream.Collectors;
 @Service
 public class ExportCenterService {
 
+    @Resource
+    private ChartViewMapper chartViewMapper;
     @Resource
     private ExportTaskMapper exportTaskMapper;
     @Value("${export.dataset.limit:100000}")
@@ -108,6 +114,9 @@ public class ExportCenterService {
     private int keepAliveSeconds = 600;
     private Map<String, Future> Running_Task = new HashMap<>();
 
+    @Autowired
+    private WsService wsService;
+
     @PostConstruct
     public void init() {
         scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(corePoolSize);
@@ -121,6 +130,16 @@ public class ExportCenterService {
             Map.Entry<String, Future> entry = iterator.next();
             if (entry.getValue().isDone()) {
                 iterator.remove();
+                try {
+                    ExportTask exportTask = exportTaskMapper.selectByPrimaryKey(entry.getKey());
+                    ExportTaskDTO exportTaskDTO = new ExportTaskDTO();
+                    BeanUtils.copyBean(exportTaskDTO, exportTask);
+                    setExportFromName(exportTaskDTO);
+                    WsMessage message = new WsMessage(exportTask.getUserId(), "/task-export-topic", exportTaskDTO);
+                    wsService.releaseMessage(message);
+                } catch (Exception e) {
+
+                }
             }
         }
     }
@@ -155,6 +174,32 @@ public class ExportCenterService {
 
         FileUtil.deleteDirectoryRecursively(exportData_path + id);
         exportTaskMapper.deleteByPrimaryKey(id);
+    }
+
+    public void deleteAll(String type) {
+        if (!STATUS.contains(type)) {
+            DataEaseException.throwException("无效的状态");
+        }
+        ExportTaskExample exportTaskExample = new ExportTaskExample();
+        ExportTaskExample.Criteria criteria = exportTaskExample.createCriteria();
+        criteria.andUserIdEqualTo(AuthUtils.getUser().getUserId());
+        if (!type.equalsIgnoreCase("ALL")) {
+            criteria.andExportStatusEqualTo(type);
+        }
+        List<ExportTask> exportTasks = exportTaskMapper.selectByExample(exportTaskExample);
+        exportTasks.parallelStream().forEach(exportTask -> {
+            Iterator<Map.Entry<String, Future>> iterator = Running_Task.entrySet().iterator();
+            while (iterator.hasNext()) {
+                Map.Entry<String, Future> entry = iterator.next();
+                if (entry.getKey().equalsIgnoreCase(exportTask.getId())) {
+                    entry.getValue().cancel(true);
+                    iterator.remove();
+                }
+            }
+            FileUtil.deleteDirectoryRecursively(exportData_path + exportTask.getId());
+            exportTaskMapper.deleteByPrimaryKey(exportTask.getId());
+        });
+
     }
 
     public void delete(List<String> ids) {
@@ -195,10 +240,10 @@ public class ExportCenterService {
             ExportTaskDTO exportTaskDTO = new ExportTaskDTO();
             BeanUtils.copyBean(exportTaskDTO, exportTask);
             if (status.equalsIgnoreCase("ALL")) {
-                setExportFromName(exportTaskDTO);
+                setExportFromAbsName(exportTaskDTO);
             }
             if (status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
-                setExportFromName(exportTaskDTO);
+                setExportFromAbsName(exportTaskDTO);
             }
             result.add(exportTaskDTO);
         });
@@ -206,7 +251,7 @@ public class ExportCenterService {
         return result;
     }
 
-    private void setExportFromName(ExportTaskDTO exportTaskDTO) {
+    private void setExportFromAbsName(ExportTaskDTO exportTaskDTO) {
         if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
             exportTaskDTO.setExportFromName(panelGroupService.getAbsPath(exportTaskDTO.getExportFrom()));
         }
@@ -214,6 +259,16 @@ public class ExportCenterService {
             exportTaskDTO.setExportFromName(dataSetGroupService.getAbsPath(exportTaskDTO.getExportFrom()));
         }
     }
+
+    private void setExportFromName(ExportTaskDTO exportTaskDTO) {
+        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
+            exportTaskDTO.setExportFromName(chartViewMapper.selectByPrimaryKey(exportTaskDTO.getExportFrom()).getName());
+        }
+        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("dataset")) {
+            exportTaskDTO.setExportFromName(datasetTableMapper.selectByPrimaryKey(exportTaskDTO.getExportFrom()).getName());
+        }
+    }
+
 
     public void exportTableDetails(PanelViewDetailsRequest request, Workbook wb, CellStyle cellStyle, Sheet detailsSheet) throws IOException {
         List<Object[]> details = request.getDetails();

@@ -34,6 +34,11 @@ public class ExportCenterController {
         exportCenterService.delete(ids);
     }
 
+    @PostMapping("/deleteAll/{type}")
+    public void  deleteAll(@PathVariable String type){
+        exportCenterService.deleteAll(type);
+    }
+
     @GetMapping("/download/{id}")
     public void download(@PathVariable String id, HttpServletResponse response) throws Exception {
         exportCenterService.download(id, response);

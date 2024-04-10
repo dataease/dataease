@@ -538,6 +538,7 @@ export default {
     confirm: 'Confirm'
   },
   deDataset: {
+    goto:', go to ',
     search_by_name: 'Search by name',
     new_folder: 'New Folder',
     search_fields: 'Search Fields',
@@ -3106,5 +3107,15 @@ export default {
     geometry: 'Geometry',
     onlinemap: 'Online map',
     empty_desc: 'No map key'
+  },
+  data_export:{
+    export_center: 'Data Export Center',
+    export_info: 'View progress and download',
+    exporting: 'Exporting in the background, you can go to',
+    del_all: 'Delete all',
+    export_failed: 'Export failed',
+    export_from: 'Export source',
+    export_obj: 'Export object',
+    export_time: 'Export time'
   }
 }
