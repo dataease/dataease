@@ -102,7 +102,13 @@ public class ExtWhere2Str {
                 String whereTerm = Utils.transFilterTerm(request.getOperator());
                 String whereValue = "";
 
-                if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
+                if (StringUtils.containsIgnoreCase(request.getOperator(), "-")) {
+                    String[] split = request.getOperator().split("-");
+                    String term1 = split[0];
+                    String logic = split[1];
+                    String term2 = split[2];
+                    whereValue = term1 + getValue(term1, value.get(0)) + logic + whereName + term2 + getValue(term2, value.get(1));
+                } else if (StringUtils.containsIgnoreCase(request.getOperator(), "in")) {
                     // 过滤空数据
                     if (value.contains(SQLConstants.EMPTY_SIGN)) {
                         whereValue = "('" + StringUtils.join(value, "','") + "', '')" + " or " + whereName + " is null ";
@@ -142,6 +148,16 @@ public class ExtWhere2Str {
             meta.setExtWheres(ObjectUtils.isNotEmpty(list) ? "(" + String.join(" AND ", strList) + ")" : null);
         }
         meta.setExtWheresDialect(fieldsDialect);
+    }
+
+    private static String getValue(String term, String value) {
+        switch (term) {
+            case "like":
+                return "'%" + value + "%'";
+            case "eq":
+                return "'" + value + "'";
+        }
+        return null;
     }
 
 }
