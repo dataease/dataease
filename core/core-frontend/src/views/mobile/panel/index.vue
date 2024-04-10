@@ -25,6 +25,18 @@ const hanedleMessage = event => {
       ele.y = my
       ele.sizeX = mSizeX
       ele.sizeY = mSizeY
+
+      if (ele.component === 'DeTabs') {
+        ele.propValue.forEach(tabItem => {
+          tabItem.componentData.forEach(tabComponent => {
+            const { mx: tx, my: ty, mSizeX: tSizeX, mSizeY: tSizeY } = tabComponent
+            tabComponent.x = tx
+            tabComponent.y = ty
+            tabComponent.sizeX = tSizeX
+            tabComponent.sizeY = tSizeY
+          })
+        })
+      }
     })
     dvMainStore.setComponentData(componentData)
     dvMainStore.setMobileInPc(true)
