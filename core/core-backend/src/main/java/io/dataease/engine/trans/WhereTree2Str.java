@@ -5,6 +5,7 @@ import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeItem;
 import io.dataease.api.permissions.dataset.dto.DatasetRowPermissionsTreeObj;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -20,7 +21,7 @@ import java.util.*;
  * @Author Junjun
  */
 public class WhereTree2Str {
-    public static void transFilterTrees(SQLMeta meta, List<DataSetRowPermissionsTreeDTO> requestList, List<DatasetTableFieldDTO> originFields) {
+    public static void transFilterTrees(SQLMeta meta, List<DataSetRowPermissionsTreeDTO> requestList, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
@@ -38,7 +39,7 @@ public class WhereTree2Str {
             if (ObjectUtils.isEmpty(tree)) {
                 continue;
             }
-            String treeExp = transTreeToWhere(tableObj, tree, originFields, fieldsDialect);
+            String treeExp = transTreeToWhere(tableObj, tree, originFields, fieldsDialect, isCross, dsMap);
             if (StringUtils.isNotEmpty(treeExp)) {
                 res.add(treeExp);
             }
@@ -47,7 +48,7 @@ public class WhereTree2Str {
         meta.setWhereTreesDialect(fieldsDialect);
     }
 
-    private static String transTreeToWhere(SQLObj tableObj, DatasetRowPermissionsTreeObj tree, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect) {
+    private static String transTreeToWhere(SQLObj tableObj, DatasetRowPermissionsTreeObj tree, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         if (ObjectUtils.isEmpty(tree)) {
             return null;
         }
@@ -60,10 +61,10 @@ public class WhereTree2Str {
                 String exp = null;
                 if (StringUtils.equalsIgnoreCase(item.getType(), "item")) {
                     // 单个item拼接SQL，最后根据logic汇总
-                    exp = transTreeItem(tableObj, item, originFields, fieldsDialect);
+                    exp = transTreeItem(tableObj, item, originFields, fieldsDialect, isCross, dsMap);
                 } else if (StringUtils.equalsIgnoreCase(item.getType(), "tree")) {
                     // 递归tree
-                    exp = transTreeToWhere(tableObj, item.getSubTree(), originFields, fieldsDialect);
+                    exp = transTreeToWhere(tableObj, item.getSubTree(), originFields, fieldsDialect, isCross, dsMap);
                 }
                 if (StringUtils.isNotEmpty(exp)) {
                     list.add(exp);
@@ -73,7 +74,7 @@ public class WhereTree2Str {
         return CollectionUtils.isNotEmpty(list) ? "(" + String.join(" " + logic + " ", list) + ")" : null;
     }
 
-    public static String transTreeItem(SQLObj tableObj, DatasetRowPermissionsTreeItem item, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect) {
+    public static String transTreeItem(SQLObj tableObj, DatasetRowPermissionsTreeItem item, List<DatasetTableFieldDTO> originFields, Map<String, String> fieldsDialect, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         String res = null;
         DatasetTableFieldDTO field = item.getField();
         if (ObjectUtils.isEmpty(field)) {
@@ -83,7 +84,7 @@ public class WhereTree2Str {
         String originName;
         if (ObjectUtils.isNotEmpty(field.getExtField()) && Objects.equals(field.getExtField(), ExtFieldConstant.EXT_CALC)) {
             // 解析origin name中有关联的字段生成sql表达式
-            String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields);
+            String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields, isCross, dsMap);
             // 给计算字段处加一个占位符，后续SQL方言转换后再替换
             originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
             fieldsDialect.put(originName, calcFieldExp);

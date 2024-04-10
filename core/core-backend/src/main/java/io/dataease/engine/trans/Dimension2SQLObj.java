@@ -3,6 +3,7 @@ package io.dataease.engine.trans;
 import io.dataease.api.chart.dto.ChartViewFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
@@ -20,7 +21,7 @@ import java.util.*;
  */
 public class Dimension2SQLObj {
 
-    public static void dimension2sqlObj(SQLMeta meta, List<ChartViewFieldDTO> fields, List<DatasetTableFieldDTO> originFields) {
+    public static void dimension2sqlObj(SQLMeta meta, List<ChartViewFieldDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
@@ -34,7 +35,7 @@ public class Dimension2SQLObj {
                 String originField;
                 if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_CALC)) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    String calcFieldExp = Utils.calcFieldRegex(x.getOriginName(), tableObj, originFields);
+                    String calcFieldExp = Utils.calcFieldRegex(x.getOriginName(), tableObj, originFields, isCross, dsMap);
                     // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                     originField = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, x.getId());
                     fieldsDialect.put(originField, calcFieldExp);

@@ -147,7 +147,7 @@ public class ChartViewManege {
                 String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, list.stream().peek(e -> {
                     DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
                     BeanUtils.copyBean(dto, e);
-                }).collect(Collectors.toList()));
+                }).collect(Collectors.toList()), true, null);
                 for (String func : FunctionConstant.AGG_FUNC) {
                     if (Utils.matchFunction(func, originField)) {
                         ele.setSummary("");
