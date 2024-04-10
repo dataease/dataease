@@ -528,9 +528,9 @@ public class ChartDataManage {
                 querySql = originSql + limit;
                 totalPageSql = "SELECT COUNT(*) FROM (" + originSql + ") COUNT_TEMP";
             } else if (StringUtils.containsIgnoreCase(view.getType(), "quadrant")) {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 yAxis.addAll(extBubble);
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
                 if (containDetailField(view) && ObjectUtils.isNotEmpty(viewFields)) {
                     detailFieldList.addAll(xAxis);
@@ -549,7 +549,7 @@ public class ChartDataManage {
                     detailFieldList.addAll(xAxis);
                     detailFieldList.addAll(viewFields);
 
-                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, detailFieldList, transFields(allFields));
+                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, detailFieldList, transFields(allFields), crossDs, dsMap);
                     String originSql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
                     String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                     detailFieldSql = originSql + limit;
