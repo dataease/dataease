@@ -1,5 +1,6 @@
 import { cloneDeep } from 'lodash-es'
 import componentList, {
+  ACTION_SELECTION,
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT
 } from '@/custom-component/component-list'
@@ -16,6 +17,7 @@ import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { getViewConfig } from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
 const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasViewInfo } =
   storeToRefs(dvMainStore)
@@ -118,6 +120,9 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       }
       componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
       componentItem['aspectRatio'] = componentItem['aspectRatio'] || 1
+      if (componentItem.component === 'UserView') {
+        componentItem.actionSelection = componentItem.actionSelection || deepCopy(ACTION_SELECTION)
+      }
     })
     const curPreviewGap =
       dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'

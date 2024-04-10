@@ -30,6 +30,10 @@ export const defaultStyleValue = {
   headFontActiveColor: '#000000'
 }
 
+export const ACTION_SELECTION = {
+  linkageActive: 'custom'
+}
+
 export const COMMON_COMPONENT_BACKGROUND_BASE = {
   backgroundColorSelect: true,
   backgroundImageEnable: false,
@@ -134,6 +138,7 @@ const list = [
     innerType: 'bar',
     editing: false,
     canvasActive: false,
+    actionSelection: ACTION_SELECTION,
     x: 1,
     y: 1,
     sizeX: 18,
