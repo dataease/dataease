@@ -674,6 +674,7 @@ const iconSize = computed<string>(() => {
         :dynamic-area-id="dynamicAreaId"
         :view="view"
         :show-position="showPosition"
+        :element="element"
         v-else-if="showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT)"
         ref="chartComponent"
         @onChartClick="chartClick"
