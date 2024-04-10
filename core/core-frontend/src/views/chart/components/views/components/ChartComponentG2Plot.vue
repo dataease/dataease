@@ -20,6 +20,14 @@ const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc } = storeToRefs(dvMainStore)
 
 const props = defineProps({
+  element: {
+    type: Object,
+    default() {
+      return {
+        propValue: null
+      }
+    }
+  },
   view: {
     type: Object,
     default() {
@@ -192,11 +200,31 @@ const action = param => {
   if (trackMenu.value.length < 2) {
     // 只有一个事件直接调用
     trackClick(trackMenu.value[0])
+  } else if (
+    props.element.actionSelection.linkageActive === 'auto' &&
+    trackMenu.value.length === 2 &&
+    !trackMenu.value.includes('jump')
+  ) {
+    trackClickPre('linkage')
   } else {
     // 图表关联多个事件
     state.trackBarStyle.left = param.x - 50 + 'px'
     state.trackBarStyle.top = param.y + 10 + 'px'
     viewTrack.value.trackButtonClick()
+  }
+}
+const trackClickPre = trackAction => {
+  if (
+    props.element.actionSelection.linkageActive === 'auto' &&
+    trackMenu.value.length === 2 &&
+    trackAction === 'linkage' &&
+    !trackMenu.value.includes('jump')
+  ) {
+    trackMenu.value.forEach(action => {
+      trackClick(action)
+    })
+  } else {
+    trackClick(trackAction)
   }
 }
 
@@ -312,7 +340,7 @@ onBeforeUnmount(() => {
       :track-menu="trackMenu"
       class="track-bar"
       :style="state.trackBarStyle"
-      @trackClick="trackClick"
+      @trackClick="trackClickPre"
     />
     <div v-if="!isError" ref="chartContainer" class="canvas-content" :id="containerId"></div>
     <chart-error v-else :err-msg="errMsg" />
