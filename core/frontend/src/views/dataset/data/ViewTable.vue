@@ -497,7 +497,7 @@ export default {
       const customClass = `de-message-loading de-message-export`;
       this.$message({
         message: h("p", null, [
-          "后台导出中,可前往",
+          this.$t('data_export.exporting'),
           h(
             Button,
             {
@@ -512,9 +512,9 @@ export default {
                 },
               },
             },
-            "数据导出中心",
+            this.$t('data_export.export_center'),
           ),
-          "查看进度,进行下载、暂停等操作",
+          this.$t('data_export.export_info'),
         ]),
         iconClass,
         showClose: true,

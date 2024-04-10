@@ -1,7 +1,7 @@
 <template>
   <el-drawer
     custom-class="de-user-drawer de-export-excel"
-    title="数据导出中心"
+    :title="$t('data_export.export_center')"
     v-loading="drawerLoading"
     :visible.sync="drawer"
     direction="rtl"
@@ -17,8 +17,11 @@
         :name="tab.name"
       ></el-tab-pane>
     </el-tabs>
-    <de-btn secondary icon="el-icon-delete" @click="delAll"
-      >{{ $t("全部删除") }}
+    <de-btn secondary icon="el-icon-delete" @click="delAll" v-show="multipleSelection.length === 0"
+      >{{ $t("data_export.del_all") }}
+    </de-btn>
+    <de-btn secondary icon="el-icon-delete" @click="delAll" v-show="multipleSelection.length !== 0"
+    >{{ $t("commons.delete") }}
     </de-btn>
     <div class="table-container" :class="!tableData.length && 'hidden-bottom'">
       <el-table
@@ -28,13 +31,13 @@
         style="width: 100%"
       >
         <el-table-column type="selection" width="50"> </el-table-column>
-        <el-table-column prop="fileName" label="文件名" width="332">
+        <el-table-column prop="fileName" :label="$t('driver.file_name')" width="332">
           <template slot-scope="scope">
             <div class="name-excel">
               <svg-icon style="font-size: 24px;" icon-class="icon_file-excel_colorful"> </svg-icon>
               <div class="name-content">
                 <div class="fileName">{{ scope.row.fileName }}</div>
-                <div class="failed" v-if="activeName==='FAILED'">导出失败</div>
+                <div class="failed" v-if="activeName==='FAILED'">{{ $t("data_export.export_failed") }}</div>
                 <div class="sucess" v-if="scope.row.exportStatus==='SUCCESS'">{{scope.row.fileSize}}{{scope.row.fileSizeUnit}}</div>
               </div>
             </div>
@@ -42,20 +45,20 @@
             <el-progress v-if="activeName==='IN_PROGRESS'" :percentage="+scope.row.exportPogress"></el-progress>
           </template>
         </el-table-column>
-        <el-table-column prop="exportFromName" label="导出对象" width="200">
+        <el-table-column prop="exportFromName" :label="$t('data_export.export_obj')" width="200">
         </el-table-column>
-        <el-table-column prop="exportFromType" width="120" label="导出来源">
+        <el-table-column prop="exportFromType" width="120" :label="$t('data_export.export_from')">
           <template slot-scope="scope">
-            <span v-if="scope.row.exportFromType === 'dataset'">数据集</span>
-            <span v-if="scope.row.exportFromType === 'chart'">视图</span>
+            <span v-if="scope.row.exportFromType === 'dataset'">{{ $t("dataset.datalist") }}</span>
+            <span v-if="scope.row.exportFromType === 'chart'">{{ $t("panel.view") }}</span>
           </template>
         </el-table-column>
-        <el-table-column prop="exportTime" width="180" label="导出时间">
+        <el-table-column prop="exportTime" width="180" :label="$t('data_export.export_time')">
           <template slot-scope="scope">
             <span>{{ scope.row.exportTime | timestampFormatDate }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" prop="operate" width="80" label="操作">
+        <el-table-column fixed="right" prop="operate" width="80" :label="$t('commons.operating')">
           <template slot-scope="scope">
             <el-button v-if="scope.row.exportStatus === 'SUCCESS'" type="text" size="mini" @click="downloadClick(scope.row)">
               <div class="download-export">
@@ -92,6 +95,8 @@
 import msgCfm from "@/components/msgCfm/index";
 import request from "@/utils/request";
 import {downloadFile, post} from '@/api/dataset/dataset'
+import bus from "@/utils/bus";
+import {Button} from "element-ui";
 export default {
   mixins: [msgCfm],
   data() {
@@ -130,6 +135,9 @@ export default {
   },
   created() {
     this.handleClick()
+  },
+  mounted() {
+    bus.$on('task-export-topic-call', this.taskExportTopicCall)
   },
   methods: {
     init() {
@@ -170,6 +178,46 @@ export default {
     },
     format(percentage) {
       return '';
+    },
+    taskExportTopicCall(task){
+      if(JSON.parse(task).exportStatus === 'SUCCESS'){
+        this.openMessageLoading(JSON.parse(task).exportFromName + ' ' + this.$t('excel.export') + this.$t('dataset.completed')+ this.$t('dataset.goto'), 'success', this.callbackExport)
+      }
+      if(JSON.parse(task).exportStatus === 'FAILED'){
+        this.openMessageLoading(JSON.parse(task).exportFromName + ' ' +  this.$t('excel.export')  + this.$t('dataset.error')+ this.$t('dataset.goto'), 'error', this.callbackExport)
+      }
+    },
+    openMessageLoading(text, type, cb) {
+      const h = this.$createElement;
+      const iconClass = `el-icon-${type || 'success'}`
+      const customClass = `de-message-${type || 'success'} de-message-export`
+      this.$message({
+        message: h("p", null, [
+          this.$t(text),
+          h(
+            Button,
+            {
+              props: {
+                type: "text",
+                size: "mini",
+              },
+              class: "btn-text",
+              on: {
+                click: () => {
+                  cb();
+                },
+              },
+            },
+            this.$t('data_export.export_center'),
+          )
+        ]),
+        iconClass,
+        showClose: true,
+        customClass,
+      });
+    },
+    callbackExport() {
+      bus.$emit('data-export-center')
     },
     handleClick() {
       this.tableData = []
@@ -255,7 +303,16 @@ export default {
     },
     delAll() {
       if(this.multipleSelection.length === 0 ){
-        this.openMessageSuccess("请选择", 'error')
+        post(
+          '/exportCenter/deleteAll/' + this.activeName,
+          this.multipleSelection.map((ele) => ele.id),
+          true
+        ).then(
+          (res) => {
+            this.handleClick()
+          }
+        )
+        this.openMessageSuccess("commons.delete_success");
         return
       }
       post(

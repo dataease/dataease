@@ -14,6 +14,10 @@ class DeWebsocket {
       {
         topic: '/web-seize-topic',
         event: 'web-seize-topic-call'
+      },
+      {
+        topic: '/task-export-topic',
+        event: 'task-export-topic-call'
       }
     ]
     this.timer = null
