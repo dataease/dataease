@@ -9,7 +9,7 @@
         frameborder="0"
         class="main-frame main-de-iframe"
       />
-      <div v-if="editMode === 'edit'" class="frame-mask edit-mask">
+      <div v-if="isEdit" class="frame-mask edit-mask">
         <span style="opacity: 1">
           <span style="font-weight: bold; color: lawngreen">{{
             t('visualization.edit_web_tips')
@@ -17,9 +17,9 @@
         </span>
       </div>
       <!--Here are three 15px wide masks(left top right) for easy clicking on the display jump button-->
-      <div v-if="editMode !== 'edit'" class="frame-mask preview-top-mask" />
-      <div v-if="editMode !== 'edit'" class="frame-mask preview-right-mask" />
-      <div v-if="editMode !== 'edit'" class="frame-mask preview-left-mask" />
+      <div v-if="isEdit" class="frame-mask preview-top-mask" />
+      <div v-if="isEdit" class="frame-mask preview-right-mask" />
+      <div v-if="isEdit" class="frame-mask preview-left-mask" />
       <div v-if="screenShot" class="frame-mask" />
     </div>
     <div v-else class="info-class">
@@ -47,10 +47,10 @@ const props = defineProps({
   element: {
     type: Object
   },
-  editMode: {
-    type: String,
+  isEdit: {
+    type: Boolean,
     require: false,
-    default: 'edit'
+    default: true
   },
   active: {
     type: Boolean,
@@ -63,7 +63,7 @@ const props = defineProps({
   }
 })
 
-const { propValue, element, editMode, active, screenShot } = toRefs(props)
+const { propValue, element, isEdit, active, screenShot } = toRefs(props)
 
 const state = reactive({
   pOption: {},
@@ -90,6 +90,7 @@ onMounted(() => {
 <style lang="less" scoped>
 .info-class {
   text-align: center;
+  width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
