@@ -35,7 +35,8 @@ export const MAP_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'showQuota'
   ],
   'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
-  'function-cfg': ['emptyDataStrategy']
+  'function-cfg': ['emptyDataStrategy'],
+  'map-mapping': ['']
 }
 
 export const MAP_AXIS_TYPE: AxisType[] = [

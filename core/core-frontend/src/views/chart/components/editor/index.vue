@@ -787,6 +787,11 @@ const onThresholdChange = val => {
   renderChart(view.value)
 }
 
+const onMapMappingChange = val => {
+  view.value.senior.areaMapping = val
+  renderChart(view.value)
+}
+
 const onScrollCfgChange = val => {
   view.value.senior.scrollCfg = val
   renderChart(view.value)
@@ -1828,6 +1833,7 @@ const onRefreshChange = val => {
                       @onAssistLineChange="onAssistLineChange"
                       @onScrollCfgChange="onScrollCfgChange"
                       @onThresholdChange="onThresholdChange"
+                      @onMapMappingChange="onMapMappingChange"
                     />
                   </el-scrollbar>
                 </el-container>

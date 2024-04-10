@@ -1410,7 +1410,8 @@ export const BASE_VIEW_CONFIG = {
     functionCfg: DEFAULT_FUNCTION_CFG,
     assistLineCfg: DEFAULT_ASSIST_LINE_CFG,
     threshold: DEFAULT_THRESHOLD,
-    scrollCfg: DEFAULT_SCROLL
+    scrollCfg: DEFAULT_SCROLL,
+    areaMapping: {}
   }
 }
 
