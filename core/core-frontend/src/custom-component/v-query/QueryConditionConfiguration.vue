@@ -171,6 +171,7 @@ const handleCheckAllChange = (val: boolean) => {
   isIndeterminate.value = false
 }
 const handleCheckedFieldsChange = (value: string[]) => {
+  if (curComponent.value.displayType === '8') return
   handleDialogClick()
   const checkedCount = value.length
   checkAll.value = checkedCount === fields.value.length
@@ -369,6 +370,31 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
   }
 }
 
+const validateConditionType = ({
+  defaultConditionValueF,
+  defaultConditionValueS,
+  conditionType
+}) => {
+  if (conditionType === 0) {
+    return defaultConditionValueF === ''
+  } else {
+    return defaultConditionValueF === '' || defaultConditionValueS === ''
+  }
+}
+
+const setParams = ele => {
+  const {
+    defaultConditionValueOperatorF,
+    defaultConditionValueF,
+    defaultConditionValueOperatorS,
+    defaultConditionValueS
+  } = ele
+  ele.conditionValueOperatorF = defaultConditionValueOperatorF
+  ele.conditionValueF = defaultConditionValueF
+  ele.conditionValueOperatorS = defaultConditionValueOperatorS
+  ele.conditionValueS = defaultConditionValueS
+}
+
 const validate = () => {
   return conditions.value.some(ele => {
     if (ele.auto) return false
@@ -378,6 +404,15 @@ const validate = () => {
     }
 
     if (ele.required) {
+      if (ele.displayType === '8') {
+        setParams(ele)
+        const result = validateConditionType(ele)
+        if (result) {
+          ElMessage.error('查询条件为必填项,默认值不能为空')
+        }
+        return result
+      }
+
       if (!ele.defaultValueCheck) {
         ElMessage.error('查询条件为必填项,默认值不能为空')
         return true
@@ -390,6 +425,11 @@ const validate = () => {
         ElMessage.error('查询条件为必填项,默认值不能为空')
         return true
       }
+    }
+
+    if (ele.displayType === '8') {
+      setParams(ele)
+      return false
     }
 
     if (+ele.displayType === 7) {
@@ -633,6 +673,15 @@ const parameterCompletion = () => {
     timeType: 'fixed',
     required: false,
     parametersStart: null,
+    conditionType: 0,
+    conditionValueOperatorF: 'eq',
+    conditionValueF: '',
+    conditionValueOperatorS: 'like',
+    conditionValueS: '',
+    defaultConditionValueOperatorF: 'eq',
+    defaultConditionValueF: '',
+    defaultConditionValueOperatorS: 'like',
+    defaultConditionValueS: '',
     parametersEnd: null,
     relativeToCurrent: 'custom',
     timeNum: 0,
@@ -645,6 +694,7 @@ const parameterCompletion = () => {
     arbitraryTimeRange: new Date(),
     setTimeRange: false,
     showEmpty: false,
+    conditionType: 0,
     timeRange: {
       intervalType: 'none',
       dynamicWindow: false,
@@ -715,7 +765,7 @@ const showError = computed(() => {
   if (!checkedFields.length || !arr.length) {
     return true
   }
-  if ([1, 7].includes(+displayType)) {
+  if ([1, 7, 8].includes(+displayType)) {
     return false
   }
   return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
@@ -723,6 +773,17 @@ const showError = computed(() => {
 const handleDialogClick = () => {
   visiblePopover.value = false
 }
+
+const operators = [
+  {
+    label: '精准匹配',
+    value: 'eq'
+  },
+  {
+    label: '模糊匹配',
+    value: 'like'
+  }
+]
 const relativeToCurrentList = computed(() => {
   let list = []
   if (!curComponent.value) return list
@@ -1154,9 +1215,14 @@ defineExpose({
                 v-model="curComponent.displayType"
               >
                 <el-option
-                  :disabled="curComponent.displayType !== '0'"
+                  :disabled="!['0', '8'].includes(curComponent.displayType)"
                   label="文本下拉"
                   value="0"
+                />
+                <el-option
+                  :disabled="!['0', '8'].includes(curComponent.displayType)"
+                  label="文本搜索"
+                  value="8"
                 />
                 <el-option
                   v-if="curComponent.displayType === '2'"
@@ -1213,7 +1279,10 @@ defineExpose({
               </template>
             </div>
           </div>
-          <div class="list-item top-item" v-if="!['1', '7'].includes(curComponent.displayType)">
+          <div
+            class="list-item top-item"
+            v-if="!['1', '7', '8'].includes(curComponent.displayType)"
+          >
             <div class="label">选项值来源</div>
             <div class="value">
               <div class="value">
@@ -1362,7 +1431,69 @@ defineExpose({
               </div>
             </div>
           </div>
-          <div v-if="!['1', '7'].includes(curComponent.displayType)" class="list-item">
+          <div class="list-item top-item" v-if="curComponent.displayType === '8'">
+            <div class="label">条件类型</div>
+            <div class="value">
+              <div class="value">
+                <el-radio-group class="larger-radio" v-model="curComponent.conditionType">
+                  <el-radio :label="0">单条件</el-radio>
+                  <el-radio :label="1">与条件</el-radio>
+                  <el-radio :label="2">或条件</el-radio>
+                </el-radio-group>
+              </div>
+            </div>
+          </div>
+          <div class="list-item top-item" v-if="curComponent.displayType === '8'">
+            <div class="label">设置默认值</div>
+            <div class="value">
+              <div class="condition-type">
+                <el-select
+                  class="condition-value-select"
+                  popper-class="condition-value-select-popper"
+                  v-model="curComponent.defaultConditionValueOperatorF"
+                >
+                  <el-option
+                    v-for="ele in operators"
+                    :key="ele.value"
+                    :label="ele.label"
+                    :value="ele.value"
+                  >
+                  </el-option>
+                </el-select>
+                <el-input
+                  class="condition-value-input"
+                  size="small"
+                  v-model="curComponent.defaultConditionValueF"
+                />
+                <div class="bottom-line"></div>
+              </div>
+              <div class="condition-type" v-if="[1, 2].includes(curComponent.conditionType)">
+                <sapn class="condition-type-tip">{{
+                  curComponent.conditionType === 1 ? '与' : '或'
+                }}</sapn>
+                <el-select
+                  class="condition-value-select"
+                  popper-class="condition-value-select-popper"
+                  v-model="curComponent.defaultConditionValueOperatorS"
+                >
+                  <el-option
+                    v-for="ele in operators"
+                    :key="ele.value"
+                    :label="ele.label"
+                    :value="ele.value"
+                  >
+                  </el-option>
+                </el-select>
+                <el-input
+                  class="condition-value-input"
+                  size="small"
+                  v-model="curComponent.defaultConditionValueS"
+                />
+                <div class="bottom-line next-line"></div>
+              </div>
+            </div>
+          </div>
+          <div v-if="!['1', '7', '8'].includes(curComponent.displayType)" class="list-item">
             <div class="label">选项类型</div>
             <div class="value">
               <el-radio-group
@@ -1432,7 +1563,7 @@ defineExpose({
               </el-tooltip>
             </div>
           </div>
-          <div class="list-item">
+          <div v-if="!['8'].includes(curComponent.displayType)" class="list-item">
             <div class="label">
               <el-tooltip
                 effect="dark"
@@ -1518,7 +1649,7 @@ defineExpose({
               </div>
             </template>
           </div>
-          <div class="list-item">
+          <div v-if="!['8'].includes(curComponent.displayType)" class="list-item">
             <div class="label">
               <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
             </div>
@@ -1694,6 +1825,11 @@ defineExpose({
 </template>
 
 <style lang="less">
+.condition-value-select-popper {
+  .ed-select-dropdown__item.selected::after {
+    display: none;
+  }
+}
 .dataset-parameters {
   font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
   font-style: normal;
@@ -1963,6 +2099,75 @@ defineExpose({
             }
             .ed-select {
               width: 321px;
+            }
+          }
+
+          .value {
+            width: 321px;
+            .condition-type {
+              margin-top: 8px;
+              display: flex;
+              position: relative;
+              .ed-input__wrapper {
+                border: none;
+                border-radius: 0;
+                box-shadow: none;
+                height: 26px;
+                font-family: '阿里巴巴普惠体 3.0 55 Regular L3', Hiragino Sans GB, Microsoft YaHei,
+                  sans-serif;
+                word-wrap: break-word;
+                text-align: left;
+                color: rgba(0, 0, 0, 0.65);
+                list-style: none;
+                user-select: none;
+                cursor: pointer;
+                line-height: 26px;
+                box-sizing: border-box;
+                max-width: 100%;
+                overflow: hidden;
+                white-space: nowrap;
+                text-overflow: ellipsis;
+                opacity: 1;
+              }
+
+              .ed-select .ed-input.is-focus .ed-input__wrapper,
+              .ed-select:hover:not(.ed-select--disabled) .ed-input__wrapper,
+              .ed-select .ed-input__wrapper.is-focus {
+                box-shadow: none !important;
+              }
+
+              .ed-select {
+                width: 120px;
+                .ed-input__wrapper {
+                  padding: 0;
+                }
+              }
+
+              .condition-type-tip {
+                font-size: 12px;
+                color: #646a73;
+                line-height: 26px;
+                margin-right: 8px;
+              }
+
+              .bottom-line {
+                box-sizing: border-box;
+                height: 1px;
+                background-color: #000;
+                opacity: 0.3;
+                position: absolute;
+                right: 5px;
+                bottom: 5px;
+                width: 220px;
+                z-index: 10;
+
+                &.next-line {
+                  width: 206px;
+                }
+              }
+              &:first-child {
+                margin-top: -0.5px;
+              }
             }
           }
 
