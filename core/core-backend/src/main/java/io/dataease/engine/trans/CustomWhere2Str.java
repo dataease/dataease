@@ -4,6 +4,7 @@ import io.dataease.api.chart.dto.ChartCustomFilterItemDTO;
 import io.dataease.api.chart.dto.ChartFieldCustomFilterDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.constant.SqlPlaceholderConstants;
@@ -21,7 +22,7 @@ import java.util.Map;
  */
 public class CustomWhere2Str {
 
-    public static void customWhere2sqlObj(SQLMeta meta, List<ChartFieldCustomFilterDTO> fields, List<DatasetTableFieldDTO> originFields) {
+    public static void customWhere2sqlObj(SQLMeta meta, List<ChartFieldCustomFilterDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
@@ -40,7 +41,7 @@ public class CustomWhere2Str {
                 String originName;
                 if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 2) {
                     // 解析origin name中有关联的字段生成sql表达式
-                    String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields);
+                    String calcFieldExp = Utils.calcFieldRegex(field.getOriginName(), tableObj, originFields, isCross, dsMap);
                     // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                     originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
                     fieldsDialect.put(originName, calcFieldExp);

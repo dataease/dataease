@@ -199,9 +199,9 @@ public class DatasetDataManage {
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-        Field2SQLObj.field2sqlObj(sqlMeta, fields);
-        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields);
-        Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, crossDs, dsMap);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
+        Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
         String querySQL;
         if (start == null || count == null) {
             querySQL = SQLProvider.createQuerySQL(sqlMeta, false, false, needOrder);
@@ -438,7 +438,7 @@ public class DatasetDataManage {
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
             // 计算字段先完成内容替换
             if (Objects.equals(field.getExtField(), ExtFieldConstant.EXT_CALC)) {
-                String originField = Utils.calcFieldRegex(field.getOriginName(), sqlMeta.getTable(), allFields);
+                String originField = Utils.calcFieldRegex(field.getOriginName(), sqlMeta.getTable(), allFields, crossDs, dsMap);
                 // 此处是数据集预览，获取数据库原始字段枚举值等操作使用，如果遇到聚合函数则将originField设置为null
                 for (String func : FunctionConstant.AGG_FUNC) {
                     if (Utils.matchFunction(func, originField)) {
@@ -470,9 +470,9 @@ public class DatasetDataManage {
                 rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
             }
 
-            Field2SQLObj.field2sqlObj(sqlMeta, fields);
-            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields);
-            Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields());
+            Field2SQLObj.field2sqlObj(sqlMeta, fields, crossDs, dsMap);
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
+            Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
             String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
             querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
 

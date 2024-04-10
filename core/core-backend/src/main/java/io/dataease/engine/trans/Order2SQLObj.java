@@ -1,9 +1,10 @@
 package io.dataease.engine.trans;
 
 import io.dataease.api.chart.dto.DeSortField;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.dataset.dto.DatasourceSchemaDTO;
+import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -13,6 +14,7 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.CollectionUtils;
 
 import java.util.List;
+import java.util.Map;
 import java.util.Objects;
 
 /**
@@ -20,7 +22,7 @@ import java.util.Objects;
  */
 public class Order2SQLObj {
 
-    public static void getOrders(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DeSortField> sortFields) {
+    public static void getOrders(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DeSortField> sortFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         SQLObj tableObj = meta.getTable();
         List<SQLObj> xOrders = meta.getXOrders();
         if (ObjectUtils.isEmpty(tableObj) || CollectionUtils.isEmpty(xOrders)) {
@@ -30,17 +32,17 @@ public class Order2SQLObj {
             int step = fields.size();
             for (int i = step; i < (step + sortFields.size()); i++) {
                 DeSortField deSortField = sortFields.get(i - step);
-                SQLObj order = buildSortField(deSortField, tableObj, i, fields);
+                SQLObj order = buildSortField(deSortField, tableObj, i, fields, isCross, dsMap);
                 xOrders.add(order);
             }
         }
     }
 
-    private static SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i, List<DatasetTableFieldDTO> originFields) {
+    private static SQLObj buildSortField(DeSortField f, SQLObj tableObj, int i, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         String originField;
         if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_CALC)) {
             // 解析origin name中有关联的字段生成sql表达式
-            originField = Utils.calcFieldRegex(f.getOriginName(), tableObj, originFields);
+            originField = Utils.calcFieldRegex(f.getOriginName(), tableObj, originFields, isCross, dsMap);
         } else if (ObjectUtils.isNotEmpty(f.getExtField()) && Objects.equals(f.getExtField(), ExtFieldConstant.EXT_COPY)) {
             originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), f.getDataeaseName());
         } else {

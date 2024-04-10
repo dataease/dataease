@@ -500,29 +500,29 @@ public class ChartDataManage {
 
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-            CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields));
-            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, transFields(allFields));
-            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields));
+            CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields), crossDs, dsMap);
+            ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, transFields(allFields), crossDs, dsMap);
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap);
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 List<ChartViewFieldDTO> xFields = new ArrayList<>();
                 xFields.addAll(xAxis);
                 xFields.addAll(extStack);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields), crossDs, dsMap);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 List<ChartViewFieldDTO> yFields = new ArrayList<>();
                 yFields.addAll(yAxis);
                 yFields.addAll(extBubble);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 String originSql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);// 明细表强制加排序
                 String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                 querySql = originSql + limit;
@@ -536,14 +536,14 @@ public class ChartDataManage {
                     detailFieldList.addAll(xAxis);
                     detailFieldList.addAll(viewFields);
 
-                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, detailFieldList, transFields(allFields));
+                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, detailFieldList, transFields(allFields), crossDs, dsMap);
                     String originSql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
                     String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                     detailFieldSql = originSql + limit;
                 }
             } else {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
                 if (containDetailField(view) && ObjectUtils.isNotEmpty(viewFields)) {
                     detailFieldList.addAll(xAxis);
@@ -1315,31 +1315,31 @@ public class ChartDataManage {
 
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields));
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap);
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 List<ChartViewFieldDTO> xFields = new ArrayList<>();
                 xFields.addAll(xAxis);
                 xFields.addAll(extStack);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields), crossDs, dsMap);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 List<ChartViewFieldDTO> yFields = new ArrayList<>();
                 yFields.addAll(yAxis);
                 yFields.addAll(extBubble);
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);
             } else {
-                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields));
-                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields));
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             }
 

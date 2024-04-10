@@ -1,6 +1,7 @@
 package io.dataease.engine.utils;
 
 import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
@@ -24,17 +25,22 @@ public class Utils {
     }
 
     // 解析计算字段
-    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields) {
+    public static String calcFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         try {
             int i = 0;
-            return buildCalcField(originField, tableObj, originFields, i);
+            DatasourceConfiguration.DatasourceType datasourceType = null;
+            if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
+                Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
+                datasourceType = DatasourceConfiguration.DatasourceType.valueOf(next.getValue().getType());
+            }
+            return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType);
         } catch (Exception e) {
             DEException.throwException(Translator.get("i18n_field_circular_ref"));
         }
         return null;
     }
 
-    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i) throws Exception {
+    public static String buildCalcField(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, int i, boolean isCross, DatasourceConfiguration.DatasourceType datasourceType) throws Exception {
         try {
             i++;
             if (i > 100) {
@@ -57,11 +63,16 @@ public class Utils {
                 if (StringUtils.containsIgnoreCase(originField, ele.getId() + "")) {
                     // 计算字段允许二次引用，这里递归查询完整引用链
                     if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
-                        originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                                String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
+                        if (isCross) {
+                            originField = originField.replaceAll("\\[" + ele.getId() + "]",
+                                    String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
+                        } else {
+                            originField = originField.replaceAll("\\[" + ele.getId() + "]",
+                                    tableObj.getTableAlias() + "." + datasourceType.getPrefix() + ele.getDataeaseName() + datasourceType.getSuffix());
+                        }
                     } else {
                         originField = originField.replaceAll("\\[" + ele.getId() + "]", "(" + ele.getOriginName() + ")");
-                        originField = buildCalcField(originField, tableObj, originFields, i);
+                        originField = buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType);
                     }
                 }
             }
