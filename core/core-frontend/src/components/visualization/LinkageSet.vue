@@ -8,6 +8,10 @@
     top="10vh"
     trigger="click"
   >
+    <linkage-set-option
+      v-if="curComponent && curComponent.actionSelection"
+      :action-selection="customLinkageActive"
+    ></linkage-set-option>
     <div v-loading="loading" @keydown.stop @keyup.stop v-if="state.initState" style="height: 550px">
       <el-row style="flex-direction: row">
         <div class="top-area">
@@ -198,8 +202,11 @@ import {
 import { getDatasetDetails } from '@/api/dataset'
 import { findAllViewsId } from '@/utils/canvasUtils'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import LinkageSetOption from '@/components/visualization/LinkageSetOption.vue'
+import { deepCopy } from '@/utils/utils'
+import { ACTION_SELECTION } from '@/custom-component/component-list'
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
+const { dvInfo, canvasViewInfo, componentData, curComponent } = storeToRefs(dvMainStore)
 const linkageInfoTree = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
@@ -220,6 +227,8 @@ const state = reactive({
   },
   linkageInfo: null
 })
+
+const customLinkageActive = ref(deepCopy(ACTION_SELECTION))
 
 const dialogInit = viewItem => {
   state.showSelected = false
@@ -277,6 +286,7 @@ const init = viewItem => {
       state.curDatasetInfo = res || {}
     })
   }
+  customLinkageActive.value = curComponent.value.actionSelection
   linkageSetting(state.viewId)
 }
 
@@ -314,6 +324,7 @@ const saveLinkageSetting = () => {
   loading.value = true
   saveLinkage(request)
     .then(() => {
+      curComponent.value.actionSelection.linkageActive = customLinkageActive.value.linkageActive
       snapshotStore.recordSnapshotCache()
       ElMessage.success('保存成功')
       // 刷新联动信息
