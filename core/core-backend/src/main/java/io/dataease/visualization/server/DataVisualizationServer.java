@@ -282,6 +282,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         String staticResource = null;
         String name = null;
         String dvType = null;
+        Integer version = null;
         //内部模板新建
         if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_INNER_TEMPLATE.equals(newFrom)) {
             VisualizationTemplate visualizationTemplate = templateMapper.selectById(request.getTemplateId());
@@ -290,6 +291,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             dynamicData = visualizationTemplate.getDynamicData();
             name = visualizationTemplate.getName();
             dvType = visualizationTemplate.getDvType();
+            version = visualizationTemplate.getVersion();
             // 模板市场记录
             coreOptRecentManage.saveOpt(request.getTemplateId(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
             VisualizationTemplate visualizationTemplateUpdate = new VisualizationTemplate();
@@ -314,6 +316,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             staticResource = templateFileInfo.getStaticResource();
             name = templateFileInfo.getName();
             dvType = templateFileInfo.getDvType();
+            version = templateFileInfo.getVersion();
             // 模板市场记录
             coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
         }
@@ -347,7 +350,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         request.setCanvasStyleData(templateStyle);
         //Store static resource into the server
         staticResourceServer.saveFilesToServe(staticResource);
-        return new DataVisualizationVO(newDvId, name, dvType, templateStyle, templateData, canvasViewInfo, null);
+        return new DataVisualizationVO(newDvId, name, dvType,version, templateStyle, templateData, canvasViewInfo, null);
     }
 
     @Override

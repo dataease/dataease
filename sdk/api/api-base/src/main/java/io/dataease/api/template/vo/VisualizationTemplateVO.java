@@ -82,6 +82,11 @@ public class VisualizationTemplateVO {
     private Integer useCount;
 
     /**
+     * 版本号
+     */
+    private Integer version;
+
+    /**
      * 分类
      */
     private List<String> categories;
