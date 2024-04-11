@@ -50,7 +50,7 @@
           </el-dropdown>
         </template>
         <de-canvas
-          v-if="isEdit"
+          v-if="isEdit && !mobileInPc"
           :ref="'tabCanvas_' + index"
           :component-data="tabItem.componentData"
           :canvas-style-data="canvasStyleData"

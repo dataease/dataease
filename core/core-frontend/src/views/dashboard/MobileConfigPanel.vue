@@ -41,9 +41,6 @@ const mobileStatusChange = (type, value) => {
 }
 
 const handleLoad = () => {
-  componentData.value.forEach(ele => {
-    ele.inMobile = canvasDataPreview.includes(ele.id)
-  })
   mobileStatusChange(
     'panelInit',
     JSON.parse(
@@ -111,26 +108,9 @@ const saveCanvasWithCheckFromMobile = () => {
     ElMessage.success('保存成功')
   })
 }
-let canvasDataPreview = []
 const loadCanvasData = () => {
-  if (!dvInfo.value?.id) {
-    handleLoad()
-    mobileLoading.value = false
-    return
-  }
-  findById(dvInfo.value.id, 'dashboard')
-    .then(res => {
-      const canvasInfo = res.data
-      const canvasDataResult = JSON.parse(canvasInfo.componentData) as unknown as Array<{
-        inMobile: boolean
-        id: string
-      }>
-      canvasDataPreview = (canvasDataResult || []).filter(ele => !!ele.inMobile).map(ele => ele.id)
-      handleLoad()
-    })
-    .finally(() => {
-      mobileLoading.value = false
-    })
+  handleLoad()
+  mobileLoading.value = false
 }
 
 const setMobileStyle = debounce(() => {
