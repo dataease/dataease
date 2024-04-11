@@ -30,10 +30,12 @@ const hanedleMessage = event => {
         ele.propValue.forEach(tabItem => {
           tabItem.componentData.forEach(tabComponent => {
             const { mx: tx, my: ty, mSizeX: tSizeX, mSizeY: tSizeY } = tabComponent
-            tabComponent.x = tx
-            tabComponent.y = ty
-            tabComponent.sizeX = tSizeX
-            tabComponent.sizeY = tSizeY
+            if (tSizeX && tSizeY) {
+              tabComponent.x = tx
+              tabComponent.y = ty
+              tabComponent.sizeX = tSizeX
+              tabComponent.sizeY = tSizeY
+            }
           })
         })
       }
