@@ -163,7 +163,7 @@ onUnmounted(() => {
 
 .scale-input-number {
   height: 28px;
-  width: 60px !important;
+  width: 80px !important;
   margin-right: 16px;
   input {
     -webkit-appearance: none;
