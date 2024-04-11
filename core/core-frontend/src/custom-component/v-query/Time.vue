@@ -65,7 +65,6 @@ const props = defineProps({
 const selectValue = ref()
 const multiple = ref(false)
 const dvMainStore = dvMainStoreWithOut()
-const calendar = h(Icon, { name: 'icon_calendar_outlined' })
 const { config } = toRefs(props)
 const minDate = new Date('1970/1/1')
 const maxDate = new Date('2100/1/1')
@@ -377,7 +376,6 @@ const formatDate = computed(() => {
     :disabled-date="disabledDate"
     @calendar-change="calendarChange"
     :format="formatDate"
-    :prefix-icon="calendar"
     v-if="multiple"
     @change="handleValueChange"
     :range-separator="$t('cron.to')"
@@ -389,7 +387,6 @@ const formatDate = computed(() => {
     v-model="selectValue"
     :type="config.timeGranularity"
     @change="handleValueChange"
-    :prefix-icon="calendar"
     :style="selectStyle"
     :placeholder="$t('commons.date.select_date_time')"
   />

@@ -256,17 +256,14 @@ const dialogErrorInfo = ref(false)
 const dialogMsg = ref('')
 
 const formatSimpleCron = (info?: SyncSetting) => {
-  const { syncRate, simpleCronValue, simpleCronType, startTime, endTime, cron, endLimit } = info
+  const { syncRate, simpleCronValue, simpleCronType, startTime, endTime, cron } = info
   let start = '-'
   let end = '-'
   if (startTime) {
     start = dayjs(new Date(startTime)).format('YYYY-MM-DD HH:mm:ss')
   }
-  if (endLimit === '1' && endTime) {
+  if (endTime) {
     end = dayjs(new Date(endTime)).format('YYYY-MM-DD HH:mm:ss')
-  }
-  if (endLimit === '0') {
-    end = '无限制'
   }
   let strArr = []
   switch (syncRate) {
