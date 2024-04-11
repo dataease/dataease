@@ -26,6 +26,8 @@ interface LinkItem {
 }
 const linkList = ref([{ id: 5, label: t('common.about'), method: 'toAbout' }] as LinkItem[])
 
+const inPlatformClient = computed(() => !!wsCache.get('de-platform-client'))
+
 const logout = async () => {
   await logoutApi()
   logoutHandler()
@@ -43,6 +45,14 @@ const xpackLinkLoaded = items => {
     }
   }
   items.forEach(item => linkList.value.push(item))
+  if (inPlatformClient.value) {
+    len = linkList.value.length
+    while (len--) {
+      if (linkList.value[len]?.id === 2) {
+        linkList.value.splice(len, 1)
+      }
+    }
+  }
   linkList.value.sort(compare('id'))
 }
 
@@ -153,7 +163,7 @@ if (uid.value === '1') {
         </div>
       </div>
       <el-divider />
-      <div class="uinfo-footer">
+      <div class="uinfo-footer" v-if="!inPlatformClient">
         <div class="uinfo-main-item de-container" @click="logout">
           <span>{{ t('common.exit_system') }}</span>
         </div>
