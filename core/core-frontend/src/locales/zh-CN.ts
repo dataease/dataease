@@ -828,7 +828,7 @@ export default {
     chart_type_table: '表格',
     chart_type_quota: '指标',
     chart_type_trend: '线/面图',
-    chart_type_compare: '柱形图',
+    chart_type_compare: '柱状图',
     chart_type_distribute: '分布图',
     chart_type_relation: '关系图',
     chart_type_space: '地图',

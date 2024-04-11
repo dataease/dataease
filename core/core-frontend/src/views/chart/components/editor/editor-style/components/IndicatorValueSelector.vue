@@ -402,10 +402,11 @@ defineExpose({ getFormData })
       <div style="padding-left: 22px">
         <el-form-item class="form-item" :class="'form-item-' + themes">
           <el-input
-            :disabled="!state.indicatorValueForm.suffixEnable"
             v-model="state.indicatorValueForm.suffix"
-            :placeholder="t('chart.indicator_suffix_placeholder')"
             maxlength="10"
+            :effect="themes"
+            :disabled="!state.indicatorValueForm.suffixEnable"
+            :placeholder="t('chart.indicator_suffix_placeholder')"
             @change="changeLabelTitleStyleStyle('suffix')"
           />
         </el-form-item>
