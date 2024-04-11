@@ -176,19 +176,15 @@ const saveSqlNode = (val: SqlNode, cb) => {
         info: state.visualNode.info,
         tableName,
         type: 'sql'
+      }).then(res => {
+        nodeField.value = res as unknown as Field[]
+        nodeField.value.forEach(ele => {
+          ele.checked = true
+        })
+        state.nodeList[0].currentDsFields = cloneDeep(res)
+        cb?.()
+        confirmEditUnion()
       })
-        .then(res => {
-          nodeField.value = res as unknown as Field[]
-          nodeField.value.forEach(ele => {
-            ele.checked = true
-          })
-          state.nodeList[0].currentDsFields = cloneDeep(res)
-          cb?.()
-          confirmEditUnion()
-        })
-        .finally(() => {
-          editUnion.value = true
-        })
       confirm()
     }
     return
@@ -203,6 +199,14 @@ const setChangeStatus = (to, from) => {
 }
 
 const closeSqlNode = () => {
+  if (
+    state.nodeList.length === 1 &&
+    !state.nodeList[0].children?.length &&
+    changeSqlId.value.length === 1
+  ) {
+    editUnion.value = true
+    changeSqlId.value = []
+  }
   if (state.visualNode?.confirm) {
     nextTick(() => {
       emits('joinEditor', [
