@@ -124,6 +124,26 @@ public class DataVisualizationVO implements Serializable {
     private String source;
 
     /**
+     * 删除标志
+     */
+    private Boolean deleteFlag;
+
+    /**
+     * 删除时间
+     */
+    private Long deleteTime;
+
+    /**
+     * 删除人
+     */
+    private String deleteBy;
+
+    /**
+     * 可视化资源版本
+     */
+    private Integer version;
+
+    /**
      * 图表基本信息
      */
     private Map<Long, ChartViewDTO> canvasViewInfo = new HashMap<>();

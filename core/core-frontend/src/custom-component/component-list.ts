@@ -116,8 +116,8 @@ const list = [
     innerType: 'VQuery',
     x: 1,
     y: 1,
-    sizeX: 36,
-    sizeY: 2,
+    sizeX: 72,
+    sizeY: 4,
     request: {
       method: 'GET',
       data: [],
@@ -141,8 +141,8 @@ const list = [
     actionSelection: ACTION_SELECTION,
     x: 1,
     y: 1,
-    sizeX: 18,
-    sizeY: 7,
+    sizeX: 36,
+    sizeY: 14,
     style: {
       width: 600,
       height: 300
@@ -161,8 +161,8 @@ const list = [
     frameLinks: FRAMELINKS,
     x: 1,
     y: 1,
-    sizeX: 18,
-    sizeY: 7,
+    sizeX: 36,
+    sizeY: 14,
     style: {
       width: 600,
       height: 300
@@ -179,8 +179,8 @@ const list = [
     canvasActive: false,
     x: 1,
     y: 1,
-    sizeX: 18,
-    sizeY: 6,
+    sizeX: 36,
+    sizeY: 12,
     propValue: {},
     style: {
       width: 300,
@@ -210,8 +210,8 @@ const list = [
     canvasActive: false,
     x: 1,
     y: 1,
-    sizeX: 18,
-    sizeY: 7,
+    sizeX: 36,
+    sizeY: 14,
     propValue: {
       url: '',
       flip: {
@@ -236,8 +236,8 @@ const list = [
     canvasActive: false,
     x: 1,
     y: 1,
-    sizeX: 5,
-    sizeY: 5,
+    sizeX: 10,
+    sizeY: 10,
     style: {
       width: 40,
       height: 40,
@@ -255,8 +255,8 @@ const list = [
     canvasActive: false,
     x: 1,
     y: 1,
-    sizeX: 15,
-    sizeY: 15,
+    sizeX: 30,
+    sizeY: 30,
     style: {
       width: 600,
       height: 300,
@@ -326,8 +326,8 @@ const list = [
     canvasActive: false,
     x: 1,
     y: 1,
-    sizeX: 18,
-    sizeY: 7,
+    sizeX: 36,
+    sizeY: 14,
     style: {
       width: 600,
       height: 300,

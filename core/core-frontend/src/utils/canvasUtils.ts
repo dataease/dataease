@@ -109,6 +109,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       watermarkInfo: watermarkInfo,
       mobileLayout: canvasInfo.mobileLayout || false
     }
+    const canvasVersion = canvasInfo.version
 
     const canvasDataResult = JSON.parse(canvasInfo.componentData)
     const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
@@ -122,6 +123,13 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       componentItem['aspectRatio'] = componentItem['aspectRatio'] || 1
       if (componentItem.component === 'UserView') {
         componentItem.actionSelection = componentItem.actionSelection || deepCopy(ACTION_SELECTION)
+      }
+      // 2 为基础版本 此处需要增加仪表板矩阵密度
+      if ((!canvasVersion || canvasVersion === 2) && canvasInfo.type === 'dashboard') {
+        componentItem.x = 1 + (componentItem.x - 1) * 2
+        componentItem.y = 1 + (componentItem.y - 1) * 2
+        componentItem.sizeX = componentItem.sizeX * 2
+        componentItem.sizeY = componentItem.sizeY * 2
       }
     })
     const curPreviewGap =

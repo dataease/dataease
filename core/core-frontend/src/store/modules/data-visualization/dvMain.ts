@@ -108,8 +108,8 @@ export const dvMainStore = defineStore('dataVisualization', {
         height: 1080
       },
       pcMatrixCount: {
-        x: 36,
-        y: 18
+        x: 72,
+        y: 36
       },
       mobileMatrixCount: {
         x: 6,

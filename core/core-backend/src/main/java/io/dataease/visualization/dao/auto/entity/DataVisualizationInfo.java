@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2023-05-11
+ * @since 2024-04-11
  */
 @TableName("data_visualization_info")
 public class DataVisualizationInfo implements Serializable {
@@ -122,6 +122,11 @@ public class DataVisualizationInfo implements Serializable {
      * 删除人
      */
     private String deleteBy;
+
+    /**
+     * 可视化资源版本
+     */
+    private Integer version;
 
     public Long getId() {
         return id;
@@ -299,6 +304,14 @@ public class DataVisualizationInfo implements Serializable {
         this.deleteBy = deleteBy;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     @Override
     public String toString() {
         return "DataVisualizationInfo{" +
@@ -324,6 +337,7 @@ public class DataVisualizationInfo implements Serializable {
         ", deleteFlag = " + deleteFlag +
         ", deleteTime = " + deleteTime +
         ", deleteBy = " + deleteBy +
+        ", version = " + version +
         "}";
     }
 }
