@@ -21,8 +21,7 @@ import {
   LIST_CLASS
 } from '@antv/l7plot-component/dist/esm/legend/category/constants'
 import substitute from '@antv/util/esm/substitute'
-import { Plot as L7Plot } from '@antv/l7plot/dist/esm/core/plot'
-import type { PlotOptions } from '@antv/l7plot/dist/esm/types'
+import type { Plot as L7Plot, PlotOptions } from '@antv/l7plot/dist/esm'
 import { Zoom } from '@antv/l7'
 import { createL7Icon } from '@antv/l7-component/es/utils/icon'
 import { DOM } from '@antv/l7-utils'
@@ -855,6 +854,10 @@ class CustomZoom extends Zoom {
   }
 }
 export function configL7Zoom(plot: L7Plot<PlotOptions>) {
+  const options = plot.options
+  if (options.zoom === false) {
+    return
+  }
   plot.once('loaded', () => {
     const zoomOptions = {
       initZoom: plot.scene.getZoom(),
