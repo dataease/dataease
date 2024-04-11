@@ -34,7 +34,8 @@ import {
   getTables,
   getPreviewData,
   getDatasetDetails,
-  saveDatasetTree
+  saveDatasetTree,
+  barInfoApi
 } from '@/api/dataset'
 import type { Table } from '@/api/dataset'
 import DatasetUnion from './DatasetUnion.vue'
@@ -581,14 +582,19 @@ const getTableName = async (datasourceId, tableName) => {
   }
 }
 
-const initEdite = () => {
+const initEdite = async () => {
   const { id, datasourceId, tableName } = route.query
   const { id: copyId } = route.params
+  const barRes = await barInfoApi(copyId || id)
+  if (!barRes || !barRes['id']) {
+    return
+  }
   if (datasourceId) {
     dataSource.value = datasourceId as string
     getTableName(datasourceId as string, tableName)
   }
   if (!id && !copyId) return
+
   loading.value = true
   getDatasetDetails(copyId || id)
     .then(res => {
@@ -859,7 +865,7 @@ let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
   await new Promise(r => (p = r))
-  initEdite()
+  await initEdite()
   getDatasource()
   useEmitt({
     name: 'onDatasetSave',
