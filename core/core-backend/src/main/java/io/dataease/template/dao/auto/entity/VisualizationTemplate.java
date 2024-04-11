@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-01-16
+ * @since 2024-04-11
  */
 @TableName("visualization_template")
 public class VisualizationTemplate implements Serializable {
@@ -85,6 +85,11 @@ public class VisualizationTemplate implements Serializable {
      * 使用次数
      */
     private Integer useCount;
+
+    /**
+     * 使用仪表板的版本
+     */
+    private Integer version;
 
     public String getId() {
         return id;
@@ -198,6 +203,14 @@ public class VisualizationTemplate implements Serializable {
         this.useCount = useCount;
     }
 
+    public Integer getVersion() {
+        return version;
+    }
+
+    public void setVersion(Integer version) {
+        this.version = version;
+    }
+
     @Override
     public String toString() {
         return "VisualizationTemplate{" +
@@ -215,6 +228,7 @@ public class VisualizationTemplate implements Serializable {
         ", templateData = " + templateData +
         ", dynamicData = " + dynamicData +
         ", useCount = " + useCount +
+        ", version = " + version +
         "}";
     }
 }

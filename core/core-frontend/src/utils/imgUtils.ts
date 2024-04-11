@@ -49,6 +49,7 @@ export function download2AppTemplate(downloadType, canvasDom, name, callBack?) {
             templateType: 'self',
             snapshot: snapshot,
             dvType: dvInfo.value.type,
+            version: 3,
             canvasStyleData: JSON.stringify(canvasStyleData.value),
             componentData: JSON.stringify(componentData.value),
             dynamicData: JSON.stringify(canvasViewDataTemplate),
