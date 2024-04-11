@@ -11,9 +11,9 @@ import { useRouter } from 'vue-router'
 import { searchMarketRecommend } from '@/api/templateMarket'
 import TemplateBranchItem from '@/views/workbranch/TemplateBranchItem.vue'
 import { ElMessage } from 'element-plus-secondary'
-import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
+import { Base64 } from 'js-base64'
 const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
@@ -203,6 +203,7 @@ const templateApply = template => {
   state.dvCreateForm.name = template.title
   state.dvCreateForm.templateUrl = template.metas.theme_repo
   state.dvCreateForm.resourceName = template.id
+  state.dvCreateForm.nodeType = template.templateType
   apply()
 }
 
@@ -211,22 +212,18 @@ const apply = () => {
     ElMessage.warning('未获取模板下载链接请联系模板市场官方')
     return false
   }
-  state.loading = true
-  decompression(state.dvCreateForm)
-    .then(response => {
-      state.loading = false
-      const templateData = response.data
-      // do create
-      wsCache.set(`de-template-data`, JSON.stringify(templateData))
-      const baseUrl =
-        templateData.type === 'dataV'
-          ? '#/dvCanvas?opt=create&createType=template'
-          : '#/dashboard?opt=create&createType=template'
-      window.open(baseUrl, '_blank')
-    })
-    .catch(() => {
-      state.loading = false
-    })
+  const templateTemplate = {
+    newFrom: state.dvCreateForm.newFrom,
+    templateUrl: state.dvCreateForm.templateUrl,
+    resourceName: state.dvCreateForm.resourceName
+  }
+  const baseUrl =
+    (['dataV', 'SCREEN'].includes(state.dvCreateForm.nodeType)
+      ? '#/dvCanvas?opt=create&createType=template'
+      : '#/dashboard?opt=create&createType=template') +
+    '&templateParams=' +
+    Base64.encode(JSON.stringify(templateTemplate))
+  window.open(baseUrl, '_blank')
 }
 
 const toTemplateMarket = () => {

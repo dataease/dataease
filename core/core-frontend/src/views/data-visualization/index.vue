@@ -17,7 +17,12 @@ import Editor from '@/views/chart/components/editor/index.vue'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
-import { findDragComponent, findNewComponent, initCanvasData } from '@/utils/canvasUtils'
+import {
+  decompressionPre,
+  findDragComponent,
+  findNewComponent,
+  initCanvasData
+} from '@/utils/canvasUtils'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
 import { listenGlobalKeyDown, releaseAttachKey } from '@/utils/DeShortcutKey'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
@@ -30,6 +35,7 @@ import RealTimeListTree from '@/components/data-visualization/RealTimeListTree.v
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
 import { XpackComponent } from '@/components/plugin'
+import { Base64 } from 'js-base64'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -214,7 +220,7 @@ onMounted(async () => {
   }
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
   const pid = embeddedStore.pid || router.currentRoute.value.query.pid
-  const { opt, createType } = router.currentRoute.value.query
+  const { opt, createType, templateParams } = router.currentRoute.value.query
   const checkResult = await checkPer(dvId)
   if (!checkResult) {
     return
@@ -250,7 +256,13 @@ onMounted(async () => {
     } catch (e) {
       console.error('can not find watermark info')
     }
-
+    let deTemplateData
+    if (createType === 'template') {
+      const templateParamsApply = JSON.parse(Base64.decode(templateParams + ''))
+      await decompressionPre(templateParamsApply, result => {
+        deTemplateData = result
+      })
+    }
     dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo)
     nextTick(() => {
       state.canvasInitStatus = true
@@ -258,11 +270,8 @@ onMounted(async () => {
       snapshotStore.recordSnapshotCache('renderChart')
       // 从模板新建
       if (createType === 'template') {
-        const deTemplateDataStr = wsCache.get(`de-template-data`)
-        wsCache.delete('de-template-data')
-        const deTemplateData = JSON.parse(deTemplateDataStr)
-        dvMainStore.setComponentData(JSON.parse(deTemplateData['componentData']))
-        dvMainStore.setCanvasStyle(JSON.parse(deTemplateData['canvasStyleData']))
+        dvMainStore.setComponentData(deTemplateData['componentData'])
+        dvMainStore.setCanvasStyle(deTemplateData['canvasStyleData'])
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
         setTimeout(() => {
           snapshotStore.recordSnapshotCache()

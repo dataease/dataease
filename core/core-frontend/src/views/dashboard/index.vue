@@ -13,7 +13,7 @@ import ViewEditor from '@/views/chart/components/editor/index.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import DbCanvasAttr from '@/components/dashboard/DbCanvasAttr.vue'
-import { initCanvasData } from '@/utils/canvasUtils'
+import { decompressionPre, initCanvasData } from '@/utils/canvasUtils'
 import ChartStyleBatchSet from '@/views/chart/components/editor/editor-style/ChartStyleBatchSet.vue'
 import DeCanvas from '@/views/canvas/DeCanvas.vue'
 import { check, compareStorage } from '@/utils/CrossPermission'
@@ -24,6 +24,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
 import { XpackComponent } from '@/components/plugin'
+import { Base64 } from 'js-base64'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -114,7 +115,7 @@ onMounted(async () => {
   window.addEventListener('storage', eventCheck)
   const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
   const pid = embeddedStore.pid || router.currentRoute.value.query.pid
-  const { opt, createType } = router.currentRoute.value.query
+  const { opt, createType, templateParams } = router.currentRoute.value.query
   const checkResult = await checkPer(resourceId)
   if (!checkResult) {
     return
@@ -147,15 +148,20 @@ onMounted(async () => {
     } catch (e) {
       console.error('can not find watermark info')
     }
+    let deTemplateData
+    if (createType === 'template') {
+      const templateParamsApply = JSON.parse(Base64.decode(templateParams + ''))
+      await decompressionPre(templateParamsApply, result => {
+        deTemplateData = result
+      })
+    }
     nextTick(() => {
       dvMainStore.createInit('dashboard', null, pid, watermarkBaseInfo)
       // 从模板新建
       if (createType === 'template') {
-        const deTemplateDataStr = wsCache.get(`de-template-data`)
-        const deTemplateData = JSON.parse(deTemplateDataStr)
         wsCache.delete('de-template-data')
-        dvMainStore.setComponentData(JSON.parse(deTemplateData['componentData']))
-        dvMainStore.setCanvasStyle(JSON.parse(deTemplateData['canvasStyleData']))
+        dvMainStore.setComponentData(deTemplateData['componentData'])
+        dvMainStore.setCanvasStyle(deTemplateData['canvasStyleData'])
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
         setTimeout(() => {
           snapshotStore.recordSnapshotCache()
