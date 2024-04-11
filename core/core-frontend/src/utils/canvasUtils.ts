@@ -7,6 +7,7 @@ import componentList, {
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
+  decompression,
   findById,
   findCopyResource,
   saveCanvas,
@@ -387,4 +388,35 @@ export function findParentIdByChildIdRecursive(tree, targetChildId) {
   }
 
   return null // 没有找到匹配的子节点
+}
+
+export async function decompressionPre(params, callBack) {
+  let deTemplateData
+  await decompression(params)
+    .then(response => {
+      const deTemplateDataTemp = response.data
+      const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
+      sourceComponentData.forEach(componentItem => {
+        // 2 为基础版本 此处需要增加仪表板矩阵密度
+        if (
+          (!deTemplateDataTemp.version || deTemplateDataTemp.version === 2) &&
+          deTemplateDataTemp.type === 'dashboard'
+        ) {
+          componentItem.x = 1 + (componentItem.x - 1) * 2
+          componentItem.y = 1 + (componentItem.y - 1) * 2
+          componentItem.sizeX = componentItem.sizeX * 2
+          componentItem.sizeY = componentItem.sizeY * 2
+        }
+      })
+      const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
+      deTemplateData = {
+        canvasStyleData: sourceCanvasStyle,
+        componentData: sourceComponentData,
+        canvasViewInfo: deTemplateDataTemp['canvasViewInfo']
+      }
+    })
+    .catch(e => {
+      console.error(e)
+    })
+  callBack(deTemplateData)
 }

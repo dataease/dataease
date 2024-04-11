@@ -166,13 +166,13 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import { nextTick, reactive, watch, onMounted, ref, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
-import { decompression } from '@/api/visualization/dataVisualization'
 import { useCache } from '@/hooks/web/useCache'
 import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { XpackComponent } from '@/components/plugin'
+import { Base64 } from 'js-base64'
 const { t } = useI18n()
 const { wsCache } = useCache()
 
@@ -399,6 +399,7 @@ const nextOne = () => {
 const templateApply = template => {
   state.curApplyTemplate = template
   state.dvCreateForm.name = template.title
+  state.dvCreateForm.nodeType = template.templateType
   if (template.source === 'market') {
     state.dvCreateForm.newFrom = 'new_market_template'
     state.dvCreateForm.templateUrl = template.metas.theme_repo
@@ -407,38 +408,34 @@ const templateApply = template => {
     state.dvCreateForm.newFrom = 'new_inner_template'
     state.dvCreateForm.templateId = template.id
   }
-  apply()
+  apply(template)
 }
 
-const apply = () => {
+const apply = template => {
   if (state.dvCreateForm.newFrom === 'new_market_template' && !state.dvCreateForm.templateUrl) {
     ElMessage.warning('未获取模板下载链接请联系模板市场官方')
     return false
   }
-  state.loading = true
-  decompression(state.dvCreateForm)
-    .then(response => {
-      state.curApplyTemplate.recentUseTime = Date.now()
-      state.curApplyTemplate.categoryNames.push('最近使用')
-      state.loading = false
-      const templateData = response.data
-      // do create
-      wsCache.set(`de-template-data`, JSON.stringify(templateData))
-      const baseUrl =
-        templateData.type === 'dataV'
-          ? '#/dvCanvas?opt=create&createType=template'
-          : '#/dashboard?opt=create&createType=template'
-      let newWindow = null
-      if (state.pid) {
-        newWindow = window.open(baseUrl + `&pid=${state.pid}`, '_blank')
-      } else {
-        newWindow = window.open(baseUrl, '_blank')
-      }
-      initOpenHandler(newWindow)
-    })
-    .catch(() => {
-      state.loading = false
-    })
+  const templateTemplate = {
+    newFrom: state.dvCreateForm.newFrom,
+    templateUrl: state.dvCreateForm.templateUrl,
+    resourceName: state.dvCreateForm.resourceName
+  }
+  state.curApplyTemplate.recentUseTime = Date.now()
+  state.curApplyTemplate.categoryNames.push('最近使用')
+  const baseUrl =
+    (['dataV', 'SCREEN'].includes(state.dvCreateForm.nodeType)
+      ? '#/dvCanvas?opt=create&createType=template'
+      : '#/dashboard?opt=create&createType=template') +
+    '&templateParams=' +
+    Base64.encode(JSON.stringify(templateTemplate))
+  let newWindow = null
+  if (state.pid) {
+    newWindow = window.open(baseUrl + `&pid=${state.pid}`, '_blank')
+  } else {
+    newWindow = window.open(baseUrl, '_blank')
+  }
+  initOpenHandler(newWindow)
 }
 const openHandler = ref(null)
 const initOpenHandler = newWindow => {
