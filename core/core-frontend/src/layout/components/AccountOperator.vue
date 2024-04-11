@@ -118,7 +118,7 @@ if (uid.value === '1') {
   <el-popover
     ref="popoverRef"
     :virtual-ref="buttonRef"
-    trigger="click"
+    trigger="hover"
     title=""
     virtual-triggering
     placement="bottom-start"
