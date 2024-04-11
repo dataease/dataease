@@ -1,13 +1,13 @@
 <script lang="ts" setup>
-import { ref, reactive, computed, toRefs, nextTick, watch } from 'vue'
+import { ref, reactive, h, computed, toRefs, nextTick, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
 import ApiHttpRequestDraw from './ApiHttpRequestDraw.vue'
 import { Configuration, ApiConfiguration, SyncSetting } from './index.vue'
+import { Icon } from '@/components/icon-custom'
 import { getSchema } from '@/api/datasource'
-import { Calendar } from '@element-plus/icons-vue'
 import { Base64 } from 'js-base64'
 import { CustomPassword } from '@/components/custom-password'
 import { ElForm, ElMessage } from 'element-plus-secondary'
@@ -54,6 +54,7 @@ const schemas = ref([])
 const dsForm = ref<FormInstance>()
 
 const cronEdit = ref(true)
+const calendar = h(Icon, { name: 'icon_calendar_outlined' })
 
 const defaultRule = {
   name: [
@@ -873,11 +874,7 @@ defineExpose({
               更新一次
             </div>
           </el-form-item>
-          <el-form-item
-            v-if="form.syncSetting.syncRate === 'CRON'"
-            prop="syncSetting.cron"
-            :label="t('common.cron_exp')"
-          >
+          <el-form-item v-if="form.syncSetting.syncRate === 'CRON'" prop="syncSetting.cron">
             <el-popover :width="834" v-model="cronEdit" trigger="click">
               <template #default>
                 <div style="width: 814px; height: 400px; overflow-y: auto">
@@ -890,11 +887,7 @@ defineExpose({
                 </div>
               </template>
               <template #reference>
-                <el-input
-                  v-model="form.syncSetting.cron"
-                  style="width: 50%"
-                  @click="cronEdit = true"
-                />
+                <el-input v-model="form.syncSetting.cron" @click="cronEdit = true" />
               </template>
             </el-popover>
           </el-form-item>
@@ -906,7 +899,7 @@ defineExpose({
             <el-date-picker
               v-model="form.syncSetting.startTime"
               class="de-date-picker"
-              :prefix-icon="Calendar"
+              :prefix-icon="calendar"
               type="datetime"
               :placeholder="t('datasource.start_time')"
             />
@@ -916,16 +909,11 @@ defineExpose({
             :label="t('datasource.end_time')"
             prop="syncSetting.endLimit"
           >
-            <el-radio-group v-model="form.syncSetting.endLimit">
-              <el-radio label="0">{{ t('datasource.no_limit') }}</el-radio>
-              <el-radio label="1"> {{ t('datasource.set_end_time') }}</el-radio>
-            </el-radio-group>
             <div style="width: 100%">
               <el-date-picker
-                v-if="form.syncSetting.endLimit === '1'"
                 v-model="form.syncSetting.endTime"
                 class="de-date-picker"
-                :prefix-icon="Calendar"
+                :prefix-icon="calendar"
                 type="datetime"
                 :placeholder="t('datasource.end_time')"
               />
@@ -955,9 +943,7 @@ defineExpose({
   }
 
   .execute-rate-cont {
-    background: #f5f6f7;
     border-radius: 4px;
-    padding: 16px;
     margin-top: -8px;
   }
 

@@ -2,7 +2,6 @@
 import { propTypes } from '@/utils/propTypes'
 import { computed, PropType, reactive, toRefs, h } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { Icon } from '@/components/icon-custom'
 
 const { t } = useI18n()
 
@@ -11,8 +10,6 @@ interface Config {
   showType: string
   // 日期分隔符
   rangeSeparator: string
-  // 前缀图标
-  prefixIcon: string
   // 开始日期label
   startPlaceholder: string
   // 结束日期label
@@ -32,13 +29,11 @@ const props = defineProps({
   title: propTypes.string
 })
 const { property } = toRefs(props)
-const prefixIcon = h(Icon, { name: 'icon_calendar_outlined' })
 const timeConfig = computed(() => {
   let obj = Object.assign(
     {
       showType: 'datetime',
       rangeSeparator: '-',
-      prefixIcon,
       startPlaceholder: t('datasource.start_time'),
       endPlaceholder: t('datasource.end_time'),
       format: 'YYYY-MM-DD HH:mm:ss',
@@ -74,7 +69,6 @@ defineExpose({
         v-model="state.modelValue"
         :type="timeConfig.showType"
         :range-separator="timeConfig.rangeSeparator"
-        :prefix-icon="timeConfig.prefixIcon"
         :start-placeholder="timeConfig.startPlaceholder"
         :end-placeholder="timeConfig.endPlaceholder"
         :format="timeConfig.format"
