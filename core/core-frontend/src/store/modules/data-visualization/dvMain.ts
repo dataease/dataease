@@ -820,7 +820,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         const trackInfo = this.nowPanelOuterParamsInfo
         for (let index = 0; index < curComponentData.length; index++) {
           const element = curComponentData[index]
-          if (element.component !== 'UserView') continue
+          if (!['UserView', 'VQuery'].includes(element.component)) continue
           const currentFilters = element.outerParamsFilters || [] // 外部参数信息
 
           // 外部参数 可能会包含多个参数
@@ -868,6 +868,14 @@ export const dvMainStore = defineStore('dataVisualization', {
                 // 不存在该条件 且 条件有效 直接保存该条件
                 // !filterExist && vValid && currentFilters.push(condition)
                 currentFilters.push(condition)
+              }
+              if (element.component === 'VQuery') {
+                element.propValue.forEach(filterItem => {
+                  if (filterItem.id === targetViewId) {
+                    filterItem.selectValue = paramValueStr
+                    filterItem.defaultValue = paramValueStr
+                  }
+                })
               }
             })
             if (element.component === 'UserView') {

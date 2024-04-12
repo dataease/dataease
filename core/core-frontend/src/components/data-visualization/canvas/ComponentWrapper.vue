@@ -154,7 +154,7 @@ const componentBackgroundStyle = computed(() => {
     } else {
       style['background-color'] = colorRGBA
     }
-    if (element.value.component !== 'UserView') {
+    if (config.value.component !== 'UserView') {
       style['overflow'] = 'hidden'
     }
     return style
