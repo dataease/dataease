@@ -159,12 +159,13 @@ const actions = {
   // user logout
   logout({ commit, state }, param) {
     const method = param && param.casEnable ? deLogout : logout
+    const customLogoutUrl = localStorage.getItem('custom_auth_logout_url')
     return new Promise((resolve, reject) => {
       method(state.token).then(res => {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
-        resolve(res.data)
+        resolve(customLogoutUrl || res.data)
         localStorage.removeItem('passwordModified')
       }).catch(error => {
         reject(error)
@@ -179,8 +180,7 @@ const actions = {
             }, {
               confirmButtonText: i18n.t('commons.confirm')
             })
-          }
-          if (error.response.data.message === ('cas_logout_error')) {
+          } else if (error.response.data.message === ('cas_logout_error')) {
             const message = i18n.t('logout.' + error.response.data.message)
             $alert(message, () => {
 
@@ -188,7 +188,11 @@ const actions = {
               confirmButtonText: i18n.t('commons.confirm'),
               showClose: false
             })
+          } else {
+            window.location.href = customLogoutUrl || '/'
           }
+        } else {
+          window.location.href = customLogoutUrl || '/'
         }
       })
     })
