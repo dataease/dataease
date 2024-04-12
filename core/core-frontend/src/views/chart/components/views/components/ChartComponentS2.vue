@@ -32,6 +32,14 @@ const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc } = storeToRefs(dvMainSt
 const { emitter } = useEmitt()
 
 const props = defineProps({
+  element: {
+    type: Object,
+    default() {
+      return {
+        propValue: null
+      }
+    }
+  },
   view: {
     type: Object as PropType<ChartObj>,
     default() {
@@ -269,6 +277,10 @@ const trackClick = trackAction => {
     sourceType: state.pointParam.data.sourceType
   }
   switch (trackAction) {
+    case 'linkageAndDrill':
+      dvMainStore.addViewTrackFilter(linkageParam)
+      emit('onChartClick', param)
+      break
     case 'drill':
       emit('onChartClick', param)
       break
@@ -285,7 +297,7 @@ const trackClick = trackAction => {
 }
 
 const trackMenu = computed(() => {
-  const trackMenuInfo = []
+  let trackMenuInfo = []
   if (showPosition.value === 'viewDialog') {
     return trackMenuInfo
   }
@@ -307,6 +319,16 @@ const trackMenu = computed(() => {
     trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')
+  // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
+  if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
+    trackMenuInfo = ['jump', 'linkageAndDrill']
+  } else if (
+    trackMenuInfo.length === 2 &&
+    props.element.actionSelection.linkageActive === 'auto' &&
+    !trackMenuInfo.includes('jump')
+  ) {
+    trackMenuInfo = ['linkageAndDrill']
+  }
   return trackMenuInfo
 })
 
