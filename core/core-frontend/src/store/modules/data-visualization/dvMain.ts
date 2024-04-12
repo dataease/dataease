@@ -828,6 +828,7 @@ export const dvMainStore = defineStore('dataVisualization', {
             // 获取外部参数的值 sourceInfo 是外部参数名称 支持数组传入
             let paramValue = params[sourceInfo]
             let paramValueStr = params[sourceInfo]
+            const parmaValueSource = params[sourceInfo]
             let operator = 'in'
             if (paramValue && !Array.isArray(paramValue)) {
               paramValue = [paramValue]
@@ -872,8 +873,19 @@ export const dvMainStore = defineStore('dataVisualization', {
               if (element.component === 'VQuery') {
                 element.propValue.forEach(filterItem => {
                   if (filterItem.id === targetViewId) {
-                    filterItem.selectValue = paramValueStr
-                    filterItem.defaultValue = paramValueStr
+                    filterItem.defaultValueCheck = true
+                    if (filterItem.displayType === '0' && filterItem.multiple) {
+                      filterItem.selectValue = paramValue
+                      filterItem.defaultValue = paramValue
+                    } else if (filterItem.displayType === '0' && !filterItem.multiple) {
+                      filterItem.selectValue = paramValue[0]
+                      filterItem.defaultValue = paramValue[0]
+                    } else if (filterItem.displayType === '8') {
+                      filterItem.conditionValueF = parmaValueSource
+                    } else {
+                      filterItem.selectValue = paramValue[0]
+                      filterItem.defaultValue = paramValue[0]
+                    }
                   }
                 })
               }
