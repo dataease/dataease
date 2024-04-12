@@ -200,31 +200,11 @@ const action = param => {
   if (trackMenu.value.length < 2) {
     // 只有一个事件直接调用
     trackClick(trackMenu.value[0])
-  } else if (
-    props.element.actionSelection.linkageActive === 'auto' &&
-    trackMenu.value.length === 2 &&
-    !trackMenu.value.includes('jump')
-  ) {
-    trackClickPre('linkage')
   } else {
     // 图表关联多个事件
     state.trackBarStyle.left = param.x - 50 + 'px'
     state.trackBarStyle.top = param.y + 10 + 'px'
     viewTrack.value.trackButtonClick()
-  }
-}
-const trackClickPre = trackAction => {
-  if (
-    props.element.actionSelection.linkageActive === 'auto' &&
-    trackMenu.value.length === 2 &&
-    trackAction === 'linkage' &&
-    !trackMenu.value.includes('jump')
-  ) {
-    trackMenu.value.forEach(action => {
-      trackClick(action)
-    })
-  } else {
-    trackClick(trackAction)
   }
 }
 
@@ -256,6 +236,10 @@ const trackClick = trackAction => {
   }
 
   switch (trackAction) {
+    case 'linkageAndDrill':
+      dvMainStore.addViewTrackFilter(linkageParam)
+      emit('onChartClick', param)
+      break
     case 'drill':
       emit('onChartClick', param)
       break
@@ -272,7 +256,7 @@ const trackClick = trackAction => {
 }
 
 const trackMenu = computed(() => {
-  const trackMenuInfo = []
+  let trackMenuInfo = []
   // 复用、放大状态的仪表板不进行联动、跳转和下钻的动作
   if (!['multiplexing', 'viewDialog'].includes(showPosition.value)) {
     let linkageCount = 0
@@ -293,6 +277,16 @@ const trackMenu = computed(() => {
       trackMenuInfo.push('jump')
     linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
     view.value.drillFields.length && trackMenuInfo.push('drill')
+    // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
+    if (trackMenuInfo.length === 3 && props.element.actionSelection.linkageActive === 'auto') {
+      trackMenuInfo = ['jump', 'linkageAndDrill']
+    } else if (
+      trackMenuInfo.length === 2 &&
+      props.element.actionSelection.linkageActive === 'auto' &&
+      !trackMenuInfo.includes('jump')
+    ) {
+      trackMenuInfo = ['linkageAndDrill']
+    }
   }
   return trackMenuInfo
 })
@@ -340,7 +334,7 @@ onBeforeUnmount(() => {
       :track-menu="trackMenu"
       class="track-bar"
       :style="state.trackBarStyle"
-      @trackClick="trackClickPre"
+      @trackClick="trackClick"
     />
     <div v-if="!isError" ref="chartContainer" class="canvas-content" :id="containerId"></div>
     <chart-error v-else :err-msg="errMsg" />

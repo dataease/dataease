@@ -34,6 +34,7 @@ const state = reactive({
   i18n_map: {
     drill: t('visualization.drill'),
     linkage: t('visualization.linkage'),
+    linkageAndDrill: t('visualization.linkage_and_drill'),
     jump: t('visualization.jump')
   }
 })
@@ -56,10 +57,6 @@ defineExpose({
 <style lang="less" scoped>
 .menu-item {
   font-size: 12px;
-}
-
-:deep(ul) {
-  width: 80px;
 }
 
 :deep(.ed-dropdown__popper) {

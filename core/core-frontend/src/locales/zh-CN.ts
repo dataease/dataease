@@ -2041,6 +2041,7 @@ export default {
     save: '保存',
     drill: '下钻',
     linkage: '联动',
+    linkage_and_drill: '联动和下钻',
     jump: '跳转',
     cancel_linkage: '取消联动',
     switch_picture: '更换图片',
