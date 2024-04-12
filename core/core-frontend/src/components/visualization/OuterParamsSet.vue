@@ -342,17 +342,18 @@ const getPanelViewList = dvId => {
     }
     // 增加过滤组件匹配
     componentData.value.forEach(componentItem => {
-      if (componentItem.type === 'custom') {
-        state.currentLinkPanelViewArray.push({
-          id: componentItem.id,
-          type: 'filter',
-          name: componentItem.options.attrs.title
-            ? componentItem.options.attrs.title
-            : state.widgetSubjectsTrans[componentItem.serviceName]
+      if (componentItem.component === 'VQuery') {
+        componentItem.propValue.forEach(filterItem => {
+          state.currentLinkPanelViewArray.push({
+            id: filterItem.id,
+            type: 'filter',
+            name: filterItem.name,
+            title: filterItem.name
+          })
+          state.viewIdFieldArrayMap[filterItem.id] = [
+            { id: 'empty', name: t('visualization.filter_no_select') }
+          ]
         })
-        state.viewIdFieldArrayMap[componentItem.id] = [
-          { id: 'empty', name: t('visualization.filter_no_select') }
-        ]
       }
     })
   })
