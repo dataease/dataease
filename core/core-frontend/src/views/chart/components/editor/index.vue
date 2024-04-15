@@ -1266,6 +1266,92 @@ const onRefreshChange = val => {
     return
   }
 }
+
+const isCtrl = ref(false)
+
+const isDraggingItem = ref(false)
+
+const activeDimension = ref<Axis[]>([])
+const activeQuota = ref<Axis[]>([])
+
+const setActive = (ele, type = 'dimension') => {
+  if (isCtrl.value) {
+    isCtrl.value = false
+  }
+  const activeChild = type === 'dimension' ? activeDimension : activeQuota
+  const deactiveChild = type === 'quota' ? activeDimension : activeQuota
+  deactiveChild.value = []
+  activeChild.value = activeChild.value.some(item => item.id === ele.id) ? [] : [ele]
+}
+
+const setActiveCtrl = (ele, type = 'dimension') => {
+  isCtrl.value = true
+  const activeChild = type === 'dimension' ? activeDimension : activeQuota
+  const deactiveChild = type === 'quota' ? activeDimension : activeQuota
+  deactiveChild.value = []
+  const index = activeChild.value.findIndex(item => item.id === ele.id)
+  if (index !== -1) {
+    activeChild.value.splice(index, 1)
+    return
+  }
+  activeChild.value.push(ele)
+}
+
+const isDrag = ref(false)
+
+const dragStart = (e: DragEvent) => {
+  isDrag.value = true
+  setTimeout(() => {
+    isDraggingItem.value = true
+  }, 0)
+}
+
+const singleDragStart = (e: DragEvent, ele, type) => {
+  const activeChild = type === 'dimension' ? activeDimension : activeQuota
+  const deactiveChild = type === 'quota' ? activeDimension : activeQuota
+  deactiveChild.value = []
+  if (!activeChild.value.length) {
+    activeChild.value = [ele]
+  }
+  dragStart(e)
+}
+
+const dragEnd = () => {
+  isDrag.value = false
+  isDraggingItem.value = false
+}
+
+const singleDragEnd = () => {
+  activeDimension.value = []
+  activeQuota.value = []
+  dragEnd()
+}
+
+const dragEnter = (ev: MouseEvent) => {
+  ev.preventDefault()
+}
+
+const dragOver = (ev: MouseEvent) => {
+  ev.preventDefault()
+}
+
+const drop = (ev: MouseEvent, type = 'xAxis') => {
+  ev.preventDefault()
+  const arr = activeDimension.value.length ? activeDimension.value : activeQuota.value
+  for (let i = 0; i < arr.length; i++) {
+    const obj = cloneDeep(arr[i])
+    state.moveId = obj.id as unknown as number
+    view.value[type].push(obj)
+    const e = { newDraggableIndex: view.value.xAxis.length - 1 }
+    if ('drillFields' === type) {
+      addDrill(e)
+    } else if (type === 'customFilter') {
+      addCustomFilter(e)
+    } else {
+      addAxis(e, type as AxisType)
+    }
+  }
+}
 </script>
 
 <template>
@@ -1404,34 +1490,41 @@ const onRefreshChange = val => {
                           </el-icon>
                         </el-tooltip>
                       </div>
-                      <draggable
-                        :list="view.xAxis"
-                        :move="onMove"
-                        item-key="id"
-                        group="drag"
-                        animation="300"
-                        class="drag-block-style"
-                        :class="{ dark: themes === 'dark' }"
-                        @add="addXaxis"
+                      <div
+                        @drop="$event => drop($event)"
+                        @dragenter="dragEnter"
+                        class="qw"
+                        @dragover="$event => dragOver($event)"
                       >
-                        <template #item="{ element, index }">
-                          <dimension-item
-                            :dimension-data="state.dimension"
-                            :quota-data="state.quota"
-                            :chart="view"
-                            :item="element"
-                            :index="index"
-                            :themes="props.themes"
-                            type="dimension"
-                            @onDimensionItemChange="dimensionItemChange"
-                            @onDimensionItemRemove="dimensionItemRemove"
-                            @onNameEdit="showRename"
-                            @onCustomSort="onCustomSort"
-                            @valueFormatter="valueFormatter"
-                          />
-                        </template>
-                      </draggable>
-                      <drag-placeholder :themes="themes" :drag-list="view.xAxis" />
+                        <draggable
+                          :list="view.xAxis"
+                          :move="onMove"
+                          item-key="id"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                          :class="{ dark: themes === 'dark' }"
+                          @add="addXaxis"
+                        >
+                          <template #item="{ element, index }">
+                            <dimension-item
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :chart="view"
+                              :item="element"
+                              :index="index"
+                              :themes="props.themes"
+                              type="dimension"
+                              @onDimensionItemChange="dimensionItemChange"
+                              @onDimensionItemRemove="dimensionItemRemove"
+                              @onNameEdit="showRename"
+                              @onCustomSort="onCustomSort"
+                              @valueFormatter="valueFormatter"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :themes="themes" :drag-list="view.xAxis" />
+                      </div>
                     </el-row>
 
                     <!--xAxisExt-->
@@ -1451,33 +1544,39 @@ const onRefreshChange = val => {
                           </el-icon>
                         </el-tooltip>
                       </div>
-                      <draggable
-                        :list="view.xAxisExt"
-                        :move="onMove"
-                        item-key="id"
-                        group="drag"
-                        animation="300"
-                        class="drag-block-style"
-                        :class="{ dark: themes === 'dark' }"
-                        @add="addXaxisExt"
+                      <div
+                        @drop="$event => drop($event, 'xAxisExt')"
+                        @dragenter="dragEnter"
+                        @dragover="$event => dragOver($event)"
                       >
-                        <template #item="{ element, index }">
-                          <dimension-item
-                            :dimension-data="state.dimension"
-                            :quota-data="state.quota"
-                            :chart="view"
-                            :item="element"
-                            :index="index"
-                            :themes="props.themes"
-                            type="dimensionExt"
-                            @onDimensionItemChange="dimensionItemChange"
-                            @onDimensionItemRemove="dimensionItemRemove"
-                            @onNameEdit="showRename"
-                            @onCustomSort="onExtCustomSort"
-                          />
-                        </template>
-                      </draggable>
-                      <drag-placeholder :drag-list="view.xAxisExt" />
+                        <draggable
+                          :list="view.xAxisExt"
+                          :move="onMove"
+                          item-key="id"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                          :class="{ dark: themes === 'dark' }"
+                          @add="addXaxisExt"
+                        >
+                          <template #item="{ element, index }">
+                            <dimension-item
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :chart="view"
+                              :item="element"
+                              :index="index"
+                              :themes="props.themes"
+                              type="dimensionExt"
+                              @onDimensionItemChange="dimensionItemChange"
+                              @onDimensionItemRemove="dimensionItemRemove"
+                              @onNameEdit="showRename"
+                              @onCustomSort="onExtCustomSort"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="view.xAxisExt" />
+                      </div>
                     </el-row>
 
                     <!--extStack-->
@@ -1497,33 +1596,39 @@ const onRefreshChange = val => {
                           </el-icon>
                         </el-tooltip>
                       </div>
-                      <draggable
-                        :list="view.extStack"
-                        :move="onMove"
-                        item-key="id"
-                        group="drag"
-                        animation="300"
-                        class="drag-block-style"
-                        :class="{ dark: themes === 'dark' }"
-                        @add="addExtStack"
+                      <div
+                        @drop="$event => drop($event, 'extStack')"
+                        @dragenter="dragEnter"
+                        @dragover="$event => dragOver($event)"
                       >
-                        <template #item="{ element, index }">
-                          <dimension-item
-                            :dimension-data="state.dimension"
-                            :quota-data="state.quota"
-                            :chart="view"
-                            :item="element"
-                            :index="index"
-                            :themes="props.themes"
-                            type="dimensionStack"
-                            @onDimensionItemChange="dimensionItemChange"
-                            @onDimensionItemRemove="dimensionItemRemove"
-                            @onNameEdit="showRename"
-                            @onCustomSort="onStackCustomSort"
-                          />
-                        </template>
-                      </draggable>
-                      <drag-placeholder :drag-list="view.extStack" />
+                        <draggable
+                          :list="view.extStack"
+                          :move="onMove"
+                          item-key="id"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                          :class="{ dark: themes === 'dark' }"
+                          @add="addExtStack"
+                        >
+                          <template #item="{ element, index }">
+                            <dimension-item
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :chart="view"
+                              :item="element"
+                              :index="index"
+                              :themes="props.themes"
+                              type="dimensionStack"
+                              @onDimensionItemChange="dimensionItemChange"
+                              @onDimensionItemRemove="dimensionItemRemove"
+                              @onNameEdit="showRename"
+                              @onCustomSort="onStackCustomSort"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="view.extStack" />
+                      </div>
                     </el-row>
 
                     <!--yAxis-->
@@ -1543,36 +1648,42 @@ const onRefreshChange = val => {
                           </el-icon>
                         </el-tooltip>
                       </div>
-                      <draggable
-                        :list="view.yAxis"
-                        :move="onMove"
-                        item-key="id"
-                        group="drag"
-                        animation="300"
-                        class="drag-block-style"
-                        :class="{ dark: themes === 'dark' }"
-                        @add="addYaxis"
-                        @change="e => onAxisChange(e, 'yAxis')"
+                      <div
+                        @drop="$event => drop($event, 'yAxis')"
+                        @dragenter="dragEnter"
+                        @dragover="$event => dragOver($event)"
                       >
-                        <template #item="{ element, index }">
-                          <quota-item
-                            :dimension-data="state.dimension"
-                            :quota-data="state.quota"
-                            :chart="view"
-                            :item="element"
-                            :index="index"
-                            type="quota"
-                            :themes="props.themes"
-                            @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
-                            @onQuotaItemRemove="quotaItemRemove"
-                            @onNameEdit="showRename"
-                            @editItemFilter="showQuotaEditFilter"
-                            @editItemCompare="showQuotaEditCompare"
-                            @valueFormatter="valueFormatter"
-                          />
-                        </template>
-                      </draggable>
-                      <drag-placeholder :drag-list="view.yAxis" />
+                        <draggable
+                          :list="view.yAxis"
+                          :move="onMove"
+                          item-key="id"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                          :class="{ dark: themes === 'dark' }"
+                          @add="addYaxis"
+                          @change="e => onAxisChange(e, 'yAxis')"
+                        >
+                          <template #item="{ element, index }">
+                            <quota-item
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :chart="view"
+                              :item="element"
+                              :index="index"
+                              type="quota"
+                              :themes="props.themes"
+                              @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
+                              @onQuotaItemRemove="quotaItemRemove"
+                              @onNameEdit="showRename"
+                              @editItemFilter="showQuotaEditFilter"
+                              @editItemCompare="showQuotaEditCompare"
+                              @valueFormatter="valueFormatter"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="view.yAxis" />
+                      </div>
                     </el-row>
                     <!--yAxisExt-->
                     <el-row class="padding-lr drag-data" v-if="showAxis('yAxisExt')">
@@ -1639,36 +1750,42 @@ const onRefreshChange = val => {
                           </el-icon>
                         </el-tooltip>
                       </div>
-                      <draggable
-                        :list="view.extBubble"
-                        :move="onMove"
-                        item-key="id"
-                        group="drag"
-                        animation="300"
-                        class="drag-block-style"
-                        :class="{ dark: themes === 'dark' }"
-                        @add="addExtBubble"
-                        @change="e => onAxisChange(e, 'extBubble')"
+                      <div
+                        @drop="$event => drop($event, 'extBubble')"
+                        @dragenter="dragEnter"
+                        @dragover="$event => dragOver($event)"
                       >
-                        <template #item="{ element, index }">
-                          <quota-item
-                            :dimension-data="state.dimension"
-                            :quota-data="state.quota"
-                            :chart="view"
-                            :item="element"
-                            :index="index"
-                            type="extBubble"
-                            :themes="props.themes"
-                            @onQuotaItemChange="item => quotaItemChange(item, 'extBubble')"
-                            @onQuotaItemRemove="quotaItemRemove"
-                            @onNameEdit="showRename"
-                            @editItemFilter="showQuotaEditFilter"
-                            @editItemCompare="showQuotaEditCompare"
-                            @valueFormatter="valueFormatter"
-                          />
-                        </template>
-                      </draggable>
-                      <drag-placeholder :drag-list="view.extBubble" />
+                        <draggable
+                          :list="view.extBubble"
+                          :move="onMove"
+                          item-key="id"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                          :class="{ dark: themes === 'dark' }"
+                          @add="addExtBubble"
+                          @change="e => onAxisChange(e, 'extBubble')"
+                        >
+                          <template #item="{ element, index }">
+                            <quota-item
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :chart="view"
+                              :item="element"
+                              :index="index"
+                              type="extBubble"
+                              :themes="props.themes"
+                              @onQuotaItemChange="item => quotaItemChange(item, 'extBubble')"
+                              @onQuotaItemRemove="quotaItemRemove"
+                              @onNameEdit="showRename"
+                              @editItemFilter="showQuotaEditFilter"
+                              @editItemCompare="showQuotaEditCompare"
+                              @valueFormatter="valueFormatter"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="view.extBubble" />
+                      </div>
                     </el-row>
 
                     <!--drill-->
@@ -1701,30 +1818,36 @@ const onRefreshChange = val => {
                           </el-icon>
                         </el-tooltip>
                       </div>
-                      <draggable
-                        :list="view.drillFields"
-                        item-key="id"
-                        group="drag"
-                        animation="300"
-                        :move="onMove"
-                        class="drag-block-style"
-                        :class="{ dark: themes === 'dark' }"
-                        @add="addDrill"
+                      <div
+                        @drop="$event => drop($event, 'drillFields')"
+                        @dragenter="dragEnter"
+                        @dragover="$event => dragOver($event)"
                       >
-                        <template #item="{ element, index }">
-                          <drill-item
-                            :key="element.id"
-                            :index="index"
-                            :item="element"
-                            :dimension-data="state.dimension"
-                            :quota-data="state.quota"
-                            :themes="props.themes"
-                            @onDimensionItemChange="drillItemChange"
-                            @onDimensionItemRemove="drillItemRemove"
-                          />
-                        </template>
-                      </draggable>
-                      <drag-placeholder :drag-list="view.drillFields" />
+                        <draggable
+                          :list="view.drillFields"
+                          item-key="id"
+                          group="drag"
+                          animation="300"
+                          :move="onMove"
+                          class="drag-block-style"
+                          :class="{ dark: themes === 'dark' }"
+                          @add="addDrill"
+                        >
+                          <template #item="{ element, index }">
+                            <drill-item
+                              :key="element.id"
+                              :index="index"
+                              :item="element"
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :themes="props.themes"
+                              @onDimensionItemChange="drillItemChange"
+                              @onDimensionItemRemove="drillItemRemove"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="view.drillFields" />
+                      </div>
                     </el-row>
 
                     <!--filter-->
@@ -1744,29 +1867,35 @@ const onRefreshChange = val => {
                           </el-icon>
                         </el-tooltip>
                       </div>
-                      <draggable
-                        :list="view.customFilter"
-                        :move="onMove"
-                        item-key="id"
-                        group="drag"
-                        animation="300"
-                        class="drag-block-style"
-                        :class="{ dark: themes === 'dark' }"
-                        @add="addCustomFilter"
+                      <div
+                        @drop="$event => drop($event, 'customFilter')"
+                        @dragenter="dragEnter"
+                        @dragover="$event => dragOver($event)"
                       >
-                        <template #item="{ element, index }">
-                          <filter-item
-                            :dimension-data="state.dimension"
-                            :quota-data="state.quota"
-                            :item="element"
-                            :index="index"
-                            :themes="props.themes"
-                            @onFilterItemRemove="filterItemRemove"
-                            @editItemFilter="showEditFilter"
-                          />
-                        </template>
-                      </draggable>
-                      <drag-placeholder :drag-list="view.customFilter" />
+                        <draggable
+                          :list="view.customFilter"
+                          :move="onMove"
+                          item-key="id"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                          :class="{ dark: themes === 'dark' }"
+                          @add="addCustomFilter"
+                        >
+                          <template #item="{ element, index }">
+                            <filter-item
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :item="element"
+                              :index="index"
+                              :themes="props.themes"
+                              @onFilterItemRemove="filterItemRemove"
+                              @editItemFilter="showEditFilter"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="view.customFilter" />
+                      </div>
                     </el-row>
                   </el-scrollbar>
                   <el-footer :class="{ 'refresh-active-footer': view.refreshViewEnable }">
@@ -2039,7 +2168,7 @@ const onRefreshChange = val => {
             </el-row>
             <div ref="elDrag" style="height: calc(100% - 137px); min-height: 120px">
               <div
-                class="padding-lr field-height first"
+                class="padding-lr field-height first right-dimension"
                 :class="{ dark: themes === 'dark', 'user-select': isDragging }"
                 :style="{
                   height: fieldDHeight + 'px'
@@ -2047,65 +2176,118 @@ const onRefreshChange = val => {
               >
                 <label>{{ t('chart.dimension') }}</label>
                 <el-scrollbar class="drag-list">
-                  <draggable
-                    :list="dimensionData"
-                    :group="dsFieldDragOptions.group"
-                    :move="onMove"
-                    item-key="id"
-                    animation="300"
-                    :clone="cloneItem"
-                    @add="moveToDimension"
+                  <div
+                    @click.ctrl="setActiveCtrl(element)"
+                    @click.meta="setActiveCtrl(element)"
+                    @click.exact="setActive(element)"
+                    @dragstart="$event => singleDragStart($event, element, 'dimension')"
+                    :draggable="true"
+                    @dragend="singleDragEnd"
+                    class="item"
+                    v-for="element in state.dimensionData"
+                    :key="element.id"
                   >
-                    <template #item="{ element }">
-                      <span
-                        @dragstart="$event => startToMove($event, element)"
-                        :draggable="true"
-                        class="item-dimension father"
-                        :class="'item-dimension--' + themes"
-                        :title="element.name"
+                    <div
+                      class="items flex-align-center"
+                      :class="[
+                        'item-dimension--' + themes,
+                        isDraggingItem && 'is-dragging-item',
+                        activeDimension.map(itx => itx.id).includes(element.id) && 'active'
+                      ]"
+                    >
+                      <el-icon>
+                        <Icon
+                          :className="`field-icon-${fieldType[element.deType]}`"
+                          :name="`field_${fieldType[element.deType]}`"
+                        />
+                      </el-icon>
+                      <span class="field-name ellipsis" :class="{ dark: themes === 'dark' }">{{
+                        element.name
+                      }}</span>
+                      <el-dropdown
+                        v-if="element.id !== '-1' && false"
+                        :effect="props.themes"
+                        placement="right-start"
+                        trigger="click"
+                        size="small"
+                        class="field-setting child"
+                        @command="chartFieldEdit"
                       >
-                        <el-icon>
-                          <Icon
-                            :className="`field-icon-${fieldType[element.deType]}`"
-                            :name="`field_${fieldType[element.deType]}`"
-                          />
-                        </el-icon>
-                        <span class="field-name" :class="{ dark: themes === 'dark' }">{{
-                          element.name
-                        }}</span>
-                        <el-dropdown
-                          v-if="element.id !== '-1' && false"
-                          :effect="props.themes"
-                          placement="right-start"
-                          trigger="click"
-                          size="small"
-                          class="field-setting child"
-                          @command="chartFieldEdit"
-                        >
-                          <span class="el-dropdown-link">
-                            <el-icon class="icon-setting"><Setting /></el-icon>
-                          </span>
-                          <template #dropdown>
-                            <el-dropdown-menu :effect="props.themes">
-                              <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
-                                {{ t('common.copy') }}
+                        <span class="el-dropdown-link">
+                          <el-icon class="icon-setting"><Setting /></el-icon>
+                        </span>
+                        <template #dropdown>
+                          <el-dropdown-menu :effect="props.themes">
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
+                              {{ t('common.copy') }}
+                            </el-dropdown-item>
+                            <span v-if="element.chartId">
+                              <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
+                                {{ t('common.edit') }}
                               </el-dropdown-item>
-                              <span v-if="element.chartId">
-                                <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
-                                  {{ t('common.edit') }}
+                              <el-dropdown-item :command="handleChartFieldEdit(element, 'delete')">
+                                {{ t('common.delete') }}
+                              </el-dropdown-item>
+                            </span>
+                          </el-dropdown-menu>
+                        </template>
+                      </el-dropdown>
+                    </div>
+                    <div
+                      @dragstart="dragStart"
+                      :draggable="true"
+                      @dragend="dragEnd"
+                      v-if="activeDimension.map(itx => itx.id).includes(element.id)"
+                      class="shadow"
+                      :class="isDraggingItem && 'is-dragging'"
+                    >
+                      <template v-if="isDrag">
+                        <div
+                          class="items flex-align-center"
+                          v-for="ele in activeDimension"
+                          :key="ele.id"
+                        >
+                          <el-icon>
+                            <Icon
+                              :className="`field-icon-${fieldType[ele.deType]}`"
+                              :name="`field_${fieldType[ele.deType]}`"
+                            />
+                          </el-icon>
+                          <span class="field-name ellipsis" :class="{ dark: themes === 'dark' }">{{
+                            ele.name
+                          }}</span>
+                          <el-dropdown
+                            v-if="ele.id !== '-1' && false"
+                            :effect="props.themes"
+                            placement="right-start"
+                            trigger="click"
+                            size="small"
+                            class="field-setting child"
+                            @command="chartFieldEdit"
+                          >
+                            <span class="el-dropdown-link">
+                              <el-icon class="icon-setting"><Setting /></el-icon>
+                            </span>
+                            <template #dropdown>
+                              <el-dropdown-menu :effect="props.themes">
+                                <el-dropdown-item :command="handleChartFieldEdit(ele, 'copy')">
+                                  {{ t('common.copy') }}
                                 </el-dropdown-item>
-                                <el-dropdown-item
-                                  :command="handleChartFieldEdit(element, 'delete')"
-                                >
-                                  {{ t('common.delete') }}
-                                </el-dropdown-item>
-                              </span>
-                            </el-dropdown-menu>
-                          </template>
-                        </el-dropdown>
-                      </span>
-                    </template>
-                  </draggable>
+                                <span v-if="ele.chartId">
+                                  <el-dropdown-item :command="handleChartFieldEdit(ele, 'edit')">
+                                    {{ t('common.edit') }}
+                                  </el-dropdown-item>
+                                  <el-dropdown-item :command="handleChartFieldEdit(ele, 'delete')">
+                                    {{ t('common.delete') }}
+                                  </el-dropdown-item>
+                                </span>
+                              </el-dropdown-menu>
+                            </template>
+                          </el-dropdown>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
                 </el-scrollbar>
                 <div
                   ref="el"
@@ -2115,68 +2297,124 @@ const onRefreshChange = val => {
                   :class="['drag-vertical', isDragging && 'is-hovering']"
                 ></div>
               </div>
-              <div class="padding-lr field-height" :class="{ dark: themes === 'dark' }">
+              <div
+                class="padding-lr field-height right-dimension"
+                :class="{ dark: themes === 'dark' }"
+              >
                 <label>{{ t('chart.quota') }}</label>
                 <el-scrollbar class="drag-list">
-                  <draggable
-                    :list="quotaData"
-                    :group="dsFieldDragOptions.group"
-                    :move="onMove"
-                    item-key="id"
-                    animation="300"
-                    :clone="cloneItem"
-                    @add="moveToQuota"
+                  <div
+                    @click.ctrl="setActiveCtrl(element, 'quota')"
+                    @click.meta="setActiveCtrl(element, 'quota')"
+                    @click.exact="setActive(element, 'quota')"
+                    class="item"
+                    @dragstart="$event => singleDragStart($event, element, 'quota')"
+                    :draggable="true"
+                    @dragend="singleDragEnd"
+                    v-for="element in quotaData"
+                    :key="element.id"
                   >
-                    <template #item="{ element }">
-                      <span
-                        @dragstart="$event => startToMove($event, element)"
-                        :draggable="true"
-                        class="item-dimension father"
-                        :class="'item-dimension--' + themes"
-                        :title="element.name"
+                    <div
+                      class="items flex-align-center"
+                      :class="[
+                        'item-dimension--' + themes,
+                        isDraggingItem && 'is-dragging-item',
+                        activeQuota.map(itx => itx.id).includes(element.id) && 'active'
+                      ]"
+                    >
+                      <el-icon>
+                        <Icon
+                          :className="`field-icon-${fieldType[element.deType]}`"
+                          :name="`field_${fieldType[element.deType]}`"
+                        ></Icon>
+                      </el-icon>
+                      <span class="field-name ellipsis" :class="{ dark: themes === 'dark' }">{{
+                        element.name
+                      }}</span>
+                      <el-dropdown
+                        v-if="element.id !== '-1' && false"
+                        :effect="props.themes"
+                        placement="right-start"
+                        trigger="click"
+                        size="small"
+                        class="field-setting child"
+                        @command="chartFieldEdit"
                       >
-                        <el-icon>
-                          <Icon
-                            :className="`field-icon-${fieldType[element.deType]}`"
-                            :name="`field_${fieldType[element.deType]}`"
-                          ></Icon>
-                        </el-icon>
-                        <span class="field-name" :class="{ dark: themes === 'dark' }">{{
-                          element.name
-                        }}</span>
-                        <el-dropdown
-                          v-if="element.id !== '-1' && false"
-                          :effect="props.themes"
-                          placement="right-start"
-                          trigger="click"
-                          size="small"
-                          class="field-setting child"
-                          @command="chartFieldEdit"
-                        >
-                          <span class="el-dropdown-link">
-                            <el-icon class="icon-setting"><Setting /></el-icon>
-                          </span>
-                          <template #dropdown>
-                            <el-dropdown-menu :effect="props.themes">
-                              <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
-                                {{ t('common.copy') }}
+                        <span class="el-dropdown-link">
+                          <el-icon class="icon-setting"><Setting /></el-icon>
+                        </span>
+                        <template #dropdown>
+                          <el-dropdown-menu :effect="props.themes">
+                            <el-dropdown-item :command="handleChartFieldEdit(element, 'copy')">
+                              {{ t('common.copy') }}
+                            </el-dropdown-item>
+                            <span v-if="element.chartId">
+                              <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
+                                {{ t('common.edit') }}
                               </el-dropdown-item>
-                              <span v-if="element.chartId">
-                                <el-dropdown-item :command="handleChartFieldEdit(element, 'edit')">
-                                  {{ t('common.edit') }}
+                              <el-dropdown-item :command="handleChartFieldEdit(element, 'delete')">
+                                {{ t('common.delete') }}
+                              </el-dropdown-item>
+                            </span>
+                          </el-dropdown-menu>
+                        </template>
+                      </el-dropdown>
+                    </div>
+                    <div
+                      @dragstart="dragStart"
+                      :draggable="true"
+                      @dragend="dragEnd"
+                      v-if="activeQuota.map(itx => itx.id).includes(element.id)"
+                      class="shadow"
+                      :class="isDraggingItem && 'is-dragging'"
+                    >
+                      <template v-if="isDrag">
+                        <div
+                          class="items flex-align-center"
+                          v-for="ele in activeQuota"
+                          :key="ele.id"
+                        >
+                          <el-icon>
+                            <Icon
+                              :className="`field-icon-${fieldType[ele.deType]}`"
+                              :name="`field_${fieldType[ele.deType]}`"
+                            ></Icon>
+                          </el-icon>
+                          <span class="field-name ellipsis" :class="{ dark: themes === 'dark' }">{{
+                            ele.name
+                          }}</span>
+                          <el-dropdown
+                            v-if="ele.id !== '-1' && false"
+                            :effect="props.themes"
+                            placement="right-start"
+                            trigger="click"
+                            size="small"
+                            class="field-setting child"
+                            @command="chartFieldEdit"
+                          >
+                            <span class="el-dropdown-link">
+                              <el-icon class="icon-setting"><Setting /></el-icon>
+                            </span>
+                            <template #dropdown>
+                              <el-dropdown-menu :effect="props.themes">
+                                <el-dropdown-item :command="handleChartFieldEdit(ele, 'copy')">
+                                  {{ t('common.copy') }}
                                 </el-dropdown-item>
-                                <el-dropdown-item
-                                  :command="handleChartFieldEdit(element, 'delete')"
-                                >
-                                  {{ t('common.delete') }}
-                                </el-dropdown-item>
-                              </span>
-                            </el-dropdown-menu>
-                          </template>
-                        </el-dropdown>
-                      </span>
-                    </template>
-                  </draggable>
+                                <span v-if="ele.chartId">
+                                  <el-dropdown-item :command="handleChartFieldEdit(ele, 'edit')">
+                                    {{ t('common.edit') }}
+                                  </el-dropdown-item>
+                                  <el-dropdown-item :command="handleChartFieldEdit(ele, 'delete')">
+                                    {{ t('common.delete') }}
+                                  </el-dropdown-item>
+                                </span>
+                              </el-dropdown-menu>
+                            </template>
+                          </el-dropdown>
+                        </div>
+                      </template>
+                    </div>
+                  </div>
                 </el-scrollbar>
               </div>
             </div>
@@ -2351,6 +2589,71 @@ const onRefreshChange = val => {
 
 <style lang="less" scoped>
 @import '@/style/mixin.less';
+
+.right-dimension {
+  .item {
+    width: 100%;
+    height: 28px;
+    position: relative;
+    overflow: hidden;
+
+    & + .item {
+      margin-top: 2px;
+    }
+
+    .items {
+      width: 100%;
+      height: 28px;
+      border-radius: 4px;
+      border: 1px solid transparent;
+      color: #a6a6a6;
+      font-family: PingFang SC;
+      font-size: 12px;
+      font-style: normal;
+      font-weight: 400;
+      line-height: 20px;
+      float: left;
+      padding: 4px 10px;
+      position: relative;
+      cursor: pointer;
+      &:hover {
+        background: #1f23291a;
+      }
+
+      .ed-icon {
+        font-size: 14px;
+      }
+      &.active {
+        border-color: var(--ed-color-primary, #3370ff);
+      }
+    }
+
+    .is-dragging-item {
+      z-index: 10;
+    }
+
+    .shadow {
+      position: absolute;
+      width: 100%;
+      top: 0;
+      left: 0;
+      cursor: pointer;
+      min-height: 100%;
+      z-index: 5;
+      .items {
+        border-color: var(--ed-color-primary, #3370ff);
+        & + .items {
+          margin-top: 2px;
+        }
+      }
+
+      &.is-dragging {
+        float: left;
+        position: relative;
+      }
+    }
+  }
+}
 .collapse-icon {
   color: @canvas-main-font-color;
 }
@@ -2428,7 +2731,7 @@ const onRefreshChange = val => {
       .ed-tabs__item {
         height: 35px;
         line-height: 35px;
-        color: var(--ed-color-primary);
+        color: var(--ed-color-primary, #3370ff);
         font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 12px;
         font-style: normal;
@@ -2456,7 +2759,7 @@ const onRefreshChange = val => {
       box-shadow: 0 0 0 1px hsla(0, 0%, 100%, 0.15) inset !important;
     }
     :deep(.ed-input__wrapper:hover) {
-      box-shadow: 0 0 0 1px var(--ed-color-primary) inset !important;
+      box-shadow: 0 0 0 1px var(--ed-color-primary, #3370ff) inset !important;
     }
   }
 }
@@ -2596,7 +2899,7 @@ span {
     }
     :deep(.is-active) {
       font-weight: 500;
-      color: var(--ed-color-primary);
+      color: var(--ed-color-primary, #3370ff);
     }
 
     :deep(.ed-tabs__nav-scroll) {
@@ -2645,7 +2948,7 @@ span {
         position: absolute;
         left: 0px;
         top: 0;
-        background: var(--ed-color-primary);
+        background: var(--ed-color-primary, #3370ff);
       }
     }
 
@@ -2701,7 +3004,7 @@ span {
     }
 
     &.sortable-chosen {
-      border: 1px solid var(--ed-color-primary);
+      border: 1px solid var(--ed-color-primary, #3370ff);
       background: #fff;
 
       &:hover {
@@ -2732,8 +3035,6 @@ span {
     overflow: hidden;
     white-space: nowrap;
     text-overflow: ellipsis;
-    position: absolute;
-    top: 2px;
     padding-left: 4px;
     font-weight: 400;
     color: #646a73;
@@ -2912,7 +3213,7 @@ span {
   .result-style-dark {
     :deep(.ed-button) {
       color: #ffffff;
-      background-color: var(--ed-color-primary);
+      background-color: var(--ed-color-primary, #3370ff);
       border: none;
       border-radius: 0;
     }
@@ -2954,7 +3255,7 @@ span {
       border-radius: 2px;
     }
     :deep(.ed-button:hover) {
-      border: 1px solid var(--ed-color-primary);
+      border: 1px solid var(--ed-color-primary, #3370ff);
     }
   }
 
