@@ -13,6 +13,7 @@ import {
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
+import { storeToRefs } from 'pinia'
 
 const props = defineProps({
   view: {
@@ -42,6 +43,8 @@ const props = defineProps({
 const { view, scale, terminal } = toRefs(props)
 
 const dvMainStore = dvMainStoreWithOut()
+
+const { batchOptStatus } = storeToRefs(dvMainStore)
 
 const errMsg = ref('')
 const isError = ref(false)
@@ -267,7 +270,11 @@ const renderChart = async view => {
       indicatorColor.value = customAttr.indicator.color
       let suffixColor = customAttr.indicator.suffixColor
 
-      if (customAttr.basicStyle && customAttr.basicStyle.alpha !== undefined) {
+      if (
+        customAttr.basicStyle &&
+        customAttr.basicStyle.alpha !== undefined &&
+        !batchOptStatus.value
+      ) {
         indicatorColor.value = hexColorToRGBA(
           customAttr.basicStyle.colors[0],
           customAttr.basicStyle.alpha
