@@ -38,7 +38,7 @@
               <div class="name-content">
                 <div class="fileName">{{ scope.row.fileName }}</div>
                 <div class="failed" v-if="activeName==='FAILED'">{{ $t("data_export.export_failed") }}</div>
-                <div class="sucess" v-if="scope.row.exportStatus==='SUCCESS'">{{scope.row.fileSize}}{{scope.row.fileSizeUnit}}</div>
+                <div class="success" v-if="scope.row.exportStatus==='SUCCESS'">{{scope.row.fileSize}}{{scope.row.fileSizeUnit}}</div>
               </div>
             </div>
             <div v-if="activeName==='FAILED'" class="red-line" />
@@ -387,7 +387,7 @@ export default {
           color: #F54A45;
         }
 
-        .sucess {
+        .success {
           font-size: 12px;
           font-weight: 400;
           line-height: 20px;
