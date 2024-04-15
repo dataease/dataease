@@ -6,6 +6,7 @@ import LabelSelector from '@/views/chart/components/editor/editor-style/componen
 import TooltipSelector from '@/views/chart/components/editor/editor-style/components/TooltipSelector.vue'
 import XAxisSelector from '@/views/chart/components/editor/editor-style/components/XAxisSelector.vue'
 import YAxisSelector from '@/views/chart/components/editor/editor-style/components/YAxisSelector.vue'
+import DualYAxisSelector from '@/views/chart/components/editor/editor-style/components/DualYAxisSelector.vue'
 import TitleSelector from '@/views/chart/components/editor/editor-style/components/TitleSelector.vue'
 import LegendSelector from '@/views/chart/components/editor/editor-style/components/LegendSelector.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -78,6 +79,7 @@ const emit = defineEmits([
   'onTooltipChange',
   'onChangeXAxisForm',
   'onChangeYAxisForm',
+  'onChangeYAxisExtForm',
   'onTextChange',
   'onLegendChange',
   'onBasicStyleChange',
@@ -115,6 +117,11 @@ const onChangeXAxisForm = (val, prop) => {
 
 const onChangeYAxisForm = (val, prop) => {
   state.initReady && emit('onChangeYAxisForm', val, prop)
+}
+
+const onChangeYAxisExtForm = (val, prop) => {
+  console.log(val, prop)
+  state.initReady && emit('onChangeYAxisExtForm', val, prop)
 }
 
 const onTextChange = (val, prop) => {
@@ -440,6 +447,25 @@ watch(
               :themes="themes"
               :chart="chart"
               @onChangeYAxisForm="onChangeYAxisForm"
+            />
+          </collapse-switch-item>
+
+          <collapse-switch-item
+            :themes="themes"
+            v-if="showProperties('dual-y-axis-selector')"
+            v-model="chart.customStyle.yAxis.show"
+            :change-model="chart.customStyle.yAxis"
+            @modelChange="val => onChangeYAxisForm(val, 'show')"
+            name="yAxis"
+            :title="$t('chart.yAxis')"
+          >
+            <dual-y-axis-selector
+              class="attr-selector"
+              :property-inner="propertyInnerAll['y-axis-selector']"
+              :themes="themes"
+              :chart="chart"
+              @onChangeYAxisForm="onChangeYAxisForm"
+              @onChangeYAxisExtForm="onChangeYAxisExtForm"
             />
           </collapse-switch-item>
         </el-collapse>

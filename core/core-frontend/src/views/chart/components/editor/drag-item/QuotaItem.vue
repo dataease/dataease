@@ -178,12 +178,23 @@ const beforeSort = type => {
   }
 }
 
+const switchChartType = param => {
+  item.value.chartType = param.type
+  emit('onQuotaItemChange', item.value)
+}
+
 const summary = param => {
   item.value.summary = param.type
   emit('onQuotaItemChange', item.value)
 }
 
 const beforeSummary = type => {
+  return {
+    type: type
+  }
+}
+
+const beforeSwitchType = type => {
   return {
     type: type
   }
@@ -334,6 +345,56 @@ onMounted(() => {
           class="drop-style"
           :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
         >
+          <el-dropdown-item @click.prevent v-if="chart.type === 'chart-mix'">
+            <el-dropdown
+              :effect="themes"
+              placement="right-start"
+              style="width: 100%"
+              @command="switchChartType"
+            >
+              <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
+                <span class="menu-item-content">
+                  <el-icon>
+                    <Icon name="icon_functions_outlined" />
+                  </el-icon>
+                  <span>{{ t('chart.chart_type') }}</span>
+                </span>
+                <el-icon>
+                  <Icon name="icon_right_outlined"></Icon>
+                </el-icon>
+              </span>
+              <template #dropdown>
+                <el-dropdown-menu
+                  :effect="themes"
+                  class="drop-style sub"
+                  :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
+                >
+                  <el-dropdown-item class="menu-item-padding" :command="beforeSwitchType('bar')">
+                    <span
+                      class="sub-menu-content"
+                      :class="'bar' === item.chartType ? 'content-active' : ''"
+                    >
+                      {{ t('chart.chart_bar') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'bar' === item.chartType" />
+                      </el-icon>
+                    </span>
+                  </el-dropdown-item>
+                  <el-dropdown-item class="menu-item-padding" :command="beforeSwitchType('line')">
+                    <span
+                      class="sub-menu-content"
+                      :class="'line' === item.chartType ? 'content-active' : ''"
+                    >
+                      {{ t('chart.chart_line') }}
+                      <el-icon class="sub-menu-content--icon">
+                        <Icon name="icon_done_outlined" v-if="'line' === item.chartType" />
+                      </el-icon>
+                    </span>
+                  </el-dropdown-item>
+                </el-dropdown-menu>
+              </template>
+            </el-dropdown>
+          </el-dropdown-item>
           <el-dropdown-item
             @click.prevent
             v-if="!item.chartId && chart.type !== 'table-info' && item.summary !== ''"

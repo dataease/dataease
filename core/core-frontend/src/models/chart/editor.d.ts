@@ -5,6 +5,7 @@ declare type EditorProperty =
   | 'tooltip-selector'
   | 'x-axis-selector'
   | 'y-axis-selector'
+  | 'dual-y-axis-selector'
   | 'title-selector'
   | 'legend-selector'
   | 'table-header-selector'
