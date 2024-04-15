@@ -9,7 +9,7 @@ import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useI18n } from '@/hooks/web/useI18n'
 import { fieldType } from '@/utils/attr'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElSelect } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
 import { getDsDetailsWithPerm, getSqlParams, listFieldsWithPermissions } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -694,7 +694,6 @@ const parameterCompletion = () => {
     arbitraryTimeRange: new Date(),
     setTimeRange: false,
     showEmpty: false,
-    conditionType: 0,
     timeRange: {
       intervalType: 'none',
       dynamicWindow: false,
@@ -743,6 +742,10 @@ const handleCondition = item => {
   if (!valueSource.value.length) {
     valueSource.value.push('')
     valueSource.value.push('')
+  }
+  curComponent.value.sortField = curComponent.value.sortField ?? {
+    id: '',
+    sortType: 'asc'
   }
   parameterCompletion()
   nextTick(() => {
@@ -1327,7 +1330,7 @@ defineExpose({
                 <div class="value">
                   <el-select
                     @change="handleFieldChange"
-                    placeholder="请选择字段"
+                    placeholder="请选择展示字段"
                     v-model="curComponent.field.id"
                   >
                     <template v-if="curComponent.field.id" #prefix>
@@ -1368,6 +1371,66 @@ defineExpose({
                         </span>
                       </div>
                     </el-option>
+                  </el-select>
+                </div>
+                <div class="value">
+                  <el-select
+                    clearable
+                    placeholder="请选择排序字段"
+                    v-model="curComponent.sortField.id"
+                    class="sort-field"
+                    @change="handleFieldChange"
+                  >
+                    <template v-if="curComponent.sortField.id" #prefix>
+                      <el-icon>
+                        <Icon
+                          :name="`field_${
+                            fieldType[
+                              getDetype(curComponent.sortField.id, curComponent.dataset.fields)
+                            ]
+                          }`"
+                          :className="`field-icon-${
+                            fieldType[
+                              getDetype(curComponent.sortField.id, curComponent.dataset.fields)
+                            ]
+                          }`"
+                        ></Icon>
+                      </el-icon>
+                    </template>
+                    <el-option
+                      v-for="ele in curComponent.dataset.fields.filter(
+                        ele =>
+                          ele.deType === +curComponent.displayType ||
+                          ([3, 4].includes(ele.deType) && +curComponent.displayType === 2)
+                      )"
+                      :key="ele.id"
+                      :label="ele.name"
+                      :value="ele.id"
+                      :disabled="ele.desensitized"
+                    >
+                      <div
+                        class="flex-align-center icon"
+                        :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
+                      >
+                        <el-icon>
+                          <Icon
+                            :name="`field_${fieldType[ele.deType]}`"
+                            :className="`field-icon-${fieldType[ele.deType]}`"
+                          ></Icon>
+                        </el-icon>
+                        <span>
+                          {{ ele.name }}
+                        </span>
+                      </div>
+                    </el-option>
+                  </el-select>
+                  <el-select
+                    class="sort-type"
+                    v-model="curComponent.sortField.sortType"
+                    @change="handleFieldChange"
+                  >
+                    <el-option label="升序" value="asc" />
+                    <el-option label="降序" value="desc" />
                   </el-select>
                 </div>
               </template>
@@ -2177,7 +2240,15 @@ defineExpose({
               }
             }
           }
-
+          .value {
+            .sort-field {
+              width: 240px;
+            }
+            .sort-type {
+              width: 73px;
+              margin-left: 8px;
+            }
+          }
           .parameters {
             margin-left: auto;
             margin-top: 8px;
