@@ -475,6 +475,7 @@ public class DatasetDataManage {
             Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
             String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
             querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
+            logger.info("calcite data enum sql: " + querySQL);
 
             // 通过数据源请求数据
             // 调用数据源的calcite获得data
@@ -497,7 +498,6 @@ public class DatasetDataManage {
                 }
                 list.add(previewData);
             }
-            logger.info("calcite data enum sql: " + querySQL);
         }
 
         // 重新构造data
