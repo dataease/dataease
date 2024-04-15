@@ -459,13 +459,6 @@ const apiRule = {
       message: t('datasource.start_time'),
       trigger: 'change'
     }
-  ],
-  'syncSetting.endLimit': [
-    {
-      required: true,
-      message: t('datasource.end_time'),
-      trigger: 'change'
-    }
   ]
 }
 
