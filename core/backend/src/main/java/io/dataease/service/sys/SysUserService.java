@@ -4,7 +4,6 @@ import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.auth.service.ExtAuthService;
 import io.dataease.commons.constants.AuthConstants;
-
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.CodingUtil;
@@ -101,6 +100,7 @@ public class SysUserService {
         if (StringUtils.isEmpty(user.getLanguage())) {
             user.setLanguage("zh_CN");
         }
+        user.setPwdResetTime(now);
         int insert = sysUserMapper.insert(user);
         SysUser dbUser = findOne(user);
         Long userId = dbUser.getUserId();
@@ -123,6 +123,7 @@ public class SysUserService {
         sysUser.setNickName(ssoUserInfo.getNickName());
         sysUser.setEmail(ssoUserInfo.getEmail());
         sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setPwdResetTime(System.currentTimeMillis());
         sysUser.setCreateTime(now);
         sysUser.setUpdateTime(now);
         sysUser.setEnabled(1L);
@@ -149,6 +150,7 @@ public class SysUserService {
         sysUser.setNickName(userMap.get("name").toString());
         sysUser.setEmail(email);
         sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setPwdResetTime(System.currentTimeMillis());
         sysUser.setCreateTime(now);
         sysUser.setUpdateTime(now);
 
@@ -172,6 +174,7 @@ public class SysUserService {
         sysUser.setNickName(dingUserEntity.getName());
         sysUser.setEmail(email);
         sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setPwdResetTime(System.currentTimeMillis());
         sysUser.setCreateTime(now);
         sysUser.setUpdateTime(now);
 
@@ -194,6 +197,7 @@ public class SysUserService {
         sysUser.setNickName(larkUserInfo.getName());
         sysUser.setEmail(email);
         sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setPwdResetTime(System.currentTimeMillis());
         sysUser.setCreateTime(now);
         sysUser.setUpdateTime(now);
 
@@ -216,6 +220,7 @@ public class SysUserService {
         sysUser.setNickName(larkUserInfo.getName());
         sysUser.setEmail(email);
         sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
+        sysUser.setPwdResetTime(System.currentTimeMillis());
         sysUser.setCreateTime(now);
         sysUser.setUpdateTime(now);
 
@@ -236,6 +241,7 @@ public class SysUserService {
         sysUser.setUsername(name);
         sysUser.setNickName(name);
         sysUser.setEmail(email);
+        sysUser.setPwdResetTime(System.currentTimeMillis());
         sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
         sysUser.setCreateTime(now);
         sysUser.setUpdateTime(now);
@@ -267,6 +273,7 @@ public class SysUserService {
             sysUser.setUsername(user.getUsername());
             sysUser.setNickName(user.getNickname());
             sysUser.setDeptId(request.getDeptId());
+            sysUser.setPwdResetTime(System.currentTimeMillis());
             sysUser.setPassword(CodingUtil.md5(DEFAULT_PWD));
             sysUser.setCreateTime(now);
             sysUser.setUpdateTime(now);
@@ -403,6 +410,7 @@ public class SysUserService {
             DataEaseException.throwException(Translator.get(msg));
         }
         sysUser.setPassword(CodingUtil.md5(request.getNewPassword()));
+        sysUser.setPwdResetTime(System.currentTimeMillis());
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }
 
@@ -410,6 +418,7 @@ public class SysUserService {
     public int adminUpdatePwd(SysUserPwdRequest request) {
         SysUser sysUser = new SysUser();
         sysUser.setUserId(request.getUserId());
+        sysUser.setPwdResetTime(System.currentTimeMillis());
         sysUser.setPassword(CodingUtil.md5(new String(java.util.Base64.getDecoder().decode(request.getNewPassword()))));
         return sysUserMapper.updateByPrimaryKeySelective(sysUser);
     }

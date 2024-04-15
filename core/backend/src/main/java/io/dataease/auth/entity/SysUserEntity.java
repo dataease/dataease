@@ -44,4 +44,6 @@ public class SysUserEntity implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private Integer from;
+    @ApiModelProperty(hidden = true)
+    private Long pwdResetTime;
 }

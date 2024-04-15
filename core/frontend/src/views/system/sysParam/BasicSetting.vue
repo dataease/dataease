@@ -388,6 +388,7 @@ export default {
           this.originLoginType = this.formInline.loginType
         }
         this.formInline.open = (this.formInline.open && this.formInline.open === 'true')
+        this.formInline.openModifyPwd = (this.formInline.openModifyPwd && this.formInline.openModifyPwd === 'true')
         this.formInline.lockedEmail = this.formInline?.lockedEmail === 'true'
         this.formInline.scanCreateUser = (this.formInline.scanCreateUser && this.formInline.scanCreateUser === 'true')
 
@@ -501,6 +502,18 @@ export default {
           paramValue: this.formInline.multiLogin,
           type: 'text',
           sort: 3
+        },
+        {
+          paramKey: 'loginlimit.openModifyPwd',
+          paramValue: this.formInline.open,
+          type: 'text',
+          sort: 5
+        },
+        {
+          paramKey: 'loginlimit.pwdCycle',
+          paramValue: this.formInline.pwdCycle,
+          type: 'text',
+          sort: 6
         }
       ]
 
