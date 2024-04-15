@@ -58,7 +58,6 @@ const fontSizeList = computed(() => {
 })
 
 const changeLabelTitleStyleStyle = prop => {
-  console.log('changeLabelTitleStyleStyle===' + prop)
   emit('onIndicatorChange', state.indicatorValueForm, prop)
 }
 
