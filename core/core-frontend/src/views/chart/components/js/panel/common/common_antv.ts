@@ -505,6 +505,98 @@ export function getYAxis(chart: Chart) {
   return axis
 }
 
+export function getYAxisExt(chart: Chart) {
+  let axis: Record<string, any> | boolean = {}
+  const yAxis = parseJson(chart.customStyle).yAxisExt
+  if (!yAxis.show) {
+    return false
+  }
+  const title =
+    yAxis.name && yAxis.name !== ''
+      ? {
+          text: yAxis.name,
+          style: {
+            fill: yAxis.color,
+            fontSize: yAxis.fontSize
+          },
+          spacing: 8
+        }
+      : null
+  const grid = yAxis.splitLine.show
+    ? {
+        line: {
+          style: {
+            stroke: yAxis.splitLine.lineStyle.color,
+            lineWidth: yAxis.splitLine.lineStyle.width
+          }
+        }
+      }
+    : null
+  const axisCfg = yAxis.axisLine ? yAxis.axisLine : DEFAULT_YAXIS_STYLE.axisLine
+  const line = axisCfg.show
+    ? {
+        style: {
+          stroke: axisCfg.lineStyle.color,
+          lineWidth: axisCfg.lineStyle.width
+        }
+      }
+    : null
+  const tickLine = axisCfg.show
+    ? {
+        style: {
+          stroke: axisCfg.lineStyle.color
+        }
+      }
+    : null
+  const rotate = yAxis.axisLabel.rotate
+  let textAlign = 'end'
+  let textBaseline = 'middle'
+  if (yAxis.position === 'right') {
+    textAlign = 'start'
+    if (Math.abs(rotate) > 75) {
+      textAlign = 'center'
+    }
+    if (rotate > 75) {
+      textBaseline = 'bottom'
+    }
+    if (rotate < -75) {
+      textBaseline = 'top'
+    }
+  }
+  if (yAxis.position === 'left') {
+    if (Math.abs(rotate) > 75) {
+      textAlign = 'center'
+    }
+    if (rotate > 75) {
+      textBaseline = 'top'
+    }
+    if (rotate < -75) {
+      textBaseline = 'bottom'
+    }
+  }
+  const label = yAxis.axisLabel.show
+    ? {
+        rotate: (rotate * Math.PI) / 180,
+        style: {
+          fill: yAxis.axisLabel.color,
+          fontSize: yAxis.axisLabel.fontSize,
+          textBaseline,
+          textAlign
+        }
+      }
+    : null
+
+  axis = {
+    position: yAxis.position,
+    title,
+    grid,
+    label,
+    line,
+    tickLine
+  }
+  return axis
+}
+
 export function getSlider(chart: Chart) {
   let cfg
   const senior = parseJson(chart.senior)

@@ -42,7 +42,7 @@ import CustomSortEdit from '@/views/chart/components/editor/drag-item/components
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import CalcFieldEdit from '@/views/visualized/data/dataset/form/CalcFieldEdit.vue'
 import { getFieldName, guid } from '@/views/visualized/data/dataset/form/util'
-import { cloneDeep, get } from 'lodash-es'
+import { cloneDeep, forEach, get } from 'lodash-es'
 import { deleteField, saveField } from '@/api/dataset'
 import { getWorldTree } from '@/api/map'
 import chartViewManager from '@/views/chart/components/js/panel'
@@ -494,10 +494,42 @@ const addAxis = (e, axis: AxisType) => {
       emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
     }
   }
-  if (view.value.type === 'indicator') {
+  if (view.value.type === 'chart-mix') {
+    if (axis === 'yAxis') {
+      if (view.value.yAxisExt.length > 0) {
+        const chartType = view.value.yAxisExt[0].chartType
+        forEach(view.value.yAxis, axis => {
+          if (chartType === 'bar') {
+            axis.chartType = 'line'
+          } else if (chartType === 'line') {
+            axis.chartType = 'bar'
+          }
+        })
+      }
+    } else if (axis === 'yAxisExt') {
+      if (view.value.yAxis.length > 0) {
+        const chartType = view.value.yAxis[0].chartType
+        forEach(view.value.yAxisExt, axis => {
+          if (chartType === 'bar') {
+            axis.chartType = 'line'
+          } else if (chartType === 'line') {
+            axis.chartType = 'bar'
+          }
+        })
+      }
+    }
+  }
+
+  if (view.value.type === 'indicator' || view.value.type === 'chart-mix') {
     if (view.value?.yAxis?.length > 1) {
       const axis = view.value.yAxis.splice(1)
       emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
+    }
+  }
+  if (view.value.type === 'chart-mix') {
+    if (view.value?.yAxisExt?.length > 1) {
+      const axis = view.value.yAxisExt.splice(1)
+      emitter.emit('removeAxis', { axisType: 'yAxisExt', axis, editType: 'remove' })
     }
   }
 }
@@ -516,6 +548,10 @@ const addExtStack = e => {
 
 const addYaxis = e => {
   addAxis(e, 'yAxis')
+}
+
+const addYaxisExt = e => {
+  addAxis(e, 'yAxisExt')
 }
 
 const addExtBubble = e => {
@@ -748,6 +784,12 @@ const onChangeYAxisForm = val => {
   renderChart(view.value)
 }
 
+const onChangeYAxisExtForm = val => {
+  console.log('onChangeYAxisExtForm', val)
+  view.value.customStyle.yAxisExt = val
+  renderChart(view.value)
+}
+
 const onChangeMiscStyleForm = val => {
   view.value.customStyle.misc = val
   renderChart(view.value)
@@ -827,7 +869,15 @@ const closeRename = () => {
 }
 
 const removeItems = (
-  _type: 'xAxis' | 'xAxisExt' | 'extStack' | 'yAxis' | 'extBubble' | 'customFilter' | 'drillFields'
+  _type:
+    | 'xAxis'
+    | 'xAxisExt'
+    | 'extStack'
+    | 'yAxis'
+    | 'yAxisExt'
+    | 'extBubble'
+    | 'customFilter'
+    | 'drillFields'
 ) => {
   recordSnapshotInfo('calcData')
   let axis = []
@@ -843,6 +893,9 @@ const removeItems = (
       break
     case 'yAxis':
       axis = view.value.yAxis?.splice(0)
+      break
+    case 'yAxisExt':
+      axis = view.value.yAxisExt?.splice(0)
       break
     case 'extBubble':
       axis = view.value.extBubble?.splice(0)
@@ -1521,6 +1574,54 @@ const onRefreshChange = val => {
                       </draggable>
                       <drag-placeholder :drag-list="view.yAxis" />
                     </el-row>
+                    <!--yAxisExt-->
+                    <el-row class="padding-lr drag-data" v-if="showAxis('yAxisExt')">
+                      <div class="form-draggable-title">
+                        <span>
+                          {{ chartViewInstance.axisConfig.yAxisExt.name }}
+                        </span>
+                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
+                          <el-icon
+                            class="remove-icon"
+                            :class="{ 'remove-icon--dark': themes === 'dark' }"
+                            size="14px"
+                            @click="removeItems('yAxisExt')"
+                          >
+                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                          </el-icon>
+                        </el-tooltip>
+                      </div>
+                      <draggable
+                        :list="view.yAxisExt"
+                        :move="onMove"
+                        item-key="id"
+                        group="drag"
+                        animation="300"
+                        class="drag-block-style"
+                        :class="{ dark: themes === 'dark' }"
+                        @add="addYaxisExt"
+                        @change="e => onAxisChange(e, 'yAxisExt')"
+                      >
+                        <template #item="{ element, index }">
+                          <quota-item
+                            :dimension-data="state.dimension"
+                            :quota-data="state.quota"
+                            :chart="view"
+                            :item="element"
+                            :index="index"
+                            type="quotaExt"
+                            :themes="props.themes"
+                            @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
+                            @onQuotaItemRemove="quotaItemRemove"
+                            @onNameEdit="showRename"
+                            @editItemFilter="showQuotaEditFilter"
+                            @editItemCompare="showQuotaEditCompare"
+                            @valueFormatter="valueFormatter"
+                          />
+                        </template>
+                      </draggable>
+                      <drag-placeholder :drag-list="view.yAxisExt" />
+                    </el-row>
                     <!-- extBubble -->
                     <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
                       <div class="form-draggable-title">
@@ -1797,6 +1898,7 @@ const onRefreshChange = val => {
                       @onTooltipChange="onTooltipChange"
                       @onChangeXAxisForm="onChangeXAxisForm"
                       @onChangeYAxisForm="onChangeYAxisForm"
+                      @onChangeYAxisExtForm="onChangeYAxisExtForm"
                       @onTextChange="onTextChange"
                       @onIndicatorChange="onIndicatorChange"
                       @onIndicatorNameChange="onIndicatorNameChange"

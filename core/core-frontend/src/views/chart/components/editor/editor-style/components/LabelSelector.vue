@@ -4,7 +4,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { ElSpace } from 'element-plus-secondary'
 import { formatterType, unitType } from '../../../js/formatter'
-import { defaultsDeep, cloneDeep, intersection } from 'lodash-es'
+import { defaultsDeep, cloneDeep, intersection, union, defaultTo } from 'lodash-es'
 import { includesAny } from '../../util/StringUtils'
 import { fieldType } from '@/utils/attr'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -37,8 +37,12 @@ watch(
   },
   { deep: true }
 )
+const yAxis = computed(() => {
+  return union(defaultTo(props.chart.yAxis, []), defaultTo(props.chart.yAxisExt, []))
+})
+
 watch(
-  [() => props.chart.yAxis, () => props.chart.type],
+  [() => yAxis.value, () => props.chart.type],
   () => {
     initSeriesLabel()
   },
@@ -46,10 +50,7 @@ watch(
 )
 const curSeriesFormatter = ref<Partial<SeriesFormatter>>({})
 const formatterEditable = computed(() => {
-  return (
-    showProperty('seriesLabelFormatter') &&
-    (props.chart.yAxis?.length || props.chart.yAxisExt?.length)
-  )
+  return showProperty('seriesLabelFormatter') && yAxis.value?.length
 })
 const formatterSelector = ref()
 // 初始化系列标签
@@ -59,17 +60,17 @@ const initSeriesLabel = () => {
     return
   }
   const formatter = state.labelForm.seriesLabelFormatter
-  const yAxis = props.chart.yAxis
+
   const seriesAxisMap = formatter.reduce((pre, next) => {
     pre[next.id] = next
     return pre
   }, {})
   formatter.splice(0, formatter.length)
-  if (!yAxis.length) {
+  if (!yAxis.value.length) {
     curSeriesFormatter.value = {}
     return
   }
-  const axisMap = yAxis.reduce((pre, next) => {
+  const axisMap = yAxis.value.reduce((pre, next) => {
     let tmp = {
       ...next,
       show: true,

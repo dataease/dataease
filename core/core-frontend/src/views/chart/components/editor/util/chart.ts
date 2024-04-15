@@ -568,7 +568,7 @@ export const DEFAULT_YAXIS_EXT_STYLE: ChartAxisStyle = {
     }
   },
   splitLine: {
-    show: true,
+    show: false,
     lineStyle: {
       color: '#cccccc',
       width: 1,
@@ -577,10 +577,10 @@ export const DEFAULT_YAXIS_EXT_STYLE: ChartAxisStyle = {
   },
   axisValue: {
     auto: true,
-    min: null,
-    max: null,
-    split: null,
-    splitCount: null
+    min: 10,
+    max: 100,
+    split: 10,
+    splitCount: 10
   },
   axisLabelFormatter: {
     type: 'auto',
@@ -1294,6 +1294,20 @@ export const CHART_TYPE_CONFIGS = [
         value: 'quadrant',
         title: t('chart.chart_quadrant'),
         icon: 'scatter'
+      }
+    ]
+  },
+  {
+    category: 'dual_axes',
+    title: t('chart.chart_type_dual_axes'),
+    display: 'show',
+    details: [
+      {
+        render: 'antv',
+        category: 'dual_axes',
+        value: 'chart-mix',
+        title: t('chart.chart_mix'),
+        icon: 'chart-mix'
       }
     ]
   },
