@@ -15,6 +15,10 @@ const infoFormat = (obj: ComponentInfo) => {
       name,
       deType
     },
+    sortField: {
+      id: '',
+      sortType: 'asc'
+    },
     timeType: 'fixed',
     relativeToCurrent: 'custom',
     required: false,
