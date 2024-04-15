@@ -1855,6 +1855,13 @@ defineExpose({
 .query-condition-configuration {
   --ed-font-weight-primary: 400;
 
+  .ed-dialog__headerbtn {
+    top: 21px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+  }
+
   .ed-input .ed-select__prefix--light {
     border-right: none;
     padding: 0;
