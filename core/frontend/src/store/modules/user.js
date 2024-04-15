@@ -85,13 +85,6 @@ const actions = {
       login({ username: username.trim(), password: password, loginType: loginType }).then(response => {
         const { data } = response
         commit('SET_LOGIN_MSG', null)
-        if (data.validityPeriod === 0) {
-          commit('SET_LOGIN_MSG', '密码已过期，请联系管理员进行密码重置！')
-          reject(null)
-          return
-        } else if (data.validityPeriod > 0 && data.validityPeriod < 8) {
-          commit('SET_LOGIN_MSG', `密码将于${data.validityPeriod}天后过期，为了不影响正常使用，请及时进行修改！`)
-        }
         commit('SET_TOKEN', data.token)
         setToken(data.token)
         setTokenExp(data.expireTime)

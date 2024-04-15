@@ -6,6 +6,8 @@
     class="app-wrapper"
   >
     <licbar />
+    <pwd-exp-tips />
+
     <topbar
       v-if="!fullHeightFlag"
       :show-tips="showTips"
@@ -57,7 +59,7 @@
 </template>
 
 <script>
-import { Sidebar, AppMain, Topbar, Licbar } from './components'
+import { Sidebar, AppMain, Topbar, Licbar, PwdExpTips } from './components'
 import ResizeMixin from './mixin/ResizeHandler'
 import DeMainContainer from '@/components/dataease/DeMainContainer'
 import DeContainer from '@/components/dataease/DeContainer'
@@ -74,7 +76,8 @@ export default {
     Licbar,
     DeMainContainer,
     DeContainer,
-    DeAsideContainer
+    DeAsideContainer,
+    PwdExpTips
   },
   mixins: [ResizeMixin],
   data() {
