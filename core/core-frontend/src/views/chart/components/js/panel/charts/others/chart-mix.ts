@@ -124,6 +124,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     const newChart = new DualAxes(container, options)
 
     newChart.on('point:click', action)
+    newChart.on('interval:click', action)
 
     return newChart
   }
