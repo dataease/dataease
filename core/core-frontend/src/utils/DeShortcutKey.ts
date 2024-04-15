@@ -106,6 +106,7 @@ export function listenGlobalKeyDown() {
     if (positionMoveKey[keyCode] && curComponent.value) {
       positionMoveKey[keyCode](keyCode)
       e.preventDefault()
+      e.stopPropagation()
     } else if (keyCode === shiftKey) {
       isShiftDown = true
       composeStore.setIsShiftDownStatus(true)
