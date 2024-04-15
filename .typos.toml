@@ -10,6 +10,8 @@ SCHEM = "SCHEM"
 wheres = "wheres"
 Wheres = "Wheres"
 Parenthesed = "Parenthesed"
+pogress = "pogress"
+Pogress = "Pogress"
 
 [files]
 extend-exclude = [
