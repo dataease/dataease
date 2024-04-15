@@ -317,7 +317,13 @@ export function isMobile() {
     return false
   }
   const flag = navigator.userAgent.match(/(phone|pad|pod|iPhone|iPod|ios|iPad|Android|Mobile|BlackBerry|IEMobile|MQQBrowser|JUC|Fennec|wOSBrowser|BrowserNG|WebOS|Symbian|Windows Phone)/i)
-  return flag
+  return flag && !isTablet()
+}
+
+export function isTablet() {
+  var userAgent = navigator.userAgent
+  var tabletRegex = /iPad|Silk|Galaxy Tab|PlayBook|BlackBerry|(tablet|ipad|playbook)/i
+  return tabletRegex.test(userAgent)
 }
 
 export const isSameVueObj = (source, target) => {
