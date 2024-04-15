@@ -120,7 +120,10 @@
                   {{ uiInfo['ui.demo.tips'].paramValue }}
                 </div>
               </div>
-              <div class="login-msg">
+              <div
+                class="login-msg"
+                :class="{'login-msg-warn': pwdPeriodWarn}"
+              >
                 {{ msg }}
               </div>
             </el-form>
@@ -184,7 +187,6 @@
             />
           </el-col>
         </el-row>
-
       </div>
       <plugin-com
         v-if="loginTypes.includes(2) && loginForm.loginType === 2"
@@ -264,6 +266,9 @@ export default {
     },
     radioTypes() {
       return this.loginTypes && this.loginTypes.filter(item => item < 4 || item > 6) || []
+    },
+    pwdPeriodWarn() {
+      return this.$store.state.user.validityPeriod > 0 && this.$store.state.user.validityPeriod < 8
     }
   },
   watch: {
@@ -496,7 +501,11 @@ export default {
             loginType: this.loginForm.loginType
           }
           this.$store.dispatch('user/login', user).then(() => {
-            this.$router.push({ path: this.redirect || '/' })
+            if (this.pwdPeriodWarn) {
+              this.showPwdPeriodMsg()
+            } else {
+              this.$router.push({ path: this.redirect || '/' })
+            }
             this.loading = false
           }).catch((e) => {
             this.loading = false
@@ -506,6 +515,11 @@ export default {
           return false
         }
       })
+    },
+    showPwdPeriodMsg() {
+      setTimeout(() => {
+        this.$router.push({ path: this.redirect || '/' })
+      }, 2000)
     },
     showMessage() {
       showMultiLoginMsg()
@@ -648,6 +662,9 @@ export default {
     padding: 0 40px;
     color: $--color-danger;
     text-align: center;
+  }
+  .login-msg-warn {
+    color: $--color-warning !important;
   }
 
   .login-image {

@@ -20,7 +20,9 @@ const getDefaultState = () => {
     permissions: [],
     language: getLanguage(),
     uiInfo: null,
-    linkToken: null
+    linkToken: null,
+    validityPeriod: -1,
+    loginMsg: null
   }
 }
 
@@ -69,6 +71,9 @@ const mutations = {
   },
   SET_PASSWORD_MODIFIED: (state, passwordModified) => {
     state.passwordModified = passwordModified
+  },
+  SET_VALIDITY_PERIOD: (state, validityPeriod) => {
+    state.validityPeriod = validityPeriod
   }
 }
 
@@ -79,8 +84,15 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password, loginType: loginType }).then(response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
         commit('SET_LOGIN_MSG', null)
+        if (data.validityPeriod === 0) {
+          commit('SET_LOGIN_MSG', '密码已过期，请联系管理员进行密码重置！')
+          reject(null)
+          return
+        } else if (data.validityPeriod > 0 && data.validityPeriod < 8) {
+          commit('SET_LOGIN_MSG', `密码将于${data.validityPeriod}天后过期，为了不影响正常使用，请及时进行修改！`)
+        }
+        commit('SET_TOKEN', data.token)
         setToken(data.token)
         setTokenExp(data.expireTime)
         let passwordModified = true
@@ -92,8 +104,10 @@ const actions = {
         }
         commit('SET_PASSWORD_MODIFIED', passwordModified)
         localStorage.setItem('passwordModified', passwordModified)
+        commit('SET_VALIDITY_PERIOD', data.validityPeriod)
         resolve()
       }).catch(error => {
+        error?.response?.data?.message?.startsWith('pwdValidityPeriod') && commit('SET_LOGIN_MSG', '密码已过期，请联系管理员进行密码重置！')
         reject(error)
       })
     })

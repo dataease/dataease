@@ -126,6 +126,8 @@ public interface ParamConstants {
         LOGIN_LIMIT_RELIEVETIMES("loginlimit.relieveTimes"),
 
         LOGIN_LIMIT_OPEN("loginlimit.open"),
+        LOGIN_LIMIT_OPEN_MODIFY_PWD("loginlimit.openModifyPwd"),
+        LOGIN_LIMIT_PWD_CYCLE("loginlimit.pwdCycle"),
         LOCKED_EMAIL("loginlimit.lockedEmail"),
 
         SCAN_CREATE_USER("loginlimit.scanCreateUser"),
