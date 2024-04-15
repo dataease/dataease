@@ -52,17 +52,17 @@ const colorButtonClick = () => {
   padding-left: 5px;
   padding-top: 5px;
   &:hover {
-    padding-left: 4px;
-    padding-top: 4px;
-    border-width: 2px;
+    padding-left: 5px;
+    padding-top: 5px;
+    border-width: 1px;
     border-color: var(--ed-color-primary-99, #3370ff99);
   }
 }
 .color-button-active {
-  padding-left: 4px;
-  padding-top: 4px;
-  border-width: 2px;
-  border-color: var(--ed-color-primary);
+  padding-left: 5px;
+  padding-top: 5px;
+  border-width: 1px;
+  border-color: var(--ed-color-primary) !important;
 }
 
 .color-button-inner {
