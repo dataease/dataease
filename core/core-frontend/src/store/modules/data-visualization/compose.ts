@@ -104,7 +104,7 @@ export const composeStore = defineStore('compose', {
         areaData.components = []
         return
       }
-      if (areaData.components.length > 0 && areaData.style.width === 0) {
+      if (areaData.components.length > 0) {
         // 计算组合区域
         this.calcComposeArea()
       }
