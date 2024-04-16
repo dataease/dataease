@@ -48,7 +48,7 @@ const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
 const { curComponent, dvInfo, editMode, tabMoveOutComponentId } = storeToRefs(dvMainStore)
-const { editorMap } = storeToRefs(composeStore)
+const { editorMap, areaData } = storeToRefs(composeStore)
 const emits = defineEmits(['scrollCanvasToTop'])
 const props = defineProps({
   isEdit: {
@@ -211,6 +211,14 @@ watch(
     nextTick(() => {
       initWatermark()
     })
+  },
+  { deep: true }
+)
+
+watch(
+  () => areaData.value.components,
+  () => {
+    groupAreaClickChange()
   },
   { deep: true }
 )
@@ -397,13 +405,12 @@ const hideArea = () => {
     },
     components: []
   })
-  groupAreaChange(false)
 }
 
 const createGroup = () => {
   // 获取选中区域的组件数据
-  const areaData = getSelectArea()
-  if (areaData.length <= 1) {
+  const areaDataLocal = getSelectArea()
+  if (areaDataLocal.length <= 1) {
     hideArea()
     return
   }
@@ -414,7 +421,7 @@ const createGroup = () => {
     left = Infinity
   let right = -Infinity,
     bottom = -Infinity
-  areaData.forEach(component => {
+  areaDataLocal.forEach(component => {
     let style = { left: 0, top: 0, right: 0, bottom: 0 }
     if (component.component == 'Group') {
       component.propValue.forEach(item => {
@@ -454,13 +461,12 @@ const createGroup = () => {
   // 设置选中区域位移大小信息和区域内的组件数据
   composeStore.setAreaData({
     style: areaDataStyle,
-    components: areaData
+    components: areaDataLocal
   })
   // 如果有组件被group选中 取消当前画布选中的组件
-  if (areaData.length > 0) {
+  if (areaDataLocal.length > 0) {
     dvMainStore.setCurComponent({ component: null, index: null })
     isShowArea.value = false
-    groupAreaChange(true, areaDataStyle)
   }
 }
 
@@ -1352,22 +1358,29 @@ const contextMenuShow = computed(() => {
 
 const markLineShow = computed(() => isMainCanvas(canvasId.value))
 
-const groupAreaChange = (showArea, style?) => {
-  nextTick(() => {
-    if (showArea) {
-      const groupArea = findNewComponent('GroupArea', 'GroupArea')
-      groupArea.style.left = style.left
-      groupArea.style.top = style.top
-      groupArea.style.width = style.width
-      groupArea.style.height = style.height
-      dvMainStore.addComponent({ component: groupArea, index: undefined })
-    } else {
-      const groupAreaHis = componentData.value.filter(ele => ele.id === 100000001)
-      if (groupAreaHis && groupAreaHis.length > 0) {
-        dvMainStore.deleteComponentById(100000001)
-      }
+// 点击事件导致选择区域变更
+const groupAreaClickChange = () => {
+  let groupAreaCom
+  const groupAreaHis = componentData.value.filter(ele => ele.id === 100000001)
+  if (groupAreaHis && groupAreaHis.length > 0) {
+    groupAreaCom = groupAreaHis[0]
+  }
+  // 显示Group视括组件
+  if (areaData.value.components.length > 1) {
+    // 重新计算边界
+    composeStore.calcComposeArea()
+    if (!groupAreaCom) {
+      // 如果不存在 新建视括组件
+      groupAreaCom = findNewComponent('GroupArea', 'GroupArea')
+      dvMainStore.addComponent({ component: groupAreaCom, index: undefined })
     }
-  })
+    groupAreaCom.style.left = areaData.value.style.left
+    groupAreaCom.style.top = areaData.value.style.top
+    groupAreaCom.style.width = areaData.value.style.width
+    groupAreaCom.style.height = areaData.value.style.height
+  } else if (groupAreaCom) {
+    dvMainStore.deleteComponentById(100000001)
+  }
 }
 
 onMounted(() => {
