@@ -2829,9 +2829,11 @@ public class DataSetTableService {
             private void visitBinaryExpr(BinaryExpression expr, String operator) {
                 boolean hasSubBinaryExpression = false;
                 if(expr.getLeftExpression() instanceof Parenthesis){
-                    Parenthesis parenthesis = (Parenthesis)expr.getLeftExpression();
-                    BinaryExpression leftBinaryExpression = (BinaryExpression)parenthesis.getExpression();
-                    hasSubBinaryExpression = leftBinaryExpression instanceof AndExpression || leftBinaryExpression instanceof OrExpression;
+                    try {
+                        Parenthesis parenthesis = (Parenthesis)expr.getLeftExpression();
+                        BinaryExpression leftBinaryExpression = (BinaryExpression)parenthesis.getExpression();
+                        hasSubBinaryExpression = leftBinaryExpression instanceof AndExpression || leftBinaryExpression instanceof OrExpression;
+                    }catch (Exception e){}
                 }
                 if(expr.getLeftExpression() instanceof BinaryExpression){
                     try {
