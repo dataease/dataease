@@ -2,8 +2,10 @@ package io.dataease.dataset.manage;
 
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
+import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.chart.request.ChartExtRequest;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.dataset.dto.EnumValueRequest;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.dto.SqlLogDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
@@ -29,7 +31,6 @@ import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.constant.SqlPlaceholderConstants;
-import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Field2SQLObj;
 import io.dataease.engine.trans.Order2SQLObj;
@@ -436,18 +437,6 @@ public class DatasetDataManage {
             // build query sql
             SQLMeta sqlMeta = new SQLMeta();
             Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-            // 计算字段先完成内容替换
-            if (Objects.equals(field.getExtField(), ExtFieldConstant.EXT_CALC)) {
-                String originField = Utils.calcFieldRegex(field.getOriginName(), sqlMeta.getTable(), allFields, crossDs, dsMap);
-                // 此处是数据集预览，获取数据库原始字段枚举值等操作使用，如果遇到聚合函数则将originField设置为null
-                for (String func : FunctionConstant.AGG_FUNC) {
-                    if (Utils.matchFunction(func, originField)) {
-                        originField = null;
-                        break;
-                    }
-                }
-                field.setOriginName(originField);
-            }
 
             // 获取allFields
             List<DatasetTableFieldDTO> fields = Collections.singletonList(field);
@@ -506,5 +495,128 @@ public class DatasetDataManage {
             result.addAll(l);
         }
         return result.stream().toList();
+    }
+
+    public List<Map<String, Object>> getFieldEnumObj(EnumValueRequest request) throws Exception {
+        List<Long> ids = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(request.getQueryId())) {
+            ids.add(request.getQueryId());
+        }
+        if (ObjectUtils.isNotEmpty(request.getDisplayId())) {
+            ids.add(request.getDisplayId());
+        }
+
+        if (CollectionUtils.isEmpty(ids)) {
+            return Collections.emptyList();
+        }
+        if (ids.size() == 2 && Objects.equals(ids.get(0), ids.get(1))) {
+            ids.remove(1);
+        }
+
+        SQLMeta sqlMeta = new SQLMeta();
+        DatasetGroupInfoDTO datasetGroupInfoDTO = null;
+        List<DatasetTableFieldDTO> fields = new ArrayList<>();
+        Map<String, Object> sqlMap = null;
+        boolean crossDs = false;
+        Map<Long, DatasourceSchemaDTO> dsMap = null;
+
+        for (Long id : ids) {
+            DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);
+            if (field == null) {
+                DEException.throwException(Translator.get("i18n_no_field"));
+            }
+            List<DatasetTableFieldDTO> allFields = new ArrayList<>();
+            // 根据图表计算字段，获取数据集
+            Long datasetGroupId;
+            if (field.getDatasetGroupId() == null && field.getChartId() != null) {
+                ChartViewDTO chart = chartViewManege.getChart(field.getChartId());
+                datasetGroupId = chart.getTableId();
+                allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
+            } else {
+                datasetGroupId = field.getDatasetGroupId();
+            }
+            datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
+
+            sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
+            String sql = (String) sqlMap.get("sql");
+
+            allFields.addAll(datasetGroupInfoDTO.getAllFields());
+
+            dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+            crossDs = Utils.isCrossDs(dsMap);
+            if (!crossDs) {
+                sql = Utils.replaceSchemaAlias(sql, dsMap);
+            }
+
+            // build query sql
+            Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
+            fields.add(field);
+        }
+
+        // 获取allFields
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+        if (ObjectUtils.isEmpty(fields)) {
+            DEException.throwException(Translator.get("i18n_no_column_permission"));
+        }
+        buildFieldName(sqlMap, fields);
+
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+        boolean needOrder = Utils.isNeedOrder(dsList);
+
+        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
+        TokenUserBO user = AuthUtils.getUser();
+        if (user != null) {
+            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+        }
+
+        // 排序
+        if (ObjectUtils.isNotEmpty(request.getSortId())) {
+            DatasetTableFieldDTO field = datasetTableFieldManage.selectById(request.getSortId());
+            if (field == null) {
+                DEException.throwException(Translator.get("i18n_no_field"));
+            }
+            DeSortField deSortField = new DeSortField();
+            BeanUtils.copyBean(deSortField, field);
+            deSortField.setOrderDirection(request.getSort());
+            datasetGroupInfoDTO.setSortFields(Collections.singletonList(deSortField));
+        }
+
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, crossDs, dsMap);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
+        Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
+        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
+        querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
+        logger.info("calcite data enum sql: " + querySQL);
+
+        // 通过数据源请求数据
+        // 调用数据源的calcite获得data
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setQuery(querySQL);
+        datasourceRequest.setDsList(dsMap);
+        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+        List<String[]> dataList = (List<String[]>) data.get("data");
+        List<Map<String, Object>> previewData = new ArrayList<>();
+
+        if (ObjectUtils.isNotEmpty(dataList)) {
+            for (String[] ele : dataList) {
+                Map<String, Object> map = new LinkedHashMap<>();
+                for (int i = 0; i < ele.length; i++) {
+                    String val = ele[i];
+                    DatasetTableFieldDTO field = fields.get(i);
+                    if (desensitizationList.containsKey(field.getDataeaseName())) {
+                        String str = ChartDataBuild.desensitizationValue(desensitizationList.get(field.getDataeaseName()), val);
+                        map.put(field.getId() + "", str);
+                    } else {
+                        map.put(field.getId() + "", val);
+                    }
+                }
+                previewData.add(map);
+            }
+        }
+        return previewData;
     }
 }
