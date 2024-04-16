@@ -198,23 +198,24 @@ const dragover = () => {
 }
 
 const drop = e => {
-  const componentInfo: ComponentInfo = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
-  if (!componentInfo.id) return
-  const checkedFields = []
-  const checkedFieldsMap = {}
-  datasetFieldList.value.forEach(ele => {
-    if (ele.tableId === componentInfo.datasetId) {
-      checkedFields.push(ele.id)
-      checkedFieldsMap[ele.id] = componentInfo.id
-    }
-  })
-  list.value.push({
-    ...infoFormat(componentInfo),
-    auto: true,
-    optionValueSource: 1,
-    checkedFields,
-    checkedFieldsMap,
-    displayType: `${componentInfo.deType}`
+  const componentInfoArr: ComponentInfo[] = JSON.parse(e.dataTransfer.getData('dimension') || '{}')
+  componentInfoArr.forEach(componentInfo => {
+    const checkedFields = []
+    const checkedFieldsMap = {}
+    datasetFieldList.value.forEach(ele => {
+      if (ele.tableId === componentInfo.datasetId) {
+        checkedFields.push(ele.id)
+        checkedFieldsMap[ele.id] = componentInfo.id
+      }
+    })
+    list.value.push({
+      ...infoFormat(componentInfo),
+      auto: true,
+      optionValueSource: 1,
+      checkedFields,
+      checkedFieldsMap,
+      displayType: `${componentInfo.deType}`
+    })
   })
   element.value.propValue = [...list.value]
   snapshotStore.recordSnapshotCache()

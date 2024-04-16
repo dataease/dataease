@@ -81,8 +81,17 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   defaultValue: any,
   selectValue: any,
   firstLoad: boolean,
-  multiple: boolean
+  multiple: boolean,
+  defaultMapValue: any,
+  optionValueSource: number
 ) => {
+  if (optionValueSource === 1) {
+    if (firstLoad && !selectValue?.length) {
+      return defaultValueCheck ? defaultMapValue : multiple ? [] : ''
+    }
+    return (selectValue?.length ? defaultMapValue : selectValue) || ''
+  }
+
   if (firstLoad && !selectValue?.length) {
     return defaultValueCheck ? defaultValue : multiple ? [] : ''
   }
@@ -134,7 +143,8 @@ const getOperator = (
   conditionValueF,
   conditionValueOperatorS,
   conditionValueS,
-  firstLoad
+  firstLoad,
+  optionValueSource
 ) => {
   const valueF = firstLoad ? defaultConditionValueF : conditionValueF
   const valueS = firstLoad ? defaultConditionValueS : conditionValueS
@@ -153,7 +163,11 @@ const getOperator = (
     return valueF === '' ? operatorS : operatorF
   }
 
-  return [1, 7].includes(+displayType) ? 'between' : multiple ? 'in' : 'eq'
+  return [1, 7].includes(+displayType)
+    ? 'between'
+    : multiple || optionValueSource === 1
+    ? 'in'
+    : 'eq'
 }
 
 export const searchQuery = (queryComponentList, filter, curComponentId, firstLoad) => {
@@ -184,6 +198,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               defaultValueCheck,
               timeType = 'fixed',
               defaultValue,
+              optionValueSource,
+              defaultMapValue,
               parameters = [],
               parametersCheck = false,
               isTree = false,
@@ -247,7 +263,9 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 defaultValue,
                 value,
                 firstLoad,
-                multiple
+                multiple,
+                defaultMapValue,
+                optionValueSource
               )
             }
             if (
@@ -273,7 +291,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 conditionValueF,
                 conditionValueOperatorS,
                 conditionValueS,
-                firstLoad
+                firstLoad,
+                optionValueSource
               )
               filter.push({
                 componentId: ele.id,
