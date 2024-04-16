@@ -49,6 +49,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
+  quotaExtData: {
+    type: Array,
+    required: true
+  },
   fieldsData: {
     type: Array,
     required: true
@@ -230,6 +234,7 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
               :chart="props.chart"
               :themes="themes"
               :quota-data="props.quotaData"
+              :quota-ext-data="props.quotaExtData"
               :property-inner="propertyInnerAll['assist-line']"
               @onAssistLineChange="onAssistLineChange"
             />

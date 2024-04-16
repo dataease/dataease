@@ -3,9 +3,9 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { DualAxes, DualAxesOptions } from '@antv/g2plot/esm/plots/dual-axes'
-import { getLabel, getPadding, getYAxis, getYAxisExt } from '../../common/common_antv'
+import { getAnalyse, getLabel, getPadding, getYAxis, getYAxisExt } from '../../common/common_antv'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep, isEmpty, defaultTo, map } from 'lodash-es'
+import { cloneDeep, isEmpty, defaultTo, map, filter } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   CHART_MIX_AXIS_TYPE,
@@ -113,6 +113,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       ]
     }
     const options = this.setupOptions(chart, initOptions)
+
     // 开始渲染
     const newChart = new DualAxes(container, options)
 
@@ -359,6 +360,15 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       }
     }
     return o
+  }
+
+  protected configAnalyse(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    const list = getAnalyse(chart)
+    const annotations = {
+      value: filter(list, l => l.axisType === 'left'),
+      valueExt: filter(list, l => l.axisType === 'right')
+    }
+    return { ...options, annotations }
   }
 
   protected setupOptions(chart: Chart, options: DualAxesOptions): DualAxesOptions {
