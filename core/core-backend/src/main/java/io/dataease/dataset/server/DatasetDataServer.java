@@ -2,6 +2,7 @@ package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DatasetDataApi;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.dataset.dto.EnumValueRequest;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
@@ -45,14 +46,24 @@ public class DatasetDataServer implements DatasetDataApi {
 
     @Override
     public List<String> getFieldEnum(List<Long> ids) {
-        try{
-           return datasetDataManage.getFieldEnum(ids);
-        }catch (Exception e){
+        try {
+            return datasetDataManage.getFieldEnum(ids);
+        } catch (Exception e) {
             e.printStackTrace();
             LogUtil.error(e);
             return null;
         }
+    }
 
+    @Override
+    public List<Map<String, Object>> getFieldEnumObj(EnumValueRequest request) throws Exception {
+        try {
+            return datasetDataManage.getFieldEnumObj(request);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtil.error(e);
+            return null;
+        }
     }
 
     @Override
