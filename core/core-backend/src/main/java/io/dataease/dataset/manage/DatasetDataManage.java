@@ -599,10 +599,22 @@ public class DatasetDataManage {
         datasourceRequest.setDsList(dsMap);
         Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
         List<String[]> dataList = (List<String[]>) data.get("data");
-        List<Map<String, Object>> previewData = new ArrayList<>();
+        Map<String, String[]> distinctData = new LinkedHashMap<>();
+        for (String[] arr : dataList) {
+            String key = Arrays.toString(arr);
+            if (!distinctData.containsKey(key)) {
+                distinctData.put(key, arr);
+            }
+        }
 
-        if (ObjectUtils.isNotEmpty(dataList)) {
-            for (String[] ele : dataList) {
+        List<String[]> distinctDataList = new ArrayList<>();
+        for (Map.Entry<String, String[]> ele : distinctData.entrySet()) {
+            distinctDataList.add(ele.getValue());
+        }
+
+        List<Map<String, Object>> previewData = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(distinctDataList)) {
+            for (String[] ele : distinctDataList) {
                 Map<String, Object> map = new LinkedHashMap<>();
                 for (int i = 0; i < ele.length; i++) {
                     String val = ele[i];
