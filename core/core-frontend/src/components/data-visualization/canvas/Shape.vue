@@ -644,6 +644,19 @@ const handleMouseDownOnPoint = (point, e) => {
 
   const needLockProportion = isNeedLockProportion()
   const originRadio = curComponent.value.aspectRatio
+  const baseGroupComponentsRadio = {}
+  // 计算初始状态 分组内组件宽高占比
+  if (areaData.value.components.length > 0) {
+    areaData.value.components.forEach(groupComponent => {
+      baseGroupComponentsRadio[groupComponent.id] = {
+        topRadio: (groupComponent.style.top - style.top) / style.height,
+        leftRadio: (groupComponent.style.left - style.left) / style.width,
+        widthRadio: groupComponent.style.width / style.width,
+        heightRadio: groupComponent.style.height / style.height
+      }
+    })
+  }
+
   const move = moveEvent => {
     // 第一次点击时也会触发 move，所以会有“刚点击组件但未移动，组件的大小却改变了”的情况发生
     // 因此第一次点击时不触发 move 事件
@@ -684,7 +697,7 @@ const handleMouseDownOnPoint = (point, e) => {
     }
     calculateRadioComponentPositionAndSize(point, style, symmetricPoint)
 
-    dvMainStore.setShapeStyle(style, areaData.value.components, 'resize')
+    dvMainStore.setShapeStyle(style, areaData.value.components, 'resize', baseGroupComponentsRadio)
     // 矩阵逻辑 如果当前是仪表板（矩阵模式）则要进行矩阵重排
     dashboardActive.value && emit('onResizing', moveEvent)
     //如果当前组件是Group分组 则要进行内部组件深度计算
