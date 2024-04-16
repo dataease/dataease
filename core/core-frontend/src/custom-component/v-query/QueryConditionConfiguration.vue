@@ -240,6 +240,8 @@ const computedTree = computed(() => {
 
 const handleDatasetChange = () => {
   curComponent.value.field.id = ''
+  curComponent.value.displayId = ''
+  curComponent.value.sortId = ''
   getOptions(curComponent.value.dataset.id, curComponent.value)
 }
 
@@ -672,6 +674,7 @@ const parameterCompletion = () => {
   const attributes = {
     timeType: 'fixed',
     required: false,
+    defaultMapValue: [],
     parametersStart: null,
     conditionType: 0,
     conditionValueOperatorF: 'eq',
@@ -691,6 +694,9 @@ const parameterCompletion = () => {
     timeNumRange: 0,
     relativeToCurrentTypeRange: 'year',
     aroundRange: 'f',
+    displayId: '',
+    sortId: '',
+    sort: 'asc',
     arbitraryTimeRange: new Date(),
     setTimeRange: false,
     showEmpty: false,
@@ -742,10 +748,6 @@ const handleCondition = item => {
   if (!valueSource.value.length) {
     valueSource.value.push('')
     valueSource.value.push('')
-  }
-  curComponent.value.sortField = curComponent.value.sortField ?? {
-    id: '',
-    sortType: 'asc'
   }
   parameterCompletion()
   nextTick(() => {
@@ -1330,7 +1332,7 @@ defineExpose({
                 <div class="value">
                   <el-select
                     @change="handleFieldChange"
-                    placeholder="请选择展示字段"
+                    placeholder="查询字段"
                     v-model="curComponent.field.id"
                   >
                     <template v-if="curComponent.field.id" #prefix>
@@ -1374,25 +1376,67 @@ defineExpose({
                   </el-select>
                 </div>
                 <div class="value">
-                  <el-select
-                    clearable
-                    placeholder="请选择排序字段"
-                    v-model="curComponent.sortField.id"
-                    class="sort-field"
-                    @change="handleFieldChange"
-                  >
-                    <template v-if="curComponent.sortField.id" #prefix>
+                  <el-select placeholder="显示字段" v-model="curComponent.displayId">
+                    <template v-if="curComponent.displayId" #prefix>
                       <el-icon>
                         <Icon
                           :name="`field_${
                             fieldType[
-                              getDetype(curComponent.sortField.id, curComponent.dataset.fields)
+                              getDetype(curComponent.displayId, curComponent.dataset.fields)
                             ]
                           }`"
                           :className="`field-icon-${
                             fieldType[
-                              getDetype(curComponent.sortField.id, curComponent.dataset.fields)
+                              getDetype(curComponent.displayId, curComponent.dataset.fields)
                             ]
+                          }`"
+                        ></Icon>
+                      </el-icon>
+                    </template>
+                    <el-option
+                      v-for="ele in curComponent.dataset.fields.filter(
+                        ele =>
+                          ele.deType === +curComponent.displayType ||
+                          ([3, 4].includes(ele.deType) && +curComponent.displayType === 2)
+                      )"
+                      :key="ele.id"
+                      :label="ele.name"
+                      :value="ele.id"
+                      :disabled="ele.desensitized"
+                    >
+                      <div
+                        class="flex-align-center icon"
+                        :title="ele.desensitized ? '脱敏字段，不能被设置为查询条件' : ''"
+                      >
+                        <el-icon>
+                          <Icon
+                            :name="`field_${fieldType[ele.deType]}`"
+                            :className="`field-icon-${fieldType[ele.deType]}`"
+                          ></Icon>
+                        </el-icon>
+                        <span>
+                          {{ ele.name }}
+                        </span>
+                      </div>
+                    </el-option>
+                  </el-select>
+                </div>
+                <div class="value">
+                  <el-select
+                    clearable
+                    placeholder="请选择排序字段"
+                    v-model="curComponent.sortId"
+                    class="sort-field"
+                    @change="handleFieldChange"
+                  >
+                    <template v-if="curComponent.sortId" #prefix>
+                      <el-icon>
+                        <Icon
+                          :name="`field_${
+                            fieldType[getDetype(curComponent.sortId, curComponent.dataset.fields)]
+                          }`"
+                          :className="`field-icon-${
+                            fieldType[getDetype(curComponent.sortId, curComponent.dataset.fields)]
                           }`"
                         ></Icon>
                       </el-icon>
@@ -1426,7 +1470,7 @@ defineExpose({
                   </el-select>
                   <el-select
                     class="sort-type"
-                    v-model="curComponent.sortField.sortType"
+                    v-model="curComponent.sort"
                     @change="handleFieldChange"
                   >
                     <el-option label="升序" value="asc" />

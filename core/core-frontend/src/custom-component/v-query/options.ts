@@ -15,10 +15,19 @@ const infoFormat = (obj: ComponentInfo) => {
       name,
       deType
     },
-    sortField: {
-      id: '',
-      sortType: 'asc'
-    },
+    displayId: '',
+    sortId: '',
+    sort: 'asc',
+    defaultMapValue: [],
+    conditionType: 0,
+    conditionValueOperatorF: 'eq',
+    conditionValueF: '',
+    conditionValueOperatorS: 'like',
+    conditionValueS: '',
+    defaultConditionValueOperatorF: 'eq',
+    defaultConditionValueF: '',
+    defaultConditionValueOperatorS: 'like',
+    defaultConditionValueS: '',
     timeType: 'fixed',
     relativeToCurrent: 'custom',
     required: false,

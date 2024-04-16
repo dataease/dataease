@@ -1,15 +1,19 @@
 <script lang="ts" setup>
 import { ref, toRefs, PropType, onBeforeMount, shallowRef, watch, nextTick, computed } from 'vue'
-import { getEnumValue } from '@/api/dataset'
+import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
 import { cloneDeep, debounce } from 'lodash-es'
 
 interface SelectConfig {
   selectValue: any
+  defaultMapValue: any
   defaultValue: any
   checkedFieldsMap: object
   displayType: string
   showEmpty: boolean
   id: string
+  displayId: string
+  sort: string
+  sortId: string
   checkedFields: string[]
   field: {
     id: string
@@ -44,11 +48,32 @@ const props = defineProps({
   }
 })
 const { config } = toRefs(props)
-
+let enumValueArr = []
 const selectValue = ref()
 const loading = ref(false)
 const multiple = ref(false)
 const options = shallowRef([])
+
+const setDefaultMapValue = arr => {
+  const { displayId, field } = config.value
+  if (!displayId || displayId === field?.id) {
+    return []
+  }
+  let defaultMapValue = {}
+  let defaultValue = []
+  arr.forEach(ele => {
+    defaultMapValue[ele] = []
+  })
+  enumValueArr.forEach(ele => {
+    if (defaultMapValue[ele[displayId]]) {
+      defaultMapValue[ele[displayId]].push(ele[field?.id])
+    }
+  })
+  Object.values(defaultMapValue).forEach(ele => {
+    defaultValue = [...defaultValue, ...(ele as unknown as string[])]
+  })
+  return defaultValue
+}
 
 const handleValueChange = () => {
   const value = Array.isArray(selectValue.value) ? [...selectValue.value] : selectValue.value
@@ -56,10 +81,16 @@ const handleValueChange = () => {
     config.value.selectValue = Array.isArray(selectValue.value)
       ? [...selectValue.value]
       : selectValue.value
+    config.value.defaultMapValue = setDefaultMapValue(
+      Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+    )
     return
   }
 
   config.value.defaultValue = value
+  config.value.defaultMapValue = setDefaultMapValue(
+    Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+  )
 }
 
 const displayTypeChange = () => {
@@ -68,7 +99,7 @@ const displayTypeChange = () => {
   selectValue.value = config.value.multiple ? [] : undefined
 }
 
-const handleFieldIdChange = (val: string[]) => {
+const handleFieldIdDefaultChange = (val: string[]) => {
   loading.value = true
   getEnumValue(val)
     .then(res => {
@@ -80,6 +111,40 @@ const handleFieldIdChange = (val: string[]) => {
             value: ele
           }
         })
+    })
+    .finally(() => {
+      loading.value = false
+      if (config.value.defaultValueCheck) {
+        selectValue.value = Array.isArray(config.value.defaultValue)
+          ? [...config.value.defaultValue]
+          : config.value.defaultValue
+      } else {
+        selectValue.value = Array.isArray(selectValue.value)
+          ? [...selectValue.value]
+          : selectValue.value
+      }
+      setEmptyData()
+    })
+}
+
+const handleFieldIdChange = (val: EnumValue) => {
+  enumValueArr = []
+  loading.value = true
+  enumValueObj(val)
+    .then(res => {
+      enumValueArr = res || []
+      options.value = [
+        ...new Set(
+          (res || []).map(ele => {
+            return ele[val.displayId || val.queryId]
+          })
+        )
+      ].map(ele => {
+        return {
+          label: ele,
+          value: ele
+        }
+      })
     })
     .finally(() => {
       loading.value = false
@@ -181,7 +246,12 @@ watch(
 )
 
 watch(
-  () => config.value.field.id,
+  [
+    () => config.value.field.id,
+    () => config.value.displayId,
+    () => config.value.sort,
+    () => config.value.sortId
+  ],
   val => {
     if (!val) return
     debounceOptions(1)
@@ -214,19 +284,30 @@ watch(
 
 const setOptions = (num: number) => {
   if (num !== config.value.optionValueSource) return
-  const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource } = config.value
+  const {
+    optionValueSource,
+    checkedFieldsMap,
+    checkedFields,
+    field,
+    valueSource,
+    displayId,
+    sort,
+    sortId
+  } = config.value
   switch (optionValueSource) {
     case 0:
       const arr = Object.values(checkedFieldsMap).filter(ele => !!ele) as string[]
       if (!!checkedFields.length && !!arr.length) {
-        handleFieldIdChange(checkedFields.map(ele => checkedFieldsMap[ele]).filter(ele => !!ele))
+        handleFieldIdDefaultChange(
+          checkedFields.map(ele => checkedFieldsMap[ele]).filter(ele => !!ele)
+        )
       } else {
         options.value = []
       }
       break
     case 1:
       if (field.id) {
-        handleFieldIdChange([field.id])
+        handleFieldIdChange({ queryId: field.id, displayId: displayId || field.id, sort, sortId })
       } else {
         options.value = []
       }

@@ -11,6 +11,13 @@ export interface DatasetOrFolder {
   allFields?: Array<{}>
 }
 
+export interface EnumValue {
+  queryId: string
+  displayId?: string
+  sortId?: string
+  sort?: string
+}
+
 interface Fields {
   fields: Array<{}>
   data: Array<{}>
@@ -72,6 +79,12 @@ export const createDatasetTree = async (data: DatasetOrFolder): Promise<IRespons
 // rename
 export const renameDatasetTree = async (data: DatasetOrFolder): Promise<IResponse> => {
   return request.post({ url: '/datasetTree/rename', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const enumValueObj = async (data: EnumValue): Promise<Record<string, string>[]> => {
+  return request.post({ url: '/datasetData/enumValueObj', data }).then(res => {
     return res?.data
   })
 }

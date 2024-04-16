@@ -9,7 +9,8 @@ import {
   nextTick,
   onBeforeMount,
   provide,
-  h
+  h,
+  unref
 } from 'vue'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
@@ -289,7 +290,14 @@ const realQuota = computed(() => {
 provide('quotaData', realQuota)
 
 const startToMove = (e, item) => {
-  e.dataTransfer.setData('dimension', JSON.stringify({ ...item, datasetId: view.value.tableId }))
+  e.dataTransfer.setData(
+    'dimension',
+    JSON.stringify(
+      item
+        .filter(ele => ele.id)
+        .map(ele => ({ ...cloneDeep(unref(ele)), datasetId: view.value.tableId }))
+    )
+  )
 }
 
 const dimensionItemChange = () => {
@@ -785,7 +793,6 @@ const onChangeYAxisForm = val => {
 }
 
 const onChangeYAxisExtForm = val => {
-  console.log('onChangeYAxisExtForm', val)
   view.value.customStyle.yAxisExt = val
   renderChart(view.value)
 }
@@ -1297,7 +1304,53 @@ const setActiveCtrl = (ele, type = 'dimension') => {
   activeChild.value.push(ele)
 }
 
+const setActiveShift = (ele, type = 'dimension') => {
+  const activeChild = type === 'dimension' ? activeDimension : activeQuota
+  const deactivateChild = type === 'quota' ? activeDimension : activeQuota
+  const dataArr = type === 'dimension' ? dimensionData : quotaData
+  deactivateChild.value = []
+  const dimensionDataId = dataArr.value.map(ele => ele.id)
+  const dimensionDataActiveChild = activeChild.value.filter(ele => dimensionDataId.includes(ele.id))
+  if (!dimensionDataActiveChild.length) {
+    const index = activeChild.value.findIndex(item => item.id === ele.id)
+    if (index !== -1) {
+      activeChild.value.splice(index, 1)
+      return
+    }
+    activeChild.value.push(ele)
+  } else {
+    const startItx = dataArr.value.findIndex(
+      item => item.id === dimensionDataActiveChild[dimensionDataActiveChild.length - 1].id
+    )
+    const endItx = dataArr.value.findIndex(item => item.id === ele.id)
+    if (startItx === endItx) return
+    if (startItx > endItx) {
+      activeChild.value = [...activeChild.value, ...dataArr.value.slice(endItx, startItx)]
+    }
+    if (startItx < endItx) {
+      activeChild.value = [...activeChild.value, ...dataArr.value.slice(startItx + 1, endItx + 1)]
+    }
+  }
+}
+
 const isDrag = ref(false)
+
+const dragStartD = (e: DragEvent) => {
+  isDrag.value = true
+  setTimeout(() => {
+    isDraggingItem.value = true
+  }, 0)
+}
+
+const singleDragStartD = (e: DragEvent, ele, type) => {
+  const activeChild = type === 'dimension' ? activeDimension : activeQuota
+  const deactivateChild = type === 'quota' ? activeDimension : activeQuota
+  deactivateChild.value = []
+  if (!activeChild.value.length) {
+    activeChild.value = [unref(ele)]
+  }
+  startToMove(e, unref(activeDimension.value))
+}
 
 const dragStart = (e: DragEvent) => {
   isDrag.value = true
@@ -1313,7 +1366,6 @@ const singleDragStart = (e: DragEvent, ele, type) => {
   if (!activeChild.value.length) {
     activeChild.value = [ele]
   }
-  dragStart(e)
 }
 
 const dragEnd = () => {
@@ -2187,11 +2239,12 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                     @click.ctrl="setActiveCtrl(element)"
                     @click.meta="setActiveCtrl(element)"
                     @click.exact="setActive(element)"
-                    @dragstart="$event => singleDragStart($event, element, 'dimension')"
+                    @click.shift="setActiveShift(element)"
+                    @dragstart="$event => singleDragStartD($event, element, 'dimension')"
                     :draggable="true"
                     @dragend="singleDragEnd"
                     class="item"
-                    v-for="element in state.dimensionData"
+                    v-for="element in dimensionData"
                     :key="element.id"
                   >
                     <div
@@ -2241,7 +2294,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                       </el-dropdown>
                     </div>
                     <div
-                      @dragstart="dragStart"
+                      @dragstart="dragStartD"
                       :draggable="true"
                       @dragend="dragEnd"
                       v-if="activeDimension.map(itx => itx.id).includes(element.id)"
@@ -2314,6 +2367,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                     @click.ctrl="setActiveCtrl(element, 'quota')"
                     @click.meta="setActiveCtrl(element, 'quota')"
                     @click.exact="setActive(element, 'quota')"
+                    @click.shift="setActiveShift(element, 'quota')"
                     class="item"
                     @dragstart="$event => singleDragStart($event, element, 'quota')"
                     :draggable="true"
