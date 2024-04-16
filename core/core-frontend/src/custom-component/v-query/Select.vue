@@ -60,7 +60,7 @@ const setDefaultMapValue = arr => {
     return []
   }
   let defaultMapValue = {}
-  let defaulValue = []
+  let defaultValue = []
   arr.forEach(ele => {
     defaultMapValue[ele] = []
   })
@@ -70,9 +70,9 @@ const setDefaultMapValue = arr => {
     }
   })
   Object.values(defaultMapValue).forEach(ele => {
-    defaulValue = [...defaulValue, ...(ele as unknown as string[])]
+    defaultValue = [...defaultValue, ...(ele as unknown as string[])]
   })
-  return defaulValue
+  return defaultValue
 }
 
 const handleValueChange = () => {

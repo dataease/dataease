@@ -1306,9 +1306,9 @@ const setActiveCtrl = (ele, type = 'dimension') => {
 
 const setActiveShift = (ele, type = 'dimension') => {
   const activeChild = type === 'dimension' ? activeDimension : activeQuota
-  const deactiveChild = type === 'quota' ? activeDimension : activeQuota
+  const deactivateChild = type === 'quota' ? activeDimension : activeQuota
   const dataArr = type === 'dimension' ? dimensionData : quotaData
-  deactiveChild.value = []
+  deactivateChild.value = []
   const dimensionDataId = dataArr.value.map(ele => ele.id)
   const dimensionDataActiveChild = activeChild.value.filter(ele => dimensionDataId.includes(ele.id))
   if (!dimensionDataActiveChild.length) {
@@ -1344,8 +1344,8 @@ const dragStartD = (e: DragEvent) => {
 
 const singleDragStartD = (e: DragEvent, ele, type) => {
   const activeChild = type === 'dimension' ? activeDimension : activeQuota
-  const deactiveChild = type === 'quota' ? activeDimension : activeQuota
-  deactiveChild.value = []
+  const deactivateChild = type === 'quota' ? activeDimension : activeQuota
+  deactivateChild.value = []
   if (!activeChild.value.length) {
     activeChild.value = [unref(ele)]
   }
