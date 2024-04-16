@@ -588,7 +588,7 @@ public class DatasetDataManage {
         Field2SQLObj.field2sqlObj(sqlMeta, fields, crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
-        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
+        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, 1000);
         querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("calcite data enum sql: " + querySQL);
 
