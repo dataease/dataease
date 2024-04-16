@@ -1702,36 +1702,42 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                           </el-icon>
                         </el-tooltip>
                       </div>
-                      <draggable
-                        :list="view.yAxisExt"
-                        :move="onMove"
-                        item-key="id"
-                        group="drag"
-                        animation="300"
-                        class="drag-block-style"
-                        :class="{ dark: themes === 'dark' }"
-                        @add="addYaxisExt"
-                        @change="e => onAxisChange(e, 'yAxisExt')"
+                      <div
+                        @drop="$event => drop($event, 'yAxisExt')"
+                        @dragenter="dragEnter"
+                        @dragover="$event => dragOver($event)"
                       >
-                        <template #item="{ element, index }">
-                          <quota-item
-                            :dimension-data="state.dimension"
-                            :quota-data="state.quota"
-                            :chart="view"
-                            :item="element"
-                            :index="index"
-                            type="quotaExt"
-                            :themes="props.themes"
-                            @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
-                            @onQuotaItemRemove="quotaItemRemove"
-                            @onNameEdit="showRename"
-                            @editItemFilter="showQuotaEditFilter"
-                            @editItemCompare="showQuotaEditCompare"
-                            @valueFormatter="valueFormatter"
-                          />
-                        </template>
-                      </draggable>
-                      <drag-placeholder :drag-list="view.yAxisExt" />
+                        <draggable
+                          :list="view.yAxisExt"
+                          :move="onMove"
+                          item-key="id"
+                          group="drag"
+                          animation="300"
+                          class="drag-block-style"
+                          :class="{ dark: themes === 'dark' }"
+                          @add="addYaxisExt"
+                          @change="e => onAxisChange(e, 'yAxisExt')"
+                        >
+                          <template #item="{ element, index }">
+                            <quota-item
+                              :dimension-data="state.dimension"
+                              :quota-data="state.quota"
+                              :chart="view"
+                              :item="element"
+                              :index="index"
+                              type="quotaExt"
+                              :themes="props.themes"
+                              @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
+                              @onQuotaItemRemove="quotaItemRemove"
+                              @onNameEdit="showRename"
+                              @editItemFilter="showQuotaEditFilter"
+                              @editItemCompare="showQuotaEditCompare"
+                              @valueFormatter="valueFormatter"
+                            />
+                          </template>
+                        </draggable>
+                        <drag-placeholder :drag-list="view.yAxisExt" />
+                      </div>
                     </el-row>
                     <!-- extBubble -->
                     <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
