@@ -22,3 +22,21 @@ CREATE TABLE `export_task`
 update `sys_user`
 set `pwd_reset_time` = `update_time`
 where `pwd_reset_time` IS NULL;
+
+UPDATE `area_mapping`
+set `county_code` = '330113',
+    `county_name` = '临平区'
+where `county_code` = '330103';
+UPDATE `area_mapping`
+set `county_code` = '330114',
+    `county_name` = '钱塘区'
+where `county_code` = '330104';
+
+UPDATE `area_mapping_global`
+set `county_code` = '156330113',
+    `county_name` = '临平区'
+where `county_code` = '156330103';
+UPDATE `area_mapping_global`
+set `county_code` = '156330114',
+    `county_name` = '钱塘区'
+where `county_code` = '156330104';
