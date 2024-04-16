@@ -202,7 +202,7 @@ public class AuthServer implements AuthApi {
             if (user.getIsAdmin()) {
                 result.put("validityPeriod", -1);
             } else {
-                Integer validityPeriod = systemParameterService.pwdValidityPeriod(user.getPwdResetTime());
+                Integer validityPeriod = systemParameterService.pwdValidityPeriod(user.getUserId());
                 if (validityPeriod.equals(0)) {
                     DataEaseException.throwException("pwdValidityPeriod");
                 }

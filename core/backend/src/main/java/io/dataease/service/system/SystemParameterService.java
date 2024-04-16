@@ -298,15 +298,17 @@ public class SystemParameterService {
         return param.getParamValue();
     }
 
-    public Integer pwdValidityPeriod(Long pwdTime) {
-        if (ObjectUtils.isEmpty(pwdTime)) {
-            return -1;
-        }
+    public Integer pwdValidityPeriod(Long userId) {
+
         Map<String, LoginLimitXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LoginLimitXpackService.class));
         boolean loginLimitPluginLoaded = beansOfType.keySet().size() > 0;
         if (!loginLimitPluginLoaded) return -1;
         String value = getValue(LOGIN_LIMIT_OPEN_MODIFY_PWD.getValue());
         if (StringUtils.isNotBlank(value) && StringUtils.equals("true", value)) {
+            long pwdTime = extSystemParameterMapper.queryPwdResetTime(userId);
+            if (ObjectUtils.isEmpty(pwdTime)) {
+                return -1;
+            }
             long dayTime = 24 * 3600L * 1000L;
             String pwdCycle = getValue(LOGIN_LIMIT_PWD_CYCLE.getValue());
             Long expireCycle = null;

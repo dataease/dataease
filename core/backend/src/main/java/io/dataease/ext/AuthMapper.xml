@@ -14,7 +14,6 @@
         <result column="is_admin" jdbcType="BIT" property="isAdmin"/>
         <result column="from" property="from"/>
         <result column="dept_name" property="deptName"/>
-        <result column="pwd_reset_time" jdbcType="BIGINT" property="pwdResetTime"/>
     </resultMap>
 
     <resultMap id="roleMap" type="io.dataease.auth.api.dto.CurrentRoleDto">
@@ -49,7 +48,6 @@
                password,
                enabled,
                email,
-               pwd_reset_time,
                phone,
                language,
                is_admin,

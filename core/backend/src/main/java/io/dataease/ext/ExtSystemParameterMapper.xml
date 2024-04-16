@@ -5,4 +5,8 @@
     <select id="email" resultType="string">
        select param_value from system_parameter where param_key=#{smtp.account}
     </select>
+
+    <select id="queryPwdResetTime" resultType="Long">
+        select pwd_reset_time from sys_user where user_id = #{userId}
+    </select>
 </mapper>
