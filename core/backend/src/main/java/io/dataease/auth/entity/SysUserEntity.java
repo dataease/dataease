@@ -6,9 +6,8 @@ import lombok.Data;
 import java.io.Serializable;
 
 @Data
-public class SysUserEntity implements Serializable {
 
-    private static final long serialVersionUID = 7606000748052557474L;
+public class SysUserEntity implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private Long userId;
@@ -45,6 +44,4 @@ public class SysUserEntity implements Serializable {
 
     @ApiModelProperty(hidden = true)
     private Integer from;
-    @ApiModelProperty(hidden = true)
-    private Long pwdResetTime;
 }
