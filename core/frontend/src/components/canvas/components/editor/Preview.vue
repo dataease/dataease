@@ -452,6 +452,7 @@ export default {
       return this.componentDataShow || []
     },
     ...mapState([
+      'sourceComponentData',
       'previewCanvasScale',
       'isClickComponent'
     ]),
@@ -824,10 +825,16 @@ export default {
     formatPoint(value, pointScale) {
       return value * pointScale
     },
+    findSourceComponent(id) {
+      return this.sourceComponentData.filter(element => element.id === id)[0]
+    },
     handleScaleChange() {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
         componentData.forEach(component => {
+          if (component.type === 'custom') {
+            component.style = deepCopy(this.findSourceComponent(component.id).style)
+          }
           Object.keys(component.style).forEach(key => {
             if (this.needToChangeHeight.includes(key)) {
               component.style[key] = this.format(component.style[key], this.scaleHeight)

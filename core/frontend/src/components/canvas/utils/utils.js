@@ -309,8 +309,6 @@ export function imgUrlTrans(url) {
 export function getNowCanvasComponentData(canvasId, showPosition) {
   if (showPosition && (showPosition.includes('email-task') || showPosition.includes('multiplexing'))) {
     return store.state.previewComponentData.filter(item => item.canvasId === canvasId)
-  } else if (showPosition === 'preview') {
-    return deepCopy(store.state.sourceComponentData.filter(item => item.canvasId === canvasId))
   } else {
     return store.state.componentData.filter(item => item.canvasId === canvasId)
   }
