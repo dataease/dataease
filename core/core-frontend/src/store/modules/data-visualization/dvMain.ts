@@ -258,7 +258,8 @@ export const dvMainStore = defineStore('dataVisualization', {
     setShapeStyle(
       { top, left, width, height, rotate },
       areaDataComponents = [],
-      moveType = 'move'
+      moveType = 'move',
+      baseGroupComponentsRadio = {}
     ) {
       if (this.curComponent.component === 'GroupArea' && areaDataComponents.length > 0) {
         const topOffset = top - this.curComponent.style.top
@@ -274,10 +275,13 @@ export const dvMainStore = defineStore('dataVisualization', {
           })
         } else {
           areaDataComponents.forEach(component => {
-            component.style.top = component.style.top + topOffset
-            component.style.left = component.style.left + leftOffset
-            component.style.width = component.style.width + widthOffset
-            component.style.height = component.style.height + heightOffset
+            const componentRadio = baseGroupComponentsRadio[component.id]
+            if (componentRadio) {
+              component.style.top = top + height * componentRadio.topRadio
+              component.style.left = left + width * componentRadio.leftRadio
+              component.style.width = width * componentRadio.widthRadio
+              component.style.height = height * componentRadio.heightRadio
+            }
           })
         }
       }
