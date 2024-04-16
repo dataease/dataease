@@ -55,7 +55,6 @@
       </div>
       <div
         v-for="item in isActive() ? getPointList() : []"
-        v-show="!isGroupArea"
         :key="item"
         class="shape-point"
         :style="getPointStyle(item)"
@@ -528,9 +527,9 @@ const handleMouseDownOnShape = e => {
       isFirst = false
     }
     // 修改当前组件样式
-    dvMainStore.setShapeStyle(pos, areaData.value.components)
+    dvMainStore.setShapeStyle(pos, areaData.value.components, 'move')
     // 等更新完当前组件的样式并绘制到屏幕后再判断是否需要吸附
-    // GroupArea是分组视括租金 不需要进行吸附
+    // GroupArea是分组视括组件 不需要进行吸附
     // 如果不使用 nextTick，吸附后将无法移动
     if (!isGroupArea.value) {
       nextTick(() => {
@@ -685,7 +684,7 @@ const handleMouseDownOnPoint = (point, e) => {
     }
     calculateRadioComponentPositionAndSize(point, style, symmetricPoint)
 
-    dvMainStore.setShapeStyle(style)
+    dvMainStore.setShapeStyle(style, areaData.value.components, 'resize')
     // 矩阵逻辑 如果当前是仪表板（矩阵模式）则要进行矩阵重排
     dashboardActive.value && emit('onResizing', moveEvent)
     //如果当前组件是Group分组 则要进行内部组件深度计算
