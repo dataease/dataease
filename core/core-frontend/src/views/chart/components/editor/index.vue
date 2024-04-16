@@ -1279,16 +1279,16 @@ const setActive = (ele, type = 'dimension') => {
     isCtrl.value = false
   }
   const activeChild = type === 'dimension' ? activeDimension : activeQuota
-  const deactiveChild = type === 'quota' ? activeDimension : activeQuota
-  deactiveChild.value = []
+  const deactivateChild = type === 'quota' ? activeDimension : activeQuota
+  deactivateChild.value = []
   activeChild.value = activeChild.value.some(item => item.id === ele.id) ? [] : [ele]
 }
 
 const setActiveCtrl = (ele, type = 'dimension') => {
   isCtrl.value = true
   const activeChild = type === 'dimension' ? activeDimension : activeQuota
-  const deactiveChild = type === 'quota' ? activeDimension : activeQuota
-  deactiveChild.value = []
+  const deactivateChild = type === 'quota' ? activeDimension : activeQuota
+  deactivateChild.value = []
   const index = activeChild.value.findIndex(item => item.id === ele.id)
   if (index !== -1) {
     activeChild.value.splice(index, 1)
@@ -1308,8 +1308,8 @@ const dragStart = (e: DragEvent) => {
 
 const singleDragStart = (e: DragEvent, ele, type) => {
   const activeChild = type === 'dimension' ? activeDimension : activeQuota
-  const deactiveChild = type === 'quota' ? activeDimension : activeQuota
-  deactiveChild.value = []
+  const deactivateChild = type === 'quota' ? activeDimension : activeQuota
+  deactivateChild.value = []
   if (!activeChild.value.length) {
     activeChild.value = [ele]
   }

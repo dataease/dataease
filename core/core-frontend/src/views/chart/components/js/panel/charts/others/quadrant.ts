@@ -72,7 +72,16 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     'legend-selector': ['icon', 'orient', 'color', 'fontSize', 'hPosition', 'vPosition'],
     'quadrant-selector': ['regionStyle', 'label', 'lineStyle']
   }
-  axis: AxisType[] = ['xAxis', 'yAxis', 'extBubble', 'filter', 'drill', 'extLabel', 'extTooltip']
+  axis: AxisType[] = [
+    'xAxis',
+    'yAxis',
+    'yAxisExt',
+    'extBubble',
+    'filter',
+    'drill',
+    'extLabel',
+    'extTooltip'
+  ]
   axisConfig: AxisConfig = {
     ...this['axisConfig'],
     extBubble: {
@@ -81,14 +90,19 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       limit: 1
     },
     xAxis: {
-      name: `${t('chart.drag_block_table_data_column')} / ${t('chart.dimension')}`,
+      name: `${t('chart.form_type')} / ${t('chart.dimension')}`,
       type: 'd',
       limit: 1
     },
     yAxis: {
-      name: `${t('chart.drag_block_table_data_column')} / ${t('chart.quota')}`,
+      name: `${t('chart.x_axis')} / ${t('chart.quota')}`,
       type: 'q',
-      limit: 2
+      limit: 1
+    },
+    yAxisExt: {
+      name: `${t('chart.y_axis')} / ${t('chart.quota')}`,
+      type: 'q',
+      limit: 1
     }
   }
 
@@ -96,7 +110,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const colorFieldObj = { id: chart.xAxis[0]?.id, name: chart.xAxis[0]?.['originName'] }
     const sizeFieldObj = { id: chart.extBubble[0]?.id, name: chart.extBubble[0]?.['originName'] }
     const xFieldObj = { id: chart.yAxis[0]?.id, name: chart.yAxis[0]?.['originName'] }
-    const yFieldObj = { id: chart.yAxis[1]?.id, name: chart.yAxis[1]?.['originName'] }
+    const yFieldObj = { id: chart.yAxisExt[0]?.id, name: chart.yAxisExt[0]?.['originName'] }
     return { colorFieldObj, sizeFieldObj, xFieldObj, yFieldObj }
   }
   public getUniqueObjects<T>(arr: T[]): T[] {
@@ -295,7 +309,8 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const tooltipAttr = customAttr.tooltip
     const xAxisTitle = chart.xAxis[0]
     const yAxisTitle = chart.yAxis[0]
-    if (!tooltipAttr.show || (!xAxisTitle && !yAxisTitle)) {
+    const yAxisExtTitle = chart.yAxisExt[0]
+    if (!tooltipAttr.show || (!xAxisTitle && !yAxisTitle && !yAxisExtTitle)) {
       return {
         ...options,
         tooltip: false
@@ -303,8 +318,8 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     }
     xAxisTitle['show'] = true
     yAxisTitle['show'] = true
+    yAxisExtTitle['show'] = true
     tooltipAttr.seriesTooltipFormatter?.push(xAxisTitle)
-    tooltipAttr.seriesTooltipFormatter?.push(yAxisTitle)
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
       .reduce((pre, next) => {
@@ -312,23 +327,30 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
         return pre
       }, {}) as Record<string, SeriesFormatter>
     const tooltip: ScatterOptions['tooltip'] = {
-      showTitle: false,
+      showTitle: true,
+      title: (_title, datum) => {
+        return datum?.[xAxisTitle['originName']]
+      },
       customItems(originalItems) {
         if (!tooltipAttr.seriesTooltipFormatter?.length) {
           return originalItems
         }
         const result = []
-        originalItems?.forEach(item => {
-          const formatter = formatterMap[item.name]
-          if (formatter) {
-            const value =
-              formatter.groupType === 'q'
-                ? valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
-                : item.value
-            const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
-            result.push({ color: item.color, name, value })
-          }
-        })
+        originalItems
+          ?.filter(i => i.name !== xAxisTitle['originName'])
+          .forEach(item => {
+            const formatter = formatterMap[item.name]
+            if (formatter) {
+              const value =
+                formatter.groupType === 'q'
+                  ? valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+                  : item.value
+              const name = isEmpty(formatter.chartShowName)
+                ? formatter.name
+                : formatter.chartShowName
+              result.push({ color: item.color, name, value })
+            }
+          })
         return result
       }
     }
@@ -343,8 +365,16 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       ...chart.customStyle.yAxis.splitLine,
       show: false
     }
+    chart.customStyle.yAxisExt.splitLine = {
+      ...chart.customStyle.yAxisExt.splitLine,
+      show: false
+    }
     chart.customStyle.yAxis.axisLine = {
       ...chart.customStyle.yAxis.axisLine,
+      show: true
+    }
+    chart.customStyle.yAxisExt.axisLine = {
+      ...chart.customStyle.yAxisExt.axisLine,
       show: true
     }
     chart.customAttr.quadrant = {
