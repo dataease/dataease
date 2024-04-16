@@ -2,12 +2,16 @@ package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
+import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.engine.constant.ExtFieldConstant;
+import io.dataease.engine.func.FunctionConstant;
+import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.AuthUtils;
@@ -200,6 +204,33 @@ public class DatasetTableFieldManage {
         return tmp;
     }
 
+    public List<DatasetTableFieldDTO> listFieldsWithPermissionsRemoveAgg(Long id) {
+        List<DatasetTableFieldDTO> fields = selectByDatasetGroupId(id);
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        Long userId = AuthUtils.getUser() == null ? null : AuthUtils.getUser().getUserId();
+        SQLObj tableObj = new SQLObj();
+        tableObj.setTableAlias("");
+        List<DatasetTableFieldDTO> tmp = permissionManage
+                .filterColumnPermissions(fields, desensitizationList, id, userId)
+                .stream()
+                .filter(ele -> {
+                    boolean flag = true;
+                    if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_CALC)) {
+                        String originField = Utils.calcFieldRegex(ele.getOriginName(), tableObj, fields, true, null);
+                        for (String func : FunctionConstant.AGG_FUNC) {
+                            if (Utils.matchFunction(func, originField)) {
+                                flag = false;
+                                break;
+                            }
+                        }
+                    }
+                    return flag;
+                })
+                .sorted(Comparator.comparing(DatasetTableFieldDTO::getGroupType))
+                .toList();
+        tmp.forEach(ele -> ele.setDesensitized(desensitizationList.containsKey(ele.getDataeaseName())));
+        return tmp;
+    }
 
     public List<DatasetTableFieldDTO> transDTO(List<CoreDatasetTableField> list) {
         return list.stream().map(ele -> {
