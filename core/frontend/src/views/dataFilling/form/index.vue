@@ -6,12 +6,16 @@ import ViewTable from './ViewTable.vue'
 import { listForm, saveForm, updateForm, deleteForm, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
 import { cloneDeep } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
+import DataFillingFormMoveSelector from './MoveSelector.vue'
 
 export default {
   name: 'DataFillingForm',
-  components: { DeAsideContainer, DeContainer, NoSelect, ViewTable },
+  components: { DataFillingFormMoveSelector, DeAsideContainer, DeContainer, NoSelect, ViewTable },
   data() {
     return {
+      selectedItem: undefined,
+      moveDialogTitle: '',
+      moveGroup: false,
       treeLoading: false,
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       activeName: 'forms',
@@ -86,7 +90,15 @@ export default {
         case 'delete':
           this.delete(param.data)
           break
+        case 'move':
+          this.moveTo(param.data)
+          break
       }
+    },
+    moveTo(data) {
+      this.selectedItem = data
+      this.moveGroup = true
+      this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
     },
     openUpdateForm(param) {
       this.updateFormData = cloneDeep(param.data)
@@ -135,6 +147,12 @@ export default {
           })
         })
       }).catch(() => {
+      })
+    },
+    onMoveSuccess() {
+      this.moveGroup = false
+      listForm({}).then(res => {
+        this.formList = res.data || []
       })
     },
     beforeClickMore(optType, data, node) {
@@ -347,6 +365,12 @@ export default {
                             {{ $t('panel.rename') }}
                           </el-dropdown-item>
                           <el-dropdown-item
+                            icon="el-icon-right"
+                            :command="beforeClickMore('move',data,node)"
+                          >
+                            {{ $t('dataset.move_to') }}
+                          </el-dropdown-item>
+                          <el-dropdown-item
                             icon="el-icon-delete"
                             :command="beforeClickMore('delete', data, node)"
                           >
@@ -481,6 +505,22 @@ export default {
           </el-button>
         </el-footer>
       </el-container>
+    </el-dialog>
+
+    <el-dialog
+      v-dialogDrag
+      :title="moveDialogTitle"
+      :visible="moveGroup"
+      :show-close="false"
+      width="30%"
+      class="dialog-css"
+    >
+      <data-filling-form-move-selector
+        v-if="moveGroup"
+        :show-selector.sync="moveGroup"
+        :item.sync="selectedItem"
+        @moveSuccess="onMoveSuccess"
+      />
     </el-dialog>
 
   </de-container>

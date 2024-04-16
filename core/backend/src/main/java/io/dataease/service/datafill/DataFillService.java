@@ -83,7 +83,7 @@ public class DataFillService {
 
         dataFillForm.setId(uuid);
 
-        checkName(uuid, dataFillForm.getName(), dataFillForm.getPid(), dataFillForm.getLevel(), dataFillForm.getNodeType(), DataFillConstants.OPT_TYPE_INSERT);
+        checkName(uuid, dataFillForm.getName(), dataFillForm.getPid(), dataFillForm.getNodeType(), DataFillConstants.OPT_TYPE_INSERT);
 
         if (!StringUtils.equals(dataFillForm.getNodeType(), "folder")) {
             List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
@@ -152,7 +152,7 @@ public class DataFillService {
     }
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
-    public ResultHolder updateForm(DataFillFormWithBLOBs dataFillForm) {
+    public ResultHolder updateForm(DataFillFormWithBLOBs dataFillForm, String type) {
 
         if (!CommonBeanFactory.getBean(AuthUserService.class).pluginLoaded()) {
             DataEaseException.throwException("invalid");
@@ -161,8 +161,15 @@ public class DataFillService {
         Assert.notNull(dataFillForm.getId(), "id cannot be null");
 
         DataFillFormWithBLOBs form = dataFillFormMapper.selectByPrimaryKey(dataFillForm.getId());
-        //todo 改变文件夹位置
-        checkName(dataFillForm.getId(), dataFillForm.getName(), form.getPid(), form.getLevel(), form.getNodeType(), DataFillConstants.OPT_TYPE_UPDATE);
+
+        if (StringUtils.equals("move", type)) {
+            //改变文件夹位置
+            checkName(dataFillForm.getId(), form.getName(), dataFillForm.getPid(), form.getNodeType(), DataFillConstants.OPT_TYPE_UPDATE);
+            dataFillForm.setName(null);
+            dataFillForm.setNodeType(null);
+        } else {
+            checkName(dataFillForm.getId(), dataFillForm.getName(), form.getPid(), form.getNodeType(), DataFillConstants.OPT_TYPE_UPDATE);
+        }
 
         dataFillForm.setUpdateTime(new Date());
         dataFillFormMapper.updateByPrimaryKeySelective(dataFillForm);
@@ -172,7 +179,7 @@ public class DataFillService {
         return ResultHolder.success(dataFillForm.getId());
     }
 
-    private void checkName(String id, String name, String pid, int level, String nodeType, String optType) {
+    private void checkName(String id, String name, String pid, String nodeType, String optType) {
         DataFillFormExample example = new DataFillFormExample();
         if (DataFillConstants.OPT_TYPE_INSERT.equalsIgnoreCase(optType)) {
             example.createCriteria().andPidEqualTo(pid).andNameEqualTo(name).andNodeTypeEqualTo(nodeType);

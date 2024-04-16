@@ -16,6 +16,14 @@ export function updateForm(data) {
     data
   })
 }
+export function moveForm(data) {
+  return request({
+    url: 'dataFilling/form/move',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
 
 export function listForm(data) {
   return request({
