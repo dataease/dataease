@@ -1362,7 +1362,10 @@ const groupAreaChange = (showArea, style?) => {
       groupArea.style.height = style.height
       dvMainStore.addComponent({ component: groupArea, index: undefined })
     } else {
-      dvMainStore.deleteComponentById(100000001)
+      const groupAreaHis = componentData.value.filter(ele => ele.id === 100000001)
+      if (groupAreaHis && groupAreaHis.length > 0) {
+        dvMainStore.deleteComponentById(100000001)
+      }
     }
   })
 }
