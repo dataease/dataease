@@ -3,7 +3,7 @@ import { computed, onMounted, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { fieldType } from '@/utils/attr'
-import _ from 'lodash'
+import { find } from 'lodash-es'
 
 const { t } = useI18n()
 
@@ -15,8 +15,21 @@ const props = defineProps({
   quotaFields: {
     type: Array,
     required: true
+  },
+  quotaExtFields: {
+    type: Array,
+    required: true
+  },
+  useQuotaExt: {
+    type: Boolean,
+    default: false
   }
 })
+
+const axisTypes = [
+  { type: 'left', name: t('chart.drag_block_value_axis_left') },
+  { type: 'right', name: t('chart.drag_block_value_axis_right') }
+]
 
 const state = reactive({
   lineArr: [],
@@ -26,6 +39,7 @@ const state = reactive({
     fieldId: '',
     summary: 'avg',
     axis: 'y', // 主轴
+    axisType: 'left',
     value: '0',
     lineType: 'solid',
     color: '#ff0000',
@@ -62,7 +76,7 @@ const init = () => {
   state.lineArr = JSON.parse(JSON.stringify(props.line))
 
   state.lineArr.forEach(line => {
-    if (_.find(props.quotaFields, d => d.id === line.fieldId) == undefined) {
+    if (find(props.quotaFields, d => d.id === line.fieldId) == undefined) {
       line.fieldId = undefined
     }
   })
@@ -84,18 +98,48 @@ const removeLine = index => {
   changeAssistLine()
 }
 
+const changeAxisType = item => {
+  if (props.useQuotaExt && item.axisType === 'right') {
+    item.fieldId = props.quotaExtFields ? props.quotaExtFields[0]?.id : null
+    item.curField = getQuotaExtField(item.fieldId)
+  } else {
+    item.fieldId = props.quotaFields ? props.quotaFields[0]?.id : null
+    item.curField = getQuotaField(item.fieldId)
+  }
+  changeAssistLine()
+}
+
 const changeAssistLine = () => {
   emit('onAssistLineChange', state.lineArr)
 }
 const changeAssistLineField = item => {
-  item.curField = getQuotaField(item.fieldId)
+  if (props.useQuotaExt && item.axisType === 'right') {
+    item.curField = getQuotaExtField(item.fieldId)
+  } else {
+    item.curField = getQuotaField(item.fieldId)
+  }
   changeAssistLine()
 }
+
 const getQuotaField = id => {
   if (!id) {
     return {}
   }
   const fields = props.quotaFields.filter(ele => {
+    return ele.id === id
+  })
+  if (fields.length === 0) {
+    return {}
+  } else {
+    return fields[0]
+  }
+}
+
+const getQuotaExtField = id => {
+  if (!id) {
+    return {}
+  }
+  const fields = props.quotaExtFields.filter(ele => {
     return ele.id === id
   })
   if (fields.length === 0) {
@@ -123,6 +167,16 @@ onMounted(() => {
             clearable
             @change="changeAssistLine"
           />
+        </el-col>
+        <el-col v-if="useQuotaExt" :span="3">
+          <el-select v-model="item.axisType" class="select-item" @change="changeAxisType(item)">
+            <el-option
+              v-for="opt in axisTypes"
+              :key="opt.type"
+              :label="opt.name"
+              :value="opt.type"
+            />
+          </el-select>
         </el-col>
         <el-col :span="3">
           <el-select v-model="item.field" class="select-item" @change="changeAssistLine">
@@ -152,7 +206,9 @@ onMounted(() => {
             @change="changeAssistLineField(item)"
           >
             <el-option
-              v-for="quota in quotaFields"
+              v-for="quota in useQuotaExt && item.axisType === 'right'
+                ? quotaExtFields
+                : quotaFields"
               :key="quota.id"
               :label="quota.name"
               :value="quota.id"
@@ -183,7 +239,7 @@ onMounted(() => {
             <el-option key="min" value="min" :label="t('chart.min')" />
           </el-select>
         </el-col>
-        <el-col :span="3">
+        <el-col :span="useQuotaExt ? 2 : 3">
           <el-tooltip effect="dark" content="字号" placement="top">
             <el-select
               v-model="item.fontSize"
@@ -200,7 +256,7 @@ onMounted(() => {
             </el-select>
           </el-tooltip>
         </el-col>
-        <el-col :span="4">
+        <el-col :span="useQuotaExt ? 2 : 4">
           <el-select v-model="item.lineType" class="select-item" @change="changeAssistLine">
             <el-option
               v-for="opt in state.lineOptions"

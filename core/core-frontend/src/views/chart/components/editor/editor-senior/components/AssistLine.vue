@@ -19,6 +19,10 @@ const props = defineProps({
     type: Array,
     required: true
   },
+  quotaExtData: {
+    type: Array,
+    required: true
+  },
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
@@ -32,6 +36,14 @@ const quotaFields = computed<Array<any>>(() => {
   return props.quotaData.filter(ele => ele.summary !== '' && ele.id !== '-1')
 })
 
+const quotaExtFields = computed<Array<any>>(() => {
+  return props.quotaExtData.filter(ele => ele.summary !== '' && ele.id !== '-1')
+})
+
+const useQuotaExt = computed<boolean>(() => {
+  return props.chart.type === 'chart-mix'
+})
+
 const state = reactive({
   assistLineCfg: {
     enable: false,
@@ -41,6 +53,11 @@ const state = reactive({
   lineArr: [],
   quotaFields: []
 })
+
+const axisType = [
+  { type: 'left', name: t('chart.drag_block_value_axis_left') },
+  { type: 'right', name: t('chart.drag_block_value_axis_right') }
+]
 
 watch(
   () => props.chart.senior.assistLineCfg,
@@ -100,7 +117,14 @@ const changeLine = () => {
 }
 
 function existField(line) {
-  return !!find(quotaFields.value, d => d.id === line.id)
+  if (useQuotaExt.value) {
+    return (
+      !!find(quotaFields.value, d => d.id === line.id) ||
+      !!find(quotaExtFields.value, d => d.id === line.id)
+    )
+  } else {
+    return !!find(quotaFields.value, d => d.id === line.id)
+  }
 }
 
 const init = () => {
@@ -194,6 +218,8 @@ onMounted(() => {
       <assist-line-edit
         :line="state.assistLineCfg.assistLine"
         :quota-fields="quotaFields"
+        :quota-ext-fields="quotaExtFields"
+        :use-quota-ext="useQuotaExt"
         @onAssistLineChange="lineChange"
       />
       <template #footer>

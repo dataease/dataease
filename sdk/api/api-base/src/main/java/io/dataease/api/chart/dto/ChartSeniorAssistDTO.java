@@ -15,6 +15,7 @@ public class ChartSeniorAssistDTO {
     private Long fieldId;
     private String summary;
     private String axis;
+    private String axisType;
     private String value;
     private String lineType;
     private String color;

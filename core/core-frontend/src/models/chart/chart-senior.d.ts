@@ -107,6 +107,8 @@ declare interface AssistLine {
    * 动态值聚合方式
    */
   summary: string
+
+  axisType: 'left' | 'right'
 }
 
 /**

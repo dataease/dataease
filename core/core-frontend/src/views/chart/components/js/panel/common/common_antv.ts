@@ -1,6 +1,7 @@
 import { hexColorToRGBA, parseJson } from '../../util'
 import {
   DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_EXT_STYLE,
   DEFAULT_YAXIS_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
@@ -645,7 +646,7 @@ export function getAnalyse(chart: Chart) {
   const assistLineArr = senior.assistLineCfg.assistLine
   if (assistLineArr?.length > 0) {
     const customStyle = parseJson(chart.customStyle)
-    let yAxisPosition, axisFormatterCfg
+    let yAxisPosition, axisFormatterCfg, yAxisExtPosition, axisExtFormatterCfg
     if (customStyle.yAxis) {
       const a = JSON.parse(JSON.stringify(customStyle.yAxis))
       yAxisPosition = a.position
@@ -653,24 +654,37 @@ export function getAnalyse(chart: Chart) {
         ? a.axisLabelFormatter
         : DEFAULT_YAXIS_STYLE.axisLabelFormatter
     }
+    if (customStyle.yAxisExt) {
+      const a = JSON.parse(JSON.stringify(customStyle.yAxisExt))
+      yAxisExtPosition = a.position
+      axisExtFormatterCfg = a.axisLabelFormatter
+        ? a.axisLabelFormatter
+        : DEFAULT_YAXIS_EXT_STYLE.axisLabelFormatter
+    }
 
     const fixedLines = assistLineArr.filter(ele => ele.field === '0')
     const dynamicLineFields = assistLineArr
       .filter(ele => ele.field === '1')
       .map(item => item.fieldId)
     const quotaFields = _.filter(chart.yAxis, ele => ele.summary !== '' && ele.id !== '-1')
-    const dynamicLines = chart.data.dynamicAssistLines?.filter(
-      item =>
+    const quotaExtFields = _.filter(chart.yAxisExt, ele => ele.summary !== '' && ele.id !== '-1')
+    const dynamicLines = chart.data.dynamicAssistLines?.filter(item => {
+      return (
         dynamicLineFields?.includes(item.fieldId) &&
-        !!_.find(quotaFields, d => d.id === item.fieldId)
-    )
+        (!!_.find(quotaFields, d => d.id === item.fieldId) ||
+          (!!_.find(quotaExtFields, d => d.id === item.fieldId) && chart.type === 'chart-mix'))
+      )
+    })
     const lines = fixedLines.concat(dynamicLines)
-
     lines.forEach(ele => {
       const value = parseFloat(ele.value)
-      const content = ele.name + ' : ' + valueFormatter(value, axisFormatterCfg)
+      const content =
+        ele.name +
+        ' : ' +
+        valueFormatter(value, ele.axisType === 'left' ? axisFormatterCfg : axisExtFormatterCfg)
       assistLine.push({
         type: 'line',
+        axisType: ele.axisType,
         start: ['start', value],
         end: ['end', value],
         style: {
@@ -680,10 +694,17 @@ export function getAnalyse(chart: Chart) {
       })
       assistLine.push({
         type: 'text',
-        position: [yAxisPosition === 'left' ? 'start' : 'end', value],
+        axisType: ele.axisType,
+        position: [
+          (ele.axisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left' ? 'start' : 'end',
+          value
+        ],
         content: content,
         offsetY: -2,
-        offsetX: yAxisPosition === 'left' ? 2 : -10 * (content.length - 2),
+        offsetX:
+          (ele.axisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left'
+            ? 2
+            : -10 * (content.length - 2),
         style: {
           textBaseline: 'bottom',
           fill: ele.color,

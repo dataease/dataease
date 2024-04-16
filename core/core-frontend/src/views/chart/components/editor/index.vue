@@ -2056,6 +2056,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                     <senior
                       :chart="view"
                       :quota-data="view.yAxis"
+                      :quota-ext-data="view.yAxisExt"
                       :fields-data="allFields"
                       :themes="themes"
                       :properties="chartViewInstance.properties"
