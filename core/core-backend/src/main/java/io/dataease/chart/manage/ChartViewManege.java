@@ -151,6 +151,7 @@ public class ChartViewManege {
                 for (String func : FunctionConstant.AGG_FUNC) {
                     if (Utils.matchFunction(func, originField)) {
                         ele.setSummary("");
+                        ele.setAgg(true);
                         break;
                     }
                 }
