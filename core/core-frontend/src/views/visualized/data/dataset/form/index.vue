@@ -585,9 +585,11 @@ const getTableName = async (datasourceId, tableName) => {
 const initEdite = async () => {
   const { id, datasourceId, tableName } = route.query
   const { id: copyId } = route.params
-  const barRes = await barInfoApi(copyId || id)
-  if (!barRes || !barRes['id']) {
-    return
+  if (copyId || id) {
+    const barRes = await barInfoApi(copyId || id)
+    if (!barRes || !barRes['id']) {
+      return
+    }
   }
   if (datasourceId) {
     dataSource.value = datasourceId as string
