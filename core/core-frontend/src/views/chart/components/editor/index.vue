@@ -2607,7 +2607,6 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
       border-radius: 4px;
       border: 1px solid transparent;
       color: #a6a6a6;
-      font-family: PingFang SC;
       font-size: 12px;
       font-style: normal;
       font-weight: 400;
@@ -2618,6 +2617,10 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
       cursor: pointer;
       &:hover {
         background: #1f23291a;
+      }
+
+      &.item-dimension--dark:hover {
+        background: #ebebeb1a;
       }
 
       .ed-icon {

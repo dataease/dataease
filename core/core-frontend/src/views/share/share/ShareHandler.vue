@@ -558,7 +558,6 @@ onMounted(() => {
 
   .copy-link {
     font-weight: 400;
-    font-family: PingFang SC;
 
     .open-share {
       margin: -18px 0 8px 0;

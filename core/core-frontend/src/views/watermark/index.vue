@@ -286,7 +286,6 @@ onMounted(() => {
 .router-title {
   color: #1f2329;
   font-feature-settings: 'clig' off, 'liga' off;
-  font-family: PingFang SC;
   font-size: 20px;
   font-style: normal;
   font-weight: 500;
