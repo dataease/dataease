@@ -674,19 +674,19 @@ export const DEFAULT_QUADRANT_STYLE: QuadrantAttr = {
   regionStyle: [
     {
       fill: '#fdfcfc',
-      fillOpacity: 0.5
+      fillOpacity: 0
     },
     {
       fill: '#fafdfa',
-      fillOpacity: 0.5
+      fillOpacity: 0
     },
     {
       fill: '#fdfcfc',
-      fillOpacity: 0.5
+      fillOpacity: 0
     },
     {
       fill: '#fafdfa',
-      fillOpacity: 0.5
+      fillOpacity: 0
     }
   ],
   labels: [
@@ -1284,16 +1284,16 @@ export const CHART_TYPE_CONFIGS = [
       {
         render: 'antv',
         category: 'distribute',
-        value: 'funnel',
-        title: t('chart.chart_funnel'),
-        icon: 'funnel'
+        value: 'quadrant',
+        title: t('chart.chart_quadrant'),
+        icon: 'quadrant'
       },
       {
         render: 'antv',
         category: 'distribute',
-        value: 'quadrant',
-        title: t('chart.chart_quadrant'),
-        icon: 'scatter'
+        value: 'funnel',
+        title: t('chart.chart_funnel'),
+        icon: 'funnel'
       }
     ]
   },
