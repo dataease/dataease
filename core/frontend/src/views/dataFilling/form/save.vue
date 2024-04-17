@@ -181,7 +181,7 @@ export default {
         formOption.type !== 'checkbox' &&
         !(formOption.type === 'select' && formOption.settings.multiple)
       ) {
-        _options.push({ value: 'nvarchar', label: this.$t('data_fill.database.datetime') })
+        _options.push({ value: 'nvarchar', label: this.$t('data_fill.database.nvarchar') })
       }
       if (formOption.type === 'checkbox' ||
         formOption.type === 'select' && formOption.settings.multiple ||
