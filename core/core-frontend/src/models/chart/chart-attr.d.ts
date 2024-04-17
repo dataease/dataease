@@ -242,6 +242,14 @@ declare interface ChartTableHeaderAttr {
    * 表头排序开关
    */
   tableHeaderSort: boolean
+  /**
+   * 行头鼠标悬浮提示开关
+   */
+  showRowTooltip: boolean
+  /**
+   * 列头鼠标悬浮提示开关
+   */
+  showColTooltip: boolean
 }
 /**
  * 单元格属性
@@ -275,6 +283,10 @@ declare interface ChartTableCellAttr {
    * 斑马纹单数行颜色
    */
   tableItemSubBgColor: string
+  /**
+   * 鼠标悬浮提示
+   */
+  showTooltip: boolean
 }
 
 /**

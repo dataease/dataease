@@ -32,7 +32,9 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'tableTitleFontSize',
       'tableHeaderFontColor',
       'tableTitleHeight',
-      'tableHeaderAlign'
+      'tableHeaderAlign',
+      'showColTooltip',
+      'showRowTooltip'
     ],
     'table-total-selector': ['row', 'col'],
     'basic-style-selector': ['tableColumnMode', 'tableBorderColor', 'tableScrollBarColor', 'alpha']
@@ -185,7 +187,18 @@ export class TablePivot extends S2ChartView<PivotSheet> {
 
     // 开始渲染
     const s2 = new PivotSheet(containerDom, s2DataConfig, s2Options as unknown as S2Options)
-
+    // hover
+    const { showColTooltip, showRowTooltip } = customAttr.tableHeader
+    if (showColTooltip) {
+      s2.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(s2, event, meta))
+    }
+    if (showRowTooltip) {
+      s2.on(S2Event.ROW_CELL_HOVER, event => this.showTooltip(s2, event, meta))
+    }
+    const { showTooltip } = customAttr.tableCell
+    if (showTooltip) {
+      s2.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(s2, event, meta))
+    }
     // click
     s2.on(S2Event.DATA_CELL_CLICK, ev => this.dataCellClickAction(chart, ev, s2, action))
     s2.on(S2Event.ROW_CELL_CLICK, ev => this.headerCellClickAction(chart, ev, s2, action))
