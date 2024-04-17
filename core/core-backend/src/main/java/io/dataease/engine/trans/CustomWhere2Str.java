@@ -86,17 +86,16 @@ public class CustomWhere2Str {
                         res.add("(" + whereName + " IN ('" + String.join("','", request.getEnumCheckField()) + "'))");
                     }
                 } else {
+                    if (field.getDeType() == 1) {
+                        // 规定几种日期格式，一一匹配，匹配到就是该格式
+                        whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
+                    }
+
                     List<ChartCustomFilterItemDTO> filter = request.getFilter();
                     for (ChartCustomFilterItemDTO filterItemDTO : filter) {
                         String value = filterItemDTO.getValue();
                         String whereTerm = Utils.transFilterTerm(filterItemDTO.getTerm());
                         String whereValue = "";
-
-//                        String whereNameReal;
-                        if (field.getDeType() == 1) {
-                            // 规定几种日期格式，一一匹配，匹配到就是该格式
-                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
-                        }
 
                         if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
                             whereValue = "";
