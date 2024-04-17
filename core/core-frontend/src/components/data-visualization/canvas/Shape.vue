@@ -1082,7 +1082,7 @@ onMounted(() => {
 .de-drag-right {
   right: 1px;
   top: 70px;
-  width: 16px;
+  width: 12px;
   height: calc(100% - 110px);
 }
 
