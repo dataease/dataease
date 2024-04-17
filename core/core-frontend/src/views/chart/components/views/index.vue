@@ -153,13 +153,13 @@ const trackMenu = computed<Array<string>>(() => {
 })
 
 const hasLinkIcon = computed(() => {
-  return trackMenu.value.indexOf('linkage') > -1 || trackMenu.value.indexOf('linkageAndDrill')
+  return trackMenu.value.indexOf('linkage') > -1 || trackMenu.value.indexOf('linkageAndDrill') > -1
 })
 const hasJumpIcon = computed(() => {
   return trackMenu.value.indexOf('jump') > -1 && !mobileInPc.value
 })
 const hasDrillIcon = computed(() => {
-  return trackMenu.value.indexOf('drill') > -1 || trackMenu.value.indexOf('linkageAndDrill')
+  return trackMenu.value.indexOf('drill') > -1 || trackMenu.value.indexOf('linkageAndDrill') > -1
 })
 
 const loading = ref(false)
