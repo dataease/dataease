@@ -303,6 +303,7 @@ watch(
 watch(
   [() => config.value.checkedFields, () => config.value.checkedFieldsMap],
   () => {
+    if (!props.isConfig) return
     debounceOptions(config.value.optionValueSource)
   },
   {
@@ -385,6 +386,7 @@ const selectStyle = computed(() => {
 })
 
 const mult = ref()
+const single = ref()
 
 onBeforeMount(() => {
   init()
@@ -392,7 +394,8 @@ onBeforeMount(() => {
 
 defineExpose({
   displayTypeChange,
-  mult
+  mult,
+  single
 })
 </script>
 
@@ -425,6 +428,7 @@ defineExpose({
     v-loading="loading"
     @change="handleValueChange"
     clearable
+    ref="single"
     :style="selectStyle"
     filterable
     radio

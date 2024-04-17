@@ -297,6 +297,11 @@ const resetData = () => {
       next.defaultValue = next.multiple || +next.displayType === 7 ? [] : undefined
     }
     next.selectValue = Array.isArray(next.defaultValue) ? [...next.defaultValue] : next.defaultValue
+    if (next.optionValueSource === 1 && next.defaultMapValue?.length) {
+      next.mapValue = Array.isArray(next.defaultMapValue)
+        ? [...next.defaultMapValue]
+        : next.defaultMapValue
+    }
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
@@ -309,6 +314,9 @@ const resetData = () => {
 const clearData = () => {
   ;(list.value || []).reduce((pre, next) => {
     next.selectValue = next.multiple || +next.displayType === 7 ? [] : undefined
+    if (next.optionValueSource === 1 && next.defaultMapValue?.length) {
+      next.mapValue = next.multiple ? [] : undefined
+    }
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
