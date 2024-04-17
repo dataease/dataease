@@ -7,7 +7,7 @@ import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
 import { formatterType, unitType } from '../../../js/formatter'
 import { fieldType } from '@/utils/attr'
-import { partition } from 'lodash-es'
+import { partition, uniqWith, isEqual } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -255,6 +255,9 @@ const updateSeriesTooltipFormatter = (form: AxisEditForm) => {
 const addAxis = (form: AxisEditForm) => {
   const { axis, axisType } = form
   const axisMap = axis.reduce((pre, next) => {
+    if (!next) {
+      return pre
+    }
     next.axisType = axisType
     next.seriesId = `${next.id}-${axisType}`
     pre[next.id] = next
@@ -278,12 +281,15 @@ const addAxis = (form: AxisEditForm) => {
       }
     }
   })
+  const dupAxisDistinct = uniqWith(dupAxis, isEqual) || []
   state.tooltipForm.seriesTooltipFormatter =
-    state.tooltipForm.seriesTooltipFormatter.concat(dupAxis)
+    state.tooltipForm.seriesTooltipFormatter.concat(dupAxisDistinct)
   state.tooltipForm.seriesTooltipFormatter = partition(
     state.tooltipForm.seriesTooltipFormatter,
     ele => quotaAxis.value.findIndex(item => item.id === ele.id) !== -1
   ).flat()
+  state.tooltipForm.seriesTooltipFormatter =
+    uniqWith(state.tooltipForm.seriesTooltipFormatter, isEqual) || []
 }
 const removeAxis = (form: AxisEditForm) => {
   const { axis, axisType } = form
