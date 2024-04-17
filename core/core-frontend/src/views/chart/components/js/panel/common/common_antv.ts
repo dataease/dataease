@@ -900,9 +900,32 @@ export function getTooltipSeriesTotalMap(data: any[]): Record<string, number> {
   })
   return result
 }
-
-export function configL7Legend(): LegendOptions {
+const LEGEND_SHAPE_STYLE_MAP = {
+  circle: {
+    borderRadius: '50%'
+  },
+  square: {},
+  triangle: {
+    borderLeft: '5px solid transparent',
+    borderRight: '5px solid transparent',
+    borderBottom: '10px solid var(--bgColor)',
+    background: 'unset'
+  },
+  diamond: {
+    transform: 'rotate(45deg)'
+  }
+}
+export function configL7Legend(chart: Chart): LegendOptions | false {
+  const { basicStyle } = parseJson(chart.customAttr)
+  if (basicStyle.suspension === false && basicStyle.showZoom === undefined) {
+    return false
+  }
+  const { legend } = parseJson(chart.customStyle)
+  if (!legend.show) {
+    return false
+  }
   return {
+    position: 'bottomleft',
     customContent: (_: string, items: CategoryLegendListItem[]) => {
       const showItems = items?.length > 30 ? items.slice(0, 30) : items
       if (showItems?.length) {
@@ -925,11 +948,22 @@ export function configL7Legend(): LegendOptions {
 
           const domStr = substitute(ITEM_TPL, substituteObj)
           const itemDom = createDom(domStr)
+          // 给 legend 形状用的
+          itemDom.style.setProperty('--bgColor', item.color)
           listDom.appendChild(itemDom)
         })
         return listDom
       }
       return ''
+    },
+    domStyles: {
+      'l7plot-legend__category-value': {
+        fontSize: legend.fontSize + 'px',
+        color: legend.color
+      },
+      'l7plot-legend__category-marker': {
+        ...LEGEND_SHAPE_STYLE_MAP[legend.icon]
+      }
     }
   }
 }
@@ -944,12 +978,18 @@ class CustomZoom extends Zoom {
       this.zoomIn
     )
     const resetBtnIconText = createL7Icon('l7-icon-round')
-    this['createButton'](resetBtnIconText, 'Reset', 'l7-button-control', container, () => {
-      this.mapsService.setZoomAndCenter(
-        this.controlOption['initZoom'],
-        this.controlOption['center']
-      )
-    })
+    this['zoomResetButton'] = this['createButton'](
+      resetBtnIconText,
+      'Reset',
+      'l7-button-control',
+      container,
+      () => {
+        this.mapsService.setZoomAndCenter(
+          this.controlOption['initZoom'],
+          this.controlOption['center']
+        )
+      }
+    )
     if (this.controlOption.showZoom) {
       this['zoomNumDiv'] = this['createButton'](
         '0',
@@ -965,19 +1005,44 @@ class CustomZoom extends Zoom {
       container,
       this.zoomOut
     )
+    const { buttonColor, buttonBackground } = this.controlOption as any
+    if (buttonColor) {
+      const elements = [
+        this.controlOption.zoomInText,
+        this.controlOption.zoomOutText,
+        resetBtnIconText
+      ] as HTMLElement[]
+      setStyle(elements, 'fill', buttonColor)
+    }
+    const elements = [this['zoomResetButton'], this['zoomInButton'], this['zoomOutButton']]
+    if (buttonBackground) {
+      setStyle(elements, 'background', buttonBackground)
+    }
+    setStyle(elements, 'border-bottom', 'none')
     this['updateDisabled']()
   }
 }
-export function configL7Zoom(plot: L7Plot<PlotOptions>) {
-  const options = plot.options
-  if (options.zoom === false) {
+export function configL7Zoom(chart: Chart, plot: L7Plot<PlotOptions>) {
+  const { basicStyle } = parseJson(chart.customAttr)
+  if (
+    (basicStyle.suspension === false && basicStyle.showZoom === undefined) ||
+    basicStyle.showZoom === false
+  ) {
     return
   }
   plot.once('loaded', () => {
     const zoomOptions = {
       initZoom: plot.scene.getZoom(),
-      center: plot.scene.getCenter()
+      center: plot.scene.getCenter(),
+      buttonColor: basicStyle.zoomButtonColor,
+      buttonBackground: basicStyle.zoomBackground
     } as any
     plot.scene.addControl(new CustomZoom(zoomOptions))
+  })
+}
+
+function setStyle(elements: HTMLElement[], styleProp: string, value) {
+  elements.forEach(e => {
+    e.style[styleProp] = value
   })
 }

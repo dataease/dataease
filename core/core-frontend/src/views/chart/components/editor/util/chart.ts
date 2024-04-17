@@ -24,7 +24,9 @@ export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
     areaBorderColor: '#303133',
     gaugeStyle: 'default',
     tableBorderColor: '#E6E7E4',
-    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)'
+    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
+    zoomButtonColor: '#aaa',
+    zoomBackground: '#fff'
   },
   misc: {
     mapLineGradient: false,
@@ -65,7 +67,9 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
     areaBorderColor: '#303133',
     gaugeStyle: 'default',
     tableBorderColor: '#E6E7E4',
-    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)'
+    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
+    zoomButtonColor: '#aaa',
+    zoomBackground: '#fff'
   },
   misc: {
     mapLineGradient: false,
@@ -106,7 +110,9 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     areaBorderColor: '#EBEEF5',
     gaugeStyle: 'default',
     tableBorderColor: '#CCCCCC',
-    tableScrollBarColor: 'rgba(255, 255, 255, 0.5)'
+    tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
+    zoomButtonColor: '#aaa',
+    zoomBackground: '#fff'
   },
   misc: {
     mapLineGradient: false,
@@ -243,9 +249,6 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   mapLineGradient: false,
   mapLineSourceColor: '#146C94',
   mapLineTargetColor: '#576CBC'
-}
-export const DEFAULT_SUSPENSION = {
-  show: true
 }
 
 export const DEFAULT_MARK = {
@@ -1364,14 +1367,16 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   radarShape: 'polygon',
   mapStyle: 'normal',
   areaBorderColor: '#EBEEF5',
-  suspension: true,
   areaBaseColor: '#ffffff',
   mapSymbolOpacity: 0.7,
   mapSymbolStrokeWidth: 2,
   mapSymbol: 'circle',
   mapSymbolSize: 20,
   radius: 80,
-  innerRadius: 60
+  innerRadius: 60,
+  showZoom: true,
+  zoomButtonColor: '#aaa',
+  zoomBackground: '#fff'
 }
 
 export const BASE_VIEW_CONFIG = {
