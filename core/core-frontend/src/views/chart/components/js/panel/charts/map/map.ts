@@ -100,6 +100,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const view = new Choropleth(container, options)
     this.configZoomButton(chart, view)
     view.once('loaded', () => {
+      view.scene.map['keyboard'].disable()
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
         const data = ev.feature.properties
         action({

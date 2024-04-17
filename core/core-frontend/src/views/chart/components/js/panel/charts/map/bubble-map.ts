@@ -101,6 +101,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     this.configZoomButton(chart, view)
     view.once('loaded', () => {
       view.addLayer(dotLayer)
+      view.scene.map['keyboard'].disable()
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
         const data = ev.feature.properties
         action({
