@@ -686,6 +686,7 @@ const iconSize = computed<string>(() => {
         :view="view"
         :scale="scale"
         :show-position="showPosition"
+        :element="element"
         v-else-if="showChartView(ChartLibraryType.S2)"
         ref="chartComponent"
         @onChartClick="chartClick"
