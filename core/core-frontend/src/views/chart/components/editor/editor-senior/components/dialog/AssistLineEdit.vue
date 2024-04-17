@@ -26,7 +26,7 @@ const props = defineProps({
   }
 })
 
-const axisTypes = [
+const yAxisTypes = [
   { type: 'left', name: t('chart.drag_block_value_axis_left') },
   { type: 'right', name: t('chart.drag_block_value_axis_right') }
 ]
@@ -39,7 +39,7 @@ const state = reactive({
     fieldId: '',
     summary: 'avg',
     axis: 'y', // 主轴
-    axisType: 'left',
+    yAxisType: 'left',
     value: '0',
     lineType: 'solid',
     color: '#ff0000',
@@ -98,8 +98,8 @@ const removeLine = index => {
   changeAssistLine()
 }
 
-const changeAxisType = item => {
-  if (props.useQuotaExt && item.axisType === 'right') {
+const changeYAxisType = item => {
+  if (props.useQuotaExt && item.yAxisType === 'right') {
     item.fieldId = props.quotaExtFields ? props.quotaExtFields[0]?.id : null
     item.curField = getQuotaExtField(item.fieldId)
   } else {
@@ -113,7 +113,7 @@ const changeAssistLine = () => {
   emit('onAssistLineChange', state.lineArr)
 }
 const changeAssistLineField = item => {
-  if (props.useQuotaExt && item.axisType === 'right') {
+  if (props.useQuotaExt && item.yAxisType === 'right') {
     item.curField = getQuotaExtField(item.fieldId)
   } else {
     item.curField = getQuotaField(item.fieldId)
@@ -169,9 +169,9 @@ onMounted(() => {
           />
         </el-col>
         <el-col v-if="useQuotaExt" :span="3">
-          <el-select v-model="item.axisType" class="select-item" @change="changeAxisType(item)">
+          <el-select v-model="item.yAxisType" class="select-item" @change="changeYAxisType(item)">
             <el-option
-              v-for="opt in axisTypes"
+              v-for="opt in yAxisTypes"
               :key="opt.type"
               :label="opt.name"
               :value="opt.type"
@@ -206,7 +206,7 @@ onMounted(() => {
             @change="changeAssistLineField(item)"
           >
             <el-option
-              v-for="quota in useQuotaExt && item.axisType === 'right'
+              v-for="quota in useQuotaExt && item.yAxisType === 'right'
                 ? quotaExtFields
                 : quotaFields"
               :key="quota.id"

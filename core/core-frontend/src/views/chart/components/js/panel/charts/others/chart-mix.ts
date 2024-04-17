@@ -365,8 +365,8 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   protected configAnalyse(chart: Chart, options: DualAxesOptions): DualAxesOptions {
     const list = getAnalyse(chart)
     const annotations = {
-      value: filter(list, l => l.axisType === 'left'),
-      valueExt: filter(list, l => l.axisType === 'right')
+      value: filter(list, l => l.yAxisType === 'left'),
+      valueExt: filter(list, l => l.yAxisType === 'right')
     }
     return { ...options, annotations }
   }

@@ -681,10 +681,10 @@ export function getAnalyse(chart: Chart) {
       const content =
         ele.name +
         ' : ' +
-        valueFormatter(value, ele.axisType === 'left' ? axisFormatterCfg : axisExtFormatterCfg)
+        valueFormatter(value, ele.yAxisType === 'left' ? axisFormatterCfg : axisExtFormatterCfg)
       assistLine.push({
         type: 'line',
-        axisType: ele.axisType,
+        yAxisType: ele.yAxisType,
         start: ['start', value],
         end: ['end', value],
         style: {
@@ -694,15 +694,17 @@ export function getAnalyse(chart: Chart) {
       })
       assistLine.push({
         type: 'text',
-        axisType: ele.axisType,
+        yAxisType: ele.yAxisType,
         position: [
-          (ele.axisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left' ? 'start' : 'end',
+          (ele.yAxisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left'
+            ? 'start'
+            : 'end',
           value
         ],
         content: content,
         offsetY: -2,
         offsetX:
-          (ele.axisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left'
+          (ele.yAxisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left'
             ? 2
             : -10 * (content.length - 2),
         style: {
