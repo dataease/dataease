@@ -211,14 +211,6 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               multiple
             } = item
 
-            console.log(
-              'displayType',
-              timeType === 'dynamic',
-              [1, 7].includes(+displayType),
-              firstLoad,
-              curComponentId
-            )
-
             if (timeType === 'dynamic' && [1, 7].includes(+displayType) && firstLoad) {
               if (+displayType === 1) {
                 selectValue = getDynamicRange(item)
@@ -308,23 +300,25 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 firstLoad,
                 optionValueSource
               )
-              filter.push({
-                componentId: ele.id,
-                fieldId: item.checkedFieldsMap[curComponentId],
-                operator,
-                value: result,
-                parameters: parametersCheck
-                  ? +displayType === 7
-                    ? [
-                        parametersStart,
-                        parametersEnd?.id
-                          ? { ...parametersEnd, id: `${parametersEnd.id}_START_END_SPLIT` }
-                          : parametersEnd
-                      ]
-                    : parameters
-                  : [],
-                isTree
-              })
+              if (result?.length) {
+                filter.push({
+                  componentId: ele.id,
+                  fieldId: item.checkedFieldsMap[curComponentId],
+                  operator,
+                  value: result,
+                  parameters: parametersCheck
+                    ? +displayType === 7
+                      ? [
+                          parametersStart,
+                          parametersEnd?.id
+                            ? { ...parametersEnd, id: `${parametersEnd.id}_START_END_SPLIT` }
+                            : parametersEnd
+                        ]
+                      : parameters
+                    : [],
+                  isTree
+                })
+              }
             }
           }
         })
