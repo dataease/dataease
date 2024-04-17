@@ -49,12 +49,19 @@ const changeBasicStyle = (prop?: string, requestData = false) => {
 }
 const init = () => {
   const basicStyle = cloneDeep(props.chart.customAttr.basicStyle)
+  configCompat(basicStyle)
   state.basicStyleForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
   if (!state.customColor) {
     state.customColor = state.basicStyleForm.colors[0]
     state.colorIndex = 0
   }
   initTableColumnWidth()
+}
+const configCompat = (basicStyle: ChartBasicStyle) => {
+  // 悬浮改为图例和缩放按钮
+  if (basicStyle.suspension === false && basicStyle.showZoom === undefined) {
+    basicStyle.showZoom = false
+  }
 }
 const COLUMN_WIDTH_TYPE = ['table-info', 'table-normal']
 const initTableColumnWidth = () => {
@@ -230,21 +237,51 @@ onMounted(() => {
         </el-form-item>
       </el-col>
     </el-row>
-    <el-form-item
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('suspension')"
-    >
+    <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('zoom')">
       <el-checkbox
         size="small"
         :effect="themes"
-        v-model="state.basicStyleForm.suspension"
+        v-model="state.basicStyleForm.showZoom"
         :predefine="predefineColors"
-        @change="changeBasicStyle('suspension')"
+        @change="changeBasicStyle('zoomShow')"
       >
-        {{ t('chart.suspension') }}
+        {{ t('chart.show_zoom') }}
       </el-checkbox>
     </el-form-item>
+    <div v-if="showProperty('zoom') && state.basicStyleForm.showZoom">
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        :label="t('chart.button_color')"
+      >
+        <el-color-picker
+          is-custom
+          class="color-picker-style"
+          v-model="state.basicStyleForm.zoomBottonColor"
+          :persistent="false"
+          :effect="themes"
+          :trigger-width="108"
+          :predefine="predefineColors"
+          @change="changeBasicStyle('zoomBottonColor')"
+        />
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        :label="t('chart.button_background_color')"
+      >
+        <el-color-picker
+          is-custom
+          class="color-picker-style"
+          v-model="state.basicStyleForm.zoomBackground"
+          :persistent="false"
+          :effect="themes"
+          :trigger-width="108"
+          :predefine="predefineColors"
+          @change="changeBasicStyle('zoomBackground')"
+        />
+      </el-form-item>
+    </div>
 
     <!--map end-->
 
