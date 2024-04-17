@@ -545,6 +545,7 @@ const validate = () => {
 
 const handleBeforeClose = () => {
   inputCom.value?.mult?.handleClickOutside?.()
+  inputCom.value?.single?.handleClickOutside?.()
   handleDialogClick()
   dialogVisible.value = false
   visiblePopover.value = false
@@ -553,6 +554,8 @@ const handleBeforeClose = () => {
 const confirmClick = () => {
   if (validate()) return
   inputCom.value?.mult?.handleClickOutside?.()
+  inputCom.value?.single?.handleClickOutside?.()
+  handleDialogClick()
   visiblePopover.value = false
   dialogVisible.value = false
   conditions.value.forEach(ele => {
@@ -782,7 +785,7 @@ const handleDialogClick = () => {
 
 const operators = [
   {
-    label: '精准匹配',
+    label: '精确匹配',
     value: 'eq'
   },
   {
@@ -1570,7 +1573,6 @@ defineExpose({
                 </el-select>
                 <el-input
                   class="condition-value-input"
-                  size="small"
                   v-model="curComponent.defaultConditionValueF"
                 />
                 <div class="bottom-line"></div>
@@ -1594,7 +1596,6 @@ defineExpose({
                 </el-select>
                 <el-input
                   class="condition-value-input"
-                  size="small"
                   v-model="curComponent.defaultConditionValueS"
                 />
                 <div class="bottom-line next-line"></div>
@@ -2220,7 +2221,7 @@ defineExpose({
           .value {
             width: 321px;
             .condition-type {
-              margin-top: 8px;
+              margin-top: 3px !important;
               display: flex;
               position: relative;
               .ed-input__wrapper {
@@ -2272,7 +2273,7 @@ defineExpose({
                 opacity: 0.3;
                 position: absolute;
                 right: 5px;
-                bottom: 5px;
+                bottom: 3px;
                 width: 220px;
                 z-index: 10;
 

@@ -84,9 +84,10 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   multiple: boolean,
   defaultMapValue: any,
   optionValueSource: number,
-  mapValue: any
+  mapValue: any,
+  displayType: string
 ) => {
-  if (optionValueSource === 1) {
+  if (optionValueSource === 1 && defaultMapValue?.length && ![1, 7].includes(+displayType)) {
     if (firstLoad) {
       return defaultValueCheck ? defaultMapValue : multiple ? [] : ''
     }
@@ -181,7 +182,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             item.checkedFields.includes(curComponentId) &&
             item.checkedFieldsMap[curComponentId]
           ) {
-            let selectValue = ''
+            let selectValue
             const {
               selectValue: value,
               timeGranularityMultiple,
@@ -209,6 +210,14 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               displayType,
               multiple
             } = item
+
+            console.log(
+              'displayType',
+              timeType === 'dynamic',
+              [1, 7].includes(+displayType),
+              firstLoad,
+              curComponentId
+            )
 
             if (timeType === 'dynamic' && [1, 7].includes(+displayType) && firstLoad) {
               if (+displayType === 1) {
@@ -249,6 +258,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 )
                 item.defaultValue = [startTime, endTime]
                 item.selectValue = [startTime, endTime]
+                selectValue = [startTime, endTime]
               }
             } else if (displayType === '8') {
               selectValue = getResult(
@@ -268,7 +278,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 multiple,
                 defaultMapValue,
                 optionValueSource,
-                mapValue
+                mapValue,
+                displayType
               )
             }
             if (
