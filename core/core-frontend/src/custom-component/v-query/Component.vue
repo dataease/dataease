@@ -293,6 +293,12 @@ const delQueryConfig = index => {
 
 const resetData = () => {
   ;(list.value || []).reduce((pre, next) => {
+    if (next.defaultConditionValueF?.length) {
+      next.conditionValueF = next.defaultConditionValueF
+    }
+    if (next.defaultConditionValueS?.length) {
+      next.conditionValueS = next.defaultConditionValueS
+    }
     if (!next.defaultValueCheck) {
       next.defaultValue = next.multiple || +next.displayType === 7 ? [] : undefined
     }
@@ -302,8 +308,6 @@ const resetData = () => {
         ? [...next.defaultMapValue]
         : next.defaultMapValue
     }
-    next.conditionValueF = next.defaultConditionValueF
-    next.conditionValueS = next.defaultConditionValueS
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
