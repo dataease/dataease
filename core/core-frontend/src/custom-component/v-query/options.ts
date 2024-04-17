@@ -19,6 +19,7 @@ const infoFormat = (obj: ComponentInfo) => {
     sortId: '',
     sort: 'asc',
     defaultMapValue: [],
+    mapValue: [],
     conditionType: 0,
     conditionValueOperatorF: 'eq',
     conditionValueF: '',

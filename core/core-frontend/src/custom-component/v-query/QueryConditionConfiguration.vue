@@ -675,6 +675,7 @@ const parameterCompletion = () => {
     timeType: 'fixed',
     required: false,
     defaultMapValue: [],
+    mapValue: [],
     parametersStart: null,
     conditionType: 0,
     conditionValueOperatorF: 'eq',

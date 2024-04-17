@@ -83,13 +83,14 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   firstLoad: boolean,
   multiple: boolean,
   defaultMapValue: any,
-  optionValueSource: number
+  optionValueSource: number,
+  mapValue: any
 ) => {
   if (optionValueSource === 1) {
-    if (firstLoad && !selectValue?.length) {
+    if (firstLoad) {
       return defaultValueCheck ? defaultMapValue : multiple ? [] : ''
     }
-    return (selectValue?.length ? defaultMapValue : selectValue) || ''
+    return (selectValue?.length ? mapValue : selectValue) || ''
   }
 
   if (firstLoad && !selectValue?.length) {
@@ -200,6 +201,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               defaultValue,
               optionValueSource,
               defaultMapValue,
+              mapValue,
               parameters = [],
               parametersCheck = false,
               isTree = false,
@@ -265,7 +267,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 firstLoad,
                 multiple,
                 defaultMapValue,
-                optionValueSource
+                optionValueSource,
+                mapValue
               )
             }
             if (

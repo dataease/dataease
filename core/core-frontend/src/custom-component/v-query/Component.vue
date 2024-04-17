@@ -13,7 +13,10 @@ import {
   watch,
   computed,
   onMounted,
-  CSSProperties
+  onBeforeMount,
+  CSSProperties,
+  shallowRef,
+  provide
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -156,7 +159,52 @@ const onComponentClick = () => {
 }
 
 const { emitter } = useEmitt()
+const unMountSelect = shallowRef([])
+onBeforeMount(() => {
+  unMountSelect.value = list.value.map(ele => ele.id)
+})
 
+const releaseSelect = id => {
+  unMountSelect.value = unMountSelect.value.filter(ele => ele !== id)
+}
+
+const queryDataForId = id => {
+  let requiredName = ''
+  const emitterList = (element.value.propValue || [])
+    .filter(ele => ele.id === id)
+    .reduce((pre, next) => {
+      if (next.required) {
+        if (!next.defaultValueCheck) {
+          requiredName = next.name
+        }
+
+        if (
+          (Array.isArray(next.selectValue) && !next.selectValue.length) ||
+          (next.selectValue !== 0 && !next.selectValue)
+        ) {
+          requiredName = next.name
+        }
+      }
+      const keyList = Object.entries(next.checkedFieldsMap)
+        .filter(ele => next.checkedFields.includes(ele[0]))
+        .filter(ele => !!ele[1])
+        .map(ele => ele[0])
+      pre = [...new Set([...keyList, ...pre])]
+      return pre
+    }, [])
+  if (!!requiredName) {
+    ElMessage.error(`【${requiredName}】查询条件是必填项，请设置选项值后，再进行查询！`)
+    return
+  }
+  if (!emitterList.length) return
+  emitterList.forEach(ele => {
+    emitter.emit(`query-data-${ele}`)
+  })
+}
+
+provide('unmount-select', unMountSelect)
+provide('release-unmount-select', releaseSelect)
+provide('query-data-for-id', queryDataForId)
 onBeforeUnmount(() => {
   emitter.off(`addQueryCriteria${element.value.id}`)
   emitter.off(`editQueryCriteria${element.value.id}`)
