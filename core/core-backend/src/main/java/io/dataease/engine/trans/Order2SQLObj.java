@@ -11,8 +11,8 @@ import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
-import org.springframework.util.CollectionUtils;
 
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -24,8 +24,8 @@ public class Order2SQLObj {
 
     public static void getOrders(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DeSortField> sortFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         SQLObj tableObj = meta.getTable();
-        List<SQLObj> xOrders = meta.getXOrders();
-        if (ObjectUtils.isEmpty(tableObj) || CollectionUtils.isEmpty(xOrders)) {
+        List<SQLObj> xOrders = meta.getXOrders() == null ? new ArrayList<>() : meta.getXOrders();
+        if (ObjectUtils.isEmpty(tableObj)) {
             return;
         }
         if (ObjectUtils.isNotEmpty(sortFields)) {
@@ -35,6 +35,7 @@ public class Order2SQLObj {
                 SQLObj order = buildSortField(deSortField, tableObj, i, fields, isCross, dsMap);
                 xOrders.add(order);
             }
+            meta.setXOrders(xOrders);
         }
     }
 

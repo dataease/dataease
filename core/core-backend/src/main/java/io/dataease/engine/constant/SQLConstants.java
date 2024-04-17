@@ -47,7 +47,7 @@ public class SQLConstants {
 
     public static final String FIELD_NAME = "%s.`%s`";
 
-    public static final String FIELD_DOT = "`%s`";
+    public static final String FIELD_DOT = "%s";
 
     public static final String UNIX_TIMESTAMP = "DE_UNIX_TIMESTAMP(%s)";
 
