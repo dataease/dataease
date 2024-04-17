@@ -108,7 +108,7 @@ declare interface AssistLine {
    */
   summary: string
 
-  axisType: 'left' | 'right'
+  yAxisType: 'left' | 'right'
 }
 
 /**
