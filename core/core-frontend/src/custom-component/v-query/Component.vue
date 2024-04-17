@@ -302,6 +302,8 @@ const resetData = () => {
         ? [...next.defaultMapValue]
         : next.defaultMapValue
     }
+    next.conditionValueF = next.defaultConditionValueF
+    next.conditionValueS = next.defaultConditionValueS
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
@@ -317,6 +319,8 @@ const clearData = () => {
     if (next.optionValueSource === 1 && next.defaultMapValue?.length) {
       next.mapValue = next.multiple ? [] : undefined
     }
+    next.conditionValueF = ''
+    next.conditionValueS = ''
     const keyList = Object.entries(next.checkedFieldsMap)
       .filter(ele => next.checkedFields.includes(ele[0]))
       .filter(ele => !!ele[1])
