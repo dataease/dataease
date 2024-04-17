@@ -15,7 +15,6 @@ import {
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
-import { ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
 import { parseJson } from '@/views/chart/components/js/util'
 
 export interface L7PlotDrawOptions<P> extends AntVDrawOptions<P> {
@@ -47,12 +46,12 @@ export abstract class L7PlotChartView<
     defaultsDeep(options.tooltip, tooltip)
     return options
   }
-  protected configLegend(_: Chart, options: ChoroplethOptions) {
-    const legend = configL7Legend()
-    defaultsDeep(options.legend, legend)
+  protected configLegend(chart: Chart, options: O): O {
+    const legend = configL7Legend(chart)
+    defaultsDeep(options, { legend })
     return options
   }
-  protected configEmptyDataStrategy(chart: Chart, options: ChoroplethOptions): ChoroplethOptions {
+  protected configEmptyDataStrategy(chart: Chart, options: O): O {
     const { functionCfg } = parseJson(chart.senior)
     const emptyDataStrategy = functionCfg.emptyDataStrategy
     if (!emptyDataStrategy || emptyDataStrategy === 'breakLine') {
@@ -75,8 +74,8 @@ export abstract class L7PlotChartView<
     return options
   }
 
-  protected configZoomButton(plot: P) {
-    configL7Zoom(plot)
+  protected configZoomButton(chart: Chart, plot: P) {
+    configL7Zoom(chart, plot)
   }
   protected constructor(name: string, defaultData?: any[]) {
     super(ChartLibraryType.L7_PLOT, name)

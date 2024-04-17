@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { computed, nextTick, onMounted, PropType, reactive, ref, watch } from 'vue'
-import { useI18n } from '@/hooks/web/useI18n'
 import { getGeoJsonFile, parseJson } from '../../../js/util'
 import { forEach, debounce } from 'lodash-es'
 import { EmptyBackground } from '@/components/empty-background'
@@ -118,14 +117,6 @@ const updateAreaData = debounce(() => {
 const onMapMappingChange = () => {
   emit('onMapMappingChange', state.mappingForm)
 }
-const mergeCellMethod = ({ columnIndex }) => {
-  if (columnIndex === 1) {
-    return [1, 2]
-  }
-  if (columnIndex === 2) {
-    return [0, 0]
-  }
-}
 onMounted(() => {
   init()
 })
@@ -141,7 +132,6 @@ onMounted(() => {
       :cell-class-name="'area-map-table-cell-' + themes"
       :row-class-name="'area-map-table-row-' + themes"
       :data="areaData"
-      :span-method="mergeCellMethod"
     >
       <el-table-column label="图形" prop="originName" width="80" show-overflow-tooltip />
       <el-table-column width="144">

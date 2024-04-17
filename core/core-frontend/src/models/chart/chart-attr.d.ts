@@ -161,9 +161,10 @@ declare interface ChartBasicStyle {
    */
   areaBorderColor: string
   /**
+   * @deprecated
    * 悬浮工具栏
    */
-  suspension: boolean
+  suspension?: boolean
   /**
    * 地图底色
    */
@@ -192,6 +193,18 @@ declare interface ChartBasicStyle {
    * 环形图/玫瑰图外径占比
    */
   radius: number
+  /**
+   * 是否显示地图缩放按钮
+   */
+  showZoom: boolean
+  /**
+   * 地图缩放按钮颜色
+   */
+  zoomButtonColor: string
+  /**
+   * 地图缩放按钮背景颜色
+   */
+  zoomBackground: string
 }
 /**
  * 表头属性
