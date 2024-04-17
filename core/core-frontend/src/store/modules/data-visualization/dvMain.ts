@@ -1,7 +1,11 @@
 import { defineStore } from 'pinia'
 import { store } from '../../index'
 import { deepCopy } from '@/utils/utils'
-import { BASE_VIEW_CONFIG } from '@/views/chart/components/editor/util/chart'
+import {
+  BASE_VIEW_CONFIG,
+  DEFAULT_INDICATOR_NAME_STYLE,
+  DEFAULT_INDICATOR_STYLE
+} from '@/views/chart/components/editor/util/chart'
 import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
   DEFAULT_CANVAS_STYLE_DATA_LIGHT,
@@ -508,6 +512,12 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (this.curBatchOptComponents.length === 1) {
             this.changeProperties.customAttr = viewBaseInfo.customAttr
             this.changeProperties.customStyle = viewBaseInfo.customStyle
+            // 补充历史指标卡缺失属性
+            this.changeProperties.customAttr['indicator'] =
+              this.changeProperties.customAttr.indicator || deepCopy(DEFAULT_INDICATOR_STYLE)
+            this.changeProperties.customAttr['indicatorName'] =
+              this.changeProperties.customAttr.indicatorName ||
+              deepCopy(DEFAULT_INDICATOR_NAME_STYLE)
           }
           this.batchOptComponents[id] = {
             properties: chartViewInstance.properties,
