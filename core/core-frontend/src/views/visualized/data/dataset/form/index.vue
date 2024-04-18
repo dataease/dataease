@@ -318,7 +318,7 @@ watch(searchTable, val => {
 const editeSave = () => {
   const union = []
   loading.value = true
-  dfsNodeList(union, datasetDrag.value.nodeList)
+  dfsNodeList(union, datasetDrag.value.getNodeList())
   saveDatasetTree({
     ...nodeInfo,
     name: datasetName.value,
@@ -448,7 +448,7 @@ const deleteField = item => {
     callback: (action: Action) => {
       if (action === 'confirm') {
         delFieldById([item.id])
-        datasetDrag.value.dfsNodeFieldBack(datasetDrag.value.nodeList, item)
+        datasetDrag.value.dfsNodeFieldBack(datasetDrag.value.getNodeList(), item)
         ElMessage({
           message: t('chart.delete_success'),
           type: 'success'
@@ -671,7 +671,6 @@ const addComplete = () => {
 const state = reactive({
   nodeNameList: [],
   editArr: [],
-  nodeList: [],
   dataSourceList: [],
   tableData: [],
   fieldCollapse: ['dimension', 'quota']
@@ -750,7 +749,7 @@ const fieldUnion = ref()
 
 const setFieldAll = () => {
   const arr = []
-  dfsFields(arr, datasetDrag.value.nodeList)
+  dfsFields(arr, datasetDrag.value.getNodeList())
   const delIdArr = getDelIdArr(arr, allfields.value)
   allfields.value = diffArr(arr, allfields.value)
   delFieldById(delIdArr)
@@ -924,7 +923,7 @@ const resetAllfieldsId = arr => {
 
 const resetAllfieldsUnionId = (arr, idMap) => {
   let strUnion = JSON.stringify(arr) as string
-  let strNodeList = JSON.stringify(toRaw(datasetDrag.value.nodeList)) as string
+  let strNodeList = JSON.stringify(toRaw(datasetDrag.value.getNodeList())) as string
   let strAllfields = JSON.stringify(unref(allfields.value)) as string
   Object.entries(idMap).forEach(([key, value]) => {
     strUnion = strUnion.replaceAll(key, value as string)
@@ -942,7 +941,7 @@ const datasetSave = () => {
     return
   }
   let union = []
-  dfsNodeList(union, datasetDrag.value.nodeList)
+  dfsNodeList(union, datasetDrag.value.getNodeList())
   const pid = route.query.pid || nodeInfo.pid
   if (!union.length) {
     ElMessage.error('数据集不能为空')
@@ -969,7 +968,7 @@ const datasetPreviewLoading = ref(false)
 const datasetPreview = () => {
   if (datasetPreviewLoading.value) return
   const arr = []
-  dfsNodeList(arr, datasetDrag.value.nodeList)
+  dfsNodeList(arr, datasetDrag.value.getNodeList())
   datasetPreviewLoading.value = true
   getPreviewData({ union: arr, allFields: allfields.value })
     .then(res => {
