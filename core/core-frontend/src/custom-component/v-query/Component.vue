@@ -620,7 +620,7 @@ const autoStyle = computed(() => {
   }
   .query-button {
     align-self: flex-end;
-    line-height: 28px;
+    line-height: 40px;
     margin: auto 0 5px auto;
     z-index: 0;
   }
