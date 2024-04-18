@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { reactive, computed, ref, nextTick, inject, type Ref, watch } from 'vue'
+import { reactive, computed, ref, nextTick, inject, type Ref, watch, unref } from 'vue'
 import AddSql from './AddSql.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import zeroNodeImg from '@/assets/img/drag.png'
@@ -113,14 +113,14 @@ const dfsForDsId = (arr, datasourceId) => {
     if (arr.children?.length) {
       return dfsForDsId(arr.children, datasourceId)
     }
-    return ele.datasourceId === datasourceId
+    return ele.datasourceId === datasourceId || !ele.datasourceId
   })
 }
 
 const crossDatasources = computed(() => {
   const { datasourceId, children = [] } = state.nodeList[0] || {}
   if (datasourceId && !!children.length) {
-    return dfsForDsId(children, datasourceId)
+    return !dfsForDsId(children, datasourceId)
   }
   return false
 })
@@ -251,6 +251,8 @@ const changeNodeFields = val => {
 }
 
 const closeEditUnion = () => {
+  nodeField.value = []
+  currentNode.value = null
   const [fir] = state.nodeList
   if (fir.isShadow) {
     delete fir.isShadow
@@ -848,9 +850,13 @@ const notConfirm = () => {
   confirm()
 }
 
+const getNodeList = () => {
+  return cloneDeep(unref(state.nodeList))
+}
+
 defineExpose({
   nodeNameList,
-  nodeList: state.nodeList,
+  getNodeList,
   setStateBack,
   notConfirm,
   dfsNodeFieldBack,
