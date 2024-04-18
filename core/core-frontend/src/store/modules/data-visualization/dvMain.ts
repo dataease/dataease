@@ -900,18 +900,36 @@ export const dvMainStore = defineStore('dataVisualization', {
               if (element.component === 'VQuery') {
                 element.propValue.forEach(filterItem => {
                   if (filterItem.id === targetViewId) {
+                    let queryParams = paramValue
+                    if (!['1', '7'].includes(filterItem.displayType)) {
+                      // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
+                      queryParams = paramValue.map(number => String(number))
+                    }
                     filterItem.defaultValueCheck = true
-                    if (filterItem.displayType === '0' && filterItem.multiple) {
-                      filterItem.selectValue = paramValue
-                      filterItem.defaultValue = paramValue
-                    } else if (filterItem.displayType === '0' && !filterItem.multiple) {
-                      filterItem.selectValue = paramValue[0]
-                      filterItem.defaultValue = paramValue[0]
+                    filterItem.timeType = 'fixed'
+                    if (['0', '2'].includes(filterItem.displayType)) {
+                      // 0 文本类型 1 数字类型
+                      if (filterItem.multiple) {
+                        // multiple === true 多选
+                        filterItem.selectValue = queryParams
+                        filterItem.defaultValue = queryParams
+                      } else {
+                        // 单选
+                        filterItem.selectValue = queryParams[0]
+                        filterItem.defaultValue = queryParams[0]
+                      }
+                    } else if (filterItem.displayType === '1') {
+                      // 1 时间类型
+                      filterItem.selectValue = queryParams[0]
+                      filterItem.defaultValue = queryParams[0]
+                    } else if (filterItem.displayType === '7') {
+                      // 7 时间范围类型
+                      filterItem.selectValue = queryParams
+                      filterItem.defaultValue = queryParams
                     } else if (filterItem.displayType === '8') {
-                      filterItem.conditionValueF = parmaValueSource
-                    } else {
-                      filterItem.selectValue = paramValue[0]
-                      filterItem.defaultValue = paramValue[0]
+                      // 8 文本搜索
+                      filterItem.conditionValueF = parmaValueSource + ''
+                      filterItem.defaultConditionValueF = parmaValueSource + ''
                     }
                   }
                 })
