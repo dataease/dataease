@@ -20,7 +20,7 @@ import java.util.*;
  */
 public class Field2SQLObj {
 
-    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields,List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
+    public static void field2sqlObj(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         SQLObj tableObj = meta.getTable();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
@@ -37,6 +37,9 @@ public class Field2SQLObj {
                     // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                     originField = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, x.getId());
                     fieldsDialect.put(originField, calcFieldExp);
+                    if (isCross) {
+                        originField = calcFieldExp;
+                    }
                     // 此处是数据集预览，获取数据库原始字段枚举值等操作使用，如果遇到聚合函数则将originField设置为null
                     for (String func : FunctionConstant.AGG_FUNC) {
                         if (Utils.matchFunction(func, calcFieldExp)) {
