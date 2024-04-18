@@ -1061,8 +1061,8 @@ const clearInfoBox = e => {
 const cellInit = () => {
   // 此处向下取整 保留1位小数,why: 矩阵模式计算 x,y时 会使用 style.left/cellWidth style.top/cellWidth
   // 当初始状态细微的差距(主要是减少)都会导致 x，y 减少一个矩阵大小造成偏移,
-  cellWidth.value = Math.floor((baseWidth.value + baseMarginLeft.value) * 10) / 10
-  cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 10) / 10
+  cellWidth.value = Math.floor((baseWidth.value + baseMarginLeft.value) * 1000) / 1000
+  cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 1000) / 1000
 }
 
 const canvasSizeInit = () => {
