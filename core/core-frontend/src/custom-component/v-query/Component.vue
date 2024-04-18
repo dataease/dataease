@@ -293,12 +293,11 @@ const delQueryConfig = index => {
 
 const resetData = () => {
   ;(list.value || []).reduce((pre, next) => {
-    if (next.defaultConditionValueF?.length) {
-      next.conditionValueF = next.defaultConditionValueF
-    }
-    if (next.defaultConditionValueS?.length) {
-      next.conditionValueS = next.defaultConditionValueS
-    }
+    next.conditionValueF = next.defaultConditionValueF
+    next.conditionValueOperatorF = next.defaultConditionValueOperatorF
+    next.conditionValueS = next.defaultConditionValueS
+    next.conditionValueOperatorS = next.defaultConditionValueOperatorS
+
     if (!next.defaultValueCheck) {
       next.defaultValue = next.multiple || +next.displayType === 7 ? [] : undefined
     }

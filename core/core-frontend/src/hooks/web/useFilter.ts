@@ -154,7 +154,7 @@ const getOperator = (
   const operatorS = firstLoad ? defaultConditionValueOperatorS : conditionValueOperatorS
   if (displayType === '8') {
     if (conditionType === 0) {
-      return defaultConditionValueOperatorF
+      return operatorF
     }
     const operatorArr = [valueF === '' ? '' : operatorF, valueS === '' ? '' : operatorS].filter(
       ele => ele !== ''
