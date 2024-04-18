@@ -422,9 +422,9 @@ export async function decompressionPre(params, callBack) {
 }
 
 export function trackBarStyleCheck(element, trackbarStyle, scale) {
-  const { width, height } = element.value.style
-  const widthReal = width * scale
-  const heightReal = height * scale
+  const { width, height } = element.style
+  const widthReal = width
+  const heightReal = height
   if (trackbarStyle.left < 0) {
     trackbarStyle.left = 0
   } else if (widthReal - trackbarStyle.left < 60) {
