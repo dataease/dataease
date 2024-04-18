@@ -367,35 +367,36 @@ export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
 
 export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
   show: true,
-  fontSize: '20',
+  fontSize: 20,
   color: '#5470C6ff',
   hPosition: 'center',
   vPosition: 'center',
   isItalic: false,
   isBolder: true,
   fontFamily: 'Microsoft YaHei',
-  letterSpace: '0',
+  letterSpace: 0,
   fontShadow: false,
 
   suffixEnable: true,
   suffix: '',
-  suffixFontSize: '14',
+  suffixFontSize: 14,
   suffixColor: '#5470C6ff',
   suffixIsItalic: false,
   suffixIsBolder: true,
   suffixFontFamily: 'Microsoft YaHei',
-  suffixLetterSpace: '0',
+  suffixLetterSpace: 0,
   suffixFontShadow: false
 }
 export const DEFAULT_INDICATOR_NAME_STYLE: ChartIndicatorNameStyle = {
   show: true,
-  fontSize: '18',
+  fontSize: 18,
   color: '#ffffffff',
   isItalic: false,
   isBolder: true,
   fontFamily: 'Microsoft YaHei',
-  letterSpace: '0',
-  fontShadow: false
+  letterSpace: 0,
+  fontShadow: false,
+  nameValueSpacing: 0
 }
 
 export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
@@ -1002,7 +1003,7 @@ export const CHART_FONT_FAMILY = [
   { name: '楷体', value: 'KaiTi' }
 ]
 
-export const CHART_CONT_FAMILY_MAP = {
+export const CHART_FONT_FAMILY_MAP = {
   'Microsoft YaHei': 'Microsoft YaHei',
   SimSun: 'SimSun, "Songti SC", STSong',
   SimHei: 'SimHei, Helvetica',
