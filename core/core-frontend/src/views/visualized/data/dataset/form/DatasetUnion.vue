@@ -110,8 +110,8 @@ const dfsNodeNameList = (list, arr) => {
 
 const dfsForDsId = (arr, datasourceId) => {
   return arr.every(ele => {
-    if (arr.children?.length) {
-      return dfsForDsId(arr.children, datasourceId)
+    if (ele.children?.length) {
+      return dfsForDsId(ele.children, datasourceId)
     }
     return ele.datasourceId === datasourceId || !ele.datasourceId
   })
