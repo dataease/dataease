@@ -248,7 +248,9 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   mapLineAnimateDuration: 3,
   mapLineGradient: false,
   mapLineSourceColor: '#146C94',
-  mapLineTargetColor: '#576CBC'
+  mapLineTargetColor: '#576CBC',
+  wordSizeRange: [8, 32],
+  wordSpacing: 6
 }
 
 export const DEFAULT_MARK = {
