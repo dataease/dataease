@@ -53,6 +53,9 @@ public class ExtWhere2Str {
                         // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                         originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
                         fieldsDialect.put(originName, calcFieldExp);
+                        if (isCross) {
+                            originName = calcFieldExp;
+                        }
                     } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
                         originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
                     } else {
