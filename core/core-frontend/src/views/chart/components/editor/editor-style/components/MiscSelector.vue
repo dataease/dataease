@@ -1,19 +1,16 @@
 <script lang="ts" setup>
 import { computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import {
-  CHART_FONT_FAMILY,
-  DEFAULT_MISC,
-  CHART_FONT_LETTER_SPACE
-} from '@/views/chart/components/editor/util/chart'
+import { DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 import { ElMessage, ElRow } from 'element-plus-secondary'
 import { fieldType } from '@/utils/attr'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 
 const { t } = useI18n()
 
 const props = withDefaults(
   defineProps<{
-    chart: any
+    chart: ChartObj
     themes?: EditorTheme
     quotaFields: Array<any>
     propertyInner?: Array<string>
@@ -66,10 +63,6 @@ const liquidShapeOptions = [
   { name: t('chart.liquid_shape_rect'), value: 'rect' }
 ]
 
-const fontFamily = CHART_FONT_FAMILY
-
-const fontLetterSpace = CHART_FONT_LETTER_SPACE
-
 const changeMisc = (prop = '', refresh = false) => {
   if (state.miscForm.gaugeMax <= state.miscForm.gaugeMin) {
     ElMessage.error(t('chart.max_more_than_mix'))
@@ -77,30 +70,9 @@ const changeMisc = (prop = '', refresh = false) => {
   emit('onMiscChange', { data: state.miscForm, requestData: refresh }, prop)
 }
 
-const fontSizeList = computed(() => {
-  const arr = []
-  for (let i = 10; i <= 60; i = i + 2) {
-    arr.push({
-      name: i + '',
-      value: i
-    })
-  }
-  return arr
-})
-
 const init = () => {
-  const chart = JSON.parse(JSON.stringify(props.chart))
-  if (chart.customAttr) {
-    let customAttr = null
-    if (Object.prototype.toString.call(chart.customAttr) === '[object Object]') {
-      customAttr = JSON.parse(JSON.stringify(chart.customAttr))
-    } else {
-      customAttr = JSON.parse(chart.customAttr)
-    }
-    if (customAttr.misc) {
-      state.miscForm = customAttr.misc
-    }
-  }
+  const misc = cloneDeep(props.chart.customAttr.misc)
+  state.miscForm = defaultsDeep(misc, cloneDeep(DEFAULT_MISC)) as ChartMiscAttr
 }
 
 const initField = () => {
@@ -202,6 +174,8 @@ const isValidField = field => {
   return field.id !== '-1' && state.quotaData.findIndex(ele => ele.id === field.id) !== -1
 }
 
+const showProperty = prop => props.propertyInner?.includes(prop)
+
 onMounted(() => {
   initField()
   init()
@@ -210,8 +184,8 @@ onMounted(() => {
 
 <template>
   <el-form :model="state.miscForm">
-    <el-row :gutter="8" v-if="!props.chart.type.includes('liquid')">
-      <el-col :span="12">
+    <el-row :gutter="8">
+      <el-col :span="12" v-show="showProperty('gaugeStartAngle')">
         <el-form-item
           :label="t('chart.start_angle')"
           class="form-item"
@@ -228,7 +202,7 @@ onMounted(() => {
           />
         </el-form-item>
       </el-col>
-      <el-col :span="12">
+      <el-col :span="12" v-show="showProperty('gaugeEndAngle')">
         <el-form-item
           :label="t('chart.end_angle')"
           class="form-item"
@@ -248,593 +222,375 @@ onMounted(() => {
     </el-row>
 
     <!--gauge-begin-->
-    <template v-if="props.chart.type.includes('gauge')">
-      <el-form-item
-        :label="t('chart.min')"
-        class="form-item margin-bottom-8"
-        :class="'form-item-' + themes"
+    <el-form-item
+      v-show="showProperty('gaugeMinType')"
+      class="form-item margin-bottom-8"
+      :label="t('chart.min')"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        :effect="themes"
+        v-model="state.miscForm.gaugeMinType"
+        size="small"
+        @change="changeQuotaField('min')"
       >
-        <el-radio-group
-          :effect="themes"
-          v-model="state.miscForm.gaugeMinType"
-          size="small"
-          @change="changeQuotaField('min')"
-        >
-          <el-radio :effect="themes" label="fix">{{ t('chart.fix') }}</el-radio>
-          <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item
-        v-if="state.miscForm.gaugeMinType === 'fix'"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-input-number
-          :effect="themes"
-          v-model="state.miscForm.gaugeMin"
-          size="small"
-          controls-position="right"
-          @change="changeMisc('gaugeMin')"
-        />
-      </el-form-item>
-      <el-row :gutter="8" v-if="state.miscForm.gaugeMinType === 'dynamic'">
-        <el-col :span="12">
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-select
-              :effect="themes"
-              :placeholder="t('chart.field')"
-              :class="{ 'invalid-field': !validMinField }"
-              v-model="state.miscForm.gaugeMinField.id"
-              @change="changeQuotaField('min', true)"
+        <el-radio :effect="themes" label="fix">{{ t('chart.fix') }}</el-radio>
+        <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('gaugeMin') && state.miscForm.gaugeMinType === 'fix'"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-input-number
+        :effect="themes"
+        v-model="state.miscForm.gaugeMin"
+        size="small"
+        controls-position="right"
+        @change="changeMisc('gaugeMin')"
+      />
+    </el-form-item>
+    <el-row
+      :gutter="8"
+      v-if="showProperty('gaugeMinField') && state.miscForm.gaugeMinType === 'dynamic'"
+    >
+      <el-col :span="12">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-select
+            :effect="themes"
+            :placeholder="t('chart.field')"
+            :class="{ 'invalid-field': !validMinField }"
+            v-model="state.miscForm.gaugeMinField.id"
+            @change="changeQuotaField('min', true)"
+          >
+            <el-option
+              class="series-select-option"
+              v-for="item in state.quotaData"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             >
-              <el-option
-                class="series-select-option"
-                v-for="item in state.quotaData"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              >
-                <el-icon style="margin-right: 8px">
-                  <Icon
-                    :className="`field-icon-${fieldType[item.deType]}`"
-                    :name="`field_${fieldType[item.deType]}`"
-                  />
-                </el-icon>
-                {{ item.name }}
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-select
-              :effect="themes"
-              :placeholder="t('chart.summary')"
-              v-model="state.miscForm.gaugeMinField.summary"
-              @change="changeQuotaField('min')"
-            >
-              <el-option v-if="validMinField" key="sum" value="sum" :label="t('chart.sum')" />
-              <el-option v-if="validMinField" key="avg" value="avg" :label="t('chart.avg')" />
-              <el-option v-if="validMinField" key="max" value="max" :label="t('chart.max')" />
-              <el-option v-if="validMinField" key="min" value="min" :label="t('chart.min')" />
-              <el-option
-                v-if="validMinField"
-                key="stddev_pop"
-                value="stddev_pop"
-                :label="t('chart.stddev_pop')"
-              />
-              <el-option
-                v-if="validMinField"
-                key="var_pop"
-                value="var_pop"
-                :label="t('chart.var_pop')"
-              />
-              <el-option key="count" value="count" :label="t('chart.count')" />
-              <el-option
-                v-if="state.minField.id !== '-1'"
-                key="count_distinct"
-                value="count_distinct"
-                :label="t('chart.count_distinct')"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
+              <el-icon style="margin-right: 8px">
+                <Icon
+                  :className="`field-icon-${fieldType[item.deType]}`"
+                  :name="`field_${fieldType[item.deType]}`"
+                />
+              </el-icon>
+              {{ item.name }}
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-select
+            :effect="themes"
+            :placeholder="t('chart.summary')"
+            v-model="state.miscForm.gaugeMinField.summary"
+            @change="changeQuotaField('min')"
+          >
+            <el-option v-if="validMinField" key="sum" value="sum" :label="t('chart.sum')" />
+            <el-option v-if="validMinField" key="avg" value="avg" :label="t('chart.avg')" />
+            <el-option v-if="validMinField" key="max" value="max" :label="t('chart.max')" />
+            <el-option v-if="validMinField" key="min" value="min" :label="t('chart.min')" />
+            <el-option
+              v-if="validMinField"
+              key="stddev_pop"
+              value="stddev_pop"
+              :label="t('chart.stddev_pop')"
+            />
+            <el-option
+              v-if="validMinField"
+              key="var_pop"
+              value="var_pop"
+              :label="t('chart.var_pop')"
+            />
+            <el-option key="count" value="count" :label="t('chart.count')" />
+            <el-option
+              v-if="state.minField.id !== '-1'"
+              key="count_distinct"
+              value="count_distinct"
+              :label="t('chart.count_distinct')"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
+    </el-row>
 
-      <el-form-item
-        :label="t('chart.max')"
-        class="form-item margin-bottom-8"
-        :class="'form-item-' + themes"
+    <el-form-item
+      v-show="showProperty('gaugeMaxType')"
+      class="form-item margin-bottom-8"
+      :label="t('chart.max')"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        v-model="state.miscForm.gaugeMaxType"
+        size="small"
+        @change="changeQuotaField('max')"
       >
-        <el-radio-group
-          v-model="state.miscForm.gaugeMaxType"
-          size="small"
-          @change="changeQuotaField('max')"
-        >
-          <el-radio :effect="themes" label="fix">{{ t('chart.fix') }}</el-radio>
-          <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
-        </el-radio-group>
-      </el-form-item>
-      <el-form-item
-        v-if="state.miscForm.gaugeMaxType === 'fix'"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-input-number
-          :effect="themes"
-          v-model="state.miscForm.gaugeMax"
-          size="small"
-          controls-position="right"
-          @change="changeMisc('gaugeMax')"
-        />
-      </el-form-item>
-      <el-row :gutter="8" v-if="state.miscForm.gaugeMaxType === 'dynamic'">
-        <el-col :span="12">
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-select
-              :effect="themes"
-              :placeholder="t('chart.field')"
-              :class="{ 'invalid-field': !validMaxField }"
-              v-model="state.miscForm.gaugeMaxField.id"
-              @change="changeQuotaField('max', true)"
+        <el-radio :effect="themes" label="fix">{{ t('chart.fix') }}</el-radio>
+        <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('gaugeMax') && state.miscForm.gaugeMaxType === 'fix'"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-input-number
+        :effect="themes"
+        v-model="state.miscForm.gaugeMax"
+        size="small"
+        controls-position="right"
+        @change="changeMisc('gaugeMax')"
+      />
+    </el-form-item>
+    <el-row
+      :gutter="8"
+      v-if="showProperty('gaugeMaxField') && state.miscForm.gaugeMaxType === 'dynamic'"
+    >
+      <el-col :span="12">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-select
+            :effect="themes"
+            :placeholder="t('chart.field')"
+            :class="{ 'invalid-field': !validMaxField }"
+            v-model="state.miscForm.gaugeMaxField.id"
+            @change="changeQuotaField('max', true)"
+          >
+            <el-option
+              class="series-select-option"
+              v-for="item in state.quotaData"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             >
-              <el-option
-                class="series-select-option"
-                v-for="item in state.quotaData"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              >
-                <el-icon style="margin-right: 8px">
-                  <Icon
-                    :className="`field-icon-${fieldType[item.deType]}`"
-                    :name="`field_${fieldType[item.deType]}`"
-                  />
-                </el-icon>
-                {{ item.name }}
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-select
-              :effect="themes"
-              v-model="state.miscForm.gaugeMaxField.summary"
-              :placeholder="t('chart.summary')"
-              @change="changeQuotaField('max')"
-            >
-              <el-option v-if="validMaxField" key="sum" value="sum" :label="t('chart.sum')" />
-              <el-option v-if="validMaxField" key="avg" value="avg" :label="t('chart.avg')" />
-              <el-option v-if="validMaxField" key="max" value="max" :label="t('chart.max')" />
-              <el-option v-if="validMaxField" key="min" value="min" :label="t('chart.min')" />
-              <el-option
-                v-if="validMaxField"
-                key="stddev_pop"
-                value="stddev_pop"
-                :label="t('chart.stddev_pop')"
-              />
-              <el-option
-                v-if="validMaxField"
-                key="var_pop"
-                value="var_pop"
-                :label="t('chart.var_pop')"
-              />
-              <el-option key="count" value="count" :label="t('chart.count')" />
-              <el-option
-                v-if="state.maxField.id !== '-1'"
-                key="count_distinct"
-                value="count_distinct"
-                :label="t('chart.count_distinct')"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </template>
+              <el-icon style="margin-right: 8px">
+                <Icon
+                  :className="`field-icon-${fieldType[item.deType]}`"
+                  :name="`field_${fieldType[item.deType]}`"
+                />
+              </el-icon>
+              {{ item.name }}
+            </el-option>
+          </el-select>
+        </el-form-item>
+      </el-col>
+      <el-col :span="12">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
+          <el-select
+            :effect="themes"
+            v-model="state.miscForm.gaugeMaxField.summary"
+            :placeholder="t('chart.summary')"
+            @change="changeQuotaField('max')"
+          >
+            <el-option v-if="validMaxField" key="sum" value="sum" :label="t('chart.sum')" />
+            <el-option v-if="validMaxField" key="avg" value="avg" :label="t('chart.avg')" />
+            <el-option v-if="validMaxField" key="max" value="max" :label="t('chart.max')" />
+            <el-option v-if="validMaxField" key="min" value="min" :label="t('chart.min')" />
+            <el-option
+              v-if="validMaxField"
+              key="stddev_pop"
+              value="stddev_pop"
+              :label="t('chart.stddev_pop')"
+            />
+            <el-option
+              v-if="validMaxField"
+              key="var_pop"
+              value="var_pop"
+              :label="t('chart.var_pop')"
+            />
+            <el-option key="count" value="count" :label="t('chart.count')" />
+            <el-option
+              v-if="state.maxField.id !== '-1'"
+              key="count_distinct"
+              value="count_distinct"
+              :label="t('chart.count_distinct')"
+            />
+          </el-select>
+        </el-form-item>
+      </el-col>
+    </el-row>
     <!--gauge-end-->
 
     <!--liquid-begin-->
-    <template v-if="props.chart.type.includes('liquid')">
-      <el-row :gutter="8">
-        <el-col :span="12">
-          <el-form-item
-            :label="t('chart.liquid_shape')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-select
-              :effect="themes"
-              v-model="state.miscForm.liquidShape"
-              :placeholder="t('chart.liquid_shape')"
-              @change="changeMisc('liquidShape')"
-            >
-              <el-option
-                v-for="item in liquidShapeOptions"
-                :key="item.value"
-                :label="item.name"
-                :value="item.value"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item
-            :label="t('chart.radar_size')"
-            class="form-item"
-            :class="'form-item-' + themes"
-          >
-            <el-input-number
-              :effect="themes"
-              v-model="state.miscForm.liquidSize"
-              :min="1"
-              :max="100"
-              size="small"
-              controls-position="right"
-              @change="changeMisc('liquidSize')"
-            />
-          </el-form-item>
-        </el-col>
-      </el-row>
-
-      <el-form-item
-        :label="t('chart.liquid_max')"
-        class="form-item margin-bottom-8"
-        :class="'form-item-' + themes"
-      >
-        <el-radio-group
-          :effect="themes"
-          v-model="state.miscForm.liquidMaxType"
-          size="small"
-          @change="changeQuotaField('max')"
-        >
-          <el-radio :effect="themes" label="fix">
-            {{ t('chart.fix') }}
-          </el-radio>
-          <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
-        </el-radio-group>
-      </el-form-item>
-
-      <el-form-item
-        v-if="state.miscForm.liquidMaxType === 'fix'"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-input-number
-          :effect="themes"
-          v-model="state.miscForm.liquidMax"
-          :min="1"
-          size="small"
-          controls-position="right"
-          @change="changeMisc('liquidMax')"
-        />
-      </el-form-item>
-
-      <el-row :gutter="8" v-if="state.miscForm.liquidMaxType === 'dynamic'">
-        <el-col :span="12">
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-select
-              :effect="themes"
-              :placeholder="t('chart.field')"
-              :class="{ 'invalid-field': !validLiquidMaxField }"
-              v-model="state.miscForm.liquidMaxField.id"
-              @change="changeQuotaField('max', true)"
-            >
-              <el-option
-                class="series-select-option"
-                v-for="item in state.quotaData"
-                :key="item.id"
-                :label="item.name"
-                :value="item.id"
-              >
-                <el-icon style="margin-right: 8px">
-                  <Icon
-                    :className="`field-icon-${fieldType[item.deType]}`"
-                    :name="`field_${fieldType[item.deType]}`"
-                  />
-                </el-icon>
-                {{ item.name }}
-              </el-option>
-            </el-select>
-          </el-form-item>
-        </el-col>
-        <el-col :span="12">
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-select
-              :effect="themes"
-              v-model="state.miscForm.liquidMaxField.summary"
-              :placeholder="t('chart.summary')"
-              @change="changeQuotaField('max')"
-            >
-              <el-option v-if="validLiquidMaxField" key="sum" value="sum" :label="t('chart.sum')" />
-              <el-option v-if="validLiquidMaxField" key="avg" value="avg" :label="t('chart.avg')" />
-              <el-option v-if="validLiquidMaxField" key="max" value="max" :label="t('chart.max')" />
-              <el-option v-if="validLiquidMaxField" key="min" value="min" :label="t('chart.min')" />
-              <el-option
-                v-if="validLiquidMaxField"
-                key="stddev_pop"
-                value="stddev_pop"
-                :label="t('chart.stddev_pop')"
-              />
-              <el-option
-                v-if="validLiquidMaxField"
-                key="var_pop"
-                value="var_pop"
-                :label="t('chart.var_pop')"
-              />
-              <el-option key="count" value="count" :label="t('chart.count')" />
-              <el-option
-                v-if="state.liquidMaxField.id !== '-1'"
-                key="count_distinct"
-                value="count_distinct"
-                :label="t('chart.count_distinct')"
-              />
-            </el-select>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </template>
-    <!--liquid-end-->
-
-    <!--text&label-start-->
-    <template v-if="props.chart.type.includes('indicator') || props.chart.type.includes('label')">
-      <el-form-item
-        :label="t('chart.quota_font_size')"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-select
-          :effect="themes"
-          v-model="state.miscForm.quotaFontSize"
-          :placeholder="t('chart.quota_font_size')"
-          @change="changeMisc('quotaFontSize')"
-        >
-          <el-option
-            v-for="option in fontSizeList"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        :label="t('chart.quota_font_family')"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-select
-          :effect="themes"
-          v-model="state.miscForm.quotaFontFamily"
-          :placeholder="t('chart.quota_font_family')"
-          @change="changeMisc('quotaFontFamily')"
-        >
-          <el-option
-            v-for="option in fontFamily"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        :label="t('chart.quota_text_style')"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-checkbox
-          size="small"
-          :effect="themes"
-          v-model="state.miscForm.quotaFontIsItalic"
-          @change="changeMisc('quotaFontIsItalic')"
-        >
-          {{ t('chart.italic') }}
-        </el-checkbox>
-        <el-checkbox
-          size="small"
-          :effect="themes"
-          v-model="state.miscForm.quotaFontIsBolder"
-          @change="changeMisc('quotaFontIsBolder')"
-        >
-          {{ t('chart.bolder') }}
-        </el-checkbox>
-      </el-form-item>
-      <el-form-item
-        :label="t('chart.quota_letter_space')"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-select
-          :effect="themes"
-          v-model="state.miscForm.quotaLetterSpace"
-          :placeholder="t('chart.quota_letter_space')"
-          @change="changeMisc('quotaLetterSpace')"
-        >
-          <el-option
-            v-for="option in fontLetterSpace"
-            :key="option.value"
-            :label="option.name"
-            :value="option.value"
-          />
-        </el-select>
-      </el-form-item>
-      <el-form-item
-        :label="t('chart.font_shadow')"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-checkbox
-          size="small"
-          :effect="themes"
-          v-model="state.miscForm.quotaFontShadow"
-          @change="changeMisc('quotaFontShadow')"
-          >{{ t('chart.font_shadow') }}</el-checkbox
-        >
-      </el-form-item>
-      <el-divider />
-      <el-form-item
-        :label="t('chart.dimension_show')"
-        class="form-item"
-        :class="'form-item-' + themes"
-      >
-        <el-checkbox
-          size="small"
-          :effect="themes"
-          v-model="state.miscForm.dimensionShow"
-          @change="changeMisc('dimensionShow')"
-        >
-          {{ t('chart.show') }}
-        </el-checkbox>
-      </el-form-item>
-      <template v-if="state.miscForm.dimensionShow">
+    <el-row :gutter="8">
+      <el-col :span="12">
         <el-form-item
-          :label="t('chart.dimension_font_size')"
+          v-show="showProperty('liquidShape')"
           class="form-item"
+          :label="t('chart.liquid_shape')"
           :class="'form-item-' + themes"
         >
           <el-select
             :effect="themes"
-            v-model="state.miscForm.dimensionFontSize"
-            :placeholder="t('chart.dimension_font_size')"
-            @change="changeMisc('dimensionFontSize')"
+            v-model="state.miscForm.liquidShape"
+            :placeholder="t('chart.liquid_shape')"
+            @change="changeMisc('liquidShape')"
           >
             <el-option
-              v-for="option in fontSizeList"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
+              v-for="item in liquidShapeOptions"
+              :key="item.value"
+              :label="item.name"
+              :value="item.value"
             />
           </el-select>
         </el-form-item>
+      </el-col>
+      <el-col :span="12">
         <el-form-item
-          :label="t('chart.dimension_font_family')"
+          v-show="showProperty('liquidSize')"
           class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-select
-            :effect="themes"
-            v-model="state.miscForm.dimensionFontFamily"
-            :placeholder="t('chart.dimension_font_family')"
-            @change="changeMisc('dimensionFontFamily')"
-          >
-            <el-option
-              v-for="option in fontFamily"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          :label="t('chart.dimension_text_style')"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-checkbox
-            size="small"
-            :effect="themes"
-            v-model="state.miscForm.dimensionFontIsItalic"
-            @change="changeMisc('dimensionFontIsItalic')"
-          >
-            {{ t('chart.italic') }}
-          </el-checkbox>
-          <el-checkbox
-            size="small"
-            :effect="themes"
-            v-model="state.miscForm.dimensionFontIsBolder"
-            @change="changeMisc('dimensionFontIsBolder')"
-          >
-            {{ t('chart.bolder') }}
-          </el-checkbox>
-        </el-form-item>
-        <el-form-item
-          :label="t('chart.dimension_letter_space')"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-select
-            :effect="themes"
-            v-model="state.miscForm.dimensionLetterSpace"
-            :placeholder="t('chart.dimension_letter_space')"
-            @change="changeMisc('dimensionLetterSpace')"
-          >
-            <el-option
-              v-for="option in fontLetterSpace"
-              :key="option.value"
-              :label="option.name"
-              :value="option.value"
-            />
-          </el-select>
-        </el-form-item>
-        <el-form-item
-          :label="t('chart.font_shadow')"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-checkbox
-            size="small"
-            :effect="themes"
-            v-model="state.miscForm.dimensionFontShadow"
-            @change="changeMisc('dimensionFontShadow')"
-          >
-            {{ t('chart.font_shadow') }}
-          </el-checkbox>
-        </el-form-item>
-        <el-divider />
-        <el-form-item
-          :label="t('chart.space_split')"
-          class="form-item"
+          :label="t('chart.radar_size')"
           :class="'form-item-' + themes"
         >
           <el-input-number
             :effect="themes"
-            v-model="state.miscForm.spaceSplit"
-            :min="0"
+            v-model="state.miscForm.liquidSize"
+            :min="1"
+            :max="100"
             size="small"
             controls-position="right"
-            @change="changeMisc('spaceSplit')"
+            @change="changeMisc('liquidSize')"
           />
         </el-form-item>
-        <el-form-item
-          :label="t('chart.h_position')"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
+      </el-col>
+    </el-row>
+
+    <el-form-item
+      v-show="showProperty('liquidMaxType')"
+      class="form-item margin-bottom-8"
+      :label="t('chart.liquid_max')"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        :effect="themes"
+        v-model="state.miscForm.liquidMaxType"
+        size="small"
+        @change="changeQuotaField('max')"
+      >
+        <el-radio :effect="themes" label="fix">
+          {{ t('chart.fix') }}
+        </el-radio>
+        <el-radio :effect="themes" label="dynamic">{{ t('chart.dynamic') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+
+    <el-form-item
+      v-if="showProperty('liquidMaxType') && state.miscForm.liquidMaxType === 'fix'"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-input-number
+        :effect="themes"
+        v-model="state.miscForm.liquidMax"
+        :min="1"
+        size="small"
+        controls-position="right"
+        @change="changeMisc('liquidMax')"
+      />
+    </el-form-item>
+
+    <el-row
+      :gutter="8"
+      v-if="showProperty('liquidMaxField') && state.miscForm.liquidMaxType === 'dynamic'"
+    >
+      <el-col :span="12">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
           <el-select
             :effect="themes"
-            v-model="state.miscForm.hPosition"
-            :placeholder="t('chart.h_position')"
-            @change="changeMisc('hPosition')"
+            :placeholder="t('chart.field')"
+            :class="{ 'invalid-field': !validLiquidMaxField }"
+            v-model="state.miscForm.liquidMaxField.id"
+            @change="changeQuotaField('max', true)"
           >
-            <el-option value="start" :label="t('chart.p_left')">{{ t('chart.p_left') }}</el-option>
-            <el-option value="center" :label="t('chart.p_center')">{{
-              t('chart.p_center')
-            }}</el-option>
-            <el-option value="end" :label="t('chart.p_right')">{{ t('chart.p_right') }}</el-option>
+            <el-option
+              class="series-select-option"
+              v-for="item in state.quotaData"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
+            >
+              <el-icon style="margin-right: 8px">
+                <Icon
+                  :className="`field-icon-${fieldType[item.deType]}`"
+                  :name="`field_${fieldType[item.deType]}`"
+                />
+              </el-icon>
+              {{ item.name }}
+            </el-option>
           </el-select>
         </el-form-item>
-        <el-form-item
-          :label="t('chart.v_position')"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
+      </el-col>
+      <el-col :span="12">
+        <el-form-item class="form-item" :class="'form-item-' + themes">
           <el-select
             :effect="themes"
-            v-model="state.miscForm.vPosition"
-            :placeholder="t('chart.v_position')"
-            @change="changeMisc('vPosition')"
+            v-model="state.miscForm.liquidMaxField.summary"
+            :placeholder="t('chart.summary')"
+            @change="changeQuotaField('max')"
           >
-            <el-option value="start" :label="t('chart.p_top')">{{ t('chart.p_top') }}</el-option>
-            <el-option value="center" :label="t('chart.p_center')">{{
-              t('chart.p_center')
-            }}</el-option>
-            <el-option value="end" :label="t('chart.p_bottom')">{{
-              t('chart.p_bottom')
-            }}</el-option>
+            <el-option v-if="validLiquidMaxField" key="sum" value="sum" :label="t('chart.sum')" />
+            <el-option v-if="validLiquidMaxField" key="avg" value="avg" :label="t('chart.avg')" />
+            <el-option v-if="validLiquidMaxField" key="max" value="max" :label="t('chart.max')" />
+            <el-option v-if="validLiquidMaxField" key="min" value="min" :label="t('chart.min')" />
+            <el-option
+              v-if="validLiquidMaxField"
+              key="stddev_pop"
+              value="stddev_pop"
+              :label="t('chart.stddev_pop')"
+            />
+            <el-option
+              v-if="validLiquidMaxField"
+              key="var_pop"
+              value="var_pop"
+              :label="t('chart.var_pop')"
+            />
+            <el-option key="count" value="count" :label="t('chart.count')" />
+            <el-option
+              v-if="state.liquidMaxField.id !== '-1'"
+              key="count_distinct"
+              value="count_distinct"
+              :label="t('chart.count_distinct')"
+            />
           </el-select>
         </el-form-item>
-      </template>
-    </template>
-    <!--text&label-end-->
+      </el-col>
+    </el-row>
+    <!--liquid-end-->
+
+    <!-- word-cloud start -->
+    <el-form-item
+      v-show="showProperty('wordSizeRange')"
+      class="form-item"
+      :label="t('chart.word_size_range')"
+      :class="'form-item-' + themes"
+    >
+      <el-slider
+        v-model="state.miscForm.wordSizeRange"
+        range
+        size="small"
+        :effect="themes"
+        :min="1"
+        :max="100"
+        @change="changeMisc('wordSizeRange')"
+      />
+    </el-form-item>
+    <el-form-item
+      v-show="showProperty('wordSpacing')"
+      class="form-item form-item-slider"
+      :label="t('chart.word_spacing')"
+      :class="'form-item-' + themes"
+    >
+      <el-slider
+        v-model="state.miscForm.wordSpacing"
+        :min="0"
+        :max="20"
+        @change="changeMisc('wordSpacing')"
+      />
+    </el-form-item>
+    <!-- word-cloud end -->
   </el-form>
 </template>
 

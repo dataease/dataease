@@ -25,7 +25,7 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha'],
     'label-selector': ['fontSize', 'color', 'labelFormatter'],
-    'misc-selector': ['liquidShape', 'liquidMaxType', 'liquidMaxField'],
+    'misc-selector': ['liquidShape', 'liquidSize', 'liquidMaxType', 'liquidMaxField'],
     'title-selector': [
       'title',
       'fontSize',

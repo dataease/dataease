@@ -542,6 +542,14 @@ declare interface ChartMiscAttr {
    * 指标/文本卡垂直位置
    */
   vPosition: 'top' | 'center' | 'bottom'
+  /**
+   * 词云图字体大小区间
+   */
+  wordSizeRange: [number, number]
+  /**
+   * 词云图文字间距
+   */
+  wordSpacing: number
 }
 /**
  * 动态极值配置

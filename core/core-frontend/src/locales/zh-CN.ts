@@ -1107,7 +1107,9 @@ export default {
     add_condition: '添加条件',
     chart_quadrant: '象限图',
     quadrant: '象限',
-    font_size: '字号'
+    font_size: '字号',
+    word_size_range: '字号区间',
+    word_spacing: '文字间隔'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
