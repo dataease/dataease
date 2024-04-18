@@ -3,6 +3,7 @@ package io.dataease.visualization.server;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.api.visualization.VisualizationLinkJumpApi;
+import io.dataease.api.visualization.dto.VisualizationComponentDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpInfoDTO;
 import io.dataease.api.visualization.request.VisualizationLinkJumpBaseRequest;
@@ -144,14 +145,18 @@ public class VisualizationLinkJumpService implements VisualizationLinkJumpApi {
     }
 
     @Override
-    public List<VisualizationViewTableVO> viewTableDetailList(Long dvId) {
+    public VisualizationComponentDTO viewTableDetailList(Long dvId) {
         DataVisualizationInfo dvInfo = dataVisualizationInfoMapper.selectById(dvId);
+        List<VisualizationViewTableVO> result;
+        String componentData;
         if (dvInfo != null) {
-            List<VisualizationViewTableVO> result = extVisualizationLinkJumpMapper.getViewTableDetails(dvId);
-            return result.stream().filter(viewTableInfo -> dvInfo.getComponentData().indexOf(viewTableInfo.getId().toString()) > -1).collect(Collectors.toList());
-        }else {
-            return new ArrayList<>();
+            result = extVisualizationLinkJumpMapper.getViewTableDetails(dvId).stream().filter(viewTableInfo -> dvInfo.getComponentData().indexOf(viewTableInfo.getId().toString()) > -1).collect(Collectors.toList());
+            componentData = dvInfo.getComponentData();
+        } else {
+            result = new ArrayList<>();
+            componentData = "[]";
         }
+        return new VisualizationComponentDTO(componentData,result);
 
     }
 

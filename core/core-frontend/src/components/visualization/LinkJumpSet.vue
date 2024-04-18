@@ -231,7 +231,8 @@
                                 >
                                   <span class="custom-option">
                                     <Icon
-                                      :icon-class="item.type"
+                                      :name="item.type"
+                                      class-name="view-type-icon"
                                       style="width: 14px; height: 14px"
                                     />
                                     <span style="float: left; margin-left: 4px; font-size: 14px">{{
@@ -245,7 +246,7 @@
                               <el-select
                                 v-model="targetViewInfo.targetFieldId"
                                 :placeholder="'请选择字段'"
-                                :disabled="!targetViewInfo.sourceFieldActiveId"
+                                :disabled="fieldIdDisabledCheck(targetViewInfo)"
                                 style="width: 100%"
                               >
                                 <el-option
@@ -405,7 +406,7 @@ import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapsho
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { filterEmptyFolderTree } from '@/utils/canvasUtils'
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo, canvasViewInfo } = storeToRefs(dvMainStore)
+const { dvInfo, canvasViewInfo, componentData } = storeToRefs(dvMainStore)
 const linkJumpInfoTree = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
@@ -643,12 +644,28 @@ const codeMirrorContentSet = content => {
 const getPanelViewList = dvId => {
   viewTableDetailList(dvId).then(rsp => {
     state.viewIdFieldArrayMap = {}
-    state.currentLinkPanelViewArray = rsp.data
+    state.currentLinkPanelViewArray = rsp.data.visualizationViewTables
     if (state.currentLinkPanelViewArray) {
       state.currentLinkPanelViewArray.forEach(view => {
         state.viewIdFieldArrayMap[view.id] = view.tableFields
       })
     }
+    // 增加过滤组件匹配
+    JSON.parse(rsp.data.bashComponentData).forEach(componentItem => {
+      if (componentItem.component === 'VQuery') {
+        componentItem.propValue.forEach(filterItem => {
+          state.currentLinkPanelViewArray.push({
+            id: filterItem.id,
+            type: 'filter',
+            name: filterItem.name,
+            title: filterItem.name
+          })
+          state.viewIdFieldArrayMap[filterItem.id] = [
+            { id: '1000001', name: t('visualization.filter_no_select') }
+          ]
+        })
+      }
+    })
   })
 }
 const dvNodeClick = data => {
@@ -667,8 +684,26 @@ const addLinkJumpField = () => {
 const deleteLinkJumpField = index => {
   state.linkJumpInfo.targetViewInfoList.splice(index, 1)
 }
+
+const fieldIdDisabledCheck = targetViewInfo => {
+  return (
+    (state.viewIdFieldArrayMap[targetViewInfo.targetViewId] &&
+      state.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 &&
+      state.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === '1000001') ||
+    !targetViewInfo.sourceFieldActiveId
+  )
+}
+
 const viewInfoOnChange = targetViewInfo => {
-  targetViewInfo.targetFieldId = null
+  if (
+    state.viewIdFieldArrayMap[targetViewInfo.targetViewId] &&
+    state.viewIdFieldArrayMap[targetViewInfo.targetViewId].length === 1 &&
+    state.viewIdFieldArrayMap[targetViewInfo.targetViewId][0].id === '1000001'
+  ) {
+    targetViewInfo.targetFieldId = '1000001'
+  } else {
+    targetViewInfo.targetFieldId = null
+  }
 }
 const sourceFieldCheckedChange = data => {
   nextTick(() => {
