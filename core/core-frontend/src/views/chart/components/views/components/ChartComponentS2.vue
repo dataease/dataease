@@ -469,6 +469,7 @@ const autoHeightStyle = computed(() => {
 }
 .table-page-info {
   position: relative;
+  padding-left: 4px;
   margin: 4px;
   height: 20px;
   display: flex;
