@@ -1656,7 +1656,10 @@ defineExpose({
               >
             </div>
           </div>
-          <div class="list-item" v-if="+curComponent.displayType === 0">
+          <div
+            class="list-item"
+            v-if="+curComponent.displayType === 0 && curComponent.optionValueSource !== 1"
+          >
             <div class="label">
               <el-tooltip
                 effect="dark"
