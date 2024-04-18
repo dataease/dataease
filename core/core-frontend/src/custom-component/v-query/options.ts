@@ -15,7 +15,7 @@ const infoFormat = (obj: ComponentInfo) => {
       name,
       deType
     },
-    displayId: '',
+    displayId: id,
     sortId: '',
     sort: 'asc',
     defaultMapValue: [],
