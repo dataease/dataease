@@ -111,8 +111,8 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     gaugeStyle: 'default',
     tableBorderColor: '#CCCCCC',
     tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
-    zoomButtonColor: '#aaa',
-    zoomBackground: '#fff'
+    zoomButtonColor: '#fff',
+    zoomBackground: '#000'
   },
   misc: {
     mapLineGradient: false,
