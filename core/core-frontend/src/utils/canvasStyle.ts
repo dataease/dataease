@@ -128,7 +128,7 @@ export const customAttrTrans = {
   label: ['fontSize'],
   tooltip: ['fontSize'],
   indicator: ['fontSize', 'suffixFontSize'],
-  indicatorName: ['fontSize']
+  indicatorName: ['fontSize', 'nameValueSpacing']
 }
 export const customStyleTrans = {
   text: ['fontSize'],

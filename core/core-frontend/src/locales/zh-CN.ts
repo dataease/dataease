@@ -982,6 +982,7 @@ export default {
     dimension_font_family: '名称字体',
     dimension_text_style: '名称样式',
     dimension_letter_space: '名称字间距',
+    name_value_spacing: '名称/值间距',
     font_family: '字体',
     letter_space: '字间距',
     font_shadow: '字体阴影',

@@ -9,7 +9,6 @@ import {
   DEFAULT_BASIC_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
-import { ElIcon } from 'element-plus-secondary'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import { hexColorToRGBA } from '@/views/chart/components/js/util'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -251,6 +250,24 @@ defineExpose({ getFormData })
           {{ t('chart.font_shadow') }}
         </el-checkbox>
       </el-form-item>
+      <el-form-item
+        class="form-item name-value-spacing-input"
+        :class="'form-item-' + themes"
+        :label="t('chart.name_value_spacing')"
+      >
+        <el-input-number
+          step-strictly
+          v-model="state.indicatorNameForm.nameValueSpacing"
+          size="small"
+          :min="0"
+          :max="100"
+          :value-on-clear="0"
+          :precision="0"
+          :step="1"
+          :effect="themes"
+          @change="changeTitleStyle('nameValueSpacing')"
+        />
+      </el-form-item>
     </el-form>
   </div>
 </template>
@@ -364,6 +381,16 @@ defineExpose({ getFormData })
 
   &.remark-label--dark {
     color: var(--N600-Dark, #a6a6a6);
+  }
+}
+.name-value-spacing-input {
+  display: flex !important;
+  :deep(label) {
+    line-height: 28px !important;
+    margin-bottom: 0 !important;
+  }
+  :deep(.ed-input__inner) {
+    text-align: center !important;
   }
 }
 </style>

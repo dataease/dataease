@@ -19,7 +19,7 @@ import {
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
 import {
-  CHART_CONT_FAMILY_MAP,
+  CHART_FONT_FAMILY_MAP,
   DEFAULT_TITLE_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
@@ -250,7 +250,7 @@ const initTitle = () => {
       state.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
 
       state.title_class.fontFamily = customStyle.text.fontFamily
-        ? CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily]
+        ? CHART_FONT_FAMILY_MAP[customStyle.text.fontFamily]
         : DEFAULT_TITLE_STYLE.fontFamily
       state.title_class.letterSpacing =
         (customStyle.text.letterSpace
