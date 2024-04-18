@@ -49,7 +49,6 @@ const changeAxisStyle = (val, prop) => {
 }
 
 const changeSubAxisStyle = (val, prop) => {
-  console.log(val, prop)
   emit('onChangeYAxisExtForm', val, prop)
 }
 
