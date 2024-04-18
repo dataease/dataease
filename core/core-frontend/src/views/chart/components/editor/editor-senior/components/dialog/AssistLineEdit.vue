@@ -76,8 +76,23 @@ const init = () => {
   state.lineArr = JSON.parse(JSON.stringify(props.line))
 
   state.lineArr.forEach(line => {
-    if (find(props.quotaFields, d => d.id === line.fieldId) == undefined) {
-      line.fieldId = undefined
+    if (props.useQuotaExt) {
+      if (
+        line.yAxisType === 'left' &&
+        find(props.quotaFields, d => d.id === line.fieldId) == undefined
+      ) {
+        line.fieldId = undefined
+      }
+      if (
+        line.yAxisType === 'right' &&
+        find(props.quotaExtFields, d => d.id === line.fieldId) == undefined
+      ) {
+        line.fieldId = undefined
+      }
+    } else {
+      if (find(props.quotaFields, d => d.id === line.fieldId) == undefined) {
+        line.fieldId = undefined
+      }
     }
   })
 
