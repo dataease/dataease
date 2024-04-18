@@ -192,7 +192,6 @@ const handleFieldIdChange = (val: EnumValue) => {
           ? [...selectValue.value]
           : selectValue.value
       }
-      setEmptyData()
     })
 }
 
@@ -211,8 +210,8 @@ watch(
 )
 
 const setEmptyData = () => {
-  const { showEmpty, displayType } = config.value
-  if (+displayType !== 0) return
+  const { showEmpty, displayType, optionValueSource } = config.value
+  if (+displayType !== 0 || optionValueSource === 1) return
   const [s] = options.value
   if (showEmpty) {
     if (s?.value !== '_empty_$') {

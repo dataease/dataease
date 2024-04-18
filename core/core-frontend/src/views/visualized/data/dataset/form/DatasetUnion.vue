@@ -108,6 +108,23 @@ const dfsNodeNameList = (list, arr) => {
   })
 }
 
+const dfsForDsId = (arr, datasourceId) => {
+  return arr.every(ele => {
+    if (arr.children?.length) {
+      return dfsForDsId(arr.children, datasourceId)
+    }
+    return ele.datasourceId === datasourceId
+  })
+}
+
+const crossDatasources = computed(() => {
+  const { datasourceId, children = [] } = state.nodeList[0] || {}
+  if (datasourceId && !!children.length) {
+    return dfsForDsId(children, datasourceId)
+  }
+  return false
+})
+
 let isUpdate = false
 
 watch(
@@ -838,7 +855,8 @@ defineExpose({
   notConfirm,
   dfsNodeFieldBack,
   initState,
-  setChangeStatus
+  setChangeStatus,
+  crossDatasources
 })
 
 const handleActiveNode = ele => {
