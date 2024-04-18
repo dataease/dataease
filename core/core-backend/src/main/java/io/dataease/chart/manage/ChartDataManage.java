@@ -865,7 +865,7 @@ public class ChartDataManage {
             return list;
         }
 
-        var assistLineCfg = JsonUtil.parseObject((String) JsonUtil.toJSONString(senior.get("assistLineCfg")), ChartSeniorAssistCfgDTO.class);
+        ChartSeniorAssistCfgDTO assistLineCfg = JsonUtil.parseObject((String) JsonUtil.toJSONString(senior.get("assistLineCfg")), ChartSeniorAssistCfgDTO.class);
         if (null == assistLineCfg || !assistLineCfg.isEnable()) {
             return list;
         }
