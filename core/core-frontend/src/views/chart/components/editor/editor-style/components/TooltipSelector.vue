@@ -12,6 +12,7 @@ import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { deepCopy } from '@/utils/utils'
 
 const { t } = useI18n()
 
@@ -44,6 +45,11 @@ const showSeriesTooltipFormatter = computed(() => {
 const initSeriesTooltip = () => {
   if (!showSeriesTooltipFormatter.value) {
     return
+  }
+  if (!props.chart.customAttr.tooltip.seriesTooltipFormatter.length) {
+    state.tooltipForm.seriesTooltipFormatter = deepCopy(
+      props.chart.customAttr.tooltip.seriesTooltipFormatter
+    )
   }
   const formatter = state.tooltipForm.seriesTooltipFormatter
   const seriesAxisMap = formatter.reduce((pre, next) => {
@@ -158,9 +164,6 @@ watch(
 watch(
   [quotaData, () => props.chart.type],
   newVal => {
-    if (!newVal?.[0]?.length) {
-      return
-    }
     initSeriesTooltip()
   },
   { deep: false }
@@ -198,6 +201,11 @@ const init = () => {
     if (customAttr.tooltip) {
       state.tooltipForm = defaultsDeep(customAttr.tooltip, cloneDeep(DEFAULT_TOOLTIP))
       formatterSelector.value?.blur()
+      if (!props.chart.customAttr.tooltip.seriesTooltipFormatter.length) {
+        state.tooltipForm.seriesTooltipFormatter = deepCopy(
+          props.chart.customAttr.tooltip.seriesTooltipFormatter
+        )
+      }
       // 新增图表
       const formatter = state.tooltipForm.seriesTooltipFormatter
       if (!formatter.length) {
@@ -537,7 +545,7 @@ onMounted(() => {
           </template>
           <el-option
             class="series-select-option"
-            :key="item.id"
+            :key="item.seriesId"
             :value="item"
             :label="`${item.name}${
               item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''
