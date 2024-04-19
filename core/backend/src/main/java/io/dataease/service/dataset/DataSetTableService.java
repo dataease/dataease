@@ -2534,7 +2534,7 @@ public class DataSetTableService {
     private String saveFile(MultipartFile file, String fileNameUUID) throws Exception {
         String filename = file.getOriginalFilename();
         String suffix = filename.substring(filename.lastIndexOf(".") + 1);
-        String dirPath = path + AuthUtils.getUser().getUsername() + "/";
+        String dirPath = path + Md5Utils.md5(AuthUtils.getUser().getUsername()) + "/";
         File p = new File(dirPath);
         if (!p.exists()) {
             p.mkdirs();
