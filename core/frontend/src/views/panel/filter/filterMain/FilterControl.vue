@@ -1,34 +1,53 @@
 <template>
   <el-row>
-    <el-col :span="8">
+    <el-col :span="11">
       <div class="filter-options-left">
-        <el-switch
+        <el-checkbox
+          v-model="element.options.attrs.required"
+          @change="requiredChange"
+        >{{ $t('commons.required') }}</el-checkbox>
+        <el-checkbox
           v-if="widget.showSwitch"
           v-model="attrs.multiple"
-          :active-text="$t('panel.multiple_choice')"
           @change="multipleChange"
-        />
+        >{{ $t('panel.multiple_choice') }}</el-checkbox>
         <span
           v-if="widget.isSortWidget && widget.isSortWidget()"
-          style="padding-left: 10px;"
         >
-
           <filter-sort
             :widget="widget"
             :element="element"
             @sort-change="sortChange"
           />
-
         </span>
-
       </div>
     </el-col>
-
-    <el-col :span="16">
+    <el-dialog
+      :visible.sync="dialogVisible"
+      append-to-body
+      :show-close="false"
+      :close-on-press-escape="false"
+      :close-on-click-modal="false"
+      :before-close="sureRequired"
+    >
+    {{ $t('time.dropdown_display_must') }}
+      <div style="text-align: end;margin-top: 16px;">
+        <span slot="footer">
+          <el-button
+            size="mini"
+            @click="dialogVisible = false"
+          >{{ $t('commons.cancel') }}</el-button>
+          <el-button
+            type="primary"
+            size="mini"
+            @click="sureRequired"
+          >{{ $t('commons.confirm') }}</el-button>
+        </span>
+      </div>
+    </el-dialog>
+    <el-col :span="13">
       <div class="filter-options-right">
         <span style="padding-right: 10px;">
-          
-          
           <el-checkbox
             v-model="attrs.showTitle"
             @change="showTitleChange"
@@ -335,6 +354,7 @@ export default {
   data() {
     return {
       activeName: 'start',
+      dialogVisible: false,
       tabsOption: [
         { label: this.$t('dataset.start_time'), name: 'start' },
         { label: this.$t('dataset.end_time'), name: 'end' }
@@ -408,11 +428,6 @@ export default {
           }
         }
       }
-    },
-    'activeName': {
-      handler(newName, oldName) {
-
-      }
     }
   },
 
@@ -443,6 +458,21 @@ export default {
     }
   },
   methods: {
+    sureRequired() {
+      this.element.options.attrs.required = false
+      this.dialogVisible = false
+      this.$emit('required-change', false)
+    },
+    requiredChange(val) {
+      if (val === false && (this.element.style.showMode && this.element.style.showMode === 'radio' && !this.element.options.attrs.multiple)) { 
+        this.dialogVisible = true
+        this.$nextTick(() => {
+          this.element.options.attrs.required = true
+        })
+        return
+      }
+      this.$emit('required-change', val)
+    },
     handlerVisibleEnableParameters() {
       if (this.attrs.showEmpty) {
         this.visibleEnableParameters = !this.visibleEnableParameters
@@ -532,6 +562,10 @@ export default {
   justify-content: flex-start;
   flex-wrap: nowrap;
   height: 50px;
+
+  .el-checkbox {
+    margin-right: 20px !important;
+  }
 }
 
 .filter-options-right {
@@ -541,7 +575,6 @@ export default {
   justify-content: flex-end;
   flex-wrap: nowrap;
   height: 50px;
-
   
   .more-select-btn {
     display: inline-flex;

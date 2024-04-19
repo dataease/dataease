@@ -1,26 +1,27 @@
 <template>
   <el-radio-group
-    style="height: 40px; line-height: 40px"
-    @change="visualChange"
     v-model="selectValue"
+    style="height: 40px; align-items: center; display: flex"
+    @change="visualChange"
   >
     <template v-for="item in options">
       <el-radio
+        v-if="radioStyle.showStyle === 'single'"
         :key="item.id + 'radio'"
         :label="item.id"
         class="is-custom-select"
-        v-if="radioStyle.showStyle === 'single'"
         :disabled="itemDisabled"
-        >{{ item.text }}</el-radio
       >
+        {{ item.text }}
+      </el-radio>
       <el-radio-button
         v-else
-        :disabled="itemDisabled"
         :key="item.id + 'tab'"
+        :disabled="itemDisabled"
         class="is-custom-select"
         :label="item.id"
-        >{{ item.text }}</el-radio-button
-      >
+      >{{ item.text }}
+      </el-radio-button>
     </template>
   </el-radio-group>
 </template>

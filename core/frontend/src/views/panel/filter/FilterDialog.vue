@@ -269,7 +269,6 @@
         <filter-head
           :element="currentElement"
           @dataset-name="dataSetName"
-          @required-change="requiredChange"
         />
 
         <filter-control
@@ -279,6 +278,7 @@
           :child-views="childViews"
           :dataset-params="datasetParams"
           :active-name="activeName"
+          @required-change="requiredChange"
         />
 
         <filter-foot

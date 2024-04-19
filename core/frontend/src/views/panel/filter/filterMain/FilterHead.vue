@@ -45,39 +45,6 @@
         </div>
       </div>
     </el-col>
-    <el-col
-      class="filter-required-container"
-    >
-      <div class="de-filter-required">
-        <el-checkbox
-          v-model="element.options.attrs.required"
-          @change="requiredChange"
-        >{{ $t('commons.required') }}</el-checkbox>
-      </div>
-    </el-col>
-    <el-dialog
-      :visible.sync="dialogVisible"
-      append-to-body
-      :show-close="false"
-      :close-on-press-escape="false"
-      :close-on-click-modal="false"
-      :before-close="sureRequired"
-    >
-    {{ $t('time.dropdown_display_must') }}
-      <div style="text-align: end;margin-top: 16px;">
-        <span slot="footer">
-          <el-button
-            size="mini"
-            @click="dialogVisible = false"
-          >{{ $t('commons.cancel') }}</el-button>
-          <el-button
-            type="primary"
-            size="mini"
-            @click="sureRequired"
-          >{{ $t('commons.confirm') }}</el-button>
-        </span>
-      </div>
-    </el-dialog>
   </el-row>
 </template>
 
@@ -98,26 +65,7 @@ export default {
       }
     }
   },
-  data() {
-    return {
-      dialogVisible: false
-    }
-  },
   methods: {
-    sureRequired() {
-      this.element.options.attrs.required = false
-      this.dialogVisible = false
-    },
-    requiredChange(val) {
-      if (val === false && (this.element.style.showMode && this.element.style.showMode === 'radio' && !this.element.options.attrs.multiple)) { 
-        this.dialogVisible = true
-        this.$nextTick(() => {
-          this.element.options.attrs.required = true
-        })
-        return
-      }
-      this.$emit('required-change', val)
-    },
     getTableName(tableId) {
       let tableName = null
       this.$emit('dataset-name', tableId, t => { tableName = t })
@@ -145,7 +93,6 @@ export default {
 </script>
 <style lang="scss" scoped>
 .filter-field-container {
-  width: calc(100% - 70px);
   float: left;
 }
 .filter-required-container {
