@@ -63,33 +63,31 @@ const checkDialog = () => {
 }
 
 const handleMouseWheel = e => {
-  if (editMode.value === 'preview' || checkDialog()) {
+  if (
+    editMode.value === 'preview' ||
+    checkDialog() ||
+    (Math.abs(e.deltaX) !== 0 && Math.abs(e.deltaY) !== 0)
+  ) {
     return
   }
-  let dvMain = document.getElementById('dv-main-center')
-  let dvMainLeftSlide = document.getElementById('dv-main-left-sidebar')
-  let areaLeftWidth = dvMainLeftSlide.clientWidth
-  let areaRight = dvMain.clientWidth + areaLeftWidth
-  if (areaLeftWidth < e.clientX && e.clientX < areaRight) {
-    const delta = e.wheelDelta ? e.wheelDelta : -e.detail
-    if ((lastWheelNum === 240 && delta === 240) || delta > 240) {
-      //放大
-      scaleIncrease(3)
-    } else if ((lastWheelNum === -240 && delta === -240) || delta < -240) {
-      // 缩小
+  if (e.ctrlKey) {
+    if (e.deltaY > 0) {
+      //向内 缩小
       scaleDecrease(3)
-    }
-
-    if (delta >= 240 || delta <= -240) {
       e.stopPropagation()
       e.preventDefault()
     }
-    lastWheelNum = delta
+    if (e.deltaY < 0) {
+      //向外 放大
+      scaleIncrease(3)
+      e.stopPropagation()
+      e.preventDefault()
+    }
   }
 }
 
 onMounted(() => {
-  window.addEventListener('mousewheel', handleMouseWheel, { passive: false })
+  window.addEventListener('wheel', handleMouseWheel, { passive: false })
   setTimeout(() => {
     scale.value = canvasStyleData.value.scale
     nextTick(() => {
@@ -99,7 +97,7 @@ onMounted(() => {
 })
 
 onUnmounted(() => {
-  window.removeEventListener('mousewheel', handleMouseWheel)
+  window.removeEventListener('wheel', handleMouseWheel)
 })
 </script>
 <template>
