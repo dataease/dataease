@@ -41,11 +41,6 @@
         size="mini"
         class="input-with-select mb10"
       >
-        <el-button
-          slot="append"
-          icon="el-icon-search"
-          @click="_searchFun"
-        />
       </el-input>
       <p
         v-if="selectParams.multiple"
@@ -90,6 +85,7 @@
 <script>
 import { on, off } from './dom'
 import { each, guid } from './utils'
+import _ from 'lodash'
 export default {
   name: 'ElTreeSelect',
   components: {},
@@ -217,6 +213,9 @@ export default {
     }
   },
   watch: {
+    keywords() {
+      this.searchWithKey()
+    },
     ids: function(val) {
       if (val !== undefined) {
         this.$nextTick(() => {
@@ -312,6 +311,9 @@ export default {
       }
       this.$set(this.selectParams, 'multiple', multiple)
     },
+    searchWithKey: _.debounce(function() {
+      this._searchFun()
+    }, 300),
     _searchFun() {
       this.$emit('searchFun', this.keywords)
     },
