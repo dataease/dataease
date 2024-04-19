@@ -496,6 +496,14 @@ defineExpose({
 </style>
 
 <style lang="less">
+.tox {
+  border-radius: 4px !important;
+  border-bottom: 1px solid #ccc !important;
+  top: 38px !important;
+}
+.tox-tbtn {
+  height: auto !important;
+}
 .tox-collection__item-label {
   p {
     color: #1a1a1a !important;
