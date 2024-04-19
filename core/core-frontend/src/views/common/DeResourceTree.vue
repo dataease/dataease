@@ -317,10 +317,14 @@ const addOperation = (
     const baseUrl =
       curCanvasType.value === 'dataV' ? '#/dvCanvas?opt=create' : '#/dashboard?opt=create'
     let newWindow = null
+    let embeddedBaseUrl = ''
+    if (isDataEaseBi.value) {
+      embeddedBaseUrl = embeddedStore.baseUrl
+    }
     if (data?.id) {
-      newWindow = window.open(baseUrl + `&pid=${data.id}`, '_blank')
+      newWindow = window.open(embeddedBaseUrl + baseUrl + `&pid=${data.id}`, '_blank')
     } else {
-      newWindow = window.open(baseUrl, '_blank')
+      newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
     }
     initOpenHandler(newWindow)
   } else if (cmd === 'newFromTemplate') {
