@@ -17,6 +17,7 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import AiComponent from '@/layout/components/AiComponent.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { findBaseParams } from '@/api/aiComponent'
+import AiTips from '@/layout/components/AiTips.vue'
 const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
 const route = useRoute()
@@ -43,6 +44,7 @@ const permissionStore = usePermissionStore()
 const routers: any[] = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
 const showSystem = ref(false)
 const showToolbox = ref(false)
+const showOverlay = ref(true)
 const handleSelect = (index: string) => {
   // 自定义事件
   if (isExternal(index)) {
@@ -61,12 +63,23 @@ const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const navigate = computed(() => appearanceStore.getNavigate)
 
 const initAiBase = async () => {
+  const aiTipsCheck = localStorage.getItem('DE-AI-TIPS-CHECK')
+  if (aiTipsCheck === 'CHECKED') {
+    showOverlay.value = false
+  } else {
+    showOverlay.value = true
+  }
   await findBaseParams().then(rsp => {
     const params = rsp.data
     if (params && params['ai.baseUrl']) {
       aiBaseUrl.value = params['ai.baseUrl']
     }
   })
+}
+
+const aiTipsConfirm = () => {
+  localStorage.setItem('DE-AI-TIPS-CHECK', 'CHECKED')
+  showOverlay.value = false
 }
 onMounted(() => {
   initShowSystem()
@@ -96,19 +109,30 @@ onMounted(() => {
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
       <XpackComponent jsname="c3dpdGNoZXI=" />
-      <el-icon style="margin: 0 10px" class="ai-icon" v-if="aiBaseUrl">
+      <el-icon style="margin: 0 10px" class="ai-icon" v-if="aiBaseUrl && !showOverlay">
         <Icon name="dv-ai" @click="handleAiClick" />
       </el-icon>
+      <ai-tips @confirm="aiTipsConfirm" v-if="showOverlay" class="ai-icon-tips"></ai-tips>
       <ToolboxCfg v-if="showToolbox" />
       <TopDoc />
       <SystemCfg v-if="showSystem" />
       <AccountOperator />
       <ai-component v-if="aiBaseUrl" :base-url="aiBaseUrl"></ai-component>
+      <div v-if="showOverlay" class="overlay"></div>
     </div>
   </el-header>
 </template>
 
 <style lang="less" scoped>
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+  z-index: 10000;
+}
 .header-light {
   background-color: #ffffff !important;
   box-shadow: 0px 0.5px 0px 0px #1f232926 !important;
@@ -207,5 +231,10 @@ onMounted(() => {
 
 .ai-icon {
   font-size: 24px !important;
+}
+
+.ai-icon-tips {
+  font-size: 24px !important;
+  z-index: 10001;
 }
 </style>
