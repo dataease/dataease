@@ -6,7 +6,7 @@
   >
     <div class="sql-editer">
       <el-row>
-        <el-col :span="12">
+        <el-col :span="16">
           <el-select
             v-model="dataSource"
             filterable
@@ -84,7 +84,7 @@
         </el-col>
         <el-col
           style="text-align: right"
-          :span="12"
+          :span="8"
         >
           <el-button
             type="text"
