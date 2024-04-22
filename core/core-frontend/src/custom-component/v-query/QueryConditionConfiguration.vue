@@ -248,6 +248,9 @@ const handleDatasetChange = () => {
 const handleFieldChange = () => {
   if (!curComponent.value.defaultValueCheck) return
   curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
+  if (!curComponent.value.displayId) {
+    curComponent.value.displayId = curComponent.value.field.id
+  }
 }
 
 const handleValueSourceChange = () => {
