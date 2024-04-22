@@ -287,10 +287,8 @@ const addAxis = (form: AxisEditForm) => {
       }
     }
   })
-  state.tooltipForm.seriesTooltipFormatter =
-    state.tooltipForm.seriesTooltipFormatter.concat(dupAxis)
   state.tooltipForm.seriesTooltipFormatter = partition(
-    state.tooltipForm.seriesTooltipFormatter,
+    state.tooltipForm.seriesTooltipFormatter.concat(dupAxis),
     ele => quotaAxis.value.findIndex(item => item.id === ele.id) !== -1
   ).flat()
 }
@@ -321,8 +319,8 @@ const removeAxis = (form: AxisEditForm) => {
     if (axisMap[ele.seriesId]) {
       // 数据集中的字段
       ele.show = false
-      ele.seriesId = ele.id
       ele.summary = axisMap[ele.seriesId].summary
+      ele.seriesId = ele.id
     }
   })
   state.tooltipForm.seriesTooltipFormatter = partition(
