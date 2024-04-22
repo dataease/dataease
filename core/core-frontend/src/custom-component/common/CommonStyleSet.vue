@@ -22,7 +22,8 @@
                 is-custom
                 :predefine="state.predefineColors"
                 @change="changeStyle"
-              />
+              >
+              </el-color-picker>
             </el-form-item>
           </el-tooltip>
         </template>
@@ -41,12 +42,17 @@
               :class="'form-item-' + themes"
             >
               <el-select
-                style="width: 50px"
+                :style="{ width: styleOptionMountedKey.width }"
                 :effect="themes"
                 v-model="styleMounted[styleOptionMountedKey.value]"
                 size="small"
                 @change="sizeChange(styleOptionMountedKey.value)"
               >
+                <template #prefix>
+                  <el-icon :class="{ 'dark-icon': themes === 'dark' }">
+                    <Icon :name="styleOptionMountedKey.icon" />
+                  </el-icon>
+                </template>
                 <el-option
                   class="custom-style-option"
                   v-for="option in styleOptionMountedKey.customOption"
@@ -72,10 +78,14 @@
                 :style="{ width: styleOptionKey.width }"
                 :effect="themes"
                 v-model="styleForm[styleOptionKey.value]"
-                placeholder="透明度"
                 size="small"
                 @change="changeStyle"
               >
+                <template #prefix>
+                  <el-icon>
+                    <Icon :name="styleOptionKey.icon" />
+                  </el-icon>
+                </template>
                 <el-option
                   class="custom-style-option"
                   v-for="option in styleOptionKey.customOption"
@@ -325,16 +335,52 @@ const borderStyleList = [
 
 //大小随画布缩放动态变化
 const styleOptionMountedKeyArray = [
-  { value: 'fontSize', label: '字体大小', customOption: fontSizeList.value },
-  { value: 'activeFontSize', label: '激活字体大小', customOption: fontSizeList.value }
+  {
+    value: 'fontSize',
+    label: '字体大小',
+    customOption: fontSizeList.value,
+    width: '80px',
+    icon: 'dv-style-fontSize'
+  },
+  {
+    value: 'activeFontSize',
+    label: '激活字体大小',
+    customOption: fontSizeList.value,
+    width: '80px',
+    icon: 'dv-style-headFontActiveColor'
+  }
 ]
 
 //大小不变
 const styleOptionKeyArray = [
-  { value: 'opacity', label: '透明度', customOption: opacitySizeList, width: '50px' },
-  { value: 'borderWidth', label: '边框宽度', customOption: borderWidthList.value, width: '50px' },
-  { value: 'borderRadius', label: '圆角', customOption: borderRadiusList.value, width: '50px' },
-  { value: 'borderStyle', label: '边框样式', customOption: borderStyleList, width: '60px' }
+  {
+    value: 'opacity',
+    label: '透明度',
+    customOption: opacitySizeList,
+    width: '80px',
+    icon: 'dv-style-opacity'
+  },
+  {
+    value: 'borderWidth',
+    label: '边框宽度',
+    customOption: borderWidthList.value,
+    width: '80px',
+    icon: 'dv-style-opacity'
+  },
+  {
+    value: 'borderRadius',
+    label: '圆角',
+    customOption: borderRadiusList.value,
+    width: '80px',
+    icon: 'dv-style-borderRadius'
+  },
+  {
+    value: 'borderStyle',
+    label: '边框样式',
+    customOption: borderStyleList,
+    width: '90px',
+    icon: 'dv-style-borderStyle'
+  }
 ]
 
 const styleInit = () => {
@@ -513,5 +559,9 @@ watch(
 }
 .custom-row-inner {
   margin: 8px 0px 24px;
+}
+
+.dark-icon {
+  color: #ffffff;
 }
 </style>
