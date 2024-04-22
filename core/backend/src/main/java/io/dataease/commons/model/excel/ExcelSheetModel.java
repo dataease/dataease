@@ -13,4 +13,6 @@ public class ExcelSheetModel {
 
     private List<List<String>> data;
 
+    private List<Integer> filedTypes;
+
 }

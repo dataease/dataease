@@ -1,6 +1,7 @@
 package io.dataease.commons.utils;
 
 import io.dataease.commons.model.excel.ExcelSheetModel;
+import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.util.FileUtil;
 import org.apache.commons.collections.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -27,6 +28,7 @@ public class ExcelUtils {
         sheets.forEach(sheet -> {
 
             List<List<String>> details = sheet.getData();
+            List<Integer> fieldTypes = sheet.getFiledTypes();
             details.add(0, sheet.getHeads());
             String sheetName = sheet.getSheetName();
             Pattern pattern = Pattern.compile("[\\s\\\\/:\\*\\?\\\"<>\\|]");
@@ -53,7 +55,12 @@ public class ExcelUtils {
                     if (rowData != null) {
                         for (int j = 0; j < rowData.size(); j++) {
                             Cell cell = row.createCell(j);
-                            cell.setCellValue(rowData.get(j));
+                            // with DataType
+                            if (i > 0 && (fieldTypes.get(j).equals(DeTypeConstants.DE_INT) || fieldTypes.get(j).equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(rowData.get(j))) {
+                                cell.setCellValue(Double.valueOf(rowData.get(j)));
+                            } else {
+                                cell.setCellValue(rowData.get(j));
+                            }
                             if (i == 0) {// 头部
                                 cell.setCellStyle(cellStyle);
                                 // 设置列的宽度
