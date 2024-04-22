@@ -39,7 +39,11 @@
       <span
         class="title-text view-title-name"
         style="line-height: 40px;"
-      >{{ view.name }}</span>
+      >
+        <chart-title-update
+          :chart-info="view"
+        />
+      </span>
       <span style="float: right;line-height: 40px;">
         <el-button
           round
@@ -1931,7 +1935,7 @@ import { equalsAny, includesAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
 import TrendLine from '@/views/chart/components/senior/TrendLine'
-
+import ChartTitleUpdate from './ChartTitleUpdate'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1970,7 +1974,8 @@ export default {
     PluginCom,
     MapMapping,
     MarkMapDataEditor,
-    TrendLine
+    TrendLine,
+    ChartTitleUpdate
   },
   provide() {
     return {

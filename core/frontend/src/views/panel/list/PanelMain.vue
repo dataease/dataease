@@ -183,4 +183,15 @@ export default {
   /* width: 10px; */
   padding: 0 10px;
 }
+
+.tab-panel ::v-deep .el-tabs__header {
+  position: sticky;
+  top: 0;
+  z-index: 10;
+  background: #fff;
+}
+
+.tab-panel ::v-deep .el-tabs__content {
+  overflow: unset;
+}
 </style>
