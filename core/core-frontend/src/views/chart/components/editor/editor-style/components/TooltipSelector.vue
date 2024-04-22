@@ -46,11 +46,6 @@ const initSeriesTooltip = () => {
   if (!showSeriesTooltipFormatter.value) {
     return
   }
-  if (!props.chart.customAttr.tooltip.seriesTooltipFormatter.length) {
-    state.tooltipForm.seriesTooltipFormatter = deepCopy(
-      props.chart.customAttr.tooltip.seriesTooltipFormatter
-    )
-  }
   const formatter = state.tooltipForm.seriesTooltipFormatter
   const seriesAxisMap = formatter.reduce((pre, next) => {
     next.seriesId = next.seriesId ?? next.id
@@ -104,7 +99,9 @@ const quotaAxis = computed(() => {
       return
     }
     const axis = props.chart[prop]
-    axis?.forEach(item => result.push(item))
+    axis?.forEach(item => {
+      result.push({ ...item, seriesId: `${item.id}-${prop}` })
+    })
   })
   return result
 })
@@ -164,6 +161,9 @@ watch(
 watch(
   [quotaData, () => props.chart.type],
   newVal => {
+    if (!newVal?.[0]?.length) {
+      return
+    }
     initSeriesTooltip()
   },
   { deep: false }
@@ -201,11 +201,6 @@ const init = () => {
     if (customAttr.tooltip) {
       state.tooltipForm = defaultsDeep(customAttr.tooltip, cloneDeep(DEFAULT_TOOLTIP))
       formatterSelector.value?.blur()
-      if (!props.chart.customAttr.tooltip.seriesTooltipFormatter.length) {
-        state.tooltipForm.seriesTooltipFormatter = deepCopy(
-          props.chart.customAttr.tooltip.seriesTooltipFormatter
-        )
-      }
       // 新增图表
       const formatter = state.tooltipForm.seriesTooltipFormatter
       if (!formatter.length) {
@@ -283,21 +278,21 @@ const addAxis = (form: AxisEditForm) => {
         ele.chartShowName = axisMap[ele.id].chartShowName
       } else {
         // 其他轴已有的字段
+        if (dupAxis.findIndex(i => i.id === ele.id) !== -1) {
+          return
+        }
         const tmp = cloneDeep(axisMap[ele.id])
         tmp.show = true
         dupAxis.push(tmp)
       }
     }
   })
-  const dupAxisDistinct = uniqWith(dupAxis, isEqual) || []
   state.tooltipForm.seriesTooltipFormatter =
-    state.tooltipForm.seriesTooltipFormatter.concat(dupAxisDistinct)
+    state.tooltipForm.seriesTooltipFormatter.concat(dupAxis)
   state.tooltipForm.seriesTooltipFormatter = partition(
     state.tooltipForm.seriesTooltipFormatter,
     ele => quotaAxis.value.findIndex(item => item.id === ele.id) !== -1
   ).flat()
-  state.tooltipForm.seriesTooltipFormatter =
-    uniqWith(state.tooltipForm.seriesTooltipFormatter, isEqual) || []
 }
 const removeAxis = (form: AxisEditForm) => {
   const { axis, axisType } = form
@@ -327,7 +322,7 @@ const removeAxis = (form: AxisEditForm) => {
       // 数据集中的字段
       ele.show = false
       ele.seriesId = ele.id
-      ele.summary = 'sum'
+      ele.summary = axisMap[ele.seriesId].summary
     }
   })
   state.tooltipForm.seriesTooltipFormatter = partition(
