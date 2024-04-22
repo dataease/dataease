@@ -533,7 +533,7 @@ defineExpose({
 .tox {
   border-radius: 4px !important;
   border-bottom: 1px solid #ccc !important;
-  top: 38px !important;
+  z-index: 1000;
 }
 .tox-tbtn {
   height: auto !important;
