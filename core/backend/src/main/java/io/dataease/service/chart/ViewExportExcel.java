@@ -113,11 +113,13 @@ public class ViewExportExcel {
         List<ChartViewFieldDTO> fields = gson.fromJson(gson.toJson(objectFields), fieldTokenType);
         List<String> heads = new ArrayList<>();
         List<String> headKeys = new ArrayList<>();
+        List<Integer> fieldTypes = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(fields)) {
             fields.forEach(field -> {
                 if (ObjectUtils.isNotEmpty(field.getName()) && ObjectUtils.isNotEmpty(field.getDataeaseName())) {
                     heads.add(field.getName());
                     headKeys.add(field.getDataeaseName());
+                    fieldTypes.add(field.getDeType());
                 }
             });
         }
@@ -132,6 +134,7 @@ public class ViewExportExcel {
         }).collect(Collectors.toList())).collect(Collectors.toList());
         result.setHeads(heads);
         result.setData(details);
+        result.setFiledTypes(fieldTypes);
 
         result.setSheetName(title);
         return result;
