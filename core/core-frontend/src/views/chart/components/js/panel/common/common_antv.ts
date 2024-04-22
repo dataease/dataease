@@ -29,9 +29,9 @@ import { DOM } from '@antv/l7-utils'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
-    return [0, 10, 26, 10]
+    return [0, 10, 22, 10]
   } else {
-    return [0, 10, 14, 10]
+    return [0, 10, 10, 10]
   }
 }
 // color,label,tooltip,axis,legend,background

@@ -198,6 +198,39 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
 
+    <div class="alpha-setting" v-if="showProperty('alpha')">
+      <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+        {{ t('chart.not_alpha') }}
+      </label>
+      <el-row style="flex: 1" :gutter="8">
+        <el-col :span="13">
+          <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+            <el-slider
+              :effect="themes"
+              v-model="state.basicStyleForm.alpha"
+              @change="changeBasicStyle('alpha')"
+            />
+          </el-form-item>
+        </el-col>
+        <el-col :span="11" style="padding-top: 2px">
+          <el-form-item class="form-item" :class="'form-item-' + themes">
+            <el-input
+              type="number"
+              :effect="themes"
+              v-model="state.basicStyleForm.alpha"
+              :min="0"
+              :max="100"
+              class="basic-input-number"
+              :controls="false"
+              @change="changeBasicStyle('alpha')"
+            >
+              <template #suffix> % </template>
+            </el-input>
+          </el-form-item>
+        </el-col>
+      </el-row>
+    </div>
+
     <!--map start-->
     <el-row :gutter="8">
       <el-col :span="12" v-if="showProperty('areaBorderColor')">
@@ -371,39 +404,6 @@ onMounted(() => {
       </el-col>
     </el-row>
     <!--table end-->
-
-    <div class="alpha-setting" v-if="showProperty('alpha')">
-      <label class="alpha-label" :class="{ dark: 'dark' === themes }">
-        {{ t('chart.not_alpha') }}
-      </label>
-      <el-row style="flex: 1" :gutter="8">
-        <el-col :span="13">
-          <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
-            <el-slider
-              :effect="themes"
-              v-model="state.basicStyleForm.alpha"
-              @change="changeBasicStyle('alpha')"
-            />
-          </el-form-item>
-        </el-col>
-        <el-col :span="11" style="padding-top: 2px">
-          <el-form-item class="form-item" :class="'form-item-' + themes">
-            <el-input
-              type="number"
-              :effect="themes"
-              v-model="state.basicStyleForm.alpha"
-              :min="0"
-              :max="100"
-              class="basic-input-number"
-              :controls="false"
-              @change="changeBasicStyle('alpha')"
-            >
-              <template #suffix> % </template>
-            </el-input>
-          </el-form-item>
-        </el-col>
-      </el-row>
-    </div>
 
     <!--table2 start-->
     <el-form-item

@@ -587,9 +587,9 @@ const toolTip = computed(() => {
 
 const marginBottom = computed<string | 0>(() => {
   if (titleShow.value || trackMenu.value.length > 0 || state.title_remark.show) {
-    return 8 * scale.value + 'px'
+    return 12 * scale.value + 'px'
   }
-  return 0
+  return 12
 })
 
 const iconSize = computed<string>(() => {
