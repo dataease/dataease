@@ -701,8 +701,7 @@ export default {
               ref="mRightForm"
               :model="selectedComponentItem.settings"
               label-position="top"
-              hide-required-asterisk
-            >
+              hide-required-asterisk>
 
               <el-form-item
                 prop="name"
@@ -720,6 +719,7 @@ export default {
                   required
                   size="small"
                   maxlength="50"
+                  class="m-right-form"
                   show-word-limit
                 />
               </el-form-item>
@@ -777,6 +777,7 @@ export default {
                   v-model="selectedComponentItem.settings.placeholder"
                   :placeholder="$t('data_fill.form.input_limit_50')"
                   size="small"
+                  class="m-right-form"
                   maxlength="50"
                   show-word-limit
                 />
@@ -1006,6 +1007,15 @@ export default {
 
 <style  lang="scss" scoped>
 .data-filling-form {
+  ::v-deep .el-form-item__error {
+    position: relative;
+  }
+
+  .m-right-form {
+    ::v-deep .el-input__inner {
+      padding-right: 45px;
+    }
+  }
 
   .drag-placeholder {
     height: 68px;

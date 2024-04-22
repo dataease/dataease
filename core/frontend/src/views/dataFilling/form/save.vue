@@ -703,6 +703,10 @@ export default {
 
   height: 100%;
 
+  ::v-deep .el-form-item__error {
+    position: relative;
+  }
+
   .de-header {
     height: 56px !important;
     padding: 0px !important;
