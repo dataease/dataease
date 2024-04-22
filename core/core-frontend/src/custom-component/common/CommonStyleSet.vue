@@ -381,7 +381,7 @@ const styleOptionKeyArray = [
     label: '边框宽度',
     customOption: borderWidthList.value,
     width: '90px',
-    icon: 'dv-style-opacity'
+    icon: 'dv-style-borderSize'
   },
   {
     value: 'borderRadius',
