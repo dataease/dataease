@@ -19,6 +19,8 @@
                 :title="t('chart.text_color')"
                 v-model="styleForm[styleColorKey.value]"
                 class="color-picker-style"
+                :prefix-icon="expandIcon(styleColorKey.icon)"
+                :triggerWidth="styleColorKey.width"
                 is-custom
                 :predefine="state.predefineColors"
                 @change="changeStyle"
@@ -128,48 +130,50 @@
         </el-tooltip>
         <template v-if="styleForm.textAlign">
           <div class="m-divider" :class="'custom-divider-' + themes"></div>
-          <el-tooltip effect="dark" placement="bottom">
-            <template #content>
-              {{ t('chart.text_pos_left') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'left' }"
-              @click="setPosition('textAlign', 'left')"
-            >
-              <el-icon>
-                <Icon name="icon_left-alignment_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
-          <el-tooltip effect="dark" placement="bottom">
-            <template #content>
-              {{ t('chart.text_pos_center') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'center' }"
-              @click="setPosition('textAlign', 'center')"
-            >
-              <el-icon>
-                <Icon name="icon_center-alignment_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
-          <el-tooltip effect="dark" placement="bottom">
-            <template #content>
-              {{ t('chart.text_pos_right') }}
-            </template>
-            <div
-              class="icon-btn"
-              :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'right' }"
-              @click="setPosition('textAlign', 'right')"
-            >
-              <el-icon>
-                <Icon name="icon_right-alignment_outlined" />
-              </el-icon>
-            </div>
-          </el-tooltip>
+          <div style="display: flex">
+            <el-tooltip effect="dark" placement="bottom">
+              <template #content>
+                {{ t('chart.text_pos_left') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'left' }"
+                @click="setPosition('textAlign', 'left')"
+              >
+                <el-icon>
+                  <Icon name="icon_left-alignment_outlined" />
+                </el-icon>
+              </div>
+            </el-tooltip>
+            <el-tooltip effect="dark" placement="bottom">
+              <template #content>
+                {{ t('chart.text_pos_center') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'center' }"
+                @click="setPosition('textAlign', 'center')"
+              >
+                <el-icon>
+                  <Icon name="icon_center-alignment_outlined" />
+                </el-icon>
+              </div>
+            </el-tooltip>
+            <el-tooltip effect="dark" placement="bottom">
+              <template #content>
+                {{ t('chart.text_pos_right') }}
+              </template>
+              <div
+                class="icon-btn"
+                :class="{ dark: themes === 'dark', active: styleForm.textAlign === 'right' }"
+                @click="setPosition('textAlign', 'right')"
+              >
+                <el-icon>
+                  <Icon name="icon_right-alignment_outlined" />
+                </el-icon>
+              </div>
+            </el-tooltip>
+          </div>
         </template>
         <template v-if="styleForm.headHorizontalPosition">
           <div class="m-divider"></div>
@@ -230,8 +234,8 @@
   </el-row>
 </template>
 
-<script lang="ts" setup>
-import { computed, reactive, ref, toRefs, watch } from 'vue'
+<script lang="tsx" setup>
+import { computed, h, reactive, ref, toRefs, watch } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -253,7 +257,9 @@ const props = withDefaults(
     themes: 'dark'
   }
 )
-
+const expandIcon = (name: string) => {
+  return h(Icon, { className: '', name })
+}
 const { themes, element } = toRefs(props)
 const emits = defineEmits(['onTextChange'])
 const styleMounted = ref({
@@ -287,11 +293,21 @@ const state = reactive({
 })
 
 const styleColorKeyArray = [
-  { value: 'color', label: '颜色' },
-  { value: 'borderColor', label: '边框颜色' },
-  { value: 'headFontColor', label: '头部字体颜色' },
-  { value: 'headFontActiveColor', label: '激活字体颜色' },
-  { value: 'backgroundColor', label: '背景色' }
+  { value: 'color', label: '颜色', width: 90, icon: 'dv-style-color' },
+  { value: 'borderColor', label: '边框颜色', width: 90, icon: 'dv-style-borderColor' },
+  {
+    value: 'headFontColor',
+    label: '头部字体颜色',
+    width: 90,
+    icon: 'dv-style-headFontColor'
+  },
+  {
+    value: 'headFontActiveColor',
+    label: '激活字体颜色',
+    width: 90,
+    icon: 'dv-style-headFontActiveColor'
+  },
+  { value: 'backgroundColor', label: '背景色', width: 90, icon: 'dv-style-backgroundColor' }
 ]
 
 const fontSizeList = computed(() => {
@@ -339,15 +355,15 @@ const styleOptionMountedKeyArray = [
     value: 'fontSize',
     label: '字体大小',
     customOption: fontSizeList.value,
-    width: '80px',
+    width: '90px',
     icon: 'dv-style-fontSize'
   },
   {
     value: 'activeFontSize',
     label: '激活字体大小',
     customOption: fontSizeList.value,
-    width: '80px',
-    icon: 'dv-style-headFontActiveColor'
+    width: '90px',
+    icon: 'dv-style-activeFont'
   }
 ]
 
@@ -357,21 +373,21 @@ const styleOptionKeyArray = [
     value: 'opacity',
     label: '透明度',
     customOption: opacitySizeList,
-    width: '80px',
+    width: '90px',
     icon: 'dv-style-opacity'
   },
   {
     value: 'borderWidth',
     label: '边框宽度',
     customOption: borderWidthList.value,
-    width: '80px',
+    width: '90px',
     icon: 'dv-style-opacity'
   },
   {
     value: 'borderRadius',
     label: '圆角',
     customOption: borderRadiusList.value,
-    width: '80px',
+    width: '90px',
     icon: 'dv-style-borderRadius'
   },
   {
