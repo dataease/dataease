@@ -2074,6 +2074,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                       v-if="chartStyleShow"
                       :properties="chartViewInstance.properties"
                       :property-inner-all="chartViewInstance.propertyInner"
+                      :selector-spec="chartViewInstance.selectorSpec"
                       :common-background-pop="curComponent?.commonBackground"
                       :chart="view"
                       :themes="themes"

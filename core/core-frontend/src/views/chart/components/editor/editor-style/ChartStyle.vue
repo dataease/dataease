@@ -68,10 +68,18 @@ const props = defineProps({
     default: () => {
       return {}
     }
+  },
+  selectorSpec: {
+    type: Object as PropType<EditorSelectorSpec>,
+    required: false,
+    default: () => {
+      return {}
+    }
   }
 })
 
-const { chart, themes, properties, propertyInnerAll, commonBackgroundPop } = toRefs(props)
+const { chart, themes, properties, propertyInnerAll, commonBackgroundPop, selectorSpec } =
+  toRefs(props)
 const emit = defineEmits([
   'onColorChange',
   'onMiscChange',
@@ -316,7 +324,7 @@ watch(
             :effect="themes"
             v-if="showProperties('misc-style-selector')"
             name="size"
-            title="大小"
+            :title="selectorSpec['misc-style-selector']?.title"
           >
             <misc-style-selector
               :property-inner="propertyInnerAll['misc-style-selector']"
