@@ -200,7 +200,7 @@ public class DatasetDataManage {
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, crossDs, dsMap);
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
         String querySQL;
@@ -459,7 +459,7 @@ public class DatasetDataManage {
                 rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
             }
 
-            Field2SQLObj.field2sqlObj(sqlMeta, fields, crossDs, dsMap);
+            Field2SQLObj.field2sqlObj(sqlMeta, fields, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
             Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
             String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
@@ -585,7 +585,7 @@ public class DatasetDataManage {
             datasetGroupInfoDTO.setSortFields(Collections.singletonList(deSortField));
         }
 
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, crossDs, dsMap);
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
         String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, 1000);

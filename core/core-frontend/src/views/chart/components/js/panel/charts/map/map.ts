@@ -22,8 +22,11 @@ const { t } = useI18n()
  * 地图
  */
 export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
-  properties = MAP_EDITOR_PROPERTY
-  propertyInner = MAP_EDITOR_PROPERTY_INNER
+  properties: EditorProperty[] = [...MAP_EDITOR_PROPERTY, 'legend-selector']
+  propertyInner: EditorPropertyInner = {
+    ...MAP_EDITOR_PROPERTY_INNER,
+    'legend-selector': ['icon', 'fontSize', 'color']
+  }
   axis = MAP_AXIS_TYPE
   axisConfig: AxisConfig = {
     xAxis: {
@@ -90,16 +93,14 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         active: { stroke: 'green', lineWidth: 1 }
       },
       tooltip: {},
-      legend: {
-        position: 'bottomleft'
-      },
       // 禁用线上地图数据
       customFetchGeoData: () => null
     }
     options = this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
-    this.configZoomButton(view)
+    this.configZoomButton(chart, view)
     view.once('loaded', () => {
+      view.scene.map['keyboard'].disable()
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
         const data = ev.feature.properties
         action({
@@ -133,14 +134,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       scale: {
         type: 'quantize',
         unknown: basicStyle.areaBaseColor
-      }
-    }
-    const suspension = basicStyle.suspension
-    if (!suspension) {
-      options = {
-        ...options,
-        legend: false,
-        zoom: false
       }
     }
     if (!chart.data?.data?.length || !geoJson?.features?.length) {

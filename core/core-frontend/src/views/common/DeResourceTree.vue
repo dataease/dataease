@@ -317,10 +317,14 @@ const addOperation = (
     const baseUrl =
       curCanvasType.value === 'dataV' ? '#/dvCanvas?opt=create' : '#/dashboard?opt=create'
     let newWindow = null
+    let embeddedBaseUrl = ''
+    if (isDataEaseBi.value) {
+      embeddedBaseUrl = embeddedStore.baseUrl
+    }
     if (data?.id) {
-      newWindow = window.open(baseUrl + `&pid=${data.id}`, '_blank')
+      newWindow = window.open(embeddedBaseUrl + baseUrl + `&pid=${data.id}`, '_blank')
     } else {
-      newWindow = window.open(baseUrl, '_blank')
+      newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
     }
     initOpenHandler(newWindow)
   } else if (cmd === 'newFromTemplate') {
@@ -463,19 +467,14 @@ defineExpose({
           <el-tooltip content="新建文件夹" placement="top" effect="dark">
             <el-icon
               class="custom-icon btn"
-              :style="{ marginRight: isDataEaseBi ? 0 : '20px' }"
+              style="margin-right: 20px"
               @click="addOperation('newFolder', null, 'folder')"
             >
               <Icon name="dv-new-folder" />
             </el-icon>
           </el-tooltip>
 
-          <el-tooltip
-            v-if="!isDataEaseBi"
-            :content="newResourceLabel"
-            placement="top"
-            effect="dark"
-          >
+          <el-tooltip :content="newResourceLabel" placement="top" effect="dark">
             <el-dropdown popper-class="menu-outer-dv_popper" trigger="hover">
               <el-icon class="custom-icon btn" @click="addOperation('newLeaf', null, 'leaf', true)">
                 <Icon name="icon_file-add_outlined" />

@@ -26,6 +26,7 @@ import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { trackBarStyleCheck } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc } = storeToRefs(dvMainStore)
@@ -247,8 +248,13 @@ const action = param => {
     trackClick(trackMenu.value[0])
   } else {
     // 图表关联多个事件
-    state.trackBarStyle.left = param.x - 50 + 'px'
-    state.trackBarStyle.top = param.y + 10 + 'px'
+    const barStyleTemp = {
+      left: param.x - 50,
+      top: param.y + 10
+    }
+    trackBarStyleCheck(props.element, barStyleTemp, props.scale)
+    state.trackBarStyle.left = barStyleTemp.left + 'px'
+    state.trackBarStyle.top = barStyleTemp.top + 'px'
     viewTrack.value.trackButtonClick()
   }
 }
@@ -463,6 +469,7 @@ const autoHeightStyle = computed(() => {
 }
 .table-page-info {
   position: relative;
+  padding-left: 4px;
   margin: 4px;
   height: 20px;
   display: flex;

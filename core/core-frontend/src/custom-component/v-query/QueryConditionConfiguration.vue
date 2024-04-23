@@ -248,6 +248,9 @@ const handleDatasetChange = () => {
 const handleFieldChange = () => {
   if (!curComponent.value.defaultValueCheck) return
   curComponent.value.defaultValue = curComponent.value.multiple ? [] : undefined
+  if (!curComponent.value.displayId) {
+    curComponent.value.displayId = curComponent.value.field.id
+  }
 }
 
 const handleValueSourceChange = () => {
@@ -545,6 +548,7 @@ const validate = () => {
 
 const handleBeforeClose = () => {
   inputCom.value?.mult?.handleClickOutside?.()
+  inputCom.value?.single?.handleClickOutside?.()
   handleDialogClick()
   dialogVisible.value = false
   visiblePopover.value = false
@@ -553,6 +557,8 @@ const handleBeforeClose = () => {
 const confirmClick = () => {
   if (validate()) return
   inputCom.value?.mult?.handleClickOutside?.()
+  inputCom.value?.single?.handleClickOutside?.()
+  handleDialogClick()
   visiblePopover.value = false
   dialogVisible.value = false
   conditions.value.forEach(ele => {
@@ -675,6 +681,7 @@ const parameterCompletion = () => {
     timeType: 'fixed',
     required: false,
     defaultMapValue: [],
+    mapValue: [],
     parametersStart: null,
     conditionType: 0,
     conditionValueOperatorF: 'eq',
@@ -781,7 +788,7 @@ const handleDialogClick = () => {
 
 const operators = [
   {
-    label: '精准匹配',
+    label: '精确匹配',
     value: 'eq'
   },
   {
@@ -1569,7 +1576,6 @@ defineExpose({
                 </el-select>
                 <el-input
                   class="condition-value-input"
-                  size="small"
                   v-model="curComponent.defaultConditionValueF"
                 />
                 <div class="bottom-line"></div>
@@ -1593,7 +1599,6 @@ defineExpose({
                 </el-select>
                 <el-input
                   class="condition-value-input"
-                  size="small"
                   v-model="curComponent.defaultConditionValueS"
                 />
                 <div class="bottom-line next-line"></div>
@@ -1654,7 +1659,10 @@ defineExpose({
               >
             </div>
           </div>
-          <div class="list-item" v-if="+curComponent.displayType === 0">
+          <div
+            class="list-item"
+            v-if="+curComponent.displayType === 0 && curComponent.optionValueSource !== 1"
+          >
             <div class="label">
               <el-tooltip
                 effect="dark"
@@ -2219,7 +2227,7 @@ defineExpose({
           .value {
             width: 321px;
             .condition-type {
-              margin-top: 8px;
+              margin-top: 3px !important;
               display: flex;
               position: relative;
               .ed-input__wrapper {
@@ -2271,7 +2279,7 @@ defineExpose({
                 opacity: 0.3;
                 position: absolute;
                 right: 5px;
-                bottom: 5px;
+                bottom: 3px;
                 width: 220px;
                 z-index: 10;
 

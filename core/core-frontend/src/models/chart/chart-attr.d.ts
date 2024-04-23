@@ -38,6 +38,14 @@ declare interface ChartAttr {
    * 象限设置
    */
   quadrant: QuadrantAttr
+  /**
+   * 指标值
+   */
+  indicator: ChartIndicatorStyle
+  /**
+   * 指标名称
+   */
+  indicatorName: ChartIndicatorNameStyle
 }
 /**
  * 基础样式设置
@@ -161,9 +169,10 @@ declare interface ChartBasicStyle {
    */
   areaBorderColor: string
   /**
+   * @deprecated
    * 悬浮工具栏
    */
-  suspension: boolean
+  suspension?: boolean
   /**
    * 地图底色
    */
@@ -192,6 +201,18 @@ declare interface ChartBasicStyle {
    * 环形图/玫瑰图外径占比
    */
   radius: number
+  /**
+   * 是否显示地图缩放按钮
+   */
+  showZoom: boolean
+  /**
+   * 地图缩放按钮颜色
+   */
+  zoomButtonColor: string
+  /**
+   * 地图缩放按钮背景颜色
+   */
+  zoomBackground: string
 }
 /**
  * 表头属性
@@ -229,6 +250,14 @@ declare interface ChartTableHeaderAttr {
    * 表头排序开关
    */
   tableHeaderSort: boolean
+  /**
+   * 行头鼠标悬浮提示开关
+   */
+  showRowTooltip: boolean
+  /**
+   * 列头鼠标悬浮提示开关
+   */
+  showColTooltip: boolean
 }
 /**
  * 单元格属性
@@ -262,6 +291,10 @@ declare interface ChartTableCellAttr {
    * 斑马纹单数行颜色
    */
   tableItemSubBgColor: string
+  /**
+   * 鼠标悬浮提示
+   */
+  showTooltip: boolean
 }
 
 /**
@@ -517,6 +550,14 @@ declare interface ChartMiscAttr {
    * 指标/文本卡垂直位置
    */
   vPosition: 'top' | 'center' | 'bottom'
+  /**
+   * 词云图字体大小区间
+   */
+  wordSizeRange: [number, number]
+  /**
+   * 词云图文字间距
+   */
+  wordSpacing: number
 }
 /**
  * 动态极值配置
@@ -701,4 +742,128 @@ declare interface QuadrantLineStyle {
    * 透明度
    */
   opacity: number
+}
+
+/**
+ * 指标卡值样式
+ */
+declare interface ChartIndicatorStyle {
+  /**
+   * 是否显示
+   */
+  show: boolean
+  /**
+   * 字体大小
+   */
+  fontSize: number
+  /**
+   * 字体颜色
+   */
+  color: string
+  /**
+   * 水平位置
+   */
+  hPosition: 'left' | 'center' | 'right'
+  /**
+   * 垂直位置
+   */
+  vPosition: 'top' | 'center' | 'bottom'
+  /**
+   * 是否斜体
+   */
+  isItalic: boolean
+  /**
+   * 是否加粗
+   */
+  isBolder: boolean
+  /**
+   * 字体类型
+   */
+  fontFamily: string
+  /**
+   * 字间距
+   */
+  letterSpace: number
+  /**
+   * 是否显示字体阴影
+   */
+  fontShadow: boolean
+  /**
+   * 是否显示后缀
+   */
+  suffixEnable: boolean
+  /**
+   * 后缀内容
+   */
+  suffix: string
+  /**
+   * 后缀字体大小
+   */
+  suffixFontSize: number
+  /**
+   * 后缀字体颜色
+   */
+  suffixColor: string
+  /**
+   * 后缀是否斜体
+   */
+  suffixIsItalic: boolean
+  /**
+   * 后缀是否加粗
+   */
+  suffixIsBolder: boolean
+  /**
+   * 后缀字体类型
+   */
+  suffixFontFamily: string
+  /**
+   * 后缀字间距
+   */
+  suffixLetterSpace: number
+  /**
+   * 后置是否显示阴影
+   */
+  suffixFontShadow: boolean
+}
+
+/**
+ * 指标卡名称样式
+ */
+declare interface ChartIndicatorNameStyle {
+  /**
+   * 是否显示
+   */
+  show: boolean
+  /**
+   * 字体大小
+   */
+  fontSize: number
+  /**
+   * 字体颜色
+   */
+  color: string
+  /**
+   * 是否斜体
+   */
+  isItalic: boolean
+  /**
+   * 是否加粗
+   */
+  isBolder: boolean
+  /**
+   * 字体类型
+   */
+  fontFamily: string
+  /**
+   * 字间距
+   */
+  letterSpace: number
+  /**
+   * 是否显示字体阴影
+   */
+  fontShadow: boolean
+  /**
+   * 指标/名称间距
+   */
+  nameValueSpacing: number
 }

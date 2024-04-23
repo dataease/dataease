@@ -20,7 +20,8 @@ export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'tableTitleHeight',
     'tableHeaderAlign',
     'showIndex',
-    'indexLabel'
+    'indexLabel',
+    'showColTooltip'
   ],
   'table-cell-selector': [
     'tableItemBgColor',
@@ -29,7 +30,8 @@ export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'tableItemAlign',
     'tableItemHeight',
     'enableTableCrossBG',
-    'tableItemSubBgColor'
+    'tableItemSubBgColor',
+    'showTooltip'
   ],
   'title-selector': [
     'title',

@@ -355,7 +355,7 @@ onMounted(() => {
               <span class="el-dropdown-link inner-dropdown-menu menu-item-padding">
                 <span class="menu-item-content">
                   <el-icon>
-                    <Icon name="icon_functions_outlined" />
+                    <Icon name="icon_dashboard_outlined" />
                   </el-icon>
                   <span>{{ t('chart.chart_type') }}</span>
                 </span>

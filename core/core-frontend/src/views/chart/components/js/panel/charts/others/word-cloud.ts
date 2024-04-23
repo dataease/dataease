@@ -8,6 +8,7 @@ import { getPadding } from '@/views/chart/components/js/panel/common/common_antv
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isEmpty } from 'lodash-es'
+import { DEFAULT_MISC } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -20,6 +21,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
     'background-overall-component',
     'title-selector',
     'tooltip-selector',
+    'misc-selector',
     'jump-set',
     'linkage'
   ]
@@ -38,6 +40,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
       'letterSpace',
       'fontShadow'
     ],
+    'misc-selector': ['wordSizeRange', 'wordSpacing'],
     'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
@@ -58,6 +61,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
     if (chart?.data) {
       // data
       const data = chart.data.data
+      const { misc } = parseJson(chart.customAttr)
       // options
       const initOptions: WordCloudOptions = {
         data: data,
@@ -66,9 +70,9 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
         colorField: 'field',
         wordStyle: {
           fontFamily: 'Verdana',
-          fontSize: [8, 32],
+          fontSize: (misc.wordSizeRange ?? DEFAULT_MISC.wordSizeRange) as [number, number],
           rotation: [0, 0],
-          padding: 6
+          padding: misc.wordSpacing ?? DEFAULT_MISC.wordSpacing
         },
         random: () => 0.5,
         appendPadding: getPadding(chart),

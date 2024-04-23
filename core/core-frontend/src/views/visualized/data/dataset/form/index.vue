@@ -318,7 +318,7 @@ watch(searchTable, val => {
 const editeSave = () => {
   const union = []
   loading.value = true
-  dfsNodeList(union, datasetDrag.value.nodeList)
+  dfsNodeList(union, datasetDrag.value.getNodeList())
   saveDatasetTree({
     ...nodeInfo,
     name: datasetName.value,
@@ -448,7 +448,7 @@ const deleteField = item => {
     callback: (action: Action) => {
       if (action === 'confirm') {
         delFieldById([item.id])
-        datasetDrag.value.dfsNodeFieldBack(datasetDrag.value.nodeList, item)
+        datasetDrag.value.dfsNodeFieldBack(datasetDrag.value.getNodeList(), item)
         ElMessage({
           message: t('chart.delete_success'),
           type: 'success'
@@ -671,7 +671,6 @@ const addComplete = () => {
 const state = reactive({
   nodeNameList: [],
   editArr: [],
-  nodeList: [],
   dataSourceList: [],
   tableData: [],
   fieldCollapse: ['dimension', 'quota']
@@ -750,7 +749,7 @@ const fieldUnion = ref()
 
 const setFieldAll = () => {
   const arr = []
-  dfsFields(arr, datasetDrag.value.nodeList)
+  dfsFields(arr, datasetDrag.value.getNodeList())
   const delIdArr = getDelIdArr(arr, allfields.value)
   allfields.value = diffArr(arr, allfields.value)
   delFieldById(delIdArr)
@@ -815,6 +814,10 @@ const mouseupDrag = () => {
   dom.removeEventListener('mousemove', calculateWidth)
   dom.removeEventListener('mousemove', calculateHeight)
 }
+
+const crossDatasources = computed(() => {
+  return datasetDrag.value?.crossDatasources
+})
 const calculateWidth = (e: MouseEvent) => {
   if (e.pageX < 240) {
     LeftWidth.value = 240
@@ -920,7 +923,7 @@ const resetAllfieldsId = arr => {
 
 const resetAllfieldsUnionId = (arr, idMap) => {
   let strUnion = JSON.stringify(arr) as string
-  let strNodeList = JSON.stringify(toRaw(datasetDrag.value.nodeList)) as string
+  let strNodeList = JSON.stringify(toRaw(datasetDrag.value.getNodeList())) as string
   let strAllfields = JSON.stringify(unref(allfields.value)) as string
   Object.entries(idMap).forEach(([key, value]) => {
     strUnion = strUnion.replaceAll(key, value as string)
@@ -938,7 +941,7 @@ const datasetSave = () => {
     return
   }
   let union = []
-  dfsNodeList(union, datasetDrag.value.nodeList)
+  dfsNodeList(union, datasetDrag.value.getNodeList())
   const pid = route.query.pid || nodeInfo.pid
   if (!union.length) {
     ElMessage.error('数据集不能为空')
@@ -965,7 +968,7 @@ const datasetPreviewLoading = ref(false)
 const datasetPreview = () => {
   if (datasetPreviewLoading.value) return
   const arr = []
-  dfsNodeList(arr, datasetDrag.value.nodeList)
+  dfsNodeList(arr, datasetDrag.value.getNodeList())
   datasetPreviewLoading.value = true
   getPreviewData({ union: arr, allFields: allfields.value })
     .then(res => {
@@ -1328,6 +1331,12 @@ const getDsIconName = data => {
         </div>
       </div>
       <div class="drag-right" :style="{ width: `calc(100vw - ${showLeft ? LeftWidth : 0}px)` }">
+        <div v-if="crossDatasources" class="different-datasource">
+          <el-icon>
+            <Icon name="icon_warning_colorful"></Icon>
+          </el-icon>
+          您正在进行跨数据源的表关联,请确保使用calcite的标准语法和函数,否则会导致数据集报错
+        </div>
         <dataset-union
           @join-editor="joinEditor"
           @changeUpdate="changeUpdate"
@@ -1343,7 +1352,9 @@ const getDsIconName = data => {
         <div
           class="sql-result"
           :style="{
-            height: sqlResultHeight ? `${sqlResultHeight}px` : `calc(100% - ${dragHeight}px)`
+            height: sqlResultHeight
+              ? `${crossDatasources ? sqlResultHeight - 40 : sqlResultHeight}px`
+              : `calc(100% - ${crossDatasources ? dragHeight + 40 : dragHeight}px)`
           }"
         >
           <div class="sql-title">
@@ -2101,6 +2112,23 @@ const getDsIconName = data => {
     display: flex;
     .drag-right {
       height: calc(100vh - 56px);
+      .different-datasource {
+        height: 40px;
+        width: 100%;
+        background: #ffe7cc;
+        color: #1f2329;
+        font-size: 14px;
+        font-weight: 400;
+        line-height: 22px;
+        display: flex;
+        align-items: center;
+        padding: 0 16px;
+
+        .ed-icon {
+          font-size: 16px;
+          margin-right: 8px;
+        }
+      }
       .sql-result {
         font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;

@@ -169,6 +169,15 @@ export class TableInfo extends S2ChartView<TableSheet> {
       action(param)
     })
 
+    // hover
+    const { showColTooltip } = customAttr.tableHeader
+    if (showColTooltip) {
+      newChart.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
+    }
+    const { showTooltip } = customAttr.tableCell
+    if (showTooltip) {
+      newChart.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
+    }
     // header resize
     newChart.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, ev => resizeAction(ev))
     // right click

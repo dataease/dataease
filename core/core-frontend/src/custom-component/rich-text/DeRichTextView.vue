@@ -10,9 +10,10 @@
     <chart-error v-if="isError" :err-msg="errMsg" />
     <Editor
       v-if="editShow && !isError"
-      :id="tinymceId"
       v-model="myValue"
       class="custom-text-content"
+      :style="wrapperStyle"
+      :id="tinymceId"
       :init="init"
       :disabled="!canEdit || disabled"
     />
@@ -46,6 +47,7 @@ import 'tinymce/plugins/contextmenu' // contextmenu
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
+import './plugins' //自定义插件
 import { computed, nextTick, reactive, ref, toRefs, watch, onMounted, PropType } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
@@ -119,11 +121,11 @@ const init = ref({
   skin_url: formatDataEaseBi('./tinymce-dataease-private/skins/ui/oxide'), // 皮肤
   content_css: formatDataEaseBi('./tinymce-dataease-private/skins/content/default/content.css'),
   plugins:
-    'advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
+    'vertical-content advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
   // 工具栏
   toolbar:
     'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough link| formatselect |' +
-    'alignleft aligncenter alignright | bullist numlist |' +
+    'top-align center-align bottom-align | alignleft aligncenter alignright | bullist numlist |' +
     ' blockquote subscript superscript removeformat | table image | fullscreen ' +
     '| bdmap indent2em lineheight formatpainter axupimgs',
   toolbar_location: '/',
@@ -134,7 +136,9 @@ const init = ref({
   placeholder: '',
   outer_placeholder: '双击输入文字',
   inline: true, // 开启内联模式
-  branding: false
+  branding: false,
+  icons: 'vertical-content',
+  vertical_align: element.value.propValue.verticalAlign
 })
 
 const editStatus = computed(() => {
@@ -169,6 +173,36 @@ watch(
     }
   }
 )
+const ALIGN_MAP = {
+  'top-align': {
+    display: 'flex',
+    'flex-direction': 'column',
+    'justify-content': 'flex-start'
+  },
+  'center-align': {
+    display: 'flex',
+    'flex-direction': 'column',
+    'justify-content': 'center'
+  },
+  'bottom-align': {
+    display: 'flex',
+    'flex-direction': 'column',
+    'justify-content': 'flex-end'
+  }
+}
+const wrapperStyle = computed(() => {
+  const align = element.value.propValue.verticalAlign
+  if (!align) {
+    return {}
+  }
+  return ALIGN_MAP[align]
+})
+useEmitt({
+  name: 'vertical-change-' + tinymceId,
+  callback: align => {
+    element.value.propValue.verticalAlign = align
+  }
+})
 
 const viewInit = () => {
   useEmitt({
@@ -496,6 +530,14 @@ defineExpose({
 </style>
 
 <style lang="less">
+.tox {
+  border-radius: 4px !important;
+  border-bottom: 1px solid #ccc !important;
+  z-index: 1000;
+}
+.tox-tbtn {
+  height: auto !important;
+}
 .tox-collection__item-label {
   p {
     color: #1a1a1a !important;

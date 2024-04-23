@@ -29,9 +29,9 @@ import { DOM } from '@antv/l7-utils'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
-    return [0, 10, 26, 10]
+    return [0, 10, 22, 10]
   } else {
-    return [0, 10, 14, 10]
+    return [0, 10, 10, 10]
   }
 }
 // color,label,tooltip,axis,legend,background
@@ -273,9 +273,7 @@ export function getLegend(chart: Chart) {
             offsetY = 0
           } else if (l.vPosition === 'bottom') {
             if (chart.drill) {
-              offsetY = -16
-            } else {
-              offsetY = -4
+              offsetY = -12
             }
           } else {
             offsetY = 0
@@ -292,9 +290,9 @@ export function getLegend(chart: Chart) {
             offsetY = 0
           } else if (l.vPosition === 'bottom') {
             if (chart.drill) {
-              offsetY = -22
+              offsetY = -18
             } else {
-              offsetY = -10
+              offsetY = -6
             }
           } else {
             offsetY = 0
@@ -309,6 +307,7 @@ export function getLegend(chart: Chart) {
           marker: {
             symbol: legendSymbol
           },
+          itemHeight: l.fontSize + 4,
           radio: false,
           pageNavigator: {
             marker: {
@@ -681,10 +680,10 @@ export function getAnalyse(chart: Chart) {
       const content =
         ele.name +
         ' : ' +
-        valueFormatter(value, ele.axisType === 'left' ? axisFormatterCfg : axisExtFormatterCfg)
+        valueFormatter(value, ele.yAxisType === 'left' ? axisFormatterCfg : axisExtFormatterCfg)
       assistLine.push({
         type: 'line',
-        axisType: ele.axisType,
+        yAxisType: ele.yAxisType,
         start: ['start', value],
         end: ['end', value],
         style: {
@@ -694,15 +693,17 @@ export function getAnalyse(chart: Chart) {
       })
       assistLine.push({
         type: 'text',
-        axisType: ele.axisType,
+        yAxisType: ele.yAxisType,
         position: [
-          (ele.axisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left' ? 'start' : 'end',
+          (ele.yAxisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left'
+            ? 'start'
+            : 'end',
           value
         ],
         content: content,
         offsetY: -2,
         offsetX:
-          (ele.axisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left'
+          (ele.yAxisType === 'left' ? yAxisPosition : yAxisExtPosition) === 'left'
             ? 2
             : -10 * (content.length - 2),
         style: {
@@ -898,9 +899,32 @@ export function getTooltipSeriesTotalMap(data: any[]): Record<string, number> {
   })
   return result
 }
-
-export function configL7Legend(): LegendOptions {
+const LEGEND_SHAPE_STYLE_MAP = {
+  circle: {
+    borderRadius: '50%'
+  },
+  square: {},
+  triangle: {
+    borderLeft: '5px solid transparent',
+    borderRight: '5px solid transparent',
+    borderBottom: '10px solid var(--bgColor)',
+    background: 'unset'
+  },
+  diamond: {
+    transform: 'rotate(45deg)'
+  }
+}
+export function configL7Legend(chart: Chart): LegendOptions | false {
+  const { basicStyle } = parseJson(chart.customAttr)
+  if (basicStyle.suspension === false && basicStyle.showZoom === undefined) {
+    return false
+  }
+  const { legend } = parseJson(chart.customStyle)
+  if (!legend.show) {
+    return false
+  }
   return {
+    position: 'bottomleft',
     customContent: (_: string, items: CategoryLegendListItem[]) => {
       const showItems = items?.length > 30 ? items.slice(0, 30) : items
       if (showItems?.length) {
@@ -923,11 +947,22 @@ export function configL7Legend(): LegendOptions {
 
           const domStr = substitute(ITEM_TPL, substituteObj)
           const itemDom = createDom(domStr)
+          // 给 legend 形状用的
+          itemDom.style.setProperty('--bgColor', item.color)
           listDom.appendChild(itemDom)
         })
         return listDom
       }
       return ''
+    },
+    domStyles: {
+      'l7plot-legend__category-value': {
+        fontSize: legend.fontSize + 'px',
+        color: legend.color
+      },
+      'l7plot-legend__category-marker': {
+        ...LEGEND_SHAPE_STYLE_MAP[legend.icon]
+      }
     }
   }
 }
@@ -942,12 +977,18 @@ class CustomZoom extends Zoom {
       this.zoomIn
     )
     const resetBtnIconText = createL7Icon('l7-icon-round')
-    this['createButton'](resetBtnIconText, 'Reset', 'l7-button-control', container, () => {
-      this.mapsService.setZoomAndCenter(
-        this.controlOption['initZoom'],
-        this.controlOption['center']
-      )
-    })
+    this['zoomResetButton'] = this['createButton'](
+      resetBtnIconText,
+      'Reset',
+      'l7-button-control',
+      container,
+      () => {
+        this.mapsService.setZoomAndCenter(
+          this.controlOption['initZoom'],
+          this.controlOption['center']
+        )
+      }
+    )
     if (this.controlOption.showZoom) {
       this['zoomNumDiv'] = this['createButton'](
         '0',
@@ -963,19 +1004,44 @@ class CustomZoom extends Zoom {
       container,
       this.zoomOut
     )
+    const { buttonColor, buttonBackground } = this.controlOption as any
+    if (buttonColor) {
+      const elements = [
+        this.controlOption.zoomInText,
+        this.controlOption.zoomOutText,
+        resetBtnIconText
+      ] as HTMLElement[]
+      setStyle(elements, 'fill', buttonColor)
+    }
+    const elements = [this['zoomResetButton'], this['zoomInButton'], this['zoomOutButton']]
+    if (buttonBackground) {
+      setStyle(elements, 'background', buttonBackground)
+    }
+    setStyle(elements, 'border-bottom', 'none')
     this['updateDisabled']()
   }
 }
-export function configL7Zoom(plot: L7Plot<PlotOptions>) {
-  const options = plot.options
-  if (options.zoom === false) {
+export function configL7Zoom(chart: Chart, plot: L7Plot<PlotOptions>) {
+  const { basicStyle } = parseJson(chart.customAttr)
+  if (
+    (basicStyle.suspension === false && basicStyle.showZoom === undefined) ||
+    basicStyle.showZoom === false
+  ) {
     return
   }
   plot.once('loaded', () => {
     const zoomOptions = {
       initZoom: plot.scene.getZoom(),
-      center: plot.scene.getCenter()
+      center: plot.scene.getCenter(),
+      buttonColor: basicStyle.zoomButtonColor,
+      buttonBackground: basicStyle.zoomBackground
     } as any
     plot.scene.addControl(new CustomZoom(zoomOptions))
+  })
+}
+
+function setStyle(elements: HTMLElement[], styleProp: string, value) {
+  elements.forEach(e => {
+    e.style[styleProp] = value
   })
 }

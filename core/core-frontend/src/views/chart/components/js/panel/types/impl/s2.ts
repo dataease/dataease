@@ -3,7 +3,7 @@ import {
   AntVDrawOptions,
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
-import { S2Theme, SpreadSheet, Style, S2Options } from '@antv/s2'
+import { S2Theme, SpreadSheet, Style, S2Options, Meta } from '@antv/s2'
 import {
   configHeaderInteraction,
   configTooltip,
@@ -13,6 +13,7 @@ import {
   handleTableEmptyStrategy
 } from '@/views/chart/components/js/panel/common/common_table'
 import '@antv/s2/dist/style.min.css'
+import { find } from 'lodash-es'
 
 declare interface PageInfo {
   currentPage: number
@@ -51,5 +52,41 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
 
   protected configConditions(chart: Chart) {
     return getConditions(chart)
+  }
+
+  protected showTooltip(s2Instance: P, event, metaConfig: Meta[]) {
+    const cell = s2Instance.getCell(event.target)
+    const meta = cell.getMeta()
+    let content = ''
+    let field
+    switch (cell.cellType) {
+      case 'dataCell':
+        field = find(metaConfig, item => item.field === meta.valueField)
+        if (meta.fieldValue) {
+          content = field?.formatter?.(meta.fieldValue)
+        }
+        break
+      case 'rowCell':
+      case 'colCell':
+        content = meta.label
+        field = find(metaConfig, item => item.field === content)
+        if (field) {
+          content = field.name
+        }
+        break
+    }
+    if (!content) {
+      return
+    }
+    event.s2Instance = s2Instance
+    s2Instance.showTooltip({
+      position: {
+        x: event.clientX,
+        y: event.clientY
+      },
+      content,
+      meta,
+      event
+    })
   }
 }

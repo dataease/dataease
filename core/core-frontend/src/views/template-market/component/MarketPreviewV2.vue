@@ -9,15 +9,15 @@
         </el-tooltip>
         <el-row v-show="state.asideActive" style="padding: 24px 12px 0">
           <el-row style="align-items: center">
-            <span class="custom-breadcrumb-item" @click="closePreview()">{{
-              t('visualization.template_preview')
-            }}</span>
+            <span class="custom-breadcrumb-item" @click="closePreview()">模版中心</span>
             <el-icon><ArrowRight /></el-icon> <span class="custom-breadcrumb-item-to">预览</span>
 
             <el-tooltip class="box-item" effect="dark" content="收起" placement="right">
-              <el-icon class="insert-retract" @click="asideActiveChange(false)">
-                <Icon name="market-retract"></Icon>
-              </el-icon>
+              <div @click="asideActiveChange(false)" class="insert-retract">
+                <el-icon>
+                  <Icon name="icon_left_outlined" />
+                </el-icon>
+              </div>
             </el-tooltip>
           </el-row>
           <el-row class="margin-top16 search-area">
@@ -499,34 +499,44 @@ onMounted(() => {
   }
 }
 
+.arrow-side-tree {
+  position: absolute;
+  border: 1px solid #dee0e3;
+  background: #fff;
+  cursor: pointer;
+  z-index: 10;
+  &:hover {
+    .ed-icon {
+      color: var(--ed-color-primary);
+    }
+  }
+  .ed-icon {
+    font-size: 12px;
+  }
+}
+
 .insert-retract {
   position: absolute;
-  left: 176px;
+  left: 182px;
   top: 2px;
-  display: inline-block;
-  font-size: 34px;
-  font-weight: 400 !important;
-  font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
-  line-height: 1;
-  white-space: nowrap;
+  border: 1px solid #dee0e3;
+  background: #fff;
   cursor: pointer;
-  color: #646a73;
-  -webkit-appearance: none;
-  text-align: center;
-  box-sizing: border-box;
-  outline: 0;
-  margin: 0;
-  transition: 0.1s;
-  border-radius: 3px;
-
-  &:active {
-    color: #000;
-    border-color: #3a8ee6;
-    outline: 0;
-  }
+  height: 24px;
+  width: 24px;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  box-shadow: 0px 5px 10px 0px #1f23291a;
 
   &:hover {
-    color: #3a8ee6;
+    .ed-icon {
+      color: var(--ed-color-primary);
+    }
+  }
+  .ed-icon {
+    font-size: 12px;
   }
 }
 

@@ -39,6 +39,9 @@ public class Dimension2SQLObj {
                     // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                     originField = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, x.getId());
                     fieldsDialect.put(originField, calcFieldExp);
+                    if (isCross) {
+                        originField = calcFieldExp;
+                    }
                 } else if (ObjectUtils.isNotEmpty(x.getExtField()) && Objects.equals(x.getExtField(), ExtFieldConstant.EXT_COPY)) {
                     originField = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), x.getDataeaseName());
                 } else {

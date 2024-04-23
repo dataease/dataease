@@ -15,10 +15,11 @@ const infoFormat = (obj: ComponentInfo) => {
       name,
       deType
     },
-    displayId: '',
+    displayId: id,
     sortId: '',
     sort: 'asc',
     defaultMapValue: [],
+    mapValue: [],
     conditionType: 0,
     conditionValueOperatorF: 'eq',
     conditionValueF: '',

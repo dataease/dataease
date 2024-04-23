@@ -98,9 +98,10 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     options = this.setupOptions(chart, options, drawOption, geoJson)
     const view = new Choropleth(container, options)
     const dotLayer = this.getDotLayer(chart, geoJson, drawOption)
-    this.configZoomButton(view)
+    this.configZoomButton(chart, view)
     view.once('loaded', () => {
       view.addLayer(dotLayer)
+      view.scene.map['keyboard'].disable()
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
         const data = ev.feature.properties
         action({
@@ -178,13 +179,6 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const curAreaNameMapping = senior.areaMapping?.[areaId]
     handleGeoJson(geoJson, curAreaNameMapping)
     options.color = hexColorToRGBA(basicStyle.areaBaseColor, basicStyle.alpha)
-    const suspension = basicStyle.suspension
-    if (!suspension) {
-      options = {
-        ...options,
-        zoom: false
-      }
-    }
     if (!chart.data?.data?.length || !geoJson?.features?.length) {
       options.label && (options.label.field = 'name')
       return options
@@ -221,8 +215,7 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       this.configLabel,
       this.configStyle,
       this.configTooltip,
-      this.configBasicStyle,
-      this.configLegend
+      this.configBasicStyle
     )(chart, options, extra)
   }
 }

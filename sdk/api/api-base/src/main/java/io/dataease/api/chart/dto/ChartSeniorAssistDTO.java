@@ -1,5 +1,6 @@
 package io.dataease.api.chart.dto;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
@@ -15,7 +16,8 @@ public class ChartSeniorAssistDTO {
     private Long fieldId;
     private String summary;
     private String axis;
-    private String axisType;
+    @JsonProperty("yAxisType")
+    private String yAxisType;
     private String value;
     private String lineType;
     private String color;

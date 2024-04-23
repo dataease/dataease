@@ -83,13 +83,15 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   firstLoad: boolean,
   multiple: boolean,
   defaultMapValue: any,
-  optionValueSource: number
+  optionValueSource: number,
+  mapValue: any,
+  displayType: string
 ) => {
-  if (optionValueSource === 1) {
-    if (firstLoad && !selectValue?.length) {
+  if (optionValueSource === 1 && defaultMapValue?.length && ![1, 7].includes(+displayType)) {
+    if (firstLoad) {
       return defaultValueCheck ? defaultMapValue : multiple ? [] : ''
     }
-    return (selectValue?.length ? defaultMapValue : selectValue) || ''
+    return (selectValue?.length ? mapValue : selectValue) || ''
   }
 
   if (firstLoad && !selectValue?.length) {
@@ -152,7 +154,7 @@ const getOperator = (
   const operatorS = firstLoad ? defaultConditionValueOperatorS : conditionValueOperatorS
   if (displayType === '8') {
     if (conditionType === 0) {
-      return defaultConditionValueOperatorF
+      return operatorF
     }
     const operatorArr = [valueF === '' ? '' : operatorF, valueS === '' ? '' : operatorS].filter(
       ele => ele !== ''
@@ -180,7 +182,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             item.checkedFields.includes(curComponentId) &&
             item.checkedFieldsMap[curComponentId]
           ) {
-            let selectValue = ''
+            let selectValue
             const {
               selectValue: value,
               timeGranularityMultiple,
@@ -200,6 +202,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               defaultValue,
               optionValueSource,
               defaultMapValue,
+              mapValue,
               parameters = [],
               parametersCheck = false,
               isTree = false,
@@ -247,6 +250,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 )
                 item.defaultValue = [startTime, endTime]
                 item.selectValue = [startTime, endTime]
+                selectValue = [startTime, endTime]
               }
             } else if (displayType === '8') {
               selectValue = getResult(
@@ -265,7 +269,9 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 firstLoad,
                 multiple,
                 defaultMapValue,
-                optionValueSource
+                optionValueSource,
+                mapValue,
+                displayType
               )
             }
             if (
@@ -294,23 +300,25 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 firstLoad,
                 optionValueSource
               )
-              filter.push({
-                componentId: ele.id,
-                fieldId: item.checkedFieldsMap[curComponentId],
-                operator,
-                value: result,
-                parameters: parametersCheck
-                  ? +displayType === 7
-                    ? [
-                        parametersStart,
-                        parametersEnd?.id
-                          ? { ...parametersEnd, id: `${parametersEnd.id}_START_END_SPLIT` }
-                          : parametersEnd
-                      ]
-                    : parameters
-                  : [],
-                isTree
-              })
+              if (result?.length) {
+                filter.push({
+                  componentId: ele.id,
+                  fieldId: item.checkedFieldsMap[curComponentId],
+                  operator,
+                  value: result,
+                  parameters: parametersCheck
+                    ? +displayType === 7
+                      ? [
+                          parametersStart,
+                          parametersEnd?.id
+                            ? { ...parametersEnd, id: `${parametersEnd.id}_START_END_SPLIT` }
+                            : parametersEnd
+                        ]
+                      : parameters
+                    : [],
+                  isTree
+                })
+              }
             }
           }
         })

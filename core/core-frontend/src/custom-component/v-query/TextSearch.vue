@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toRefs, onBeforeMount, type PropType } from 'vue'
+import { toRefs, onBeforeMount, type PropType, inject, type CSSProperties } from 'vue'
 interface SelectConfig {
   conditionValueOperatorF: string
   conditionValueF: string
@@ -14,7 +14,7 @@ interface SelectConfig {
 
 const operators = [
   {
-    label: '精准匹配',
+    label: '精确匹配',
     value: 'eq'
   },
   {
@@ -57,10 +57,11 @@ const setParams = () => {
 onBeforeMount(() => {
   setParams()
 })
+const customStyle = inject<{ background: string }>('$custom-style-filter')
 </script>
 
 <template>
-  <div class="text-search-select">
+  <div class="text-search-select" :style="{ background: customStyle.background }">
     <div class="condition-type">
       <el-select
         class="condition-value-select"
@@ -143,7 +144,7 @@ onBeforeMount(() => {
       opacity: 0.3;
       position: absolute;
       right: 5px;
-      bottom: 5px;
+      bottom: 3px;
       width: 195px;
       z-index: 10;
 

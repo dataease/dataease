@@ -121,12 +121,14 @@ export const customAttrTrans = {
     'valueFontSize',
     'spaceSplit', // 间隔
     'scatterSymbolSize', // 气泡大小，散点图
-    'radarSize' // 雷达占比
+    'radarSize', // 雷达占比
+    'wordSizeRange',
+    'wordSpacing'
   ],
   label: ['fontSize'],
   tooltip: ['fontSize'],
   indicator: ['fontSize', 'suffixFontSize'],
-  indicatorName: ['fontSize']
+  indicatorName: ['fontSize', 'nameValueSpacing']
 }
 export const customStyleTrans = {
   text: ['fontSize'],
@@ -278,6 +280,13 @@ export const mobileSpecialProps = {
 }
 
 export function getScaleValue(propValue, scale) {
+  if (propValue instanceof Array) {
+    propValue.forEach((v, i) => {
+      const val = Math.round(v * scale)
+      propValue[i] = val > 1 ? val : 1
+    })
+    return propValue
+  }
   const propValueTemp = Math.round(propValue * scale)
   return propValueTemp > 1 ? propValueTemp : 1
 }

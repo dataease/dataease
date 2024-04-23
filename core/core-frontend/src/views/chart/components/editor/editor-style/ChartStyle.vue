@@ -116,11 +116,14 @@ const onChangeXAxisForm = (val, prop) => {
 }
 
 const onChangeYAxisForm = (val, prop) => {
+  if (prop === 'show' && chart.value.type === 'chart-mix') {
+    chart.value.customStyle.yAxisExt.show = val.show
+    onChangeYAxisExtForm(chart.value.customStyle.yAxisExt, 'show')
+  }
   state.initReady && emit('onChangeYAxisForm', val, prop)
 }
 
 const onChangeYAxisExtForm = (val, prop) => {
-  console.log(val, prop)
   state.initReady && emit('onChangeYAxisExtForm', val, prop)
 }
 

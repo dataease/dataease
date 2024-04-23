@@ -7,11 +7,12 @@ import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
 import { formatterType, unitType } from '../../../js/formatter'
 import { fieldType } from '@/utils/attr'
-import { partition } from 'lodash-es'
+import { partition, uniqWith, isEqual } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { deepCopy } from '@/utils/utils'
 
 const { t } = useI18n()
 
@@ -98,7 +99,9 @@ const quotaAxis = computed(() => {
       return
     }
     const axis = props.chart[prop]
-    axis?.forEach(item => result.push(item))
+    axis?.forEach(item => {
+      result.push({ ...item, seriesId: `${item.id}-${prop}` })
+    })
   })
   return result
 })
@@ -255,6 +258,9 @@ const updateSeriesTooltipFormatter = (form: AxisEditForm) => {
 const addAxis = (form: AxisEditForm) => {
   const { axis, axisType } = form
   const axisMap = axis.reduce((pre, next) => {
+    if (!next) {
+      return pre
+    }
     next.axisType = axisType
     next.seriesId = `${next.id}-${axisType}`
     pre[next.id] = next
@@ -272,16 +278,17 @@ const addAxis = (form: AxisEditForm) => {
         ele.chartShowName = axisMap[ele.id].chartShowName
       } else {
         // 其他轴已有的字段
+        if (dupAxis.findIndex(i => i.id === ele.id) !== -1) {
+          return
+        }
         const tmp = cloneDeep(axisMap[ele.id])
         tmp.show = true
         dupAxis.push(tmp)
       }
     }
   })
-  state.tooltipForm.seriesTooltipFormatter =
-    state.tooltipForm.seriesTooltipFormatter.concat(dupAxis)
   state.tooltipForm.seriesTooltipFormatter = partition(
-    state.tooltipForm.seriesTooltipFormatter,
+    state.tooltipForm.seriesTooltipFormatter.concat(dupAxis),
     ele => quotaAxis.value.findIndex(item => item.id === ele.id) !== -1
   ).flat()
 }
@@ -312,8 +319,8 @@ const removeAxis = (form: AxisEditForm) => {
     if (axisMap[ele.seriesId]) {
       // 数据集中的字段
       ele.show = false
+      ele.summary = axisMap[ele.seriesId].summary
       ele.seriesId = ele.id
-      ele.summary = 'sum'
     }
   })
   state.tooltipForm.seriesTooltipFormatter = partition(
@@ -531,7 +538,7 @@ onMounted(() => {
           </template>
           <el-option
             class="series-select-option"
-            :key="item.id"
+            :key="item.seriesId"
             :value="item"
             :label="`${item.name}${
               item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''

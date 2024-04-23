@@ -812,7 +812,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       const checkQDList = [...data.dimensionList, ...data.quotaList]
       for (let indexOuter = 0; indexOuter < this.componentData.length; indexOuter++) {
         const element = this.componentData[indexOuter]
-        if (element.component === 'UserView' && element.innerType != 'VQuery') {
+        if (['UserView', 'VQuery'].includes(element.component)) {
           this.trackFilterCursor(element, checkQDList, trackInfo, preActiveComponentIds, viewId)
           this.componentData[indexOuter] = element
         } else if (element.component === 'Group') {
@@ -900,18 +900,36 @@ export const dvMainStore = defineStore('dataVisualization', {
               if (element.component === 'VQuery') {
                 element.propValue.forEach(filterItem => {
                   if (filterItem.id === targetViewId) {
+                    let queryParams = paramValue
+                    if (!['1', '7'].includes(filterItem.displayType)) {
+                      // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
+                      queryParams = paramValue.map(number => String(number))
+                    }
                     filterItem.defaultValueCheck = true
-                    if (filterItem.displayType === '0' && filterItem.multiple) {
-                      filterItem.selectValue = paramValue
-                      filterItem.defaultValue = paramValue
-                    } else if (filterItem.displayType === '0' && !filterItem.multiple) {
-                      filterItem.selectValue = paramValue[0]
-                      filterItem.defaultValue = paramValue[0]
+                    filterItem.timeType = 'fixed'
+                    if (['0', '2'].includes(filterItem.displayType)) {
+                      // 0 文本类型 1 数字类型
+                      if (filterItem.multiple) {
+                        // multiple === true 多选
+                        filterItem.selectValue = queryParams
+                        filterItem.defaultValue = queryParams
+                      } else {
+                        // 单选
+                        filterItem.selectValue = queryParams[0]
+                        filterItem.defaultValue = queryParams[0]
+                      }
+                    } else if (filterItem.displayType === '1') {
+                      // 1 时间类型
+                      filterItem.selectValue = queryParams[0]
+                      filterItem.defaultValue = queryParams[0]
+                    } else if (filterItem.displayType === '7') {
+                      // 7 时间范围类型
+                      filterItem.selectValue = queryParams
+                      filterItem.defaultValue = queryParams
                     } else if (filterItem.displayType === '8') {
-                      filterItem.conditionValueF = parmaValueSource
-                    } else {
-                      filterItem.selectValue = paramValue[0]
-                      filterItem.defaultValue = paramValue[0]
+                      // 8 文本搜索
+                      filterItem.conditionValueF = parmaValueSource + ''
+                      filterItem.defaultConditionValueF = parmaValueSource + ''
                     }
                   }
                 })
@@ -933,10 +951,11 @@ export const dvMainStore = defineStore('dataVisualization', {
         const sourceInfo = viewId + '#' + QDItem.id
         // 获取所有目标联动信息
         const targetInfoList = trackInfo[sourceInfo] || []
+        const paramValue = [QDItem.value]
         targetInfoList.forEach(targetInfo => {
           const targetInfoArray = targetInfo.split('#')
           const targetViewId = targetInfoArray[0] // 目标图表
-          if (element.id === targetViewId) {
+          if (element.component === 'UserView' && element.id === targetViewId) {
             // 如果目标图表 和 当前循环组件id相等 则进行条件增减
             const targetFieldId = targetInfoArray[1] // 目标图表列ID
             const condition = {
@@ -958,6 +977,43 @@ export const dvMainStore = defineStore('dataVisualization', {
             // !filterExist && vValid && currentFilters.push(condition)
             currentFilters.push(condition)
             preActiveComponentIds.includes(element.id) || preActiveComponentIds.push(element.id)
+          }
+          if (element.component === 'VQuery') {
+            element.propValue.forEach(filterItem => {
+              if (filterItem.id === targetViewId) {
+                let queryParams = paramValue
+                if (!['1', '7'].includes(filterItem.displayType)) {
+                  // 查询组件除了时间组件 其他入参只支持文本 这里全部转为文本
+                  queryParams = paramValue.map(number => String(number))
+                }
+                filterItem.defaultValueCheck = true
+                filterItem.timeType = 'fixed'
+                if (['0', '2'].includes(filterItem.displayType)) {
+                  // 0 文本类型 1 数字类型
+                  if (filterItem.multiple) {
+                    // multiple === true 多选
+                    filterItem.selectValue = queryParams
+                    filterItem.defaultValue = queryParams
+                  } else {
+                    // 单选
+                    filterItem.selectValue = queryParams[0]
+                    filterItem.defaultValue = queryParams[0]
+                  }
+                } else if (filterItem.displayType === '1') {
+                  // 1 时间类型
+                  filterItem.selectValue = queryParams[0]
+                  filterItem.defaultValue = queryParams[0]
+                } else if (filterItem.displayType === '7') {
+                  // 7 时间范围类型
+                  filterItem.selectValue = queryParams
+                  filterItem.defaultValue = queryParams
+                } else if (filterItem.displayType === '8') {
+                  // 8 文本搜索
+                  filterItem.conditionValueF = queryParams[0]
+                  filterItem.defaultConditionValueF = queryParams[0]
+                }
+              }
+            })
           }
         })
       })

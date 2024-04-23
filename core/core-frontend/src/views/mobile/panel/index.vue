@@ -9,11 +9,11 @@ const dvMainStore = dvMainStoreWithOut()
 
 const checkItemPosition = component => {
   component.x = 1
-  component.sizeX = 36
+  component.sizeX = 72
   component.y = dvMainStore.componentData.reduce((pre, next) => {
     return Math.max(pre, next.y + next.sizeY)
   }, 1)
-  component.sizeY = 10
+  component.sizeY = 20
 }
 
 const hanedleMessage = event => {

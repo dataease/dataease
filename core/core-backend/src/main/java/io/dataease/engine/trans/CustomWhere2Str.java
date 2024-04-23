@@ -45,6 +45,9 @@ public class CustomWhere2Str {
                     // 给计算字段处加一个占位符，后续SQL方言转换后再替换
                     originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
                     fieldsDialect.put(originName, calcFieldExp);
+                    if (isCross) {
+                        originName = calcFieldExp;
+                    }
                 } else if (ObjectUtils.isNotEmpty(field.getExtField()) && field.getExtField() == 1) {
                     originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
                 } else {
@@ -86,17 +89,16 @@ public class CustomWhere2Str {
                         res.add("(" + whereName + " IN ('" + String.join("','", request.getEnumCheckField()) + "'))");
                     }
                 } else {
+                    if (field.getDeType() == 1) {
+                        // 规定几种日期格式，一一匹配，匹配到就是该格式
+                        whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
+                    }
+
                     List<ChartCustomFilterItemDTO> filter = request.getFilter();
                     for (ChartCustomFilterItemDTO filterItemDTO : filter) {
                         String value = filterItemDTO.getValue();
                         String whereTerm = Utils.transFilterTerm(filterItemDTO.getTerm());
                         String whereValue = "";
-
-//                        String whereNameReal;
-                        if (field.getDeType() == 1) {
-                            // 规定几种日期格式，一一匹配，匹配到就是该格式
-                            whereName = String.format(SQLConstants.UNIX_TIMESTAMP, whereName);
-                        }
 
                         if (StringUtils.equalsIgnoreCase(filterItemDTO.getTerm(), "null")) {
                             whereValue = "";
@@ -113,12 +115,12 @@ public class CustomWhere2Str {
                         } else {
                             // 如果是时间字段过滤，当条件是等于和不等于的时候转换成between和not between
                             if (field.getDeType() == 1) {
-                                if (StringUtils.containsIgnoreCase(whereTerm, "=")) {
+                                if (StringUtils.equalsIgnoreCase(whereTerm, " = ")) {
                                     whereTerm = " BETWEEN ";
                                     // 把value类似过滤组件处理，获得start time和end time
                                     Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                                     whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
-                                } else if (StringUtils.containsIgnoreCase(whereTerm, "<>")) {
+                                } else if (StringUtils.equalsIgnoreCase(whereTerm, " <> ")) {
                                     whereTerm = " NOT BETWEEN ";
                                     Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                                     whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));

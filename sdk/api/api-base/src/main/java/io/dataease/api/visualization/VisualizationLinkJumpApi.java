@@ -1,6 +1,7 @@
 package io.dataease.api.visualization;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.api.visualization.dto.VisualizationComponentDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpDTO;
 import io.dataease.api.visualization.request.VisualizationLinkJumpBaseRequest;
 import io.dataease.api.visualization.response.VisualizationLinkJumpBaseResponse;
@@ -46,7 +47,7 @@ public interface VisualizationLinkJumpApi {
 
     @GetMapping("/viewTableDetailList/{dvId}")
     @Operation(summary = "查询跳转明细")
-    List<VisualizationViewTableVO> viewTableDetailList(@PathVariable Long dvId);
+    VisualizationComponentDTO viewTableDetailList(@PathVariable Long dvId);
 
     @PostMapping("/updateJumpSetActive")
     @Operation(summary = "更新跳转信息可用状态")

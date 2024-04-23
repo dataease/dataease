@@ -19,7 +19,7 @@ import {
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { hexColorToRGBA } from '@/views/chart/components/js/util.js'
 import {
-  CHART_CONT_FAMILY_MAP,
+  CHART_FONT_FAMILY_MAP,
   DEFAULT_TITLE_STYLE
 } from '@/views/chart/components/editor/util/chart'
 import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
@@ -153,13 +153,13 @@ const trackMenu = computed<Array<string>>(() => {
 })
 
 const hasLinkIcon = computed(() => {
-  return trackMenu.value.indexOf('linkage') > -1 || trackMenu.value.indexOf('linkageAndDrill')
+  return trackMenu.value.indexOf('linkage') > -1 || trackMenu.value.indexOf('linkageAndDrill') > -1
 })
 const hasJumpIcon = computed(() => {
   return trackMenu.value.indexOf('jump') > -1 && !mobileInPc.value
 })
 const hasDrillIcon = computed(() => {
-  return trackMenu.value.indexOf('drill') > -1 || trackMenu.value.indexOf('linkageAndDrill')
+  return trackMenu.value.indexOf('drill') > -1 || trackMenu.value.indexOf('linkageAndDrill') > -1
 })
 
 const loading = ref(false)
@@ -250,7 +250,7 @@ const initTitle = () => {
       state.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
 
       state.title_class.fontFamily = customStyle.text.fontFamily
-        ? CHART_CONT_FAMILY_MAP[customStyle.text.fontFamily]
+        ? CHART_FONT_FAMILY_MAP[customStyle.text.fontFamily]
         : DEFAULT_TITLE_STYLE.fontFamily
       state.title_class.letterSpacing =
         (customStyle.text.letterSpace
@@ -587,9 +587,9 @@ const toolTip = computed(() => {
 
 const marginBottom = computed<string | 0>(() => {
   if (titleShow.value || trackMenu.value.length > 0 || state.title_remark.show) {
-    return 8 * scale.value + 'px'
+    return 12 * scale.value + 'px'
   }
-  return 0
+  return 12
 })
 
 const iconSize = computed<string>(() => {
@@ -686,6 +686,7 @@ const iconSize = computed<string>(() => {
         :view="view"
         :scale="scale"
         :show-position="showPosition"
+        :element="element"
         v-else-if="showChartView(ChartLibraryType.S2)"
         ref="chartComponent"
         @onChartClick="chartClick"

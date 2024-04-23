@@ -24,7 +24,9 @@ export const DEFAULT_COLOR_CASE: DeepPartial<ChartAttr> = {
     areaBorderColor: '#303133',
     gaugeStyle: 'default',
     tableBorderColor: '#E6E7E4',
-    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)'
+    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
+    zoomButtonColor: '#aaa',
+    zoomBackground: '#fff'
   },
   misc: {
     mapLineGradient: false,
@@ -65,7 +67,9 @@ export const DEFAULT_COLOR_CASE_LIGHT: DeepPartial<ChartAttr> = {
     areaBorderColor: '#303133',
     gaugeStyle: 'default',
     tableBorderColor: '#E6E7E4',
-    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)'
+    tableScrollBarColor: 'rgba(0, 0, 0, 0.15)',
+    zoomButtonColor: '#aaa',
+    zoomBackground: '#fff'
   },
   misc: {
     mapLineGradient: false,
@@ -106,7 +110,9 @@ export const DEFAULT_COLOR_CASE_DARK: DeepPartial<ChartAttr> = {
     areaBorderColor: '#EBEEF5',
     gaugeStyle: 'default',
     tableBorderColor: '#CCCCCC',
-    tableScrollBarColor: 'rgba(255, 255, 255, 0.5)'
+    tableScrollBarColor: 'rgba(255, 255, 255, 0.5)',
+    zoomButtonColor: '#fff',
+    zoomBackground: '#000'
   },
   misc: {
     mapLineGradient: false,
@@ -242,10 +248,9 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   mapLineAnimateDuration: 3,
   mapLineGradient: false,
   mapLineSourceColor: '#146C94',
-  mapLineTargetColor: '#576CBC'
-}
-export const DEFAULT_SUSPENSION = {
-  show: true
+  mapLineTargetColor: '#576CBC',
+  wordSizeRange: [8, 32],
+  wordSpacing: 6
 }
 
 export const DEFAULT_MARK = {
@@ -330,7 +335,9 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   tableHeaderFontColor: '#000000',
   tableTitleFontSize: 12,
   tableTitleHeight: 36,
-  tableHeaderSort: false
+  tableHeaderSort: false,
+  showColTooltip: false,
+  showRowTooltip: false
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFontColor: '#000000',
@@ -339,7 +346,8 @@ export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableItemFontSize: 12,
   tableItemHeight: 36,
   enableTableCrossBG: false,
-  tableItemSubBgColor: '#EEEEEE'
+  tableItemSubBgColor: '#EEEEEE',
+  showTooltip: false
 }
 export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
   show: true,
@@ -359,35 +367,36 @@ export const DEFAULT_TITLE_STYLE: ChartTextStyle = {
 
 export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
   show: true,
-  fontSize: '20',
+  fontSize: 20,
   color: '#5470C6ff',
   hPosition: 'center',
   vPosition: 'center',
   isItalic: false,
   isBolder: true,
   fontFamily: 'Microsoft YaHei',
-  letterSpace: '0',
+  letterSpace: 0,
   fontShadow: false,
 
   suffixEnable: true,
   suffix: '',
-  suffixFontSize: '14',
+  suffixFontSize: 14,
   suffixColor: '#5470C6ff',
   suffixIsItalic: false,
   suffixIsBolder: true,
   suffixFontFamily: 'Microsoft YaHei',
-  suffixLetterSpace: '0',
+  suffixLetterSpace: 0,
   suffixFontShadow: false
 }
 export const DEFAULT_INDICATOR_NAME_STYLE: ChartIndicatorNameStyle = {
   show: true,
-  fontSize: '18',
+  fontSize: 18,
   color: '#ffffffff',
   isItalic: false,
   isBolder: true,
   fontFamily: 'Microsoft YaHei',
-  letterSpace: '0',
-  fontShadow: false
+  letterSpace: 0,
+  fontShadow: false,
+  nameValueSpacing: 0
 }
 
 export const DEFAULT_TITLE_STYLE_BASE: ChartTextStyle = {
@@ -994,7 +1003,7 @@ export const CHART_FONT_FAMILY = [
   { name: '楷体', value: 'KaiTi' }
 ]
 
-export const CHART_CONT_FAMILY_MAP = {
+export const CHART_FONT_FAMILY_MAP = {
   'Microsoft YaHei': 'Microsoft YaHei',
   SimSun: 'SimSun, "Songti SC", STSong',
   SimHei: 'SimHei, Helvetica',
@@ -1364,14 +1373,16 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   radarShape: 'polygon',
   mapStyle: 'normal',
   areaBorderColor: '#EBEEF5',
-  suspension: true,
   areaBaseColor: '#ffffff',
   mapSymbolOpacity: 0.7,
   mapSymbolStrokeWidth: 2,
   mapSymbol: 'circle',
   mapSymbolSize: 20,
   radius: 80,
-  innerRadius: 60
+  innerRadius: 60,
+  showZoom: true,
+  zoomButtonColor: '#aaa',
+  zoomBackground: '#fff'
 }
 
 export const BASE_VIEW_CONFIG = {

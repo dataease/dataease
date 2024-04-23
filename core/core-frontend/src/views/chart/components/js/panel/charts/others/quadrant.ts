@@ -123,7 +123,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       return
     }
     const { colorFieldObj, sizeFieldObj, xFieldObj, yFieldObj } = this.getFieldObject(chart)
-    if (!xFieldObj.id || !yFieldObj.id) {
+    if (!xFieldObj.id || !yFieldObj.id || yFieldObj.id === xFieldObj.id) {
       return
     }
     const data: any[] = []
@@ -316,14 +316,10 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
         tooltip: false
       }
     }
-    xAxisTitle['show'] = true
-    yAxisTitle['show'] = true
-    yAxisExtTitle['show'] = true
-    tooltipAttr.seriesTooltipFormatter?.push(xAxisTitle)
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
       .reduce((pre, next) => {
-        pre[next['originName']] = next
+        pre[next['seriesId']] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
     const tooltip: ScatterOptions['tooltip'] = {
@@ -339,17 +335,21 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
         originalItems
           ?.filter(i => i.name !== xAxisTitle['originName'])
           .forEach(item => {
-            const formatter = formatterMap[item.name]
-            if (formatter) {
-              const value =
-                formatter.groupType === 'q'
-                  ? valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
-                  : item.value
-              const name = isEmpty(formatter.chartShowName)
-                ? formatter.name
-                : formatter.chartShowName
-              result.push({ color: item.color, name, value })
-            }
+            Object.keys(formatterMap).forEach(key => {
+              if (formatterMap[key]['originName'] === item.name) {
+                const formatter = formatterMap[key]
+                if (formatter) {
+                  const value =
+                    formatter.groupType === 'q'
+                      ? valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+                      : item.value
+                  const name = isEmpty(formatter.chartShowName)
+                    ? formatter.name
+                    : formatter.chartShowName
+                  result.push({ color: item.color, name, value })
+                }
+              }
+            })
           })
         return result
       }

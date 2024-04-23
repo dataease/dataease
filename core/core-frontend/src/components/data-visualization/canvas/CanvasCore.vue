@@ -216,11 +216,10 @@ watch(
 )
 
 watch(
-  () => areaData.value.components,
-  () => {
+  () => areaData.value.components.length,
+  (val, oldVal) => {
     groupAreaClickChange()
-  },
-  { deep: true }
+  }
 )
 
 const initWatermark = (waterDomId = 'editor-canvas-main') => {
@@ -1062,8 +1061,8 @@ const clearInfoBox = e => {
 const cellInit = () => {
   // 此处向下取整 保留1位小数,why: 矩阵模式计算 x,y时 会使用 style.left/cellWidth style.top/cellWidth
   // 当初始状态细微的差距(主要是减少)都会导致 x，y 减少一个矩阵大小造成偏移,
-  cellWidth.value = Math.floor((baseWidth.value + baseMarginLeft.value) * 10) / 10
-  cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 10) / 10
+  cellWidth.value = Math.floor((baseWidth.value + baseMarginLeft.value) * 1000) / 1000
+  cellHeight.value = Math.floor((baseHeight.value + baseMarginTop.value) * 1000) / 1000
 }
 
 const canvasSizeInit = () => {
@@ -1359,9 +1358,9 @@ const contextMenuShow = computed(() => {
 const markLineShow = computed(() => isMainCanvas(canvasId.value))
 
 // 点击事件导致选择区域变更
-const groupAreaClickChange = () => {
+const groupAreaClickChange = async () => {
   let groupAreaCom
-  const groupAreaHis = componentData.value.filter(ele => ele.id === 100000001)
+  const groupAreaHis = dvMainStore.componentData.filter(ele => ele.component === 'GroupArea')
   if (groupAreaHis && groupAreaHis.length > 0) {
     groupAreaCom = groupAreaHis[0]
   }
@@ -1369,7 +1368,8 @@ const groupAreaClickChange = () => {
   if (areaData.value.components.length > 1) {
     // 重新计算边界
     composeStore.calcComposeArea()
-    if (!groupAreaCom) {
+    const hist2 = dvMainStore.componentData.filter(ele => ele.component === 'GroupArea')
+    if (groupAreaHis.length === 0) {
       // 如果不存在 新建视括组件
       groupAreaCom = findNewComponent('GroupArea', 'GroupArea')
       dvMainStore.addComponent({ component: groupAreaCom, index: undefined })
@@ -1379,7 +1379,9 @@ const groupAreaClickChange = () => {
     groupAreaCom.style.width = areaData.value.style.width
     groupAreaCom.style.height = areaData.value.style.height
   } else if (groupAreaCom) {
-    dvMainStore.deleteComponentById(100000001)
+    groupAreaHis.forEach(ele => {
+      dvMainStore.deleteComponentById(ele.id)
+    })
   }
 }
 

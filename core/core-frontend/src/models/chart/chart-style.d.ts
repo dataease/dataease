@@ -32,39 +32,6 @@ declare interface ChartStyle {
   }
 }
 
-declare interface ChartIndicatorStyle {
-  show: boolean
-  fontSize: string
-  color: string
-  hPosition: 'left' | 'center' | 'right'
-  vPosition: 'top' | 'center' | 'bottom'
-  isItalic: boolean
-  isBolder: boolean
-  fontFamily: string
-  letterSpace: string
-  fontShadow: boolean
-
-  suffixEnable: boolean
-  suffix: string
-  suffixFontSize: string
-  suffixColor: string
-  suffixIsItalic: boolean
-  suffixIsBolder: boolean
-  suffixFontFamily: string
-  suffixLetterSpace: string
-  suffixFontShadow: boolean
-}
-declare interface ChartIndicatorNameStyle {
-  show: boolean
-  fontSize: string
-  color: string
-  isItalic: boolean
-  isBolder: boolean
-  fontFamily: string
-  letterSpace: string
-  fontShadow: boolean
-}
-
 /**
  * 标题样式设置
  */

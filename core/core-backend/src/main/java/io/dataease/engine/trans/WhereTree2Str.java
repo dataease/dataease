@@ -88,6 +88,9 @@ public class WhereTree2Str {
             // 给计算字段处加一个占位符，后续SQL方言转换后再替换
             originName = String.format(SqlPlaceholderConstants.CALC_FIELD_PLACEHOLDER, field.getId());
             fieldsDialect.put(originName, calcFieldExp);
+            if (isCross) {
+                originName = calcFieldExp;
+            }
         } else if (ObjectUtils.isNotEmpty(field.getExtField()) && Objects.equals(field.getExtField(), ExtFieldConstant.EXT_COPY)) {
             originName = String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), field.getDataeaseName());
         } else {
@@ -149,12 +152,12 @@ public class WhereTree2Str {
             } else {
                 // 如果是时间字段过滤，当条件是等于和不等于的时候转换成between和not between
                 if (field.getDeType() == 1) {
-                    if (StringUtils.containsIgnoreCase(whereTerm, "=")) {
+                    if (StringUtils.equalsIgnoreCase(whereTerm, " = ")) {
                         whereTerm = " BETWEEN ";
                         // 把value类似过滤组件处理，获得start time和end time
                         Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                         whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));
-                    } else if (StringUtils.containsIgnoreCase(whereTerm, "<>")) {
+                    } else if (StringUtils.equalsIgnoreCase(whereTerm, " <> ")) {
                         whereTerm = " NOT BETWEEN ";
                         Map<String, Long> stringLongMap = Utils.parseDateTimeValue(value);
                         whereValue = String.format(SQLConstants.WHERE_VALUE_BETWEEN, stringLongMap.get("startTime"), stringLongMap.get("endTime"));

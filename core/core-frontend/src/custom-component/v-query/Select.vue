@@ -1,11 +1,23 @@
 <script lang="ts" setup>
-import { ref, toRefs, PropType, onBeforeMount, shallowRef, watch, nextTick, computed } from 'vue'
+import {
+  ref,
+  toRefs,
+  PropType,
+  onBeforeMount,
+  shallowRef,
+  watch,
+  nextTick,
+  computed,
+  inject,
+  Ref
+} from 'vue'
 import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
 import { cloneDeep, debounce } from 'lodash-es'
 
 interface SelectConfig {
   selectValue: any
   defaultMapValue: any
+  mapValue: any
   defaultValue: any
   checkedFieldsMap: object
   displayType: string
@@ -53,7 +65,9 @@ const selectValue = ref()
 const loading = ref(false)
 const multiple = ref(false)
 const options = shallowRef([])
-
+const unMountSelect: Ref = inject('unmount-select')
+const releaseSelect = inject('release-unmount-select', Function, true)
+const queryDataForId = inject('query-data-for-id', Function, true)
 const setDefaultMapValue = arr => {
   const { displayId, field } = config.value
   if (!displayId || displayId === field?.id) {
@@ -81,13 +95,16 @@ const handleValueChange = () => {
     config.value.selectValue = Array.isArray(selectValue.value)
       ? [...selectValue.value]
       : selectValue.value
-    config.value.defaultMapValue = setDefaultMapValue(
+    config.value.mapValue = setDefaultMapValue(
       Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
     )
     return
   }
 
   config.value.defaultValue = value
+  config.value.mapValue = setDefaultMapValue(
+    Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+  )
   config.value.defaultMapValue = setDefaultMapValue(
     Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
   )
@@ -152,12 +169,29 @@ const handleFieldIdChange = (val: EnumValue) => {
         selectValue.value = Array.isArray(config.value.defaultValue)
           ? [...config.value.defaultValue]
           : config.value.defaultValue
+        let shouldReSearch = false
+        if (unMountSelect.value.includes(config.value.id)) {
+          const mapValue = setDefaultMapValue(
+            Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+          )
+          if (mapValue.length !== config.value.defaultMapValue.length) {
+            shouldReSearch = true
+          } else if (!mapValue.every(value => config.value.defaultMapValue.includes(value))) {
+            shouldReSearch = true
+          }
+          releaseSelect(config.value.id)
+        }
+        config.value.mapValue = setDefaultMapValue(
+          Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
+        )
+        if (shouldReSearch) {
+          queryDataForId(config.value.id)
+        }
       } else {
         selectValue.value = Array.isArray(selectValue.value)
           ? [...selectValue.value]
           : selectValue.value
       }
-      setEmptyData()
     })
 }
 
@@ -176,8 +210,8 @@ watch(
 )
 
 const setEmptyData = () => {
-  const { showEmpty, displayType } = config.value
-  if (+displayType !== 0) return
+  const { showEmpty, displayType, optionValueSource } = config.value
+  if (+displayType !== 0 || optionValueSource === 1) return
   const [s] = options.value
   if (showEmpty) {
     if (s?.value !== '_empty_$') {
@@ -268,6 +302,7 @@ watch(
 watch(
   [() => config.value.checkedFields, () => config.value.checkedFieldsMap],
   () => {
+    if (!props.isConfig) return
     debounceOptions(config.value.optionValueSource)
   },
   {
@@ -350,6 +385,7 @@ const selectStyle = computed(() => {
 })
 
 const mult = ref()
+const single = ref()
 
 onBeforeMount(() => {
   init()
@@ -357,7 +393,8 @@ onBeforeMount(() => {
 
 defineExpose({
   displayTypeChange,
-  mult
+  mult,
+  single
 })
 </script>
 
@@ -390,6 +427,7 @@ defineExpose({
     v-loading="loading"
     @change="handleValueChange"
     clearable
+    ref="single"
     :style="selectStyle"
     filterable
     radio

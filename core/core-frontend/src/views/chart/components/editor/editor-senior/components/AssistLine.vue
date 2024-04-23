@@ -54,11 +54,6 @@ const state = reactive({
   quotaFields: []
 })
 
-const axisType = [
-  { type: 'left', name: t('chart.drag_block_value_axis_left') },
-  { type: 'right', name: t('chart.drag_block_value_axis_right') }
-]
-
 watch(
   () => props.chart.senior.assistLineCfg,
   () => {
