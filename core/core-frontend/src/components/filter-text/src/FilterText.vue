@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, watch } from 'vue'
+import { nextTick, ref, watch } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { ElButton, ElDivider, ElIcon } from 'element-plus-secondary'
 import { propTypes } from '@/utils/propTypes'
@@ -29,10 +29,16 @@ const clearFilter = (index?: number) => {
   emits('clearFilter', index)
 }
 
+const clearFilterAll = () => {
+  emits('clearFilter', 'empty')
+}
+
 watch(
-  props.filterTexts,
+  () => props.filterTexts,
   () => {
-    showScroll.value = container.value && container.value.scrollWidth > container.value.offsetWidth
+    nextTick(() => {
+      showScroll.value = container.value?.scrollWidth > container.value?.offsetWidth
+    })
   },
   { deep: true }
 )
@@ -53,11 +59,28 @@ watch(
           <Icon name="icon_close_outlined"></Icon>
         </el-icon>
       </p>
+      <el-button
+        type="text"
+        class="clear-btn clear-btn-inner"
+        v-if="!showScroll"
+        @click="clearFilterAll"
+      >
+        <template #icon>
+          <Icon name="icon_delete-trash_outlined"></Icon>
+        </template>
+        清空条件</el-button
+      >
     </div>
     <el-icon @click="scrollNext" class="arrow-right arrow-filter" v-if="showScroll">
       <Icon name="icon_right_outlined"></Icon>
     </el-icon>
-    <el-button type="text" class="clear-btn" @click="clearFilter()">
+    <el-button
+      type="text"
+      class="clear-btn"
+      style="height: 24px; line-height: 24px"
+      v-if="showScroll"
+      @click="clearFilterAll"
+    >
       <template #icon>
         <Icon name="icon_delete-trash_outlined"></Icon>
       </template>
@@ -102,8 +125,9 @@ watch(
 
     i {
       position: absolute;
-      right: 2px;
+      right: 6px;
       top: 50%;
+      font-size: 12px;
       transform: translateY(-50%);
       cursor: pointer;
     }
@@ -150,6 +174,10 @@ watch(
     overflow-x: auto;
     white-space: nowrap;
     height: 24px;
+
+    .clear-btn-inner {
+      margin-top: -16px;
+    }
   }
 }
 </style>
