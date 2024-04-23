@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <dataease.version>1.18.17</dataease.version>
+        <dataease.version>1.18.18</dataease.version>
     </properties>
 
     <name>dataease</name>
