@@ -1,4 +1,4 @@
-package io.dataease.job.sechedule;
+package io.dataease.job.schedule;
 
 import io.dataease.utils.LogUtil;
 import org.quartz.*;

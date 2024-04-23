@@ -42,10 +42,17 @@
         <flatten-maven.version>1.3.0</flatten-maven.version>
         <maven.resources.version>3.3.1</maven.resources.version>
         <maven.exec.version>3.1.0</maven.exec.version>
+        <guava.version>31.1-jre</guava.version>
     </properties>
 
     <dependencyManagement>
         <dependencies>
+            <dependency>
+                <groupId>com.google.guava</groupId>
+                <artifactId>guava</artifactId>
+                <version>${guava.version}</version>
+                <scope>import</scope>
+            </dependency>
             <dependency>
                 <groupId>com.alibaba.cloud</groupId>
                 <artifactId>spring-cloud-alibaba-dependencies</artifactId>
@@ -106,6 +113,7 @@
                 <artifactId>easyexcel</artifactId>
                 <version>${easyexcel.version}</version>
             </dependency>
+
         </dependencies>
 
     </dependencyManagement>

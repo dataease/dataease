@@ -1,14 +1,13 @@
-package io.dataease.job.sechedule;
+package io.dataease.job.schedule;
 
 
 import io.dataease.datasource.manage.DatasourceSyncManage;
-import io.dataease.datasource.server.DatasourceServer;
 import io.dataease.utils.CommonBeanFactory;
 import org.quartz.JobExecutionContext;
 import org.springframework.stereotype.Component;
 
 @Component
-public class ExtractDataJob extends DeScheduleJob{
+public class ExtractDataJob extends DeScheduleJob {
     private DatasourceSyncManage datasourceSyncManage;
 
     public ExtractDataJob() {
