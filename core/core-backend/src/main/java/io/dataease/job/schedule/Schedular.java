@@ -1,10 +1,9 @@
-package io.dataease.job.sechedule;
+package io.dataease.job.schedule;
 
 import com.fit2cloud.quartz.anno.QuartzScheduled;
 import io.dataease.datasource.server.DatasourceServer;
 import jakarta.annotation.Resource;
 import org.springframework.stereotype.Component;
-
 
 
 @Component

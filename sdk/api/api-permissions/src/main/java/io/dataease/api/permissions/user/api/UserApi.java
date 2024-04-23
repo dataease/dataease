@@ -79,6 +79,10 @@ public interface UserApi {
     @PostMapping("/role/option")
     List<UserItemVO> optionForRole(@RequestBody UserRequest request);
 
+    @Operation(summary = "组织内用户")
+    @GetMapping("/org/option")
+    List<UserItemVO> optionForOrg();
+
     @Operation(summary = "角色已绑用户")
     @Parameters({
             @Parameter(name = "goPage", description = "目标页码", required = true, in = ParameterIn.PATH),

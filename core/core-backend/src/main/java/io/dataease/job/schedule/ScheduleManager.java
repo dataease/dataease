@@ -1,4 +1,4 @@
-package io.dataease.job.sechedule;
+package io.dataease.job.schedule;
 
 
 import io.dataease.exception.DEException;
@@ -7,7 +7,6 @@ import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.quartz.*;
 import org.springframework.stereotype.Component;
-
 
 import java.util.Date;
 import java.util.HashMap;
@@ -31,7 +30,7 @@ public class ScheduleManager {
      * @throws SchedulerException
      */
     public void addSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class<? extends Job> cls, int repeatIntervalTime,
-            JobDataMap jobDataMap) throws SchedulerException {
+                             JobDataMap jobDataMap) throws SchedulerException {
 
         JobBuilder jobBuilder = JobBuilder.newJob(cls).withIdentity(jobKey);
 
@@ -64,7 +63,7 @@ public class ScheduleManager {
      * @param jobDataMap
      */
     public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime,
-            Date endTime, JobDataMap jobDataMap) {
+                           Date endTime, JobDataMap jobDataMap) {
         try {
 
             LogUtil.info("addCronJob: " + triggerKey.getName() + "," + triggerKey.getGroup());
@@ -105,7 +104,7 @@ public class ScheduleManager {
     }
 
     public void addCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime,
-            Date endTime) {
+                           Date endTime) {
         addCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, null);
     }
 
@@ -315,7 +314,7 @@ public class ScheduleManager {
      * @throws SchedulerException
      */
     public void addOrUpdateSimpleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
-            int intervalTime, JobDataMap jobDataMap) throws SchedulerException {
+                                     int intervalTime, JobDataMap jobDataMap) throws SchedulerException {
 
         if (scheduler.checkExists(triggerKey)) {
             modifySimpleJobTime(triggerKey, intervalTime);
@@ -326,20 +325,20 @@ public class ScheduleManager {
     }
 
     public void addOrUpdateSingleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
-            Date date, JobDataMap jobDataMap) throws DEException {
+                                     Date date, JobDataMap jobDataMap) throws DEException {
         try {
             if (scheduler.checkExists(triggerKey)) {
                 modifySingleJobTime(triggerKey, date);
             } else {
                 addSingleJob(jobKey, triggerKey, clz, date, jobDataMap);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             DEException.throwException(e);
         }
     }
 
     public void addOrUpdateSingleJob(JobKey jobKey, TriggerKey triggerKey, Class clz,
-            Date date) throws SchedulerException {
+                                     Date date) throws SchedulerException {
         addOrUpdateSingleJob(jobKey, triggerKey, clz, date, null);
     }
 
@@ -359,7 +358,7 @@ public class ScheduleManager {
      * @throws SchedulerException
      */
     public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime,
-            Date endTime, JobDataMap jobDataMap) throws DEException {
+                                   Date endTime, JobDataMap jobDataMap) throws DEException {
 
         LogUtil.info("AddOrUpdateCronJob: " + jobKey.getName() + "," + triggerKey.getGroup());
         try {
@@ -368,13 +367,13 @@ public class ScheduleManager {
             } else {
                 addCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, jobDataMap);
             }
-        }catch (Exception e){
+        } catch (Exception e) {
             DEException.throwException(e);
         }
     }
 
     public void addOrUpdateCronJob(JobKey jobKey, TriggerKey triggerKey, Class jobClass, String cron, Date startTime,
-            Date endTime) throws SchedulerException {
+                                   Date endTime) throws SchedulerException {
         addOrUpdateCronJob(jobKey, triggerKey, jobClass, cron, startTime, endTime, null);
     }
 
