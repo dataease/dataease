@@ -48,4 +48,10 @@ public class DataFillLogService {
 
         dataFillCommitLogMapper.insertSelective(log);
     }
+
+    public void saveCommitOperations(String operate, String formId, List<String> dataIds) {
+        for (String dataId : dataIds) {
+            saveCommitOperation(operate, formId, dataId);
+        }
+    }
 }

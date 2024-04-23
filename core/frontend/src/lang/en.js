@@ -538,7 +538,7 @@ export default {
     confirm: 'Confirm'
   },
   deDataset: {
-    goto:', go to ',
+    goto: ', go to ',
     search_by_name: 'Search by name',
     new_folder: 'New Folder',
     search_fields: 'Search Fields',
@@ -680,6 +680,7 @@ export default {
     data: {
       confirm_delete: 'Confirm delete?',
       add_data: 'Add Data',
+      download_template: 'Download Template',
       insert_data: 'Insert Data',
       update_data: 'Update Data',
       delete_data: 'Delete Data',
@@ -3211,7 +3212,7 @@ export default {
     onlinemap: 'Online map',
     empty_desc: 'No map key'
   },
-  data_export:{
+  data_export: {
     export_center: 'Data Export Center',
     export_info: 'View progress and download',
     exporting: 'Exporting in the background, you can go to',

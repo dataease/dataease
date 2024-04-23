@@ -678,6 +678,7 @@ export default {
     data: {
       confirm_delete: '确认删除?',
       add_data: '添加数据',
+      download_template: '下载模板',
       insert_data: '插入数据',
       update_data: '更新数据',
       delete_data: '删除数据',
@@ -1806,7 +1807,7 @@ export default {
     sub_axis_label: '副轴标签'
   },
   dataset: {
-    goto:', 前往 ',
+    goto: ', 前往 ',
     scope_edit: '仅编辑时生效',
     scope_all: '数据集预览时全局生效',
     spend_time: '耗时',
@@ -3204,7 +3205,7 @@ export default {
     onlinemap: '在线地图',
     empty_desc: '暂无在线地图key'
   },
-  data_export:{
+  data_export: {
     export_center: '数据导出中心',
     export_info: '查看进度，进行下载',
     exporting: '后台导出中,可前往',
