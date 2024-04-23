@@ -1,5 +1,5 @@
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
-import { S2Event, S2Options, TableSheet, TableColCell, ViewMeta } from '@antv/s2'
+import { S2Event, S2Options, TableSheet, TableColCell, ViewMeta, TableDataCell } from '@antv/s2'
 import { parseJson } from '@/views/chart/components/js/util'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
 import { copyContent, getCurrentField } from '@/views/chart/components/js/panel/common/common_table'
@@ -128,6 +128,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
         }
         return new TableColCell(node, sheet, config)
       }
+      s2Options.dataCell = viewMeta => {
+        return new TableDataCell(viewMeta, viewMeta?.spreadsheet)
+      }
     }
     // tooltip
     this.configTooltip(s2Options)
@@ -167,7 +170,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
     // hover
     const { showColTooltip } = customAttr.tableHeader
     if (showColTooltip) {
-      newChart.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(newChart, event))
+      newChart.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(newChart, event, meta))
     }
     const { showTooltip } = customAttr.tableCell
     if (showTooltip) {

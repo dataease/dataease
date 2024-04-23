@@ -92,7 +92,7 @@ export abstract class AntVAbstractChartView extends AbstractChartView {
       limit: 1
     }
   }
-  selectorDesc: EditorSelectorSpec = {
+  selectorSpec: EditorSelectorSpec = {
     'misc-style-selector': {
       title: `${t('chart.size')}`
     }
