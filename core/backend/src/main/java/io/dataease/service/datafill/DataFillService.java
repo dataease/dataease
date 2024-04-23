@@ -39,10 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -344,12 +341,67 @@ public class DataFillService {
             }
         }
 
-        rowId = dataFillDataService.updateRowData(formId, rowId, data, rowId == null);
+        rowId = dataFillDataService.updateOrInsertRowData(formId, Collections.singletonList(new RowDataDatum().setId(rowId).setData(data))).get(0);
 
         task.setValueId(rowId);
         task.setFinishTime(new Date());
 
         dataFillUserTaskMapper.updateByPrimaryKeySelective(task);
+    }
+
+
+    public List<List<String>> getExcelHead(String formId) {
+        List<List<String>> list = new ArrayList<>();
+
+        DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
+        List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
+        }.getType());
+        for (ExtTableField formField : fields) {
+            String name = formField.getSettings().getName();
+            String required = formField.getSettings().isRequired() ? "\n必填" : "";
+
+            if (StringUtils.equalsIgnoreCase(formField.getType(), "dateRange")) {
+                String name1 = formField.getSettings().getName() + "(开始时间) ";
+                String name2 = formField.getSettings().getName() + "(结束时间) ";
+                String example = "\n(日期格式: yyyy/MM/dd" + (formField.getSettings().isEnableTime() ? " HH:mm:ss" : "") + ")";
+
+                List<String> head1 = List.of(name1 + required + example);
+                List<String> head2 = List.of(name2 + required + example);
+
+                list.add(head1);
+                list.add(head2);
+            } else {
+                String example = "";
+                switch (formField.getSettings().getMapping().getType()) {
+                    case datetime:
+                        example = "\n(日期格式: yyyy/MM/dd" + (formField.getSettings().isEnableTime() ? " HH:mm:ss" : "") + ")";
+                        list.add(List.of(name + required + example));
+                        break;
+                    case number:
+                        example = "\n(整形数字)";
+                        list.add(List.of(name + required + example));
+                        break;
+                    case decimal:
+                        example = "\n(小数数字)";
+                        list.add(List.of(name + required + example));
+                        break;
+                    case text:
+                    case nvarchar:
+                        if (StringUtils.equalsIgnoreCase("select", formField.getType()) || StringUtils.equalsIgnoreCase("checkbox", formField.getType())) {
+                            example = "\n(多个值使用分号\";\"分割)";
+                        } else if (StringUtils.equalsIgnoreCase("email", formField.getSettings().getInputType())) {
+                            example = "\n(邮箱格式)";
+                        } else if (StringUtils.equalsIgnoreCase("phone", formField.getSettings().getInputType())) {
+                            example = "\n(手机号格式)";
+                        }
+                        list.add(List.of(name + required + example));
+                        break;
+                }
+            }
+        }
+
+        return list;
+
     }
 
 }

@@ -1,5 +1,11 @@
 package io.dataease.service.datafill;
 
+import com.alibaba.excel.EasyExcel;
+import com.alibaba.excel.ExcelReader;
+import com.alibaba.excel.context.AnalysisContext;
+import com.alibaba.excel.event.AnalysisEventListener;
+import com.alibaba.excel.metadata.CellData;
+import com.alibaba.excel.read.metadata.ReadSheet;
 import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
 import io.dataease.auth.service.AuthUserService;
@@ -23,6 +29,7 @@ import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.sys.SysAuthService;
+import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
@@ -30,14 +37,13 @@ import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.core.env.Environment;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -240,6 +246,10 @@ public class DataFillDataService {
 
 
     public void deleteRowData(String formId, String id) throws Exception {
+        deleteRowData(formId, List.of(id));
+    }
+
+    public void deleteRowData(String formId, List<String> ids) throws Exception {
         DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
 
         if (StringUtils.equals(dataFillForm.getNodeType(), "folder")) {
@@ -262,37 +272,38 @@ public class DataFillDataService {
         }
         TableField key = tableFields.get(0);
 
-        DatasourceRequest.TableFieldWithValue pk = new DatasourceRequest.TableFieldWithValue()
-                .setValue(id) //todo 有可能是数字
-                .setFiledName(key.getFieldName())
-                .setTypeName(key.getFieldType())
-                .setType(key.getType());
+        List<DatasourceRequest.TableFieldWithValue> pks = new ArrayList<>();
+        for (String id : ids) {
+            DatasourceRequest.TableFieldWithValue pk = new DatasourceRequest.TableFieldWithValue()
+                    .setValue(id) //todo 有可能是数字
+                    .setFiledName(key.getFieldName())
+                    .setTypeName(key.getFieldType())
+                    .setType(key.getType());
+            pks.add(pk);
+        }
 
-        String deleteSql = extDDLProvider.deleteDataByIdSql(dataFillForm.getTableName(), pk);
+        String deleteSql = extDDLProvider.deleteDataByIdsSql(dataFillForm.getTableName(), pks);
 
         datasourceRequest.setQuery(deleteSql);
-        datasourceRequest.setTableFieldWithValues(List.of(pk));
+        datasourceRequest.setTableFieldWithValues(pks);
 
         JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
         jdbcProvider.execWithPreparedStatement(datasourceRequest);
 
-        dataFillLogService.saveCommitOperation(DataFillLogService.COMMIT_OPERATE_DELETE, dataFillForm.getId(), id);
+        for (String id : ids) {
+            dataFillLogService.saveCommitOperation(DataFillLogService.COMMIT_OPERATE_DELETE, dataFillForm.getId(), id);
+        }
 
     }
 
-    public String updateRowData(String formId, String rowId, Map<String, Object> data, boolean insert) throws Exception {
+    public List<String> updateOrInsertRowData(String formId, List<RowDataDatum> datumList) throws Exception {
         if (!CommonBeanFactory.getBean(AuthUserService.class).pluginLoaded()) {
             DataEaseException.throwException("invalid");
         }
 
-        if (rowId == null) {
-            insert = true;
-            //先默认主键是uuid
-            rowId = UUIDUtil.getUUIDAsString();
-        }
-
         DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
 
+        List<String> results = new ArrayList<>();
         List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
         }.getType());
 
@@ -308,27 +319,214 @@ public class DataFillDataService {
 
         List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
 
+        //实际的表内字段
         Map<String, TableField> tableFieldMap = new HashMap<>();
-
-        List<DatasourceRequest.TableFieldWithValue> searchFields = new ArrayList<>();
-        List<DatasourceRequest.TableFieldWithValue> uniqueFields = new ArrayList<>();
-        Map<String, ExtTableField> extTableFields = new HashMap<>();
-
-        DatasourceRequest.TableFieldWithValue pk = null;
+        DatasourceRequest.TableFieldWithValue pkField = null;
         for (TableField tableField : tableFields) {
             if (tableField.isPrimaryKey()) {
-                pk = new DatasourceRequest.TableFieldWithValue()
-                        .setValue(rowId)
+                pkField = new DatasourceRequest.TableFieldWithValue()
                         .setFiledName(tableField.getFieldName())
                         .setTypeName(tableField.getFieldType())
                         .setType(tableField.getType());
-                if (insert) {
-                    searchFields.add(pk);
-                }
                 continue;
             }
             tableFieldMap.put(tableField.getFieldName(), tableField);
         }
+
+        List<RowDataDatum> insertList = new ArrayList<>();
+        List<RowDataDatum> updateList = new ArrayList<>();
+
+        Map<String, ExtTableField> extTableFields = new HashMap<>();
+
+        Map<String, List<String>> uniqueMap = new HashMap<>();
+
+        for (RowDataDatum row : datumList) {
+            String rowId = row.getId();
+            if (rowId == null) {
+                //默认主键是uuid
+                rowId = UUIDUtil.getUUIDAsString();
+
+                //再设置回去
+                row.setInsert(true);
+                row.setId(rowId);
+            }
+            if (row.isInsert()) {
+                insertList.add(row);
+            } else {
+                updateList.add(row);
+            }
+
+            Map<String, Object> data = row.getData();
+            for (ExtTableField field : fields) {
+                String name = field.getSettings().getMapping().getColumnName();
+
+                if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                    String name1 = field.getSettings().getMapping().getColumnName1();
+                    String name2 = field.getSettings().getMapping().getColumnName2();
+                    if (tableFieldMap.containsKey(name1)) {
+                        extTableFields.put(name1, field);
+                    }
+                    if (tableFieldMap.containsKey(name2)) {
+                        extTableFields.put(name2, field);
+                    }
+                } else {
+                    extTableFields.put(name, field);
+                }
+
+                if (StringUtils.equalsIgnoreCase(field.getType(), "input")) { //input框支持unique
+                    if (field.getSettings().isUnique() && data.get(name) != null) {
+                        uniqueMap.putIfAbsent(name, new ArrayList<>());
+                        if (uniqueMap.get(name).contains(data.get(name).toString())) {
+                            //提前判断录入的数据有没有unique字段重复的
+                            DataEaseException.throwException(extTableFields.get(name).getSettings().getName() + " 值不能重复");
+                        } else {
+                            uniqueMap.get(name).add(data.get(name).toString());
+                        }
+                    }
+                }
+            }
+        }
+
+        //进入数据库查询是否有重复
+        for (RowDataDatum row : datumList) {
+            boolean insert = row.isInsert();
+            String rowId = row.getId();
+            DatasourceRequest.TableFieldWithValue pk = gson.fromJson(gson.toJson(pkField), DatasourceRequest.TableFieldWithValue.class).setValue(rowId);
+            Map<String, Object> data = row.getData();
+            //一条条去判断
+            for (ExtTableField field : fields) {
+                String name = field.getSettings().getMapping().getColumnName();
+                if (StringUtils.equalsIgnoreCase(field.getType(), "input")) { //input框支持unique
+                    if (field.getSettings().isUnique() && data.get(name) != null) {
+                        DatasourceRequest.TableFieldWithValue uniqueField = new DatasourceRequest.TableFieldWithValue()
+                                .setValue(data.get(name))
+                                .setFiledName(name)
+                                .setTypeName(tableFieldMap.get(name).getFieldType())
+                                .setType(tableFieldMap.get(name).getType());
+
+                        String sql = extDDLProvider.checkUniqueValueSql(dataFillForm.getTableName(), uniqueField, insert ? null : pk);
+                        datasourceRequest.setQuery(sql);
+                        List<DatasourceRequest.TableFieldWithValue> fs = new ArrayList<>();
+                        fs.add(uniqueField);
+                        if (!insert) {
+                            fs.add(pk);
+                        }
+                        datasourceRequest.setTableFieldWithValues(fs);
+                        List<String[]> countData = datasourceProvider.getData(datasourceRequest);
+                        long count = NumberUtils.toLong(countData.get(0)[0]);
+
+                        if (count > 0) {
+                            DataEaseException.throwException(extTableFields.get(uniqueField.getFiledName()).getSettings().getName() + " 值不能重复");
+                        }
+
+                    }
+                }
+            }
+        }
+
+        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+
+        for (RowDataDatum rowDataDatum : updateList) {
+            String rowId = rowDataDatum.getId();
+            Map<String, Object> data = rowDataDatum.getData();
+
+            //只能一个个更新
+            String result = updateRowData(rowId, data, pkField, fields, tableFieldMap, dataFillForm, datasourceRequest, jdbcProvider, extDDLProvider);
+            results.add(result);
+        }
+
+        List<String> result = insertRowData(insertList, pkField, fields, tableFieldMap, dataFillForm, datasourceRequest, jdbcProvider, extDDLProvider);
+
+        if (result != null) {
+            results.addAll(result);
+        }
+        return results;
+    }
+
+    private List<String> insertRowData(List<RowDataDatum> insertList, DatasourceRequest.TableFieldWithValue pkField, List<ExtTableField> fields, Map<String, TableField> tableFieldMap, DataFillFormWithBLOBs dataFillForm, DatasourceRequest datasourceRequest, JdbcProvider jdbcProvider, ExtDDLProvider extDDLProvider) throws Exception {
+        if (CollectionUtils.isEmpty(insertList)) {
+            //批量插入
+            return null;
+        }
+        List<DatasourceRequest.TableFieldWithValue> baseSearchFields = null;
+        List<DatasourceRequest.TableFieldWithValue> allSearchFields = new ArrayList<>();
+
+        List<String> ids = new ArrayList<>();
+        for (RowDataDatum row : insertList) {
+            String rowId = row.getId();
+            ids.add(rowId);
+            Map<String, Object> data = row.getData();
+
+            List<DatasourceRequest.TableFieldWithValue> searchFields = new ArrayList<>();
+
+            DatasourceRequest.TableFieldWithValue pk = gson.fromJson(gson.toJson(pkField), DatasourceRequest.TableFieldWithValue.class).setValue(rowId);
+            searchFields.add(pk);
+
+            for (ExtTableField field : fields) {
+                if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                    String name1 = field.getSettings().getMapping().getColumnName1();
+                    String name2 = field.getSettings().getMapping().getColumnName2();
+                    if (tableFieldMap.containsKey(name1)) {
+                        DatasourceRequest.TableFieldWithValue value1 = new DatasourceRequest.TableFieldWithValue()
+                                .setValue(data.get(name1) != null ? new java.sql.Date((long) data.get(name1)) : null)
+                                .setFiledName(name1)
+                                .setTypeName(tableFieldMap.get(name1).getFieldType())
+                                .setType(tableFieldMap.get(name1).getType());
+                        searchFields.add(value1);
+
+                    }
+                    if (tableFieldMap.containsKey(name2)) {
+                        DatasourceRequest.TableFieldWithValue value2 = new DatasourceRequest.TableFieldWithValue()
+                                .setValue(data.get(name2) != null ? new java.sql.Date((long) data.get(name2)) : null)
+                                .setFiledName(name2)
+                                .setTypeName(tableFieldMap.get(name2).getFieldType())
+                                .setType(tableFieldMap.get(name2).getType());
+                        searchFields.add(value2);
+
+                    }
+                } else {
+                    String name = field.getSettings().getMapping().getColumnName();
+                    if (tableFieldMap.containsKey(name)) {
+                        DatasourceRequest.TableFieldWithValue value = new DatasourceRequest.TableFieldWithValue()
+                                .setValue(data.get(name))
+                                .setFiledName(name)
+                                .setTypeName(tableFieldMap.get(name).getFieldType())
+                                .setType(tableFieldMap.get(name).getType());
+
+                        if (StringUtils.equalsIgnoreCase(field.getType(), "date")) {
+                            value.setValue(data.get(name) != null ? new java.sql.Date((long) data.get(name)) : null);
+                        }
+                        searchFields.add(value);
+
+                    }
+                }
+            }
+
+            if (baseSearchFields == null) {
+                baseSearchFields = searchFields;
+            }
+            allSearchFields.addAll(searchFields);
+
+        }
+
+        String sql = extDDLProvider.insertDataSql(dataFillForm.getTableName(), baseSearchFields, insertList.size());
+        datasourceRequest.setQuery(sql);
+
+
+        datasourceRequest.setTableFieldWithValues(allSearchFields);
+
+
+        int result = jdbcProvider.execWithPreparedStatement(datasourceRequest);
+
+        dataFillLogService.saveCommitOperations(DataFillLogService.COMMIT_OPERATE_INSERT, dataFillForm.getId(), ids);
+
+        return ids;
+    }
+
+    private String updateRowData(String rowId, Map<String, Object> data, DatasourceRequest.TableFieldWithValue pkField, List<ExtTableField> fields, Map<String, TableField> tableFieldMap, DataFillFormWithBLOBs dataFillForm, DatasourceRequest datasourceRequest, JdbcProvider jdbcProvider, ExtDDLProvider extDDLProvider) throws Exception {
+        List<DatasourceRequest.TableFieldWithValue> searchFields = new ArrayList<>();
+
+        DatasourceRequest.TableFieldWithValue pk = gson.fromJson(gson.toJson(pkField), DatasourceRequest.TableFieldWithValue.class).setValue(rowId);
 
         for (ExtTableField field : fields) {
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
@@ -341,7 +539,6 @@ public class DataFillDataService {
                             .setTypeName(tableFieldMap.get(name1).getFieldType())
                             .setType(tableFieldMap.get(name1).getType());
                     searchFields.add(value1);
-                    extTableFields.put(name1, field);
                 }
                 if (tableFieldMap.containsKey(name2)) {
                     DatasourceRequest.TableFieldWithValue value2 = new DatasourceRequest.TableFieldWithValue()
@@ -350,7 +547,6 @@ public class DataFillDataService {
                             .setTypeName(tableFieldMap.get(name2).getFieldType())
                             .setType(tableFieldMap.get(name2).getType());
                     searchFields.add(value2);
-                    extTableFields.put(name2, field);
                 }
             } else {
                 String name = field.getSettings().getMapping().getColumnName();
@@ -366,67 +562,214 @@ public class DataFillDataService {
                     }
                     searchFields.add(value);
 
-                    extTableFields.put(name, field);
-
-                    // 关于unique的字段判断
-                    if (field.getSettings().isUnique() && data.get(name) != null) {
-
-                        uniqueFields.add(value);
-                    }
                 }
             }
         }
 
-        if (CollectionUtils.isNotEmpty(uniqueFields)) {
-            for (DatasourceRequest.TableFieldWithValue uniqueField : uniqueFields) {
-
-                String sql = extDDLProvider.checkUniqueValueSql(dataFillForm.getTableName(), uniqueField, insert ? null : pk);
-                datasourceRequest.setQuery(sql);
-                List<DatasourceRequest.TableFieldWithValue> fs = new ArrayList<>();
-                fs.add(uniqueField);
-                if (!insert) {
-                    fs.add(pk);
-                }
-                datasourceRequest.setTableFieldWithValues(fs);
-                List<String[]> countData = datasourceProvider.getData(datasourceRequest);
-                long count = NumberUtils.toLong(countData.get(0)[0]);
-
-                if (count > 0) {
-                    DataEaseException.throwException(extTableFields.get(uniqueField.getFiledName()).getSettings().getName() + " 值不能重复");
-                }
-            }
-        }
-
-        String sql = insert ?
-                extDDLProvider.insertDataSql(dataFillForm.getTableName(), searchFields) :
-                extDDLProvider.updateDataByIdSql(dataFillForm.getTableName(), searchFields, pk);
+        String sql = extDDLProvider.updateDataByIdSql(dataFillForm.getTableName(), searchFields, pk);
         datasourceRequest.setQuery(sql);
 
         boolean skip = false;
-        if (!insert && CollectionUtils.isEmpty(searchFields)) {
+        if (CollectionUtils.isEmpty(searchFields)) {
             //DataEaseException.throwException("没有修改");
             skip = true;
         }
 
-        JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
-
         // 主键在最后传进去
-        if (!insert) {
-            searchFields.add(pk);
-        }
+        searchFields.add(pk);
         datasourceRequest.setTableFieldWithValues(searchFields);
 
         if (!skip) {
             int result = jdbcProvider.execWithPreparedStatement(datasourceRequest);
         }
 
-        if (insert) {
-            dataFillLogService.saveCommitOperation(DataFillLogService.COMMIT_OPERATE_INSERT, dataFillForm.getId(), rowId);
-        } else {
-            dataFillLogService.saveCommitOperation(DataFillLogService.COMMIT_OPERATE_UPDATE, dataFillForm.getId(), rowId);
-        }
+        dataFillLogService.saveCommitOperation(DataFillLogService.COMMIT_OPERATE_UPDATE, dataFillForm.getId(), rowId);
 
         return rowId;
+    }
+
+    @Data
+    public static class ExcelDataListener extends AnalysisEventListener<Map<Integer, String>> {
+        private List<List<String>> data = new ArrayList<>();
+        private List<String> header = new ArrayList<>();
+
+
+        @Override
+        public void invokeHead(Map<Integer, CellData> headMap, AnalysisContext context) {
+            super.invokeHead(headMap, context);
+            for (Integer key : headMap.keySet()) {
+                CellData cellData = headMap.get(key);
+                String value = cellData.getStringValue();
+                if (StringUtils.isEmpty(value)) {
+                    value = "none_" + key;
+                }
+                header.add(value);
+            }
+        }
+
+        @Override
+        public void invoke(Map<Integer, String> dataMap, AnalysisContext context) {
+            List<String> line = new ArrayList<>();
+            for (Integer key : dataMap.keySet()) {
+                String value = dataMap.get(key);
+                if (StringUtils.isEmpty(value)) {
+                    value = "";
+                }
+                line.add(value);
+            }
+            ;
+            int size = line.size();
+            if (size < header.size()) {
+                for (int i = 0; i < header.size() - size; i++) {
+                    line.add("");
+                }
+            }
+            data.add(line);
+        }
+
+        @Override
+        public void doAfterAllAnalysed(AnalysisContext analysisContext) {
+        }
+
+        public void clear() {
+            data.clear();
+            header.clear();
+        }
+    }
+
+    public void importExcelData(MultipartFile file, String formId) throws Exception {
+        if (!CommonBeanFactory.getBean(AuthUserService.class).pluginLoaded()) {
+            DataEaseException.throwException("invalid");
+        }
+
+        DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
+
+        List<ExtTableField> formFields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
+        }.getType());
+
+        List<ExtTableField> fields = new ArrayList<>();
+        for (ExtTableField field : formFields) {
+            if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                ExtTableField start = gson.fromJson(gson.toJson(field), ExtTableField.class);
+                start.getSettings().getMapping().setColumnName(start.getSettings().getMapping().getColumnName1());
+                fields.add(start);
+
+                ExtTableField end = gson.fromJson(gson.toJson(field), ExtTableField.class);
+                end.getSettings().getMapping().setColumnName(end.getSettings().getMapping().getColumnName2());
+                fields.add(end);
+            } else {
+                fields.add(field);
+            }
+        }
+
+        ExcelDataListener listener = new ExcelDataListener();
+        ExcelReader excelReader = EasyExcel.read(file.getInputStream(), listener).build();
+        List<ReadSheet> sheets = excelReader.excelExecutor().sheetList();
+        excelReader.read(sheets.get(0));
+
+        List<String> excelHeaders = listener.getHeader();
+        List<List<String>> excelData = listener.getData();
+
+        if (excelHeaders.size() != fields.size()) {
+            DataEaseException.throwException("模板字段个数不匹配");
+        }
+
+        List<RowDataDatum> dataList = new ArrayList<>();
+        for (List<String> excelDatum : excelData) {
+            Map<String, Object> rowData = new HashMap<>();
+            for (int i = 0; i < fields.size(); i++) {
+                ExtTableField field = fields.get(i);
+
+                String excelRowData = null;
+                if (i < excelDatum.size()) {
+                    excelRowData = excelDatum.get(i);
+                }
+                if (StringUtils.isBlank(excelRowData)) { //处理必填，这里如果是字符串格式的，强制改成空字符串防止报错，其他类型都直接报错
+                    if (field.getSettings().isRequired()) {
+                        if (field.getSettings().getMapping().getType().equals(ExtTableField.BaseType.nvarchar) ||
+                                field.getSettings().getMapping().getType().equals(ExtTableField.BaseType.text)) {
+                            excelRowData = StringUtils.EMPTY;
+                        } else {
+                            DataEaseException.throwException(field.getSettings().getName() + "不能为空");
+                        }
+                    }
+                }
+                if (excelRowData == null) {
+                    continue;
+                }
+                try {
+                    switch (field.getSettings().getMapping().getType()) {
+                        case decimal:
+                            BigDecimal decimalValue = new BigDecimal(excelRowData);
+                            rowData.put(field.getSettings().getMapping().getColumnName(), decimalValue);
+                            break;
+                        case number:
+                            BigDecimal longValue = new BigDecimal(excelRowData);
+                            rowData.put(field.getSettings().getMapping().getColumnName(), longValue.longValue());
+                            break;
+                        case datetime:
+                            Date date = getDate(field, excelRowData);
+                            rowData.put(field.getSettings().getMapping().getColumnName(), date.getTime());
+                            break;
+                        default:
+                            if (StringUtils.equalsIgnoreCase(field.getType(), "checkbox") ||
+                                    StringUtils.equalsIgnoreCase(field.getType(), "select") && field.getSettings().isMultiple()) {
+                                List<String> list = new ArrayList<>();
+                                String[] strArr = excelRowData.split(",");
+                                for (String str : strArr) {
+                                    if (StringUtils.isNotBlank(str)) {
+                                        list.add(str);
+                                    }
+                                }
+                                if (field.getSettings().isRequired()) {
+                                    if (CollectionUtils.isEmpty(list)) {
+                                        DataEaseException.throwException(field.getSettings().getName() + "不能为空");
+                                    }
+                                }
+                                rowData.put(field.getSettings().getMapping().getColumnName(), gson.toJson(list));
+                            } else {
+                                rowData.put(field.getSettings().getMapping().getColumnName(), excelRowData);
+                            }
+                    }
+
+                } catch (DataEaseException e) {
+                    DataEaseException.throwException(e.getMessage());
+                } catch (Exception e) {
+                    DataEaseException.throwException(field.getSettings().getName() + "格式错误");
+                }
+            }
+
+            if (rowData.isEmpty()) {
+                continue;
+            }
+
+            dataList.add(new RowDataDatum().setData(rowData));
+        }
+
+        if (CollectionUtils.isNotEmpty(dataList)) {
+
+            updateOrInsertRowData(formId, dataList);
+
+        }
+
+    }
+
+    private static Date getDate(ExtTableField field, String excelRowData) throws ParseException {
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //默认会拿到这种格式的
+        if (field.getSettings().isEnableTime()) {
+            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        }
+        Date date = null;
+        try {
+            date = sdf.parse(excelRowData);
+        } catch (ParseException e) {
+            sdf = new SimpleDateFormat("yyyy/MM/dd"); //以防万一也加上这种
+            if (field.getSettings().isEnableTime()) {
+                sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            }
+            date = sdf.parse(excelRowData);
+        }
+        return date;
     }
 
 }

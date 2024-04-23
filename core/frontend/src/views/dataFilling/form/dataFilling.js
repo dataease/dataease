@@ -55,6 +55,14 @@ export function deleteData(formId, rowId) {
     loading: true
   })
 }
+export function downloadTemplate(formId) {
+  return request({
+    url: 'dataFilling/form/' + formId + '/excel/template',
+    method: 'post',
+    loading: true,
+    responseType: 'blob'
+  })
+}
 export function getWithPrivileges(id) {
   return request({
     url: 'dataFilling/manage/form/' + id,

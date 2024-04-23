@@ -538,7 +538,7 @@ export default {
     confirm: '確 定'
   },
   deDataset: {
-    goto:', 前往 ',
+    goto: ', 前往 ',
     search_by_name: '通過名稱搜索',
     new_folder: '新建資料夾',
     search_fields: '搜索欄位',
@@ -680,6 +680,7 @@ export default {
     data: {
       confirm_delete: '確認刪除?',
       add_data: '添加數據',
+      download_template: '下載模板',
       insert_data: '插入數據',
       update_data: '更新數據',
       delete_data: '刪除數據',
@@ -3205,7 +3206,7 @@ export default {
     onlinemap: '在線地圖',
     empty_desc: '暫無在線地圖key'
   },
-  data_export:{
+  data_export: {
     export_center: '資料匯出中心',
     export_info: '查看進度，進行下載',
     exporting: '後台匯出中,可前往',

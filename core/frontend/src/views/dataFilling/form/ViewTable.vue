@@ -101,12 +101,38 @@
     >
 
       <template>
-        <div style="margin-bottom: 12px; height: 32px;">
+        <div style="margin-bottom: 12px; height: 32px; display: flex; flex-direction: row;">
           <el-button
             icon="el-icon-plus"
             size="small"
             @click="addData"
           >{{ $t('data_fill.data.add_data') }}</el-button>
+          <el-button
+            icon="el-icon-download"
+            size="small"
+            @click="downloadTemplate"
+          >{{ $t('data_fill.data.download_template') }}</el-button>
+          <el-upload
+            :action="`${baseUrl}dataFilling/form/${param.id}/excel/upload`"
+            :multiple="false"
+            :show-file-list="false"
+            :file-list="fileList"
+            :data="{}"
+            accept=".xlsx"
+            :before-upload="beforeUpload"
+            :on-success="uploadSuccess"
+            :on-error="uploadFail"
+            name="file"
+            :headers="headers"
+          >
+            <el-button
+              style="margin-left: 10px"
+              icon="el-icon-upload2"
+              size="small"
+              :disabled="uploading"
+            >{{ $t('deDataset.upload_data') }}
+            </el-button>
+          </el-upload>
         </div>
         <div style="flex: 1">
           <grid-table
@@ -483,7 +509,7 @@
 <script>
 import {
   deleteData,
-  deleteFormTasks, disableFormTasks, enableFormTasks,
+  deleteFormTasks, disableFormTasks, downloadTemplate, enableFormTasks,
   searchCommitLogs,
   searchFormTasks,
   searchTable
@@ -492,6 +518,14 @@ import GridTable from '@/components/gridTable/index.vue'
 import { forEach, forIn, includes, filter, map } from 'lodash-es'
 import EditFormData from '@/views/dataFilling/form/EditFormData.vue'
 import CreateTask from '@/views/dataFilling/form/CreateTask.vue'
+import i18n from '@/lang'
+import { getToken, setToken } from '@/utils/auth'
+import { $alert } from '@/utils/message'
+import store from '@/store'
+import Config from '@/settings'
+
+const token = getToken()
+const RefreshTokenKey = Config.RefreshTokenKey
 
 export default {
   name: 'ViewTable',
@@ -509,6 +543,13 @@ export default {
   },
   data() {
     return {
+      baseUrl: process.env.VUE_APP_BASE_API,
+      headers: {
+        Authorization: token,
+        'Accept-Language': i18n.locale.replace('_', '-')
+      },
+      fileList: [],
+      uploading: false,
       operateName: '',
       taskName: '',
       showDrawer: false,
@@ -620,6 +661,52 @@ export default {
     this.initTable(this.param.id)
   },
   methods: {
+    beforeUpload() {
+      this.uploading = true
+    },
+    uploadFail(response, file, fileList) {
+      let myError = response.toString()
+      myError = myError.replace('Error: ', '')
+
+      if (myError.indexOf('AuthenticationException') >= 0) {
+        const message = i18n.t('login.tokenError')
+        $alert(
+          message,
+          () => {
+            store.dispatch('user/logout').then(() => {
+              location.reload()
+            })
+          },
+          {
+            confirmButtonText: i18n.t('login.re_login'),
+            showClose: false
+          }
+        )
+        return
+      }
+
+      const errorMessage = JSON.parse(myError).message
+
+      this.fileList = []
+      this.uploading = false
+      this.$message({
+        type: 'error',
+        message: errorMessage,
+        showClose: true
+      })
+    },
+    uploadSuccess(response, file, fileList) {
+      this.uploading = false
+      this.fileList = fileList
+
+      if (response.headers && response.headers[RefreshTokenKey]) {
+        const refreshToken = response.headers[RefreshTokenKey]
+        setToken(refreshToken)
+        store.dispatch('user/refreshToken', refreshToken)
+      }
+
+      this.initTable()
+    },
     entryKey(type) {
       if (type === 'record') {
         this.$refs.search2.focus()
@@ -818,6 +905,18 @@ export default {
       this.showDrawer = true
       this.drawerReadonly = false
       this.createTitle = this.$t('data_fill.data.add_data')
+    },
+    downloadTemplate() {
+      downloadTemplate(this.param.id).then(res => {
+        const blob = new Blob([res])
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = 'test.xlsx' // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
     },
     deleteRow(id) {
       this.$confirm(
