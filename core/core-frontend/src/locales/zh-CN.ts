@@ -2163,6 +2163,16 @@ export default {
     platformOid: '第三方平台用户组织',
     platformRid: '第三方平台用户角色'
   },
+  setting_email: {
+    title: '邮件设置',
+    host: 'SMTP主机',
+    port: 'SMTP端口',
+    account: 'SMTP账号',
+    pwd: 'SMTP密码',
+    reci: '测试收件人',
+    ssl: 'SSL',
+    tsl: 'TSL'
+  },
   template_manage: {
     name_already_exists_type: '分类名称已存在',
     the_same_category: '同一分类下，该模板名称已存在'
