@@ -221,7 +221,22 @@ const closeSqlNode = () => {
     !state.nodeList[0].children?.length &&
     changeSqlId.value.length === 1
   ) {
-    editUnion.value = true
+    currentNode.value = state.nodeList[0]
+    const { datasourceId, id, info, tableName } = currentNode.value
+    getTableField({
+      datasourceId,
+      id,
+      info,
+      tableName,
+      type: 'sql'
+    }).then(res => {
+      nodeField.value = res as unknown as Field[]
+      nodeField.value.forEach(ele => {
+        ele.checked = true
+      })
+      state.nodeList[0].currentDsFields = cloneDeep(res)
+      editUnion.value = true
+    })
     changeSqlId.value = []
   }
   if (state.visualNode?.confirm) {
