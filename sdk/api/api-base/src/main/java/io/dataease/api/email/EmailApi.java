@@ -1,7 +1,9 @@
 package io.dataease.api.email;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.api.email.dto.EmailDTO;
 import io.dataease.api.system.vo.SettingItemVO;
+import io.swagger.v3.oas.annotations.Hidden;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -25,4 +27,8 @@ public interface EmailApi {
     @Operation(summary = "校验邮件设置")
     @PostMapping("/setting/validate")
     void validate(@RequestBody List<SettingItemVO> settingItemVOS);
+
+    @PostMapping("/send")
+    @Hidden
+    void send(@RequestBody EmailDTO dto);
 }

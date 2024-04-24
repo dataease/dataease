@@ -103,6 +103,17 @@
                     <version>${selenium-java.version}</version>
                 </dependency>
                 <dependency>
+                    <groupId>org.eclipse.angus</groupId>
+                    <artifactId>angus-mail</artifactId>
+                    <version>${angus-mail.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.eclipse.angus</groupId>
+                            <artifactId>angus-activation</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                 </dependency>
