@@ -59,7 +59,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     const { container, chart, chartObj, action } = drawOption
     const containerDom = document.getElementById(container)
 
-    const { xAxis: columnFields, xAxisExt: rowFields, yAxis: valueFields } = chart
+    const { xAxisExt: columnFields, xAxis: rowFields, yAxis: valueFields } = chart
     const [c, r, v] = [columnFields, rowFields, valueFields].map(arr =>
       arr.map(i => i.dataeaseName)
     )
