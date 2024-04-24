@@ -1383,7 +1383,10 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   showZoom: true,
   zoomButtonColor: '#aaa',
   zoomBackground: '#fff',
-  tableLayoutMode: 'grid'
+  tableLayoutMode: 'grid',
+  calcTopN: false,
+  topN: 5,
+  topNLabel: '其他'
 }
 
 export const BASE_VIEW_CONFIG = {
