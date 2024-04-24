@@ -26,6 +26,7 @@
     <el-footer class="de-footer">
       <el-button @click="closeSave">{{ $t("commons.cancel") }}</el-button>
       <el-button
+        :disabled="targetGroup.id === undefined"
         type="primary"
         @click="doSave"
       >{{ $t("commons.confirm") }}
