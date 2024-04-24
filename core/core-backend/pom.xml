@@ -276,6 +276,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
+                    <finalName>CoreApplication</finalName>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>
@@ -283,10 +284,6 @@
                         <goals>
                             <goal>repackage</goal>
                         </goals>
-                        <!--<configuration>
-                            <finalName>CoreApplication</finalName>
-                            <layout>ZIP</layout>
-                        </configuration>-->
                     </execution>
                 </executions>
             </plugin>
