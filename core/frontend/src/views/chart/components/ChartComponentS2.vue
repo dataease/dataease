@@ -104,6 +104,7 @@ import { mapState } from 'vuex'
 import DePagination from '@/components/deCustomCm/pagination.js'
 import bus from '@/utils/bus'
 import { getRange } from '@/utils/timeUitils'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'ChartComponentS2',
@@ -327,15 +328,6 @@ export default {
         pre[next['dataeaseName']] = next['id']
         return pre
       }, {})
-      const nameTypeMap = this.chart.data.fields.reduce((pre, next) => {
-        pre[next['dataeaseName']] = next['deType']
-        return pre
-      }, {})
-
-      const nameDateStyleMap = this.chart.data.fields.reduce((pre, next) => {
-        pre[next['dataeaseName']] = next['dateStyle']
-        return pre
-      }, {})
 
       let rowData
       if (this.chart.type === 'table-pivot') {
@@ -347,12 +339,7 @@ export default {
       const dimensionList = []
       for (const key in rowData) {
         if (nameIdMap[key]) {
-          let value = rowData[key]
-          // deType === 1 表示是时间类型
-          if (nameTypeMap[key] === 1) {
-            value = getRange(value, nameDateStyleMap[key])
-          }
-          dimensionList.push({ id: nameIdMap[key], value: value })
+          dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
         }
       }
       this.antVActionPost(dimensionList, nameIdMap[meta.valueField] || 'null', param)
@@ -422,6 +409,23 @@ export default {
       }, 100)
     },
     trackClick(trackAction) {
+      const idTypeMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['id']] = next['deType']
+        return pre
+      }, {})
+
+      const idDateStyleMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['id']] = next['dateStyle']
+        return pre
+      }, {})
+
+      const dimensionListAdaptor = deepCopy(this.pointParam.data.dimensionList)
+      dimensionListAdaptor.forEach(dimension => {
+        // deType === 1 表示是时间类型
+        if (idTypeMap[dimension.id] === 1) {
+          dimension.value = getRange(dimension.value, idDateStyleMap[dimension.id])
+        }
+      })
       const param = this.pointParam
       if (!param || !param.data || !param.data.dimensionList) {
         // 地图提示没有关联字段 其他没有维度信息的 直接返回
@@ -434,14 +438,14 @@ export default {
         option: 'linkage',
         name: this.pointParam.data.name,
         viewId: this.chart.id,
-        dimensionList: this.pointParam.data.dimensionList,
+        dimensionList: dimensionListAdaptor,
         quotaList: this.pointParam.data.quotaList
       }
       const jumpParam = {
         option: 'jump',
         name: this.pointParam.data.name,
         viewId: this.chart.id,
-        dimensionList: this.pointParam.data.dimensionList,
+        dimensionList: dimensionListAdaptor,
         quotaList: this.pointParam.data.quotaList,
         sourceType: this.pointParam.data.sourceType
       }

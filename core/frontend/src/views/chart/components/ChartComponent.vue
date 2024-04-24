@@ -57,6 +57,8 @@ import { reverseColor } from '../chart/common/common'
 import MapController from './map/MapController.vue'
 import { mapState } from 'vuex'
 import bus from '@/utils/bus'
+import { deepCopy } from '@/components/canvas/utils/utils'
+import { getRange } from '@/utils/timeUitils'
 
 export default {
   name: 'ChartComponent',
@@ -538,6 +540,24 @@ export default {
       }
     },
     trackClick(trackAction) {
+      const idTypeMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['id']] = next['deType']
+        return pre
+      }, {})
+
+      const idDateStyleMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['id']] = next['dateStyle']
+        return pre
+      }, {})
+
+      const dimensionListAdaptor = deepCopy(this.pointParam.data.dimensionList)
+      dimensionListAdaptor.forEach(dimension => {
+        // deType === 1 表示是时间类型
+        if (idTypeMap[dimension.id] === 1) {
+          dimension.value = getRange(dimension.value, idDateStyleMap[dimension.id])
+        }
+      })
+
       const param = this.pointParam
       if (!param || !param.data || !param.data.dimensionList) {
         return
@@ -548,14 +568,14 @@ export default {
         option: 'linkage',
         name: this.pointParam.data.name,
         viewId: this.chart.id,
-        dimensionList: this.pointParam.data.dimensionList,
+        dimensionList: dimensionListAdaptor,
         quotaList: quotaList
       }
       const jumpParam = {
         option: 'jump',
         name: this.pointParam.data.name,
         viewId: this.chart.id,
-        dimensionList: this.pointParam.data.dimensionList,
+        dimensionList: dimensionListAdaptor,
         quotaList: quotaList
       }
       jumpParam.quotaList[0]['value'] = this.pointParam.data.value
