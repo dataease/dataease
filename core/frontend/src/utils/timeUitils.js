@@ -22,6 +22,19 @@ export const getRange = (selectValue, timeGranularity) => {
   }
 }
 
+export const getTimeBegin = (selectValue, timeGranularity) => {
+  switch (timeGranularity) {
+    case 'year':
+      return getYearEnd(selectValue)
+    case 'month':
+      return getMonthEnd(selectValue)
+    case 'date':
+      return getDayEnd(selectValue)
+    default:
+      return selectValue
+  }
+}
+
 const getYearEnd = timestamp => {
   const time = new Date(timestamp)
   return [
@@ -48,5 +61,22 @@ const getHourEnd = timestamp => {
 
 const getMinuteEnd = timestamp => {
   return [+new Date(timestamp), +new Date(timestamp) + 60 * 1000 - 1000]
+}
+
+const getYearBegin = timestamp => {
+  const time = new Date(timestamp)
+  return +new Date(time.getFullYear(), 0, 1)
+}
+
+const getMonthBegin = timestamp => {
+  const time = new Date(timestamp)
+  const date = new Date(time.getFullYear(), time.getMonth(), 1)
+  date.setDate(1)
+  date.setMonth(date.getMonth() + 1)
+  return +new Date(time.getFullYear(), time.getMonth(), 1)
+}
+
+const getDayBegin = timestamp => {
+  return +new Date(timestamp)
 }
 
