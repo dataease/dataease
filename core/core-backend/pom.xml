@@ -98,6 +98,11 @@
 
             <dependencies>
                 <dependency>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-java</artifactId>
+                    <version>${selenium-java.version}</version>
+                </dependency>
+                <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                 </dependency>
@@ -270,15 +275,18 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <layout>ZIP</layout>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
-                        <configuration>
+                        <!--<configuration>
                             <finalName>CoreApplication</finalName>
                             <layout>ZIP</layout>
-                        </configuration>
+                        </configuration>-->
                     </execution>
                 </executions>
             </plugin>
