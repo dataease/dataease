@@ -217,6 +217,18 @@ declare interface ChartBasicStyle {
    * 地图缩放按钮背景颜色
    */
   zoomBackground: string
+  /**
+   * 是否合并数据为其他
+   */
+  calcTopN: boolean
+  /**
+   * 只展示 TopN 项，其他合并为一项
+   */
+  topN: number
+  /**
+   * 其他项的标签
+   */
+  topNLabel: string
 }
 /**
  * 表头属性

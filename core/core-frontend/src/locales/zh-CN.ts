@@ -1113,7 +1113,11 @@ export default {
     word_spacing: '文字间隔',
     table_layout_mode: '展示形式',
     table_layout_grid: '平铺展示',
-    table_layout_tree: '树形展示'
+    table_layout_tree: '树形展示',
+    top_n_desc: '合并数据',
+    top_n_input_1: '显示 Top',
+    top_n_input_2: ', 其余合并至其他',
+    top_n_label: '其他项名称'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
