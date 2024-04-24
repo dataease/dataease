@@ -97,6 +97,10 @@ declare interface ChartBasicStyle {
    */
   tablePageSize: number
   /**
+   * 表格展示形式,平铺和树形
+   */
+  tableLayoutMode: 'grid' | 'tree'
+  /**
    * 仪表盘样式
    */
   gaugeStyle: string

@@ -65,40 +65,41 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Gauge>): G2Gauge {
     const { chart, container, scale } = drawOptions
-    if (chart?.data) {
-      // options
-      const initOptions: GaugeOptions = {
-        percent: 0,
-        appendPadding: getPadding(chart),
-        axis: {
-          tickInterval: 0.2,
-          label: {
-            style: {
-              fontSize: getScaleValue(12, scale) // 刻度值字体大小
-            },
-            formatter: function (v) {
-              const r = parseFloat(v)
-              return v === '0' || !r ? v : r * 100 + '%'
-            }
+    if (!chart.data?.series) {
+      return
+    }
+    // options
+    const initOptions: GaugeOptions = {
+      percent: 0,
+      appendPadding: getPadding(chart),
+      axis: {
+        tickInterval: 0.2,
+        label: {
+          style: {
+            fontSize: getScaleValue(12, scale) // 刻度值字体大小
           },
-          tickLine: {
-            length: getScaleValue(12, scale) * -1, // 刻度线长度
-            style: {
-              lineWidth: getScaleValue(1, scale) // 刻度线宽度
-            }
-          },
-          subTickLine: {
-            count: 4, // 子刻度数
-            length: getScaleValue(6, scale) * -1, // 子刻度线长度
-            style: {
-              lineWidth: getScaleValue(1, scale) // 子刻度线宽度
-            }
+          formatter: function (v) {
+            const r = parseFloat(v)
+            return v === '0' || !r ? v : r * 100 + '%'
+          }
+        },
+        tickLine: {
+          length: getScaleValue(12, scale) * -1, // 刻度线长度
+          style: {
+            lineWidth: getScaleValue(1, scale) // 刻度线宽度
+          }
+        },
+        subTickLine: {
+          count: 4, // 子刻度数
+          length: getScaleValue(6, scale) * -1, // 子刻度线长度
+          style: {
+            lineWidth: getScaleValue(1, scale) // 子刻度线宽度
           }
         }
       }
-      const options = this.setupOptions(chart, initOptions, scale)
-      return new G2Gauge(container, options)
     }
+    const options = this.setupOptions(chart, initOptions, scale)
+    return new G2Gauge(container, options)
   }
 
   protected configMisc(chart: Chart, options: GaugeOptions): GaugeOptions {

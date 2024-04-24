@@ -189,6 +189,7 @@ const initScroll = () => {
   const senior = actualChart.senior
   if (
     senior?.scrollCfg?.open &&
+    chartData.value.tableRow?.length &&
     (view.value.type === 'table-normal' || (view.value.type === 'table-info' && !state.showPage))
   ) {
     // 防止多次渲染

@@ -1110,7 +1110,10 @@ export default {
     quadrant: '象限',
     font_size: '字号',
     word_size_range: '字号区间',
-    word_spacing: '文字间隔'
+    word_spacing: '文字间隔',
+    table_layout_mode: '展示形式',
+    table_layout_grid: '平铺展示',
+    table_layout_tree: '树形展示'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
