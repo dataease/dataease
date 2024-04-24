@@ -481,6 +481,10 @@ const data = {
               if (element.options.manualModify) {
                 element.options.manualModify = false
               }
+              // 去掉动态时间
+              if (element.options.attrs?.default?.isDynamic) {
+                element.options.attrs.default.isDynamic = false
+              }
               // 去掉首选项
               if (element.options?.attrs?.selectFirst) {
                 element.options.attrs.selectFirst = false

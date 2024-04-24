@@ -478,7 +478,7 @@ export default {
           completeSingle: false // 当匹配只有一项的时候是否自动补全
         }
       },
-      widgetSubjectsFilter: ['textSelectWidget', 'textSelectGridWidget', 'textInputWidget', 'textSelectTreeWidget', 'numberSelectWidget', 'numberSelectGridWidget'],
+      widgetSubjectsFilter: ['timeYearWidget', 'timeMonthWidget', 'timeDateWidget', 'textSelectWidget', 'textSelectGridWidget', 'textInputWidget', 'textSelectTreeWidget', 'numberSelectWidget', 'numberSelectGridWidget'],
       widgetSubjectsTrans: {
         timeYearWidget: '年份过滤组件',
         timeMonthWidget: '年月过滤组件',
