@@ -103,6 +103,7 @@ import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { mapState } from 'vuex'
 import DePagination from '@/components/deCustomCm/pagination.js'
 import bus from '@/utils/bus'
+import { getRange } from '@/utils/timeUitils'
 
 export default {
   name: 'ChartComponentS2',
@@ -326,6 +327,15 @@ export default {
         pre[next['dataeaseName']] = next['id']
         return pre
       }, {})
+      const nameTypeMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['dataeaseName']] = next['deType']
+        return pre
+      }, {})
+
+      const nameDateStyleMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['dataeaseName']] = next['dateStyle']
+        return pre
+      }, {})
 
       let rowData
       if (this.chart.type === 'table-pivot') {
@@ -337,7 +347,12 @@ export default {
       const dimensionList = []
       for (const key in rowData) {
         if (nameIdMap[key]) {
-          dimensionList.push({ id: nameIdMap[key], value: rowData[key] })
+          let value = rowData[key]
+          // deType === 1 表示是时间类型
+          if (nameTypeMap[key] === 1) {
+            value = getRange(value, nameDateStyleMap[key])
+          }
+          dimensionList.push({ id: nameIdMap[key], value: value })
         }
       }
       this.antVActionPost(dimensionList, nameIdMap[meta.valueField] || 'null', param)
