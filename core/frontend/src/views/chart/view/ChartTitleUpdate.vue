@@ -8,7 +8,7 @@
       ref="chartTitle"
       v-model.trim="chartTitleUpdate"
       type="text"
-      :style="inputStyle"
+      maxlength="50"
       class="chart-input-title"
       @blur="changeEditStatus"
     >
@@ -19,18 +19,21 @@
       @click="chartTitleUpdate = ''"
     />
   </div>
-  <p
+  <span
     v-else
     style="
       overflow: hidden;
       white-space: pre;
       text-overflow: ellipsis;
-      display: inline;
+      display: inline-block;
       min-width: 30px;
+      width: 100%;
+      height: 40px;
+      line-height: 40px;
       cursor: pointer;
     "
     @dblclick="handleTitleEditer"
-  >{{ chart.title }}</p>
+  >{{ chart.title }}</span>
 </template>
 
 <script>
@@ -84,10 +87,6 @@ export default {
   methods: {
     changeEditStatus() {
       this.lostFocus()
-      if (this.chartTitleUpdate.length > 50) {
-        this.$error(this.$t('chart.title_limit'))
-        return
-      }
       if (this.chartTitleUpdate.length < 1) {
         this.$error(this.$t('chart.title_cannot_empty'))
         this.chartTitleUpdate = this.chart.title

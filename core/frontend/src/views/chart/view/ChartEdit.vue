@@ -37,8 +37,7 @@
         />
       </el-popover>
       <span
-        class="title-text view-title-name"
-        style="line-height: 40px;"
+        class="title-text view-title-name-update"
       >
         <chart-title-update
           :chart-info="view"
@@ -4210,13 +4209,11 @@ span {
   margin-left: 4px;
 }
 
-.view-title-name {
+.view-title-name-update {
   display: -moz-inline-box;
   display: inline-block;
-  width: 130px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  width: 170px;
+  height: 40px;
   margin-left: 45px;
 }
 
