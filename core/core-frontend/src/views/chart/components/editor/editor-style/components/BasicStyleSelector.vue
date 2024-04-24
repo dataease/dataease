@@ -198,6 +198,23 @@ onMounted(() => {
       </el-checkbox>
     </el-form-item>
 
+    <el-form-item
+      class="form-item"
+      v-if="showProperty('tableLayoutMode')"
+      :label="t('chart.table_layout_mode')"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.tableLayoutMode"
+        @change="changeBasicStyle('tableLayoutMode')"
+      >
+        <el-radio label="grid">{{ t('chart.table_layout_grid') }}</el-radio>
+        <el-radio label="tree">{{ t('chart.table_layout_tree') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+
     <div class="alpha-setting" v-if="showProperty('alpha')">
       <label class="alpha-label" :class="{ dark: 'dark' === themes }">
         {{ t('chart.not_alpha') }}
