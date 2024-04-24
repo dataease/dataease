@@ -38,12 +38,6 @@
             <artifactId>calcite-core</artifactId>
             <version>${calcite-core.version}</version>
             <classifier>de</classifier>
-            <exclusions>
-                <exclusion>
-                    <groupId>com.google.guava</groupId>
-                    <artifactId>guava</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         <dependency>
             <groupId>org.apache.commons</groupId>
