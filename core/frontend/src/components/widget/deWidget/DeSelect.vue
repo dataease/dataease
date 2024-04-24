@@ -23,7 +23,7 @@
     :is-config="isConfig"
     :custom-style="customStyle"
     :radio-style="element.style"
-    @resetKeyWords="filterMethod"
+    @resetKeyWords="resetKeyWords"
     @change="changeValue"
     @focus="setOptionWidth"
     @blur="onBlur"
@@ -93,6 +93,7 @@ export default {
   data() {
     return {
       showNumber: false,
+      resetKeyWordsVal: '',
       selectOptionWidth: 0,
       show: true,
       value: null,
@@ -322,6 +323,11 @@ export default {
     searchWithKey: _.debounce(function() {
       this.refreshOptions()
     }, 1000),
+    resetKeyWords() {
+      this.resetKeyWordsVal = this.value
+      this.keyWord = ''
+      this.searchWithKey()
+    },
     filterMethod(key) {
       if (!key && !this.keyWord) {
         this.keyWord = key
@@ -549,6 +555,12 @@ export default {
       let tempData = data.filter(item => !!item)
       if (this.isCustomSortWidget && this.element.options.attrs?.sort?.sort === 'custom') {
         tempData = mergeCustomSortOption(this.element.options.attrs.sort.list, tempData)
+      }
+
+      if (Array.isArray(this.resetKeyWordsVal) && this.resetKeyWordsVal.length) {
+        tempData = [...new Set([...this.resetKeyWordsVal, ...tempData])]
+      } else if (!Array.isArray(this.resetKeyWordsVal) && this.resetKeyWordsVal) {
+        tempData = [...new Set([this.resetKeyWordsVal, ...tempData])]
       }
       this.filterInvalidValue(this.element.options.attrs.showEmpty ? [...tempData, '_empty_$'] : tempData)
       return tempData.map(item => {
