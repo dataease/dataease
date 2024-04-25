@@ -1236,6 +1236,7 @@ export default {
     top_n_desc: 'Merge data into other',
     top_n_input_1: 'Show Top',
     top_n_input_2: ',the rest merged to other',
+    top_n_label: 'Label of the merged',
     area_border_color: 'Map border',
     area_base_color: 'Base map',
     size: 'Size',
