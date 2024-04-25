@@ -1117,7 +1117,6 @@ export const TYPE_CONFIGS = [
     icon: 'bar-time-range',
     properties: [
       'color-selector',
-
       'label-selector-ant-v',
       'tooltip-selector-ant-v',
       'x-axis-selector-ant-v',
@@ -1141,11 +1140,13 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-h'
+        'position-h',
+        'showGap'
       ],
       'tooltip-selector-ant-v': [
         'show',
-        'textStyle'
+        'textStyle',
+        'showGap'
       ],
       'x-axis-selector-ant-v': [
         'show',

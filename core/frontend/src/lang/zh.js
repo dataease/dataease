@@ -1285,6 +1285,7 @@ export default {
     label_shadow: '标签阴影',
     label_shadow_color: '阴影颜色',
     label_reserve_decimal_count: '保留小数',
+    show_gap: '显示间隔值',
     content_formatter: '内容格式',
     inside: '内',
     tooltip: '提示',
