@@ -298,8 +298,8 @@ const trackMenu = computed(() => {
   }
   return trackMenuInfo
 })
-const quadrantDefaultBaseline = defualtQuadrant => {
-  emitter.emit('quadrant-default-baseline', defualtQuadrant)
+const quadrantDefaultBaseline = defaultQuadrant => {
+  emitter.emit('quadrant-default-baseline', defaultQuadrant)
 }
 defineExpose({
   calcData,
