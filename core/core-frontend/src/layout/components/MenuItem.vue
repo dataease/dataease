@@ -3,7 +3,7 @@ import { h } from 'vue'
 import { Icon } from '@/components/icon-custom'
 import { ElMenuItem, ElSubMenu, ElIcon } from 'element-plus-secondary'
 
-const title = props => {
+const titleWithIcon = props => {
   const { title, icon } = props.menu?.meta || {}
   return [
     h(ElIcon, null, { default: () => h(Icon, { className: 'logo', name: icon }) }),
@@ -21,16 +21,18 @@ const MenuItem = props => {
       ElSubMenu,
       { index: path },
       {
-        title: () => title(props),
+        title: () => titleWithIcon(props),
         default: () => children.map(ele => h(MenuItem, { menu: ele }))
       }
     )
   }
+  const { title, icon } = props.menu?.meta || {}
   return h(
     ElMenuItem,
     { index: path },
     {
-      title: () => title(props)
+      title: h('span', null, { default: () => title }),
+      default: h(ElIcon, null, { default: () => h(Icon, { className: 'logo', name: icon }) })
     }
   )
 }

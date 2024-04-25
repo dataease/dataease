@@ -14,7 +14,6 @@ import 'vant/es/popup/style'
 import 'vant/es/date-picker/style'
 import 'vant/es/picker-group/style'
 import 'vant/es/time-picker/style'
-import { Icon } from '@/components/icon-custom'
 
 interface SelectConfig {
   selectValue: any
