@@ -147,7 +147,7 @@
                             </filesets>
                         </configuration>
                     </plugin>
-                    <!--<plugin>
+                    <plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
@@ -168,7 +168,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>-->
+                    </plugin>
                 </plugins>
             </build>
         </profile>
@@ -299,7 +299,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <!--<finalName>CoreApplication</finalName>-->
+                    <finalName>CoreApplication</finalName>
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>
