@@ -12,6 +12,7 @@ import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.handler.annotation.I18n;
+import io.dataease.controller.request.dataset.DataSetExportRequest;
 import io.dataease.controller.request.panel.*;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.authModel.VAuthModelDTO;
@@ -155,6 +156,13 @@ public class PanelGroupController {
         return panelGroupService.queryPanelComponents(id);
     }
 
+    @ApiOperation("视图导出数据集明细")
+    @PostMapping("/exportDatasetDetails")
+    @I18n
+    public void exportDatasetDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws Exception {
+        panelGroupService.exportDatasetDetails(request, response);
+    }
+
     @ApiOperation("公共连接导出仪表板视图明细")
     @PostMapping("/exportDetails")
     @I18n
@@ -172,8 +180,13 @@ public class PanelGroupController {
     @PostMapping("/innerExportDetails")
     @DePermissionProxy(value = "proxy")
     @I18n
-    public void innerExportDetails(@RequestBody PanelViewDetailsRequest request) throws IOException {
-        exportCenterService.addTask(request.getViewId(), "chart", request);
+    public void innerExportDetails(@RequestBody PanelViewDetailsRequest request) throws Exception {
+        if("dataset".equals(request.getDownloadType())){
+            DataSetExportRequest exportRequest = panelGroupService.composeDatasetExportRequest(request);
+            exportCenterService.addTask(exportRequest.getId(), "dataset", exportRequest);
+        }else{
+            exportCenterService.addTask(request.getViewId(), "chart", request);
+        }
     }
 
     @ApiOperation("更新仪表板状态")

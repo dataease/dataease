@@ -202,6 +202,18 @@
             class="ds-icon-excel"
           />{{ $t('chart.export') }}Excel
         </el-button>
+
+        <el-button
+          v-if="showChartInfoType==='details' && hasDataPermission('export',panelInfo.privileges)"
+          size="mini"
+          :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
+          @click="exportSourceDetails"
+        >
+          <svg-icon
+            icon-class="ds-excel"
+            class="ds-icon-excel"
+          />{{ $t('chart.導出原始明細') }}
+        </el-button>
       </span>
       <user-view-dialog
         v-if="chartDetailsVisible"
@@ -831,6 +843,20 @@ export default {
         this.dialogLoading = false
       })
     },
+    exportSourceDetails() {
+      this.dialogLoading = true
+      this.$refs['userViewDialog'].exportSourceDetails((val) => {
+        if (val && val.success) {
+          this.openMessageLoading(this.exportData)
+        }
+
+        if (val && val.success === false) {
+          this.openMessageSuccess(`${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error', this.exportData)
+        }
+        this.dialogLoading = false
+      })
+    },
+
     exportViewImg() {
       this.imageDownloading = true
       this.$refs['userViewDialog'].exportViewImg(this.pixel, () => {

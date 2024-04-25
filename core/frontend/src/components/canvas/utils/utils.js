@@ -468,7 +468,7 @@ export function getCacheTree(treeName) {
   return JSON.parse(localStorage.getItem(treeName))
 }
 
-export function exportExcelDownload(chart, snapshot, width, height, loadingWrapper, callBack) {
+export function exportExcelDownload(chart, snapshot, width, height, loadingWrapper, downloadParams, callBack) {
   if (chart.render === 'antv' && !chart.data?.data?.length) {
     return
   }
@@ -507,6 +507,7 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
   const request = {
     proxy: null,
     viewId: chart.id,
+    downloadType: downloadParams?.downloadType ? downloadParams.downloadType : 'view',
     viewName: excelName,
     header: excelHeader,
     details: excelData,

@@ -1128,6 +1128,7 @@ export default {
     password_input_error: 'Original password input error'
   },
   chart: {
+    export_source: 'Export Source',
     empty_hide: 'hide empty',
     hide: 'hide',
     chart_refresh_tips: 'View refresh setting takes precedence over panel refresh setting',

@@ -269,6 +269,15 @@ export function innerExportDetails(data) {
   })
 }
 
+export function exportDatasetDetails(data) {
+  return request({
+    url: 'panel/group/exportDatasetDetails',
+    method: 'post',
+    data: data,
+    loading: true
+  })
+}
+
 export function updatePanelStatus(panelId, param) {
   return request({
     url: '/panel/group/updatePanelStatus/' + panelId,

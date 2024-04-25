@@ -542,7 +542,7 @@ export default {
       })
     },
     exportExcelDownload() {
-      exportExcelDownload(this.chart, null, null, null, null, this.exportDataCb)
+      exportExcelDownload(this.chart, null, null, null, null, null, this.exportDataCb)
     },
     auxiliaryMatrixChange() {
       if (this.curComponent.auxiliaryMatrix) {
