@@ -169,7 +169,7 @@ onUnmounted(() => {
     &::after {
       position: absolute;
       content: '%';
-      right: 27px;
+      right: 35px;
       top: 1px;
     }
   }
