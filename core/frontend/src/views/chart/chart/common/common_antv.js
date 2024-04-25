@@ -347,7 +347,8 @@ export function getTooltip(chart) {
       if (t.show) {
         tooltip = {
           container: getTooltipContainer(`tooltip-${chart.id}`),
-          itemTpl: TOOLTIP_TPL
+          itemTpl: TOOLTIP_TPL,
+          enterable: true
         }
         let xAxis, yAxis, extStack, xAxisExt
 
@@ -1229,6 +1230,13 @@ export function configPlotTooltipEvent(chart, plot) {
   if (!t.show) {
     return
   }
+  // 鼠标可移入, 移入之后保持显示, 移出之后隐藏
+  plot.options.tooltip.container.addEventListener('mouseenter', e => {
+    e.target.style.visibility = 'visible'
+  })
+  plot.options.tooltip.container.addEventListener('mouseleave', e => {
+    e.target.style.visibility = 'hidden'
+  })
   // 手动处理 tooltip 的显示和隐藏事件，需配合源码理解
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#showTooltip
   plot.on('tooltip:show', () => {
@@ -1239,6 +1247,9 @@ export function configPlotTooltipEvent(chart, plot) {
     if (tooltipCtl.tooltip) {
       // 处理视图放大后再关闭 tooltip 的 dom 被清除
       const container = tooltipCtl.tooltip.cfg.container
+      // 最多铺满屏幕，鼠标移入可滚动
+      container.style.maxHeight = '100%'
+      container.style.overflow = 'scroll'
       const dom = document.getElementById(container.id)
       if (!dom) {
         const full = document.getElementsByClassName('fullscreen')
