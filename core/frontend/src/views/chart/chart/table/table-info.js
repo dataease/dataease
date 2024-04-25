@@ -368,10 +368,6 @@ export function baseTableNormal(container, chart, action, tableData, vueCom, res
   }
 
   const customAttr = JSON.parse(chart.customAttr)
-  const sortIconMap = {
-    'asc': 'SortUp',
-    'desc': 'SortDown'
-  }
   // options
   const s2Options = {
     width: containerDom.offsetWidth,
@@ -645,7 +641,7 @@ export function baseTablePivot(container, chart, action, headerAction, tableData
         position: 'absolute',
         padding: '4px 2px'
       }
-    },
+    }
   }
 
   // 开始渲染
@@ -1106,7 +1102,7 @@ function getTooltipPosition(event) {
   if (!s2Instance) {
     return result
   }
-  const { height, width} = s2Instance.getCanvasElement().getBoundingClientRect()
+  const { height, width } = s2Instance.getCanvasElement().getBoundingClientRect()
   const { offsetHeight, offsetWidth } = s2Instance.tooltip.getContainer()
   if (offsetWidth > width) {
     result.x = 0
@@ -1148,7 +1144,7 @@ function copyContent(s2Instance, event, fieldMeta) {
     const fieldMap = fieldMeta?.reduce((p, n) => {
       p[n.field] = n.name
       return p
-    },{})
+    }, {})
     if (fieldMap?.[content]) {
       content = fieldMap[content]
     }

@@ -8,6 +8,7 @@
       ref="chartTitle"
       v-model.trim="chartTitleUpdate"
       type="text"
+      maxlength="50"
       :style="inputStyle"
       class="chart-input-title"
       @blur="changeEditStatus"
@@ -91,10 +92,6 @@ export default {
   methods: {
     changeEditStatus() {
       this.lostFocus()
-      if (this.chartTitleUpdate.length > 50) {
-        this.$error(this.$t('chart.title_limit'))
-        return
-      }
       if (this.chartTitleUpdate.length < 1) {
         this.$error(this.$t('chart.title_cannot_empty'))
         this.chartTitleUpdate = this.chart.title

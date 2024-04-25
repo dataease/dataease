@@ -1266,7 +1266,7 @@ export const configTopN = (data, chart) => {
     ...data[0],
     field: i18n.t('datasource.other'),
     name: i18n.t('datasource.other'),
-    value: 0,
+    value: 0
   }
   otherItems.reduce((p, n) => {
     p.value += n.value ?? 0
@@ -1351,12 +1351,12 @@ export function configPlotTrendLine(chart, plot) {
         offsetY: 10
       })
     }
-    regLine.axis(false);
-    regLine.data(totalData);
+    regLine.axis(false)
+    regLine.data(totalData)
     regLine.line()
       .position('index*value')
       .color('color', color => color)
-      .style('trendId',trendId => {
+      .style('trendId', trendId => {
         const trend = trendLineMap[trendId]
         return {
           stroke: trend?.color ?? 'grey',
@@ -1425,7 +1425,7 @@ export function configAxisLabelLengthLimit(chart, plot) {
       return
     }
     const parentNode = e.event.target.parentNode
-    let labelTooltipDom = parentNode.getElementsByClassName('g2-axis-label-tooltip')?.[0]
+    const labelTooltipDom = parentNode.getElementsByClassName('g2-axis-label-tooltip')?.[0]
     if (labelTooltipDom) {
       labelTooltipDom.style.visibility = 'hidden'
     }

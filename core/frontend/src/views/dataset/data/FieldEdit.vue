@@ -150,7 +150,7 @@
                 :options="getFields(scope.row)"
                 @change="saveEdit(scope.row)"
               >
-                <template slot-scope="{ node, data }">
+                <template slot-scope="{ data }">
                   <span>
                     <svg-icon
                       v-if="data.value === 0"
@@ -221,18 +221,22 @@
             </template>
           </el-table-column>
           <el-table-column
-              property="key"
-              :label="$t('dataset.change_to_key')"
-              v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')"
+            v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')"
+            property="key"
+            :label="$t('dataset.change_to_key')"
           >
             <template slot-scope="scope">
-              <el-select v-model="scope.row.key" @change="saveKey(scope.row)" :disabled="scope.row.extField !== 0">
+              <el-select
+                v-model="scope.row.key"
+                :disabled="scope.row.extField !== 0"
+                @change="saveKey(scope.row)"
+              >
                 <el-option
-                    v-for="item in getKeyFields(scope.row)"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                </el-option>
+                  v-for="item in getKeyFields(scope.row)"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
             </template>
           </el-table-column>
@@ -500,7 +504,7 @@
                 :options="getFields(scope.row)"
                 @change="saveEdit(scope.row)"
               >
-                <template slot-scope="{ node, data }">
+                <template slot-scope="{ data }">
                   <span>
                     <svg-icon
                       v-if="data.value === 0"
@@ -571,18 +575,22 @@
             </template>
           </el-table-column>
           <el-table-column
-              property="key"
-              :label="$t('dataset.change_to_key')"
-              v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')"
+            v-if="table.mode === 1 && (table.type === 'db' || table.type === 'sql')"
+            property="key"
+            :label="$t('dataset.change_to_key')"
           >
             <template slot-scope="scope">
-              <el-select v-model="scope.row.key" @change="saveKey(scope.row)"  :disabled="scope.row.extField !== 0">
+              <el-select
+                v-model="scope.row.key"
+                :disabled="scope.row.extField !== 0"
+                @change="saveKey(scope.row)"
+              >
                 <el-option
-                    v-for="item in getKeyFields(scope.row)"
-                    :key="item.value"
-                    :label="item.label"
-                    :value="item.value">
-                </el-option>
+                  v-for="item in getKeyFields(scope.row)"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
               </el-select>
             </template>
           </el-table-column>
@@ -768,7 +776,7 @@ import { batchEdit, dateformats, fieldListDQ, post } from '@/api/dataset/dataset
 import CalcFieldEdit from './CalcFieldEdit'
 import { getFieldName } from '@/views/dataset/data/utils'
 import msgCfm from '@/components/msgCfm/index'
-import {engineMode} from "@/api/system/engine";
+import { engineMode } from '@/api/system/engine'
 
 export default {
   name: 'FieldEdit',
@@ -804,7 +812,7 @@ export default {
       dimensionIndeterminate: false,
       quotaChecked: false,
       quotaIndeterminate: false,
-      engineMode: 'local',
+      engineMode: 'local'
     }
   },
   watch: {
@@ -886,16 +894,16 @@ export default {
       }
     },
 
-    saveKey(item ) {
+    saveKey(item) {
       post('/dataset/field/saveKey', item)
-          .then((response) => {
-            this.initField()
-            localStorage.setItem('reloadDsData', 'true')
-          })
-          .catch((res) => {
-            this.initField()
-            localStorage.setItem('reloadDsData', 'true')
-          })
+        .then((response) => {
+          this.initField()
+          localStorage.setItem('reloadDsData', 'true')
+        })
+        .catch((res) => {
+          this.initField()
+          localStorage.setItem('reloadDsData', 'true')
+        })
     },
 
     saveEdit(item, checkExp = true) {

@@ -155,7 +155,6 @@
             >
               <template
                 slot="header"
-                slot-scope="scope"
               >
                 {{ c.label }}
                 <span v-if="c.rangeIndex === 0">({{ $t('data_fill.data.start') }})</span>

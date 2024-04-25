@@ -264,7 +264,7 @@ export function getSize(chart) {
           size.colCfg.width = node => {
             const width = node.spreadsheet.container.cfg.el.offsetWidth
             if (!s.tableFieldWidth?.length) {
-              let columnCount = s.showIndex ? chart.data.fields.length + 1 : chart.data.fields.length
+              const columnCount = s.showIndex ? chart.data.fields.length + 1 : chart.data.fields.length
               return width / columnCount
             }
             const baseWidth = width / 100

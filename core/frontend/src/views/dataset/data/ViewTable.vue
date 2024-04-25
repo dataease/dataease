@@ -259,7 +259,7 @@ import { pluginLoaded } from '@/api/user'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import UpdateRecords from './UpdateRecords'
 import rowAuth from './components/rowAuth.vue'
-import {Button} from "element-ui";
+import { Button } from 'element-ui'
 import bus from '@/utils/bus'
 
 export default {
@@ -426,7 +426,7 @@ export default {
               show: 0
             }
             this.previewDataSuccess = false
-            if(this.$currentHttpRequestList.some((item, key) => {
+            if (this.$currentHttpRequestList.some((item, key) => {
               return key.indexOf('dataset/table/getPreviewData') > -1
             })) return
             this.tableLoading = false
@@ -492,34 +492,34 @@ export default {
       this.showExport = false
     },
     openMessageLoading(cb) {
-      const h = this.$createElement;
-      const iconClass = `el-icon-loading`;
-      const customClass = `de-message-loading de-message-export`;
+      const h = this.$createElement
+      const iconClass = `el-icon-loading`
+      const customClass = `de-message-loading de-message-export`
       this.$message({
-        message: h("p", null, [
+        message: h('p', null, [
           this.$t('data_export.exporting'),
           h(
             Button,
             {
               props: {
-                type: "text",
-                size: "mini",
+                type: 'text',
+                size: 'mini'
               },
-              class: "btn-text",
+              class: 'btn-text',
               on: {
                 click: () => {
-                  cb();
-                },
-              },
+                  cb()
+                }
+              }
             },
-            this.$t('data_export.export_center'),
+            this.$t('data_export.export_center')
           ),
-          this.$t('data_export.export_info'),
+          this.$t('data_export.export_info')
         ]),
         iconClass,
         showClose: true,
-        customClass,
-      });
+        customClass
+      })
     },
     callbackExport() {
       bus.$emit('data-export-center')

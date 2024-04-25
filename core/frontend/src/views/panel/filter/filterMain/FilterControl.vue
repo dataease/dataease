@@ -30,7 +30,7 @@
       :close-on-click-modal="false"
       :before-close="sureRequired"
     >
-    {{ $t('time.dropdown_display_must') }}
+      {{ $t('time.dropdown_display_must') }}
       <div style="text-align: end;margin-top: 16px;">
         <span slot="footer">
           <el-button
@@ -134,33 +134,45 @@
         <span
           style="padding-left: 10px;"
         >
-        <el-popover popper-class="popover-more-parent" :visible-arrow="false" placement="bottom-start" :width="182" trigger="click">
-            <template v-if="showMore" #reference>
+          <el-popover
+            popper-class="popover-more-parent"
+            :visible-arrow="false"
+            placement="bottom-start"
+            :width="182"
+            trigger="click"
+          >
+            <template
+              v-if="showMore"
+              #reference
+            >
               <div class="more-select-btn icon iconfont icon-icon-more">
                 {{ $t('panel.more') }}
               </div>
             </template>
             <div class="check-item">
               <el-tooltip
+                v-model="visibleShowEmpty"
                 class="box-item"
                 effect="dark"
                 :content="$t('time.passing_parameters')"
                 placement="top"
                 manual
-                v-model="visibleShowEmpty"
               >
                 <el-checkbox
                   v-if="widget.name && ['textSelectWidget', 'textSelectGridWidget'].includes(widget.name)"
-                  :disabled="attrs.enableParameters"
                   v-model="attrs.showEmpty"
-                ><span @mouseenter="handlerVisibleShowEmpty" @mouseleave="handlerVisibleShowEmpty">{{ $t('panel.show_empty') }}</span>
+                  :disabled="attrs.enableParameters"
+                ><span
+                  @mouseenter="handlerVisibleShowEmpty"
+                  @mouseleave="handlerVisibleShowEmpty"
+                >{{ $t('panel.show_empty') }}</span>
                 </el-checkbox>
               </el-tooltip>
             </div>
             <div class="check-item">
               <el-checkbox
-                v-model="attrs.showTime"
                 v-if="widget.isTimeWidget && widget.isTimeWidget()"
+                v-model="attrs.showTime"
                 @change="showTimeChange"
               >
                 <span>{{ $t('panel.show_time') }} </span>
@@ -189,9 +201,9 @@
                 </div>
 
                 <i
+                  v-if="widget.isTimeWidget && widget.isTimeWidget()"
                   slot="reference"
                   :class="{'i-filter-active': attrs.showTime, 'i-filter-inactive': !attrs.showTime}"
-                  v-if="widget.isTimeWidget && widget.isTimeWidget()"
                   class="el-icon-setting i-filter"
                 />
               </el-popover>
@@ -202,30 +214,44 @@
                 v-model="attrs.setTimeRange"
               >{{ $t('time.set_time_filtering_range') }}
               </el-checkbox>
-              <el-popover :disabled="!attrs.setTimeRange" popper-class="popover-setting-parent" ref="popoverSetting" :visible-arrow="false" placement="bottom-start" :width="452" trigger="click">
-                <RangeFilterTime @changeData="changeData" :timeRangeData="attrs.timeRange" />
+              <el-popover
+                ref="popoverSetting"
+                :disabled="!attrs.setTimeRange"
+                popper-class="popover-setting-parent"
+                :visible-arrow="false"
+                placement="bottom-start"
+                :width="452"
+                trigger="click"
+              >
+                <RangeFilterTime
+                  :time-range-data="attrs.timeRange"
+                  @changeData="changeData"
+                />
                 <i
                   v-if="widget.name && ['timeDateRangeWidget'].includes(widget.name)"
-                  :class="{'i-filter-active': attrs.setTimeRange, 'i-filter-inactive': !attrs.setTimeRange}"
                   slot="reference"
+                  :class="{'i-filter-active': attrs.setTimeRange, 'i-filter-inactive': !attrs.setTimeRange}"
                   class="el-icon-setting i-filter"
                 />
               </el-popover>
             </div>
             <div class="check-item">
               <el-tooltip
-                manual
                 v-model="visibleEnableParameters"
+                manual
               >
-              <template #content>
-                <span>{{ $t('time.not_supported') }}</span>
-              </template>
+                <template #content>
+                  <span>{{ $t('time.not_supported') }}</span>
+                </template>
                 <el-checkbox
                   v-if="showParams"
-                  :disabled="attrs.showEmpty"
                   v-model="attrs.enableParameters"
+                  :disabled="attrs.showEmpty"
                   @change="enableParametersChange"
-                ><span @mouseenter="handlerVisibleEnableParameters" @mouseleave="handlerVisibleEnableParameters">
+                ><span
+                  @mouseenter="handlerVisibleEnableParameters"
+                  @mouseleave="handlerVisibleEnableParameters"
+                >
                   {{ $t('panel.binding_parameters') }} </span>
                 </el-checkbox>
               </el-tooltip>
@@ -306,8 +332,8 @@
                 </div>
 
                 <i
-                  slot="reference"
                   v-if="showParams"
+                  slot="reference"
                   :class="{'i-filter-active': attrs.enableParameters, 'i-filter-inactive': !attrs.enableParameters}"
                   class="el-icon-setting i-filter"
                 />
@@ -415,9 +441,9 @@ export default {
       handler(newName, oldName) {
         this.allParams = JSON.parse(JSON.stringify(this.childViews.datasetParams))
         if (this.datasetParams.length > 0) {
-          for (var j = 0; j < this.datasetParams.length; j++) {
-            var hasParam = false
-            for (var i = 0; i < this.childViews.datasetParams.length; i++) {
+          for (let j = 0; j < this.datasetParams.length; j++) {
+            let hasParam = false
+            for (let i = 0; i < this.childViews.datasetParams.length; i++) {
               if (this.childViews.datasetParams[i].id === this.datasetParams[j].id) {
                 hasParam = true
               }
@@ -435,18 +461,18 @@ export default {
     this.attrs = this.controlAttrs
     if (!this.attrs.timeRange) {
       this.$set(this.attrs, 'timeRange', {
-        intervalType: "none",
+        intervalType: 'none',
         dynamicWindow: false,
         maximumSingleQuery: 0,
-        regularOrTrends: "fixed",
-        regularOrTrendsValue: "",
-        relativeToCurrent: "custom",
+        regularOrTrends: 'fixed',
+        regularOrTrendsValue: '',
+        relativeToCurrent: 'custom',
         timeNum: 0,
-        relativeToCurrentType: "year",
-        around: "f",
+        relativeToCurrentType: 'year',
+        around: 'f',
         timeNumRange: 0,
-        relativeToCurrentTypeRange: "year",
-        aroundRange: "f",
+        relativeToCurrentTypeRange: 'year',
+        aroundRange: 'f'
       })
     }
     if (this.widget.isTimeWidget) {
@@ -464,7 +490,7 @@ export default {
       this.$emit('required-change', false)
     },
     requiredChange(val) {
-      if (val === false && (this.element.style.showMode && this.element.style.showMode === 'radio' && !this.element.options.attrs.multiple)) { 
+      if (val === false && (this.element.style.showMode && this.element.style.showMode === 'radio' && !this.element.options.attrs.multiple)) {
         this.dialogVisible = true
         this.$nextTick(() => {
           this.element.options.attrs.required = true
@@ -575,7 +601,7 @@ export default {
   justify-content: flex-end;
   flex-wrap: nowrap;
   height: 50px;
-  
+
   .more-select-btn {
     display: inline-flex;
     width: 56px;

@@ -77,7 +77,7 @@ export async function baseFlowMapOption(chartId, chart) {
   return mapInstance
 }
 
-const getMapKey = async () => {
+const getMapKey = async() => {
   const key = 'online-map-key'
   if (!localStorage.getItem(key)) {
     await queryMapKey().then(res => localStorage.setItem(key, res.data))

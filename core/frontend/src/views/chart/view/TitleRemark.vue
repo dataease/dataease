@@ -7,7 +7,7 @@
       trigger="hover"
       width="300"
       :append-to-body="!previewVisible"
-      :popper-class="previewVisible && 'remark-pop'"
+      :popper-class="previewVisible ? 'remark-pop' : ''"
       :visible-arrow="false"
     >
       <div

@@ -24,7 +24,7 @@
           <el-col
             :span="8"
           >
-            {{ $t(`chart.regression_${item.algoType}`)}}
+            {{ $t(`chart.regression_${item.algoType}`) }}
           </el-col>
         </el-row>
       </el-col>

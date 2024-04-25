@@ -122,7 +122,6 @@
               </div>
               <div
                 class="login-msg"
-                
               >
                 {{ msg }}
               </div>
