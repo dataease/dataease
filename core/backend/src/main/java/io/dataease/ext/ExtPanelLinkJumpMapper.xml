@@ -192,6 +192,7 @@
         lj.source_panel_id = #{request.sourcePanelId}
         AND lj.source_view_id = #{request.sourceViewId}
         AND lji.target_panel_id = #{request.targetPanelId}
+        AND lji.checked = 1
         <if test="request.sourceFieldId != null">
             AND lji.source_field_id = #{request.sourceFieldId}
         </if>
