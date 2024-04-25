@@ -212,7 +212,7 @@
           <svg-icon
             icon-class="ds-excel"
             class="ds-icon-excel"
-          />{{ $t('chart.導出原始明細') }}
+          />{{ $t('chart.export_source') }}
         </el-button>
       </span>
       <user-view-dialog
@@ -1059,9 +1059,7 @@ export default {
             if (response.success) {
               this.chart = response.data
               this.view = response.data
-              if (this.chart.type.includes('table')) {
-                this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
-              }
+              this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
               this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
               this.$emit('fill-chart-2-parent', this.chart)
               this.getDataOnly(response.data, dataBroadcast)
