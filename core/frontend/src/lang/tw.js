@@ -1238,6 +1238,7 @@ export default {
     top_n_desc: '合併數據',
     top_n_input_1: '顯示 Top',
     top_n_input_2: ', 其餘合併至其他',
+    top_n_label: '其他項標籤',
     area_border_color: '地圖邊線',
     area_base_color: '底圖',
     size: '大小',

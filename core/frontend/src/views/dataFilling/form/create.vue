@@ -701,7 +701,8 @@ export default {
               ref="mRightForm"
               :model="selectedComponentItem.settings"
               label-position="top"
-              hide-required-asterisk>
+              hide-required-asterisk
+            >
 
               <el-form-item
                 prop="name"

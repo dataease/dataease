@@ -1234,6 +1234,7 @@ export default {
     top_n_desc: '合并数据',
     top_n_input_1: '显示 Top',
     top_n_input_2: ', 其余合并至其他',
+    top_n_label: '其他项标签',
     area_border_color: '地图边线',
     area_base_color: '底图',
     size: '大小',

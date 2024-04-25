@@ -1,6 +1,6 @@
 <template>
   <div style="display: flex;align-items: center;">
-    <span class="filter-line"></span>
+    <span class="filter-line" />
     <el-dropdown
       trigger="click"
       size="mini"

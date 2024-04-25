@@ -1,8 +1,12 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
-import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
+import {
+  DEFAULT_COLOR_CASE,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_EXT_STYLE,
+  DEFAULT_YAXIS_STYLE
+} from '@/views/chart/chart/chart'
 import { equalsAny, includesAny } from '@/utils/StringUtils'
-import i18n from '@/lang'
 import {
   regressionExp,
   regressionPoly,
@@ -1279,8 +1283,8 @@ export const configTopN = (data, chart) => {
   const otherItems = data.splice(color.topN)
   const initOtherItem = {
     ...data[0],
-    field: i18n.t('datasource.other'),
-    name: i18n.t('datasource.other'),
+    field: color.topNLabel ?? DEFAULT_COLOR_CASE.topNLabel,
+    name: color.topNLabel ?? DEFAULT_COLOR_CASE.topNLabel,
     value: 0
   }
   otherItems.reduce((p, n) => {
