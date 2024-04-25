@@ -149,6 +149,8 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const dataLength = chart.data?.data.length / chart.data?.fields.length
     for (let index = 0; index < dataLength; index++) {
       const tmpData = {
+        dimensionList: groupedData[xFieldObj.name][index].dimensionList,
+        quotaList: groupedData[xFieldObj.name][index].quotaList,
         [xFieldObj.name]: groupedData[xFieldObj.name][index].value
       }
       if (groupedData[yFieldObj.name]) {
@@ -168,15 +170,23 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     }
     // x轴基准线 默认值
     const xBaseline = (
-      data.reduce((valueSoFar, currentItem) => {
+      (data.reduce((valueSoFar, currentItem) => {
         return Math.max(valueSoFar, currentItem[xFieldObj.name])
-      }, 0) / 2
+      }, 0) +
+        data.reduce((valueSoFar, currentItem) => {
+          return Math.min(valueSoFar, currentItem[xFieldObj.name])
+        }, Infinity)) /
+      2
     ).toFixed()
     // y轴基准线 默认值
     const yBaseline = (
-      data.reduce((valueSoFar, currentItem) => {
+      (data.reduce((valueSoFar, currentItem) => {
         return Math.max(valueSoFar, currentItem[yFieldObj.name])
-      }, 0) / 2
+      }, 0) +
+        data.reduce((valueSoFar, currentItem) => {
+          return Math.min(valueSoFar, currentItem[yFieldObj.name])
+        }, Infinity)) /
+      2
     ).toFixed()
     const defaultBaselineQuadrant = {
       ...chart.customAttr['quadrant']
