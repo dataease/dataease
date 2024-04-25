@@ -3708,7 +3708,9 @@ export default {
       this.showValueFormatter = false
     },
     saveValueFormatter() {
-      const ele = this.valueFormatterItem.formatterCfg.decimalCount
+      const formatterItem = _.cloneDeep(this.valueFormatterItem)
+      const formatterCfg = formatterItem.formatterCfg
+      const ele = formatterCfg.decimalCount
       if (ele === undefined || ele.toString().indexOf('.') > -1 || parseInt(ele).toString() === 'NaN' || parseInt(ele) < 0 || parseInt(ele) > 10) {
         this.$message({
           message: this.$t('chart.formatter_decimal_count_error'),
@@ -3718,14 +3720,14 @@ export default {
         return
       }
       // 更新指标
-      if (this.valueFormatterItem.formatterType === 'quota' && this.chart.type !== 'bar-time-range') {
-        this.view.yaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
-      } else if (this.valueFormatterItem.formatterType === 'quotaExt') {
-        this.view.yaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
-      } else if (this.valueFormatterItem.formatterType === 'dimension') {
-        this.view.xaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      if (formatterItem.formatterType === 'quota' && this.chart.type !== 'bar-time-range') {
+        this.view.yaxis[formatterItem.index].formatterCfg = formatterCfg
+      } else if (formatterItem.formatterType === 'quotaExt') {
+        this.view.yaxisExt[formatterItem.index].formatterCfg = formatterCfg
+      } else if (formatterItem.formatterType === 'dimension') {
+        this.view.xaxis[formatterItem.index].formatterCfg = formatterCfg
       } else if (this.chart.type === 'bar-time-range') {
-        this.view.xaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+        this.view.xaxisExt[formatterItem.index].formatterCfg = formatterCfg
       }
       this.calcData(true)
       this.closeValueFormatter()
