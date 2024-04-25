@@ -1124,6 +1124,7 @@ export default {
     log_live_time_error: '请填写1-4000整数'
   },
   chart: {
+    export_source: '导出原始明细',
     empty_hide: '隐藏空值',
     hide: '隐藏',
     chart_refresh_tips: '视图刷新设置优先于仪表板刷新设置',

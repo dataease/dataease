@@ -96,7 +96,7 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import html2canvas from 'html2canvasde'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import {deepCopy, exportExcelDownload, exportImg, exportImgNew, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { deepCopy, exportExcelDownload, exportImg, exportImgNew, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 
@@ -296,6 +296,10 @@ export default {
         }
       }
     },
+    exportSourceDetails(callBack) {
+      const loadingWrapper = { val: this.linkLoading }
+      exportExcelDownload(this.chart, null, null, null, loadingWrapper, { downloadType: 'dataset' }, callBack)
+    },
     exportViewImg(pixel, callback) {
       this.pixel = pixel
       this.exportLoading = true
@@ -320,7 +324,7 @@ export default {
     },
     exportExcelDownload(snapshot, width, height, callBack) {
       const loadingWrapper = { val: this.linkLoading }
-      exportExcelDownload(this.chart, snapshot, width, height, loadingWrapper, callBack)
+      exportExcelDownload(this.chart, snapshot, width, height, loadingWrapper, null, callBack)
     },
 
     renderComponent() {

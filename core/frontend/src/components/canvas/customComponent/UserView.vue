@@ -202,6 +202,18 @@
             class="ds-icon-excel"
           />{{ $t('chart.export') }}Excel
         </el-button>
+
+        <el-button
+          v-if="showChartInfoType==='details' && hasDataPermission('export',panelInfo.privileges)"
+          size="mini"
+          :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
+          @click="exportSourceDetails"
+        >
+          <svg-icon
+            icon-class="ds-excel"
+            class="ds-icon-excel"
+          />{{ $t('chart.導出原始明細') }}
+        </el-button>
       </span>
       <user-view-dialog
         v-if="chartDetailsVisible"
@@ -239,7 +251,7 @@ import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
-import { Button } from "element-ui";
+import { Button } from 'element-ui'
 import bus from '@/utils/bus'
 import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
@@ -760,63 +772,63 @@ export default {
       bus.$emit('data-export-center')
     },
     openMessageLoading(cb) {
-      const h = this.$createElement;
-      const iconClass = `el-icon-loading`;
-      const customClass = `de-message-loading de-message-export`;
+      const h = this.$createElement
+      const iconClass = `el-icon-loading`
+      const customClass = `de-message-loading de-message-export`
       this.$message({
-        message: h("p", null, [
+        message: h('p', null, [
           this.$t('data_export.exporting'),
           h(
             Button,
             {
               props: {
-                type: "text",
-                size: "mini",
+                type: 'text',
+                size: 'mini'
               },
-              class: "btn-text",
+              class: 'btn-text',
               on: {
                 click: () => {
-                  cb();
-                },
-              },
+                  cb()
+                }
+              }
             },
-            this.$t('data_export.export_center'),
+            this.$t('data_export.export_center')
           ),
-          this.$t('data_export.export_info'),
+          this.$t('data_export.export_info')
         ]),
         iconClass,
         showClose: true,
-        customClass,
-      });
+        customClass
+      })
     },
     openMessageSuccess(text, type, cb) {
-      const h = this.$createElement;
-      const iconClass = `el-icon-${type || "success"}`;
-      const customClass = `de-message-${type || "success"} de-message-export`;
+      const h = this.$createElement
+      const iconClass = `el-icon-${type || 'success'}`
+      const customClass = `de-message-${type || 'success'} de-message-export`
       this.$message({
-        message: h("p", null, [
-          h("span", null, text),
+        message: h('p', null, [
+          h('span', null, text),
           h(
             Button,
             {
               props: {
-                type: "text",
-                size: "mini",
+                type: 'text',
+                size: 'mini'
               },
-              class: "btn-text",
+              class: 'btn-text',
               on: {
                 click: () => {
-                  cb();
-                },
-              },
+                  cb()
+                }
+              }
             },
-            this.$t('data_export.export_center'),
-          ),
+            this.$t('data_export.export_center')
+          )
         ]),
         iconClass,
         showClose: true,
-        customClass,
-      });
+        customClass
+      })
     },
     exportExcel() {
       this.dialogLoading = true
@@ -826,11 +838,25 @@ export default {
         }
 
         if (val && val.success === false) {
-          this.openMessageSuccess( `${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error',this.exportData);
+          this.openMessageSuccess(`${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error', this.exportData)
         }
         this.dialogLoading = false
       })
     },
+    exportSourceDetails() {
+      this.dialogLoading = true
+      this.$refs['userViewDialog'].exportSourceDetails((val) => {
+        if (val && val.success) {
+          this.openMessageLoading(this.exportData)
+        }
+
+        if (val && val.success === false) {
+          this.openMessageSuccess(`${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error', this.exportData)
+        }
+        this.dialogLoading = false
+      })
+    },
+
     exportViewImg() {
       this.imageDownloading = true
       this.$refs['userViewDialog'].exportViewImg(this.pixel, () => {
