@@ -27,22 +27,22 @@ const setCollapse = () => {
     />
     <Header v-else></Header>
     <el-container class="layout-container">
-      <Sidebar
-        v-if="(systemMenu || settingMenu || toolboxMenu) && !isCollapse"
-        class="layout-sidebar"
-      >
-        <div @click="setCollapse" v-if="systemMenu && !isCollapse" class="org-config-center">
-          组织管理中心
-        </div>
-        <Menu :style="{ height: systemMenu ? 'calc(100% - 48px)' : '100%' }"></Menu>
-      </Sidebar>
-      <el-aside class="layout-sidebar layout-sidebar-collapse" v-else>
-        <Menu
-          :collapse="isCollapse"
-          :style="{ height: systemMenu ? 'calc(100% - 48px)' : '100%' }"
-        ></Menu>
-      </el-aside>
-      <CollapseBar @setCollapse="setCollapse" :isCollapse="isCollapse"></CollapseBar>
+      <template v-if="systemMenu || settingMenu || toolboxMenu">
+        <Sidebar v-if="!isCollapse" class="layout-sidebar">
+          <div @click="setCollapse" v-if="systemMenu && !isCollapse" class="org-config-center">
+            组织管理中心
+          </div>
+          <Menu :style="{ height: systemMenu ? 'calc(100% - 48px)' : '100%' }"></Menu>
+        </Sidebar>
+        <el-aside class="layout-sidebar layout-sidebar-collapse" v-else>
+          <Menu
+            :collapse="isCollapse"
+            :style="{ height: systemMenu ? 'calc(100% - 48px)' : '100%' }"
+          ></Menu>
+        </el-aside>
+        <CollapseBar @setCollapse="setCollapse" :isCollapse="isCollapse"></CollapseBar>
+      </template>
+
       <Main
         class="layout-main"
         :class="{ 'with-sider': systemMenu || settingMenu || toolboxMenu }"
