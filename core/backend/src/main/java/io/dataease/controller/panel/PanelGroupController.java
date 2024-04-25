@@ -166,14 +166,18 @@ public class PanelGroupController {
     @ApiOperation("公共连接导出仪表板视图明细")
     @PostMapping("/exportDetails")
     @I18n
-    public void exportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
+    public void exportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         String linkToken = httpServletRequest.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
         Long userId = jwt.getClaim("userId").asLong();
         request.setUserId(userId);
-        panelGroupService.exportPanelViewDetails(request, response);
+        if("dataset".equals(request.getDownloadType())){
+            panelGroupService.exportDatasetDetails(request, response);
+        }else {
+            panelGroupService.exportPanelViewDetails(request, response);
+        }
     }
 
     @ApiOperation("站内导出仪表板视图明细")
