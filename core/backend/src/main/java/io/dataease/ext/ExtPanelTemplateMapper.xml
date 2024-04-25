@@ -80,9 +80,6 @@
                 and panel_template.level = #{level}
             </if>
         </where>
-        <if test="sort != null">
-            order by ${sort}
-        </if>
         <if test="sort == null">
             order by panel_template.create_time desc
         </if>
