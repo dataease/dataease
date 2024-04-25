@@ -1288,6 +1288,7 @@ export default {
     label_shadow_color: 'Shadow Color',
     content_formatter: 'Content Format',
     label_reserve_decimal_count: 'Reserve Decimal',
+    show_gap: 'Show Gap',
     inside: 'Inside',
     tooltip: 'Tips',
     tooltip_item: 'Data Item',

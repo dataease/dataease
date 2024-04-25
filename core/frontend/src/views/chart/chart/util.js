@@ -1117,7 +1117,6 @@ export const TYPE_CONFIGS = [
     icon: 'bar-time-range',
     properties: [
       'color-selector',
-
       'label-selector-ant-v',
       'tooltip-selector-ant-v',
       'x-axis-selector-ant-v',
@@ -1141,11 +1140,13 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-h'
+        'position-h',
+        'showGap'
       ],
       'tooltip-selector-ant-v': [
         'show',
-        'textStyle'
+        'textStyle',
+        'showGap'
       ],
       'x-axis-selector-ant-v': [
         'show',
@@ -3953,9 +3954,9 @@ export function adjustPosition(targetDom, parentDom, clickPosition, offset, init
     x: offsetX ? x + offsetX : x,
     y: offsetY ? y + offsetY : y
   }
-  const width = targetWidth ? targetWidth : initSize.width
-  const height = targetHeight ? targetHeight : initSize.height
-  if ( result.x + width > parentWidth ) {
+  const width = targetWidth || initSize.width
+  const height = targetHeight || initSize.height
+  if (result.x + width > parentWidth) {
     result.x = parentWidth - width
   }
   if (result.y + height > parentHeight) {
