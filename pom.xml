@@ -42,9 +42,10 @@
         <flatten-maven.version>1.3.0</flatten-maven.version>
         <maven.resources.version>3.3.1</maven.resources.version>
         <maven.exec.version>3.1.0</maven.exec.version>
-        <guava.version>31.1-jre</guava.version>
+        <guava.version>33.0.0-jre</guava.version>
         <selenium-java.version>4.19.1</selenium-java.version>
         <angus-mail.version>2.0.3</angus-mail.version>
+        <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
     </properties>
 
     <dependencyManagement>
@@ -108,6 +109,11 @@
                 <groupId>com.alibaba</groupId>
                 <artifactId>easyexcel</artifactId>
                 <version>${easyexcel.version}</version>
+            </dependency>
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql-connector-j.version}</version>
             </dependency>
 
         </dependencies>

@@ -14,6 +14,27 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.seleniumhq.selenium</groupId>
+            <artifactId>selenium-java</artifactId>
+            <version>${selenium-java.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.eclipse.angus</groupId>
+            <artifactId>angus-mail</artifactId>
+            <version>${angus-mail.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.eclipse.angus</groupId>
+                    <artifactId>angus-activation</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>api-base</artifactId>
             <version>${dataease.version}</version>
@@ -37,6 +58,12 @@
             <groupId>org.apache.calcite</groupId>
             <artifactId>calcite-core</artifactId>
             <version>${calcite-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
             <classifier>de</classifier>
         </dependency>
         <dependency>
@@ -98,22 +125,6 @@
 
             <dependencies>
                 <dependency>
-                    <groupId>org.seleniumhq.selenium</groupId>
-                    <artifactId>selenium-java</artifactId>
-                    <version>${selenium-java.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>org.eclipse.angus</groupId>
-                    <artifactId>angus-mail</artifactId>
-                    <version>${angus-mail.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.eclipse.angus</groupId>
-                            <artifactId>angus-activation</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
                 </dependency>
@@ -135,7 +146,7 @@
                             </filesets>
                         </configuration>
                     </plugin>
-                    <plugin>
+                    <!--<plugin>
                         <groupId>org.apache.maven.plugins</groupId>
                         <artifactId>maven-antrun-plugin</artifactId>
                         <executions>
@@ -156,7 +167,7 @@
                                 </goals>
                             </execution>
                         </executions>
-                    </plugin>
+                    </plugin>-->
                 </plugins>
             </build>
         </profile>
@@ -287,7 +298,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
                 <configuration>
-                    <finalName>CoreApplication</finalName>
+                    <!--<finalName>CoreApplication</finalName>-->
                     <layout>ZIP</layout>
                 </configuration>
                 <executions>
