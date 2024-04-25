@@ -804,7 +804,7 @@ onMounted(() => {
           v-model="state.basicStyleForm.topNLabel"
           size="small"
           :maxlength="50"
-          @blur="changeBasicStyle('topNLabel')"
+          @change="changeBasicStyle('topNLabel')"
         />
       </el-form-item>
     </div>
