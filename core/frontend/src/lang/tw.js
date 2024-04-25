@@ -1286,6 +1286,7 @@ export default {
     label: '標簽',
     label_position: '標簽位置',
     label_reserve_decimal_count: '保留小數',
+    show_gap: '顯示間隔值',
     label_bg: '標簽背景',
     label_shadow: '標簽陰影',
     label_shadow_color: '陰影顏色',

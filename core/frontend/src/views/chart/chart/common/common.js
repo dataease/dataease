@@ -438,7 +438,7 @@ export const configTopN = (data, chart) => {
   const initOtherItem = {
     ...cloneDeep(data[0]),
     name: i18n.t('datasource.other'),
-    value: 0,
+    value: 0
   }
   otherItems.reduce((p, n) => {
     p.value += n.value ?? 0

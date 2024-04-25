@@ -270,14 +270,14 @@
               :label="$t('chart.axis_label_length_limit')"
               class="form-item"
             >
-                <el-input-number
-                  v-model="axisForm.axisLabel.lengthLimit"
-                  :precision="0"
-                  :min="1"
-                  :max="50"
-                  size="mini"
-                  @change="changeYAxisStyle('axisLabel')"
-                />
+              <el-input-number
+                v-model="axisForm.axisLabel.lengthLimit"
+                :precision="0"
+                :min="1"
+                :max="50"
+                size="mini"
+                @change="changeYAxisStyle('axisLabel')"
+              />
             </el-form-item>
             <el-form-item
               :label="$t('chart.axis_label_rotate')"

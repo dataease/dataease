@@ -61,6 +61,16 @@
               @change="changeTooltipAttr('backgroundColor')"
             />
           </el-form-item>
+          <el-form-item
+            v-show="showProperty('showGap')"
+            :label="$t('chart.show_gap')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="tooltipForm.showGap"
+              @change="changeTooltipAttr('showGap')"
+            />
+          </el-form-item>
         </div>
       </el-form>
     </el-col>

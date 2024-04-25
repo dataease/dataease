@@ -47,8 +47,8 @@
     >
       <div class="download-export">
         <svg-icon
-          @click="downloadClick"
           icon-class="icon_download_outlined"
+          @click="downloadClick"
         />
       </div>
       <div
@@ -124,9 +124,12 @@
       </el-dropdown>
     </div>
 
-    <ExportExcel ref="ExportExcelRef"></ExportExcel>
+    <ExportExcel ref="ExportExcelRef" />
 
-    <ai-component v-if="aiBaseUrl" :base-url="aiBaseUrl"/>
+    <ai-component
+      v-if="aiBaseUrl"
+      :base-url="aiBaseUrl"
+    />
 
     <!--模板市场全屏显示框-->
     <el-dialog

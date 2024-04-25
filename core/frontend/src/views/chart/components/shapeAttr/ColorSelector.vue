@@ -349,7 +349,7 @@
             :min="1"
             :step-strictly="true"
             @change="changeColorCase('topN')"
-            />
+          />
           <span>{{ $t('chart.top_n_input_2') }}</span>
         </el-form-item>
         <el-form-item

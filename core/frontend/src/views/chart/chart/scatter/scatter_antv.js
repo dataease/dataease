@@ -8,8 +8,6 @@ import {
   getPadding,
   getSlider,
   getAnalyse,
-  getTooltipContainer,
-  TOOLTIP_TPL,
   configPlotTooltipEvent
 } from '@/views/chart/chart/common/common_antv'
 
@@ -91,7 +89,7 @@ export function baseScatterOptionAntV(container, chart, action) {
 
   plot.off('point:click')
   plot.on('point:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }

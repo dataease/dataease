@@ -174,6 +174,9 @@ export function getLabel(chart) {
         }
         // label value formatter
         if (chart.type && chart.type !== 'waterfall') {
+          if (chart.type === 'bar-time-range') {
+            label.content = ''
+          }
           label.formatter = function(param) {
             let xAxis, yAxis, extStack, xaxisExt
             let res = param.value
@@ -266,6 +269,12 @@ export function getLabel(chart) {
             } else if (chart.type === 'scatter' && xAxis && xAxis.length > 0 && xAxis[0].groupType === 'q') {
               // 针对散点图
               res = param.field
+            } else if (chart.type === 'bar-time-range') {
+              if (l.showGap) {
+                res = param.gap
+              } else {
+                res = param.values[0] + ' ~ ' + param.values[1]
+              }
             } else {
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
@@ -363,7 +372,10 @@ export function getTooltip(chart) {
         if (chart.type && chart.type !== 'waterfall') {
           if (chart.type === 'bar-group-stack') {
             tooltip.fields = []
+          } else if (chart.type === 'bar-time-range') {
+            tooltip.fields = ['gap', 'category', 'values', 'group', 'field']
           }
+
           tooltip.formatter = function(param) {
             let res = param.value
 
@@ -492,7 +504,10 @@ export function getTooltip(chart) {
               }
             } else if (chart.type === 'bar-time-range') {
               obj = { values: param.values, name: param.category }
-              res = param.values[0] + ' - ' + param.values[1]
+              res = param.values[0] + ' ~ ' + param.values[1]
+              if (t.showGap) {
+                res = res + ' (' + param.gap + ')'
+              }
             } else {
               res = param.value
             }
@@ -1266,7 +1281,7 @@ export const configTopN = (data, chart) => {
     ...data[0],
     field: i18n.t('datasource.other'),
     name: i18n.t('datasource.other'),
-    value: 0,
+    value: 0
   }
   otherItems.reduce((p, n) => {
     p.value += n.value ?? 0
@@ -1351,12 +1366,12 @@ export function configPlotTrendLine(chart, plot) {
         offsetY: 10
       })
     }
-    regLine.axis(false);
-    regLine.data(totalData);
+    regLine.axis(false)
+    regLine.data(totalData)
     regLine.line()
       .position('index*value')
       .color('color', color => color)
-      .style('trendId',trendId => {
+      .style('trendId', trendId => {
         const trend = trendLineMap[trendId]
         return {
           stroke: trend?.color ?? 'grey',
@@ -1425,7 +1440,7 @@ export function configAxisLabelLengthLimit(chart, plot) {
       return
     }
     const parentNode = e.event.target.parentNode
-    let labelTooltipDom = parentNode.getElementsByClassName('g2-axis-label-tooltip')?.[0]
+    const labelTooltipDom = parentNode.getElementsByClassName('g2-axis-label-tooltip')?.[0]
     if (labelTooltipDom) {
       labelTooltipDom.style.visibility = 'hidden'
     }

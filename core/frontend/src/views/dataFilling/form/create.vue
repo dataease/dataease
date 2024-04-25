@@ -443,7 +443,7 @@ export default {
             >
               <transition-group>
                 <div
-                  v-for="(item, $index) in componentList1"
+                  v-for="(item) in componentList1"
                   :key="item.type"
                   class="m-item base-component-item"
                   @click="addComponentItem(item)"
@@ -468,7 +468,7 @@ export default {
             >
               <transition-group>
                 <div
-                  v-for="(item, $index) in componentList2"
+                  v-for="(item) in componentList2"
                   :key="item.type"
                   class="m-item base-component-item"
                   @click="addComponentItem(item)"

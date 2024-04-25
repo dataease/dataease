@@ -444,7 +444,7 @@ export function timeRangeBarOptionAntV(container, chart, action) {
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }
@@ -535,7 +535,7 @@ export function baseBidirectionalBarOptionAntV(container, chart, action, isGroup
   const plot = new BidirectionalBar(container, options)
 
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }

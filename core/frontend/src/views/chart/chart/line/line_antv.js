@@ -109,7 +109,7 @@ export function baseLineOptionAntV(container, chart, action) {
   plot.on('point:click', action)
   // 趋势线
   configPlotTrendLine(chart, plot)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }
@@ -215,7 +215,7 @@ export function baseAreaOptionAntV(container, chart, action, isStack) {
   const plot = new Area(container, options)
 
   plot.on('point:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }

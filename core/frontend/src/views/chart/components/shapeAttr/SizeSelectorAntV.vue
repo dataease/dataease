@@ -266,7 +266,10 @@
             <el-radio label="custom">
               <span>{{ $t('chart.table_column_fixed') }}</span>
             </el-radio>
-            <el-radio v-if="equalsAny(chart.type, 'table-info', 'table-normal')" label="field">
+            <el-radio
+              v-if="equalsAny(chart.type, 'table-info', 'table-normal')"
+              label="field"
+            >
               <span>{{ $t('chart.table_column_custom') }}</span>
             </el-radio>
           </el-radio-group>
@@ -324,7 +327,10 @@
                 />
               </el-select>
             </el-col>
-            <el-col :span="12" :offset="2">
+            <el-col
+              :span="12"
+              :offset="2"
+            >
               <el-input
                 v-model.number="fieldColumnWidth.width"
                 type="number"
@@ -1885,7 +1891,7 @@ export default {
                 const fieldMap = this.sizeForm.tableFieldWidth.reduce((p, n) => {
                   p[n.fieldId] = n
                   return p
-                },{})
+                }, {})
                 this.sizeForm.tableFieldWidth.splice(0)
                 allAxis.forEach(item => {
                   let width = 10

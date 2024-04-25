@@ -715,7 +715,7 @@ public class DataFillDataService {
                             if (StringUtils.equalsIgnoreCase(field.getType(), "checkbox") ||
                                     StringUtils.equalsIgnoreCase(field.getType(), "select") && field.getSettings().isMultiple()) {
                                 List<String> list = new ArrayList<>();
-                                String[] strArr = excelRowData.split(",");
+                                String[] strArr = excelRowData.split(";");
                                 for (String str : strArr) {
                                     if (StringUtils.isNotBlank(str)) {
                                         list.add(str);

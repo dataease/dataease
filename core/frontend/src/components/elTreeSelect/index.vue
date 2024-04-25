@@ -40,8 +40,7 @@
         v-model="keywords"
         size="mini"
         class="input-with-select mb10"
-      >
-      </el-input>
+      />
       <p
         v-if="selectParams.multiple"
         class="tree-select-all"

@@ -424,10 +424,10 @@ export default {
 
       for (let i = 0; i < this.checkTableList.length; i++) {
         const table = this.tables.find(
-            (ele) => ele.name === this.checkTableList[i]
+          (ele) => ele.name === this.checkTableList[i]
         )
-        if(table.setKey && table.keys.length === 0 ){
-          this.openMessageSuccess(this.checkTableList[i] + this.$t('dataset.no_set_key')  , 'error')
+        if (table.setKey && table.keys.length === 0) {
+          this.openMessageSuccess(this.checkTableList[i] + this.$t('dataset.no_set_key'), 'error')
           return
         }
         tables.push({
@@ -437,7 +437,7 @@ export default {
           type: 'api',
           syncType: syncType,
           mode: parseInt(mode),
-          info: JSON.stringify({ table: this.checkTableList[i], setKey: table.setKey, keys: table.keys})
+          info: JSON.stringify({ table: this.checkTableList[i], setKey: table.setKey, keys: table.keys })
         })
       }
       post('/dataset/table/batchAdd', tables)

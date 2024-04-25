@@ -12,6 +12,10 @@ Wheres = "Wheres"
 Parenthesed = "Parenthesed"
 pogress = "pogress"
 Pogress = "Pogress"
+yoy = "yoy"
+YOY = "YOY"
+Leafs = "Leafs"
+leafs = "leafs"
 
 [files]
 extend-exclude = [

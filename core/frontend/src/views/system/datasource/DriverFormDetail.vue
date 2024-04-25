@@ -19,7 +19,8 @@
       label-width="180px"
       label-position="right"
     >
-      <el-form-item v-if="showItem(driverForm.id)"
+      <el-form-item
+        v-if="showItem(driverForm.id)"
         :label="$t('driver.driver')"
         prop="driverClass"
       >
@@ -30,13 +31,13 @@
         />
       </el-form-item>
       <el-form-item
-          :label="$t('driver.surpportVersions')"
-          prop="surpportVersions"
+        :label="$t('driver.surpportVersions')"
+        prop="surpportVersions"
       >
         <el-input
-            v-model="driverForm.surpportVersions"
-            style="width: 600px"
-            autocomplete="off"
+          v-model="driverForm.surpportVersions"
+          style="width: 600px"
+          autocomplete="off"
         />
       </el-form-item>
     </el-form>
@@ -63,7 +64,10 @@
         {{ uploading ? $t('dataset.uploading') : $t('dataset.upload_file') }}
       </deBtn>
     </el-upload>
-    <p class="tips" v-show="showItem(driverForm.id)">
+    <p
+      v-show="showItem(driverForm.id)"
+      class="tips"
+    >
       {{ $t('datasource.can_be_uploaded') }}
     </p>
     <div class="jar-cont">
@@ -305,13 +309,13 @@ export default {
     refreshType(form) {
       this.$emit('refresh-type', form)
     },
-    showItem(id){
-      if (id !== '' && id.indexOf("default") !== -1) {
+    showItem(id) {
+      if (id !== '' && id.indexOf('default') !== -1) {
         return false
       } else {
         return true
       }
-    },
+    }
   }
 }
 </script>

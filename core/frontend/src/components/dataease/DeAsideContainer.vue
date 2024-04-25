@@ -1,14 +1,19 @@
 <template>
   <el-aside
     :width="currentWidth"
-    @mouseenter.native="mouseenter"
-    @mouseleave.native="mouseleave"
     class="ms-aside-container"
     :class="{ retract: !sideTreeStatus }"
     :style="{'margin-left': !asideHidden ? 0 : '-' + currentWidth}"
+    @mouseenter.native="mouseenter"
+    @mouseleave.native="mouseleave"
   >
-    <DeArrowSide v-if="!close" @changeSideTreeStatus="changeSideTreeStatus" :style="sideStyle" :isInside="!sideTreeStatus"></DeArrowSide>
-    <slot/>
+    <DeArrowSide
+      v-if="!close"
+      :style="sideStyle"
+      :is-inside="!sideTreeStatus"
+      @changeSideTreeStatus="changeSideTreeStatus"
+    />
+    <slot />
     <de-horizontal-drag-bar
       v-if="isSystem"
       :type="type"
@@ -57,7 +62,7 @@ export default {
     return {
       asideHidden: false,
       currentWidth: '',
-      sideTreeStatus: true,
+      sideTreeStatus: true
     }
   },
   computed: {
@@ -65,7 +70,7 @@ export default {
       // 系统管理不需要拖拽菜单
       return this.isTemplate || (!this.$route.fullPath.includes('system') && this.showDragBar)
     },
-    sideStyle () {
+    sideStyle() {
       return this.sideTreeStatus ? { right: '-12px' } : { left: 0 }
     }
   },
@@ -80,11 +85,11 @@ export default {
       this.currentWidth = this.isCollapseWidth || this.type && getLayout(this.type) || this.width
     },
     mouseenter() {
-      if(!this.sideTreeStatus) return
+      if (!this.sideTreeStatus) return
       this.$store.dispatch('app/setArrowSide', true)
     },
     mouseleave() {
-      if(!this.sideTreeStatus) return
+      if (!this.sideTreeStatus) return
       this.$store.dispatch('app/setArrowSide', false)
     },
     changeSideTreeStatus(val) {
@@ -106,7 +111,7 @@ export default {
     position: relative;
     padding-bottom: 50px;
     overflow: visible;
-    
+
     &.retract {
       width: 0 !important;
       min-width: 0 !important;
