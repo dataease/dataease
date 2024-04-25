@@ -710,6 +710,8 @@ declare interface MapCfg {
  * 象限属性
  */
 declare interface QuadrantAttr {
+  xBaseline?: number
+  yBaseline?: number
   lineStyle: QuadrantLineStyle
   regionStyle: QuadrantCommonStyle[]
   labels: QuadrantLabelConf[]
