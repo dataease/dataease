@@ -16,10 +16,11 @@ import { BASE_VIEW_CONFIG } from '../../editor/util/chart'
 import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/canvasStyle'
 import { deepCopy } from '@/utils/utils'
 import { trackBarStyleCheck } from '@/utils/canvasUtils'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc } = storeToRefs(dvMainStore)
-
+const { emitter } = useEmitt()
 const props = defineProps({
   element: {
     type: Object,
@@ -149,7 +150,8 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
     container: containerId,
     chart: chart,
     scale: 1,
-    action
+    action,
+    quadrantDefaultBaseline
   })
   myChart?.render()
 }
@@ -296,7 +298,9 @@ const trackMenu = computed(() => {
   }
   return trackMenuInfo
 })
-
+const quadrantDefaultBaseline = defaultQuadrant => {
+  emitter.emit('quadrant-default-baseline', defaultQuadrant)
+}
 defineExpose({
   calcData,
   renderChart,
