@@ -216,8 +216,9 @@
             :label="$t('datasource.driver_name')"
             prop="name"
           >
-            <el-input :disabled="disabledEdit(driverForm.id)"
+            <el-input
               v-model="driverForm.name"
+              :disabled="disabledEdit(driverForm.id)"
               :placeholder="$t('fu.search_bar.please_input')"
             />
           </el-form-item>
@@ -458,8 +459,8 @@ export default {
     handleClick() {
       document.querySelector(`.${this.tabActive}`).scrollIntoView()
     },
-    disabledEdit(id){
-      if (id !== '' && id.indexOf("default") !== -1) {
+    disabledEdit(id) {
+      if (id !== '' && id.indexOf('default') !== -1) {
         return true
       } else {
         return false

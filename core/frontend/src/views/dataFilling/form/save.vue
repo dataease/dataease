@@ -467,7 +467,6 @@ export default {
           <el-table-column>
             <template
               slot="header"
-              slot-scope="scope"
             >
               {{ $t('data_fill.form.column_name') }}
             </template>

@@ -696,7 +696,7 @@ export default {
   methods: {
     async cancelEdit() {
       const params = this.configFromTabs?.id ? this.configFromTabs : this.$route.query
-      let { id, showModel } = params
+      const { id, showModel } = params
       await this.getDatasourceDetail(id, showModel)
       this.edit(this.params)
       this.changeType(true)

@@ -53,7 +53,7 @@ export function baseTreemapOptionAntV(container, chart, action) {
   const plot = new Treemap(container, options)
 
   plot.on('polygon:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }

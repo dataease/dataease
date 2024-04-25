@@ -96,7 +96,7 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import LabelNormalText from '@/views/chart/components/normal/LabelNormalText'
 import html2canvas from 'html2canvasde'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import {deepCopy, exportExcelDownload, exportImg, exportImgNew, imgUrlTrans} from '@/components/canvas/utils/utils'
+import { deepCopy, exportExcelDownload, exportImgNew, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { activeWatermark } from '@/components/canvas/tools/watermark'
 import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 

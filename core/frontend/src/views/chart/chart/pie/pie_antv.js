@@ -89,7 +89,7 @@ export function basePieOptionAntV(container, chart, action) {
   const plot = new Pie(container, options)
 
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }
@@ -162,7 +162,7 @@ export function basePieRoseOptionAntV(container, chart, action) {
   const plot = new Rose(container, options)
 
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }

@@ -659,9 +659,9 @@ export default {
       if (this.widgetInfo.name.indexOf('numberSelect') !== -1) {
         type = 'NUM'
       }
-      if(viewIds && viewIds.length > 0){
+      if (viewIds && viewIds.length > 0) {
         paramsWithIds(type, viewIds).then(res => {
-          this.childViews.datasetParams =  res.data
+          this.childViews.datasetParams = res.data
         })
       }
     },

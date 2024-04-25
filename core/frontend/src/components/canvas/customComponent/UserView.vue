@@ -239,7 +239,7 @@ import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
-import { Button } from "element-ui";
+import { Button } from 'element-ui'
 import bus from '@/utils/bus'
 import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
@@ -760,63 +760,63 @@ export default {
       bus.$emit('data-export-center')
     },
     openMessageLoading(cb) {
-      const h = this.$createElement;
-      const iconClass = `el-icon-loading`;
-      const customClass = `de-message-loading de-message-export`;
+      const h = this.$createElement
+      const iconClass = `el-icon-loading`
+      const customClass = `de-message-loading de-message-export`
       this.$message({
-        message: h("p", null, [
+        message: h('p', null, [
           this.$t('data_export.exporting'),
           h(
             Button,
             {
               props: {
-                type: "text",
-                size: "mini",
+                type: 'text',
+                size: 'mini'
               },
-              class: "btn-text",
+              class: 'btn-text',
               on: {
                 click: () => {
-                  cb();
-                },
-              },
+                  cb()
+                }
+              }
             },
-            this.$t('data_export.export_center'),
+            this.$t('data_export.export_center')
           ),
-          this.$t('data_export.export_info'),
+          this.$t('data_export.export_info')
         ]),
         iconClass,
         showClose: true,
-        customClass,
-      });
+        customClass
+      })
     },
     openMessageSuccess(text, type, cb) {
-      const h = this.$createElement;
-      const iconClass = `el-icon-${type || "success"}`;
-      const customClass = `de-message-${type || "success"} de-message-export`;
+      const h = this.$createElement
+      const iconClass = `el-icon-${type || 'success'}`
+      const customClass = `de-message-${type || 'success'} de-message-export`
       this.$message({
-        message: h("p", null, [
-          h("span", null, text),
+        message: h('p', null, [
+          h('span', null, text),
           h(
             Button,
             {
               props: {
-                type: "text",
-                size: "mini",
+                type: 'text',
+                size: 'mini'
               },
-              class: "btn-text",
+              class: 'btn-text',
               on: {
                 click: () => {
-                  cb();
-                },
-              },
+                  cb()
+                }
+              }
             },
-            this.$t('data_export.export_center'),
-          ),
+            this.$t('data_export.export_center')
+          )
         ]),
         iconClass,
         showClose: true,
-        customClass,
-      });
+        customClass
+      })
     },
     exportExcel() {
       this.dialogLoading = true
@@ -826,7 +826,7 @@ export default {
         }
 
         if (val && val.success === false) {
-          this.openMessageSuccess( `${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error',this.exportData);
+          this.openMessageSuccess(`${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error', this.exportData)
         }
         this.dialogLoading = false
       })
@@ -967,11 +967,14 @@ export default {
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
         customAttrChart.label.show = false
       }
+      const data = this.chart.data
+      delete this.chart.data
       this.chart = {
         ...this.chart,
         customAttr: JSON.stringify(customAttrChart),
         customStyle: JSON.stringify(customStyleChart)
       }
+      this.chart.data = data
     },
     getData(id, cache = true, dataBroadcast = false) {
       if (this.requestStatus === 'waiting') {
@@ -1031,8 +1034,12 @@ export default {
           try {
             // 将视图传入echart组件
             if (response.success) {
+              const data = response.data.data
+              delete response.data.data
               this.chart = response.data
               this.view = response.data
+              this.chart.data = data
+              this.view.data = data
               if (this.chart.type.includes('table')) {
                 this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
               }

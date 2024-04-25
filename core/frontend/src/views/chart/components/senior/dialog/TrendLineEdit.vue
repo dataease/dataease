@@ -172,7 +172,7 @@ export default {
         { label: this.$t('chart.regression_log'), value: 'log' },
         { label: this.$t('chart.regression_quad'), value: 'quad' },
         { label: this.$t('chart.regression_pow'), value: 'pow' },
-        { label: this.$t('chart.regression_loess'), value: 'loess' },
+        { label: this.$t('chart.regression_loess'), value: 'loess' }
       ],
       lineOptions: [
         { label: this.$t('chart.line_type_solid'), value: 'solid' },

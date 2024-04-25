@@ -344,7 +344,7 @@
 
 <script>
 import { columnOptions } from './options'
-import {addOrder, formatOrders} from '@/utils/index'
+import { addOrder, formatOrders } from '@/utils/index'
 import { datasetTaskList, post } from '@/api/dataset/dataset'
 import { hasDataPermission } from '@/utils/permission'
 import GridTable from '@/components/gridTable/index.vue'
@@ -496,13 +496,13 @@ export default {
       this.search()
     },
     sortChange({ column, prop, order }) {
-      this.orderConditions = [];
+      this.orderConditions = []
       if (!order) {
-        this.search(true);
-        return;
+        this.search(true)
+        return
       }
-      addOrder({ field: prop, value: order }, this.orderConditions);
-      this.search(true);
+      addOrder({ field: prop, value: order }, this.orderConditions)
+      this.search(true)
     },
     handleCurrentChange(currentPage) {
       this.paginationConfig.currentPage = currentPage
