@@ -289,7 +289,7 @@ export function exportDataset(data) {
     url: 'dataset/table/exportDataset',
     method: 'post',
     data: data,
-    loading: true,
+    loading: true
   })
 }
 
