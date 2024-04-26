@@ -461,7 +461,17 @@ public class CalciteProvider {
                 }
                 resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
                 while (resultSet.next()) {
-                    datasetTableFields.add(getTableFieldDesc(datasourceRequest, resultSet));
+                    TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet);
+                    boolean repeat = false;
+                    for (TableField ele : datasetTableFields) {
+                        if (StringUtils.equalsIgnoreCase(ele.getOriginName(), tableFieldDesc.getOriginName())) {
+                            repeat = true;
+                            break;
+                        }
+                    }
+                    if (!repeat) {
+                        datasetTableFields.add(tableFieldDesc);
+                    }
                 }
             } catch (Exception e) {
                 DEException.throwException(e.getMessage());
