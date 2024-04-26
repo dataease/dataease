@@ -371,7 +371,7 @@ const styleOptionMountedKeyArray = [
 const styleOptionKeyArray = [
   {
     value: 'opacity',
-    label: '透明度',
+    label: '不透明度',
     customOption: opacitySizeList,
     width: '90px',
     icon: 'dv-style-opacity'
