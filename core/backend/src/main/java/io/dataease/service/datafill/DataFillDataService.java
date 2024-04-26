@@ -41,6 +41,7 @@ import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
 import java.math.BigDecimal;
+import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -171,7 +172,15 @@ public class DataFillDataService {
         List<String[]> countData = datasourceProvider.getData(datasourceRequest);
         long count = NumberUtils.toLong(countData.get(0)[0]);
 
-        String searchSql = extDDLProvider.searchSql(dataFillForm.getTableName(), searchFields, whereSql, searchRequest.getPageSize(), (searchRequest.getCurrentPage() - 1) * searchRequest.getPageSize());
+        long totalPage = new BigDecimal(count).divide(new BigDecimal(searchRequest.getPageSize()), 0, RoundingMode.CEILING).longValue();
+
+        long currentPage = totalPage < searchRequest.getCurrentPage() ? totalPage - 1 : searchRequest.getCurrentPage();
+
+        if (currentPage < 1) {
+            currentPage = 1;
+        }
+
+        String searchSql = extDDLProvider.searchSql(dataFillForm.getTableName(), searchFields, whereSql, searchRequest.getPageSize(), (currentPage - 1) * searchRequest.getPageSize());
         datasourceRequest.setQuery(searchSql);
 
         List<String[]> data2 = datasourceProvider.getData(datasourceRequest);
@@ -241,7 +250,7 @@ public class DataFillDataService {
                 .setFields(fields)
                 .setTotal(count)
                 .setPageSize(searchRequest.getPageSize())
-                .setCurrentPage(searchRequest.getCurrentPage());
+                .setCurrentPage(currentPage);
     }
 
 
@@ -378,7 +387,7 @@ public class DataFillDataService {
                         uniqueMap.putIfAbsent(name, new ArrayList<>());
                         if (uniqueMap.get(name).contains(data.get(name).toString())) {
                             //提前判断录入的数据有没有unique字段重复的
-                            DataEaseException.throwException(extTableFields.get(name).getSettings().getName() + " 值不能重复");
+                            DataEaseException.throwException("[" + extTableFields.get(name).getSettings().getName() + "] 值: " + data.get(name) + " 不能重复");
                         } else {
                             uniqueMap.get(name).add(data.get(name).toString());
                         }
@@ -416,7 +425,7 @@ public class DataFillDataService {
                         long count = NumberUtils.toLong(countData.get(0)[0]);
 
                         if (count > 0) {
-                            DataEaseException.throwException(extTableFields.get(uniqueField.getFiledName()).getSettings().getName() + " 值不能重复");
+                            DataEaseException.throwException("[" + extTableFields.get(uniqueField.getFiledName()).getSettings().getName() + "] 值: " + data.get(name) + " 在数据库中已存在, 不能重复");
                         }
 
                     }
@@ -684,14 +693,10 @@ public class DataFillDataService {
                 if (i < excelDatum.size()) {
                     excelRowData = excelDatum.get(i);
                 }
-                if (StringUtils.isBlank(excelRowData)) { //处理必填，这里如果是字符串格式的，强制改成空字符串防止报错，其他类型都直接报错
+                if (StringUtils.isBlank(excelRowData)) { //处理必填
+                    excelRowData = null;
                     if (field.getSettings().isRequired()) {
-                        if (field.getSettings().getMapping().getType().equals(ExtTableField.BaseType.nvarchar) ||
-                                field.getSettings().getMapping().getType().equals(ExtTableField.BaseType.text)) {
-                            excelRowData = StringUtils.EMPTY;
-                        } else {
-                            DataEaseException.throwException(field.getSettings().getName() + "不能为空");
-                        }
+                        DataEaseException.throwException("[" + field.getSettings().getName() + "] 不能为空");
                     }
                 }
                 if (excelRowData == null) {
@@ -709,7 +714,11 @@ public class DataFillDataService {
                             break;
                         case datetime:
                             Date date = getDate(field, excelRowData);
-                            rowData.put(field.getSettings().getMapping().getColumnName(), date.getTime());
+                            Long time = date == null ? null : date.getTime();
+                            if (time != null && time < 0) {
+                                throw new Exception("时间不能小于1970/01/01");
+                            }
+                            rowData.put(field.getSettings().getMapping().getColumnName(), time);
                             break;
                         default:
                             if (StringUtils.equalsIgnoreCase(field.getType(), "checkbox") ||
@@ -723,11 +732,23 @@ public class DataFillDataService {
                                 }
                                 if (field.getSettings().isRequired()) {
                                     if (CollectionUtils.isEmpty(list)) {
-                                        DataEaseException.throwException(field.getSettings().getName() + "不能为空");
+                                        DataEaseException.throwException("[" + field.getSettings().getName() + "] 不能为空");
                                     }
                                 }
                                 rowData.put(field.getSettings().getMapping().getColumnName(), gson.toJson(list));
                             } else {
+                                //校验手机号，校验邮箱格式
+                                if (StringUtils.equalsAnyIgnoreCase(field.getSettings().getInputType(), "tel")) {
+                                    if (!excelRowData.matches("^1[3|4|5|7|8][0-9]{9}$")) {
+                                        throw new Exception(Translator.get("i18n_wrong_tel"));
+                                    }
+                                }
+                                if (StringUtils.equalsAnyIgnoreCase(field.getSettings().getInputType(), "email")) {
+                                    if (!excelRowData.matches("^[a-zA-Z0-9_._-]+@[a-zA-Z0-9_-]+(\\.[a-zA-Z0-9_-]+)+$")) {
+                                        throw new Exception(Translator.get("i18n_wrong_email"));
+                                    }
+                                }
+
                                 rowData.put(field.getSettings().getMapping().getColumnName(), excelRowData);
                             }
                     }
@@ -735,7 +756,7 @@ public class DataFillDataService {
                 } catch (DataEaseException e) {
                     DataEaseException.throwException(e.getMessage());
                 } catch (Exception e) {
-                    DataEaseException.throwException(field.getSettings().getName() + "格式错误");
+                    DataEaseException.throwException("[" + field.getSettings().getName() + "] 值: " + excelRowData + " 格式解析错误: " + e.getMessage());
                 }
             }
 
@@ -755,6 +776,9 @@ public class DataFillDataService {
     }
 
     private static Date getDate(ExtTableField field, String excelRowData) throws ParseException {
+        if (StringUtils.isBlank(excelRowData)) {
+            return null;
+        }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //默认会拿到这种格式的
         if (field.getSettings().isEnableTime()) {
             sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
