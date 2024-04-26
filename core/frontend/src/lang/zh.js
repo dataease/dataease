@@ -2269,6 +2269,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    export_pixel: '导出分辨率',
     app_export_tips: '当前仪表板中[{0}]属于模版视图，无法导出，请先设置数据集！',
     required_tips: '必填项不能为空！',
     filter_no_select: '过滤组件无需选择',
@@ -3219,5 +3220,11 @@ export default {
     export_from: '导出来源',
     export_obj: '导出对象',
     export_time: '导出时间'
+  },
+  link_ticket: {
+    require: '必选',
+    back: '返回公共链接设置页面',
+    refresh: '刷新',
+    time_tips: '单位: 分钟，范围: [0-1440],0代表无期限，自首次使用ticket访问开始'
   }
 }

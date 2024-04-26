@@ -2268,6 +2268,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    export_pixel: '導出分辨率',
     app_export_tips: '當前儀表板中[{0}]屬於模板視圖，無法導出，請先設置數據集！',
     required_tips: '必填項不能爲空！',
     filter_no_select: '過濾組件無需選擇',
@@ -3218,5 +3219,11 @@ export default {
     export_from: '匯出來源',
     export_obj: '匯出對象',
     export_time: '匯出時間'
+  },
+  link_ticket: {
+    require: '必選',
+    back: '返回公共鏈接設置頁面',
+    refresh: '刷新',
+    time_tips: '單位: 分鐘，範圍: [0-1440],0代表無期限，自首次使用ticket訪問開始'
   }
 }
