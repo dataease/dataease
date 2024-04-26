@@ -505,7 +505,7 @@ export default {
         },
         {
           paramKey: 'loginlimit.openModifyPwd',
-          paramValue: this.formInline.open,
+          paramValue: this.formInline.openModifyPwd,
           type: 'text',
           sort: 5
         },
