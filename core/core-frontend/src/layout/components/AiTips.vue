@@ -42,7 +42,7 @@ onMounted(() => {
 .ai-popper-tips {
   z-index: 10001 !important;
   padding: 24px !important;
-  box-shadow: none;
+  box-shadow: none !important;
   background: var(--ed-color-primary) !important;
   .ed-popper__arrow::before {
     border: 1px solid var(--ed-color-primary) !important;
