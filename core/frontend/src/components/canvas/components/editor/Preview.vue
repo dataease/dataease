@@ -833,7 +833,10 @@ export default {
         const componentData = deepCopy(this.componentData)
         componentData.forEach(component => {
           if (component.type === 'custom') {
-            component.style = deepCopy(this.findSourceComponent(component.id).style)
+            const sourceComponent = this.findSourceComponent(component.id)
+            if (sourceComponent?.style) {
+              component.style = deepCopy(this.findSourceComponent(component.id).style)
+            }
           }
           Object.keys(component.style).forEach(key => {
             if (this.needToChangeHeight.includes(key)) {
