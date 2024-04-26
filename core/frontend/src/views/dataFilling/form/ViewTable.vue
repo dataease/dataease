@@ -1,5 +1,8 @@
 <template>
-  <div class="view-table">
+  <div
+    v-if="hasDataPermission('use', param.privileges)"
+    class="view-table"
+  >
     <el-row>
       <el-col
         class="de-dataset-name"
@@ -87,6 +90,7 @@
         name="record"
       />
       <el-tab-pane
+        v-if="hasDataPermission('grant', param.privileges)"
         :label="$t('data_fill.form.task_manage')"
         :lazy="true"
         name="task"
@@ -108,11 +112,13 @@
             @click="addData"
           >{{ $t('data_fill.data.add_data') }}</el-button>
           <el-button
+            v-if="hasDataPermission('write', param.privileges)"
             icon="el-icon-download"
             size="small"
             @click="downloadTemplate"
           >{{ $t('data_fill.data.download_template') }}</el-button>
           <el-upload
+            v-if="hasDataPermission('write', param.privileges)"
             :action="`${baseUrl}dataFilling/form/${param.id}/excel/upload`"
             :multiple="false"
             :show-file-list="false"
@@ -213,6 +219,7 @@
             >
               <template slot-scope="scope">
                 <el-button
+                  v-if="hasDataPermission('write', param.privileges)"
                   type="text"
                   @click="updateRow(scope.row.data)"
                 >
@@ -225,6 +232,7 @@
                   {{ $t('data_fill.form.show') }}
                 </el-button>
                 <el-button
+                  v-if="hasDataPermission('write', param.privileges)"
                   type="text"
                   @click="deleteRow(scope.row.data[paginationConfig.key])"
                 >
