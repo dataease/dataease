@@ -129,6 +129,10 @@ public class XAuthServer {
         if (StringUtils.equals("panel", sourceType)) {
             return SysLogConstants.SOURCE_TYPE.PANEL;
         }
+
+        if (StringUtils.equals("data_fill", sourceType)) {
+            return SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM;
+        }
         return null;
     }
 
