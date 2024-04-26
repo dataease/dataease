@@ -530,7 +530,7 @@ public class ChartDataManage {
                 String originSql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);// 明细表强制加排序
                 String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                 querySql = originSql + limit;
-                totalPageSql = "SELECT COUNT(*) FROM (" + originSql + ") COUNT_TEMP";
+                totalPageSql = "SELECT COUNT(*) FROM (" + SQLProvider.createQuerySQL(sqlMeta, false, false, view) + ") COUNT_TEMP";
             } else if (StringUtils.containsIgnoreCase(view.getType(), "quadrant")) {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 yAxis.addAll(extBubble);
