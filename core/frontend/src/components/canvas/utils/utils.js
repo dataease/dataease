@@ -469,7 +469,7 @@ export function getCacheTree(treeName) {
 }
 
 export function exportExcelDownload(chart, snapshot, width, height, loadingWrapper, downloadParams, callBack) {
-  if ((chart.render === 'echarts' || ['text', 'label'.includes(chart.type)]) && !(chart.data?.series?.length && chart.data?.series[0].data?.length)) {
+  if ((chart.render === 'echarts' || ['text', 'label'].includes(chart.type)) && !(chart.data?.series?.length && chart.data?.series[0].data?.length)) {
     callBack()
     return
   } else if ((chart.render === 'antv' && !['text', 'label'].includes(chart.type)) && !chart.data?.data?.length) {
