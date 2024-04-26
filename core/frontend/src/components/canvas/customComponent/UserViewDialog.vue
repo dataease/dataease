@@ -282,19 +282,7 @@ export default {
       }
     },
     exportExcel(callBack) {
-      const _this = this
-      if (this.isOnlyDetails) {
-        _this.exportExcelDownload(null, null, null, callBack)
-      } else {
-        if (this.showChartCanvas) {
-          html2canvas(document.getElementById('chartCanvas')).then(canvas => {
-            const snapshot = canvas.toDataURL('image/jpeg', 1)
-            _this.exportExcelDownload(snapshot, canvas.width, canvas.height, callBack)
-          })
-        } else {
-          _this.exportExcelDownload(null, null, null, callBack)
-        }
-      }
+      this.exportExcelDownload(null, null, null, callBack)
     },
     exportSourceDetails(callBack) {
       const loadingWrapper = { val: this.linkLoading }
