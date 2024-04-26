@@ -721,7 +721,19 @@ public class DataFillDataService {
                             rowData.put(field.getSettings().getMapping().getColumnName(), time);
                             break;
                         default:
-                            if (StringUtils.equalsIgnoreCase(field.getType(), "checkbox") ||
+                            if (StringUtils.equalsIgnoreCase(field.getType(), "select") && !field.getSettings().isMultiple()) {
+                                boolean has = false;
+                                for (ExtTableField.Option option : field.getSettings().getOptions()) {
+                                    if (StringUtils.equals((String) option.getValue(), excelRowData)) {
+                                        has = true;
+                                        break;
+                                    }
+                                }
+                                if (!has) {
+                                    DataEaseException.throwException("[" + field.getSettings().getName() + "] 值: " + excelRowData + " 不在范围内");
+                                }
+                                rowData.put(field.getSettings().getMapping().getColumnName(), excelRowData);
+                            } else if (StringUtils.equalsIgnoreCase(field.getType(), "checkbox") ||
                                     StringUtils.equalsIgnoreCase(field.getType(), "select") && field.getSettings().isMultiple()) {
                                 List<String> list = new ArrayList<>();
                                 String[] strArr = excelRowData.split(";");
@@ -735,7 +747,27 @@ public class DataFillDataService {
                                         DataEaseException.throwException("[" + field.getSettings().getName() + "] 不能为空");
                                     }
                                 }
-                                rowData.put(field.getSettings().getMapping().getColumnName(), gson.toJson(list));
+
+                                List<String> result = new ArrayList<>();
+                                if (CollectionUtils.isNotEmpty(list)) {
+                                    for (String str : list) {
+                                        boolean has = false;
+                                        for (ExtTableField.Option option : field.getSettings().getOptions()) {
+                                            if (StringUtils.equals((String) option.getValue(), str)) {
+                                                has = true;
+                                                break;
+                                            }
+                                        }
+                                        if (has) {
+                                            result.add(str);
+                                        }
+                                    }
+                                    if (CollectionUtils.isEmpty(result)) {
+                                        DataEaseException.throwException("[" + field.getSettings().getName() + "] 输入值不在范围内");
+                                    }
+                                }
+
+                                rowData.put(field.getSettings().getMapping().getColumnName(), gson.toJson(result));
                             } else {
                                 //校验手机号，校验邮箱格式
                                 if (StringUtils.equalsAnyIgnoreCase(field.getSettings().getInputType(), "tel")) {
