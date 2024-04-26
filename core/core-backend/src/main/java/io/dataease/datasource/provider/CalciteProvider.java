@@ -981,6 +981,23 @@ public class CalciteProvider {
         }
     }
 
+    public void updateDsPoolAfterCheckStatus(DatasourceDTO datasourceDTO) throws DEException {
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, datasourceDTO);
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
+        try {
+            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            SchemaPlus rootSchema = calciteConnection.getRootSchema();
+            if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) == null) {
+                buildSchema(datasourceRequest, calciteConnection);
+            }
+        } catch (Exception e) {
+            DEException.throwException(e.getMessage());
+        }
+    }
+
     public void delete(CoreDatasource datasource) throws DEException {
         DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
         BeanUtils.copyBean(datasourceSchemaDTO, datasource);
