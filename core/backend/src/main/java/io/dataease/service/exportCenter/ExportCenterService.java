@@ -290,7 +290,7 @@ public class ExportCenterService {
                                 // with DataType
                                 if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && rowData[j] != null) {
                                     cell.setCellValue(Double.valueOf(rowData[j].toString()));
-                                } else {
+                                } else if(rowData[j] != null){
                                     cell.setCellValue(String.valueOf(rowData[j]));
                                 }
                             } catch (Exception e) {
@@ -496,7 +496,7 @@ public class ExportCenterService {
                                             // with DataType
                                             if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
                                                 cell.setCellValue(Double.valueOf(cellValObj.toString()));
-                                            } else {
+                                            } else if(cellValObj != null){
                                                 cell.setCellValue(cellValObj.toString());
                                             }
                                         } catch (Exception e) {
