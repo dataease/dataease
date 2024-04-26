@@ -173,6 +173,7 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    pwd_will_expired: '密碼將於%s天後過期，為了不影響正常使用，請及時進行修改！',
     component: {
       input: '單行輸入',
       textarea: '多行輸入',

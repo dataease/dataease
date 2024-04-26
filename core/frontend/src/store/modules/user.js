@@ -98,6 +98,7 @@ const actions = {
         commit('SET_PASSWORD_MODIFIED', passwordModified)
         localStorage.setItem('passwordModified', passwordModified)
         commit('SET_VALIDITY_PERIOD', data.validityPeriod)
+        localStorage.removeItem('pwd-period-warn')
         resolve()
       }).catch(error => {
         error?.response?.data?.message?.startsWith('pwdValidityPeriod') && commit('SET_LOGIN_MSG', '密码已过期，请联系管理员进行密码重置！')
@@ -174,6 +175,7 @@ const actions = {
         commit('RESET_STATE')
         resolve(customLogoutUrl || res.data)
         localStorage.removeItem('passwordModified')
+        localStorage.removeItem('pwd-period-warn')
       }).catch(error => {
         reject(error)
         if (error?.response?.data?.message) {

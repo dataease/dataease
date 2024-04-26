@@ -173,6 +173,7 @@ export default {
     default_login: 'Normal'
   },
   commons: {
+    pwd_will_expired: 'The password will expire in %s days. To avoid any disruption to your normal use, please update it promptly!',
     component: {
       input: 'Input',
       textarea: 'Textarea',

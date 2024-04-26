@@ -173,6 +173,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    pwd_will_expired: '密码将于%s天后过期，为了不影响正常使用，请及时进行修改！',
     component: {
       input: '单行输入',
       textarea: '多行输入',

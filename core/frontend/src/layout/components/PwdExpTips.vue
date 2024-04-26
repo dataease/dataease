@@ -29,11 +29,21 @@ export default {
   },
   computed: {
     pwdPeriodWarn() {
+      if (localStorage.getItem('pwd-period-warn')) {
+        return true
+      }
       return this.$store.state.user.validityPeriod > 0 && this.$store.state.user.validityPeriod < 8
     },
     warnMsg() {
+      if (localStorage.getItem('pwd-period-warn')) {
+        const timeText = localStorage.getItem('pwd-period-warn')
+        const temp = this.$t('commons.pwd_will_expired')
+        return temp.replace('%s', timeText)
+      }
       if (this.$store.state.user.validityPeriod > 0 && this.$store.state.user.validityPeriod < 8) {
-        return `密码将于${this.$store.state.user.validityPeriod}后过期，为了不影响正常使用，请及时进行修改！`
+        localStorage.setItem('pwd-period-warn', this.$store.state.user.validityPeriod)
+        const temp = this.$t('commons.pwd_will_expired')
+        return temp.replace('%s', this.$store.state.user.validityPeriod)
       }
       return null
     }
