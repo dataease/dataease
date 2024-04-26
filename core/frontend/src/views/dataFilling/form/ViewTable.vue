@@ -136,7 +136,8 @@
         </div>
         <div style="flex: 1">
           <grid-table
-            v-if="columns.length > 0"
+            v-if="columns.length > 0 && dataTableShow"
+            ref="dataTable"
             v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
             style="width: 100%; height: 100%"
             border
@@ -547,6 +548,7 @@ export default {
         Authorization: token,
         'Accept-Language': i18n.locale.replace('_', '-')
       },
+      dataTableShow: true,
       fileList: [],
       uploading: false,
       operateName: '',
@@ -642,6 +644,10 @@ export default {
         this.data = []
         this.records = []
         this.tasks = []
+        this.dataTableShow = false
+        this.$nextTick(() => {
+          this.dataTableShow = true
+        })
       }
       this.initTable(this.param.id)
     },
@@ -731,6 +737,7 @@ export default {
         if (res.data) {
           this.paginationConfig.key = res.data.key
           this.paginationConfig.total = res.data.total
+          this.paginationConfig.currentPage = res.data.currentPage
           const _data = []
           forEach(res.data.data, d => {
             const obj = {}
@@ -911,7 +918,7 @@ export default {
         const link = document.createElement('a')
         link.style.display = 'none'
         link.href = URL.createObjectURL(blob)
-        link.download = 'test.xlsx' // 下载的文件名
+        link.download = this.param.name + '.xlsx' // 下载的文件名
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)

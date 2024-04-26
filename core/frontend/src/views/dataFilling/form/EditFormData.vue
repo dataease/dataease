@@ -77,7 +77,12 @@ export default {
           name: this.$t('data_fill.form.email'),
           rules: [{ pattern: EMAIL_REGEX, message: this.$t('user.email_format_is_incorrect'), trigger: ['blur', 'change'] }]
         }
-      ]
+      ],
+      pickerOptions: {
+        disabledDate: (time) => {
+          return time.getTime() < new Date(0).getTime()
+        }
+      }
     }
   },
   watch: {},
@@ -343,6 +348,7 @@ export default {
               :placeholder="item.settings.placeholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
             <el-date-picker
               v-else-if="item.type === 'date' && item.settings.enableTime"
@@ -353,6 +359,7 @@ export default {
               :placeholder="item.settings.placeholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
             <el-date-picker
               v-else-if="item.type === 'dateRange' && !item.settings.enableTime"
@@ -365,6 +372,7 @@ export default {
               :end-placeholder="item.settings.endPlaceholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
             <el-date-picker
               v-else-if="item.type === 'dateRange' && item.settings.enableTime"
@@ -377,6 +385,7 @@ export default {
               :end-placeholder="item.settings.endPlaceholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
 
           </el-form-item>
