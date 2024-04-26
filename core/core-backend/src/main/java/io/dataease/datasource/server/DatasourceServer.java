@@ -655,9 +655,7 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         try {
             checkDatasourceStatus(coreDatasource);
-            if(StringUtils.isNotEmpty(lastStatus) && StringUtils.isNotEmpty(coreDatasource.getStatus()) && lastStatus.equalsIgnoreCase("Error") && coreDatasource.getStatus().equalsIgnoreCase("Success")){
-                calciteProvider.update(datasourceDTO);
-            }
+            calciteProvider.updateDsPoolAfterCheckStatus(datasourceDTO);
         } catch (Exception e) {
             coreDatasource.setStatus("Error");
             DEException.throwException(e.getMessage());
