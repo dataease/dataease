@@ -25,6 +25,10 @@ spring:
   jackson:
     parser:
       allow-numeric-leading-zeros: true
+    serialization:
+      fail-on-empty-beans: true
+    deserialization:
+      fail-on-unknown-properties: true
 management:
   health:
     redis:
