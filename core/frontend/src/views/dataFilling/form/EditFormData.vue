@@ -264,7 +264,7 @@ export default {
               :readonly="readonly"
               :placeholder="item.settings.placeholder"
               size="small"
-              :show-word-limit="item.value !== undefined && item.value.length > 250"
+              :show-word-limit="item.value !== undefined && item.value !== null && item.value.length > 250"
               maxlength="255"
             />
             <el-input-number
