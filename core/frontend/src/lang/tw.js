@@ -2157,6 +2157,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    export_pixel: '導出分辨率',
     app_export_tips: '當前儀表板中[{0}]屬於模板視圖，無法導出，請先設置數據集！',
     required_tips: '必填項不能爲空！',
     filter_no_select: '過濾組件無需選擇',
@@ -3095,5 +3096,21 @@ export default {
     geometry: '地理信息',
     onlinemap: '在線地圖',
     empty_desc: '暫無在線地圖key'
+  },
+  data_export: {
+    export_center: '資料匯出中心',
+    export_info: '查看進度，進行下載',
+    exporting: '後台匯出中,可前往',
+    del_all: '全部刪除',
+    export_failed: '匯出失敗',
+    export_from: '匯出來源',
+    export_obj: '匯出對象',
+    export_time: '匯出時間'
+  },
+  link_ticket: {
+    require: '必選',
+    back: '返回公共鏈接設置頁面',
+    refresh: '刷新',
+    time_tips: '單位: 分鐘，範圍: [0-1440],0代表無期限，自首次使用ticket訪問開始'
   }
 }

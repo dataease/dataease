@@ -2164,6 +2164,7 @@ export default {
     back_parent: 'Back to previous'
   },
   panel: {
+    export_pixel: 'Export pixel',
     app_export_tips: 'In the current dashboard, [{0}] belongs to a template view and cannot be exported. Please set up the dataset first!',
     required_tips: 'Cannot be empty!',
     filter_no_select: 'Filter components do not need to be selected',
@@ -2298,7 +2299,7 @@ export default {
     link_share: 'Share Link',
     over_time: 'Over time',
     link_expire: 'Link is expire',
-    link_share_desc: 'After opening the link, anyone can access the dashboard through this link.',
+    link_share_desc: 'Anyone can access the dashboard through this link.',
     share: 'Share',
     remove_share_confirm: 'Sure removel All share ?',
     share_in: 'Share With Me',
@@ -3103,5 +3104,21 @@ export default {
     geometry: 'Geometry',
     onlinemap: 'Online map',
     empty_desc: 'No map key'
+  },
+  data_export: {
+    export_center: 'Data Export Center',
+    export_info: 'View progress and download',
+    exporting: 'Exporting in the background, you can go to',
+    del_all: 'Delete all',
+    export_failed: 'Export failed',
+    export_from: 'Export source',
+    export_obj: 'Export object',
+    export_time: 'Export time'
+  },
+  link_ticket: {
+    require: 'Require',
+    back: 'Back to link',
+    refresh: 'Refresh',
+    time_tips: 'Unit: Minutes, Range: [0-1440], 0 represents no expiration, starting from the first use of the ticket'
   }
 }

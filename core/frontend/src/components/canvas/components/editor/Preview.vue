@@ -127,7 +127,7 @@
       >
         <span v-if="showChartInfoType==='enlarge' && hasDataPermission('export',panelInfo.privileges)&& showChartInfo && showChartInfo.type !== 'symbol-map'">
           <span style="font-size: 12px">
-            导出分辨率
+            {{ $t('panel.export_pixel') }}
           </span>
           <el-select
             v-model="pixel"
