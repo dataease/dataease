@@ -198,9 +198,6 @@ public class PermissionManage {
                 if (StringUtils.isNotEmpty(userEntity.getName())) {
                     expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userName}", userEntity.getName());
                 }
-                if (StringUtils.isNotEmpty(userEntity.getLabel())) {
-                    expressionTree = expressionTree.replaceAll("\\$\\{sysParams\\.userLabel}", userEntity.getLabel());
-                }
                 record.setExpressionTree(expressionTree);
                 DatasetRowPermissionsTreeObj tree = JsonUtil.parseObject(expressionTree, DatasetRowPermissionsTreeObj.class);
                 record.setTree(tree);
