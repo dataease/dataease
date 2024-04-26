@@ -504,6 +504,19 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
       })
     })
   }
+  if (chart.render === 'echarts' && chart.type === 'table-normal') {
+    const initTotal = fields.map(i => [2, 3].includes(i.deType) ? 0 : undefined)
+    initTotal[0] = '合计'
+    tableRow.reduce((p, n) => {
+      p.forEach((v, i) => {
+        if (!isNaN(v)) {
+          p[i] = v + n[excelHeaderKeys[i]]
+        }
+      })
+      return p
+    }, initTotal)
+    excelData.push(initTotal)
+  }
   const request = {
     proxy: null,
     viewId: chart.id,
