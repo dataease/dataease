@@ -2150,9 +2150,9 @@ export default {
   },
   pblink: {
     key_pwd: '请输入密码打开链接',
-    input_placeholder: '请输入4位数字或字母',
+    input_placeholder: '请输入4～10位数字或字母',
     pwd_error: '密码错误',
-    pwd_format_error: '请输入4位数字或字母',
+    pwd_format_error: '请输入4～10位数字或字母',
     sure_bt: '确定',
     back_parent: '返回上一级'
   },
