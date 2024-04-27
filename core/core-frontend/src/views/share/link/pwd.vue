@@ -67,7 +67,7 @@ const rule = reactive<FormRules>({
     { required: true, message: t('pblink.key_pwd'), trigger: 'blur' },
     {
       required: true,
-      pattern: /^(?=.*[A-Za-z])(?=.*\d)(?=.*[!@#$%^&*()_+])[A-Za-z\d!@#$%^&*()_+]{4,10}$/,
+      pattern: /^[A-Za-z\d!@#$%^&*()_+]{4,10}$/,
       message: t('pblink.pwd_format_error'),
       trigger: 'blur'
     }
