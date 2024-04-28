@@ -793,6 +793,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     setNowPanelJumpInfo(jumpInfo) {
       this.nowPanelJumpInfo = jumpInfo.baseJumpInfoMap
     },
+    setNowPanelJumpInfoInner(jumpInfo) {
+      this.nowPanelJumpInfo = jumpInfo
+    },
     setNowTargetPanelJumpInfo(jumpInfo) {
       this.nowPanelJumpInfoTargetPanel = jumpInfo.baseJumpInfoVisualizationMap
     },
@@ -1121,6 +1124,24 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.canvasStyleData = deepCopy(canvasStyleDataNew)
       this.componentData = []
       this.canvasViewInfo = {}
+    },
+    removeLinkageInfo(targetId) {
+      if (!!targetId && !!this.nowPanelTrackInfo) {
+        Object.keys(this.nowPanelTrackInfo).forEach(trackId => {
+          const targetInfo = this.nowPanelTrackInfo[trackId]
+          for (let i = 0; i < targetInfo.length; i++) {
+            if (targetInfo[i].indexOf(targetId) > -1) {
+              targetInfo.splice(i, 1)
+              i--
+            }
+          }
+        })
+        Object.keys(this.nowPanelTrackInfo).forEach(trackId => {
+          if (trackId.indexOf(targetId) > -1 || this.nowPanelTrackInfo[trackId].length === 0) {
+            delete this.nowPanelTrackInfo[trackId]
+          }
+        })
+      }
     },
     canvasDataInit() {
       this.canvasViewInfo = {}

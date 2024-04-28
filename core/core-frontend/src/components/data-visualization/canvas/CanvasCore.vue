@@ -867,6 +867,7 @@ function removeItem(index) {
       })
     }
     componentData.value.splice(index, 1)
+    dvMainStore.removeLinkageInfo(item['id'])
     if (!!checkedFields.length) {
       Array.from(new Set(checkedFields)).forEach(ele => {
         emitter.emit(`query-data-${ele}`)
