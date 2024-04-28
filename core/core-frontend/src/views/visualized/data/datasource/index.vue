@@ -402,9 +402,9 @@ const listDs = () => {
       if (!!id) {
         Object.assign(nodeInfo, cloneDeep(defaultInfo))
         dfsDatasourceTree(state.datasourceTree, id)
-        nextTick(() => {
-          dsListTree.value.setCurrentKey(id, true)
-        })
+        setTimeout(() => {
+          dsListTree.value.setCurrentKey(nodeInfo.id, true)
+        }, 100)
       }
     })
 }
