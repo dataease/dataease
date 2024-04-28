@@ -437,6 +437,23 @@ const validate = () => {
       return false
     }
 
+    if (!ele.defaultValueCheck) {
+      const isMultiple = +ele.displayType === 7 || ele.multiple
+      ele.selectValue = isMultiple ? [] : undefined
+      ele.defaultValue = isMultiple ? [] : undefined
+      return false
+    }
+
+    if (ele.displayType === '1') {
+      if (!ele.defaultValueCheck) return false
+      if (ele.timeType === 'fixed') {
+        if (!ele.defaultValue) {
+          ElMessage.error('默认时间不能为空!')
+          return true
+        }
+      }
+    }
+
     if (+ele.displayType === 7) {
       if (!ele.defaultValueCheck) return false
       if (ele.timeType === 'fixed') {
@@ -518,12 +535,6 @@ const validate = () => {
     if (ele.optionValueSource === 1 && !ele.field.id) {
       ElMessage.error('请选择数据集的选项值字段')
       return true
-    }
-
-    if (!ele.defaultValueCheck) {
-      const isMultiple = +ele.displayType === 7 || ele.multiple
-      ele.selectValue = isMultiple ? [] : undefined
-      ele.defaultValue = isMultiple ? [] : undefined
     }
 
     let displayTypeField = null
