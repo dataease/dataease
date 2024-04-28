@@ -13,7 +13,8 @@ const {
   canvasStyleData,
   canvasViewInfo,
   curOriginThemes,
-  dataPrepareState
+  dataPrepareState,
+  nowPanelTrackInfo
 } = storeToRefs(dvMainStore)
 
 let defaultCanvasInfo = {
@@ -81,6 +82,7 @@ export const snapshotStore = defineStore('snapshot', {
       dvMainStore.setComponentData(snapshotInfo.componentData)
       dvMainStore.setCanvasStyle(snapshotInfo.canvasStyleData)
       dvMainStore.setCanvasViewInfo(snapshotInfo.canvasViewInfo)
+      dvMainStore.setNowPanelJumpInfoInner(snapshotInfo.nowPanelTrackInfo)
       const curCacheViewIdInfo = deepCopy(this.cacheViewIdInfo)
       this.cacheViewIdInfo = snapshotInfo.cacheViewIdInfo
 
@@ -139,7 +141,8 @@ export const snapshotStore = defineStore('snapshot', {
           componentData: deepCopy(componentData.value),
           canvasStyleData: deepCopy(canvasStyleData.value),
           canvasViewInfo: deepCopy(canvasViewInfo.value),
-          cacheViewIdInfo: deepCopy(this.cacheViewIdInfo)
+          cacheViewIdInfo: deepCopy(this.cacheViewIdInfo),
+          nowPanelTrackInfo: deepCopy(nowPanelTrackInfo.value)
         }
         this.snapshotData[++this.snapshotIndex] = newSnapshot
         // 在 undo 过程中，添加新的快照时，要将它后面的快照清理掉
