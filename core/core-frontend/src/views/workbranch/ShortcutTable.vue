@@ -3,7 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, onMounted, computed } from 'vue'
 import type { TabsPaneContext } from 'element-plus-secondary'
 import GridTable from '@/components/grid-table/src/GridTable.vue'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import dayjs from 'dayjs'
 import { shortcutOption } from './ShortcutOption'
 /* import { XpackComponent } from '@/components/plugin' */
@@ -13,11 +13,17 @@ import { useCache } from '@/hooks/web/useCache'
 import { useUserStoreWithOut } from '@/store/modules/user'
 import ShareGrid from '@/views/share/share/ShareGrid.vue'
 import ShareHandler from '@/views/share/share/ShareHandler.vue'
+import { useAppStoreWithOut } from '@/store/modules/app'
+import { useEmbedded } from '@/store/modules/embedded'
 const userStore = useUserStoreWithOut()
 const { resolve } = useRouter()
 const { t } = useI18n()
 const interactiveStore = interactiveStoreWithOut()
 const { wsCache } = useCache()
+const appStore = useAppStoreWithOut()
+const embeddedStore = useEmbedded()
+const route = useRoute()
+const { push } = useRouter()
 defineProps({
   expand: {
     type: Boolean,
@@ -161,9 +167,26 @@ const handleCellClick = row => {
       window.open('#/panel/index?dvId=' + row.id, '_self')
     } else if (['dataV', 'screen'].includes(row.type)) {
       window.open('#/screen/index?dvId=' + row.id, '_self')
+    } else if (['dataset'].includes(row.type)) {
+      const routeName =
+        embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded' : 'dataset'
+      push({
+        name: routeName,
+        params: {
+          id: row.id
+        }
+      })
+    } else if (['datasource'].includes(row.type)) {
+      push({
+        name: 'datasource',
+        params: {
+          id: row.id
+        }
+      })
     }
   }
 }
+
 const setLoading = (val: boolean) => {
   loading.value = val
 }
