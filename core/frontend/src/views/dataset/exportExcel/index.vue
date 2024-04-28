@@ -21,6 +21,20 @@
       />
     </el-tabs>
     <de-btn
+      v-show="activeName === 'SUCCESS' && multipleSelection.length === 0"
+      secondary
+      icon="el-icon-delete"
+      @click="downLoadAll"
+    >{{ $t("data_export.download_all") }}
+    </de-btn>
+    <de-btn
+      v-show="activeName === 'SUCCESS' && multipleSelection.length !== 0"
+      secondary
+      icon="el-icon-delete"
+      @click="downLoadAll"
+    >{{ $t("data_export.download") }}
+    </de-btn>
+    <de-btn
       v-show="multipleSelection.length === 0"
       secondary
       icon="el-icon-delete"
@@ -163,6 +177,7 @@ import request from '@/utils/request'
 import { downloadFile, post } from '@/api/dataset/dataset'
 import bus from '@/utils/bus'
 import { Button } from 'element-ui'
+import { runInContext as tableData } from 'lodash'
 export default {
   mixins: [msgCfm],
   data() {
@@ -328,6 +343,39 @@ export default {
         this.drawerLoading = false
       })
     },
+    downLoadAll() {
+      if (this.multipleSelection.length === 0) {
+        this.tableData.forEach(item => {
+          downloadFile(item.id).then((res) => {
+            const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+            const link = document.createElement('a')
+            link.style.display = 'none'
+            link.href = URL.createObjectURL(blob)
+            link.download = item.fileName // 下载的文件名
+            document.body.appendChild(link)
+            link.click()
+            document.body.removeChild(link)
+          }).finally(() => {
+            this.exportDatasetLoading = false
+          })
+        })
+        return
+      }
+      this.multipleSelection.map((ele) => {
+        downloadFile(ele.id).then((res) => {
+          const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+          const link = document.createElement('a')
+          link.style.display = 'none'
+          link.href = URL.createObjectURL(blob)
+          link.download = ele.fileName // 下载的文件名
+          document.body.appendChild(link)
+          link.click()
+          document.body.removeChild(link)
+        }).finally(() => {
+          this.exportDatasetLoading = false
+        })
+      })
+    },
     downloadClick(item) {
       downloadFile(item.id).then((res) => {
         const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
@@ -354,15 +402,28 @@ export default {
       )
     },
     deleteField(item) {
-      request({
-        url: '/exportCenter/delete/' + item.id,
-        method: 'get'
-      }).then(
-        (res) => {
-          this.handleClick()
-        }
-      )
-      this.openMessageSuccess('commons.delete_success')
+      this.$confirm(this.$t('data_export.sure_del'), '', {
+        confirmButtonText: this.$t('commons.delete'),
+        cancelButtonText: this.$t('commons.cancel'),
+        cancelButtonClass: 'de-confirm-fail-btn de-confirm-fail-cancel',
+        confirmButtonClass: 'de-confirm-fail-btn de-confirm-fail-confirm',
+        customClass: 'de-confirm de-confirm-fail',
+        iconClass: 'el-icon-warning'
+      })
+        .then(() => {
+          request({
+            url: '/exportCenter/delete/' + item.id,
+            method: 'get'
+          }).then(
+            (res) => {
+              this.openMessageSuccess('commons.delete_success')
+              this.handleClick()
+            }
+          )
+        })
+        .catch(() => {
+          this.$info(this.$t('commons.delete_cancel'))
+        })
     },
     handleSelectionChange(val) {
       this.multipleSelection = val
@@ -392,6 +453,7 @@ export default {
               true
             ).then(
               (res) => {
+                this.openMessageSuccess('commons.delete_success')
                 this.handleClick()
               }
             )
@@ -399,7 +461,6 @@ export default {
           .catch(() => {
             this.$info(this.$t('commons.delete_cancel'))
           })
-        this.openMessageSuccess('commons.delete_success')
         return
       }
 
@@ -418,6 +479,7 @@ export default {
             true
           ).then(
             (res) => {
+              this.openMessageSuccess('commons.delete_success')
               this.handleClick()
             }
           )
@@ -425,7 +487,6 @@ export default {
         .catch(() => {
           this.$info(this.$t('commons.delete_cancel'))
         })
-      this.openMessageSuccess('commons.delete_success')
     },
 
     handleClose() {

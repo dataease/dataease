@@ -3226,7 +3226,9 @@ export default {
     sure_del: '确定删除该导出记录吗？',
     no_failed_file: '暂无失败文件',
     no_file: '暂无文件',
-    no_task: '暂无任务'
+    no_task: '暂无任务',
+    download_all: '下载全部',
+    download: '下载'
   },
   link_ticket: {
     require: '必选',

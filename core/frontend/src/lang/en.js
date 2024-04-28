@@ -3228,7 +3228,14 @@ export default {
     export_failed: 'Export failed',
     export_from: 'Export source',
     export_obj: 'Export object',
-    export_time: 'Export time'
+    export_time: 'Export time',
+    sure_del_all: 'Are you sure you want to delete all export records？',
+    sure_del: 'Are you sure you want to delete this export record？',
+    no_failed_file: 'No failed files',
+    no_file: 'No files available',
+    no_task: 'No tasks available',
+    download_all: 'Download All',
+    download: 'Download'
   },
   link_ticket: {
     require: 'Require',

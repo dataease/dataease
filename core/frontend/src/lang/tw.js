@@ -3220,7 +3220,14 @@ export default {
     export_failed: '匯出失敗',
     export_from: '匯出來源',
     export_obj: '匯出對象',
-    export_time: '匯出時間'
+    export_time: '匯出時間',
+    sure_del_all: '確定刪除全部導出記錄嗎？',
+    sure_del: '確定刪除該導出記錄嗎？',
+    no_failed_file: '暫無失敗文件',
+    no_file: '暫無文件',
+    no_task: '暫無任務',
+    download_all: '下載',
+    download: '下載'
   },
   link_ticket: {
     require: '必選',
