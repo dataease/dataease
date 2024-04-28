@@ -407,10 +407,9 @@ onBeforeUnmount(() => {
 
 const autoStyle = computed(() => {
   return {
-    height: 100 / scale.value + '%!important',
+    height: 20 * scale.value + 8 + 'px',
     width: 100 / scale.value + '%!important',
     left: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
-    top: 50 * (1 - 1 / scale.value) + '%', // 放大余量 除以 2
     transform: 'scale(' + scale.value + ')'
   }
 })
@@ -434,8 +433,8 @@ const autoHeightStyle = computed(() => {
     <div v-if="!isError" class="canvas-content">
       <div style="position: relative; height: 100%" :id="containerId"></div>
     </div>
-    <el-row :style="autoHeightStyle" v-if="showPage && !isError">
-      <div :style="autoStyle" class="table-page-info">
+    <el-row :style="autoStyle" v-if="showPage && !isError">
+      <div class="table-page-info">
         <div>共{{ state.pageInfo.total }}条</div>
         <el-pagination
           class="table-page-content"
@@ -474,7 +473,6 @@ const autoHeightStyle = computed(() => {
   height: 20px;
   display: flex;
   width: 100%;
-  justify-content: space-between;
   color: grey;
   :deep(.table-page-content) {
     button,
