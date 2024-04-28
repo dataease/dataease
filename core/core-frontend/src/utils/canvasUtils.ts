@@ -131,6 +131,10 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
         componentItem.y = 1 + (componentItem.y - 1) * 2
         componentItem.sizeX = componentItem.sizeX * 2
         componentItem.sizeY = componentItem.sizeY * 2
+        componentItem.mx = 1 + (componentItem.mx - 1) * 2
+        componentItem.my = 1 + (componentItem.my - 1) * 2
+        componentItem.mSizeX = componentItem.mSizeX * 2
+        componentItem.mSizeY = componentItem.mSizeY * 2
       }
     })
     const curPreviewGap =
