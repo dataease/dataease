@@ -125,6 +125,8 @@
     </div>
 
     <ExportExcel ref="ExportExcelRef" />
+    <ai-tips @confirm="aiTipsConfirm" v-if="showOverlay" class="ai-icon-tips"></ai-tips>
+    <div v-if="showOverlay" class="overlay"></div>
 
     <ai-component
       v-if="aiBaseUrl"
@@ -165,9 +167,11 @@ import TemplateMarket from '@/views/panel/templateMarket'
 import { changeFavicon, inOtherPlatform } from '@/utils/index'
 import AiComponent from '@/layout/components/AiComponent'
 import { findBaseParams } from '@/api/ai/aiComponent'
+import AiTips from "@/layout/components/AiTips.vue";
 export default {
   name: 'Topbar',
   components: {
+    AiTips,
     AiComponent,
     TemplateMarket,
     AppLink,
@@ -183,6 +187,7 @@ export default {
   },
   data() {
     return {
+      showOverlay: false,
       aiBaseUrl: null,
       uiInfo: null,
       logoUrl: null,
@@ -308,10 +313,15 @@ export default {
     })
   },
   methods: {
+    aiTipsConfirm(){
+      localStorage.setItem('DE1.0-AI-TIPS-CHECK', 'CHECKED')
+      this.showOverlay = false
+    },
     dataExportCenter() {
       this.downloadClick()
     },
     async initAiBase() {
+      const aiTipsCheck = localStorage.getItem('DE1.0-AI-TIPS-CHECK')
       await findBaseParams().then(rsp => {
         const params = rsp.data
         if (params && params['ai.baseUrl']) {
@@ -527,6 +537,21 @@ export default {
 
 .dialog-css ::v-deep .el-dialog__header {
   display: none;
+}
+
+.ai-icon-tips {
+  font-size: 24px !important;
+  z-index: 10001;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+  z-index: 10000;
 }
 
 </style>
