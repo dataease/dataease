@@ -29,7 +29,6 @@
     }
     return (false)
   }
-  console.log('document.cookie', document.cookie);
   const link = getQueryVariable('link')
   const user = getQueryVariable('user')
   const terminal = getQueryVariable('terminal')
@@ -37,18 +36,14 @@
   const fromLink = getQueryVariable('fromLink')
   const ticket = getQueryVariable('ticket')
   const baseUrl = window.location.pathname.replace('link.html', '')
-  console.log('encodeURIComponent(link)', encodeURIComponent(link));
-  console.log('link(link)', link);
   let url = baseUrl + "#/delink?link=" + encodeURIComponent(link)
   if (terminal) {
     url += '&terminal=' + terminal
   }
   if (user) {
-    console.log('user(link)', encodeURIComponent(user));
     url += '&user=' + encodeURIComponent(user)
   }
   if (attachParams) {
-  console.log('attachParams(link)', encodeURIComponent(attachParams));
     url += '&attachParams=' + encodeURIComponent(attachParams)
   }
   if (fromLink) {
