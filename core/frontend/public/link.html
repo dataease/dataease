@@ -21,6 +21,7 @@
     } else {
       vars = query.split('&')
     }
+    console.log('document.cookie', document.cookie, query, variable);
     for (var i = 0; i < vars.length; i++) {
       const pair = vars[i].split('=')
       if (pair[0].trim() === variable) {
@@ -29,6 +30,7 @@
     }
     return (false)
   }
+  console.log('document.cookie', document.cookie);
   const link = getQueryVariable('link')
   const user = getQueryVariable('user')
   const terminal = getQueryVariable('terminal')
