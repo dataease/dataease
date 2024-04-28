@@ -660,6 +660,7 @@ export default {
       create_index: '创建索引',
       add_index: '新增索引',
       index_name: '索引名称',
+      create_index_hint: 'MySQL 8.0 或 MariaDB 10.8.0 以下版本不支持索引降序排序',
       index_column: '索引字段',
       order_asc: '升序',
       order_desc: '降序',
