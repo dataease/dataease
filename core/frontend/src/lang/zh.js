@@ -3218,6 +3218,11 @@ export default {
     export_failed: '导出失败',
     export_from: '导出来源',
     export_obj: '导出对象',
-    export_time: '导出时间'
+    export_time: '导出时间',
+    sure_del_all: '确定删除全部导出记录吗？',
+    sure_del: '确定删除该导出记录吗？',
+    no_failed_file: '暂无失败文件',
+    no_file: '暂无文件',
+    no_task: '暂无任务'
   }
 }

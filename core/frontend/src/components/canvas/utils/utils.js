@@ -531,6 +531,16 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
     request.proxy = { userId: panelInfo.proxy }
   }
   method(request).then((res) => {
+    if (!token && linkToken) {
+      const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
+      const link = document.createElement('a')
+      link.style.display = 'none'
+      link.href = URL.createObjectURL(blob)
+      link.download = excelName + '.xlsx' // 下载的文件名
+      document.body.appendChild(link)
+      link.click()
+      document.body.removeChild(link)
+    }
     loadingWrapper && (loadingWrapper.val = false)
     callBack && callBack(res)
   }).catch((error) => {
