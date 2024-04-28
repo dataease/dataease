@@ -174,20 +174,12 @@ watch(
   }
 )
 const ALIGN_MAP = {
-  'top-align': {
-    display: 'flex',
-    'flex-direction': 'column',
-    'justify-content': 'flex-start'
-  },
+  'top-align': {},
   'center-align': {
-    display: 'flex',
-    'flex-direction': 'column',
-    'justify-content': 'center'
+    margin: 'auto'
   },
   'bottom-align': {
-    display: 'flex',
-    'flex-direction': 'column',
-    'justify-content': 'flex-end'
+    'margin-top': 'auto'
   }
 }
 const wrapperStyle = computed(() => {
@@ -468,6 +460,7 @@ defineExpose({
 
 <style lang="less" scoped>
 .rich-main-class {
+  display: flex;
   font-size: initial;
   width: 100%;
   height: 100%;
@@ -585,7 +578,6 @@ defineExpose({
 
 .custom-text-content {
   width: 100%;
-  height: 100%;
   overflow-y: auto;
   outline: none !important;
   border: none !important;

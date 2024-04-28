@@ -41,11 +41,11 @@ export default {
       },
       'center-align': {
         component: null,
-        tooltip: '居中'
+        tooltip: '居中,只在内容未溢出时生效'
       },
       'bottom-align': {
         component: null,
-        tooltip: '置底'
+        tooltip: '置底,只在内容未溢出时生效'
       }
     }
     for (const key in btnMap) {
