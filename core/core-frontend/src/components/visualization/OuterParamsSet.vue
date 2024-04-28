@@ -72,11 +72,9 @@
             <el-row v-if="state.curNodeId">
               <el-row style="margin-top: 5px">
                 <div style="display: flex" class="inner-content">
-                  <div style="flex: 1">{{ t('visualization.link_view') }}</div>
+                  <div style="flex: 1">联动组件</div>
                   <div style="width: 36px"></div>
-                  <div style="flex: 1">
-                    {{ t('visualization.link_view_field') }}
-                  </div>
+                  <div style="flex: 1">联动组件字段</div>
                   <div style="width: 32px"></div>
                 </div>
                 <div style="width: 100%; max-height: 350px; overflow-y: auto">
