@@ -104,6 +104,9 @@ public class LogManager {
             case 11:
                 typeValue = "menu";
                 break;
+            case 13:
+                typeValue = "data_fill";
+                break;
             default:
                 break;
         }

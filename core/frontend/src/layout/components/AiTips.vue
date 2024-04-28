@@ -1,0 +1,95 @@
+<script>
+export default {
+  name: 'AiTips',
+  data() {
+    return {
+      visible: true
+    }
+  },
+  mounted() {
+  },
+  methods: {
+    confirm() {
+      this.$emit('confirm')
+    }
+  }
+}
+
+</script>
+<template>
+  <el-popover
+    v-model="visible"
+    placement="bottom"
+    :width="288"
+    show-arrow
+  >
+    <div class="ai-popper-tips-content">
+      <p class="title">DataEase 智能客服</p>
+      <p class="constant">
+        你好，我是 DataEase 智能客服<br />点击一下，开启高效解答模式~<br />&nbsp;
+      </p>
+      <div class="bottom">
+        <el-button size="middle" @click="confirm"> 我知道了 </el-button>
+      </div>
+    </div>
+    <div slot="reference">
+      <div
+        style="height: 100%;padding: 0 8px;"
+        class="right-menu-item hover-effect"
+      >
+        <a style="font-size:24px;display: flex;height: 100%;width: 100%;justify-content: center;align-items: center;">
+          <svg-icon
+            icon-class="dv-ai"
+          />
+        </a>
+      </div>
+    </div>
+  </el-popover>
+</template>
+
+<style lang="less">
+.ai-popper-tips {
+  z-index: 10001 !important;
+  padding: 24px !important;
+  box-shadow: none !important;
+  background: var(--ed-color-primary) !important;
+  .ed-popper__arrow::before {
+    border: 1px solid var(--ed-color-primary) !important;
+    background: var(--ed-color-primary) !important;
+  }
+}
+.ai-popper-tips-content {
+  color: rgba(255, 255, 255, 1);
+  .title {
+    font-family: PingFang SC;
+    font-size: 20px;
+    font-weight: 500;
+    line-height: 28px;
+  }
+  .content {
+    font-family: PingFang SC;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    text-align: left;
+  }
+  .bottom {
+    line-height: 22px;
+    text-align: right;
+    button {
+      border-color: #ffffff !important;
+      font-weight: 500;
+      color: rgba(51, 112, 255, 1) !important;
+    }
+  }
+}
+
+.ai-popper-tips-icon {
+  margin: 0 8px;
+  z-index: 10003;
+  border-radius: 50%;
+  background: #ffffff;
+  width: 28px;
+  height: 28px;
+}
+</style>

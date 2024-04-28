@@ -664,15 +664,17 @@ public class PanelGroupService {
         CacheUtils.removeAll(AuthConstants.DEPT_PANEL_NAME);
     }
 
-    public DataSetExportRequest composeDatasetExportRequest(PanelViewDetailsRequest request){
+    public DataSetExportRequest composeDatasetExportRequest(PanelViewDetailsRequest request) {
         ChartExtRequest extRequest = request.getComponentFilterInfo();
         List<ChartExtFilterRequest> filter = new ArrayList();
-        if(extRequest != null){
-            if(CollectionUtils.isNotEmpty(extRequest.getFilter())){
+        if (extRequest != null) {
+            if (CollectionUtils.isNotEmpty(extRequest.getFilter())) {
                 filter.addAll(extRequest.getFilter());
-            }if(CollectionUtils.isNotEmpty(extRequest.getLinkageFilters())){
+            }
+            if (CollectionUtils.isNotEmpty(extRequest.getLinkageFilters())) {
                 filter.addAll(extRequest.getLinkageFilters());
-            }if(CollectionUtils.isNotEmpty(extRequest.getOuterParamsFilters())){
+            }
+            if (CollectionUtils.isNotEmpty(extRequest.getOuterParamsFilters())) {
                 filter.addAll(extRequest.getOuterParamsFilters());
             }
         }
@@ -681,23 +683,23 @@ public class PanelGroupService {
         permissionsTreeObjFilter.setLogic("and");
         List<DatasetRowPermissionsTreeItem> composePermission = new ArrayList<>();
         permissionsTreeObjFilter.setItems(composePermission);
-        if(CollectionUtils.isNotEmpty(filter)){
-            filter.forEach(filterInfo ->{
+        if (CollectionUtils.isNotEmpty(filter)) {
+            filter.forEach(filterInfo -> {
                 DatasetRowPermissionsTreeItem filterPermission = new DatasetRowPermissionsTreeItem();
                 List<String> values = filterInfo.getValue();
                 String operator = filterInfo.getOperator();
                 String dataSetFilterType = "logic";
                 String term = operator;
-                if("eq".equals(operator) && values.size()>1){
+                if ("eq".equals(operator) && values.size() > 1) {
                     dataSetFilterType = "enum";
                 }
                 String fieldId = filterInfo.getFieldId();
                 filterPermission.setFieldId(fieldId);
                 filterPermission.setFilterType(dataSetFilterType);
                 filterPermission.setType("item");
-                if(dataSetFilterType.equals("enum")){
+                if (dataSetFilterType.equals("enum")) {
                     filterPermission.setEnumValue(values);
-                }else{
+                } else {
                     filterPermission.setTerm(term);
                     filterPermission.setValue(values.get(0));
                 }
@@ -708,17 +710,19 @@ public class PanelGroupService {
         ChartViewWithBLOBs chartInfo = chartViewMapper.selectByPrimaryKey(request.getViewId());
         String customFilter = chartInfo.getCustomFilter();
 
-        DatasetTable datasetTable =  datasetTableMapper.selectByPrimaryKey(chartInfo.getTableId());
+        DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(chartInfo.getTableId());
         DataSetExportRequest dataSetExportRequest = new DataSetExportRequest();
-        BeanUtils.copyBean(dataSetExportRequest,datasetTable);
-        if(CollectionUtils.isNotEmpty(composePermission)){
-            DatasetRowPermissionsTreeObj permissionsTreeObjCustomsFilter = gson.fromJson(customFilter,DatasetRowPermissionsTreeObj.class);
-            DatasetRowPermissionsTreeItem customFilterPermission = new DatasetRowPermissionsTreeItem();
-            customFilterPermission.setType("tree");
-            customFilterPermission.setSubTree(permissionsTreeObjCustomsFilter);
-            composePermission.add(customFilterPermission);
+        BeanUtils.copyBean(dataSetExportRequest, datasetTable);
+        DatasetRowPermissionsTreeObj permissionsTreeObjCustomsFilter = gson.fromJson(customFilter, DatasetRowPermissionsTreeObj.class);
+        if (CollectionUtils.isNotEmpty(composePermission)) {
+            if (StringUtils.isNotEmpty(permissionsTreeObjCustomsFilter.getLogic())) {
+                DatasetRowPermissionsTreeItem customFilterPermission = new DatasetRowPermissionsTreeItem();
+                customFilterPermission.setType("tree");
+                customFilterPermission.setSubTree(permissionsTreeObjCustomsFilter);
+                composePermission.add(customFilterPermission);
+            }
             dataSetExportRequest.setExpressionTree(gson.toJson(permissionsTreeObjFilter));
-        }else{
+        } else if(StringUtils.isNotEmpty(permissionsTreeObjCustomsFilter.getLogic())){
             dataSetExportRequest.setExpressionTree(customFilter);
         }
         dataSetExportRequest.setFilename(dataSetExportRequest.getName());
@@ -727,7 +731,7 @@ public class PanelGroupService {
     }
 
     public void exportDatasetDetails(PanelViewDetailsRequest request, HttpServletResponse response) throws Exception {
-        dataSetTableService.exportDataset(composeDatasetExportRequest(request),response);
+        dataSetTableService.exportDataset(composeDatasetExportRequest(request), response);
     }
 
 

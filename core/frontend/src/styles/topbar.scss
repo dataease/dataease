@@ -4,9 +4,8 @@
   top: 0;
   left: 0;
   z-index: 1001;
-  overflow: hidden;
   border-bottom: 1px solid var(--TopBG, #E6E6E6);
-  background-color: var(--TopBG, #f1f3f8); 
+  background-color: var(--TopBG, #f1f3f8);
   .log {
     padding: 0 16px;
     line-height: 56px;
@@ -71,7 +70,7 @@
       padding: 10px 8px;
       height: 100%;
       font-size: 18px;
-      
+
       vertical-align: text-bottom;
 
       &.hover-effect {

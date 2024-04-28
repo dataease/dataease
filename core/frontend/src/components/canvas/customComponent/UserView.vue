@@ -160,7 +160,7 @@
       >
         <span v-if="showChartInfoType==='enlarge' && hasDataPermission('export',panelInfo.privileges)&& showChartInfo && !equalsAny(showChartInfo.type, 'symbol-map', 'flow-map')">
           <span style="font-size: 12px">
-            导出分辨率
+            {{ $t('panel.export_pixel') }}
           </span>
           <el-select
             v-model="pixel"
@@ -993,14 +993,11 @@ export default {
       if (this.chart.type === 'map' && this.scaleCoefficientType === 'mobile') {
         customAttrChart.label.show = false
       }
-      const data = this.chart.data
-      delete this.chart.data
       this.chart = {
         ...this.chart,
         customAttr: JSON.stringify(customAttrChart),
         customStyle: JSON.stringify(customStyleChart)
       }
-      this.chart.data = data
     },
     getData(id, cache = true, dataBroadcast = false) {
       if (this.requestStatus === 'waiting') {
@@ -1060,12 +1057,8 @@ export default {
           try {
             // 将视图传入echart组件
             if (response.success) {
-              const data = response.data.data
-              delete response.data.data
               this.chart = response.data
               this.view = response.data
-              this.chart.data = data
-              this.view.data = data
               this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
               this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
               this.$emit('fill-chart-2-parent', this.chart)

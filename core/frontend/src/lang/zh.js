@@ -173,6 +173,7 @@ export default {
     default_login: '普通登录'
   },
   commons: {
+    pwd_will_expired: '密码将于%s天后过期，为了不影响正常使用，请及时进行修改！',
     component: {
       input: '单行输入',
       textarea: '多行输入',
@@ -660,8 +661,8 @@ export default {
       add_index: '新增索引',
       index_name: '索引名称',
       index_column: '索引字段',
-      order_asc: '顺序',
-      order_desc: '倒序',
+      order_asc: '升序',
+      order_desc: '降序',
       order_none: '默认排序',
       add_column: '新增字段',
       please_insert_start: '请输入开始时间',
@@ -2269,6 +2270,7 @@ export default {
     back_parent: '返回上一级'
   },
   panel: {
+    export_pixel: '导出分辨率',
     app_export_tips: '当前仪表板中[{0}]属于模版视图，无法导出，请先设置数据集！',
     required_tips: '必填项不能为空！',
     filter_no_select: '过滤组件无需选择',
@@ -3224,5 +3226,11 @@ export default {
     no_failed_file: '暂无失败文件',
     no_file: '暂无文件',
     no_task: '暂无任务'
+  },
+  link_ticket: {
+    require: '必选',
+    back: '返回公共链接设置页面',
+    refresh: '刷新',
+    time_tips: '单位: 分钟，范围: [0-1440],0代表无期限，自首次使用ticket访问开始'
   }
 }

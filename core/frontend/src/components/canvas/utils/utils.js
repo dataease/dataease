@@ -469,10 +469,11 @@ export function getCacheTree(treeName) {
 }
 
 export function exportExcelDownload(chart, snapshot, width, height, loadingWrapper, downloadParams, callBack) {
-  if (chart.render === 'antv' && !chart.data?.data?.length) {
+  if ((chart.render === 'echarts' || ['text', 'label'].includes(chart.type)) && !(chart.data?.series?.length && chart.data?.series[0].data?.length)) {
+    callBack()
     return
-  }
-  if (chart.type === 'echarts' && !(chart.data?.series?.length && chart.data?.series[0].data?.length)) {
+  } else if ((chart.render === 'antv' && !['text', 'label'].includes(chart.type)) && !chart.data?.data?.length) {
+    callBack()
     return
   }
   const fields = JSON.parse(JSON.stringify(chart.data.fields))
@@ -503,6 +504,19 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
         return item[i]
       })
     })
+  }
+  if (chart.render === 'echarts' && chart.type === 'table-normal') {
+    const initTotal = fields.map(i => [2, 3].includes(i.deType) ? 0 : undefined)
+    initTotal[0] = '合计'
+    tableRow.reduce((p, n) => {
+      p.forEach((v, i) => {
+        if (!isNaN(v)) {
+          p[i] = v + n[excelHeaderKeys[i]]
+        }
+      })
+      return p
+    }, initTotal)
+    excelData.push(initTotal)
   }
   const request = {
     proxy: null,

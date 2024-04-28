@@ -77,7 +77,12 @@ export default {
           name: this.$t('data_fill.form.email'),
           rules: [{ pattern: EMAIL_REGEX, message: this.$t('user.email_format_is_incorrect'), trigger: ['blur', 'change'] }]
         }
-      ]
+      ],
+      pickerOptions: {
+        disabledDate: (time) => {
+          return time.getTime() < new Date(0).getTime()
+        }
+      }
     }
   },
   watch: {},
@@ -259,7 +264,7 @@ export default {
               :readonly="readonly"
               :placeholder="item.settings.placeholder"
               size="small"
-              :show-word-limit="item.value !== undefined && item.value.length > 250"
+              :show-word-limit="item.value !== undefined && item.value !== null && item.value.length > 250"
               maxlength="255"
             />
             <el-input-number
@@ -343,6 +348,7 @@ export default {
               :placeholder="item.settings.placeholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
             <el-date-picker
               v-else-if="item.type === 'date' && item.settings.enableTime"
@@ -353,6 +359,7 @@ export default {
               :placeholder="item.settings.placeholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
             <el-date-picker
               v-else-if="item.type === 'dateRange' && !item.settings.enableTime"
@@ -365,6 +372,7 @@ export default {
               :end-placeholder="item.settings.endPlaceholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
             <el-date-picker
               v-else-if="item.type === 'dateRange' && item.settings.enableTime"
@@ -377,6 +385,7 @@ export default {
               :end-placeholder="item.settings.endPlaceholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
 
           </el-form-item>

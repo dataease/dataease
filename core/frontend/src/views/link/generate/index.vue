@@ -19,13 +19,13 @@
         :model="form"
         size="small"
         :rules="rules"
-        label-width="80px"
+        label-width="90px"
       >
 
         <el-form-item :label="$t('panel.link_share')">
           <el-switch
             v-model="valid"
-            style="width: 370px;"
+            style="width: 360px;"
             :active-value="true"
             :inactive-value="false"
             @change="onChange"
@@ -34,7 +34,7 @@
         <el-form-item label=" ">
           <el-link
             class="de-link"
-            style="width: 370px;"
+            style="width: 360px;"
             disabled
           >{{ $t('panel.link_share_desc') }}</el-link>
         </el-form-item>
@@ -45,7 +45,7 @@
           <el-input
             v-model.number="form.uri"
             disabled
-            style="width: 370px;"
+            style="width: 360px;"
           />
         </el-form-item>
 
@@ -102,7 +102,7 @@
               plain
               size="mini"
               @click="openTicket"
-            >Ticket 设置</el-button>
+            >{{ 'Ticket ' + $t('commons.setting') }}</el-button>
             <el-button
               v-if="!form.enablePwd"
               v-clipboard:copy="form.uri"
@@ -136,7 +136,7 @@
           <el-tooltip
             class="item"
             effect="dark"
-            content="返回公共链接设置页面"
+            :content="$t('link_ticket.back')"
             placement="top"
           >
             <span class="back-tips">
@@ -146,14 +146,14 @@
               />
             </span>
           </el-tooltip>
-          <span class="ticket-title">Ticket 设置</span>
+          <span class="ticket-title">{{ 'Ticket ' + $t('commons.setting') }}</span>
         </div>
         <div class="ticket-model-end">
           <el-checkbox
             v-model="requireTicket"
             @change="requireTicketChange"
           />
-          <span>必选</span>
+          <span>{{ $t('link_ticket.require') }}</span>
         </div>
 
       </div>
@@ -185,7 +185,7 @@
                 <el-tooltip
                   class="item"
                   effect="dark"
-                  content="复制"
+                  :content="$t('commons.copy')"
                   placement="top"
                 >
                   <span
@@ -202,7 +202,7 @@
                 <el-tooltip
                   class="item"
                   effect="dark"
-                  content="刷新ticket"
+                  :content="`${$t('link_ticket.refresh')} ticket`"
                   placement="top"
                 >
                   <span class="refresh-i">
@@ -218,15 +218,15 @@
 
           <el-table-column
             prop="exp"
-            label="有效期"
+            :label="$t('panel.over_time')"
             width="100"
           >
             <template slot="header">
-              <span>有效期</span>
+              <span>{{ $t('panel.over_time') }}</span>
               <el-tooltip
                 class="item"
                 effect="dark"
-                content="单位: 分钟，范围: [0-1440],0代表无期限，自首次使用ticket访问开始"
+                :content="$t('link_ticket.time_tips')"
                 placement="top"
               >
                 <span class="check-tips">
@@ -243,7 +243,7 @@
                 :ref="setExpRef(scope.$index)"
                 v-model="scope.row.exp"
                 type="number"
-                placeholder="请输入内容"
+                :placeholder="$t('commons.input_content')"
                 min="0"
                 max="1440"
                 size="mini"
@@ -256,7 +256,7 @@
           </el-table-column>
           <el-table-column
             prop="args"
-            label="参数"
+            :label="$t('dataset.param')"
           >
             <template slot-scope="scope">
               <el-input
@@ -264,7 +264,7 @@
                 :ref="setArgRef(scope.$index)"
                 v-model="scope.row.args"
                 type="text"
-                placeholder="请输入内容"
+                :placeholder="$t('commons.input_content')"
                 maxlength="200"
                 size="mini"
                 @change="val => validateArgs(val, scope.$index)"
@@ -275,15 +275,15 @@
             </template>
           </el-table-column>
           <el-table-column
-            label="操作"
-            width="60"
+            :label="$t('commons.operating')"
+            width="80"
           >
             <template slot-scope="scope">
               <div class="ticket-op">
                 <el-tooltip
                   class="item"
                   effect="dark"
-                  content="删除"
+                  :content="$t('commons.delete')"
                   placement="top"
                 >
                   <span>
@@ -296,7 +296,7 @@
                 <el-tooltip
                   class="item"
                   effect="dark"
-                  :content="scope.row.isEdit ? '保存' : '编辑'"
+                  :content="scope.row.isEdit ? $t('commons.save') : $t('commons.edit')"
                   placement="top"
                 >
                   <span>
@@ -349,7 +349,7 @@ export default {
       requireTicket: false,
       uuid: '',
       tabList: [
-        { name: 'link', 'label': '链接分享' }
+        { name: 'link', 'label': this.$t('panel.link_share') }
       ],
       activeName: 'link',
       tableData: [],

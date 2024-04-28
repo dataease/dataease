@@ -173,6 +173,7 @@ export default {
     default_login: '普通登錄'
   },
   commons: {
+    pwd_will_expired: '密碼將於%s天後過期，為了不影響正常使用，請及時進行修改！',
     component: {
       input: '單行輸入',
       textarea: '多行輸入',
@@ -662,8 +663,8 @@ export default {
       add_index: '新增索引',
       index_name: '索引名稱',
       index_column: '索引字段',
-      order_asc: '順序',
-      order_desc: '倒序',
+      order_asc: '升序',
+      order_desc: '降序',
       order_none: '默認排序',
       add_column: '新增字段',
       please_insert_start: '請輸入開始時間',
@@ -2268,6 +2269,7 @@ export default {
     back_parent: '返回上一級'
   },
   panel: {
+    export_pixel: '導出分辨率',
     app_export_tips: '當前儀表板中[{0}]屬於模板視圖，無法導出，請先設置數據集！',
     required_tips: '必填項不能爲空！',
     filter_no_select: '過濾組件無需選擇',
@@ -3218,5 +3220,11 @@ export default {
     export_from: '匯出來源',
     export_obj: '匯出對象',
     export_time: '匯出時間'
+  },
+  link_ticket: {
+    require: '必選',
+    back: '返回公共鏈接設置頁面',
+    refresh: '刷新',
+    time_tips: '單位: 分鐘，範圍: [0-1440],0代表無期限，自首次使用ticket訪問開始'
   }
 }

@@ -39,9 +39,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
     @Override
     public String createTableSql(String table, List<ExtTableField> formFields) {
         //check inject
-        if (checkSqlInjection(table)) {
+        /*if (checkSqlInjection(table)) {
             throw new RuntimeException("包含SQL注入的参数，请检查参数！");
-        }
+        }*/
 
         List<ExtTableField.TableField> fields = convertTableFields(true, formFields);
         String fieldSql = convertTableFieldsString(table, fields);
@@ -249,9 +249,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
             }
 
             //check inject
-            if (checkSqlInjection(field.getColumnName())) {
+            /*if (checkSqlInjection(field.getColumnName())) {
                 throw new RuntimeException("包含SQL注入的参数，请检查参数！");
-            }
+            }*/
 
             //column name
             str.append("`").append(field.getColumnName()).append("` ");
@@ -345,9 +345,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         }
 
         //check inject
-        if (checkSqlInjection(table) || checkSqlInjection(indexField.getName())) {
+        /*if (checkSqlInjection(table) || checkSqlInjection(indexField.getName())) {
             throw new RuntimeException("包含SQL注入的参数，请检查参数！");
-        }
+        }*/
 
         int count = 0;
         for (ExtIndexField.ColumnSetting indexFieldColumn : indexField.getColumns()) {

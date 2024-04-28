@@ -387,7 +387,7 @@ public class DataFillService {
                         break;
                     case text:
                     case nvarchar:
-                        if (StringUtils.equalsIgnoreCase("select", formField.getType()) || StringUtils.equalsIgnoreCase("checkbox", formField.getType())) {
+                        if (StringUtils.equalsIgnoreCase("select", formField.getType()) && formField.getSettings().isMultiple() || StringUtils.equalsIgnoreCase("checkbox", formField.getType())) {
                             example = "\n(多个值使用分号\";\"分割)";
                         } else if (StringUtils.equalsIgnoreCase("email", formField.getSettings().getInputType())) {
                             example = "\n(邮箱格式)";

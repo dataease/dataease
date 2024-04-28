@@ -1,5 +1,8 @@
 <template>
-  <div class="view-table">
+  <div
+    v-if="hasDataPermission('use', param.privileges)"
+    class="view-table"
+  >
     <el-row>
       <el-col
         class="de-dataset-name"
@@ -87,6 +90,7 @@
         name="record"
       />
       <el-tab-pane
+        v-if="hasDataPermission('grant', param.privileges)"
         :label="$t('data_fill.form.task_manage')"
         :lazy="true"
         name="task"
@@ -108,11 +112,13 @@
             @click="addData"
           >{{ $t('data_fill.data.add_data') }}</el-button>
           <el-button
+            v-if="hasDataPermission('write', param.privileges)"
             icon="el-icon-download"
             size="small"
             @click="downloadTemplate"
           >{{ $t('data_fill.data.download_template') }}</el-button>
           <el-upload
+            v-if="hasDataPermission('write', param.privileges)"
             :action="`${baseUrl}dataFilling/form/${param.id}/excel/upload`"
             :multiple="false"
             :show-file-list="false"
@@ -136,7 +142,8 @@
         </div>
         <div style="flex: 1">
           <grid-table
-            v-if="columns.length > 0"
+            v-if="columns.length > 0 && dataTableShow"
+            ref="dataTable"
             v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
             style="width: 100%; height: 100%"
             border
@@ -212,6 +219,7 @@
             >
               <template slot-scope="scope">
                 <el-button
+                  v-if="hasDataPermission('write', param.privileges)"
                   type="text"
                   @click="updateRow(scope.row.data)"
                 >
@@ -224,6 +232,7 @@
                   {{ $t('data_fill.form.show') }}
                 </el-button>
                 <el-button
+                  v-if="hasDataPermission('write', param.privileges)"
                   type="text"
                   @click="deleteRow(scope.row.data[paginationConfig.key])"
                 >
@@ -547,6 +556,7 @@ export default {
         Authorization: token,
         'Accept-Language': i18n.locale.replace('_', '-')
       },
+      dataTableShow: true,
       fileList: [],
       uploading: false,
       operateName: '',
@@ -642,6 +652,10 @@ export default {
         this.data = []
         this.records = []
         this.tasks = []
+        this.dataTableShow = false
+        this.$nextTick(() => {
+          this.dataTableShow = true
+        })
       }
       this.initTable(this.param.id)
     },
@@ -731,6 +745,7 @@ export default {
         if (res.data) {
           this.paginationConfig.key = res.data.key
           this.paginationConfig.total = res.data.total
+          this.paginationConfig.currentPage = res.data.currentPage
           const _data = []
           forEach(res.data.data, d => {
             const obj = {}
@@ -911,7 +926,7 @@ export default {
         const link = document.createElement('a')
         link.style.display = 'none'
         link.href = URL.createObjectURL(blob)
-        link.download = 'test.xlsx' // 下载的文件名
+        link.download = this.param.name + '.xlsx' // 下载的文件名
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
