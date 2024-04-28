@@ -1,6 +1,7 @@
 package io.dataease.service.exportCenter;
 
 
+import com.alibaba.excel.EasyExcel;
 import com.google.gson.Gson;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
@@ -655,22 +656,17 @@ public class ExportCenterService {
                     wb.close();
                 } else {
                     Integer totalPage = (totalCount / extractPageSize) + (totalCount % extractPageSize > 0 ? 1 : 0);
-                    List<List<String>> details = new ArrayList<>();
+
                     List<DatasetTableField> fields = new ArrayList<>();
                     for (Integer p = 1; p < totalPage + 1; p++) {
-                        Integer offset = p * extractPageSize;
-                        Integer all = offset + extractPageSize;
-                        Map<String, Object> previewData = getPreviewData(request, p, extractPageSize, all, null, tree);
-                        Workbook wb = null;
-                        Sheet detailsSheet = null;
-                        CellStyle cellStyle = null;
-                        FileInputStream fis = null;
+                        Map<String, Object> previewData = getPreviewData(request, p, extractPageSize, extractPageSize, null, tree);
+                        List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
                         if (p == 1L) {
-                            wb = new SXSSFWorkbook();
+                            Workbook wb = new SXSSFWorkbook();
                             // Sheet
-                            detailsSheet = wb.createSheet("数据");
+                            Sheet detailsSheet = wb.createSheet("数据");
                             //给单元格设置样式
-                            cellStyle = wb.createCellStyle();
+                            CellStyle cellStyle = wb.createCellStyle();
                             Font font = wb.createFont();
                             //设置字体大小
                             font.setFontHeightInPoints((short) 12);
@@ -687,62 +683,63 @@ public class ExportCenterService {
                             for (DatasetTableField field : fields) {
                                 header.add(field.getName());
                             }
+                            List<List<String>> details = new ArrayList<>();
                             details.add(header);
-                        } else {
-                            fis = new FileInputStream(dataPath + "/" + request.getFilename() + ".xlsx");
-                            wb = new XSSFWorkbook(fis); // 假设这是个.xlsx格式的文件
-                            detailsSheet = wb.getSheetAt(0);
-                        }
-
-                        List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
-                        for (Map<String, Object> obj : data) {
-                            List<String> row = new ArrayList<>();
-                            for (DatasetTableField field : fields) {
-                                String string = (String) obj.get(field.getDataeaseName());
-                                row.add(string);
+                            for (Map<String, Object> obj : data) {
+                                List<String> row = new ArrayList<>();
+                                for (DatasetTableField field : fields) {
+                                    String string = (String) obj.get(field.getDataeaseName());
+                                    row.add(string);
+                                }
+                                details.add(row);
                             }
-                            details.add(row);
-                        }
-
-
-                        if (CollectionUtils.isNotEmpty(details)) {
-                            for (int i = 0; i < details.size(); i++) {
-                                Row row = detailsSheet.createRow(i);
-                                List<String> rowData = details.get(i);
-                                if (rowData != null) {
-                                    for (int j = 0; j < rowData.size(); j++) {
-                                        Cell cell = row.createCell(j);
-                                        if (i == 0) {// 头部
-                                            cell.setCellValue(rowData.get(j));
-                                            cell.setCellStyle(cellStyle);
-                                            //设置列的宽度
-                                            detailsSheet.setColumnWidth(j, 255 * 20);
-                                        } else {
-                                            if ((fields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || fields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
-                                                try {
-                                                    cell.setCellValue(Double.valueOf(rowData.get(j)));
-                                                } catch (Exception e) {
-                                                    LogUtil.warn("export excel data transform error");
-                                                }
-                                            } else {
+                            if (CollectionUtils.isNotEmpty(details)) {
+                                for (int i = 0; i < details.size(); i++) {
+                                    Row row = detailsSheet.createRow(i);
+                                    List<String> rowData = details.get(i);
+                                    if (rowData != null) {
+                                        for (int j = 0; j < rowData.size(); j++) {
+                                            Cell cell = row.createCell(j);
+                                            if (i == 0) {// 头部
                                                 cell.setCellValue(rowData.get(j));
+                                                cell.setCellStyle(cellStyle);
+                                                //设置列的宽度
+                                                detailsSheet.setColumnWidth(j, 255 * 20);
+                                            } else {
+                                                if ((fields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || fields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
+                                                    try {
+                                                        cell.setCellValue(Double.valueOf(rowData.get(j)));
+                                                    } catch (Exception e) {
+                                                        LogUtil.warn("export excel data transform error");
+                                                    }
+                                                } else {
+                                                    cell.setCellValue(rowData.get(j));
+                                                }
                                             }
                                         }
                                     }
                                 }
                             }
-                        }
-                        if (p == 1) {
                             try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + request.getFilename() + ".xlsx")) {
                                 wb.write(outputStream);
                             }
                             wb.close();
                         } else {
-                            fis.close();
-                            wb.close();
+                            List<List<String>> details = new ArrayList<>();
+                            for (Map<String, Object> obj : data) {
+                                List<String> row = new ArrayList<>();
+                                for (DatasetTableField field : fields) {
+                                    String string = (String) obj.get(field.getDataeaseName());
+                                    row.add(string);
+                                }
+                                details.add(row);
+                            }
+                            EasyExcel.write(dataPath + "/" + request.getFilename() + p + ".xlsx").withTemplate(dataPath + "/" + request.getFilename() + ".xlsx").sheet("数据").doWrite(details);
+                            FileUtil.del(dataPath + "/" + request.getFilename() + ".xlsx");
+                            new File(dataPath + "/" + request.getFilename() + p + ".xlsx").renameTo(new File(dataPath + "/" + request.getFilename() + ".xlsx"));
                         }
                         exportTask.setExportStatus("IN_PROGRESS");
-                        double exportRogress = (double) ((double) p / (double) totalCount);
+                        double exportRogress = (double) ((double) p / (double) totalPage);
                         DecimalFormat df = new DecimalFormat("#.##");
                         String formattedResult = df.format(exportRogress * 100);
                         exportTask.setExportPogress(formattedResult);
@@ -1099,7 +1096,6 @@ public class ExportCenterService {
                 String table = dataTableInfoDTO.getTable();
                 QueryProvider qp = ProviderFactory.getQueryProvider(ds.getType());
                 datasourceRequest.setQuery(qp.createQueryTableWithPage(table, fields, page, pageSize, realSize, false, ds, null, rowPermissionsTree));
-
                 try {
 
                     data.addAll(datasourceProvider.getData(datasourceRequest));
