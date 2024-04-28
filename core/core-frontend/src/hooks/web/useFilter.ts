@@ -42,7 +42,7 @@ const forMatterValue = (
     : getRange(selectValue, timeGranularity)
 }
 
-const getRange = (selectValue, timeGranularity) => {
+export const getRange = (selectValue, timeGranularity) => {
   switch (timeGranularity) {
     case 'year':
       return getYearEnd(selectValue)
