@@ -13,7 +13,7 @@ import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { previewData, getById } from '@/api/datasource'
 import { useI18n } from '@/hooks/web/useI18n'
-import { useRouter } from 'vue-router'
+import { useRoute, useRouter } from 'vue-router'
 import DatasetDetail from '@/views/visualized/data/dataset/DatasetDetail.vue'
 import { timestampFormatDate } from '@/views/visualized/data/dataset/form/util'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
@@ -42,6 +42,7 @@ import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { cloneDeep } from 'lodash-es'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import treeSort from '@/utils/treeSortUtils'
+const route = useRoute()
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
   fieldShortName: string
@@ -403,6 +404,9 @@ const listDs = () => {
       if (!!id) {
         Object.assign(nodeInfo, cloneDeep(defaultInfo))
         dfsDatasourceTree(state.datasourceTree, id)
+        nextTick(() => {
+          dsListTree.value.setCurrentKey(id, true)
+        })
       }
     })
 }
@@ -419,8 +423,6 @@ const dfsDatasourceTree = (ds, id) => {
     return false
   })
 }
-
-listDs()
 
 const creatDsFolder = ref()
 const sortList = [
@@ -692,6 +694,8 @@ const defaultProps = {
   label: 'name'
 }
 onMounted(() => {
+  nodeInfo.id = (route.params.id as string) || ''
+  listDs()
   const { opt } = router.currentRoute.value.query
   if (opt && opt === 'create') {
     datasourceEditor.value.init(null, null)

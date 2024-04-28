@@ -22,7 +22,7 @@ onMounted(() => {
     <div class="ai-popper-tips-content">
       <p class="title">DataEase 智能客服</p>
       <p class="constant">
-        你好，我是DataEase智能客服<br />点击一下，开启高效解答模式~<br />&nbsp;
+        你好，我是 DataEase 智能客服<br />点击一下，开启高效解答模式~<br />&nbsp;
       </p>
       <div class="bottom">
         <el-button size="middle" @click="confirm"> 我知道了 </el-button>
