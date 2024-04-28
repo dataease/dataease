@@ -597,9 +597,27 @@ export default {
             </template>
           </el-table-column>
 
-          <el-table-column
-            :label="$t('data_fill.form.index_column')"
-          >
+          <el-table-column>
+            <template
+              slot="header"
+              slot-scope="scope"
+            >
+              {{ $t('data_fill.form.index_column') }}
+              <el-tooltip
+                class="item"
+                effect="dark"
+                placement="bottom"
+              >
+                <div
+                  slot="content"
+                  v-html="$t('data_fill.form.create_index_hint')"
+                />
+                <i
+                  class="el-icon-info"
+                  style="cursor: pointer;"
+                />
+              </el-tooltip>
+            </template>
             <template slot-scope="scope">
               <div
                 v-for="(indexRow, $index) in scope.row.columns"

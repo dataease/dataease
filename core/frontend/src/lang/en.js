@@ -662,6 +662,7 @@ export default {
       create_index: 'Create Index',
       add_index: 'Add Index',
       index_name: 'Index Name',
+      create_index_hint: 'MySQL versions earlier than 8.0 or MariaDB versions earlier than 10.8.0 do not support Descending indexes',
       index_column: 'Index Column',
       order_asc: 'Asc',
       order_desc: 'Desc',
