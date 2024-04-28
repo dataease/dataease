@@ -62,7 +62,7 @@
               <div class="name-content">
                 <div class="fileName">{{ scope.row.fileName }}</div>
                 <div
-                  v-if="activeName==='FAILED'"
+                  v-if="scope.row.exportStatus==='FAILED'"
                   class="failed"
                 >{{ $t("data_export.export_failed") }}</div>
                 <div
@@ -72,11 +72,11 @@
               </div>
             </div>
             <div
-              v-if="activeName==='FAILED'"
+              v-if="scope.row.exportStatus==='FAILED'"
               class="red-line"
             />
             <el-progress
-              v-if="activeName==='IN_PROGRESS'"
+              v-if="scope.row.exportStatus==='IN_PROGRESS'"
               :percentage="+scope.row.exportPogress"
             />
           </template>
@@ -212,7 +212,7 @@ export default {
       this.timer = setInterval(() => {
         if (this.activeName === 'IN_PROGRESS') {
           post(
-            '/exportCenter/exportTasks/' + this.activeName, {}, true
+            '/exportCenter/exportTasks/' + this.activeName, {}, false
           ).then(
             (res) => {
               this.tabList.forEach(item => {
@@ -286,6 +286,14 @@ export default {
       bus.$emit('data-export-center')
     },
     handleClick() {
+      if (this.activeName === 'ALL') {
+        this.description = this.$t('data_export.no_file')
+      } else if (this.activeName === 'FAILED') {
+        this.description = this.$t('data_export.no_failed_file')
+      } else {
+        this.description = this.$t('data_export.no_task')
+      }
+
       this.tableData = []
       this.drawerLoading = true
       post(
@@ -369,27 +377,54 @@ export default {
     },
     delAll() {
       if (this.multipleSelection.length === 0) {
-        post(
-          '/exportCenter/deleteAll/' + this.activeName,
-          this.multipleSelection.map((ele) => ele.id),
-          true
-        ).then(
-          (res) => {
-            this.handleClick()
-          }
-        )
+        this.$confirm(this.$t('data_export.sure_del_all'), '', {
+          confirmButtonText: this.$t('commons.delete'),
+          cancelButtonText: this.$t('commons.cancel'),
+          cancelButtonClass: 'de-confirm-fail-btn de-confirm-fail-cancel',
+          confirmButtonClass: 'de-confirm-fail-btn de-confirm-fail-confirm',
+          customClass: 'de-confirm de-confirm-fail',
+          iconClass: 'el-icon-warning'
+        })
+          .then(() => {
+            post(
+              '/exportCenter/deleteAll/' + this.activeName,
+              this.multipleSelection.map((ele) => ele.id),
+              true
+            ).then(
+              (res) => {
+                this.handleClick()
+              }
+            )
+          })
+          .catch(() => {
+            this.$info(this.$t('commons.delete_cancel'))
+          })
         this.openMessageSuccess('commons.delete_success')
         return
       }
-      post(
-        '/exportCenter/delete',
-        this.multipleSelection.map((ele) => ele.id),
-        true
-      ).then(
-        (res) => {
-          this.handleClick()
-        }
-      )
+
+      this.$confirm(this.$t('data_export.sure_del'), '', {
+        confirmButtonText: this.$t('commons.delete'),
+        cancelButtonText: this.$t('commons.cancel'),
+        cancelButtonClass: 'de-confirm-fail-btn de-confirm-fail-cancel',
+        confirmButtonClass: 'de-confirm-fail-btn de-confirm-fail-confirm',
+        customClass: 'de-confirm de-confirm-fail',
+        iconClass: 'el-icon-warning'
+      })
+        .then(() => {
+          post(
+            '/exportCenter/delete',
+            this.multipleSelection.map((ele) => ele.id),
+            true
+          ).then(
+            (res) => {
+              this.handleClick()
+            }
+          )
+        })
+        .catch(() => {
+          this.$info(this.$t('commons.delete_cancel'))
+        })
       this.openMessageSuccess('commons.delete_success')
     },
 

@@ -215,7 +215,7 @@
                   :key="item.id"
                   :label="item.nameAlias"
                   :value="item.id"
-                  :disabled="!item.driverClass"
+                  :disabled="disabledDriver(item)"
                 />
               </el-select>
             </el-form-item>
@@ -1121,6 +1121,9 @@ export default {
           return false
         }
       })
+    },
+    disabledDriver(item) {
+      return !item.driverClass && item.id.indexOf('default') === -1
     },
     reloadStatus(statusMap = {}) {
       this.form.apiConfiguration.forEach(ele => {

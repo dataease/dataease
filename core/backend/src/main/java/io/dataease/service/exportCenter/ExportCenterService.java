@@ -50,7 +50,6 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
-import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -375,6 +374,7 @@ public class ExportCenterService {
     }
 
     private void startViewTask(ExportTask exportTask, PanelViewDetailsRequest request) {
+
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
@@ -382,7 +382,6 @@ public class ExportCenterService {
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateByPrimaryKey(exportTask);
-
                 findExcelData(request);
                 String snapshot = request.getSnapshot();
                 List<Object[]> details = request.getDetails();
