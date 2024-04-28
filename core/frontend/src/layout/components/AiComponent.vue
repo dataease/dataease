@@ -89,7 +89,8 @@ export default {
   }
 }
 .ai-main-active {
-  border: 1px solid #d9d9d9;
+  border: 1px solid rgba(239, 240, 241, 1);
+  box-shadow: 0px 6px 24px 0px #1f232914;
 }
 .ai-main-active-min {
   min-width: 350px;
