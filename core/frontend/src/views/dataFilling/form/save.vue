@@ -664,6 +664,7 @@ export default {
                 </div>
               </div>
               <el-button
+                v-if="scope.row.columns.length < 5"
                 type="text"
                 @click="addColumn(scope.row.columns)"
               >+ {{ $t('data_fill.form.add_column') }}
