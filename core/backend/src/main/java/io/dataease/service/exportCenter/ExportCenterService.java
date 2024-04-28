@@ -656,27 +656,20 @@ public class ExportCenterService {
                     wb.close();
                 } else {
                     Integer totalPage = (totalCount / extractPageSize) + (totalCount % extractPageSize > 0 ? 1 : 0);
-
                     List<DatasetTableField> fields = new ArrayList<>();
+                    Workbook wb = new SXSSFWorkbook();
+                    FileOutputStream fileOutputStream = new FileOutputStream(dataPath + "/" + request.getFilename() + ".xlsx");
+                    Sheet detailsSheet = wb.createSheet("数据");
                     for (Integer p = 1; p < totalPage + 1; p++) {
                         Map<String, Object> previewData = getPreviewData(request, p, extractPageSize, extractPageSize, null, tree);
                         List<Map<String, Object>> data = (List<Map<String, Object>>) previewData.get("data");
                         if (p == 1L) {
-                            Workbook wb = new SXSSFWorkbook();
-                            // Sheet
-                            Sheet detailsSheet = wb.createSheet("数据");
-                            //给单元格设置样式
                             CellStyle cellStyle = wb.createCellStyle();
                             Font font = wb.createFont();
-                            //设置字体大小
                             font.setFontHeightInPoints((short) 12);
-                            //设置字体加粗
                             font.setBold(true);
-                            //给字体设置样式
                             cellStyle.setFont(font);
-                            //设置单元格背景颜色
                             cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
-                            //设置单元格填充样式(使用纯色背景颜色填充)
                             cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
                             fields = (List<DatasetTableField>) previewData.get("fields");
                             List<String> header = new ArrayList<>();
@@ -700,10 +693,9 @@ public class ExportCenterService {
                                     if (rowData != null) {
                                         for (int j = 0; j < rowData.size(); j++) {
                                             Cell cell = row.createCell(j);
-                                            if (i == 0) {// 头部
+                                            if (i == 0) {
                                                 cell.setCellValue(rowData.get(j));
                                                 cell.setCellStyle(cellStyle);
-                                                //设置列的宽度
                                                 detailsSheet.setColumnWidth(j, 255 * 20);
                                             } else {
                                                 if ((fields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || fields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
@@ -720,10 +712,6 @@ public class ExportCenterService {
                                     }
                                 }
                             }
-                            try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + request.getFilename() + ".xlsx")) {
-                                wb.write(outputStream);
-                            }
-                            wb.close();
                         } else {
                             List<List<String>> details = new ArrayList<>();
                             for (Map<String, Object> obj : data) {
@@ -734,9 +722,25 @@ public class ExportCenterService {
                                 }
                                 details.add(row);
                             }
-                            EasyExcel.write(dataPath + "/" + request.getFilename() + p + ".xlsx").withTemplate(dataPath + "/" + request.getFilename() + ".xlsx").sheet("数据").doWrite(details);
-                            FileUtil.del(dataPath + "/" + request.getFilename() + ".xlsx");
-                            new File(dataPath + "/" + request.getFilename() + p + ".xlsx").renameTo(new File(dataPath + "/" + request.getFilename() + ".xlsx"));
+                            int lastNum = detailsSheet.getLastRowNum();
+                            for (int i = 0; i < details.size(); i++) {
+                                Row row = detailsSheet.createRow(i + lastNum + 1);
+                                List<String> rowData = details.get(i);
+                                if (rowData != null) {
+                                    for (int j = 0; j < rowData.size(); j++) {
+                                        Cell cell = row.createCell(j);
+                                        if ((fields.get(j).getDeType().equals(DeTypeConstants.DE_INT) || fields.get(j).getDeType() == DeTypeConstants.DE_FLOAT) && StringUtils.isNotEmpty(rowData.get(j))) {
+                                            try {
+                                                cell.setCellValue(Double.valueOf(rowData.get(j)));
+                                            } catch (Exception e) {
+                                                LogUtil.warn("export excel data transform error");
+                                            }
+                                        } else {
+                                            cell.setCellValue(rowData.get(j));
+                                        }
+                                    }
+                                }
+                            }
                         }
                         exportTask.setExportStatus("IN_PROGRESS");
                         double exportRogress = (double) ((double) p / (double) totalPage);
@@ -745,6 +749,9 @@ public class ExportCenterService {
                         exportTask.setExportPogress(formattedResult);
                         exportTaskMapper.updateByPrimaryKey(exportTask);
                     }
+                    wb.write(fileOutputStream);
+                    fileOutputStream.close();
+                    wb.close();
                 }
                 exportTask.setExportPogress("100");
                 exportTask.setExportStatus("SUCCESS");
