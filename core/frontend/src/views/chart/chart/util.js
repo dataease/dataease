@@ -3967,3 +3967,29 @@ export function adjustPosition(targetDom, parentDom, clickPosition, offset, init
   }
   return result
 }
+
+export function handleStackSort(chart, data) {
+  if (!data?.length) {
+    return
+  }
+  if (!chart.type.includes('stack') ||
+    chart.type.includes('group')) {
+    return
+  }
+  const { xaxis, yaxis, extStack } = chart
+  const xAxis = JSON.parse(xaxis)
+  const yAxis = JSON.parse(yaxis)
+  const stack = JSON.parse(extStack)
+  if (!(stack.length && xAxis.length && yAxis.length) ||
+    yAxis[0].sort === 'none' ||
+    !xAxis.every(i => i.sort === 'none')) {
+    return
+  }
+  const result = data.reduce((p, n, i) => {
+    p[n.field] = (p[n.field] || 0) + (n.value ?? 0)
+    return p
+  }, {})
+  data.sort((p, n) => {
+    return yAxis[0].sort === 'asc' ? result[p.field] - result[n.field] : result[n.field] - result[p.field]
+  })
+}
