@@ -169,6 +169,17 @@
             class="ds-icon-excel"
           />{{ $t('chart.export') }}Excel
         </el-button>
+        <el-button
+          v-if="showChartInfoType==='details' && !userId && hasDataPermission('export',panelInfo.privileges)"
+          size="mini"
+          :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
+          @click="exportSourceDetails"
+        >
+          <svg-icon
+            icon-class="ds-excel"
+            class="ds-icon-excel"
+          />{{ $t('chart.export_source') }}
+        </el-button>
       </span>
       <user-view-dialog
         v-if="chartDetailsVisible"
@@ -863,6 +874,9 @@ export default {
       }
     },
     exportExcel() {
+      this.$refs['userViewDialog-canvas-main'].exportExcel()
+    },
+    exportSourceDetails() {
       this.$refs['userViewDialog-canvas-main'].exportExcel()
     },
     exportViewImg() {

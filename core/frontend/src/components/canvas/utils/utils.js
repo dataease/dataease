@@ -536,7 +536,7 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
   let method = innerExportDetails
   const token = store.getters.token || getToken()
   const linkToken = store.getters.linkToken || getLinkToken()
-  if (!token && linkToken) {
+  if (linkToken) {
     method = exportDetails
     loadingWrapper && (loadingWrapper.val = true)
   }
@@ -545,7 +545,7 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
     request.proxy = { userId: panelInfo.proxy }
   }
   method(request).then((res) => {
-    if (!token && linkToken) {
+    if (linkToken) {
       const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
       const link = document.createElement('a')
       link.style.display = 'none'
