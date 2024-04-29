@@ -1,6 +1,7 @@
 package io.dataease.service.exportCenter;
 
 import com.google.gson.Gson;
+import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
@@ -50,6 +51,7 @@ import org.apache.poi.hssf.usermodel.HSSFWorkbook;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.ss.util.CellRangeAddress;
 import org.apache.poi.xssf.streaming.SXSSFWorkbook;
+import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.scheduling.annotation.Scheduled;
@@ -362,7 +364,8 @@ public class ExportCenterService {
     public void addTask(String exportFrom, String exportFromType, PanelViewDetailsRequest request) {
         ExportTask exportTask = new ExportTask();
         exportTask.setId(UUID.randomUUID().toString());
-        exportTask.setUserId(AuthUtils.getUser().getUserId());
+        CurrentUserDto u = (CurrentUserDto) SecurityUtils.getSubject().getPrincipal();
+        exportTask.setUserId(u.getUserId());
         exportTask.setExportFrom(exportFrom);
         exportTask.setExportFromType(exportFromType);
         exportTask.setExportStatus("PENDING");
