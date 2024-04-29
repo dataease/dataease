@@ -40,7 +40,7 @@ export function getLanguage() {
 
   // if has not choose language
   let language = (navigator.language || navigator.browserLanguage).toLowerCase()
-  if (language && language === 'en') {
+  if (language && language.toLocaleLowerCase().startsWith('en')) {
     language = 'en_US'
   }
   const locales = Object.keys(messages)
