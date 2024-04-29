@@ -536,7 +536,7 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
   let method = innerExportDetails
   const token = store.getters.token || getToken()
   const linkToken = store.getters.linkToken || getLinkToken()
-  if (linkToken) {
+  if (linkToken && !token) {
     method = exportDetails
     loadingWrapper && (loadingWrapper.val = true)
   }
