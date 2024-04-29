@@ -30,6 +30,7 @@
           :rules="rule"
           size="small"
           label-width="100px"
+          @submit.native.prevent
         >
           <div class="row-rules marTop0">
             <span>{{ $t("datasource.base_info") }}</span>

@@ -503,6 +503,7 @@ export default {
             label-position="top"
             hide-required-asterisk
             class="form-drag-form"
+            @submit.native.prevent
           >
             <draggable
               id="form-drag-place"
@@ -702,6 +703,7 @@ export default {
               :model="selectedComponentItem.settings"
               label-position="top"
               hide-required-asterisk
+              @submit.native.prevent
             >
 
               <el-form-item
@@ -960,6 +962,7 @@ export default {
               :model="formSettings"
               label-position="top"
               hide-required-asterisk
+              @submit.native.prevent
             >
               <el-form-item
                 prop="name"
