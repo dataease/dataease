@@ -254,6 +254,8 @@
           :style="imageWrapperStyle"
         >
           <fullscreen
+            teleport
+            fullscreen-class="de-fullscreen-preview-index"
             style="height: 100%;background: #f7f8fa;overflow-y: auto"
             :fullscreen.sync="fullscreen"
           >
@@ -978,4 +980,3 @@ export default {
   }
 }
 </style>
-

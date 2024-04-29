@@ -6,7 +6,6 @@
       placement="bottom"
       trigger="hover"
       width="300"
-      :append-to-body="!previewVisible"
       :popper-class="previewVisible ? 'remark-pop' : ''"
       :visible-arrow="false"
     >
@@ -77,18 +76,5 @@ export default {
 ::v-deep li {
   display: list-item!important;
   text-align: -webkit-match-parent!important;
-}
-</style>
-
-<style lang="scss">
-.remark-pop {
-  position: absolute !important;
-  left: 10% !important;
-}
-.title-is-right {
-  .remark-pop {
-    left: auto !important;
-    right: 20px;
-  }
 }
 </style>
