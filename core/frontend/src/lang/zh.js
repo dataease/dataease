@@ -1077,6 +1077,7 @@ export default {
     message_retention_time: '消息保留时间',
     log_retention_time: '日志保留时间',
     ds_sync_log_retention_time: '数据同步日志保留时间',
+    export_file_retention_time: '后台导出文件保留时间',
     ds_check_time: '数据源检测时间间隔',
     test_mail_recipient: '仅用来作为测试邮件收件人',
     to_enable_tsl: '如果SMTP端口是587，通常需要启用TSL',
