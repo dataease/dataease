@@ -162,6 +162,8 @@
 
 <script setup lang="ts">
 import { searchMarket } from '@/api/templateMarket'
+import { useEmbedded } from '@/store/modules/embedded'
+import { useAppStoreWithOut } from '@/store/modules/app'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { nextTick, reactive, watch, onMounted, ref, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -175,7 +177,8 @@ import { XpackComponent } from '@/components/plugin'
 import { Base64 } from 'js-base64'
 const { t } = useI18n()
 const { wsCache } = useCache()
-
+const embeddedStore = useEmbedded()
+const appStore = useAppStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 
 // full 正常展示 marketPreview 模板中心预览 createPreview 创建界面预览
@@ -187,7 +190,7 @@ const close = () => {
 }
 
 const title = computed(() => (state.curPosition === 'branch' ? '模板中心' : '使用模板新建'))
-
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const state = reactive({
   initReady: true,
   curPosition: 'branch',
@@ -430,10 +433,14 @@ const apply = template => {
     '&templateParams=' +
     Base64.encode(JSON.stringify(templateTemplate))
   let newWindow = null
+  let embeddedBaseUrl = ''
+  if (isDataEaseBi.value) {
+    embeddedBaseUrl = embeddedStore.baseUrl
+  }
   if (state.pid) {
-    newWindow = window.open(baseUrl + `&pid=${state.pid}`, '_blank')
+    newWindow = window.open(embeddedBaseUrl + baseUrl + `&pid=${state.pid}`, '_blank')
   } else {
-    newWindow = window.open(baseUrl, '_blank')
+    newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
   }
   initOpenHandler(newWindow)
 }

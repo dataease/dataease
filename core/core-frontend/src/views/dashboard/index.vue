@@ -100,10 +100,14 @@ const onMobileConfig = () => {
 }
 
 const loadFinish = ref(false)
+const newWindowFromDiv = ref(false)
 let p = null
 const XpackLoaded = () => p(true)
 // 全局监听按键事件
 onMounted(async () => {
+  if (window.location.hash.includes('#/dashboard')) {
+    newWindowFromDiv.value = true
+  }
   await new Promise(r => (p = r))
   loadFinish.value = true
   useEmitt({
@@ -185,7 +189,7 @@ onUnmounted(() => {
 <template>
   <div
     class="dv-common-layout dv-teleport-query"
-    :class="isDataEaseBi && 'dataease-w-h'"
+    :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
     v-if="loadFinish && !mobileConfig"
   >
     <DbToolbar />
