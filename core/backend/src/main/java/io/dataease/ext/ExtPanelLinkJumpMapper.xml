@@ -12,6 +12,7 @@
     <resultMap id="LinkJumpInfoMap" type="io.dataease.dto.panel.linkJump.PanelLinkJumpInfoDTO"
                extends="io.dataease.plugins.common.base.mapper.PanelLinkJumpInfoMapper.BaseResultMap">
         <result column="source_field_id" jdbcType="VARCHAR" property="sourceFieldId"/>
+        <result column="source_field_type" jdbcType="VARCHAR" property="sourceFieldType"/>
         <result column="source_field_name" jdbcType="VARCHAR" property="sourceFieldName"/>
         <result column="publicJumpId" jdbcType="VARCHAR" property="publicJumpId"/>
         <collection property="targetViewInfoList"
@@ -29,7 +30,7 @@
     </resultMap>
 
     <select id="getLinkJumpInfo" resultMap="LinkJumpInfoMap">
-        SELECT dataset_table_field.id AS 'source_field_id', dataset_table_field.NAME AS 'source_field_name', panel_link_jump_info.id,
+        SELECT dataset_table_field.id AS 'source_field_id',dataset_table_field.de_type AS 'source_field_type',  dataset_table_field.NAME AS 'source_field_name', panel_link_jump_info.id,
                panel_link_jump_info.link_jump_id,
                panel_link_jump_info.link_type,
                panel_link_jump_info.jump_type,
