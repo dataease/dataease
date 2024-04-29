@@ -1089,7 +1089,7 @@ public class ChartViewService {
             }
             datasourceRequest.setQuery(sql);
             data = datasourceProvider.getData(datasourceRequest);
-
+            data = resultCustomSort(xAxis, data);
             Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
             logger.info("plugin_sql:" + sql);
             Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(fieldMap, view, data, desensitizationList);
