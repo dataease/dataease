@@ -349,6 +349,29 @@ public class DataFillService {
         dataFillUserTaskMapper.updateByPrimaryKeySelective(task);
     }
 
+    public CommentWriteHandler getCommentWriteHandler(String formId) {
+        DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
+        List<ExtTableField> formFields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
+        }.getType());
+
+        List<ExtTableField> fields = new ArrayList<>();
+        for (ExtTableField field : formFields) {
+            if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                ExtTableField start = gson.fromJson(gson.toJson(field), ExtTableField.class);
+                start.getSettings().getMapping().setColumnName(start.getSettings().getMapping().getColumnName1());
+                fields.add(start);
+
+                ExtTableField end = gson.fromJson(gson.toJson(field), ExtTableField.class);
+                end.getSettings().getMapping().setColumnName(end.getSettings().getMapping().getColumnName2());
+                fields.add(end);
+            } else {
+                fields.add(field);
+            }
+        }
+        CommentWriteHandler commentWriteHandler = new CommentWriteHandler();
+        commentWriteHandler.setFields(fields);
+        return commentWriteHandler;
+    }
 
     public List<List<String>> getExcelHead(String formId) {
         List<List<String>> list = new ArrayList<>();
@@ -358,45 +381,18 @@ public class DataFillService {
         }.getType());
         for (ExtTableField formField : fields) {
             String name = formField.getSettings().getName();
-            String required = formField.getSettings().isRequired() ? "\n必填" : "";
 
             if (StringUtils.equalsIgnoreCase(formField.getType(), "dateRange")) {
                 String name1 = formField.getSettings().getName() + "(开始时间) ";
                 String name2 = formField.getSettings().getName() + "(结束时间) ";
-                String example = "\n(日期格式: yyyy/MM/dd" + (formField.getSettings().isEnableTime() ? " HH:mm:ss" : "") + ")";
 
-                List<String> head1 = List.of(name1 + required + example);
-                List<String> head2 = List.of(name2 + required + example);
+                List<String> head1 = List.of(name1);
+                List<String> head2 = List.of(name2);
 
                 list.add(head1);
                 list.add(head2);
             } else {
-                String example = "";
-                switch (formField.getSettings().getMapping().getType()) {
-                    case datetime:
-                        example = "\n(日期格式: yyyy/MM/dd" + (formField.getSettings().isEnableTime() ? " HH:mm:ss" : "") + ")";
-                        list.add(List.of(name + required + example));
-                        break;
-                    case number:
-                        example = "\n(整形数字)";
-                        list.add(List.of(name + required + example));
-                        break;
-                    case decimal:
-                        example = "\n(小数数字)";
-                        list.add(List.of(name + required + example));
-                        break;
-                    case text:
-                    case nvarchar:
-                        if (StringUtils.equalsIgnoreCase("select", formField.getType()) && formField.getSettings().isMultiple() || StringUtils.equalsIgnoreCase("checkbox", formField.getType())) {
-                            example = "\n(多个值使用分号\";\"分割)";
-                        } else if (StringUtils.equalsIgnoreCase("email", formField.getSettings().getInputType())) {
-                            example = "\n(邮箱格式)";
-                        } else if (StringUtils.equalsIgnoreCase("phone", formField.getSettings().getInputType())) {
-                            example = "\n(手机号格式)";
-                        }
-                        list.add(List.of(name + required + example));
-                        break;
-                }
+                list.add(List.of(name));
             }
         }
 
