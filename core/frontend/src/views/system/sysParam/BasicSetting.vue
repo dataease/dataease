@@ -96,6 +96,18 @@
         >{{ $t('components.day') }}</template></el-input>
       </el-form-item>
 
+      <el-form-item
+        :label="$t('system_parameter_setting.export_file_retention_time')"
+        prop="exportFileTimeOut"
+      >
+        <el-input
+          v-model="formInline.exportFileTimeOut"
+          :placeholder="$t('system_parameter_setting.empty_msg')"
+        ><template
+          slot="append"
+        >{{ $t('components.day') }}</template></el-input>
+      </el-form-item>
+
       <el-form-item :label="$t('system_parameter_setting.ds_check_time')">
         <el-form
           :inline="true"
@@ -303,6 +315,13 @@ export default {
             trigger: 'blur'
           }
         ],
+        exportFileTimeOut: [
+          {
+            pattern: '^([1-9]|[1-9][0-9]|[1-2][0-9][0-9]|3[0-5][0-9]|36[0-5])$',
+            message: this.$t('system_parameter_setting.msg_error'),
+            trigger: 'blur'
+          }
+        ],
         limitTimes: [
 
           { validator: this.validateNumber, trigger: 'blur' }
@@ -427,6 +446,12 @@ export default {
         {
           paramKey: 'basic.dsSyncLogTimeOut',
           paramValue: this.formInline.dsSyncLogTimeOut,
+          type: 'text',
+          sort: 2
+        },
+        {
+          paramKey: 'basic.exportFileTimeOut',
+          paramValue: this.formInline.exportFileTimeOut,
           type: 'text',
           sort: 2
         },

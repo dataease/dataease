@@ -87,6 +87,9 @@ public class SystemParameterService {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DS_SYNC_LOG_TIME_OUT.getValue())) {
                     result.setDsSyncLogTimeOut(param.getParamValue());
                 }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.EXPORT_FILE_TIME_OUT.getValue())) {
+                    result.setExportFileTimeOut(param.getParamValue());
+                }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DEFAULT_LOGIN_TYPE.getValue())) {
                     String paramValue = param.getParamValue();
                     result.setLoginType(StringUtils.isNotBlank(paramValue) ? Integer.parseInt(paramValue) : 0);

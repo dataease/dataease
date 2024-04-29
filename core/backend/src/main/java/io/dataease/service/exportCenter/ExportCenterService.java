@@ -1,8 +1,7 @@
 package io.dataease.service.exportCenter;
 
-
-import com.alibaba.excel.EasyExcel;
 import com.google.gson.Gson;
+import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.chart.ChartExtRequest;
@@ -39,6 +38,7 @@ import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
 import io.dataease.service.panel.PanelGroupService;
+import io.dataease.service.system.SystemParameterService;
 import io.dataease.websocket.entity.WsMessage;
 import io.dataease.websocket.service.WsService;
 import org.apache.commons.collections4.CollectionUtils;
@@ -72,6 +72,8 @@ import java.util.stream.Collectors;
 @Service
 public class ExportCenterService {
 
+    @Resource
+    private SystemParameterService systemParameterService;
     @Resource
     private ChartViewMapper chartViewMapper;
     @Resource
@@ -1329,7 +1331,27 @@ public class ExportCenterService {
         map.put("data", jsonArray);
         return map;
     }
+    private static final String LOG_RETENTION = "30";
 
+    public void cleanLog() {
+        String value = systemParameterService.getValue(ParamConstants.BASIC.EXPORT_FILE_TIME_OUT.getValue());
+        value = StringUtils.isBlank(value) ? LOG_RETENTION : value;
+        int logRetention = Integer.parseInt(value);
+        Calendar instance = Calendar.getInstance();
+        Calendar startInstance = (Calendar) instance.clone();
+        startInstance.add(Calendar.DATE, -logRetention);
+        startInstance.set(Calendar.HOUR_OF_DAY, 0);
+        startInstance.set(Calendar.MINUTE, 0);
+        startInstance.set(Calendar.SECOND, 0);
+        startInstance.set(Calendar.MILLISECOND, -1);
+        long timeInMillis = startInstance.getTimeInMillis();
+        ExportTaskExample exportTaskExample = new ExportTaskExample();
+        ExportTaskExample.Criteria criteria = exportTaskExample.createCriteria();
+        criteria.andExportTimeLessThan(timeInMillis);
+        exportTaskMapper.selectByExample(exportTaskExample).forEach(exportTask -> {
+            delete(exportTask.getId());
+        });
+    }
 
 }
 

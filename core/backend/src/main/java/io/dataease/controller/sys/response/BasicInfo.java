@@ -17,6 +17,8 @@ public class BasicInfo extends LoginLimitInfo implements Serializable {
     private String logTimeOut;
     @ApiModelProperty("数据同步日志保留时间")
     private String dsSyncLogTimeOut;
+    @ApiModelProperty("后台导出文件保留时间")
+    private String exportFileTimeOut;
     @ApiModelProperty("显示首页")
     private String openHomePage;
     @ApiModelProperty("默认登录方式")
