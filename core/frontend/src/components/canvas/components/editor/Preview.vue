@@ -118,7 +118,7 @@
       class="dialog-css"
       :destroy-on-close="true"
       :show-close="true"
-      :append-to-body="false"
+      append-to-body
       top="5vh"
     >
       <span

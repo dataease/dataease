@@ -150,8 +150,8 @@
       width="80%"
       class="dialog-css"
       :destroy-on-close="true"
+      append-to-body
       :show-close="true"
-      :append-to-body="true"
       top="5vh"
     >
       <span
