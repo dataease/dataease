@@ -117,22 +117,15 @@ const resourceTypeList = computed(() => {
       label: '使用模板新建',
       svgName: 'dv-use-template',
       command: 'newFromTemplate'
+    },
+    {
+      label: '新建文件夹',
+      divided: true,
+      svgName: 'dv-folder',
+      command: 'newFolder'
     }
   ]
-
-  const del = {
-    label: '新建文件夹',
-    divided: true,
-    svgName: 'dv-folder',
-    command: 'newFolder'
-  }
-
-  if (isDataEaseBi.value) {
-    del.divided = false
-    return [del]
-  }
-
-  return [...list, del]
+  return list
 })
 
 const menuList = computed(() => {
@@ -152,10 +145,7 @@ const menuList = computed(() => {
       command: 'delete',
       svgName: 'dv-delete',
       divided: true
-    }
-  ]
-
-  const edit = [
+    },
     {
       label: '编辑',
       command: 'edit',
@@ -167,12 +157,7 @@ const menuList = computed(() => {
       svgName: 'dv-copy-dark'
     }
   ]
-
-  if (isDataEaseBi.value) {
-    return list
-  }
-
-  return [...list, ...edit]
+  return list
 })
 
 const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
@@ -298,7 +283,11 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         curCanvasType.value === 'dataV'
           ? `#/dvCanvas?opt=copy&pid=${params.pid}&dvId=${data.data}`
           : `#/dashboard?opt=copy&pid=${params.pid}&resourceId=${data.data}`
-      const newWindow = window.open(baseUrl, '_blank')
+      let embeddedBaseUrl = ''
+      if (isDataEaseBi.value) {
+        embeddedBaseUrl = embeddedStore.baseUrl
+      }
+      const newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
       initOpenHandler(newWindow)
     })
   } else {
@@ -345,7 +334,11 @@ function createNewObject() {
 
 const resourceEdit = resourceId => {
   const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
-  const newWindow = window.open(baseUrl + resourceId, '_blank')
+  let embeddedBaseUrl = ''
+  if (isDataEaseBi.value) {
+    embeddedBaseUrl = embeddedStore.baseUrl
+  }
+  const newWindow = window.open(embeddedBaseUrl + baseUrl + resourceId, '_blank')
   initOpenHandler(newWindow)
 }
 
@@ -361,10 +354,14 @@ const resourceCreateFinish = templateData => {
       ? '#/dvCanvas?opt=create&createType=template'
       : '#/dashboard?opt=create&createType=template'
   let newWindow = null
+  let embeddedBaseUrl = ''
+  if (isDataEaseBi.value) {
+    embeddedBaseUrl = embeddedStore.baseUrl
+  }
   if (state.templateCreatePid) {
-    newWindow = window.open(baseUrl + `&pid=${state.templateCreatePid}`, '_blank')
+    newWindow = window.open(embeddedBaseUrl + baseUrl + `&pid=${state.templateCreatePid}`, '_blank')
   } else {
-    newWindow = window.open(baseUrl, '_blank')
+    newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
   }
   initOpenHandler(newWindow)
 }
@@ -580,7 +577,7 @@ defineExpose({
             >
               <el-icon
                 v-on:click.stop
-                v-if="data.leaf && !isDataEaseBi"
+                v-if="data.leaf"
                 class="hover-icon"
                 @click="resourceEdit(data.id)"
               >
