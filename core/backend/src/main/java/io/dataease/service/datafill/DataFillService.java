@@ -383,8 +383,8 @@ public class DataFillService {
             String name = formField.getSettings().getName();
 
             if (StringUtils.equalsIgnoreCase(formField.getType(), "dateRange")) {
-                String name1 = formField.getSettings().getName() + "(开始时间) ";
-                String name2 = formField.getSettings().getName() + "(结束时间) ";
+                String name1 = formField.getSettings().getName() + "(开始) ";
+                String name2 = formField.getSettings().getName() + "(结束) ";
 
                 List<String> head1 = List.of(name1);
                 List<String> head2 = List.of(name2);
