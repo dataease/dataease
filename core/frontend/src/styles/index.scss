@@ -1818,3 +1818,7 @@ div:focus {
 .el-table__fixed-right::before {
   display: none;
 }
+
+.de-fullscreen-preview-index {
+  z-index: 2000;
+}

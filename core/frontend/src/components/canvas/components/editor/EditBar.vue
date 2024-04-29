@@ -489,22 +489,23 @@ export default {
       this.$message({
         message: h('p', null, [
           this.$t('data_export.exporting'),
-          h(
-            Button,
-            {
-              props: {
-                type: 'text',
-                size: 'mini'
-              },
-              class: 'btn-text',
-              on: {
-                click: () => {
-                  cb()
+          this.showEditPosition === 'bar-main-preview'
+            ? h(
+              Button,
+              {
+                props: {
+                  type: 'text',
+                  size: 'mini'
+                },
+                class: 'btn-text',
+                on: {
+                  click: () => {
+                    cb()
+                  }
                 }
-              }
-            },
-            this.$t('data_export.export_center')
-          ),
+              },
+              this.$t('data_export.export_center')
+            ) : this.$t('data_export.export_center'),
           this.$t('data_export.export_info')
         ]),
         iconClass,
