@@ -59,7 +59,7 @@ public class CommentWriteHandler implements RowWriteHandler {
                         } else if (StringUtils.equalsIgnoreCase("phone", field.getSettings().getInputType())) {
                             example = "\n(手机号格式)";
                         }
-                        if (StringUtils.equalsIgnoreCase("select", field.getType()) || StringUtils.equalsIgnoreCase("checkbox", field.getType())) {
+                        if (StringUtils.equalsIgnoreCase("select", field.getType()) || StringUtils.equalsIgnoreCase("checkbox", field.getType()) || StringUtils.equalsIgnoreCase("radio", field.getType())) {
                             options = new StringBuilder("\n选项值为:\n");
                             for (ExtTableField.Option option : field.getSettings().getOptions()) {
                                 options.append(option.getName()).append("\n");

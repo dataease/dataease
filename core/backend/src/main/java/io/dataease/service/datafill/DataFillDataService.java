@@ -721,7 +721,7 @@ public class DataFillDataService {
                             rowData.put(field.getSettings().getMapping().getColumnName(), time);
                             break;
                         default:
-                            if (StringUtils.equalsIgnoreCase(field.getType(), "select") && !field.getSettings().isMultiple()) {
+                            if (StringUtils.equalsIgnoreCase(field.getType(), "select") && !field.getSettings().isMultiple() || StringUtils.equalsIgnoreCase(field.getType(), "radio")) {
                                 boolean has = false;
                                 for (ExtTableField.Option option : field.getSettings().getOptions()) {
                                     if (StringUtils.equals((String) option.getValue(), excelRowData)) {
