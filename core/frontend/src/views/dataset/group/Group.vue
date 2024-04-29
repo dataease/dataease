@@ -694,9 +694,17 @@ export default {
     init(cache = true) {
       const { id } = this.$route.params
       const modelInfo = localStorage.getItem('dataset-tree')
-      const userCache = modelInfo && cache
+      let preParse
+      if (modelInfo) {
+        try {
+          preParse = JSON.parse(modelInfo)
+        } catch (e) {
+          console.warn('dataset-tree cache error')
+        }
+      }
+      const userCache = preParse && cache
       if (userCache) {
-        this.tData = JSON.parse(modelInfo)
+        this.tData = preParse
         this.queryAfter(id)
       } else {
         this.treeLoading = true
