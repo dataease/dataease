@@ -142,6 +142,7 @@
                       >
                         <el-option
                           v-for="item in currentLinkPanelViewArray"
+                          v-show="checkShow(item)"
                           :key="item.id"
                           :label="item.name"
                           :value="item.id"
@@ -579,6 +580,10 @@ export default {
         })
       })
     },
+    checkShow(item) {
+      const result = !(this.linkJumpInfo && this.linkJumpInfo.sourceFieldType !== 1 && item.componentType && item.componentType.indexOf('time') > -1)
+      return result
+    },
     handleExceed(file) {
     },
     cancel() {
@@ -610,6 +615,7 @@ export default {
     },
     nodeClick(data, node) {
       this.linkJumpInfo = this.mapJumpInfoArray[data.sourceFieldId]
+      console.log('nodeClick=' + JSON.stringify(this.linkJumpInfo))
       if (!this.linkJumpInfo.linkType) {
         this.linkJumpInfo.linkType = 'inner'
       }
@@ -644,6 +650,7 @@ export default {
           if (componentItem.type === 'custom' && this.widgetSubjectsFilter.includes(componentItem.serviceName)) {
             this.currentLinkPanelViewArray.push({
               id: componentItem.id,
+              componentType: componentItem.serviceName,
               type: 'filter',
               name: componentItem.options.attrs.title ? componentItem.options.attrs.title : this.widgetSubjectsTrans[componentItem.serviceName]
             })
