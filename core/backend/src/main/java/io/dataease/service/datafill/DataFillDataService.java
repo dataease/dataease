@@ -657,13 +657,18 @@ public class DataFillDataService {
         }.getType());
 
         List<ExtTableField> fields = new ArrayList<>();
+        Map<String, String> dateRangeNameMap = new HashMap<>();
         for (ExtTableField field : formFields) {
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                dateRangeNameMap.put(field.getId(), field.getSettings().getName());
+
                 ExtTableField start = gson.fromJson(gson.toJson(field), ExtTableField.class);
                 start.getSettings().getMapping().setColumnName(start.getSettings().getMapping().getColumnName1());
+                start.getSettings().setName(start.getSettings().getName() + "（开始）");
                 fields.add(start);
 
                 ExtTableField end = gson.fromJson(gson.toJson(field), ExtTableField.class);
+                end.getSettings().setName(end.getSettings().getName() + "（结束）");
                 end.getSettings().getMapping().setColumnName(end.getSettings().getMapping().getColumnName2());
                 fields.add(end);
             } else {
@@ -686,6 +691,15 @@ public class DataFillDataService {
         List<RowDataDatum> dataList = new ArrayList<>();
         for (List<String> excelDatum : excelData) {
             Map<String, Object> rowData = new HashMap<>();
+            Map<String, List<Long>> dateRangeCheckMap = new HashMap<>();
+            for (String key : dateRangeNameMap.keySet()) {
+                //初始化
+                List<Long> list = new ArrayList<>();
+                list.add(null);
+                list.add(null);
+                dateRangeCheckMap.put(key, list);
+            }
+
             for (int i = 0; i < fields.size(); i++) {
                 ExtTableField field = fields.get(i);
 
@@ -717,6 +731,14 @@ public class DataFillDataService {
                             Long time = date == null ? null : date.getTime();
                             if (time != null && time < 0) {
                                 throw new Exception("时间不能小于1970/01/01");
+                            }
+                            //检测dateRange下，开始要小于结束，且必须两个都有或都没有
+                            if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                                if (StringUtils.equals(field.getSettings().getMapping().getColumnName(), field.getSettings().getMapping().getColumnName1())) {
+                                    dateRangeCheckMap.get(field.getId()).set(0, time);
+                                } else if (StringUtils.equals(field.getSettings().getMapping().getColumnName(), field.getSettings().getMapping().getColumnName2())) {
+                                    dateRangeCheckMap.get(field.getId()).set(1, time);
+                                }
                             }
                             rowData.put(field.getSettings().getMapping().getColumnName(), time);
                             break;
@@ -791,6 +813,19 @@ public class DataFillDataService {
                     DataEaseException.throwException("[" + field.getSettings().getName() + "] 值: " + excelRowData + " 格式解析错误: " + e.getMessage());
                 }
             }
+
+            //判断时间范围的开始结束是否符合要求
+            dateRangeCheckMap.forEach((key, list) -> {
+                if (list.get(0) == null && list.get(1) != null) {
+                    DataEaseException.throwException("[" + dateRangeNameMap.get(key) + "（开始/结束）] 不能只有一个为空");
+                } else if (list.get(0) != null && list.get(1) == null) {
+                    DataEaseException.throwException("[" + dateRangeNameMap.get(key) + "（结束/结束）] 不能只有一个为空");
+                } else if (list.get(0) != null && list.get(1) != null) {
+                    if (list.get(0) > list.get(1)) {
+                        DataEaseException.throwException("[" + dateRangeNameMap.get(key) + "（结束）] 不能早于 [" + dateRangeNameMap.get(key) + "（开始）]");
+                    }
+                }
+            });
 
             if (rowData.isEmpty()) {
                 continue;
