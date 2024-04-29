@@ -545,7 +545,7 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
     request.proxy = { userId: panelInfo.proxy }
   }
   method(request).then((res) => {
-    if (linkToken) {
+    if (linkToken && !token) {
       const blob = new Blob([res], { type: 'application/vnd.ms-excel' })
       const link = document.createElement('a')
       link.style.display = 'none'
