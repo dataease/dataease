@@ -152,7 +152,7 @@ if [[ $available_disk -lt 20480 ]];then
    log "\033[31m[警告] DataEase 运行目录所在磁盘剩余空间不足 20G 可能无法正常启动!\033[0m"
 fi
 
-cp -r ./dataease/* ${DE_RUN_BASE}/
+cp -r ${CURRENT_DIR}/dataease/* ${DE_RUN_BASE}/
 
 cd $DE_RUN_BASE
 env | grep DE_ >.env
