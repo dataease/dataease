@@ -273,7 +273,7 @@ import Vue from 'vue'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import UserViewMobileDialog from '@/components/canvas/customComponent/UserViewMobileDialog'
-import { equalsAny } from '@/utils/StringUtils'
+import { equalsAny, includesAny } from '@/utils/StringUtils'
 
 export default {
   name: 'UserView',
@@ -530,7 +530,7 @@ export default {
       let linkageCount = 0
       let jumpCount = 0
       if (this.drillFilters.length && !this.chart.type.includes('table')) {
-        const checkItem = this.drillFields[this.drillFilters.length]
+        const checkItem = this.getDrillField()
         const sourceInfo = this.chart.id + '#' + checkItem.id
         if (this.nowPanelTrackInfo[sourceInfo]) {
           linkageCount++
@@ -1587,6 +1587,49 @@ export default {
     pageClick(page) {
       this.currentPage = page
       this.getData(this.element.propValue.viewId, false)
+    },
+    getDrillField() {
+      const { type, xaxis, xaxisExt, extStack } = this.chart
+      const drillItem = this.drillFields[this.drillFilters.length]
+      if (!includesAny(type, 'group', 'stack')) {
+        return drillItem
+      }
+      const drillHead = this.drillFields[0]
+      const xAxis = JSON.parse(xaxis)
+      // group
+      if (type.includes('group') && !type.includes('stack')) {
+        const xAxisExt = JSON.parse(xaxisExt)
+        if (drillHead.id === xAxisExt?.[0]?.id) {
+          return this.drillFields[this.drillFilters.length - xAxis.length]
+        }
+      }
+      // stack
+      if (!type.includes('group') && type.includes('stack')) {
+        const stack = JSON.parse(extStack)
+        if (drillHead.id === stack?.[0]?.id) {
+          return this.drillFields[this.drillFilters.length - xAxis.length]
+        }
+      }
+      // group-stack
+      if (type.includes('group') && type.includes('stack')) {
+        const xAxisExt = JSON.parse(xaxisExt)
+        const stack = JSON.parse(extStack)
+        if (drillHead.id === xAxisExt?.[0]?.id) {
+          if (stack?.length) {
+            return this.drillFields[this.drillFilters.length - xAxis.length - stack.length]
+          } else {
+            return this.drillFields[this.drillFilters.length - xAxis.length ]
+          }
+        }
+        if (drillHead.id === stack?.[0].id) {
+          if (xAxisExt?.length) {
+            return this.drillFields[this.drillFilters.length - xAxis.length - xAxisExt.length]
+          } else {
+            return this.drillFields[this.drillFilters.length - xAxis.length]
+          }
+        }
+      }
+      return drillItem
     }
   }
 }
