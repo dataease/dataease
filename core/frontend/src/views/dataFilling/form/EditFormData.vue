@@ -234,6 +234,7 @@ export default {
         label-position="top"
         hide-required-asterisk
         :model="formData"
+        @submit.native.prevent
       >
         <div
           v-for="(item, $index) in formData"

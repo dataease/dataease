@@ -309,6 +309,7 @@ export default {
         :model="formData"
         label-position="top"
         hide-required-asterisk
+        @submit.native.prevent
       >
         <el-form-item
           prop="name"

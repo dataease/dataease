@@ -420,6 +420,7 @@ export default {
           :model="folderForm"
           label-position="top"
           hide-required-asterisk
+          @submit.native.prevent
         >
           <el-main>
             <el-form-item
@@ -473,6 +474,7 @@ export default {
           :model="updateFormData"
           label-position="top"
           hide-required-asterisk
+          @submit.native.prevent
         >
           <el-main>
             <el-form-item
