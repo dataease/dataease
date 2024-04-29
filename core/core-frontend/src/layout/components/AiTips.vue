@@ -43,6 +43,7 @@ onMounted(() => {
   z-index: 10001 !important;
   padding: 24px !important;
   box-shadow: none !important;
+  border: 0px !important;
   background: var(--ed-color-primary) !important;
   .ed-popper__arrow::before {
     border: 1px solid var(--ed-color-primary) !important;
