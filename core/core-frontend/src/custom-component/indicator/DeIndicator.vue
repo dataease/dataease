@@ -313,7 +313,7 @@ const renderChart = async view => {
     if (indicatorName?.show) {
       let nameColor = indicatorName.color
 
-      if (basicStyle?.alpha !== undefined) {
+      if (basicStyle?.alpha !== undefined && !batchOptStatus.value) {
         nameColor = hexColorToRGBA(basicStyle.colors[2], basicStyle.alpha)
       }
 
