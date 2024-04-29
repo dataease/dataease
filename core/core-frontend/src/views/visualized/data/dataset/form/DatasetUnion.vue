@@ -1030,8 +1030,12 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
   >
     <template #header v-if="currentNode">
       <div class="info">
-        <span :title="currentNode.tableName" class="name ellipsis">{{ currentNode.tableName }}</span>
-        <span :title="getDsName(currentNode.datasourceId)" class="ds ellipsis">{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span>
+        <span :title="currentNode.tableName" class="name ellipsis">{{
+          currentNode.tableName
+        }}</span>
+        <span :title="getDsName(currentNode.datasourceId)" class="ds ellipsis"
+          >{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span
+        >
       </div>
     </template>
     <union-field-list
