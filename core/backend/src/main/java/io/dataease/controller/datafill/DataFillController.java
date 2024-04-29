@@ -3,7 +3,6 @@ package io.dataease.controller.datafill;
 import com.alibaba.excel.EasyExcel;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
-import com.google.gson.Gson;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -187,28 +186,20 @@ public class DataFillController {
 
     @ApiIgnore
     @PostMapping("/form/{formId}/excel/template")
-    public void userFillData(@PathVariable String formId, HttpServletResponse response) throws Exception {
-        try {
-            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-            response.setCharacterEncoding("utf-8");
-            // 这里URLEncoder.encode可以防止中文乱码
-            String fileName = URLEncoder.encode("template", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-            // 这里需要设置不关闭流
-            EasyExcel.write(response.getOutputStream())
-                    .head(dataFillService.getExcelHead(formId))
-                    .autoCloseStream(Boolean.FALSE)
-                    .sheet("模板")
-                    .doWrite(new ArrayList());
-        } catch (Exception e) {
-            // 重置response
-            response.reset();
-            response.setContentType("application/json");
-            response.setCharacterEncoding("utf-8");
-
-            ResultHolder resultHolder = ResultHolder.error("get template excel error", e);
-            response.getWriter().println(new Gson().toJson(resultHolder));
-        }
+    public void getExcelTemplate(@PathVariable String formId, HttpServletResponse response) throws Exception {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        // 这里URLEncoder.encode可以防止中文乱码
+        String fileName = URLEncoder.encode("template", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+        // 这里需要设置不关闭流
+        EasyExcel.write(response.getOutputStream())
+                .head(dataFillService.getExcelHead(formId))
+                .inMemory(true)
+                .registerWriteHandler(dataFillService.getCommentWriteHandler(formId))
+                .autoCloseStream(Boolean.FALSE)
+                .sheet("模板")
+                .doWrite(new ArrayList());
     }
 
     @ApiIgnore
