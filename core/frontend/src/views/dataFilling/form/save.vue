@@ -2,6 +2,7 @@
 import { filter, forEach, find, split, get } from 'lodash-es'
 import { listDatasource, listDatasourceType } from '@/api/system/datasource'
 import { listForm, saveForm } from '@/views/dataFilling/form/dataFilling'
+import { hasDataPermission } from '@/utils/permission'
 
 export default {
   name: 'DataFillingFormSave',
@@ -160,7 +161,7 @@ export default {
 
       this.allDatasourceList = val[1].data
 
-      this.folders = val[2].data || []
+      this.folders = this.filterListDeep(val[2].data) || []
       if (this.formData.folder) {
         this.$nextTick(() => {
           this.$refs.tree.setCurrentKey(this.formData.folder)
@@ -172,6 +173,14 @@ export default {
     })
   },
   methods: {
+    filterListDeep(list) {
+      return filter(list, item => {
+        if (item.children) {
+          this.filterListDeep(item.children)
+        }
+        return hasDataPermission('manage', item.privileges)
+      })
+    },
     getTypeOptions(formOption) {
       const _options = []
       if (formOption.type !== 'date' &&
