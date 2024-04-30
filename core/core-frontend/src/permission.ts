@@ -7,7 +7,7 @@ import { usePermissionStoreWithOut, pathValid, getFirstAuthMenu } from '@/store/
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getRoleRouters } from '@/api/common'
 import { useCache } from '@/hooks/web/useCache'
-import { isMobile } from '@/utils/utils'
+import { isMobile, checkPlatform } from '@/utils/utils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -28,6 +28,7 @@ const embeddedRouteWhiteList = ['/dataset-embedded', '/dataset-form', '/dataset-
 router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
+  checkPlatform()
   if (isMobile()) {
     done()
     loadDone()
