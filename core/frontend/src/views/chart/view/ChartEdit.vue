@@ -1183,8 +1183,10 @@
                             :item="item"
                             :dimension-data="dimension"
                             :quota-data="quota"
+                            :chart="chart"
                             @onDimensionItemChange="drillItemChange"
                             @onDimensionItemRemove="drillItemRemove"
+                            @onCustomSort="item => onCustomSort(item, 'drillFields')"
                           />
                         </transition-group>
                       </draggable>
@@ -2934,7 +2936,7 @@ export default {
     },
     customSort(args) {
       const { item, axis } = JSON.parse(JSON.stringify(args))
-      this.onCustomSort(item, axis);
+      this.onCustomSort(item, axis)
     },
     onCustomSort(item, axis) {
       this.customSortFieldType = axis

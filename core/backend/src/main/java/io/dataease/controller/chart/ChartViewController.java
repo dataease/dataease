@@ -180,6 +180,14 @@ public class ChartViewController {
     }
 
     @ApiIgnore
+    @ApiOperation("获取下钻字段值")
+    @PostMapping("/getDrillFieldData/{id}/{panelId}/{fieldId}")
+    public List<String> getDrillFieldData(@PathVariable String id, @PathVariable String panelId, @PathVariable String fieldId,
+                                           @RequestBody ChartExtRequest requestList) throws Exception {
+        return chartViewService.getDrillFieldData(id, requestList, false, fieldId);
+    }
+
+    @ApiIgnore
     @ApiOperation("更新视图属性")
     @PostMapping("/viewPropsSave/{panelId}")
     public void viewPropsSave(@PathVariable String panelId, @RequestBody ChartViewWithBLOBs chartViewWithBLOBs) {

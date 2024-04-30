@@ -443,9 +443,6 @@ public class ChartViewService {
         }
 
         List<ChartExtFilterRequest> extFilterList = new ArrayList<>();
-        List<ChartExtFilterRequest> filters = new ArrayList<>();
-        List<ChartExtFilterRequest> drillFilters = new ArrayList<>();
-        boolean isDrill = false;
 
         // 判断连接方式，直连或者定时抽取 table.mode
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -984,7 +981,6 @@ public class ChartViewService {
                             ChartViewFieldDTO nextDrillField = drill.get(i + 1);
                             if (!checkDrillExist(xAxis, extStack, nextDrillField.getId(), view)) {
                                 // get drill list first element's sort,then assign to nextDrillField
-                                nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
                                 nextDrillField.setDrill(true);
 
                                 if (isAntVScatterNumberXAxis) {
@@ -2529,5 +2525,28 @@ public class ChartViewService {
         } else {
             result.setDatasourceType(null);
         }
+    }
+
+    public List<String> getDrillFieldData(String id, ChartExtRequest requestList, boolean cache, String fieldId) throws Exception {
+        ChartViewDTO view = getOne(id, requestList.getQueryFrom());
+        Type tokenType = new TypeToken<List<ChartViewFieldDTO>>() {
+        }.getType();
+        List<ChartViewFieldDTO> drillField = gson.fromJson(view.getDrillFields(), tokenType);
+        ChartViewFieldDTO targetField = null;
+        for (int i = 0; i < drillField.size(); i++) {
+            ChartViewFieldDTO tmp = drillField.get(i);
+            if (tmp.getId().equalsIgnoreCase(fieldId)) {
+                targetField = tmp;
+                break;
+            }
+        }
+        if (targetField == null) {
+            return Collections.emptyList();
+        }
+        view.setXAxis(gson.toJson(Collections.singleton(targetField)));
+
+        List<String[]> sqlData = sqlData(view, requestList, cache, fieldId);
+        List<String[]> result = customSort(Optional.ofNullable(targetField.getCustomSort()).orElse(new ArrayList<>()), sqlData, 0);
+        return result.stream().map(i -> i[0]).distinct().collect(Collectors.toList());
     }
 }
