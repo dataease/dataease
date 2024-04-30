@@ -725,7 +725,7 @@ public class PanelGroupService {
         } else if(StringUtils.isNotEmpty(permissionsTreeObjCustomsFilter.getLogic())){
             dataSetExportRequest.setExpressionTree(customFilter);
         }
-        dataSetExportRequest.setFilename(dataSetExportRequest.getName());
+        dataSetExportRequest.setFilename(request.getViewName()+"-details");
 
         return dataSetExportRequest;
     }
