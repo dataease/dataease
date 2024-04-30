@@ -27,7 +27,6 @@ export const logoutHandler = (justClean?: boolean) => {
     return
   }
   if (wsCache.get('out_auth_platform') === 'oidc') {
-    localStorage.removeItem('out_auth_platform')
     window.location.href = '/oidcbi/oidc/logout'
     return
   }

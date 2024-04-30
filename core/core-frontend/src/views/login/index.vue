@@ -16,7 +16,7 @@ import { XpackComponent } from '@/components/plugin'
 import { logoutHandler } from '@/utils/logout'
 import DeImage from '@/assets/login-desc-de.png'
 import elementResizeDetectorMaker from 'element-resize-detector'
-import { isLarkPlatform, isPlatformClient } from '@/utils/utils'
+import { checkPlatform, cleanPlatformFlag } from '@/utils/utils'
 import xss from 'xss'
 const { wsCache } = useCache()
 const appStore = useAppStoreWithOut()
@@ -134,23 +134,6 @@ const showLoginImage = computed<boolean>(() => {
   return !(loginContainerWidth.value < 889)
 })
 
-const checkPlatform = () => {
-  const flagArray = ['/casbi', 'oidcbi']
-  const pathname = window.location.pathname
-  if (
-    !flagArray.some(flag => pathname.includes(flag)) &&
-    !isLarkPlatform() &&
-    !isPlatformClient()
-  ) {
-    cleanPlatformFlag()
-  }
-}
-const cleanPlatformFlag = () => {
-  const platformKey = 'out_auth_platform'
-  wsCache.delete(platformKey)
-  preheat.value = false
-}
-
 const preheat = ref(true)
 const showLoginErrorMsg = () => {
   if (!loginErrorMsg.value) {
@@ -219,7 +202,9 @@ const loadArrearance = () => {
 }
 onMounted(() => {
   loadArrearance()
-  checkPlatform()
+  if (!checkPlatform()) {
+    preheat.value = false
+  }
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {
     const msg = localStorage.getItem('DE-GATEWAY-FLAG')
     loginErrorMsg.value = decodeURIComponent(msg)

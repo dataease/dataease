@@ -1,5 +1,7 @@
 import { BusiTreeNode } from '@/models/tree/TreeNode'
+import { useCache } from '@/hooks/web/useCache'
 
+const { wsCache } = useCache()
 export function deepCopy(target) {
   if (target === null || target === undefined) {
     return target
@@ -85,6 +87,24 @@ export const isLarkPlatform = () => {
 
 export const isPlatformClient = () => {
   return !!getQueryString('client') || getQueryString('state')?.includes('client')
+}
+
+export const checkPlatform = () => {
+  const flagArray = ['/casbi', 'oidcbi']
+  const pathname = window.location.pathname
+  if (
+    !flagArray.some(flag => pathname.includes(flag)) &&
+    !isLarkPlatform() &&
+    !isPlatformClient()
+  ) {
+    return cleanPlatformFlag()
+  }
+  return true
+}
+export const cleanPlatformFlag = () => {
+  const platformKey = 'out_auth_platform'
+  wsCache.delete(platformKey)
+  return false
 }
 
 export function isMobile() {
