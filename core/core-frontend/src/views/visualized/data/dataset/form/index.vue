@@ -293,6 +293,7 @@ const confirmCustomTime = () => {
     })
     delete currentField.value.name
     recoverSelection()
+    updateCustomTime.value = false
   } else {
     ruleFormRef.value.validate(valid => {
       if (valid) {
@@ -309,7 +310,6 @@ const confirmCustomTime = () => {
       }
     })
   }
-  updateCustomTime.value = false
 }
 
 watch(searchTable, val => {
