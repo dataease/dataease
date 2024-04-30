@@ -15,6 +15,8 @@ export const getRange = (selectValue, timeGranularity) => {
     case 'minute':
     case 'y_M_d_H_m':
       return getMinuteEnd(selectValue)
+    case 'y_M_d_H_m_s':
+      return getSecondEnd(selectValue)
     case 'datetime':
       return [+new Date(selectValue), +new Date(selectValue)]
     default:
@@ -61,6 +63,10 @@ const getHourEnd = timestamp => {
 
 const getMinuteEnd = timestamp => {
   return [+new Date(timestamp), +new Date(timestamp) + 60 * 1000 - 1000]
+}
+
+const getSecondEnd = timestamp => {
+  return [+new Date(timestamp), +new Date(timestamp) + 999]
 }
 
 const getYearBegin = timestamp => {
