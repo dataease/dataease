@@ -37,6 +37,8 @@
 
 <script>
 import { listForm, moveForm } from '@/views/dataFilling/form/dataFilling'
+import { hasDataPermission } from '@/utils/permission'
+import { filter } from 'lodash-es'
 
 export default {
   name: 'DataFillingFormMoveSelector',
@@ -76,7 +78,7 @@ export default {
   methods: {
     tree(group) {
       listForm({ nodeType: 'folder' }).then(res => {
-        const formList = res.data || []
+        const formList = this.filterListDeep(res.data) || []
         if (this.item.nodeType === 'folder') {
           this.tData = [
             {
@@ -90,6 +92,14 @@ export default {
         } else {
           this.tData = formList
         }
+      })
+    },
+    filterListDeep(list) {
+      return filter(list, item => {
+        if (item.children) {
+          this.filterListDeep(item.children)
+        }
+        return hasDataPermission('manage', item.privileges)
       })
     },
     nodeClick(data, node) {
