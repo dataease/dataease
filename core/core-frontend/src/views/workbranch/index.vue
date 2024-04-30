@@ -14,6 +14,8 @@ import { ElMessage } from 'element-plus-secondary'
 import { useCache } from '@/hooks/web/useCache'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { Base64 } from 'js-base64'
+import { useEmbedded } from '@/store/modules/embedded'
+import { useAppStoreWithOut } from '@/store/modules/app'
 const userStore = useUserStoreWithOut()
 const interactiveStore = interactiveStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
@@ -25,6 +27,8 @@ const { wsCache } = useCache()
 const { push } = useRouter()
 const router = useRouter()
 const resourceCreateOpt = ref(null)
+const embeddedStore = useEmbedded()
+const appStore = useAppStoreWithOut()
 
 const quickCreationList = shallowRef([
   {
@@ -96,6 +100,7 @@ const state = reactive({
   loading: false,
   dvCreateForm: {
     resourceName: null,
+    templateId: null,
     name: null,
     pid: null,
     nodeType: 'panel',
@@ -201,14 +206,21 @@ const templatePreview = previewId => {
 
 const templateApply = template => {
   state.dvCreateForm.name = template.title
-  state.dvCreateForm.templateUrl = template.metas.theme_repo
-  state.dvCreateForm.resourceName = template.id
   state.dvCreateForm.nodeType = template.templateType
+  if (template.source === 'market') {
+    state.dvCreateForm.newFrom = 'new_market_template'
+    state.dvCreateForm.templateUrl = template.metas.theme_repo
+    state.dvCreateForm.resourceName = template.id
+  } else {
+    state.dvCreateForm.newFrom = 'new_inner_template'
+    state.dvCreateForm.templateId = template.id
+  }
   apply()
 }
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const apply = () => {
-  if (!state.dvCreateForm.templateUrl) {
+  if (state.dvCreateForm.newFrom === 'new_market_template' && !state.dvCreateForm.templateUrl) {
     ElMessage.warning('未获取模板下载链接请联系模板市场官方')
     return false
   }
@@ -223,7 +235,27 @@ const apply = () => {
       : '#/dashboard?opt=create&createType=template') +
     '&templateParams=' +
     Base64.encode(JSON.stringify(templateTemplate))
-  window.open(baseUrl, '_blank')
+  let newWindow = null
+  let embeddedBaseUrl = ''
+  if (isDataEaseBi.value) {
+    embeddedBaseUrl = embeddedStore.baseUrl
+  }
+  if (state.pid) {
+    newWindow = window.open(embeddedBaseUrl + baseUrl + `&pid=${state.pid}`, '_blank')
+  } else {
+    newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
+  }
+  initOpenHandler(newWindow)
+}
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
 }
 
 const toTemplateMarket = () => {
