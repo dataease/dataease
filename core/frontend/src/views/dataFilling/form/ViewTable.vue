@@ -90,7 +90,7 @@
         name="record"
       />
       <el-tab-pane
-        v-if="hasDataPermission('grant', param.privileges)"
+        v-if="hasDataPermission('manage', param.privileges)"
         :label="$t('data_fill.form.task_manage')"
         :lazy="true"
         name="task"
