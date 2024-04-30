@@ -3,7 +3,14 @@ import {
   G2PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { DualAxes, DualAxesOptions } from '@antv/g2plot/esm/plots/dual-axes'
-import { getAnalyse, getLabel, getPadding, getYAxis, getYAxisExt } from '../../common/common_antv'
+import {
+  getAnalyse,
+  getLabel,
+  getPadding,
+  getYAxis,
+  getYAxisExt,
+  setGradientColor
+} from '../../common/common_antv'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { cloneDeep, isEmpty, defaultTo, map, filter } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
@@ -63,20 +70,31 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     })
     // custom color
     const customAttr = parseJson(chart.customAttr)
-    const color = customAttr.basicStyle.colors
+    let color = customAttr.basicStyle.colors
+
+    color = color.map(ele => {
+      const tmp = hexColorToRGBA(ele, customAttr.basicStyle.alpha)
+      if (customAttr.basicStyle.gradient) {
+        return setGradientColor(tmp, true, 270)
+      } else {
+        return tmp
+      }
+    })
+
     // options
     const initOptions: DualAxesOptions = {
       data: [data1, data2],
       xField: 'field',
       yField: ['value', 'valueExt'], //这里不能设置成一样的
       appendPadding: getPadding(chart),
-      color,
       geometryOptions: [
         {
-          geometry: data1Type
+          geometry: data1Type,
+          color: color[0]
         },
         {
-          geometry: data2Type
+          geometry: data2Type,
+          color: color[1]
         }
       ],
       interactions: [
