@@ -19,8 +19,8 @@ DataEase 是开源的数据可视化分析工具（ BI 工具 ），帮助用户
 
 **DataEase 支持的数据源：**
 
--   OLTP 型数据库： MySQL、Oracle、SQL Server、PostgreSQL、MariaDB、Db2、TiDB、MongoDB-BI 等;
--   OLAP 型数据库： ClickHouse、Apache Doris、Apache Impala、StarRocks 等;
+-   OLTP 数据库： MySQL、Oracle、SQL Server、PostgreSQL、MariaDB、Db2、TiDB、MongoDB-BI 等;
+-   OLAP 数据库： ClickHouse、Apache Doris、Apache Impala、StarRocks 等;
 -   数据仓库/数据湖： Amazon RedShift 等;
 -   数据文件： Excel、CSV 等;
 -   API 数据源。
@@ -28,7 +28,7 @@ DataEase 是开源的数据可视化分析工具（ BI 工具 ），帮助用户
 ## 快速开始
 
 ```
-准备一台 2核4G 以上 Linux 服务器，以 root 运行以下安装脚本：
+准备一台 2核4G 以上 Linux 服务器，以 root 运行以下一键安装脚本：
 
 curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
 
@@ -75,7 +75,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
 - [1Panel](https://github.com/1panel-dev/1panel/) - 现代化、开源的 Linux 服务器运维管理面板
 - [Halo](https://github.com/halo-dev/halo/) - 强大易用的开源建站工具
 - [MaxKB](https://github.com/1panel-dev/MaxKB/) - 基于 LLM 大语言模型的开源知识库问答系统
-- [MeterSphere](https://github.com/metersphere/metersphere/) - 现代化、开源的测试管理和接口测试工具
+- [MeterSphere](https://github.com/metersphere/metersphere/) - 开源的测试管理和接口测试工具
 
 ## License
 
