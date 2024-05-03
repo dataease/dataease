@@ -68,7 +68,15 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
 -   数据库：[MySQL](https://www.mysql.com/)
 -   数据处理：[Apache Calcite](https://github.com/apache/calcite/)、[Apache SeaTunnel](https://github.com/apache/seatunnel)
 -   基础设施：[Docker](https://www.docker.com/)
-  
+
+## 我们的其他明星开源项目
+
+- [JumpServer](https://github.com/jumpserver/jumpserver/) - 广受欢迎的开源堡垒机
+- [1Panel](https://github.com/1panel-dev/1panel/) - 现代化、开源的 Linux 服务器运维管理面板
+- [Halo](https://github.com/halo-dev/halo/) - 强大易用的开源建站工具
+- [MaxKB](https://github.com/1panel-dev/MaxKB/) - 基于 LLM 大语言模型的开源知识库问答系统
+- [MeterSphere](https://github.com/metersphere/metersphere/) - 现代化、开源的测试管理和接口测试工具
+
 ## License
 
 Copyright (c) 2014-2024 [FIT2CLOUD 飞致云](https://fit2cloud.com/), All rights reserved.
