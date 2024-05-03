@@ -30,7 +30,7 @@ DataEase 是开源的数据可视化分析工具（ BI 工具 ），帮助用户
 ## 快速开始
 
 ```
-准备一台 2核4G 以上 Linux 服务器，以 root 运行以下一键安装脚本：
+# 准备一台 2核4G 以上 Linux 服务器，以 root 运行以下一键安装脚本：
 
 curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
 
