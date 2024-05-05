@@ -32,7 +32,7 @@
         <velocity.version>2.3</velocity.version>
         <maven.antrun.version>3.1.0</maven.antrun.version>
         <ehcache.version>3.10.8</ehcache.version>
-        <bcprov.version>1.74</bcprov.version>
+        <bcprov.version>1.78</bcprov.version>
         <junit.version>4.13.2</junit.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
