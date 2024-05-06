@@ -54,7 +54,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
 <table style="border-collapse: collapse; border: 1px solid black;">
   <tr>
     <td style="padding: 5px;background-color:#fff;"><img src= "https://github.com/dataease/dataease/assets/41712985/8dbed4e1-39f0-4392-aa8c-d1fd83ba42eb" alt="DataEase 工作台"   /></td>
-    <td style="padding: 5px;background-color:#fff;"><img src= "https://github.com/dataease/dataease/assets/985347/67db0acb-cd9c-44a2-85b7-ac5c6e5b0db4" alt="DataEase 仪表板"   /></td>
+    <td style="padding: 5px;background-color:#fff;"><img src= "https://github.com/dataease/dataease/assets/41712985/7c54cb07-51ef-4bb6-a931-8a95c64c7e11" alt="DataEase 仪表板"   /></td>
   </tr>
 
   <tr>
