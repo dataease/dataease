@@ -175,10 +175,11 @@ export default {
   methods: {
     filterListDeep(list) {
       return filter(list, item => {
+        const hasChildren = item.children && item.children.length > 0
         if (item.children) {
           this.filterListDeep(item.children)
         }
-        return hasDataPermission('manage', item.privileges)
+        return hasDataPermission('manage', item.privileges) || hasChildren
       })
     },
     getTypeOptions(formOption) {
@@ -247,9 +248,14 @@ export default {
     },
     nodeClick(data) {
       this.$nextTick(() => {
-        this.formData.folder = data.id
-        this.formData.level = data.level + 1
-        this.folderTreeShow = false
+        if (hasDataPermission('manage', data.privileges)) {
+          this.formData.folder = data.id
+          this.formData.level = data.level + 1
+          this.folderTreeShow = false
+        } else {
+          this.formData.folder = undefined
+          this.formData.level = undefined
+        }
       })
     },
     filterMethod(val) {
