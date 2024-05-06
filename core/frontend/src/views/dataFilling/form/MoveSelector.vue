@@ -96,14 +96,21 @@ export default {
     },
     filterListDeep(list) {
       return filter(list, item => {
+        let hasChildren = item.children && item.children.length > 0
         if (item.children) {
-          this.filterListDeep(item.children)
+          hasChildren = this.filterListDeep(item.children)
         }
-        return hasDataPermission('manage', item.privileges)
+        return hasDataPermission('manage', item.privileges) || hasChildren
       })
     },
     nodeClick(data, node) {
-      this.targetGroup = data
+      this.$nextTick(() => {
+        if (hasDataPermission('manage', data.privileges)) {
+          this.targetGroup = data
+        } else {
+          this.targetGroup = {}
+        }
+      })
     },
     treeClass(data, node) {
       if (data.id === this.item.id) {
