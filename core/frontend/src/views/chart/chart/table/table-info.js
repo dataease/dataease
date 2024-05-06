@@ -230,9 +230,7 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
   // right click
   s2.on(S2Event.GLOBAL_CONTEXT_MENU, event => copyContent(s2, event, meta))
   // column resize
-  if (size.tableColumnMode === 'field') {
-    s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, event => resizeFunc(event))
-  }
+  s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, event => resizeFunc(event))
   // theme
   const customTheme = getCustomTheme(chart)
   s2.setThemeCfg({ theme: customTheme })
@@ -436,9 +434,7 @@ export function baseTableNormal(container, chart, action, tableData, vueCom, res
   // right click
   s2.on(S2Event.GLOBAL_CONTEXT_MENU, event => copyContent(s2, event, meta))
   // column resize
-  if (size.tableColumnMode === 'field') {
-    s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, event => resizeFunc(event))
-  }
+  s2.on(S2Event.LAYOUT_RESIZE_COL_WIDTH, event => resizeFunc(event))
   // theme
   const customTheme = getCustomTheme(chart)
   s2.setThemeCfg({ theme: customTheme })

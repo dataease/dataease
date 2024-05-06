@@ -577,12 +577,18 @@ export default {
       this.remarkCfg = getRemark(this.chart)
     },
     columnResize(resizeColumn) {
+      // 从头开始滚动
+      this.myChart.facet.timer?.stop()
+      this.$nextTick(this.initScroll)
       if (!this.inScreen) {
-        // 预览/全屏预览不保存
+        // 预览/全屏预览不保存宽度
+        return
+      }
+      const size = JSON.parse(this.chart.customAttr).size
+      if (size.tableColumnMode !== 'field') {
         return
       }
       const fieldId = resizeColumn.info.meta.field
-      const size = JSON.parse(this.chart.customAttr).size
       const containerWidth = document.getElementById(this.chartId).offsetWidth
       const column = size.tableFieldWidth?.find(i => i.fieldId === fieldId)
       let tableWidth
