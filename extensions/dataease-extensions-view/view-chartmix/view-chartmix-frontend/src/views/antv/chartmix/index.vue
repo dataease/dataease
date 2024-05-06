@@ -757,6 +757,7 @@ export default {
           meta: {
             key: {
               sync: true,
+              type: 'cat'
             },
           },
           color: color,
@@ -815,6 +816,7 @@ export default {
           meta: {
             key: {
               sync: true,
+              type: 'cat'
             },
           },
           color: color,
