@@ -70,7 +70,7 @@ export function baseMixOption(chart_option, chart) {
           show: label.show,
           color: label.color,
           position: label.position,
-          fontsize: label.fontSize,
+          fontSize: label.fontSize,
           formatter: label.formatter
         }
         let subLabel = {
