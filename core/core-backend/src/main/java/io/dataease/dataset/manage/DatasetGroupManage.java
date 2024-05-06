@@ -142,6 +142,7 @@ public class DatasetGroupManage {
 
     @XpackInteract(value = "authResourceTree", before = false)
     public void innerEdit(DatasetGroupInfoDTO datasetGroupInfoDTO) {
+        checkName(datasetGroupInfoDTO);
         CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
         coreDatasetGroup.setLastUpdateTime(System.currentTimeMillis());
         coreDatasetGroupMapper.updateById(coreDatasetGroup);
@@ -150,6 +151,7 @@ public class DatasetGroupManage {
 
     @XpackInteract(value = "authResourceTree", before = false)
     public void innerSave(DatasetGroupInfoDTO datasetGroupInfoDTO) {
+        checkName(datasetGroupInfoDTO);
         CoreDatasetGroup coreDatasetGroup = BeanUtils.copyBean(new CoreDatasetGroup(), datasetGroupInfoDTO);
         coreDatasetGroupMapper.insert(coreDatasetGroup);
         coreOptRecentManage.saveOpt(coreDatasetGroup.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASET, OptConstants.OPT_TYPE.NEW);
