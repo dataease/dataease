@@ -4,7 +4,7 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer.vue'
 import NoSelect from './NoSelect.vue'
 import ViewTable from './ViewTable.vue'
 import { listForm, saveForm, updateForm, deleteForm, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
-import { cloneDeep } from 'lodash-es'
+import { forEach, cloneDeep, find } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
 import DataFillingFormMoveSelector from './MoveSelector.vue'
 
@@ -33,10 +33,31 @@ export default {
       displayFormData: undefined
     }
   },
+  computed: {
+    flattenFolderList() {
+      const result = []
+      this.flattenFolder(this.formList, result)
+      return result
+    }
+  },
   mounted() {
     this.treeLoading = true
     listForm({}).then(res => {
       this.formList = res.data || []
+
+      if (this.$route.query?.id) {
+        this.$nextTick(() => {
+          this.$refs.formTreeRef?.setCurrentKey(this.$route.query.id)
+          const checkedNode = this.$refs.formTreeRef?.getNode(this.$route.query.id)
+          if (checkedNode) {
+            checkedNode?.parent?.expand()
+            this.selectedItem = find(this.flattenFolderList, f => f.id === this.$route.query.id)
+            if (this.selectedItem) {
+              this.nodeClick(this.selectedItem)
+            }
+          }
+        })
+      }
     }).finally(() => {
       this.treeLoading = false
     })
@@ -217,6 +238,15 @@ export default {
       if (this.activeName === 'my-tasks') {
         this.$router.push('/data-filling/my-jobs')
       }
+    },
+    flattenFolder(list, result = []) {
+      forEach(list, item => {
+        result.push(item)
+        if (item.children && item.children.length > 0) {
+          this.flattenFolder(item.children, result)
+        }
+      })
+      return result
     }
   }
 }
@@ -274,7 +304,7 @@ export default {
             </div>
             <el-tree
               v-else
-              ref="datasetTreeRef"
+              ref="formTreeRef"
               :default-expanded-keys="expandedArray"
               :data="formList"
               node-key="id"
