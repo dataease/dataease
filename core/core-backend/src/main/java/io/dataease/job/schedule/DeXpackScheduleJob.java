@@ -11,14 +11,24 @@ import java.util.Objects;
 public class DeXpackScheduleJob implements Job {
     @Resource
     private DeTaskExecutor deTaskExecutor;
+
     @Override
     public void execute(JobExecutionContext jobExecutionContext) throws JobExecutionException {
         Trigger trigger = jobExecutionContext.getTrigger();
         JobKey jobKey = trigger.getJobKey();
         JobDataMap jobDataMap = jobExecutionContext.getJobDetail().getJobDataMap();
         Long taskId = jobDataMap.getLong("taskId");
-        if (!deTaskExecutor.execute(taskId)) {
+        boolean isTempTask = jobDataMap.getBoolean("isTempTask");
+        boolean taskLoaded = false;
+        if (isTempTask) {
+            taskLoaded = deTaskExecutor.executeTemplate(taskId);
+        } else {
+            taskLoaded = deTaskExecutor.execute(taskId);
+        }
+        if (!taskLoaded) {
             Objects.requireNonNull(CommonBeanFactory.getBean(ScheduleManager.class)).removeJob(jobKey, trigger.getKey());
         }
+
+
     }
 }

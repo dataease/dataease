@@ -34,6 +34,14 @@ public class CronUtils {
         return date;
     }
 
+    public static String cron() {
+        Calendar instance = Calendar.getInstance();
+        instance.add(Calendar.SECOND, 5);
+        return instance.get(Calendar.SECOND) + " " +
+                instance.get(Calendar.MINUTE) + " " +
+                instance.get(Calendar.HOUR_OF_DAY) + " * * ?";
+    }
+
     public static String cron(Integer rateType, String rateVal) {
         if (rateType == 0) {
             return rateVal;
