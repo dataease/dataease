@@ -1,4 +1,7 @@
 export const getRange = (selectValue, timeGranularity) => {
+  if (new Date(selectValue).toString() === 'Invalid Date') {
+    return selectValue
+  }
   switch (timeGranularity) {
     case 'year':
     case 'y':
