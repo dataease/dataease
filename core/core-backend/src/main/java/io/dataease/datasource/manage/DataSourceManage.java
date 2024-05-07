@@ -11,6 +11,7 @@ import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
 import io.dataease.datasource.dto.DatasourceNodeBO;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -73,8 +74,29 @@ public class DataSourceManage {
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
     public void innerSave(CoreDatasource coreDatasource) {
+        checkName(coreDatasource);
         coreDatasourceMapper.insert(coreDatasource);
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.NEW);
+    }
+
+    public void checkName(CoreDatasource dto) {
+        QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
+        if (ObjectUtils.isNotEmpty(dto.getPid())) {
+            wrapper.eq("pid", dto.getPid());
+        }
+        if (StringUtils.isNotEmpty(dto.getName())) {
+            wrapper.eq("name", dto.getName());
+        }
+        if (ObjectUtils.isNotEmpty(dto.getId())) {
+            wrapper.ne("id", dto.getId());
+        }
+        if (ObjectUtils.isNotEmpty(dto.getType()) && dto.getType().equalsIgnoreCase("folder")) {
+            wrapper.ne("type", dto.getType());
+        }
+        List<CoreDatasource> list = coreDatasourceMapper.selectList(wrapper);
+        if (list.size() > 0) {
+            DEException.throwException(Translator.get("i18n_ds_name_exists"));
+        }
     }
 
 
@@ -108,6 +130,7 @@ public class DataSourceManage {
         sourceData.setUpdateBy(AuthUtils.getUser().getUserId());
         sourceData.setPid(dataSourceDTO.getPid());
         sourceData.setName(dataSourceDTO.getName());
+        checkName(sourceData);
         coreDatasourceMapper.updateById(sourceData);
         coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
