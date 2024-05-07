@@ -548,7 +548,7 @@ public class ExportCenterService {
 
                 setFileSize(dataPath + "/" + dataPath + "/" + request.getViewName() + ".xlsx", exportTask);
             } catch (Exception e) {
-                e.printStackTrace();
+                LogUtil.error("Failed to export data", e);
                 exportTask.setExportStatus("FAILED");
             } finally {
                 exportTaskMapper.updateByPrimaryKey(exportTask);
@@ -761,6 +761,7 @@ public class ExportCenterService {
                 exportTask.setExportStatus("SUCCESS");
                 setFileSize(dataPath + "/" + request.getFilename() + ".xlsx", exportTask);
             } catch (Exception e) {
+                LogUtil.error("Failed to export data", e);
                 exportTask.setExportStatus("FAILED");
             } finally {
                 exportTaskMapper.updateByPrimaryKey(exportTask);
