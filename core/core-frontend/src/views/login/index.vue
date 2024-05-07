@@ -257,7 +257,7 @@ onMounted(() => {
               <img v-if="loginLogoUrl && axiosFinished" :src="loginLogoUrl" alt="" />
             </div>
             <div class="login-welcome">
-              {{ slogan || '欢迎使用 DataEase 数据可视化分析平台' }}
+              {{ slogan || '欢迎使用 DataEase 数据可视化分析工具' }}
             </div>
             <div class="login-form">
               <el-tabs v-model="activeName" @tab-click="handleClick" class="default-login-tabs">
