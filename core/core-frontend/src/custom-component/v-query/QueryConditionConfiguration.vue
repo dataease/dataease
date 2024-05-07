@@ -1348,9 +1348,11 @@ defineExpose({
                   </el-tree-select>
                 </div>
                 <div class="value">
+                  <span class="label">查询字段</span>
                   <el-select
                     @change="handleFieldChange"
                     placeholder="查询字段"
+                    class="search-field"
                     v-model="curComponent.field.id"
                   >
                     <template v-if="curComponent.field.id" #prefix>
@@ -1394,7 +1396,12 @@ defineExpose({
                   </el-select>
                 </div>
                 <div class="value">
-                  <el-select placeholder="显示字段" v-model="curComponent.displayId">
+                  <span class="label">显示字段</span>
+                  <el-select
+                    placeholder="显示字段"
+                    class="search-field"
+                    v-model="curComponent.displayId"
+                  >
                     <template v-if="curComponent.displayId" #prefix>
                       <el-icon>
                         <Icon
@@ -1440,6 +1447,7 @@ defineExpose({
                   </el-select>
                 </div>
                 <div class="value">
+                  <span class="label">排序字段</span>
                   <el-select
                     clearable
                     placeholder="请选择排序字段"
@@ -2223,15 +2231,28 @@ defineExpose({
           }
 
           .value {
+            .ed-select {
+              width: 321px;
+            }
             width: 321px;
             .value {
               margin-top: 8px;
               &:first-child {
                 margin-top: -0.5px;
               }
-            }
-            .ed-select {
-              width: 321px;
+              .search-field {
+                width: 257px;
+              }
+
+              .sort-field {
+                width: 176px;
+              }
+
+              .label {
+                line-height: 32px;
+                font-size: 14px;
+                margin-right: 8px;
+              }
             }
           }
 
