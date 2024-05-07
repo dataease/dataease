@@ -1058,7 +1058,7 @@ function customCalcFunc(query, data, totalCfgMap) {
   if (!data?.length || !query[EXTRA_FIELD]) {
     return 0
   }
-  const aggregation = totalCfgMap[query[EXTRA_FIELD]].aggregation
+  const aggregation = totalCfgMap[query[EXTRA_FIELD]]?.aggregation ?? 'SUM'
   switch (aggregation) {
     case 'SUM': {
       return data.reduce((p, n) => {
