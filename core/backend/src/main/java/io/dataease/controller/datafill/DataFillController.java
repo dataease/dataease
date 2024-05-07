@@ -195,6 +195,7 @@ public class DataFillController {
         // 这里需要设置不关闭流
         EasyExcel.write(response.getOutputStream())
                 .head(dataFillService.getExcelHead(formId))
+                .automaticMergeHead(false)
                 .inMemory(true)
                 .registerWriteHandler(dataFillService.getCommentWriteHandler(formId))
                 .autoCloseStream(Boolean.FALSE)
@@ -206,8 +207,6 @@ public class DataFillController {
     @PostMapping("/form/{formId}/excel/upload")
     public void excelUpload(@RequestParam("file") MultipartFile file, @PathVariable String formId) throws Exception {
         String filename = file.getOriginalFilename();
-        System.out.println(filename);
-        System.out.println(formId);
         dataFillDataService.importExcelData(file, formId);
     }
 
