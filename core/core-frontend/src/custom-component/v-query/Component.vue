@@ -86,7 +86,6 @@ const { datasetFieldList } = comInfo(element.value.id)
 
 const setCustomStyle = val => {
   const {
-    show,
     borderShow,
     borderColor,
     bgColorShow,
@@ -102,10 +101,6 @@ const setCustomStyle = val => {
     textColorShow,
     title
   } = val
-  if (!show) {
-    Object.assign(customStyle, { ...defaultStyle })
-    return
-  }
   customStyle.background = bgColorShow ? bgColor || '' : ''
   customStyle.border = borderShow ? borderColor || '' : ''
   customStyle.btnList = [...btnList]
