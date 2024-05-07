@@ -667,9 +667,7 @@ const init = (queryId: string) => {
         .forEach(ele => {
           const { dimensionList, quotaList } = ele.fields
           ele.list = [...dimensionList, ...quotaList]
-          if (!datasetMap[ele.id]) {
-            datasetMap[ele.id] = ele
-          }
+          datasetMap[ele.id] = ele
         })
       fields.value = datasetFieldList.value
         .map(ele => {
@@ -745,7 +743,7 @@ const handleCondition = item => {
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
 
   multiple.value = curComponent.value.multiple
-  if (!curComponent.value.dataset.fields.length && curComponent.value.dataset.id) {
+  if (curComponent.value.dataset.id) {
     getOptions(curComponent.value.dataset.id, curComponent.value)
   }
   datasetFieldList.value.forEach(ele => {
