@@ -174,7 +174,7 @@ const handleFieldIdChange = (val: EnumValue) => {
           const mapValue = setDefaultMapValue(
             Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
           )
-          if (mapValue.length !== config.value.defaultMapValue.length) {
+          if (mapValue?.length !== config.value.defaultMapValue?.length) {
             shouldReSearch = true
           } else if (!mapValue.every(value => config.value.defaultMapValue.includes(value))) {
             shouldReSearch = true
