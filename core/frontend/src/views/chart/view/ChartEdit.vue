@@ -3715,7 +3715,7 @@ export default {
       this.showValueFormatter = false
     },
     saveValueFormatter() {
-      const formatterItem = _.cloneDeep(this.valueFormatterItem)
+      const formatterItem = JSON.parse(JSON.stringify(this.valueFormatterItem))
       const formatterCfg = formatterItem.formatterCfg
       const ele = formatterCfg.decimalCount
       if (ele === undefined || ele.toString().indexOf('.') > -1 || parseInt(ele).toString() === 'NaN' || parseInt(ele) < 0 || parseInt(ele) > 10) {

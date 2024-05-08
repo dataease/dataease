@@ -16,7 +16,10 @@
         class="drill-item"
         @click.native="drillJump(index + 1)"
       >
-        <span :style="{'color': textColor}">{{ filter.value[0] }}</span>
+        <span
+          :style="{'color': textColor}"
+          :title="filter.value[0]"
+        >{{ filter.value[0] }}</span>
       </el-breadcrumb-item>
     </el-breadcrumb>
   </div>
@@ -97,6 +100,8 @@ export default {
   margin: 0!important;
 }
 .drill-item{
+  max-width: 120px;
+  overflow: hidden;
   cursor: pointer;
 }
 </style>
