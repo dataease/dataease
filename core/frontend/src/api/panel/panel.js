@@ -265,8 +265,16 @@ export function innerExportDetails(data) {
     url: 'panel/group/innerExportDetails',
     method: 'post',
     data: data,
-    loading: true,
-    responseType: 'blob'
+    loading: true
+  })
+}
+
+export function exportDatasetDetails(data) {
+  return request({
+    url: 'panel/group/exportDatasetDetails',
+    method: 'post',
+    data: data,
+    loading: true
   })
 }
 

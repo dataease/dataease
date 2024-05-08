@@ -1,6 +1,8 @@
 <template>
   <div style="width: 100%;height: 100vh;">
     <fullscreen
+      teleport
+      fullscreen-class="de-fullscreen-preview-index"
       style="height:100%;background: #f7f8fa;overflow-y: auto"
       :fullscreen.sync="fullscreen"
       @change="fullscreenChange"

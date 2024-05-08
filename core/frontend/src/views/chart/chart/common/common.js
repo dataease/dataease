@@ -1,5 +1,10 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
+import {
+  DEFAULT_COLOR_CASE,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_EXT_STYLE,
+  DEFAULT_YAXIS_STYLE
+} from '@/views/chart/chart/chart'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import { $success } from '@/utils/message'
 import i18n from '@/lang'
@@ -437,8 +442,8 @@ export const configTopN = (data, chart) => {
   const otherItems = data.splice(color.topN)
   const initOtherItem = {
     ...cloneDeep(data[0]),
-    name: i18n.t('datasource.other'),
-    value: 0,
+    name: color.topNLabel ?? DEFAULT_COLOR_CASE.topNLabel,
+    value: 0
   }
   otherItems.reduce((p, n) => {
     p.value += n.value ?? 0

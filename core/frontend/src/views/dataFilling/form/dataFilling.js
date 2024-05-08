@@ -16,6 +16,14 @@ export function updateForm(data) {
     data
   })
 }
+export function moveForm(data) {
+  return request({
+    url: 'dataFilling/form/move',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
 
 export function listForm(data) {
   return request({
@@ -45,6 +53,14 @@ export function deleteData(formId, rowId) {
     url: 'dataFilling/form/' + formId + '/delete/' + rowId,
     method: 'post',
     loading: true
+  })
+}
+export function downloadTemplate(formId) {
+  return request({
+    url: 'dataFilling/form/' + formId + '/excel/template',
+    method: 'post',
+    loading: true,
+    responseType: 'blob'
   })
 }
 export function getWithPrivileges(id) {

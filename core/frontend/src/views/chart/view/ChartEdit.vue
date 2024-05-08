@@ -37,9 +37,12 @@
         />
       </el-popover>
       <span
-        class="title-text view-title-name"
-        style="line-height: 40px;"
-      >{{ view.name }}</span>
+        class="title-text view-title-name-update"
+      >
+        <chart-title-update
+          :chart-info="view"
+        />
+      </span>
       <span style="float: right;line-height: 40px;">
         <el-button
           round
@@ -1180,8 +1183,10 @@
                             :item="item"
                             :dimension-data="dimension"
                             :quota-data="quota"
+                            :chart="chart"
                             @onDimensionItemChange="drillItemChange"
                             @onDimensionItemRemove="drillItemRemove"
+                            @onCustomSort="item => onCustomSort(item, 'drillFields')"
                           />
                         </transition-group>
                       </draggable>
@@ -1931,7 +1936,7 @@ import { equalsAny, includesAny } from '@/utils/StringUtils'
 import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
 import TrendLine from '@/views/chart/components/senior/TrendLine'
-
+import ChartTitleUpdate from './ChartTitleUpdate'
 export default {
   name: 'ChartEdit',
   components: {
@@ -1970,7 +1975,8 @@ export default {
     PluginCom,
     MapMapping,
     MarkMapDataEditor,
-    TrendLine
+    TrendLine,
+    ChartTitleUpdate
   },
   provide() {
     return {
@@ -2434,6 +2440,7 @@ export default {
       bus.$on('plugin-chart-click', this.chartClick)
       bus.$on('set-dynamic-area-code', this.setDynamicAreaCode)
       bus.$on('set-table-column-width', this.onTableFieldWidthChange)
+      bus.$on('show-custom-sort', this.customSort)
     },
     initTableData(id, optType) {
       if (id != null) {
@@ -2926,6 +2933,10 @@ export default {
     onMove(e, originalEvent) {
       this.moveId = e.draggedContext.element.id
       return true
+    },
+    customSort(args) {
+      const { item, axis } = JSON.parse(JSON.stringify(args))
+      this.onCustomSort(item, axis)
     },
     onCustomSort(item, axis) {
       this.customSortFieldType = axis
@@ -3704,7 +3715,9 @@ export default {
       this.showValueFormatter = false
     },
     saveValueFormatter() {
-      const ele = this.valueFormatterItem.formatterCfg.decimalCount
+      const formatterItem = JSON.parse(JSON.stringify(this.valueFormatterItem))
+      const formatterCfg = formatterItem.formatterCfg
+      const ele = formatterCfg.decimalCount
       if (ele === undefined || ele.toString().indexOf('.') > -1 || parseInt(ele).toString() === 'NaN' || parseInt(ele) < 0 || parseInt(ele) > 10) {
         this.$message({
           message: this.$t('chart.formatter_decimal_count_error'),
@@ -3714,14 +3727,14 @@ export default {
         return
       }
       // 更新指标
-      if (this.valueFormatterItem.formatterType === 'quota' && this.chart.type !== 'bar-time-range') {
-        this.view.yaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
-      } else if (this.valueFormatterItem.formatterType === 'quotaExt') {
-        this.view.yaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
-      } else if (this.valueFormatterItem.formatterType === 'dimension') {
-        this.view.xaxis[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+      if (formatterItem.formatterType === 'quota' && this.chart.type !== 'bar-time-range') {
+        this.view.yaxis[formatterItem.index].formatterCfg = formatterCfg
+      } else if (formatterItem.formatterType === 'quotaExt') {
+        this.view.yaxisExt[formatterItem.index].formatterCfg = formatterCfg
+      } else if (formatterItem.formatterType === 'dimension') {
+        this.view.xaxis[formatterItem.index].formatterCfg = formatterCfg
       } else if (this.chart.type === 'bar-time-range') {
-        this.view.xaxisExt[this.valueFormatterItem.index].formatterCfg = this.valueFormatterItem.formatterCfg
+        this.view.xaxisExt[formatterItem.index].formatterCfg = formatterCfg
       }
       this.calcData(true)
       this.closeValueFormatter()
@@ -4205,13 +4218,11 @@ span {
   margin-left: 4px;
 }
 
-.view-title-name {
+.view-title-name-update {
   display: -moz-inline-box;
   display: inline-block;
-  width: 130px;
-  white-space: nowrap;
-  text-overflow: ellipsis;
-  overflow: hidden;
+  width: 170px;
+  height: 40px;
   margin-left: 45px;
 }
 

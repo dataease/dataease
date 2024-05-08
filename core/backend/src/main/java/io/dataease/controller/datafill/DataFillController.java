@@ -1,5 +1,6 @@
 package io.dataease.controller.datafill;
 
+import com.alibaba.excel.EasyExcel;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import io.dataease.commons.utils.AuthUtils;
@@ -14,15 +15,18 @@ import io.dataease.dto.datafill.DataFillTaskDTO;
 import io.dataease.dto.datafill.DataFillUserTaskDTO;
 import io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs;
 import io.dataease.plugins.common.dto.datafill.ExtTableField;
-import io.dataease.service.datafill.DataFillDataService;
-import io.dataease.service.datafill.DataFillLogService;
-import io.dataease.service.datafill.DataFillService;
-import io.dataease.service.datafill.DataFillTaskService;
+import io.dataease.service.datafill.*;
 import io.swagger.annotations.ApiOperation;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 import springfox.documentation.annotations.ApiIgnore;
 
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletResponse;
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
@@ -50,7 +54,13 @@ public class DataFillController {
     @ApiIgnore
     @PostMapping("/form/update")
     public ResultHolder updateForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
-        return dataFillService.updateForm(dataFillForm);
+        return dataFillService.updateForm(dataFillForm, null);
+    }
+
+    @ApiIgnore
+    @PostMapping("/form/move")
+    public ResultHolder moveForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
+        return dataFillService.updateForm(dataFillForm, "move");
     }
 
     @PostMapping("/manage/form/{id}")
@@ -97,13 +107,13 @@ public class DataFillController {
     @ApiIgnore
     @PostMapping("/form/{formId}/rowData/save")
     public String newRowData(@PathVariable String formId, @RequestBody Map<String, Object> data) throws Exception {
-        return dataFillDataService.updateRowData(formId, null, data, true);
+        return dataFillDataService.updateOrInsertRowData(formId, Collections.singletonList(new RowDataDatum().setData(data))).get(0);
     }
 
     @ApiIgnore
     @PostMapping("/form/{formId}/rowData/save/{id}")
     public String updateRowData(@PathVariable String formId, @PathVariable String id, @RequestBody Map<String, Object> data) throws Exception {
-        return dataFillDataService.updateRowData(formId, id, data, false);
+        return dataFillDataService.updateOrInsertRowData(formId, Collections.singletonList(new RowDataDatum().setId(id).setData(data))).get(0);
     }
 
 
@@ -172,6 +182,32 @@ public class DataFillController {
     @PostMapping("/myTask/fill/{taskId}")
     public void userFillData(@PathVariable String taskId, @RequestBody Map<String, Object> data) throws Exception {
         dataFillService.fillFormData(taskId, data);
+    }
+
+    @ApiIgnore
+    @PostMapping("/form/{formId}/excel/template")
+    public void getExcelTemplate(@PathVariable String formId, HttpServletResponse response) throws Exception {
+        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+        response.setCharacterEncoding("utf-8");
+        // 这里URLEncoder.encode可以防止中文乱码
+        String fileName = URLEncoder.encode("template", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+        // 这里需要设置不关闭流
+        EasyExcel.write(response.getOutputStream())
+                .head(dataFillService.getExcelHead(formId))
+                .automaticMergeHead(false)
+                .inMemory(true)
+                .registerWriteHandler(dataFillService.getCommentWriteHandler(formId))
+                .autoCloseStream(Boolean.FALSE)
+                .sheet("模板")
+                .doWrite(new ArrayList());
+    }
+
+    @ApiIgnore
+    @PostMapping("/form/{formId}/excel/upload")
+    public void excelUpload(@RequestParam("file") MultipartFile file, @PathVariable String formId) throws Exception {
+        String filename = file.getOriginalFilename();
+        dataFillDataService.importExcelData(file, formId);
     }
 
 }

@@ -4,7 +4,7 @@ import DataFillingFormSave from './save.vue'
 import clickoutside from 'element-ui/src/utils/clickoutside.js'
 import { filter, cloneDeep, find, concat } from 'lodash-es'
 import { v4 as uuidv4 } from 'uuid'
-import { PHONE_REGEX } from '@/utils/validate'
+import { EMAIL_REGEX, PHONE_REGEX } from '@/utils/validate'
 
 export default {
   name: 'DataFillingFormCreate',
@@ -15,28 +15,32 @@ export default {
   data: function() {
     const checkDuplicateOptionValidator = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.component.required')))
       }
       const _list = filter(this.selectedComponentItem.settings.options, f => f.value === value)
       if (_list.length > 1) {
-        callback(new Error('重复'))
+        callback(new Error(this.$t('data_fill.form.duplicate_error')))
       }
       callback()
     }
     return {
       moveId: undefined,
       showDrawer: false,
-      requiredRule: { required: true, message: this.$t('commons.required'), trigger: 'blur' },
-      duplicateOptionRule: { validator: checkDuplicateOptionValidator, trigger: 'blur' },
+      requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
+      duplicateOptionRule: { validator: checkDuplicateOptionValidator, trigger: ['blur', 'change'] },
       inputTypes: [
-        { type: 'text', name: '普通文本', rules: [] },
-        { type: 'number', name: '数字', rules: [] },
+        { type: 'text', name: this.$t('data_fill.form.text'), rules: [] },
+        { type: 'number', name: this.$t('data_fill.form.number'), rules: [] },
         {
           type: 'tel',
-          name: '手机号',
-          rules: [{ pattern: PHONE_REGEX, message: this.$t('user.mobile_number_format_is_incorrect'), trigger: 'blur' }]
+          name: this.$t('data_fill.form.tel'),
+          rules: [{ pattern: PHONE_REGEX, message: this.$t('user.mobile_number_format_is_incorrect'), trigger: ['blur', 'change'] }]
         },
-        { type: 'email', name: '邮箱', rules: [] }
+        {
+          type: 'email',
+          name: this.$t('data_fill.form.email'),
+          rules: [{ pattern: EMAIL_REGEX, message: this.$t('user.email_format_is_incorrect'), trigger: ['blur', 'change'] }]
+        }
       ],
       componentList: [
         {
@@ -84,7 +88,8 @@ export default {
           id: undefined,
           settings: {
             name: this.$t('commons.component.select'),
-            options: [{ name: '选项1', value: '选项1' }, { name: '选项2', value: '选项2' }],
+            options: [{ name: this.$t('data_fill.form.option') + ' 1', value: this.$t('data_fill.form.option') + ' 1' },
+              { name: this.$t('data_fill.form.option') + ' 2', value: this.$t('data_fill.form.option') + ' 2' }],
             optionSourceType: 1,
             placeholder: '',
             multiple: false, required: false,
@@ -103,7 +108,8 @@ export default {
           id: undefined,
           settings: {
             name: this.$t('commons.component.radio'),
-            options: [{ name: '选项1', value: '选项1' }, { name: '选项2', value: '选项2' }],
+            options: [{ name: this.$t('data_fill.form.option') + ' 1', value: this.$t('data_fill.form.option') + ' 1' },
+              { name: this.$t('data_fill.form.option') + ' 2', value: this.$t('data_fill.form.option') + ' 2' }],
             optionSourceType: 1,
             required: false,
             mapping: {
@@ -122,7 +128,8 @@ export default {
           id: undefined,
           settings: {
             name: this.$t('commons.component.checkbox'),
-            options: [{ name: '选项1', value: '选项1' }, { name: '选项2', value: '选项2' }],
+            options: [{ name: this.$t('data_fill.form.option') + ' 1', value: this.$t('data_fill.form.option') + ' 1' },
+              { name: this.$t('data_fill.form.option') + ' 2', value: this.$t('data_fill.form.option') + ' 2' }],
             optionSourceType: 1,
             required: false,
             mapping: {
@@ -191,7 +198,7 @@ export default {
       },
       formSettings: {
         id: undefined,
-        name: '未命名表单',
+        name: this.$t('data_fill.form.untitled'),
         table: undefined,
         forms: [],
         createIndex: false,
@@ -299,7 +306,7 @@ export default {
         this.$refs['mRightForm'].validate((valid, invalidFields) => {
           if (showError && !valid) {
             this.$message({
-              message: '组件设置错误',
+              message: this.$t('data_fill.form.component_setting_error'),
               type: 'error',
               showClose: true
             })
@@ -338,7 +345,7 @@ export default {
       // 校验
       if (this.formSettings.name === undefined || this.formSettings.name.trim() === '') {
         this.$message({
-          message: '表单名称不能为空',
+          message: this.$t('data_fill.form.form_name_cannot_none'),
           type: 'error',
           showClose: true
         })
@@ -347,7 +354,7 @@ export default {
       }
       if (this.formSettings.forms.length === 0) {
         this.$message({
-          message: '请添加表单组件',
+          message: this.$t('data_fill.form.form_components_cannot_null'),
           type: 'warning',
           showClose: true
         })
@@ -370,7 +377,7 @@ export default {
             if (f.settings.options.length === 0) {
               this.selectItem(f.id)
               this.$message({
-                message: '选项值不能为空',
+                message: this.$t('data_fill.form.option_list_cannot_empty'),
                 type: 'error',
                 showClose: true
               })
@@ -412,7 +419,7 @@ export default {
           @click="closeCreate"
         />
         <span class="text16 margin-left12">
-          新建表单
+          {{ $t('data_fill.form.create_new_form') }}
         </span>
       </div>
 
@@ -423,7 +430,7 @@ export default {
     </el-header>
     <de-container class="form-main-container">
       <div class="tools-window-left">
-        <el-header class="sub-title-header">组件</el-header>
+        <el-header class="sub-title-header">{{ $t('data_fill.form.component') }}</el-header>
         <div style="width: 100%; display: flex;">
           <div style="flex: 1; padding:8px 4px 8px 8px;">
             <draggable
@@ -436,7 +443,7 @@ export default {
             >
               <transition-group>
                 <div
-                  v-for="(item, $index) in componentList1"
+                  v-for="(item) in componentList1"
                   :key="item.type"
                   class="m-item base-component-item"
                   @click="addComponentItem(item)"
@@ -461,7 +468,7 @@ export default {
             >
               <transition-group>
                 <div
-                  v-for="(item, $index) in componentList2"
+                  v-for="(item) in componentList2"
                   :key="item.type"
                   class="m-item base-component-item"
                   @click="addComponentItem(item)"
@@ -496,6 +503,7 @@ export default {
             label-position="top"
             hide-required-asterisk
             class="form-drag-form"
+            @submit.native.prevent
           >
             <draggable
               id="form-drag-place"
@@ -688,13 +696,14 @@ export default {
       <el-cantainer class="tools-window-right">
 
         <template v-if="selectedItemId !== undefined && selectedComponentItem !== undefined">
-          <el-header class="sub-title-header">组件设置</el-header>
+          <el-header class="sub-title-header">{{ $t('data_fill.form.component_setting') }}</el-header>
           <el-main style="height: calc(100vh - 60px - 56px);">
             <el-form
               ref="mRightForm"
               :model="selectedComponentItem.settings"
               label-position="top"
               hide-required-asterisk
+              @submit.native.prevent
             >
 
               <el-form-item
@@ -703,7 +712,7 @@ export default {
                 :rules="[requiredRule]"
               >
                 <template #label>
-                  标题
+                  {{ $t('data_fill.form.title') }}
                   <span
                     style="color: red"
                   >*</span>
@@ -713,6 +722,7 @@ export default {
                   required
                   size="small"
                   maxlength="50"
+                  class="m-right-form"
                   show-word-limit
                 />
               </el-form-item>
@@ -724,7 +734,7 @@ export default {
                 :rules="[requiredRule]"
               >
                 <template #label>
-                  分割字符
+                  {{ $t('data_fill.form.range_separator') }}
                   <span
                     style="color: red"
                   >*</span>
@@ -762,14 +772,15 @@ export default {
                 "
                 prop="placeholder"
                 class="form-item"
-                label="提示词"
+                :label="$t('data_fill.form.hint')"
                 :rules="[
-                  { maxlength: 50, message: '不超过50个字符', trigger: 'blur' }]"
+                  { maxlength: 50, message: $t('data_fill.form.input_limit_50'), trigger: 'blur' }]"
               >
                 <el-input
                   v-model="selectedComponentItem.settings.placeholder"
-                  placeholder="不超过50个字符"
+                  :placeholder="$t('data_fill.form.input_limit_50')"
                   size="small"
+                  class="m-right-form"
                   maxlength="50"
                   show-word-limit
                 />
@@ -778,13 +789,13 @@ export default {
                 v-if="selectedComponentItem.type === 'dateRange' "
                 prop="startPlaceholder"
                 class="form-item"
-                label="开始提示词"
+                :label="$t('data_fill.form.start_hint_word')"
                 :rules="[
-                  { maxlength: 50, message: '不超过50个字符', trigger: 'blur' }]"
+                  { maxlength: 50, message: $t('data_fill.form.input_limit_50'), trigger: 'blur' }]"
               >
                 <el-input
                   v-model="selectedComponentItem.settings.startPlaceholder"
-                  placeholder="不超过50个字符"
+                  :placeholder="$t('data_fill.form.input_limit_50')"
                   size="small"
                   maxlength="50"
                   show-word-limit
@@ -794,13 +805,13 @@ export default {
                 v-if="selectedComponentItem.type === 'dateRange' "
                 prop="endPlaceholder"
                 class="form-item"
-                label="结束提示词"
+                :label="$t('data_fill.form.end_hint_word')"
                 :rules="[
-                  { maxlength: 50, message: '不超过50个字符', trigger: 'blur' }]"
+                  { maxlength: 50, message: $t('data_fill.form.input_limit_50'), trigger: 'blur' }]"
               >
                 <el-input
                   v-model="selectedComponentItem.settings.endPlaceholder"
-                  placeholder="不超过50个字符"
+                  :placeholder="$t('data_fill.form.input_limit_50')"
                   size="small"
                   maxlength="50"
                   show-word-limit
@@ -813,7 +824,7 @@ export default {
                 v-if="selectedComponentItem.type === 'input'"
                 prop="inputType"
                 class="form-item"
-                label="格式类型"
+                :label="$t('data_fill.form.input_type')"
                 :rules="[requiredRule]"
               >
                 <el-select
@@ -833,15 +844,17 @@ export default {
 
               <div class="right-check-div">
                 <div class="m-label-container">
-                  <span style="width: unset">
-                    校验
+                  <span style="width: unset; font-weight: bold">
+                    {{ $t('data_fill.form.check') }}
                   </span>
                 </div>
                 <el-form-item
                   prop="required"
                   class="form-item"
                 >
-                  <el-checkbox v-model="selectedComponentItem.settings.required">设置为必填项</el-checkbox>
+                  <el-checkbox v-model="selectedComponentItem.settings.required">
+                    {{ $t('data_fill.form.set_required') }}
+                  </el-checkbox>
                 </el-form-item>
                 <el-form-item
                   v-if="selectedComponentItem.type === 'input'"
@@ -850,7 +863,8 @@ export default {
                 >
                   <el-checkbox
                     v-model="selectedComponentItem.settings.unique"
-                  >不允许重复值
+                  >
+                    {{ $t('data_fill.form.set_unique') }}
                   </el-checkbox>
                 </el-form-item>
                 <el-form-item
@@ -861,7 +875,8 @@ export default {
                   <el-checkbox
                     v-model="selectedComponentItem.settings.multiple"
                     @change="changeSelectMultiple(selectedComponentItem, selectedComponentItem.settings.multiple)"
-                  >允许多选
+                  >
+                    {{ $t('data_fill.form.set_multiple') }}
                   </el-checkbox>
                 </el-form-item>
                 <el-form-item
@@ -871,7 +886,8 @@ export default {
                 >
                   <el-checkbox
                     v-model="selectedComponentItem.settings.enableTime"
-                  >使用日期时间
+                  >
+                    {{ $t('data_fill.form.use_datetime') }}
                   </el-checkbox>
                 </el-form-item>
 
@@ -885,21 +901,23 @@ export default {
 
                 <el-form-item
                   prop="optionSourceType"
-                  label="选项值"
+                  :label="$t('data_fill.form.option_value')"
                   class="form-item no-margin-bottom"
                 >
                   <el-radio-group
                     v-model="selectedComponentItem.settings.optionSourceType"
                     size="small"
                   >
-                    <el-radio :label="1">自定义</el-radio>
+                    <el-radio :label="1">
+                      {{ $t('data_fill.form.custom') }}
+                    </el-radio>
                   </el-radio-group>
                 </el-form-item>
 
                 <el-button
                   type="text"
                   @click="addOption(selectedComponentItem.settings.options)"
-                >+ 添加选项值
+                >+ {{ $t('data_fill.form.add_option') }}
                 </el-button>
 
                 <div
@@ -937,13 +955,14 @@ export default {
           </el-main>
         </template>
         <template v-else>
-          <el-header class="sub-title-header">表单设置</el-header>
+          <el-header class="sub-title-header">{{ $t('data_fill.form.form_setting') }}</el-header>
           <el-main style="height: calc(100vh - 60px - 56px);">
             <el-form
               ref="mRightFormBase"
               :model="formSettings"
               label-position="top"
               hide-required-asterisk
+              @submit.native.prevent
             >
               <el-form-item
                 prop="name"
@@ -951,7 +970,7 @@ export default {
                 :rules="[requiredRule]"
               >
                 <template #label>
-                  表单名称
+                  {{ $t('data_fill.form.form_name') }}
                   <span
                     style="color: red"
                   >*</span>
@@ -973,7 +992,7 @@ export default {
     </de-container>
 
     <el-drawer
-      title="保存表单"
+      :title="$t('data_fill.form.save_form')"
       :visible.sync="showDrawer"
       direction="btt"
       size="100%"
@@ -992,6 +1011,15 @@ export default {
 
 <style  lang="scss" scoped>
 .data-filling-form {
+  ::v-deep .el-form-item__error {
+    position: relative;
+  }
+
+  .m-right-form {
+    ::v-deep .el-input__inner {
+      padding-right: 45px;
+    }
+  }
 
   .drag-placeholder {
     height: 68px;

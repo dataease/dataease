@@ -14,7 +14,7 @@ import {
   configPlotTooltipEvent,
   configAxisLabelLengthLimit
 } from '@/views/chart/chart/common/common_antv'
-import { antVCustomColor, getColors, handleEmptyDataStrategy, hexColorToRGBA } from '@/views/chart/chart/util'
+import { antVCustomColor, getColors, handleEmptyDataStrategy, hexColorToRGBA, handleStackSort } from '@/views/chart/chart/util'
 import { cloneDeep, find } from 'lodash-es'
 
 export function baseBarOptionAntV(container, chart, action, isGroup, isStack) {
@@ -131,6 +131,8 @@ export function baseBarOptionAntV(container, chart, action, isGroup, isStack) {
     }
     handleEmptyDataStrategy(emptyDataStrategy, chart, data, options)
   }
+  // 处理堆叠排序
+  handleStackSort(chart, data)
 
   // 开始渲染
   const plot = new Column(container, options)
@@ -240,6 +242,8 @@ export function hBaseBarOptionAntV(container, chart, action, isGroup, isStack) {
       return setGradientColor(ele, customAttr.color.gradient)
     })
   }
+  // 处理堆叠排序
+  handleStackSort(chart, data)
   // 处理空值
   if (chart.senior) {
     let emptyDataStrategy = JSON.parse(chart.senior)?.functionCfg?.emptyDataStrategy
@@ -444,7 +448,7 @@ export function timeRangeBarOptionAntV(container, chart, action) {
 
   plot.off('interval:click')
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }
@@ -535,7 +539,7 @@ export function baseBidirectionalBarOptionAntV(container, chart, action, isGroup
   const plot = new BidirectionalBar(container, options)
 
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }

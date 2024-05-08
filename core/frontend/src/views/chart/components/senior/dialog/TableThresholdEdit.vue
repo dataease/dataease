@@ -331,7 +331,7 @@
           <el-col
             v-if="item.field === '2'"
             :span="12"
-            >
+          >
             <el-select
               v-if="!item.term.includes('null') && !item.term.includes('empty') && item.term !== 'between'"
               v-model="item.enumValues"
@@ -397,6 +397,7 @@ import { parseJson } from '@/views/chart/chart/util'
 
 export default {
   name: 'TableThresholdEdit',
+  inject: ['filedList'],
   props: {
     threshold: {
       type: Array,
@@ -407,7 +408,6 @@ export default {
       required: true
     }
   },
-  inject: ['filedList'],
   data() {
     return {
       thresholdArr: [],
@@ -630,7 +630,7 @@ export default {
         const yAxis = parseJson(this.chart.yaxis)
         const xAxis = parseJson(this.chart.xaxis)
         const xAxisExt = parseJson(this.chart.xaxisExt)
-        this.fields.splice(0, this.fields.length,  ...yAxis, ...xAxis, ...xAxisExt)
+        this.fields.splice(0, this.fields.length, ...yAxis, ...xAxis, ...xAxisExt)
       } else {
         const yAxis = parseJson(this.chart.yaxis)
         const xAxis = parseJson(this.chart.xaxis)

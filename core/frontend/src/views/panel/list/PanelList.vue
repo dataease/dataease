@@ -1,7 +1,10 @@
 <template xmlns:el-col="http://www.w3.org/1999/html">
   <el-col style="padding: 1px 24px 16px 24px">
     <el-col>
-      <el-row style="margin-bottom: 10px">
+      <el-row
+        class="sticky-de-search-panel"
+        style="margin-bottom: 10px"
+      >
         <el-col :span="24">
           <el-input
             v-model="filterText"
@@ -1257,6 +1260,21 @@ export default {
 </script>
 
 <style lang="scss" scoped>
+.sticky-de-search-panel {
+  position: sticky;
+  top: 55px;
+  z-index: 10;
+  background: #fff;
+  &::before {
+    content: '';
+    position: absolute;
+    top: -15px;
+    height: 15px;
+    width: 100%;
+    background: #fff;
+  }
+}
+
 .default-expansion {
   height: 40px;
   width: 232px;

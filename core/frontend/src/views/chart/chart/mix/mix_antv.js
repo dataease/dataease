@@ -102,7 +102,7 @@ export function baseMixOptionAntV(container, chart, action) {
 
   plot.on('point:click', action)
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }

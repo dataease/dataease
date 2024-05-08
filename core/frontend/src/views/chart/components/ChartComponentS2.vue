@@ -103,6 +103,8 @@ import ChartTitleUpdate from './ChartTitleUpdate.vue'
 import { mapState } from 'vuex'
 import DePagination from '@/components/deCustomCm/pagination.js'
 import bus from '@/utils/bus'
+import { getRange } from '@/utils/timeUitils'
+import { deepCopy } from '@/components/canvas/utils/utils'
 
 export default {
   name: 'ChartComponentS2',
@@ -407,6 +409,23 @@ export default {
       }, 100)
     },
     trackClick(trackAction) {
+      const idTypeMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['id']] = next['deType']
+        return pre
+      }, {})
+
+      const idDateStyleMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['id']] = next['dateStyle']
+        return pre
+      }, {})
+
+      const dimensionListAdaptor = deepCopy(this.pointParam.data.dimensionList)
+      dimensionListAdaptor.forEach(dimension => {
+        // deType === 1 表示是时间类型
+        if (idTypeMap[dimension.id] === 1) {
+          dimension.value = getRange(dimension.value, idDateStyleMap[dimension.id])
+        }
+      })
       const param = this.pointParam
       if (!param || !param.data || !param.data.dimensionList) {
         // 地图提示没有关联字段 其他没有维度信息的 直接返回
@@ -419,14 +438,14 @@ export default {
         option: 'linkage',
         name: this.pointParam.data.name,
         viewId: this.chart.id,
-        dimensionList: this.pointParam.data.dimensionList,
+        dimensionList: dimensionListAdaptor,
         quotaList: this.pointParam.data.quotaList
       }
       const jumpParam = {
         option: 'jump',
         name: this.pointParam.data.name,
         viewId: this.chart.id,
-        dimensionList: this.pointParam.data.dimensionList,
+        dimensionList: dimensionListAdaptor,
         quotaList: this.pointParam.data.quotaList,
         sourceType: this.pointParam.data.sourceType
       }
@@ -558,12 +577,18 @@ export default {
       this.remarkCfg = getRemark(this.chart)
     },
     columnResize(resizeColumn) {
+      // 从头开始滚动
+      this.myChart.facet.timer?.stop()
+      this.$nextTick(this.initScroll)
       if (!this.inScreen) {
-        // 预览/全屏预览不保存
+        // 预览/全屏预览不保存宽度
+        return
+      }
+      const size = JSON.parse(this.chart.customAttr).size
+      if (size.tableColumnMode !== 'field') {
         return
       }
       const fieldId = resizeColumn.info.meta.field
-      const size = JSON.parse(this.chart.customAttr).size
       const containerWidth = document.getElementById(this.chartId).offsetWidth
       const column = size.tableFieldWidth?.find(i => i.fieldId === fieldId)
       let tableWidth

@@ -133,6 +133,9 @@ service.interceptors.response.use(response => {
   if (error.response) {
     checkAuth(error.response)
     msg = error.response.data.message || error.response.data
+    if (msg?.startsWith('pwdValidityPeriod')) {
+      config['hideMsg'] = true
+    }
   } else {
     msg = error.message
   }

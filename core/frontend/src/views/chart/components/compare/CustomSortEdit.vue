@@ -92,10 +92,17 @@ export default {
   },
   methods: {
     init() {
-      post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + this.field.id + '/' + this.fieldType, {}).then(response => {
-        this.sortList = response.data
-        this.onUpdate()
-      })
+      if (this.fieldType === 'drillFields') {
+        post('/chart/view/getDrillFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + this.field.id, {}).then(response => {
+          this.sortList = response.data
+          this.onUpdate()
+        })
+      } else {
+        post('/chart/view/getFieldData/' + this.chart.id + '/' + this.panelInfo.id + '/' + this.field.id + '/' + this.fieldType, {}).then(response => {
+          this.sortList = response.data
+          this.onUpdate()
+        })
+      }
     },
     moveToTop(index, item) {
       let targetIndex = index

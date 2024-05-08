@@ -492,6 +492,5 @@ export default {
       border-left: none;
     }
   }
-  
 }
 </style>

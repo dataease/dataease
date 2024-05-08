@@ -19,8 +19,8 @@
     >
       <el-checkbox
         v-model="selectAll"
-        class="is-tree-select"
         v-customStyle="customStyle"
+        class="is-tree-select"
         :indeterminate="isIndeterminate"
         @change="selectAllChange"
       >

@@ -1,8 +1,8 @@
 <template>
   <div
-    @click="handleClick(false)"
     v-if="arrowSide && !isInside"
     class="arrow-side-tree arrow-side-tree-left"
+    @click="handleClick(false)"
   >
     <svg-icon
       icon-class="icon_left_outlined"
@@ -10,9 +10,9 @@
     />
   </div>
   <div
-    @click="handleClick(true)"
     v-else-if="!arrowSide && isInside"
     class="arrow-side-tree arrow-side-tree-right"
+    @click="handleClick(true)"
   >
     <svg-icon
       icon-class="icon_right_outlined"
@@ -29,7 +29,7 @@ export default {
     isInside: {
       type: Boolean,
       default: false
-    },
+    }
   },
   computed: {
     ...mapState('app', [

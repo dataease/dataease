@@ -15,7 +15,7 @@
           <el-checkbox
             v-model="labelForm.show"
             @change="changeLabelAttr('show')"
-          ></el-checkbox>
+          />
         </el-form-item>
         <div v-show="labelForm.show">
           <el-form-item
@@ -139,6 +139,16 @@
               >{{ option.name }}</el-radio>
             </el-radio-group>
           </el-form-item>
+          <el-form-item
+            v-show="showProperty('showGap')"
+            :label="$t('chart.show_gap')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="labelForm.showGap"
+              @change="changeLabelAttr('showGap')"
+            />
+          </el-form-item>
         </div>
         <el-form-item
           v-show="showProperty('conversion')"
@@ -148,7 +158,7 @@
           <el-checkbox
             v-model="labelForm.showConversion"
             @change="changeLabelAttr('showConversion')"
-          ></el-checkbox>
+          />
         </el-form-item>
         <el-form-item
           v-show="labelForm.showConversion && showProperty('conversionLabel')"
@@ -159,7 +169,7 @@
             v-model="labelForm.conversionLabel"
             :maxlength="20"
             @change="changeLabelAttr('conversionLabel')"
-          ></el-input>
+          />
         </el-form-item>
       </el-form>
 

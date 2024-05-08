@@ -1,7 +1,6 @@
 package io.dataease.service.system;
 
 import io.dataease.commons.constants.ParamConstants;
-;
 import io.dataease.commons.utils.BeanUtils;
 import io.dataease.commons.utils.EncryptUtils;
 import io.dataease.controller.sys.response.BasicInfo;
@@ -35,6 +34,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
+
+import static io.dataease.commons.constants.ParamConstants.BASIC.LOGIN_LIMIT_OPEN_MODIFY_PWD;
+import static io.dataease.commons.constants.ParamConstants.BASIC.LOGIN_LIMIT_PWD_CYCLE;
 
 @Service
 @Transactional(rollbackFor = Exception.class)
@@ -70,7 +72,7 @@ public class SystemParameterService {
         BasicInfo result = new BasicInfo();
         result.setOpenHomePage("true");
         Map<String, LoginLimitXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LoginLimitXpackService.class));
-        Boolean loginLimitPluginLoaded = beansOfType.keySet().size() > 0;
+        boolean loginLimitPluginLoaded = beansOfType.keySet().size() > 0;
         if (!CollectionUtils.isEmpty(paramList)) {
             for (SystemParameter param : paramList) {
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.FRONT_TIME_OUT.getValue())) {
@@ -84,6 +86,9 @@ public class SystemParameterService {
                 }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DS_SYNC_LOG_TIME_OUT.getValue())) {
                     result.setDsSyncLogTimeOut(param.getParamValue());
+                }
+                if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.EXPORT_FILE_TIME_OUT.getValue())) {
+                    result.setExportFileTimeOut(param.getParamValue());
                 }
                 if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.DEFAULT_LOGIN_TYPE.getValue())) {
                     String paramValue = param.getParamValue();
@@ -131,6 +136,16 @@ public class SystemParameterService {
                     if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.LOGIN_LIMIT_OPEN.getValue())) {
                         boolean open = StringUtils.equals("true", param.getParamValue());
                         result.setOpen(open ? "true" : "false");
+                    }
+                    if (StringUtils.equals(param.getParamKey(), LOGIN_LIMIT_OPEN_MODIFY_PWD.getValue())) {
+                        boolean open = StringUtils.equals("true", param.getParamValue());
+                        result.setOpenModifyPwd(open ? "true" : "false");
+                    }
+                    if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.LOGIN_LIMIT_PWD_CYCLE.getValue())) {
+                        String paramValue = param.getParamValue();
+                        if (StringUtils.isNotBlank(paramValue)) {
+                            result.setPwdCycle(paramValue);
+                        }
                     }
                     if (StringUtils.equals(param.getParamKey(), ParamConstants.BASIC.LOCKED_EMAIL.getValue())) {
                         boolean open = StringUtils.equals("true", param.getParamValue());
@@ -285,6 +300,40 @@ public class SystemParameterService {
         }
         return param.getParamValue();
     }
+
+    public Integer pwdValidityPeriod(Long userId) {
+
+        Map<String, LoginLimitXpackService> beansOfType = SpringContextUtil.getApplicationContext().getBeansOfType((LoginLimitXpackService.class));
+        boolean loginLimitPluginLoaded = beansOfType.keySet().size() > 0;
+        if (!loginLimitPluginLoaded) return -1;
+        String value = getValue(LOGIN_LIMIT_OPEN_MODIFY_PWD.getValue());
+        if (StringUtils.isNotBlank(value) && StringUtils.equals("true", value)) {
+            long pwdTime = extSystemParameterMapper.queryPwdResetTime(userId);
+            if (ObjectUtils.isEmpty(pwdTime)) {
+                return -1;
+            }
+            long dayTime = 24 * 3600L * 1000L;
+            String pwdCycle = getValue(LOGIN_LIMIT_PWD_CYCLE.getValue());
+            Long expireCycle = null;
+            if (StringUtils.isBlank(pwdCycle) || StringUtils.equals("1", pwdCycle)) {
+                expireCycle = 90L * dayTime;
+            } else if (StringUtils.equals("2", pwdCycle)) {
+                expireCycle = 180L * dayTime;
+            } else {
+                expireCycle = 365L * dayTime;
+            }
+            long now = System.currentTimeMillis();
+            long validityPeriod = pwdTime + expireCycle - now;
+            if (validityPeriod < 0L) return 0;
+            long validityDays = validityPeriod / dayTime;
+            if (validityPeriod % dayTime != 0) {
+                validityDays++;
+            }
+            return (int) validityDays;
+        }
+        return -1;
+    }
+
 
     public void disabledLockedEmail() {
         SystemParameter param = systemParameterMapper.selectByPrimaryKey(ParamConstants.BASIC.LOCKED_EMAIL.getValue());

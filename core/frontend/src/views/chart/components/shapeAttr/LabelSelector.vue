@@ -7,6 +7,12 @@
         label-width="80px"
         size="mini"
       >
+        <el-divider
+          v-if="showProperty('mainLabel')"
+          content-position="left"
+        >
+          <span style="font-size: 12px">{{ $t('chart.main_axis_label') }}</span>
+        </el-divider>
         <el-form-item
           v-show="showProperty('show')"
           :label="$t('chart.show')"
@@ -178,6 +184,102 @@
             />
           </el-form-item>
         </div>
+        <el-divider
+          v-if="showProperty('subLabel')"
+          content-position="left"
+        >
+          <span style="font-size: 12px">{{ $t('chart.sub_axis_label') }}</span>
+        </el-divider>
+        <el-form-item
+          v-show="showProperty('subShow')"
+          :label="$t('chart.show')"
+          class="form-item"
+        >
+          <el-checkbox
+            v-model="labelForm.subShow"
+            @change="changeLabelAttr('subShow')"
+          >{{ $t('chart.show') }}</el-checkbox>
+        </el-form-item>
+        <div v-show="labelForm.subShow">
+          <el-form-item
+            v-show="showProperty('subFontSize')"
+            :label="$t('chart.text_fontsize')"
+            class="form-item"
+          >
+            <el-select
+              v-model="labelForm.subFontSize"
+              :placeholder="$t('chart.text_fontsize')"
+              size="mini"
+              @change="changeLabelAttr('subFontSize')"
+            >
+              <el-option
+                v-for="option in fontSize"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('subColor')"
+            :label="$t('chart.text_color')"
+            class="form-item"
+          >
+            <el-color-picker
+              v-model="labelForm.subColor"
+              class="color-picker-style"
+              :predefine="predefineColors"
+              @change="changeLabelAttr('subColor')"
+            />
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('sub-position-v') "
+            :label="$t('chart.label_position')"
+            class="form-item"
+          >
+            <el-select
+              v-model="labelForm.subPosition"
+              :placeholder="$t('chart.label_position')"
+              @change="changeLabelAttr('subPosition')"
+            >
+              <el-option
+                v-for="option in labelPositionV"
+                :key="option.value"
+                :label="option.name"
+                :value="option.value"
+              />
+            </el-select>
+          </el-form-item>
+          <el-form-item
+            v-show="showProperty('subFormatter')"
+            class="form-item"
+          >
+            <span slot="label">
+              <span class="span-box">
+                <span>{{ $t('chart.content_formatter') }}</span>
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                  placement="bottom"
+                >
+                  <div slot="content">
+                    字符串模板 模板变量有：<br>{a}：系列名。<br>{b}：数据名。<br>{c}：数据值。<br>{d}：百分比（用于饼图等）。
+                  </div>
+                  <i
+                    class="el-icon-info"
+                    style="cursor: pointer;"
+                  />
+                </el-tooltip>
+              </span>
+            </span>
+            <el-input
+              v-model="labelForm.subFormatter"
+              type="textarea"
+              :autosize="{ minRows: 4, maxRows: 4}"
+              @blur="changeLabelAttr('subFormatter')"
+            />
+          </el-form-item>
+        </div>
         <el-form-item
           v-show="showProperty('gaugeFormatter')"
           class="form-item"
@@ -274,6 +376,11 @@ export default {
           this.labelForm = customAttr.label
           if (!this.labelForm.labelLine) {
             this.labelForm.labelLine = JSON.parse(JSON.stringify(DEFAULT_LABEL.labelLine))
+            this.labelForm.subShow = this.labelForm.subShow ?? this.labelForm.show
+            this.labelForm.subFontSize = this.labelForm.subFontSize ?? this.labelForm.fontSize
+            this.labelForm.subColor = this.labelForm.subColor ?? this.labelForm.color
+            this.labelForm.subPosition = this.labelForm.subPosition ?? this.labelForm.position
+            this.labelForm.subFormatter = this.labelForm.subFormatter ?? this.labelForm.formatter
           }
         }
       }

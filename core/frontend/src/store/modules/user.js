@@ -20,7 +20,9 @@ const getDefaultState = () => {
     permissions: [],
     language: getLanguage(),
     uiInfo: null,
-    linkToken: null
+    linkToken: null,
+    validityPeriod: -1,
+    loginMsg: null
   }
 }
 
@@ -69,6 +71,9 @@ const mutations = {
   },
   SET_PASSWORD_MODIFIED: (state, passwordModified) => {
     state.passwordModified = passwordModified
+  },
+  SET_VALIDITY_PERIOD: (state, validityPeriod) => {
+    state.validityPeriod = validityPeriod
   }
 }
 
@@ -79,8 +84,8 @@ const actions = {
     return new Promise((resolve, reject) => {
       login({ username: username.trim(), password: password, loginType: loginType }).then(response => {
         const { data } = response
-        commit('SET_TOKEN', data.token)
         commit('SET_LOGIN_MSG', null)
+        commit('SET_TOKEN', data.token)
         setToken(data.token)
         setTokenExp(data.expireTime)
         let passwordModified = true
@@ -92,8 +97,11 @@ const actions = {
         }
         commit('SET_PASSWORD_MODIFIED', passwordModified)
         localStorage.setItem('passwordModified', passwordModified)
+        commit('SET_VALIDITY_PERIOD', data.validityPeriod)
+        localStorage.removeItem('pwd-period-warn')
         resolve()
       }).catch(error => {
+        error?.response?.data?.message?.startsWith('pwdValidityPeriod') && commit('SET_LOGIN_MSG', '密码已过期，请联系管理员进行密码重置！')
         reject(error)
       })
     })
@@ -159,13 +167,15 @@ const actions = {
   // user logout
   logout({ commit, state }, param) {
     const method = param && param.casEnable ? deLogout : logout
+    const customLogoutUrl = localStorage.getItem('custom_auth_logout_url')
     return new Promise((resolve, reject) => {
       method(state.token).then(res => {
         removeToken() // must remove  token  first
         resetRouter()
         commit('RESET_STATE')
-        resolve(res.data)
+        resolve(customLogoutUrl || res.data)
         localStorage.removeItem('passwordModified')
+        localStorage.removeItem('pwd-period-warn')
       }).catch(error => {
         reject(error)
         if (error?.response?.data?.message) {
@@ -179,8 +189,7 @@ const actions = {
             }, {
               confirmButtonText: i18n.t('commons.confirm')
             })
-          }
-          if (error.response.data.message === ('cas_logout_error')) {
+          } else if (error.response.data.message === ('cas_logout_error')) {
             const message = i18n.t('logout.' + error.response.data.message)
             $alert(message, () => {
 
@@ -188,7 +197,11 @@ const actions = {
               confirmButtonText: i18n.t('commons.confirm'),
               showClose: false
             })
+          } else {
+            window.location.href = customLogoutUrl || '/'
           }
+        } else {
+          window.location.href = customLogoutUrl || '/'
         }
       })
     })

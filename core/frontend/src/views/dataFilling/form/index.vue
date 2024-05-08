@@ -4,14 +4,18 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer.vue'
 import NoSelect from './NoSelect.vue'
 import ViewTable from './ViewTable.vue'
 import { listForm, saveForm, updateForm, deleteForm, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
-import { cloneDeep } from 'lodash-es'
+import { forEach, cloneDeep, find } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
+import DataFillingFormMoveSelector from './MoveSelector.vue'
 
 export default {
   name: 'DataFillingForm',
-  components: { DeAsideContainer, DeContainer, NoSelect, ViewTable },
+  components: { DataFillingFormMoveSelector, DeAsideContainer, DeContainer, NoSelect, ViewTable },
   data() {
     return {
+      selectedItem: undefined,
+      moveDialogTitle: '',
+      moveGroup: false,
       treeLoading: false,
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       activeName: 'forms',
@@ -29,10 +33,31 @@ export default {
       displayFormData: undefined
     }
   },
+  computed: {
+    flattenFolderList() {
+      const result = []
+      this.flattenFolder(this.formList, result)
+      return result
+    }
+  },
   mounted() {
     this.treeLoading = true
     listForm({}).then(res => {
       this.formList = res.data || []
+
+      if (this.$route.query?.id) {
+        this.$nextTick(() => {
+          this.$refs.formTreeRef?.setCurrentKey(this.$route.query.id)
+          const checkedNode = this.$refs.formTreeRef?.getNode(this.$route.query.id)
+          if (checkedNode) {
+            checkedNode?.parent?.expand()
+            this.selectedItem = find(this.flattenFolderList, f => f.id === this.$route.query.id)
+            if (this.selectedItem) {
+              this.nodeClick(this.selectedItem)
+            }
+          }
+        })
+      }
     }).finally(() => {
       this.treeLoading = false
     })
@@ -86,7 +111,15 @@ export default {
         case 'delete':
           this.delete(param.data)
           break
+        case 'move':
+          this.moveTo(param.data)
+          break
       }
+    },
+    moveTo(data) {
+      this.selectedItem = data
+      this.moveGroup = true
+      this.moveDialogTitle = this.$t('dataset.m1') + (data.name.length > 10 ? (data.name.substr(0, 10) + '...') : data.name) + this.$t('dataset.m2')
     },
     openUpdateForm(param) {
       this.updateFormData = cloneDeep(param.data)
@@ -135,6 +168,12 @@ export default {
           })
         })
       }).catch(() => {
+      })
+    },
+    onMoveSuccess() {
+      this.moveGroup = false
+      listForm({}).then(res => {
+        this.formList = res.data || []
       })
     },
     beforeClickMore(optType, data, node) {
@@ -199,6 +238,15 @@ export default {
       if (this.activeName === 'my-tasks') {
         this.$router.push('/data-filling/my-jobs')
       }
+    },
+    flattenFolder(list, result = []) {
+      forEach(list, item => {
+        result.push(item)
+        if (item.children && item.children.length > 0) {
+          this.flattenFolder(item.children, result)
+        }
+      })
+      return result
     }
   }
 }
@@ -220,7 +268,7 @@ export default {
           name="my-tasks"
         >
           <span slot="label">
-            我的填报
+            {{ $t('data_fill.my_job') }}
           </span>
         </el-tab-pane>
 
@@ -228,13 +276,13 @@ export default {
           name="forms"
         >
           <span slot="label">
-            表单管理
+            {{ $t('data_fill.form_manage') }}
           </span>
 
           <div style="padding-left: 20px;padding-right: 20px;">
 
             <div style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
-              填报表单
+              {{ $t('data_fill.form.form_list_name') }}
               <el-button
                 icon="el-icon-plus"
                 type="text"
@@ -246,7 +294,7 @@ export default {
               v-if="!formList.length && !treeLoading"
               class="no-tdata"
             >
-              暂无表单，点击
+              {{ $t('data_fill.form.no_form') }}
               <span
                 class="no-tdata-new"
                 @click="() => createFolder({id: '0', level: 0, firstFolder: true})"
@@ -256,7 +304,7 @@ export default {
             </div>
             <el-tree
               v-else
-              ref="datasetTreeRef"
+              ref="formTreeRef"
               :default-expanded-keys="expandedArray"
               :data="formList"
               node-key="id"
@@ -308,16 +356,16 @@ export default {
                             :command="beforeData('folder',data)"
                           >
                             <svg-icon icon-class="scene" />
-                            <span style="margin-left: 5px">新建文件夹</span>
+                            <span style="margin-left: 5px">{{ $t('data_fill.new_folder') }}</span>
                           </el-dropdown-item>
                           <el-dropdown-item
                             :command="beforeData('form',data)"
                           >
                             <svg-icon
-                              icon-class="panel"
+                              icon-class="form"
                               class="ds-icon-scene"
                             />
-                            <span>新建表单</span>
+                            <span>{{ $t('data_fill.form.create_form') }}</span>
                           </el-dropdown-item>
                         </el-dropdown-menu>
                       </el-dropdown>
@@ -345,6 +393,12 @@ export default {
                             :command="beforeClickMore('rename', data, node)"
                           >
                             {{ $t('panel.rename') }}
+                          </el-dropdown-item>
+                          <el-dropdown-item
+                            icon="el-icon-right"
+                            :command="beforeClickMore('move',data,node)"
+                          >
+                            {{ $t('dataset.move_to') }}
                           </el-dropdown-item>
                           <el-dropdown-item
                             icon="el-icon-delete"
@@ -379,7 +433,7 @@ export default {
     <el-dialog
       v-dialogDrag
       append-to-body
-      title="新建文件夹"
+      :title="$t('data_fill.new_folder')"
       :visible.sync="showFolderCreateForm"
       :show-close="true"
       width="600px"
@@ -396,6 +450,7 @@ export default {
           :model="folderForm"
           label-position="top"
           hide-required-asterisk
+          @submit.native.prevent
         >
           <el-main>
             <el-form-item
@@ -404,7 +459,7 @@ export default {
               :rules="[requiredRule]"
             >
               <template #label>
-                名称
+                {{ $t('data_fill.form.name') }}
                 <span
                   style="color: red"
                 >*</span>
@@ -420,11 +475,11 @@ export default {
           </el-main>
         </el-form>
         <el-footer class="de-footer">
-          <el-button @click="closeSaveFolder">取消</el-button>
+          <el-button @click="closeSaveFolder">{{ $t("commons.cancel") }}</el-button>
           <el-button
             type="primary"
             @click="doSaveFolder"
-          >保存
+          >{{ $t("commons.confirm") }}
           </el-button>
         </el-footer>
       </el-container>
@@ -433,7 +488,7 @@ export default {
     <el-dialog
       v-dialogDrag
       append-to-body
-      title="重命名"
+      :title="$t('data_fill.form.rename')"
       :visible.sync="showUpdateName"
       :show-close="true"
       width="600px"
@@ -449,6 +504,7 @@ export default {
           :model="updateFormData"
           label-position="top"
           hide-required-asterisk
+          @submit.native.prevent
         >
           <el-main>
             <el-form-item
@@ -457,7 +513,7 @@ export default {
               :rules="[requiredRule]"
             >
               <template #label>
-                名称
+                {{ $t('data_fill.form.name') }}
                 <span
                   style="color: red"
                 >*</span>
@@ -473,14 +529,30 @@ export default {
           </el-main>
         </el-form>
         <el-footer class="de-footer">
-          <el-button @click="closeUpdateForm">取消</el-button>
+          <el-button @click="closeUpdateForm">{{ $t("commons.cancel") }}</el-button>
           <el-button
             type="primary"
             @click="doUpdateForm"
-          >保存
+          >{{ $t("commons.confirm") }}
           </el-button>
         </el-footer>
       </el-container>
+    </el-dialog>
+
+    <el-dialog
+      v-dialogDrag
+      :title="moveDialogTitle"
+      :visible="moveGroup"
+      :show-close="false"
+      width="30%"
+      class="dialog-css"
+    >
+      <data-filling-form-move-selector
+        v-if="moveGroup"
+        :show-selector.sync="moveGroup"
+        :item.sync="selectedItem"
+        @moveSuccess="onMoveSuccess"
+      />
     </el-dialog>
 
   </de-container>

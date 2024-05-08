@@ -1117,7 +1117,6 @@ export const TYPE_CONFIGS = [
     icon: 'bar-time-range',
     properties: [
       'color-selector',
-
       'label-selector-ant-v',
       'tooltip-selector-ant-v',
       'x-axis-selector-ant-v',
@@ -1141,11 +1140,13 @@ export const TYPE_CONFIGS = [
         'show',
         'fontSize',
         'color',
-        'position-h'
+        'position-h',
+        'showGap'
       ],
       'tooltip-selector-ant-v': [
         'show',
-        'textStyle'
+        'textStyle',
+        'showGap'
       ],
       'x-axis-selector-ant-v': [
         'show',
@@ -2519,11 +2520,18 @@ export const TYPE_CONFIGS = [
         'mix'
       ],
       'label-selector': [
+        'mainLabel',
         'show',
         'fontSize',
         'color',
         'position-v',
-        'formatter'
+        'formatter',
+        'subLabel',
+        'subShow',
+        'subFontSize',
+        'subColor',
+        'sub-position-v',
+        'subFormatter'
       ],
       'tooltip-selector': [
         'show',
@@ -3946,9 +3954,9 @@ export function adjustPosition(targetDom, parentDom, clickPosition, offset, init
     x: offsetX ? x + offsetX : x,
     y: offsetY ? y + offsetY : y
   }
-  const width = targetWidth ? targetWidth : initSize.width
-  const height = targetHeight ? targetHeight : initSize.height
-  if ( result.x + width > parentWidth ) {
+  const width = targetWidth || initSize.width
+  const height = targetHeight || initSize.height
+  if (result.x + width > parentWidth) {
     result.x = parentWidth - width
   }
   if (result.y + height > parentHeight) {
@@ -3958,4 +3966,30 @@ export function adjustPosition(targetDom, parentDom, clickPosition, offset, init
     result.y = height
   }
   return result
+}
+
+export function handleStackSort(chart, data) {
+  if (!data?.length) {
+    return
+  }
+  if (!chart.type.includes('stack') ||
+    chart.type.includes('group')) {
+    return
+  }
+  const { xaxis, yaxis, extStack } = chart
+  const xAxis = JSON.parse(xaxis)
+  const yAxis = JSON.parse(yaxis)
+  const stack = JSON.parse(extStack)
+  if (!(stack.length && xAxis.length && yAxis.length) ||
+    yAxis[0].sort === 'none' ||
+    !xAxis.every(i => i.sort === 'none')) {
+    return
+  }
+  const result = data.reduce((p, n, i) => {
+    p[n.field] = (p[n.field] || 0) + (n.value ?? 0)
+    return p
+  }, {})
+  data.sort((p, n) => {
+    return yAxis[0].sort === 'asc' ? result[p.field] - result[n.field] : result[n.field] - result[p.field]
+  })
 }

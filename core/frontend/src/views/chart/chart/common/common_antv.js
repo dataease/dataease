@@ -1,8 +1,12 @@
 import { hexColorToRGBA } from '@/views/chart/chart/util'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
-import { DEFAULT_XAXIS_STYLE, DEFAULT_YAXIS_EXT_STYLE, DEFAULT_YAXIS_STYLE } from '@/views/chart/chart/chart'
+import {
+  DEFAULT_COLOR_CASE,
+  DEFAULT_XAXIS_STYLE,
+  DEFAULT_YAXIS_EXT_STYLE,
+  DEFAULT_YAXIS_STYLE
+} from '@/views/chart/chart/chart'
 import { equalsAny, includesAny } from '@/utils/StringUtils'
-import i18n from '@/lang'
 import {
   regressionExp,
   regressionPoly,
@@ -102,7 +106,8 @@ export function getTheme(chart) {
             color: tooltipColor,
             fontSize: tooltipFontsize + 'px',
             background: tooltipBackgroundColor,
-            'z-index': 3000
+            'z-index': 3000,
+            position: 'fixed'
           }
         }
       },
@@ -149,7 +154,10 @@ export function getLabel(chart) {
         } else if (chart.type.includes('line') || chart.type.includes('area')) {
           label = {
             position: l.position,
-            offsetY: -8
+            layout: [
+              { type: 'hide-overlap' },
+              { type: 'limit-in-plot' }
+            ]
           }
         } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
           label = {
@@ -174,6 +182,9 @@ export function getLabel(chart) {
         }
         // label value formatter
         if (chart.type && chart.type !== 'waterfall') {
+          if (chart.type === 'bar-time-range') {
+            label.content = ''
+          }
           label.formatter = function(param) {
             let xAxis, yAxis, extStack, xaxisExt
             let res = param.value
@@ -266,6 +277,12 @@ export function getLabel(chart) {
             } else if (chart.type === 'scatter' && xAxis && xAxis.length > 0 && xAxis[0].groupType === 'q') {
               // 针对散点图
               res = param.field
+            } else if (chart.type === 'bar-time-range') {
+              if (l.showGap) {
+                res = param.gap
+              } else {
+                res = param.values[0] + ' ~ ' + param.values[1]
+              }
             } else {
               for (let i = 0; i < yAxis.length; i++) {
                 const f = yAxis[i]
@@ -334,7 +351,8 @@ export function getTooltip(chart) {
       if (t.show) {
         tooltip = {
           container: getTooltipContainer(`tooltip-${chart.id}`),
-          itemTpl: TOOLTIP_TPL
+          itemTpl: TOOLTIP_TPL,
+          enterable: true
         }
         let xAxis, yAxis, extStack, xAxisExt
 
@@ -363,7 +381,10 @@ export function getTooltip(chart) {
         if (chart.type && chart.type !== 'waterfall') {
           if (chart.type === 'bar-group-stack') {
             tooltip.fields = []
+          } else if (chart.type === 'bar-time-range') {
+            tooltip.fields = ['gap', 'category', 'values', 'group', 'field']
           }
+
           tooltip.formatter = function(param) {
             let res = param.value
 
@@ -492,7 +513,10 @@ export function getTooltip(chart) {
               }
             } else if (chart.type === 'bar-time-range') {
               obj = { values: param.values, name: param.category }
-              res = param.values[0] + ' - ' + param.values[1]
+              res = param.values[0] + ' ~ ' + param.values[1]
+              if (t.showGap) {
+                res = res + ' (' + param.gap + ')'
+              }
             } else {
               res = param.value
             }
@@ -1188,7 +1212,13 @@ export function getTooltipContainer(id) {
   const g2Tooltip = document.createElement('div')
   g2Tooltip.setAttribute('id', id)
   g2Tooltip.classList.add('g2-tooltip')
-
+  // 最多半屏，鼠标移入可滚动
+  g2Tooltip.style.maxHeight = '50%'
+  g2Tooltip.style.overflow = 'scroll'
+  g2Tooltip.style.display = 'none'
+  g2Tooltip.style.position = 'fixed'
+  g2Tooltip.style.left = '0px'
+  g2Tooltip.style.top = '0px'
   const g2TooltipTitle = document.createElement('div')
   g2TooltipTitle.classList.add('g2-tooltip-title')
   g2Tooltip.appendChild(g2TooltipTitle)
@@ -1210,6 +1240,15 @@ export function configPlotTooltipEvent(chart, plot) {
   if (!t.show) {
     return
   }
+  // 鼠标可移入, 移入之后保持显示, 移出之后隐藏
+  plot.options.tooltip.container.addEventListener('mouseenter', e => {
+    e.target.style.visibility = 'visible'
+    e.target.style.display = 'block'
+  })
+  plot.options.tooltip.container.addEventListener('mouseleave', e => {
+    e.target.style.visibility = 'hidden'
+    e.target.style.display = 'none'
+  })
   // 手动处理 tooltip 的显示和隐藏事件，需配合源码理解
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#showTooltip
   plot.on('tooltip:show', () => {
@@ -1217,9 +1256,11 @@ export function configPlotTooltipEvent(chart, plot) {
     if (!tooltipCtl) {
       return
     }
+    const event = plot.chart.interactions.tooltip?.context?.event
     if (tooltipCtl.tooltip) {
       // 处理视图放大后再关闭 tooltip 的 dom 被清除
       const container = tooltipCtl.tooltip.cfg.container
+      container.style.display = 'block'
       const dom = document.getElementById(container.id)
       if (!dom) {
         const full = document.getElementsByClassName('fullscreen')
@@ -1230,7 +1271,6 @@ export function configPlotTooltipEvent(chart, plot) {
         }
       }
     }
-    const event = plot.chart.interactions.tooltip?.context?.event
     plot.chart.getOptions().tooltip.follow = false
     tooltipCtl.title = Math.random().toString()
     plot.chart.getTheme().components.tooltip.x = event.clientX
@@ -1243,6 +1283,10 @@ export function configPlotTooltipEvent(chart, plot) {
       return
     }
     plot.chart.getOptions().tooltip.follow = true
+    const container = tooltipCtl.tooltip?.cfg?.container
+    if (container) {
+      container.style.display = 'none'
+    }
     tooltipCtl.hideTooltip()
   })
 }
@@ -1264,9 +1308,9 @@ export const configTopN = (data, chart) => {
   const otherItems = data.splice(color.topN)
   const initOtherItem = {
     ...data[0],
-    field: i18n.t('datasource.other'),
-    name: i18n.t('datasource.other'),
-    value: 0,
+    field: color.topNLabel ?? DEFAULT_COLOR_CASE.topNLabel,
+    name: color.topNLabel ?? DEFAULT_COLOR_CASE.topNLabel,
+    value: 0
   }
   otherItems.reduce((p, n) => {
     p.value += n.value ?? 0
@@ -1351,12 +1395,12 @@ export function configPlotTrendLine(chart, plot) {
         offsetY: 10
       })
     }
-    regLine.axis(false);
-    regLine.data(totalData);
+    regLine.axis(false)
+    regLine.data(totalData)
     regLine.line()
       .position('index*value')
       .color('color', color => color)
-      .style('trendId',trendId => {
+      .style('trendId', trendId => {
         const trend = trendLineMap[trendId]
         return {
           stroke: trend?.color ?? 'grey',
@@ -1425,7 +1469,7 @@ export function configAxisLabelLengthLimit(chart, plot) {
       return
     }
     const parentNode = e.event.target.parentNode
-    let labelTooltipDom = parentNode.getElementsByClassName('g2-axis-label-tooltip')?.[0]
+    const labelTooltipDom = parentNode.getElementsByClassName('g2-axis-label-tooltip')?.[0]
     if (labelTooltipDom) {
       labelTooltipDom.style.visibility = 'hidden'
     }

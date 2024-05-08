@@ -1113,7 +1113,7 @@ export default {
           value: 3
         }
       ],
-      certinKey: false,
+      certainKey: false,
       originFieldItem: {
         jsonFields: [],
         fields: []
@@ -1276,7 +1276,7 @@ export default {
       if (!this.add_api_item) {
         for (let i = 0; i < this.form.apiConfiguration.length; i++) {
           if (this.form.apiConfiguration[i].serialNumber === this.apiItem.serialNumber) {
-            this.certinKey = !this.certinKey
+            this.certainKey = !this.certainKey
             if (this.form.apiConfiguration[i].name !== this.apiItem.name) {
               this.apiItem.reName = true
               this.apiItem.orgName = this.form.apiConfiguration[i].name

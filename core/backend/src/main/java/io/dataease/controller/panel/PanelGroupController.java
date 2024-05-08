@@ -12,12 +12,14 @@ import io.dataease.commons.constants.DePermissionType;
 import io.dataease.commons.constants.PanelConstants;
 import io.dataease.commons.constants.ResourceAuthLevel;
 import io.dataease.controller.handler.annotation.I18n;
+import io.dataease.controller.request.dataset.DataSetExportRequest;
 import io.dataease.controller.request.panel.*;
 import io.dataease.dto.PermissionProxy;
 import io.dataease.dto.authModel.VAuthModelDTO;
 import io.dataease.dto.panel.PanelExport2App;
 import io.dataease.dto.panel.PanelGroupDTO;
 import io.dataease.plugins.common.base.domain.PanelGroup;
+import io.dataease.service.exportCenter.ExportCenterService;
 import io.dataease.service.panel.PanelGroupService;
 import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
@@ -50,6 +52,8 @@ public class PanelGroupController {
     private PanelGroupService panelGroupService;
     @Resource
     private ExtAuthServiceImpl authService;
+    @Resource
+    private ExportCenterService exportCenterService;
 
     @ApiOperation("查询树")
     @PostMapping("/tree")
@@ -152,25 +156,41 @@ public class PanelGroupController {
         return panelGroupService.queryPanelComponents(id);
     }
 
+    @ApiOperation("视图导出数据集明细")
+    @PostMapping("/exportDatasetDetails")
+    @I18n
+    public void exportDatasetDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws Exception {
+        panelGroupService.exportDatasetDetails(request, response);
+    }
+
     @ApiOperation("公共连接导出仪表板视图明细")
     @PostMapping("/exportDetails")
     @I18n
-    public void exportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
+    public void exportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws Exception {
         HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes())
                 .getRequest();
         String linkToken = httpServletRequest.getHeader(F2CLinkFilter.LINK_TOKEN_KEY);
         DecodedJWT jwt = JWT.decode(linkToken);
         Long userId = jwt.getClaim("userId").asLong();
         request.setUserId(userId);
-        panelGroupService.exportPanelViewDetails(request, response);
+        if("dataset".equals(request.getDownloadType())){
+            panelGroupService.exportDatasetDetails(request, response);
+        }else {
+            panelGroupService.exportPanelViewDetails(request, response);
+        }
     }
 
     @ApiOperation("站内导出仪表板视图明细")
     @PostMapping("/innerExportDetails")
     @DePermissionProxy(value = "proxy")
     @I18n
-    public void innerExportDetails(@RequestBody PanelViewDetailsRequest request, HttpServletResponse response) throws IOException {
-        panelGroupService.exportPanelViewDetails(request, response);
+    public void innerExportDetails(@RequestBody PanelViewDetailsRequest request) throws Exception {
+        if("dataset".equals(request.getDownloadType())){
+            DataSetExportRequest exportRequest = panelGroupService.composeDatasetExportRequest(request);
+            exportCenterService.addTask(exportRequest.getId(), "dataset", exportRequest);
+        }else{
+            exportCenterService.addTask(request.getViewId(), "chart", request);
+        }
     }
 
     @ApiOperation("更新仪表板状态")

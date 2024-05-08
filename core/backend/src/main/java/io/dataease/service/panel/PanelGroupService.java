@@ -10,6 +10,7 @@ import io.dataease.commons.constants.*;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.request.authModel.VAuthModelRequest;
 import io.dataease.controller.request.chart.ChartExtRequest;
+import io.dataease.controller.request.dataset.DataSetExportRequest;
 import io.dataease.controller.request.dataset.DataSetTableRequest;
 import io.dataease.controller.request.panel.*;
 import io.dataease.dto.DatasourceDTO;
@@ -32,6 +33,9 @@ import io.dataease.plugins.common.base.domain.*;
 import io.dataease.plugins.common.base.mapper.*;
 import io.dataease.plugins.common.constants.DeTypeConstants;
 import io.dataease.plugins.common.exception.DataEaseException;
+import io.dataease.plugins.common.request.chart.ChartExtFilterRequest;
+import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeItem;
+import io.dataease.plugins.common.request.permission.DatasetRowPermissionsTreeObj;
 import io.dataease.plugins.common.util.HttpClientUtil;
 import io.dataease.service.chart.ChartViewService;
 import io.dataease.service.dataset.DataSetGroupService;
@@ -143,6 +147,9 @@ public class PanelGroupService {
 
     @Resource
     private DatasourceMapper datasourceMapper;
+
+    @Resource
+    private DatasetTableMapper datasetTableMapper;
 
     @Value("${export.views.limit:100000}")
     private Long limit;
@@ -655,6 +662,76 @@ public class PanelGroupService {
         CacheUtils.removeAll(AuthConstants.USER_PANEL_NAME);
         CacheUtils.removeAll(AuthConstants.ROLE_PANEL_NAME);
         CacheUtils.removeAll(AuthConstants.DEPT_PANEL_NAME);
+    }
+
+    public DataSetExportRequest composeDatasetExportRequest(PanelViewDetailsRequest request) {
+        ChartExtRequest extRequest = request.getComponentFilterInfo();
+        List<ChartExtFilterRequest> filter = new ArrayList();
+        if (extRequest != null) {
+            if (CollectionUtils.isNotEmpty(extRequest.getFilter())) {
+                filter.addAll(extRequest.getFilter());
+            }
+            if (CollectionUtils.isNotEmpty(extRequest.getLinkageFilters())) {
+                filter.addAll(extRequest.getLinkageFilters());
+            }
+            if (CollectionUtils.isNotEmpty(extRequest.getOuterParamsFilters())) {
+                filter.addAll(extRequest.getOuterParamsFilters());
+            }
+        }
+        Gson gson = new Gson();
+        DatasetRowPermissionsTreeObj permissionsTreeObjFilter = new DatasetRowPermissionsTreeObj();
+        permissionsTreeObjFilter.setLogic("and");
+        List<DatasetRowPermissionsTreeItem> composePermission = new ArrayList<>();
+        permissionsTreeObjFilter.setItems(composePermission);
+        if (CollectionUtils.isNotEmpty(filter)) {
+            filter.forEach(filterInfo -> {
+                DatasetRowPermissionsTreeItem filterPermission = new DatasetRowPermissionsTreeItem();
+                List<String> values = filterInfo.getValue();
+                String operator = filterInfo.getOperator();
+                String dataSetFilterType = "logic";
+                String term = operator;
+                if ("eq".equals(operator) && values.size() > 1) {
+                    dataSetFilterType = "enum";
+                }
+                String fieldId = filterInfo.getFieldId();
+                filterPermission.setFieldId(fieldId);
+                filterPermission.setFilterType(dataSetFilterType);
+                filterPermission.setType("item");
+                if (dataSetFilterType.equals("enum")) {
+                    filterPermission.setEnumValue(values);
+                } else {
+                    filterPermission.setTerm(term);
+                    filterPermission.setValue(values.get(0));
+                }
+                composePermission.add(filterPermission);
+            });
+        }
+
+        ChartViewWithBLOBs chartInfo = chartViewMapper.selectByPrimaryKey(request.getViewId());
+        String customFilter = chartInfo.getCustomFilter();
+
+        DatasetTable datasetTable = datasetTableMapper.selectByPrimaryKey(chartInfo.getTableId());
+        DataSetExportRequest dataSetExportRequest = new DataSetExportRequest();
+        BeanUtils.copyBean(dataSetExportRequest, datasetTable);
+        DatasetRowPermissionsTreeObj permissionsTreeObjCustomsFilter = gson.fromJson(customFilter, DatasetRowPermissionsTreeObj.class);
+        if (CollectionUtils.isNotEmpty(composePermission)) {
+            if (StringUtils.isNotEmpty(permissionsTreeObjCustomsFilter.getLogic())) {
+                DatasetRowPermissionsTreeItem customFilterPermission = new DatasetRowPermissionsTreeItem();
+                customFilterPermission.setType("tree");
+                customFilterPermission.setSubTree(permissionsTreeObjCustomsFilter);
+                composePermission.add(customFilterPermission);
+            }
+            dataSetExportRequest.setExpressionTree(gson.toJson(permissionsTreeObjFilter));
+        } else if(StringUtils.isNotEmpty(permissionsTreeObjCustomsFilter.getLogic())){
+            dataSetExportRequest.setExpressionTree(customFilter);
+        }
+        dataSetExportRequest.setFilename(request.getViewName()+"-details");
+
+        return dataSetExportRequest;
+    }
+
+    public void exportDatasetDetails(PanelViewDetailsRequest request, HttpServletResponse response) throws Exception {
+        dataSetTableService.exportDataset(composeDatasetExportRequest(request), response);
     }
 
 
@@ -1224,5 +1301,44 @@ public class PanelGroupService {
             }
         }
 
+    }
+
+
+    public String getAbsPath(String id) {
+        ChartViewWithBLOBs chartViewWithBLOBs = chartViewMapper.selectByPrimaryKey(id);
+        if (chartViewWithBLOBs == null) {
+            return null;
+        }
+        if (chartViewWithBLOBs.getSceneId() == null) {
+            return chartViewWithBLOBs.getName();
+        }
+        List<PanelGroupWithBLOBs> parents = getParents(chartViewWithBLOBs.getSceneId());
+        StringBuilder stringBuilder = new StringBuilder();
+        parents.forEach(ele -> {
+            if (ObjectUtils.isNotEmpty(ele)) {
+                stringBuilder.append(ele.getName()).append("/");
+            }
+        });
+        stringBuilder.append(chartViewWithBLOBs.getName());
+        return stringBuilder.toString();
+    }
+
+    public List<PanelGroupWithBLOBs> getParents(String id) {
+        List<PanelGroupWithBLOBs> list = new ArrayList<>();
+        PanelGroupWithBLOBs panelGroupWithBLOBs = panelGroupMapper.selectByPrimaryKey(id);
+        list.add(panelGroupWithBLOBs);
+        getParent(list, panelGroupWithBLOBs);
+        Collections.reverse(list);
+        return list;
+    }
+
+    public void getParent(List<PanelGroupWithBLOBs> list, PanelGroupWithBLOBs panelGroupWithBLOBs) {
+        if (ObjectUtils.isNotEmpty(panelGroupWithBLOBs)) {
+            if (StringUtils.isNotEmpty(panelGroupWithBLOBs.getPid()) && !panelGroupWithBLOBs.getPid().equalsIgnoreCase("panel_list")) {
+                PanelGroupWithBLOBs d = panelGroupMapper.selectByPrimaryKey(panelGroupWithBLOBs.getPid());
+                list.add(d);
+                getParent(list, d);
+            }
+        }
     }
 }

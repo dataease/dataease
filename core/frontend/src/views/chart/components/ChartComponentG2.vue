@@ -32,8 +32,8 @@
       </div>
     </span>
     <div
-      ref="chart"
       :id="chartId"
+      ref="chart"
       style="width: 100%;overflow: hidden;"
       :style="{height:chartHeight}"
     />
@@ -63,6 +63,9 @@ import { equalsAny } from '@/utils/StringUtils'
 import { mapState } from 'vuex'
 import { baseFlowMapOption } from '@/views/chart/chart/map/map_antv'
 import { clear } from 'size-sensor'
+import { getRange } from '@/utils/timeUitils'
+import { deepCopy } from '@/components/canvas/utils/utils'
+
 export default {
   name: 'ChartComponentG2',
   components: { TitleRemark, ViewTrackBar, ChartTitleUpdate },
@@ -348,7 +351,7 @@ export default {
         this.trackClick(this.trackMenu[0])
       } else {
         // 视图关联多个事件
-        const menuDom = this.$refs.viewTrack.$el.getElementsByClassName("track-menu")?.[0]
+        const menuDom = this.$refs.viewTrack.$el.getElementsByClassName('track-menu')?.[0]
         const chartDom = this.$refs.chart
         let position = {
           x: param.x,
@@ -385,6 +388,23 @@ export default {
       }, 100)
     },
     trackClick(trackAction) {
+      const idTypeMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['id']] = next['deType']
+        return pre
+      }, {})
+
+      const idDateStyleMap = this.chart.data.fields.reduce((pre, next) => {
+        pre[next['id']] = next['dateStyle']
+        return pre
+      }, {})
+
+      const dimensionListAdaptor = deepCopy(this.pointParam.data.dimensionList)
+      dimensionListAdaptor.forEach(dimension => {
+        // deType === 1 表示是时间类型
+        if (idTypeMap[dimension.id] === 1) {
+          dimension.value = getRange(dimension.value, idDateStyleMap[dimension.id])
+        }
+      })
       const param = this.pointParam
       if (!param || !param.data || !param.data.dimensionList) {
         // 地图提示没有关联字段 其他没有维度信息的 直接返回
@@ -403,7 +423,7 @@ export default {
         option: 'linkage',
         name: this.pointParam.data.name,
         viewId: this.chart.id,
-        dimensionList: this.pointParam.data.dimensionList,
+        dimensionList: dimensionListAdaptor,
         quotaList: quotaList,
         category: this.pointParam.data.category,
         group: this.pointParam.data.group
@@ -412,7 +432,7 @@ export default {
         option: 'jump',
         name: this.pointParam.data.name,
         viewId: this.chart.id,
-        dimensionList: this.pointParam.data.dimensionList,
+        dimensionList: dimensionListAdaptor,
         quotaList: quotaList,
         category: this.pointParam.data.category,
         group: this.pointParam.data.group

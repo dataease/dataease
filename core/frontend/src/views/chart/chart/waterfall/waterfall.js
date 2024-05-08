@@ -104,7 +104,7 @@ export function baseWaterfallOptionAntV(container, chart, action) {
   const plot = new Waterfall(container, options)
 
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }

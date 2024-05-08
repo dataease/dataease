@@ -167,22 +167,25 @@
             {{ $t('deDataset.already_exists') }}
           </div>
 
-          <el-checkbox  v-if="mode === '1'" v-model="activeTable.setKey">{{ $t('dataset.set_key') }}</el-checkbox>
+          <el-checkbox
+            v-if="mode === '1'"
+            v-model="activeTable.setKey"
+          >{{ $t('dataset.set_key') }}</el-checkbox>
 
           <el-select
-              size="small"
-              v-model="activeTable.keys"
-              v-if="mode === '1'"
-              multiple
-              filterable
-              :disabled="!activeTable.setKey"
-              :placeholder="$t('dataset.selecet_key')"
+            v-if="mode === '1'"
+            v-model="activeTable.keys"
+            size="small"
+            multiple
+            filterable
+            :disabled="!activeTable.setKey"
+            :placeholder="$t('dataset.selecet_key')"
           >
             <el-option
-                v-for="field in fields"
-                :key="field.fieldName"
-                :label="field.fieldName"
-                :value="field.fieldName"
+              v-for="field in fields"
+              :key="field.fieldName"
+              :label="field.fieldName"
+              :value="field.fieldName"
             />
           </el-select>
 
@@ -467,10 +470,10 @@ export default {
       const syncType = this.syncType
       for (let i = 0; i < this.checkTableList.length; i++) {
         const table = this.tables.find(
-            (ele) => ele.name === this.checkTableList[i]
+          (ele) => ele.name === this.checkTableList[i]
         )
-        if(table.setKey && table.keys.length === 0 ){
-          this.openMessageSuccess(this.checkTableList[i] + this.$t('dataset.no_set_key')  , 'error')
+        if (table.setKey && table.keys.length === 0) {
+          this.openMessageSuccess(this.checkTableList[i] + this.$t('dataset.no_set_key'), 'error')
           return
         }
         tables.push({
@@ -480,7 +483,7 @@ export default {
           type: 'db',
           syncType: syncType,
           mode: parseInt(mode),
-          info: JSON.stringify({ table: this.checkTableList[i], setKey: table.setKey, keys: table.keys})
+          info: JSON.stringify({ table: this.checkTableList[i], setKey: table.setKey, keys: table.keys })
         })
       }
 

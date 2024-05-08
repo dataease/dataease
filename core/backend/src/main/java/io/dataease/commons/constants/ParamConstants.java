@@ -113,6 +113,7 @@ public interface ParamConstants {
 
         LOG_TIME_OUT("basic.logTimeOut"),
         DS_SYNC_LOG_TIME_OUT("basic.dsSyncLogTimeOut"),
+        EXPORT_FILE_TIME_OUT("basic.exportFileTimeOut"),
         DS_CHECK_INTERVAL("basic.dsCheckInterval"),
         DS_CHECK_INTERVAL_TYPE("basic.dsCheckIntervalType"),
         DEFAULT_LOGIN_TYPE("basic.loginType"),
@@ -126,6 +127,8 @@ public interface ParamConstants {
         LOGIN_LIMIT_RELIEVETIMES("loginlimit.relieveTimes"),
 
         LOGIN_LIMIT_OPEN("loginlimit.open"),
+        LOGIN_LIMIT_OPEN_MODIFY_PWD("loginlimit.openModifyPwd"),
+        LOGIN_LIMIT_PWD_CYCLE("loginlimit.pwdCycle"),
         LOCKED_EMAIL("loginlimit.lockedEmail"),
 
         SCAN_CREATE_USER("loginlimit.scanCreateUser"),

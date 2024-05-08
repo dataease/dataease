@@ -150,8 +150,8 @@
       width="80%"
       class="dialog-css"
       :destroy-on-close="true"
+      append-to-body
       :show-close="true"
-      :append-to-body="true"
       top="5vh"
     >
       <span
@@ -192,7 +192,7 @@
         </span>
 
         <el-button
-          v-if="showChartInfoType==='details' && hasDataPermission('export',panelInfo.privileges)"
+          v-if="showChartInfoType==='details' && chart.dataFrom !== 'template' && hasDataPermission('export',panelInfo.privileges)"
           size="mini"
           :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
           @click="exportExcel"
@@ -201,6 +201,18 @@
             icon-class="ds-excel"
             class="ds-icon-excel"
           />{{ $t('chart.export') }}Excel
+        </el-button>
+
+        <el-button
+          v-if="showChartInfoType==='details' && chart.dataFrom !== 'template' && !userId && hasDataPermission('export',panelInfo.privileges)"
+          size="mini"
+          :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
+          @click="exportSourceDetails"
+        >
+          <svg-icon
+            icon-class="ds-excel"
+            class="ds-icon-excel"
+          />{{ $t('chart.export_source') }}
         </el-button>
       </span>
       <user-view-dialog
@@ -239,6 +251,7 @@ import ChartComponent from '@/views/chart/components/ChartComponent.vue'
 import TableNormal from '@/views/chart/components/table/TableNormal'
 import LabelNormal from '../../../views/chart/components/normal/LabelNormal'
 import { uuid } from 'vue-uuid'
+import { Button } from 'element-ui'
 import bus from '@/utils/bus'
 import { mapState } from 'vuex'
 import { isChange } from '@/utils/conditionUtil'
@@ -260,7 +273,7 @@ import Vue from 'vue'
 import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 import UserViewDialog from '@/components/canvas/customComponent/UserViewDialog'
 import UserViewMobileDialog from '@/components/canvas/customComponent/UserViewMobileDialog'
-import { equalsAny } from '@/utils/StringUtils'
+import { equalsAny, includesAny } from '@/utils/StringUtils'
 
 export default {
   name: 'UserView',
@@ -517,7 +530,7 @@ export default {
       let linkageCount = 0
       let jumpCount = 0
       if (this.drillFilters.length && !this.chart.type.includes('table')) {
-        const checkItem = this.drillFields[this.drillFilters.length]
+        const checkItem = this.getDrillField()
         const sourceInfo = this.chart.id + '#' + checkItem.id
         if (this.nowPanelTrackInfo[sourceInfo]) {
           linkageCount++
@@ -755,12 +768,96 @@ export default {
         this.getData(this.element.propValue.viewId, false)
       }
     },
+    exportData() {
+      bus.$emit('data-export-center')
+    },
+    openMessageLoading(cb) {
+      const h = this.$createElement
+      const iconClass = `el-icon-loading`
+      const customClass = `de-message-loading de-message-export`
+      this.$message({
+        message: h('p', null, [
+          this.$t('data_export.exporting'),
+          this.editMode === 'preview'
+            ? h(
+              Button,
+              {
+                props: {
+                  type: 'text',
+                  size: 'mini'
+                },
+                class: 'btn-text',
+                on: {
+                  click: () => {
+                    cb()
+                  }
+                }
+              },
+              this.$t('data_export.export_center')
+            ) : this.$t('data_export.export_center'),
+          this.$t('data_export.export_info')
+        ]),
+        iconClass,
+        showClose: true,
+        customClass
+      })
+    },
+    openMessageSuccess(text, type, cb) {
+      const h = this.$createElement
+      const iconClass = `el-icon-${type || 'success'}`
+      const customClass = `de-message-${type || 'success'} de-message-export`
+      this.$message({
+        message: h('p', null, [
+          h('span', null, text),
+          h(
+            Button,
+            {
+              props: {
+                type: 'text',
+                size: 'mini'
+              },
+              class: 'btn-text',
+              on: {
+                click: () => {
+                  cb()
+                }
+              }
+            },
+            this.$t('data_export.export_center')
+          )
+        ]),
+        iconClass,
+        showClose: true,
+        customClass
+      })
+    },
     exportExcel() {
       this.dialogLoading = true
-      this.$refs['userViewDialog'].exportExcel(() => {
+      this.$refs['userViewDialog'].exportExcel((val) => {
+        if (val && val.success) {
+          this.openMessageLoading(this.exportData)
+        }
+
+        if (val && val.success === false) {
+          this.openMessageSuccess(`${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error', this.exportData)
+        }
         this.dialogLoading = false
       })
     },
+    exportSourceDetails() {
+      this.dialogLoading = true
+      this.$refs['userViewDialog'].exportSourceDetails((val) => {
+        if (val && val.success) {
+          this.openMessageLoading(this.exportData)
+        }
+
+        if (val && val.success === false) {
+          this.openMessageSuccess(`${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error', this.exportData)
+        }
+        this.dialogLoading = false
+      })
+    },
+
     exportViewImg() {
       this.imageDownloading = true
       this.$refs['userViewDialog'].exportViewImg(this.pixel, () => {
@@ -963,9 +1060,7 @@ export default {
             if (response.success) {
               this.chart = response.data
               this.view = response.data
-              if (this.chart.type.includes('table')) {
-                this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
-              }
+              this.$store.commit('setLastViewRequestInfo', { viewId: id, requestInfo: requestInfo })
               this.buildInnerRefreshTimer(this.chart.refreshViewEnable, this.chart.refreshUnit, this.chart.refreshTime)
               this.$emit('fill-chart-2-parent', this.chart)
               this.getDataOnly(response.data, dataBroadcast)
@@ -1492,6 +1587,49 @@ export default {
     pageClick(page) {
       this.currentPage = page
       this.getData(this.element.propValue.viewId, false)
+    },
+    getDrillField() {
+      const { type, xaxis, xaxisExt, extStack } = this.chart
+      const drillItem = this.drillFields[this.drillFilters.length]
+      if (!includesAny(type, 'group', 'stack')) {
+        return drillItem
+      }
+      const drillHead = this.drillFields[0]
+      const xAxis = JSON.parse(xaxis)
+      // group
+      if (type.includes('group') && !type.includes('stack')) {
+        const xAxisExt = JSON.parse(xaxisExt)
+        if (drillHead.id === xAxisExt?.[0]?.id) {
+          return this.drillFields[this.drillFilters.length - xAxis.length]
+        }
+      }
+      // stack
+      if (!type.includes('group') && type.includes('stack')) {
+        const stack = JSON.parse(extStack)
+        if (drillHead.id === stack?.[0]?.id) {
+          return this.drillFields[this.drillFilters.length - xAxis.length]
+        }
+      }
+      // group-stack
+      if (type.includes('group') && type.includes('stack')) {
+        const xAxisExt = JSON.parse(xaxisExt)
+        const stack = JSON.parse(extStack)
+        if (drillHead.id === xAxisExt?.[0]?.id) {
+          if (stack?.length) {
+            return this.drillFields[this.drillFilters.length - xAxis.length - stack.length]
+          } else {
+            return this.drillFields[this.drillFilters.length - xAxis.length ]
+          }
+        }
+        if (drillHead.id === stack?.[0].id) {
+          if (xAxisExt?.length) {
+            return this.drillFields[this.drillFilters.length - xAxis.length - xAxisExt.length]
+          } else {
+            return this.drillFields[this.drillFilters.length - xAxis.length]
+          }
+        }
+      }
+      return drillItem
     }
   }
 }

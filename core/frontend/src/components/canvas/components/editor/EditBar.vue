@@ -206,6 +206,7 @@ import { uploadFileResult } from '@/api/staticResource/staticResource'
 import eventBus from '@/components/canvas/utils/eventBus'
 import { hasDataPermission } from '@/utils/permission'
 import { exportExcelDownload } from '@/components/canvas/utils/utils'
+import { Button } from 'element-ui'
 
 export default {
   components: { Background, LinkJumpSet, FieldsList, SettingMenu, LinkageField, MapLayerController },
@@ -295,7 +296,7 @@ export default {
       return this.curComponent.type === 'view' && this.terminal === 'pc' && this.curComponent.propValue.innerType && this.curComponent.propValue.innerType !== 'richTextView'
     },
     exportExcelShow() {
-      return this.detailsShow && hasDataPermission('export', this.$store.state.panel.panelInfo.privileges) && this.chart
+      return this.detailsShow && hasDataPermission('export', this.$store.state.panel.panelInfo.privileges) && this.chart && this.chart.dataFrom !== 'template'
     },
     enlargeShow() {
       return this.curComponent.type === 'view' && this.curComponent.propValue.innerType && this.curComponent.propValue.innerType !== 'richTextView' && !this.curComponent.propValue.innerType.includes('table')
@@ -469,8 +470,80 @@ export default {
     showViewDetails(openType = 'details') {
       this.$emit('showViewDetails', { openType: openType })
     },
+    exportDataCb(val) {
+      if (val && val.success) {
+        this.openMessageLoading(this.exportData)
+      }
+
+      if (val && val.success === false) {
+        this.openMessageSuccess(`${this.chart.title ? this.chart.title : this.chart.name} 导出失败，前往`, 'error', this.exportData)
+      }
+    },
+    exportData() {
+      bus.$emit('data-export-center')
+    },
+    openMessageLoading(cb) {
+      const h = this.$createElement
+      const iconClass = `el-icon-loading`
+      const customClass = `de-message-loading de-message-export`
+      this.$message({
+        message: h('p', null, [
+          this.$t('data_export.exporting'),
+          this.showEditPosition === 'bar-main-preview'
+            ? h(
+              Button,
+              {
+                props: {
+                  type: 'text',
+                  size: 'mini'
+                },
+                class: 'btn-text',
+                on: {
+                  click: () => {
+                    cb()
+                  }
+                }
+              },
+              this.$t('data_export.export_center')
+            ) : this.$t('data_export.export_center'),
+          this.$t('data_export.export_info')
+        ]),
+        iconClass,
+        showClose: true,
+        customClass
+      })
+    },
+    openMessageSuccess(text, type, cb) {
+      const h = this.$createElement
+      const iconClass = `el-icon-${type || 'success'}`
+      const customClass = `de-message-${type || 'success'} de-message-export`
+      this.$message({
+        message: h('p', null, [
+          h('span', null, text),
+          h(
+            Button,
+            {
+              props: {
+                type: 'text',
+                size: 'mini'
+              },
+              class: 'btn-text',
+              on: {
+                click: () => {
+                  cb()
+                }
+              }
+            },
+            this.$t('data_export.export_center')
+          )
+        ]),
+        iconClass,
+        showClose: true,
+        customClass
+      })
+    },
     exportExcelDownload() {
-      exportExcelDownload(this.chart)
+      exportExcelDownload(this.chart, null, null, null, null, null, this.exportDataCb)
     },
     auxiliaryMatrixChange() {
       if (this.curComponent.auxiliaryMatrix) {

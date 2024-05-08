@@ -71,8 +71,8 @@ import ChartComponentS2 from '@/views/chart/components/ChartComponentS2'
 import PluginCom from '@/views/system/plugin/PluginCom'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import {activeWatermark} from "@/components/canvas/tools/watermark";
-import {proxyUserLoginInfo, userLoginInfo} from "@/api/systemInfo/userLogin";
+import { activeWatermark } from '@/components/canvas/tools/watermark'
+import { proxyUserLoginInfo, userLoginInfo } from '@/api/systemInfo/userLogin'
 export default {
   name: 'UserViewMobileDialog',
   components: { ChartComponentS2, LabelNormalText, DeContainer, DeMainContainer, ChartComponentG2, ChartComponent, TableNormal, LabelNormal, PluginCom },

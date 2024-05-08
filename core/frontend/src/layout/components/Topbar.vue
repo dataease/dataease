@@ -45,6 +45,12 @@
       class="right-menu"
       style="color: var(--TopTextColor)"
     >
+      <div class="download-export">
+        <svg-icon
+          icon-class="icon_download_outlined"
+          @click="downloadClick"
+        />
+      </div>
       <div
         v-if="aiBaseUrl"
         style="height: 100%;padding: 0 8px;"
@@ -117,7 +123,15 @@
         </el-dropdown-menu>
       </el-dropdown>
     </div>
-    <ai-component v-if="aiBaseUrl" :base-url="aiBaseUrl"/>
+
+    <ExportExcel ref="ExportExcelRef" />
+    <ai-tips @confirm="aiTipsConfirm" v-if="showOverlay" class="ai-icon-tips"></ai-tips>
+    <div v-if="showOverlay" class="overlay"></div>
+
+    <ai-component
+      v-if="aiBaseUrl"
+      :base-url="aiBaseUrl"
+    />
 
     <!--模板市场全屏显示框-->
     <el-dialog
@@ -139,6 +153,7 @@
 
 <script>
 import { mapGetters } from 'vuex'
+import ExportExcel from '@/views/dataset/exportExcel/index.vue'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
@@ -152,15 +167,17 @@ import TemplateMarket from '@/views/panel/templateMarket'
 import { changeFavicon, inOtherPlatform } from '@/utils/index'
 import AiComponent from '@/layout/components/AiComponent'
 import { findBaseParams } from '@/api/ai/aiComponent'
+import AiTips from "@/layout/components/AiTips.vue";
 export default {
   name: 'Topbar',
   components: {
+    AiTips,
     AiComponent,
     TemplateMarket,
     AppLink,
     Notification,
-    LangSelect
-
+    LangSelect,
+    ExportExcel
   },
   props: {
     showTips: {
@@ -170,6 +187,7 @@ export default {
   },
   data() {
     return {
+      showOverlay: false,
       aiBaseUrl: null,
       uiInfo: null,
       logoUrl: null,
@@ -265,6 +283,7 @@ export default {
     bus.$on('set-top-text-info', this.setTopTextInfo)
     bus.$on('set-top-text-active-info', this.setTopTextActiveInfo)
     bus.$on('sys-logout', this.logout)
+    bus.$on('data-export-center', this.dataExportCenter)
     this.showTips && this.$nextTick(() => {
       const drop = this.$refs['my-drop']
       drop && drop.show && drop.show()
@@ -275,6 +294,7 @@ export default {
     window.removeEventListener('beforeunload', (e) => this.beforeunloadHandler(e))
     window.removeEventListener('unload', (e) => this.unloadHandler(e))
 
+    bus.$off('data-export-center', this.dataExportCenter)
     bus.$off('set-top-menu-info', this.setTopMenuInfo)
     bus.$off('set-top-menu-active-info', this.setTopMenuActiveInfo)
     bus.$off('set-top-text-info', this.setTopTextInfo)
@@ -293,7 +313,15 @@ export default {
     })
   },
   methods: {
+    aiTipsConfirm(){
+      localStorage.setItem('DE1.0-AI-TIPS-CHECK', 'CHECKED')
+      this.showOverlay = false
+    },
+    dataExportCenter() {
+      this.downloadClick()
+    },
     async initAiBase() {
+      const aiTipsCheck = localStorage.getItem('DE1.0-AI-TIPS-CHECK')
       await findBaseParams().then(rsp => {
         const params = rsp.data
         if (params && params['ai.baseUrl']) {
@@ -307,13 +335,15 @@ export default {
     beforeunloadHandler() {
       this.beforeUnload_time = new Date().getTime()
     },
+    downloadClick() {
+      this.$refs.ExportExcelRef.init()
+    },
     unloadHandler(e) {
       this.gap_time = new Date().getTime() - this.beforeUnload_time
       if (this.gap_time <= 5) {
         // this.logout().then(res => {})
       }
     },
-
     // 通过当前路径找到二级菜单对应项，存到store，用来渲染左侧菜单
     initCurrentRoutes() {
       const {
@@ -460,6 +490,20 @@ export default {
 
 </script>
 <style lang="scss" scoped>
+.download-export {
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px;
+  color: #646A73;
+  width: 28px;
+  height: 28px;
+  border-radius: 4px;
+  display: flex;
+
+  &:hover {
+    background: #1F23291A;
+  }
+}
 .el-dropdown-link {
   cursor: pointer;
   color: #1e212a;
@@ -493,6 +537,21 @@ export default {
 
 .dialog-css ::v-deep .el-dialog__header {
   display: none;
+}
+
+.ai-icon-tips {
+  font-size: 24px !important;
+  z-index: 10001;
+}
+
+.overlay {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100%;
+  height: 100%;
+  background-color: rgba(0, 0, 0, 0.5); /* 半透明黑色 */
+  z-index: 10000;
 }
 
 </style>

@@ -43,12 +43,12 @@ public class DefaultExtDDLProvider extends ExtDDLProvider {
     }
 
     @Override
-    public String deleteDataByIdSql(String table, DatasourceRequest.TableFieldWithValue pk) {
+    public String deleteDataByIdsSql(String table, List<DatasourceRequest.TableFieldWithValue> pks) {
         return null;
     }
 
     @Override
-    public String insertDataSql(String tableName, List<DatasourceRequest.TableFieldWithValue> fields) {
+    public String insertDataSql(String tableName, List<DatasourceRequest.TableFieldWithValue> fields, int count) {
         return null;
     }
 

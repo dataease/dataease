@@ -111,7 +111,7 @@ public class AuthServer implements AuthApi {
         String pwd = RsaUtil.decryptByPrivateKey(RsaProperties.privateKey, loginDto.getPassword());
 
         // 增加ldap登录方式
-        Integer loginType = loginDto.getLoginType();
+        int loginType = loginDto.getLoginType();
         boolean isSupportLdap = authUserService.supportLdap();
         if (loginType == 1 && isSupportLdap) {
             AccountLockStatus accountLockStatus = authUserService.lockStatus(username, 1);
@@ -195,10 +195,18 @@ public class AuthServer implements AuthApi {
                 result.put("passwordModified", false);
                 result.put("defaultPwd", "dataease");
             }
-
             if (!user.getIsAdmin() && user.getPassword().equals(CodingUtil.md5(DEFAULT_PWD))) {
                 result.put("passwordModified", false);
                 result.put("defaultPwd", DEFAULT_PWD);
+            }
+            if (user.getIsAdmin()) {
+                result.put("validityPeriod", -1);
+            } else {
+                Integer validityPeriod = systemParameterService.pwdValidityPeriod(user.getUserId());
+                if (validityPeriod.equals(0)) {
+                    DataEaseException.throwException("pwdValidityPeriod");
+                }
+                result.put("validityPeriod", validityPeriod);
             }
         }
         Long expireTime = System.currentTimeMillis() + JWTUtils.getExpireTime();

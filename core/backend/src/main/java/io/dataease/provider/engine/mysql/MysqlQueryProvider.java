@@ -1040,7 +1040,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 whereValue = "''";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
-            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "like")) {
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
                 whereValue = "'" + value + "%'";
@@ -1119,7 +1119,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 whereValue = "''";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "in")) {
                 whereValue = "('" + StringUtils.join(value, "','") + "')";
-            } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "like")) {
+            } else if (StringUtils.containsIgnoreCase(item.getTerm(), "like")) {
                 whereValue = "'%" + value + "%'";
             } else if (StringUtils.equalsIgnoreCase(item.getTerm(), "begin_with")) {
                 whereValue = "'" + value + "%'";

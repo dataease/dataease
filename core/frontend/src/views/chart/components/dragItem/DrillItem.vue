@@ -59,6 +59,33 @@
           />
         </el-tag>
         <el-dropdown-menu slot="dropdown">
+          <el-dropdown-item>
+            <el-dropdown
+              placement="right-start"
+              size="mini"
+              style="width: 100%"
+              @command="sort"
+            >
+              <span class="el-dropdown-link inner-dropdown-menu">
+                <span>
+                  <i class="el-icon-sort" />
+                  <span>{{ $t('chart.sort') }}</span>
+                  <span class="summary-span-item">({{ item.sort ? $t('chart.' + item.sort) : $t('chart.none') }})</span>
+                </span>
+                <i class="el-icon-arrow-right el-icon--right" />
+              </span>
+              <el-dropdown-menu slot="dropdown">
+                <el-dropdown-item :command="beforeSort('none')">{{ $t('chart.none') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSort('asc')">{{ $t('chart.asc') }}</el-dropdown-item>
+                <el-dropdown-item :command="beforeSort('desc')">{{ $t('chart.desc') }}</el-dropdown-item>
+                <el-dropdown-item
+                  :command="beforeSort('custom_sort')"
+                >
+                  {{ $t('chart.custom_sort') }}...
+                </el-dropdown-item>
+              </el-dropdown-menu>
+            </el-dropdown>
+          </el-dropdown-item>
           <el-dropdown-item
             v-show="item.deType === 1"
           >
@@ -161,11 +188,27 @@ export default {
     quotaData: {
       type: Array,
       required: true
+    },
+    chart: {
+      type: Object,
+      required: true
     }
   },
   data() {
     return {
       tagType: 'success'
+    }
+  },
+  computed: {
+    showDateExt() {
+      return (
+        this.chart.datasourceType === 'mysql' ||
+        this.chart.datasourceType === 'ds_doris' ||
+        this.chart.datasourceType === 'StarRocks' ||
+        this.chart.datasourceType === 'ck' ||
+        this.chart.datasourceType === 'oracle' ||
+        this.chart.datasetMode === 1) &&
+        this.chart.type !== 'bar-time-range'
     }
   },
   watch: {
@@ -227,6 +270,25 @@ export default {
     beforeDatePattern(type) {
       return {
         type: type
+      }
+    },
+    beforeSort(type) {
+      return {
+        type: type
+      }
+    },
+    sort(param) {
+      if (param.type === 'custom_sort') {
+        const item = {
+          index: this.index,
+          sort: param.type
+        }
+        this.$emit('onCustomSort', item)
+      } else {
+        this.item.index = this.index
+        this.item.sort = param.type
+        this.item.customSort = []
+        this.$emit('onDimensionItemChange', this.item)
       }
     }
   }

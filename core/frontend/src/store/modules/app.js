@@ -7,7 +7,6 @@ const state = {
     hide: false
   },
   device: 'desktop',
-  
   size: Cookies.get('size') || 'small',
   arrowSide: false
 }
@@ -40,7 +39,7 @@ const mutations = {
   },
   SET_ARROW_SIDE: (state, arrowSide) => {
     state.arrowSide = arrowSide
-  },
+  }
 }
 
 const actions = {

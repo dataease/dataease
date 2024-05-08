@@ -23,9 +23,9 @@ public abstract class ExtDDLProvider {
 
     public abstract List<String> createTableIndexSql(String table, List<ExtIndexField> indexFields);
 
-    public abstract String deleteDataByIdSql(String table, DatasourceRequest.TableFieldWithValue pk);
+    public abstract String deleteDataByIdsSql(String table, List<DatasourceRequest.TableFieldWithValue> pks);
 
-    public abstract String insertDataSql(String tableName, List<DatasourceRequest.TableFieldWithValue> fields);
+    public abstract String insertDataSql(String tableName, List<DatasourceRequest.TableFieldWithValue> fields, int count);
 
     public abstract String updateDataByIdSql(String tableName, List<DatasourceRequest.TableFieldWithValue> fields, DatasourceRequest.TableFieldWithValue pk);
 

@@ -1,5 +1,6 @@
 <template>
-  <div>
+  <div style="display: flex;align-items: center;">
+    <span class="filter-line" />
     <el-dropdown
       trigger="click"
       size="mini"
@@ -7,8 +8,8 @@
     >
 
       <span class="el-dropdown-link filter-sort-span">
-        {{ $t('chart.sort') }}
         <i class="el-icon-sort i-filter i-filter-active" />
+        {{ $t('chart.sort') }}
       </span>
       <el-dropdown-menu slot="dropdown">
         <el-dropdown-item
@@ -434,13 +435,50 @@ export default {
   text-align: end;
 }
 
+.filter-line {
+  width: 1px;
+  height: 18px;
+  background: #BBBFC4;
+  display: inline-block;
+  margin-right: 20px;
+}
+
 .filter-sort-span {
-  color: #303133;
-  font-weight: 500;
+  font-size: 14px;
+  font-weight: 400;
+  line-height: 22px;
+  color: #1F2329;
+  height: 26px;
   cursor: pointer;
-  margin-left: 10px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  position: relative;
+
+  &::after {
+    content: '';
+    width: 56px;
+    height: 26px;
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    border-radius: 4px;
+    transform: translate(-50%, -50%);
+  }
+  &:hover {
+    &::after {
+      background: #1F23291A;
+    }
+  }
+  &:active {
+    color: #3370FF;
+    &::after {
+      background: #3370FF1A;
+    }
+  }
   i {
-    margin-left: 1px;
+    font-size: 16px;
+    margin-right: 4px;
   }
 }
 .dialog-css ::v-deep .el-dialog__title {

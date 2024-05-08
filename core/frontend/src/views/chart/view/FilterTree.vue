@@ -1,46 +1,46 @@
 <template>
-    <el-dialog
-        width="896px"
-        append-to-body
-        title="添加过滤"
-        destroy-on-close
-        class="de-dialog-form filter-tree-cont"
-        :visible.sync="dialogVisible"
-    >
+  <el-dialog
+    width="896px"
+    append-to-body
+    title="添加过滤"
+    destroy-on-close
+    class="de-dialog-form filter-tree-cont"
+    :visible.sync="dialogVisible"
+  >
     <div class="tree-cont">
-            <div class="content">
-              <rowAuth ref="rowAuth" />
-            </div>
-          </div>
-          <div
-        slot="footer"
-        class="dialog-footer"
-      >
-        <de-btn
-          secondary
-          @click="closeFilter"
-        >{{ $t('chart.cancel') }}
-        </de-btn>
-        <de-btn
-          type="primary"
-          @click="changeFilter"
-        >{{ $t('chart.confirm') }}
-        </de-btn>
+      <div class="content">
+        <rowAuth ref="rowAuth" />
       </div>
-    </el-dialog>
+    </div>
+    <div
+      slot="footer"
+      class="dialog-footer"
+    >
+      <de-btn
+        secondary
+        @click="closeFilter"
+      >{{ $t('chart.cancel') }}
+      </de-btn>
+      <de-btn
+        type="primary"
+        @click="changeFilter"
+      >{{ $t('chart.confirm') }}
+      </de-btn>
+    </div>
+  </el-dialog>
 </template>
 <script>
 import rowAuth from '@/views/dataset/data/components/rowAuth.vue'
 export default {
   name: 'FilterTree',
-  inject: ['filedList'],
   components: {
     rowAuth
   },
-    data() {
-        return {
-            dialogVisible: false,
-        }
+  inject: ['filedList'],
+  data() {
+    return {
+      dialogVisible: false
+    }
   },
   computed: {
     computedFiledList() {
@@ -48,58 +48,58 @@ export default {
         if (next.id !== 'count') {
           pre[next.id] = next
         }
-          return pre
-        }, {})
-      }
-    },
-    methods: {
-        closeFilter() {
-            this.dialogVisible = false
-        },
-        changeFilter() {
-            const { logic, items, errorMessage } = this.$refs.rowAuth.submit()
-            if (errorMessage) {
-              this.$message({
-                message: errorMessage,
-                type: 'error',
-                showClose: true
-              })
-              return
-            }
-            this.dfsTreeDelete(items)
-            this.$emit('filter-data', { logic, items })
-            this.dialogVisible = false
-      },
-      dfsTreeDelete(arr) {
-        arr.forEach((ele) => {
-          if (ele?.subTree?.items?.length) {
-            this.dfsTreeDelete(ele.subTree.items)
-          } else {
-            if (ele.field) {
-               this.$delete(ele, 'field')
-            }
-          }
-        })
-      },
-      dfsTree(arr) {
-        arr.forEach((ele) => {
-          if (ele?.subTree?.items?.length) {
-            this.dfsTree(ele.subTree.items)
-          } else {
-            if (this.computedFiledList[ele.fieldId]) {
-              ele.field = this.computedFiledList[ele.fieldId]
-            }
-          }
-        })
-      },
-      init(tree) {
-        this.dialogVisible = true
-        this.$nextTick(() => {
-          this.dfsTree(tree.items || [])
-          this.$refs.rowAuth.init(tree || {})
-        })
-      }
+        return pre
+      }, {})
     }
+  },
+  methods: {
+    closeFilter() {
+      this.dialogVisible = false
+    },
+    changeFilter() {
+      const { logic, items, errorMessage } = this.$refs.rowAuth.submit()
+      if (errorMessage) {
+        this.$message({
+          message: errorMessage,
+          type: 'error',
+          showClose: true
+        })
+        return
+      }
+      this.dfsTreeDelete(items)
+      this.$emit('filter-data', { logic, items })
+      this.dialogVisible = false
+    },
+    dfsTreeDelete(arr) {
+      arr.forEach((ele) => {
+        if (ele?.subTree?.items?.length) {
+          this.dfsTreeDelete(ele.subTree.items)
+        } else {
+          if (ele.field) {
+            this.$delete(ele, 'field')
+          }
+        }
+      })
+    },
+    dfsTree(arr) {
+      arr.forEach((ele) => {
+        if (ele?.subTree?.items?.length) {
+          this.dfsTree(ele.subTree.items)
+        } else {
+          if (this.computedFiledList[ele.fieldId]) {
+            ele.field = this.computedFiledList[ele.fieldId]
+          }
+        }
+      })
+    },
+    init(tree) {
+      this.dialogVisible = true
+      this.$nextTick(() => {
+        this.dfsTree(tree.items || [])
+        this.$refs.rowAuth.init(tree || {})
+      })
+    }
+  }
 }
 </script>
 

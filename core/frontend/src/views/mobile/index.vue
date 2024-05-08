@@ -19,12 +19,11 @@
 import DeCanvas from '@/components/canvas/DeCanvas'
 import CanvasOptBar from '@/components/canvas/components/editor/CanvasOptBar'
 import {
-  imgUrlTrans,
-  getNowCanvasComponentData
+  imgUrlTrans
 } from '@/components/canvas/utils/utils'
 import { mapState } from 'vuex'
 import { hexColorToRGBA } from '@/views/chart/chart/util'
-import store from '@/store'
+
 export default {
   components: { DeCanvas, CanvasOptBar },
   data() {

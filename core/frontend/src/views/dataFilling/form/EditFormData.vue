@@ -46,16 +46,16 @@ export default {
   data() {
     const checkDateRangeRequireValidator = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.required')))
       }
       if (value.length < 2) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.required')))
       }
       if (!value[0]) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.required')))
       }
       if (!value[1]) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.required')))
       }
       callback()
     }
@@ -65,19 +65,24 @@ export default {
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       dateRangeRequiredRule: { validator: checkDateRangeRequireValidator, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       inputTypes: [
-        { type: 'text', name: '普通文本', rules: [] },
-        { type: 'number', name: '数字', rules: [] },
+        { type: 'text', name: this.$t('data_fill.form.text'), rules: [] },
+        { type: 'number', name: this.$t('data_fill.form.number'), rules: [] },
         {
           type: 'tel',
-          name: '手机号',
+          name: this.$t('data_fill.form.tel'),
           rules: [{ pattern: PHONE_REGEX, message: this.$t('user.mobile_number_format_is_incorrect'), trigger: ['blur', 'change'] }]
         },
         {
           type: 'email',
-          name: '邮箱',
+          name: this.$t('data_fill.form.email'),
           rules: [{ pattern: EMAIL_REGEX, message: this.$t('user.email_format_is_incorrect'), trigger: ['blur', 'change'] }]
         }
-      ]
+      ],
+      pickerOptions: {
+        disabledDate: (time) => {
+          return time.getTime() < new Date(0).getTime()
+        }
+      }
     }
   },
   watch: {},
@@ -207,7 +212,7 @@ export default {
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">
-          {{ title? title: (readonly? '查看数据': '编辑数据') }}
+          {{ title? title: (readonly? $t('data_fill.task.show_data'): $t('data_fill.task.edit_data')) }}
         </span>
       </div>
 
@@ -229,6 +234,7 @@ export default {
         label-position="top"
         hide-required-asterisk
         :model="formData"
+        @submit.native.prevent
       >
         <div
           v-for="(item, $index) in formData"
@@ -259,7 +265,7 @@ export default {
               :readonly="readonly"
               :placeholder="item.settings.placeholder"
               size="small"
-              :show-word-limit="item.value !== undefined && item.value.length > 250"
+              :show-word-limit="item.value !== undefined && item.value !== null && item.value.length > 250"
               maxlength="255"
             />
             <el-input-number
@@ -343,6 +349,7 @@ export default {
               :placeholder="item.settings.placeholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
             <el-date-picker
               v-else-if="item.type === 'date' && item.settings.enableTime"
@@ -353,6 +360,7 @@ export default {
               :placeholder="item.settings.placeholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
             <el-date-picker
               v-else-if="item.type === 'dateRange' && !item.settings.enableTime"
@@ -365,6 +373,7 @@ export default {
               :end-placeholder="item.settings.endPlaceholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
             <el-date-picker
               v-else-if="item.type === 'dateRange' && item.settings.enableTime"
@@ -377,6 +386,7 @@ export default {
               :end-placeholder="item.settings.endPlaceholder"
               style="width: 100%"
               size="small"
+              :picker-options="pickerOptions"
             />
 
           </el-form-item>
@@ -386,12 +396,12 @@ export default {
     <el-footer
       class="de-footer"
     >
-      <el-button @click="closeDrawer">取消</el-button>
+      <el-button @click="closeDrawer">{{ $t("commons.cancel") }}</el-button>
       <el-button
         v-if="!readonly"
         type="primary"
         @click="doSave"
-      >保存
+      >{{ $t("commons.confirm") }}
       </el-button>
     </el-footer>
   </el-container>

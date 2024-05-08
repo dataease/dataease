@@ -93,7 +93,6 @@
 <script>
 import { mapState } from 'vuex'
 import DeEditor from '@/components/canvas/components/editor/DeEditor'
-import elementResizeDetectorMaker from 'element-resize-detector'
 import bus from '@/utils/bus'
 import { deepCopy, imgUrlTrans } from '@/components/canvas/utils/utils'
 import { uuid } from 'vue-uuid'

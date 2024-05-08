@@ -1,5 +1,8 @@
 <template>
-  <div class="view-table">
+  <div
+    v-if="hasDataPermission('use', param.privileges)"
+    class="view-table"
+  >
     <el-row>
       <el-col
         class="de-dataset-name"
@@ -87,6 +90,7 @@
         name="record"
       />
       <el-tab-pane
+        v-if="hasDataPermission('manage', param.privileges)"
         :label="$t('data_fill.form.task_manage')"
         :lazy="true"
         name="task"
@@ -101,16 +105,49 @@
     >
 
       <template>
-        <div style="margin-bottom: 12px; height: 32px;">
+        <div
+          v-if="hasDataPermission('write', param.privileges)"
+          style="margin-bottom: 12px; height: 32px; display: flex; flex-direction: row;"
+        >
           <el-button
+            v-if="hasDataPermission('write', param.privileges)"
             icon="el-icon-plus"
             size="small"
             @click="addData"
-          >添加数据</el-button>
+          >{{ $t('data_fill.data.add_data') }}</el-button>
+          <el-button
+            v-if="hasDataPermission('write', param.privileges)"
+            icon="el-icon-download"
+            size="small"
+            @click="downloadTemplate"
+          >{{ $t('data_fill.data.download_template') }}</el-button>
+          <el-upload
+            v-if="hasDataPermission('write', param.privileges)"
+            :action="`${baseUrl}dataFilling/form/${param.id}/excel/upload`"
+            :multiple="false"
+            :show-file-list="false"
+            :file-list="fileList"
+            :data="{}"
+            accept=".xlsx"
+            :before-upload="beforeUpload"
+            :on-success="uploadSuccess"
+            :on-error="uploadFail"
+            name="file"
+            :headers="headers"
+          >
+            <el-button
+              style="margin-left: 10px"
+              icon="el-icon-upload2"
+              size="small"
+              :disabled="uploading"
+            >{{ $t('deDataset.upload_data') }}
+            </el-button>
+          </el-upload>
         </div>
         <div style="flex: 1">
           <grid-table
-            v-if="columns.length > 0"
+            v-if="columns.length > 0 && dataTableShow"
+            ref="dataTable"
             v-loading="$store.getters.loadingMap[$store.getters.currentPath]"
             style="width: 100%; height: 100%"
             border
@@ -129,11 +166,10 @@
             >
               <template
                 slot="header"
-                slot-scope="scope"
               >
                 {{ c.label }}
-                <span v-if="c.rangeIndex === 0">(开始)</span>
-                <span v-if="c.rangeIndex === 1">(结束)</span>
+                <span v-if="c.rangeIndex === 0">({{ $t('data_fill.data.start') }})</span>
+                <span v-if="c.rangeIndex === 1">({{ $t('data_fill.data.end') }})</span>
               </template>
               <template slot-scope="scope">
                 <span
@@ -163,7 +199,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="最近提交人"
+              :label="$t('data_fill.data.recent_committer')"
               fixed="right"
               width="100"
             >
@@ -172,7 +208,7 @@
               </template>
             </el-table-column>
             <el-table-column
-              label="最近提交时间"
+              :label="$t('data_fill.data.recent_commit_time')"
               fixed="right"
               width="160"
             >
@@ -187,6 +223,7 @@
             >
               <template slot-scope="scope">
                 <el-button
+                  v-if="hasDataPermission('write', param.privileges)"
                   type="text"
                   @click="updateRow(scope.row.data)"
                 >
@@ -199,6 +236,7 @@
                   {{ $t('data_fill.form.show') }}
                 </el-button>
                 <el-button
+                  v-if="hasDataPermission('write', param.privileges)"
                   type="text"
                   @click="deleteRow(scope.row.data[paginationConfig.key])"
                 >
@@ -225,7 +263,7 @@
               <el-input
                 ref="search2"
                 v-model="operateName"
-                :placeholder="$t('data_fill.search_by_commit_name')"
+                :placeholder="$t('data_fill.form.operator')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
@@ -256,13 +294,13 @@
             >
               <template slot-scope="scope">
                 <template v-if="scope.row.operate === 'INSERT'">
-                  插入数据
+                  {{ $t('data_fill.data.insert_data') }}
                 </template>
                 <template v-else-if="scope.row.operate === 'UPDATE'">
-                  更新数据
+                  {{ $t('data_fill.data.update_data') }}
                 </template>
                 <template v-else-if="scope.row.operate === 'DELETE'">
-                  删除数据
+                  {{ $t('data_fill.data.delete_data') }}
                 </template>
                 <template v-else>
                   {{ scope.row.operate }}
@@ -319,7 +357,7 @@
                 icon="el-icon-plus"
                 size="small"
                 @click="addTask"
-              >添加任务</el-button>
+              >{{ $t('data_fill.task.add_task') }}</el-button>
             </el-col>
             <el-col
               :span="8"
@@ -328,7 +366,7 @@
               <el-input
                 ref="search3"
                 v-model="taskName"
-                :placeholder="$t('commons.search_by_name')"
+                :placeholder="$t('data_fill.task.name')"
                 prefix-icon="el-icon-search"
                 class="name-email-search"
                 size="small"
@@ -355,7 +393,7 @@
             <el-table-column
               key="name"
               prop="name"
-              label="名称"
+              :label="$t('data_fill.task.name')"
             >
               <template slot-scope="scope">
                 {{ scope.row.name }}
@@ -364,7 +402,7 @@
             <el-table-column
               key="rateType"
               prop="rateType"
-              label="任务下发模式"
+              :label="$t('data_fill.task.rate_type')"
             >
               <template slot-scope="scope">
                 {{ scope.row.rateType === -1 ? $t('emailtask.single_task') : $t('emailtask.simple_repeat') }}
@@ -373,7 +411,7 @@
             <el-table-column
               key="status"
               prop="status"
-              label="任务状态"
+              :label="$t('data_fill.task.task_status')"
             >
               <template slot-scope="scope">
                 <span :class="['de-status', `de-${taskStatusFormatter(scope.row.status)}`]">{{
@@ -385,7 +423,7 @@
             <el-table-column
               key="creatorName"
               prop="creatorName"
-              label="创建人"
+              :label="$t('data_fill.task.creator')"
             >
               <template slot-scope="scope">
                 {{ scope.row.creatorName }}
@@ -394,7 +432,7 @@
             <el-table-column
               key="createTime"
               prop="createTime"
-              label="创建时间"
+              :label="$t('data_fill.task.create_time')"
             >
               <template slot-scope="scope">
                 {{ new Date(scope.row.createTime).format("yyyy-MM-dd hh:mm:ss") }}
@@ -410,27 +448,27 @@
                   type="text"
                   @click="editTask(scope.row)"
                 >
-                  编辑
+                  {{ $t('data_fill.task.edit') }}
                 </el-button>
                 <el-button
                   v-if="!scope.row.status"
                   type="text"
                   @click="enableTask(scope.row)"
                 >
-                  启动
+                  {{ $t('data_fill.task.start') }}
                 </el-button>
                 <el-button
                   v-if="scope.row.status"
                   type="text"
                   @click="disableTask(scope.row)"
                 >
-                  停止
+                  {{ $t('data_fill.task.stop') }}
                 </el-button>
                 <el-button
                   type="text"
                   @click="deleteTask(scope.row)"
                 >
-                  删除
+                  {{ $t('data_fill.task.delete') }}
                 </el-button>
               </template>
             </el-table-column>
@@ -483,7 +521,7 @@
 <script>
 import {
   deleteData,
-  deleteFormTasks, disableFormTasks, enableFormTasks,
+  deleteFormTasks, disableFormTasks, downloadTemplate, enableFormTasks,
   searchCommitLogs,
   searchFormTasks,
   searchTable
@@ -492,6 +530,14 @@ import GridTable from '@/components/gridTable/index.vue'
 import { forEach, forIn, includes, filter, map } from 'lodash-es'
 import EditFormData from '@/views/dataFilling/form/EditFormData.vue'
 import CreateTask from '@/views/dataFilling/form/CreateTask.vue'
+import i18n from '@/lang'
+import { getToken, setToken } from '@/utils/auth'
+import { $alert } from '@/utils/message'
+import store from '@/store'
+import Config from '@/settings'
+
+const token = getToken()
+const RefreshTokenKey = Config.RefreshTokenKey
 
 export default {
   name: 'ViewTable',
@@ -509,6 +555,14 @@ export default {
   },
   data() {
     return {
+      baseUrl: process.env.VUE_APP_BASE_API,
+      headers: {
+        Authorization: token,
+        'Accept-Language': i18n.locale.replace('_', '-')
+      },
+      dataTableShow: true,
+      fileList: [],
+      uploading: false,
       operateName: '',
       taskName: '',
       showDrawer: false,
@@ -602,6 +656,10 @@ export default {
         this.data = []
         this.records = []
         this.tasks = []
+        this.dataTableShow = false
+        this.$nextTick(() => {
+          this.dataTableShow = true
+        })
       }
       this.initTable(this.param.id)
     },
@@ -620,6 +678,52 @@ export default {
     this.initTable(this.param.id)
   },
   methods: {
+    beforeUpload() {
+      this.uploading = true
+    },
+    uploadFail(response, file, fileList) {
+      let myError = response.toString()
+      myError = myError.replace('Error: ', '')
+
+      if (myError.indexOf('AuthenticationException') >= 0) {
+        const message = i18n.t('login.tokenError')
+        $alert(
+          message,
+          () => {
+            store.dispatch('user/logout').then(() => {
+              location.reload()
+            })
+          },
+          {
+            confirmButtonText: i18n.t('login.re_login'),
+            showClose: false
+          }
+        )
+        return
+      }
+
+      const errorMessage = JSON.parse(myError).message
+
+      this.fileList = []
+      this.uploading = false
+      this.$message({
+        type: 'error',
+        message: errorMessage,
+        showClose: true
+      })
+    },
+    uploadSuccess(response, file, fileList) {
+      this.uploading = false
+      this.fileList = fileList
+
+      if (response.headers && response.headers[RefreshTokenKey]) {
+        const refreshToken = response.headers[RefreshTokenKey]
+        setToken(refreshToken)
+        store.dispatch('user/refreshToken', refreshToken)
+      }
+
+      this.initTable()
+    },
     entryKey(type) {
       if (type === 'record') {
         this.$refs.search2.focus()
@@ -645,6 +749,7 @@ export default {
         if (res.data) {
           this.paginationConfig.key = res.data.key
           this.paginationConfig.total = res.data.total
+          this.paginationConfig.currentPage = res.data.currentPage
           const _data = []
           forEach(res.data.data, d => {
             const obj = {}
@@ -679,7 +784,7 @@ export default {
     },
 
     searchFormTaskData() {
-      searchFormTasks(this.param.id, { name: this.taskName }, this.recordPaginationConfig.currentPage, this.recordPaginationConfig.pageSize).then(res => {
+      searchFormTasks(this.param.id, { name: this.taskName }, this.taskPaginationConfig.currentPage, this.taskPaginationConfig.pageSize).then(res => {
         if (res.data) {
           this.taskPaginationConfig.total = res.data.itemCount
           this.tasks = res.data.listObject
@@ -716,7 +821,7 @@ export default {
     taskHandleSizeChange(pageSize) {
       this.taskPaginationConfig.currentPage = 1
       this.taskPaginationConfig.pageSize = pageSize
-      this.searchTableRecordData()
+      this.searchFormTaskData()
     },
     taskHandleCurrentChange(currentPage) {
       this.taskPaginationConfig.currentPage = currentPage
@@ -773,7 +878,7 @@ export default {
           const obj = {}
           if (res.data.data.length === 0) {
             this.$message({
-              message: 'ID为[' + row.dataId + ']的数据不存在',
+              message: this.$t('data_fill.data.id_is') + row.dataId + this.$t('data_fill.data.data_not_found'),
               type: 'warning',
               showClose: true
             })
@@ -817,7 +922,19 @@ export default {
 
       this.showDrawer = true
       this.drawerReadonly = false
-      this.createTitle = '添加数据'
+      this.createTitle = this.$t('data_fill.data.add_data')
+    },
+    downloadTemplate() {
+      downloadTemplate(this.param.id).then(res => {
+        const blob = new Blob([res])
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = this.param.name + '.xlsx' // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+      })
     },
     deleteRow(id) {
       this.$confirm(

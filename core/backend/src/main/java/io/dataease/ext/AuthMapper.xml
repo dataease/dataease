@@ -48,7 +48,10 @@
                password,
                enabled,
                email,
-               phone, language, is_admin, `from`
+               phone,
+               language,
+               is_admin,
+               `from`
         from sys_user
         where username = #{username}
     </select>
@@ -61,9 +64,13 @@
                password,
                enabled,
                email,
-               phone, language, is_admin, `from`
+               phone,
+               language,
+               is_admin,
+               `from`
         from sys_user a
-        where username = #{username} and a.from = 1
+        where username = #{username}
+          and a.from = 1
     </select>
 
 
@@ -75,9 +82,13 @@
                password,
                enabled,
                email,
-               phone, language, is_admin, `from`
+               phone,
+               language,
+               is_admin,
+               `from`
         from sys_user a
-        where username = #{username} and a.from = 3
+        where username = #{username}
+          and a.from = 3
     </select>
 
     <select id="findUserBySub" resultMap="baseMap">
@@ -88,7 +99,10 @@
                password,
                enabled,
                email,
-               phone, language, is_admin, `from`
+               phone,
+               language,
+               is_admin,
+               `from`
         from sys_user
         where sub = #{sub}
           and `from` = #{userFrom}
@@ -144,12 +158,14 @@
                password,
                enabled,
                email,
-               phone, language, is_admin, `from`
-        from
-            sys_user_assist a
-            left join
-            sys_user u
-        on u.user_id = a.user_id
+               phone,
+               language,
+               is_admin,
+               `from`
+        from sys_user_assist a
+                 left join
+             sys_user u
+             on u.user_id = a.user_id
         where a.wecom_id = #{wecomId}
     </select>
 
@@ -161,12 +177,14 @@
                password,
                enabled,
                email,
-               phone, language, is_admin, `from`
-        from
-            sys_user_assist a
-            left join
-            sys_user u
-        on u.user_id = a.user_id
+               phone,
+               language,
+               is_admin,
+               `from`
+        from sys_user_assist a
+                 left join
+             sys_user u
+             on u.user_id = a.user_id
         where a.dingtalk_id = #{dingtalkId}
     </select>
 
@@ -178,12 +196,14 @@
                password,
                enabled,
                email,
-               phone, language, is_admin, `from`
-        from
-            sys_user_assist a
-            left join
-            sys_user u
-        on u.user_id = a.user_id
+               phone,
+               language,
+               is_admin,
+               `from`
+        from sys_user_assist a
+                 left join
+             sys_user u
+             on u.user_id = a.user_id
         where a.lark_id = #{larkId}
     </select>
 
@@ -195,12 +215,14 @@
                password,
                enabled,
                email,
-               phone, language, is_admin, `from`
-        from
-            sys_user_assist a
-            left join
-            sys_user u
-        on u.user_id = a.user_id
+               phone,
+               language,
+               is_admin,
+               `from`
+        from sys_user_assist a
+                 left join
+             sys_user u
+             on u.user_id = a.user_id
         where a.larksuite_id = #{larksuiteId}
     </select>
 

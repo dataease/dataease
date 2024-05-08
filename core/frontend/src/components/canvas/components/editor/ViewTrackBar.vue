@@ -11,7 +11,6 @@
       >
       <el-dropdown-menu
         class="track-menu"
-        :append-to-body="false"
       >
         <el-dropdown-item
           v-for="(item, key) in trackMenu"
@@ -76,9 +75,6 @@ export default {
 
   .track-menu {
     border: #3a8ee6 1px solid;
-    position: absolute !important;
-    top: 0 !important;
-    left: 0 !important;
   }
 
 </style>

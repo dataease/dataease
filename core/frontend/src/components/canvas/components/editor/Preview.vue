@@ -118,7 +118,7 @@
       class="dialog-css"
       :destroy-on-close="true"
       :show-close="true"
-      :append-to-body="false"
+      append-to-body
       top="5vh"
     >
       <span
@@ -159,7 +159,7 @@
         </span>
 
         <el-button
-          v-if="showChartInfoType==='details'&& hasDataPermission('export',panelInfo.privileges)"
+          v-if="showChartInfoType==='details'&& this.showChartInfo.dataFrom !== 'template' && hasDataPermission('export',panelInfo.privileges)"
           size="mini"
           :disabled="$store.getters.loadingMap[$store.getters.currentPath]"
           @click="exportExcel"
@@ -168,6 +168,17 @@
             icon-class="ds-excel"
             class="ds-icon-excel"
           />{{ $t('chart.export') }}Excel
+        </el-button>
+        <el-button
+          v-if="showChartInfoType==='details' && this.showChartInfo.dataFrom !== 'template' && !userId && hasDataPermission('export',panelInfo.privileges)"
+          size="mini"
+          :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
+          @click="exportSourceDetails"
+        >
+          <svg-icon
+            icon-class="ds-excel"
+            class="ds-icon-excel"
+          />{{ $t('chart.export_source') }}
         </el-button>
       </span>
       <user-view-dialog
@@ -833,7 +844,10 @@ export default {
         const componentData = deepCopy(this.componentData)
         componentData.forEach(component => {
           if (component.type === 'custom') {
-            component.style = deepCopy(this.findSourceComponent(component.id).style)
+            const sourceComponent = this.findSourceComponent(component.id)
+            if (sourceComponent?.style) {
+              component.style = deepCopy(this.findSourceComponent(component.id).style)
+            }
           }
           Object.keys(component.style).forEach(key => {
             if (this.needToChangeHeight.includes(key)) {
@@ -860,6 +874,9 @@ export default {
       }
     },
     exportExcel() {
+      this.$refs['userViewDialog-canvas-main'].exportExcel()
+    },
+    exportSourceDetails() {
       this.$refs['userViewDialog-canvas-main'].exportExcel()
     },
     exportViewImg() {

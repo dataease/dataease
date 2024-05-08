@@ -39,10 +39,7 @@ import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.Assert;
 
 import javax.annotation.Resource;
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Service
@@ -83,7 +80,7 @@ public class DataFillService {
 
         dataFillForm.setId(uuid);
 
-        checkName(uuid, dataFillForm.getName(), dataFillForm.getPid(), dataFillForm.getLevel(), dataFillForm.getNodeType(), DataFillConstants.OPT_TYPE_INSERT);
+        checkName(uuid, dataFillForm.getName(), dataFillForm.getPid(), dataFillForm.getNodeType(), DataFillConstants.OPT_TYPE_INSERT);
 
         if (!StringUtils.equals(dataFillForm.getNodeType(), "folder")) {
             List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
@@ -152,7 +149,7 @@ public class DataFillService {
     }
 
     @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
-    public ResultHolder updateForm(DataFillFormWithBLOBs dataFillForm) {
+    public ResultHolder updateForm(DataFillFormWithBLOBs dataFillForm, String type) {
 
         if (!CommonBeanFactory.getBean(AuthUserService.class).pluginLoaded()) {
             DataEaseException.throwException("invalid");
@@ -161,8 +158,15 @@ public class DataFillService {
         Assert.notNull(dataFillForm.getId(), "id cannot be null");
 
         DataFillFormWithBLOBs form = dataFillFormMapper.selectByPrimaryKey(dataFillForm.getId());
-        //todo 改变文件夹位置
-        checkName(dataFillForm.getId(), dataFillForm.getName(), form.getPid(), form.getLevel(), form.getNodeType(), DataFillConstants.OPT_TYPE_UPDATE);
+
+        if (StringUtils.equals("move", type)) {
+            //改变文件夹位置
+            checkName(dataFillForm.getId(), form.getName(), dataFillForm.getPid(), form.getNodeType(), DataFillConstants.OPT_TYPE_UPDATE);
+            dataFillForm.setName(null);
+            dataFillForm.setNodeType(null);
+        } else {
+            checkName(dataFillForm.getId(), dataFillForm.getName(), form.getPid(), form.getNodeType(), DataFillConstants.OPT_TYPE_UPDATE);
+        }
 
         dataFillForm.setUpdateTime(new Date());
         dataFillFormMapper.updateByPrimaryKeySelective(dataFillForm);
@@ -172,7 +176,7 @@ public class DataFillService {
         return ResultHolder.success(dataFillForm.getId());
     }
 
-    private void checkName(String id, String name, String pid, int level, String nodeType, String optType) {
+    private void checkName(String id, String name, String pid, String nodeType, String optType) {
         DataFillFormExample example = new DataFillFormExample();
         if (DataFillConstants.OPT_TYPE_INSERT.equalsIgnoreCase(optType)) {
             example.createCriteria().andPidEqualTo(pid).andNameEqualTo(name).andNodeTypeEqualTo(nodeType);
@@ -296,16 +300,16 @@ public class DataFillService {
         DataFillUserTask task = dataFillUserTaskMapper.selectByPrimaryKey(userTaskId);
 
         if (task == null) {
-            DataEaseException.throwException("任务不存在");
+            DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_NOT_EXIST"));
         }
 
         if (!AuthUtils.getUser().getUserId().equals(task.getUser())) {
-            DataEaseException.throwException("当前用户非任务用户");
+            DataEaseException.throwException(Translator.get("I18N_DATA_FILL_USER_NOT_TASK_USER"));
         }
 
         if (task.getEndTime() != null) {
             if (task.getEndTime().getTime() < System.currentTimeMillis()) {
-                DataEaseException.throwException("已经超过了任务截止时间");
+                DataEaseException.throwException(Translator.get("I18N_DATA_FILL_TASK_EXPIRED"));
             }
         }
 
@@ -337,12 +341,63 @@ public class DataFillService {
             }
         }
 
-        rowId = dataFillDataService.updateRowData(formId, rowId, data, rowId == null);
+        rowId = dataFillDataService.updateOrInsertRowData(formId, Collections.singletonList(new RowDataDatum().setId(rowId).setData(data))).get(0);
 
         task.setValueId(rowId);
         task.setFinishTime(new Date());
 
         dataFillUserTaskMapper.updateByPrimaryKeySelective(task);
+    }
+
+    public CommentWriteHandler getCommentWriteHandler(String formId) {
+        DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
+        List<ExtTableField> formFields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
+        }.getType());
+
+        List<ExtTableField> fields = new ArrayList<>();
+        for (ExtTableField field : formFields) {
+            if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                ExtTableField start = gson.fromJson(gson.toJson(field), ExtTableField.class);
+                start.getSettings().getMapping().setColumnName(start.getSettings().getMapping().getColumnName1());
+                fields.add(start);
+
+                ExtTableField end = gson.fromJson(gson.toJson(field), ExtTableField.class);
+                end.getSettings().getMapping().setColumnName(end.getSettings().getMapping().getColumnName2());
+                fields.add(end);
+            } else {
+                fields.add(field);
+            }
+        }
+        CommentWriteHandler commentWriteHandler = new CommentWriteHandler();
+        commentWriteHandler.setFields(fields);
+        return commentWriteHandler;
+    }
+
+    public List<List<String>> getExcelHead(String formId) {
+        List<List<String>> list = new ArrayList<>();
+
+        DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
+        List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
+        }.getType());
+        for (ExtTableField formField : fields) {
+            String name = formField.getSettings().getName();
+
+            if (StringUtils.equalsIgnoreCase(formField.getType(), "dateRange")) {
+                String name1 = formField.getSettings().getName() + "(开始) ";
+                String name2 = formField.getSettings().getName() + "(结束) ";
+
+                List<String> head1 = List.of(name1);
+                List<String> head2 = List.of(name2);
+
+                list.add(head1);
+                list.add(head2);
+            } else {
+                list.add(List.of(name));
+            }
+        }
+
+        return list;
+
     }
 
 }

@@ -296,6 +296,34 @@ function upgrade() {
    rm -rf /tmp/dataease-${latest_version}-online
 }
 function backup() {
+   need_stop=0
+   if [[ -z $1 ]];then
+      echo "如需备份 DataEase 数据，建议您先停止 DataEase 服务，以保证备份数据的完整性。"
+      read -r -p "即将备份 DataEase 数据，是否需要停止 DataEase 服务? [Y/n] " input
+
+      case $input in
+         [yY][eE][sS]|[yY])
+            echo "Yes"
+            need_stop=1
+            ;;
+         [nN][oO]|[nN])
+            echo "No"
+            ;;
+         *)
+            echo "无效输入..."
+            exit 1
+            ;;
+      esac
+   elif [[ "$1" == "stop" ]];then
+      need_stop=1
+   fi
+
+   if [[ $need_stop == 1 ]];then
+      service dataease stop
+   else
+      echo "不停服进行备份"
+   fi
+
    echo "开始备份，建议在备份时先停止 DataEase 服务!"
    backup_file_name=dataease-backup-$(date +%Y%m%d)_$(date +%H%M%S).tar.gz
    tar --exclude=logs/* -zcf $backup_file_name -C $DE_BASE/dataease .
@@ -304,6 +332,10 @@ function backup() {
       exit 1
    else
       echo "备份成功，备份文件 : $backup_file_name"
+   fi
+
+   if [[ $need_stop == 1 ]];then
+      service dataease start
    fi
 }
 function restore() {
@@ -347,7 +379,7 @@ function main() {
          upgrade
          ;;
       backup)
-         backup
+         backup $target
          ;;
       restore)
          restore $target

@@ -47,7 +47,7 @@
           <el-collapse-item
             v-show="showPropertiesCollapse(['size-selector'])"
             name="size"
-            :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
+            :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : chart.type.includes('radar') ? $t('chart.axis') : $t('chart.size')"
           >
             <size-selector
               :param="param"
@@ -60,7 +60,7 @@
           <el-collapse-item
             v-show="showPropertiesCollapse(['size-selector-ant-v'])"
             name="size"
-            :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : $t('chart.size')"
+            :title="(chart.type && chart.type.includes('table')) ? $t('chart.table_config') : chart.type.includes('radar') ? $t('chart.axis') : $t('chart.size')"
           >
             <size-selector-ant-v
               :param="param"

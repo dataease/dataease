@@ -226,10 +226,19 @@ public class DirectFieldService implements DataSetFieldService {
         if (CollectionUtils.isNotEmpty(rows) && existExtSortField && originSize > 0) {
             rows = rows.stream().map(row -> ArrayUtils.subarray(row, 0, originSize)).collect(Collectors.toList());
         }
+        rows = rows.stream().filter(row -> {
+            int length = row.length;
+            boolean allEmpty = true;
+            for (String s : row) {
+                if (StringUtils.isNotBlank(s)) {
+                    allEmpty = false;
+                }
+            }
+            return !allEmpty;
+        }).collect(Collectors.toList());
         List<BaseTreeNode> treeNodes = rows.stream().map(row -> buildTreeNode(row, pkSet)).flatMap(Collection::stream).collect(Collectors.toList());
         List tree = TreeUtils.mergeDuplicateTree(treeNodes, TreeUtils.DEFAULT_ROOT);
         return tree;
-
     }
 
     private List<BaseTreeNode> buildTreeNode(String[] row, Set<String> pkSet) {
@@ -239,12 +248,12 @@ public class DirectFieldService implements DataSetFieldService {
             String text = row[i];
 
             parentPkList.add(text);
-            String val = parentPkList.stream().collect(Collectors.joining(TreeUtils.SEPARATOR));
+            String val = String.join(TreeUtils.SEPARATOR, parentPkList);
             String parentVal = i == 0 ? TreeUtils.DEFAULT_ROOT : row[i - 1];
-            String pk = parentPkList.stream().collect(Collectors.joining(TreeUtils.SEPARATOR));
+            String pk = String.join(TreeUtils.SEPARATOR, parentPkList);
             if (pkSet.contains(pk)) continue;
             pkSet.add(pk);
-            BaseTreeNode node = new BaseTreeNode(val, parentVal, text, pk + TreeUtils.SEPARATOR + i);
+            BaseTreeNode node = new BaseTreeNode(val, parentVal, StringUtils.isNotBlank(text) ? text.trim() : text, pk + TreeUtils.SEPARATOR + i);
             nodes.add(node);
         }
         return nodes;

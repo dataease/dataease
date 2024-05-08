@@ -269,7 +269,6 @@
         <filter-head
           :element="currentElement"
           @dataset-name="dataSetName"
-          @required-change="requiredChange"
         />
 
         <filter-control
@@ -279,6 +278,7 @@
           :child-views="childViews"
           :dataset-params="datasetParams"
           :active-name="activeName"
+          @required-change="requiredChange"
         />
 
         <filter-foot
@@ -659,9 +659,9 @@ export default {
       if (this.widgetInfo.name.indexOf('numberSelect') !== -1) {
         type = 'NUM'
       }
-      if(viewIds && viewIds.length > 0){
+      if (viewIds && viewIds.length > 0) {
         paramsWithIds(type, viewIds).then(res => {
-          this.childViews.datasetParams =  res.data
+          this.childViews.datasetParams = res.data
         })
       }
     },

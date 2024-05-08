@@ -6,7 +6,7 @@
   >
     <div class="sql-editer">
       <el-row>
-        <el-col :span="12">
+        <el-col :span="16">
           <el-select
             v-model="dataSource"
             filterable
@@ -61,30 +61,34 @@
               value="sync_latter"
             />
           </el-select>
-          <el-checkbox   style="margin-left: 12px" v-if="mode === '1' && engineMode !== 'simple'" v-model="param.setKey">{{ $t('dataset.set_key') }}</el-checkbox>
+          <el-checkbox
+            v-if="mode === '1' && engineMode !== 'simple'"
+            v-model="param.setKey"
+            style="margin-left: 12px"
+          >{{ $t('dataset.set_key') }}</el-checkbox>
 
           <el-select
-              size="small"
-              style="margin-left: 12px;width: 315px"
-              v-model="param.keys"
-              v-if="mode === '1' && engineMode !== 'simple'"
-              multiple
-              filterable
-              :disabled="!param.setKey"
-              :placeholder="$t('dataset.selecet_key')"
+            v-if="mode === '1' && engineMode !== 'simple'"
+            v-model="param.keys"
+            size="small"
+            style="margin-left: 12px;width: 315px"
+            multiple
+            filterable
+            :disabled="!param.setKey"
+            :placeholder="$t('dataset.selecet_key')"
           >
             <el-option
-                v-for="field in fields"
-                :key="field.fieldName"
-                :label="field.fieldName"
-                :value="field.fieldName"
+              v-for="field in fields"
+              :key="field.fieldName"
+              :label="field.fieldName"
+              :value="field.fieldName"
             />
           </el-select>
 
         </el-col>
         <el-col
           style="text-align: right"
-          :span="12"
+          :span="8"
         >
           <el-button
             type="text"
@@ -966,7 +970,7 @@ export default {
               table.info.replace(/\n/g, '\\n').replace(/\r/g, '\\r')
             ).sql
           }
-          if (JSON.parse(table.info).hasOwnProperty("setKey")) {
+          if (JSON.parse(table.info).hasOwn('setKey')) {
             this.$set(this.param, 'setKey', JSON.parse(table.info).setKey)
             this.param.keys = JSON.parse(table.info).keys
           }

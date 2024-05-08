@@ -120,7 +120,9 @@
                   {{ uiInfo['ui.demo.tips'].paramValue }}
                 </div>
               </div>
-              <div class="login-msg">
+              <div
+                class="login-msg"
+              >
                 {{ msg }}
               </div>
             </el-form>
@@ -184,7 +186,6 @@
             />
           </el-col>
         </el-row>
-
       </div>
       <plugin-com
         v-if="loginTypes.includes(2) && loginForm.loginType === 2"

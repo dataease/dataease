@@ -84,6 +84,7 @@
             :panel-info="panelInfo"
             :in-screen="inScreen"
             :show-position="showPosition"
+            :screen-shot="screenShot"
             :user-id="userId"
           />
         </div>
@@ -240,6 +241,10 @@ export default {
       type: Boolean,
       required: false,
       default: true
+    },
+    screenShot: {
+      type: Boolean,
+      default: false
     },
     canvasId: {
       type: String,

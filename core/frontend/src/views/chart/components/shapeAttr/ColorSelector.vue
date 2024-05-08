@@ -349,8 +349,20 @@
             :min="1"
             :step-strictly="true"
             @change="changeColorCase('topN')"
-            />
+          />
           <span>{{ $t('chart.top_n_input_2') }}</span>
+        </el-form-item>
+        <el-form-item
+          v-show="showProperty('topN') && colorForm.calcTopN"
+          class="form-item"
+          :label="$t('chart.top_n_label')"
+        >
+          <el-input
+            v-model="colorForm.topNLabel"
+            size="mini"
+            :maxlength="50"
+            @change="changeColorCase('topNLabel')"
+          />
         </el-form-item>
         <el-form-item
           v-show="showProperty('mapLineGradient')"
@@ -639,6 +651,7 @@ export default {
           this.colorForm.mapLineTargetColor = this.colorForm.mapLineTargetColor ? this.colorForm.mapLineTargetColor : DEFAULT_COLOR_CASE.mapLineTargetColor
           this.colorForm.calcTopN = this.colorForm.calcTopN === undefined ? false : this.colorForm.calcTopN
           this.colorForm.topN = this.colorForm.topN ?? DEFAULT_COLOR_CASE.topN
+          this.colorForm.topNLabel = this.colorForm.topNLabel ?? DEFAULT_COLOR_CASE.topNLabel
           this.initCustomColor()
         }
       }

@@ -1,0 +1,377 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
+<mapper namespace="io.dataease.plugins.common.base.mapper.ExportTaskMapper">
+  <resultMap id="BaseResultMap" type="io.dataease.plugins.common.base.domain.ExportTask">
+    <id column="id" jdbcType="VARCHAR" property="id" />
+    <result column="user_id" jdbcType="BIGINT" property="userId" />
+    <result column="file_name" jdbcType="VARCHAR" property="fileName" />
+    <result column="file_size" jdbcType="DOUBLE" property="fileSize" />
+    <result column="file_size_unit" jdbcType="VARCHAR" property="fileSizeUnit" />
+    <result column="export_from" jdbcType="VARCHAR" property="exportFrom" />
+    <result column="export_status" jdbcType="VARCHAR" property="exportStatus" />
+    <result column="export_from_type" jdbcType="VARCHAR" property="exportFromType" />
+    <result column="export_time" jdbcType="BIGINT" property="exportTime" />
+    <result column="export_pogress" jdbcType="VARCHAR" property="exportPogress" />
+    <result column="export_machine_name" jdbcType="VARCHAR" property="exportMachineName" />
+  </resultMap>
+  <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.ExportTask">
+    <result column="params" jdbcType="LONGVARCHAR" property="params" />
+  </resultMap>
+  <sql id="Example_Where_Clause">
+    <where>
+      <foreach collection="oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Update_By_Example_Where_Clause">
+    <where>
+      <foreach collection="example.oredCriteria" item="criteria" separator="or">
+        <if test="criteria.valid">
+          <trim prefix="(" prefixOverrides="and" suffix=")">
+            <foreach collection="criteria.criteria" item="criterion">
+              <choose>
+                <when test="criterion.noValue">
+                  and ${criterion.condition}
+                </when>
+                <when test="criterion.singleValue">
+                  and ${criterion.condition} #{criterion.value}
+                </when>
+                <when test="criterion.betweenValue">
+                  and ${criterion.condition} #{criterion.value} and #{criterion.secondValue}
+                </when>
+                <when test="criterion.listValue">
+                  and ${criterion.condition}
+                  <foreach close=")" collection="criterion.value" item="listItem" open="(" separator=",">
+                    #{listItem}
+                  </foreach>
+                </when>
+              </choose>
+            </foreach>
+          </trim>
+        </if>
+      </foreach>
+    </where>
+  </sql>
+  <sql id="Base_Column_List">
+    id, user_id, file_name, file_size, file_size_unit, export_from, export_status, export_from_type, 
+    export_time, export_pogress, export_machine_name
+  </sql>
+  <sql id="Blob_Column_List">
+    params
+  </sql>
+  <select id="selectByExampleWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.ExportTaskExample" resultMap="ResultMapWithBLOBs">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from export_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByExample" parameterType="io.dataease.plugins.common.base.domain.ExportTaskExample" resultMap="BaseResultMap">
+    select
+    <if test="distinct">
+      distinct
+    </if>
+    <include refid="Base_Column_List" />
+    from export_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+    <if test="orderByClause != null">
+      order by ${orderByClause}
+    </if>
+  </select>
+  <select id="selectByPrimaryKey" parameterType="java.lang.String" resultMap="ResultMapWithBLOBs">
+    select 
+    <include refid="Base_Column_List" />
+    ,
+    <include refid="Blob_Column_List" />
+    from export_task
+    where id = #{id,jdbcType=VARCHAR}
+  </select>
+  <delete id="deleteByPrimaryKey" parameterType="java.lang.String">
+    delete from export_task
+    where id = #{id,jdbcType=VARCHAR}
+  </delete>
+  <delete id="deleteByExample" parameterType="io.dataease.plugins.common.base.domain.ExportTaskExample">
+    delete from export_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </delete>
+  <insert id="insert" parameterType="io.dataease.plugins.common.base.domain.ExportTask">
+    insert into export_task (id, user_id, file_name, 
+      file_size, file_size_unit, export_from, 
+      export_status, export_from_type, export_time, 
+      export_pogress, export_machine_name, params
+      )
+    values (#{id,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{fileName,jdbcType=VARCHAR}, 
+      #{fileSize,jdbcType=DOUBLE}, #{fileSizeUnit,jdbcType=VARCHAR}, #{exportFrom,jdbcType=VARCHAR}, 
+      #{exportStatus,jdbcType=VARCHAR}, #{exportFromType,jdbcType=VARCHAR}, #{exportTime,jdbcType=BIGINT}, 
+      #{exportPogress,jdbcType=VARCHAR}, #{exportMachineName,jdbcType=VARCHAR}, #{params,jdbcType=LONGVARCHAR}
+      )
+  </insert>
+  <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.ExportTask">
+    insert into export_task
+    <trim prefix="(" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        id,
+      </if>
+      <if test="userId != null">
+        user_id,
+      </if>
+      <if test="fileName != null">
+        file_name,
+      </if>
+      <if test="fileSize != null">
+        file_size,
+      </if>
+      <if test="fileSizeUnit != null">
+        file_size_unit,
+      </if>
+      <if test="exportFrom != null">
+        export_from,
+      </if>
+      <if test="exportStatus != null">
+        export_status,
+      </if>
+      <if test="exportFromType != null">
+        export_from_type,
+      </if>
+      <if test="exportTime != null">
+        export_time,
+      </if>
+      <if test="exportPogress != null">
+        export_pogress,
+      </if>
+      <if test="exportMachineName != null">
+        export_machine_name,
+      </if>
+      <if test="params != null">
+        params,
+      </if>
+    </trim>
+    <trim prefix="values (" suffix=")" suffixOverrides=",">
+      <if test="id != null">
+        #{id,jdbcType=VARCHAR},
+      </if>
+      <if test="userId != null">
+        #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="fileName != null">
+        #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileSize != null">
+        #{fileSize,jdbcType=DOUBLE},
+      </if>
+      <if test="fileSizeUnit != null">
+        #{fileSizeUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="exportFrom != null">
+        #{exportFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="exportStatus != null">
+        #{exportStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="exportFromType != null">
+        #{exportFromType,jdbcType=VARCHAR},
+      </if>
+      <if test="exportTime != null">
+        #{exportTime,jdbcType=BIGINT},
+      </if>
+      <if test="exportPogress != null">
+        #{exportPogress,jdbcType=VARCHAR},
+      </if>
+      <if test="exportMachineName != null">
+        #{exportMachineName,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        #{params,jdbcType=LONGVARCHAR},
+      </if>
+    </trim>
+  </insert>
+  <select id="countByExample" parameterType="io.dataease.plugins.common.base.domain.ExportTaskExample" resultType="java.lang.Long">
+    select count(*) from export_task
+    <if test="_parameter != null">
+      <include refid="Example_Where_Clause" />
+    </if>
+  </select>
+  <update id="updateByExampleSelective" parameterType="map">
+    update export_task
+    <set>
+      <if test="record.id != null">
+        id = #{record.id,jdbcType=VARCHAR},
+      </if>
+      <if test="record.userId != null">
+        user_id = #{record.userId,jdbcType=BIGINT},
+      </if>
+      <if test="record.fileName != null">
+        file_name = #{record.fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.fileSize != null">
+        file_size = #{record.fileSize,jdbcType=DOUBLE},
+      </if>
+      <if test="record.fileSizeUnit != null">
+        file_size_unit = #{record.fileSizeUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exportFrom != null">
+        export_from = #{record.exportFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exportStatus != null">
+        export_status = #{record.exportStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exportFromType != null">
+        export_from_type = #{record.exportFromType,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exportTime != null">
+        export_time = #{record.exportTime,jdbcType=BIGINT},
+      </if>
+      <if test="record.exportPogress != null">
+        export_pogress = #{record.exportPogress,jdbcType=VARCHAR},
+      </if>
+      <if test="record.exportMachineName != null">
+        export_machine_name = #{record.exportMachineName,jdbcType=VARCHAR},
+      </if>
+      <if test="record.params != null">
+        params = #{record.params,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExampleWithBLOBs" parameterType="map">
+    update export_task
+    set id = #{record.id,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=BIGINT},
+      file_name = #{record.fileName,jdbcType=VARCHAR},
+      file_size = #{record.fileSize,jdbcType=DOUBLE},
+      file_size_unit = #{record.fileSizeUnit,jdbcType=VARCHAR},
+      export_from = #{record.exportFrom,jdbcType=VARCHAR},
+      export_status = #{record.exportStatus,jdbcType=VARCHAR},
+      export_from_type = #{record.exportFromType,jdbcType=VARCHAR},
+      export_time = #{record.exportTime,jdbcType=BIGINT},
+      export_pogress = #{record.exportPogress,jdbcType=VARCHAR},
+      export_machine_name = #{record.exportMachineName,jdbcType=VARCHAR},
+      params = #{record.params,jdbcType=LONGVARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByExample" parameterType="map">
+    update export_task
+    set id = #{record.id,jdbcType=VARCHAR},
+      user_id = #{record.userId,jdbcType=BIGINT},
+      file_name = #{record.fileName,jdbcType=VARCHAR},
+      file_size = #{record.fileSize,jdbcType=DOUBLE},
+      file_size_unit = #{record.fileSizeUnit,jdbcType=VARCHAR},
+      export_from = #{record.exportFrom,jdbcType=VARCHAR},
+      export_status = #{record.exportStatus,jdbcType=VARCHAR},
+      export_from_type = #{record.exportFromType,jdbcType=VARCHAR},
+      export_time = #{record.exportTime,jdbcType=BIGINT},
+      export_pogress = #{record.exportPogress,jdbcType=VARCHAR},
+      export_machine_name = #{record.exportMachineName,jdbcType=VARCHAR}
+    <if test="_parameter != null">
+      <include refid="Update_By_Example_Where_Clause" />
+    </if>
+  </update>
+  <update id="updateByPrimaryKeySelective" parameterType="io.dataease.plugins.common.base.domain.ExportTask">
+    update export_task
+    <set>
+      <if test="userId != null">
+        user_id = #{userId,jdbcType=BIGINT},
+      </if>
+      <if test="fileName != null">
+        file_name = #{fileName,jdbcType=VARCHAR},
+      </if>
+      <if test="fileSize != null">
+        file_size = #{fileSize,jdbcType=DOUBLE},
+      </if>
+      <if test="fileSizeUnit != null">
+        file_size_unit = #{fileSizeUnit,jdbcType=VARCHAR},
+      </if>
+      <if test="exportFrom != null">
+        export_from = #{exportFrom,jdbcType=VARCHAR},
+      </if>
+      <if test="exportStatus != null">
+        export_status = #{exportStatus,jdbcType=VARCHAR},
+      </if>
+      <if test="exportFromType != null">
+        export_from_type = #{exportFromType,jdbcType=VARCHAR},
+      </if>
+      <if test="exportTime != null">
+        export_time = #{exportTime,jdbcType=BIGINT},
+      </if>
+      <if test="exportPogress != null">
+        export_pogress = #{exportPogress,jdbcType=VARCHAR},
+      </if>
+      <if test="exportMachineName != null">
+        export_machine_name = #{exportMachineName,jdbcType=VARCHAR},
+      </if>
+      <if test="params != null">
+        params = #{params,jdbcType=LONGVARCHAR},
+      </if>
+    </set>
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKeyWithBLOBs" parameterType="io.dataease.plugins.common.base.domain.ExportTask">
+    update export_task
+    set user_id = #{userId,jdbcType=BIGINT},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      file_size = #{fileSize,jdbcType=DOUBLE},
+      file_size_unit = #{fileSizeUnit,jdbcType=VARCHAR},
+      export_from = #{exportFrom,jdbcType=VARCHAR},
+      export_status = #{exportStatus,jdbcType=VARCHAR},
+      export_from_type = #{exportFromType,jdbcType=VARCHAR},
+      export_time = #{exportTime,jdbcType=BIGINT},
+      export_pogress = #{exportPogress,jdbcType=VARCHAR},
+      export_machine_name = #{exportMachineName,jdbcType=VARCHAR},
+      params = #{params,jdbcType=LONGVARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+  <update id="updateByPrimaryKey" parameterType="io.dataease.plugins.common.base.domain.ExportTask">
+    update export_task
+    set user_id = #{userId,jdbcType=BIGINT},
+      file_name = #{fileName,jdbcType=VARCHAR},
+      file_size = #{fileSize,jdbcType=DOUBLE},
+      file_size_unit = #{fileSizeUnit,jdbcType=VARCHAR},
+      export_from = #{exportFrom,jdbcType=VARCHAR},
+      export_status = #{exportStatus,jdbcType=VARCHAR},
+      export_from_type = #{exportFromType,jdbcType=VARCHAR},
+      export_time = #{exportTime,jdbcType=BIGINT},
+      export_pogress = #{exportPogress,jdbcType=VARCHAR},
+      export_machine_name = #{exportMachineName,jdbcType=VARCHAR}
+    where id = #{id,jdbcType=VARCHAR}
+  </update>
+</mapper>

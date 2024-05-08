@@ -39,9 +39,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
     @Override
     public String createTableSql(String table, List<ExtTableField> formFields) {
         //check inject
-        if (checkSqlInjection(table)) {
+        /*if (checkSqlInjection(table)) {
             throw new RuntimeException("包含SQL注入的参数，请检查参数！");
-        }
+        }*/
 
         List<ExtTableField.TableField> fields = convertTableFields(true, formFields);
         String fieldSql = convertTableFieldsString(table, fields);
@@ -143,10 +143,18 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
     }
 
     @Override
-    public String deleteDataByIdSql(String table, DatasourceRequest.TableFieldWithValue pk) {
-        String deleteSql = "DELETE FROM `$TABLE_NAME$` WHERE `$PRIMARY_KEY$` = ?;";
+    public String deleteDataByIdsSql(String table, List<DatasourceRequest.TableFieldWithValue> pks) {
+        String deleteSql = "DELETE FROM `$TABLE_NAME$` WHERE `$PRIMARY_KEY$` IN ($PRIMARY_KEY_GROUP$);";
+        StringBuilder groupStr = new StringBuilder();
+        for (int i = 0; i < pks.size(); i++) {
+            groupStr.append("?");
+            if (i < pks.size() - 1) {
+                groupStr.append(", ");
+            }
+        }
         return deleteSql.replace("$TABLE_NAME$", table)
-                .replace("$PRIMARY_KEY$", pk.getFiledName());
+                .replace("$PRIMARY_KEY$", pks.get(0).getFiledName())
+                .replace("$PRIMARY_KEY_GROUP$", groupStr);
     }
 
     private String convertFields(List<DatasourceRequest.TableFieldWithValue> fields) {
@@ -175,12 +183,23 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         return builder.toString();
     }
 
+    private String convertInsertValueFields(List<DatasourceRequest.TableFieldWithValue> fields, int count) {
+        StringBuilder builder = new StringBuilder();
+        for (int i = 0; i < count; i++) {
+            builder.append("(").append(convertValueFields(fields)).append(")");
+            if (i < count - 1) {
+                builder.append(", ");
+            }
+        }
+        return builder.toString();
+    }
+
     @Override
-    public String insertDataSql(String tableName, List<DatasourceRequest.TableFieldWithValue> fields) {
-        String sql = "INSERT INTO `$TABLE_NAME$`($Column_Fields$) VALUES ($Value_Fields$);";
+    public String insertDataSql(String tableName, List<DatasourceRequest.TableFieldWithValue> fields, int count) {
+        String sql = "INSERT INTO `$TABLE_NAME$`($Column_Fields$) VALUES $Value_Fields$;";
         return sql.replace("$TABLE_NAME$", tableName)
                 .replace("$Column_Fields$", convertFields(fields))
-                .replace("$Value_Fields$", convertValueFields(fields));
+                .replace("$Value_Fields$", convertInsertValueFields(fields, count));
     }
 
     private String convertUpdateFields(List<DatasourceRequest.TableFieldWithValue> fields) {
@@ -230,9 +249,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
             }
 
             //check inject
-            if (checkSqlInjection(field.getColumnName())) {
+            /*if (checkSqlInjection(field.getColumnName())) {
                 throw new RuntimeException("包含SQL注入的参数，请检查参数！");
-            }
+            }*/
 
             //column name
             str.append("`").append(field.getColumnName()).append("` ");
@@ -326,9 +345,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         }
 
         //check inject
-        if (checkSqlInjection(table) || checkSqlInjection(indexField.getName())) {
+        /*if (checkSqlInjection(table) || checkSqlInjection(indexField.getName())) {
             throw new RuntimeException("包含SQL注入的参数，请检查参数！");
-        }
+        }*/
 
         int count = 0;
         for (ExtIndexField.ColumnSetting indexFieldColumn : indexField.getColumns()) {

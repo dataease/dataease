@@ -42,7 +42,8 @@ export const DEFAULT_COLOR_CASE = {
   mapLineTargetColor: '#576CBC',
   quotaSuffixColor: '#5470c6',
   calcTopN: false,
-  topN: 5
+  topN: 5,
+  topNLabel: '其他'
 }
 
 export const DEFAULT_COLOR_CASE_DARK = {
@@ -69,7 +70,8 @@ export const DEFAULT_COLOR_CASE_DARK = {
   mapLineTargetColor: '#3795BD',
   quotaSuffixColor: '#5470c6',
   calcTopN: false,
-  topN: 5
+  topN: 5,
+  topNLabel: '其他'
 }
 export const DEFAULT_SIZE = {
   barDefault: true,
@@ -199,10 +201,15 @@ export const DEFAULT_LABEL = {
   color: '#909399',
   fontSize: '10',
   formatter: '{c}',
-  gaugeFormatter: '{value}',
+  subShow: false,
+  subPosition: 'top',
+  subColor: '#909399',
+  subFontSize: '10',
+  subFormatter: '{c}',
   labelLine: {
     show: true
   },
+  gaugeFormatter: '{value}',
   gaugeLabelFormatter: {
     type: 'value', // auto,value,percent
     unit: 1, // 换算单位

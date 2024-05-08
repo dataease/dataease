@@ -2,6 +2,7 @@
 import { filter, forEach, find, split, get } from 'lodash-es'
 import { listDatasource, listDatasourceType } from '@/api/system/datasource'
 import { listForm, saveForm } from '@/views/dataFilling/form/dataFilling'
+import { hasDataPermission } from '@/utils/permission'
 
 export default {
   name: 'DataFillingFormSave',
@@ -18,7 +19,7 @@ export default {
   data: function() {
     const checkDuplicateNameValidator = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.component.required')))
       }
       let count = 0
       forEach(this.formData.forms, f => {
@@ -36,13 +37,13 @@ export default {
         }
       })
       if (count > 1) {
-        callback(new Error('重复'))
+        callback(new Error(this.$t('data_fill.form.duplicate_error')))
       }
       callback()
     }
     const checkDuplicateIndexNameValidator = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.component.required')))
       }
       let count = 0
       forEach(this.formData.tableIndexes, f => {
@@ -51,25 +52,25 @@ export default {
         }
       })
       if (count > 1) {
-        callback(new Error('重复'))
+        callback(new Error(this.$t('data_fill.form.duplicate_error')))
       }
       callback()
     }
     const checkInvalidColumnValidator = (rule, value, callback) => {
       if (!value) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.component.required')))
       }
       if (this.columnsList.length === 0) {
-        return callback(new Error('值不存在'))
+        return callback(new Error(this.$t('data_fill.form.value_not_exists')))
       }
       if (find(this.columnsList, c => c === value) === undefined) {
-        callback(new Error('值不存在'))
+        callback(new Error(this.$t('data_fill.form.value_not_exists')))
       }
       callback()
     }
     const checkDuplicateIndexColumnValidator = (rule, value, callback, source) => {
       if (!value) {
-        return callback(new Error('必填'))
+        return callback(new Error(this.$t('commons.component.required')))
       }
       const f = split(rule.field, '.')[0]
       const _list = get(this.formData, f)
@@ -81,7 +82,7 @@ export default {
         }
       })
       if (count > 1) {
-        callback(new Error('重复'))
+        callback(new Error(this.$t('data_fill.form.duplicate_error')))
       }
       callback()
     }
@@ -160,7 +161,7 @@ export default {
 
       this.allDatasourceList = val[1].data
 
-      this.folders = val[2].data || []
+      this.folders = this.filterListDeep(val[2].data) || []
       if (this.formData.folder) {
         this.$nextTick(() => {
           this.$refs.tree.setCurrentKey(this.formData.folder)
@@ -172,6 +173,15 @@ export default {
     })
   },
   methods: {
+    filterListDeep(list) {
+      return filter(list, item => {
+        const hasChildren = item.children && item.children.length > 0
+        if (item.children) {
+          this.filterListDeep(item.children)
+        }
+        return hasDataPermission('manage', item.privileges) || hasChildren
+      })
+    },
     getTypeOptions(formOption) {
       const _options = []
       if (formOption.type !== 'date' &&
@@ -181,20 +191,20 @@ export default {
         formOption.type !== 'checkbox' &&
         !(formOption.type === 'select' && formOption.settings.multiple)
       ) {
-        _options.push({ value: 'nvarchar', label: '字符串' })
+        _options.push({ value: 'nvarchar', label: this.$t('data_fill.database.nvarchar') })
       }
       if (formOption.type === 'checkbox' ||
         formOption.type === 'select' && formOption.settings.multiple ||
         formOption.type === 'textarea') {
-        _options.push({ value: 'text', label: '长文本' })
+        _options.push({ value: 'text', label: this.$t('data_fill.database.text') })
       }
 
       if (formOption.type === 'input' && formOption.settings.inputType === 'number') {
-        _options.push({ value: 'number', label: '整型数字' })
-        _options.push({ value: 'decimal', label: '小数数字' })
+        _options.push({ value: 'number', label: this.$t('data_fill.database.number') })
+        _options.push({ value: 'decimal', label: this.$t('data_fill.database.decimal') })
       }
       if (formOption.type === 'date' || formOption.type === 'dateRange') {
-        _options.push({ value: 'datetime', label: '日期' })
+        _options.push({ value: 'datetime', label: this.$t('data_fill.database.datetime') })
       }
       return _options
     },
@@ -238,9 +248,14 @@ export default {
     },
     nodeClick(data) {
       this.$nextTick(() => {
-        this.formData.folder = data.id
-        this.formData.level = data.level + 1
-        this.folderTreeShow = false
+        if (hasDataPermission('manage', data.privileges)) {
+          this.formData.folder = data.id
+          this.formData.level = data.level + 1
+          this.folderTreeShow = false
+        } else {
+          this.formData.folder = undefined
+          this.formData.level = undefined
+        }
       })
     },
     filterMethod(val) {
@@ -290,7 +305,7 @@ export default {
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">
-          保存表单
+          {{ $t('data_fill.form.save_form') }}
         </span>
       </div>
 
@@ -309,6 +324,7 @@ export default {
         :model="formData"
         label-position="top"
         hide-required-asterisk
+        @submit.native.prevent
       >
         <el-form-item
           prop="name"
@@ -316,7 +332,7 @@ export default {
           :rules="[requiredRule]"
         >
           <template #label>
-            表单名称
+            {{ $t('data_fill.form.form_name') }}
             <span
               style="color: red"
             >*</span>
@@ -336,7 +352,7 @@ export default {
           :rules="[requiredRule]"
         >
           <template #label>
-            所属文件夹
+            {{ $t('data_fill.form.folder') }}
             <span
               style="color: red"
             >*</span>
@@ -368,11 +384,11 @@ export default {
                 </span>
                 <span
                   style="
-                  margin-left: 6px;
-                  white-space: nowrap;
-                  overflow: hidden;
-                  text-overflow: ellipsis;
-                "
+                    margin-left: 6px;
+                    white-space: nowrap;
+                    overflow: hidden;
+                    text-overflow: ellipsis;
+                  "
                   :title="data.name"
                 >{{ data.name }}</span>
               </span>
@@ -404,7 +420,7 @@ export default {
           :rules="[requiredRule]"
         >
           <template #label>
-            数据源
+            {{ $t('data_fill.form.datasource') }}
             <span
               style="color: red"
             >*</span>
@@ -437,7 +453,7 @@ export default {
           :rules="[requiredRule]"
         >
           <template #label>
-            数据库表名
+            {{ $t('data_fill.form.table_name') }}
             <span
               style="color: red"
             >*</span>
@@ -458,7 +474,7 @@ export default {
           style="width: 100%"
         >
           <el-table-column
-            label="表单字段"
+            :label="$t('data_fill.form.form_column')"
           >
             <template slot-scope="scope">
               {{ scope.row.settings.name }}
@@ -467,9 +483,8 @@ export default {
           <el-table-column>
             <template
               slot="header"
-              slot-scope="scope"
             >
-              数据库表字段名称
+              {{ $t('data_fill.form.column_name') }}
             </template>
             <template slot-scope="scope">
               <el-form-item
@@ -480,7 +495,7 @@ export default {
               >
                 <el-input
                   v-model.trim="scope.row.settings.mapping.columnName"
-                  placeholder="请输入"
+                  :placeholder="$t('fu.search_bar.please_input')"
                   size="small"
                   maxlength="50"
                   show-word-limit
@@ -495,7 +510,7 @@ export default {
                 >
                   <el-input
                     v-model.trim="scope.row.settings.mapping.columnName1"
-                    placeholder="请输入开始时间"
+                    :placeholder="$t('data_fill.form.please_insert_start')"
                     size="small"
                     maxlength="50"
                     show-word-limit
@@ -509,7 +524,7 @@ export default {
                 >
                   <el-input
                     v-model.trim="scope.row.settings.mapping.columnName2"
-                    placeholder="请输入结束时间"
+                    :placeholder="$t('data_fill.form.please_insert_end')"
                     size="small"
                     maxlength="50"
                     show-word-limit
@@ -520,7 +535,7 @@ export default {
             </template>
           </el-table-column>
           <el-table-column
-            label="数据库字段类型"
+            :label="$t('data_fill.form.column_type')"
           >
             <template slot-scope="scope">
               <el-form-item
@@ -530,7 +545,7 @@ export default {
               >
                 <el-select
                   v-model="scope.row.settings.mapping.type"
-                  placeholder="请选择"
+                  :placeholder="$t('data_fill.form.please_select')"
                   size="small"
                   required
                   style="width: 100%"
@@ -555,7 +570,7 @@ export default {
           >
             <el-checkbox
               v-model="formData.createIndex"
-              label="创建索引"
+              :label="$t('data_fill.form.create_index')"
               size="small"
             />
           </el-form-item>
@@ -565,7 +580,7 @@ export default {
             type="text"
             style="margin-left: 20px"
             @click="addIndex"
-          >+ 新增索引
+          >+ {{ $t('data_fill.form.add_index') }}
           </el-button>
         </div>
 
@@ -577,7 +592,7 @@ export default {
           style="width: 100%"
         >
           <el-table-column
-            label="索引名称"
+            :label="$t('data_fill.form.index_name')"
             width="300"
           >
             <template slot-scope="scope">
@@ -588,7 +603,7 @@ export default {
               >
                 <el-input
                   v-model="scope.row.name"
-                  placeholder="请输入"
+                  :placeholder="$t('fu.search_bar.please_input')"
                   size="small"
                   maxlength="50"
                   show-word-limit
@@ -598,9 +613,27 @@ export default {
             </template>
           </el-table-column>
 
-          <el-table-column
-            label="索引字段"
-          >
+          <el-table-column>
+            <template
+              slot="header"
+              slot-scope="scope"
+            >
+              {{ $t('data_fill.form.index_column') }}
+              <el-tooltip
+                class="item"
+                effect="dark"
+                placement="bottom"
+              >
+                <div
+                  slot="content"
+                  v-html="$t('data_fill.form.create_index_hint')"
+                />
+                <i
+                  class="el-icon-info"
+                  style="cursor: pointer;"
+                />
+              </el-tooltip>
+            </template>
             <template slot-scope="scope">
               <div
                 v-for="(indexRow, $index) in scope.row.columns"
@@ -615,7 +648,7 @@ export default {
                 >
                   <el-select
                     v-model="indexRow.column"
-                    placeholder="请选择"
+                    :placeholder="$t('data_fill.form.please_select')"
                     size="small"
                     required
                     style="width: 100%"
@@ -637,22 +670,22 @@ export default {
                 >
                   <el-select
                     v-model="indexRow.order"
-                    placeholder="请选择"
+                    :placeholder="$t('data_fill.form.please_select')"
                     size="small"
                     required
                     style="width: 100%"
                   >
                     <el-option
                       value="asc"
-                      label="顺序"
+                      :label="$t('data_fill.form.order_asc')"
                     />
                     <el-option
                       value="none"
-                      label="默认排序"
+                      :label="$t('data_fill.form.order_none')"
                     />
                     <el-option
                       value="desc"
-                      label="倒序"
+                      :label="$t('data_fill.form.order_desc')"
                     />
                   </el-select>
                 </el-form-item>
@@ -665,9 +698,10 @@ export default {
                 </div>
               </div>
               <el-button
+                v-if="scope.row.columns.length < 5"
                 type="text"
                 @click="addColumn(scope.row.columns)"
-              >+ 新增字段
+              >+ {{ $t('data_fill.form.add_column') }}
               </el-button>
             </template>
           </el-table-column>
@@ -688,11 +722,11 @@ export default {
 
     </el-main>
     <el-footer class="de-footer">
-      <el-button @click="closeSave">取消</el-button>
+      <el-button @click="closeSave">{{ $t("commons.cancel") }}</el-button>
       <el-button
         type="primary"
         @click="doSave"
-      >保存
+      >{{ $t("commons.confirm") }}
       </el-button>
     </el-footer>
   </el-container>
@@ -702,6 +736,10 @@ export default {
 .DataFillingFormSave {
 
   height: 100%;
+
+  ::v-deep .el-form-item__error {
+    position: relative;
+  }
 
   .de-header {
     height: 56px !important;

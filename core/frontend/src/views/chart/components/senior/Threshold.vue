@@ -385,8 +385,8 @@
                   <el-tooltip
                     v-if="item.enumValues && item.enumValues.length"
                   >
-                    <i class="el-icon-info"></i>
-                    <template v-slot:content>
+                    <i class="el-icon-info" />
+                    <template #content>
                       <div style="max-width: 200px">
                         {{ item.enumValues.join(',') }}
                       </div>

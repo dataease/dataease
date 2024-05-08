@@ -65,14 +65,14 @@ router.beforeEach(async(to, from, next) => routeBefore(() => {
   const hasToken = getToken()
 
   if (isMobile() && !to.path.includes(mobilePreview) && mobileIgnores.indexOf(to.path) === -1) {
-    let urlSuffix = '/app.html'
+    let urlSuffix = 'app.html'
     if (hasToken) {
       urlSuffix += ('?detoken=' + hasToken)
     }
     localStorage.removeItem('user-info')
     localStorage.removeItem('userId')
     localStorage.removeItem('Authorization')
-    window.location.href = window.origin + urlSuffix
+    window.location.href = window.origin + window.location.pathname + urlSuffix
     NProgress.done()
   }
 
@@ -102,7 +102,7 @@ router.beforeEach(async(to, from, next) => routeBefore(() => {
           route = store.getters.permission_routes.find(item => item.path === '/')
         }
         store.commit('permission/SET_CURRENT_ROUTES', route)
-        if (['system'].includes(route.name)) {
+        if (route?.name && ['system'].includes(route.name)) {
           store.dispatch('app/toggleSideBarHide', false)
         }
       } else {

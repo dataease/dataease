@@ -31,7 +31,7 @@
           :indeterminate="isIndeterminate"
           @change="handleCheckAllChange"
         >
-        {{ $t('commons.all') }}
+          {{ $t('commons.all') }}
         </el-checkbox>
         <el-checkbox-group
           v-model="value"
@@ -39,8 +39,8 @@
         >
           <template v-for="item in dataWithEmpty">
             <el-checkbox
-              class="is-tree-select"
               :key="item.id"
+              class="is-tree-select"
               :label="item.id"
             >{{ item.label || item.id }}
             </el-checkbox>
@@ -63,7 +63,7 @@
             :label="item.id"
             @click.native.prevent="testChange(item)"
           >
-            <span>{{item.label || item.id  }}</span>
+            <span>{{ item.label || item.id }}</span>
           </el-radio>
         </el-radio-group>
       </div>
@@ -132,7 +132,7 @@ export default {
   },
   computed: {
     dataWithEmpty() {
-      return this.element.options.attrs.showEmpty ? [{ label: '空数据', id: '_empty_$'}, ...this.data] : this.data
+      return this.element.options.attrs.showEmpty ? [{ label: '空数据', id: '_empty_$' }, ...this.data] : this.data
     },
     operator() {
       return this.element.options.attrs.multiple ? 'in' : 'eq'

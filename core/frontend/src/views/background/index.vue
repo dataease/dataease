@@ -236,74 +236,74 @@
         </el-col>
       </el-row>
 
-      <template v-if="this.curComponent.component === 'de-select' && !this.curComponent.options.attrs.multiple && this.curComponent.options.attrs.required">
+      <template v-if="curComponent.component === 'de-select' && !curComponent.options.attrs.multiple && curComponent.options.attrs.required">
         <el-row
           style="height: 40px;overflow: hidden;"
         >
-        <el-col
+          <el-col
             :span="3"
             style="padding-left: 10px;padding-top: 8px"
           >
-          {{ $t('deshowdate.open_mode') }}
-        </el-col>
-        <el-col
-          :span="20"
-          style="padding-left: 10px;padding-top: 8px"
+            {{ $t('deshowdate.open_mode') }}
+          </el-col>
+          <el-col
+            :span="20"
+            style="padding-left: 10px;padding-top: 8px"
           >
-          <el-radio-group
-            v-model="curComponent.style.showMode"
-            size="mini"
-          >
-            <el-radio label="select">{{ $t('time.dropdown_display') }}</el-radio>
-            <el-radio label="radio">{{ $t('time.tile_display') }}</el-radio>
-          </el-radio-group>
+            <el-radio-group
+              v-model="curComponent.style.showMode"
+              size="mini"
+            >
+              <el-radio label="select">{{ $t('time.dropdown_display') }}</el-radio>
+              <el-radio label="radio">{{ $t('time.tile_display') }}</el-radio>
+            </el-radio-group>
           </el-col>
         </el-row>
         <el-row
           v-if="curComponent.style.showMode === 'radio'"
           style="height: 40px;overflow: hidden;"
         >
-        <el-col
+          <el-col
             :span="3"
             style="padding-left: 10px;padding-top: 8px"
           >
-          {{ $t('time.display_format') }}
-        </el-col>
-        <el-col
+            {{ $t('time.display_format') }}
+          </el-col>
+          <el-col
             :span="20"
             style="padding-left: 10px;padding-top: 8px"
           >
-          <el-radio-group
-            v-model="curComponent.style.showStyle"
-            size="mini"
-          >
-            <el-radio label="single">{{ $t('time.radio') }}</el-radio>
-            <el-radio label="tab">{{ $t('time.tab_switching') }}</el-radio>
-          </el-radio-group>
-        </el-col>
+            <el-radio-group
+              v-model="curComponent.style.showStyle"
+              size="mini"
+            >
+              <el-radio label="single">{{ $t('time.radio') }}</el-radio>
+              <el-radio label="tab">{{ $t('time.tab_switching') }}</el-radio>
+            </el-radio-group>
+          </el-col>
         </el-row>
         <el-row
           v-if="curComponent.style.showMode === 'radio'"
           style="height: 40px;overflow: hidden;"
         >
-        <el-col
-          :span="3"
-          style="padding-left: 10px;padding-top: 8px"
-        >
-          {{$t('time.number_of_display_options')}}
-        </el-col>
-        <el-col
-          :span="8"
-          style="padding-left: 10px;padding-top: 8px"
-        >
-          <el-input-number
-            v-model="curComponent.style.showNum"
-            :min="1"
-            step-strictly
-            :max="10"
-            controls-position="right"
-            size="small"
-          />
+          <el-col
+            :span="3"
+            style="padding-left: 10px;padding-top: 8px"
+          >
+            {{ $t('time.number_of_display_options') }}
+          </el-col>
+          <el-col
+            :span="8"
+            style="padding-left: 10px;padding-top: 8px"
+          >
+            <el-input-number
+              v-model="curComponent.style.showNum"
+              :min="1"
+              step-strictly
+              :max="10"
+              controls-position="right"
+              size="small"
+            />
           </el-col>
         </el-row>
       </template>
@@ -400,10 +400,10 @@ export default {
       this.backgroundOrigin = deepCopy(this.curComponent.commonBackground ? this.curComponent.commonBackground : COMMON_BACKGROUND_NONE)
       this.backgroundOrigin.style = deepCopy(this.curComponent.style || { brColor: '', innerBgColor: '', wordColor: '' })
       if (!this.backgroundOrigin.style.showStyle) {
-        this.backgroundOrigin.style = {...this.backgroundOrigin.style, ...{ showStyle: 'single', showMode: 'select', showNum: 5 }}
+        this.backgroundOrigin.style = { ...this.backgroundOrigin.style, ...{ showStyle: 'single', showMode: 'select', showNum: 5 }}
       }
       if (!this.curComponent.style.showStyle) {
-        this.curComponent.style = {...this.curComponent.style, ...{ showStyle: 'single', showMode: 'select', showNum: 5 }}
+        this.curComponent.style = { ...this.curComponent.style, ...{ showStyle: 'single', showMode: 'select', showNum: 5 }}
       }
       this.queryBackground()
     },

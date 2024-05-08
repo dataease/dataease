@@ -10,7 +10,7 @@ export function sortCircle(tree, hisSortType, sortType) {
   sortPer(tree, hisSortType, sortType)
   tree.forEach(node => {
     if (node.children && node.children.length > 0) {
-      sortPer(node.children, hisSortType, sortType)
+      sortCircle(node.children, hisSortType, sortType)
     }
   })
   return tree

@@ -27,13 +27,13 @@ import io.dataease.plugins.common.dto.dataset.SqlVariableDetails;
 import io.dataease.plugins.common.dto.datasource.TableField;
 import io.dataease.service.authModel.VAuthModelService;
 import io.dataease.service.dataset.DataSetTableService;
+import io.dataease.service.exportCenter.ExportCenterService;
 import io.swagger.annotations.*;
 import org.apache.shiro.authz.annotation.Logical;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import javax.annotation.Resource;
-import javax.servlet.http.HttpServletResponse;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
@@ -53,6 +53,8 @@ public class DataSetTableController {
 
     @Resource
     private VAuthModelService vAuthModelService;
+    @Resource
+    private ExportCenterService exportCenterService;
 
     @DePermissions(value = {
             @DePermission(type = DePermissionType.DATASET, value = "id"),
@@ -269,7 +271,7 @@ public class DataSetTableController {
     @ApiOperation("数据集导出")
     @PostMapping("/exportDataset")
     @I18n
-    public void exportDataset(@RequestBody DataSetExportRequest request, HttpServletResponse response) throws Exception {
-        dataSetTableService.exportDataset(request, response);
+    public void exportDataset(@RequestBody DataSetExportRequest request) {
+        exportCenterService.addTask(request.getId(), "dataset", request);
     }
 }

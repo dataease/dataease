@@ -65,7 +65,25 @@ export function baseMixOption(chart_option, chart) {
       }
       // label
       if (customAttr.label) {
-        y.label = customAttr.label
+        const { label } = customAttr
+        const mainLabel = {
+          show: label.show,
+          color: label.color,
+          position: label.position,
+          fontSize: label.fontSize,
+          formatter: label.formatter
+        }
+        let subLabel = {
+          show: label.subShow,
+          color: label.subColor,
+          position: label.subPosition,
+          fontSize: label.subFontSize,
+          formatter: label.subFormatter
+        }
+        if (label.subShow === undefined) {
+          subLabel = mainLabel
+        }
+        y.label = i >= yAxis.length ? subLabel : mainLabel
       }
       chart_option.legend.data.push(y.name)
       i >= yAxis.length ? (y.yAxisIndex = 1) : (y.yAxisIndex = 0)

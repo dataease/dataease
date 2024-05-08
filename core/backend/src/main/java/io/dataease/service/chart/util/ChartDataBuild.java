@@ -1,7 +1,11 @@
 package io.dataease.service.chart.util;
 
+import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.commons.utils.AuthUtils;
 import io.dataease.controller.request.chart.ChartDrillRequest;
 import io.dataease.dto.chart.*;
+import io.dataease.i18n.Lang;
+import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.ChartViewWithBLOBs;
 import io.dataease.plugins.common.dto.chart.ChartViewFieldDTO;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
@@ -1132,10 +1136,10 @@ public class ChartDataBuild {
         } else {
             switch (columnPermissionItem.getDesensitizationRule().getCustomBuiltInRule()) {
                 case RetainBeforeMAndAfterN:
-                    if (StringUtils.isEmpty(originStr) || originStr.length() <= columnPermissionItem.getDesensitizationRule().getM() + columnPermissionItem.getDesensitizationRule().getN() + 1) {
+                    if (StringUtils.isEmpty(originStr) || originStr.length() < columnPermissionItem.getDesensitizationRule().getM() + columnPermissionItem.getDesensitizationRule().getN()) {
                         desensitizationStr = String.join("", Collections.nCopies(columnPermissionItem.getDesensitizationRule().getM(), "X")) + "***" + String.join("", Collections.nCopies(columnPermissionItem.getDesensitizationRule().getN(), "X"));
                     } else {
-                        desensitizationStr = StringUtils.substring(originStr, 0, columnPermissionItem.getDesensitizationRule().getM()) + "***" + StringUtils.substring(originStr, originStr.length() - columnPermissionItem.getDesensitizationRule().getN() - 1, originStr.length());
+                        desensitizationStr = StringUtils.substring(originStr, 0, columnPermissionItem.getDesensitizationRule().getM()) + "***" + StringUtils.substring(originStr, originStr.length() - columnPermissionItem.getDesensitizationRule().getN(), originStr.length());
                     }
                     break;
                 case RetainMToN:
@@ -1390,20 +1394,24 @@ public class ChartDataBuild {
                 values.add(row[xAxis.size() - 2]);
                 values.add(row[xAxis.size() - 1]);
                 obj.put("values", values);
+                Date date1 = null, date2 = null;
                 try {
-                    Date date = sdf.parse(row[xAxis.size() - 2]);
-                    if (date != null) {
-                        dates.add(date);
+                    date1 = sdf.parse(row[xAxis.size() - 2]);
+                    if (date1 != null) {
+                        dates.add(date1);
                     }
                 } catch (Exception ignore) {
                 }
                 try {
-                    Date date = sdf.parse(row[xAxis.size() - 1]);
-                    if (date != null) {
-                        dates.add(date);
+                    date2 = sdf.parse(row[xAxis.size() - 1]);
+                    if (date2 != null) {
+                        dates.add(date2);
                     }
                 } catch (Exception ignore) {
                 }
+                //间隔时间
+                obj.put("gap", getTimeGap(date1, date2, xAxis1.getDateStyle()));
+
             } else {
                 values.add(new BigDecimal(row[xAxis.size() - 2]));
                 values.add(new BigDecimal(row[xAxis.size() - 1]));
@@ -1411,6 +1419,9 @@ public class ChartDataBuild {
 
                 numbers.add(new BigDecimal(row[xAxis.size() - 2]));
                 numbers.add(new BigDecimal(row[xAxis.size() - 1]));
+
+                //间隔差
+                obj.put("gap", new BigDecimal(row[xAxis.size() - 1]).subtract(new BigDecimal(row[xAxis.size() - 2])));
             }
 
             dataList.add(obj);
@@ -1434,6 +1445,114 @@ public class ChartDataBuild {
         map.put("data", dataList);
         return map;
 
+    }
+
+    private static String getTimeGap(Date from, Date to, String dateStyle) {
+        if (from == null || to == null) {
+            return "";
+        }
+        Calendar fromCalender = Calendar.getInstance();
+        fromCalender.setTime(from);
+
+        Calendar toCalender = Calendar.getInstance();
+        toCalender.setTime(to);
+
+        long yearGap = 0;
+        long monthGap = 0;
+        long dayGap = (toCalender.getTimeInMillis() - fromCalender.getTimeInMillis()) / (1000 * 3600 * 24);
+        long hourGap = ((toCalender.getTimeInMillis() - fromCalender.getTimeInMillis()) / (1000 * 3600)) % 24;
+        long minuteGap = ((toCalender.getTimeInMillis() - fromCalender.getTimeInMillis()) / (1000 * 60)) % 60;
+        long secondGap = ((toCalender.getTimeInMillis() - fromCalender.getTimeInMillis()) / 1000) % 60;
+
+        CurrentUserDto user = AuthUtils.getUser();
+        String language = null;
+        if (user != null) {
+            language = user.getLanguage();
+        }
+        Lang lang = Lang.getLangWithoutDefault(language);
+        boolean isEnUs = Lang.en_US.equals(lang);
+        String splitter = isEnUs ? " " : "";
+
+        String yearGapStr = "";
+        String monthGapStr = "";
+
+        String dayGapStr = "";
+        if (dayGap != 0) {
+            dayGapStr = dayGap + splitter + Translator.get("i18n_day") + (isEnUs && dayGap != 1 ? "s" : "");
+        }
+        String hourGapStr = "";
+        if (hourGap != 0) {
+            hourGapStr = hourGap + splitter + Translator.get("i18n_hour") + (isEnUs && hourGap != 1 ? "s" : "");
+        }
+        String minuteGapStr = "";
+        if (minuteGap != 0) {
+            minuteGapStr = minuteGap + splitter + Translator.get("i18n_minute") + (isEnUs && minuteGap != 1 ? "s" : "");
+        }
+        String secondGapStr = "";
+        if (secondGap != 0) {
+            secondGapStr = secondGap + splitter + Translator.get("i18n_second") + (isEnUs && secondGap != 1 ? "s" : "");
+        }
+
+        List<String> list = new ArrayList<>();
+
+        switch (dateStyle) {
+            case "y":
+                yearGap = toCalender.get(Calendar.YEAR) - fromCalender.get(Calendar.YEAR);
+                yearGapStr = yearGap == 0 ? "" : (yearGap + splitter + Translator.get("i18n_year") + (isEnUs && yearGap != 1 ? "s" : ""));
+                return yearGapStr;
+            case "y_M":
+                yearGap = ((toCalender.get(Calendar.YEAR) - fromCalender.get(Calendar.YEAR)) * 12L + (toCalender.get(Calendar.MONTH) - fromCalender.get(Calendar.MONTH))) / 12;
+                monthGap = ((toCalender.get(Calendar.YEAR) - fromCalender.get(Calendar.YEAR)) * 12L + (toCalender.get(Calendar.MONTH) - fromCalender.get(Calendar.MONTH))) % 12;
+
+                yearGapStr = yearGap == 0 ? "" : (yearGap + splitter + Translator.get("i18n_year") + (isEnUs && yearGap != 1 ? "s" : ""));
+                monthGapStr = monthGap == 0 ? "" : (monthGap + splitter + Translator.get("i18n_month") + (isEnUs && monthGap != 1 ? "s" : ""));
+
+                if (!yearGapStr.isEmpty()) {
+                    list.add(yearGapStr);
+                }
+                if (!monthGapStr.isEmpty()) {
+                    list.add(monthGapStr);
+                }
+                return StringUtils.join(list, splitter);
+            case "y_M_d":
+                return dayGapStr;
+            case "y_M_d_H":
+                if (!dayGapStr.isEmpty()) {
+                    list.add(dayGapStr);
+                }
+                if (!hourGapStr.isEmpty()) {
+                    list.add(hourGapStr);
+                }
+                return StringUtils.join(list, splitter);
+            case "y_M_d_H_m":
+                if (!dayGapStr.isEmpty()) {
+                    list.add(dayGapStr);
+                }
+                if (!hourGapStr.isEmpty()) {
+                    list.add(hourGapStr);
+                }
+                if (!minuteGapStr.isEmpty()) {
+                    list.add(minuteGapStr);
+                }
+                return StringUtils.join(list, splitter);
+            case "H_m_s":
+            case "y_M_d_H_m_s":
+                if (!dayGapStr.isEmpty()) {
+                    list.add(dayGapStr);
+                }
+                if (!hourGapStr.isEmpty()) {
+                    list.add(hourGapStr);
+                }
+                if (!minuteGapStr.isEmpty()) {
+                    list.add(minuteGapStr);
+                }
+                if (!secondGapStr.isEmpty()) {
+                    list.add(secondGapStr);
+                }
+                return StringUtils.join(list, splitter);
+            default:
+                return "";
+        }
     }
 
     public static Map<String, Object> transBidirectionalBarData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {

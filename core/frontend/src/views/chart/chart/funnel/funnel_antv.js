@@ -26,7 +26,7 @@ export function baseFunnelOptionAntV(container, chart, action) {
     conversionTag = {
       formatter: datum => {
         const rate = ((datum[Funnel.CONVERSATION_FIELD][1] / datum[Funnel.CONVERSATION_FIELD][0]) * 100).toFixed(2)
-        return `${labelAttr.conversionLabel ?? ''}${rate}%`;
+        return `${labelAttr.conversionLabel ?? ''}${rate}%`
       }
     }
   }
@@ -68,7 +68,7 @@ export function baseFunnelOptionAntV(container, chart, action) {
   const plot = new Funnel(container, options)
 
   plot.on('interval:click', action)
-// 处理 tooltip 被其他视图遮挡
+  // 处理 tooltip 被其他视图遮挡
   configPlotTooltipEvent(chart, plot)
   return plot
 }

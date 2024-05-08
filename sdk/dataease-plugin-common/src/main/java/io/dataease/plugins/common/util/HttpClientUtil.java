@@ -30,7 +30,9 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
 import java.io.File;
+import java.io.InputStream;
 import java.net.ProxySelector;
 import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
@@ -284,5 +286,38 @@ public class HttpClientUtil {
             logger.error("HttpClient查询失败", e);
             throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
         }
+    }
+
+    public static byte[] downFromRemote(String url, HttpClientConfig config) {
+        HttpGet httpGet = new HttpGet(url);
+        CloseableHttpClient httpClient = buildHttpClient(url);
+
+        try {
+            httpGet.setConfig(config.buildRequestConfig());
+
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpGet.addHeader(key, header.get(key));
+            }
+            HttpResponse response = httpClient.execute(httpGet);
+            InputStream inputStream = response.getEntity().getContent();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+            return outputStream.toByteArray();
+        } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new RuntimeException("HttpClient查询失败: " + e.getMessage());
+        } finally {
+            try {
+                httpClient.close();
+            } catch (Exception e) {
+                logger.error("HttpClient关闭连接失败", e);
+            }
+        }
+
     }
 }

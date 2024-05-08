@@ -6,7 +6,7 @@
     <el-header class="de-header">
       <div class="panel-info-area">
         <span class="text16 margin-left12">
-          {{ id? '编辑任务': '新建任务' }}
+          {{ id? $t('data_fill.task.edit_task'): $t('data_fill.task.create_task') }}
         </span>
       </div>
 
@@ -30,6 +30,7 @@
           :rules="rule"
           size="small"
           label-width="100px"
+          @submit.native.prevent
         >
           <div class="row-rules marTop0">
             <span>{{ $t("datasource.base_info") }}</span>
@@ -131,7 +132,7 @@
                 <span
                   class="prefix"
                   style="margin-bottom: 28px; "
-                >任务下发时间</span>
+                >{{ $t('data_fill.task.task_distribute_time') }}</span>
                 <el-form-item
                   prop="publishStartTime"
                   style="flex:1"
@@ -154,7 +155,7 @@
                 <span
                   class="prefix"
                   style="margin-bottom: 28px"
-                >填报截止时间</span>
+                >{{ $t('data_fill.task.task_end_time') }}</span>
                 <el-form-item
                   prop="publishEndTime"
                   style="flex:1"
@@ -221,7 +222,7 @@
                 <span class="tail">{{ $t('cron.every_exec') }}</span>
               </div>
               <div class="rate-type-time second-row">
-                <span class="prefix">在任务下发</span>
+                <span class="prefix">{{ $t('data_fill.task.task_finish_in') }}</span>
                 <el-input-number
                   v-model.number="form.publishRangeTime"
                   class="w140"
@@ -245,7 +246,7 @@
                   />
                 </el-select>
 
-                <span class="tail">内完成填报</span>
+                <span class="tail">{{ $t('data_fill.task.task_finish_in_suffix') }}</span>
               </div>
             </template>
           </el-form-item>
