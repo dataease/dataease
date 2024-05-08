@@ -2,9 +2,9 @@
 import { ref, onMounted, unref, onBeforeUnmount, computed } from 'vue'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import MobileBackgroundSelector from './MobileBackgroundSelector.vue'
-import { findById } from '@/api/visualization/dataVisualization'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { useEmbedded } from '@/store/modules/embedded'
 import { canvasSave } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
@@ -39,6 +39,13 @@ const mobileStatusChange = (type, value) => {
     )
   }
 }
+const embeddedStore = useEmbedded()
+
+const iframeSrc = computed(() => {
+  return embeddedStore.baseUrl
+    ? `${embeddedStore.baseUrl}/mobile.html#/panel`
+    : './mobile.html#/panel'
+})
 
 const handleLoad = () => {
   mobileStatusChange(
@@ -207,7 +214,7 @@ const save = () => {
         {{ dvInfo.name }}
       </div>
       <div class="config-panel-content" v-loading="mobileLoading">
-        <iframe src="./mobile.html#/panel" frameborder="0" width="375" />
+        <iframe :src="iframeSrc" frameborder="0" width="375" />
       </div>
       <div class="config-panel-foot"></div>
     </div>
