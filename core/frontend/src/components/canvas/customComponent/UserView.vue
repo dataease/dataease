@@ -192,7 +192,7 @@
         </span>
 
         <el-button
-          v-if="showChartInfoType==='details' && hasDataPermission('export',panelInfo.privileges)"
+          v-if="showChartInfoType==='details' && chart.dataFrom !== 'template' && hasDataPermission('export',panelInfo.privileges)"
           size="mini"
           :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
           @click="exportExcel"
@@ -204,7 +204,7 @@
         </el-button>
 
         <el-button
-          v-if="showChartInfoType==='details' && !userId && hasDataPermission('export',panelInfo.privileges)"
+          v-if="showChartInfoType==='details' && chart.dataFrom !== 'template' && !userId && hasDataPermission('export',panelInfo.privileges)"
           size="mini"
           :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
           @click="exportSourceDetails"
