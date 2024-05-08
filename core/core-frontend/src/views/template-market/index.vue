@@ -422,7 +422,8 @@ const apply = template => {
   const templateTemplate = {
     newFrom: state.dvCreateForm.newFrom,
     templateUrl: state.dvCreateForm.templateUrl,
-    resourceName: state.dvCreateForm.resourceName
+    resourceName: state.dvCreateForm.resourceName,
+    templateId: state.dvCreateForm.templateId
   }
   state.curApplyTemplate.recentUseTime = Date.now()
   state.curApplyTemplate.categoryNames.push('最近使用')
