@@ -1,7 +1,6 @@
 <script lang="ts" setup>
 import { onBeforeMount, ref, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { XpackComponent } from '@/components/plugin'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import DePreviewMobile from './MobileInPc.vue'
@@ -90,10 +89,7 @@ const hanedleMessage = event => {
   }
 }
 
-let p = null
-const XpackLoaded = () => p(true)
 onBeforeMount(async () => {
-  await new Promise(r => (p = r))
   window.top.postMessage({ type: 'panelInit', value: true }, '*')
   window.addEventListener('message', hanedleMessage)
   useEmitt({
@@ -120,11 +116,6 @@ onBeforeUnmount(() => {
   <div class="panel-mobile">
     <de-preview-mobile v-if="panelInit"></de-preview-mobile>
   </div>
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
-    @loaded="XpackLoaded"
-    @load-fail="XpackLoaded"
-  />
 </template>
 
 <style lang="less" scoped>

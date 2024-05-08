@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref, onMounted, unref, onBeforeUnmount, computed } from 'vue'
-import { XpackComponent } from '@/components/plugin'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import MobileBackgroundSelector from './MobileBackgroundSelector.vue'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
@@ -47,17 +46,6 @@ const iframeSrc = computed(() => {
     ? `${embeddedStore.baseUrl}mobile.html#/panel`
     : './mobile.html#/panel'
 })
-const openHandler = ref(null)
-
-const initOpenHandler = newWindow => {
-  if (openHandler?.value && !!embeddedStore.baseUrl) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
-  }
-}
 
 const handleLoad = () => {
   mobileStatusChange(
@@ -146,7 +134,6 @@ const setMobileStyle = debounce(() => {
     transformOrigin: '0 0'
   }
 }, 100)
-const newWindow = ref()
 onMounted(() => {
   window.addEventListener('message', hanedleMessage)
   window.addEventListener('resize', setMobileStyle)
@@ -158,9 +145,6 @@ onMounted(() => {
     }
   })
   setMobileStyle()
-  setTimeout(() => {
-    initOpenHandler(newWindow.value)
-  }, 300)
 })
 
 onBeforeUnmount(() => {
@@ -230,7 +214,7 @@ const save = () => {
         {{ dvInfo.name }}
       </div>
       <div class="config-panel-content" v-loading="mobileLoading">
-        <iframe ref="newWindow" :src="iframeSrc" frameborder="0" width="375" />
+        <iframe :src="iframeSrc" frameborder="0" width="375" />
       </div>
       <div class="config-panel-foot"></div>
     </div>
@@ -274,7 +258,6 @@ const save = () => {
       </div>
     </div>
   </div>
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less" scoped>
