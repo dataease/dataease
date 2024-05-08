@@ -740,11 +740,14 @@ const handleCondition = item => {
   handleDialogClick()
   if (activeConditionForRename.id) return
   activeCondition.value = item.id
-  curComponent.value = conditions.value.find(ele => ele.id === item.id)
+  curComponent.value = cloneDeep(conditions.value.find(ele => ele.id === item.id))
+  curComponent.value.dataset.fields = []
 
   multiple.value = curComponent.value.multiple
   if (curComponent.value.dataset.id) {
-    getOptions(curComponent.value.dataset.id, curComponent.value)
+    listFieldsWithPermissions(curComponent.value.dataset.id).then(res => {
+      curComponent.value.dataset.fields = res.data
+    })
   }
   datasetFieldList.value.forEach(ele => {
     if (!curComponent.value.checkedFieldsMap[ele.id]) {
