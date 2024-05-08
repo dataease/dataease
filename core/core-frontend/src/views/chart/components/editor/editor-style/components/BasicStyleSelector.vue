@@ -214,8 +214,8 @@ onMounted(() => {
         v-model="state.basicStyleForm.tableLayoutMode"
         @change="changeBasicStyle('tableLayoutMode')"
       >
-        <el-radio label="grid">{{ t('chart.table_layout_grid') }}</el-radio>
-        <el-radio label="tree">{{ t('chart.table_layout_tree') }}</el-radio>
+        <el-radio label="grid" :effect="themes">{{ t('chart.table_layout_grid') }}</el-radio>
+        <el-radio label="tree" :effect="themes">{{ t('chart.table_layout_tree') }}</el-radio>
       </el-radio-group>
     </el-form-item>
 
@@ -770,7 +770,11 @@ onMounted(() => {
 
     <div v-show="showProperty('topN')" class="top-n-setting">
       <el-form-item class="form-item" :class="'form-item-' + themes">
-        <el-checkbox v-model="state.basicStyleForm.calcTopN" @change="changeBasicStyle('calcTopN')">
+        <el-checkbox
+          :effect="themes"
+          v-model="state.basicStyleForm.calcTopN"
+          @change="changeBasicStyle('calcTopN')"
+        >
           {{ $t('chart.top_n_desc') }}
         </el-checkbox>
       </el-form-item>
@@ -789,6 +793,7 @@ onMounted(() => {
           :precision="0"
           :step-strictly="true"
           :value-on-clear="5"
+          :effect="themes"
           @change="changeBasicStyle('topN')"
         />
         <span>{{ $t('chart.top_n_input_2') }}</span>
