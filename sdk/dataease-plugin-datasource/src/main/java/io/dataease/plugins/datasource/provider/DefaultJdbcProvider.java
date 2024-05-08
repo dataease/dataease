@@ -535,7 +535,7 @@ public abstract class DefaultJdbcProvider extends Provider {
     }
 
     protected boolean isDefaultClassLoader(String customDriver) {
-        return StringUtils.isEmpty(customDriver) || customDriver.equalsIgnoreCase("default");
+        return StringUtils.isEmpty(customDriver) || customDriver.contains("default");
     }
 
     @Override
