@@ -17,7 +17,7 @@ const { start, done } = useNProgress()
 const interactiveStore = interactiveStoreWithOut()
 
 const { loadStart, loadDone } = usePageLoading()
-const whiteList = ['/login'] // 不重定向白名单
+const whiteList = ['/login', '/panel'] // 不重定向白名单
 
 router.beforeEach(async (to, _, next) => {
   start()
