@@ -107,7 +107,7 @@ export default {
   methods: {
     init() {
       if (!this.formatterItem.formatterCfg) {
-        this.formatterItem.formatterCfg = formatterItem
+        this.formatterItem.formatterCfg = JSON.parse(JSON.stringify(formatterItem))
       }
     },
     getExampleValue() {
