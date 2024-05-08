@@ -34,7 +34,7 @@ public class CronUtils {
         return date;
     }
 
-    public static String cron() {
+    public static String tempCron() {
         Calendar instance = Calendar.getInstance();
         instance.add(Calendar.SECOND, 5);
         return instance.get(Calendar.SECOND) + " " +

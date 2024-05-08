@@ -10,8 +10,9 @@ import org.quartz.TriggerKey;
 import org.springframework.stereotype.Component;
 
 import java.util.Date;
+import java.util.Map;
 
-@Component
+@Component("deTaskExecutor")
 public class DeTaskExecutor {
 
     protected static final String IS_TEMP_TASK = "isTempTask";
@@ -20,12 +21,7 @@ public class DeTaskExecutor {
     private ScheduleManager scheduleManager;
 
     @XpackInteract(value = "xpackTaskExecutor", replace = true)
-    public boolean execute(Long taskId) {
-        return false;
-    }
-
-    @XpackInteract(value = "xpackTaskExecutor", replace = true)
-    public boolean executeTemplate(Long taskId) {
+    public boolean execute(Map<String, Object> taskData) {
         return false;
     }
 
@@ -44,7 +40,7 @@ public class DeTaskExecutor {
         scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(startTime), end, jobDataMap);
     }
 
-    public void fireNow(Long taskId) throws Exception{
+    public void fireNow(Long taskId) throws Exception {
         String key = taskId.toString();
         JobKey jobKey = new JobKey(key, key);
         scheduleManager.fireNow(jobKey);
@@ -56,7 +52,7 @@ public class DeTaskExecutor {
         TriggerKey triggerKey = new TriggerKey(key, key);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(IS_TEMP_TASK, true);
-        String cron = CronUtils.cron();
+        String cron = CronUtils.tempCron();
         jobDataMap.put("taskId", taskId);
         scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(startTime), null, jobDataMap);
     }
