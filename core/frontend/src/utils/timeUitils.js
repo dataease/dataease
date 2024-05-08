@@ -1,4 +1,5 @@
-export const getRange = (selectValue, timeGranularity) => {
+export const getRange = (outerTimeValue, timeGranularity) => {
+  const selectValue = timeGranularity === 'y_M_d_H' ? outerTimeValue + ':' : outerTimeValue
   if (new Date(selectValue).toString() === 'Invalid Date') {
     return selectValue
   }
@@ -57,7 +58,8 @@ const getMonthEnd = timestamp => {
 }
 
 const getDayEnd = timestamp => {
-  return [+new Date(timestamp), +new Date(timestamp) + 60 * 1000 * 60 * 24 - 1000]
+  const utcTime = getUtcTime(timestamp)
+  return [+utcTime, +utcTime + 60 * 1000 * 60 * 24 - 1000]
 }
 
 const getHourEnd = timestamp => {
@@ -89,3 +91,12 @@ const getDayBegin = timestamp => {
   return +new Date(timestamp)
 }
 
+const getUtcTime = timestamp => {
+  if (timestamp) {
+    const time = new Date(timestamp)
+    const utcDate = new Date(time.getUTCFullYear(), time.getUTCMonth(), time.getUTCDate(), time.getUTCHours(), time.getUTCMinutes(), time.getUTCSeconds())
+    return utcDate
+  } else {
+    return timestamp
+  }
+}
