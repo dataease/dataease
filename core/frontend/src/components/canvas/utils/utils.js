@@ -472,7 +472,10 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
   if ((chart.render === 'echarts' || ['text', 'label'].includes(chart.type)) && !(chart.data?.series?.length && chart.data?.series[0].data?.length)) {
     callBack()
     return
-  } else if ((chart.render === 'antv' && !['text', 'label'].includes(chart.type)) && !chart.data?.data?.length) {
+  } else if ((chart.render === 'antv' && !['text', 'label', 'flow-map'].includes(chart.type)) && !chart.data?.data?.length) {
+    callBack()
+    return
+  } else if (chart.type === 'flow-map' && !chart.data?.tableRow?.length) {
     callBack()
     return
   }
