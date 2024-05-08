@@ -89,7 +89,10 @@ const hanedleMessage = event => {
   }
 }
 
-onBeforeMount(() => {
+let p = null
+const XpackLoaded = () => p(true)
+onBeforeMount(async () => {
+  await new Promise(r => (p = r))
   window.top.postMessage({ type: 'panelInit', value: true }, '*')
   window.addEventListener('message', hanedleMessage)
   useEmitt({
@@ -106,6 +109,7 @@ const mobileStatusChange = (type, value) => {
     eventBus.emit('removeMatrixItemById-canvas-main', value)
   }
 }
+
 onBeforeUnmount(() => {
   window.removeEventListener('message', hanedleMessage)
 })
@@ -115,6 +119,11 @@ onBeforeUnmount(() => {
   <div class="panel-mobile">
     <de-preview-mobile v-if="panelInit"></de-preview-mobile>
   </div>
+  <XpackComponent
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
+    @loaded="XpackLoaded"
+    @load-fail="XpackLoaded"
+  />
 </template>
 
 <style lang="less" scoped>
