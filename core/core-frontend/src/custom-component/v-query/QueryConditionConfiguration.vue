@@ -740,7 +740,7 @@ const handleCondition = item => {
   handleDialogClick()
   if (activeConditionForRename.id) return
   activeCondition.value = item.id
-  curComponent.value = cloneDeep(conditions.value.find(ele => ele.id === item.id))
+  curComponent.value = conditions.value.find(ele => ele.id === item.id)
   curComponent.value.dataset.fields = []
 
   multiple.value = curComponent.value.multiple
