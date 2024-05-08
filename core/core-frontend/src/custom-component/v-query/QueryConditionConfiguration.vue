@@ -1719,6 +1719,9 @@ defineExpose({
                   popper-class="dataset-parameters"
                   value-key="id"
                   multiple
+                  collapse-tags
+                  collapse-tags-tooltip
+                  :max-collapse-tags="3"
                   @focus="handleDialogClick"
                   v-model="curComponent.parameters"
                   clearable
