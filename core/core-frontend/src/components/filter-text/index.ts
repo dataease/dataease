@@ -29,7 +29,7 @@ const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
-  return new Date(value)['format']()
+  return new Date(value).toLocaleString()
 }
 const valueText = (field, val, options) => {
   for (let index = 0; index < options.length; index++) {

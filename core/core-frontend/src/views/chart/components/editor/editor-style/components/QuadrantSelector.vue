@@ -1,8 +1,13 @@
 <script lang="tsx" setup>
-import { computed, onMounted, PropType, reactive, watch } from 'vue'
+import { computed, inject, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_QUADRANT_STYLE } from '@/views/chart/components/editor/util/chart'
-
+import { useEmitt } from '@/hooks/web/useEmitt'
+useEmitt({
+  name: 'quadrant-default-baseline',
+  callback: args => quadrantDefaultBaseline(args)
+})
+const quotaData = ref<Axis[]>(inject('quotaData'))
 const { t } = useI18n()
 
 const props = defineProps({
@@ -62,6 +67,10 @@ const fillOpacityList = computed(() => {
 
 const changeStyle = () => {
   emit('onChangeQuadrantForm', state.quadrantForm)
+}
+const quadrantDefaultBaseline = quadrant => {
+  state.quadrantForm.xBaseline = quadrant.xBaseline
+  state.quadrantForm.yBaseline = quadrant.yBaseline
 }
 
 const init = () => {
@@ -134,6 +143,42 @@ onMounted(() => {
               @change="changeStyle()"
             />
           </el-tooltip>
+        </el-form-item>
+      </div>
+      <div style="display: flex">
+        <el-form-item
+          class="form-item"
+          label="X 轴恒线"
+          :class="'form-item-' + themes"
+          style="padding-left: 4px"
+        >
+          <el-input-number
+            controls-position="right"
+            style="width: 100%"
+            :effect="props.themes"
+            v-model="state.quadrantForm.xBaseline"
+            :precision="0"
+            :min="0"
+            size="small"
+            @change="changeStyle()"
+          />
+        </el-form-item>
+        <el-form-item
+          class="form-item"
+          label="Y 轴恒线"
+          :class="'form-item-' + themes"
+          style="padding-left: 4px"
+        >
+          <el-input-number
+            controls-position="right"
+            style="width: 100%"
+            :effect="props.themes"
+            v-model="state.quadrantForm.yBaseline"
+            :precision="0"
+            :min="0"
+            size="small"
+            @change="changeStyle()"
+          />
         </el-form-item>
       </div>
     </template>

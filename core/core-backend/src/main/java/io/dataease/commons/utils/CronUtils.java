@@ -1,6 +1,6 @@
 package io.dataease.commons.utils;
 
-import io.dataease.task.dao.auto.entity.CoreSysTask;
+import io.dataease.utils.LogUtil;
 import org.apache.commons.lang3.ObjectUtils;
 import org.quartz.CronExpression;
 import org.quartz.CronScheduleBuilder;
@@ -12,19 +12,9 @@ import java.text.SimpleDateFormat;
 import java.util.Calendar;
 import java.util.Date;
 
-/**
- * @author song.tianyang
- * @Date 2020/12/17 4:06 下午
- * @Description CRON解析类
- */
 public class CronUtils {
 
-    /**
-     * 解析表达式，获取CronTrigger
-     *
-     * @param cron
-     * @return
-     */
+
     public static CronTrigger getCronTrigger(String cron) {
         if (!CronExpression.isValidExpression(cron)) {
             throw new RuntimeException("cron :" + cron + "表达式解析错误");
@@ -32,28 +22,6 @@ public class CronUtils {
         return TriggerBuilder.newTrigger().withIdentity("Calculate Date").withSchedule(CronScheduleBuilder.cronSchedule(cron)).build();
     }
 
-    /**
-     * 获取以指定时间为开始时间的下一次执行时间
-     *
-     * @param cron
-     * @param start
-     * @return
-     */
-    public static Date getNextTriggerTime(String cron, Date start) {
-        if (start == null) {
-            return getNextTriggerTime(cron);
-        } else {
-            CronTrigger trigger = getCronTrigger(cron);
-            return trigger.getFireTimeAfter(start);
-        }
-    }
-
-    /**
-     * 获取以当前日期为准的下一次执行时间
-     *
-     * @param cron
-     * @return
-     */
     public static Date getNextTriggerTime(String cron) {
         Date date = null;
         try {
@@ -61,45 +29,9 @@ public class CronUtils {
             Date startDate = trigger.getStartTime();
             date = trigger.getFireTimeAfter(startDate);
         } catch (Exception e) {
-
+            LogUtil.error(e.getMessage(), e);
         }
         return date;
-    }
-
-    public static String cron(CoreSysTask taskEntity) {
-        if (taskEntity.getRateType() == -1) {
-            return taskEntity.getRateVal();
-        }
-        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-
-        Date date = null;
-        try {
-            date = sdf.parse(taskEntity.getRateVal());
-        } catch (ParseException e) {
-            e.printStackTrace();
-        }
-        Calendar instance = Calendar.getInstance();
-        instance.setTime(date);
-
-        if (taskEntity.getRateType() == 0) {
-            return instance.get(Calendar.SECOND) + " " +
-                    instance.get(Calendar.MINUTE) + " " +
-                    instance.get(Calendar.HOUR_OF_DAY) + " * * ?";
-        }
-        if (taskEntity.getRateType() == 1) {
-            return instance.get(Calendar.SECOND) + " " +
-                    instance.get(Calendar.MINUTE) + " " +
-                    instance.get(Calendar.HOUR_OF_DAY) + " ? * " +
-                    getDayOfWeek(instance);
-        }
-        if (taskEntity.getRateType() == 2) {
-            return instance.get(Calendar.SECOND) + " " +
-                    instance.get(Calendar.MINUTE) + " " +
-                    instance.get(Calendar.HOUR_OF_DAY) + " " +
-                    instance.get(Calendar.DATE) + " * ?";
-        }
-
-        return null;
     }
 
     public static String cron() {
@@ -109,6 +41,44 @@ public class CronUtils {
                 instance.get(Calendar.MINUTE) + " " +
                 instance.get(Calendar.HOUR_OF_DAY) + " * * ?";
     }
+
+    public static String cron(Integer rateType, String rateVal) {
+        if (rateType == 0) {
+            return rateVal;
+        }
+        SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+
+        Date date = null;
+        try {
+            date = sdf.parse(rateVal);
+        } catch (ParseException e) {
+            e.printStackTrace();
+        }
+        Calendar instance = Calendar.getInstance();
+        assert date != null;
+        instance.setTime(date);
+
+        if (rateType == 1) {
+            return instance.get(Calendar.SECOND) + " " +
+                    instance.get(Calendar.MINUTE) + " " +
+                    instance.get(Calendar.HOUR_OF_DAY) + " * * ?";
+        }
+        if (rateType == 2) {
+            return instance.get(Calendar.SECOND) + " " +
+                    instance.get(Calendar.MINUTE) + " " +
+                    instance.get(Calendar.HOUR_OF_DAY) + " ? * " +
+                    getDayOfWeek(instance);
+        }
+        if (rateType == 3) {
+            return instance.get(Calendar.SECOND) + " " +
+                    instance.get(Calendar.MINUTE) + " " +
+                    instance.get(Calendar.HOUR_OF_DAY) + " " +
+                    instance.get(Calendar.DATE) + " * ?";
+        }
+
+        return null;
+    }
+
 
     private static String getDayOfWeek(Calendar instance) {
         int index = instance.get(Calendar.DAY_OF_WEEK);
@@ -120,7 +90,7 @@ public class CronUtils {
     public static Boolean taskExpire(Long endTime) {
         if (ObjectUtils.isEmpty(endTime))
             return false;
-        Long now = System.currentTimeMillis();
+        long now = System.currentTimeMillis();
         return now > endTime;
     }
 

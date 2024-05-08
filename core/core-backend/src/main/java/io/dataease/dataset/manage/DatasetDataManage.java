@@ -616,7 +616,7 @@ public class DatasetDataManage {
         if (ObjectUtils.isNotEmpty(distinctDataList)) {
             for (String[] ele : distinctDataList) {
                 Map<String, Object> map = new LinkedHashMap<>();
-                for (int i = 0; i < ele.length; i++) {
+                for (int i = 0; i < fields.size(); i++) {
                     String val = ele[i];
                     DatasetTableFieldDTO field = fields.get(i);
                     if (desensitizationList.containsKey(field.getDataeaseName())) {

@@ -1382,7 +1382,11 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   innerRadius: 60,
   showZoom: true,
   zoomButtonColor: '#aaa',
-  zoomBackground: '#fff'
+  zoomBackground: '#fff',
+  tableLayoutMode: 'grid',
+  calcTopN: false,
+  topN: 5,
+  topNLabel: '其他'
 }
 
 export const BASE_VIEW_CONFIG = {

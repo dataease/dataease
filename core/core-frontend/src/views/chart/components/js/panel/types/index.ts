@@ -26,6 +26,7 @@ export abstract class AbstractChartView {
   abstract propertyInner: EditorPropertyInner
   abstract axis: AxisType[]
   abstract axisConfig: AxisConfig
+  abstract selectorSpec: EditorSelectorSpec
   /**
    * 在新建和切换图表的时候处理默认值
    * @param chart 数据库图表对象
@@ -89,6 +90,11 @@ export abstract class AntVAbstractChartView extends AbstractChartView {
       name: `${t('chart.drag_block_value_axis')} / ${t('chart.quota')}`,
       type: 'q',
       limit: 1
+    }
+  }
+  selectorSpec: EditorSelectorSpec = {
+    'misc-style-selector': {
+      title: `${t('chart.size')}`
     }
   }
   protected constructor(library: ChartLibraryType, name: string, defaultData?: any[]) {

@@ -7,19 +7,27 @@ import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.JsonUtil;
+import net.sf.jsqlparser.expression.*;
+import net.sf.jsqlparser.expression.operators.conditional.AndExpression;
+import net.sf.jsqlparser.expression.operators.conditional.OrExpression;
+import net.sf.jsqlparser.expression.operators.relational.*;
+import net.sf.jsqlparser.parser.CCJSqlParserUtil;
+import net.sf.jsqlparser.statement.Statement;
+import net.sf.jsqlparser.statement.select.*;
+import net.sf.jsqlparser.util.deparser.ExpressionDeParser;
+import net.sf.jsqlparser.util.deparser.SelectDeParser;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.calcite.sql.util.SqlShuttle;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.checkerframework.checker.nullness.qual.Nullable;
 
 import java.text.SimpleDateFormat;
-import java.util.Date;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -31,6 +39,362 @@ public class SqlparserUtils {
     private static final String SubstitutedParams = "DATAEASE_PATAMS_BI";
     private static final String SubstitutedSql = " 'DE-BI' = 'DE-BI' ";
     private static final String SubstitutedSqlVirtualData = " 1 > 2 ";
+
+    public static String removeVariables(final String sql, String dsType) throws Exception {
+        String tmpSql = sql.replaceAll("(?m)^\\s*$[\n\r]{0,}", "");
+        Pattern pattern = Pattern.compile(regex);
+        Matcher matcher = pattern.matcher(tmpSql);
+        boolean hasVariables = false;
+        while (matcher.find()) {
+            hasVariables = true;
+            tmpSql = tmpSql.replace(matcher.group(), SubstitutedParams);
+        }
+        if (!hasVariables && !tmpSql.contains(SubstitutedParams)) {
+            return tmpSql;
+        }
+
+        Statement statement = CCJSqlParserUtil.parse(tmpSql);
+        Select select = (Select) statement;
+
+        if (select.getSelectBody() instanceof PlainSelect) {
+            return handlePlainSelect((PlainSelect) select.getSelectBody(), select, dsType);
+        } else {
+            StringBuilder result = new StringBuilder();
+            SetOperationList setOperationList = (SetOperationList) select.getSelectBody();
+            for (int i = 0; i < setOperationList.getSelects().size(); i++) {
+                result.append(handlePlainSelect((PlainSelect) setOperationList.getSelects().get(i), null, dsType));
+                if (i < setOperationList.getSelects().size() - 1) {
+                    result.append(" ").append(setOperationList.getOperations().get(i).toString()).append(" ");
+                }
+            }
+            return result.toString();
+        }
+    }
+
+    private static String handlePlainSelect(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
+        handleSelectItems(plainSelect, dsType);
+        handleFromItems(plainSelect, dsType);
+        handleJoins(plainSelect, dsType);
+        return handleWhere(plainSelect, statementSelect, dsType);
+    }
+
+    private static void handleSelectItems(PlainSelect plainSelect, String dsType) throws Exception {
+        List<SelectItem<?>> selectItems = new ArrayList<>();
+        for (SelectItem selectItem : plainSelect.getSelectItems()) {
+            try {
+                if (selectItem.getExpression() instanceof ParenthesedSelect) {
+                    ParenthesedSelect parenthesedSelect = (ParenthesedSelect) selectItem.getExpression();
+                    parenthesedSelect.setSelect((Select) CCJSqlParserUtil.parse(removeVariables(((Select) selectItem.getExpression()).getPlainSelect().toString(), dsType)));
+                    selectItem.setExpression(parenthesedSelect);
+                }
+            } catch (Exception e) {
+                e.printStackTrace();
+            }
+            selectItems.add(selectItem);
+        }
+        plainSelect.setSelectItems(selectItems);
+    }
+
+    private static void handleFromItems(PlainSelect plainSelect, String dsType) throws Exception {
+        FromItem fromItem = plainSelect.getFromItem();
+        if (fromItem instanceof ParenthesedSelect) {
+            if (((ParenthesedSelect) fromItem).getSelect() instanceof SetOperationList) {
+                StringBuilder result = new StringBuilder();
+                SetOperationList setOperationList = (SetOperationList) ((ParenthesedSelect) fromItem).getSelect().getSelectBody();
+                for (int i = 0; i < setOperationList.getSelects().size(); i++) {
+                    result.append(handlePlainSelect((PlainSelect) setOperationList.getSelects().get(i), null, dsType));
+                    if (i < setOperationList.getSelects().size() - 1) {
+                        result.append(" ").append(setOperationList.getOperations().get(i).toString()).append(" ");
+                    }
+                }
+            } else {
+                PlainSelect selectBody = ((ParenthesedSelect) fromItem).getSelect().getPlainSelect();
+                Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
+                ((ParenthesedSelect) fromItem).setSelect(subSelectTmp.getSelectBody());
+                if (dsType.equals(DatasourceConfiguration.DatasourceType.oracle.getType())) {
+                    if (fromItem.getAlias() != null) {
+                        fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                    }
+                } else {
+                    if (fromItem.getAlias() == null) {
+                        throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                    }
+                    fromItem.setAlias(new Alias(fromItem.getAlias().toString(), false));
+                }
+            }
+            plainSelect.setFromItem(fromItem);
+        }
+    }
+
+    private static void handleJoins(PlainSelect plainSelect, String dsType) throws Exception {
+        List<Join> joins = plainSelect.getJoins();
+        if (joins != null) {
+            List<Join> joinsList = new ArrayList<>();
+            for (Join join : joins) {
+                FromItem rightItem = join.getRightItem();
+                if (rightItem instanceof ParenthesedSelect) {
+                    PlainSelect selectBody = ((ParenthesedSelect) rightItem).getPlainSelect();
+                    Select subSelectTmp = (Select) CCJSqlParserUtil.parse(removeVariables(selectBody.toString(), dsType));
+                    PlainSelect subPlainSelect = ((PlainSelect) subSelectTmp.getSelectBody());
+                    ((ParenthesedSelect) rightItem).setSelect(subPlainSelect);
+                    if (dsType.equals(DatasourceConfiguration.DatasourceType.oracle.getType())) {
+                        rightItem.setAlias(new Alias(rightItem.getAlias().toString(), false));
+                    } else {
+                        if (rightItem.getAlias() == null) {
+                            throw new Exception("Failed to parse sql, Every derived table must have its own alias！");
+                        }
+                        rightItem.setAlias(new Alias(rightItem.getAlias().toString(), false));
+                    }
+                    join.setRightItem(rightItem);
+                }
+                joinsList.add(join);
+            }
+            plainSelect.setJoins(joinsList);
+        }
+    }
+
+    private static String handleWhere(PlainSelect plainSelect, Select statementSelect, String dsType) throws Exception {
+        Expression expr = plainSelect.getWhere();
+        if (expr == null) {
+            return handleWith(plainSelect, statementSelect, dsType);
+        }
+        StringBuilder stringBuilder = new StringBuilder();
+        BinaryExpression binaryExpression = null;
+        try {
+            binaryExpression = (BinaryExpression) expr;
+        } catch (Exception e) {
+        }
+        if (binaryExpression != null) {
+            boolean hasSubBinaryExpression = binaryExpression instanceof AndExpression || binaryExpression instanceof OrExpression;
+            if (!hasSubBinaryExpression && !(binaryExpression.getLeftExpression() instanceof BinaryExpression) && !(binaryExpression.getLeftExpression() instanceof InExpression) && (hasVariable(binaryExpression.getLeftExpression().toString()) || hasVariable(binaryExpression.getRightExpression().toString()))) {
+                stringBuilder.append(SubstitutedSql);
+            } else {
+                expr.accept(getExpressionDeParser(stringBuilder));
+            }
+
+        } else {
+            expr.accept(getExpressionDeParser(stringBuilder));
+        }
+        plainSelect.setWhere(CCJSqlParserUtil.parseCondExpression(stringBuilder.toString()));
+        return handleWith(plainSelect, statementSelect, dsType);
+    }
+
+    private static String handleWith(PlainSelect plainSelect, Select select, String dsType) throws Exception {
+        if (select != null && CollectionUtils.isNotEmpty(select.getWithItemsList())) {
+            for (Iterator<WithItem> iter = select.getWithItemsList().iterator(); iter.hasNext(); ) {
+                WithItem withItem = iter.next();
+                ParenthesedSelect parenthesedSelect = (ParenthesedSelect) withItem.getSelect();
+                parenthesedSelect.setSelect((Select) CCJSqlParserUtil.parse(removeVariables(parenthesedSelect.getSelect().toString(), dsType)));
+            }
+        }
+        return plainSelect.toString();
+    }
+
+    private static ExpressionDeParser getExpressionDeParser(StringBuilder stringBuilder) {
+        SelectDeParser selectDeParser = new SelectDeParser(stringBuilder);
+        ExpressionDeParser expressionDeParser = new ExpressionDeParser(null, stringBuilder) {
+            @Override
+            public void visit(Parenthesis parenthesis) {
+                getBuffer().append("(");
+                parenthesis.getExpression().accept(this);
+                getBuffer().append(")");
+            }
+
+            @Override
+            public void visit(OrExpression orExpression) {
+                visitBinaryExpr(orExpression, "OR");
+            }
+
+            @Override
+            public void visit(AndExpression andExpression) {
+                visitBinaryExpr(andExpression, andExpression.isUseOperator() ? " && " : " AND ");
+            }
+
+            @Override
+            public void visit(Between between) {
+                if (hasVariable(between.getBetweenExpressionStart().toString()) || hasVariable(between.getBetweenExpressionEnd().toString())) {
+                    getBuffer().append(SubstitutedSql);
+                } else {
+                    getBuffer().append(between.getLeftExpression()).append(" BETWEEN ").append(between.getBetweenExpressionStart()).append(" AND ").append(between.getBetweenExpressionEnd());
+                }
+            }
+
+            @Override
+            public void visit(MinorThan minorThan) {
+                if (hasVariable(minorThan.getLeftExpression().toString()) || hasVariable(minorThan.getRightExpression().toString())) {
+                    getBuffer().append(SubstitutedSql);
+                    return;
+                }
+                getBuffer().append(minorThan.getLeftExpression());
+                getBuffer().append(" < ");
+                getBuffer().append(minorThan.getRightExpression());
+            }
+
+            @Override
+            public void visit(MinorThanEquals minorThan) {
+                if (hasVariable(minorThan.getLeftExpression().toString()) || hasVariable(minorThan.getRightExpression().toString())) {
+                    getBuffer().append(SubstitutedSql);
+                    return;
+                }
+                getBuffer().append(minorThan.getLeftExpression());
+                getBuffer().append(" <= ");
+                getBuffer().append(minorThan.getRightExpression());
+            }
+
+            @Override
+            public void visit(GreaterThanEquals minorThan) {
+                if (hasVariable(minorThan.getLeftExpression().toString()) || hasVariable(minorThan.getRightExpression().toString())) {
+                    getBuffer().append(SubstitutedSql);
+                    return;
+                }
+                getBuffer().append(minorThan.getLeftExpression());
+                getBuffer().append(" >= ");
+                getBuffer().append(minorThan.getRightExpression());
+            }
+
+            @Override
+            public void visit(GreaterThan greaterThan) {
+                if (hasVariable(greaterThan.getLeftExpression().toString()) || hasVariable(greaterThan.getRightExpression().toString())) {
+                    getBuffer().append(SubstitutedSql);
+                    return;
+                }
+                getBuffer().append(greaterThan.getLeftExpression());
+                getBuffer().append(" > ");
+                getBuffer().append(greaterThan.getRightExpression());
+            }
+
+            @Override
+            public void visit(ExpressionList expressionList) {
+                for (Iterator<Expression> iter = expressionList.getExpressions().iterator(); iter.hasNext(); ) {
+                    Expression expression = iter.next();
+                    expression.accept(this);
+                    if (iter.hasNext()) {
+                        buffer.append(", ");
+                    }
+                }
+            }
+
+            @Override
+            public void visit(LikeExpression likeExpression) {
+                if (hasVariable(likeExpression.toString())) {
+                    getBuffer().append(SubstitutedSql);
+                    return;
+                }
+                visitBinaryExpression(likeExpression, (likeExpression.isNot() ? " NOT" : "") + (likeExpression.isCaseInsensitive() ? " ILIKE " : " LIKE "));
+                if (likeExpression.getEscape() != null) {
+                    buffer.append(" ESCAPE '").append(likeExpression.getEscape()).append('\'');
+                }
+            }
+
+            @Override
+            public void visit(InExpression inExpression) {
+                if (inExpression.getRightExpression() != null && hasVariable(inExpression.getRightExpression().toString()) && !(inExpression.getRightExpression() instanceof ParenthesedSelect)) {
+                    stringBuilder.append(SubstitutedSql);
+                    return;
+                }
+                inExpression.getLeftExpression().accept(this);
+
+                if (inExpression.isNot()) {
+                    getBuffer().append(" " + " NOT IN " + " ");
+                } else {
+                    getBuffer().append(" IN ");
+                }
+                if (inExpression.getRightExpression() != null && inExpression.getRightExpression() instanceof ParenthesedSelect) {
+                    try {
+                        ParenthesedSelect subSelect = (ParenthesedSelect) inExpression.getRightExpression();
+                        Select select = (Select) CCJSqlParserUtil.parse(removeVariables(subSelect.getPlainSelect().toString(), ""));
+                        subSelect.setSelect(select);
+                        inExpression.setRightExpression(subSelect);
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    inExpression.getRightExpression().accept(this);
+                }
+                if (inExpression.getRightExpression() instanceof ParenthesedExpressionList) {
+                    buffer.append(inExpression.getRightExpression());
+                }
+            }
+
+            @Override
+            public void visit(ParenthesedSelect subSelect) {
+                StringBuilder stringBuilder = new StringBuilder();
+                Expression in = ((PlainSelect) subSelect.getSelectBody()).getWhere();
+                if (in instanceof BinaryExpression && hasVariable(in.toString())) {
+                    stringBuilder.append(SubstitutedParams);
+                } else {
+                    in.accept(getExpressionDeParser(stringBuilder));
+                }
+
+                try {
+                    Expression where = CCJSqlParserUtil.parseCondExpression(stringBuilder.toString());
+                    ((PlainSelect) subSelect.getSelectBody()).setWhere(where);
+                    getBuffer().append(subSelect.getSelectBody());
+                } catch (Exception e) {
+                    e.printStackTrace();
+                }
+            }
+
+            @Override
+            public void visit(Select selectBody) {
+                getBuffer().append(selectBody.toString());
+            }
+
+
+            private void visitBinaryExpr(BinaryExpression expr, String operator) {
+                boolean hasSubBinaryExpression = false;
+                if (expr.getLeftExpression() instanceof Parenthesis) {
+                    try {
+                        Parenthesis parenthesis = (Parenthesis) expr.getLeftExpression();
+                        BinaryExpression leftBinaryExpression = (BinaryExpression) parenthesis.getExpression();
+                        hasSubBinaryExpression = leftBinaryExpression instanceof AndExpression || leftBinaryExpression instanceof OrExpression;
+                    } catch (Exception e) {
+                    }
+                }
+                if (expr.getLeftExpression() instanceof BinaryExpression) {
+                    try {
+                        BinaryExpression leftBinaryExpression = (BinaryExpression) expr.getLeftExpression();
+                        hasSubBinaryExpression = leftBinaryExpression instanceof AndExpression || leftBinaryExpression instanceof OrExpression;
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                }
+
+                if ((expr.getLeftExpression() instanceof BinaryExpression || expr.getLeftExpression() instanceof Parenthesis) && !hasSubBinaryExpression && hasVariable(expr.getLeftExpression().toString())) {
+                    getBuffer().append(SubstitutedSql);
+                } else {
+                    expr.getLeftExpression().accept(this);
+                }
+
+                getBuffer().append(" " + operator + " ");
+
+                hasSubBinaryExpression = false;
+                if (expr.getRightExpression() instanceof Parenthesis) {
+                    Parenthesis parenthesis = (Parenthesis) expr.getRightExpression();
+                    BinaryExpression rightBinaryExpression = (BinaryExpression) parenthesis.getExpression();
+                    hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;
+                }
+                if (expr.getRightExpression() instanceof BinaryExpression) {
+                    try {
+                        BinaryExpression rightBinaryExpression = (BinaryExpression) expr.getRightExpression();
+                        hasSubBinaryExpression = rightBinaryExpression instanceof AndExpression || rightBinaryExpression instanceof OrExpression;
+                    } catch (Exception e) {
+                    }
+                }
+
+                if ((expr.getRightExpression() instanceof Parenthesis || expr.getRightExpression() instanceof BinaryExpression || expr.getRightExpression() instanceof Function) && !hasSubBinaryExpression && hasVariable(expr.getRightExpression().toString())) {
+                    getBuffer().append(SubstitutedSql);
+                } else {
+                    expr.getRightExpression().accept(this);
+                }
+            }
+        };
+        return expressionDeParser;
+    }
+
+    private static boolean hasVariable(String sql) {
+        return sql.contains(SubstitutedParams);
+    }
+
 
     public static String removeVariables(final String sql) {
         String tmpSql = sql;
@@ -167,7 +531,8 @@ public class SqlparserUtils {
         }
 
         try {
-            sql = removeVariables(sql);
+            DatasourceSchemaDTO ds = dsMap.entrySet().iterator().next().getValue();
+            sql = removeVariables(sql, ds.getType());
 
             // replace keyword '`'
             if (!isCross) {

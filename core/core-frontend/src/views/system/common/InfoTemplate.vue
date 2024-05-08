@@ -5,6 +5,7 @@
         <span>{{ curTitle }}</span>
       </div>
       <div>
+        <el-button v-if="testConnectText" secondary @click="check">{{ testConnectText }}</el-button>
         <el-button type="primary" @click="edit">{{ t('commons.edit') }}</el-button>
         <el-button v-if="showValidate" type="primary" @click="check">{{
           t('datasource.validate')
@@ -108,6 +109,10 @@ const props = defineProps({
   showValidate: {
     type: Boolean,
     default: false
+  },
+  testConnectText: {
+    type: String,
+    default: null
   },
   copyList: {
     type: Array as PropType<string[]>,

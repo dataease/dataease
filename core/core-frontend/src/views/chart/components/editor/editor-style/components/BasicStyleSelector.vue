@@ -5,7 +5,11 @@ import { useI18n } from '@/hooks/web/useI18n'
 import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
 import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { SERIES_NUMBER_FIELD } from '@antv/s2'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
 
+const dvMainStore = dvMainStoreWithOut()
+const { batchOptStatus } = storeToRefs(dvMainStore)
 const { t } = useI18n()
 const props = defineProps({
   chart: {
@@ -196,6 +200,23 @@ onMounted(() => {
       >
         {{ $t('chart.gradient') }}{{ $t('chart.color') }}
       </el-checkbox>
+    </el-form-item>
+
+    <el-form-item
+      class="form-item"
+      v-if="showProperty('tableLayoutMode')"
+      :label="t('chart.table_layout_mode')"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.tableLayoutMode"
+        @change="changeBasicStyle('tableLayoutMode')"
+      >
+        <el-radio label="grid">{{ t('chart.table_layout_grid') }}</el-radio>
+        <el-radio label="tree">{{ t('chart.table_layout_tree') }}</el-radio>
+      </el-radio-group>
     </el-form-item>
 
     <div class="alpha-setting" v-if="showProperty('alpha')">
@@ -449,6 +470,7 @@ onMounted(() => {
       <el-select
         v-model="state.fieldColumnWidth.fieldId"
         :effect="themes"
+        :disabled="batchOptStatus"
         @change="changeFieldColumn()"
       >
         <el-option
@@ -465,6 +487,7 @@ onMounted(() => {
         :min="0"
         :max="100"
         :effect="themes"
+        :disabled="batchOptStatus"
         @change="changeFieldColumnWidth()"
       >
         <template #append>%</template>
@@ -745,6 +768,46 @@ onMounted(() => {
     </el-form-item>
     <!-- pie/rose start -->
 
+    <div v-show="showProperty('topN')" class="top-n-setting">
+      <el-form-item class="form-item" :class="'form-item-' + themes">
+        <el-checkbox v-model="state.basicStyleForm.calcTopN" @change="changeBasicStyle('calcTopN')">
+          {{ $t('chart.top_n_desc') }}
+        </el-checkbox>
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        v-show="state.basicStyleForm.calcTopN"
+      >
+        <span>{{ $t('chart.top_n_input_1') }}</span>
+        <el-input-number
+          v-model="state.basicStyleForm.topN"
+          controls-position="right"
+          size="small"
+          :min="1"
+          :max="100"
+          :precision="0"
+          :step-strictly="true"
+          :value-on-clear="5"
+          @change="changeBasicStyle('topN')"
+        />
+        <span>{{ $t('chart.top_n_input_2') }}</span>
+      </el-form-item>
+      <el-form-item
+        class="form-item"
+        :class="'form-item-' + themes"
+        :label="t('chart.top_n_label')"
+        v-show="state.basicStyleForm.calcTopN"
+      >
+        <el-input
+          :effect="themes"
+          v-model="state.basicStyleForm.topNLabel"
+          size="small"
+          :maxlength="50"
+          @change="changeBasicStyle('topNLabel')"
+        />
+      </el-form-item>
+    </div>
     <div class="alpha-setting" v-if="showProperty('innerRadius')">
       <label class="alpha-label" :class="{ dark: 'dark' === themes }">
         {{ t('chart.pie_inner_radius_percent') }}
@@ -886,6 +949,15 @@ onMounted(() => {
     &::-webkit-outer-spin-button {
       -webkit-appearance: none;
     }
+  }
+}
+.top-n-setting {
+  .ed-input-number {
+    width: 80px !important;
+    margin: 0 2px;
+  }
+  :deep(span) {
+    font-size: 12px;
   }
 }
 </style>

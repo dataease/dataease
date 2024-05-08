@@ -1394,7 +1394,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     const obj = cloneDeep(arr[i])
     state.moveId = obj.id as unknown as number
     view.value[type].push(obj)
-    const e = { newDraggableIndex: view.value.xAxis.length - 1 }
+    const e = { newDraggableIndex: view.value[type].length - 1 }
     if ('drillFields' === type) {
       addDrill(e)
     } else if (type === 'customFilter') {
@@ -2074,6 +2074,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                       v-if="chartStyleShow"
                       :properties="chartViewInstance.properties"
                       :property-inner-all="chartViewInstance.propertyInner"
+                      :selector-spec="chartViewInstance.selectorSpec"
                       :common-background-pop="curComponent?.commonBackground"
                       :chart="view"
                       :themes="themes"

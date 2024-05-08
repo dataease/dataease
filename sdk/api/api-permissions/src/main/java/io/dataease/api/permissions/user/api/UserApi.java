@@ -20,6 +20,7 @@ import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
 import java.util.List;
+import java.util.Map;
 
 import static io.dataease.constant.AuthResourceEnum.USER;
 
@@ -78,6 +79,10 @@ public interface UserApi {
     @Operation(summary = "角色可绑用户")
     @PostMapping("/role/option")
     List<UserItemVO> optionForRole(@RequestBody UserRequest request);
+
+    @Operation(summary = "组织内用户")
+    @GetMapping("/org/option")
+    List<UserItemVO> optionForOrg();
 
     @Operation(summary = "角色已绑用户")
     @Parameters({
@@ -172,4 +177,8 @@ public interface UserApi {
     @Operation(summary = "绑定状态")
     @GetMapping("/bindStatus")
     List<Integer> bindStatus();
+
+    @Hidden
+    @GetMapping("/getRecipient")
+    List<Map<String, Object>> getRecipient(@RequestBody UserReciRequest request);
 }

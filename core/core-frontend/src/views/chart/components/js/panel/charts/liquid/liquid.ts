@@ -50,14 +50,15 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Liquid>): G2Liquid {
     const { chart, container } = drawOptions
-    if (chart?.data) {
-      const initOptions: LiquidOptions = {
-        percent: 0
-      }
-      const options = this.setupOptions(chart, initOptions)
-      // 开始渲染
-      return new G2Liquid(container, options)
+    if (!chart.data?.series) {
+      return
     }
+    const initOptions: LiquidOptions = {
+      percent: 0
+    }
+    const options = this.setupOptions(chart, initOptions)
+    // 开始渲染
+    return new G2Liquid(container, options)
   }
 
   protected configTheme(chart: Chart, options: LiquidOptions): LiquidOptions {

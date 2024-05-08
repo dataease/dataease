@@ -221,7 +221,22 @@ const closeSqlNode = () => {
     !state.nodeList[0].children?.length &&
     changeSqlId.value.length === 1
   ) {
-    editUnion.value = true
+    currentNode.value = state.nodeList[0]
+    const { datasourceId, id, info, tableName } = currentNode.value
+    getTableField({
+      datasourceId,
+      id,
+      info,
+      tableName,
+      type: 'sql'
+    }).then(res => {
+      nodeField.value = res as unknown as Field[]
+      nodeField.value.forEach(ele => {
+        ele.checked = true
+      })
+      state.nodeList[0].currentDsFields = cloneDeep(res)
+      editUnion.value = true
+    })
     changeSqlId.value = []
   }
   if (state.visualNode?.confirm) {
@@ -1015,8 +1030,12 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
   >
     <template #header v-if="currentNode">
       <div class="info">
-        <span class="name">{{ currentNode.tableName }}</span>
-        <span class="ds">{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span>
+        <span :title="currentNode.tableName" class="name ellipsis">{{
+          currentNode.tableName
+        }}</span>
+        <span :title="getDsName(currentNode.datasourceId)" class="ds ellipsis"
+          >{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span
+        >
       </div>
     </template>
     <union-field-list
@@ -1070,10 +1089,12 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
         font-weight: 500;
         font-size: 16px;
         color: #1f2329;
+        max-width: 500px;
       }
       .ds {
         font-weight: 400;
         font-size: 14px;
+        max-width: 500px;
         color: #646a73;
       }
     }

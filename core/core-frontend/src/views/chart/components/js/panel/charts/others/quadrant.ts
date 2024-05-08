@@ -7,7 +7,6 @@ import { flow, parseJson } from '../../../util'
 import { valueFormatter } from '../../../formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isEmpty } from 'lodash-es'
-import { Datum } from '@antv/g2plot/esm/types/common'
 import { DEFAULT_QUADRANT_STYLE } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
@@ -31,7 +30,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
   ]
   propertyInner: EditorPropertyInner = {
     'basic-style-selector': ['colors', 'alpha', 'scatterSymbol', 'scatterSymbolSize'],
-    'label-selector': ['fontSize', 'color', 'labelFormatter'],
+    'label-selector': ['fontSize', 'color'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
     'x-axis-selector': [
       'position',
@@ -118,7 +117,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
   }
 
   public drawChart(drawOptions: G2PlotDrawOptions<G2Scatter>) {
-    const { chart, container, action } = drawOptions
+    const { chart, container, action, quadrantDefaultBaseline } = drawOptions
     if (!chart.data?.data) {
       return
     }
@@ -150,6 +149,8 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const dataLength = chart.data?.data.length / chart.data?.fields.length
     for (let index = 0; index < dataLength; index++) {
       const tmpData = {
+        dimensionList: groupedData[xFieldObj.name][index].dimensionList,
+        quotaList: groupedData[xFieldObj.name][index].quotaList,
         [xFieldObj.name]: groupedData[xFieldObj.name][index].value
       }
       if (groupedData[yFieldObj.name]) {
@@ -167,21 +168,41 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       }
       data.push(tmpData)
     }
-    chart.customAttr['quadrant'].xBaseline = (
-      data.reduce((valueSoFar, currentItem) => {
-        return valueSoFar + currentItem[xFieldObj.name]
-      }, 0) / data.length
+    // x轴基准线 默认值
+    const xBaseline = (
+      (data.reduce((valueSoFar, currentItem) => {
+        return Math.max(valueSoFar, currentItem[xFieldObj.name])
+      }, 0) +
+        data.reduce((valueSoFar, currentItem) => {
+          return Math.min(valueSoFar, currentItem[xFieldObj.name])
+        }, Infinity)) /
+      2
     ).toFixed()
-    chart.customAttr['quadrant'].yBaseline = (
-      data.reduce((valueSoFar, currentItem) => {
-        return valueSoFar + currentItem[yFieldObj.name]
-      }, 0) / data.length
+    // y轴基准线 默认值
+    const yBaseline = (
+      (data.reduce((valueSoFar, currentItem) => {
+        return Math.max(valueSoFar, currentItem[yFieldObj.name])
+      }, 0) +
+        data.reduce((valueSoFar, currentItem) => {
+          return Math.min(valueSoFar, currentItem[yFieldObj.name])
+        }, Infinity)) /
+      2
     ).toFixed()
+    const defaultBaselineQuadrant = {
+      ...chart.customAttr['quadrant']
+    }
+    // 新建图表
+    if (!defaultBaselineQuadrant.xBaseline) {
+      // 默认基准线值
+      defaultBaselineQuadrant.xBaseline = xBaseline
+      defaultBaselineQuadrant.yBaseline = yBaseline
+    }
     const colorField = colorFieldObj.name ? { colorField: colorFieldObj.name } : {}
-    const quadrant = chart.customAttr['quadrant'] ? { quadrant: chart.customAttr['quadrant'] } : {}
     const baseOptions: ScatterOptions = {
       ...colorField,
-      ...quadrant,
+      quadrant: {
+        ...defaultBaselineQuadrant
+      },
       data: data,
       xField: xFieldObj.name,
       yField: yFieldObj.name,
@@ -195,6 +216,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const options = this.setupOptions(chart, baseOptions)
     const newChart = new G2Scatter(container, options)
     newChart.on('point:click', action)
+    newChart.on('click', () => quadrantDefaultBaseline(defaultBaselineQuadrant))
     return newChart
   }
 
@@ -205,7 +227,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     if (chart.extBubble?.length) {
       return {
         ...options,
-        size: [5, 30],
+        size: [4, 30],
         sizeField: extBubbleObj.name,
         shape: basicStyle.scatterSymbol
       }
@@ -283,18 +305,15 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
         const l = customAttr.label
         if (l.show) {
           label = {
-            position: l.position,
-            offsetY: 5,
+            offset: 0,
             style: {
               fill: l.color,
               fontSize: l.fontSize
             },
-            formatter: function (param: Datum, item) {
-              const text = String(param[chart.xAxis[0]?.['originName']])
-              const radius = item.size
-              const textWidth = text.length * 10
-              return textWidth > 2 * radius ? '' : param[chart.xAxis[0]?.['originName']]
-            }
+            content: datum => {
+              return datum[chart.xAxis[0]?.['originName']]
+            },
+            layout: [{ type: 'limit-in-shape' }]
           }
         } else {
           label = false

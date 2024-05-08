@@ -2,22 +2,7 @@ import { createRouter, createWebHashHistory } from 'vue-router'
 import type { RouteRecordRaw } from 'vue-router'
 import type { App } from 'vue'
 
-export const routes: AppRouteRecordRaw[] = [
-  {
-    path: '/dvCanvas',
-    name: 'dvCanvas',
-    hidden: true,
-    meta: {},
-    component: () => import('@/views/data-visualization/index.vue')
-  },
-  {
-    path: '/dashboard',
-    name: 'dashboard',
-    hidden: true,
-    meta: {},
-    component: () => import('@/views/dashboard/index.vue')
-  }
-]
+export const routes: AppRouteRecordRaw[] = []
 
 const router = createRouter({
   history: createWebHashHistory(),

@@ -23,7 +23,10 @@ const DEFAULT_DATA = []
 export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
   axis: AxisType[] = PIE_AXIS_TYPE
   properties = PIE_EDITOR_PROPERTY
-  propertyInner = PIE_EDITOR_PROPERTY_INNER
+  propertyInner: EditorPropertyInner = {
+    ...PIE_EDITOR_PROPERTY_INNER,
+    'basic-style-selector': ['colors', 'alpha', 'radius', 'topN']
+  }
   axisConfig = PIE_AXIS_CONFIG
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Pie>): G2Pie {
@@ -212,9 +215,37 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
 
   protected configBasicStyle(chart: Chart, options: PieOptions): PieOptions {
     const customAttr = parseJson(chart.customAttr)
+    const { basicStyle } = customAttr
+    const { data } = options
+    if (data?.length && basicStyle.calcTopN && data.length > basicStyle.topN) {
+      data.sort((a, b) => b.value - a.value)
+      const otherItems = data.splice(basicStyle.topN)
+      const initOtherItem = {
+        ...data[0],
+        dynamicTooltipValue: [],
+        field: basicStyle.topNLabel,
+        name: basicStyle.topNLabel,
+        value: 0
+      }
+      const dynamicTotalMap: Record<string, number> = {}
+      otherItems.reduce((p, n) => {
+        p.value += n.value ?? 0
+        n.dynamicTooltipValue?.forEach(val => {
+          dynamicTotalMap[val.fieldId] = (dynamicTotalMap[val.fieldId] || 0) + val.value
+        })
+        return p
+      }, initOtherItem)
+      for (const key in dynamicTotalMap) {
+        initOtherItem.dynamicTooltipValue.push({
+          fieldId: key,
+          value: dynamicTotalMap[key]
+        })
+      }
+      data.push(initOtherItem)
+    }
     return {
       ...options,
-      radius: customAttr.basicStyle.radius / 100
+      radius: basicStyle.radius / 100
     }
   }
   setupDefaultOptions(chart: ChartObj): ChartObj {
@@ -253,14 +284,15 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
 export class PieDonut extends Pie {
   propertyInner: EditorPropertyInner = {
     ...PIE_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['colors', 'alpha', 'radius', 'innerRadius']
+    'basic-style-selector': ['colors', 'alpha', 'radius', 'innerRadius', 'topN']
   }
   protected configBasicStyle(chart: Chart, options: PieOptions): PieOptions {
-    const customAttr = parseJson(chart.customAttr)
+    const tmp = super.configBasicStyle(chart, options)
+    const { basicStyle } = parseJson(chart.customAttr)
     return {
-      ...options,
-      radius: customAttr.basicStyle.radius / 100,
-      innerRadius: customAttr.basicStyle.innerRadius / 100
+      ...tmp,
+      radius: basicStyle.radius / 100,
+      innerRadius: basicStyle.innerRadius / 100
     }
   }
 

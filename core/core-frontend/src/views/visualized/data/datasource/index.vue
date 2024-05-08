@@ -310,7 +310,9 @@ const tabList = shallowRef([])
 
 const initSearch = () => {
   handleCurrentChange(1)
-  state.filterTable = tableData.value.filter(ele => ele.tableName.includes(nickName.value))
+  state.filterTable = tableData.value.filter(ele =>
+    ele.tableName.toLowerCase().includes(nickName.value.toLowerCase())
+  )
   state.paginationConfig.total = state.filterTable.length
 }
 
@@ -876,7 +878,7 @@ const getMenuList = (val: boolean) => {
     <div
       class="datasource-content"
       :class="{
-        auto: isIframe,
+        auto: isIframe || isDataEaseBi,
         h100: isDataEaseBi || isIframe
       }"
     >

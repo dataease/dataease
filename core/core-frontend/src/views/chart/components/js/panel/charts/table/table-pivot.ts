@@ -37,7 +37,13 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       'showRowTooltip'
     ],
     'table-total-selector': ['row', 'col'],
-    'basic-style-selector': ['tableColumnMode', 'tableBorderColor', 'tableScrollBarColor', 'alpha']
+    'basic-style-selector': [
+      'tableColumnMode',
+      'tableBorderColor',
+      'tableScrollBarColor',
+      'alpha',
+      'tableLayoutMode'
+    ]
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'yAxis', 'filter']
   axisConfig: AxisConfig = {
@@ -59,7 +65,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     const { container, chart, chartObj, action } = drawOption
     const containerDom = document.getElementById(container)
 
-    const { xAxis: columnFields, xAxisExt: rowFields, yAxis: valueFields } = chart
+    const { xAxisExt: columnFields, xAxis: rowFields, yAxis: valueFields } = chart
     const [c, r, v] = [columnFields, rowFields, valueFields].map(arr =>
       arr.map(i => i.dataeaseName)
     )
@@ -104,7 +110,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
 
     // total config
     const customAttr = parseJson(chart.customAttr)
-    const { tableTotal } = customAttr
+    const { tableTotal, basicStyle } = customAttr
     tableTotal.row.subTotalsDimensions = r
     tableTotal.col.subTotalsDimensions = c
 
@@ -182,7 +188,8 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       height: containerDom.offsetHeight,
       style: this.configStyle(chart),
       totals: tableTotal,
-      conditions: this.configConditions(chart)
+      conditions: this.configConditions(chart),
+      hierarchyType: basicStyle.tableLayoutMode ?? 'grid'
     }
 
     // 开始渲染

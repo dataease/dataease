@@ -273,9 +273,7 @@ export function getLegend(chart: Chart) {
             offsetY = 0
           } else if (l.vPosition === 'bottom') {
             if (chart.drill) {
-              offsetY = -16
-            } else {
-              offsetY = -4
+              offsetY = -12
             }
           } else {
             offsetY = 0
@@ -292,9 +290,9 @@ export function getLegend(chart: Chart) {
             offsetY = 0
           } else if (l.vPosition === 'bottom') {
             if (chart.drill) {
-              offsetY = -22
+              offsetY = -18
             } else {
-              offsetY = -10
+              offsetY = -6
             }
           } else {
             offsetY = 0
@@ -309,6 +307,7 @@ export function getLegend(chart: Chart) {
           marker: {
             symbol: legendSymbol
           },
+          itemHeight: l.fontSize + 4,
           radio: false,
           pageNavigator: {
             marker: {

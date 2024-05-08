@@ -461,7 +461,17 @@ public class CalciteProvider {
                 }
                 resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
                 while (resultSet.next()) {
-                    datasetTableFields.add(getTableFieldDesc(datasourceRequest, resultSet));
+                    TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet);
+                    boolean repeat = false;
+                    for (TableField ele : datasetTableFields) {
+                        if (StringUtils.equalsIgnoreCase(ele.getOriginName(), tableFieldDesc.getOriginName())) {
+                            repeat = true;
+                            break;
+                        }
+                    }
+                    if (!repeat) {
+                        datasetTableFields.add(tableFieldDesc);
+                    }
                 }
             } catch (Exception e) {
                 DEException.throwException(e.getMessage());
@@ -966,6 +976,23 @@ public class CalciteProvider {
         try {
             CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
             SchemaPlus rootSchema = buildSchema(datasourceRequest, calciteConnection);
+        } catch (Exception e) {
+            DEException.throwException(e.getMessage());
+        }
+    }
+
+    public void updateDsPoolAfterCheckStatus(DatasourceDTO datasourceDTO) throws DEException {
+        DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
+        BeanUtils.copyBean(datasourceSchemaDTO, datasourceDTO);
+        datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
+        try {
+            CalciteConnection calciteConnection = connection.unwrap(CalciteConnection.class);
+            SchemaPlus rootSchema = calciteConnection.getRootSchema();
+            if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) == null) {
+                buildSchema(datasourceRequest, calciteConnection);
+            }
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
         }

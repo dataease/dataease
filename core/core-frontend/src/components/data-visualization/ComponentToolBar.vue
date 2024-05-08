@@ -103,21 +103,19 @@ onUnmounted(() => {
 <template>
   <el-row class="custom-main">
     <div class="scale-area">
-      <el-input
+      <el-input-number
         @keydown.stop
         @keyup.stop
-        type="number"
-        size="small"
-        effect="dark"
         v-model="scale"
+        effect="dark"
         :min="10"
         :max="200"
-        :controls="false"
+        size="small"
+        controls-position="right"
         @change="handleScaleChange()"
         class="scale-input-number"
-      >
-        <template #suffix> % </template>
-      </el-input>
+      />
+
       <el-icon @click="scaleDecrease(1)" class="hover-icon-custom" style="margin-right: 12px">
         <Icon name="dv-min"></Icon
       ></el-icon>
@@ -160,16 +158,19 @@ onUnmounted(() => {
 }
 
 .scale-input-number {
-  height: 28px;
-  width: 80px !important;
+  height: 24px;
+  line-height: 24px;
+  width: 80px;
   margin-right: 16px;
-  input {
-    -webkit-appearance: none;
-    -moz-appearance: textfield;
 
-    &::-webkit-inner-spin-button,
-    &::-webkit-outer-spin-button {
-      -webkit-appearance: none;
+  :deep(.ed-input__wrapper) {
+    position: relative;
+    padding: 0 38px 0 8px;
+    &::after {
+      position: absolute;
+      content: '%';
+      right: 35px;
+      top: 1px;
     }
   }
 }

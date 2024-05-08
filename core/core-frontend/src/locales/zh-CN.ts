@@ -1110,7 +1110,14 @@ export default {
     quadrant: '象限',
     font_size: '字号',
     word_size_range: '字号区间',
-    word_spacing: '文字间隔'
+    word_spacing: '文字间隔',
+    table_layout_mode: '展示形式',
+    table_layout_grid: '平铺展示',
+    table_layout_tree: '树形展示',
+    top_n_desc: '合并数据',
+    top_n_input_1: '显示 Top',
+    top_n_input_2: ', 其余合并至其他',
+    top_n_label: '其他项名称'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
@@ -2143,9 +2150,9 @@ export default {
   },
   pblink: {
     key_pwd: '请输入密码打开链接',
-    input_placeholder: '请输入4位数字或字母',
+    input_placeholder: '请输入4～10位数字或字母',
     pwd_error: '密码错误',
-    pwd_format_error: '请输入4位数字或字母',
+    pwd_format_error: '请输入4～10位数字或字母',
     sure_bt: '确定',
     back_parent: '返回上一级'
   },
@@ -2162,6 +2169,16 @@ export default {
     logLiveTime: '操作日志保留时间（天）',
     platformOid: '第三方平台用户组织',
     platformRid: '第三方平台用户角色'
+  },
+  setting_email: {
+    title: '邮件设置',
+    host: 'SMTP主机',
+    port: 'SMTP端口',
+    account: 'SMTP账号',
+    pwd: 'SMTP密码',
+    reci: '测试收件人',
+    ssl: 'SSL',
+    tsl: 'TSL'
   },
   template_manage: {
     name_already_exists_type: '分类名称已存在',
@@ -2250,5 +2267,42 @@ export default {
   appearance: {
     give_up: '放弃更新',
     save_apply: '保存并应用'
+  },
+  report: {
+    title: '定时报告',
+    task_name: '任务名称',
+    last_exec_time: '上次执行时间',
+    last_exec_result: '上次执行结果',
+    task_status: '任务状态',
+    next_exec_time: '下次执行时间',
+    creator: '创建人',
+    create_time: '创建时间',
+    status_wait: '等待发送',
+    status_stop: '任务停止',
+    status_finish: '任务结束',
+    status_send: '发送中',
+    search_tips: '通过任务名称搜索',
+    report_title: '任务列表',
+    instance_title: '任务日志',
+    add_task: '添加任务',
+    lark_groups: '飞书群',
+    send_setting: '发送设置',
+    start_time: '开始时间',
+    end_time: '结束时间',
+    once_a_day: '每天',
+    once_a_week: '每周',
+    once_a_month: '每月',
+    week_mon: '一',
+    week_tue: '二',
+    week_wed: '三',
+    week_thu: '四',
+    week_fri: '五',
+    week_sat: '六',
+    week_sun: '日',
+    every_exec: '执行一次',
+    date: '日',
+    last_status_running: '运行中',
+    last_status_fail: '失败',
+    last_status_success: '成功'
   }
 }

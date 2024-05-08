@@ -41,6 +41,11 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
     ],
     'legend-selector': ['icon', 'orient', 'color', 'fontSize', 'hPosition', 'vPosition']
   }
+  selectorSpec: EditorSelectorSpec = {
+    'misc-style-selector': {
+      title: `${t('chart.tooltip_axis')}`
+    }
+  }
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter', 'extLabel', 'extTooltip']
   axisConfig: AxisConfig = {
     xAxis: {

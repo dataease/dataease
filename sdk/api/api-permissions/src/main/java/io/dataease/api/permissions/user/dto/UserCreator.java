@@ -31,6 +31,4 @@ public class UserCreator implements Serializable {
     @Schema(hidden = true)
     @JsonIgnore
     private Long uid;
-    @Schema(description = "标签", requiredMode = Schema.RequiredMode.NOT_REQUIRED)
-    private String label;
 }

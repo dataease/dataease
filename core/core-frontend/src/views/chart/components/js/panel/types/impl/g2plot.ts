@@ -25,6 +25,11 @@ export interface G2PlotDrawOptions<O> extends AntVDrawOptions<O> {
    * 缩放比例
    */
   scale?: number
+  /**
+   * 特殊处理，象限图设置分割线的默认值
+   * @param args
+   */
+  quadrantDefaultBaseline?: (...args: any) => void
 }
 
 /**

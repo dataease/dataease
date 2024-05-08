@@ -85,9 +85,14 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   defaultMapValue: any,
   optionValueSource: number,
   mapValue: any,
-  displayType: string
+  displayType: string,
+  displayId: string
 ) => {
-  if (optionValueSource === 1 && defaultMapValue?.length && ![1, 7].includes(+displayType)) {
+  if (
+    optionValueSource === 1 &&
+    (defaultMapValue?.length || displayId) &&
+    ![1, 7].includes(+displayType)
+  ) {
     if (firstLoad) {
       return defaultValueCheck ? defaultMapValue : multiple ? [] : ''
     }
@@ -208,6 +213,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               isTree = false,
               timeGranularity = 'date',
               displayType,
+              displayId,
               multiple
             } = item
 
@@ -271,7 +277,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 defaultMapValue,
                 optionValueSource,
                 mapValue,
-                displayType
+                displayType,
+                displayId
               )
             }
             if (

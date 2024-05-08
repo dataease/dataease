@@ -670,7 +670,7 @@ const getMenuList = (val: boolean) => {
     <div
       class="dataset-content"
       :class="{
-        auto: isIframe
+        auto: isIframe || isDataEaseBi
       }"
     >
       <template v-if="!state.datasetTree.length && mounted">

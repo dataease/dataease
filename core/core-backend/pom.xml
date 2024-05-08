@@ -14,6 +14,12 @@
 
     <dependencies>
         <dependency>
+            <groupId>com.google.guava</groupId>
+            <artifactId>guava</artifactId>
+            <version>${guava.version}</version>
+        </dependency>
+
+        <dependency>
             <groupId>io.dataease</groupId>
             <artifactId>api-base</artifactId>
             <version>${dataease.version}</version>
@@ -37,6 +43,12 @@
             <groupId>org.apache.calcite</groupId>
             <artifactId>calcite-core</artifactId>
             <version>${calcite-core.version}</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>com.google.guava</groupId>
+                    <artifactId>guava</artifactId>
+                </exclusion>
+            </exclusions>
             <classifier>de</classifier>
         </dependency>
         <dependency>
@@ -100,6 +112,22 @@
                 <dependency>
                     <groupId>com.h2database</groupId>
                     <artifactId>h2</artifactId>
+                </dependency>
+                <dependency>
+                    <groupId>org.seleniumhq.selenium</groupId>
+                    <artifactId>selenium-java</artifactId>
+                    <version>${selenium-java.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>org.eclipse.angus</groupId>
+                    <artifactId>angus-mail</artifactId>
+                    <version>${angus-mail.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.eclipse.angus</groupId>
+                            <artifactId>angus-activation</artifactId>
+                        </exclusion>
+                    </exclusions>
                 </dependency>
             </dependencies>
 
@@ -270,15 +298,15 @@
             <plugin>
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
+                <configuration>
+                    <finalName>CoreApplication</finalName>
+                    <layout>ZIP</layout>
+                </configuration>
                 <executions>
                     <execution>
                         <goals>
                             <goal>repackage</goal>
                         </goals>
-                        <configuration>
-                            <finalName>CoreApplication</finalName>
-                            <layout>ZIP</layout>
-                        </configuration>
                     </execution>
                 </executions>
             </plugin>

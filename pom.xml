@@ -13,7 +13,7 @@
     </modules>
 
     <properties>
-        <dataease.version>2.5.0</dataease.version>
+        <dataease.version>2.6.0</dataease.version>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
@@ -22,7 +22,7 @@
         <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
-        <mybatis-plus.version>3.5.3.1</mybatis-plus.version>
+        <mybatis-plus.version>3.5.6</mybatis-plus.version>
         <h2.version>2.2.220</h2.version>
         <knife4j.version>4.4.0</knife4j.version>
         <calcite-core.version>1.35.7</calcite-core.version>
@@ -32,7 +32,7 @@
         <velocity.version>2.3</velocity.version>
         <maven.antrun.version>3.1.0</maven.antrun.version>
         <ehcache.version>3.10.8</ehcache.version>
-        <bcprov.version>1.74</bcprov.version>
+        <bcprov.version>1.78</bcprov.version>
         <junit.version>4.13.2</junit.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
@@ -42,6 +42,10 @@
         <flatten-maven.version>1.3.0</flatten-maven.version>
         <maven.resources.version>3.3.1</maven.resources.version>
         <maven.exec.version>3.1.0</maven.exec.version>
+        <guava.version>33.0.0-jre</guava.version>
+        <selenium-java.version>4.19.1</selenium-java.version>
+        <angus-mail.version>2.0.3</angus-mail.version>
+        <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
     </properties>
 
     <dependencyManagement>
@@ -106,6 +110,12 @@
                 <artifactId>easyexcel</artifactId>
                 <version>${easyexcel.version}</version>
             </dependency>
+            <dependency>
+                <groupId>com.mysql</groupId>
+                <artifactId>mysql-connector-j</artifactId>
+                <version>${mysql-connector-j.version}</version>
+            </dependency>
+
         </dependencies>
 
     </dependencyManagement>

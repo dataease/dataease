@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed } from 'vue'
+import { computed } from 'vue'
 import { ElMenu } from 'element-plus-secondary'
 import { useRoute, useRouter } from 'vue-router'
 import { isExternal } from '@/utils/validate'
@@ -12,7 +12,10 @@ const tempColor = computed(() => {
       (appearanceStore.themeColor === 'custom' ? appearanceStore.customColor : '#3370FF') + '1A'
   }
 })
-const isCollapse = ref(false)
+defineProps({
+  collapse: Boolean
+})
+
 const route = useRoute()
 const { push } = useRouter()
 const menuList = computed(() => route.matched[0]?.children || [])
@@ -38,7 +41,7 @@ const menuSelect = (index: string, indexPath: string[]) => {
     @select="menuSelect"
     :default-active="activeIndex"
     class="el-menu-vertical"
-    :collapse="isCollapse"
+    :collapse="collapse"
   >
     <MenuItem v-for="menu in menuList" :key="menu.path" :menu="menu"></MenuItem>
   </el-menu>

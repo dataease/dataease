@@ -437,6 +437,23 @@ const validate = () => {
       return false
     }
 
+    if (!ele.defaultValueCheck) {
+      const isMultiple = +ele.displayType === 7 || ele.multiple
+      ele.selectValue = isMultiple ? [] : undefined
+      ele.defaultValue = isMultiple ? [] : undefined
+      return false
+    }
+
+    if (ele.displayType === '1') {
+      if (!ele.defaultValueCheck) return false
+      if (ele.timeType === 'fixed') {
+        if (!ele.defaultValue) {
+          ElMessage.error('默认时间不能为空!')
+          return true
+        }
+      }
+    }
+
     if (+ele.displayType === 7) {
       if (!ele.defaultValueCheck) return false
       if (ele.timeType === 'fixed') {
@@ -518,12 +535,6 @@ const validate = () => {
     if (ele.optionValueSource === 1 && !ele.field.id) {
       ElMessage.error('请选择数据集的选项值字段')
       return true
-    }
-
-    if (!ele.defaultValueCheck) {
-      const isMultiple = +ele.displayType === 7 || ele.multiple
-      ele.selectValue = isMultiple ? [] : undefined
-      ele.defaultValue = isMultiple ? [] : undefined
     }
 
     let displayTypeField = null
@@ -656,9 +667,7 @@ const init = (queryId: string) => {
         .forEach(ele => {
           const { dimensionList, quotaList } = ele.fields
           ele.list = [...dimensionList, ...quotaList]
-          if (!datasetMap[ele.id]) {
-            datasetMap[ele.id] = ele
-          }
+          datasetMap[ele.id] = ele
         })
       fields.value = datasetFieldList.value
         .map(ele => {
@@ -734,7 +743,7 @@ const handleCondition = item => {
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
 
   multiple.value = curComponent.value.multiple
-  if (!curComponent.value.dataset.fields.length && curComponent.value.dataset.id) {
+  if (curComponent.value.dataset.id) {
     getOptions(curComponent.value.dataset.id, curComponent.value)
   }
   datasetFieldList.value.forEach(ele => {
@@ -1337,9 +1346,11 @@ defineExpose({
                   </el-tree-select>
                 </div>
                 <div class="value">
+                  <span class="label">查询字段</span>
                   <el-select
                     @change="handleFieldChange"
                     placeholder="查询字段"
+                    class="search-field"
                     v-model="curComponent.field.id"
                   >
                     <template v-if="curComponent.field.id" #prefix>
@@ -1383,7 +1394,12 @@ defineExpose({
                   </el-select>
                 </div>
                 <div class="value">
-                  <el-select placeholder="显示字段" v-model="curComponent.displayId">
+                  <span class="label">显示字段</span>
+                  <el-select
+                    placeholder="显示字段"
+                    class="search-field"
+                    v-model="curComponent.displayId"
+                  >
                     <template v-if="curComponent.displayId" #prefix>
                       <el-icon>
                         <Icon
@@ -1429,6 +1445,7 @@ defineExpose({
                   </el-select>
                 </div>
                 <div class="value">
+                  <span class="label">排序字段</span>
                   <el-select
                     clearable
                     placeholder="请选择排序字段"
@@ -2212,15 +2229,28 @@ defineExpose({
           }
 
           .value {
+            .ed-select {
+              width: 321px;
+            }
             width: 321px;
             .value {
               margin-top: 8px;
               &:first-child {
                 margin-top: -0.5px;
               }
-            }
-            .ed-select {
-              width: 321px;
+              .search-field {
+                width: 257px;
+              }
+
+              .sort-field {
+                width: 176px;
+              }
+
+              .label {
+                line-height: 32px;
+                font-size: 14px;
+                margin-right: 8px;
+              }
             }
           }
 

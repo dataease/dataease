@@ -27,7 +27,7 @@ const timestampFormatDate = value => {
   if (!value) {
     return '-'
   }
-  return new Date(value)['format']()
+  return new Date(value).toLocaleString()
 }
 </script>
 

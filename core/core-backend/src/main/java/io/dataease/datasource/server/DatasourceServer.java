@@ -35,8 +35,8 @@ import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
-import io.dataease.job.sechedule.CheckDsStatusJob;
-import io.dataease.job.sechedule.ScheduleManager;
+import io.dataease.job.schedule.CheckDsStatusJob;
+import io.dataease.job.schedule.ScheduleManager;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
@@ -655,9 +655,7 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         try {
             checkDatasourceStatus(coreDatasource);
-            if(StringUtils.isNotEmpty(lastStatus) && StringUtils.isNotEmpty(coreDatasource.getStatus()) && lastStatus.equalsIgnoreCase("Error") && coreDatasource.getStatus().equalsIgnoreCase("Success")){
-                calciteProvider.update(datasourceDTO);
-            }
+            calciteProvider.updateDsPoolAfterCheckStatus(datasourceDTO);
         } catch (Exception e) {
             coreDatasource.setStatus("Error");
             DEException.throwException(e.getMessage());

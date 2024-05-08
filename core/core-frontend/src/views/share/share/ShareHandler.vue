@@ -228,6 +228,7 @@ const copyInfo = async () => {
         ElMessage.warning('链接格式错误，请重新填写！')
         return
       }
+      formatLinkAddr()
       await toClipboard(linkAddr.value)
       ElMessage.success(t('common.copy_success'))
     } catch (e) {

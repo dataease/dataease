@@ -42,7 +42,4 @@ public class UserFormVO implements Serializable {
 
     @Schema(description = "模式")
     private String model;
-
-    @Schema(description = "标签")
-    private String label;
 }

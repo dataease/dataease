@@ -42,6 +42,7 @@ onMounted(() => {
 .ai-popper-tips {
   z-index: 10001 !important;
   padding: 24px !important;
+  box-shadow: none !important;
   border: 0px !important;
   background: var(--ed-color-primary) !important;
   .ed-popper__arrow::before {
@@ -69,6 +70,7 @@ onMounted(() => {
     text-align: right;
     button {
       border: 0px !important;
+      border-color: #ffffff !important;
       font-weight: 500;
       color: rgba(51, 112, 255, 1) !important;
     }

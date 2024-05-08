@@ -293,6 +293,7 @@ const confirmCustomTime = () => {
     })
     delete currentField.value.name
     recoverSelection()
+    updateCustomTime.value = false
   } else {
     ruleFormRef.value.validate(valid => {
       if (valid) {
@@ -309,7 +310,6 @@ const confirmCustomTime = () => {
       }
     })
   }
-  updateCustomTime.value = false
 }
 
 watch(searchTable, val => {
@@ -701,10 +701,10 @@ let num = +new Date()
 
 const expandedD = ref(true)
 const expandedQ = ref(true)
-const setGuid = (arr, id, datasourceId) => {
+const setGuid = (arr, id, datasourceId, oldArr) => {
   arr.forEach(ele => {
     if (!ele.id) {
-      ele.id = `${++num}`
+      ele.id = oldArr.find(itx => itx.originName === ele.originName)?.id || `${++num}`
       ele.datasetTableId = id
       ele.datasourceId = datasourceId
     }
@@ -756,6 +756,17 @@ const setFieldAll = () => {
   tabChange('manage')
   fieldUnion.value?.clearState()
 }
+
+const dfsNode = (arr, id) => {
+  return arr.reduce((pre, next) => {
+    if (next.id === id) {
+      pre = [...next.currentDsFields]
+    } else if (next.children?.length) {
+      pre = dfsNode(next.children, id)
+    }
+    return pre
+  }, [])
+}
 const confirmEditUnion = () => {
   const { node, parent } = fieldUnion.value
   const to = node.id
@@ -770,8 +781,11 @@ const confirmEditUnion = () => {
     return
   }
 
-  setGuid(node.currentDsFields, node.id, node.datasourceId)
-  setGuid(parent.currentDsFields, parent.id, parent.datasourceId)
+  const nodeOldCurrentDsFields = dfsNode(datasetDrag.value.getNodeList(), to)
+  const parentOldCurrentDsFields = dfsNode(datasetDrag.value.getNodeList(), from)
+
+  setGuid(node.currentDsFields, node.id, node.datasourceId, nodeOldCurrentDsFields)
+  setGuid(parent.currentDsFields, parent.id, parent.datasourceId, parentOldCurrentDsFields)
   const top = cloneDeep(node)
   const bottom = cloneDeep(parent)
   datasetDrag.value.setStateBack(top, bottom)

@@ -97,6 +97,10 @@ declare interface ChartBasicStyle {
    */
   tablePageSize: number
   /**
+   * 表格展示形式,平铺和树形
+   */
+  tableLayoutMode: 'grid' | 'tree'
+  /**
    * 仪表盘样式
    */
   gaugeStyle: string
@@ -213,6 +217,18 @@ declare interface ChartBasicStyle {
    * 地图缩放按钮背景颜色
    */
   zoomBackground: string
+  /**
+   * 是否合并数据为其他
+   */
+  calcTopN: boolean
+  /**
+   * 只展示 TopN 项，其他合并为一项
+   */
+  topN: number
+  /**
+   * 其他项的标签
+   */
+  topNLabel: string
 }
 /**
  * 表头属性
@@ -694,6 +710,8 @@ declare interface MapCfg {
  * 象限属性
  */
 declare interface QuadrantAttr {
+  xBaseline?: number
+  yBaseline?: number
   lineStyle: QuadrantLineStyle
   regionStyle: QuadrantCommonStyle[]
   labels: QuadrantLabelConf[]

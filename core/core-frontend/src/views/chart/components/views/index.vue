@@ -128,7 +128,8 @@ const state = reactive({
     fontSynthesis: 'style weight',
     width: 'fit-content',
     maxWidth: '100%',
-    wordBreak: 'break-word'
+    wordBreak: 'break-word',
+    whiteSpace: 'pre-wrap'
   } as CSSProperties,
   drillFilters: [],
   drillClickDimensionList: []
@@ -589,7 +590,7 @@ const marginBottom = computed<string | 0>(() => {
   if (titleShow.value || trackMenu.value.length > 0 || state.title_remark.show) {
     return 12 * scale.value + 'px'
   }
-  return 12
+  return 0
 })
 
 const iconSize = computed<string>(() => {

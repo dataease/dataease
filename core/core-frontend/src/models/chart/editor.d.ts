@@ -28,6 +28,11 @@ declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }
 
+declare type EditorSelectorSpec = {
+  [key in EditorProperty]?: {
+    title: string
+  }
+}
 /**
  * 轴类型
  */

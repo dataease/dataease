@@ -19,6 +19,7 @@ export const CHART_MIX_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'basic-style-selector': [
     'colors',
     'alpha',
+    'gradient',
     'lineWidth',
     'lineSymbol',
     'lineSymbolSize',

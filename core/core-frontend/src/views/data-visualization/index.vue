@@ -208,10 +208,13 @@ const checkPer = async resourceId => {
 }
 
 const loadFinish = ref(false)
-
+const newWindowFromDiv = ref(false)
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
+  if (window.location.hash.includes('#/dvCanvas')) {
+    newWindowFromDiv.value = true
+  }
   await new Promise(r => (p = r))
   loadFinish.value = true
   window.addEventListener('blur', releaseAttachKey)
@@ -311,7 +314,11 @@ eventBus.on('handleNew', handleNew)
 </script>
 
 <template>
-  <div ref="dvLayout" class="dv-common-layout" :class="isDataEaseBi && 'dataease-w-h'">
+  <div
+    ref="dvLayout"
+    class="dv-common-layout"
+    :class="isDataEaseBi && !newWindowFromDiv && 'dataease-w-h'"
+  >
     <DvToolbar />
     <div class="custom-dv-divider" />
     <el-container

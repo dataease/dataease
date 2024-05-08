@@ -2,7 +2,6 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { toRefs } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 const { t } = useI18n()
 
 const state = {
@@ -24,13 +23,8 @@ const { chart } = toRefs(props)
   <div class="attr-style">
     <el-row class="de-collapse-style">
       <el-collapse v-model="state.styleActiveNames" class="style-collapse">
-        <collapse-switch-item
-          themes="light"
-          v-model="chart.customStyle.component.show"
-          name="component"
-          :title="t('visualization.module')"
-        >
-          <el-form label-position="top" :disabled="!chart.customStyle.component.show">
+        <el-collapse-item themes="light" name="component" :title="t('visualization.module')">
+          <el-form label-position="top">
             <el-form-item class="form-item margin-bottom-8">
               <el-checkbox size="small" v-model="chart.customStyle.component.titleShow">
                 {{ t('chart.show') + t('chart.title') }}
@@ -158,7 +152,7 @@ const { chart } = toRefs(props)
               </el-radio-group>
             </el-form-item>
           </el-form>
-        </collapse-switch-item>
+        </el-collapse-item>
       </el-collapse>
     </el-row>
   </div>

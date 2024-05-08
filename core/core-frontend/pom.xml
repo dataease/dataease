@@ -26,9 +26,9 @@
         <artifactId>maven-clean-plugin</artifactId>
         <configuration>
           <filesets>
-            <fileset>
+            <!--<fileset>
               <directory>dist</directory>
-            </fileset>
+            </fileset>-->
             <fileset>
                 <directory>node_modules</directory>
             </fileset>
