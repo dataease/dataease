@@ -3,6 +3,7 @@ import { onBeforeMount, ref, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { XpackComponent } from '@/components/plugin'
 import DePreviewMobile from './MobileInPc.vue'
 const panelInit = ref(false)
 const dvMainStore = dvMainStoreWithOut()
@@ -61,7 +62,7 @@ const hanedleMessage = event => {
   }
 
   if (event.data.type === 'mobileSave') {
-    window.top.postMessage(
+    window.parent.postMessage(
       {
         type: 'mobileSaveFromMobile',
         value: dvMainStore.componentData.reduce((pre, next) => {
@@ -89,8 +90,15 @@ const hanedleMessage = event => {
   }
 }
 
-onBeforeMount(async () => {
-  window.top.postMessage({ type: 'panelInit', value: true }, '*')
+const initIframe = () => {
+  panelInit.value = false
+  setTimeout(() => {
+    panelInit.value = true
+  })
+}
+
+onBeforeMount(() => {
+  window.parent.postMessage({ type: 'panelInit', value: true }, '*')
   window.addEventListener('message', hanedleMessage)
   useEmitt({
     name: 'onMobileStatusChange',
@@ -101,7 +109,7 @@ onBeforeMount(async () => {
 })
 
 const mobileStatusChange = (type, value) => {
-  window.top.postMessage({ type, value }, '*')
+  window.parent.postMessage({ type, value }, '*')
   if (type === 'delFromMobile') {
     eventBus.emit('removeMatrixItemById-canvas-main', value)
   }
@@ -116,6 +124,10 @@ onBeforeUnmount(() => {
   <div class="panel-mobile">
     <de-preview-mobile v-if="panelInit"></de-preview-mobile>
   </div>
+  <XpackComponent
+    @initIframe="initIframe"
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvRW50cmFuY2Vz"
+  />
 </template>
 
 <style lang="less" scoped>

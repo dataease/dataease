@@ -46,7 +46,6 @@ const iframeSrc = computed(() => {
     ? `${embeddedStore.baseUrl}mobile.html#/panel`
     : './mobile.html#/panel'
 })
-
 const handleLoad = () => {
   mobileStatusChange(
     'panelInit',
@@ -67,7 +66,19 @@ const componentDataNotInMobile = computed(() => {
   return componentData.value.filter(ele => !ele.inMobile)
 })
 
+const newWindow = ref()
+
 const hanedleMessage = event => {
+  if (event.data?.msgOrigin === 'de-fit2cloud' && !!embeddedStore.token) {
+    const params = {
+      embeddedToken: embeddedStore.token
+    }
+    params['de-embedded'] = true
+    const contentWindow = newWindow.value.contentWindow
+    console.log('call back from dataease!', contentWindow)
+    contentWindow.postMessage(params, '*')
+    return
+  }
   if (event.data.type === 'panelInit') {
     loadCanvasData()
   }
@@ -214,7 +225,7 @@ const save = () => {
         {{ dvInfo.name }}
       </div>
       <div class="config-panel-content" v-loading="mobileLoading">
-        <iframe :src="iframeSrc" frameborder="0" width="375" />
+        <iframe ref="newWindow" :src="iframeSrc" frameborder="0" width="375" />
       </div>
       <div class="config-panel-foot"></div>
     </div>
