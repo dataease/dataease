@@ -227,7 +227,8 @@ const apply = () => {
   const templateTemplate = {
     newFrom: state.dvCreateForm.newFrom,
     templateUrl: state.dvCreateForm.templateUrl,
-    resourceName: state.dvCreateForm.resourceName
+    resourceName: state.dvCreateForm.resourceName,
+    templateId: state.dvCreateForm.templateId
   }
   const baseUrl =
     (['dataV', 'SCREEN'].includes(state.dvCreateForm.nodeType)
