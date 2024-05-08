@@ -18,7 +18,7 @@
     :key-word="keyWord"
     popper-class="coustom-de-select"
     :class="{'disabled-close': !inDraw && selectFirst && element.options.attrs.multiple, 'show-required-tips': showRequiredTips}"
-    :list="(element.options.attrs.showEmpty ? [{ text: '空数据', id: '_empty_$'}, ...data] : data)"
+    :list="(element.options.attrs.showEmpty ? [{ text: '空数据', id: '_empty_$'}, ...data.filter(ele => ele.id !== '_empty_$')] : data)"
     :flag="flag"
     :is-config="isConfig"
     :custom-style="customStyle"
@@ -562,7 +562,7 @@ export default {
       } else if (!Array.isArray(this.resetKeyWordsVal) && this.resetKeyWordsVal) {
         tempData = [...new Set([this.resetKeyWordsVal, ...tempData])]
       }
-      this.filterInvalidValue(this.element.options.attrs.showEmpty ? [...tempData, '_empty_$'] : tempData)
+      this.filterInvalidValue(tempData)
       return tempData.map(item => {
         return {
           id: item,
