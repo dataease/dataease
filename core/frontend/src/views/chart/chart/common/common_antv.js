@@ -106,7 +106,8 @@ export function getTheme(chart) {
             color: tooltipColor,
             fontSize: tooltipFontsize + 'px',
             background: tooltipBackgroundColor,
-            'z-index': 3000
+            'z-index': 3000,
+            position: 'fixed'
           }
         }
       },
@@ -153,7 +154,10 @@ export function getLabel(chart) {
         } else if (chart.type.includes('line') || chart.type.includes('area')) {
           label = {
             position: l.position,
-            offsetY: -8
+            layout: [
+              { type: 'hide-overlap' },
+              { type: 'limit-in-plot' }
+            ]
           }
         } else if (equalsAny(chart.type, 'pie-rose', 'pie-donut-rose')) {
           label = {
@@ -1208,7 +1212,13 @@ export function getTooltipContainer(id) {
   const g2Tooltip = document.createElement('div')
   g2Tooltip.setAttribute('id', id)
   g2Tooltip.classList.add('g2-tooltip')
-
+  // 最多半屏，鼠标移入可滚动
+  g2Tooltip.style.maxHeight = '50%'
+  g2Tooltip.style.overflow = 'scroll'
+  g2Tooltip.style.display = 'none'
+  g2Tooltip.style.position = 'fixed'
+  g2Tooltip.style.left = '0px'
+  g2Tooltip.style.top = '0px'
   const g2TooltipTitle = document.createElement('div')
   g2TooltipTitle.classList.add('g2-tooltip-title')
   g2Tooltip.appendChild(g2TooltipTitle)
@@ -1233,9 +1243,11 @@ export function configPlotTooltipEvent(chart, plot) {
   // 鼠标可移入, 移入之后保持显示, 移出之后隐藏
   plot.options.tooltip.container.addEventListener('mouseenter', e => {
     e.target.style.visibility = 'visible'
+    e.target.style.display = 'block'
   })
   plot.options.tooltip.container.addEventListener('mouseleave', e => {
     e.target.style.visibility = 'hidden'
+    e.target.style.display = 'none'
   })
   // 手动处理 tooltip 的显示和隐藏事件，需配合源码理解
   // https://github.com/antvis/G2/blob/master/src/chart/controller/tooltip.ts#showTooltip
@@ -1244,12 +1256,11 @@ export function configPlotTooltipEvent(chart, plot) {
     if (!tooltipCtl) {
       return
     }
+    const event = plot.chart.interactions.tooltip?.context?.event
     if (tooltipCtl.tooltip) {
       // 处理视图放大后再关闭 tooltip 的 dom 被清除
       const container = tooltipCtl.tooltip.cfg.container
-      // 最多铺满屏幕，鼠标移入可滚动
-      container.style.maxHeight = '100%'
-      container.style.overflow = 'scroll'
+      container.style.display = 'block'
       const dom = document.getElementById(container.id)
       if (!dom) {
         const full = document.getElementsByClassName('fullscreen')
@@ -1260,7 +1271,6 @@ export function configPlotTooltipEvent(chart, plot) {
         }
       }
     }
-    const event = plot.chart.interactions.tooltip?.context?.event
     plot.chart.getOptions().tooltip.follow = false
     tooltipCtl.title = Math.random().toString()
     plot.chart.getTheme().components.tooltip.x = event.clientX
@@ -1273,6 +1283,10 @@ export function configPlotTooltipEvent(chart, plot) {
       return
     }
     plot.chart.getOptions().tooltip.follow = true
+    const container = tooltipCtl.tooltip?.cfg?.container
+    if (container) {
+      container.style.display = 'none'
+    }
     tooltipCtl.hideTooltip()
   })
 }
