@@ -69,6 +69,7 @@ onMounted(() => {
     line-height: 22px;
     text-align: right;
     button {
+      border: 0px !important;
       border-color: #ffffff !important;
       font-weight: 500;
       color: rgba(51, 112, 255, 1) !important;
