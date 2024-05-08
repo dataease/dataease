@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { onBeforeMount, ref, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { XpackComponent } from '@/components/plugin'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import DePreviewMobile from './MobileInPc.vue'
