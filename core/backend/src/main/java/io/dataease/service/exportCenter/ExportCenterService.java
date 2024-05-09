@@ -294,7 +294,7 @@ public class ExportCenterService {
                                 // with DataType
                                 if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && rowData[j] != null) {
                                     cell.setCellValue(Double.valueOf(rowData[j].toString()));
-                                } else if(rowData[j] != null){
+                                } else if (rowData[j] != null) {
                                     cell.setCellValue(String.valueOf(rowData[j]));
                                 }
                             } catch (Exception e) {
@@ -501,7 +501,7 @@ public class ExportCenterService {
                                             // with DataType
                                             if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
                                                 cell.setCellValue(Double.valueOf(cellValObj.toString()));
-                                            } else if(cellValObj != null){
+                                            } else if (cellValObj != null) {
                                                 cell.setCellValue(cellValObj.toString());
                                             }
                                         } catch (Exception e) {
@@ -533,6 +533,7 @@ public class ExportCenterService {
 
                 try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + request.getViewName() + ".xlsx")) {
                     wb.write(outputStream);
+                    outputStream.flush();
                 }
                 wb.close();
 
@@ -546,7 +547,7 @@ public class ExportCenterService {
                 exportTask.setExportPogress("100");
                 exportTask.setExportStatus("SUCCESS");
 
-                setFileSize(dataPath + "/" + dataPath + "/" + request.getViewName() + ".xlsx", exportTask);
+                setFileSize(dataPath + "/" + request.getViewName() + ".xlsx", exportTask);
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
                 exportTask.setExportStatus("FAILED");
@@ -754,6 +755,7 @@ public class ExportCenterService {
                         exportTaskMapper.updateByPrimaryKey(exportTask);
                     }
                     wb.write(fileOutputStream);
+                    fileOutputStream.flush();
                     fileOutputStream.close();
                     wb.close();
                 }
