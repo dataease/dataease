@@ -17,6 +17,7 @@
         @click.native="drillJump(index + 1)"
       >
         <span
+          class="drill-label"
           :style="{'color': textColor}"
           :title="filter.value[0]"
         >{{ filter.value[0] }}</span>
@@ -100,8 +101,12 @@ export default {
   margin: 0!important;
 }
 .drill-item{
-  max-width: 120px;
-  overflow: hidden;
   cursor: pointer;
+}
+.drill-label {
+  display: inline-block;
+  max-width: 120px;
+  white-space: nowrap;
+  overflow: hidden;
 }
 </style>
