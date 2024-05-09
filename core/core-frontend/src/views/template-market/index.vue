@@ -432,7 +432,7 @@ const apply = template => {
       ? '#/dvCanvas?opt=create&createType=template'
       : '#/dashboard?opt=create&createType=template') +
     '&templateParams=' +
-    Base64.encode(JSON.stringify(templateTemplate))
+    encodeURIComponent(Base64.encode(JSON.stringify(templateTemplate)))
   let newWindow = null
   let embeddedBaseUrl = ''
   if (isDataEaseBi.value) {
