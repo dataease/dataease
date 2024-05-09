@@ -19,7 +19,7 @@ const checkItemPosition = component => {
 
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
-    const { componentData, canvasStyleData, dvInfo, canvasViewInfo } = event.data.value
+    const { componentData, canvasStyleData, dvInfo, canvasViewInfo, isEmbedded } = event.data.value
     componentData.forEach(ele => {
       const { mx, my, mSizeX, mSizeY } = ele
       ele.x = mx
@@ -47,6 +47,7 @@ const hanedleMessage = event => {
     dvMainStore.updateCurDvInfo(dvInfo)
     dvMainStore.setCanvasViewInfo(canvasViewInfo)
     eventBus.emit('doCanvasInit-canvas-main')
+    if (isEmbedded) return
     panelInit.value = true
   }
 

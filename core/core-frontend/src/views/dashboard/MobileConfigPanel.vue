@@ -56,7 +56,8 @@ const handleLoad = () => {
         ),
         canvasStyleData: JSON.parse(JSON.stringify(unref(canvasStyleData))),
         canvasViewInfo: JSON.parse(JSON.stringify(unref(canvasViewInfo))),
-        dvInfo: JSON.parse(JSON.stringify(unref(dvInfo)))
+        dvInfo: JSON.parse(JSON.stringify(unref(dvInfo))),
+        isEmbedded: !!embeddedStore.baseUrl
       })
     )
   )
