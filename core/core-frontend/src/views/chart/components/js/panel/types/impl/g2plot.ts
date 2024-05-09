@@ -15,7 +15,8 @@ import {
 import {
   AntVAbstractChartView,
   AntVDrawOptions,
-  ChartLibraryType
+  ChartLibraryType,
+  ChartWrapper
 } from '@/views/chart/components/js/panel/types'
 import { getEngine } from '@antv/g2/esm/core'
 import { handleEmptyDataStrategy } from '../../../util'
@@ -33,6 +34,38 @@ export interface G2PlotDrawOptions<O> extends AntVDrawOptions<O> {
 }
 
 /**
+ * 图表对象包装类，一个图表里面可能有多个对象实例
+ */
+export class G2PlotWrapper<O extends PickOptions, P extends Plot<O>> extends ChartWrapper<
+  P | Array<P>
+> {
+  constructor(chartInstance: P | Array<P>) {
+    super()
+    this.chartInstance = chartInstance
+  }
+  destroy = () => {
+    if (!this.chartInstance) {
+      return
+    }
+    if (Array.isArray(this.chartInstance)) {
+      this.chartInstance?.forEach(p => p.destroy())
+    } else {
+      this.chartInstance?.destroy()
+    }
+  }
+
+  render = () => {
+    if (!this.chartInstance) {
+      return
+    }
+    if (Array.isArray(this.chartInstance)) {
+      this.chartInstance?.forEach(p => p.render())
+    } else {
+      this.chartInstance?.render()
+    }
+  }
+}
+/**
  * G2Plot 的图表抽象类
  */
 export abstract class G2PlotChartView<
@@ -46,7 +79,7 @@ export abstract class G2PlotChartView<
    * @param drawOptions 图表配置参数
    * @return 生成的图表对象，类型为 Plot 的子类
    */
-  public abstract drawChart(drawOptions: G2PlotDrawOptions<P>): P
+  public abstract drawChart(drawOptions: G2PlotDrawOptions<P>): G2PlotWrapper<O, P> | P
 
   protected configTheme(chart: Chart, options: O): O {
     const theme = getTheme(chart)
