@@ -95,7 +95,7 @@ const hanedleMessage = event => {
     })
   }
 
-  if (event.data.type === 'mobileSaveFromMobile') {
+  if (['mobileSaveFromMobile', 'mobilePatchFromMobile'].includes(event.data.type)) {
     componentData.value.forEach(ele => {
       const com = event.data.value[ele.id]
       if (!!com) {
@@ -117,7 +117,13 @@ const hanedleMessage = event => {
         }
       }
     })
+  }
+  if (event.data.type === 'mobileSaveFromMobile') {
     saveCanvasWithCheckFromMobile()
+  }
+
+  if (event.data.type === 'mobilePatchFromMobile') {
+    emits('pcMode')
   }
 }
 
@@ -175,7 +181,7 @@ const changeTimes = ref(0)
 const activeCollapse = ref('com')
 const handleBack = () => {
   if (!changeTimes.value) {
-    emits('pcMode')
+    mobileStatusChange('mobilePatch', undefined)
     return
   }
   ElMessageBox.confirm('当前的更改尚未保存，确定退出吗？', {
@@ -184,7 +190,9 @@ const handleBack = () => {
     autofocus: false,
     showClose: false
   }).then(() => {
-    emits('pcMode')
+    setTimeout(() => {
+      mobileStatusChange('mobilePatch', undefined)
+    }, 100)
   })
 }
 

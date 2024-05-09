@@ -62,10 +62,10 @@ const hanedleMessage = event => {
     dvMainStore.setCanvasStyle(event.data.value)
   }
 
-  if (event.data.type === 'mobileSave') {
+  if (['mobileSave', 'mobilePatch'].includes(event.data.type)) {
     window.parent.postMessage(
       {
-        type: 'mobileSaveFromMobile',
+        type: `${event.data.type}FromMobile`,
         value: dvMainStore.componentData.reduce((pre, next) => {
           const { x, y, sizeX, sizeY, id, component } = next
           pre[id] = { x, y, sizeX, sizeY, component }
