@@ -20,6 +20,7 @@ interface AppearanceState {
   foot?: string
   footContent?: string
   loaded: boolean
+  showDemoTips?: boolean
 }
 const { wsCache } = useCache()
 export const useAppearanceStore = defineStore('appearanceStore', {
@@ -37,7 +38,8 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       name: '',
       foot: 'false',
       footContent: '',
-      loaded: false
+      loaded: false,
+      showDemoTips: false
     }
   },
   getters: {
@@ -91,6 +93,9 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     },
     getFootContent(): string {
       return this.footContent
+    },
+    getShowDemoTips(): boolean {
+      return this.showDemoTips
     }
   },
   actions: {
@@ -124,6 +129,10 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.loaded = true
       const resData = res.data
       if (!resData?.length) {
+        return
+      }
+      if (resData.length === 1 && resData[0]?.pkey === 'showDemoTips') {
+        this.showDemoTips = resData[0].pval
         return
       }
       const data: AppearanceState = { loaded: false }
