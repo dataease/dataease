@@ -29,7 +29,6 @@ set
 where a.id = b.id and a.type = 'table-pivot';
 
 
-INSERT INTO `core_datasource` (`id`, `name`, `description`, `type`, `pid`, `edit_type`, `configuration`, `create_time`, `update_time`, `update_by`, `create_by`, `status`, `qrtz_instance`, `task_status`) VALUES (985188400292302848, 'Demo', '', 'mysql', 0, NULL, '{\"dataBase\":\"dataease\",\"extraParams\":\"\",\"username\":\"root\",\"password\":\"Password123@mysql\",\"host\":\"mysql-de\",\"authMethod\":\"\",\"port\":3306,\"initialPoolSize\":5,\"minPoolSize\":5,\"maxPoolSize\":5,\"queryTimeout\":30}', 1715053684176, 1715100309074, 1, '1', 'Success', NULL, 'WaitingForExecution');
 INSERT INTO `core_dataset_table` (`id`, `name`, `table_name`, `datasource_id`, `dataset_group_id`, `type`, `info`, `sql_variable_details`) VALUES (7193457660727922688, NULL, 'demo_tea_material', 985188400292302848, 985189703189925888, 'db', '{\"table\":\"demo_tea_material\",\"sql\":\"\"}', NULL);
 INSERT INTO `core_dataset_table` (`id`, `name`, `table_name`, `datasource_id`, `dataset_group_id`, `type`, `info`, `sql_variable_details`) VALUES (7193537020143079424, NULL, 'demo_tea_order', 985188400292302848, 985189053949415424, 'db', '{\"table\":\"demo_tea_order\",\"sql\":\"\"}', NULL);
 
