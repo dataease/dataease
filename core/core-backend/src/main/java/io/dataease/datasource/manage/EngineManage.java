@@ -158,6 +158,7 @@ public class EngineManage {
     public void initLocalDataSource(){
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("id",985188400292302848L);
+        queryWrapper.ne("create_time",1715053684176L);
         if(!datasourceMapper.exists(queryWrapper) && !ModelUtils.isDesktop()){
             Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)\\?(.*)");
             Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
