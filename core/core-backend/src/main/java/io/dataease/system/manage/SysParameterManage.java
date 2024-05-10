@@ -27,6 +27,9 @@ public class SysParameterManage {
     @Value("${dataease.show-demo-tips:false}")
     private boolean showDemoTips;
 
+    @Value("${dataease.demo-tips-content:#{null}}")
+    private String demoTipsContent;
+
     private static final String mapKey = "map.key";
 
     @Resource
@@ -95,13 +98,18 @@ public class SysParameterManage {
 
     @XpackInteract(value = "perSetting", replace = true)
     public List<Object> getUiList() {
-        Map<String, Object> loginTipsItem = new HashMap<>();
-        loginTipsItem.put("pkey", "showDemoTips");
-        loginTipsItem.put("pval", showDemoTips);
-        loginTipsItem.put("sort", 1);
         List<Object> result = new ArrayList<>();
-        result.add(loginTipsItem);
+        result.add(buildSettingItem("community", true));
+        result.add(buildSettingItem("showDemoTips", showDemoTips));
+        result.add(buildSettingItem("demoTipsContent", demoTipsContent));
         return result;
+    }
+
+    private Map<String, Object> buildSettingItem(String pkey, Object pval) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("pkey", pkey);
+        item.put("pval", pval);
+        return item;
     }
 
 

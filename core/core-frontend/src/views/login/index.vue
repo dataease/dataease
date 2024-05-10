@@ -36,7 +36,14 @@ const footContent = ref(null)
 const loginErrorMsg = ref('')
 const xpackLoginHandler = ref()
 const showDempTips = ref(false)
-const demoTips = '账号：admin 密码：DataEase@123456 每晚 00:00 重置数据'
+const demoTips = computed(() => {
+  if (!showDempTips.value) {
+    return ''
+  }
+  return (
+    appearanceStore.getDemoTipsContent || '账号：admin 密码：DataEase@123456 每晚 00:00 重置数据'
+  )
+})
 const state = reactive({
   loginForm: {
     username: '',
