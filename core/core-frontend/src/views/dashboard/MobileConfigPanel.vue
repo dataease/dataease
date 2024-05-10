@@ -70,13 +70,16 @@ const componentDataNotInMobile = computed(() => {
 const newWindow = ref()
 
 const hanedleMessage = event => {
-  if (event.data?.msgOrigin === 'de-fit2cloud' && !!embeddedStore.token) {
+  if (
+    event.data?.msgOrigin === 'de-fit2cloud' &&
+    !!embeddedStore.token &&
+    !!embeddedStore.baseUrl
+  ) {
     const params = {
       embeddedToken: embeddedStore.token
     }
     params['de-embedded'] = true
     const contentWindow = newWindow.value.contentWindow
-    console.log('call back from dataease!', contentWindow)
     contentWindow.postMessage(params, '*')
     return
   }
