@@ -202,4 +202,9 @@ public class ChartViewBaseDTO implements Serializable {
      */
     private Boolean jumpActive;
 
+    /**
+     * 区间条形图开启时间纬度开启聚合
+     */
+    private Boolean aggregate;
+
 }

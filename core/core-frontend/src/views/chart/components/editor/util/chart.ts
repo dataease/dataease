@@ -1198,6 +1198,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'percentage-bar-stack-horizontal',
         title: t('chart.chart_percentage_bar_stack_horizontal'),
         icon: 'percentage-bar-stack-horizontal'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bar-range',
+        title: t('chart.chart_bar_range'),
+        icon: 'bar-range'
       }
     ]
   },

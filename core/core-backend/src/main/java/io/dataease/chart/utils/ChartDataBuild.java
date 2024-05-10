@@ -1,13 +1,17 @@
 package io.dataease.chart.utils;
 
 import io.dataease.api.chart.dto.*;
+import io.dataease.i18n.Lang;
+import io.dataease.i18n.Translator;
 import io.dataease.utils.IDUtils;
 import org.apache.commons.lang3.ArrayUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
 
@@ -1321,6 +1325,270 @@ public class ChartDataBuild {
         }
         map.put("data", dataList);
         return map;
+    }
+
+    public static Map<String, Object> transTimeBarDataAntV(boolean skipBarRange, boolean isDate, List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
+
+        Map<String, Object> map = new HashMap<>();
+        if (skipBarRange) {
+            map.put("data", new ArrayList<>());
+            return map;
+        }
+
+        List<Date> dates = new ArrayList<>();
+        List<BigDecimal> numbers = new ArrayList<>();
+
+        ChartViewFieldDTO dateAxis1 = null;
+
+        SimpleDateFormat sdf = null;
+        if (isDate) {
+            if (BooleanUtils.isTrue(view.getAggregate())) {
+                dateAxis1 = yAxis.get(0);
+            } else {
+                dateAxis1 = xAxis.get(xAxisBase.size());
+            }
+            sdf = new SimpleDateFormat(getDateFormat(dateAxis1.getDateStyle(), dateAxis1.getDatePattern()));
+        }
+
+        List<Object> dataList = new ArrayList<>();
+        for (int i1 = 0; i1 < data.size(); i1++) {
+            String[] row = data.get(i1);
+
+            StringBuilder xField = new StringBuilder();
+            if (isDrill) {
+                xField.append(row[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxisBase.size(); i++) {
+                    if (i == xAxisBase.size() - 1) {
+                        xField.append(row[i]);
+                    } else {
+                        xField.append(row[i]).append("\n");
+                    }
+                }
+            }
+
+
+            Map<String, Object> obj = new HashMap<>();
+            obj.put("field", xField.toString());
+            obj.put("category", xField.toString());
+
+            List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+
+            for (int i = 0; i < xAxisBase.size(); i++) {
+                ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                chartDimensionDTO.setId(xAxis.get(i).getId());
+                chartDimensionDTO.setValue(row[i]);
+                dimensionList.add(chartDimensionDTO);
+            }
+            if (isDrill) {
+                int index = xAxis.size() - 1;
+                ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                chartDimensionDTO.setId(xAxis.get(index).getId());
+                chartDimensionDTO.setValue(row[index]);
+                dimensionList.add(chartDimensionDTO);
+            }
+            obj.put("dimensionList", dimensionList);
+
+
+            List<Object> values = new ArrayList<>();
+
+            if (row[xAxisBase.size()] == null || row[xAxisBase.size() + 1] == null) {
+                continue;
+            }
+
+            if (isDate) {
+                int index;
+                if (BooleanUtils.isTrue(view.getAggregate())) {
+                    index = xAxis.size();
+                } else {
+                    index = xAxisBase.size();
+                }
+
+                values.add(row[index]);
+                values.add(row[index + 1]);
+                obj.put("values", values);
+                Date date1 = null, date2 = null;
+                try {
+                    date1 = sdf.parse(row[index]);
+                    if (date1 != null) {
+                        dates.add(date1);
+                    }
+                } catch (Exception ignore) {
+                }
+                try {
+                    date2 = sdf.parse(row[index + 1]);
+                    if (date2 != null) {
+                        dates.add(date2);
+                    }
+                } catch (Exception ignore) {
+                }
+                //间隔时间
+                obj.put("gap", getTimeGap(date1, date2, dateAxis1.getDateStyle()));
+
+            } else {
+                values.add(new BigDecimal(row[xAxis.size()]));
+                values.add(new BigDecimal(row[xAxis.size() + 1]));
+                obj.put("values", values);
+
+                numbers.add(new BigDecimal(row[xAxis.size()]));
+                numbers.add(new BigDecimal(row[xAxis.size() + 1]));
+
+                //间隔差
+                obj.put("gap", new BigDecimal(row[xAxis.size() + 1]).subtract(new BigDecimal(row[xAxis.size()])));
+            }
+
+            dataList.add(obj);
+        }
+
+        if (isDate) {
+            Date minDate = dates.stream().min(Date::compareTo).orElse(null);
+            if (minDate != null) {
+                map.put("minTime", sdf.format(minDate));
+            }
+            Date maxDate = dates.stream().max(Date::compareTo).orElse(null);
+            if (maxDate != null) {
+                map.put("maxTime", sdf.format(maxDate));
+            }
+        } else {
+            map.put("min", numbers.stream().min(BigDecimal::compareTo).orElse(null));
+            map.put("max", numbers.stream().max(BigDecimal::compareTo).orElse(null));
+        }
+
+        map.put("isDate", isDate);
+        map.put("data", dataList);
+        return map;
+
+    }
+
+    private static String getDateFormat(String dateStyle, String datePattern) {
+        String split;
+        if (StringUtils.equalsIgnoreCase(datePattern, "date_split")) {
+            split = "/";
+        } else {
+            split = "-";
+        }
+        switch (dateStyle) {
+            case "y":
+                return "yyyy";
+            case "y_M":
+                return "yyyy" + split + "MM";
+            case "y_M_d":
+                return "yyyy" + split + "MM" + split + "dd";
+            case "H_m_s":
+                return "HH:mm:ss";
+            case "y_M_d_H":
+                return "yyyy" + split + "MM" + split + "dd" + " HH";
+            case "y_M_d_H_m":
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm";
+            case "y_M_d_H_m_s":
+                return "yyyy" + split + "MM" + split + "dd" + " HH:mm:ss";
+            default:
+                return "yyyy-MM-dd HH:mm:ss";
+        }
+    }
+
+    private static String getTimeGap(Date from, Date to, String dateStyle) {
+        if (from == null || to == null) {
+            return "";
+        }
+        Calendar fromCalender = Calendar.getInstance();
+        fromCalender.setTime(from);
+
+        Calendar toCalender = Calendar.getInstance();
+        toCalender.setTime(to);
+
+        long yearGap = 0;
+        long monthGap = 0;
+        long dayGap = (toCalender.getTimeInMillis() - fromCalender.getTimeInMillis()) / (1000 * 3600 * 24);
+        long hourGap = ((toCalender.getTimeInMillis() - fromCalender.getTimeInMillis()) / (1000 * 3600)) % 24;
+        long minuteGap = ((toCalender.getTimeInMillis() - fromCalender.getTimeInMillis()) / (1000 * 60)) % 60;
+        long secondGap = ((toCalender.getTimeInMillis() - fromCalender.getTimeInMillis()) / 1000) % 60;
+
+        String language = "zh-CN"; //国际化
+        Lang lang = Lang.getLangWithoutDefault(language);
+        boolean isEnUs = Lang.en_US.equals(lang);
+        String splitter = isEnUs ? " " : "";
+
+        String yearGapStr = "";
+        String monthGapStr = "";
+
+        String dayGapStr = "";
+        if (dayGap != 0) {
+            dayGapStr = dayGap + splitter + Translator.get("i18n_day") + (isEnUs && dayGap != 1 ? "s" : "");
+        }
+        String hourGapStr = "";
+        if (hourGap != 0) {
+            hourGapStr = hourGap + splitter + Translator.get("i18n_hour") + (isEnUs && hourGap != 1 ? "s" : "");
+        }
+        String minuteGapStr = "";
+        if (minuteGap != 0) {
+            minuteGapStr = minuteGap + splitter + Translator.get("i18n_minute") + (isEnUs && minuteGap != 1 ? "s" : "");
+        }
+        String secondGapStr = "";
+        if (secondGap != 0) {
+            secondGapStr = secondGap + splitter + Translator.get("i18n_second") + (isEnUs && secondGap != 1 ? "s" : "");
+        }
+
+        List<String> list = new ArrayList<>();
+
+        switch (dateStyle) {
+            case "y":
+                yearGap = toCalender.get(Calendar.YEAR) - fromCalender.get(Calendar.YEAR);
+                yearGapStr = yearGap == 0 ? "" : (yearGap + splitter + Translator.get("i18n_year") + (isEnUs && yearGap != 1 ? "s" : ""));
+                return yearGapStr;
+            case "y_M":
+                yearGap = ((toCalender.get(Calendar.YEAR) - fromCalender.get(Calendar.YEAR)) * 12L + (toCalender.get(Calendar.MONTH) - fromCalender.get(Calendar.MONTH))) / 12;
+                monthGap = ((toCalender.get(Calendar.YEAR) - fromCalender.get(Calendar.YEAR)) * 12L + (toCalender.get(Calendar.MONTH) - fromCalender.get(Calendar.MONTH))) % 12;
+
+                yearGapStr = yearGap == 0 ? "" : (yearGap + splitter + Translator.get("i18n_year") + (isEnUs && yearGap != 1 ? "s" : ""));
+                monthGapStr = monthGap == 0 ? "" : (monthGap + splitter + Translator.get("i18n_month") + (isEnUs && monthGap != 1 ? "s" : ""));
+
+                if (!yearGapStr.isEmpty()) {
+                    list.add(yearGapStr);
+                }
+                if (!monthGapStr.isEmpty()) {
+                    list.add(monthGapStr);
+                }
+                return StringUtils.join(list, splitter);
+            case "y_M_d":
+                return dayGapStr;
+            case "y_M_d_H":
+                if (!dayGapStr.isEmpty()) {
+                    list.add(dayGapStr);
+                }
+                if (!hourGapStr.isEmpty()) {
+                    list.add(hourGapStr);
+                }
+                return StringUtils.join(list, splitter);
+            case "y_M_d_H_m":
+                if (!dayGapStr.isEmpty()) {
+                    list.add(dayGapStr);
+                }
+                if (!hourGapStr.isEmpty()) {
+                    list.add(hourGapStr);
+                }
+                if (!minuteGapStr.isEmpty()) {
+                    list.add(minuteGapStr);
+                }
+                return StringUtils.join(list, splitter);
+            case "H_m_s":
+            case "y_M_d_H_m_s":
+                if (!dayGapStr.isEmpty()) {
+                    list.add(dayGapStr);
+                }
+                if (!hourGapStr.isEmpty()) {
+                    list.add(hourGapStr);
+                }
+                if (!minuteGapStr.isEmpty()) {
+                    list.add(minuteGapStr);
+                }
+                if (!secondGapStr.isEmpty()) {
+                    list.add(secondGapStr);
+                }
+                return StringUtils.join(list, splitter);
+            default:
+                return "";
+        }
     }
 
 }

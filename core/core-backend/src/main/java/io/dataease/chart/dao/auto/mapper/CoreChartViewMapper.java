@@ -6,11 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- *  Mapper 接口
+ * 组件图表表 Mapper 接口
  * </p>
  *
  * @author fit2cloud
- * @since 2023-08-20
+ * @since 2024-05-07
  */
 @Mapper
 public interface CoreChartViewMapper extends BaseMapper<CoreChartView> {
