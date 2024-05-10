@@ -51,6 +51,7 @@ onMounted(() => {
 .ai-main {
   position: fixed;
   border-radius: 5px;
+  border-top-right-radius: 0;
   overflow: hidden;
   height: 0;
   bottom: 48px;

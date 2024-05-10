@@ -349,6 +349,7 @@ onMounted(() => {
             <el-dropdown
               :effect="themes"
               placement="right-start"
+              popper-class="data-dropdown_popper_mr9"
               style="width: 100%"
               @command="switchChartType"
             >
@@ -403,6 +404,7 @@ onMounted(() => {
             <el-dropdown
               :effect="themes"
               placement="right-start"
+              popper-class="data-dropdown_popper_mr9"
               style="width: 100%; height: 100%"
               @command="summary"
             >
@@ -583,6 +585,7 @@ onMounted(() => {
             <el-dropdown
               placement="right-start"
               :effect="themes"
+              popper-class="data-dropdown_popper_mr9"
               style="width: 100%; height: 100%"
               @command="quickCalc"
             >
@@ -670,6 +673,7 @@ onMounted(() => {
             <el-dropdown
               :effect="themes"
               placement="right-start"
+              popper-class="data-dropdown_popper_mr9"
               style="width: 100%; height: 100%"
               @command="sort"
             >
@@ -958,6 +962,9 @@ span {
 }
 </style>
 <style lang="less">
+.data-dropdown_popper_mr9 {
+  margin-left: -9px !important;
+}
 .menu-item-padding {
   span {
     font-size: 14px;
