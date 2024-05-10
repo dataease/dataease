@@ -151,6 +151,21 @@ const aggregationList = computed(() => {
   }
   return AGGREGATION_TYPE
 })
+
+const isBarRangeTime = computed<boolean>(() => {
+  if (props.chart.type === 'bar-range') {
+    const tempYAxis = props.chart.yAxis[0]
+    const tempYAxisExt = props.chart.yAxisExt[0]
+    if (
+      (tempYAxis && tempYAxis.groupType === 'd') ||
+      (tempYAxisExt && tempYAxisExt.groupType === 'd')
+    ) {
+      return true
+    }
+  }
+  return false
+})
+
 watch(
   [() => props.chart.customAttr.tooltip, () => props.chart.customAttr.tooltip.show],
   () => {
@@ -425,7 +440,7 @@ onMounted(() => {
         </el-tooltip>
       </el-form-item>
     </el-space>
-    <template v-if="showProperty('tooltipFormatter')">
+    <template v-if="showProperty('tooltipFormatter') && !isBarRangeTime">
       <el-form-item
         :label="t('chart.value_formatter_type')"
         class="form-item"
@@ -707,6 +722,15 @@ onMounted(() => {
         </div>
       </template>
     </div>
+    <el-form-item class="form-item" :class="'form-item-' + themes" v-show="showProperty('showGap')">
+      <el-checkbox
+        :effect="themes"
+        @change="changeTooltipAttr('showGap')"
+        v-model="state.tooltipForm.showGap"
+      >
+        {{ t('chart.show_gap') }}
+      </el-checkbox>
+    </el-form-item>
   </el-form>
 </template>
 

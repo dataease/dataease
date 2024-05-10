@@ -40,6 +40,7 @@ declare interface Chart {
   resultCount: number
   linkageActive: boolean
   jumpActive: boolean
+  aggregate?: boolean
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>

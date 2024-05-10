@@ -44,10 +44,12 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     ...this['axisConfig'],
     yAxis: {
       name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.quota')}`,
+      limit: 1,
       type: 'q'
     },
     yAxisExt: {
       name: `${t('chart.drag_block_value_axis_right')} / ${t('chart.quota')}`,
+      limit: 1,
       type: 'q'
     }
   }

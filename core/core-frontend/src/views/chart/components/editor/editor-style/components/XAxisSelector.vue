@@ -52,6 +52,20 @@ const fontSizeList = computed(() => {
   return arr
 })
 
+const isBarRangeTime = computed<boolean>(() => {
+  if (props.chart.type === 'bar-range') {
+    const tempYAxis = props.chart.yAxis[0]
+    const tempYAxisExt = props.chart.yAxisExt[0]
+    if (
+      (tempYAxis && tempYAxis.groupType === 'd') ||
+      (tempYAxisExt && tempYAxisExt.groupType === 'd')
+    ) {
+      return true
+    }
+  }
+  return false
+})
+
 const changeAxisStyle = prop => {
   if (
     state.axisForm.axisValue.splitCount &&
@@ -374,7 +388,7 @@ onMounted(() => {
         />
       </el-form-item>
 
-      <template v-if="showProperty('axisLabelFormatter')">
+      <template v-if="showProperty('axisLabelFormatter') && !isBarRangeTime">
         <el-form-item
           class="form-item"
           :class="'form-item-' + themes"

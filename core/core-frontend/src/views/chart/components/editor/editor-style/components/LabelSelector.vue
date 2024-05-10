@@ -204,8 +204,23 @@ const showSeriesLabelFormatter = computed(() => {
 })
 const showDivider = computed(() => {
   const DIVIDER_PROPS = ['labelFormatter', 'showDimension', 'showQuota', 'showProportion']
-  return includesAny(props.propertyInner, ...DIVIDER_PROPS)
+  return includesAny(props.propertyInner, ...DIVIDER_PROPS) && !isBarRangeTime.value
 })
+
+const isBarRangeTime = computed<boolean>(() => {
+  if (props.chart.type === 'bar-range') {
+    const tempYAxis = props.chart.yAxis[0]
+    const tempYAxisExt = props.chart.yAxisExt[0]
+    if (
+      (tempYAxis && tempYAxis.groupType === 'd') ||
+      (tempYAxisExt && tempYAxisExt.groupType === 'd')
+    ) {
+      return true
+    }
+  }
+  return false
+})
+
 onMounted(() => {
   init()
 })
@@ -329,7 +344,7 @@ onMounted(() => {
       :class="{ 'divider-dark': themes === 'dark' }"
       v-if="showDivider"
     />
-    <template v-if="showProperty('labelFormatter')">
+    <template v-if="showProperty('labelFormatter') && !isBarRangeTime">
       <el-form-item
         :label="$t('chart.value_formatter_type')"
         class="form-item"
@@ -803,6 +818,15 @@ onMounted(() => {
         </div>
       </template>
     </div>
+    <el-form-item class="form-item" :class="'form-item-' + themes" v-show="showProperty('showGap')">
+      <el-checkbox
+        :effect="themes"
+        @change="changeLabelAttr('showGap')"
+        v-model="state.labelForm.showGap"
+      >
+        {{ t('chart.show_gap') }}
+      </el-checkbox>
+    </el-form-item>
   </el-form>
 </template>
 

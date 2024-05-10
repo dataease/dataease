@@ -5,11 +5,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ * 组件图表表
  * </p>
  *
  * @author fit2cloud
- * @since 2023-08-20
+ * @since 2024-05-07
  */
 @TableName("core_chart_view")
 public class CoreChartView implements Serializable {
@@ -191,9 +191,20 @@ public class CoreChartView implements Serializable {
      */
     private Boolean jumpActive;
 
+    /**
+     * 复制来源
+     */
     private Long copyFrom;
 
+    /**
+     * 复制ID
+     */
     private Long copyId;
+
+    /**
+     * 区间条形图开启时间纬度开启聚合
+     */
+    private Boolean aggregate;
 
     public Long getId() {
         return id;
@@ -491,6 +502,14 @@ public class CoreChartView implements Serializable {
         this.copyId = copyId;
     }
 
+    public Boolean getAggregate() {
+        return aggregate;
+    }
+
+    public void setAggregate(Boolean aggregate) {
+        this.aggregate = aggregate;
+    }
+
     @Override
     public String toString() {
         return "CoreChartView{" +
@@ -531,6 +550,7 @@ public class CoreChartView implements Serializable {
         ", jumpActive = " + jumpActive +
         ", copyFrom = " + copyFrom +
         ", copyId = " + copyId +
+        ", aggregate = " + aggregate +
         "}";
     }
 }

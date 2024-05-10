@@ -34,6 +34,7 @@ import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.collections4.MapUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -127,6 +128,35 @@ public class ChartDataManage {
             List<ChartViewFieldDTO> yAxisExt = new ArrayList<>(view.getYAxisExt());
             yAxis.addAll(yAxisExt);
         }
+        boolean skipBarRange = false;
+        boolean barRangeDate = false;
+        if (StringUtils.equalsIgnoreCase(view.getType(), "bar-range")) { //针对区间条形图进行处理
+            yAxis.clear();
+            if (CollectionUtils.isNotEmpty(view.getYAxis()) && CollectionUtils.isNotEmpty(view.getYAxisExt())) {
+                ChartViewFieldDTO axis1 = view.getYAxis().get(0);
+                ChartViewFieldDTO axis2 = view.getYAxisExt().get(0);
+
+                if (StringUtils.equalsIgnoreCase(axis1.getGroupType(), "q") && StringUtils.equalsIgnoreCase(axis2.getGroupType(), "q")) {
+                    yAxis.add(axis1);
+                    yAxis.add(axis2);
+                } else if (StringUtils.equalsIgnoreCase(axis1.getGroupType(), "d") && axis1.getDeType() == 1 && StringUtils.equalsIgnoreCase(axis2.getGroupType(), "d") && axis2.getDeType() == 1) {
+                    barRangeDate = true;
+                    if (BooleanUtils.isTrue(view.getAggregate())) {
+                        axis1.setSummary("min");
+                        axis2.setSummary("max");
+                        yAxis.add(axis1);
+                        yAxis.add(axis2);
+                    } else {
+                        xAxis.add(axis1);
+                        xAxis.add(axis2);
+                    }
+                } else {
+                    skipBarRange = true;
+                }
+
+            }
+        }
+
         List<ChartViewFieldDTO> extStack = new ArrayList<>(view.getExtStack());
         List<ChartViewFieldDTO> extBubble = new ArrayList<>(view.getExtBubble());
         if (ObjectUtils.isNotEmpty(view.getExtLabel()) && enableExtData(view.getType())) {
@@ -753,6 +783,8 @@ public class ChartDataManage {
                 mapChart = ChartDataBuild.transLabelChartData(xAxis, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "quadrant")) {
                 mapChart = ChartDataBuild.transQuadrantDataAntV(xAxis, yAxis, view, data, extBubble, isDrill);
+            } else if (StringUtils.equalsIgnoreCase(view.getType(), "bar-range")) {
+                mapChart = ChartDataBuild.transTimeBarDataAntV(skipBarRange, barRangeDate, xAxisBase, xAxis, yAxis, view, data, isDrill);
             } else {
                 mapChart = ChartDataBuild.transChartDataAntV(xAxis, yAxis, view, data, isDrill);
             }

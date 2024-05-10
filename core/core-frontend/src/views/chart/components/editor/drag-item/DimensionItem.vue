@@ -110,6 +110,7 @@ const sort = param => {
     item.value.index = props.index
     item.value.sort = param.type
     item.value.customSort = []
+    delete item.value.axisType
     emit('onDimensionItemChange', item.value)
   }
 }
@@ -122,6 +123,7 @@ const beforeSort = type => {
 
 const dateStyle = param => {
   item.value.dateStyle = param.type
+  item.value.axisType = props.type
   emit('onDimensionItemChange', item.value)
 }
 
@@ -133,6 +135,7 @@ const beforeDateStyle = type => {
 
 const datePattern = param => {
   item.value.datePattern = param.type
+  item.value.axisType = props.type
   emit('onDimensionItemChange', item.value)
 }
 

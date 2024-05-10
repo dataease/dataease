@@ -12,6 +12,19 @@ export const BAR_EDITOR_PROPERTY: EditorProperty[] = [
   'jump-set',
   'linkage'
 ]
+export const BAR_RANGE_EDITOR_PROPERTY: EditorProperty[] = [
+  'background-overall-component',
+  'basic-style-selector',
+  'label-selector',
+  'tooltip-selector',
+  'x-axis-selector',
+  'y-axis-selector',
+  'title-selector',
+  'legend-selector',
+  'function-cfg',
+  'jump-set',
+  'linkage'
+]
 
 export const BAR_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
   'background-overall-component': ['all'],

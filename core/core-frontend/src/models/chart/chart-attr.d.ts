@@ -659,6 +659,8 @@ declare interface ChartLabelAttr {
    * 多系列标签设置
    */
   seriesLabelFormatter: SeriesFormatter[]
+
+  showGap?: boolean
 }
 /**
  * 提示设置
@@ -690,6 +692,8 @@ declare interface ChartTooltipAttr {
    * 多系列提示设置
    */
   seriesTooltipFormatter: SeriesFormatter[]
+
+  showGap?: boolean
 }
 
 /**
