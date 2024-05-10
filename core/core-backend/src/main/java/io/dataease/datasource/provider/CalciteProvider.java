@@ -404,6 +404,9 @@ public class CalciteProvider {
                         "    database = '%s'  \n" +
                         "    AND table = '%s' ", configuration.getDataBase(), datasourceRequest.getTable());
                 break;
+            case impala:
+                sql = String.format("DESCRIBE `%s`", datasourceRequest.getTable());
+                break;
             default:
                 break;
         }
