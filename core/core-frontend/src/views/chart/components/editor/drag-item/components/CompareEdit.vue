@@ -145,7 +145,7 @@ initCompareType()
           >本期数据 - 上期数据</span
         >
         <span v-else-if="compareItem.compareCalc.resultData === 'percent'" class="exp-style"
-          >(本期数据 / 上期数据 - 1) * 100%</span
+          >(本期数据 / |上期数据| - 1) * 100%</span
         >
       </el-form-item>
     </el-form>

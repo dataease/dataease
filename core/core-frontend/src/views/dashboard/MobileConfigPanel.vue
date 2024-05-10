@@ -1,6 +1,5 @@
 <script lang="ts" setup>
 import { ref, onMounted, unref, onBeforeUnmount, computed } from 'vue'
-import { XpackComponent } from '@/components/plugin'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import MobileBackgroundSelector from './MobileBackgroundSelector.vue'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
@@ -47,18 +46,6 @@ const iframeSrc = computed(() => {
     ? `${embeddedStore.baseUrl}mobile.html#/panel`
     : './mobile.html#/panel'
 })
-const openHandler = ref(null)
-
-const initOpenHandler = newWindow => {
-  if (openHandler?.value && !!embeddedStore.baseUrl) {
-    const pm = {
-      methodName: 'initOpenHandler',
-      args: newWindow
-    }
-    openHandler.value.invokeMethod(pm)
-  }
-}
-
 const handleLoad = () => {
   mobileStatusChange(
     'panelInit',
@@ -69,7 +56,8 @@ const handleLoad = () => {
         ),
         canvasStyleData: JSON.parse(JSON.stringify(unref(canvasStyleData))),
         canvasViewInfo: JSON.parse(JSON.stringify(unref(canvasViewInfo))),
-        dvInfo: JSON.parse(JSON.stringify(unref(dvInfo)))
+        dvInfo: JSON.parse(JSON.stringify(unref(dvInfo))),
+        isEmbedded: !!embeddedStore.baseUrl
       })
     )
   )
@@ -79,7 +67,19 @@ const componentDataNotInMobile = computed(() => {
   return componentData.value.filter(ele => !ele.inMobile)
 })
 
+const newWindow = ref()
+
 const hanedleMessage = event => {
+  if (event.data?.msgOrigin === 'de-fit2cloud' && !!embeddedStore.token) {
+    const params = {
+      embeddedToken: embeddedStore.token
+    }
+    params['de-embedded'] = true
+    const contentWindow = newWindow.value.contentWindow
+    console.log('call back from dataease!', contentWindow)
+    contentWindow.postMessage(params, '*')
+    return
+  }
   if (event.data.type === 'panelInit') {
     loadCanvasData()
   }
@@ -95,7 +95,7 @@ const hanedleMessage = event => {
     })
   }
 
-  if (event.data.type === 'mobileSaveFromMobile') {
+  if (['mobileSaveFromMobile', 'mobilePatchFromMobile'].includes(event.data.type)) {
     componentData.value.forEach(ele => {
       const com = event.data.value[ele.id]
       if (!!com) {
@@ -117,7 +117,13 @@ const hanedleMessage = event => {
         }
       }
     })
+  }
+  if (event.data.type === 'mobileSaveFromMobile') {
     saveCanvasWithCheckFromMobile()
+  }
+
+  if (event.data.type === 'mobilePatchFromMobile') {
+    emits('pcMode')
   }
 }
 
@@ -146,7 +152,6 @@ const setMobileStyle = debounce(() => {
     transformOrigin: '0 0'
   }
 }, 100)
-const newWindow = ref()
 onMounted(() => {
   window.addEventListener('message', hanedleMessage)
   window.addEventListener('resize', setMobileStyle)
@@ -158,9 +163,6 @@ onMounted(() => {
     }
   })
   setMobileStyle()
-  setTimeout(() => {
-    initOpenHandler(newWindow.value)
-  }, 300)
 })
 
 onBeforeUnmount(() => {
@@ -179,7 +181,7 @@ const changeTimes = ref(0)
 const activeCollapse = ref('com')
 const handleBack = () => {
   if (!changeTimes.value) {
-    emits('pcMode')
+    mobileStatusChange('mobilePatch', undefined)
     return
   }
   ElMessageBox.confirm('当前的更改尚未保存，确定退出吗？', {
@@ -188,7 +190,9 @@ const handleBack = () => {
     autofocus: false,
     showClose: false
   }).then(() => {
-    emits('pcMode')
+    setTimeout(() => {
+      mobileStatusChange('mobilePatch', undefined)
+    }, 100)
   })
 }
 
@@ -274,7 +278,6 @@ const save = () => {
       </div>
     </div>
   </div>
-  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less" scoped>
