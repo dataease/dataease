@@ -21,6 +21,8 @@ interface AppearanceState {
   footContent?: string
   loaded: boolean
   showDemoTips?: boolean
+  demoTipsContent?: string
+  community: boolean
 }
 const { wsCache } = useCache()
 export const useAppearanceStore = defineStore('appearanceStore', {
@@ -39,7 +41,9 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       foot: 'false',
       footContent: '',
       loaded: false,
-      showDemoTips: false
+      showDemoTips: false,
+      demoTipsContent: '',
+      community: true
     }
   },
   getters: {
@@ -96,6 +100,12 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     },
     getShowDemoTips(): boolean {
       return this.showDemoTips
+    },
+    getDemoTipsContent(): string {
+      return this.demoTipsContent
+    },
+    getCommunity(): boolean {
+      return this.community
     }
   },
   actions: {
@@ -121,6 +131,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       const desktop = wsCache.get('app.desktop')
       if (desktop) {
         this.loaded = true
+        this.community = true
       }
       if (this.loaded) {
         return
@@ -131,14 +142,22 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       if (!resData?.length) {
         return
       }
-      if (resData.length === 1 && resData[0]?.pkey === 'showDemoTips') {
-        this.showDemoTips = resData[0].pval
-        return
-      }
-      const data: AppearanceState = { loaded: false }
+      const data: AppearanceState = { loaded: false, community: true }
+      let isCommunity = false
       resData.forEach(item => {
         data[item.pkey] = item.pval
+        if (item.pkey === 'community') {
+          isCommunity = true
+        }
       })
+      data.community = isCommunity
+      this.community = data.community
+      if (this.community) {
+        this.showDemoTips = data.showDemoTips
+        this.demoTipsContent = data.demoTipsContent
+        this.loaded = true
+        return
+      }
       this.navigate = data.navigate
       this.help = data.help
       this.navigateBg = data.navigateBg
