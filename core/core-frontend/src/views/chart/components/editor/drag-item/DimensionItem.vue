@@ -226,6 +226,7 @@ onMounted(() => {
           <el-dropdown-item @click.prevent>
             <el-dropdown
               :effect="themes"
+              popper-class="data-dropdown_popper_mr9"
               placement="right-start"
               style="width: 100%; height: 100%"
               @command="sort"
@@ -305,6 +306,7 @@ onMounted(() => {
             <el-dropdown
               :effect="themes"
               placement="right-start"
+              popper-class="data-dropdown_popper_mr9"
               style="width: 100%; height: 100%"
               @command="dateStyle"
             >
@@ -438,6 +440,7 @@ onMounted(() => {
             <el-dropdown
               :effect="themes"
               placement="right-start"
+              popper-class="data-dropdown_popper_mr9"
               style="width: 100%; height: 100%"
               @command="datePattern"
             >
@@ -695,6 +698,9 @@ span {
 }
 </style>
 <style lang="less">
+.data-dropdown_popper_mr9 {
+  margin-left: -9px !important;
+}
 .menu-item-padding {
   span {
     font-size: 14px;
