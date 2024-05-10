@@ -13,7 +13,7 @@
     </modules>
 
     <properties>
-        <dataease.version>2.6.0</dataease.version>
+        <dataease.version>2.6.1</dataease.version>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
