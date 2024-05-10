@@ -1430,7 +1430,7 @@ public class ChartViewService {
                                         item[dataIndex] = null;
                                     } else {
                                         item[dataIndex] = new BigDecimal(cValue)
-                                                .divide(new BigDecimal(lastValue), 8, RoundingMode.HALF_UP)
+                                                .divide(new BigDecimal(lastValue).abs(), 8, RoundingMode.HALF_UP)
                                                 .subtract(new BigDecimal(1))
                                                 .setScale(8, RoundingMode.HALF_UP)
                                                 .toString();
