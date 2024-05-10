@@ -60,7 +60,9 @@ const classBackground = computed(() => {
   return {
     width: props.width + 'px',
     height: props.width * 0.58 + 'px',
-    background: `url(${imgUrlTrans(thumbnailUrl.value)}) no-repeat`,
+    background: `url(${imgUrlTrans(thumbnailUrl.value)
+      .replace(/\(/g, '%28')
+      .replace(/\)/g, '%29')}) no-repeat`,
     'background-size': `100% 100%`
   }
 })
