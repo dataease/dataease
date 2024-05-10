@@ -35,12 +35,13 @@ const slogan = ref(null)
 const footContent = ref(null)
 const loginErrorMsg = ref('')
 const xpackLoginHandler = ref()
+const showDempTips = ref(false)
+const demoTips = '账号：admin 密码：DataEase@123456 每晚 00:00 重置数据'
 const state = reactive({
   loginForm: {
     username: '',
     password: ''
   },
-  uiInfo: {},
   footContent: ''
 })
 const checkUsername = value => {
@@ -163,6 +164,7 @@ const showLoginErrorMsg = () => {
 }
 
 const loadArrearance = () => {
+  showDempTips.value = appearanceStore.getShowDemoTips
   if (appearanceStore.getBg) {
     loginImageUrl.value = appearanceStore.getBg
   }
@@ -307,15 +309,8 @@ onMounted(() => {
                     >
                       {{ t('login.btn') }}
                     </el-button>
-                    <div
-                      v-if="
-                        state.uiInfo &&
-                        state.uiInfo['ui.demo.tips'] &&
-                        state.uiInfo['ui.demo.tips'].paramValue
-                      "
-                      class="demo-tips"
-                    >
-                      {{ state.uiInfo['ui.demo.tips'].paramValue }}
+                    <div v-if="showDempTips" class="demo-tips">
+                      <span>{{ demoTips }}</span>
                     </div>
                   </div>
                 </div>
@@ -426,12 +421,13 @@ onMounted(() => {
   }
 
   .demo-tips {
-    margin-top: 20px;
+    position: absolute;
     font-size: 18px;
     color: #f56c6c;
     letter-spacing: 0;
     line-height: 18px;
     text-align: center;
+    top: 120px;
     @media only screen and (max-width: 1280px) {
       margin-top: 20px;
     }
@@ -465,6 +461,7 @@ onMounted(() => {
   }
 
   .login-btn {
+    position: relative;
     margin-bottom: 120px;
     .submit {
       width: 100%;
