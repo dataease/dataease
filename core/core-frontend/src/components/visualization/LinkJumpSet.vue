@@ -852,11 +852,16 @@ defineExpose({
   }
   .head-filter {
     flex: 1;
-    text-align: right;
+    display: flex;
+    align-items: center;
+    justify-content: end;
     margin-right: 16px;
     font-weight: 400;
     font-size: 12px;
     color: #646a73;
+    .ed-switch {
+      margin-left: 8px;
+    }
   }
 }
 
