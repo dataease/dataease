@@ -183,10 +183,12 @@ public class SqlUtils {
             case mysql:
             case mongo:
             case StarRocks:
-            case doris:
             case TiDB:
             case mariadb:
                 sqlDialect = MysqlSqlDialect.DEFAULT;
+                break;
+            case doris:
+                sqlDialect = DorisSqlDialect.DEFAULT;
                 break;
             case impala:
                 sqlDialect = ImpalaSqlDialect.DEFAULT;
