@@ -13,6 +13,7 @@ const props = withDefaults(
     form: any
     propertyInner?: Array<string>
     type?: 'left' | 'right'
+    chartType?: string
   }>(),
   {
     themes: 'dark',
@@ -92,8 +93,14 @@ onMounted(() => {
         size="small"
         @change="changeAxisStyle('position')"
       >
-        <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
-        <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_right') }}</el-radio>
+        <div v-if="chartType === 'bidirectional-bar'">
+          <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_top') }}</el-radio>
+          <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_bottom') }}</el-radio>
+        </div>
+        <div v-else>
+          <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+          <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_right') }}</el-radio>
+        </div>
       </el-radio-group>
     </el-form-item>
     <el-form-item

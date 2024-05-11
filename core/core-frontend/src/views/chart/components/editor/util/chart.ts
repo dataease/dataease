@@ -1205,6 +1205,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'bar-range',
         title: t('chart.chart_bar_range'),
         icon: 'bar-range'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bidirectional-bar',
+        title: t('chart.chart_bidirectional_bar'),
+        icon: 'percentage-bar-stack-horizontal'
       }
     ]
   },

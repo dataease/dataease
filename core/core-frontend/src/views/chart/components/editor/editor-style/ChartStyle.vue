@@ -433,7 +433,7 @@ watch(
             :change-model="chart.customStyle.xAxis"
             @modelChange="val => onChangeXAxisForm(val, 'show')"
             name="xAxis"
-            :title="t('chart.xAxis')"
+            :title="chart.type === 'bidirectional-bar' ? $t('chart.yAxis') : t('chart.xAxis')"
           >
             <x-axis-selector
               class="attr-selector"
@@ -468,7 +468,7 @@ watch(
             :change-model="chart.customStyle.yAxis"
             @modelChange="val => onChangeYAxisForm(val, 'show')"
             name="yAxis"
-            :title="$t('chart.yAxis')"
+            :title="chart.type === 'bidirectional-bar' ? $t('chart.xAxis') : $t('chart.yAxis')"
           >
             <dual-y-axis-selector
               class="attr-selector"

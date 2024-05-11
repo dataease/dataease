@@ -116,17 +116,15 @@ public class ChartDataManage {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
-        if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
+        if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
+                || StringUtils.equalsIgnoreCase(view.getType(), "bidirectional-bar")
+                || StringUtils.equalsIgnoreCase(view.getType(), "quadrant")) {
             List<ChartViewFieldDTO> yAxisExt = new ArrayList<>(view.getYAxisExt());
             yAxis.addAll(yAxisExt);
         }
         if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsAnyIgnoreCase(view.getType(), "gauge", "liquid")) {
             List<ChartViewFieldDTO> sizeField = getSizeField(view);
             yAxis.addAll(sizeField);
-        }
-        if (StringUtils.equalsIgnoreCase(view.getType(), "quadrant")) {
-            List<ChartViewFieldDTO> yAxisExt = new ArrayList<>(view.getYAxisExt());
-            yAxis.addAll(yAxisExt);
         }
         boolean skipBarRange = false;
         boolean barRangeDate = false;
@@ -777,7 +775,8 @@ public class ChartDataManage {
                     || StringUtils.containsIgnoreCase(view.getType(), "gauge")
                     || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                 mapChart = ChartDataBuild.transNormalChartData(xAxis, yAxis, view, data, isDrill);
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")
+                    || StringUtils.containsIgnoreCase(view.getType(), "bidirectional-bar")) {
                 mapChart = ChartDataBuild.transMixChartDataAntV(xAxis, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "label")) {
                 mapChart = ChartDataBuild.transLabelChartData(xAxis, yAxis, view, data, isDrill);
