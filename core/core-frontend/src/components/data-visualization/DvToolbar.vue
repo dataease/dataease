@@ -18,6 +18,7 @@ import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
 import { XpackComponent } from '@/components/plugin'
 import { useCache } from '@/hooks/web/useCache'
+import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -29,6 +30,7 @@ const dvToolbarMain = ref(null)
 const { canvasStyleData, dvInfo, editMode } = storeToRefs(dvMainStore)
 let scaleEdit = 100
 const { wsCache } = useCache('localStorage')
+const dvModel = 'dataV'
 
 const closeEditCanvasName = () => {
   nameEdit.value = false
@@ -215,6 +217,15 @@ eventBus.on('clearCanvas', clearCanvas)
             title="图表"
           >
             <user-view-group></user-view-group>
+          </component-group>
+          <component-group
+            :base-width="115"
+            :show-split-line="true"
+            is-label
+            icon-name="dv-filter"
+            title="查询组件"
+          >
+            <query-group :dv-model="dvModel"></query-group>
           </component-group>
           <component-group is-label :base-width="115" icon-name="dv-text" title="文本">
             <text-group></text-group>

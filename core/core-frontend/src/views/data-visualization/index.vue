@@ -337,13 +337,15 @@ onUnmounted(() => {
 const previewStatus = computed(() => editMode.value === 'preview')
 
 const commonPropertiesShow = computed(
-  () => curComponent.value && !['UserView', 'GroupArea'].includes(curComponent.value.component)
+  () =>
+    curComponent.value &&
+    !['UserView', 'GroupArea', 'VQuery'].includes(curComponent.value.component)
 )
 const canvasPropertiesShow = computed(
   () => !curComponent.value || ['GroupArea'].includes(curComponent.value.component)
 )
 const viewsPropertiesShow = computed(
-  () => !!(curComponent.value && ['UserView'].includes(curComponent.value.component))
+  () => !!(curComponent.value && ['UserView', 'VQuery'].includes(curComponent.value.component))
 )
 eventBus.on('handleNew', handleNew)
 </script>
