@@ -27,6 +27,7 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
+import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -90,6 +91,9 @@ public class DatasetDataManage {
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             if (StringUtils.equalsIgnoreCase("excel", coreDatasource.getType()) || StringUtils.equalsIgnoreCase("api", coreDatasource.getType())) {
                 coreDatasource = engineManage.getDeEngine();
+            }
+            if (StringUtils.isNotEmpty(coreDatasource.getStatus()) && "Error".equalsIgnoreCase(coreDatasource.getStatus())) {
+                DEException.throwException(Translator.get("i18n_invalid_ds"));
             }
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
@@ -181,6 +185,7 @@ public class DatasetDataManage {
         buildFieldName(sqlMap, fields);
 
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        DatasourceUtils.checkDsStatus(dsMap);
         List<String> dsList = new ArrayList<>();
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
             dsList.add(next.getValue().getType());
@@ -301,6 +306,11 @@ public class DatasetDataManage {
         } else {
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
         }
+
+        if (StringUtils.isNotEmpty(datasourceSchemaDTO.getStatus()) && "Error".equalsIgnoreCase(datasourceSchemaDTO.getStatus())) {
+            DEException.throwException(Translator.get("i18n_invalid_ds"));
+        }
+
         String alias = String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId());
         datasourceSchemaDTO.setSchemaAlias(alias);
 
