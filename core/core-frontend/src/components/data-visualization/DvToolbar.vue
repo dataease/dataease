@@ -17,6 +17,7 @@ import { canvasSave } from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
 import { XpackComponent } from '@/components/plugin'
+import { useCache } from '@/hooks/web/useCache'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -27,6 +28,7 @@ const resourceGroupOpt = ref(null)
 const dvToolbarMain = ref(null)
 const { canvasStyleData, dvInfo, editMode } = storeToRefs(dvMainStore)
 let scaleEdit = 100
+const { wsCache } = useCache('localStorage')
 
 const closeEditCanvasName = () => {
   nameEdit.value = false
@@ -87,6 +89,7 @@ const saveCanvasWithCheck = () => {
 }
 
 const saveResource = () => {
+  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   if (styleChangeTimes.value > 0) {
     snapshotStore.resetStyleChangeTimes()
     canvasSave(() => {
@@ -140,6 +143,7 @@ const backHandler = (url: string) => {
     openHandler.value.invokeMethod(pm)
     return
   }
+  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   window.open(url, '_self')
 }
 const openHandler = ref(null)

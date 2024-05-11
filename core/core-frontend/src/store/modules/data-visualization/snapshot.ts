@@ -86,8 +86,8 @@ export const snapshotStore = defineStore('snapshot', {
       dvMainStore.setComponentData(snapshotInfo.componentData)
       dvMainStore.setCanvasStyle(snapshotInfo.canvasStyleData)
       dvMainStore.setCanvasViewInfo(snapshotInfo.canvasViewInfo)
-      dvMainStore.setNowPanelJumpInfoInner(snapshotInfo.nowPanelTrackInfo)
-      dvMainStore.setNowPanelJumpInfo(snapshotInfo.nowPanelJumpInfo)
+      dvMainStore.setNowPanelJumpInfoInner(snapshotInfo.nowPanelJumpInfo)
+      dvMainStore.setNowPanelTrackInfo(snapshotInfo.nowPanelTrackInfo)
       dvMainStore.updateCurDvInfo(snapshotInfo.dvInfo)
       const curCacheViewIdInfo = deepCopy(this.cacheViewIdInfo)
       this.cacheViewIdInfo = snapshotInfo.cacheViewIdInfo
