@@ -203,6 +203,23 @@ onMounted(() => {
     </el-form-item>
 
     <el-form-item
+      :label="t('chart.orient')"
+      class="form-item"
+      :class="'form-item-' + themes"
+      v-if="showProperty('layout')"
+    >
+      <el-radio-group
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.layout"
+        @change="changeBasicStyle('layout')"
+      >
+        <el-radio :effect="themes" label="horizontal">{{ t('chart.horizontal') }}</el-radio>
+        <el-radio :effect="themes" label="vertical">{{ t('chart.vertical') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+
+    <el-form-item
       class="form-item"
       v-if="showProperty('tableLayoutMode')"
       :label="t('chart.table_layout_mode')"
