@@ -13,4 +13,6 @@ public class ReportInstanceDelRequest implements Serializable {
     private Long instanceId;
 
     private Integer timeFlag;
+
+    private Long taskId;
 }

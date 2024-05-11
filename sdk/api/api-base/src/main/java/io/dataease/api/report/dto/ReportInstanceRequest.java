@@ -18,4 +18,6 @@ public class ReportInstanceRequest implements Serializable {
     private List<Long> timeList;
 
     private String keyword;
+
+    private Boolean timeDesc;
 }

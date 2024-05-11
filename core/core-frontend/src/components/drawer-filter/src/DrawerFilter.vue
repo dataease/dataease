@@ -70,6 +70,7 @@ defineExpose({
 <style lang="less" scope>
 .filter {
   display: flex;
+  align-items: center;
   min-height: 46px;
 
   > :nth-child(1) {

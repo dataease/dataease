@@ -46,6 +46,10 @@ public interface ReportApi {
     @PostMapping("/stop/{taskId}")
     void stopNow(@PathVariable("taskId") Long taskId);
 
+    @Operation(summary = "启用")
+    @PostMapping("/start/{taskId}")
+    void start(@PathVariable("taskId") Long taskId);
+
     @Operation(summary = "删除")
     @PostMapping("/delete")
     void delete(@RequestBody List<Long> taskIdList);
@@ -68,6 +72,6 @@ public interface ReportApi {
     @PostMapping("/deleteLog")
     void deleteInstance(@RequestBody ReportInstanceDelRequest request);
 
-    @GetMapping("/logMsg")
+    @PostMapping("/logMsg")
     String logMsg(@RequestBody ReportInstanceMsgRequest request);
 }
