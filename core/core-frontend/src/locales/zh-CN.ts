@@ -681,6 +681,7 @@ export default {
     chart_bar_stack_horizontal: '横向堆叠柱状图',
     chart_percentage_bar_stack_horizontal: '横向百分比柱状图',
     chart_bar_range: '区间条形图',
+    chart_bidirectional_bar: '对称柱状图',
     chart_line: '基础折线图',
     chart_area_stack: '堆叠折线图',
     chart_pie: '饼图',

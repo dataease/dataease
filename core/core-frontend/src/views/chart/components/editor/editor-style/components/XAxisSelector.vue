@@ -118,8 +118,18 @@ onMounted(() => {
         size="small"
         @change="changeAxisStyle('position')"
       >
-        <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_top') }}</el-radio>
-        <el-radio :effect="props.themes" label="bottom">{{ t('chart.text_pos_bottom') }}</el-radio>
+        <div v-if="chart.type === 'bidirectional-bar'">
+          <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_left') }}</el-radio>
+          <el-radio :effect="props.themes" label="bottom">{{
+            t('chart.text_pos_center')
+          }}</el-radio>
+        </div>
+        <div v-else>
+          <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_top') }}</el-radio>
+          <el-radio :effect="props.themes" label="bottom">{{
+            t('chart.text_pos_bottom')
+          }}</el-radio>
+        </div>
       </el-radio-group>
     </el-form-item>
     <el-form-item
