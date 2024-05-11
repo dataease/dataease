@@ -118,6 +118,10 @@ const list = [
     y: 1,
     sizeX: 72,
     sizeY: 4,
+    style: {
+      width: 400,
+      height: 100
+    },
     request: {
       method: 'GET',
       data: [],

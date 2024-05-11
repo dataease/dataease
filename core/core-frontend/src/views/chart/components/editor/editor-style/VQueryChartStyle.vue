@@ -1,6 +1,6 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { toRefs } from 'vue'
+import { PropType, toRefs } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 const { t } = useI18n()
 
@@ -12,6 +12,10 @@ const props = defineProps({
   chart: {
     type: Object,
     required: true
+  },
+  themes: {
+    type: String as PropType<EditorTheme>,
+    default: 'dark'
   }
 })
 const predefineColors = COLOR_PANEL
@@ -23,7 +27,7 @@ const { chart } = toRefs(props)
   <div class="attr-style">
     <el-row class="de-collapse-style">
       <el-collapse v-model="state.styleActiveNames" class="style-collapse">
-        <el-collapse-item themes="light" name="component" :title="t('visualization.module')">
+        <el-collapse-item :themes="themes" name="component" :title="t('visualization.module')">
           <el-form label-position="top">
             <el-form-item class="form-item margin-bottom-8">
               <el-checkbox size="small" v-model="chart.customStyle.component.titleShow">
