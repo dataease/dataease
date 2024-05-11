@@ -114,6 +114,9 @@ export default {
         case 'move':
           this.moveTo(param.data)
           break
+        case 'copy':
+          this.copyForm(param.data)
+          break
       }
     },
     moveTo(data) {
@@ -169,6 +172,9 @@ export default {
         })
       }).catch(() => {
       })
+    },
+    copyForm(data) {
+      this.$router.push({ name: 'data-filling-form-create', query: { copy: data.id }})
     },
     onMoveSuccess() {
       this.moveGroup = false
@@ -399,6 +405,12 @@ export default {
                             :command="beforeClickMore('move',data,node)"
                           >
                             {{ $t('dataset.move_to') }}
+                          </el-dropdown-item>
+                          <el-dropdown-item
+                            icon="el-icon-document-copy"
+                            :command="beforeClickMore('copy',data,node)"
+                          >
+                            {{ $t('dataset.copy') }}
                           </el-dropdown-item>
                           <el-dropdown-item
                             icon="el-icon-delete"
