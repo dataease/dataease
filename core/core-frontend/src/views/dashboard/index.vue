@@ -120,8 +120,8 @@ const doUseCache = flag => {
     }, 1500)
   } else {
     initLocalCanvasData()
+    wsCache.delete('DE-DV-CATCH-' + state.resourceId)
   }
-  wsCache.delete('DE-DV-CATCH-' + state.resourceId)
 }
 
 const initLocalCanvasData = () => {
