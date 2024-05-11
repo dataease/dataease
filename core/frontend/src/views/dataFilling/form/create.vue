@@ -5,6 +5,7 @@ import clickoutside from 'element-ui/src/utils/clickoutside.js'
 import { filter, cloneDeep, find, concat } from 'lodash-es'
 import { v4 as uuidv4 } from 'uuid'
 import { EMAIL_REGEX, PHONE_REGEX } from '@/utils/validate'
+import { getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
 
 export default {
   name: 'DataFillingFormCreate',
@@ -232,6 +233,15 @@ export default {
     }
     if (this.$route.query.level !== undefined) {
       this.formSettings.level = this.$route.query.level
+    }
+    if (this.$route.query.copy !== undefined) {
+      const id = this.$route.query.copy
+      getWithPrivileges(id).then(res => {
+        const tempData = res.data
+        this.formSettings.folder = tempData.pid
+        this.formSettings.level = tempData.level
+        this.formSettings.forms = JSON.parse(tempData.forms)
+      })
     }
   },
   methods: {
