@@ -229,6 +229,10 @@ declare interface ChartBasicStyle {
    * 其他项的标签
    */
   topNLabel: string
+  /**
+   * 对称柱状图方向
+   */
+  layout: 'horizontal' | 'vertical'
 }
 /**
  * 表头属性

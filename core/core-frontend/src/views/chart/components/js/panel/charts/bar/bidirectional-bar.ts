@@ -58,7 +58,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
   ]
   propertyInner = {
     'background-overall-component': ['all'],
-    'basic-style-selector': ['colors', 'alpha', 'gradient'],
+    'basic-style-selector': ['colors', 'alpha', 'gradient', 'layout'],
     'x-axis-selector': ['color', 'fontSize', 'position', 'axisLabel', 'axisLine', 'splitLine'],
     'y-axis-selector': [
       'name',
@@ -149,12 +149,26 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     if (basicStyle.gradient) {
       const color = basicStyle.colors?.map((ele, index) => {
         const tmp = hexColorToRGBA(ele, basicStyle.alpha)
-        return setGradientColor(tmp, true, 180 - index * 180)
+        let angle = 180 - index * 180
+        // 垂直固定角度
+        if (basicStyle.layout === 'vertical') {
+          if (index === 0) {
+            angle = 280
+          }
+          if (index === 1) {
+            angle = 90
+          }
+        }
+        return setGradientColor(tmp, true, angle)
       })
       options = {
         ...options,
         color
       }
+    }
+    options = {
+      ...options,
+      layout: basicStyle.layout
     }
     return options
   }
@@ -351,7 +365,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
         if (l.show) {
           label = {
             position: l.position,
-            layout: [{ type: 'limit-in-canvas' }],
+            layout: [{ type: 'fixed-overlap' }],
             style: {
               fill: l.color,
               fontSize: l.fontSize
