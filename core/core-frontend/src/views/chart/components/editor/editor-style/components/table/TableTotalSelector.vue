@@ -300,7 +300,7 @@ onMounted(() => {
       <el-checkbox
         :effect="themes"
         v-model="state.tableTotalForm.row.showSubTotals"
-        :disabled="chart.xAxisExt.length < 2"
+        :disabled="chart.xAxis.length < 2"
         @change="changeTableTotal('row')"
         >{{ t('chart.show') }}</el-checkbox
       >
@@ -314,7 +314,7 @@ onMounted(() => {
         <el-radio-group
           :effect="themes"
           v-model="state.tableTotalForm.row.reverseSubLayout"
-          :disabled="chart.xAxisExt.length < 2"
+          :disabled="chart.xAxis.length < 2"
           @change="changeTableTotal('row')"
         >
           <el-radio :effect="themes" :label="true">{{ t('chart.total_pos_top') }}</el-radio>
@@ -328,7 +328,7 @@ onMounted(() => {
       >
         <el-input
           :effect="themes"
-          :disabled="chart.xAxisExt.length < 2"
+          :disabled="chart.xAxis.length < 2"
           :placeholder="t('chart.total_label')"
           v-model="state.tableTotalForm.row.subLabel"
           size="small"
@@ -346,7 +346,7 @@ onMounted(() => {
           <el-select
             :effect="themes"
             v-model="state.rowSubTotalItem.dataeaseName"
-            :disabled="chart.xAxisExt.length < 2"
+            :disabled="chart.xAxis.length < 2"
             :placeholder="t('chart.aggregation')"
             @change="changeTotal(state.rowSubTotalItem, state.tableTotalForm.row.calcSubTotals.cfg)"
           >
@@ -362,7 +362,7 @@ onMounted(() => {
           <el-select
             :effect="themes"
             v-model="state.rowSubTotalItem.aggregation"
-            :disabled="chart.xAxisExt.length < 2"
+            :disabled="chart.xAxis.length < 2"
             :placeholder="t('chart.aggregation')"
             @change="
               changeTotalAggr(
@@ -522,7 +522,7 @@ onMounted(() => {
       <el-checkbox
         :effect="themes"
         v-model="state.tableTotalForm.col.showSubTotals"
-        :disabled="chart.xAxis.length < 2"
+        :disabled="chart.xAxisExt.length < 2"
         @change="changeTableTotal('col')"
         >{{ t('chart.show') }}</el-checkbox
       >
@@ -536,7 +536,7 @@ onMounted(() => {
         <el-radio-group
           :effect="themes"
           v-model="state.tableTotalForm.col.reverseSubLayout"
-          :disabled="chart.xAxis?.length < 2"
+          :disabled="chart.xAxisExt?.length < 2"
           @change="changeTableTotal('col')"
         >
           <el-radio :effect="themes" :label="true">{{ t('chart.total_pos_left') }}</el-radio>
@@ -550,7 +550,7 @@ onMounted(() => {
       >
         <el-input
           :effect="themes"
-          :disabled="chart.xAxis?.length < 2"
+          :disabled="chart.xAxisExt?.length < 2"
           :placeholder="t('chart.total_label')"
           v-model="state.tableTotalForm.col.subLabel"
           size="small"
@@ -568,7 +568,7 @@ onMounted(() => {
           <el-select
             :effect="themes"
             v-model="state.colSubTotalItem.dataeaseName"
-            :disabled="chart.xAxis?.length < 2"
+            :disabled="chart.xAxisExt?.length < 2"
             :placeholder="t('chart.aggregation')"
             @change="changeTotal(state.colSubTotalItem, state.tableTotalForm.col.calcSubTotals.cfg)"
           >
@@ -584,7 +584,7 @@ onMounted(() => {
           <el-select
             :effect="themes"
             v-model="state.colSubTotalItem.aggregation"
-            :disabled="chart.xAxis?.length < 2"
+            :disabled="chart.xAxisExt?.length < 2"
             :placeholder="t('chart.aggregation')"
             @change="
               changeTotalAggr(
