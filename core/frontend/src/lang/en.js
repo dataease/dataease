@@ -720,7 +720,7 @@ export default {
       delete: 'Delete',
       no_time_limit: 'No Time Limit',
       todo: 'Todo',
-      finished: 'Finished',
+      finished: 'Committed',
       expired: 'Expired',
 
       task_finish_in: 'Task Finished in ',

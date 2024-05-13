@@ -718,7 +718,7 @@ export default {
       delete: '删除',
       no_time_limit: '不限时',
       todo: '待办项',
-      finished: '已完成',
+      finished: '已提交',
       expired: '已过期',
       task_finish_in: '在任务下发',
       task_finish_in_suffix: '内完成填报'
