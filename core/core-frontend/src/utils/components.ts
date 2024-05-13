@@ -27,6 +27,8 @@ import GroupArea from '@/custom-component/group-area/Component.vue'
 import GroupAreaAttr from '@/custom-component/group-area/Attr.vue'
 import DeFrame from '@/custom-component/de-frame/ComponentFrame.vue'
 import DeFrameAttr from '@/custom-component/de-frame/Attr.vue'
+import DeVideo from '@/custom-component/de-video/Component.vue'
+import DeVideoAttr from '@/custom-component/de-video/Attr.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -56,7 +58,9 @@ export const componentsMap = {
   GroupArea: GroupArea,
   GroupAreaAttr: GroupAreaAttr,
   DeFrame: DeFrame,
-  DeFrameAttr: DeFrameAttr
+  DeFrameAttr: DeFrameAttr,
+  DeVideo: DeVideo,
+  DeVideoAttr: DeVideoAttr
 }
 
 export default function findComponent(key) {

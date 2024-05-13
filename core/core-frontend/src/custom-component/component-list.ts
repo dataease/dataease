@@ -154,6 +154,24 @@ const list = [
     matrixStyle: {}
   },
   {
+    component: 'DeVideo',
+    name: '媒体',
+    label: '媒体',
+    innerType: 'DeVideo',
+    editing: false,
+    canvasActive: false,
+    icon: 'icon-video',
+    x: 1,
+    y: 1,
+    sizeX: 36,
+    sizeY: 14,
+    style: {
+      width: 600,
+      height: 300
+    },
+    matrixStyle: {}
+  },
+  {
     component: 'DeFrame',
     name: '网页',
     label: '网页',
