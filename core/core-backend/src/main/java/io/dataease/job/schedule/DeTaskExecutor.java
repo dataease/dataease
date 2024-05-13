@@ -17,6 +17,9 @@ public class DeTaskExecutor {
 
     protected static final String IS_TEMP_TASK = "isTempTask";
 
+    private static final String JOB_GROUP = "REPORT_TASK";
+    private static final String TEMP_JOB_GROUP = "TEMP_REPORT_TASK";
+
     @Resource
     private ScheduleManager scheduleManager;
 
@@ -25,13 +28,16 @@ public class DeTaskExecutor {
         return false;
     }
 
+    @XpackInteract(value = "xpackTaskExecutor", replace = true)
+    public void init() {}
+
     public void addOrUpdateTask(Long taskId, String cron, Long startTime, Long endTime) {
         if (CronUtils.taskExpire(endTime)) {
             return;
         }
         String key = taskId.toString();
-        JobKey jobKey = new JobKey(key, key);
-        TriggerKey triggerKey = new TriggerKey(key, key);
+        JobKey jobKey = new JobKey(key, JOB_GROUP);
+        TriggerKey triggerKey = new TriggerKey(key, JOB_GROUP);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put("taskId", taskId);
         jobDataMap.put(IS_TEMP_TASK, false);
@@ -42,14 +48,14 @@ public class DeTaskExecutor {
 
     public void fireNow(Long taskId) throws Exception {
         String key = taskId.toString();
-        JobKey jobKey = new JobKey(key, key);
+        JobKey jobKey = new JobKey(key, JOB_GROUP);
         scheduleManager.fireNow(jobKey);
     }
 
     public void addTempTask(Long taskId, Long startTime) {
         String key = taskId.toString();
-        JobKey jobKey = new JobKey(key, key);
-        TriggerKey triggerKey = new TriggerKey(key, key);
+        JobKey jobKey = new JobKey(key, TEMP_JOB_GROUP);
+        TriggerKey triggerKey = new TriggerKey(key, TEMP_JOB_GROUP);
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put(IS_TEMP_TASK, true);
         String cron = CronUtils.tempCron();
@@ -57,10 +63,10 @@ public class DeTaskExecutor {
         scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(startTime), null, jobDataMap);
     }
 
-    public void removeTask(Long taskId) {
+    public void removeTask(Long taskId, boolean isTemp) {
         String key = taskId.toString();
-        JobKey jobKey = new JobKey(key);
-        TriggerKey triggerKey = new TriggerKey(key);
+        JobKey jobKey = new JobKey(key, isTemp ? TEMP_JOB_GROUP : JOB_GROUP);
+        TriggerKey triggerKey = new TriggerKey(key, isTemp ? TEMP_JOB_GROUP : JOB_GROUP);
         scheduleManager.removeJob(jobKey, triggerKey);
     }
 }
