@@ -2,6 +2,7 @@ package io.dataease.api.permissions.user.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -42,4 +43,10 @@ public class UserFormVO implements Serializable {
 
     @Schema(description = "模式")
     private String model;
+
+    @Schema(description = "系统变量")
+    private String sysVariable;
+
+    @Schema(description = "系统变量")
+    private List<SysVariableValueItem> variables;
 }

@@ -31,4 +31,6 @@ public class UserCreator implements Serializable {
     @Schema(hidden = true)
     @JsonIgnore
     private Long uid;
+    @Schema(description = "系统变量")
+    private String sysVariable;
 }
