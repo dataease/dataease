@@ -720,7 +720,7 @@ export default {
       delete: '刪除',
       no_time_limit: '不限時',
       todo: '待辦項',
-      finished: '已完成',
+      finished: '已提交',
       expired: '已過期',
 
       task_finish_in: '在任務下發',
