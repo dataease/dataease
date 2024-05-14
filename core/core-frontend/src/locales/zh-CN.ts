@@ -2126,7 +2126,7 @@ export default {
     play_circle: '循环播放',
     video_links: '视频链接',
     web_url: '网页地址',
-    video_add_tips: '添加视频信息...',
+    video_add_tips: '请在右侧添加视频信息...',
     link_add_tips_pre: '请在右侧配置网页信息..',
     web_add_tips_suf: '添加网页信息...',
     panel_view_result_show: '图表结果',

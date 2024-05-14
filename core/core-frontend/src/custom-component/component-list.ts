@@ -8,6 +8,82 @@ export const commonStyle = {
   opacity: 1
 }
 
+// 视频信息配置
+export const VIDEO_LINKS_DE2 = {
+  videoType: 'web',
+  poster: null,
+  web: {
+    width: '100%', //播放器宽度
+    height: '100%', //播放器高度
+    color: '#409eff', //主题色
+    title: '', //视频名称
+    src: null, //视频源
+    muted: false, //静音
+    webFullScreen: false,
+    speedRate: ['0.75', '1.0', '1.25', '1.5', '2.0'], //播放倍速
+    autoPlay: true, //自动播放
+    loop: false, //循环播放
+    mirror: false, //镜像画面
+    ligthOff: false, //关灯模式
+    volume: 0.3, //默认音量大小
+    control: true, //是否显示控制
+    controlBtns: ['audioTrack', 'quality', 'volume', 'fullScreen'] //显示所有按钮,
+  },
+  rtmp: {
+    sources: [
+      {
+        type: 'rtmp/mp4'
+      }
+    ],
+    height: 300,
+    techOrder: ['flash'],
+    autoplay: false,
+    controls: true,
+    flash: {
+      hls: {
+        withCredentials: false
+      }
+    }
+  }
+}
+
+// 视频信息配置
+export const VIDEO_LINKS = {
+  videoType: 'web',
+  web: {
+    autoplay: true,
+    height: 300,
+    muted: true,
+    loop: true,
+    controlBar: {
+      timeDivider: false,
+      durationDisplay: false,
+      remainingTimeDisplay: false,
+      currentTimeDisplay: false, // 当前时间
+      volumeControl: false, // 声音控制键
+      fullscreenToggle: false,
+      pause: false
+    },
+    sources: [{}]
+  },
+  rtmp: {
+    sources: [
+      {
+        type: 'rtmp/mp4'
+      }
+    ],
+    height: 300,
+    techOrder: ['flash'],
+    autoplay: false,
+    controls: true,
+    flash: {
+      hls: {
+        withCredentials: false
+      }
+    }
+  }
+}
+
 // 超链接配置
 export const HYPERLINKS = {
   openMode: '_blank',
@@ -77,7 +153,7 @@ export const commonAttr = {
   maintainRadio: false, // 布局时保持宽高比例
   aspectRatio: 1, // 锁定时的宽高比例
   isShow: true, // 是否显示组件
-  collapseName: ['position', 'background', 'style', 'picture', 'frameLinks'], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
+  collapseName: ['position', 'background', 'style', 'picture', 'frameLinks', 'videoLinks'], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
     duration: 0, // 过渡持续时间
     data: [
@@ -169,6 +245,7 @@ const list = [
       width: 600,
       height: 300
     },
+    videoLinks: VIDEO_LINKS_DE2,
     matrixStyle: {}
   },
   {
