@@ -1211,7 +1211,9 @@ const mousedownDrag = () => {
 
     .ed-input-group__prepend {
       padding: 0 11px;
+      margin-right: -1px;
       .ed-select {
+        width: 178px !important;
         margin: 0 -10px 0 -10px;
       }
     }
