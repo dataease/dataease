@@ -670,7 +670,9 @@ export default {
       add_column: 'Add Column',
       please_insert_start: 'Start Time Column Name',
       please_insert_end: 'End Time Column Name',
-      save_form: 'Save Form'
+      save_form: 'Save Form',
+      default: 'default',
+      default_built_in: 'Built-in Database'
     },
     database: {
       nvarchar: 'Nvarchar',

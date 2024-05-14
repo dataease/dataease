@@ -670,7 +670,9 @@ export default {
       add_column: '新增字段',
       please_insert_start: '請輸入開始時間',
       please_insert_end: '請輸入結束時間',
-      save_form: '保存表單'
+      save_form: '保存表單',
+      default: '默認',
+      default_built_in: '內建數據庫'
     },
     database: {
       nvarchar: '字符串',
