@@ -444,7 +444,7 @@ const initOpenHandler = newWindow => {
           <component-group
             is-label
             themes="light"
-            :base-width="115"
+            :base-width="215"
             icon-name="dv-media"
             title="媒体"
           >
