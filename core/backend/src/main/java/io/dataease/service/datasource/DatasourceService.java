@@ -276,6 +276,14 @@ public class DatasourceService {
 
 
     public void updateDatasource(String id, Datasource datasource) {
+
+        if (datasource.getEnableDataFill() != null) {
+            Datasource ds = datasourceMapper.selectByPrimaryKey(id);
+            if (ds.getEnableDataFill()) {
+                datasource.setEnableDataFill(true);
+            }
+        }
+
         DatasourceExample example = new DatasourceExample();
         example.createCriteria().andIdEqualTo(id);
         Status status = checkDatasourceStatus(datasource);
@@ -469,7 +477,8 @@ public class DatasourceService {
                     record.setVersion(status.getVersion());
                     record.setStatus(status.getStatus());
                     datasourceMapper.updateByExampleSelective(record, example);
-                }catch (Exception ignore){}
+                } catch (Exception ignore) {
+                }
                 try {
                     handleConnectionPool(datasource, "add");
                 } catch (Exception e) {
@@ -652,13 +661,14 @@ public class DatasourceService {
         datasourceMapper.updateByPrimaryKeyWithBLOBs(datasource);
     }
 
-    public void releaseDsconnections(){
-        List<DefaultJdbcProvider> providers = (List<DefaultJdbcProvider>)SpringContextUtil.getApplicationContext().getBeansOfType(DefaultJdbcProvider.class).values();
-        providers.forEach(provider ->{
+    public void releaseDsconnections() {
+        List<DefaultJdbcProvider> providers = (List<DefaultJdbcProvider>) SpringContextUtil.getApplicationContext().getBeansOfType(DefaultJdbcProvider.class).values();
+        providers.forEach(provider -> {
             provider.getJdbcConnection().values().forEach(druidDataSource -> {
                 try {
                     druidDataSource.close();
-                }catch (Exception e){}
+                } catch (Exception e) {
+                }
             });
         });
     }

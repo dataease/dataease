@@ -114,8 +114,11 @@ public class DataFillDataService {
                 ds = datasource.get(datasourceId);
             } else {
                 ds = datasource.getDataSourceDetails(datasourceId);
-                //todo 判断是否能创建
-                ds.setConfiguration(new String(java.util.Base64.getDecoder().decode(ds.getConfiguration())));
+                if (ds.getEnableDataFill() && ds.getEnableDataFillCreateTable()) {
+                    ds.setConfiguration(new String(java.util.Base64.getDecoder().decode(ds.getConfiguration())));
+                } else {
+                    return null;
+                }
             }
         }
 

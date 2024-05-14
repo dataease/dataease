@@ -595,6 +595,9 @@ export default {
   },
   data_fill: {
     data_fill: '数据填报',
+    permission: '填报权限',
+    enable: '开启',
+    enable_hint: '数据填报开启后，可将表单数据存放至数据源中，一旦开启后，后期不允许关闭。',
     new_folder: '新建文件夹',
     form_manage: '表单管理',
     my_job: '我的填报',
