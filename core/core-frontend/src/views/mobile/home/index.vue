@@ -35,7 +35,7 @@ const loadTableData = () => {
   shortcutOption
     .loadData({ type: 'panel', keyword: '', asc: false })
     .then(res => {
-      state.tableData = (res.data || []).filter(ele => ele.extraFlag === 1)
+      state.tableData = (res.data || []).filter(ele => ele.extFlag === 1)
     })
     .finally(() => {
       emits('setLoading', false)
@@ -63,7 +63,7 @@ const loadShareTableData = () => {
       data: { type: 'panel', keyword: '', asc: false }
     })
     .then(res => {
-      state.tableData = (res.data || []).filter(ele => ele.extraFlag === 1)
+      state.tableData = (res.data || []).filter(ele => ele.extFlag === 1)
     })
     .finally(() => {
       emits('setLoading', false)
