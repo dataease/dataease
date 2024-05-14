@@ -13,6 +13,10 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  commonBackgroundPop: {
+    type: Object,
+    required: true
+  },
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
@@ -20,7 +24,7 @@ const props = defineProps({
 })
 const predefineColors = COLOR_PANEL
 
-const { chart } = toRefs(props)
+const { chart, commonBackgroundPop } = toRefs(props)
 </script>
 
 <template>
@@ -62,6 +66,29 @@ const { chart } = toRefs(props)
                 :disabled="!chart.customStyle.component.titleShow"
                 is-custom
                 :predefine="COLOR_PANEL"
+              />
+            </el-form-item>
+            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
+              <el-checkbox
+                :effect="themes"
+                size="small"
+                v-model="commonBackgroundPop.backgroundColorSelect"
+              >
+                自定义组件背景
+              </el-checkbox>
+            </el-form-item>
+            <el-form-item
+              class="form-item"
+              style="padding-left: 20px"
+              :class="'form-item-' + themes"
+            >
+              <el-color-picker
+                :effect="themes"
+                :trigger-width="108"
+                is-custom
+                v-model="commonBackgroundPop.backgroundColor"
+                :disabled="!commonBackgroundPop.backgroundColorSelect"
+                :predefine="predefineColors"
               />
             </el-form-item>
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
@@ -139,7 +166,7 @@ const { chart } = toRefs(props)
                 size="small"
                 v-model="chart.customStyle.component.bgColorShow"
               >
-                {{ t('chart.custom_case') + t('chart.backgroundColor') }}
+                自定义查询条件背景
               </el-checkbox>
             </el-form-item>
             <el-form-item

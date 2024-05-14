@@ -1517,7 +1517,11 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
           <el-row style="height: calc(100vh - 110px); overflow-y: auto">
             <div class="query-style-tab" v-if="view.type === 'VQuery'">
               <div style="padding-top: 1px">
-                <VQueryChartStyle :chart="view" :themes="themes" />
+                <VQueryChartStyle
+                  :common-background-pop="curComponent?.commonBackground"
+                  :chart="view"
+                  :themes="themes"
+                />
               </div>
             </div>
             <el-tabs
