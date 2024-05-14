@@ -1,26 +1,21 @@
 <template>
   <el-row ref="mainPlayer">
-    <div v-if="element.videoLinks[element.videoLinks.videoType].sources[0].src" class="player">
-      <video-player
-        v-if="state.showVideo"
-        ref="videoPlayer"
-        class="vjs-custom-skin"
-        :options="editMode === 'preview' ? state.pOption : playerOptions"
-        :playsinline="true"
-      />
+    <div v-if="element.videoLinks[element.videoLinks.videoType].src" class="player">
+      <video-play v-bind="playerOptions" />
     </div>
     <div v-else class="info-class">
-      <span>{{ $t('panel.link_add_tips_pre') }}</span>
-      <span>{{ $t('panel.video_add_tips') }}</span>
+      <span>{{ t('visualization.video_add_tips') }}</span>
     </div>
   </el-row>
 </template>
 
 <script setup lang="ts">
-import VideoPlayer from 'vue-video-player'
-import 'video.js/dist/video-js.css'
-import { computed, nextTick, reactive, toRefs, watch } from 'vue'
-
+import { videoPlay } from 'vue3-video-play/lib/index' // 引入组件
+import 'vue3-video-play/dist/style.css' // 引入css
+import { computed, nextTick, reactive, toRefs, watch, onMounted, ref } from 'vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import { useI18n } from '@/hooks/web/useI18n'
+const { t } = useI18n()
 const props = defineProps({
   propValue: {
     type: String,
@@ -45,20 +40,23 @@ const props = defineProps({
   }
 })
 const state = reactive({
-  pOption: {},
+  pOption: {
+    height: null
+  },
   showVideo: true
 })
 const { element, h } = toRefs(props)
 
-const moveFlag = computed(
-  () => element.value.optStatus.dragging || element.value.optStatus.resizing
-)
-
-const playerOptions = computed(() => {
-  const videoPlayerOptions = element.value.videoLinks[element.value.videoLinks.videoType]
-  videoPlayerOptions.height = h
-  return videoPlayerOptions
+onMounted(() => {
+  useEmitt({
+    name: 'videoLinksChange-' + element.value.id,
+    callback: function () {
+      videoLinksChange()
+    }
+  })
 })
+
+const playerOptions = computed(() => element.value.videoLinks[element.value.videoLinks.videoType])
 
 const videoLinksChange = () => {
   state.showVideo = false
@@ -83,18 +81,25 @@ watch(
 <style lang="less" scoped>
 .info-class {
   text-align: center;
+  width: 100%;
   height: 100%;
   display: flex;
   align-items: center;
   justify-content: center;
-  background-color: rgba(255, 255, 255, 0.3);
+  background-color: rgba(255, 255, 255, 0.1);
   font-size: 12px;
   color: #9ea6b2;
 }
 
-.move-bg {
+.player {
   height: 100%;
   width: 100%;
+  display: flex;
+  align-items: center;
   background-color: #000000;
+}
+
+.d-player-state {
+  display: none;
 }
 </style>

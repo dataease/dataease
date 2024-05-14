@@ -230,7 +230,7 @@ eventBus.on('clearCanvas', clearCanvas)
           <component-group is-label :base-width="115" icon-name="dv-text" title="文本">
             <text-group></text-group>
           </component-group>
-          <component-group is-label :base-width="115" icon-name="dv-media" title="媒体">
+          <component-group is-label :base-width="215" icon-name="dv-media" title="媒体">
             <media-group></media-group>
           </component-group>
           <component-group is-label :base-width="115" icon-name="dv-more-com" title="更多">

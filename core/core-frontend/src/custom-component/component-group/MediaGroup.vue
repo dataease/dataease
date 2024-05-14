@@ -50,11 +50,19 @@ const handleDragEnd = e => {
       drag-info="Picture&Picture"
       v-on:click="newComponent('Picture')"
     ></drag-component>
+    <drag-component
+      :themes="themes"
+      icon="icon-video"
+      label="视频"
+      drag-info="DeVideo&DeVideo"
+      v-on:click="newComponent('DeVideo')"
+    ></drag-component>
   </div>
 </template>
 
 <style lang="less" scoped>
 .group {
   padding: 12px 8px;
+  display: inline-flex;
 }
 </style>
