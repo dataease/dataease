@@ -147,7 +147,7 @@ public class CoreVisualizationManage {
     }
 
     private VisualizationNodeBO convert(VisualizationNodePO po) {
-        return new VisualizationNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), "leaf"), 7, po.getPid(), 0);
+        return new VisualizationNodeBO(po.getId(), po.getName(), StringUtils.equals(po.getNodeType(), "leaf"), 7, po.getPid(), po.getExtraFlag());
     }
 
     public CoreVisualizationManage proxy() {
