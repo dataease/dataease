@@ -58,6 +58,10 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 1
+  },
+  isSelector: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -276,6 +280,7 @@ defineExpose({
       :show-position="showPosition"
       :search-count="searchCount"
       :scale="mobileInPc ? 100 : scaleWidth"
+      :is-selector="props.isSelector"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>

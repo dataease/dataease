@@ -3,6 +3,7 @@ package io.dataease.chart.server;
 import io.dataease.api.chart.ChartViewApi;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ChartViewFieldDTO;
+import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.exception.DEException;
 import io.dataease.result.ResultCode;
@@ -52,5 +53,8 @@ public class ChartViewServer implements ChartViewApi {
         return chartViewManege.getDetails(id);
     }
 
-
+    @Override
+    public List<ViewSelectorVO> viewOption(Long resourceId) {
+        return chartViewManege.viewOption(resourceId);
+    }
 }

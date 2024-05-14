@@ -4,6 +4,7 @@ import com.baomidou.mybatisplus.core.metadata.IPage;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.report.dto.*;
 import io.dataease.api.report.vo.ReportGridVO;
+import io.dataease.api.report.vo.ReportInfoVO;
 import io.dataease.api.report.vo.ReportInstanceVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.Parameter;
@@ -57,7 +58,7 @@ public interface ReportApi {
 
     @Operation(summary = "查询详情")
     @GetMapping("/info/{taskId}")
-    ReportEditor info(@PathVariable("taskId") Long taskId);
+    ReportInfoVO info(@PathVariable("taskId") Long taskId);
 
     @Operation(summary = "查询日志列表")
     @Parameters({
