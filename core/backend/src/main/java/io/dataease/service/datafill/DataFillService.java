@@ -11,7 +11,6 @@ import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.datafill.DataFillFormRequest;
-import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.datafill.DataFillFormDTO;
 import io.dataease.ext.ExtDataFillFormMapper;
 import io.dataease.i18n.Translator;
@@ -28,7 +27,6 @@ import io.dataease.plugins.datasource.provider.ExtDDLProvider;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.provider.datasource.JdbcProvider;
-import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,8 +50,7 @@ public class DataFillService {
     private DataFillFormMapper dataFillFormMapper;
     @Resource
     private ExtDataFillFormMapper extDataFillFormMapper;
-    @Resource
-    private DatasourceService datasource;
+
     @Resource
     private SysAuthService sysAuthService;
     @Resource
@@ -92,19 +89,17 @@ public class DataFillService {
                 }.getType());
             }
 
-            DatasourceDTO datasourceDTO = datasource.getDataSourceDetails(dataFillForm.getDatasource());
-
-            datasourceDTO.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
+            Datasource ds = dataFillDataService.getDataSource(dataFillForm.getDatasource(), true);
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(datasourceDTO);
+            datasourceRequest.setDatasource(ds);
             datasourceRequest.setQuery("SELECT VERSION()");
 
             JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
             String version = jdbcProvider.getData(datasourceRequest).get(0)[0];
 
             //拼sql
-            ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(datasourceDTO.getType());
+            ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
             String sql = extDDLProvider.createTableSql(dataFillForm.getTableName(), fields);
             //创建表
             datasourceRequest.setQuery(sql);
@@ -239,7 +234,7 @@ public class DataFillService {
             result.setCreatorName(sysUsers.get(0).getNickName());
         }
 
-        Datasource d = datasource.get(result.getDatasource());
+        Datasource d = dataFillDataService.getDataSource(result.getDatasource());
         if (d != null) {
             result.setDatasourceName(d.getName());
         }
@@ -321,7 +316,7 @@ public class DataFillService {
         } else {
             DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
 
-            Datasource ds = datasource.get(dataFillForm.getDatasource());
+            Datasource ds = dataFillDataService.getDataSource(dataFillForm.getDatasource());
             Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 

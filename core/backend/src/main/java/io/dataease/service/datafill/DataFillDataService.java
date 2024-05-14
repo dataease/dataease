@@ -13,6 +13,7 @@ import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.datafill.DataFillFormTableDataRequest;
 import io.dataease.controller.response.datafill.DataFillFormTableDataResponse;
 import io.dataease.dto.datafill.DataFillCommitLogDTO;
+import io.dataease.dto.datasource.MysqlConfiguration;
 import io.dataease.ext.ExtDataFillFormMapper;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs;
@@ -45,6 +46,8 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,6 +70,60 @@ public class DataFillDataService {
 
 
     private final static Gson gson = new Gson();
+
+
+    private Datasource getBuiltInDataSource() {
+        MysqlConfiguration mysqlConfiguration = new MysqlConfiguration();
+        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
+        if (!matcher.find()) {
+            return null;
+        }
+        mysqlConfiguration.setHost(matcher.group(1));
+        mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
+        String[] databasePrams = matcher.group(3).split("\\?");
+        mysqlConfiguration.setDataBase(databasePrams[0]);
+        if (databasePrams.length == 2) {
+            mysqlConfiguration.setExtraParams(databasePrams[1]);
+        }
+        if (StringUtils.isNotEmpty(mysqlConfiguration.getExtraParams()) && !mysqlConfiguration.getExtraParams().contains("connectionCollation")) {
+            mysqlConfiguration.setExtraParams(mysqlConfiguration.getExtraParams() + "&connectionCollation=utf8mb4_general_ci");
+        }
+        mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
+        mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
+
+        Datasource datasource = new Datasource();
+        datasource.setId("default-built-in");
+        datasource.setType("mysql");
+        datasource.setName(Translator.get("I18N_DATA_FILL_DATASOURCE_DEFAULT_BUILT_IN"));
+        datasource.setConfiguration(new Gson().toJson(mysqlConfiguration));
+
+        return datasource;
+    }
+
+    public Datasource getDataSource(String datasourceId) {
+        return getDataSource(datasourceId, false);
+    }
+
+    public Datasource getDataSource(String datasourceId, boolean withCreatePrivileges) {
+        Datasource ds = null;
+        if (StringUtils.equals("default-built-in", datasourceId)) {
+            ds = getBuiltInDataSource();
+        } else {
+            if (!withCreatePrivileges) {
+                ds = datasource.get(datasourceId);
+            } else {
+                ds = datasource.getDataSourceDetails(datasourceId);
+                //todo 判断是否能创建
+                ds.setConfiguration(new String(java.util.Base64.getDecoder().decode(ds.getConfiguration())));
+            }
+        }
+
+        if (ds == null) {
+            DataEaseException.throwException(Translator.get("I18N_DATA_FILL_DATASOURCE_NOT_EXIST"));
+        }
+        return ds;
+    }
 
     public static void setLowerCaseRequest(Datasource ds, Provider datasourceProvider, ExtDDLProvider extDDLProvider, DatasourceRequest datasourceRequest) throws Exception {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(ds.getType());
@@ -94,7 +151,7 @@ public class DataFillDataService {
         List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
         }.getType());
 
-        Datasource ds = datasource.get(dataFillForm.getDatasource());
+        Datasource ds = getDataSource(dataFillForm.getDatasource());
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -264,7 +321,7 @@ public class DataFillDataService {
         if (StringUtils.equals(dataFillForm.getNodeType(), "folder")) {
             return;
         }
-        Datasource ds = datasource.get(dataFillForm.getDatasource());
+        Datasource ds = getDataSource(dataFillForm.getDatasource());
 
         ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
@@ -316,7 +373,7 @@ public class DataFillDataService {
         List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
         }.getType());
 
-        Datasource ds = datasource.get(dataFillForm.getDatasource());
+        Datasource ds = getDataSource(dataFillForm.getDatasource());
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 

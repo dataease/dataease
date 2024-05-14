@@ -668,7 +668,9 @@ export default {
       add_column: '新增字段',
       please_insert_start: '请输入开始时间',
       please_insert_end: '请输入结束时间',
-      save_form: '保存表单'
+      save_form: '保存表单',
+      default: '默认',
+      default_built_in: '内建数据库'
     },
     database: {
       nvarchar: '字符串',

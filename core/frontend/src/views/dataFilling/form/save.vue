@@ -1,6 +1,6 @@
 <script>
-import { filter, forEach, find, split, get } from 'lodash-es'
-import { listDatasource, listDatasourceType } from '@/api/system/datasource'
+import { filter, forEach, find, split, get, groupBy, keys } from 'lodash-es'
+import { listDatasource } from '@/api/system/datasource'
 import { listForm, saveForm } from '@/views/dataFilling/form/dataFilling'
 import { hasDataPermission } from '@/utils/permission'
 
@@ -102,10 +102,26 @@ export default {
   },
   computed: {
     datasourceList() {
-      const _types = filter(this.allDatasourceTypes, t => t.type === 'mysql' || t.type === 'mariadb')
-      forEach(_types, t => {
-        t.options = filter(this.allDatasourceList, d => d.type === t.type)
-      })
+      const dsMap = groupBy(this.allDatasourceList, d => d.type)
+      const _types = [{
+        name: this.$t('data_fill.form.default'),
+        type: 'default',
+        options: [{
+          id: 'default-built-in',
+          name: this.$t('data_fill.form.default_built_in')
+        }]
+      }]
+      if (dsMap) {
+        forEach(keys(dsMap), type => {
+          if (type === 'mysql' || type === 'mariadb') {
+            _types.push({
+              name: dsMap[type][0]?.typeDesc,
+              type: type,
+              options: dsMap[type]
+            })
+          }
+        })
+      }
       return _types
     },
     selectDatasets() {
@@ -152,16 +168,13 @@ export default {
         f.settings.mapping.type = f.settings.mapping.typeOptions[0].value
       }
     })
-    const p1 = listDatasourceType()
-    const p2 = listDatasource()
-    const p3 = listForm({ nodeType: 'folder' })
+    const p1 = listDatasource()
+    const p2 = listForm({ nodeType: 'folder' })
 
-    Promise.all([p1, p2, p3]).then((val) => {
-      this.allDatasourceTypes = val[0].data
+    Promise.all([p1, p2]).then((val) => {
+      this.allDatasourceList = val[0].data
 
-      this.allDatasourceList = val[1].data
-
-      this.folders = this.filterListDeep(val[2].data) || []
+      this.folders = this.filterListDeep(val[1].data) || []
       if (this.formData.folder) {
         this.$nextTick(() => {
           this.$refs.tree.setCurrentKey(this.formData.folder)
