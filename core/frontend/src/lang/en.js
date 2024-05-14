@@ -597,6 +597,9 @@ export default {
   },
   data_fill: {
     data_fill: 'Data Filling',
+    permission: 'Data Filling Permission',
+    enable: 'Enable',
+    enable_hint: 'Cannot disable after enable',
     new_folder: 'New Folder',
     form_manage: 'Form Manage',
     my_job: 'My Job',

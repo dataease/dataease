@@ -713,6 +713,126 @@ public class DatasourceExample {
             addCriterion("version not between", value1, value2, "version");
             return (Criteria) this;
         }
+
+        public Criteria andEnableDataFillIsNull() {
+            addCriterion("enable_data_fill is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillIsNotNull() {
+            addCriterion("enable_data_fill is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillEqualTo(Boolean value) {
+            addCriterion("enable_data_fill =", value, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillNotEqualTo(Boolean value) {
+            addCriterion("enable_data_fill <>", value, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillGreaterThan(Boolean value) {
+            addCriterion("enable_data_fill >", value, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("enable_data_fill >=", value, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillLessThan(Boolean value) {
+            addCriterion("enable_data_fill <", value, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillLessThanOrEqualTo(Boolean value) {
+            addCriterion("enable_data_fill <=", value, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillIn(List<Boolean> values) {
+            addCriterion("enable_data_fill in", values, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillNotIn(List<Boolean> values) {
+            addCriterion("enable_data_fill not in", values, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillBetween(Boolean value1, Boolean value2) {
+            addCriterion("enable_data_fill between", value1, value2, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("enable_data_fill not between", value1, value2, "enableDataFill");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableIsNull() {
+            addCriterion("enable_data_fill_create_table is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableIsNotNull() {
+            addCriterion("enable_data_fill_create_table is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableEqualTo(Boolean value) {
+            addCriterion("enable_data_fill_create_table =", value, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableNotEqualTo(Boolean value) {
+            addCriterion("enable_data_fill_create_table <>", value, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableGreaterThan(Boolean value) {
+            addCriterion("enable_data_fill_create_table >", value, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("enable_data_fill_create_table >=", value, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableLessThan(Boolean value) {
+            addCriterion("enable_data_fill_create_table <", value, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableLessThanOrEqualTo(Boolean value) {
+            addCriterion("enable_data_fill_create_table <=", value, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableIn(List<Boolean> values) {
+            addCriterion("enable_data_fill_create_table in", values, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableNotIn(List<Boolean> values) {
+            addCriterion("enable_data_fill_create_table not in", values, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableBetween(Boolean value1, Boolean value2) {
+            addCriterion("enable_data_fill_create_table between", value1, value2, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
+
+        public Criteria andEnableDataFillCreateTableNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("enable_data_fill_create_table not between", value1, value2, "enableDataFillCreateTable");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

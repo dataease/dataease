@@ -11,6 +11,8 @@
     <result column="update_time" jdbcType="BIGINT" property="updateTime" />
     <result column="create_by" jdbcType="VARCHAR" property="createBy" />
     <result column="version" jdbcType="VARCHAR" property="version" />
+    <result column="enable_data_fill" jdbcType="BIT" property="enableDataFill" />
+    <result column="enable_data_fill_create_table" jdbcType="BIT" property="enableDataFillCreateTable" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.Datasource">
     <result column="status" jdbcType="LONGVARCHAR" property="status" />
@@ -74,7 +76,8 @@
     </where>
   </sql>
   <sql id="Base_Column_List">
-    id, `name`, `desc`, `type`, configuration, create_time, update_time, create_by, version
+    id, `name`, `desc`, `type`, configuration, create_time, update_time, create_by, version, 
+    enable_data_fill, enable_data_fill_create_table
   </sql>
   <sql id="Blob_Column_List">
     `status`
@@ -131,11 +134,13 @@
     insert into datasource (id, `name`, `desc`, 
       `type`, configuration, create_time, 
       update_time, create_by, version, 
-      `status`)
+      enable_data_fill, enable_data_fill_create_table, `status`
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{desc,jdbcType=VARCHAR}, 
       #{type,jdbcType=VARCHAR}, #{configuration,jdbcType=VARCHAR}, #{createTime,jdbcType=BIGINT}, 
       #{updateTime,jdbcType=BIGINT}, #{createBy,jdbcType=VARCHAR}, #{version,jdbcType=VARCHAR}, 
-      #{status,jdbcType=LONGVARCHAR})
+      #{enableDataFill,jdbcType=BIT}, #{enableDataFillCreateTable,jdbcType=BIT}, #{status,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.Datasource">
     insert into datasource
@@ -166,6 +171,12 @@
       </if>
       <if test="version != null">
         version,
+      </if>
+      <if test="enableDataFill != null">
+        enable_data_fill,
+      </if>
+      <if test="enableDataFillCreateTable != null">
+        enable_data_fill_create_table,
       </if>
       <if test="status != null">
         `status`,
@@ -198,6 +209,12 @@
       </if>
       <if test="version != null">
         #{version,jdbcType=VARCHAR},
+      </if>
+      <if test="enableDataFill != null">
+        #{enableDataFill,jdbcType=BIT},
+      </if>
+      <if test="enableDataFillCreateTable != null">
+        #{enableDataFillCreateTable,jdbcType=BIT},
       </if>
       <if test="status != null">
         #{status,jdbcType=LONGVARCHAR},
@@ -240,6 +257,12 @@
       <if test="record.version != null">
         version = #{record.version,jdbcType=VARCHAR},
       </if>
+      <if test="record.enableDataFill != null">
+        enable_data_fill = #{record.enableDataFill,jdbcType=BIT},
+      </if>
+      <if test="record.enableDataFillCreateTable != null">
+        enable_data_fill_create_table = #{record.enableDataFillCreateTable,jdbcType=BIT},
+      </if>
       <if test="record.status != null">
         `status` = #{record.status,jdbcType=LONGVARCHAR},
       </if>
@@ -259,6 +282,8 @@
       update_time = #{record.updateTime,jdbcType=BIGINT},
       create_by = #{record.createBy,jdbcType=VARCHAR},
       version = #{record.version,jdbcType=VARCHAR},
+      enable_data_fill = #{record.enableDataFill,jdbcType=BIT},
+      enable_data_fill_create_table = #{record.enableDataFillCreateTable,jdbcType=BIT},
       `status` = #{record.status,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -274,7 +299,9 @@
       create_time = #{record.createTime,jdbcType=BIGINT},
       update_time = #{record.updateTime,jdbcType=BIGINT},
       create_by = #{record.createBy,jdbcType=VARCHAR},
-      version = #{record.version,jdbcType=VARCHAR}
+      version = #{record.version,jdbcType=VARCHAR},
+      enable_data_fill = #{record.enableDataFill,jdbcType=BIT},
+      enable_data_fill_create_table = #{record.enableDataFillCreateTable,jdbcType=BIT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -306,6 +333,12 @@
       <if test="version != null">
         version = #{version,jdbcType=VARCHAR},
       </if>
+      <if test="enableDataFill != null">
+        enable_data_fill = #{enableDataFill,jdbcType=BIT},
+      </if>
+      <if test="enableDataFillCreateTable != null">
+        enable_data_fill_create_table = #{enableDataFillCreateTable,jdbcType=BIT},
+      </if>
       <if test="status != null">
         `status` = #{status,jdbcType=LONGVARCHAR},
       </if>
@@ -322,6 +355,8 @@
       update_time = #{updateTime,jdbcType=BIGINT},
       create_by = #{createBy,jdbcType=VARCHAR},
       version = #{version,jdbcType=VARCHAR},
+      enable_data_fill = #{enableDataFill,jdbcType=BIT},
+      enable_data_fill_create_table = #{enableDataFillCreateTable,jdbcType=BIT},
       `status` = #{status,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -334,7 +369,9 @@
       create_time = #{createTime,jdbcType=BIGINT},
       update_time = #{updateTime,jdbcType=BIGINT},
       create_by = #{createBy,jdbcType=VARCHAR},
-      version = #{version,jdbcType=VARCHAR}
+      version = #{version,jdbcType=VARCHAR},
+      enable_data_fill = #{enableDataFill,jdbcType=BIT},
+      enable_data_fill_create_table = #{enableDataFillCreateTable,jdbcType=BIT}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

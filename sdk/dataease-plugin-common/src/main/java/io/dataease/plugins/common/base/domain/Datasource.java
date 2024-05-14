@@ -28,5 +28,9 @@ public class Datasource implements Serializable {
     @ApiModelProperty(value = "配置详情", required = true)
     private String configuration;
 
+    private Boolean enableDataFill;
+
+    private Boolean enableDataFillCreateTable;
+
     private static final long serialVersionUID = 1L;
 }

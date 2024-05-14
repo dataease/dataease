@@ -117,7 +117,7 @@ export default {
             _types.push({
               name: dsMap[type][0]?.typeDesc,
               type: type,
-              options: dsMap[type]
+              options: filter(dsMap[type], d => d.enableDataFill && d.enableDataFillCreateTable)
             })
           }
         })
