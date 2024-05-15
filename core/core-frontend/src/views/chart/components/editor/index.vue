@@ -967,7 +967,8 @@ const removeItems = (
       axis = view.value.extBubble?.splice(0)
       break
     case 'customFilter':
-      axis = view.value.customFilter?.splice(0)
+      view.value.customFilter = {}
+      return
       break
     case 'drillFields':
       axis = view.value.drillFields?.splice(0)
