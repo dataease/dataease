@@ -285,7 +285,10 @@ export default {
             {{ $t('data_fill.form_manage') }}
           </span>
 
-          <div style="padding-left: 20px;padding-right: 20px;">
+          <div
+            style="padding-left: 20px;padding-right: 20px;"
+            class="de-tree"
+          >
 
             <div style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
               {{ $t('data_fill.form.form_list_name') }}
@@ -638,6 +641,59 @@ export default {
   .no-tdata-new {
     cursor: pointer;
     color: var(--primary, #3370ff);
+  }
+}
+.de-tree {
+  .el-tree-node.is-current.is-focusable {
+    &>.el-tree-node__content {
+      background-color: var(--deWhiteHover, #e0eaff);
+      color: var(--primary, #3370ff);
+    }
+  }
+
+  .el-tree-node__content, .de-el-tree-node__content {
+
+    .el-icon-more,
+    .el-icon-plus {
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #646a73;
+      cursor: pointer;
+    }
+
+    .el-icon-more:hover,
+    .el-icon-plus:hover {
+      background: rgba(31, 35, 41, 0.1);
+      border-radius: 4px;
+    }
+
+    .el-icon-more:active,
+    .el-icon-plus:active {
+      background: rgba(31, 35, 41, 0.2);
+      border-radius: 4px;
+    }
+  }
+  .el-tree-node__content {
+    height: 40px;
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(31, 35, 41, 0.1);
+    }
+  }
+
+  .de-el-tree-node__content {
+    .el-button--text {
+      padding: 0 !important;
+    }
+    .el-icon-more {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+    }
   }
 }
 </style>
