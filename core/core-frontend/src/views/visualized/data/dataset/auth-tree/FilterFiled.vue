@@ -112,7 +112,7 @@ watch(checkResult, () => {
 const authTargetType = ref('')
 
 watch(
-  () => getAuthTargetType.authTargetType,
+  () => getAuthTargetType?.authTargetType,
   value => {
     if (authTargetType.value === value || !value) return
     authTargetType.value = value

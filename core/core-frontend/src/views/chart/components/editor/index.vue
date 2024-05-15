@@ -24,7 +24,7 @@ import DimensionItem from './drag-item/DimensionItem.vue'
 import { fieldType } from '@/utils/attr'
 import QuotaItem from '@/views/chart/components/editor/drag-item/QuotaItem.vue'
 import DragPlaceholder from '@/views/chart/components/editor/drag-item/DragPlaceholder.vue'
-import FilterItem from '@/views/chart/components/editor/drag-item/FilterItem.vue'
+import FilterTree from './filter/FilterTree.vue'
 import ChartStyle from '@/views/chart/components/editor/editor-style/ChartStyle.vue'
 import VQueryChartStyle from '@/views/chart/components/editor/editor-style/VQueryChartStyle.vue'
 import Senior from '@/views/chart/components/editor/editor-senior/Senior.vue'
@@ -63,7 +63,6 @@ const router = useRouter()
 const { t } = useI18n()
 const loading = ref(false)
 const tabActive = ref('data')
-const tabActiveVQuery = ref('style')
 const datasetSelector = ref(null)
 const curDatasetWeight = ref(0)
 const renameForm = ref<FormInstance>()
@@ -111,8 +110,6 @@ onBeforeMount(() => {
 
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-const dsFieldDragOptions = { group: { name: 'drag', pull: 'clone' }, sort: true }
-
 const itemFormRules = reactive<FormRules>({
   chartShowName: [
     { required: true, message: t('commons.input_content'), trigger: 'change' },
@@ -154,6 +151,11 @@ const state = reactive({
   useless: null
 })
 
+const filedList = computed(() => {
+  return [...state.dimension, ...state.quota].filter(ele => ele.id !== 'count')
+})
+
+provide('filedList', () => filedList.value)
 watch(
   [() => view.value['tableId']],
   () => {
@@ -654,34 +656,6 @@ const addDrill = e => {
   dragRemoveAggField(view.value.drillFields, e)
 }
 
-const addCustomFilter = e => {
-  // 记录数等自动生成字段不做为过滤条件
-  if (view.value.customFilter && view.value.customFilter.length > 0) {
-    for (let i = 0; i < view.value.customFilter.length; i++) {
-      if (view.value.customFilter[i].id === 'count') {
-        view.value.customFilter.splice(i, 1)
-      }
-    }
-  }
-  view.value.customFilter[e.newDraggableIndex].filter = []
-  dragMoveDuplicate(view.value.customFilter, e, '')
-  dragRemoveAggField(view.value.customFilter, e)
-}
-const filterItemRemove = item => {
-  recordSnapshotInfo('calcData')
-  view.value.customFilter.splice(item.index, 1)
-}
-
-const cloneItem = param => {
-  return cloneDeep(param)
-}
-const moveToDimension = e => {
-  dragMoveDuplicate(state.dimensionData, e, 'ds')
-}
-const moveToQuota = e => {
-  dragMoveDuplicate(state.quotaData, e, 'ds')
-}
-
 const onAxisChange = (e, axis: AxisType) => {
   if (e.removed) {
     const { element } = e.removed
@@ -1078,21 +1052,13 @@ const saveQuotaFilter = () => {
   }
   closeQuotaFilter()
 }
+const changeFilterData = customFilter => {
+  view.value.customFilter = cloneDeep(customFilter)
+}
+const filterTree = ref()
 
-const showEditFilter = item => {
-  recordSnapshotInfo('calcData')
-  state.filterItem = JSON.parse(JSON.stringify(item))
-  state.chartForFilter = JSON.parse(JSON.stringify(view.value))
-  if (!state.filterItem.logic) {
-    state.filterItem.logic = 'and'
-  }
-  if (!state.filterItem.filterType) {
-    state.filterItem.filterType = 'logic'
-  }
-  if (!state.filterItem.enumCheckField) {
-    state.filterItem.enumCheckField = []
-  }
-  state.resultFilterEdit = true
+const openTreeFilter = () => {
+  filterTree.value.init(cloneDeep(view.value.customFilter))
 }
 const closeResultFilter = () => {
   state.resultFilterEdit = false
@@ -1478,8 +1444,6 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     const e = { newDraggableIndex: view.value[type].length - 1 }
     if ('drillFields' === type) {
       addDrill(e)
-    } else if (type === 'customFilter') {
-      addCustomFilter(e)
     } else {
       addAxis(e, type as AxisType)
     }
@@ -2164,33 +2128,15 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                         </el-tooltip>
                       </div>
                       <div
-                        @drop="$event => drop($event, 'customFilter')"
-                        @dragenter="dragEnter"
-                        @dragover="$event => dragOver($event)"
+                        class="tree-btn"
+                        :class="!!view.customFilter.logic && 'active'"
+                        @click="openTreeFilter"
                       >
-                        <draggable
-                          :list="view.customFilter"
-                          :move="onMove"
-                          item-key="id"
-                          group="drag"
-                          animation="300"
-                          class="drag-block-style"
-                          :class="{ dark: themes === 'dark' }"
-                          @add="addCustomFilter"
-                        >
-                          <template #item="{ element, index }">
-                            <filter-item
-                              :dimension-data="state.dimension"
-                              :quota-data="state.quota"
-                              :item="element"
-                              :index="index"
-                              :themes="props.themes"
-                              @onFilterItemRemove="filterItemRemove"
-                              @editItemFilter="showEditFilter"
-                            />
-                          </template>
-                        </draggable>
-                        <drag-placeholder :drag-list="view.customFilter" />
+                        <el-icon>
+                          <Icon class="svg-background" name="icon-filter"></Icon>
+                        </el-icon>
+
+                        <span>{{ $t('chart.filter') }}</span>
                       </div>
                     </el-row>
 
@@ -2899,6 +2845,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
         <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
       </template>
     </el-dialog>
+    <FilterTree ref="filterTree" @filter-data="changeFilterData" />
   </div>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
@@ -3474,6 +3421,25 @@ span {
   .drag-data {
     padding-top: 8px;
     padding-bottom: 16px;
+
+    .tree-btn {
+      width: 100%;
+      background: #fff;
+      height: 32px;
+      border-radius: 4px;
+      border: 1px solid #dcdfe6;
+      display: flex;
+      color: #cccccc;
+      align-items: center;
+      cursor: pointer;
+      justify-content: center;
+      font-size: 12px;
+
+      &.active {
+        color: #3370ff;
+        border-color: #3370ff;
+      }
+    }
 
     &.no-top-border {
       border-top: none !important;
