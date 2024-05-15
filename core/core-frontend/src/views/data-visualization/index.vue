@@ -193,6 +193,10 @@ const doUseCache = flag => {
     nextTick(() => {
       dvMainStore.setDataPrepareState(true)
       snapshotStore.recordSnapshotCache('renderChart')
+      setTimeout(() => {
+        // 使用缓存时，初始化的保存按钮为激活状态
+        snapshotStore.recordSnapshotCache('renderChart')
+      }, 2000)
     })
   } else {
     initLocalCanvasData()

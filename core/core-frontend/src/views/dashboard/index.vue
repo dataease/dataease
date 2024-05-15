@@ -117,6 +117,8 @@ const doUseCache = flag => {
     dataInitState.value = true
     setTimeout(() => {
       snapshotStore.recordSnapshotCache()
+      // 使用缓存时，初始化的保存按钮为激活状态
+      snapshotStore.recordSnapshotCache('renderChart')
     }, 1500)
   } else {
     initLocalCanvasData()
