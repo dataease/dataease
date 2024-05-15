@@ -36,6 +36,8 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
 import { XpackComponent } from '@/components/plugin'
 import { Base64 } from 'js-base64'
+import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
+import { deepCopy } from '@/utils/utils'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -58,6 +60,8 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
+const canvasCacheOutRef = ref(null)
+
 const {
   componentData,
   curComponent,
@@ -77,7 +81,10 @@ const state = reactive({
   datasetTree: [],
   scaleHistory: 100,
   canvasId: 'canvas-main',
-  canvasInitStatus: false
+  canvasInitStatus: false,
+  sourcePid: null,
+  resourceId: null,
+  opt: null
 })
 
 const contentStyle = computed(() => {
@@ -177,6 +184,46 @@ const initScroll = () => {
     canvasOut.value.scrollTo(scrollX, scrollY)
   })
 }
+const doUseCache = flag => {
+  const canvasCache = wsCache.get('DE-DV-CATCH-' + state.resourceId)
+  if (flag && canvasCache) {
+    const canvasCacheSeries = deepCopy(canvasCache)
+    snapshotStore.snapshotPublish(canvasCacheSeries)
+    state.canvasInitStatus = true
+    nextTick(() => {
+      dvMainStore.setDataPrepareState(true)
+      snapshotStore.recordSnapshotCache('renderChart')
+      setTimeout(() => {
+        // 使用缓存时，初始化的保存按钮为激活状态
+        snapshotStore.recordSnapshotCache('renderChart')
+      }, 2000)
+    })
+  } else {
+    initLocalCanvasData()
+    wsCache.delete('DE-DV-CATCH-' + state.resourceId)
+  }
+}
+
+const initLocalCanvasData = () => {
+  const { opt, sourcePid, resourceId } = state
+  const busiFlg = opt === 'copy' ? 'dataV-copy' : 'dataV'
+  initCanvasData(resourceId, busiFlg, function () {
+    state.canvasInitStatus = true
+    // afterInit
+    nextTick(() => {
+      dvMainStore.setDataPrepareState(true)
+      snapshotStore.recordSnapshotCache('renderChart')
+      if (dvInfo.value && opt === 'copy') {
+        dvInfo.value.dataState = 'prepare'
+        dvInfo.value.optType = 'copy'
+        dvInfo.value.pid = sourcePid
+        setTimeout(() => {
+          snapshotStore.recordSnapshotCache('renderChart')
+        }, 1500)
+      }
+    })
+  })
+}
 
 const previewScaleChange = () => {
   state.scaleHistory = canvasStyleData.value.scale
@@ -229,25 +276,17 @@ onMounted(async () => {
     return
   }
   initDataset()
+  state.resourceId = dvId
+  state.sourcePid = pid
+  state.opt = opt
   if (dvId) {
     state.canvasInitStatus = false
-    const busiFlg = opt === 'copy' ? 'dataV-copy' : 'dataV'
-    initCanvasData(dvId, busiFlg, function () {
-      state.canvasInitStatus = true
-      // afterInit
-      nextTick(() => {
-        dvMainStore.setDataPrepareState(true)
-        snapshotStore.recordSnapshotCache('renderChart')
-        if (dvInfo.value && opt === 'copy') {
-          dvInfo.value.dataState = 'prepare'
-          dvInfo.value.optType = 'copy'
-          dvInfo.value.pid = pid
-          setTimeout(() => {
-            snapshotStore.recordSnapshotCache('renderChart')
-          }, 1500)
-        }
-      })
-    })
+    const canvasCache = wsCache.get('DE-DV-CATCH-' + dvId)
+    if (canvasCache) {
+      canvasCacheOutRef.value?.dialogInit({ canvasType: 'dataV', resourceId: dvId })
+    } else {
+      initLocalCanvasData()
+    }
   } else if (opt && opt === 'create') {
     state.canvasInitStatus = false
     let watermarkBaseInfo
@@ -261,7 +300,7 @@ onMounted(async () => {
     }
     let deTemplateData
     if (createType === 'template') {
-      const templateParamsApply = JSON.parse(Base64.decode(templateParams + ''))
+      const templateParamsApply = JSON.parse(decodeURIComponent(Base64.decode(templateParams + '')))
       await decompressionPre(templateParamsApply, result => {
         deTemplateData = result
       })
@@ -302,13 +341,15 @@ onUnmounted(() => {
 const previewStatus = computed(() => editMode.value === 'preview')
 
 const commonPropertiesShow = computed(
-  () => curComponent.value && !['UserView', 'GroupArea'].includes(curComponent.value.component)
+  () =>
+    curComponent.value &&
+    !['UserView', 'GroupArea', 'VQuery'].includes(curComponent.value.component)
 )
 const canvasPropertiesShow = computed(
   () => !curComponent.value || ['GroupArea'].includes(curComponent.value.component)
 )
 const viewsPropertiesShow = computed(
-  () => !!(curComponent.value && ['UserView'].includes(curComponent.value.component))
+  () => !!(curComponent.value && ['UserView', 'VQuery'].includes(curComponent.value.component))
 )
 eventBus.on('handleNew', handleNew)
 </script>
@@ -404,6 +445,7 @@ eventBus.on('handleNew', handleNew)
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   />
+  <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
 </template>
 
 <style lang="less">

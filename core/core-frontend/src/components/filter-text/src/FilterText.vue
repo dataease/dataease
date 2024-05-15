@@ -54,7 +54,9 @@ watch(
     </el-icon>
     <div class="filter-texts-container" ref="container">
       <p v-for="(ele, index) in filterTexts" :key="ele" class="text">
-        {{ ele }}
+        <el-tooltip effect="dark" :content="ele" placement="top-start">
+          {{ ele }}
+        </el-tooltip>
         <el-icon @click="clearFilter(index)">
           <Icon name="icon_close_outlined"></Icon>
         </el-icon>

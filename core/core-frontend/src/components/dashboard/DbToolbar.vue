@@ -27,6 +27,7 @@ import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 import { XpackComponent } from '@/components/plugin'
 import DbMoreComGroup from '@/custom-component/component-group/DbMoreComGroup.vue'
+import { useCache } from '@/hooks/web/useCache'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -54,6 +55,7 @@ const state = reactive({
 })
 const resourceGroupOpt = ref(null)
 const outerParamsSetRef = ref(null)
+const { wsCache } = useCache('localStorage')
 
 const editCanvasName = () => {
   nameEdit.value = true
@@ -147,6 +149,7 @@ const saveCanvasWithCheck = () => {
 }
 
 const saveResource = () => {
+  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   if (styleChangeTimes.value > 0) {
     snapshotStore.resetStyleChangeTimes()
     dvMainStore.matrixSizeAdaptor()
@@ -199,6 +202,7 @@ const backHandler = (url: string) => {
     openHandler.value.invokeMethod(pm)
     return
   }
+  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   window.open(url, '_self')
 }
 
@@ -440,7 +444,7 @@ const initOpenHandler = newWindow => {
           <component-group
             is-label
             themes="light"
-            :base-width="115"
+            :base-width="215"
             icon-name="dv-media"
             title="媒体"
           >

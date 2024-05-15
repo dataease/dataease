@@ -769,10 +769,10 @@ const mousedownDrag = () => {
           </el-input>
           <div
             v-if="getIconName(scope.row.type[0]) === 'time'"
-            class="ed-input-group ed-input-group--prepend de-group__prepend"
+            class="ed-input ed-input--light ed-input-group ed-input-group--prepend de-group__prepend"
           >
             <div class="ed-input-group__prepend">
-              <el-select v-model="scope.row.defaultValueScope" style="width: 161px">
+              <el-select v-model="scope.row.defaultValueScope" style="width: calc(100% + 22px)">
                 <el-option
                   v-for="item in defaultValueScopeList"
                   :key="item.value"
@@ -1207,16 +1207,8 @@ const mousedownDrag = () => {
     padding: 0 11px;
   }
   .de-group__prepend {
-    width: 100%;
-
-    .ed-input-group__prepend {
-      padding: 0 11px;
-      .ed-select {
-        margin: 0 -10px 0 -10px;
-      }
-    }
-
     .ed-date-editor {
+      flex: 1;
       .ed-input__wrapper {
         border-top-left-radius: 0;
         border-bottom-left-radius: 0;

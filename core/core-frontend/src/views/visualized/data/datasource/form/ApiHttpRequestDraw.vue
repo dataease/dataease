@@ -12,6 +12,7 @@ import { checkApiItem } from '@/api/datasource'
 import { cloneDeep } from 'lodash-es'
 import { fieldType } from '@/utils/attr'
 import type { ApiConfiguration } from '@/views/visualized/data/datasource/form/option'
+import { cancelMap } from '@/config/axios/service'
 
 export interface Field {
   name: string
@@ -138,6 +139,7 @@ const showApiData = () => {
     if (valid) {
       const data = Base64.encode(JSON.stringify(apiItem))
       loading.value = true
+      cancelMap['/datasource/checkApiDatasource']?.()
       checkApiItem({ data: data, type: 'apiStructure' }).then(response => {
         originFieldItem.jsonFields = response.data.jsonFields
       })
@@ -202,6 +204,7 @@ const next = () => {
           return
         }
       }
+      cancelMap['/datasource/checkApiDatasource']?.()
       checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
         apiItem.jsonFields = response.data.jsonFields
         apiItem.fields = []
@@ -220,6 +223,7 @@ const validate = () => {
         ElMessage.error(t('datasource.please_input_dataPath'))
         return
       }
+      cancelMap['/datasource/checkApiDatasource']?.()
       checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) })
         .then(response => {
           apiItem.jsonFields = response.data.jsonFields
@@ -235,6 +239,7 @@ const validate = () => {
   })
 }
 const closeEditItem = () => {
+  cancelMap['/datasource/checkApiDatasource']?.()
   edit_api_item.value = false
 }
 
@@ -571,7 +576,11 @@ defineExpose({
           </el-icon>
           <span class="name">{{ t('datasource.data_preview') }}</span>
         </p>
-        <div v-show="activeDataPreview" class="info-table">
+        <div
+          v-show="activeDataPreview"
+          class="info-table"
+          :style="{ height: Math.min(tableData.length, 20) * 40 + 'px' }"
+        >
           <empty-background
             v-if="showEmpty"
             description="暂无数据，请在数据结构勾选字段"
@@ -725,8 +734,7 @@ defineExpose({
   }
 
   .info-table {
-    max-height: 300px;
-    height: 200px;
+    min-height: 300px;
     .ed-table-v2__header-cell {
       background-color: #f5f6f7;
     }

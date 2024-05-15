@@ -13,17 +13,22 @@ import io.dataease.utils.IDUtils;
 import io.dataease.utils.SystemSettingUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 
-import java.util.Comparator;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
 public class SysParameterManage {
+
+    @Value("${dataease.show-demo-tips:false}")
+    private boolean showDemoTips;
+
+    @Value("${dataease.demo-tips-content:#{null}}")
+    private String demoTipsContent;
 
     private static final String mapKey = "map.key";
 
@@ -93,7 +98,18 @@ public class SysParameterManage {
 
     @XpackInteract(value = "perSetting", replace = true)
     public List<Object> getUiList() {
-        return null;
+        List<Object> result = new ArrayList<>();
+        result.add(buildSettingItem("community", true));
+        result.add(buildSettingItem("showDemoTips", showDemoTips));
+        result.add(buildSettingItem("demoTipsContent", demoTipsContent));
+        return result;
+    }
+
+    private Map<String, Object> buildSettingItem(String pkey, Object pval) {
+        Map<String, Object> item = new HashMap<>();
+        item.put("pkey", pkey);
+        item.put("pval", pval);
+        return item;
     }
 
 

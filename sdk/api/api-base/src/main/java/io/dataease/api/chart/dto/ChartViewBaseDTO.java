@@ -3,6 +3,7 @@ package io.dataease.api.chart.dto;
 import com.fasterxml.jackson.annotation.JsonProperty;
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.api.chart.filter.FilterTreeObj;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -120,7 +121,7 @@ public class ChartViewBaseDTO implements Serializable {
     /**
      * 结果过滤
      */
-    private List<ChartFieldCustomFilterDTO> customFilter;
+    private FilterTreeObj customFilter;
 
     /**
      * 钻取字段
@@ -201,5 +202,10 @@ public class ChartViewBaseDTO implements Serializable {
      * 是否开启跳转
      */
     private Boolean jumpActive;
+
+    /**
+     * 区间条形图开启时间纬度开启聚合
+     */
+    private Boolean aggregate;
 
 }

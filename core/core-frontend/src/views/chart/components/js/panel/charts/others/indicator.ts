@@ -55,6 +55,7 @@ export class IndicatorChartView extends AbstractChartView {
   axisConfig: AxisConfig = {
     yAxis: {
       name: `${t('chart.quota')}`,
+      limit: 1,
       type: 'q'
     }
   }

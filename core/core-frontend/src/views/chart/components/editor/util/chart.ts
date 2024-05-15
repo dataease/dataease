@@ -1198,6 +1198,27 @@ export const CHART_TYPE_CONFIGS = [
         value: 'percentage-bar-stack-horizontal',
         title: t('chart.chart_percentage_bar_stack_horizontal'),
         icon: 'percentage-bar-stack-horizontal'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bar-range',
+        title: t('chart.chart_bar_range'),
+        icon: 'bar-range'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'bidirectional-bar',
+        title: t('chart.chart_bidirectional_bar'),
+        icon: 'percentage-bar-stack-horizontal'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'progress-bar',
+        title: t('chart.chart_progress_bar'),
+        icon: 'percentage-bar-stack-horizontal'
       }
     ]
   },
@@ -1411,7 +1432,7 @@ export const BASE_VIEW_CONFIG = {
   extBubble: [],
   extLabel: [],
   extTooltip: [],
-  customFilter: [],
+  customFilter: {},
   customAttr: {
     basicStyle: DEFAULT_BASIC_STYLE,
     misc: DEFAULT_MISC,

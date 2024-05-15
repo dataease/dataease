@@ -70,7 +70,7 @@ const releaseSelect = inject('release-unmount-select', Function, true)
 const queryDataForId = inject('query-data-for-id', Function, true)
 const setDefaultMapValue = arr => {
   const { displayId, field } = config.value
-  if (!displayId || displayId === field?.id) {
+  if (!displayId) {
     return []
   }
   let defaultMapValue = {}

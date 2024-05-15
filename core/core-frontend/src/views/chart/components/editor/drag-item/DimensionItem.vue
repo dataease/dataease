@@ -110,6 +110,7 @@ const sort = param => {
     item.value.index = props.index
     item.value.sort = param.type
     item.value.customSort = []
+    delete item.value.axisType
     emit('onDimensionItemChange', item.value)
   }
 }
@@ -122,6 +123,7 @@ const beforeSort = type => {
 
 const dateStyle = param => {
   item.value.dateStyle = param.type
+  item.value.axisType = props.type
   emit('onDimensionItemChange', item.value)
 }
 
@@ -133,6 +135,7 @@ const beforeDateStyle = type => {
 
 const datePattern = param => {
   item.value.datePattern = param.type
+  item.value.axisType = props.type
   emit('onDimensionItemChange', item.value)
 }
 
@@ -226,6 +229,7 @@ onMounted(() => {
           <el-dropdown-item @click.prevent>
             <el-dropdown
               :effect="themes"
+              popper-class="data-dropdown_popper_mr9"
               placement="right-start"
               style="width: 100%; height: 100%"
               @command="sort"
@@ -305,6 +309,7 @@ onMounted(() => {
             <el-dropdown
               :effect="themes"
               placement="right-start"
+              popper-class="data-dropdown_popper_mr9"
               style="width: 100%; height: 100%"
               @command="dateStyle"
             >
@@ -438,6 +443,7 @@ onMounted(() => {
             <el-dropdown
               :effect="themes"
               placement="right-start"
+              popper-class="data-dropdown_popper_mr9"
               style="width: 100%; height: 100%"
               @command="datePattern"
             >
@@ -695,6 +701,9 @@ span {
 }
 </style>
 <style lang="less">
+.data-dropdown_popper_mr9 {
+  margin-left: -9px !important;
+}
 .menu-item-padding {
   span {
     font-size: 14px;

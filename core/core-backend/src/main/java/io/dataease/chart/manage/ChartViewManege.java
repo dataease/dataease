@@ -5,6 +5,7 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.*;
 import io.dataease.api.chart.vo.ViewSelectorVO;
+import io.dataease.api.chart.filter.FilterTreeObj;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
@@ -243,8 +244,6 @@ public class ChartViewManege {
 
         TypeReference<List<ChartViewFieldDTO>> tokenType = new TypeReference<>() {
         };
-        TypeReference<List<ChartFieldCustomFilterDTO>> filterTokenType = new TypeReference<>() {
-        };
 
         dto.setXAxis(JsonUtil.parseList(record.getxAxis(), tokenType));
         dto.setXAxisExt(JsonUtil.parseList(record.getxAxisExt(), tokenType));
@@ -258,7 +257,7 @@ public class ChartViewManege {
         dto.setCustomStyle(JsonUtil.parse(record.getCustomStyle(), Map.class));
         dto.setSenior(JsonUtil.parse(record.getSenior(), Map.class));
         dto.setDrillFields(JsonUtil.parseList(record.getDrillFields(), tokenType));
-        dto.setCustomFilter(JsonUtil.parseList(record.getCustomFilter(), filterTokenType));
+        dto.setCustomFilter(JsonUtil.parseObject(record.getCustomFilter(), FilterTreeObj.class));
         dto.setViewFields(JsonUtil.parseList(record.getViewFields(), tokenType));
 
         return dto;

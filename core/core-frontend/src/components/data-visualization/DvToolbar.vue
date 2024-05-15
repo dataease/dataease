@@ -17,6 +17,8 @@ import { canvasSave } from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
 import { XpackComponent } from '@/components/plugin'
+import { useCache } from '@/hooks/web/useCache'
+import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -27,6 +29,8 @@ const resourceGroupOpt = ref(null)
 const dvToolbarMain = ref(null)
 const { canvasStyleData, dvInfo, editMode } = storeToRefs(dvMainStore)
 let scaleEdit = 100
+const { wsCache } = useCache('localStorage')
+const dvModel = 'dataV'
 
 const closeEditCanvasName = () => {
   nameEdit.value = false
@@ -87,6 +91,7 @@ const saveCanvasWithCheck = () => {
 }
 
 const saveResource = () => {
+  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   if (styleChangeTimes.value > 0) {
     snapshotStore.resetStyleChangeTimes()
     canvasSave(() => {
@@ -140,6 +145,7 @@ const backHandler = (url: string) => {
     openHandler.value.invokeMethod(pm)
     return
   }
+  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   window.open(url, '_self')
 }
 const openHandler = ref(null)
@@ -212,10 +218,19 @@ eventBus.on('clearCanvas', clearCanvas)
           >
             <user-view-group></user-view-group>
           </component-group>
+          <component-group
+            :base-width="115"
+            :show-split-line="true"
+            is-label
+            icon-name="dv-filter"
+            title="查询组件"
+          >
+            <query-group :dv-model="dvModel"></query-group>
+          </component-group>
           <component-group is-label :base-width="115" icon-name="dv-text" title="文本">
             <text-group></text-group>
           </component-group>
-          <component-group is-label :base-width="115" icon-name="dv-media" title="媒体">
+          <component-group is-label :base-width="215" icon-name="dv-media" title="媒体">
             <media-group></media-group>
           </component-group>
           <component-group is-label :base-width="115" icon-name="dv-more-com" title="更多">

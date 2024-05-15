@@ -20,6 +20,9 @@ interface AppearanceState {
   foot?: string
   footContent?: string
   loaded: boolean
+  showDemoTips?: boolean
+  demoTipsContent?: string
+  community: boolean
 }
 const { wsCache } = useCache()
 export const useAppearanceStore = defineStore('appearanceStore', {
@@ -37,7 +40,10 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       name: '',
       foot: 'false',
       footContent: '',
-      loaded: false
+      loaded: false,
+      showDemoTips: false,
+      demoTipsContent: '',
+      community: true
     }
   },
   getters: {
@@ -91,6 +97,15 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     },
     getFootContent(): string {
       return this.footContent
+    },
+    getShowDemoTips(): boolean {
+      return this.showDemoTips
+    },
+    getDemoTipsContent(): string {
+      return this.demoTipsContent
+    },
+    getCommunity(): boolean {
+      return this.community
     }
   },
   actions: {
@@ -112,10 +127,11 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     setLoaded(data: boolean) {
       this.loaded = data
     },
-    async setAppearance() {
+    async setAppearance(isDataEaseBi?: boolean) {
       const desktop = wsCache.get('app.desktop')
       if (desktop) {
         this.loaded = true
+        this.community = true
       }
       if (this.loaded) {
         return
@@ -126,10 +142,22 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       if (!resData?.length) {
         return
       }
-      const data: AppearanceState = { loaded: false }
+      const data: AppearanceState = { loaded: false, community: true }
+      let isCommunity = false
       resData.forEach(item => {
         data[item.pkey] = item.pval
+        if (item.pkey === 'community') {
+          isCommunity = true
+        }
       })
+      data.community = isCommunity
+      this.community = data.community
+      if (this.community) {
+        this.showDemoTips = data.showDemoTips
+        this.demoTipsContent = data.demoTipsContent
+        this.loaded = true
+        return
+      }
       this.navigate = data.navigate
       this.help = data.help
       this.navigateBg = data.navigateBg
@@ -177,6 +205,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       if (this.name) {
         document.title = this.name
       }
+      if (isDataEaseBi) return
       const link = document.querySelector('link[rel="icon"]')
       if (link) {
         if (this.web) {

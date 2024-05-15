@@ -5,16 +5,20 @@ import { deepCopy } from '@/utils/utils'
 import { BASE_THEMES } from '@/views/chart/components/editor/util/dataVisualiztion'
 import eventBus from '@/utils/eventBus'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache('localStorage')
 
 const dvMainStore = dvMainStoreWithOut()
 const {
+  dvInfo,
   curComponent,
   componentData,
   canvasStyleData,
   canvasViewInfo,
   curOriginThemes,
   dataPrepareState,
-  nowPanelTrackInfo
+  nowPanelTrackInfo,
+  nowPanelJumpInfo
 } = storeToRefs(dvMainStore)
 
 let defaultCanvasInfo = {
@@ -82,7 +86,9 @@ export const snapshotStore = defineStore('snapshot', {
       dvMainStore.setComponentData(snapshotInfo.componentData)
       dvMainStore.setCanvasStyle(snapshotInfo.canvasStyleData)
       dvMainStore.setCanvasViewInfo(snapshotInfo.canvasViewInfo)
-      dvMainStore.setNowPanelJumpInfoInner(snapshotInfo.nowPanelTrackInfo)
+      dvMainStore.setNowPanelJumpInfoInner(snapshotInfo.nowPanelJumpInfo)
+      dvMainStore.setNowPanelTrackInfo(snapshotInfo.nowPanelTrackInfo)
+      dvMainStore.updateCurDvInfo(snapshotInfo.dvInfo)
       const curCacheViewIdInfo = deepCopy(this.cacheViewIdInfo)
       this.cacheViewIdInfo = snapshotInfo.cacheViewIdInfo
 
@@ -142,7 +148,9 @@ export const snapshotStore = defineStore('snapshot', {
           canvasStyleData: deepCopy(canvasStyleData.value),
           canvasViewInfo: deepCopy(canvasViewInfo.value),
           cacheViewIdInfo: deepCopy(this.cacheViewIdInfo),
-          nowPanelTrackInfo: deepCopy(nowPanelTrackInfo.value)
+          nowPanelTrackInfo: deepCopy(nowPanelTrackInfo.value),
+          nowPanelJumpInfo: deepCopy(nowPanelJumpInfo.value),
+          dvInfo: deepCopy(dvInfo.value)
         }
         this.snapshotData[++this.snapshotIndex] = newSnapshot
         // 在 undo 过程中，添加新的快照时，要将它后面的快照清理掉
@@ -151,6 +159,9 @@ export const snapshotStore = defineStore('snapshot', {
         }
         // 清理缓存计数器
         this.snapshotCacheTimes = 0
+        if (this.snapshotData.length > 1) {
+          wsCache.set('DE-DV-CATCH-' + dvInfo.value.id, newSnapshot)
+        }
       }
     }
   }

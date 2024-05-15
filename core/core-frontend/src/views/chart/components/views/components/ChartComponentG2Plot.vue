@@ -226,8 +226,12 @@ const trackClick = trackAction => {
   if (state.pointParam.data.dimensionList.length > 1) {
     checkName = state.pointParam.data.dimensionList[0].id
   }
-  const quotaList = state.pointParam.data.quotaList
-  quotaList[0]['value'] = state.pointParam.data.value
+  let quotaList = state.pointParam.data.quotaList
+  if (curView.type === 'bar-range') {
+    quotaList = state.pointParam.data.dimensionList
+  } else {
+    quotaList[0]['value'] = state.pointParam.data.value
+  }
   const linkageParam = {
     option: 'linkage',
     name: checkName,

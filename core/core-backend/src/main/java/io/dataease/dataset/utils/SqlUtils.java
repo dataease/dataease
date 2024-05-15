@@ -16,6 +16,7 @@ import org.apache.commons.collections4.MapUtils;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.regex.Matcher;
 
 import static org.apache.calcite.sql.SqlKind.*;
 
@@ -143,7 +144,7 @@ public class SqlUtils {
     public static String replaceTablePlaceHolder(String s, String placeholder) {
         s = s.replaceAll("\r\n", " ")
                 .replaceAll("\n", " ")
-                .replaceAll(SqlPlaceholderConstants.TABLE_PLACEHOLDER_REGEX, placeholder)
+                .replaceAll(SqlPlaceholderConstants.TABLE_PLACEHOLDER_REGEX, Matcher.quoteReplacement(placeholder))
                 .replaceAll("ASYMMETRIC", "")
                 .replaceAll("SYMMETRIC", "");
         return s;
@@ -169,7 +170,7 @@ public class SqlUtils {
 
         if (MapUtils.isNotEmpty(fieldsDialect)) {
             for (Map.Entry<String, String> ele : fieldsDialect.entrySet()) {
-                s = s.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + ele.getKey() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, ele.getValue());
+                s = s.replaceAll(SqlPlaceholderConstants.KEYWORD_PREFIX_REGEX + ele.getKey() + SqlPlaceholderConstants.KEYWORD_SUFFIX_REGEX, Matcher.quoteReplacement(ele.getValue()));
             }
         }
         return s;
@@ -182,10 +183,12 @@ public class SqlUtils {
             case mysql:
             case mongo:
             case StarRocks:
-            case doris:
             case TiDB:
             case mariadb:
                 sqlDialect = MysqlSqlDialect.DEFAULT;
+                break;
+            case doris:
+                sqlDialect = DorisSqlDialect.DEFAULT;
                 break;
             case impala:
                 sqlDialect = ImpalaSqlDialect.DEFAULT;

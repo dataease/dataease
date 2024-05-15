@@ -71,6 +71,10 @@ const init = () => {
     }
     state.subAxisForm.position = 'right'
     state.subAxisForm.show = state.axisForm.show
+    if (chart.type === 'bidirectional-bar') {
+      state.axisForm.position = customStyle.yAxis.position
+      state.subAxisForm.position = customStyle.yAxisExt.position
+    }
   }
 }
 
@@ -81,7 +85,14 @@ onMounted(() => {
 
 <template>
   <el-tabs v-model="activeName" id="axis-tabs" stretch>
-    <el-tab-pane :label="t('chart.yAxisLeft')" name="left">
+    <el-tab-pane
+      :label="
+        chart.type === 'bidirectional-bar'
+          ? t('chart.text_pos_left') + t('chart.xAxis')
+          : t('chart.yAxisLeft')
+      "
+      name="left"
+    >
       <dual-y-axis-selector-inner
         style="margin-top: 8px"
         v-if="state.axisForm"
@@ -89,10 +100,18 @@ onMounted(() => {
         :property-inner="propertyInner"
         :themes="themes"
         type="left"
+        :chart-type="chart.type"
         @on-change-y-axis-form="changeAxisStyle"
       />
     </el-tab-pane>
-    <el-tab-pane :label="t('chart.yAxisRight')" name="right">
+    <el-tab-pane
+      :label="
+        chart.type === 'bidirectional-bar'
+          ? t('chart.text_pos_right') + t('chart.xAxis')
+          : t('chart.yAxisRight')
+      "
+      name="right"
+    >
       <dual-y-axis-selector-inner
         style="margin-top: 8px"
         v-if="state.subAxisForm"
@@ -100,6 +119,7 @@ onMounted(() => {
         :property-inner="propertyInner"
         :themes="themes"
         type="right"
+        :chart-type="chart.type"
         @on-change-y-axis-form="changeSubAxisStyle"
       />
     </el-tab-pane>

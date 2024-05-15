@@ -1,9 +1,9 @@
 <script lang="ts" setup>
 import { onBeforeMount, ref, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { XpackComponent } from '@/components/plugin'
 import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { XpackComponent } from '@/components/plugin'
 import DePreviewMobile from './MobileInPc.vue'
 const panelInit = ref(false)
 const dvMainStore = dvMainStoreWithOut()
@@ -19,7 +19,7 @@ const checkItemPosition = component => {
 
 const hanedleMessage = event => {
   if (event.data.type === 'panelInit') {
-    const { componentData, canvasStyleData, dvInfo, canvasViewInfo } = event.data.value
+    const { componentData, canvasStyleData, dvInfo, canvasViewInfo, isEmbedded } = event.data.value
     componentData.forEach(ele => {
       const { mx, my, mSizeX, mSizeY } = ele
       ele.x = mx
@@ -47,6 +47,7 @@ const hanedleMessage = event => {
     dvMainStore.updateCurDvInfo(dvInfo)
     dvMainStore.setCanvasViewInfo(canvasViewInfo)
     eventBus.emit('doCanvasInit-canvas-main')
+    if (isEmbedded) return
     panelInit.value = true
   }
 
@@ -61,10 +62,10 @@ const hanedleMessage = event => {
     dvMainStore.setCanvasStyle(event.data.value)
   }
 
-  if (event.data.type === 'mobileSave') {
-    window.top.postMessage(
+  if (['mobileSave', 'mobilePatch'].includes(event.data.type)) {
+    window.parent.postMessage(
       {
-        type: 'mobileSaveFromMobile',
+        type: `${event.data.type}FromMobile`,
         value: dvMainStore.componentData.reduce((pre, next) => {
           const { x, y, sizeX, sizeY, id, component } = next
           pre[id] = { x, y, sizeX, sizeY, component }
@@ -90,11 +91,15 @@ const hanedleMessage = event => {
   }
 }
 
-let p = null
-const XpackLoaded = () => p(true)
-onBeforeMount(async () => {
-  await new Promise(r => (p = r))
-  window.top.postMessage({ type: 'panelInit', value: true }, '*')
+const initIframe = () => {
+  panelInit.value = false
+  setTimeout(() => {
+    panelInit.value = true
+  })
+}
+
+onBeforeMount(() => {
+  window.parent.postMessage({ type: 'panelInit', value: true }, '*')
   window.addEventListener('message', hanedleMessage)
   useEmitt({
     name: 'onMobileStatusChange',
@@ -105,7 +110,7 @@ onBeforeMount(async () => {
 })
 
 const mobileStatusChange = (type, value) => {
-  window.top.postMessage({ type, value }, '*')
+  window.parent.postMessage({ type, value }, '*')
   if (type === 'delFromMobile') {
     eventBus.emit('removeMatrixItemById-canvas-main', value)
   }
@@ -121,9 +126,8 @@ onBeforeUnmount(() => {
     <de-preview-mobile v-if="panelInit"></de-preview-mobile>
   </div>
   <XpackComponent
-    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
-    @loaded="XpackLoaded"
-    @load-fail="XpackLoaded"
+    @initIframe="initIframe"
+    jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvRW50cmFuY2Vz"
   />
 </template>
 

@@ -23,6 +23,8 @@ import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Service;
 import org.springframework.util.CollectionUtils;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
 import java.util.*;
 import java.util.function.Function;
 import java.util.stream.Collectors;
@@ -52,6 +54,8 @@ public class TemplateCenterManage {
      */
     public TemplateManageFileDTO getTemplateFromMarket(String templateUrl) {
         if (StringUtils.isNotEmpty(templateUrl)) {
+            String templateName = templateUrl.substring(templateUrl.lastIndexOf("/")+1,templateUrl.length());
+            templateUrl = templateUrl.replace(templateName,URLEncoder.encode(templateName, StandardCharsets.UTF_8).replace("+", "%20"));
             String sufUrl = sysParameterManage.groupVal("template.").get("template.url");
             String templateInfo = HttpClientUtil.get(sufUrl + templateUrl, null);
             return JsonUtil.parseObject(templateInfo, TemplateManageFileDTO.class);

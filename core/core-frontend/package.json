@@ -51,6 +51,7 @@
     "vue-types": "^5.0.2",
     "vue-uuid": "^3.0.0",
     "vue3-ace-editor": "^2.2.2",
+    "vue3-video-play": "^1.3.2",
     "vuedraggable": "^4.1.0",
     "web-storage-cache": "^1.1.1",
     "xss": "^1.0.14"

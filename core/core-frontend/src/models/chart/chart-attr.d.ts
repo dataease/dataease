@@ -229,6 +229,10 @@ declare interface ChartBasicStyle {
    * 其他项的标签
    */
   topNLabel: string
+  /**
+   * 对称柱状图方向
+   */
+  layout: 'horizontal' | 'vertical'
 }
 /**
  * 表头属性
@@ -659,6 +663,8 @@ declare interface ChartLabelAttr {
    * 多系列标签设置
    */
   seriesLabelFormatter: SeriesFormatter[]
+
+  showGap?: boolean
 }
 /**
  * 提示设置
@@ -690,6 +696,8 @@ declare interface ChartTooltipAttr {
    * 多系列提示设置
    */
   seriesTooltipFormatter: SeriesFormatter[]
+
+  showGap?: boolean
 }
 
 /**

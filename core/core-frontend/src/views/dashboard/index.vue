@@ -25,9 +25,12 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { watermarkFind } from '@/api/watermark'
 import { XpackComponent } from '@/components/plugin'
 import { Base64 } from 'js-base64'
+import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
+import { deepCopy } from '@/utils/utils'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
+const canvasCacheOutRef = ref(null)
 const eventCheck = e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
     const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
@@ -55,7 +58,9 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const state = reactive({
   datasetTree: [],
   sourcePid: null,
-  canvasId: 'canvas-main'
+  canvasId: 'canvas-main',
+  opt: null,
+  resourceId: null
 })
 
 const initDataset = () => {
@@ -103,7 +108,39 @@ const loadFinish = ref(false)
 const newWindowFromDiv = ref(false)
 let p = null
 const XpackLoaded = () => p(true)
-// 全局监听按键事件
+
+const doUseCache = flag => {
+  const canvasCache = wsCache.get('DE-DV-CATCH-' + state.resourceId)
+  if (flag && canvasCache) {
+    const canvasCacheSeries = deepCopy(canvasCache)
+    snapshotStore.snapshotPublish(canvasCacheSeries)
+    dataInitState.value = true
+    setTimeout(() => {
+      snapshotStore.recordSnapshotCache()
+      // 使用缓存时，初始化的保存按钮为激活状态
+      snapshotStore.recordSnapshotCache('renderChart')
+    }, 1500)
+  } else {
+    initLocalCanvasData()
+    wsCache.delete('DE-DV-CATCH-' + state.resourceId)
+  }
+}
+
+const initLocalCanvasData = () => {
+  const { resourceId, opt, sourcePid } = state
+  const busiFlg = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
+  initCanvasData(resourceId, busiFlg, function () {
+    dataInitState.value = true
+    if (dvInfo.value && opt === 'copy') {
+      dvInfo.value.dataState = 'prepare'
+      dvInfo.value.optType = 'copy'
+      dvInfo.value.pid = sourcePid
+      setTimeout(() => {
+        snapshotStore.recordSnapshotCache()
+      }, 1500)
+    }
+  })
+}
 onMounted(async () => {
   if (window.location.hash.includes('#/dashboard')) {
     newWindowFromDiv.value = true
@@ -127,20 +164,16 @@ onMounted(async () => {
   initDataset()
 
   state.sourcePid = pid
+  state.opt = opt
+  state.resourceId = resourceId
   if (resourceId) {
     dataInitState.value = false
-    const busiFlg = opt === 'copy' ? 'dashboard-copy' : 'dashboard'
-    initCanvasData(resourceId, busiFlg, function () {
-      dataInitState.value = true
-      if (dvInfo.value && opt === 'copy') {
-        dvInfo.value.dataState = 'prepare'
-        dvInfo.value.optType = 'copy'
-        dvInfo.value.pid = pid
-        setTimeout(() => {
-          snapshotStore.recordSnapshotCache()
-        }, 1500)
-      }
-    })
+    const canvasCache = wsCache.get('DE-DV-CATCH-' + resourceId)
+    if (canvasCache) {
+      canvasCacheOutRef.value?.dialogInit({ canvasType: 'dashboard', resourceId: resourceId })
+    } else {
+      initLocalCanvasData()
+    }
   } else if (opt && opt === 'create') {
     dataInitState.value = false
     let watermarkBaseInfo
@@ -154,7 +187,7 @@ onMounted(async () => {
     }
     let deTemplateData
     if (createType === 'template') {
-      const templateParamsApply = JSON.parse(Base64.decode(templateParams + ''))
+      const templateParamsApply = JSON.parse(decodeURIComponent(Base64.decode(templateParams + '')))
       await decompressionPre(templateParamsApply, result => {
         deTemplateData = result
       })
@@ -267,6 +300,7 @@ onUnmounted(() => {
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   />
+  <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
 </template>
 
 <style lang="less">

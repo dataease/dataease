@@ -7,7 +7,7 @@ CREATE TABLE `visualization_outer_params` (
                                       `remark` varchar(255) DEFAULT NULL COMMENT '备注',
                                       `copy_from` varchar(50) DEFAULT NULL COMMENT '复制来源',
                                       `copy_id` varchar(50) DEFAULT NULL COMMENT '复制来源ID',
-                                      PRIMARY KEY (`params_id`) USING BTREE
+                                      PRIMARY KEY (`params_id`)
 ) COMMENT='外部参数关联关系表';
 
 
@@ -19,7 +19,7 @@ CREATE TABLE `visualization_outer_params_info` (
                                            `checked` tinyint(1) DEFAULT NULL COMMENT '是否启用',
                                            `copy_from` varchar(255) DEFAULT NULL COMMENT '复制来源',
                                            `copy_id` varchar(50) DEFAULT NULL COMMENT '复制来源ID',
-                                           PRIMARY KEY (`params_info_id`) USING BTREE
+                                           PRIMARY KEY (`params_info_id`)
 )  COMMENT='外部参数配置表';
 
 

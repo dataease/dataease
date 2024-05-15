@@ -10,7 +10,7 @@ const setCollapse = () => {
 
 <template>
   <div class="de-collapse-bar" @click="setCollapse">
-    <el-icon>
+    <el-icon style="color: #646a73">
       <Icon :name="!isCollapse ? 'icon_side-fold_outlined' : 'icon_side-expand_outlined'"></Icon>
     </el-icon>
     {{ !isCollapse ? '收起导航' : '' }}
@@ -29,7 +29,6 @@ const setCollapse = () => {
   font-size: 14px;
   font-weight: 400;
   line-height: 22px;
-  color: #646a73;
   display: flex;
   align-items: center;
 

@@ -28,9 +28,9 @@ const svgDashinePath = computed(() => {
 })
 
 const init = expressionTree => {
-  const { logic: lg = 'or', items = [] } = expressionTree
+  const { logic: lg = 'or', items } = expressionTree
   logic.value = lg
-  relationList.value = dfsInit(items)
+  relationList.value = dfsInit(items || [])
 }
 const submit = () => {
   errorMessage.value = ''
@@ -73,7 +73,7 @@ const dfsInit = arr => {
   arr.forEach(ele => {
     const { subTree } = ele
     if (subTree) {
-      const { items, logic } = subTree
+      const { items = [], logic } = subTree
       const child = dfsInit(items)
       elementList.push({ logic, child })
     } else {
