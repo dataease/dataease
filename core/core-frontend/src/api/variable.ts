@@ -8,10 +8,12 @@ export const variableDetailApi = id => request.get({ url: '/sysVariable/detail/'
 
 export const variableDeletelApi = id => request.get({ url: '/sysVariable/delete/' + id })
 
-export const searchVariableApi = data => request.post({ url: '/sysVariable/query', data })
+export const searchVariableApi = async data => request.post({ url: '/sysVariable/query', data })
 
-export const valueSelectedForVaribleApi = (page: number, limit: number, data) =>
+export const valueSelectedForVariableApi = (page: number, limit: number, data) =>
   request.post({ url: `/sysVariable/value/selected/${page}/${limit}`, data })
+
+export const valueForVariable = id => request.get({ url: '/sysVariable/value/selected/' + id })
 
 export const variableValueCreateApi = data =>
   request.post({ url: '/sysVariable/value/create', data })
@@ -19,3 +21,5 @@ export const variableValueCreateApi = data =>
 export const variableValueDeletelApi = id => request.get({ url: '/sysVariable/value/delete/' + id })
 
 export const variableValueEditApi = data => request.post({ url: '/sysVariable/value/edit', data })
+
+export const batchDelApi = data => request.post({ url: '/sysVariable/value/batchDel', data })

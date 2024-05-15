@@ -1,6 +1,7 @@
 package io.dataease.api.permissions.user.dto;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
+import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
 import io.swagger.v3.oas.annotations.media.Schema;
 import lombok.Data;
 
@@ -32,5 +33,5 @@ public class UserCreator implements Serializable {
     @JsonIgnore
     private Long uid;
     @Schema(description = "系统变量")
-    private String sysVariable;
+    private List<SysVariableValueItem> variables;
 }

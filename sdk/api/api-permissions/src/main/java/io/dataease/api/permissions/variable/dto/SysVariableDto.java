@@ -10,6 +10,10 @@ public class SysVariableDto {
     private Long id;
     private String type;
     private String name;
+    private Long min;
+    private Long max;
+    private String startTime;
+    private String endTime;
     private boolean root = false;
     private boolean disabled = false;
 }

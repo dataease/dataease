@@ -54,10 +54,14 @@ public interface SysVariablesApi {
     @GetMapping("/value/delete/{id}")
     void deleteValue(@PathVariable String id);
 
-//    @PostMapping("/value/selected/{id}")
-//    List<SysVariableValueDto> selectVariableValue(@PathVariable("id") String id, @PathVariable("pageSize") int pageSize, @RequestBody SysVariableDto request);
+    @GetMapping("/value/selected/{id}")
+    List<SysVariableValueDto> selectVariableValue(@PathVariable("id") String id);
 
     @PostMapping("/value/selected/{goPage}/{pageSize}")
-    IPage<SysVariableValueDto> selectPage(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody SysVariableDto request);
+    IPage<SysVariableValueDto> selectPage(@PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize, @RequestBody SysVariableValueDto sysVariableValueDto);
+
+    @Operation(summary = "批量删除")
+    @PostMapping("/value/batchDel")
+    void batchDel(@RequestBody List<Long> ids);
 
 }
