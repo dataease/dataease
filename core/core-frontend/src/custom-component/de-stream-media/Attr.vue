@@ -4,10 +4,13 @@
       <el-collapse-item
         :effect="themes"
         title="流媒体信息"
-        name="videoLinks"
-        v-if="curComponent && curComponent.videoLinks"
+        name="streamLinks"
+        v-if="curComponent && curComponent.streamMediaLinks"
       >
-        <video-links :link-info="curComponent.videoLinks" :themes="themes"></video-links>
+        <stream-media-links
+          :link-info="curComponent.streamMediaLinks"
+          :themes="themes"
+        ></stream-media-links>
       </el-collapse-item>
     </CommonAttr>
   </div>
@@ -18,6 +21,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import CommonAttr from '@/custom-component/common/CommonAttr.vue'
 import { storeToRefs } from 'pinia'
 import VideoLinks from '@/custom-component/de-video/VideoLinks.vue'
+import StreamMediaLinks from '@/custom-component/de-stream-media/StreamMediaLinks.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { curComponent } = storeToRefs(dvMainStore)
 withDefaults(

@@ -166,7 +166,15 @@ export const commonAttr = {
   maintainRadio: false, // 布局时保持宽高比例
   aspectRatio: 1, // 锁定时的宽高比例
   isShow: true, // 是否显示组件
-  collapseName: ['position', 'background', 'style', 'picture', 'frameLinks', 'videoLinks'], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
+  collapseName: [
+    'position',
+    'background',
+    'style',
+    'picture',
+    'frameLinks',
+    'videoLinks',
+    'streamLinks'
+  ], // 编辑组件时记录当前使用的是哪个折叠面板，再次回来时恢复上次打开的折叠面板，优化用户体验
   linkage: {
     duration: 0, // 过渡持续时间
     data: [

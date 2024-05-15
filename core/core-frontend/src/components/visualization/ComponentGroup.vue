@@ -17,6 +17,10 @@ const props = defineProps({
   themes: {
     type: String,
     default: 'dark'
+  },
+  placement: {
+    type: String,
+    default: 'bottom-start'
   }
 })
 
@@ -25,7 +29,7 @@ const { title, iconName, baseWidth, themes } = toRefs(props)
 
 <template>
   <el-popover
-    placement="bottom-start"
+    :placement="placement"
     :width="baseWidth"
     trigger="click"
     :show-arrow="false"
