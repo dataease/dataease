@@ -29,6 +29,8 @@ import DeFrame from '@/custom-component/de-frame/ComponentFrame.vue'
 import DeFrameAttr from '@/custom-component/de-frame/Attr.vue'
 import DeVideo from '@/custom-component/de-video/Component.vue'
 import DeVideoAttr from '@/custom-component/de-video/Attr.vue'
+import DeStreamMedia from '@/custom-component/de-stream-media/Component.vue'
+import DeStreamMediaAttr from '@/custom-component/de-stream-media/Attr.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -60,7 +62,9 @@ export const componentsMap = {
   DeFrame: DeFrame,
   DeFrameAttr: DeFrameAttr,
   DeVideo: DeVideo,
-  DeVideoAttr: DeVideoAttr
+  DeVideoAttr: DeVideoAttr,
+  DeStreamMedia: DeStreamMedia,
+  DeStreamMediaAttr: DeStreamMediaAttr
 }
 
 export default function findComponent(key) {

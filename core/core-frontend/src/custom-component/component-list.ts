@@ -8,6 +8,19 @@ export const commonStyle = {
   opacity: 1
 }
 
+// 流媒体视频信息配置
+export const STREAMMEDIALINKS = {
+  videoType: 'flv',
+  flv: {
+    type: 'flv',
+    isLive: false,
+    cors: true, // 允许跨域
+    loop: true,
+    autoplay: false
+    // url: null // 网络动画视频
+  }
+}
+
 // 视频信息配置
 export const VIDEO_LINKS_DE2 = {
   videoType: 'web',
@@ -246,6 +259,25 @@ const list = [
       height: 300
     },
     videoLinks: VIDEO_LINKS_DE2,
+    matrixStyle: {}
+  },
+  {
+    component: 'DeStreamMedia',
+    name: '媒体',
+    label: '媒体',
+    innerType: 'DeStreamMedia',
+    editing: false,
+    canvasActive: false,
+    icon: 'icon-stream',
+    x: 1,
+    y: 1,
+    sizeX: 36,
+    sizeY: 14,
+    style: {
+      width: 600,
+      height: 300
+    },
+    streamMediaLinks: STREAMMEDIALINKS,
     matrixStyle: {}
   },
   {
