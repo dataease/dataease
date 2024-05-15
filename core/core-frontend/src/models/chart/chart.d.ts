@@ -26,7 +26,7 @@ declare interface Chart {
   extBubble?: Axis[]
   extLabel?: Axis[]
   extTooltip?: Axis[]
-  customFilter: []
+  customFilter: {}
   senior: CustomSenior
   customAttr: CustomAttr
   customStyle: CustomStyle

@@ -86,7 +86,7 @@ const del = (index, child) => {
           {{ logic === 'or' ? 'OR' : 'AND' }}
         </span>
         <el-dropdown @command="handleCommand" trigger="click" v-else>
-          <span style="color: rgba(0 0 0 / 65%)" class="mrg-title">
+          <span style="color: rgba(0 0 0 / 65%)" class="mrg-title fir">
             {{ logic === 'or' ? 'OR' : 'AND' }}
             <el-icon>
               <Icon name="icon_down_outlined"></Icon>
@@ -183,7 +183,7 @@ const del = (index, child) => {
       }
 
       .operate-title {
-        .mrg-title {
+        .mrg-title:not(.fir) {
           margin: 0 5px;
         }
       }

@@ -4,7 +4,7 @@ import { inject, computed, ref, nextTick, provide } from 'vue'
 import RowAuth from '@/views/visualized/data/dataset/auth-tree/RowAuth.vue'
 
 const emits = defineEmits(['filter-data'])
-const filedList = inject('filedList')
+const filedList = inject('filedList', () => [])
 const rowAuth = ref()
 const dialogVisible = ref(false)
 const computedFiledList = computed(() => {
@@ -47,7 +47,7 @@ const dfsTreeDelete = arr => {
       dfsTreeDelete(ele.subTree.items || [])
     } else {
       if (ele.field) {
-        delete (ele, 'field')
+        delete ele.field
       }
     }
   })

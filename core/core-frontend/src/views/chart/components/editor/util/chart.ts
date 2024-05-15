@@ -1425,7 +1425,7 @@ export const BASE_VIEW_CONFIG = {
   extBubble: [],
   extLabel: [],
   extTooltip: [],
-  customFilter: [],
+  customFilter: {},
   customAttr: {
     basicStyle: DEFAULT_BASIC_STYLE,
     misc: DEFAULT_MISC,

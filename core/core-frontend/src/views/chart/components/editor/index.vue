@@ -367,6 +367,10 @@ const arrowIcon = () => {
   return h(Icon, { name: 'icon_down_outlined-1' })
 }
 
+const isFilterActive = computed(() => {
+  return !!view.value.customFilter?.items?.length
+})
+
 const drillItemChange = () => {
   recordSnapshotInfo('calcData')
   // temp do nothing
@@ -2129,7 +2133,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                       </div>
                       <div
                         class="tree-btn"
-                        :class="!!view.customFilter.logic && 'active'"
+                        :class="isFilterActive && 'active'"
                         @click="openTreeFilter"
                       >
                         <el-icon>
@@ -3424,6 +3428,7 @@ span {
 
     .tree-btn {
       width: 100%;
+      margin-top: 8px;
       background: #fff;
       height: 32px;
       border-radius: 4px;
