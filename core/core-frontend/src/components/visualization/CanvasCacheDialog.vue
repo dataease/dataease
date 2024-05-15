@@ -1,10 +1,9 @@
 <template>
   <el-dialog
     ref="canvasCacheDialogRef"
-    :title="dialogInfo.title"
     :append-to-body="true"
     v-model="dialogShow"
-    width="540px"
+    width="340px"
     trigger="click"
   >
     <el-row style="height: 20px">
@@ -47,8 +46,7 @@ const dialogInit = initInfo => {
   const canvasTypeName = initInfo.canvasType === 'dataV' ? '数据大屏' : '仪表板'
   dialogInfo.resourceId = initInfo.resourceId
   dialogInfo.title = '存在未保存的' + canvasTypeName
-  dialogInfo.tips =
-    '检查到上次有' + canvasTypeName + '未能正常保存，是否使用上次未保存的' + canvasTypeName + '？'
+  dialogInfo.tips = canvasTypeName + '存在未保存的修改，立即恢复？'
   dialogShow.value = true
 }
 
