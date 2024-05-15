@@ -1891,7 +1891,7 @@ export default {
     yes: '是',
     no: '否',
     live_tips: '优先HTTPS链接',
-    stream_media_add_tips: '添加流媒体信息...',
+    stream_media_add_tips: '请在右侧添加流媒体信息...',
     stream_mobile_tips: 'IOS终端可能无法显示',
     json_params_error: '第三方参数解析失败，请检查参数格式是否正确',
     inner_padding: '内边距',

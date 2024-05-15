@@ -57,6 +57,13 @@ const handleDragEnd = e => {
       drag-info="DeVideo&DeVideo"
       v-on:click="newComponent('DeVideo')"
     ></drag-component>
+    <drag-component
+      :themes="themes"
+      icon="icon-stream"
+      label="流媒体"
+      drag-info="DeStreamMedia&DeStreamMedia"
+      v-on:click="newComponent('DeStreamMedia')"
+    ></drag-component>
   </div>
 </template>
 
