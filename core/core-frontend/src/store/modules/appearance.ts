@@ -127,7 +127,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     setLoaded(data: boolean) {
       this.loaded = data
     },
-    async setAppearance() {
+    async setAppearance(isDataEaseBi?: boolean) {
       const desktop = wsCache.get('app.desktop')
       if (desktop) {
         this.loaded = true
@@ -205,6 +205,7 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       if (this.name) {
         document.title = this.name
       }
+      if (isDataEaseBi) return
       const link = document.querySelector('link[rel="icon"]')
       if (link) {
         if (this.web) {
