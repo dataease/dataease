@@ -237,9 +237,9 @@
             <el-form-item
               v-if="form.type === 'mysql' || form.type === 'mariadb'"
               prop="enableDataFill"
-              label-position="left"
+              class="data-fill-form-item"
             >
-              <span style="display: inline-block; width: 80px; font-weight: 700;">{{ $t('data_fill.data_fill') }}</span>
+              <span style="display: inline-block; width: 80px; font-weight: 700; color: #606266;">{{ $t('data_fill.data_fill') }}</span>
               <el-checkbox
                 v-model="form.enableDataFill"
                 :disabled="disableEditDataFill"
@@ -265,7 +265,7 @@
               prop="enableDataFill"
               label-position="left"
             >
-              <span style="display: inline-block; width: 80px; font-weight: 700;">{{ $t('data_fill.permission') }}</span>
+              <span style="display: inline-block; width: 80px; font-weight: 700; color: #606266;">{{ $t('data_fill.permission') }}</span>
               <el-checkbox
                 v-model="form.enableDataFillCreateTable"
               >允许新建表</el-checkbox>
@@ -1404,6 +1404,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.data-fill-form-item {
+  margin-bottom: 14px !important;
+}
 .de-ds-cont {
   display: flex;
   width: 100%;
