@@ -27,6 +27,7 @@
     "element-plus-secondary": "^0.5.8",
     "element-resize-detector": "^1.2.4",
     "file-saver": "^2.0.5",
+    "flv.js": "^1.6.2",
     "html-to-image": "^1.11.11",
     "html2canvas": "^1.4.1",
     "js-base64": "^3.7.5",
