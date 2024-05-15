@@ -252,7 +252,7 @@ public class ChartViewManege {
         dto.setCustomStyle(JsonUtil.parse(record.getCustomStyle(), Map.class));
         dto.setSenior(JsonUtil.parse(record.getSenior(), Map.class));
         dto.setDrillFields(JsonUtil.parseList(record.getDrillFields(), tokenType));
-        dto.setCustomFilter(JsonUtil.parse(record.getCustomFilter(), FilterTreeObj.class));
+        dto.setCustomFilter(JsonUtil.parseObject(record.getCustomFilter(), FilterTreeObj.class));
         dto.setViewFields(JsonUtil.parseList(record.getViewFields(), tokenType));
 
         return dto;
