@@ -12,6 +12,7 @@ import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
 import { isMainCanvas } from '@/utils/canvasUtils'
 import { activeWatermark } from '@/components/watermark/watermark'
 import { personInfoApi } from '@/api/user'
+import router from '@/router'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc } = storeToRefs(dvMainStore)
 
@@ -89,7 +90,9 @@ const userInfo = ref(null)
 const dashboardActive = computed(() => {
   return dvInfo.value.type === 'dashboard'
 })
-
+const isReport = computed(() => {
+  return !!router.currentRoute.value.query?.report
+})
 const canvasStyle = computed(() => {
   let style = {}
   if (canvasStyleData.value && canvasStyleData.value.width && isMainCanvas(canvasId.value)) {
@@ -109,6 +112,12 @@ const canvasStyle = computed(() => {
 })
 
 const getDownloadStatusMainHeight = () => {
+  if (!previewCanvas.value?.childNodes) {
+    nextTick(() => {
+      canvasStyle.value.height = getDownloadStatusMainHeight()
+    })
+    return '100%'
+  }
   const children = previewCanvas.value.childNodes
   let maxHeight = 0
 
@@ -130,7 +139,7 @@ watch(
   }
 )
 
-const restore = () => {
+const resetLayout = () => {
   if (downloadStatus.value) {
     return
   }
@@ -155,6 +164,12 @@ const restore = () => {
       }
     }
   })
+}
+const restore = () => {
+  if (isReport.value) {
+    return
+  }
+  resetLayout()
 }
 
 const getShapeItemShowStyle = item => {
@@ -223,7 +238,7 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
 
 onMounted(() => {
   initRefreshTimer()
-  restore()
+  resetLayout()
   window.addEventListener('resize', restore)
   const erd = elementResizeDetectorMaker()
   erd.listenTo(document.getElementById(domId), () => {
