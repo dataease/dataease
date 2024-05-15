@@ -3,6 +3,7 @@ package io.dataease.api.chart;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ChartViewFieldDTO;
+import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -38,4 +39,8 @@ public interface ChartViewApi {
     @Operation(summary = "查询图表详情")
     @PostMapping("getDetail/{id}")
     ChartViewDTO getDetail(@PathVariable Long id);
+
+    @Operation(summary = "查询仪表板下视图项")
+    @GetMapping("/viewOption/{resourceId}")
+    List<ViewSelectorVO> viewOption(@PathVariable("resourceId") Long resourceId);
 }

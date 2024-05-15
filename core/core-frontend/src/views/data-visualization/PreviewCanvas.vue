@@ -25,6 +25,10 @@ const props = defineProps({
     type: Boolean,
     required: false,
     default: false
+  },
+  isSelector: {
+    type: Boolean,
+    default: false
   }
 })
 
@@ -119,6 +123,7 @@ defineExpose({
       :canvas-view-info="state.canvasViewInfoPreview"
       :dv-info="state.dvInfo"
       :cur-gap="state.curPreviewGap"
+      :is-selector="props.isSelector"
     ></de-preview>
   </div>
   <XpackComponent

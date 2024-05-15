@@ -4,10 +4,12 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.*;
+import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.api.chart.filter.FilterTreeObj;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
+import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.manage.PermissionManage;
@@ -41,6 +43,9 @@ public class ChartViewManege {
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
     @Resource
     private PermissionManage permissionManage;
+
+    @Resource
+    private ExtChartViewMapper extChartViewMapper;
 
     private ObjectMapper objectMapper = new ObjectMapper();
 
@@ -272,4 +277,7 @@ public class ChartViewManege {
 
     }
 
+    public List<ViewSelectorVO> viewOption(Long resourceId) {
+        return extChartViewMapper.queryViewOption(resourceId);
+    }
 }

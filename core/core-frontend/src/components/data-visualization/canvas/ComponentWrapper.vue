@@ -5,6 +5,7 @@ import { ref, onMounted, toRefs, getCurrentInstance, computed } from 'vue'
 import findComponent from '@/utils/components'
 import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
+import ComponentSelector from '@/components/visualization/ComponentSelector.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
 const componentWrapperInnerRef = ref(null)
@@ -72,6 +73,10 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 100
+  },
+  isSelector: {
+    type: Boolean,
+    default: false
   }
 })
 const { config, showPosition, index, canvasStyleData, canvasViewInfo, dvInfo, searchCount, scale } =
@@ -187,7 +192,7 @@ const deepScale = computed(() => scale.value / 100)
     @mouseenter="onMouseEnter"
   >
     <component-edit-bar
-      v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard'"
+      v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard' && !props.isSelector"
       class="wrapper-edit-bar"
       ref="componentEditBarRef"
       :class="{ 'wrapper-edit-bar-active': active }"
@@ -197,6 +202,10 @@ const deepScale = computed(() => scale.value / 100)
       :show-position="showPosition"
       @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
     ></component-edit-bar>
+    <component-selector
+      v-if="props.isSelector && config.component === 'UserView'"
+      :resource-id="config.id"
+    />
     <div class="wrapper-inner" ref="componentWrapperInnerRef" :style="componentBackgroundStyle">
       <!--边框背景-->
       <Icon

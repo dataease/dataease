@@ -84,6 +84,7 @@ defineExpose({
 <style lang="less" scope>
 .filter {
   display: flex;
+  align-items: center;
   min-height: 32px;
 
   > :nth-child(1) {
@@ -94,7 +95,7 @@ defineExpose({
     line-height: 24px;
     white-space: nowrap;
     width: 116px;
-    margin-top: 5px;
+    // margin-top: 5px;
   }
 
   .filter-item {

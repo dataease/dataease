@@ -181,4 +181,8 @@ public interface UserApi {
     @Hidden
     @GetMapping("/getRecipient")
     List<Map<String, Object>> getRecipient(@RequestBody UserReciRequest request);
+
+    @Hidden
+    @GetMapping("/orgAdmin")
+    boolean orgAdmin();
 }
