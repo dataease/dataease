@@ -121,7 +121,8 @@ public class ChartDataManage {
         List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
         if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
                 || StringUtils.equalsIgnoreCase(view.getType(), "bidirectional-bar")
-                || StringUtils.equalsIgnoreCase(view.getType(), "quadrant")) {
+                || StringUtils.equalsIgnoreCase(view.getType(), "quadrant")
+                || StringUtils.containsIgnoreCase(view.getType(), "progress-bar")) {
             List<ChartViewFieldDTO> yAxisExt = new ArrayList<>(view.getYAxisExt());
             yAxis.addAll(yAxisExt);
         }
@@ -767,7 +768,8 @@ public class ChartDataManage {
                     || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                 mapChart = ChartDataBuild.transNormalChartData(xAxis, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")
-                    || StringUtils.containsIgnoreCase(view.getType(), "bidirectional-bar")) {
+                    || StringUtils.containsIgnoreCase(view.getType(), "bidirectional-bar")
+                    || StringUtils.containsIgnoreCase(view.getType(), "progress-bar")) {
                 mapChart = ChartDataBuild.transMixChartDataAntV(xAxis, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "label")) {
                 mapChart = ChartDataBuild.transLabelChartData(xAxis, yAxis, view, data, isDrill);
