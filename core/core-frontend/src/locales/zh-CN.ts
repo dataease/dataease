@@ -682,6 +682,7 @@ export default {
     chart_percentage_bar_stack_horizontal: '横向百分比柱状图',
     chart_bar_range: '区间条形图',
     chart_bidirectional_bar: '对称柱状图',
+    chart_progress_bar: '进度条',
     chart_line: '基础折线图',
     chart_area_stack: '堆叠折线图',
     chart_pie: '饼图',
@@ -1126,7 +1127,9 @@ export default {
     top_n_desc: '合并数据',
     top_n_input_1: '显示 Top',
     top_n_input_2: ', 其余合并至其他',
-    top_n_label: '其他项名称'
+    top_n_label: '其他项名称',
+    progress_target: '目标值',
+    progress_current: '实际值',
   },
   dataset: {
     scope_edit: '仅编辑时生效',

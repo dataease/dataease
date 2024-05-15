@@ -365,7 +365,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
         if (l.show) {
           label = {
             position: l.position,
-            layout: [{ type: 'fixed-overlap' }],
+            layout: [{ type: 'limit-in-canvas' }],
             style: {
               fill: l.color,
               fontSize: l.fontSize

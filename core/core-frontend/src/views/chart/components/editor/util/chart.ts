@@ -1212,6 +1212,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'bidirectional-bar',
         title: t('chart.chart_bidirectional_bar'),
         icon: 'percentage-bar-stack-horizontal'
+      },
+      {
+        render: 'antv',
+        category: 'compare',
+        value: 'progress-bar',
+        title: t('chart.chart_progress_bar'),
+        icon: 'percentage-bar-stack-horizontal'
       }
     ]
   },
