@@ -1,6 +1,7 @@
 package io.dataease.chart.manage;
 
 import io.dataease.api.chart.dto.*;
+import io.dataease.api.chart.filter.FilterTreeObj;
 import io.dataease.api.chart.request.ChartDrillRequest;
 import io.dataease.api.chart.request.ChartExtRequest;
 import io.dataease.api.dataset.dto.SqlVariableDetails;
@@ -65,6 +66,8 @@ public class ChartDataManage {
     private ChartViewManege chartViewManege;
     @Resource
     private PermissionManage permissionManage;
+    @Resource
+    private ChartFilterTreeService chartFilterTreeService;
 
     @Resource
     private CorePermissionManage corePermissionManage;
@@ -165,7 +168,7 @@ public class ChartDataManage {
             List<ChartViewFieldDTO> extTooltip = new ArrayList<>(view.getExtTooltip());
             yAxis.addAll(extTooltip);
         }
-        List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>(view.getCustomFilter());
+        FilterTreeObj fieldCustomFilter = view.getCustomFilter();
         List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
 
         DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);
@@ -187,16 +190,14 @@ public class ChartDataManage {
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
         dataeaseNames.add("*");
-        fieldCustomFilter = fieldCustomFilter.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+//        fieldCustomFilter = fieldCustomFilter.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         extStack = extStack.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         extBubble = extBubble.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         drill = drill.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
         // row permission
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
 
-        for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
-            ele.setField(datasetTableFieldManage.selectById(ele.getId()));
-        }
+        chartFilterTreeService.searchFieldAndSet(fieldCustomFilter);
 
         if (ObjectUtils.isEmpty(xAxis) && ObjectUtils.isEmpty(yAxis)) {
             return emptyChartViewDTO(view);
@@ -483,16 +484,7 @@ public class ChartDataManage {
         }
 
         // 处理过滤条件中的单引号
-        fieldCustomFilter = fieldCustomFilter.stream().peek(ele -> {
-            if (ObjectUtils.isNotEmpty(ele.getEnumCheckField())) {
-                List<String> collect = ele.getEnumCheckField().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
-                ele.setEnumCheckField(collect);
-            }
-            if (ObjectUtils.isNotEmpty(ele.getFilter())) {
-                List<ChartCustomFilterItemDTO> collect = ele.getFilter().stream().peek(f -> f.setValue(SQLUtils.transKeyword(f.getValue()))).collect(Collectors.toList());
-                ele.setFilter(collect);
-            }
-        }).collect(Collectors.toList());
+        fieldCustomFilter = chartFilterTreeService.charReplace(fieldCustomFilter);
 
         extFilterList = extFilterList.stream().peek(ele -> {
             if (ObjectUtils.isNotEmpty(ele.getValue())) {
@@ -1269,17 +1261,15 @@ public class ChartDataManage {
         }
         List<ChartViewFieldDTO> extStack = new ArrayList<>(view.getExtStack());
         List<ChartViewFieldDTO> extBubble = new ArrayList<>(view.getExtBubble());
-        List<ChartFieldCustomFilterDTO> fieldCustomFilter = new ArrayList<>(view.getCustomFilter());
+        FilterTreeObj fieldCustomFilter = view.getCustomFilter();
         List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
 
         // 获取数据集,需校验权限
-        DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);// todo
-        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();// todo
+        DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), view.getChartExtRequest().getUser());
 
-        for (ChartFieldCustomFilterDTO ele : fieldCustomFilter) {
-            ele.setField(datasetTableFieldManage.selectById(ele.getId()));
-        }
+        chartFilterTreeService.searchFieldAndSet(fieldCustomFilter);
 
         if (ObjectUtils.isEmpty(xAxis) && ObjectUtils.isEmpty(yAxis)) {
             return new ArrayList<String[]>();
