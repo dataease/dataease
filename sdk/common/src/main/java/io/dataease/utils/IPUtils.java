@@ -1,6 +1,7 @@
 package io.dataease.utils;
 
 import jakarta.servlet.http.HttpServletRequest;
+import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 
 import java.net.InetAddress;
@@ -27,6 +28,7 @@ public class IPUtils {
             LogUtil.error(e.getMessage(), e);
             return null;
         }
+        if (ObjectUtils.isEmpty(request)) return null;
         String[] keyArr = HEAD_KEYS.split(",");
         for (String key : keyArr) {
             String header = request.getHeader(key.trim());
