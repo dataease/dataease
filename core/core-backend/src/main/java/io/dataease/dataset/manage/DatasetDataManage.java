@@ -231,7 +231,8 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        map.put("total", getDatasetTotal(datasetGroupInfoDTO));
+        List<LinkedHashMap<String, Object>> realTotal = (List<LinkedHashMap<String, Object>>) previewData.get("data");
+        map.put("total", Math.min(getDatasetTotal(datasetGroupInfoDTO), realTotal.size()));
         return map;
     }
 
