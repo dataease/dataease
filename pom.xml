@@ -46,6 +46,7 @@
         <selenium-java.version>4.19.1</selenium-java.version>
         <angus-mail.version>2.0.3</angus-mail.version>
         <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
+        <itextpdf.version>8.0.4</itextpdf.version>
     </properties>
 
     <dependencyManagement>
