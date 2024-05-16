@@ -1,13 +1,11 @@
 package io.dataease.dataset.manage;
 
+import io.dataease.api.chart.dto.ChartExtFilterDTO;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.chart.request.ChartExtRequest;
-import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.dataset.dto.EnumValueRequest;
-import io.dataease.api.dataset.dto.PreviewSqlDTO;
-import io.dataease.api.dataset.dto.SqlLogDTO;
+import io.dataease.api.dataset.dto.*;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.dataset.union.model.SQLMeta;
@@ -33,10 +31,7 @@ import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.engine.sql.SQLProvider;
-import io.dataease.engine.trans.Field2SQLObj;
-import io.dataease.engine.trans.Order2SQLObj;
-import io.dataease.engine.trans.Table2SQLObj;
-import io.dataease.engine.trans.WhereTree2Str;
+import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
@@ -54,6 +49,8 @@ import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
+
+import static io.dataease.chart.manage.ChartDataManage.START_END_SEPARATOR;
 
 /**
  * @Author Junjun
@@ -583,6 +580,87 @@ public class DatasetDataManage {
             rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
         }
 
+        //组件过滤条件
+        List<ChartExtFilterDTO> extFilterList = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(request.getFilter())) {
+            for (ChartExtFilterDTO filterDTO : request.getFilter()) {
+                // 解析多个fieldId,fieldId是一个逗号分隔的字符串
+                String fieldId = filterDTO.getFieldId();
+                if (filterDTO.getIsTree() == null) {
+                    filterDTO.setIsTree(false);
+                }
+
+                boolean hasParameters = false;
+                List<SqlVariableDetails> sqlVariables = datasetGroupManage.getSqlParams(Arrays.asList(datasetGroupInfoDTO.getId()));
+                if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(sqlVariables)) {
+                    for (SqlVariableDetails parameter : Optional.ofNullable(filterDTO.getParameters()).orElse(new ArrayList<>())) {
+                        String parameterId = StringUtils.endsWith(parameter.getId(), START_END_SEPARATOR) ? parameter.getId().split(START_END_SEPARATOR)[0] : parameter.getId();
+                        if (sqlVariables.stream().map(SqlVariableDetails::getId).collect(Collectors.toList()).contains(parameterId)) {
+                            hasParameters = true;
+                        }
+                    }
+                }
+
+                if (hasParameters) {
+                    continue;
+                }
+
+                if (StringUtils.isNotEmpty(fieldId)) {
+                    List<Long> fieldIds = Arrays.stream(fieldId.split(",")).map(Long::valueOf).collect(Collectors.toList());
+
+                    if (filterDTO.getIsTree()) {
+                        ChartExtFilterDTO filterRequest = new ChartExtFilterDTO();
+                        BeanUtils.copyBean(filterRequest, filterDTO);
+                        filterRequest.setDatasetTableFieldList(new ArrayList<>());
+                        for (Long fId : fieldIds) {
+                            DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(fId);
+                            if (datasetTableField == null) {
+                                continue;
+                            }
+                            if (Objects.equals(datasetTableField.getDatasetGroupId(), datasetGroupInfoDTO.getId())) {
+                                filterRequest.getDatasetTableFieldList().add(datasetTableField);
+                            }
+                        }
+                        if (ObjectUtils.isNotEmpty(filterRequest.getDatasetTableFieldList())) {
+                            extFilterList.add(filterRequest);
+                        }
+                    } else {
+                        for (Long fId : fieldIds) {
+                            ChartExtFilterDTO filterRequest = new ChartExtFilterDTO();
+                            BeanUtils.copyBean(filterRequest, filterDTO);
+                            filterRequest.setFieldId(fId + "");
+
+                            DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(fId);
+                            if (datasetTableField == null) {
+                                continue;
+                            }
+                            filterRequest.setDatasetTableField(datasetTableField);
+                            if (Objects.equals(datasetTableField.getDatasetGroupId(), datasetGroupInfoDTO.getId())) {
+                                extFilterList.add(filterRequest);
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        // 搜索备选项
+        if (StringUtils.isNotEmpty(request.getSearchText())) {
+            ChartExtFilterDTO dto = new ChartExtFilterDTO();
+            DatasetTableFieldDTO field = null;
+            if (ids.size() == 1) {
+                field = datasetTableFieldManage.selectById(ids.get(0));
+            } else {
+                field = datasetTableFieldManage.selectById(ids.get(1));
+            }
+            dto.setDatasetTableField(field);
+            dto.setFieldId(field.getId() + "");
+            dto.setIsTree(false);
+            dto.setOperator("like");
+            dto.setValue(List.of(request.getSearchText()));
+            extFilterList.add(dto);
+        }
+
         // 排序
         if (ObjectUtils.isNotEmpty(request.getSortId())) {
             DatasetTableFieldDTO field = datasetTableFieldManage.selectById(request.getSortId());
@@ -596,9 +674,10 @@ public class DatasetDataManage {
         }
 
         Field2SQLObj.field2sqlObj(sqlMeta, fields, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
+        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
-        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, 1000);
+        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, ids.size() == 1, 0, 1000);
         querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("calcite data enum sql: " + querySQL);
 
