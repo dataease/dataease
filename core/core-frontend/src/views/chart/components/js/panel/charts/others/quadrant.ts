@@ -7,10 +7,8 @@ import { flow, parseJson } from '../../../util'
 import { valueFormatter } from '../../../formatter'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isEmpty } from 'lodash-es'
-import { DEFAULT_QUADRANT_STYLE } from '@/views/chart/components/editor/util/chart'
 
 const { t } = useI18n()
-
 /**
  * 象限图
  */
@@ -395,9 +393,6 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     chart.customStyle.yAxisExt.axisLine = {
       ...chart.customStyle.yAxisExt.axisLine,
       show: true
-    }
-    chart.customAttr.quadrant = {
-      ...DEFAULT_QUADRANT_STYLE
     }
     return chart
   }
