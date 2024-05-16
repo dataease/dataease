@@ -18,6 +18,7 @@
     "@antv/l7plot": "^0.5.5",
     "@antv/s2": "^1.49.0",
     "@codemirror/lang-sql": "^6.4.0",
+    "@npkg/tinymce-plugins": "^0.0.7",
     "@tinymce/tinymce-vue": "^5.1.0",
     "@vueuse/core": "^9.13.0",
     "ace-builds": "^1.15.3",

@@ -3,13 +3,16 @@ import { computed, inject, onMounted, PropType, reactive, ref, watch } from 'vue
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_QUADRANT_STYLE } from '@/views/chart/components/editor/util/chart'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
+import { deepCopy } from '@/utils/utils'
 useEmitt({
   name: 'quadrant-default-baseline',
   callback: args => quadrantDefaultBaseline(args)
 })
 const quotaData = ref<Axis[]>(inject('quotaData'))
 const { t } = useI18n()
-
+const dvMainStore = dvMainStoreWithOut()
 const props = defineProps({
   chart: {
     type: Object,
@@ -25,9 +28,29 @@ const props = defineProps({
 })
 
 const predefineColors = COLOR_PANEL
-
+const regionStyle = []
+const labels = []
+const isDashboard = dvMainStore.dvInfo.type === 'dashboard'
+for (let i = 0; i < 4; i++) {
+  regionStyle.push({
+    fill: isDashboard ? '#fdfcfc' : 'rgb(2,4,8,1)',
+    fillOpacity: 1
+  })
+  labels.push({
+    content: '',
+    style: {
+      fill: isDashboard ? 'rgb(2,4,8,1)' : '#fdfcfc',
+      fillOpacity: 0.5,
+      fontSize: 14
+    }
+  })
+}
 const state = reactive({
-  quadrantForm: JSON.parse(JSON.stringify(DEFAULT_QUADRANT_STYLE))
+  quadrantForm: {
+    ...JSON.parse(JSON.stringify(DEFAULT_QUADRANT_STYLE)),
+    regionStyle,
+    labels
+  }
 })
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
@@ -84,19 +107,27 @@ const init = () => {
     }
     if (customAttr.quadrant) {
       state.quadrantForm = customAttr.quadrant
+    } else {
+      changeStyle()
     }
   }
 }
 
 const showProperty = prop => props.propertyInner?.includes(prop)
-
+const tabActive = ref(1)
 onMounted(() => {
   init()
 })
 </script>
 
 <template>
-  <el-form ref="quadrantForm" :model="state.quadrantForm" size="small" label-position="top">
+  <el-form
+    ref="quadrantForm"
+    class="quadrant"
+    :model="state.quadrantForm"
+    size="small"
+    label-position="top"
+  >
     <template v-if="showProperty('lineStyle')">
       <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes"
         >{{ t('chart.quadrant') }}{{ t('chart.split_line') }}</label
@@ -113,12 +144,12 @@ onMounted(() => {
           />
         </el-form-item>
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
-          <el-tooltip :content="t('chart.alpha')" :effect="toolTip" placement="top">
+          <el-tooltip :content="t('chart.not_alpha')" :effect="toolTip" placement="top">
             <el-select
               style="width: 53px"
               :effect="props.themes"
               v-model="state.quadrantForm.lineStyle.opacity"
-              :placeholder="t('chart.alpha')"
+              :placeholder="t('chart.not_alpha')"
               @change="changeStyle()"
             >
               <el-option
@@ -182,147 +213,226 @@ onMounted(() => {
         </el-form-item>
       </div>
     </template>
-    <div
-      v-for="(l, index) in state.quadrantForm.labels"
-      :key="index"
-      style="flex-direction: row; justify-content: space-between"
-    >
-      <el-divider
-        class="m-divider"
-        v-if="index < state.quadrantForm.labels.length"
-        :class="'m-divider--' + themes"
-      />
-      <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes"
-        >{{ t('chart.quadrant') }}{{ index + 1 }}</label
+    <el-tabs v-model="tabActive" class="quadrant-tab-header" :class="{ dark: themes === 'dark' }">
+      <el-tab-pane
+        :name="index + 1"
+        v-for="(l, index) in state.quadrantForm.labels"
+        :key="index"
+        :label="t('chart.quadrant') + (index + 1)"
+        class="padding-tab"
       >
-      <template v-if="showProperty('regionStyle')">
-        <div style="display: flex">
-          <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">{{
-            t('chart.backgroundColor')
-          }}</label>
-        </div>
-        <div style="display: flex">
-          <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
-            <el-color-picker
-              v-model="state.quadrantForm.regionStyle[index].fill"
-              class="color-picker-style"
-              :predefine="predefineColors"
-              @change="changeStyle()"
-              :effect="themes"
-              is-custom
-            />
-          </el-form-item>
-          <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
-            <el-tooltip :content="t('chart.alpha')" :effect="toolTip" placement="top">
-              <el-select
-                style="width: 53px"
-                :effect="props.themes"
-                v-model="state.quadrantForm.regionStyle[index].fillOpacity"
-                :placeholder="t('chart.alpha')"
-                @change="changeStyle()"
+        <div style="flex-direction: row; justify-content: space-between">
+          <template v-if="showProperty('regionStyle')">
+            <div style="display: flex">
+              <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">{{
+                t('chart.backgroundColor')
+              }}</label>
+            </div>
+            <div style="display: flex">
+              <el-form-item
+                class="form-item"
+                :class="'form-item-' + themes"
+                style="padding-right: 4px"
               >
-                <el-option
-                  v-for="option in fillOpacityList"
-                  :key="option.value"
-                  :label="option.name"
-                  :value="option.value"
+                <el-color-picker
+                  v-model="state.quadrantForm.regionStyle[index].fill"
+                  class="color-picker-style"
+                  :predefine="predefineColors"
+                  @change="changeStyle()"
+                  :effect="themes"
+                  is-custom
                 />
-              </el-select>
-            </el-tooltip>
-          </el-form-item>
-        </div>
-      </template>
-      <template v-if="showProperty('label')">
-        <el-form-item class="form-item" :class="'form-item-' + themes" :label="t('chart.text')">
-          <el-input
-            :effect="props.themes"
-            v-model="l.content"
-            size="small"
-            maxlength="50"
-            @blur="changeStyle()"
-          />
-        </el-form-item>
-        <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">
-          {{ t('chart.text') }}{{ t('chart.chart_style') }}</label
-        >
-        <div style="display: flex">
-          <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
-            <el-color-picker
-              v-model="l.style.fill"
-              class="color-picker-style"
-              :predefine="predefineColors"
-              @change="changeStyle()"
-              :effect="themes"
-              is-custom
-            />
-          </el-form-item>
-          <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
-            <el-tooltip :content="t('chart.alpha')" :effect="toolTip" placement="top">
-              <el-select
-                style="width: 53px"
-                :effect="props.themes"
-                v-model="l.style.fillOpacity"
-                :placeholder="t('chart.alpha')"
-                @change="changeStyle()"
+              </el-form-item>
+              <el-form-item
+                class="form-item"
+                :class="'form-item-' + themes"
+                style="padding-left: 4px"
               >
-                <el-option
-                  v-for="option in fillOpacityList"
-                  :key="option.value"
-                  :label="option.name"
-                  :value="option.value"
-                />
-              </el-select>
-            </el-tooltip>
-          </el-form-item>
-          <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
-            <el-tooltip :content="t('chart.font_size')" :effect="toolTip" placement="top">
-              <el-select
-                style="width: 108px"
+                <el-tooltip :content="t('chart.not_alpha')" :effect="toolTip" placement="top">
+                  <el-select
+                    style="width: 53px"
+                    :effect="props.themes"
+                    v-model="state.quadrantForm.regionStyle[index].fillOpacity"
+                    :placeholder="t('chart.not_alpha')"
+                    @change="changeStyle()"
+                  >
+                    <el-option
+                      v-for="option in fillOpacityList"
+                      :key="option.value"
+                      :label="option.name"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </el-tooltip>
+              </el-form-item>
+            </div>
+          </template>
+          <template v-if="showProperty('label')">
+            <el-form-item class="form-item" :class="'form-item-' + themes" :label="t('chart.text')">
+              <el-input
                 :effect="props.themes"
-                v-model="l.style.fontSize"
-                :placeholder="t('chart.axis_name_fontsize')"
-                @change="changeStyle()"
+                v-model="l.content"
+                size="small"
+                maxlength="50"
+                @blur="changeStyle()"
+              />
+            </el-form-item>
+            <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">
+              {{ t('chart.text') }}{{ t('chart.chart_style') }}</label
+            >
+            <div style="display: flex">
+              <el-form-item
+                class="form-item"
+                :class="'form-item-' + themes"
+                style="padding-right: 4px"
               >
-                <el-option
-                  v-for="option in fontSizeList"
-                  :key="option.value"
-                  :label="option.name"
-                  :value="option.value"
+                <el-color-picker
+                  v-model="l.style.fill"
+                  class="color-picker-style"
+                  :predefine="predefineColors"
+                  @change="changeStyle()"
+                  :effect="themes"
+                  is-custom
                 />
-              </el-select>
-            </el-tooltip>
-          </el-form-item>
+              </el-form-item>
+              <el-form-item
+                class="form-item"
+                :class="'form-item-' + themes"
+                style="padding-left: 4px"
+              >
+                <el-tooltip :content="t('chart.not_alpha')" :effect="toolTip" placement="top">
+                  <el-select
+                    style="width: 53px"
+                    :effect="props.themes"
+                    v-model="l.style.fillOpacity"
+                    :placeholder="t('chart.not_alpha')"
+                    @change="changeStyle()"
+                  >
+                    <el-option
+                      v-for="option in fillOpacityList"
+                      :key="option.value"
+                      :label="option.name"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </el-tooltip>
+              </el-form-item>
+              <el-form-item
+                class="form-item"
+                :class="'form-item-' + themes"
+                style="padding-left: 4px"
+              >
+                <el-tooltip :content="t('chart.font_size')" :effect="toolTip" placement="top">
+                  <el-select
+                    style="width: 108px"
+                    :effect="props.themes"
+                    v-model="l.style.fontSize"
+                    :placeholder="t('chart.axis_name_fontsize')"
+                    @change="changeStyle()"
+                  >
+                    <el-option
+                      v-for="option in fontSizeList"
+                      :key="option.value"
+                      :label="option.name"
+                      :value="option.value"
+                    />
+                  </el-select>
+                </el-tooltip>
+              </el-form-item>
+            </div>
+          </template>
         </div>
-      </template>
-    </div>
+      </el-tab-pane>
+    </el-tabs>
   </el-form>
 </template>
 
 <style lang="less" scoped>
-.custom-form-item-label {
-  margin-bottom: 4px;
-  line-height: 20px;
-  color: #646a73;
-  font-size: 12px;
-  font-style: normal;
-  font-weight: 400;
-  padding: 2px 12px 0 0;
+.quadrant {
+  .custom-form-item-label {
+    margin-bottom: 4px;
+    line-height: 20px;
+    color: #646a73;
+    font-size: 12px;
+    font-style: normal;
+    font-weight: 400;
+    padding: 2px 12px 0 0;
 
-  &.custom-form-item-label--dark {
-    color: #a6a6a6;
+    &.custom-form-item-label--dark {
+      color: #a6a6a6;
+    }
   }
-}
 
-.form-item-checkbox {
-  margin-bottom: 10px !important;
-}
+  .form-item-checkbox {
+    margin-bottom: 10px !important;
+  }
 
-.m-divider {
-  border-color: rgba(31, 35, 41, 0.15);
-  margin: 0 0 16px;
+  .m-divider {
+    border-color: rgba(31, 35, 41, 0.15);
+    margin: 0 0 16px;
 
-  &.m-divider--dark {
-    border-color: rgba(235, 235, 235, 0.15);
+    &.m-divider--dark {
+      border-color: rgba(235, 235, 235, 0.15);
+    }
+  }
+  .quadrant-tab-header {
+    --ed-tabs-header-height: 34px;
+    --custom-tab-color: #646a73;
+
+    :deep(.ed-tabs__nav-wrap::after) {
+      background-color: unset;
+    }
+
+    &.dark {
+      --custom-tab-color: #a6a6a6;
+    }
+
+    height: 100%;
+    :deep(.ed-tabs__header) {
+      border-top: solid 1px @side-outline-border-color;
+    }
+    :deep(.ed-tabs__item) {
+      font-weight: 400;
+      font-size: 12px;
+      padding: 0 12px !important;
+      margin-right: 0 !important;
+      color: var(--custom-tab-color);
+    }
+    :deep(.is-active) {
+      font-weight: 500;
+      color: var(--ed-color-primary, #3370ff);
+    }
+
+    :deep(.ed-tabs__nav-scroll) {
+      padding-left: 0 !important;
+    }
+
+    :deep(.ed-tabs__header) {
+      margin: 0 !important;
+    }
+
+    :deep(.ed-tabs__content) {
+      height: calc(100% - 33px);
+      overflow-y: auto;
+      overflow-x: hidden;
+    }
+  }
+  .padding-tab {
+    padding: 0;
+    height: 100%;
+    width: 100%;
+    display: flex;
+
+    :deep(.ed-scrollbar) {
+      &.has-footer {
+        height: calc(100% - 81px);
+      }
+    }
+
+    :deep(.ed-footer) {
+      padding: 0;
+      height: 114px;
+    }
   }
 }
 </style>
