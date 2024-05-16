@@ -201,6 +201,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
         pre[next.seriesId] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
+    const optionsData = cloneDeep(options.data)
     const yaxisObj = item => {
       const param = item.data
       let yaxis = yAxis[0]
@@ -236,6 +237,19 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
             const name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
             result.push({ ...item, name, value })
           })
+        const dynamicTooltipValue = optionsData.find(
+          d => d.field === originalItems[0]['title']
+        )?.dynamicTooltipValue
+        if (dynamicTooltipValue.length > 0) {
+          dynamicTooltipValue.forEach(dy => {
+            const q = tooltipAttr.seriesTooltipFormatter.filter(i => i.id === dy.fieldId)
+            if (q && q.length > 0) {
+              const value = valueFormatter(parseFloat(dy.value as string), q[0].formatterCfg)
+              const name = isEmpty(q[0].chartShowName) ? q[0].name : q[0].chartShowName
+              result.push({ color: 'grey', name, value })
+            }
+          })
+        }
         return result
       }
     }
