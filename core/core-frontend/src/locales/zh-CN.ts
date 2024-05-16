@@ -1129,7 +1129,7 @@ export default {
     top_n_input_2: ', 其余合并至其他',
     top_n_label: '其他项名称',
     progress_target: '目标值',
-    progress_current: '实际值',
+    progress_current: '实际值'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
