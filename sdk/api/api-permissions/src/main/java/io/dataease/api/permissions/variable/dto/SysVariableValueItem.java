@@ -8,12 +8,17 @@ import java.util.List;
 
 @Data
 public class SysVariableValueItem {
-    private SysVariableDto sysVariableDto;
-    @JsonSerialize(using = ToStringSerializer.class)
-    private String variableId;
-    @JsonSerialize(using = ToStringSerializer.class)
-    private String variableValueId;
     @JsonSerialize(using = ToStringSerializer.class)
     private String variableValue;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private String variableValue2;
+    private String variableType;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long variableId;
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long variableValueId;
+    private String variableName;
     private List<SysVariableValueDto> valueList;
+    private SysVariableDto sysVariableDto;
+
 }

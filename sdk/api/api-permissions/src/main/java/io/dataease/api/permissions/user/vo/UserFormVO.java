@@ -45,8 +45,5 @@ public class UserFormVO implements Serializable {
     private String model;
 
     @Schema(description = "系统变量")
-    private String sysVariable;
-
-    @Schema(description = "系统变量")
     private List<SysVariableValueItem> variables;
 }
