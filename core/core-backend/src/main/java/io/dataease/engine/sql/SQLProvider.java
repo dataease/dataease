@@ -45,9 +45,11 @@ public class SQLProvider {
         if (ObjectUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String customWheres = sqlMeta.getCustomWheres();
+        String extWheres = sqlMeta.getExtWheres();
         String whereTrees = sqlMeta.getWhereTrees();
         List<String> wheres = new ArrayList<>();
         if (customWheres != null) wheres.add(customWheres);
+        if (extWheres != null) wheres.add(extWheres);
         if (whereTrees != null) wheres.add(whereTrees);
         if (ObjectUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
 
