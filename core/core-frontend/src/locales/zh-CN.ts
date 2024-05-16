@@ -2316,5 +2316,9 @@ export default {
     last_status_running: '运行中',
     last_status_fail: '失败',
     last_status_success: '成功'
+  },
+  variable: {
+    give_up: 's',
+    save_apply: '保存并应用'
   }
 }
