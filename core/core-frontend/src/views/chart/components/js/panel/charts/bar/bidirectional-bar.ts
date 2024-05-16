@@ -53,6 +53,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     'legend-selector',
     'label-selector',
     'tooltip-selector',
+    'function-cfg',
     'jump-set',
     'linkage'
   ]
@@ -84,7 +85,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       'fontShadow'
     ],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
-    'function-cfg': ['slider', 'emptyDataStrategy'],
+    'function-cfg': ['emptyDataStrategy'],
     'label-selector': ['hPosition', 'seriesLabelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter']
   }
@@ -427,7 +428,8 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       this.configXAxis,
       this.configYAxis,
       this.configAnalyse,
-      this.configSlider
+      this.configSlider,
+      this.configEmptyDataStrategy
     )(chart, options)
   }
 
