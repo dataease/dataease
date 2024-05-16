@@ -9,6 +9,7 @@ import {
   nextTick,
   computed,
   inject,
+  onUnmounted,
   Ref
 } from 'vue'
 import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
@@ -84,10 +85,14 @@ const setDefaultMapValue = arr => {
     }
   })
   Object.values(defaultMapValue).forEach(ele => {
-    defaultValue = [...defaultValue, ...(ele as unknown as string[])]
+    defaultValue = [...new Set([...defaultValue, ...(ele as unknown as string[])])]
   })
   return defaultValue
 }
+
+onUnmounted(() => {
+  enumValueArr = []
+})
 
 const handleValueChange = () => {
   const value = Array.isArray(selectValue.value) ? [...selectValue.value] : selectValue.value
@@ -144,27 +149,57 @@ const handleFieldIdDefaultChange = (val: string[]) => {
     })
 }
 
+const setOldMapValue = arr => {
+  const { displayId } = config.value
+  if (!displayId) {
+    return []
+  }
+  let defaultMapValue = {}
+  let defaultValue = []
+  arr.forEach(ele => {
+    defaultMapValue[ele] = []
+  })
+  enumValueArr.forEach(ele => {
+    if (defaultMapValue[ele[displayId]]) {
+      defaultMapValue[ele[displayId]].push(ele)
+    }
+  })
+  Object.values(defaultMapValue).forEach(ele => {
+    defaultValue = [...defaultValue, ...(ele as unknown as string[])]
+  })
+  return defaultValue
+}
+
 const handleFieldIdChange = (val: EnumValue) => {
-  enumValueArr = []
   loading.value = true
   enumValueObj(val)
     .then(res => {
-      enumValueArr = res || []
+      let oldArr = []
+      let oldEnumValueArr = []
+      if (selectValue.value?.length && config.value.multiple) {
+        oldArr = [...selectValue.value]
+        oldEnumValueArr = setOldMapValue(oldArr)
+      }
+      enumValueArr = [...res, ...oldEnumValueArr] || []
       options.value = [
         ...new Set(
-          (res || []).map(ele => {
-            return ele[val.displayId || val.queryId]
-          })
+          (res || [])
+            .map(ele => {
+              return ele[val.displayId || val.queryId]
+            })
+            .concat(oldArr)
         )
       ].map(ele => {
         return {
           label: ele,
-          value: ele
+          value: ele,
+          checked: oldArr.includes(ele)
         }
       })
     })
     .finally(() => {
       loading.value = false
+      if (isFromRemote.value) return
       if (config.value.defaultValueCheck) {
         selectValue.value = Array.isArray(config.value.defaultValue)
           ? [...config.value.defaultValue]
@@ -199,6 +234,11 @@ const visible = ref(false)
 const visibleChange = (val: boolean) => {
   setTimeout(() => {
     visible.value = !val
+    if (!val) {
+      isFromRemote.value = false
+      searchText.value = ''
+      remoteMethod('')
+    }
   }, 50)
 }
 
@@ -310,6 +350,19 @@ watch(
   }
 )
 
+const searchText = ref('')
+const isFromRemote = ref(false)
+const clear = () => {
+  remoteMethod('')
+}
+
+const remoteMethod = (query: string) => {
+  if (config.value.optionValueSource !== 1) return
+  isFromRemote.value = true
+  searchText.value = query
+  debounceOptions(1)
+}
+
 watch(
   () => config.value.valueSource,
   () => {
@@ -342,7 +395,13 @@ const setOptions = (num: number) => {
       break
     case 1:
       if (field.id) {
-        handleFieldIdChange({ queryId: field.id, displayId: displayId || field.id, sort, sortId })
+        handleFieldIdChange({
+          queryId: field.id,
+          displayId: displayId || field.id,
+          sort,
+          sortId,
+          searchText: searchText.value
+        })
       } else {
         options.value = []
       }
@@ -414,9 +473,10 @@ defineExpose({
     multiple
     show-checked
     clearable
-    radio
     :style="selectStyle"
     collapse-tags
+    :remote="config.optionValueSource === 1"
+    :remote-method="remoteMethod"
     :options="options"
     collapse-tags-tooltip
   ></el-select-v2>
@@ -430,6 +490,9 @@ defineExpose({
     ref="single"
     :style="selectStyle"
     filterable
+    @clear="clear"
+    :remote="config.optionValueSource === 1"
+    :remote-method="remoteMethod"
     radio
     @visible-change="visibleChange"
     :popper-class="

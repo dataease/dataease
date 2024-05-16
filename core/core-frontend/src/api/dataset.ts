@@ -16,6 +16,7 @@ export interface EnumValue {
   displayId?: string
   sortId?: string
   sort?: string
+  searchText: string
 }
 
 interface Fields {
