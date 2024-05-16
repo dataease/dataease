@@ -59,6 +59,9 @@ const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasCollapse, curComponent, componentData, editMode } = storeToRefs(dvMainStore)
 const router = useRouter()
+let componentNameEdit = ref(false)
+let inputComponentName = ref('')
+let componentNameInput = ref(null)
 
 const { t } = useI18n()
 const loading = ref(false)
@@ -92,6 +95,35 @@ const editCalcField = ref(false)
 const isCalcFieldAdd = ref(true)
 const calcEdit = ref()
 const route = useRoute()
+
+const onComponentNameChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
+
+const closeEditComponentName = () => {
+  componentNameEdit.value = false
+  if (!inputComponentName.value || !inputComponentName.value.trim()) {
+    return
+  }
+  if (inputComponentName.value.trim() === view.value.title) {
+    return
+  }
+  if (inputComponentName.value.trim().length > 64 || inputComponentName.value.trim().length < 2) {
+    ElMessage.warning('名称字段长度2-64个字符')
+    editComponentName()
+    return
+  }
+  view.value.title = inputComponentName.value
+  inputComponentName.value = ''
+}
+
+const editComponentName = () => {
+  componentNameEdit.value = true
+  inputComponentName.value = view.value.title
+  nextTick(() => {
+    componentNameInput.value.focus()
+  })
+}
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
@@ -1480,7 +1512,9 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
         </div>
         <div v-if="!canvasCollapse.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
-            <span style="font-size: 14px">{{ view.title }}</span>
+            <span class="name-area" @dblclick="editComponentName" id="component-name">{{
+              view.title
+            }}</span>
           </el-row>
 
           <el-row style="height: calc(100vh - 110px); overflow-y: auto">
@@ -2853,6 +2887,15 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     <FilterTree ref="filterTree" @filter-data="changeFilterData" />
   </div>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
+  <Teleport v-if="componentNameEdit" :to="'#component-name'">
+    <input
+      width="100%"
+      @change="onComponentNameChange"
+      ref="componentNameInput"
+      v-model="inputComponentName"
+      @blur="closeEditComponentName"
+    />
+  </Teleport>
 </template>
 
 <style lang="less" scoped>
@@ -3954,6 +3997,26 @@ span {
 
   .no-margin-bottom {
     margin-bottom: 8px;
+  }
+}
+
+.name-area {
+  position: relative;
+  line-height: 24px;
+  height: 24px;
+  font-size: 14px !important;
+  width: 300px;
+  overflow: hidden;
+  cursor: pointer;
+  input {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    outline: none;
+    border: 1px solid #295acc;
+    border-radius: 4px;
+    padding: 0 4px;
+    height: 100%;
   }
 }
 </style>

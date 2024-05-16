@@ -47,6 +47,7 @@ import 'tinymce/plugins/contextmenu' // contextmenu
 import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
+import '@npkg/tinymce-plugins/letterspacing'
 import './plugins' //自定义插件
 import { computed, nextTick, reactive, ref, toRefs, watch, onMounted, PropType } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -121,10 +122,10 @@ const init = ref({
   skin_url: formatDataEaseBi('./tinymce-dataease-private/skins/ui/oxide'), // 皮肤
   content_css: formatDataEaseBi('./tinymce-dataease-private/skins/content/default/content.css'),
   plugins:
-    'vertical-content advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak', // 插件
+    'vertical-content advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak letterspacing', // 插件
   // 工具栏
   toolbar:
-    'undo redo |fontselect fontsizeselect |forecolor backcolor bold italic |underline strikethrough link| formatselect |' +
+    'undo redo | fontselect fontsizeselect |forecolor backcolor bold italic letterspacing |underline strikethrough link| formatselect |' +
     'top-align center-align bottom-align | alignleft aligncenter alignright | bullist numlist |' +
     ' blockquote subscript superscript removeformat | table image | fullscreen ' +
     '| bdmap indent2em lineheight formatpainter axupimgs',
