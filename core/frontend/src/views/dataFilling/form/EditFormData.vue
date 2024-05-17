@@ -1,5 +1,5 @@
 <script>
-import { forEach, find, concat, cloneDeep, floor } from 'lodash-es'
+import { forEach, find, concat, cloneDeep, floor, map, filter, includes } from 'lodash-es'
 import { PHONE_REGEX, EMAIL_REGEX } from '@/utils/validate'
 import { newFormRowData, saveFormRowData, userFillFormData } from '@/views/dataFilling/form/dataFilling'
 
@@ -99,7 +99,13 @@ export default {
           const _value = this.data[f.settings.mapping.columnName]
           if (f.type === 'select' && f.settings.multiple || f.type === 'checkbox') {
             if (_value) {
-              f.value = JSON.parse(_value)
+              // 过滤一下选项值
+              if (this.readonly) {
+                f.value = JSON.parse(_value)
+              } else {
+                const options = map(f.settings.options, f => f.value)
+                f.value = filter(JSON.parse(_value), v => includes(options, v))
+              }
             } else {
               f.value = []
             }
