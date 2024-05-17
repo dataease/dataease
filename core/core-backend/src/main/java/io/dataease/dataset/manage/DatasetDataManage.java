@@ -231,28 +231,32 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        map.put("total", getDatasetTotal(datasetGroupInfoDTO));
+        map.put("total", getDatasetTotal(datasetGroupInfoDTO, SqlUtils.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, needOrder), sqlMeta, crossDs, dsMap)));
         return map;
     }
 
     public Long getDatasetTotal(Long datasetGroupId) throws Exception {
         DatasetGroupInfoDTO dto = datasetGroupManage.getForCount(datasetGroupId);
         if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
-            return getDatasetTotal(dto);
+            return getDatasetTotal(dto, null);
         }
         return 0L;
     }
 
-    public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
+    public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO, String s) throws Exception {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
-        String sql = (String) sqlMap.get("sql");
-
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-        boolean crossDs = Utils.isCrossDs(dsMap);
-        if (!crossDs) {
-            sql = Utils.replaceSchemaAlias(sql, dsMap);
-        }
 
+        String sql;
+        if (StringUtils.isEmpty(s)) {
+            sql = (String) sqlMap.get("sql");
+            boolean crossDs = Utils.isCrossDs(dsMap);
+            if (!crossDs) {
+                sql = Utils.replaceSchemaAlias(sql, dsMap);
+            }
+        } else {
+            sql = s;
+        }
         String querySQL = "SELECT COUNT(*) FROM (" + sql + ") t_a_0";
         logger.info("calcite data count sql: " + querySQL);
 
