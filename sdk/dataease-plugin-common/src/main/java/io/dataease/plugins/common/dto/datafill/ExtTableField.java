@@ -25,6 +25,8 @@ public class ExtTableField implements Serializable {
 
     private ExtTableFieldSetting settings;
 
+    private boolean removed;
+
     @Data
     @Builder
     @AllArgsConstructor

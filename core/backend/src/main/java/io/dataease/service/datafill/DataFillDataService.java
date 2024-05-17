@@ -185,6 +185,10 @@ public class DataFillDataService {
 
         //核对一下字段
         for (ExtTableField field : fields) {
+            if (field.isRemoved()) {
+                continue;
+            }
+
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                 String name1 = field.getSettings().getMapping().getColumnName1();
                 extTableFieldTypeMap.put(name1, field.getSettings().getMapping().getType());
@@ -427,6 +431,10 @@ public class DataFillDataService {
 
             Map<String, Object> data = row.getData();
             for (ExtTableField field : fields) {
+                if (field.isRemoved()) {
+                    continue;
+                }
+
                 String name = field.getSettings().getMapping().getColumnName();
 
                 if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
@@ -464,7 +472,17 @@ public class DataFillDataService {
             Map<String, Object> data = row.getData();
             //一条条去判断
             for (ExtTableField field : fields) {
+                if (field.isRemoved()) {
+                    continue;
+                }
                 String name = field.getSettings().getMapping().getColumnName();
+
+                if (data.get(name) == null) {
+                    if (field.getSettings().isRequired()) {
+                        DataEaseException.throwException("[" + field.getSettings().getName() + "] 不能为空");
+                    }
+                }
+
                 if (StringUtils.equalsIgnoreCase(field.getType(), "input")) { //input框支持unique
                     if (field.getSettings().isUnique() && data.get(name) != null) {
                         DatasourceRequest.TableFieldWithValue uniqueField = new DatasourceRequest.TableFieldWithValue()
@@ -532,6 +550,9 @@ public class DataFillDataService {
             searchFields.add(pk);
 
             for (ExtTableField field : fields) {
+                if (field.isRemoved()) {
+                    continue;
+                }
                 if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                     String name1 = field.getSettings().getMapping().getColumnName1();
                     String name2 = field.getSettings().getMapping().getColumnName2();
@@ -598,6 +619,9 @@ public class DataFillDataService {
         DatasourceRequest.TableFieldWithValue pk = gson.fromJson(gson.toJson(pkField), DatasourceRequest.TableFieldWithValue.class).setValue(rowId);
 
         for (ExtTableField field : fields) {
+            if (field.isRemoved()) {
+                continue;
+            }
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                 String name1 = field.getSettings().getMapping().getColumnName1();
                 String name2 = field.getSettings().getMapping().getColumnName2();
@@ -719,6 +743,9 @@ public class DataFillDataService {
         List<ExtTableField> fields = new ArrayList<>();
         Map<String, String> dateRangeNameMap = new HashMap<>();
         for (ExtTableField field : formFields) {
+            if (field.isRemoved()) {
+                continue;
+            }
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                 dateRangeNameMap.put(field.getId(), field.getSettings().getName());
 

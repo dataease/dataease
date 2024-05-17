@@ -3,7 +3,7 @@ import DeContainer from '@/components/dataease/DeContainer.vue'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer.vue'
 import NoSelect from './NoSelect.vue'
 import ViewTable from './ViewTable.vue'
-import { listForm, saveForm, updateForm, deleteForm, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
+import { listForm, saveForm, updateFormName, deleteForm, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
 import { forEach, cloneDeep, find } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
 import DataFillingFormMoveSelector from './MoveSelector.vue'
@@ -108,6 +108,9 @@ export default {
         case 'rename':
           this.openUpdateForm(param)
           break
+        case 'edit':
+          this.editForm(param.data)
+          break
         case 'delete':
           this.delete(param.data)
           break
@@ -138,7 +141,7 @@ export default {
             id: this.updateFormData.id,
             name: this.updateFormData.name
           }
-          updateForm(data).then(res => {
+          updateFormName(data).then(res => {
             this.closeUpdateForm()
             listForm({}).then(res => {
               this.formList = res.data || []
@@ -175,6 +178,9 @@ export default {
     },
     copyForm(data) {
       this.$router.push({ name: 'data-filling-form-create', query: { copy: data.id }})
+    },
+    editForm(data) {
+      this.$router.push({ name: 'data-filling-form-create', query: { id: data.id }})
     },
     onMoveSuccess() {
       this.moveGroup = false
@@ -402,6 +408,12 @@ export default {
                             :command="beforeClickMore('rename', data, node)"
                           >
                             {{ $t('panel.rename') }}
+                          </el-dropdown-item>
+                          <el-dropdown-item
+                            icon="el-icon-edit-outline"
+                            :command="beforeClickMore('edit', data, node)"
+                          >
+                            {{ $t('panel.edit') }}
                           </el-dropdown-item>
                           <el-dropdown-item
                             icon="el-icon-right"

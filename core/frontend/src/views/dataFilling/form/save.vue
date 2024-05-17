@@ -1,12 +1,20 @@
 <script>
-import { filter, forEach, find, split, get, groupBy, keys } from 'lodash-es'
+import { filter, forEach, find, split, get, groupBy, keys, includes } from 'lodash-es'
 import { listDatasource } from '@/api/system/datasource'
-import { listForm, saveForm } from '@/views/dataFilling/form/dataFilling'
+import { listForm, saveForm, updateForm } from '@/views/dataFilling/form/dataFilling'
 import { hasDataPermission } from '@/utils/permission'
 
 export default {
   name: 'DataFillingFormSave',
   props: {
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
+    disableCreateIndex: {
+      type: Boolean,
+      default: false
+    },
     form: {
       type: Object,
       required: true
@@ -22,7 +30,7 @@ export default {
         return callback(new Error(this.$t('commons.component.required')))
       }
       let count = 0
-      forEach(this.formData.forms, f => {
+      forEach(this.computedFormList, f => {
         if (f.type === 'dateRange') {
           if (f.settings.mapping.columnName1 === value) {
             count++
@@ -46,7 +54,7 @@ export default {
         return callback(new Error(this.$t('commons.component.required')))
       }
       let count = 0
-      forEach(this.formData.tableIndexes, f => {
+      forEach(this.computedTableIndexList, f => {
         if (f.name === value) {
           count++
         }
@@ -129,10 +137,53 @@ export default {
       this.flattenFolder(this.folders, result)
       return result
     },
+    computedFormList() {
+      if (this.isEdit) {
+        const _list = []
+        const columnIds = []
+        for (let i = 0; i < this.formData.forms.length; i++) {
+          const row = this.formData.forms[i]
+          columnIds.push(row.id)
+          _list.push(row)
+        }
+        for (let i = 0; i < this.formData.oldForms.length; i++) {
+          const row = this.formData.oldForms[i]
+          if (includes(columnIds, row.id)) {
+            continue
+          }
+          _list.push(row)
+        }
+        return _list
+      } else {
+        return this.formData.forms
+      }
+    },
+    computedTableIndexList() {
+      if (this.isEdit) {
+        const _list = []
+        const columnIds = []
+        for (let i = 0; i < this.formData.tableIndexes.length; i++) {
+          const row = this.formData.tableIndexes[i]
+          columnIds.push(row.id)
+          _list.push(row)
+        }
+        for (let i = 0; i < this.formData.oldTableIndexes.length; i++) {
+          const row = this.formData.oldTableIndexes[i]
+          if (includes(columnIds, row.id)) {
+            continue
+          }
+          columnIds.push(row.id)
+          _list.push(row)
+        }
+        return _list
+      } else {
+        return this.formData.tableIndexes
+      }
+    },
     columnsList() {
       const _list = []
-      for (let i = 0; i < this.formData.forms.length; i++) {
-        const row = this.formData.forms[i]
+      for (let i = 0; i < this.computedFormList.length; i++) {
+        const row = this.computedFormList[i]
         if (row.type === 'dateRange') {
           if (row.settings.mapping.columnName1 !== undefined && row.settings.mapping.columnName1 !== '') {
             _list.push(row.settings.mapping.columnName1)
@@ -278,6 +329,34 @@ export default {
     filterNode(value, data) {
       if (!value) return true
       return data.name.indexOf(value) !== -1
+    },
+    doEdit() {
+      this.loading = true
+      this.$refs['mRightForm'].validate((valid) => {
+        if (valid) {
+          const data = {
+            id: this.formData.id,
+            name: this.formData.name,
+            tableName: this.formData.table,
+            datasource: this.formData.datasource,
+            pid: this.formData.folder,
+            level: this.formData.level,
+            forms: JSON.stringify(this.formData.forms),
+            createIndex: this.formData.createIndex,
+            tableIndexes: JSON.stringify(this.formData.tableIndexes),
+            nodeType: 'form'
+          }
+          updateForm(data).then(res => {
+            this.closeSave()
+            this.$router.replace({ name: 'data-filling-form', query: { id: res.data }})
+          }).finally(() => {
+            this.loading = false
+          })
+        } else {
+          this.loading = false
+          return false
+        }
+      })
     },
     doSave() {
       this.loading = true
@@ -428,6 +507,7 @@ export default {
         </el-form-item>
 
         <el-form-item
+          v-if="!isEdit"
           prop="datasource"
           class="form-item"
           :rules="[requiredRule]"
@@ -461,6 +541,7 @@ export default {
         </el-form-item>
 
         <el-form-item
+          v-if="!isEdit"
           prop="table"
           class="form-item"
           :rules="[requiredRule]"
@@ -508,6 +589,7 @@ export default {
               >
                 <el-input
                   v-model.trim="scope.row.settings.mapping.columnName"
+                  :disabled="isEdit && scope.row.old"
                   :placeholder="$t('fu.search_bar.please_input')"
                   size="small"
                   maxlength="50"
@@ -523,6 +605,7 @@ export default {
                 >
                   <el-input
                     v-model.trim="scope.row.settings.mapping.columnName1"
+                    :disabled="isEdit && scope.row.old"
                     :placeholder="$t('data_fill.form.please_insert_start')"
                     size="small"
                     maxlength="50"
@@ -537,6 +620,7 @@ export default {
                 >
                   <el-input
                     v-model.trim="scope.row.settings.mapping.columnName2"
+                    :disabled="isEdit && scope.row.old"
                     :placeholder="$t('data_fill.form.please_insert_end')"
                     size="small"
                     maxlength="50"
@@ -558,6 +642,7 @@ export default {
               >
                 <el-select
                   v-model="scope.row.settings.mapping.type"
+                  :disabled="isEdit && scope.row.old"
                   :placeholder="$t('data_fill.form.please_select')"
                   size="small"
                   required
@@ -583,6 +668,7 @@ export default {
           >
             <el-checkbox
               v-model="formData.createIndex"
+              :disabled="disableCreateIndex"
               :label="$t('data_fill.form.create_index')"
               size="small"
             />
@@ -612,10 +698,12 @@ export default {
               <el-form-item
                 :prop="'tableIndexes['+scope.$index+'].name'"
                 class="form-item"
+                :class="scope.row.columns.length === 1 && (isEdit && scope.row.old) ? 'no-margin-bottom' : ''"
                 :rules="[requiredRule, duplicateIndexRule]"
               >
                 <el-input
                   v-model="scope.row.name"
+                  :disabled="isEdit && scope.row.old"
                   :placeholder="$t('fu.search_bar.please_input')"
                   size="small"
                   maxlength="50"
@@ -661,6 +749,7 @@ export default {
                 >
                   <el-select
                     v-model="indexRow.column"
+                    :disabled="isEdit && scope.row.old"
                     :placeholder="$t('data_fill.form.please_select')"
                     size="small"
                     required
@@ -683,6 +772,7 @@ export default {
                 >
                   <el-select
                     v-model="indexRow.order"
+                    :disabled="isEdit && scope.row.old"
                     :placeholder="$t('data_fill.form.please_select')"
                     size="small"
                     required
@@ -703,7 +793,7 @@ export default {
                   </el-select>
                 </el-form-item>
                 <div
-                  v-if="scope.row.columns.length > 1"
+                  v-if="scope.row.columns.length > 1 && !(isEdit && scope.row.old)"
                   class="btn-item"
                   @click="removeIndexColumn(scope.row.columns, $index)"
                 >
@@ -711,7 +801,7 @@ export default {
                 </div>
               </div>
               <el-button
-                v-if="scope.row.columns.length < 5"
+                v-if="scope.row.columns.length < 5 && !(isEdit && scope.row.old)"
                 type="text"
                 @click="addColumn(scope.row.columns)"
               >+ {{ $t('data_fill.form.add_column') }}
@@ -722,6 +812,7 @@ export default {
           <el-table-column width="50">
             <template slot-scope="scope">
               <div
+                v-if="!(isEdit && scope.row.old)"
                 class="btn-item"
                 @click="removeIndex(scope.$index)"
               >
@@ -737,8 +828,15 @@ export default {
     <el-footer class="de-footer">
       <el-button @click="closeSave">{{ $t("commons.cancel") }}</el-button>
       <el-button
+        v-if="!isEdit"
         type="primary"
         @click="doSave"
+      >{{ $t("commons.confirm") }}
+      </el-button>
+      <el-button
+        v-else
+        type="primary"
+        @click="doEdit"
       >{{ $t("commons.confirm") }}
       </el-button>
     </el-footer>

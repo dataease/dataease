@@ -2,7 +2,7 @@
 import DeContainer from '@/components/dataease/DeContainer.vue'
 import DataFillingFormSave from './save.vue'
 import clickoutside from 'element-ui/src/utils/clickoutside.js'
-import { filter, cloneDeep, find, concat } from 'lodash-es'
+import { filter, cloneDeep, find, concat, forEach } from 'lodash-es'
 import { v4 as uuidv4 } from 'uuid'
 import { EMAIL_REGEX, PHONE_REGEX } from '@/utils/validate'
 import { getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
@@ -25,8 +25,9 @@ export default {
       callback()
     }
     return {
-      moveId: undefined,
       showDrawer: false,
+      isEdit: false,
+      disableCreateIndex: false,
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       duplicateOptionRule: { validator: checkDuplicateOptionValidator, trigger: ['blur', 'change'] },
       inputTypes: [
@@ -222,12 +223,26 @@ export default {
         return find(this.formSettings.forms, f => f.id === this.selectedItemId)
       }
       return undefined
+    },
+    selectedComponentItemInputTypes() {
+      if (this.selectedComponentItem && this.selectedComponentItem.type === 'input') {
+        if (this.isEdit && this.selectedComponentItem.old) {
+          if (this.selectedComponentItem.settings.inputType === 'number') {
+            return filter(this.inputTypes, t => t.type === 'number')
+          } else {
+            return filter(this.inputTypes, t => t.type !== 'number')
+          }
+        }
+      }
+      return this.inputTypes
     }
 
   },
   beforeDestroy() {
   },
   created() {
+    this.isEdit = false
+    this.disableCreateIndex = false
     if (this.$route.query.folder !== undefined) {
       this.formSettings.folder = this.$route.query.folder
     }
@@ -242,6 +257,27 @@ export default {
         this.formSettings.level = tempData.level
         this.formSettings.forms = JSON.parse(tempData.forms)
       })
+    } else if (this.$route.query.id !== undefined) {
+      const id = this.$route.query.id
+      getWithPrivileges(id).then(res => {
+        this.isEdit = true
+        const tempData = cloneDeep(res.data)
+        this.formSettings = tempData
+        this.formSettings.table = tempData.tableName
+        this.formSettings.folder = tempData.pid
+        this.formSettings.forms = filter(JSON.parse(res.data.forms), f => !f.removed)
+        forEach(this.formSettings.forms, f => {
+          f.old = true
+        })
+        this.formSettings.oldForms = JSON.parse(res.data.forms)
+        this.formSettings.tableIndexes = JSON.parse(res.data.tableIndexes)
+        forEach(this.formSettings.tableIndexes, f => {
+          f.old = true
+        })
+        this.formSettings.oldTableIndexes = JSON.parse(res.data.tableIndexes)
+
+        this.disableCreateIndex = res.data.createIndex
+      })
     }
   },
   methods: {
@@ -254,9 +290,6 @@ export default {
         return true
       }
       return false
-    },
-    addInComponentList(e) {
-      console.log(e)
     },
     addComponent(e) {
       this.formSettings.forms = cloneDeep(this.formSettings.forms)
@@ -297,6 +330,10 @@ export default {
     copyItem(item, index) {
       const copyItem = cloneDeep(item)
       copyItem.id = uuidv4()
+      delete copyItem.old
+      delete copyItem.settings.mapping.columnName
+      delete copyItem.settings.mapping.columnName1
+      delete copyItem.settings.mapping.columnName2
       this.formSettings.forms.splice(index + 1, 0, copyItem)
 
       this.selectedItemId = copyItem.id
@@ -844,7 +881,7 @@ export default {
                   @change="selectedComponentItem.settings.mapping.type = undefined"
                 >
                   <el-option
-                    v-for="(x) in inputTypes"
+                    v-for="(x) in selectedComponentItemInputTypes"
                     :key="x.type"
                     :label="x.name"
                     :value="x.type"
@@ -884,6 +921,7 @@ export default {
                 >
                   <el-checkbox
                     v-model="selectedComponentItem.settings.multiple"
+                    :disabled="selectedComponentItem.old"
                     @change="changeSelectMultiple(selectedComponentItem, selectedComponentItem.settings.multiple)"
                   >
                     {{ $t('data_fill.form.set_multiple') }}
@@ -891,7 +929,7 @@ export default {
                 </el-form-item>
                 <el-form-item
                   v-if="selectedComponentItem.type === 'date' || selectedComponentItem.type === 'dateRange'"
-                  prop="multiple"
+                  prop="enableTime"
                   class="form-item"
                 >
                   <el-checkbox
@@ -1011,6 +1049,8 @@ export default {
     >
       <data-filling-form-save
         v-if="showDrawer"
+        :is-edit="isEdit"
+        :disable-create-index="disableCreateIndex"
         :form.sync="formSettings"
         :show-drawer.sync="showDrawer"
       />

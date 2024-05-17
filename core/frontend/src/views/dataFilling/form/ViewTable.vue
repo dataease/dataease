@@ -612,7 +612,7 @@ export default {
     },
     columns: function() {
       const _list = []
-      forEach(this.forms, f => {
+      forEach(filter(this.forms, f => !f.removed), f => {
         if (f.type === 'dateRange') {
           _list.push({
             props: f.settings?.mapping?.columnName1,
