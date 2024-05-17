@@ -393,7 +393,7 @@ eventBus.on('handleNew', handleNew)
             @mouseup="deselectCurComponent"
           >
             <canvas-core
-              class="canvas-area-shadow"
+              class="canvas-area-shadow editor-main"
               v-if="state.canvasInitStatus"
               ref="mainCanvasCoreRef"
               :component-data="componentData"
