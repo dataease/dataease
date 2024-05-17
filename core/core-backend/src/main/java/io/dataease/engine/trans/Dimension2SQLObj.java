@@ -66,7 +66,7 @@ public class Dimension2SQLObj {
         meta.setXFieldsDialect(fieldsDialect);
     }
 
-    private static SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
+    public static SQLObj getXFields(ChartViewFieldDTO x, String originField, String fieldAlias) {
         String fieldName = "";
         if (Objects.equals(x.getDeExtractType(), DeTypeConstants.DE_TIME)) {
             if (Objects.equals(x.getDeType(), DeTypeConstants.DE_INT) || Objects.equals(x.getDeType(), DeTypeConstants.DE_FLOAT)) {
