@@ -89,24 +89,26 @@ export default {
   mounted() {
     this.formData = []
     forEach(this.forms, v => {
-      const f = cloneDeep(v)
-      if (f.type === 'dateRange') {
-        const _start = this.data[f.settings.mapping.columnName1]
-        const _end = this.data[f.settings.mapping.columnName2]
-        f.value = [_start, _end]
-      } else {
-        const _value = this.data[f.settings.mapping.columnName]
-        if (f.type === 'select' && f.settings.multiple || f.type === 'checkbox') {
-          if (_value) {
-            f.value = JSON.parse(_value)
-          } else {
-            f.value = []
-          }
+      if (!v.removed) {
+        const f = cloneDeep(v)
+        if (f.type === 'dateRange') {
+          const _start = this.data[f.settings.mapping.columnName1]
+          const _end = this.data[f.settings.mapping.columnName2]
+          f.value = [_start, _end]
         } else {
-          f.value = _value
+          const _value = this.data[f.settings.mapping.columnName]
+          if (f.type === 'select' && f.settings.multiple || f.type === 'checkbox') {
+            if (_value) {
+              f.value = JSON.parse(_value)
+            } else {
+              f.value = []
+            }
+          } else {
+            f.value = _value
+          }
         }
+        this.formData.push(f)
       }
-      this.formData.push(f)
     })
   },
   methods: {

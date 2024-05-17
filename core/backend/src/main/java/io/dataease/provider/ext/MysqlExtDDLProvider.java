@@ -48,6 +48,30 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         return creatTableSql.replace("TABLE_NAME", table).replace("Column_Fields", fieldSql);
     }
 
+    @Override
+    public String addTableColumnSql(String table, List<ExtTableField> formFields) {
+        String modifyTableSql = "ALTER TABLE `$TABLE_NAME$` $Column_Fields$ ;";
+        List<ExtTableField.TableField> fields = convertTableFields(false, formFields);
+        String fieldSql = convertTableFieldsString(table, fields, true);
+        return modifyTableSql.replace("$TABLE_NAME$", table).replace("$Column_Fields$", fieldSql);
+    }
+
+    @Override
+    public String dropTableColumnSql(String table, List<ExtTableField> formFields) {
+        String modifyTableSql = "ALTER TABLE `$TABLE_NAME$` $Column_Fields$ ;";
+        List<ExtTableField.TableField> fields = convertTableFields(false, formFields);
+        StringBuilder str = new StringBuilder();
+        str.append("\n");
+        for (int i = 0; i < fields.size(); i++) {
+            ExtTableField.TableField field = fields.get(i);
+            str.append("drop column ");
+            str.append("`").append(field.getColumnName()).append("` ");
+            if (i != fields.size() - 1) {
+                str.append(",\n");
+            }
+        }
+        return modifyTableSql.replace("$TABLE_NAME$", table).replace("$Column_Fields$", str.toString());
+    }
 
     @Override
     public String searchSql(String table, List<TableField> formFields, String whereSql, long limit, long offset) {
@@ -238,12 +262,19 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
     }
 
     private String convertTableFieldsString(String table, List<ExtTableField.TableField> fields) {
+        return convertTableFieldsString(table, fields, false);
+    }
+
+    private String convertTableFieldsString(String table, List<ExtTableField.TableField> fields, boolean addColumn) {
         StringBuilder str = new StringBuilder();
-
-        str.append("(\n");
-
+        if (addColumn) {
+            str.append("\n");
+        } else {
+            str.append("(\n");
+        }
         ExtTableField.TableField primaryKeyField = null;
-        for (ExtTableField.TableField field : fields) {
+        for (int i = 0; i < fields.size(); i++) {
+            ExtTableField.TableField field = fields.get(i);
             if (field.isPrimaryKey()) {
                 primaryKeyField = field;
             }
@@ -252,6 +283,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
             /*if (checkSqlInjection(field.getColumnName())) {
                 throw new RuntimeException("包含SQL注入的参数，请检查参数！");
             }*/
+            if (addColumn) {
+                str.append("add ");
+            }
 
             //column name
             str.append("`").append(field.getColumnName()).append("` ");
@@ -298,16 +332,22 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
                     break;
             }
 
-            //必填
-            if (field.isRequired()) {
+            //必填 考虑到表单编辑的情况，调整为代码判断
+            /*if (field.isRequired()) {
                 str.append("NOT NULL ");
-            }
+            }*/
 
             //comment
             str.append("COMMENT '").append(field.getComment()).append("' ");
 
             //换行
-            str.append(",\n");
+            if (i < fields.size() - 1) {
+                str.append(",\n");
+            } else {
+                if (primaryKeyField != null) {
+                    str.append(",\n");
+                }
+            }
 
         }
 
@@ -321,8 +361,9 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
                     .append("`)");
         }
 
-        str.append("\n)\n");
-
+        if (!addColumn) {
+            str.append("\n)\n");
+        }
         return str.toString();
     }
 
@@ -338,11 +379,21 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         return list;
     }
 
+    @Override
+    public List<String> dropTableIndexSql(String table, List<ExtIndexField> indexFields) {
+        List<String> list = new ArrayList<>();
+        for (ExtIndexField indexField : indexFields) {
+            String sql = "drop index `$INDEX_NAME$` on `$TABLE_NAME$`;";
+            list.add(sql.replace("$TABLE_NAME$", table).replace("$INDEX_NAME$", indexField.getName()));
+        }
+        return list;
+    }
+
     private String convertTableIndexSql(String table, ExtIndexField indexField) {
         StringBuilder column = new StringBuilder();
-        if (CollectionUtils.isEmpty(indexField.getColumns())) {
+        /*if (CollectionUtils.isEmpty(indexField.getColumns())) {
             return null;
-        }
+        }*/
 
         //check inject
         /*if (checkSqlInjection(table) || checkSqlInjection(indexField.getName())) {

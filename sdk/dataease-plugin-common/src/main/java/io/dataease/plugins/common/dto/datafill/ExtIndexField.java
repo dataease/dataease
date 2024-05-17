@@ -19,6 +19,8 @@ public class ExtIndexField implements Serializable {
 
     private List<ColumnSetting> columns;
 
+    private boolean removed;
+
     @Data
     @Builder
     @AllArgsConstructor
