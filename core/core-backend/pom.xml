@@ -135,6 +135,11 @@
                     <version>${itextpdf.version}</version>
                     <type>pom</type>
                 </dependency>
+                <dependency>
+                    <groupId>com.vladsch.flexmark</groupId>
+                    <artifactId>flexmark-all</artifactId>
+                    <version>${flexmark.version}</version>
+                </dependency>
             </dependencies>
 
             <build>

@@ -18,6 +18,7 @@ public class StaticResourceConstants {
     public static String MAP_DIR  = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "map";
     public static String CUSTOM_MAP_DIR  = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "geo";
     public static String APPEARANCE_DIR  = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "appearance";
+    public static String REPORT_DIR  = ensureSuffix(USER_HOME, FILE_SEPARATOR) + "report";
 
     public static String MAP_URL = "/map";
     public static String GEO_URL = "/geo";
