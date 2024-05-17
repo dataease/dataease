@@ -1,10 +1,12 @@
 package io.dataease.utils;
 
 import io.dataease.exception.DEException;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpGet;
@@ -28,8 +30,12 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.nio.charset.StandardCharsets;
 import java.security.cert.X509Certificate;
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -48,7 +54,7 @@ public class HttpClientUtil {
      * @return CloseableHttpClient实例
      */
     private static CloseableHttpClient buildHttpClient(String url) {
-        if(StringUtils.isEmpty(url)){
+        if (StringUtils.isEmpty(url)) {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: url 不能为空！");
         }
         try {
@@ -70,6 +76,7 @@ public class HttpClientUtil {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         }
     }
+
     /**
      * Get http请求
      *
@@ -99,7 +106,7 @@ public class HttpClientUtil {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
-                if(httpClient != null){
+                if (httpClient != null) {
                     httpClient.close();
                 }
             } catch (Exception e) {
@@ -125,7 +132,7 @@ public class HttpClientUtil {
             httpPatch.setEntity(requestEntity);
             HttpResponse response = httpClient.execute(httpPatch);
             return getResponseStr(response, config);
-        }catch (Exception e) {
+        } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
@@ -171,7 +178,7 @@ public class HttpClientUtil {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
         } finally {
             try {
-                if(httpClient != null){
+                if (httpClient != null) {
                     httpClient.close();
                 }
             } catch (Exception e) {
@@ -231,14 +238,108 @@ public class HttpClientUtil {
         }
     }
 
-    private static String getResponseStr(HttpResponse response, HttpClientConfig config) throws Exception{
-        if(response.getStatusLine().getStatusCode() >= 400){
+    private static String getResponseStr(HttpResponse response, HttpClientConfig config) throws Exception {
+        if (response.getStatusLine().getStatusCode() >= 400) {
             String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
-            if(StringUtils.isEmpty(msg)){
+            if (StringUtils.isEmpty(msg)) {
                 msg = "StatusCode: " + response.getStatusLine().getStatusCode();
             }
             throw new Exception(msg);
         }
         return EntityUtils.toString(response.getEntity(), config.getCharset());
+    }
+
+    public static byte[] downloadBytes(String url) {
+        HttpClientConfig config = new HttpClientConfig();
+        return HttpClientUtil.downFromRemote(url, config);
+    }
+
+    public static byte[] downFromRemote(String url, HttpClientConfig config) {
+        HttpGet httpGet = new HttpGet(url);
+        CloseableHttpClient httpClient = buildHttpClient(url);
+
+        try {
+            httpGet.setConfig(config.buildRequestConfig());
+            Map<String, String> header = config.getHeader();
+            Iterator var5 = header.keySet().iterator();
+
+            while (var5.hasNext()) {
+                String key = (String) var5.next();
+                httpGet.addHeader(key, (String) header.get(key));
+            }
+
+            HttpResponse response = httpClient.execute(httpGet);
+            InputStream inputStream = response.getEntity().getContent();
+            ByteArrayOutputStream outputStream = new ByteArrayOutputStream();
+            byte[] buffer = new byte[1024];
+
+            int bytesRead;
+            while ((bytesRead = inputStream.read(buffer)) != -1) {
+                outputStream.write(buffer, 0, bytesRead);
+            }
+
+            byte[] var10 = outputStream.toByteArray();
+            return var10;
+        } catch (Exception var19) {
+            logger.error("HttpClient查询失败", var19);
+            throw new RuntimeException("HttpClient查询失败: " + var19.getMessage());
+        } finally {
+            try {
+                httpClient.close();
+            } catch (Exception var18) {
+                logger.error("HttpClient关闭连接失败", var18);
+            }
+
+        }
+    }
+
+    public static String postFile(String fileServer, byte[] bytes, String fileName, Map<String, String> param, HttpClientConfig config) {
+        CloseableHttpClient httpClient = buildHttpClient(fileServer);
+        HttpPost postRequest = new HttpPost(fileServer);
+        if (config == null) {
+            config = new HttpClientConfig();
+        }
+
+        postRequest.setConfig(config.buildRequestConfig());
+        Map<String, String> header = config.getHeader();
+        if (MapUtils.isNotEmpty(header)) {
+            Iterator var8 = header.keySet().iterator();
+
+            while (var8.hasNext()) {
+                String key = (String) var8.next();
+                postRequest.addHeader(key, (String) header.get(key));
+            }
+        }
+
+        MultipartEntityBuilder builder = MultipartEntityBuilder.create();
+        builder.setCharset(StandardCharsets.UTF_8);
+        builder.addBinaryBody("image", bytes, ContentType.DEFAULT_BINARY, fileName);
+        if (param != null) {
+            Iterator var13 = param.entrySet().iterator();
+            while (var13.hasNext()) {
+                Map.Entry<String, String> entry = (Map.Entry) var13.next();
+                builder.addTextBody((String) entry.getKey(), (String) entry.getValue());
+            }
+        }
+        try {
+            postRequest.setEntity((HttpEntity) builder.build());
+            return getResponseStr(httpClient.execute(postRequest), config);
+        } catch (Exception var11) {
+            logger.error("HttpClient查询失败", var11);
+            throw new RuntimeException("HttpClient查询失败: " + var11.getMessage());
+        }
+    }
+
+    public static String upload(String url, byte[] bytes, String name, Map<String, String> paramMap, Map<String, Object> headMap) {
+        HttpClientConfig config = new HttpClientConfig();
+        addHead(config, headMap);
+        return HttpClientUtil.postFile(url, bytes, name, paramMap, config);
+    }
+
+    private static void addHead(HttpClientConfig config, Map<String, Object> headMap) {
+        if (MapUtils.isEmpty(headMap)) return;
+        for (Map.Entry<String, Object> entry : headMap.entrySet()) {
+            config.addHeader(entry.getKey(), entry.getValue().toString());
+        }
     }
 }

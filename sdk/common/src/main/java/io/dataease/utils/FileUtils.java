@@ -1,5 +1,6 @@
 package io.dataease.utils;
 
+import io.dataease.exception.DEException;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
 import org.springframework.web.multipart.MultipartFile;
@@ -9,6 +10,8 @@ import java.nio.channels.FileChannel;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.util.Arrays;
+import java.util.List;
+import java.util.stream.Collectors;
 
 public class FileUtils {
 
@@ -51,9 +54,10 @@ public class FileUtils {
 
     public static void validateExist(String path) {
         File dir = new File(path);
-        if (dir.exists()) return ;
+        if (dir.exists()) return;
         dir.mkdirs();
     }
+
     /**
      * 将文件名解析成文件的上传路径
      */
@@ -62,7 +66,7 @@ public class FileUtils {
         String suffix = getExtensionName(file.getOriginalFilename());
         try {
             validateExist(filePath);
-            String fileName = name  + "." + suffix;
+            String fileName = name + "." + suffix;
             String path = filePath + fileName;
             // getCanonicalFile 可解析正确各种路径
             File dest = new File(path).getCanonicalFile();
@@ -78,45 +82,46 @@ public class FileUtils {
         }
         return null;
     }
-    public static void copyFolder(String sourcePath,String targetPath) throws Exception{
+
+    public static void copyFolder(String sourcePath, String targetPath) throws Exception {
         //源文件夹路径
         File sourceFile = new File(sourcePath);
         //目标文件夹路径
         File targetFile = new File(targetPath);
 
-        if(!sourceFile.exists()){
+        if (!sourceFile.exists()) {
             throw new Exception("文件夹不存在");
         }
-        if(!sourceFile.isDirectory()){
+        if (!sourceFile.isDirectory()) {
             throw new Exception("源文件夹不是目录");
         }
-        if(!targetFile.exists()){
+        if (!targetFile.exists()) {
             targetFile.mkdirs();
         }
-        if(!targetFile.isDirectory()){
+        if (!targetFile.isDirectory()) {
             throw new Exception("目标文件夹不是目录");
         }
 
         File[] files = sourceFile.listFiles();
-        if(files == null || files.length == 0){
+        if (files == null || files.length == 0) {
             return;
         }
 
-        for(File file : files){
+        for (File file : files) {
             //文件要移动的路径
-            String movePath = targetFile+File.separator+file.getName();
-            if(file.isDirectory()){
+            String movePath = targetFile + File.separator + file.getName();
+            if (file.isDirectory()) {
                 //如果是目录则递归调用
-                copyFolder(file.getAbsolutePath(),movePath);
-            }else {
+                copyFolder(file.getAbsolutePath(), movePath);
+            } else {
                 //如果是文件则复制文件
                 BufferedInputStream in = new BufferedInputStream(new FileInputStream(file));
                 BufferedOutputStream out = new BufferedOutputStream(new FileOutputStream(movePath));
 
                 byte[] b = new byte[1024];
                 int temp = 0;
-                while((temp = in.read(b)) != -1){
-                    out.write(b,0,temp);
+                while ((temp = in.read(b)) != -1) {
+                    out.write(b, 0, temp);
                 }
                 out.close();
                 in.close();
@@ -125,12 +130,12 @@ public class FileUtils {
     }
 
 
-    public static String copy(File source, String targetDir) throws IOException{
+    public static String copy(File source, String targetDir) throws IOException {
         String name = source.getName();
         String destPath = null;
-        if (targetDir.endsWith("/") || targetDir.endsWith("\\")){
+        if (targetDir.endsWith("/") || targetDir.endsWith("\\")) {
             destPath = targetDir + name;
-        }else{
+        } else {
             destPath = targetDir + "/" + name;
         }
         File DestFile = new File(destPath);
@@ -159,7 +164,7 @@ public class FileUtils {
         try {
             FileReader fileReader = new FileReader(file);
             Reader reader = new InputStreamReader(new FileInputStream(file), "utf-8");
-            int ch=0;
+            int ch = 0;
             StringBuffer sb = new StringBuffer();
             while ((ch = reader.read()) != -1) {
                 sb.append((char) ch);
@@ -176,11 +181,92 @@ public class FileUtils {
 
     public static void deleteFile(String path) {
         File file = new File(path);
-        if (file.exists()){
+        if (file.exists()) {
             if (file.isDirectory()) {
                 Arrays.stream(file.listFiles()).forEach(item -> deleteFile(item.getAbsolutePath()));
             }
             file.delete();
         }
+    }
+
+    public static boolean exist(String path) {
+        File file = new File(path);
+        return file.exists();
+    }
+
+    public static List<String> listFileNames(String path) {
+        File file = new File(path);
+        if (!file.exists()) {
+            return null;
+        } else {
+            File[] files = file.listFiles();
+
+            assert files != null;
+
+            return Arrays.stream(files).map(File::getName).collect(Collectors.toList());
+        }
+    }
+
+    public static String getSuffix(String fileName) {
+        return fileName.substring(fileName.lastIndexOf(".") + 1);
+    }
+
+    public static String getPrefix(String fileName) {
+        return fileName.substring(0, fileName.lastIndexOf("."));
+    }
+
+    public static byte[] readBytes(String path) {
+        File file = new File(path);
+        if (!file.exists() || !file.isFile()) {
+            DEException.throwException("文件不存在");
+        }
+
+        byte[] bytes = null;
+
+        try {
+            FileInputStream fis = new FileInputStream(file);
+
+            try {
+                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+
+                try {
+                    byte[] buffer = new byte[4096];
+
+                    while (true) {
+                        int bytesRead;
+                        if ((bytesRead = fis.read(buffer)) == -1) {
+                            bytes = bos.toByteArray();
+                            break;
+                        }
+
+                        bos.write(buffer, 0, bytesRead);
+                    }
+                } catch (Throwable var9) {
+                    try {
+                        bos.close();
+                    } catch (Throwable var8) {
+                        var9.addSuppressed(var8);
+                    }
+
+                    throw var9;
+                }
+
+                bos.close();
+            } catch (Throwable var10) {
+                try {
+                    fis.close();
+                } catch (Throwable var7) {
+                    var10.addSuppressed(var7);
+                }
+
+                throw var10;
+            }
+
+            fis.close();
+        } catch (Exception var11) {
+            var11.printStackTrace();
+        }
+
+        return bytes;
     }
 }

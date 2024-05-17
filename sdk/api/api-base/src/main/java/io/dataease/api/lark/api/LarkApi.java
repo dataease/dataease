@@ -3,6 +3,7 @@ package io.dataease.api.lark.api;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.lark.dto.LarkEnableEditor;
 import io.dataease.api.lark.dto.LarkTokenRequest;
+import io.dataease.api.lark.vo.LarkGroupVO;
 import io.dataease.api.lark.vo.LarkInfoVO;
 import io.dataease.api.lark.dto.LarkSettingCreator;
 import io.swagger.v3.oas.annotations.Operation;
@@ -38,4 +39,8 @@ public interface LarkApi {
     @Operation(summary = "飞书绑定", hidden = true)
     @PostMapping("/bind")
     void bind(@RequestBody LarkTokenRequest request);
+
+    @Operation(summary = "获取飞书群组", hidden = true)
+    @GetMapping("/getGroup")
+    LarkGroupVO getGroup();
 }
