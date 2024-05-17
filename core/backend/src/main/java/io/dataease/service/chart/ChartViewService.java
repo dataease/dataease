@@ -11,6 +11,7 @@ import io.dataease.commons.constants.JdbcConstants;
 import io.dataease.commons.model.PluginViewSetImpl;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.BeanUtils;
+import io.dataease.commons.utils.DateUtils;
 import io.dataease.commons.utils.LogUtil;
 import io.dataease.controller.request.chart.*;
 import io.dataease.controller.response.ChartDetail;
@@ -52,6 +53,8 @@ import io.dataease.plugins.view.service.ViewPluginService;
 import io.dataease.plugins.xpack.auth.dto.request.ColumnPermissionItem;
 import io.dataease.provider.query.SQLUtils;
 import io.dataease.service.chart.util.ChartDataBuild;
+import io.dataease.service.chart.util.dataForecast.ForecastAlgo;
+import io.dataease.service.chart.util.dataForecast.ForecastAlgoManager;
 import io.dataease.service.dataset.*;
 import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.engine.EngineService;
@@ -71,6 +74,7 @@ import javax.annotation.Resource;
 import java.lang.reflect.Type;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.concurrent.atomic.AtomicReference;
@@ -1090,7 +1094,7 @@ public class ChartViewService {
             logger.info("plugin_sql:" + sql);
             Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(fieldMap, view, data, desensitizationList);
 
-            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);
+            return uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData, Collections.emptyList());
             // 如果是插件到此结束
         }
 
@@ -1361,6 +1365,16 @@ public class ChartViewService {
         }
         tempYAxis.addAll(yAxis);
 
+        // forecast
+        List<? extends ForecastDataVO<?, ?>> forecastData = Collections.emptyList();
+        JSONObject senior = JSONObject.parseObject(view.getSenior());
+        JSONObject forecastObj = senior.getJSONObject("forecast");
+        if (forecastObj != null) {
+            ChartSeniorForecastDTO forecastCfg = forecastObj.toJavaObject(ChartSeniorForecastDTO.class);
+            if (forecastCfg.isEnable()) {
+                forecastData = forecastData(forecastCfg, data, xAxis, yAxis, view);
+            }
+        }
         for (int i = 0; i < tempYAxis.size(); i++) {
             ChartViewFieldDTO chartViewFieldDTO = tempYAxis.get(i);
             ChartFieldCompareDTO compareCalc = chartViewFieldDTO.getCompareCalc();
@@ -1622,10 +1636,41 @@ public class ChartViewService {
 
             mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
         }
-        chartViewDTO = uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);
+        chartViewDTO = uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData, forecastData);
         chartViewDTO.setTotalPage(totalPage);
         chartViewDTO.setTotalItems(totalItems);
         return chartViewDTO;
+    }
+
+    private List<? extends ForecastDataVO<?,?>> forecastData(ChartSeniorForecastDTO forecastCfg, List<String[]> data, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view) throws ParseException {
+        List<String[]> trainingData = data;
+        if (!forecastCfg.isAllPeriod() && data.size() > forecastCfg.getTrainingPeriod()) {
+            trainingData = data.subList(data.size() - forecastCfg.getTrainingPeriod(), data.size() - 1);
+        }
+        if (xAxis.size() == 1 && xAxis.get(0).getDeType() == 1) {
+            // 先处理时间类型, 默认数据是有序递增的
+            String lastTime = data.get(data.size() - 1)[0];
+            ChartViewFieldDTO timeAxis = xAxis.get(0);
+            List<String> forecastPeriod = DateUtils.getForecastPeriod(lastTime, forecastCfg.getPeriod(), timeAxis.getDateStyle(), timeAxis.getDatePattern());
+            if(!forecastPeriod.isEmpty()){
+                ForecastAlgo algo = ForecastAlgoManager.getAlgo(forecastCfg.getAlgorithm());
+                List<ForecastDataDTO> forecastData = algo.forecast(forecastCfg, trainingData, view);
+                if (forecastPeriod.size() == forecastData.size()) {
+                    List<ForecastDataVO<String, Double>> result = new ArrayList<>();
+                    for (int i = 0; i < forecastPeriod.size(); i++) {
+                        String period = forecastPeriod.get(i);
+                        ForecastDataDTO forecastDataItem = forecastData.get(i);
+                        ForecastDataVO<String, Double> tmp = new ForecastDataVO<>();
+                        BeanUtils.copyBean(tmp, forecastDataItem);
+                        tmp.setDimension(period);
+                        tmp.setQuota(forecastDataItem.getYVal());
+                        result.add(tmp);
+                    }
+                    return result;
+                }
+            }
+        }
+        return List.of();
     }
 
     // 对结果排序
@@ -1684,11 +1729,12 @@ public class ChartViewService {
         return "SELECT " + stringBuilder + " FROM (" + sql + ") tmp";
     }
 
-    public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tableData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters, List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData) {
+    public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tableData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterRequest> drillFilters, List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData, List<? extends ForecastDataVO<?, ?>> forecastData) {
 
         Map<String, Object> map = new HashMap<>();
         map.putAll(chartData);
         map.putAll(tableData);
+        map.put("forecastData", forecastData);
 
         List<DatasetTableField> sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
         map.put("sourceFields", sourceFields);
