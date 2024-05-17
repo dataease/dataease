@@ -1327,7 +1327,7 @@ public class ChartDataBuild {
         return map;
     }
 
-    public static Map<String, Object> transTimeBarDataAntV(boolean skipBarRange, boolean isDate, List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
+    public static Map<String, Object> transBarRangeDataAntV(boolean skipBarRange, boolean isDate, List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
 
         Map<String, Object> map = new HashMap<>();
         if (skipBarRange) {

@@ -11,6 +11,8 @@ import java.util.Map;
 @Data
 public class SQLMeta {
 
+    private String chartType;
+
     private SQLObj table;
 
     /**

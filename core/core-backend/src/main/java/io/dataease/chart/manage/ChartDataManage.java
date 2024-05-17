@@ -565,7 +565,21 @@ public class ChartDataManage {
                     String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                     detailFieldSql = originSql + limit;
                 }
-            } else {
+            } else if (StringUtils.equalsIgnoreCase("bar-range", view.getType())) {
+                sqlMeta.setChartType(view.getType());
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                if (containDetailField(view) && ObjectUtils.isNotEmpty(viewFields)) {
+                    detailFieldList.addAll(xAxis);
+                    detailFieldList.addAll(viewFields);
+
+                    Dimension2SQLObj.dimension2sqlObj(sqlMeta, detailFieldList, transFields(allFields), crossDs, dsMap);
+                    String originSql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
+                    String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
+                    detailFieldSql = originSql + limit;
+                }
+            }else {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
@@ -776,7 +790,7 @@ public class ChartDataManage {
             } else if (StringUtils.containsIgnoreCase(view.getType(), "quadrant")) {
                 mapChart = ChartDataBuild.transQuadrantDataAntV(xAxis, yAxis, view, data, extBubble, isDrill);
             } else if (StringUtils.equalsIgnoreCase(view.getType(), "bar-range")) {
-                mapChart = ChartDataBuild.transTimeBarDataAntV(skipBarRange, barRangeDate, xAxisBase, xAxis, yAxis, view, data, isDrill);
+                mapChart = ChartDataBuild.transBarRangeDataAntV(skipBarRange, barRangeDate, xAxisBase, xAxis, yAxis, view, data, isDrill);
             } else {
                 mapChart = ChartDataBuild.transChartDataAntV(xAxis, yAxis, view, data, isDrill);
             }

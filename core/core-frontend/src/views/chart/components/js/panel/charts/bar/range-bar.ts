@@ -203,6 +203,7 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
         const t = JSON.parse(JSON.stringify(customAttr.tooltip))
         if (t.show) {
           tooltip = {
+            fields: ['values', 'field', 'gap'],
             formatter: function (param: Datum) {
               let res
               if (isDate) {

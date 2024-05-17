@@ -50,7 +50,12 @@ public class Quota2SQLObj {
                 }
                 String fieldAlias = String.format(SQLConstants.FIELD_ALIAS_Y_PREFIX, i);
                 // 处理纵轴字段
-                yFields.add(getYFields(y, originField, fieldAlias));
+                SQLObj ySQLObj = getYFields(y, originField, fieldAlias);
+                if (StringUtils.equalsIgnoreCase("bar-range", meta.getChartType()) && StringUtils.equalsIgnoreCase(y.getGroupType(), "d") && y.getDeType() == 1) {
+                    yFields.add(Dimension2SQLObj.getXFields(y, ySQLObj.getFieldName(), fieldAlias));
+                } else {
+                    yFields.add(ySQLObj);
+                }
                 // 处理纵轴过滤
                 String wheres = getYWheres(y, originField, fieldAlias);
                 if (ObjectUtils.isNotEmpty(wheres)) {
