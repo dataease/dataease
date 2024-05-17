@@ -16,7 +16,10 @@ import {
 import { storeToRefs } from 'pinia'
 import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
-import { getViewConfig } from '@/views/chart/components/editor/util/chart'
+import {
+  getViewConfig,
+  SENIOR_STYLE_SETTING_LIGHT
+} from '@/views/chart/components/editor/util/chart'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
@@ -115,6 +118,10 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
     const canvasDataResult = JSON.parse(canvasInfo.componentData)
     const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
     const canvasViewInfoPreview = canvasInfo.canvasViewInfo
+    //历史字段适配
+    canvasStyleResult.component.seniorStyleSetting =
+      canvasStyleResult.component.seniorStyleSetting || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
+
     canvasDataResult.forEach(componentItem => {
       componentItem['canvasActive'] = false
       if (componentItem.component === 'Group') {

@@ -152,7 +152,9 @@ import {
   DEFAULT_TITLE_STYLE_DARK,
   DEFAULT_TITLE_STYLE_LIGHT,
   FILTER_COMMON_STYLE_DARK,
-  FILTER_COMMON_STYLE_LIGHT
+  FILTER_COMMON_STYLE_LIGHT,
+  SENIOR_STYLE_SETTING_DARK,
+  SENIOR_STYLE_SETTING_LIGHT
 } from '@/views/chart/components/editor/util/chart'
 import ColorButton from '@/components/assist-button/ColorButton.vue'
 import { computed } from 'vue'
@@ -189,6 +191,7 @@ const themeChange = modifyName => {
       canvasStyleData.value.component.chartColor = deepCopy(DEFAULT_COLOR_CASE_LIGHT)
       canvasStyleData.value.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_LIGHT)
       canvasStyleData.value.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_LIGHT)
+      canvasStyleData.value.component.seniorStyleSetting = deepCopy(SENIOR_STYLE_SETTING_LIGHT)
     } else {
       canvasStyleData.value.backgroundColor = DARK_THEME_DASHBOARD_BACKGROUND
       canvasStyleData.value.component.chartCommonStyle = deepCopy(COMMON_COMPONENT_BACKGROUND_DARK)
@@ -196,6 +199,7 @@ const themeChange = modifyName => {
       canvasStyleData.value.component.chartColor = deepCopy(DEFAULT_COLOR_CASE_DARK)
       canvasStyleData.value.component.filterStyle = deepCopy(FILTER_COMMON_STYLE_DARK)
       canvasStyleData.value.component.tabStyle = deepCopy(DEFAULT_TAB_COLOR_CASE_DARK)
+      canvasStyleData.value.component.seniorStyleSetting = deepCopy(SENIOR_STYLE_SETTING_DARK)
     }
     adaptCurThemeCommonStyleAll()
   }
