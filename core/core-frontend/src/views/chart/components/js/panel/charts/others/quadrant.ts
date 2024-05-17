@@ -167,30 +167,16 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       data.push(tmpData)
     }
     // x轴基准线 默认值
-    const xBaseline = (
-      (data.reduce((valueSoFar, currentItem) => {
-        return Math.max(valueSoFar, currentItem[xFieldObj.name])
-      }, 0) +
-        data.reduce((valueSoFar, currentItem) => {
-          return Math.min(valueSoFar, currentItem[xFieldObj.name])
-        }, Infinity)) /
-      2
-    ).toFixed()
+    const xValues = data.map(item => item[xFieldObj.name])
+    const xBaseline = ((Math.max(...xValues) + Math.min(...xValues)) / 2).toFixed()
     // y轴基准线 默认值
-    const yBaseline = (
-      (data.reduce((valueSoFar, currentItem) => {
-        return Math.max(valueSoFar, currentItem[yFieldObj.name])
-      }, 0) +
-        data.reduce((valueSoFar, currentItem) => {
-          return Math.min(valueSoFar, currentItem[yFieldObj.name])
-        }, Infinity)) /
-      2
-    ).toFixed()
+    const yValues = data.map(item => item[yFieldObj.name])
+    const yBaseline = ((Math.max(...yValues) + Math.min(...yValues)) / 2).toFixed()
     const defaultBaselineQuadrant = {
       ...chart.customAttr['quadrant']
     }
     // 新建图表
-    if (!defaultBaselineQuadrant.xBaseline) {
+    if (defaultBaselineQuadrant.xBaseline === undefined) {
       // 默认基准线值
       defaultBaselineQuadrant.xBaseline = xBaseline
       defaultBaselineQuadrant.yBaseline = yBaseline
@@ -215,6 +201,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     const newChart = new G2Scatter(container, options)
     newChart.on('point:click', action)
     newChart.on('click', () => quadrantDefaultBaseline(defaultBaselineQuadrant))
+    newChart.on('afterrender', () => quadrantDefaultBaseline(defaultBaselineQuadrant))
     return newChart
   }
 

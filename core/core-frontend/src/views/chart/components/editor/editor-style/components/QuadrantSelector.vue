@@ -33,14 +33,14 @@ const labels = []
 const isDashboard = dvMainStore.dvInfo.type === 'dashboard'
 for (let i = 0; i < 4; i++) {
   regionStyle.push({
-    fill: isDashboard ? '#fdfcfc' : 'rgb(2,4,8,1)',
-    fillOpacity: 1
+    fill: isDashboard ? '#ffffff' : 'rgb(2,4,8,1,1)',
+    fillOpacity: '1.0'
   })
   labels.push({
     content: '',
     style: {
-      fill: isDashboard ? 'rgb(2,4,8,1)' : '#fdfcfc',
-      fillOpacity: 0.5,
+      fill: isDashboard ? 'rgb(2,4,8,1,1)' : '#ffffff',
+      fillOpacity: '0.5',
       fontSize: 14
     }
   })
@@ -108,6 +108,14 @@ const init = () => {
     if (customAttr.quadrant) {
       state.quadrantForm = customAttr.quadrant
     } else {
+      // 新增图表
+      state.quadrantForm = {
+        ...JSON.parse(JSON.stringify(DEFAULT_QUADRANT_STYLE)),
+        regionStyle,
+        labels
+      }
+      state.quadrantForm.xBaseline = undefined
+      state.quadrantForm.yBaseline = undefined
       changeStyle()
     }
   }
@@ -188,8 +196,8 @@ onMounted(() => {
             style="width: 100%"
             :effect="props.themes"
             v-model="state.quadrantForm.xBaseline"
-            :precision="0"
-            :min="0"
+            :precision="2"
+            :step="0.01"
             size="small"
             @change="changeStyle()"
           />
@@ -205,8 +213,8 @@ onMounted(() => {
             style="width: 100%"
             :effect="props.themes"
             v-model="state.quadrantForm.yBaseline"
-            :precision="0"
-            :min="0"
+            :precision="2"
+            :step="0.01"
             size="small"
             @change="changeStyle()"
           />
