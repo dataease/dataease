@@ -8,6 +8,17 @@
     trigger="click"
   >
     <div class="export-button">
+      <el-select v-model="pixel" class="pixel-select" size="small">
+        <el-option-group v-for="group in pixelOptions" :key="group.label" :label="group.label">
+          <el-option
+            v-for="item in group.options"
+            :key="item.value"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-option-group>
+      </el-select>
+
       <el-button
         class="m-button"
         v-if="optType === 'enlarge'"
@@ -31,28 +42,36 @@
       </el-button>
       <el-divider class="close-divider" direction="vertical" />
     </div>
-    <div class="enlarge-outer" ref="viewContainer" v-if="dialogShow">
-      <component-wrapper
-        v-if="optType === 'enlarge'"
-        class="enlarge-wrapper"
-        :view-info="viewInfo"
-        :config="config"
-        :dv-info="dvInfo"
-        show-position="viewDialog"
-      />
-      <chart-component-s2
-        v-if="optType === 'details'"
-        :view="viewInfo"
-        show-position="viewDialog"
-        ref="chartComponentDetails"
-      />
+    <div
+      v-loading="downLoading"
+      element-loading-text="导出中..."
+      element-loading-background="rgba(122, 122, 122, 1)"
+      class="enlarge-outer"
+      v-if="dialogShow"
+    >
+      <div class="enlarge-inner" ref="viewContainer" :style="customExport">
+        <component-wrapper
+          v-if="optType === 'enlarge'"
+          class="enlarge-wrapper"
+          :view-info="viewInfo"
+          :config="config"
+          :dv-info="dvInfo"
+          show-position="viewDialog"
+        />
+        <chart-component-s2
+          v-if="optType === 'details'"
+          :view="viewInfo"
+          show-position="viewDialog"
+          ref="chartComponentDetails"
+        />
+      </div>
     </div>
   </el-dialog>
 </template>
 
 <script setup lang="ts">
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import { toPng } from 'html-to-image'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
@@ -61,6 +80,8 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
 import { assign } from 'lodash-es'
+import { useEmitt } from '@/hooks/web/useEmitt'
+const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
 let viewInfo = ref<DeepPartial<ChartObj>>(null)
@@ -90,6 +111,57 @@ const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
     }
   }
 }
+
+const customExport = computed(() => {
+  if (downLoading.value) {
+    const bashStyle = pixel.value.split(' * ')
+    return {
+      width: bashStyle[0] + 'px!important',
+      height: bashStyle[1] + 'px!important'
+    }
+  } else {
+    return {}
+  }
+})
+
+const pixel = ref('1280 * 720')
+
+const pixelOptions = [
+  {
+    label: 'Windows(16:9)',
+    options: [
+      {
+        value: '1920 * 1080',
+        label: '1920 * 1080'
+      },
+      {
+        value: '1600 * 900',
+        label: '1600 * 900'
+      },
+      {
+        value: '1280 * 720',
+        label: '1280 * 720'
+      }
+    ]
+  },
+  {
+    label: 'MacOS(16:10)',
+    options: [
+      {
+        value: '2560 * 1600',
+        label: '2560 * 1600'
+      },
+      {
+        value: '1920 * 1200',
+        label: '1920 * 1200'
+      },
+      {
+        value: '1680 * 1050',
+        label: '1680 * 1050'
+      }
+    ]
+  }
+]
 const dialogInit = (canvasStyle, view, item, opt) => {
   optType.value = opt
   dialogShow.value = true
@@ -127,16 +199,24 @@ const downloadViewDetails = () => {
 }
 
 const htmlToImage = () => {
-  toPng(viewContainer.value)
-    .then(dataUrl => {
-      const a = document.createElement('a')
-      a.setAttribute('download', viewInfo.value.title)
-      a.href = dataUrl
-      a.click()
-    })
-    .catch(error => {
-      console.error('oops, something went wrong!', error)
-    })
+  downLoading.value = true
+  useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
+  setTimeout(() => {
+    toPng(viewContainer.value)
+      .then(dataUrl => {
+        downLoading.value = false
+        const a = document.createElement('a')
+        a.setAttribute('download', viewInfo.value.title)
+        a.href = dataUrl
+        a.click()
+        useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
+      })
+      .catch(error => {
+        downLoading.value = false
+        useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)
+        console.error('oops, something went wrong!', error)
+      })
+  }, 500)
 }
 
 defineExpose({
@@ -150,6 +230,12 @@ defineExpose({
   right: 48px;
   top: 26px;
   z-index: 2;
+
+  .pixel-select {
+    width: 125px;
+    margin-right: 8px;
+    margin-top: -1px;
+  }
 
   .m-button {
     color: #1f2329;
@@ -182,6 +268,12 @@ defineExpose({
 .enlarge-outer {
   position: relative;
   height: 65vh;
+  overflow: hidden;
+  .enlarge-inner {
+    position: relative;
+    width: 100%;
+    height: 100%;
+  }
   .enlarge-wrapper {
     width: 100%;
     height: 100%;
