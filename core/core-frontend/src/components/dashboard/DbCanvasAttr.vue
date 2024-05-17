@@ -16,6 +16,7 @@ import { deepCopy } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { merge } from 'lodash-es'
 import CanvasBackground from '@/components/visualization/component-background/CanvasBackground.vue'
+import SeniorStyleSetting from '@/components/dashboard/subject-setting/dashboard-style/SeniorStyleSetting.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -144,6 +145,20 @@ const saveSelfSubject = () => {
           class="no-padding no-border-bottom"
         >
           <filter-style-simple-selector />
+        </el-collapse-item>
+        <el-collapse-item
+          :title="t('visualization.filter_component')"
+          name="filterComponent"
+          class="no-padding no-border-bottom"
+        >
+          <filter-style-simple-selector />
+        </el-collapse-item>
+        <el-collapse-item
+          title="高级样式设置"
+          name="seniorStyleSetting"
+          class="no-padding no-border-bottom"
+        >
+          <senior-style-setting></senior-style-setting>
         </el-collapse-item>
       </el-collapse>
     </el-row>

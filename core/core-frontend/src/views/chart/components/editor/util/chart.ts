@@ -150,6 +150,17 @@ export const TAB_COMMON_STYLE_DARK = {
   headBorderActiveColor: '#000000'
 }
 
+export const SENIOR_STYLE_SETTING_LIGHT = {
+  linkageIconColor: '#a6a6a6',
+  drillLayerColor: '#a6a6a6',
+  pagerColor: '#a6a6a6'
+}
+
+export const SENIOR_STYLE_SETTING_DARK = {
+  linkageIconColor: '#ffffff',
+  drillLayerColor: '#ffffff'
+}
+
 export const FILTER_COMMON_STYLE_BASE = {
   layout: 'horizontal',
   titleLayout: 'left'
