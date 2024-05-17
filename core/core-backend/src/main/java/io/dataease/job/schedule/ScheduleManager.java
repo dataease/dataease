@@ -431,4 +431,13 @@ public class ScheduleManager {
         scheduler.triggerJob(jobKey);
     }
 
+    public boolean exist(JobKey jobKey) {
+        try {
+            return scheduler.checkExists(jobKey);
+        } catch (SchedulerException e) {
+            LogUtil.error(e.getMessage(), new Throwable(e));
+            return false;
+        }
+    }
+
 }

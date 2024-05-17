@@ -29,7 +29,8 @@ public class DeTaskExecutor {
     }
 
     @XpackInteract(value = "xpackTaskExecutor", replace = true)
-    public void init() {}
+    public void init() {
+    }
 
     public void addOrUpdateTask(Long taskId, String cron, Long startTime, Long endTime) {
         if (CronUtils.taskExpire(endTime)) {
@@ -46,10 +47,14 @@ public class DeTaskExecutor {
         scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(startTime), end, jobDataMap);
     }
 
-    public void fireNow(Long taskId) throws Exception {
+    public boolean fireNow(Long taskId) throws Exception {
         String key = taskId.toString();
         JobKey jobKey = new JobKey(key, JOB_GROUP);
-        scheduleManager.fireNow(jobKey);
+        if (scheduleManager.exist(jobKey)) {
+            scheduleManager.fireNow(jobKey);
+            return true;
+        }
+        return false;
     }
 
     public void addTempTask(Long taskId, Long startTime) {
