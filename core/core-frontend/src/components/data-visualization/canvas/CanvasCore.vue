@@ -508,7 +508,7 @@ const handleContextMenu = e => {
     target = target.parentNode
   }
 
-  while (!target.className.includes('editor')) {
+  while (!target.className.includes('editor-main')) {
     left += target.offsetLeft
     top += target.offsetTop
     target = target.parentNode
