@@ -155,7 +155,8 @@ public class ChartDataManage {
                 } else {
                     skipBarRange = true;
                 }
-
+            } else {
+                skipBarRange = true;
             }
         }
 
@@ -579,7 +580,7 @@ public class ChartDataManage {
                     String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                     detailFieldSql = originSql + limit;
                 }
-            }else {
+            } else {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
