@@ -598,7 +598,9 @@ const iconSize = computed<string>(() => {
 })
 
 const titleIconStyle = computed(() => {
-  color: canvasStyleData.value.component.seniorStyleSetting.linkageIconColor
+  return {
+    color: canvasStyleData.value.component.seniorStyleSetting.linkageIconColor
+  }
 })
 </script>
 
