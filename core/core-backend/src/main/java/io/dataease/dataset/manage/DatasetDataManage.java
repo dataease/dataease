@@ -231,20 +231,21 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        map.put("total", getDatasetTotal(datasetGroupInfoDTO, SqlUtils.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, needOrder), sqlMeta, crossDs, dsMap)));
+        String replaceSql = SqlUtils.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, needOrder), sqlMeta, crossDs, dsMap);
+        map.put("total", getDatasetTotal(datasetGroupInfoDTO, replaceSql, null));
         return map;
     }
 
     public Long getDatasetTotal(Long datasetGroupId) throws Exception {
         DatasetGroupInfoDTO dto = datasetGroupManage.getForCount(datasetGroupId);
         if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
-            return getDatasetTotal(dto, null);
+            return getDatasetTotal(dto, null, new ChartExtRequest());
         }
         return 0L;
     }
 
-    public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO, String s) throws Exception {
-        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+    public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO, String s, ChartExtRequest request) throws Exception {
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, request);
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
 
         String sql;
