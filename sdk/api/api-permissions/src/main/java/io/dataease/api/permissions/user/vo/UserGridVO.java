@@ -28,4 +28,6 @@ public class UserGridVO {
     private Long createTime;
     @Schema(description = "系统变量")
     private String sysVariable;
+    @Schema(description = "用户来源")
+    private Integer origin;
 }
