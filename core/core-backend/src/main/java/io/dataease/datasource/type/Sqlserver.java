@@ -17,6 +17,9 @@ public class Sqlserver extends DatasourceConfiguration {
     private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
+        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+            return getJdbcUrl();
+        }
         if (StringUtils.isEmpty(extraParams.trim())) {
             return "jdbc:sqlserver://HOSTNAME:PORT;DatabaseName=DATABASE"
                     .replace("HOSTNAME", getHost().trim())

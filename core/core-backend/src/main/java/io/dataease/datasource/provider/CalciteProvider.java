@@ -39,6 +39,8 @@ import java.math.BigDecimal;
 import java.net.URL;
 import java.sql.*;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 
@@ -731,6 +733,7 @@ public class CalciteProvider {
         List<String> tableSqls = new ArrayList<>();
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
         DatasourceConfiguration configuration = null;
+        String database = "";
         switch (datasourceType) {
             case mysql:
             case mongo:
@@ -739,7 +742,16 @@ public class CalciteProvider {
             case StarRocks:
             case doris:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
-                tableSqls.add(String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", configuration.getDataBase()));
+                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                    database = configuration.getDataBase();
+                } else {
+                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                    matcher.find();
+                    String[] databasePrams = matcher.group(3).split("\\?");
+                    database = databasePrams[0];
+                }
+                tableSqls.add(String.format("SELECT TABLE_NAME,TABLE_COMMENT FROM INFORMATION_SCHEMA.TABLES WHERE TABLE_SCHEMA = '%s' ;", database));
                 break;
             case oracle:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Oracle.class);
@@ -781,7 +793,17 @@ public class CalciteProvider {
                 break;
             case ck:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
-                tableSqls.add("SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", configuration.getDataBase()));
+                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                    database = configuration.getDataBase();
+                } else {
+                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:clickhouse://(.*):(\\d+)/(.*)");
+                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                    matcher.find();
+                    String[] databasePrams = matcher.group(3).split("\\?");
+                    database = databasePrams[0];
+                }
+                tableSqls.add("SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", database));
+
                 break;
             default:
                 tableSqls.add("show tables");

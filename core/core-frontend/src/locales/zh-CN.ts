@@ -284,6 +284,7 @@ export default {
     datasource_url: '地址',
     please_input_datasource_url: '请输入 Elasticsearch 地址，如: http://es_host:es_port',
     please_input_data_base: '请输入数据库名称',
+    please_input_jdbc_url: '请输入JDBC 连接',
     please_select_oracle_type: '选择连接类型',
     please_input_user_name: '请输入用户名',
     please_input_password: '请输入密码',

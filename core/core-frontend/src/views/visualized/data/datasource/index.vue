@@ -1122,14 +1122,14 @@ const getMenuList = (val: boolean) => {
                 </el-col>
               </el-row>
               <template v-if="!['Excel', 'API'].includes(nodeInfo.type)">
-                <el-row :gutter="24">
+                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType === 'hostName'">
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.host')">{{
                       nodeInfo.configuration.host
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24">
+                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType === 'hostName'">
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.port')">{{
                       nodeInfo.configuration.port
@@ -1141,7 +1141,7 @@ const getMenuList = (val: boolean) => {
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
-                <el-row :gutter="24">
+                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType === 'hostName'">
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.user_name')">{{
                       nodeInfo.configuration.username
@@ -1150,6 +1150,20 @@ const getMenuList = (val: boolean) => {
                   <el-col :span="12">
                     <BaseInfoItem :label="t('datasource.extra_params')">{{
                       nodeInfo.configuration.extraParams
+                    }}</BaseInfoItem>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'hostName'">
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.jdbcUrl')">{{
+                      nodeInfo.configuration.jdbcUrl
+                    }}</BaseInfoItem>
+                  </el-col>
+                </el-row>
+                <el-row :gutter="24" v-show="nodeInfo.configuration.urlType !== 'hostName'">
+                  <el-col :span="12">
+                    <BaseInfoItem :label="t('datasource.user_name')">{{
+                      nodeInfo.configuration.username
                     }}</BaseInfoItem>
                   </el-col>
                 </el-row>
