@@ -93,7 +93,9 @@ public class DefaultCacheImpl implements DECacheService {
     @Override
     public void keyRemove(String cacheName, String key) {
         Cache<Object, Object> cache = cacheManager.getCache(cacheName);
-        cache.remove(key);
+        if(cache != null){
+            cache.remove(key);
+        }
     }
 
     @PostConstruct
