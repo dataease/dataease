@@ -1,8 +1,10 @@
 <script lang="tsx" setup>
-import { reactive, watch } from 'vue'
+import { computed, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { reverseColor } from '../util/util'
 import { ArrowRight } from '@element-plus/icons-vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
 
 const { t } = useI18n()
 
@@ -24,13 +26,17 @@ const state = reactive({
   textColor: '#bbbfc4'
 })
 
-watch(
-  [() => props.themeStyle?.backgroundColorSelect, () => props.themeStyle?.color],
-  () => {
-    loadThemeStyle()
-  },
-  { deep: true }
+const textColor = computed(
+  () => dvMainStore.canvasStyleData.component.seniorStyleSetting.drillLayerColor
 )
+
+// watch(
+//   [() => props.themeStyle?.backgroundColorSelect, () => props.themeStyle?.color],
+//   () => {
+//     loadThemeStyle()
+//   },
+//   { deep: true }
+// )
 
 const drillJump = index => {
   if (index < props.drillFilters.length) {
@@ -67,7 +73,7 @@ const loadThemeStyle = () => {
   <div v-if="props.drillFilters && props.drillFilters.length > 0" class="drill">
     <el-breadcrumb :separator-icon="ArrowRight" class="drill-style">
       <el-breadcrumb-item class="drill-item" @click="drillJump(0)">
-        <span :style="{ color: state.textColor }">{{ t('commons.all') }}</span>
+        <span :style="{ color: textColor }">{{ t('commons.all') }}</span>
       </el-breadcrumb-item>
       <el-breadcrumb-item
         v-for="(filter, index) in props.drillFilters"
@@ -75,7 +81,7 @@ const loadThemeStyle = () => {
         class="drill-item"
         @click="drillJump(index + 1)"
       >
-        <span :style="{ color: state.textColor }">{{ filter.value[0] }}</span>
+        <span :style="{ color: textColor }">{{ filter.value[0] }}</span>
       </el-breadcrumb-item>
     </el-breadcrumb>
   </div>

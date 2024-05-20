@@ -158,6 +158,21 @@
                 />
               </el-form-item>
             </el-col>
+            <el-col :span="12">
+              <el-form-item label="分页器配色" class="form-item">
+                <el-color-picker
+                  :trigger-width="colorPickerWidth"
+                  v-model="seniorForm.pagerColor"
+                  size="small"
+                  :predefine="predefineColors"
+                  color-format="rgb"
+                  :effect="themes"
+                  show-alpha
+                  is-custom
+                  @change="changePagerColorChange"
+                />
+              </el-form-item>
+            </el-col>
           </el-row>
         </div>
       </el-collapse-item>
@@ -174,7 +189,10 @@ import eventBus from '@/utils/eventBus'
 import { storeToRefs } from 'pinia'
 import CustomColorStyleSelect from '@/views/chart/components/editor/editor-style/components/CustomColorStyleSelect.vue'
 import elementResizeDetectorMaker from 'element-resize-detector'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const { t } = useI18n()
+const snapshotStore = snapshotStoreWithOut()
+
 const props = defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
@@ -191,6 +209,9 @@ const colorFormRef = ref(null)
 const colorForm = computed(
   () => canvasStyleData.value.component.chartColor as DeepPartial<ChartAttr>
 )
+
+const seniorForm = computed(() => canvasStyleData.value.component.seniorStyleSetting)
+
 const predefineColors = COLOR_PANEL
 
 const state = reactive({
@@ -213,6 +234,10 @@ const initForm = () => {
 const changeColorOption = (modifyName = 'value') => {
   colorForm.value.basicStyle = state.basicStyleForm
   changeColorCase(modifyName)
+}
+
+const changePagerColorChange = () => {
+  snapshotStore.recordSnapshotCache()
 }
 
 const changeColorCase = modifyName => {
