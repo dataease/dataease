@@ -392,7 +392,7 @@ em {
 }
 
 strong {
-  font-synthesis: style weight!important;
+  font-synthesis: style weight !important;
 }
 
 .ed-date-editor .ed-range__icon {
@@ -400,12 +400,94 @@ strong {
 }
 
 .ed-picker__popper {
-  --ed-datepicker-border-color: #DEE0E3 !important;
+  --ed-datepicker-border-color: #dee0e3 !important;
 }
 
 .ed-dialog__headerbtn {
   top: 21px !important;
   display: flex;
   align-items: center;
-  justify-content: center
+  justify-content: center;
+}
+
+.de-message-export {
+  min-width: 20px !important;
+  padding: 16px 20px !important;
+  display: flex;
+  align-items: center;
+  box-shadow: 0px 4px 8px 0px #1f23291a;
+
+  & > p {
+    font-family: AlibabaPuHuiTi;
+    font-size: 14px;
+    font-weight: 500;
+    line-height: 22px;
+    letter-spacing: 0px;
+    text-align: left;
+    color: #1f2329;
+    display: flex;
+    align-items: center;
+    padding-right: 20px;
+  }
+
+  .btn-text {
+    padding: 2px 4px;
+    &:hover {
+      background: var(--primary10, #3370ff1a);
+    }
+  }
+
+  .ed-message__closeBtn {
+    margin-left: 28px;
+    height: 16px;
+    width: 16px;
+    position: relative;
+    margin-right: 0;
+    top: 0;
+    right: 0;
+    transform: translateY(0);
+    color: #646a73;
+  }
+
+  .ed-message__icon {
+    height: 16px;
+    width: 16px;
+    margin-right: 8px;
+  }
+}
+
+.de-message-loading {
+  border: 1px solid var(--primary, #3370ff) !important;
+  background: #f0f4ff !important;
+  @keyframes circle {
+    0% {
+      transform: rotate(0);
+    }
+
+    100% {
+      transform: rotate(360deg);
+    }
+  }
+  .ed-message__icon {
+    color: var(--primary, #3370ff);
+    animation: circle infinite 0.75s linear;
+  }
+}
+
+.de-message-error {
+  border: 1px solid var(--deDanger, #f54a45) !important;
+  background: var(--deWhitemsgDeDanger, #fef1f1) !important;
+
+  .ed-message__icon {
+    color: var(--deDanger, #f54a45);
+  }
+}
+
+.de-message-success {
+  border: 1px solid var(--deSuccess, #34c724) !important;
+  background: var(--deWhitemsgDeSuccess, #f0fbef) !important;
+
+  .ed-message__icon {
+    color: var(--deSuccess, #34c724);
+  }
 }

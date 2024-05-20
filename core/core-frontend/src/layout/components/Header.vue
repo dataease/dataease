@@ -4,6 +4,7 @@ import { usePermissionStore } from '@/store/modules/permission'
 import { isExternal } from '@/utils/validate'
 import { formatRoute } from '@/router/establish'
 import HeaderMenuItem from './HeaderMenuItem.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { Icon } from '@/components/icon-custom'
 import { ElHeader, ElMenu } from 'element-plus-secondary'
 import SystemCfg from './SystemCfg.vue'
@@ -15,8 +16,8 @@ import { isDesktop } from '@/utils/ModelUtil'
 import { XpackComponent } from '@/components/plugin'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import AiComponent from '@/layout/components/AiComponent.vue'
-import { useEmitt } from '@/hooks/web/useEmitt'
 import { findBaseParams } from '@/api/aiComponent'
+import ExportExcel from '@/views/visualized/data/dataset/ExportExcel.vue'
 import AiTips from '@/layout/components/AiTips.vue'
 const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
@@ -40,7 +41,10 @@ const activeIndex = computed(() => {
   return route.path
 })
 const permissionStore = usePermissionStore()
-
+const ExportExcelRef = ref()
+const downloadClick = () => {
+  ExportExcelRef.value.init()
+}
 const routers: any[] = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
 const showSystem = ref(false)
 const showToolbox = ref(false)
@@ -85,6 +89,10 @@ onMounted(() => {
   initShowSystem()
   initShowToolbox()
   initAiBase()
+  useEmitt({
+    name: 'data-export-center',
+    callback: downloadClick
+  })
 })
 </script>
 
@@ -112,6 +120,9 @@ onMounted(() => {
       <el-icon style="margin: 0 10px" class="ai-icon" v-if="aiBaseUrl && !showOverlay">
         <Icon name="dv-ai" @click="handleAiClick" />
       </el-icon>
+      <el-icon style="margin: 0 10px">
+        <Icon name="dv-preview-download" @click="downloadClick" />
+      </el-icon>
       <ai-tips @confirm="aiTipsConfirm" v-if="showOverlay" class="ai-icon-tips"></ai-tips>
       <ToolboxCfg v-if="showToolbox" />
       <TopDoc />
@@ -121,6 +132,7 @@ onMounted(() => {
       <div v-if="showOverlay" class="overlay"></div>
     </div>
   </el-header>
+  <ExportExcel ref="ExportExcelRef"></ExportExcel>
 </template>
 
 <style lang="less" scoped>

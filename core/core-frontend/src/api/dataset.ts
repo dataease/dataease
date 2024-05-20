@@ -247,3 +247,39 @@ export const getFunction = async (): Promise<DatasetDetail[]> => {
     return res?.data
   })
 }
+
+export const exportTasks = async (type): Promise<IResponse> => {
+  return request.post({ url: '/exportCenter/exportTasks/' + type, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
+export const exportRetry = async (id): Promise<IResponse> => {
+  return request.post({ url: '/exportCenter/retry/' + id, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
+export const downloadFile = async (id): Promise<Blob> => {
+  return request.get({ url: 'exportCenter/download/' + id, responseType: 'blob' }).then(res => {
+    return res?.data
+  })
+}
+
+export const exportDelete = async (id): Promise<IResponse> => {
+  return request.get({ url: '/exportCenter/delete/' + id }).then(res => {
+    return res?.data
+  })
+}
+
+export const exportDeleteAll = async (type, data): Promise<IResponse> => {
+  return request.post({ url: '/exportCenter/deleteAll/' + type, data }).then(res => {
+    return res?.data
+  })
+}
+
+export const exportDeletePost = async (data): Promise<IResponse> => {
+  return request.post({ url: '/exportCenter/delete', data }).then(res => {
+    return res?.data
+  })
+}
