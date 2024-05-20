@@ -39,7 +39,11 @@ export const logoutHandler = (justClean?: boolean) => {
 const removeCache = () => {
   const keys = Object.keys(wsCache['storage'])
   keys.forEach(key => {
-    if (key.startsWith('de-plugin-') || key === 'de-platform-client') {
+    if (
+      key.startsWith('de-plugin-') ||
+      key === 'de-platform-client' ||
+      key === 'pwd-validity-period'
+    ) {
       wsCache.delete(key)
     }
   })

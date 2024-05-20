@@ -2180,7 +2180,10 @@ export default {
     frontTimeOut: '请求超时时间（秒）',
     logLiveTime: '操作日志保留时间（天）',
     platformOid: '第三方平台用户组织',
-    platformRid: '第三方平台用户角色'
+    platformRid: '第三方平台用户角色',
+    pwdStrategy: '开启密码策略',
+    dip: '禁用初始密码',
+    pvp: '密码有效期'
   },
   setting_email: {
     title: '邮件设置',

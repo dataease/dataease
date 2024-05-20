@@ -36,6 +36,7 @@ const footContent = ref(null)
 const loginErrorMsg = ref('')
 const xpackLoginHandler = ref()
 const showDempTips = ref(false)
+const xpackInvalidPwd = ref()
 const demoTips = computed(() => {
   if (!showDempTips.value) {
     return ''
@@ -113,6 +114,16 @@ const handleLogin = () => {
           const { token, exp } = res.data
           userStore.setToken(token)
           userStore.setExp(exp)
+          if (!xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
+            const param = {
+              methodName: 'init',
+              args: () => {
+                duringLogin.value = false
+              }
+            }
+            xpackInvalidPwd?.value.invokeMethod(param)
+            return
+          }
           const queryRedirectPath = getCurLocation()
           router.push({ path: queryRedirectPath })
         })
@@ -135,6 +146,7 @@ const tablePaneList = ref([{ title: '普通登录', name: 'simple' }])
 const xpackLoaded = info => {
   tablePaneList.value.push(info)
 }
+const xpackLoadFail = ref(false)
 
 const loginContainer = ref()
 const loginContainerWidth = ref(0)
@@ -333,6 +345,11 @@ onMounted(() => {
                 ref="xpackLoginHandler"
                 jsname="L2NvbXBvbmVudC9sb2dpbi9IYW5kbGVy"
                 @loaded="xpackLoaded"
+              />
+              <XpackComponent
+                ref="xpackInvalidPwd"
+                jsname="L2NvbXBvbmVudC9sb2dpbi9JbnZhbGlkUHdk"
+                @load-fail="() => (xpackLoadFail = true)"
               />
             </div>
 

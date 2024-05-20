@@ -8,6 +8,7 @@ import Main from './components/Main.vue'
 import CollapseBar from './components/CollapseBar.vue'
 import { ElContainer } from 'element-plus-secondary'
 import { useRoute } from 'vue-router'
+import { XpackComponent } from '@/components/plugin'
 const route = useRoute()
 const systemMenu = computed(() => route.path.includes('system'))
 const settingMenu = computed(() => route.path.includes('sys-setting'))
@@ -49,6 +50,7 @@ const setCollapse = () => {
       ></Main>
     </el-container>
   </div>
+  <XpackComponent jsname="L2NvbXBvbmVudC9sb2dpbi9Qd2RJbnZhbGlkVGlwcw==" />
 </template>
 
 <style lang="less" scoped>
