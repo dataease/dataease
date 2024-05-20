@@ -7,7 +7,7 @@ import { usePermissionStoreWithOut, pathValid, getFirstAuthMenu } from '@/store/
 import { usePageLoading } from '@/hooks/web/usePageLoading'
 import { getRoleRouters } from '@/api/common'
 import { useCache } from '@/hooks/web/useCache'
-import { isMobile, checkPlatform } from '@/utils/utils'
+import { isMobile, checkPlatform, isLarkPlatform, isPlatformClient } from '@/utils/utils'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -34,7 +34,7 @@ router.beforeEach(async (to, from, next) => {
     loadDone()
     if (to.name === 'link') {
       window.location.href = window.origin + '/mobile.html#' + to.path
-    } else {
+    } else if (!isPlatformClient() && !isLarkPlatform()) {
       window.location.href = window.origin + '/mobile.html#/index'
     }
   }

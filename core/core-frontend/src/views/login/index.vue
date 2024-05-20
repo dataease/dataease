@@ -256,7 +256,13 @@ onMounted(() => {
       </div>
       <div class="login-form-content" v-loading="loading">
         <div class="login-form-center">
-          <el-form ref="formRef" :model="state.loginForm" :rules="rules" size="default">
+          <el-form
+            ref="formRef"
+            :model="state.loginForm"
+            :rules="rules"
+            size="default"
+            :disabled="preheat"
+          >
             <div class="login-logo">
               <Icon
                 v-if="!loginLogoUrl && axiosFinished"
