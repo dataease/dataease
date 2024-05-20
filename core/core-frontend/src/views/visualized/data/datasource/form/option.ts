@@ -122,6 +122,8 @@ export const nameMap = {
 
 export interface Configuration {
   dataBase: string
+  jdbcUrl: string
+  urlType: string
   connectionType: string
   schema: string
   extraParams: string

@@ -2,8 +2,6 @@ package io.dataease.api.ds.vo;
 
 import lombok.Data;
 
-import java.util.List;
-
 @Data
 public class Configuration {
     private String type;
@@ -17,6 +15,8 @@ public class Configuration {
     private String aliasSuffix = "";
     private String jdbc;
     private String host;
+    private String jdbcUrl;
+    private String urlType;
     private Integer port;
     private String username;
     private String password;

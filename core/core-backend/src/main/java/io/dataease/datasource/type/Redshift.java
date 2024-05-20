@@ -12,6 +12,9 @@ public class Redshift extends DatasourceConfiguration {
     private String extraParams = "";
 
     public String getJdbc() {
+        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+            return getJdbcUrl();
+        }
         return "jdbc:redshift://HOSTNAME:PORT/DATABASE"
                 .replace("HOSTNAME", getHost().trim())
                 .replace("PORT", getPort().toString().trim())

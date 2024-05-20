@@ -12,6 +12,9 @@ public class Pg extends DatasourceConfiguration {
     private String extraParams = "";
 
     public String getJdbc() {
+        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+            return getJdbcUrl();
+        }
         if(StringUtils.isEmpty(extraParams.trim())){
             if (StringUtils.isEmpty(getSchema())) {
                 return "jdbc:postgresql://HOSTNAME:PORT/DATABASE"

@@ -465,6 +465,9 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
       Object.assign(form2, cloneDeep(nodeInfo))
     } else {
       Object.assign(form, cloneDeep(nodeInfo))
+      if (form.hasOwnProperty('configuration') && form.configuration.urlType == undefined) {
+        form.configuration.urlType = 'hostName'
+      }
     }
     pid.value = nodeInfo.pid || '0'
   } else {
