@@ -117,7 +117,7 @@ public class CalciteProvider {
         tableDesc.setDatasourceId(datasourceRequest.getDatasource().getId());
         tableDesc.setType("db");
         tableDesc.setTableName(resultSet.getString(1));
-        tableDesc.setName(resultSet.getString(1));
+        tableDesc.setName(resultSet.getString(2));
         return tableDesc;
     }
 
@@ -315,6 +315,7 @@ public class CalciteProvider {
     private String getTableFiledSql(DatasourceRequest datasourceRequest) {
         String sql = "";
         DatasourceConfiguration configuration = null;
+        String database="";
         DatasourceType datasourceType = DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
@@ -324,7 +325,16 @@ public class CalciteProvider {
             case StarRocks:
             case doris:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
-                sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND   TABLE_NAME = '%s'", configuration.getDataBase(), datasourceRequest.getTable());
+                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                    database = configuration.getDataBase();
+                } else {
+                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                    matcher.find();
+                    String[] databasePrams = matcher.group(3).split("\\?");
+                    database = databasePrams[0];
+                }
+                sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND   TABLE_NAME = '%s'", database, datasourceRequest.getTable());
                 break;
             case oracle:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Oracle.class);
@@ -396,6 +406,16 @@ public class CalciteProvider {
                 break;
             case ck:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
+
+                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                    database = configuration.getDataBase();
+                } else {
+                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:clickhouse://(.*):(\\d+)/(.*)");
+                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                    matcher.find();
+                    String[] databasePrams = matcher.group(3).split("\\?");
+                    database = databasePrams[0];
+                }
                 sql = String.format(" SELECT\n" +
                         "    name,\n" +
                         "    type,\n" +
@@ -404,7 +424,7 @@ public class CalciteProvider {
                         "    system.columns\n" +
                         "WHERE\n" +
                         "    database = '%s'  \n" +
-                        "    AND table = '%s' ", configuration.getDataBase(), datasourceRequest.getTable());
+                        "    AND table = '%s' ", database, datasourceRequest.getTable());
                 break;
             case impala:
                 sql = String.format("DESCRIBE `%s`", datasourceRequest.getTable());

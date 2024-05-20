@@ -91,7 +91,7 @@ const { width, node } = useMoveLine('DATASOURCE')
 
 const dsTableDetail = reactive({
   tableName: '',
-  remark: ''
+  name: ''
 })
 const rootManage = ref(false)
 const nickName = ref('')
@@ -1356,7 +1356,7 @@ const getMenuList = (val: boolean) => {
             {{ t('datasource.table_description') }}
           </p>
           <p class="table-value">
-            {{ dsTableDetail.remark || '-' }}
+            {{ dsTableDetail.name || '-' }}
           </p>
         </el-col>
       </el-row>
