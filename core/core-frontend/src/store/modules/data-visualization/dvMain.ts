@@ -362,8 +362,15 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       //如果当前的组件是UserView 图表，则想canvasView中增加一项 UserView ID 和componentID保持一致
       if (component.component === 'UserView') {
+        const defaultConfig = JSON.parse(JSON.stringify(BASE_VIEW_CONFIG))
+        if (component.innerType === 'bar-range') {
+          defaultConfig.customStyle.xAxis.axisLine.show = false
+          defaultConfig.customStyle.xAxis.splitLine.show = true
+          defaultConfig.customStyle.yAxis.axisLine.show = true
+          defaultConfig.customStyle.yAxis.splitLine.show = false
+        }
         let newView = {
-          ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
+          ...defaultConfig,
           id: component.id,
           type: component.innerType,
           render: component.render
