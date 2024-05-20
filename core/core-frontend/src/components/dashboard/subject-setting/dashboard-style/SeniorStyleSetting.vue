@@ -2,9 +2,15 @@
   <div style="width: 100%; padding-bottom: 8px">
     <el-form label-position="top" style="width: 100%">
       <div style="width: 100%; padding: 16px 8px 0">
-        <el-col :span="12">
-          <el-form-item class="form-item" label="联动、钻取、调整的图标颜色">
+        <el-col :span="24">
+          <el-form-item
+            :effect="themes"
+            class="form-item"
+            :class="'form-item-' + themes"
+            label="联动、钻取、跳转的图标颜色"
+          >
             <el-color-picker
+              :effect="themes"
               v-model="seniorStyleSetting.linkageIconColor"
               :trigger-width="197"
               is-custom
@@ -13,10 +19,16 @@
             />
           </el-form-item>
         </el-col>
-        <el-col :span="12">
-          <el-form-item class="form-item" label="钻取层级展示颜色">
+        <el-col :span="24">
+          <el-form-item
+            :effect="themes"
+            class="form-item"
+            :class="'form-item-' + themes"
+            label="钻取层级展示颜色"
+          >
             <el-color-picker
               v-model="seniorStyleSetting.drillLayerColor"
+              :effect="themes"
               :trigger-width="197"
               is-custom
               :predefine="state.predefineColors"
@@ -44,6 +56,12 @@ const seniorStyleSetting = computed<any>(() => {
   return dvMainStore.canvasStyleData.component.seniorStyleSetting
 })
 
+const props = defineProps({
+  themes: {
+    type: String,
+    default: 'light'
+  }
+})
 const state = reactive({
   fontSize: [],
   isSetting: false,
@@ -56,11 +74,6 @@ const initForm = () => {
 const themeChange = () => {
   dvMainStore.canvasStyleData.component.seniorStyleSetting = cloneDeep(seniorStyleSetting.value)
   snapshotStore.recordSnapshotCache('seniorStyleSettingSimpleSelector-themeChange')
-}
-
-const handleHorizontalChange = (type, horizontal = 'titleLayout') => {
-  seniorStyleSetting.value[horizontal] = type
-  themeChange(horizontal)
 }
 
 onMounted(() => {
@@ -98,6 +111,14 @@ onMounted(() => {
 
   :deep(.ed-form-item__label) {
     color: #646a73;
+    font-size: 12px;
+    font-weight: 400;
+    line-height: 20px;
+  }
+}
+.form-item-dark {
+  :deep(.ed-form-item__label) {
+    color: #6a6a6a;
     font-size: 12px;
     font-weight: 400;
     line-height: 20px;
