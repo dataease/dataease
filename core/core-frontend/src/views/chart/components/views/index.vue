@@ -741,11 +741,11 @@ const titleIconStyle = computed(() => {
     flex-wrap: nowrap;
     gap: 8px;
 
-    //color: #646a73;
-    //
-    //&.icons-container__dark {
-    //  color: #a6a6a6;
-    //}
+    color: #646a73;
+
+    &.icons-container__dark {
+      color: #a6a6a6;
+    }
 
     &.is-editing {
       gap: 6px;

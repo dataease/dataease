@@ -5,22 +5,22 @@
         <el-col :span="12">
           <el-form-item class="form-item" label="联动、钻取、调整的图标颜色">
             <el-color-picker
-              v-model="filterStyle.titleColor"
+              v-model="seniorStyleSetting.linkageIconColor"
               :trigger-width="197"
               is-custom
               :predefine="state.predefineColors"
-              @change="themeChange('titleColor')"
+              @change="themeChange"
             />
           </el-form-item>
         </el-col>
         <el-col :span="12">
           <el-form-item class="form-item" label="钻取层级展示颜色">
             <el-color-picker
-              v-model="filterStyle.labelColor"
+              v-model="seniorStyleSetting.drillLayerColor"
               :trigger-width="197"
               is-custom
               :predefine="state.predefineColors"
-              @change="themeChange('labelColor')"
+              @change="themeChange"
             />
           </el-form-item>
         </el-col>
@@ -35,15 +35,13 @@ import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
 import { cloneDeep } from 'lodash-es'
-import { adaptCurThemeFilterStyleAll } from '@/utils/canvasStyle'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
-import { ElIcon } from 'element-plus-secondary'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
-const filterStyle = computed<any>(() => {
-  return dvMainStore.canvasStyleData.component.filterStyle
+const seniorStyleSetting = computed<any>(() => {
+  return dvMainStore.canvasStyleData.component.seniorStyleSetting
 })
 
 const state = reactive({
@@ -55,14 +53,13 @@ const state = reactive({
 const initForm = () => {
   // do
 }
-const themeChange = styleKey => {
-  dvMainStore.canvasStyleData.component.filterStyle = cloneDeep(filterStyle.value)
-  adaptCurThemeFilterStyleAll(styleKey)
-  snapshotStore.recordSnapshotCache('filterStyleSimpleSelector-themeChange')
+const themeChange = () => {
+  dvMainStore.canvasStyleData.component.seniorStyleSetting = cloneDeep(seniorStyleSetting.value)
+  snapshotStore.recordSnapshotCache('seniorStyleSettingSimpleSelector-themeChange')
 }
 
 const handleHorizontalChange = (type, horizontal = 'titleLayout') => {
-  filterStyle.value[horizontal] = type
+  seniorStyleSetting.value[horizontal] = type
   themeChange(horizontal)
 }
 
