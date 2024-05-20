@@ -22,6 +22,13 @@ import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const editor = ref()
 const infoTemplate = ref()
+const pvpOptions = [
+  { value: '0', label: '永久' },
+  { value: '1', label: '一年' },
+  { value: '2', label: '半年' },
+  { value: '3', label: '三个月' },
+  { value: '4', label: '一个月' }
+]
 const tooltips = [
   {
     key: 'setting_basic.frontTimeOut',
@@ -59,6 +66,7 @@ const selectedOid = ref('')
 const selectedOName = ref('')
 const selectedRid = ref<string[]>([])
 const selectedRName = ref<string[]>([])
+const selectedPvp = ref('0')
 const search = cb => {
   const url = '/sysParameter/basic/query'
   originData = []
@@ -68,7 +76,11 @@ const search = cb => {
     const data = res.data
     for (let index = 0; index < data.length; index++) {
       const item = data[index]
-      if (item.pkey === 'basic.autoCreateUser') {
+      if (
+        item.pkey === 'basic.autoCreateUser' ||
+        item.pkey === 'basic.dip' ||
+        item.pkey === 'basic.pwdStrategy'
+      ) {
         item.pval = item.pval === 'true' ? '开启' : '未开启'
       } else if (item.pkey === 'basic.platformOid') {
         selectedOid.value = item.pval
@@ -89,6 +101,9 @@ const search = cb => {
           selectedRid.value = []
           item.pval = '普通角色'
         }
+      } else if (item.pkey === 'basic.pvp') {
+        selectedPvp.value = item.pval || '0'
+        item.pval = pvpOptions.filter(cur => cur.value === selectedPvp.value)[0].label
       } else {
         item.pval = item.pval
       }

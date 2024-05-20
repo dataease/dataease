@@ -185,4 +185,9 @@ public interface UserApi {
     @Hidden
     @GetMapping("/orgAdmin")
     boolean orgAdmin();
+
+    @Hidden
+    @GetMapping("/invalidPwd")
+    InvalidPwdVO invalidPwd();
+
 }
