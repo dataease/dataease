@@ -357,7 +357,8 @@ export function getXAxis(chart: Chart) {
               line: {
                 style: {
                   stroke: a.splitLine.lineStyle.color,
-                  lineWidth: a.splitLine.lineStyle.width
+                  lineWidth: a.splitLine.lineStyle.width,
+                  lineDash: getLineDash(a.splitLine.lineStyle.style)
                 }
               }
             }
@@ -435,7 +436,8 @@ export function getYAxis(chart: Chart) {
         line: {
           style: {
             stroke: yAxis.splitLine.lineStyle.color,
-            lineWidth: yAxis.splitLine.lineStyle.width
+            lineWidth: yAxis.splitLine.lineStyle.width,
+            lineDash: getLineDash(yAxis.splitLine.lineStyle.style)
           }
         }
       }
