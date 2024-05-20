@@ -342,8 +342,11 @@
             <artifactId>ashot</artifactId>
             <version>1.5.4</version>
         </dependency>
-
-
+        <dependency>
+            <groupId>org.apache.commons</groupId>
+            <artifactId>commons-math4-legacy</artifactId>
+            <version>4.0-beta1</version>
+        </dependency>
     </dependencies>
 
     <build>
