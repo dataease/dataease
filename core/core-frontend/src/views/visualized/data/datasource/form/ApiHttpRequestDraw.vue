@@ -293,8 +293,8 @@ const previewData = () => {
   for (let i = 0; i < apiItem.fields.length; i++) {
     for (let j = 0; j < apiItem.fields[i].value.length; j++) {
       data[j][apiItem.fields[i].name] = apiItem.fields[i].value[j]
-      data[j]['id'] = apiItem.fields[i].name
     }
+
     columnTmp.push({
       key: apiItem.fields[i].name,
       dataKey: apiItem.fields[i].name,
