@@ -4,7 +4,6 @@ export const SANKEY_EDITOR_PROPERTY: EditorProperty[] = [
   'label-selector',
   'tooltip-selector',
   'title-selector',
-  'function-cfg',
   'jump-set',
   'linkage'
 ]
