@@ -325,7 +325,7 @@ public class CalciteProvider {
             case StarRocks:
             case doris:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
-                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
@@ -407,7 +407,7 @@ public class CalciteProvider {
             case ck:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
 
-                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:clickhouse://(.*):(\\d+)/(.*)");
@@ -762,7 +762,7 @@ public class CalciteProvider {
             case StarRocks:
             case doris:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
-                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
@@ -813,7 +813,7 @@ public class CalciteProvider {
                 break;
             case ck:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
-                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:clickhouse://(.*):(\\d+)/(.*)");
