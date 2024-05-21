@@ -834,7 +834,7 @@ public class DatasourceServer implements DatasourceApi {
 
     public ApiDefinition checkApiDatasource(Map<String, String> request) throws DEException {
         ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
-        String response = ApiUtils.execHttpRequest(apiDefinition, 10);
+        String response = ApiUtils.execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout());
         if (request.keySet().contains("type") && request.get("type").equals("apiStructure")) {
             apiDefinition.setShowApiStructure(true);
         }

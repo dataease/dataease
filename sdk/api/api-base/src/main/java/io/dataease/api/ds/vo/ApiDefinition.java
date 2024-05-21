@@ -19,8 +19,7 @@ public class ApiDefinition {
     private ApiDefinitionRequest request;
     private String status;
     private List<Map<String, Object>> data = new ArrayList<>();
-
-
+    private Integer apiQueryTimeout = 10;
     private int previewNum = 10;
     private int maxPreviewNum = 10;
     private int serialNumber;

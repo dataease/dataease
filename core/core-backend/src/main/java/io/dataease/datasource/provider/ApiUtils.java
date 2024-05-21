@@ -59,7 +59,7 @@ public class ApiUtils {
         if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
-        String response = execHttpRequest(apiDefinition, 10);
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout());
         fieldList = getTableFields(apiDefinition);
         result.put("fieldList", fieldList);
         dataList = fetchResult(response, apiDefinition);
@@ -116,7 +116,7 @@ public class ApiUtils {
         if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
-        String response = execHttpRequest(apiDefinition, 10);
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout());
         return fetchResult(response, apiDefinition);
     }
 
