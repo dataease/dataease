@@ -1336,6 +1336,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'funnel',
         title: t('chart.chart_funnel'),
         icon: 'funnel'
+      },
+      {
+        render: 'antv',
+        category: 'relation',
+        value: 'sankey',
+        title: t('chart.chart_sankey'),
+        icon: 'sankey'
       }
     ]
   },
