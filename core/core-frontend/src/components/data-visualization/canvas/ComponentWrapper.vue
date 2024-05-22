@@ -8,6 +8,8 @@ import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { subscription } from '@/api/setting/sysParameter'
 import { ElMessage } from 'element-plus-secondary'
+import { useUserStoreWithOut } from '@/store/modules/user'
+const userStore = useUserStoreWithOut()
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
 
@@ -204,7 +206,7 @@ const deepScale = computed(() => scale.value / 100)
     @mouseenter="onMouseEnter"
   >
     <!-- v-if="dvInfo.type === 'dashboard'" -->
-    <div class="collect-icon" v-if="dvInfo.watermarkInfo?.createBy === 'admin'">
+    <div class="collect-icon" v-if="dvInfo.createBy === '1' && userStore.uid !== '1'">
       <el-icon @click="onFavorit" :size="16" :style="{ color: favorited ? '#FFC60A' : '#646A73' }">
         <icon :name="favorited ? 'visual-star' : 'icon_collection_outlined'"></icon>
       </el-icon>

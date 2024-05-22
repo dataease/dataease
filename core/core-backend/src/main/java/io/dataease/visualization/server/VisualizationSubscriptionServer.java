@@ -77,13 +77,13 @@ public class VisualizationSubscriptionServer implements VisualizationSubscriptio
             if ("UserView".equalsIgnoreCase(component)) {
                 // 图表
                 // 新增chart关联用户首页大屏
-                addChartForSubscription(adminComponentDataJson, targetJsonObject, userDataV);
+                addChartForSubscription(targetJsonObject, userDataV);
             } else if ("Group".equalsIgnoreCase(component)) {
                 // 组合
                 JSONArray propValueJsonArray = targetJsonObject.getJSONArray("propValue");
                 for (int i = 0; i < propValueJsonArray.length(); i++) {
                     JSONObject targetPropValueJSONObject = propValueJsonArray.getJSONObject(i);
-                    addChartForSubscription(adminComponentDataJson, targetPropValueJSONObject, userDataV);
+                    addChartForSubscription(targetPropValueJSONObject, userDataV);
                     propValueJsonArray.put(i, targetPropValueJSONObject);
                 }
             } else if ("DeTabs".equalsIgnoreCase(component)) {
@@ -191,22 +191,19 @@ public class VisualizationSubscriptionServer implements VisualizationSubscriptio
 
     /**
      * 为用户订阅新增图表
-     * @param checkData adminComponentData
      * @param targetJsonObject target
      * @param userDataV userDataV
      */
-    private void addChartForSubscription(String checkData, JSONObject targetJsonObject, DataVisualizationInfo userDataV) {
+    private void addChartForSubscription(JSONObject targetJsonObject, DataVisualizationInfo userDataV) {
         try {
             long id = targetJsonObject.getLong("id");
-            if (checkData.contains(id + "")) {
-                CoreChartView coreChartView = coreChartViewMapper.selectById(id);
-                if (null != coreChartView) {
-                    Long snowID = IDUtils.snowID();
-                    coreChartView.setId(snowID);
-                    coreChartView.setSceneId(userDataV.getId());
-                    coreChartViewMapper.insert(coreChartView);
-                    targetJsonObject.put("id", snowID.toString());
-                }
+            CoreChartView coreChartView = coreChartViewMapper.selectById(id);
+            if (null != coreChartView) {
+                Long snowID = IDUtils.snowID();
+                coreChartView.setId(snowID);
+                coreChartView.setSceneId(userDataV.getId());
+                coreChartViewMapper.insert(coreChartView);
+                targetJsonObject.put("id", snowID.toString());
             }
         } catch (JSONException e) {
             log.error("内部错误: {}", e.getMessage());
