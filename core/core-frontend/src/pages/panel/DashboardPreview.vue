@@ -73,7 +73,7 @@ onBeforeMount(async () => {
         dashboardPreview.value.restore()
       })
       if (attachParam) {
-        dvMainStore.addOuterParamsFilter(attachParam)
+        dvMainStore.addOuterParamsFilter(attachParam, canvasDataResult, 'outer')
       }
     }
   )
