@@ -850,9 +850,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       })
     },
     // 添加外部参数的过滤条件
-    addOuterParamsFilter(params, source = 'inner') {
+    addOuterParamsFilter(params, curComponentData = this.componentData, source = 'inner') {
       // params 结构 {key1:value1,key2:value2}
-      const curComponentData = this.componentData
       if (params) {
         const preActiveComponentIds = []
         const trackInfo = this.nowPanelOuterParamsInfo

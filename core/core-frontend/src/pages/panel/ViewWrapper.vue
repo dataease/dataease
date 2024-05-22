@@ -5,20 +5,40 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { useEmbedded } from '@/store/modules/embedded'
 import { check } from '@/utils/CrossPermission'
 import { useCache } from '@/hooks/web/useCache'
+import { getOuterParamsInfo } from '@/api/visualization/outerParams'
+import { ElMessage } from 'element-plus-secondary'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { useI18n } from '@/hooks/web/useI18n'
 const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const config = ref()
 const viewInfo = ref()
 const userViewEnlargeRef = ref()
+const dvMainStore = dvMainStoreWithOut()
+const { t } = useI18n()
 
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  curPreviewGap: 0
+  curPreviewGap: 0,
+  chartId: null
 })
+
+// 目标校验： 需要校验targetSourceId 是否是当前可视化资源ID
+const winMsgHandle = event => {
+  console.info('PostMessage Params Received')
+  const msgInfo = event.data
+  // 校验targetSourceId
+  if (msgInfo && msgInfo.type === 'attachParams' && msgInfo.targetSourceId === state.chartId + '') {
+    const attachParam = msgInfo.params
+    if (attachParam) {
+      dvMainStore.addOuterParamsFilter(attachParam, state.canvasDataPreview, 'outer')
+    }
+  }
+}
 
 const checkPer = async resourceId => {
   if (!window.DataEaseBi || !resourceId) {
@@ -34,6 +54,25 @@ onBeforeMount(async () => {
   if (!checkResult) {
     return
   }
+  state.chartId = embeddedStore.dvId
+  window.addEventListener('message', winMsgHandle)
+
+  // 添加外部参数
+  let attachParam
+  await getOuterParamsInfo(embeddedStore.dvId).then(rsp => {
+    dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
+  })
+
+  // div嵌入
+  if (embeddedStore.outerParams) {
+    try {
+      attachParam = JSON.parse(embeddedStore.outerParams)
+    } catch (e) {
+      console.error(e)
+      ElMessage.error(t('visualization.outer_param_decode_error'))
+    }
+  }
+
   initCanvasDataPrepare(
     embeddedStore.dvId,
     embeddedStore.busiFlag,
@@ -49,6 +88,9 @@ onBeforeMount(async () => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
+      if (attachParam) {
+        dvMainStore.addOuterParamsFilter(attachParam, canvasDataResult)
+      }
 
       viewInfo.value = canvasViewInfoPreview[embeddedStore.chartId]
       ;(

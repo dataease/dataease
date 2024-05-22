@@ -236,15 +236,19 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
   }
 }
 
-// 目标校验： 需要校验targetDvId 是否是当前可视化资源ID
+// 目标校验： 需要校验targetSourceId 是否是当前可视化资源ID
 const winMsgHandle = event => {
   console.info('PostMessage Params Received')
   const msgInfo = event.data
-  // 校验targetDvId
-  if (msgInfo && msgInfo.type === 'attachParams' && msgInfo.targetDvId === dvInfo.value.id + '') {
+  // 校验targetSourceId
+  if (
+    msgInfo &&
+    msgInfo.type === 'attachParams' &&
+    msgInfo.targetSourceId === dvInfo.value.id + ''
+  ) {
     const attachParam = msgInfo.params
     if (attachParam) {
-      dvMainStore.addOuterParamsFilter(attachParam, 'outer')
+      dvMainStore.addOuterParamsFilter(attachParam, componentData.value, 'outer')
     }
   }
 }
