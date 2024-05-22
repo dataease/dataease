@@ -48,7 +48,7 @@ dataease:
   version: '@project.version@'
   origin-list: http://192.168.2.70:9080
   apisix-api:
-    domain: http://192.168.0.121:9180
+    domain: http://192.168.2.70:9180
     key: edd1c9f034335f136f87ad84b625c8f1
 
 # springdoc-openapi项目配置

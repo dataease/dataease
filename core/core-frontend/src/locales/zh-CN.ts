@@ -1532,6 +1532,7 @@ export default {
     day_limit: '天不能小于1，大于31'
   },
   commons: {
+    test_connect: '测试连接',
     consanguinity: '血缘关系',
     collapse_navigation: '收起导航',
     operate_cancelled: '已取消操作',

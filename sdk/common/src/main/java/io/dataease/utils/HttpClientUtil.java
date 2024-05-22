@@ -6,9 +6,9 @@ import org.apache.commons.lang3.StringUtils;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
-import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.apache.http.client.methods.HttpDelete;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPatch;
 import org.apache.http.client.methods.HttpPost;
@@ -20,6 +20,7 @@ import org.apache.http.conn.socket.PlainConnectionSocketFactory;
 import org.apache.http.conn.ssl.NoopHostnameVerifier;
 import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
 import org.apache.http.entity.ContentType;
+import org.apache.http.entity.mime.MultipartEntityBuilder;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.impl.client.HttpClients;
@@ -74,6 +75,37 @@ public class HttpClientUtil {
             }
         } catch (Exception e) {
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
+        }
+    }
+
+    public static boolean validateUrl(String url, HttpClientConfig config) {
+        CloseableHttpClient httpClient = null;
+        try {
+            httpClient = buildHttpClient(url);
+            HttpGet httpGet = new HttpGet(url);
+            if (config == null) {
+                config = new HttpClientConfig();
+            }
+            httpGet.setConfig(config.buildRequestConfig());
+
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpGet.addHeader(key, header.get(key));
+            }
+            HttpResponse response = httpClient.execute(httpGet);
+            int statusCode = response.getStatusLine().getStatusCode();
+            return statusCode <= 400;
+        } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
+        } finally {
+            try {
+                if (httpClient != null) {
+                    httpClient.close();
+                }
+            } catch (Exception e) {
+                logger.error("HttpClient关闭连接失败", e);
+            }
         }
     }
 
@@ -340,6 +372,37 @@ public class HttpClientUtil {
         if (MapUtils.isEmpty(headMap)) return;
         for (Map.Entry<String, Object> entry : headMap.entrySet()) {
             config.addHeader(entry.getKey(), entry.getValue().toString());
+        }
+    }
+
+    public static String delete(String url, HttpClientConfig config) {
+        CloseableHttpClient httpClient = null;
+        try {
+            httpClient = buildHttpClient(url);
+            HttpDelete httpDelete = new HttpDelete(url);
+
+            if (config == null) {
+                config = new HttpClientConfig();
+            }
+            httpDelete.setConfig(config.buildRequestConfig());
+
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpDelete.addHeader(key, header.get(key));
+            }
+            HttpResponse response = httpClient.execute(httpDelete);
+            return getResponseStr(response, config);
+        } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
+        } finally {
+            try {
+                if (httpClient != null) {
+                    httpClient.close();
+                }
+            } catch (Exception e) {
+                logger.error("HttpClient关闭连接失败", e);
+            }
         }
     }
 }
