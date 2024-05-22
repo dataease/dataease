@@ -1825,7 +1825,16 @@ export default {
     trend_line: 'Trend Line',
     field_enum: 'Enumeration values',
     main_axis_label: 'Main Axis Label',
-    sub_axis_label: 'Sub Axis Label'
+    sub_axis_label: 'Sub Axis Label',
+    forecast_enable: 'Enable forecast',
+    forecast_all_period: 'Use full data',
+    forecast_all_period_tip: 'Whether to use all data as training data for predictions',
+    forecast_training_period: 'Training data',
+    forecast_training_period_tip: 'Intercept the most recent data from all the data as the training data',
+    forecast_period: 'Forecast period',
+    forecast_confidence_interval: 'Confidence interval',
+    forecast_model: 'Forecast model',
+    forecast_degree: 'Degree'
   },
   dataset: {
     scope_edit: 'Effective only when editing',

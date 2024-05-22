@@ -114,6 +114,33 @@ export function baseBarOptionAntV(container, chart, action, isGroup, isStack) {
   } else {
     delete options.groupField
   }
+  // forecast
+  if (chart.data?.forecastData?.length) {
+    const { forecastData } = chart.data
+    const templateData = data?.[data.length - 1]
+    forecastData.forEach(item => {
+      data.push({
+        ...templateData,
+        field: item.dimension,
+        name: item.dimension,
+        value: item.quota,
+        forecast: true
+      })
+    })
+    analyse.push({
+      type: 'region',
+      start: xScale => {
+        const ratio = xScale.ticks ? 1 / xScale.ticks.length : 1
+        const x = xScale.scale(forecastData[0].dimension) - ratio / 2
+        return [`${x * 100}%`, '0%']
+      },
+      end: (xScale) => {
+        const ratio = xScale.ticks ? 1 / xScale.ticks.length : 1
+        const x = xScale.scale(forecastData[forecastData.length - 1].dimension) + ratio / 2
+        return [`${x * 100}%`, '100%']
+      }
+    })
+  }
   // 目前只有百分比堆叠柱状图需要这个属性，先直接在这边判断而不作为参数传过来
   options.isPercent = chart.type === 'percentage-bar-stack'
   // custom color
