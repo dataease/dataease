@@ -608,6 +608,8 @@ export default {
       rename: '重命名',
       untitled: '未命名表單',
       create_new_form: '新建表單',
+      copy_new_form: '復制表單',
+      edit_form: '編輯表單',
       title: '標題',
       no_form: '暫無表單，點擊',
       form_list_name: '填報表單',

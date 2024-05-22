@@ -283,7 +283,13 @@ export default {
   methods: {
     closeCreate: function() {
       // back to forms list
-      this.$router.replace('/data-filling/forms')
+      if (this.$route.query.copy) {
+        this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.copy }})
+      } else if (this.$route.query.id) {
+        this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.id }})
+      } else {
+        this.$router.replace('/data-filling/forms')
+      }
     },
     onMoveInComponentList(e, originalEvent) {
       if (e.relatedContext?.component?.$el?.id === 'form-drag-place') {
@@ -465,7 +471,22 @@ export default {
           class="toolbar-icon-active icon20"
           @click="closeCreate"
         />
-        <span class="text16 margin-left12">
+        <span
+          v-if="$route.query.copy"
+          class="text16 margin-left12"
+        >
+          {{ $t('data_fill.form.copy_new_form') }}
+        </span>
+        <span
+          v-else-if="$route.query.id"
+          class="text16 margin-left12"
+        >
+          {{ $t('data_fill.form.edit_form') }}
+        </span>
+        <span
+          v-else
+          class="text16 margin-left12"
+        >
           {{ $t('data_fill.form.create_new_form') }}
         </span>
       </div>

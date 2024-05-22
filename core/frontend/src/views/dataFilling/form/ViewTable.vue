@@ -72,6 +72,11 @@
         :span="8"
       >
         <!--  编辑 todo      -->
+        <el-button
+          v-if="hasDataPermission('manage', data.privileges)"
+          type="primary"
+          @click="editForm(param)"
+        >{{ $t('panel.edit') }}</el-button>
       </el-col>
     </el-row>
 
@@ -866,6 +871,10 @@ export default {
       if (this.tabActive === 'task') {
         this.searchFormTaskData()
       }*/
+    },
+
+    editForm(param) {
+      this.$emit('editForm', param)
     },
 
     showData(row) {
