@@ -10,6 +10,7 @@ import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
+
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
 const state = reactive({
@@ -55,14 +56,16 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   }
 
   // 添加外部参数
-  const attachParamsEncode = router.currentRoute.value.query.attachParams
   let attachParam
+  await getOuterParamsInfo(dvId).then(rsp => {
+    dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
+  })
+
+  // 外部参数（iframe 或者 iframe嵌入）
+  const attachParamsEncode = router.currentRoute.value.query.attachParams
   if (attachParamsEncode) {
     try {
       attachParam = JSON.parse(Base64.decode(decodeURIComponent(attachParamsEncode)))
-      await getOuterParamsInfo(dvId).then(rsp => {
-        dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
-      })
     } catch (e) {
       console.error(e)
       ElMessage.error(t('visualization.outer_param_decode_error'))
@@ -97,6 +100,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     }
   )
 }
+
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
@@ -108,6 +112,7 @@ onMounted(async () => {
   }
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
 })
+
 defineExpose({
   loadCanvasDataAsync
 })

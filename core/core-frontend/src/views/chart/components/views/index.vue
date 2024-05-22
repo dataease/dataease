@@ -2,6 +2,8 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
+import { useAppStoreWithOut } from '@/store/modules/app'
+import { XpackComponent } from '@/components/plugin'
 import {
   computed,
   CSSProperties,
@@ -99,6 +101,7 @@ const props = defineProps({
 })
 const dynamicAreaId = ref('')
 const { view, showPosition, element, active, searchCount, scale } = toRefs(props)
+const appStore = useAppStoreWithOut()
 
 const titleShow = computed(
   () =>
@@ -235,6 +238,7 @@ watch([() => curComponent.value], () => {
     })
   }
 })
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const chartExtRequest = shallowRef(null)
 provide('chartExtRequest', chartExtRequest)
@@ -313,10 +317,21 @@ const filter = (firstLoad?: boolean) => {
 const onDrillFilters = param => {
   state.drillFilters = param ? param : []
 }
+const openHandler = ref(null)
+const initOpenHandler = newWindow => {
+  if (openHandler?.value) {
+    const pm = {
+      methodName: 'initOpenHandler',
+      args: newWindow
+    }
+    openHandler.value.invokeMethod(pm)
+  }
+}
 
 const windowsJump = (url, jumpType) => {
   try {
-    window.open(url, jumpType)
+    const newWindow = window.open(url, jumpType)
+    initOpenHandler(newWindow)
     if (jumpType === '_self') {
       location.reload()
     }
@@ -350,15 +365,19 @@ const jumpClick = param => {
     param.sourceDvId = dvInfo.value.id
     param.sourceViewId = param.viewId
     param.sourceFieldId = dimension.id
+    let embeddedBaseUrl = ''
+    if (isDataEaseBi.value) {
+      embeddedBaseUrl = embeddedStore.baseUrl
+    }
     // 内部仪表板跳转
     if (jumpInfo.linkType === 'inner') {
       if (jumpInfo.targetDvId) {
         if (publicLinkStatus.value) {
           // 判断是否有公共链接ID
           if (jumpInfo.publicJumpId) {
-            const url = `#/de-link/${jumpInfo.publicJumpId}?jumpInfoParam=${encodeURIComponent(
-              Base64.encode(JSON.stringify(param))
-            )}`
+            const url = `${embeddedBaseUrl}#/de-link/${
+              jumpInfo.publicJumpId
+            }?jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
             const currentUrl = window.location.href
             localStorage.setItem('beforeJumpUrl', currentUrl)
             windowsJump(url, jumpInfo.jumpType)
@@ -366,9 +385,9 @@ const jumpClick = param => {
             ElMessage.warning(t('visualization.public_link_tips'))
           }
         } else {
-          const url = `#/preview?dvId=${jumpInfo.targetDvId}&jumpInfoParam=${encodeURIComponent(
-            Base64.encode(JSON.stringify(param))
-          )}`
+          const url = `${embeddedBaseUrl}#/preview?dvId=${
+            jumpInfo.targetDvId
+          }&jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
           windowsJump(url, jumpInfo.jumpType)
         }
       } else {
@@ -713,6 +732,10 @@ const titleIconStyle = computed(() => {
       :view-icon="view.type"
     ></chart-empty-info>
     <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
+    <XpackComponent
+      ref="openHandler"
+      jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
+    />
   </div>
 </template>
 
@@ -741,11 +764,11 @@ const titleIconStyle = computed(() => {
     flex-wrap: nowrap;
     gap: 8px;
 
-    //color: #646a73;
-    //
-    //&.icons-container__dark {
-    //  color: #a6a6a6;
-    //}
+    color: #646a73;
+
+    &.icons-container__dark {
+      color: #a6a6a6;
+    }
 
     &.is-editing {
       gap: 6px;

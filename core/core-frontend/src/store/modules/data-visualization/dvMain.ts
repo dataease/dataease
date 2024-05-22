@@ -850,10 +850,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       })
     },
     // 添加外部参数的过滤条件
-    addOuterParamsFilter(params) {
+    addOuterParamsFilter(params, curComponentData = this.componentData, source = 'inner') {
       // params 结构 {key1:value1,key2:value2}
-      const curComponentData = this.componentData
       if (params) {
+        const preActiveComponentIds = []
         const trackInfo = this.nowPanelOuterParamsInfo
         for (let index = 0; index < curComponentData.length; index++) {
           const element = curComponentData[index]
@@ -906,6 +906,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                 // 不存在该条件 且 条件有效 直接保存该条件
                 // !filterExist && vValid && currentFilters.push(condition)
                 currentFilters.push(condition)
+                preActiveComponentIds.push(element.id)
               }
               if (element.component === 'VQuery') {
                 element.propValue.forEach(filterItem => {
@@ -949,6 +950,11 @@ export const dvMainStore = defineStore('dataVisualization', {
               element['outerParamsFilters'] = currentFilters
             }
             curComponentData[index] = element
+          })
+        }
+        if (source === 'outer') {
+          preActiveComponentIds.forEach(viewId => {
+            useEmitt().emitter.emit('query-data-' + viewId)
           })
         }
       }

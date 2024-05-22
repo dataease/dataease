@@ -59,7 +59,7 @@ public class ApiUtils {
         if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
-        String response = execHttpRequest(apiDefinition, 10);
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout());
         fieldList = getTableFields(apiDefinition);
         result.put("fieldList", fieldList);
         dataList = fetchResult(response, apiDefinition);
@@ -116,7 +116,7 @@ public class ApiUtils {
         if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
-        String response = execHttpRequest(apiDefinition, 10);
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout());
         return fetchResult(response, apiDefinition);
     }
 
@@ -194,6 +194,26 @@ public class ApiUtils {
         return response;
     }
 
+    private static void previewNum(List<Map<String, Object>> field){
+        for (Map<String, Object> stringObjectMap : field) {
+            JSONArray newArray = new JSONArray();
+            if (stringObjectMap.get("value") != null) {
+                try {
+                    TypeReference<JSONArray> listTypeReference = new TypeReference<JSONArray>() {
+                    };
+                    JSONArray array = objectMapper.readValue(stringObjectMap.get("value").toString(), listTypeReference);
+                    if(array.size() > 100){
+                        for (int i = 0; i < Math.min(100, array.size()); i++) {
+                            newArray.add(array.get(i));
+                        }
+                        stringObjectMap.put("value", newArray);
+                    }
+                } catch (Exception e) {
+
+                }
+            }
+        }
+    }
 
     public static ApiDefinition checkApiDefinition(ApiDefinition apiDefinition, String response) throws DEException {
         if (StringUtils.isEmpty(response)) {
@@ -217,6 +237,7 @@ public class ApiUtils {
                 rootPath = "$";
                 handleStr(apiDefinition, response, fields, rootPath);
             }
+            previewNum(fields);
             apiDefinition.setJsonFields(fields);
             return apiDefinition;
         } else {

@@ -493,6 +493,9 @@ public class DatasourceServer implements DatasourceApi {
     public DatasourceDTO get(Long datasourceId) throws DEException {
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         CoreDatasource datasource = datasourceMapper.selectById(datasourceId);
+        if(datasource == null){
+            DEException.throwException("不存在的数据源！");
+        }
         BeanUtils.copyBean(datasourceDTO, datasource);
         TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
         };
@@ -834,10 +837,11 @@ public class DatasourceServer implements DatasourceApi {
 
     public ApiDefinition checkApiDatasource(Map<String, String> request) throws DEException {
         ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
-        String response = ApiUtils.execHttpRequest(apiDefinition, 10);
+        String response = ApiUtils.execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout());
         if (request.keySet().contains("type") && request.get("type").equals("apiStructure")) {
             apiDefinition.setShowApiStructure(true);
         }
+
         ApiUtils.checkApiDefinition(apiDefinition, response);
         if (apiDefinition.getRequest().getAuthManager() != null && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getUsername()) && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getPassword()) && apiDefinition.getRequest().getAuthManager().getVerification().equals("Basic Auth")) {
             apiDefinition.getRequest().getAuthManager().setUsername(new String(Base64.getEncoder().encode(apiDefinition.getRequest().getAuthManager().getUsername().getBytes())));

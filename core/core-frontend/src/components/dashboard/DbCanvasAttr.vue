@@ -147,13 +147,6 @@ const saveSelfSubject = () => {
           <filter-style-simple-selector />
         </el-collapse-item>
         <el-collapse-item
-          :title="t('visualization.filter_component')"
-          name="filterComponent"
-          class="no-padding no-border-bottom"
-        >
-          <filter-style-simple-selector />
-        </el-collapse-item>
-        <el-collapse-item
           title="高级样式设置"
           name="seniorStyleSetting"
           class="no-padding no-border-bottom"

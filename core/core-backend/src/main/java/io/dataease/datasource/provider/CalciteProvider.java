@@ -117,7 +117,11 @@ public class CalciteProvider {
         tableDesc.setDatasourceId(datasourceRequest.getDatasource().getId());
         tableDesc.setType("db");
         tableDesc.setTableName(resultSet.getString(1));
-        tableDesc.setName(resultSet.getString(1));
+        if(resultSet.getMetaData().getColumnCount() > 1){
+            tableDesc.setName(resultSet.getString(2));
+        }else {
+            tableDesc.setName(resultSet.getString(1));
+        }
         return tableDesc;
     }
 
@@ -315,6 +319,7 @@ public class CalciteProvider {
     private String getTableFiledSql(DatasourceRequest datasourceRequest) {
         String sql = "";
         DatasourceConfiguration configuration = null;
+        String database="";
         DatasourceType datasourceType = DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
@@ -324,7 +329,16 @@ public class CalciteProvider {
             case StarRocks:
             case doris:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
-                sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND   TABLE_NAME = '%s'", configuration.getDataBase(), datasourceRequest.getTable());
+                if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
+                    database = configuration.getDataBase();
+                } else {
+                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                    matcher.find();
+                    String[] databasePrams = matcher.group(3).split("\\?");
+                    database = databasePrams[0];
+                }
+                sql = String.format("SELECT COLUMN_NAME,DATA_TYPE,COLUMN_COMMENT FROM INFORMATION_SCHEMA.COLUMNS WHERE TABLE_SCHEMA = '%s' AND   TABLE_NAME = '%s'", database, datasourceRequest.getTable());
                 break;
             case oracle:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Oracle.class);
@@ -396,6 +410,16 @@ public class CalciteProvider {
                 break;
             case ck:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
+
+                if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
+                    database = configuration.getDataBase();
+                } else {
+                    Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:clickhouse://(.*):(\\d+)/(.*)");
+                    Matcher matcher = WITH_SQL_FRAGMENT.matcher(configuration.getJdbcUrl());
+                    matcher.find();
+                    String[] databasePrams = matcher.group(3).split("\\?");
+                    database = databasePrams[0];
+                }
                 sql = String.format(" SELECT\n" +
                         "    name,\n" +
                         "    type,\n" +
@@ -404,7 +428,7 @@ public class CalciteProvider {
                         "    system.columns\n" +
                         "WHERE\n" +
                         "    database = '%s'  \n" +
-                        "    AND table = '%s' ", configuration.getDataBase(), datasourceRequest.getTable());
+                        "    AND table = '%s' ", database, datasourceRequest.getTable());
                 break;
             case impala:
                 sql = String.format("DESCRIBE `%s`", datasourceRequest.getTable());
@@ -742,7 +766,7 @@ public class CalciteProvider {
             case StarRocks:
             case doris:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
-                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
@@ -758,42 +782,76 @@ public class CalciteProvider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                tableSqls.add("select table_name, owner, comments from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'TABLE'");
-                tableSqls.add("select table_name, owner, comments from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'VIEW'");
+                tableSqls.add("select table_name, comments, owner  from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'TABLE'");
+                tableSqls.add("select table_name, comments, owner  from all_tab_comments where owner='" + configuration.getSchema() + "' AND table_type = 'VIEW'");
                 break;
             case db2:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Db2.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                tableSqls.add("select TABNAME from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T'".replace("DE_SCHEMA", configuration.getSchema()));
+                tableSqls.add("select TABNAME, REMARKS from syscat.tables  WHERE TABSCHEMA ='DE_SCHEMA' AND \"TYPE\" = 'T'".replace("DE_SCHEMA", configuration.getSchema()));
                 break;
             case sqlServer:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Sqlserver.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                tableSqls.add("SELECT TABLE_NAME FROM \"DATABASE\".INFORMATION_SCHEMA.VIEWS WHERE  TABLE_SCHEMA = 'DS_SCHEMA' ;"
-                        .replace("DATABASE", configuration.getDataBase())
+                tableSqls.add("SELECT   \n" +
+                        "    t.name AS TableName,  \n" +
+                        "    ep.value AS TableDescription  \n" +
+                        "FROM   \n" +
+                        "    sys.tables t  \n" +
+                        "LEFT OUTER JOIN   sys.schemas sc ON sc.schema_id =t.schema_id \n" +
+                        "LEFT OUTER JOIN   \n" +
+                        "    sys.extended_properties ep ON t.object_id = ep.major_id   \n" +
+                        "                               AND ep.minor_id = 0   \n" +
+                        "                               AND ep.class = 1  \n" +
+                        "                               AND ep.name = 'MS_Description'\n" +
+                        "where sc.name ='DS_SCHEMA'"
                         .replace("DS_SCHEMA", configuration.getSchema()));
-                tableSqls.add("SELECT TABLE_NAME FROM \"DATABASE\".INFORMATION_SCHEMA.TABLES WHERE TABLE_TYPE = 'BASE TABLE' AND TABLE_SCHEMA = 'DS_SCHEMA' ;"
-                        .replace("DATABASE", configuration.getDataBase())
-                        .replace("DS_SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT   \n" +
+                        "    t.name AS TableName,  \n" +
+                        "    ep.value AS TableDescription  \n" +
+                        "FROM   \n" +
+                        "    sys.views t  \n" +
+                        "LEFT OUTER JOIN   sys.schemas sc ON sc.schema_id =t.schema_id \n" +
+                        "LEFT OUTER JOIN   \n" +
+                        "    sys.extended_properties ep ON t.object_id = ep.major_id   \n" +
+                        "                               AND ep.minor_id = 0   \n" +
+                        "                               AND ep.class = 1  \n" +
+                        "                               AND ep.name = 'MS_Description'\n" +
+                        "where sc.name ='DS_SCHEMA'"
+                                .replace("DS_SCHEMA", configuration.getSchema()));
                 break;
             case pg:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
-                tableSqls.add("SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT  \n" +
+                        "    relname AS TableName,  \n" +
+                        "    obj_description(relfilenode::regclass, 'pg_class') AS TableDescription  \n" +
+                        "FROM  \n" +
+                        "    pg_class  \n" +
+                        "WHERE  \n" +
+                        "    relkind = 'r'  \n" +
+                        "    AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'SCHEMA') ".replace("SCHEMA", configuration.getSchema()));
                 break;
             case redshift:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
-                tableSqls.add("SELECT tablename FROM  pg_tables WHERE  schemaname='SCHEMA' ;".replace("SCHEMA", configuration.getSchema()));
+                tableSqls.add("SELECT  \n" +
+                        "    relname AS TableName,  \n" +
+                        "    obj_description(relfilenode::regclass, 'pg_class') AS TableDescription  \n" +
+                        "FROM  \n" +
+                        "    pg_class  \n" +
+                        "WHERE  \n" +
+                        "    relkind = 'r'  \n" +
+                        "    AND relnamespace = (SELECT oid FROM pg_namespace WHERE nspname = 'SCHEMA') ".replace("SCHEMA", configuration.getSchema()));
                 break;
             case ck:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), CK.class);
-                if (configuration.getUrlType().equalsIgnoreCase("")) {
+                if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();
                 } else {
                     Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:clickhouse://(.*):(\\d+)/(.*)");
@@ -802,7 +860,7 @@ public class CalciteProvider {
                     String[] databasePrams = matcher.group(3).split("\\?");
                     database = databasePrams[0];
                 }
-                tableSqls.add("SELECT name FROM system.tables where database='DATABASE';".replace("DATABASE", database));
+                tableSqls.add("SELECT name, comment FROM system.tables where database='DATABASE';".replace("DATABASE", database));
 
                 break;
             default:

@@ -29,7 +29,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { trackBarStyleCheck } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
-const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc } = storeToRefs(dvMainStore)
+const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, canvasStyleData } =
+  storeToRefs(dvMainStore)
 const { emitter } = useEmitt()
 
 const props = defineProps({
@@ -261,8 +262,6 @@ const action = param => {
 }
 const appStore = useAppStoreWithOut()
 
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-
 const trackClick = trackAction => {
   const param = state.pointParam
   if (!param?.data?.dimensionList) {
@@ -295,7 +294,7 @@ const trackClick = trackAction => {
       dvMainStore.addViewTrackFilter(linkageParam)
       break
     case 'jump':
-      if (isDataEaseBi.value || mobileInPc.value) return
+      if (mobileInPc.value) return
       emit('onJumpClick', jumpParam)
       break
     default:
@@ -319,11 +318,7 @@ const trackMenu = computed(() => {
       jumpCount++
     }
   })
-  jumpCount &&
-    view.value?.jumpActive &&
-    !isDataEaseBi.value &&
-    !mobileInPc.value &&
-    trackMenuInfo.push('jump')
+  jumpCount && view.value?.jumpActive && !mobileInPc.value && trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')
   // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
@@ -420,6 +415,10 @@ const autoHeightStyle = computed(() => {
     height: 20 * scale.value + 8 + 'px'
   }
 })
+
+const tabStyle = computed(() => [
+  { '--de-pager-color': canvasStyleData.value.component.seniorStyleSetting.pagerColor }
+])
 </script>
 
 <template>
@@ -435,7 +434,7 @@ const autoHeightStyle = computed(() => {
       <div style="position: relative; height: 100%" :id="containerId"></div>
     </div>
     <el-row :style="autoStyle" v-if="showPage && !isError">
-      <div class="table-page-info">
+      <div class="table-page-info" :style="tabStyle">
         <div>共{{ state.pageInfo.total }}条</div>
         <el-pagination
           class="table-page-content"
@@ -474,16 +473,16 @@ const autoHeightStyle = computed(() => {
   height: 20px;
   display: flex;
   width: 100%;
-  color: grey;
+  color: var(--de-pager-color);
   :deep(.table-page-content) {
     button,
     button[disabled] {
-      color: grey;
+      color: var(--de-pager-color);
       background: transparent !important;
     }
     ul li {
       &:not(.is-active) {
-        color: grey;
+        color: var(--de-pager-color);
       }
       background: transparent !important;
     }

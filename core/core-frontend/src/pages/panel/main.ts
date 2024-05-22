@@ -70,6 +70,7 @@ const setupAll = async (
   dom: string,
   type: string,
   busiFlag: string,
+  outerParams: string,
   token: string,
   baseUrl: string,
   dvId: string,
@@ -86,6 +87,7 @@ const setupAll = async (
   const embeddedStore = useEmbedded()
   embeddedStore.setType(type)
   embeddedStore.setBusiFlag(busiFlag)
+  embeddedStore.setOuterParams(outerParams)
   embeddedStore.setToken(token)
   embeddedStore.setBaseUrl(baseUrl)
   embeddedStore.setDvId(dvId)
@@ -129,6 +131,7 @@ class DataEaseBi {
     | 'DashboardPanel'
   dvId: string
   busiFlag: 'dashboard' | 'dataV'
+  outerParams: string
   resourceId: string
   pid: string
   chartId: string
@@ -139,6 +142,7 @@ class DataEaseBi {
     this.type = type
     this.token = options.token
     this.busiFlag = options.busiFlag
+    this.outerParams = options.outerParams
     this.baseUrl = options.baseUrl
     this.dvId = options.dvId
     this.pid = options.pid
@@ -152,6 +156,7 @@ class DataEaseBi {
       this.deOptions.container,
       this.type,
       this.busiFlag,
+      this.outerParams,
       this.token,
       this.baseUrl,
       this.dvId,
@@ -169,6 +174,7 @@ class DataEaseBi {
     const embeddedStore = useEmbedded()
     embeddedStore.setType(null)
     embeddedStore.setBusiFlag(null)
+    embeddedStore.setOuterParams(null)
     embeddedStore.setToken(null)
     embeddedStore.setBaseUrl(null)
     embeddedStore.setDvId(null)
@@ -179,6 +185,7 @@ class DataEaseBi {
     this.type = null
     this.token = null
     this.busiFlag = null
+    this.outerParams = null
     this.baseUrl = null
     this.dvId = null
     this.pid = null
