@@ -281,7 +281,7 @@ public class PanelLinkService {
         List<PanelLinkMapping> mappings = panelLinkMappingMapper.selectByExample(example);
         PanelLinkMapping mapping = mappings.get(0);
         String uuid = mapping.getUuid();
-        return contextPath + SHORT_URL_PREFIX + (StringUtils.isBlank(uuid) ? mapping.getId() : uuid);
+        return (StringUtils.isNotBlank(contextPath) ? contextPath : "") + SHORT_URL_PREFIX + (StringUtils.isBlank(uuid) ? mapping.getId() : uuid);
     }
 
     public String saveTicket(TicketCreator creator) {
