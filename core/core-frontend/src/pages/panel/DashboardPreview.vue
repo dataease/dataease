@@ -47,7 +47,9 @@ onBeforeMount(async () => {
   // div嵌入
   if (embeddedStore.outerParams) {
     try {
-      attachParam = JSON.parse(embeddedStore.outerParams)
+      const outerPramsParse = JSON.parse(embeddedStore.outerParams)
+      attachParam = outerPramsParse.attachParam
+      dvMainStore.setEmbeddedCallBack(outerPramsParse.callBackFlag || 'no')
     } catch (e) {
       console.error(e)
       ElMessage.error(t('visualization.outer_param_decode_error'))

@@ -19,7 +19,8 @@ import { trackBarStyleCheck } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
-const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc } = storeToRefs(dvMainStore)
+const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack } =
+  storeToRefs(dvMainStore)
 const { emitter } = useEmitt()
 const props = defineProps({
   element: {
@@ -54,7 +55,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick', 'resetLoading'])
+const emit = defineEmits([
+  'onPointClick',
+  'onChartClick',
+  'onDrillFilters',
+  'onJumpClick',
+  'resetLoading'
+])
 
 const { view, showPosition, scale, terminal } = toRefs(props)
 
@@ -192,9 +199,17 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
   }, 500)
 }
 
+const pointClickTrans = () => {
+  if (embeddedCallBack.value === 'yes') {
+    trackClick('pointClick')
+  }
+}
+
 const action = param => {
-  // 下钻 联动 跳转
   state.pointParam = param.data
+  // 点击
+  pointClickTrans()
+  // 下钻 联动 跳转
   state.linkageActiveParam = {
     category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
     name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA'
@@ -246,7 +261,18 @@ const trackClick = trackAction => {
     quotaList: quotaList
   }
 
+  const clickParams = {
+    option: 'pointClick',
+    name: checkName,
+    viewId: view.value.id,
+    dimensionList: state.pointParam.data.dimensionList,
+    quotaList: quotaList
+  }
+
   switch (trackAction) {
+    case 'pointClick':
+      emit('onPointClick', clickParams)
+      break
     case 'linkageAndDrill':
       dvMainStore.addViewTrackFilter(linkageParam)
       emit('onChartClick', param)
