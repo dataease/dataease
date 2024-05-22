@@ -210,7 +210,7 @@ service.interceptors.response.use(
     ) {
       ElMessage({
         type: 'error',
-        message: error.message,
+        message: error.response?.data?.msg ? error.response?.data?.msg : error.message,
         showClose: true
       })
     } else if (error?.config?.url.startsWith('/xpackComponent/content')) {

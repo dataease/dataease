@@ -5,7 +5,7 @@ import type { FormInstance, FormRules } from 'element-plus-secondary'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
 import ApiHttpRequestDraw from './ApiHttpRequestDraw.vue'
-import { Configuration, ApiConfiguration, SyncSetting } from './index.vue'
+import type { Configuration, ApiConfiguration, SyncSetting } from './option'
 import { Icon } from '@/components/icon-custom'
 import { getSchema } from '@/api/datasource'
 import { Base64 } from 'js-base64'
@@ -102,6 +102,8 @@ const initForm = type => {
   if (type !== 'API') {
     form.value.configuration = {
       dataBase: '',
+      jdbcUrl: '',
+      urlType: 'hostName',
       extraParams: '',
       username: '',
       password: '',
@@ -153,6 +155,13 @@ const authMethodList = [
 ]
 const setRules = () => {
   const configRules = {
+    'configuration.jdbcUrl': [
+      {
+        required: true,
+        message: t('datasource.please_input_jdbc_url'),
+        trigger: 'blur'
+      }
+    ],
     'configuration.dataBase': [
       {
         required: true,
@@ -602,14 +611,41 @@ defineExpose({
           </template>
         </template>
         <template v-if="notapiexcelconfig">
-          <el-form-item :label="t('datasource.host')" prop="configuration.host">
+          <el-form-item label="连接方式" prop="type">
+            <el-radio-group v-model="form.configuration.urlType">
+              <el-radio label="hostName">主机名</el-radio>
+              <el-radio label="jdbcUrl">JDBC 连接</el-radio>
+            </el-radio-group>
+          </el-form-item>
+
+          <el-form-item
+            label="JDBC连接字符串"
+            prop="configuration.jdbcUrl"
+            v-if="form.configuration.urlType === 'jdbcUrl'"
+          >
+            <el-input
+              v-model="form.configuration.jdbcUrl"
+              placeholder="JDBC连接字符串"
+              autocomplete="off"
+            />
+          </el-form-item>
+
+          <el-form-item
+            :label="t('datasource.host')"
+            prop="configuration.host"
+            v-if="form.configuration.urlType !== 'jdbcUrl'"
+          >
             <el-input
               v-model="form.configuration.host"
               :placeholder="t('datasource._ip_address')"
               autocomplete="off"
             />
           </el-form-item>
-          <el-form-item :label="t('datasource.port')" prop="configuration.port">
+          <el-form-item
+            :label="t('datasource.port')"
+            prop="configuration.port"
+            v-if="form.configuration.urlType !== 'jdbcUrl'"
+          >
             <el-input-number
               v-model="form.configuration.port"
               autocomplete="off"
@@ -621,10 +657,46 @@ defineExpose({
               type="number"
             />
           </el-form-item>
-          <el-form-item :label="t('datasource.data_base')" prop="configuration.dataBase">
+          <el-form-item
+            :label="t('datasource.data_base')"
+            prop="configuration.dataBase"
+            v-if="form.configuration.urlType !== 'jdbcUrl'"
+          >
             <el-input
               v-model="form.configuration.dataBase"
               :placeholder="t('datasource.please_input_data_base')"
+              autocomplete="off"
+            />
+          </el-form-item>
+          <el-form-item
+            v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.type)"
+            class="schema-label"
+            :prop="showSchema ? '' : 'configuration.schema'"
+          >
+            <template v-slot:label>
+              <span class="name">{{ t('datasource.schema') }}<i class="required" /></span>
+              <el-button text size="small" @click="getDsSchema()">
+                <template #icon>
+                  <Icon name="icon_add_outlined"></Icon>
+                </template>
+                {{ t('datasource.get_schema') }}
+              </el-button>
+            </template>
+            <el-select
+              v-model="form.configuration.schema"
+              filterable
+              :placeholder="t('common.please_select')"
+              class="de-select"
+              @change="validatorSchema"
+              @blur="validatorSchema"
+            >
+              <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
+            </el-select>
+          </el-form-item>
+          <el-form-item :label="t('datasource.extra_params')">
+            <el-input
+              :placeholder="t('common.inputText') + t('datasource.extra_params')"
+              v-model="form.configuration.extraParams"
               autocomplete="off"
             />
           </el-form-item>
@@ -687,13 +759,6 @@ defineExpose({
               v-model="form.configuration.password"
             />
           </el-form-item>
-          <el-form-item :label="t('datasource.extra_params')">
-            <el-input
-              :placeholder="t('common.inputText') + t('datasource.extra_params')"
-              v-model="form.configuration.extraParams"
-              autocomplete="off"
-            />
-          </el-form-item>
           <el-form-item
             v-if="form.type == 'oracle'"
             :label="t('datasource.connection_mode')"
@@ -705,31 +770,6 @@ defineExpose({
             <el-radio v-model="form.configuration.connectionType" label="serviceName">
               {{ t('datasource.oracle_service_name') }}
             </el-radio>
-          </el-form-item>
-          <el-form-item
-            v-if="['oracle', 'sqlServer', 'pg', 'redshift', 'db2'].includes(form.type)"
-            class="schema-label"
-            :prop="showSchema ? '' : 'configuration.schema'"
-          >
-            <template v-slot:label>
-              <span class="name">{{ t('datasource.schema') }}<i class="required" /></span>
-              <el-button text size="small" @click="getDsSchema()">
-                <template #icon>
-                  <Icon name="icon_add_outlined"></Icon>
-                </template>
-                {{ t('datasource.get_schema') }}
-              </el-button>
-            </template>
-            <el-select
-              v-model="form.configuration.schema"
-              filterable
-              :placeholder="t('common.please_select')"
-              class="de-select"
-              @change="validatorSchema"
-              @blur="validatorSchema"
-            >
-              <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
-            </el-select>
           </el-form-item>
           <span
             v-if="!['es', 'api'].includes(form.type)"

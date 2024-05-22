@@ -19,6 +19,9 @@ public class Mysql extends DatasourceConfiguration {
     private List<String> showTableSqls = Arrays.asList("show tables");
 
     public String getJdbc() {
+        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+            return getJdbcUrl();
+        }
         if (StringUtils.isEmpty(extraParams.trim())) {
             return "jdbc:mysql://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getHost().trim())

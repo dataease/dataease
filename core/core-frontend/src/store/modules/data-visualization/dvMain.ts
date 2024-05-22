@@ -362,8 +362,15 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       //如果当前的组件是UserView 图表，则想canvasView中增加一项 UserView ID 和componentID保持一致
       if (component.component === 'UserView') {
+        const defaultConfig = JSON.parse(JSON.stringify(BASE_VIEW_CONFIG))
+        if (component.innerType === 'bar-range') {
+          defaultConfig.customStyle.xAxis.axisLine.show = false
+          defaultConfig.customStyle.xAxis.splitLine.show = true
+          defaultConfig.customStyle.yAxis.axisLine.show = true
+          defaultConfig.customStyle.yAxis.splitLine.show = false
+        }
         let newView = {
-          ...JSON.parse(JSON.stringify(BASE_VIEW_CONFIG)),
+          ...defaultConfig,
           id: component.id,
           type: component.innerType,
           render: component.render
@@ -843,10 +850,10 @@ export const dvMainStore = defineStore('dataVisualization', {
       })
     },
     // 添加外部参数的过滤条件
-    addOuterParamsFilter(params) {
+    addOuterParamsFilter(params, curComponentData = this.componentData, source = 'inner') {
       // params 结构 {key1:value1,key2:value2}
-      const curComponentData = this.componentData
       if (params) {
+        const preActiveComponentIds = []
         const trackInfo = this.nowPanelOuterParamsInfo
         for (let index = 0; index < curComponentData.length; index++) {
           const element = curComponentData[index]
@@ -899,6 +906,7 @@ export const dvMainStore = defineStore('dataVisualization', {
                 // 不存在该条件 且 条件有效 直接保存该条件
                 // !filterExist && vValid && currentFilters.push(condition)
                 currentFilters.push(condition)
+                preActiveComponentIds.push(element.id)
               }
               if (element.component === 'VQuery') {
                 element.propValue.forEach(filterItem => {
@@ -942,6 +950,11 @@ export const dvMainStore = defineStore('dataVisualization', {
               element['outerParamsFilters'] = currentFilters
             }
             curComponentData[index] = element
+          })
+        }
+        if (source === 'outer') {
+          preActiveComponentIds.forEach(viewId => {
+            useEmitt().emitter.emit('query-data-' + viewId)
           })
         }
       }

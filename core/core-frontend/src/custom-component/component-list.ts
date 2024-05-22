@@ -211,6 +211,7 @@ const list = [
     propValue: '',
     icon: 'other_text',
     innerType: 'VQuery',
+    isHang: false,
     x: 1,
     y: 1,
     sizeX: 72,

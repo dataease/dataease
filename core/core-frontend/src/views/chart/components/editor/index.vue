@@ -1512,15 +1512,20 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
         </div>
         <div v-if="!canvasCollapse.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
-            <span class="name-area" @dblclick="editComponentName" id="component-name">{{
-              view.title
-            }}</span>
+            <span
+              class="name-area"
+              :class="{ 'component-name-dark': themes === 'dark' }"
+              @dblclick="editComponentName"
+              id="component-name"
+              >{{ view.title }}</span
+            >
           </el-row>
 
           <el-row style="height: calc(100vh - 110px); overflow-y: auto">
-            <div class="query-style-tab" v-if="view.type === 'VQuery'">
+            <div class="query-style-tab" v-if="view.type === 'VQuery' && curComponent">
               <div style="padding-top: 1px">
                 <VQueryChartStyle
+                  :element="curComponent"
                   :common-background-pop="curComponent?.commonBackground"
                   :chart="view"
                   :themes="themes"
@@ -2168,7 +2173,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                       </div>
                       <div
                         class="tree-btn"
-                        :class="isFilterActive && 'active'"
+                        :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
                         @click="openTreeFilter"
                       >
                         <el-icon>
@@ -2889,6 +2894,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
   <Teleport v-if="componentNameEdit" :to="'#component-name'">
     <input
+      :effect="themes"
       width="100%"
       @change="onComponentNameChange"
       ref="componentNameInput"
@@ -3483,6 +3489,10 @@ span {
       cursor: pointer;
       justify-content: center;
       font-size: 12px;
+      &.tree-btn--dark {
+        background: rgba(235, 235, 235, 0.05);
+        border-color: #5f5f5f;
+      }
 
       &.active {
         color: #3370ff;
@@ -4012,6 +4022,21 @@ span {
     position: absolute;
     left: 0;
     width: 100%;
+    outline: none;
+    border: 1px solid #295acc;
+    border-radius: 4px;
+    padding: 0 4px;
+    height: 100%;
+  }
+}
+
+.component-name-dark {
+  input {
+    position: absolute;
+    left: 0;
+    width: 100%;
+    color: @dv-canvas-main-font-color;
+    background-color: #050e21;
     outline: none;
     border: 1px solid #295acc;
     border-radius: 4px;

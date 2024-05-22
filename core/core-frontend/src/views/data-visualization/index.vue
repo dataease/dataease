@@ -409,7 +409,7 @@ eventBus.on('handleNew', handleNew)
       <div style="width: auto; height: 100%" ref="leftSidebarRef">
         <dv-sidebar
           v-if="commonPropertiesShow"
-          :title="'属性'"
+          :title="curComponent['name']"
           :width="240"
           :side-name="'componentProp'"
           :aside-position="'right'"

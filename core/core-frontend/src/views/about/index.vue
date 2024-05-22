@@ -127,9 +127,14 @@ const update = (licKey: string) => {
   })
 }
 
+const autoSync = ref(true)
 const checkFree = () => {
   checkFreeApi().then(res => {
     if (res.data) {
+      if (autoSync.value) {
+        syncFree()
+        return
+      }
       // do something
       const title = '存在未同步的资源数据，请谨慎操作！'
       const childrenDomList = [h('strong', null, title)]

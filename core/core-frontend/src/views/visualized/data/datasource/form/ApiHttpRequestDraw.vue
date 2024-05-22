@@ -31,6 +31,7 @@ export interface ApiItem {
   fields: Field[]
   jsonFields: JsonField[]
   useJsonPath: boolean
+  apiQueryTimeout: number
   showApiStructure: boolean
   jsonPath: string
   serialNumber: number
@@ -81,6 +82,7 @@ let apiItem = reactive<ApiItem>({
   fields: [],
   jsonFields: [],
   useJsonPath: false,
+  apiQueryTimeout: 10,
   showApiStructure: false,
   jsonPath: '',
   serialNumber: -1
@@ -95,6 +97,24 @@ const loading = ref(false)
 const columns = shallowRef([])
 const tableData = shallowRef([])
 const apiItemBasicInfo = ref<FormInstance>()
+const isNumber = (rule, value, callback) => {
+  if (!value) {
+    callback(new Error(t('datasource.please_input_query_timeout')))
+    return
+  }
+  let isNumber = false
+  var reg = /^\d+$/
+  isNumber = reg.test(value)
+  if (!isNumber) {
+    callback(new Error(t('datasource.please_input_query_timeout')))
+    return
+  }
+  if (value <= 0 || value > 300) {
+    callback(new Error(t('datasource.please_input_query_timeout')))
+    return
+  }
+  callback()
+}
 const rule = reactive<FormRules>({
   name: [
     {
@@ -107,6 +127,13 @@ const rule = reactive<FormRules>({
       max: 64,
       message: t('datasource.input_limit_2_25', [2, 64]),
       trigger: 'blur'
+    }
+  ],
+  apiQueryTimeout: [
+    {
+      required: true,
+      validator: isNumber,
+      trigger: ['blur', 'change']
     }
   ],
   url: [
@@ -266,8 +293,8 @@ const previewData = () => {
   for (let i = 0; i < apiItem.fields.length; i++) {
     for (let j = 0; j < apiItem.fields[i].value.length; j++) {
       data[j][apiItem.fields[i].name] = apiItem.fields[i].value[j]
-      data[j]['id'] = apiItem.fields[i].name
     }
+
     columnTmp.push({
       key: apiItem.fields[i].name,
       dataKey: apiItem.fields[i].name,
@@ -429,7 +456,11 @@ defineExpose({
             />
           </el-form-item>
         </div>
-
+        <el-form-item :label="$t('datasource.query_timeout')" prop="apiQueryTimeout">
+          <el-input v-model="apiItem.apiQueryTimeout" autocomplete="off" type="number" :min="0">
+            <template v-slot:append>{{ $t('panel.second') }}</template>
+          </el-input>
+        </el-form-item>
         <div class="title-form_primary request-info">
           <span>{{ t('datasource.isUseJsonPath') }}</span>
         </div>

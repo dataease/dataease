@@ -10,6 +10,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
 import OverallSetting from '@/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue'
 import CanvasBackground from '@/components/visualization/component-background/CanvasBackground.vue'
+import SeniorStyleSetting from '@/components/dashboard/subject-setting/dashboard-style/SeniorStyleSetting.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { canvasStyleData, canvasViewInfo } = storeToRefs(dvMainStore)
@@ -101,6 +102,14 @@ onMounted(() => {
       </el-collapse-item>
       <el-collapse-item effect="dark" title="刷新配置" name="overallSetting">
         <overall-setting themes="dark" />
+      </el-collapse-item>
+      <el-collapse-item
+        effect="dark"
+        title="高级样式设置"
+        name="seniorStyleSetting"
+        class="no-padding no-border-bottom"
+      >
+        <senior-style-setting themes="dark"></senior-style-setting>
       </el-collapse-item>
     </el-collapse>
   </div>

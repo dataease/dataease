@@ -708,12 +708,13 @@ const dragenter_handler = ev => {
 const drop_handler = ev => {
   ev.preventDefault()
   let data = ev.dataTransfer.getData('text')
-  const { tableName, type, datasourceId } = JSON.parse(data) as Table
+  const { tableName, type, datasourceId, name: noteName } = JSON.parse(data) as Table
   const extraData = {
     info: JSON.stringify({
       table: tableName,
       sql: ''
     }),
+    noteName,
     unionType: 'left',
     unionFields: [],
     currentDsFields: [],
@@ -1029,10 +1030,19 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
     direction="rtl"
   >
     <template #header v-if="currentNode">
-      <div class="info">
-        <span :title="currentNode.tableName" class="name ellipsis">{{
-          currentNode.tableName
-        }}</span>
+      <div class="info-content">
+        <div class="info">
+          <span class="label">表名</span>
+          <span :title="currentNode.tableName" class="name ellipsis">{{
+            currentNode.tableName
+          }}</span>
+        </div>
+        <div class="info">
+          <span class="label">表备注</span>
+          <span :title="currentNode.noteName" class="name ellipsis">{{
+            currentNode.noteName || '-'
+          }}</span>
+        </div>
         <span :title="getDsName(currentNode.datasourceId)" class="ds ellipsis"
           >{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span
         >
@@ -1082,14 +1092,24 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
       top: 26px;
     }
 
+    .info-content {
+      display: flex;
+      flex-wrap: wrap;
+    }
+
     .info {
       display: flex;
       flex-direction: column;
-      .name {
+      width: 50%;
+      .label {
         font-weight: 500;
         font-size: 16px;
         color: #1f2329;
         max-width: 500px;
+      }
+      .name {
+        font-weight: 400;
+        font-size: 14px;
       }
       .ds {
         font-weight: 400;

@@ -19,6 +19,8 @@ public class XpackAuthenticationVO implements Serializable {
     private Long id;
     @Schema(description = "名称")
     private String name;
-    @Schema(description = "状态")
+    @Schema(description = "开启")
     private boolean enable;
+    @Schema(description = "有效")
+    private boolean valid;
 }

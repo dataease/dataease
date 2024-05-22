@@ -12,6 +12,13 @@ const options = [
   { value: 'minute', label: '分钟（执行时间：0秒）' },
   { value: 'hour', label: '小时（执行时间：0分0秒）' }
 ]
+const pvpOptions = [
+  { value: '0', label: '永久' },
+  { value: '1', label: '一年' },
+  { value: '2', label: '半年' },
+  { value: '3', label: '三个月' },
+  { value: '4', label: '一个月' }
+]
 const state = reactive({
   form: reactive({
     dsIntervalTime: '30',
@@ -207,7 +214,9 @@ defineExpose({
       >
         <el-switch
           class="de-basic-switch"
-          v-if="item.pkey === 'autoCreateUser'"
+          v-if="
+            item.pkey === 'autoCreateUser' || item.pkey === 'pwdStrategy' || item.pkey === 'dip'
+          "
           active-value="true"
           inactive-value="false"
           v-model="state.form[item.pkey]"
@@ -281,6 +290,16 @@ defineExpose({
             show-checkbox
             check-on-click-node
           />
+        </div>
+        <div v-else-if="item.pkey === 'pvp'">
+          <el-select v-model="state.form[item.pkey]" class="edit-all-line">
+            <el-option
+              v-for="item in pvpOptions"
+              :key="item.value"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
         </div>
         <v-else />
       </el-form-item>

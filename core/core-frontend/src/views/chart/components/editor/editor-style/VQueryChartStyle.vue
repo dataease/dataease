@@ -9,6 +9,10 @@ const state = {
 }
 
 const props = defineProps({
+  element: {
+    type: Object,
+    required: true
+  },
   chart: {
     type: Object,
     required: true
@@ -24,7 +28,7 @@ const props = defineProps({
 })
 const predefineColors = COLOR_PANEL
 
-const { chart, commonBackgroundPop } = toRefs(props)
+const { element, chart, commonBackgroundPop } = toRefs(props)
 </script>
 
 <template>
@@ -33,6 +37,11 @@ const { chart, commonBackgroundPop } = toRefs(props)
       <el-collapse v-model="state.styleActiveNames" class="style-collapse">
         <el-collapse-item :effect="themes" name="component" :title="t('visualization.module')">
           <el-form label-position="top">
+            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
+              <el-checkbox :effect="themes" v-model="element.isHang" size="small">
+                隐藏组件
+              </el-checkbox>
+            </el-form-item>
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
               <el-checkbox
                 :effect="themes"

@@ -354,7 +354,7 @@ function backup() {
       echo "备份失败"
       exit 1
    else
-      echo "备份成功，备份文件 : $backup_file_name"
+      echo "备份成功，备份文件 : $(pwd)/$backup_file_name"
    fi
 
    if [[ $need_stop == 1 ]];then

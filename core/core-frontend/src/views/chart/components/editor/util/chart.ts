@@ -158,7 +158,8 @@ export const SENIOR_STYLE_SETTING_LIGHT = {
 
 export const SENIOR_STYLE_SETTING_DARK = {
   linkageIconColor: '#ffffff',
-  drillLayerColor: '#ffffff'
+  drillLayerColor: '#ffffff',
+  pagerColor: '#ffffff'
 }
 
 export const FILTER_COMMON_STYLE_BASE = {
@@ -1335,6 +1336,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'funnel',
         title: t('chart.chart_funnel'),
         icon: 'funnel'
+      },
+      {
+        render: 'antv',
+        category: 'relation',
+        value: 'sankey',
+        title: t('chart.chart_sankey'),
+        icon: 'sankey'
       }
     ]
   },

@@ -12,6 +12,9 @@ public class CK extends DatasourceConfiguration {
     private String extraParams = "";
 
     public String getJdbc() {
+        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+            return getJdbcUrl();
+        }
         if(StringUtils.isEmpty(extraParams.trim())){
             return "jdbc:clickhouse://HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getHost().trim())

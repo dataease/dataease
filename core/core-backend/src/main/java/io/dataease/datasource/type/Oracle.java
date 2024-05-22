@@ -12,6 +12,9 @@ public class Oracle extends DatasourceConfiguration {
     private String extraParams = "";
 
     public String getJdbc() {
+        if(StringUtils.isNoneEmpty(getUrlType()) && !getUrlType().equalsIgnoreCase("hostName")){
+            return getJdbcUrl();
+        }
         if (StringUtils.isNotEmpty(getConnectionType()) && getConnectionType().equalsIgnoreCase("serviceName")) {
             return "jdbc:oracle:thin:@HOSTNAME:PORT/DATABASE"
                     .replace("HOSTNAME", getHost().trim())

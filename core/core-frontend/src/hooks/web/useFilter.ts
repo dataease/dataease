@@ -150,8 +150,7 @@ const getOperator = (
   conditionValueF,
   conditionValueOperatorS,
   conditionValueS,
-  firstLoad,
-  optionValueSource
+  firstLoad
 ) => {
   const valueF = firstLoad ? defaultConditionValueF : conditionValueF
   const valueS = firstLoad ? defaultConditionValueS : conditionValueS
@@ -170,11 +169,7 @@ const getOperator = (
     return valueF === '' ? operatorS : operatorF
   }
 
-  return [1, 7].includes(+displayType)
-    ? 'between'
-    : multiple || optionValueSource === 1
-    ? 'in'
-    : 'eq'
+  return [1, 7].includes(+displayType) ? 'between' : multiple ? 'in' : 'eq'
 }
 
 export const searchQuery = (queryComponentList, filter, curComponentId, firstLoad) => {
@@ -304,8 +299,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 conditionValueF,
                 conditionValueOperatorS,
                 conditionValueS,
-                firstLoad,
-                optionValueSource
+                firstLoad
               )
               if (result?.length) {
                 filter.push({
