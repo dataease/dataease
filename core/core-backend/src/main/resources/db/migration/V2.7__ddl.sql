@@ -11,5 +11,14 @@ CREATE TABLE `core_sys_startup_job`
 ) COMMENT ='项目启动任务';
 
 BEGIN;
-INSERT INTO `core_sys_startup_job` VALUES ('chartFilterMerge', 'chartFilterMerge', 'ready');
+INSERT INTO `core_sys_startup_job`
+VALUES ('chartFilterMerge', 'chartFilterMerge', 'ready');
 COMMIT;
+
+
+ALTER TABLE `xpack_setting_authentication`
+    ADD COLUMN `plugin_json` longtext NULL COMMENT '插件配置' AFTER `relational_ids`;
+ALTER TABLE `xpack_setting_authentication`
+    ADD COLUMN `synced` tinyint(1) NOT NULL DEFAULT 0 COMMENT '已同步' AFTER `plugin_json`;
+ALTER TABLE `xpack_setting_authentication`
+    ADD COLUMN `valid` tinyint(1) NOT NULL DEFAULT 0 COMMENT '有效' AFTER `synced`;
