@@ -2173,7 +2173,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                       </div>
                       <div
                         class="tree-btn"
-                        :class="isFilterActive && 'active'"
+                        :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
                         @click="openTreeFilter"
                       >
                         <el-icon>
@@ -3489,6 +3489,10 @@ span {
       cursor: pointer;
       justify-content: center;
       font-size: 12px;
+      &.tree-btn--dark {
+        background: rgba(235, 235, 235, 0.05);
+        border-color: #5f5f5f;
+      }
 
       &.active {
         color: #3370ff;
