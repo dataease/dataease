@@ -38,6 +38,7 @@ import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { useAppStoreWithOut } from '@/store/modules/app'
 
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
@@ -45,6 +46,9 @@ const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 
 let innerRefreshTimer = null
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isIframe = computed(() => appStore.getIsIframe)
 
 const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData, mobileInPc } =
   storeToRefs(dvMainStore)
@@ -275,6 +279,21 @@ const drillJump = (index: number) => {
   state.drillClickDimensionList.splice(index)
   view.value.chartExtRequest = filter()
   calcData(view.value)
+}
+
+const onPointClick = param => {
+  try {
+    console.info('de_inner_params send')
+    const msg = {
+      type: 'de_inner_params',
+      sourceDvId: dvInfo.value.id,
+      sourceViewId: view.value.id,
+      message: Base64.encode(param)
+    }
+    window.parent.postMessage(msg, '*')
+  } catch (e) {
+    console.warn('de_inner_params send error')
+  }
 }
 
 const chartClick = param => {
@@ -691,6 +710,7 @@ const titleIconStyle = computed(() => {
         v-else-if="showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT)"
         ref="chartComponent"
         @onChartClick="chartClick"
+        @onPointClick="onPointClick"
         @onDrillFilters="onDrillFilters"
         @onJumpClick="jumpClick"
         @resetLoading="() => (loading = false)"
@@ -702,6 +722,7 @@ const titleIconStyle = computed(() => {
         :element="element"
         v-else-if="showChartView(ChartLibraryType.S2)"
         ref="chartComponent"
+        @onPointClick="onPointClick"
         @onChartClick="chartClick"
         @onDrillFilters="onDrillFilters"
         @onJumpClick="jumpClick"

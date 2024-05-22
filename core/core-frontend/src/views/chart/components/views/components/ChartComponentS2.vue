@@ -29,7 +29,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { trackBarStyleCheck } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
-const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, canvasStyleData } =
+const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, canvasStyleData, embeddedCallBack } =
   storeToRefs(dvMainStore)
 const { emitter } = useEmitt()
 
@@ -66,7 +66,7 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick'])
+const emit = defineEmits(['onPointClick', 'onChartClick', 'onDrillFilters', 'onJumpClick'])
 
 const { view, showPosition, scale, terminal } = toRefs(props)
 
@@ -241,10 +241,17 @@ const handleCurrentChange = pageNum => {
   const chart = { ...view.value, chartExtRequest: extReq }
   calcData(chart, null, false)
 }
+const pointClickTrans = () => {
+  if (embeddedCallBack.value === 'yes') {
+    trackClick('pointClick')
+  }
+}
 
 const action = param => {
-  // 下钻 联动 跳转
   state.pointParam = param
+  // 点击
+  pointClickTrans()
+  // 下钻 联动 跳转
   if (trackMenu.value.length < 2) {
     // 只有一个事件直接调用
     trackClick(trackMenu.value[0])
@@ -284,7 +291,19 @@ const trackClick = trackAction => {
     quotaList: state.pointParam.data.quotaList,
     sourceType: state.pointParam.data.sourceType
   }
+
+  const clickParams = {
+    option: 'pointClick',
+    name: state.pointParam.data.name,
+    viewId: view.value.id,
+    dimensionList: state.pointParam.data.dimensionList,
+    quotaList: state.pointParam.data.quotaList
+  }
+
   switch (trackAction) {
+    case 'pointClick':
+      emit('onPointClick', clickParams)
+      break
     case 'linkageAndDrill':
       dvMainStore.addViewTrackFilter(linkageParam)
       emit('onChartClick', param)

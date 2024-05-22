@@ -32,6 +32,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         chartAreaCollapse: false,
         datasetAreaCollapse: false
       },
+      embeddedCallBack: 'no', // 嵌入模式是否允许反馈参数
       editMode: 'edit', // 编辑器模式 edit preview
       mobileInPc: false,
       firstLoadMap: [],
@@ -173,6 +174,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     }
   },
   actions: {
+    setEmbeddedCallBack(value) {
+      this.embeddedCallBack = value
+    },
     setPublicLinkStatus(value) {
       this.publicLinkStatus = value
     },
