@@ -375,9 +375,9 @@ const jumpClick = param => {
         if (publicLinkStatus.value) {
           // 判断是否有公共链接ID
           if (jumpInfo.publicJumpId) {
-            const url = `${embeddedBaseUrl}#/de-link/${jumpInfo.publicJumpId}?jumpInfoParam=${encodeURIComponent(
-              Base64.encode(JSON.stringify(param))
-            )}`
+            const url = `${embeddedBaseUrl}#/de-link/${
+              jumpInfo.publicJumpId
+            }?jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
             const currentUrl = window.location.href
             localStorage.setItem('beforeJumpUrl', currentUrl)
             windowsJump(url, jumpInfo.jumpType)
@@ -385,9 +385,9 @@ const jumpClick = param => {
             ElMessage.warning(t('visualization.public_link_tips'))
           }
         } else {
-          const url = `${embeddedBaseUrl}#/preview?dvId=${jumpInfo.targetDvId}&jumpInfoParam=${encodeURIComponent(
-            Base64.encode(JSON.stringify(param))
-          )}`
+          const url = `${embeddedBaseUrl}#/preview?dvId=${
+            jumpInfo.targetDvId
+          }&jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
           windowsJump(url, jumpInfo.jumpType)
         }
       } else {
@@ -732,7 +732,10 @@ const titleIconStyle = computed(() => {
       :view-icon="view.type"
     ></chart-empty-info>
     <drill-path :drill-filters="state.drillFilters" @onDrillJump="drillJump" />
-    <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
+    <XpackComponent
+      ref="openHandler"
+      jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
+    />
   </div>
 </template>
 
