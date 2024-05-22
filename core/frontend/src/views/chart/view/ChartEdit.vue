@@ -1361,6 +1361,18 @@
                       @onTrendLineChange="onTrendLineChange"
                     />
                   </el-collapse-item>
+                  <el-collapse-item
+                    v-if="showDataForecastCfg"
+                    name="data-forecast"
+                    title="数据预测"
+                  >
+                    <data-forecast
+                      class="attr-selector"
+                      :chart="chart"
+                      :quota-data="view.yaxis"
+                      @onForecastChange="onForecastChange"
+                    />
+                  </el-collapse-item>
                 </el-collapse>
               </el-row>
 
@@ -1937,9 +1949,11 @@ import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
 import TrendLine from '@/views/chart/components/senior/TrendLine'
 import ChartTitleUpdate from './ChartTitleUpdate'
+import DataForecast from '@/views/chart/components/senior/DataForecast'
 export default {
   name: 'ChartEdit',
   components: {
+    DataForecast,
     PositionAdjust,
     ScrollCfg,
     CalcChartFieldEdit,
@@ -2190,6 +2204,9 @@ export default {
     },
     showTrendLineCfg() {
       return this.view.render === 'antv' && equalsAny(this.view.type, 'line')
+    },
+    showDataForecastCfg() {
+      return this.view.render === 'antv' && equalsAny(this.view.type, 'line', 'bar')
     },
     showThresholdCfg() {
       if (this.view.type === 'bidirectional-bar') {
@@ -3077,7 +3094,10 @@ export default {
       this.view.senior.trendLine = val
       this.calcData()
     },
-
+    onForecastChange(val) {
+      this.view.senior.forecastCfg = val
+      this.calcData()
+    },
     onThresholdChange(val) {
       this.view.senior.threshold = val
       this.calcData()

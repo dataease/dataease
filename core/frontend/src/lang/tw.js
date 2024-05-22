@@ -1818,7 +1818,16 @@ export default {
     trend_line: '趨勢線',
     field_enum: '枚舉值',
     main_axis_label: '主軸標籤',
-    sub_axis_label: '副軸標籤'
+    sub_axis_label: '副軸標籤',
+    forecast_enable: '啟用預測',
+    forecast_all_period: '全量數據',
+    forecast_all_period_tip: '是否使用所有數據作為馴良數據進行預測',
+    forecast_training_period: '訓練數據',
+    forecast_training_period_tip: '從所有數據中截取最近的數據作為訓練數據',
+    forecast_period: '預測週期',
+    forecast_confidence_interval: '置信區間',
+    forecast_model: '預測模型',
+    forecast_degree: '階數'
   },
   dataset: {
     scope_edit: '僅編輯時生效',

@@ -1368,7 +1368,7 @@ public class ChartViewService {
         // forecast
         List<? extends ForecastDataVO<?, ?>> forecastData = Collections.emptyList();
         JSONObject senior = JSONObject.parseObject(view.getSenior());
-        JSONObject forecastObj = senior.getJSONObject("forecast");
+        JSONObject forecastObj = senior.getJSONObject("forecastCfg");
         if (forecastObj != null) {
             ChartSeniorForecastDTO forecastCfg = forecastObj.toJavaObject(ChartSeniorForecastDTO.class);
             if (forecastCfg.isEnable()) {

@@ -1815,7 +1815,16 @@ export default {
     trend_line: '趋势线',
     field_enum: '枚举值',
     main_axis_label: '主轴标签',
-    sub_axis_label: '副轴标签'
+    sub_axis_label: '副轴标签',
+    forecast_enable: '启用预测',
+    forecast_all_period: '全量数据',
+    forecast_all_period_tip: '是否使用所有数据作为训练数据进行预测',
+    forecast_training_period: '训练数据',
+    forecast_training_period_tip: '从所有数据中截取最近的数据作为训练数据',
+    forecast_period: '预测周期',
+    forecast_confidence_interval: '置信区间',
+    forecast_model: '预测模型',
+    forecast_degree: '阶数'
   },
   dataset: {
     goto: ', 前往 ',
