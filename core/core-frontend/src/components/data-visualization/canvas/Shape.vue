@@ -294,7 +294,7 @@ const active = computed(() => {
 })
 
 const boardMoveActive = computed(() => {
-  const CHARTS = ['map', 'bubble-map', 'table-info', 'table-normal', 'table-pivot']
+  const CHARTS = ['flow-map', 'map', 'bubble-map', 'table-info', 'table-normal', 'table-pivot']
   return CHARTS.includes(element.value.innerType)
 })
 

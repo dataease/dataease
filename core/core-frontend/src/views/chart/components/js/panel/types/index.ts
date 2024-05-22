@@ -11,6 +11,7 @@ export enum ChartRenderType {
 export enum ChartLibraryType {
   G2_PLOT = 'g2plot',
   L7_PLOT = 'l7plot',
+  L7 = 'l7',
   ECHARTS = 'echarts',
   S2 = 's2',
   RICH_TEXT = 'rich-text',

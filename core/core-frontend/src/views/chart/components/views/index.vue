@@ -40,7 +40,6 @@ import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { useAppStoreWithOut } from '@/store/modules/app'
 
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
@@ -105,7 +104,6 @@ const props = defineProps({
 })
 const dynamicAreaId = ref('')
 const { view, showPosition, element, active, searchCount, scale } = toRefs(props)
-const appStore = useAppStoreWithOut()
 
 const titleShow = computed(
   () =>
@@ -242,7 +240,6 @@ watch([() => curComponent.value], () => {
     })
   }
 })
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const chartExtRequest = shallowRef(null)
 provide('chartExtRequest', chartExtRequest)
@@ -568,7 +565,7 @@ const chartAreaShow = computed(() => {
     return true
   }
   if (view.value.customAttr.map.id) {
-    const MAP_CHARTS = ['map', 'bubble-map']
+    const MAP_CHARTS = ['map', 'bubble-map', 'flow-map']
     if (MAP_CHARTS.includes(view.value.type)) {
       return true
     }
@@ -726,7 +723,9 @@ const titleIconStyle = computed(() => {
         :view="view"
         :show-position="showPosition"
         :element="element"
-        v-else-if="showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT)"
+        v-else-if="
+          showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT, ChartLibraryType.L7)
+        "
         ref="chartComponent"
         @onChartClick="chartClick"
         @onPointClick="onPointClick"
