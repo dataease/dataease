@@ -318,10 +318,7 @@ const trackMenu = computed(() => {
       jumpCount++
     }
   })
-  jumpCount &&
-    view.value?.jumpActive &&
-    !mobileInPc.value &&
-    trackMenuInfo.push('jump')
+  jumpCount && view.value?.jumpActive && !mobileInPc.value && trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')
   // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'
