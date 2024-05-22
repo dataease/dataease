@@ -152,6 +152,7 @@ export const uploadFile = async (data): Promise<IResponse> => {
     .post({
       url: '/datasource/uploadFile',
       data,
+      loading: true,
       headersType: 'multipart/form-data;'
     })
     .then(res => {
