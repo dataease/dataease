@@ -2,7 +2,7 @@
 import { toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
-import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
+import ComponentGroupWrapper from '@/components/data-visualization/canvas/ComponentGroupWrapper.vue'
 import { toPercent } from '@/utils/translate'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasViewInfo } = storeToRefs(dvMainStore)
@@ -57,7 +57,7 @@ const customGroupStyle = item => {
 <template>
   <div class="group">
     <div>
-      <component-wrapper
+      <ComponentGroupWrapper
         v-for="(item, index) in propValue"
         :id="'component' + item.id"
         :view-info="canvasViewInfo[item.id]"
@@ -80,7 +80,6 @@ const customGroupStyle = item => {
     position: relative;
     width: 100%;
     height: 100%;
-
     .component {
       position: absolute;
     }
