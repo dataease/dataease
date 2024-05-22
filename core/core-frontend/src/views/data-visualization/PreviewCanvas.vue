@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onMounted, reactive, computed, onUnmounted } from 'vue'
+import { onMounted, reactive } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
 import { initCanvasData } from '@/utils/canvasUtils'
@@ -10,8 +10,6 @@ import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
-import { useAppStoreWithOut } from '@/store/modules/app'
-const appStore = useAppStoreWithOut()
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
@@ -32,18 +30,8 @@ const props = defineProps({
   isSelector: {
     type: Boolean,
     default: false
-  },
-  // JSON String 格式
-  embedParams: {
-    type: String,
-    required: false
   }
 })
-
-// div嵌入
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-// iframe嵌入
-const isIframe = computed(() => appStore.getIsIframe)
 
 const loadCanvasDataAsync = async (dvId, dvType) => {
   const { jumpInfoParam } = router.currentRoute.value.query
@@ -84,16 +72,6 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     }
   }
 
-  // div嵌入
-  if (props.embedParams && isDataEaseBi.value) {
-    try {
-      attachParam = JSON.parse(props.embedParams)
-    } catch (e) {
-      console.error(e)
-      ElMessage.error(t('visualization.outer_param_decode_error'))
-    }
-  }
-
   initCanvasData(
     dvId,
     dvType,
@@ -123,19 +101,6 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   )
 }
 
-// 目标校验： 需要校验targetDvId 是否是当前可视化资源ID
-const winMsgHandle = event => {
-  console.info('PostMessage Params Received')
-  const msgInfo = event.data
-  // 校验targetDvId
-  if (msgInfo && msgInfo.type === 'attachParams' && msgInfo.targetDvId === state.dvInfo.id + '') {
-    const attachParam = msgInfo.params
-    if (attachParam) {
-      dvMainStore.addOuterParamsFilter(attachParam, 'outer')
-    }
-  }
-}
-
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
@@ -146,11 +111,6 @@ onMounted(async () => {
     return
   }
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
-  window.addEventListener('message', winMsgHandle)
-})
-
-onUnmounted(() => {
-  window.removeEventListener('message', winMsgHandle)
 })
 
 defineExpose({
