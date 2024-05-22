@@ -4,6 +4,7 @@ interface AppState {
   type: string
   token: string
   busiFlag: string
+  outerParams: string
   baseUrl: string
   dvId: string
   pid: string
@@ -17,6 +18,7 @@ export const userStore = defineStore('embedded', {
       type: '',
       token: '',
       busiFlag: '',
+      outerParams: '',
       baseUrl: '',
       dvId: '',
       pid: '',
@@ -33,6 +35,9 @@ export const userStore = defineStore('embedded', {
     },
     getBusiFlag(): string {
       return this.busiFlag
+    },
+    getOuterParams(): string {
+      return this.outerParams
     },
     getBaseUrl(): string {
       return this.baseUrl
@@ -53,6 +58,7 @@ export const userStore = defineStore('embedded', {
       return {
         embeddedToken: this.token,
         busiFlag: this.busiFlag,
+        outerParams: this.outerParams,
         type: this.type,
         dvId: this.dvId,
         chartId: this.chartId,
@@ -70,6 +76,9 @@ export const userStore = defineStore('embedded', {
     },
     setBusiFlag(busiFlag: string) {
       this.busiFlag = busiFlag
+    },
+    setOuterParams(outerParams: string) {
+      this.outerParams = outerParams
     },
     setBaseUrl(baseUrl: string) {
       this.baseUrl = baseUrl
@@ -90,6 +99,7 @@ export const userStore = defineStore('embedded', {
       this.type = data['type']
       this.token = data['embeddedToken']
       this.busiFlag = data['busiFlag']
+      this.outerParams = data['outerParams']
       this.dvId = data['dvId']
       this.chartId = data['chartId']
       this.pid = data['pid']
