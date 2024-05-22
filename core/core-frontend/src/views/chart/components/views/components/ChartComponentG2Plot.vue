@@ -17,6 +17,7 @@ import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/ca
 import { deepCopy } from '@/utils/utils'
 import { trackBarStyleCheck } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 
 const dvMainStore = dvMainStoreWithOut()
 const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack } =
@@ -116,7 +117,7 @@ const calcData = async (view, callback) => {
         callback?.()
       })
   } else {
-    if (['bubble-map', 'map'].includes(view.type)) {
+    if (['bubble-map', 'map', 'flow-map'].includes(view.type)) {
       await renderChart(view, callback)
     }
     callback?.()
@@ -140,6 +141,9 @@ const renderChart = async (view, callback?) => {
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
       await renderL7Plot(chart, chartView as L7PlotChartView<any, any>, callback)
+      break
+    case ChartLibraryType.L7:
+      await renderL7(chart, chartView as L7ChartView<any, any>, callback)
       break
     case ChartLibraryType.G2_PLOT:
       renderG2Plot(chart, chartView as G2PlotChartView<any, any>)
@@ -194,6 +198,23 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
       areaId,
       action
     })
+    callback?.()
+    emit('resetLoading')
+  }, 500)
+}
+
+let mapL7Timer: number
+const renderL7 = async (chart: ChartObj, chartView: L7ChartView<any, any>, callback) => {
+  mapL7Timer && clearTimeout(mapL7Timer)
+  mapL7Timer = setTimeout(async () => {
+    myChart?.destroy()
+    myChart = await chartView.drawChart({
+      chartObj: myChart,
+      container: containerId,
+      chart: chart,
+      action
+    })
+    myChart?.render()
     callback?.()
     emit('resetLoading')
   }, 500)
@@ -333,7 +354,7 @@ defineExpose({
 })
 let resizeObserver
 const TOLERANCE = 0.01
-const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map']
+const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map']
 onMounted(() => {
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom
