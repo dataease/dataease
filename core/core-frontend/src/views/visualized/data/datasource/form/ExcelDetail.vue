@@ -354,11 +354,24 @@ const uploadExcel = () => {
   formData.append('type', '')
   formData.append('editType', param.value.editType)
   formData.append('id', param.value.id || 0)
-  return uploadFile(formData).then(res => {
-    upload.value?.clearFiles()
-    uploadAgain.value?.clearFiles()
-    uploadSuccess(res)
-  })
+  loading.value = true
+  return uploadFile(formData)
+    .then(res => {
+      upload.value?.clearFiles()
+      uploadAgain.value?.clearFiles()
+      uploadSuccess(res)
+      loading.value = false
+    })
+    .catch(error => {
+      if (error.code === 'ECONNABORTED') {
+        ElMessage({
+          type: 'error',
+          message: error.message,
+          showClose: true
+        })
+      }
+      loading.value = false
+    })
 }
 const excelForm = ref()
 const submitForm = () => {
@@ -394,6 +407,7 @@ defineExpose({
         require-asterisk-position="right"
         :model="param"
         label-position="top"
+        v-loading="loading"
       >
         <el-form-item
           v-if="sheetFile.name"
