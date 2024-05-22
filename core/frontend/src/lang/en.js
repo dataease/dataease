@@ -608,6 +608,8 @@ export default {
       rename: 'Rename',
       untitled: 'Untitled',
       create_new_form: 'Create New Form',
+      copy_new_form: 'Copy Form',
+      edit_form: 'Edit Form',
       title: 'Title',
       no_form: 'Click to Create New',
       form_list_name: 'Form List',

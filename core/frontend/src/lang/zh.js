@@ -606,6 +606,8 @@ export default {
       rename: '重命名',
       untitled: '未命名表单',
       create_new_form: '新建表单',
+      copy_new_form: '复制表单',
+      edit_form: '编辑表单',
       title: '标题',
       no_form: '暂无表单，点击',
       form_list_name: '填报表单',

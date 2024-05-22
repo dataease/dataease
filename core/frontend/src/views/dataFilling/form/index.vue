@@ -387,6 +387,18 @@ export default {
                     </template>
 
                     <span
+                      v-if="data.nodeType !== 'folder'"
+                      @click.stop
+                    >
+                      <el-button
+                        icon="el-icon-edit"
+                        type="text"
+                        size="small"
+                        @click="editForm(data)"
+                      />
+                    </span>
+
+                    <span
                       style="margin-left: 12px"
                       @click.stop
                     >
@@ -410,20 +422,22 @@ export default {
                             {{ $t('panel.rename') }}
                           </el-dropdown-item>
                           <el-dropdown-item
-                            icon="el-icon-edit-outline"
+                            v-if="data.nodeType !== 'folder'"
+                            icon="el-icon-edit"
                             :command="beforeClickMore('edit', data, node)"
                           >
                             {{ $t('panel.edit') }}
                           </el-dropdown-item>
                           <el-dropdown-item
                             icon="el-icon-right"
-                            :command="beforeClickMore('move',data,node)"
+                            :command="beforeClickMore('move', data, node)"
                           >
                             {{ $t('dataset.move_to') }}
                           </el-dropdown-item>
                           <el-dropdown-item
+                            v-if="data.nodeType !== 'folder'"
                             icon="el-icon-document-copy"
-                            :command="beforeClickMore('copy',data,node)"
+                            :command="beforeClickMore('copy', data, node)"
                           >
                             {{ $t('dataset.copy') }}
                           </el-dropdown-item>
@@ -454,6 +468,7 @@ export default {
       <view-table
         v-else
         :param="displayFormData"
+        @editForm="editForm"
       />
     </el-main>
 
