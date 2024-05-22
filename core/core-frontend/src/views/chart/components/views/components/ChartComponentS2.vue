@@ -262,8 +262,6 @@ const action = param => {
 }
 const appStore = useAppStoreWithOut()
 
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-
 const trackClick = trackAction => {
   const param = state.pointParam
   if (!param?.data?.dimensionList) {
@@ -296,7 +294,7 @@ const trackClick = trackAction => {
       dvMainStore.addViewTrackFilter(linkageParam)
       break
     case 'jump':
-      if (isDataEaseBi.value || mobileInPc.value) return
+      if (mobileInPc.value) return
       emit('onJumpClick', jumpParam)
       break
     default:
@@ -322,7 +320,6 @@ const trackMenu = computed(() => {
   })
   jumpCount &&
     view.value?.jumpActive &&
-    !isDataEaseBi.value &&
     !mobileInPc.value &&
     trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')

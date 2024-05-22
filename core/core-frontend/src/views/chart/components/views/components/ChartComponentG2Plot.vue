@@ -159,7 +159,6 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
 const dynamicAreaId = ref('')
 const country = ref('')
 const appStore = useAppStoreWithOut()
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 const chartContainer = ref<HTMLElement>(null)
 let mapTimer: number
 const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any>, callback) => {
@@ -259,7 +258,7 @@ const trackClick = trackAction => {
       dvMainStore.addViewTrackFilter(linkageParam)
       break
     case 'jump':
-      if (isDataEaseBi.value || mobileInPc.value) return
+      if (mobileInPc.value) return
       emit('onJumpClick', jumpParam)
       break
     default:
@@ -284,7 +283,6 @@ const trackMenu = computed(() => {
     })
     jumpCount &&
       view.value?.jumpActive &&
-      !isDataEaseBi.value &&
       !mobileInPc.value &&
       trackMenuInfo.push('jump')
     linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
