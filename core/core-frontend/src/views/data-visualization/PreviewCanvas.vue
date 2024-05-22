@@ -122,12 +122,16 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     }
   )
 }
+
+// 目标校验： 需要校验targetDvId 是否是当前可视化资源ID
 const winMsgHandle = event => {
-  const msgInfo = JSON.parse(event.data.info)
-  if (msgInfo.type === 'attachParams') {
+  console.info('PostMessage Params Received')
+  const msgInfo = event.data
+  // 校验targetDvId
+  if (msgInfo && msgInfo.type === 'attachParams' && msgInfo.targetDvId === state.dvInfo.id + '') {
     const attachParam = msgInfo.params
     if (attachParam) {
-      dvMainStore.addOuterParamsFilter(attachParam)
+      dvMainStore.addOuterParamsFilter(attachParam, 'outer')
     }
   }
 }
@@ -142,11 +146,11 @@ onMounted(async () => {
     return
   }
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
-  window.addEventListener('embedParamsMessage', winMsgHandle)
+  window.addEventListener('message', winMsgHandle)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('embedParamsMessage', winMsgHandle)
+  window.removeEventListener('message', winMsgHandle)
 })
 
 defineExpose({

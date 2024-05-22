@@ -3,7 +3,7 @@
     <div v-if="element.frameLinks.src" class="main-frame">
       <iframe
         v-if="state.frameShow"
-        id="iframe"
+        :id="'iframe-' + element.id"
         :src="element.frameLinks.src"
         scrolling="auto"
         frameborder="0"
