@@ -122,7 +122,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
     }
   )
 }
-const winMsgHandel = event => {
+const winMsgHandle = event => {
   const msgInfo = JSON.parse(event.data.info)
   if (msgInfo.type === 'attachParams') {
     const attachParam = msgInfo.params
@@ -142,11 +142,11 @@ onMounted(async () => {
     return
   }
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
-  window.addEventListener('embedParamsMessage', winMsgHandel)
+  window.addEventListener('embedParamsMessage', winMsgHandle)
 })
 
 onUnmounted(() => {
-  window.removeEventListener('embedParamsMessage', winMsgHandel)
+  window.removeEventListener('embedParamsMessage', winMsgHandle)
 })
 
 defineExpose({
