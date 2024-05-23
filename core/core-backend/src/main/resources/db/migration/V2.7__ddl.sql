@@ -22,3 +22,14 @@ ALTER TABLE `xpack_setting_authentication`
     ADD COLUMN `synced` tinyint(1) NOT NULL DEFAULT 0 COMMENT '已同步' AFTER `plugin_json`;
 ALTER TABLE `xpack_setting_authentication`
     ADD COLUMN `valid` tinyint(1) NOT NULL DEFAULT 0 COMMENT '有效' AFTER `synced`;
+
+
+DROP TABLE IF EXISTS `xpack_platform_token`;
+CREATE TABLE `xpack_platform_token`
+(
+    `id`          int          NOT NULL,
+    `token`       varchar(255) NOT NULL,
+    `create_time` bigint       NOT NULL,
+    `exp_time`    bigint       NOT NULL,
+    PRIMARY KEY (`id`)
+);
