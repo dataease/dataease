@@ -116,6 +116,7 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
     // 移除所有下钻字段，调整当前下钻字段到下钻入口位置
     fields = fields.filter(item => !drillFilters.includes(item.id))
     fields.splice(drillEnterFieldIndex, 0, curDrillField)
+    nameMap[curDrillField.dataeaseName] = curDrillField
   }
   fields.forEach(ele => {
     const f = nameMap[ele.dataeaseName]
