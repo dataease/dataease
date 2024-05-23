@@ -1,5 +1,5 @@
 <script>
-import { filter, forEach, find, split, get, groupBy, keys, includes } from 'lodash-es'
+import { filter, forEach, find, split, get, groupBy, keys, includes, cloneDeep } from 'lodash-es'
 import { listDatasource } from '@/api/system/datasource'
 import { listForm, saveForm, updateForm } from '@/views/dataFilling/form/dataFilling'
 import { hasDataPermission } from '@/utils/permission'
@@ -31,17 +31,21 @@ export default {
       }
       let count = 0
       forEach(this.computedFormList, f => {
-        if (f.type === 'dateRange') {
-          if (f.settings.mapping.columnName1 === value) {
-            count++
-          }
-          if (f.settings.mapping.columnName2 === value) {
-            count++
+        if (!f.deleted) {
+          if (f.type === 'dateRange') {
+            if (f.settings.mapping.columnName1 === value) {
+              count++
+            }
+            if (f.settings.mapping.columnName2 === value) {
+              count++
+            }
+          } else {
+            if (f.settings.mapping.columnName === value) {
+              count++
+            }
           }
         } else {
-          if (f.settings.mapping.columnName === value) {
-            count++
-          }
+          // 后台会讲删除的字段名处理成uuid，正常不会有重复的
         }
       })
       if (count > 1) {
@@ -65,13 +69,19 @@ export default {
       callback()
     }
     const checkInvalidColumnValidator = (rule, value, callback) => {
+      const f = split(rule.field, '.')[0]
+      const _index = get(this.formData, f)
+      if (_index.old) {
+        // 旧的 index 跳过校验
+        callback()
+      }
       if (!value) {
         return callback(new Error(this.$t('commons.component.required')))
       }
       if (this.columnsList.length === 0) {
         return callback(new Error(this.$t('data_fill.form.value_not_exists')))
       }
-      if (find(this.columnsList, c => c === value) === undefined) {
+      if (find(this.columnsList, c => c.value === value) === undefined) {
         callback(new Error(this.$t('data_fill.form.value_not_exists')))
       }
       callback()
@@ -142,15 +152,16 @@ export default {
         const _list = []
         const columnIds = []
         for (let i = 0; i < this.formData.forms.length; i++) {
-          const row = this.formData.forms[i]
+          const row = cloneDeep(this.formData.forms[i])
           columnIds.push(row.id)
           _list.push(row)
         }
         for (let i = 0; i < this.formData.oldForms.length; i++) {
-          const row = this.formData.oldForms[i]
+          const row = cloneDeep(this.formData.oldForms[i])
           if (includes(columnIds, row.id)) {
             continue
           }
+          row.deleted = true
           _list.push(row)
         }
         return _list
@@ -180,25 +191,40 @@ export default {
         return this.formData.tableIndexes
       }
     },
-    columnsList() {
+    allColumnsList() {
       const _list = []
       for (let i = 0; i < this.computedFormList.length; i++) {
         const row = this.computedFormList[i]
         if (row.type === 'dateRange') {
           if (row.settings.mapping.columnName1 !== undefined && row.settings.mapping.columnName1 !== '') {
-            _list.push(row.settings.mapping.columnName1)
+            _list.push({
+              name: !row.deleted ? row.settings.mapping.columnName1 : row.id + '_1',
+              value: row.id + '_1',
+              deleted: !!row.deleted
+            })
           }
           if (row.settings.mapping.columnName2 !== undefined && row.settings.mapping.columnName2 !== '') {
-            _list.push(row.settings.mapping.columnName2)
+            _list.push({
+              name: !row.deleted ? row.settings.mapping.columnName2 : row.id + '_2',
+              value: row.id + '_2',
+              deleted: !!row.deleted
+            })
           }
         } else {
           if (row.settings.mapping.columnName !== undefined && row.settings.mapping.columnName !== '' && row.settings.mapping.type !== 'text') {
-            _list.push(row.settings.mapping.columnName)
+            _list.push({
+              name: !row.deleted ? row.settings.mapping.columnName : row.id,
+              value: row.id,
+              deleted: !!row.deleted
+            })
           }
         }
       }
 
       return _list
+    },
+    columnsList() {
+      return filter(this.allColumnsList, c => !c.deleted)
     }
   },
   watch: {
@@ -756,12 +782,11 @@ export default {
                     style="width: 100%"
                   >
                     <el-option
-                      v-for="(x, $index) in columnsList"
+                      v-for="(x, $index) in (isEdit && scope.row.old ? allColumnsList : columnsList)"
                       :key="$index"
-                      :value="x"
-                      :label="x"
-                    >{{ x }}
-                    </el-option>
+                      :value="x.value"
+                      :label="x.name"
+                    />
                   </el-select>
                 </el-form-item>
 
