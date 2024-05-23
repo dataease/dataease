@@ -15,7 +15,7 @@ INSERT INTO `core_sys_startup_job`
 VALUES ('chartFilterMerge', 'chartFilterMerge', 'ready');
 COMMIT;
 
-
+TRUNCATE TABLE `xpack_setting_authentication`;
 ALTER TABLE `xpack_setting_authentication`
     ADD COLUMN `plugin_json` longtext NULL COMMENT '插件配置' AFTER `relational_ids`;
 ALTER TABLE `xpack_setting_authentication`
