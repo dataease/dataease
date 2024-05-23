@@ -167,6 +167,10 @@ watch(
   }
 )
 const hideShare = async () => {
+  if (!shareEnable.value) {
+    popoverVisible.value = false
+    return
+  }
   const pwdValid = validatePwdFormat()
   const uuidValid = await validateUuid()
   if (pwdValid && uuidValid) {
