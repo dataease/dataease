@@ -261,6 +261,16 @@ export function getSize(chart) {
             p[n.fieldId] = n
             return p
           }, {}) || {}
+          // 下钻字段使用入口字段的宽度
+          if (chart.drill) {
+            const xAxis = JSON.parse(chart.xaxis)
+            const curDrillField = chart.drillFields[chart.drillFilters.length]
+            const drillEnterFieldIndex = xAxis.findIndex(item => item.id === chart.drillFilters[0].fieldId)
+            const drillEnterField = xAxis[drillEnterFieldIndex]
+            fieldMap[curDrillField.dataeaseName] = {
+              width: fieldMap[drillEnterField.dataeaseName]?.width
+            }
+          }
           size.colCfg.width = node => {
             const width = node.spreadsheet.container.cfg.el.offsetWidth
             if (!s.tableFieldWidth?.length) {
