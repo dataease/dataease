@@ -219,7 +219,7 @@ const openDataBoardSetting = () => {
 }
 
 const openMobileSetting = () => {
-  if (!dvInfo.value.id) {
+  if (!dvInfo.value.id || dvInfo.value.dataState === 'prepare') {
     ElMessage.warning('请先保存当前页面')
     return
   }
