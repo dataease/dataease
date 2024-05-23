@@ -675,6 +675,7 @@ export const DEFAULT_ASSIST_LINE_CFG: ChartAssistLineCfg = {
 export const DEFAULT_THRESHOLD: ChartThreshold = {
   enable: false,
   gaugeThreshold: '',
+  liquidThreshold: '',
   labelThreshold: [],
   tableThreshold: [],
   textLabelThreshold: []
