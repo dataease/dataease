@@ -137,6 +137,13 @@ const initLocalCanvasData = () => {
       dvInfo.value.pid = sourcePid
       setTimeout(() => {
         snapshotStore.recordSnapshotCache()
+        // 复制时，初始化的保存按钮为激活状态
+        if (opt === 'copy') {
+          // 使用缓存时，初始化的保存按钮为激活状态
+          setTimeout(() => {
+            snapshotStore.recordSnapshotCache('renderChart')
+          }, 1000)
+        }
       }, 1500)
     }
   })
