@@ -24,6 +24,7 @@ const thresholdObj = {
   field: '0',
   value: '0',
   color: '#ff0000ff',
+  backgroundColor: '#fff',
   min: '0',
   max: '1'
 }
@@ -175,7 +176,7 @@ init()
             @change="changeThreshold"
           />
         </div>
-        <!--        <div style="display: flex; align-items: center; justify-content: center; margin-left: 8px">
+        <div style="display: flex; align-items: center; justify-content: center; margin-left: 8px">
           <div class="color-title">{{ t('chart.backgroundColor') }}</div>
           <el-color-picker
             is-custom
@@ -186,7 +187,7 @@ init()
             :predefine="predefineColors"
             @change="changeThreshold"
           />
-        </div>-->
+        </div>
         <div style="display: flex; align-items: center; justify-content: center; margin-left: 8px">
           <el-button
             class="circle-button"

@@ -439,14 +439,14 @@ init()
               class="color-div"
               :class="{ 'color-div-dark': themes === 'dark' }"
             ></div>
-            <!--            <div
+            <div
               :title="t('chart.backgroundColor')"
               :style="{
                 backgroundColor: item.backgroundColor
               }"
               class="color-div"
               :class="{ 'color-div-dark': themes === 'dark' }"
-            ></div>-->
+            ></div>
           </div>
         </div>
       </el-col>

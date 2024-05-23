@@ -93,9 +93,10 @@ const result = computed(() => {
 const indicatorColor = ref(DEFAULT_INDICATOR_STYLE.color)
 
 const thresholdColor = computed(() => {
-  let color = indicatorColor.value
+  let color: string = indicatorColor.value
+  let backgroundColor: string = DEFAULT_INDICATOR_STYLE.backgroundColor
   if (result.value === '-') {
-    return color
+    return { color, backgroundColor }
   }
   const value = result.value
   if (
@@ -107,42 +108,47 @@ const thresholdColor = computed(() => {
     for (let i = 0; i < senior.threshold.labelThreshold.length; i++) {
       let flag = false
       const t = senior.threshold.labelThreshold[i]
-      const tv = parseFloat(t.value)
+      const tv = t.value
       if (t.term === 'eq') {
         if (value === tv) {
           color = t.color
+          backgroundColor = t.backgroundColor
           flag = true
         }
       } else if (t.term === 'not_eq') {
         if (value !== tv) {
           color = t.color
+          backgroundColor = t.backgroundColor
           flag = true
         }
       } else if (t.term === 'lt') {
         if (value < tv) {
           color = t.color
+          backgroundColor = t.backgroundColor
           flag = true
         }
       } else if (t.term === 'gt') {
         if (value > tv) {
           color = t.color
+          backgroundColor = t.backgroundColor
           flag = true
         }
       } else if (t.term === 'le') {
         if (value <= tv) {
           color = t.color
+          backgroundColor = t.backgroundColor
           flag = true
         }
       } else if (t.term === 'ge') {
         if (value >= tv) {
           color = t.color
+          backgroundColor = t.backgroundColor
           flag = true
         }
       } else if (t.term === 'between') {
-        const min = parseFloat(t.min)
-        const max = parseFloat(t.max)
-        if (min <= value && value <= max) {
+        if (t.min <= value && value <= t.max) {
           color = t.color
+          backgroundColor = t.backgroundColor
           flag = true
         }
       }
@@ -151,7 +157,7 @@ const thresholdColor = computed(() => {
       }
     }
   }
-  return color
+  return { color, backgroundColor }
 })
 
 const formattedResult = computed(() => {
@@ -175,11 +181,12 @@ const contentStyle = ref<CSSProperties>({
   'flex-direction': 'column',
   'align-items': 'center',
   'justify-content': 'center',
-  height: '100%'
+  height: '100%',
+  'background-color': thresholdColor.value.backgroundColor
 })
 
 const indicatorClass = ref<CSSProperties>({
-  color: thresholdColor.value,
+  color: thresholdColor.value.color,
   'font-size': DEFAULT_INDICATOR_STYLE.fontSize + 'px',
   'font-family': defaultTo(
     CHART_FONT_FAMILY_MAP[DEFAULT_INDICATOR_STYLE.fontFamily],
@@ -280,7 +287,7 @@ const renderChart = async view => {
       }
 
       indicatorClass.value = {
-        color: thresholdColor.value,
+        color: thresholdColor.value.color,
         'font-size': indicator.fontSize + 'px',
         'font-family': defaultTo(
           CHART_FONT_FAMILY_MAP[indicator.fontFamily],
@@ -292,6 +299,7 @@ const renderChart = async view => {
         'text-shadow': indicator.fontShadow ? '2px 2px 4px' : 'none',
         'font-synthesis': 'weight style'
       }
+      contentStyle.value['background-color'] = thresholdColor.value.backgroundColor
 
       indicatorSuffixClass.value = {
         color: suffixColor,
