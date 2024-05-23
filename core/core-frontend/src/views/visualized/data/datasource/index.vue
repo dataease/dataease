@@ -1073,7 +1073,7 @@ const getMenuList = (val: boolean) => {
                     placement="top"
                   >
                     <el-button
-                      @click.stop="createDataset(scope.row.name)"
+                      @click.stop="createDataset(scope.row.tableName)"
                       text
                       v-permission="['dataset']"
                     >
