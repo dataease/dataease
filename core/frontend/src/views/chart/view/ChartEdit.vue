@@ -3618,8 +3618,18 @@ export default {
         aCode = this.currentAcreaNode.code
       }
       const currentNode = this.findEntityByCode(aCode || this.view.customAttr.areaCode, this.places)
+      let mappingName = null
+      if (this.chart.senior) {
+        const senior = JSON.parse(this.chart.senior)
+        if (senior?.mapMapping[currentNode.code]) {
+          const mapping = senior.mapMapping[currentNode.code]
+          if (mapping[name]) {
+            mappingName = mapping[name]
+          }
+        }
+      }
       if (currentNode && currentNode.children && currentNode.children.length > 0) {
-        const nextNode = currentNode.children.find(item => item.name === name)
+        const nextNode = currentNode.children.find(item => item.name === name || (mappingName && item.name === mappingName))
         if (!nextNode || !nextNode.code) return null
         this.currentAcreaNode = nextNode
         const current = this.$refs.dynamicChart
