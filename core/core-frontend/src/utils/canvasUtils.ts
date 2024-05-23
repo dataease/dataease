@@ -99,6 +99,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
     const dvInfo = {
       id: canvasInfo.id,
       name: canvasInfo.name,
+      createBy: canvasInfo.createBy,
       pid: canvasInfo.pid,
       status: canvasInfo.status,
       selfWatermarkStatus: canvasInfo.selfWatermarkStatus,

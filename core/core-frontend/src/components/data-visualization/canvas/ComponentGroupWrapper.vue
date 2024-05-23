@@ -6,10 +6,7 @@ import findComponent from '@/utils/components'
 import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { subscription } from '@/api/setting/sysParameter'
-import { ElMessage } from 'element-plus-secondary'
-import { useUserStoreWithOut } from '@/store/modules/user'
-const userStore = useUserStoreWithOut()
+
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
 
@@ -79,21 +76,6 @@ const props = defineProps({
 })
 const { config, showPosition, index, canvasStyleData, canvasViewInfo, dvInfo, searchCount, scale } =
   toRefs(props)
-
-const favorited = ref(false)
-const onFavorit = async () => {
-  const res = await subscription(dvInfo.value.id, config.value.id)
-  if (res.code === 0) {
-    ElMessage.success('订阅成功')
-    favorited.value = true
-  } else {
-    ElMessage.error('订阅失败')
-  }
-
-  setTimeout(() => {
-    favorited.value = false
-  }, 2000)
-}
 
 let currentInstance
 const component = ref(null)
@@ -205,13 +187,6 @@ const deepScale = computed(() => scale.value / 100)
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
   >
-    <!-- v-if="dvInfo.type === 'dashboard'" -->
-    <div class="collect-icon" v-if="dvInfo.createBy === '1' && userStore.uid !== '1'">
-      <el-icon @click="onFavorit" :size="16" :style="{ color: favorited ? '#FFC60A' : '#646A73' }">
-        <icon :name="favorited ? 'visual-star' : 'icon_collection_outlined'"></icon>
-      </el-icon>
-    </div>
-
     <component-edit-bar
       v-if="!showPosition.includes('canvas') && dvInfo.type === 'dashboard'"
       class="wrapper-edit-bar"
@@ -260,19 +235,6 @@ const deepScale = computed(() => scale.value / 100)
 <style lang="less" scoped>
 .wrapper-outer {
   position: absolute;
-  .collect-icon {
-    position: absolute;
-    top: 0px;
-    right: 4px;
-    z-index: 99999;
-    background: url('@/assets/img/collect-bg.png') 0 0/100% 100%;
-    width: 28px;
-    height: 34px;
-    padding-bottom: 6px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-  }
 }
 .wrapper-inner {
   width: 100%;
