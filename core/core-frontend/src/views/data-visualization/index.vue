@@ -429,12 +429,15 @@ eventBus.on('handleNew', handleNew)
         >
           <canvas-attr></canvas-attr>
         </dv-sidebar>
-        <div v-show="viewsPropertiesShow" style="height: 100%">
+        <div
+          v-show="viewsPropertiesShow"
+          style="height: 100%"
+          :class="{ 'preview-aside': editMode === 'preview' }"
+        >
           <editor
             :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
             themes="dark"
             :dataset-tree="state.datasetTree"
-            :class="{ 'preview-aside': editMode === 'preview' }"
           ></editor>
         </div>
       </div>
