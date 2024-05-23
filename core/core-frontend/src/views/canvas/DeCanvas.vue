@@ -138,7 +138,9 @@ const canvasInit = (isFistLoad = true) => {
     }
     // afterInit
     dvMainStore.setDataPrepareState(true)
-    isFistLoad && snapshotStore.recordSnapshotCache('renderChart')
+    if (isMainCanvas(canvasId.value.id) && isFistLoad) {
+      snapshotStore.recordSnapshotCache('renderChart')
+    }
   }, 500)
 }
 
