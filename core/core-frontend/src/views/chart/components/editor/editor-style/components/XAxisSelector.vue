@@ -153,15 +153,12 @@ onMounted(() => {
       />
     </el-form-item>
 
-    <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes"
-      >{{ t('chart.name') }}{{ t('chart.text') }}</label
-    >
     <div style="display: flex">
       <el-form-item
         class="form-item"
         :class="'form-item-' + themes"
         v-if="showProperty('color')"
-        style="padding-right: 4px"
+        :label="t('chart.chart_style')"
       >
         <el-color-picker
           v-model="state.axisForm.color"
@@ -178,6 +175,7 @@ onMounted(() => {
         v-if="showProperty('fontSize')"
         style="padding-left: 4px"
       >
+        <template #label>&nbsp;</template>
         <el-tooltip content="字号" :effect="toolTip" placement="top">
           <el-select
             style="width: 108px"

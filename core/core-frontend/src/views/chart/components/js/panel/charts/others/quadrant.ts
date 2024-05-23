@@ -4,9 +4,10 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { ScatterOptions, Scatter as G2Scatter } from '@antv/g2plot/esm/plots/scatter'
 import { flow, parseJson } from '../../../util'
-import { valueFormatter } from '../../../formatter'
+import { valueFormatter } from '@/views/chart/components/js/formatter'
 import { useI18n } from '@/hooks/web/useI18n'
-import { isEmpty } from 'lodash-es'
+import { isEmpty, map } from 'lodash-es'
+import { cloneDeep, defaultTo } from 'lodash-es'
 
 const { t } = useI18n()
 /**
@@ -119,58 +120,40 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
     if (!chart.data?.data) {
       return
     }
-    const { colorFieldObj, sizeFieldObj, xFieldObj, yFieldObj } = this.getFieldObject(chart)
-    if (!xFieldObj.id || !yFieldObj.id || yFieldObj.id === xFieldObj.id) {
-      return
-    }
-    const data: any[] = []
-    // 根据指标字段对数据列表进行分组
-    const groupedData = chart.data?.data
-      ?.filter(item => item['category'] != null)
-      .reduce((result, item) => {
-        ;(result[item['field']] = result[item['field']] || []).push(item)
-        return result
-      }, {})
-    // 维度字段数据分组
-    chart.data?.data
-      ?.filter(item => item['category'] === null)
-      .forEach(item => {
-        ;(groupedData[colorFieldObj.name] = groupedData[colorFieldObj.name] || []).push(
-          item['field']
-        )
-      })
-    // 去掉groupedData每个key中集合的对象重复项
-    Object.keys(groupedData).forEach(key => {
-      groupedData[key] = Array.from(this.getUniqueObjects(groupedData[key]))
+    // data
+    const sourceData: Array<any> = cloneDeep(chart.data.data)
+    const data1 = defaultTo(sourceData[0]?.data, [])
+    const data2 = defaultTo(sourceData[1]?.data, [])
+    const data3 = defaultTo(sourceData[2]?.data, [])
+    const xData = data1.map(item => {
+      return {
+        ...item,
+        id: item.quotaList[0]?.id,
+        field: item.field,
+        value: item.value
+      }
     })
-    // 一个指标字段的数据长度，视为数据长度，也就是有多少数据
-    const dataLength = chart.data?.data.length / chart.data?.fields.length
-    for (let index = 0; index < dataLength; index++) {
-      const tmpData = {
-        dimensionList: groupedData[xFieldObj.name][index].dimensionList,
-        quotaList: groupedData[xFieldObj.name][index].quotaList,
-        [xFieldObj.name]: groupedData[xFieldObj.name][index].value
+    const yData = data2.map(item => {
+      return {
+        ...item,
+        id: item.quotaList[0]?.id,
+        field: item.field,
+        value: item.value
       }
-      if (groupedData[yFieldObj.name]) {
-        tmpData[yFieldObj.name] = groupedData[yFieldObj.name][index].value
+    })
+    const eData = data3.map(item => {
+      return {
+        ...item,
+        id: item.quotaList[0]?.id,
+        field: item.field,
+        value: item.value
       }
-      if (
-        groupedData[sizeFieldObj.name] &&
-        sizeFieldObj.name !== yFieldObj.name &&
-        sizeFieldObj.name !== xFieldObj.name
-      ) {
-        tmpData[sizeFieldObj.name] = groupedData[sizeFieldObj.name]?.[index].value
-      }
-      if (groupedData[colorFieldObj.name]) {
-        tmpData[colorFieldObj.name] = groupedData[colorFieldObj.name][index]
-      }
-      data.push(tmpData)
-    }
+    })
     // x轴基准线 默认值
-    const xValues = data.map(item => item[xFieldObj.name])
+    const xValues = xData.map(item => item.value)
     const xBaseline = ((Math.max(...xValues) + Math.min(...xValues)) / 2).toFixed()
     // y轴基准线 默认值
-    const yValues = data.map(item => item[yFieldObj.name])
+    const yValues = yData.map(item => item.value)
     const yBaseline = ((Math.max(...yValues) + Math.min(...yValues)) / 2).toFixed()
     const defaultBaselineQuadrant = {
       ...chart.customAttr['quadrant']
@@ -181,15 +164,25 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       defaultBaselineQuadrant.xBaseline = xBaseline
       defaultBaselineQuadrant.yBaseline = yBaseline
     }
-    const colorField = colorFieldObj.name ? { colorField: colorFieldObj.name } : {}
+    const data = map(defaultTo(xData, []), d => {
+      return {
+        ...d,
+        yAxis: d.value,
+        quotaList: d.quotaList
+          .concat(yData.find(item => item.field === d.field)?.quotaList)
+          .concat(eData.find(item => item.field === d.field)?.quotaList),
+        yAxisExt: yData.find(item => item.field === d.field)?.value,
+        extBubble: eData.find(item => item.field === d.field)?.value
+      }
+    })
     const baseOptions: ScatterOptions = {
-      ...colorField,
+      colorField: 'field',
       quadrant: {
         ...defaultBaselineQuadrant
       },
       data: data,
-      xField: xFieldObj.name,
-      yField: yFieldObj.name,
+      xField: 'yAxis',
+      yField: 'yAxisExt',
       appendPadding: 30,
       pointStyle: {
         fillOpacity: 0.8,
@@ -208,12 +201,11 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
   protected configBasicStyle(chart: Chart, options: ScatterOptions): ScatterOptions {
     const customAttr = parseJson(chart.customAttr)
     const basicStyle = customAttr.basicStyle
-    const extBubbleObj = { id: chart.extBubble[0]?.id, name: chart.extBubble[0]?.['originName'] }
     if (chart.extBubble?.length) {
       return {
         ...options,
         size: [4, 30],
-        sizeField: extBubbleObj.name,
+        sizeField: 'extBubble',
         shape: basicStyle.scatterSymbol
       }
     }
@@ -296,7 +288,7 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
               fontSize: l.fontSize
             },
             content: datum => {
-              return datum[chart.xAxis[0]?.['originName']]
+              return datum['name']
             },
             layout: [{ type: 'limit-in-shape' }]
           }
@@ -326,35 +318,47 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
         pre[next['seriesId']] = next
         return pre
       }, {}) as Record<string, SeriesFormatter>
+    const optionsData = cloneDeep(options.data)
     const tooltip: ScatterOptions['tooltip'] = {
       showTitle: true,
       title: (_title, datum) => {
-        return datum?.[xAxisTitle['originName']]
+        return datum?.['name']
       },
       customItems(originalItems) {
         if (!tooltipAttr.seriesTooltipFormatter?.length) {
           return originalItems
         }
         const result = []
-        originalItems
-          ?.filter(i => i.name !== xAxisTitle['originName'])
-          .forEach(item => {
-            Object.keys(formatterMap).forEach(key => {
-              if (formatterMap[key]['originName'] === item.name) {
-                const formatter = formatterMap[key]
-                if (formatter) {
-                  const value =
-                    formatter.groupType === 'q'
-                      ? valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
-                      : item.value
-                  const name = isEmpty(formatter.chartShowName)
-                    ? formatter.name
-                    : formatter.chartShowName
-                  result.push({ color: item.color, name, value })
-                }
+        originalItems.forEach(item => {
+          Object.keys(formatterMap).forEach(key => {
+            if (key.endsWith(item.name)) {
+              const formatter = formatterMap[key]
+              if (formatter) {
+                const value =
+                  formatter.groupType === 'q'
+                    ? valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
+                    : item.value
+                const name = isEmpty(formatter.chartShowName)
+                  ? formatter.name
+                  : formatter.chartShowName
+                result.push({ color: item.color, name, value })
               }
-            })
+            }
           })
+        })
+        const dynamicTooltipValue = optionsData.find(
+          d => d.field === originalItems[0]['title']
+        )?.dynamicTooltipValue
+        if (dynamicTooltipValue.length > 0) {
+          dynamicTooltipValue.forEach(dy => {
+            const q = tooltipAttr.seriesTooltipFormatter.filter(i => i.id === dy.fieldId)
+            if (q && q.length > 0) {
+              const value = valueFormatter(parseFloat(dy.value as string), q[0].formatterCfg)
+              const name = isEmpty(q[0].chartShowName) ? q[0].name : q[0].chartShowName
+              result.push({ color: 'grey', name, value })
+            }
+          })
+        }
         return result
       }
     }
