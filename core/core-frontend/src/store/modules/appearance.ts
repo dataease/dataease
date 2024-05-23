@@ -6,12 +6,16 @@ import colorFunctions from 'less/lib/less/functions/color.js'
 import colorTree from 'less/lib/less/tree/color.js'
 const basePath = import.meta.env.VITE_API_BASEPATH
 const baseUrl = basePath + '/appearance/image/'
+import { isBtnShow } from '@/utils/utils'
 interface AppearanceState {
   themeColor?: string
   customColor?: string
   navigateBg?: string
   navigate?: string
   help?: string
+  showAi?: string
+  showDoc?: string
+  showAbout?: string
   bg?: string
   login?: string
   slogan?: string
@@ -33,6 +37,9 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       navigateBg: '',
       navigate: '',
       help: '',
+      showDoc: '0',
+      showAi: '0',
+      showAbout: '0',
       bg: '',
       login: '',
       slogan: '',
@@ -106,6 +113,15 @@ export const useAppearanceStore = defineStore('appearanceStore', {
     },
     getCommunity(): boolean {
       return this.community
+    },
+    getShowAi(): boolean {
+      return isBtnShow(this.showAi)
+    },
+    getShowDoc(): boolean {
+      return isBtnShow(this.showDoc)
+    },
+    getShowAbout(): boolean {
+      return isBtnShow(this.showAbout)
     }
   },
   actions: {
@@ -160,6 +176,9 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       }
       this.navigate = data.navigate
       this.help = data.help
+      this.showAi = data.showAi
+      this.showDoc = data.showDoc
+      this.showAbout = data.showAbout
       this.navigateBg = data.navigateBg
       this.themeColor = data.themeColor
       this.customColor = data.customColor
