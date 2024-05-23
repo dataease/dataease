@@ -180,7 +180,7 @@ const handleFieldIdChange = (val: EnumValue) => {
         oldArr = [...selectValue.value]
         oldEnumValueArr = setOldMapValue(oldArr)
       }
-      enumValueArr = [...res, ...oldEnumValueArr] || []
+      enumValueArr = [...(res || []), ...oldEnumValueArr] || []
       options.value = [
         ...new Set(
           (res || [])
