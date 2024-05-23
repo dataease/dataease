@@ -3059,6 +3059,35 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
       }
     }
   }
+  .query-style-tab {
+    width: 100%;
+    border-top: solid 1px @side-outline-border-color-light !important;
+
+    .tab-container {
+      .border-bottom-tab(8px);
+    }
+
+    margin-left: 0px !important;
+
+    :deep(.ed-tabs__header) {
+      border-top: none !important;
+    }
+
+    :deep(.ed-tabs__nav-wrap::after) {
+      background-color: rgba(31, 35, 41, 0.15);
+    }
+    :deep(.ed-tabs__nav-scroll) {
+      .ed-tabs__item {
+        height: 35px;
+        line-height: 35px;
+        color: var(--ed-color-primary, #3370ff);
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+      }
+    }
+  }
 }
 
 // editor form 全局样式
@@ -3080,6 +3109,35 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     }
     :deep(.ed-input__wrapper:hover) {
       box-shadow: 0 0 0 1px var(--ed-color-primary, #3370ff) inset !important;
+    }
+  }
+  .query-style-tab {
+    width: 100%;
+    border-top: solid 1px @main-collapse-border-dark !important;
+
+    .tab-container {
+      .border-bottom-tab(8px);
+    }
+
+    margin-left: 0px !important;
+
+    :deep(.ed-tabs__header) {
+      border-top: none !important;
+    }
+
+    :deep(.ed-tabs__nav-wrap::after) {
+      background-color: rgba(31, 35, 41, 0.15);
+    }
+    :deep(.ed-tabs__nav-scroll) {
+      .ed-tabs__item {
+        height: 35px;
+        line-height: 35px;
+        color: var(--ed-color-primary, #3370ff);
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
+        font-size: 12px;
+        font-style: normal;
+        font-weight: 500;
+      }
     }
   }
 }

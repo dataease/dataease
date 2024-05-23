@@ -253,8 +253,8 @@ const list = [
   },
   {
     component: 'DeVideo',
-    name: '媒体',
-    label: '媒体',
+    name: '视频',
+    label: '视频',
     innerType: 'DeVideo',
     editing: false,
     canvasActive: false,
@@ -272,8 +272,8 @@ const list = [
   },
   {
     component: 'DeStreamMedia',
-    name: '媒体',
-    label: '媒体',
+    name: '流媒体',
+    label: '流媒体',
     innerType: 'DeStreamMedia',
     editing: false,
     canvasActive: false,
