@@ -18,6 +18,7 @@ import AiComponent from '@/layout/components/AiComponent.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { findBaseParams } from '@/api/aiComponent'
 import AiTips from '@/layout/components/AiTips.vue'
+
 const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
 const route = useRoute()
@@ -39,6 +40,7 @@ const activeIndex = computed(() => {
   }
   return route.path
 })
+
 const permissionStore = usePermissionStore()
 
 const routers: any[] = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
@@ -109,16 +111,27 @@ onMounted(() => {
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
       <XpackComponent jsname="c3dpdGNoZXI=" />
-      <el-icon style="margin: 0 10px" class="ai-icon" v-if="aiBaseUrl && !showOverlay">
+      <el-icon
+        style="margin: 0 10px"
+        class="ai-icon"
+        v-if="aiBaseUrl && !showOverlay && appearanceStore.getShowAi"
+      >
         <Icon name="dv-ai" @click="handleAiClick" />
       </el-icon>
-      <ai-tips @confirm="aiTipsConfirm" v-if="showOverlay" class="ai-icon-tips"></ai-tips>
+      <ai-tips
+        @confirm="aiTipsConfirm"
+        v-if="showOverlay && appearanceStore.getShowAi"
+        class="ai-icon-tips"
+      />
       <ToolboxCfg v-if="showToolbox" />
-      <TopDoc />
+      <TopDoc v-if="appearanceStore.getShowDoc" />
       <SystemCfg v-if="showSystem" />
       <AccountOperator />
-      <ai-component v-if="aiBaseUrl" :base-url="aiBaseUrl"></ai-component>
-      <div v-if="showOverlay" class="overlay"></div>
+      <ai-component
+        v-if="aiBaseUrl && appearanceStore.getShowAi"
+        :base-url="aiBaseUrl"
+      ></ai-component>
+      <div v-if="showOverlay && appearanceStore.getShowAi" class="overlay"></div>
     </div>
   </el-header>
 </template>
