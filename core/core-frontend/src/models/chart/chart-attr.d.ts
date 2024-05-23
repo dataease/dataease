@@ -791,6 +791,10 @@ declare interface ChartIndicatorStyle {
    */
   color: string
   /**
+   * 背景颜色
+   */
+  backgroundColor: string
+  /**
    * 水平位置
    */
   hPosition: 'left' | 'center' | 'right'
