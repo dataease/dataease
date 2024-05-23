@@ -269,12 +269,15 @@ onUnmounted(() => {
       >
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
-      <div v-show="viewEditorShow" style="height: 100%">
+      <div
+        v-show="viewEditorShow"
+        style="height: 100%"
+        :class="{ 'preview-aside': editMode === 'preview' }"
+      >
         <view-editor
           :themes="'light'"
           :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
           :dataset-tree="state.datasetTree"
-          :class="{ 'preview-aside': editMode === 'preview' }"
         ></view-editor>
       </div>
       <dv-sidebar
