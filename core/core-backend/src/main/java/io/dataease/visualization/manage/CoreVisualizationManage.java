@@ -109,6 +109,7 @@ public class CoreVisualizationManage {
 
     @XpackInteract(value = "visualizationResourceTree", before = false)
     public Long innerSave(DataVisualizationInfo visualizationInfo) {
+        visualizationInfo.setVersion(3);
         return preInnerSave(visualizationInfo);
     }
 
@@ -123,7 +124,6 @@ public class CoreVisualizationManage {
         visualizationInfo.setCreateTime(System.currentTimeMillis());
         visualizationInfo.setUpdateTime(System.currentTimeMillis());
         visualizationInfo.setOrgId(AuthUtils.getUser().getDefaultOid());
-        visualizationInfo.setVersion(3);
         mapper.insert(visualizationInfo);
         coreOptRecentManage.saveOpt(visualizationInfo.getId(), OptConstants.OPT_RESOURCE_TYPE.VISUALIZATION, OptConstants.OPT_TYPE.NEW);
         return visualizationInfo.getId();
