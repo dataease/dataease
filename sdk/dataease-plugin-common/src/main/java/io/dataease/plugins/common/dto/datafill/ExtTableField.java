@@ -81,6 +81,10 @@ public class ExtTableField implements Serializable {
         private String columnName1;
         private String columnName2;
 
+        private String oldColumnName;
+        private String oldColumnName1;
+        private String oldColumnName2;
+
         private BaseType type;
 
         //长度
@@ -106,6 +110,8 @@ public class ExtTableField implements Serializable {
     public static class TableField {
 
         private String columnName;
+
+        private String oldColumnName;
 
         private BaseType type;
 

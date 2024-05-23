@@ -15,7 +15,8 @@ public abstract class ExtDDLProvider {
 
     public abstract String createTableSql(String table, List<ExtTableField> formFields);
 
-    public abstract String addTableColumnSql(String table, List<ExtTableField> formFields);
+    public abstract String addTableColumnSql(String table, List<ExtTableField> formFieldsToCreate, List<ExtTableField> formFieldsToModify);
+
     public abstract String dropTableColumnSql(String table, List<ExtTableField> formFields);
 
     public abstract String searchSql(String table, List<TableField> formFields, String whereSql, long limit, long offset);
@@ -25,6 +26,7 @@ public abstract class ExtDDLProvider {
     public abstract String dropTableSql(String table);
 
     public abstract List<String> createTableIndexSql(String table, List<ExtIndexField> indexFields);
+
     public abstract List<String> dropTableIndexSql(String table, List<ExtIndexField> indexFields);
 
     public abstract String deleteDataByIdsSql(String table, List<DatasourceRequest.TableFieldWithValue> pks);

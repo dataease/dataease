@@ -49,10 +49,11 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
     }
 
     @Override
-    public String addTableColumnSql(String table, List<ExtTableField> formFields) {
+    public String addTableColumnSql(String table, List<ExtTableField> formFieldsToCreate, List<ExtTableField> formFieldsToModify) {
         String modifyTableSql = "ALTER TABLE `$TABLE_NAME$` $Column_Fields$ ;";
-        List<ExtTableField.TableField> fields = convertTableFields(false, formFields);
-        String fieldSql = convertTableFieldsString(table, fields, true);
+        List<ExtTableField.TableField> fields = convertTableFields(false, formFieldsToCreate);
+        List<ExtTableField.TableField> fieldsToModify = convertTableFields(false, formFieldsToModify);
+        String fieldSql = convertTableFieldsString(table, fields, true, fieldsToModify);
         return modifyTableSql.replace("$TABLE_NAME$", table).replace("$Column_Fields$", fieldSql);
     }
 
@@ -144,18 +145,21 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         for (ExtTableField formField : formFields) {
             ExtTableField.TableField.TableFieldBuilder fieldBuilder = ExtTableField.TableField.builder()
                     .columnName(formField.getSettings().getMapping().getColumnName())
+                    .oldColumnName(formField.getSettings().getMapping().getOldColumnName())
                     .type(formField.getSettings().getMapping().getType())
                     .comment(formField.getSettings().getName())
                     .required(formField.getSettings().isRequired());
             if (StringUtils.equalsIgnoreCase(formField.getType(), "dateRange")) {
                 ExtTableField.TableField f1 = fieldBuilder
                         .columnName(formField.getSettings().getMapping().getColumnName1())
+                        .oldColumnName(formField.getSettings().getMapping().getOldColumnName1())
                         .comment(formField.getSettings().getName() + " start")
                         .build();
                 list.add(f1);
 
                 ExtTableField.TableField f2 = BeanUtils.copyBean(new ExtTableField.TableField(), f1);
                 f2.setColumnName(formField.getSettings().getMapping().getColumnName2());
+                f2.setOldColumnName(formField.getSettings().getMapping().getOldColumnName2());
                 f2.setComment(formField.getSettings().getName() + " end");
                 list.add(f2);
             } else {
@@ -265,13 +269,42 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         return convertTableFieldsString(table, fields, false);
     }
 
-    private String convertTableFieldsString(String table, List<ExtTableField.TableField> fields, boolean addColumn) {
+    private String convertTableFieldsString(String table, List<ExtTableField.TableField> fields, boolean notCreateTable) {
+        return convertTableFieldsString(table, fields, notCreateTable, null);
+    }
+
+    private String convertTableFieldsString(String table, List<ExtTableField.TableField> fields, boolean notCreateTable, List<ExtTableField.TableField> fieldsToModify) {
         StringBuilder str = new StringBuilder();
-        if (addColumn) {
+        if (notCreateTable) {
             str.append("\n");
         } else {
             str.append("(\n");
         }
+
+        if (notCreateTable && CollectionUtils.isNotEmpty(fieldsToModify)) {
+            for (int i = 0; i < fieldsToModify.size(); i++) {
+                ExtTableField.TableField field = fieldsToModify.get(i);
+
+                str.append("change ");
+
+                //column name
+                str.append("`").append(field.getOldColumnName()).append("` ");
+                str.append("`").append(field.getColumnName()).append("` ");
+
+                appendTypes(str, field);
+
+                //换行
+                if (i < fieldsToModify.size() - 1) {
+                    str.append(",\n");
+                }
+            }
+
+            if (CollectionUtils.isNotEmpty(fields)) {
+                str.append(",\n");
+            }
+        }
+
+
         ExtTableField.TableField primaryKeyField = null;
         for (int i = 0; i < fields.size(); i++) {
             ExtTableField.TableField field = fields.get(i);
@@ -283,62 +316,14 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
             /*if (checkSqlInjection(field.getColumnName())) {
                 throw new RuntimeException("包含SQL注入的参数，请检查参数！");
             }*/
-            if (addColumn) {
+            if (notCreateTable) {
                 str.append("add ");
             }
 
             //column name
             str.append("`").append(field.getColumnName()).append("` ");
-            //type
-            switch (field.getType()) {
-                case nvarchar:
-                    str.append("NVARCHAR(");
-                    if (field.getSize() != null && field.getSize() > 0) {
-                        str.append(field.getSize());
-                    } else {
-                        str.append(256);
-                    }
-                    str.append(") ");
-                    break;
-                case number:
-                    str.append("BIGINT(");
-                    if (field.getSize() != null && field.getSize() > 0) {
-                        str.append(field.getSize());
-                    } else {
-                        str.append(20);
-                    }
-                    str.append(") ");
-                    break;
-                case decimal:
-                    str.append("DECIMAL(");
-                    if (field.getSize() != null && field.getSize() > 0) {
-                        str.append(field.getSize());
-                    } else {
-                        str.append(20);
-                    }
-                    str.append(",");
-                    if (field.getAccuracy() != null && field.getAccuracy() >= 0) {
-                        str.append(field.getAccuracy());
-                    } else {
-                        str.append(8);
-                    }
-                    str.append(") ");
-                    break;
-                case datetime:
-                    str.append("DATETIME ");
-                    break;
-                default:
-                    str.append("LONGTEXT ");
-                    break;
-            }
 
-            //必填 考虑到表单编辑的情况，调整为代码判断
-            /*if (field.isRequired()) {
-                str.append("NOT NULL ");
-            }*/
-
-            //comment
-            str.append("COMMENT '").append(field.getComment()).append("' ");
+            appendTypes(str, field);
 
             //换行
             if (i < fields.size() - 1) {
@@ -351,7 +336,7 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
 
         }
 
-        if (primaryKeyField != null) {
+        if (!notCreateTable && primaryKeyField != null) {
             str.append("constraint `")
                     .append(table)
                     .append("_pk` ")
@@ -361,10 +346,63 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
                     .append("`)");
         }
 
-        if (!addColumn) {
+        if (!notCreateTable) {
             str.append("\n)\n");
         }
         return str.toString();
+    }
+
+    private static void appendTypes(StringBuilder str, ExtTableField.TableField field) {
+        //type
+        switch (field.getType()) {
+            case nvarchar:
+                str.append("NVARCHAR(");
+                if (field.getSize() != null && field.getSize() > 0) {
+                    str.append(field.getSize());
+                } else {
+                    str.append(256);
+                }
+                str.append(") ");
+                break;
+            case number:
+                str.append("BIGINT(");
+                if (field.getSize() != null && field.getSize() > 0) {
+                    str.append(field.getSize());
+                } else {
+                    str.append(20);
+                }
+                str.append(") ");
+                break;
+            case decimal:
+                str.append("DECIMAL(");
+                if (field.getSize() != null && field.getSize() > 0) {
+                    str.append(field.getSize());
+                } else {
+                    str.append(20);
+                }
+                str.append(",");
+                if (field.getAccuracy() != null && field.getAccuracy() >= 0) {
+                    str.append(field.getAccuracy());
+                } else {
+                    str.append(8);
+                }
+                str.append(") ");
+                break;
+            case datetime:
+                str.append("DATETIME ");
+                break;
+            default:
+                str.append("LONGTEXT ");
+                break;
+        }
+
+        //必填 考虑到表单编辑的情况，调整为代码判断
+            /*if (field.isRequired()) {
+                str.append("NOT NULL ");
+            }*/
+
+        //comment
+        str.append("COMMENT '").append(field.getComment()).append("' ");
     }
 
     @Override

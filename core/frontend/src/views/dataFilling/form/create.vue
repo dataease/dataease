@@ -268,13 +268,21 @@ export default {
         this.formSettings.forms = filter(JSON.parse(res.data.forms), f => !f.removed)
         forEach(this.formSettings.forms, f => {
           f.old = true
+          if (f.type === 'checkbox' || f.type === 'select' && f.settings.multiple) {
+            f.value = []
+          }
         })
         this.formSettings.oldForms = JSON.parse(res.data.forms)
         this.formSettings.tableIndexes = JSON.parse(res.data.tableIndexes)
-        forEach(this.formSettings.tableIndexes, f => {
-          f.old = true
-        })
-        this.formSettings.oldTableIndexes = JSON.parse(res.data.tableIndexes)
+
+        if (res.data.createIndex) {
+          forEach(this.formSettings.tableIndexes, f => {
+            f.old = true
+          })
+          this.formSettings.oldTableIndexes = JSON.parse(res.data.tableIndexes)
+        } else {
+          this.formSettings.oldTableIndexes = []
+        }
 
         this.disableCreateIndex = res.data.createIndex
       })
