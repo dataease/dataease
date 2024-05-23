@@ -71,6 +71,9 @@ public class TemplateCenterManage {
     public String marketGet(String url, String accessKey) {
         HttpClientConfig config = new HttpClientConfig();
         config.addHeader("API-Authorization", accessKey);
+        config.setConnectTimeout(5000);
+        config.setSocketTimeout(10000);
+        config.setConnectionRequestTimeout(5000);
         return HttpClientUtil.get(url, config);
     }
 
