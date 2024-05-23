@@ -6,6 +6,7 @@ import { storeToRefs } from 'pinia'
 import { findResourceAsBase64 } from '@/api/staticResource'
 import FileSaver from 'file-saver'
 import { deepCopy } from '@/utils/utils'
+import { toPng } from 'html-to-image'
 const embeddedStore = useEmbedded()
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, componentData, canvasViewInfo, canvasViewDataInfo, dvInfo } =
@@ -68,6 +69,35 @@ export function download2AppTemplate(downloadType, canvasDom, name, callBack?) {
   } catch (e) {
     console.error(e)
   }
+}
+
+export function downloadCanvas2(type, canvasDom, name, callBack?) {
+  toPng(canvasDom)
+    .then(dataUrl => {
+      const a = document.createElement('a')
+      a.setAttribute('download', name)
+      a.href = dataUrl
+      if (type === 'img') {
+        const a = document.createElement('a')
+        a.setAttribute('download', name)
+        a.href = dataUrl
+        a.click()
+        document.body.removeChild(a)
+      } else {
+        const contentWidth = canvasDom.offsetWidth
+        const contentHeight = canvasDom.offsetHeight
+        const lp = contentWidth > contentHeight ? 'l' : 'p'
+        const PDF = new JsPDF(lp, 'pt', [contentWidth, contentHeight])
+        PDF.addImage(dataUrl, 'PNG', 0, 0, contentWidth, contentHeight)
+        PDF.save(name + '.pdf')
+      }
+      if (callBack) {
+        callBack()
+      }
+    })
+    .catch(error => {
+      console.error('oops, something went wrong!', error)
+    })
 }
 
 export function downloadCanvas(type, canvasDom, name, callBack?) {
