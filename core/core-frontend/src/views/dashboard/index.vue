@@ -34,7 +34,7 @@ const canvasCacheOutRef = ref(null)
 const eventCheck = e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
     const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
-    const { opt } = router.currentRoute.value.query
+    const opt = embeddedStore.opt || router.currentRoute.value.query.opt
     if (!(opt && opt === 'create')) {
       check(wsCache.get('panel-weight'), resourceId as string, 4)
     }
@@ -163,7 +163,10 @@ onMounted(async () => {
   window.addEventListener('storage', eventCheck)
   const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
   const pid = embeddedStore.pid || router.currentRoute.value.query.pid
-  const { opt, createType, templateParams } = router.currentRoute.value.query
+  const opt = embeddedStore.opt || router.currentRoute.value.query.opt
+  const createType = embeddedStore.createType || router.currentRoute.value.query.createType
+  const templateParams =
+    embeddedStore.templateParams || router.currentRoute.value.query.templateParams
   const checkResult = await checkPer(resourceId)
   if (!checkResult) {
     return
