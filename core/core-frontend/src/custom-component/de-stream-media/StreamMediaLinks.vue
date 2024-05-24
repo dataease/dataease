@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-form :effect="themes" ref="form" size="mini" style="width: 100%">
+    <el-form @submit.prevent :effect="themes" ref="form" size="mini" style="width: 100%">
       <el-form-item :effect="themes" :label="t('visualization.video_type')">
         <el-radio-group :effect="themes" v-model="state.streamMediaInfoTemp.videoType">
           <el-radio :effect="themes" :label="'flv'">FLV</el-radio>
