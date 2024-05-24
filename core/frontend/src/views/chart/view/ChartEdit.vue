@@ -2188,7 +2188,7 @@ export default {
         equalsAny(this.view.type, 'map', 'text')
     },
     showScrollCfg() {
-      return equalsAny(this.view.type, 'table-normal', 'table-info')
+      return equalsAny(this.view.type, 'table-normal', 'table-info', 'table-pivot')
     },
     showAnalyseCfg() {
       if (this.view.type === 'bidirectional-bar' || this.view.type === 'bar-time-range') {
