@@ -180,9 +180,9 @@
                 <span
                   v-if="c.date && scope.row.data[c.props]"
                   style="white-space:nowrap; width: fit-content"
-                  :title="formatDate(scope.row.data[c.props], c.enableTime)"
+                  :title="formatDate(scope.row.data[c.props], c.dateType)"
                 >
-                  {{ formatDate(scope.row.data[c.props], c.enableTime) }}
+                  {{ formatDate(scope.row.data[c.props], c.dateType) }}
                 </span>
                 <template v-else-if="(c.type === 'select' && c.multiple || c.type === 'checkbox') && scope.row.data[c.props]">
                   <div
@@ -623,7 +623,7 @@ export default {
             props: f.settings?.mapping?.columnName1,
             label: f.settings?.name,
             date: true,
-            enableTime: f.settings?.enableTime,
+            dateType: f.settings?.dateType ? f.settings?.dateType : (f.settings?.enableTime ? 'datetimerange' : 'daterange'),
             type: f.type,
             multiple: !!f.settings.multiple,
             rangeIndex: 0
@@ -632,7 +632,7 @@ export default {
             props: f.settings?.mapping?.columnName2,
             label: f.settings?.name,
             date: true,
-            enableTime: f.settings?.enableTime,
+            dateType: f.settings?.dateType ? f.settings?.dateType : (f.settings?.enableTime ? 'datetimerange' : 'daterange'),
             type: f.type,
             multiple: !!f.settings.multiple,
             rangeIndex: 1
@@ -642,7 +642,7 @@ export default {
             props: f.settings?.mapping?.columnName,
             label: f.settings?.name,
             date: f.type === 'date',
-            enableTime: f.type === 'date' && f.settings?.enableTime,
+            dateType: f.type === 'date' ? (f.settings?.dateType ? f.settings?.dateType : (f.settings?.enableTime ? 'datetime' : 'date')) : undefined,
             type: f.type,
             multiple: !!f.settings.multiple
           })
@@ -961,14 +961,21 @@ export default {
       }).catch(() => {
       })
     },
-    formatDate(value, enableTime) {
+    formatDate(value, dateType) {
       if (!value) {
         return value
       }
-      if (enableTime) {
-        return value.format('yyyy-MM-dd hh:mm:ss')
-      } else {
-        return value.format('yyyy-MM-dd')
+      switch (dateType) {
+        case 'year':
+          return value.format('yyyy')
+        case 'month':
+        case 'monthrange':
+          return value.format('yyyy-MM')
+        case 'datetime':
+        case 'datetimerange':
+          return value.format('yyyy-MM-dd hh:mm:ss')
+        default:
+          return value.format('yyyy-MM-dd')
       }
     },
 

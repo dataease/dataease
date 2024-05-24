@@ -42,7 +42,29 @@ public class CommentWriteHandler implements RowWriteHandler {
                 StringBuilder options = new StringBuilder();
                 switch (field.getSettings().getMapping().getType()) {
                     case datetime:
-                        example = "\n(日期格式: yyyy/MM/dd" + (field.getSettings().isEnableTime() ? " HH:mm:ss" : "") + ")";
+                        String dateFormat = "yyyy/MM/dd";
+                        switch (field.getSettings().getDateType()) {
+                            case "year":
+                                dateFormat = "yyyy";
+                                break;
+                            case "month":
+                            case "monthrange":
+                                dateFormat = "yyyy/MM";
+                                break;
+                            case "datetime":
+                            case "datetimerange":
+                                dateFormat = "yyyy/MM/dd HH:mm:ss";
+                                break;
+                            case "date":
+                            case "daterange":
+                                dateFormat = "yyyy/MM/dd";
+                                break;
+                            default:
+                                if (field.getSettings().isEnableTime()) { //兼容旧版
+                                    dateFormat = "yyyy/MM/dd HH:mm:ss";
+                                }
+                        }
+                        example = "\n(日期格式: " + dateFormat + ")";
                         break;
                     case number:
                         example = "\n(整形数字)";

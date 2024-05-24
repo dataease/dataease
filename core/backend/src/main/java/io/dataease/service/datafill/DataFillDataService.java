@@ -934,16 +934,53 @@ public class DataFillDataService {
             return null;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //默认会拿到这种格式的
-        if (field.getSettings().isEnableTime()) {
-            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        switch (field.getSettings().getDateType()) {
+            case "year":
+                sdf = new SimpleDateFormat("yyyy");
+                break;
+            case "month":
+            case "monthrange":
+                sdf = new SimpleDateFormat("yyyy-MM");
+                break;
+            case "datetime":
+            case "datetimerange":
+                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                break;
+            case "date":
+            case "daterange":
+                sdf = new SimpleDateFormat("yyyy-MM-dd");
+                break;
+            default:
+                if (field.getSettings().isEnableTime()) { //兼容旧版
+                    sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                }
         }
+
         Date date = null;
         try {
             date = sdf.parse(excelRowData);
         } catch (ParseException e) {
             sdf = new SimpleDateFormat("yyyy/MM/dd"); //以防万一也加上这种
-            if (field.getSettings().isEnableTime()) {
-                sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            switch (field.getSettings().getDateType()) {
+                case "year":
+                    sdf = new SimpleDateFormat("yyyy");
+                    break;
+                case "month":
+                case "monthrange":
+                    sdf = new SimpleDateFormat("yyyy/MM");
+                    break;
+                case "datetime":
+                case "datetimerange":
+                    sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    break;
+                case "date":
+                case "daterange":
+                    sdf = new SimpleDateFormat("yyyy/MM/dd");
+                    break;
+                default:
+                    if (field.getSettings().isEnableTime()) { //兼容旧版
+                        sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    }
             }
             date = sdf.parse(excelRowData);
         }

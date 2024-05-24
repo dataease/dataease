@@ -39,6 +39,7 @@ public class ExtTableField implements Serializable {
 
         private ExtTableFieldMapping mapping;
 
+        //弃用
         private boolean enableTime;
 
         private String rangeSeparator;
@@ -46,6 +47,8 @@ public class ExtTableField implements Serializable {
         private boolean unique;
 
         private String inputType;
+
+        private String dateType;
 
         private String placeholder;
         private String startPlaceholder;

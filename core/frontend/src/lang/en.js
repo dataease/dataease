@@ -648,6 +648,7 @@ export default {
       start_hint_word: 'Start Hint Word',
       end_hint_word: 'End Hint Word',
       input_type: 'Input Type',
+      date_type: 'Date Format',
       check: 'Check',
       set_required: 'Set Required',
       set_unique: 'Set Unique',
