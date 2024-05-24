@@ -386,7 +386,7 @@ const list = [
   },
   {
     component: 'CanvasBoard',
-    name: '图形',
+    name: '边框',
     label: '边框',
     propValue: '',
     icon: 'other_material_board',
@@ -497,7 +497,8 @@ const list = [
       letterSpacing: 0,
       color: '',
       padding: 4,
-      verticalAlign: 'middle'
+      verticalAlign: 'middle',
+      scrollSpeed: 0
     }
   }
 ]
