@@ -393,28 +393,51 @@ export function getConditions(chart: Chart) {
   }
   const conditions = threshold.tableThreshold ?? []
 
+  const dimFields = [...chart.xAxis, ...chart.xAxisExt].map(i => i.dataeaseName)
   if (conditions?.length > 0) {
-    const { tableCell, basicStyle } = parseJson(chart.customAttr)
-    const valueColor = tableCell.tableFontColor
-    let valueBgColor = hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
+    const { tableCell, basicStyle, tableHeader } = parseJson(chart.customAttr)
     const enableTableCrossBG = tableCell.enableTableCrossBG
-    if (enableTableCrossBG) {
-      valueBgColor = null
-    }
+    const valueColor = tableCell.tableFontColor
+    const valueBgColor = enableTableCrossBG
+      ? null
+      : hexColorToRGBA(tableCell.tableItemBgColor, basicStyle.alpha)
+    const headerValueColor = tableHeader.tableHeaderFontColor
+    const headerValueBgColor = hexColorToRGBA(tableHeader.tableHeaderBgColor, basicStyle.alpha)
     for (let i = 0; i < conditions.length; i++) {
       const field = conditions[i]
+      let defaultValueColor = valueColor
+      let defaultBgColor = valueBgColor
+      // 透视表表头颜色配置
+      if (chart.type === 'table-pivot' && dimFields.includes(field.field.dataeaseName)) {
+        defaultValueColor = headerValueColor
+        defaultBgColor = headerValueBgColor
+      }
       res.text.push({
         field: field.field.dataeaseName,
-        mapping(value) {
+        mapping(value, rowData) {
+          // 总计小计
+          if (rowData?.isTotals) {
+            return null
+          }
+          // 表头
+          if (rowData?.id && rowData?.field === rowData.id) {
+            return null
+          }
           return {
-            fill: mappingColor(value, valueColor, field, 'color')
+            fill: mappingColor(value, defaultValueColor, field, 'color')
           }
         }
       })
       res.background.push({
         field: field.field.dataeaseName,
-        mapping(value) {
-          const fill = mappingColor(value, valueBgColor, field, 'backgroundColor')
+        mapping(value, rowData) {
+          if (rowData?.isTotals) {
+            return null
+          }
+          if (rowData?.id && rowData?.field === rowData.id) {
+            return null
+          }
+          const fill = mappingColor(value, defaultBgColor, field, 'backgroundColor')
           return fill ? { fill } : null
         }
       })

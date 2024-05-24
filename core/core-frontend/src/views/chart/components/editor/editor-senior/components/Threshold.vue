@@ -336,7 +336,9 @@ init()
               }}</span>
             </el-col>
             <el-col :span="12">
-              <span v-if="!item.term.includes('null')" :title="item.value">{{ item.value }}</span>
+              <span v-if="!item.term.includes('null')" :title="item.value + ''">{{
+                item.value
+              }}</span>
               <span v-else>&nbsp;</span>
             </el-col>
             <el-col :span="6">
@@ -426,7 +428,7 @@ init()
               }}</span>
             </div>
             <div style="flex: 1; margin: 0 8px">
-              <span v-if="item.term !== 'between'" :title="item.value">{{ item.value }}</span>
+              <span v-if="item.term !== 'between'" :title="item.value + ''">{{ item.value }}</span>
               <span v-if="item.term === 'between'">
                 {{ item.min }}&nbsp;≤{{ t('chart.drag_block_label_value') }}≤&nbsp;{{ item.max }}
               </span>
@@ -498,8 +500,8 @@ init()
               <span>
                 <el-icon>
                   <Icon
-                    :className="`field-icon-${fieldType[fieldItem.field.deType.deType]}`"
-                    :name="`field_${fieldType[fieldItem.field.deType.deType]}`"
+                    :className="`field-icon-${fieldType[fieldItem.field.deType]}`"
+                    :name="`field_${fieldType[fieldItem.field.deType]}`"
                   />
                 </el-icon>
               </span>
@@ -556,7 +558,7 @@ init()
                     !item.term.includes('empty') &&
                     item.term !== 'between'
                   "
-                  :title="item.value"
+                  :title="item.value + ''"
                   >{{ item.value }}</span
                 >
                 <span
