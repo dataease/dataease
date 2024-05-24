@@ -7,7 +7,7 @@ import { groupSizeStyleAdaptor } from '@/utils/style'
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, curComponentIndex, canvasStyleData } = storeToRefs(dvMainStore)
 
-const needToChangeAttrs = ['top', 'left', 'width', 'height', 'fontSize']
+const needToChangeAttrs = ['top', 'left', 'width', 'height', 'fontSize', 'letterSpacing']
 
 export function changeSizeWithScale(scale) {
   return changeComponentsSizeWithScale(scale)

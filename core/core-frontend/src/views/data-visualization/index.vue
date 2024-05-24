@@ -43,7 +43,7 @@ const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const eventCheck = e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
-    const { opt } = router.currentRoute.value.query
+    const opt = embeddedStore.opt || router.currentRoute.value.query.opt
     if (!(opt && opt === 'create')) {
       check(
         wsCache.get('screen-weight'),
@@ -270,7 +270,10 @@ onMounted(async () => {
   }
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
   const pid = embeddedStore.pid || router.currentRoute.value.query.pid
-  const { opt, createType, templateParams } = router.currentRoute.value.query
+  const templateParams =
+    embeddedStore.templateParams || router.currentRoute.value.query.templateParams
+  const createType = embeddedStore.createType || router.currentRoute.value.query.createType
+  const opt = embeddedStore.opt || router.currentRoute.value.query.opt
   const checkResult = await checkPer(dvId)
   if (!checkResult) {
     return

@@ -11,7 +11,7 @@ const props = defineProps({
   },
   dvModel: {
     type: String,
-    default: 'dv'
+    default: 'dataV'
   },
   element: {
     type: Object,
@@ -52,6 +52,7 @@ const newComponent = (componentName, innerType) => {
       v-on:click="newComponent('UserView', 'rich-text')"
     ></drag-component>
     <drag-component
+      v-if="dvModel === 'dataV'"
       :themes="themes"
       icon="dv-scroll-text"
       label="跑马灯"

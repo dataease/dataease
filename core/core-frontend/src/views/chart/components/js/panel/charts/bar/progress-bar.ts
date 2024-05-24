@@ -9,6 +9,7 @@ import {
 } from '@/views/chart/components/js/panel/charts/bar/common'
 import { cloneDeep, defaultTo } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { Options } from '@antv/g2plot/esm'
 
 const { t } = useI18n()
 
@@ -38,6 +39,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     'tooltip-selector',
     'y-axis-selector',
     'title-selector',
+    'function-cfg',
     'jump-set',
     'linkage'
   ]
@@ -45,10 +47,11 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     ...BAR_EDITOR_PROPERTY_INNER,
     'legend-selector': null,
     'background-overall-component': ['all'],
-    'basic-style-selector': ['colors', 'gradient'],
+    'basic-style-selector': ['colors', 'alpha', 'gradient'],
     'label-selector': ['hPosition', 'color', 'fontSize'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter'],
-    'y-axis-selector': ['name', 'color', 'fontSize', 'axisForm', 'axisLabel', 'position']
+    'y-axis-selector': ['name', 'color', 'fontSize', 'axisForm', 'axisLabel', 'position'],
+    'function-cfg': ['emptyDataStrategy']
   }
   axis: AxisType[] = [...BAR_AXIS_TYPE, 'yAxisExt']
   protected baseOptions: BarOptions = {
@@ -133,18 +136,14 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     const basicStyle = parseJson(chart.customAttr).basicStyle
     let color1 = basicStyle.colors?.map((ele, index) => {
       if (index === 1) {
-        return hexColorToRGBA(ele, 10)
+        return hexColorToRGBA(ele, basicStyle.alpha > 10 ? 10 : basicStyle.alpha)
       } else {
-        return ele
+        return hexColorToRGBA(ele, basicStyle.alpha)
       }
     })
     if (basicStyle.gradient) {
-      color1 = color1.map((ele, index) => {
-        if (index === 1) {
-          return ele
-        }
-        const tmp = hexColorToRGBA(ele, basicStyle.alpha)
-        return setGradientColor(tmp, true, 0)
+      color1 = color1.map((ele, _index) => {
+        return setGradientColor(ele, true, 0)
       })
     }
     options = {
@@ -186,7 +185,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
           const result = []
           originalItems.forEach(item => {
             if (item.data) {
-              const value = valueFormatter(item.data.originalValue, tooltipAttr.tooltipFormatter)
+              const value = valueFormatter(item.data.value, tooltipAttr.tooltipFormatter)
               if (item.data.id === yAxis.id) {
                 result.push({
                   ...item,
@@ -275,6 +274,41 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     }
   }
 
+  protected configEmptyDataStrategy(chart: Chart, options: BarOptions): BarOptions {
+    const { data } = options as unknown as Options
+    if (!data?.length) {
+      return options
+    }
+    const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
+    if (strategy === 'ignoreData') {
+      const emptyFields = data.filter(obj => obj['value'] === null).map(obj => obj['field'])
+      return {
+        ...options,
+        data: data.filter(obj => {
+          if (emptyFields.includes(obj['field'])) {
+            return false
+          }
+          return true
+        })
+      }
+    }
+    if (strategy === 'breakLine') {
+      data.forEach(obj => {
+        if (obj['value'] === null) {
+          obj['value'] = null
+        }
+      })
+    }
+    if (strategy === 'setZero') {
+      data.forEach(obj => {
+        if (obj['value'] === null) {
+          obj['value'] = 0
+        }
+      })
+    }
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
       this.configTheme,
@@ -282,7 +316,8 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
       this.configLabel,
       this.configTooltip,
       this.configLegend,
-      this.configYAxis
+      this.configYAxis,
+      this.configEmptyDataStrategy
     )(chart, options)
   }
 
