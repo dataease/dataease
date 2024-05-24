@@ -532,6 +532,13 @@ public class DatasetDataManage {
         boolean crossDs = false;
         Map<Long, DatasourceSchemaDTO> dsMap = null;
 
+        if (ObjectUtils.isNotEmpty(request.getSortId())) {
+            // 如果排序字段和查询字段显示字段不一致，则加入到查询列表中
+            if (!request.getSortId().equals(request.getQueryId()) && !request.getSortId().equals(request.getDisplayId())) {
+                ids.add(request.getSortId());
+            }
+        }
+
         for (Long id : ids) {
             DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);
             if (field == null) {

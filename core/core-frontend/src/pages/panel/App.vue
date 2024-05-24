@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { shallowRef, defineAsyncComponent } from 'vue'
 import { propTypes } from '@/utils/propTypes'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const VisualizationEditor = defineAsyncComponent(
   () => import('@/views/data-visualization/index.vue')
@@ -32,6 +33,15 @@ const componentMap = {
   ScreenPanel,
   DashboardPanel
 }
+
+const changeCurrentComponent = val => {
+  currentComponent.value = componentMap[val]
+}
+
+useEmitt({
+  name: 'changeCurrentComponent',
+  callback: changeCurrentComponent
+})
 
 currentComponent.value = componentMap[props.componentName]
 </script>

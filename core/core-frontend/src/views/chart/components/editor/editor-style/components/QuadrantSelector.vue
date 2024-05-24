@@ -137,11 +137,13 @@ onMounted(() => {
     label-position="top"
   >
     <template v-if="showProperty('lineStyle')">
-      <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes"
-        >{{ t('chart.quadrant') }}{{ t('chart.split_line') }}</label
-      >
       <div style="display: flex">
-        <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-right: 4px">
+        <el-form-item
+          :label="t('chart.split_line')"
+          class="form-item"
+          :class="'form-item-' + themes"
+          style="padding-right: 4px"
+        >
           <el-color-picker
             v-model="state.quadrantForm.lineStyle.stroke"
             class="color-picker-style"
@@ -152,6 +154,7 @@ onMounted(() => {
           />
         </el-form-item>
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
+          <template #label>&nbsp;</template>
           <el-tooltip :content="t('chart.not_alpha')" :effect="toolTip" placement="top">
             <el-select
               style="width: 53px"
@@ -170,6 +173,7 @@ onMounted(() => {
           </el-tooltip>
         </el-form-item>
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
+          <template #label>&nbsp;</template>
           <el-tooltip :content="t('chart.funnel_width')" :effect="toolTip" placement="top">
             <el-input-number
               style="width: 108px"
@@ -229,18 +233,14 @@ onMounted(() => {
         :label="t('chart.quadrant') + (index + 1)"
         class="padding-tab"
       >
-        <div style="flex-direction: row; justify-content: space-between">
+        <div style="margin-top: 8px">
           <template v-if="showProperty('regionStyle')">
-            <div style="display: flex">
-              <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">{{
-                t('chart.backgroundColor')
-              }}</label>
-            </div>
             <div style="display: flex">
               <el-form-item
                 class="form-item"
                 :class="'form-item-' + themes"
                 style="padding-right: 4px"
+                :label="t('chart.backgroundColor')"
               >
                 <el-color-picker
                   v-model="state.quadrantForm.regionStyle[index].fill"
@@ -256,6 +256,7 @@ onMounted(() => {
                 :class="'form-item-' + themes"
                 style="padding-left: 4px"
               >
+                <template #label>&nbsp;</template>
                 <el-tooltip :content="t('chart.not_alpha')" :effect="toolTip" placement="top">
                   <el-select
                     style="width: 53px"
@@ -285,14 +286,12 @@ onMounted(() => {
                 @blur="changeStyle()"
               />
             </el-form-item>
-            <label class="custom-form-item-label" :class="'custom-form-item-label--' + themes">
-              {{ t('chart.text') }}{{ t('chart.chart_style') }}</label
-            >
             <div style="display: flex">
               <el-form-item
                 class="form-item"
                 :class="'form-item-' + themes"
                 style="padding-right: 4px"
+                :label="t('chart.chart_style')"
               >
                 <el-color-picker
                   v-model="l.style.fill"
@@ -308,6 +307,7 @@ onMounted(() => {
                 :class="'form-item-' + themes"
                 style="padding-left: 4px"
               >
+                <template #label>&nbsp;</template>
                 <el-tooltip :content="t('chart.not_alpha')" :effect="toolTip" placement="top">
                   <el-select
                     style="width: 53px"
@@ -330,6 +330,7 @@ onMounted(() => {
                 :class="'form-item-' + themes"
                 style="padding-left: 4px"
               >
+                <template #label>&nbsp;</template>
                 <el-tooltip :content="t('chart.font_size')" :effect="toolTip" placement="top">
                   <el-select
                     style="width: 108px"

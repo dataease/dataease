@@ -3,6 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { useEmbedded } from '@/store/modules/embedded'
 import { XpackComponent } from '@/components/plugin'
 import {
   computed,
@@ -47,6 +48,9 @@ const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 
 let innerRefreshTimer = null
+const appStore = useAppStoreWithOut()
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isIframe = computed(() => appStore.getIsIframe)
 
 const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData, mobileInPc } =
   storeToRefs(dvMainStore)
@@ -101,7 +105,6 @@ const props = defineProps({
 })
 const dynamicAreaId = ref('')
 const { view, showPosition, element, active, searchCount, scale } = toRefs(props)
-const appStore = useAppStoreWithOut()
 
 const titleShow = computed(
   () =>
@@ -176,6 +179,7 @@ const resultCount = computed(() => {
   return canvasStyleData.value.dashboard?.resultCount || null
 })
 
+const embeddedStore = useEmbedded()
 // 编辑状态下 不启动刷新
 const buildInnerRefreshTimer = (
   refreshViewEnable = false,
@@ -238,7 +242,6 @@ watch([() => curComponent.value], () => {
     })
   }
 })
-const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const chartExtRequest = shallowRef(null)
 provide('chartExtRequest', chartExtRequest)
@@ -279,6 +282,21 @@ const drillJump = (index: number) => {
   state.drillClickDimensionList.splice(index)
   view.value.chartExtRequest = filter()
   calcData(view.value)
+}
+
+const onPointClick = param => {
+  try {
+    console.info('de_inner_params send')
+    const msg = {
+      type: 'de_inner_params',
+      sourceDvId: dvInfo.value.id,
+      sourceViewId: view.value.id,
+      message: Base64.encode(param)
+    }
+    window.parent.postMessage(msg, '*')
+  } catch (e) {
+    console.warn('de_inner_params send error')
+  }
 }
 
 const chartClick = param => {
@@ -332,7 +350,7 @@ const windowsJump = (url, jumpType) => {
   try {
     const newWindow = window.open(url, jumpType)
     initOpenHandler(newWindow)
-    if (jumpType === '_self') {
+    if (jumpType === '_self' && !embeddedStore.baseUrl) {
       location.reload()
     }
   } catch (e) {
@@ -549,7 +567,7 @@ const chartAreaShow = computed(() => {
     return true
   }
   if (view.value.customAttr.map.id) {
-    const MAP_CHARTS = ['map', 'bubble-map']
+    const MAP_CHARTS = ['map', 'bubble-map', 'flow-map']
     if (MAP_CHARTS.includes(view.value.type)) {
       return true
     }
@@ -707,9 +725,12 @@ const titleIconStyle = computed(() => {
         :view="view"
         :show-position="showPosition"
         :element="element"
-        v-else-if="showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT)"
+        v-else-if="
+          showChartView(ChartLibraryType.G2_PLOT, ChartLibraryType.L7_PLOT, ChartLibraryType.L7)
+        "
         ref="chartComponent"
         @onChartClick="chartClick"
+        @onPointClick="onPointClick"
         @onDrillFilters="onDrillFilters"
         @onJumpClick="jumpClick"
         @resetLoading="() => (loading = false)"
@@ -721,6 +742,7 @@ const titleIconStyle = computed(() => {
         :element="element"
         v-else-if="showChartView(ChartLibraryType.S2)"
         ref="chartComponent"
+        @onPointClick="onPointClick"
         @onChartClick="chartClick"
         @onDrillFilters="onDrillFilters"
         @onJumpClick="jumpClick"

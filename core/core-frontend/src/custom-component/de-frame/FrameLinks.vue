@@ -19,7 +19,7 @@
             </el-tooltip>
           </span>
         </template>
-        <el-input v-model="state.linkInfoTemp.src" @blur="onBlur" />
+        <el-input :effect="themes" v-model="state.linkInfoTemp.src" @blur="onBlur" />
       </el-form-item>
     </el-form>
   </el-row>

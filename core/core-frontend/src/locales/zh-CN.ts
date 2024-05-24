@@ -2170,7 +2170,7 @@ export default {
     link_add_tips_pre: '请在右侧配置网页信息..',
     web_add_tips_suf: '添加网页信息...',
     panel_view_result_show: '图表结果',
-    panel_view_result_tips: '选择仪表板会覆盖图表的结果展示数量，取值范围1~10000',
+    panel_view_result_tips: '选择{0}会覆盖图表的结果展示数量，取值范围1~10000',
     timeout_refresh: '请求超时，稍后刷新...',
     mobile_layout: '移动端布局',
     component_hidden: '隐藏的组件',

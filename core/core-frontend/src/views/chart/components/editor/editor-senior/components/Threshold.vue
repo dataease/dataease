@@ -61,10 +61,10 @@ const init = () => {
 const changeThreshold = () => {
   emit('onThresholdChange', state.thresholdForm)
 }
-const gaugeThresholdChange = () => {
+const changeSplitThreshold = (threshold: string) => {
   // check input
-  if (state.thresholdForm.gaugeThreshold) {
-    const arr = state.thresholdForm.gaugeThreshold.split(',')
+  if (threshold) {
+    const arr = threshold.split(',')
     for (let i = 0; i < arr.length; i++) {
       const ele = arr[i]
       if (parseFloat(ele).toString() === 'NaN' || parseFloat(ele) <= 0 || parseFloat(ele) >= 100) {
@@ -246,13 +246,43 @@ init()
             style="width: 100px; margin: 0 10px"
             size="small"
             clearable
-            @change="gaugeThresholdChange"
+            @change="changeSplitThreshold"
           />
           <span>,100</span>
           <el-tooltip effect="dark" placement="bottom">
             <el-icon style="margin-left: 10px"><InfoFilled /></el-icon>
             <template #content>
               阈值设置，决定仪表盘区间颜色，为空则不开启阈值，范围(0-100)，逐级递增
+              <br />
+              例如：输入 30,70；表示：分为3段，分别为[0,30],(30,70],(70,100]
+            </template>
+          </el-tooltip>
+        </el-form-item>
+      </el-form>
+    </el-col>
+    <el-col v-show="showProperty('liquidThreshold')">
+      <el-form ref="thresholdForm" :model="state.thresholdForm" label-position="top">
+        <el-form-item
+          :label="t('chart.threshold_range') + '(%)'"
+          class="form-item"
+          label-width="auto"
+        >
+          <span>0,</span>
+          <el-input
+            :effect="themes"
+            :placeholder="t('chart.threshold_range')"
+            :disabled="!state.thresholdForm.enable"
+            v-model="state.thresholdForm.liquidThreshold"
+            style="width: 100px; margin: 0 10px"
+            size="small"
+            clearable
+            @change="changeSplitThreshold"
+          />
+          <span>,100</span>
+          <el-tooltip effect="dark" placement="bottom">
+            <el-icon style="margin-left: 10px"><InfoFilled /></el-icon>
+            <template #content>
+              阈值设置，决定水波图颜色，为空则不开启阈值，范围(0-100)，逐级递增
               <br />
               例如：输入 30,70；表示：分为3段，分别为[0,30],(30,70],(70,100]
             </template>
@@ -409,14 +439,14 @@ init()
               class="color-div"
               :class="{ 'color-div-dark': themes === 'dark' }"
             ></div>
-            <!--            <div
+            <div
               :title="t('chart.backgroundColor')"
               :style="{
                 backgroundColor: item.backgroundColor
               }"
               class="color-div"
               :class="{ 'color-div-dark': themes === 'dark' }"
-            ></div>-->
+            ></div>
           </div>
         </div>
       </el-col>

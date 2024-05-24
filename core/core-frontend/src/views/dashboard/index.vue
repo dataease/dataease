@@ -34,7 +34,7 @@ const canvasCacheOutRef = ref(null)
 const eventCheck = e => {
   if (e.key === 'panel-weight' && !compareStorage(e.oldValue, e.newValue)) {
     const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
-    const { opt } = router.currentRoute.value.query
+    const opt = embeddedStore.opt || router.currentRoute.value.query.opt
     if (!(opt && opt === 'create')) {
       check(wsCache.get('panel-weight'), resourceId as string, 4)
     }
@@ -137,6 +137,13 @@ const initLocalCanvasData = () => {
       dvInfo.value.pid = sourcePid
       setTimeout(() => {
         snapshotStore.recordSnapshotCache()
+        // 复制时，初始化的保存按钮为激活状态
+        if (opt === 'copy') {
+          // 使用缓存时，初始化的保存按钮为激活状态
+          setTimeout(() => {
+            snapshotStore.recordSnapshotCache('renderChart')
+          }, 1000)
+        }
       }, 1500)
     }
   })
@@ -156,7 +163,10 @@ onMounted(async () => {
   window.addEventListener('storage', eventCheck)
   const resourceId = embeddedStore.resourceId || router.currentRoute.value.query.resourceId
   const pid = embeddedStore.pid || router.currentRoute.value.query.pid
-  const { opt, createType, templateParams } = router.currentRoute.value.query
+  const opt = embeddedStore.opt || router.currentRoute.value.query.opt
+  const createType = embeddedStore.createType || router.currentRoute.value.query.createType
+  const templateParams =
+    embeddedStore.templateParams || router.currentRoute.value.query.templateParams
   const checkResult = await checkPer(resourceId)
   if (!checkResult) {
     return
@@ -269,12 +279,15 @@ onUnmounted(() => {
       >
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
-      <div v-show="viewEditorShow" style="height: 100%">
+      <div
+        v-show="viewEditorShow"
+        style="height: 100%"
+        :class="{ 'preview-aside': editMode === 'preview' }"
+      >
         <view-editor
           :themes="'light'"
           :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
           :dataset-tree="state.datasetTree"
-          :class="{ 'preview-aside': editMode === 'preview' }"
         ></view-editor>
       </div>
       <dv-sidebar

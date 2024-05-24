@@ -11,7 +11,7 @@ const props = defineProps({
   },
   dvModel: {
     type: String,
-    default: 'dv'
+    default: 'dataV'
   },
   element: {
     type: Object,
@@ -37,23 +37,27 @@ const handleDragEnd = e => {
   commonHandleDragEnd(e, dvModel.value)
 }
 
-const newComponent = () => {
-  eventBus.emit('handleNew', { componentName: 'UserView', innerType: 'rich-text' })
+const newComponent = (componentName, innerType) => {
+  eventBus.emit('handleNew', { componentName: componentName, innerType: innerType })
 }
 </script>
 
 <template>
-  <div
-    class="group"
-    @dragstart="handleDragStart"
-    @dragend="handleDragEnd"
-    v-on:click="newComponent"
-  >
+  <div class="group" @dragstart="handleDragStart" @dragend="handleDragEnd">
     <drag-component
       :themes="themes"
       icon="dv-richText"
       label="富文本"
       drag-info="UserView&rich-text"
+      v-on:click="newComponent('UserView', 'rich-text')"
+    ></drag-component>
+    <drag-component
+      v-if="dvModel === 'dataV'"
+      :themes="themes"
+      icon="dv-scroll-text"
+      label="跑马灯"
+      drag-info="ScrollText&ScrollText"
+      v-on:click="newComponent('ScrollText', 'ScrollText')"
     ></drag-component>
   </div>
 </template>
@@ -61,10 +65,6 @@ const newComponent = () => {
 <style lang="less" scoped>
 .group {
   padding: 12px 8px;
-}
-.custom_img {
-  width: 100px;
-  height: 70px;
-  cursor: pointer;
+  display: inline-flex;
 }
 </style>

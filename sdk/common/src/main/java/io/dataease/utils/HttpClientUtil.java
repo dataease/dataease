@@ -93,8 +93,14 @@ public class HttpClientUtil {
                 httpGet.addHeader(key, header.get(key));
             }
             HttpResponse response = httpClient.execute(httpGet);
-            int statusCode = response.getStatusLine().getStatusCode();
-            return statusCode <= 400;
+            if (response.getStatusLine().getStatusCode() >= 400) {
+                String msg = EntityUtils.toString(response.getEntity(), config.getCharset());
+                if (StringUtils.isEmpty(msg)) {
+                    msg = "StatusCode: " + response.getStatusLine().getStatusCode();
+                }
+                throw new Exception(msg);
+            }
+            return true;
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);
             throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());

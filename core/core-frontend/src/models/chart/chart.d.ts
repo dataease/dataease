@@ -117,6 +117,14 @@ declare interface Axis extends ChartViewField {
    * 维度/指标分组类型
    */
   groupType: 'q' | 'd'
+  /**
+   * 排序规则
+   */
+  sort: 'asc' | 'desc' | 'none' | 'custom_sort'
+  /**
+   * 自定义排序项
+   */
+  customSort: string[]
 }
 declare interface ChartViewField {
   /**

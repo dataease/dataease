@@ -19,7 +19,8 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     'basic-style-selector',
     'label-selector',
     'misc-selector',
-    'title-selector'
+    'title-selector',
+    'threshold'
   ]
   propertyInner: EditorPropertyInner = {
     'background-overall-component': ['all'],
@@ -37,7 +38,8 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
       'fontFamily',
       'letterSpace',
       'fontShadow'
-    ]
+    ],
+    threshold: ['liquidThreshold']
   }
   axis: AxisType[] = ['yAxis', 'filter']
   axisConfig: AxisConfig = {
@@ -147,6 +149,31 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
     }
   }
 
+  protected configThreshold(chart: Chart, options: LiquidOptions): LiquidOptions {
+    const senior = parseJson(chart.senior)
+    if (senior?.threshold?.enable) {
+      const { liquidThreshold } = senior?.threshold
+      if (liquidThreshold) {
+        const { paletteQualitative10: colors } = (options.theme as any).styleSheet
+        const liquidStyle = () => {
+          const thresholdArr = liquidThreshold.split(',')
+          let index = 0
+          thresholdArr.forEach((v, i) => {
+            if (options.percent > parseFloat(v) / 100) {
+              index = i + 1
+            }
+          })
+          return {
+            fill: colors[index % colors.length],
+            stroke: colors[index % colors.length]
+          }
+        }
+        return { ...options, liquidStyle }
+      }
+    }
+    return options
+  }
+
   setupDefaultOptions(chart: ChartObj): ChartObj {
     chart.customAttr.label = {
       ...chart.customAttr.label,
@@ -162,7 +189,12 @@ export class Liquid extends G2PlotChartView<LiquidOptions, G2Liquid> {
   }
 
   protected setupOptions(chart: Chart, options: LiquidOptions): LiquidOptions {
-    return flow(this.configTheme, this.configMisc, this.configLabel)(chart, options)
+    return flow(
+      this.configTheme,
+      this.configMisc,
+      this.configLabel,
+      this.configThreshold
+    )(chart, options)
   }
   constructor() {
     super('liquid', DEFAULT_LIQUID_DATA)

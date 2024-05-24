@@ -105,11 +105,12 @@ let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
   await new Promise(r => (p = r))
-  const { dvId, dvType } = router.currentRoute.value.query
+  const { dvId, dvType, callBackFlag } = router.currentRoute.value.query
   if (dvId) {
     loadCanvasDataAsync(dvId, dvType)
     return
   }
+  dvMainStore.setEmbeddedCallBack(callBackFlag || 'no')
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
 })
 

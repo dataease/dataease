@@ -12,7 +12,7 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
-import { download2AppTemplate, downloadCanvas } from '@/utils/imgUtils'
+import { download2AppTemplate, downloadCanvas, downloadCanvas2 } from '@/utils/imgUtils'
 
 const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
@@ -98,7 +98,7 @@ const downloadH2 = type => {
   downloadStatus.value = true
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
-    downloadCanvas(type, vueDom, state.dvInfo.name, () => {
+    downloadCanvas2(type, vueDom, state.dvInfo.name, () => {
       downloadStatus.value = false
     })
   })

@@ -11,15 +11,19 @@
     <modules>
         <module>sdk</module>
     </modules>
+    <parent>
+        <groupId>org.springframework.boot</groupId>
+        <artifactId>spring-boot-starter-parent</artifactId>
+        <version>${spring-boot.version}</version>
+    </parent>
 
     <properties>
         <dataease.version>2.6.1</dataease.version>
         <java.version>17</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <spring-cloud-alibaba.version>2022.0.0.0</spring-cloud-alibaba.version>
-        <spring-cloud.version>2022.0.0</spring-cloud.version>
-        <spring-boot.version>3.0.2</spring-boot.version>
-        <maven-compiler-plugin.version>3.9.0</maven-compiler-plugin.version>
+        <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
+        <spring-cloud.version>2023.0.1</spring-cloud.version>
+        <spring-boot.version>3.3.0</spring-boot.version>
         <maven.compiler.source>17</maven.compiler.source>
         <maven.compiler.target>17</maven.compiler.target>
         <mybatis-plus.version>3.5.6</mybatis-plus.version>
@@ -30,17 +34,13 @@
         <antlr.version>3.5.2</antlr.version>
         <java-jwt.version>3.12.1</java-jwt.version>
         <velocity.version>2.3</velocity.version>
-        <maven.antrun.version>3.1.0</maven.antrun.version>
         <ehcache.version>3.10.8</ehcache.version>
         <bcprov.version>1.78</bcprov.version>
         <junit.version>4.13.2</junit.version>
         <httpclient.version>4.5.14</httpclient.version>
         <httpcore.version>4.4.16</httpcore.version>
-        <easyexcel.version>3.3.2</easyexcel.version>
-        <maven.surefire.version>3.1.2</maven.surefire.version>
-        <maven.clean.version>3.2.0</maven.clean.version>
+        <easyexcel.version>3.3.4</easyexcel.version>
         <flatten-maven.version>1.3.0</flatten-maven.version>
-        <maven.resources.version>3.3.1</maven.resources.version>
         <maven.exec.version>3.1.0</maven.exec.version>
         <guava.version>33.0.0-jre</guava.version>
         <selenium-java.version>4.19.1</selenium-java.version>
@@ -48,6 +48,7 @@
         <mysql-connector-j.version>8.2.0</mysql-connector-j.version>
         <itextpdf.version>8.0.4</itextpdf.version>
         <flexmark.version>0.62.2</flexmark.version>
+        <mybatis-spring.version>3.0.3</mybatis-spring.version>
     </properties>
 
     <dependencyManagement>
@@ -72,6 +73,11 @@
                 <version>${spring-boot.version}</version>
                 <type>pom</type>
                 <scope>import</scope>
+            </dependency>
+            <dependency>
+                <groupId>org.mybatis</groupId>
+                <artifactId>mybatis-spring</artifactId>
+                <version>${mybatis-spring.version}</version>
             </dependency>
             <dependency>
                 <groupId>com.baomidou</groupId>
@@ -144,35 +150,6 @@
                     <version>${spring-boot.version}</version>
                 </plugin>
 
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <version>${maven-compiler-plugin.version}</version>
-                    <configuration>
-                        <source>17</source>
-                        <target>17</target>
-                    </configuration>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-antrun-plugin</artifactId>
-                    <version>${maven.antrun.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-surefire-plugin</artifactId>
-                    <version>${maven.surefire.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-clean-plugin</artifactId>
-                    <version>${maven.clean.version}</version>
-                </plugin>
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-resources-plugin</artifactId>
-                    <version>${maven.resources.version}</version>
-                </plugin>
                 <plugin>
                     <groupId>org.codehaus.mojo</groupId>
                     <artifactId>exec-maven-plugin</artifactId>

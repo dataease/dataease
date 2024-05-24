@@ -221,6 +221,7 @@ watch(
               :themes="themes"
               :chart="chart"
               @onBasicStyleChange="onBasicStyleChange"
+              @onMiscChange="onMiscChange"
             />
           </el-collapse-item>
           <collapse-switch-item

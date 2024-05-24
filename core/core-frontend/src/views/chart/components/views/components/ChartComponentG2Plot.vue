@@ -17,9 +17,11 @@ import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/ca
 import { deepCopy } from '@/utils/utils'
 import { trackBarStyleCheck } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { L7ChartView } from '@/views/chart/components/js/panel/types/impl/l7'
 
 const dvMainStore = dvMainStoreWithOut()
-const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc } = storeToRefs(dvMainStore)
+const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, embeddedCallBack } =
+  storeToRefs(dvMainStore)
 const { emitter } = useEmitt()
 const props = defineProps({
   element: {
@@ -54,7 +56,13 @@ const props = defineProps({
   }
 })
 
-const emit = defineEmits(['onChartClick', 'onDrillFilters', 'onJumpClick', 'resetLoading'])
+const emit = defineEmits([
+  'onPointClick',
+  'onChartClick',
+  'onDrillFilters',
+  'onJumpClick',
+  'resetLoading'
+])
 
 const { view, showPosition, scale, terminal } = toRefs(props)
 
@@ -109,7 +117,7 @@ const calcData = async (view, callback) => {
         callback?.()
       })
   } else {
-    if (['bubble-map', 'map'].includes(view.type)) {
+    if (['bubble-map', 'map', 'flow-map'].includes(view.type)) {
       await renderChart(view, callback)
     }
     callback?.()
@@ -133,6 +141,9 @@ const renderChart = async (view, callback?) => {
   switch (chartView.library) {
     case ChartLibraryType.L7_PLOT:
       await renderL7Plot(chart, chartView as L7PlotChartView<any, any>, callback)
+      break
+    case ChartLibraryType.L7:
+      await renderL7(chart, chartView as L7ChartView<any, any>, callback)
       break
     case ChartLibraryType.G2_PLOT:
       renderG2Plot(chart, chartView as G2PlotChartView<any, any>)
@@ -192,9 +203,34 @@ const renderL7Plot = async (chart: ChartObj, chartView: L7PlotChartView<any, any
   }, 500)
 }
 
+let mapL7Timer: number
+const renderL7 = async (chart: ChartObj, chartView: L7ChartView<any, any>, callback) => {
+  mapL7Timer && clearTimeout(mapL7Timer)
+  mapL7Timer = setTimeout(async () => {
+    myChart?.destroy()
+    myChart = await chartView.drawChart({
+      chartObj: myChart,
+      container: containerId,
+      chart: chart,
+      action
+    })
+    myChart?.render()
+    callback?.()
+    emit('resetLoading')
+  }, 500)
+}
+
+const pointClickTrans = () => {
+  if (embeddedCallBack.value === 'yes') {
+    trackClick('pointClick')
+  }
+}
+
 const action = param => {
-  // 下钻 联动 跳转
   state.pointParam = param.data
+  // 点击
+  pointClickTrans()
+  // 下钻 联动 跳转
   state.linkageActiveParam = {
     category: state.pointParam.data.category ? state.pointParam.data.category : 'NO_DATA',
     name: state.pointParam.data.name ? state.pointParam.data.name : 'NO_DATA'
@@ -246,7 +282,18 @@ const trackClick = trackAction => {
     quotaList: quotaList
   }
 
+  const clickParams = {
+    option: 'pointClick',
+    name: checkName,
+    viewId: view.value.id,
+    dimensionList: state.pointParam.data.dimensionList,
+    quotaList: quotaList
+  }
+
   switch (trackAction) {
+    case 'pointClick':
+      emit('onPointClick', clickParams)
+      break
     case 'linkageAndDrill':
       dvMainStore.addViewTrackFilter(linkageParam)
       emit('onChartClick', param)
@@ -307,7 +354,7 @@ defineExpose({
 })
 let resizeObserver
 const TOLERANCE = 0.01
-const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map']
+const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map']
 onMounted(() => {
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom

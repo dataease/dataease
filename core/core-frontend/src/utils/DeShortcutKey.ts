@@ -174,14 +174,27 @@ function move(keyCode) {
   if (curComponent.value) {
     if (keyCode === leftKey) {
       curComponent.value.style.left = --curComponent.value.style.left
+      groupAreaAdaptor(-1, 0)
     } else if (keyCode === rightKey) {
       curComponent.value.style.left = ++curComponent.value.style.left
+      groupAreaAdaptor(1, 0)
     } else if (keyCode === upKey) {
       curComponent.value.style.top = --curComponent.value.style.top
+      groupAreaAdaptor(0, -1)
     } else if (keyCode === downKey) {
       curComponent.value.style.top = ++curComponent.value.style.top
+      groupAreaAdaptor(0, 1)
     }
     snapshotStore.recordSnapshotCache('key-move')
+  }
+}
+
+function groupAreaAdaptor(leftOffset = 0, topOffset = 0) {
+  if (curComponent.value.component === 'GroupArea') {
+    composeStore.areaData.components.forEach(component => {
+      component.style.top = component.style.top + topOffset
+      component.style.left = component.style.left + leftOffset
+    })
   }
 }
 

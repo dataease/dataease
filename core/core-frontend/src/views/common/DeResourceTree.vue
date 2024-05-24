@@ -3,6 +3,7 @@ import { onMounted, reactive, ref, toRefs, watch, nextTick, computed } from 'vue
 import { copyResource, deleteLogic, ResourceOrFolder } from '@/api/visualization/dataVisualization'
 import { ElIcon, ElMessage, ElMessageBox, ElScrollbar } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { HandleMore } from '@/components/handle-more'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -283,11 +284,23 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         curCanvasType.value === 'dataV'
           ? `#/dvCanvas?opt=copy&pid=${params.pid}&dvId=${data.data}`
           : `#/dashboard?opt=copy&pid=${params.pid}&resourceId=${data.data}`
-      let embeddedBaseUrl = ''
       if (isDataEaseBi.value) {
-        embeddedBaseUrl = embeddedStore.baseUrl
+        embeddedStore.clearState()
+        embeddedStore.setPid(params.pid as string)
+        embeddedStore.setOpt('copy')
+        if (curCanvasType.value === 'dataV') {
+          embeddedStore.setDvId(data.data)
+        } else {
+          embeddedStore.setResourceId(data.data)
+        }
+        useEmitt().emitter.emit(
+          'changeCurrentComponent',
+          curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'Dashboard'
+        )
+        return
       }
-      const newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
+
+      const newWindow = window.open(baseUrl, '_blank')
       initOpenHandler(newWindow)
     })
   } else {
@@ -306,14 +319,22 @@ const addOperation = (
     const baseUrl =
       curCanvasType.value === 'dataV' ? '#/dvCanvas?opt=create' : '#/dashboard?opt=create'
     let newWindow = null
-    let embeddedBaseUrl = ''
     if (isDataEaseBi.value) {
-      embeddedBaseUrl = embeddedStore.baseUrl
+      embeddedStore.clearState()
+      embeddedStore.setOpt('create')
+      if (data?.id) {
+        embeddedStore.setPid(data?.id as string)
+      }
+      useEmitt().emitter.emit(
+        'changeCurrentComponent',
+        curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'Dashboard'
+      )
+      return
     }
     if (data?.id) {
-      newWindow = window.open(embeddedBaseUrl + baseUrl + `&pid=${data.id}`, '_blank')
+      newWindow = window.open(baseUrl + `&pid=${data.id}`, '_blank')
     } else {
-      newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
+      newWindow = window.open(baseUrl, '_blank')
     }
     initOpenHandler(newWindow)
   } else if (cmd === 'newFromTemplate') {
@@ -334,11 +355,20 @@ function createNewObject() {
 
 const resourceEdit = resourceId => {
   const baseUrl = curCanvasType.value === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
-  let embeddedBaseUrl = ''
   if (isDataEaseBi.value) {
-    embeddedBaseUrl = embeddedStore.baseUrl
+    embeddedStore.clearState()
+    if (curCanvasType.value === 'dataV') {
+      embeddedStore.setDvId(resourceId)
+    } else {
+      embeddedStore.setResourceId(resourceId)
+    }
+    useEmitt().emitter.emit(
+      'changeCurrentComponent',
+      curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'Dashboard'
+    )
+    return
   }
-  const newWindow = window.open(embeddedBaseUrl + baseUrl + resourceId, '_blank')
+  const newWindow = window.open(baseUrl + resourceId, '_blank')
   initOpenHandler(newWindow)
 }
 
@@ -354,14 +384,23 @@ const resourceCreateFinish = templateData => {
       ? '#/dvCanvas?opt=create&createType=template'
       : '#/dashboard?opt=create&createType=template'
   let newWindow = null
-  let embeddedBaseUrl = ''
   if (isDataEaseBi.value) {
-    embeddedBaseUrl = embeddedStore.baseUrl
+    embeddedStore.clearState()
+    embeddedStore.setOpt('create')
+    embeddedStore.setCreateType('template')
+    if (state.templateCreatePid) {
+      embeddedStore.setPid(state.templateCreatePid as unknown as string)
+    }
+    useEmitt().emitter.emit(
+      'changeCurrentComponent',
+      curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'Dashboard'
+    )
+    return
   }
   if (state.templateCreatePid) {
-    newWindow = window.open(embeddedBaseUrl + baseUrl + `&pid=${state.templateCreatePid}`, '_blank')
+    newWindow = window.open(baseUrl + `&pid=${state.templateCreatePid}`, '_blank')
   } else {
-    newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
+    newWindow = window.open(baseUrl, '_blank')
   }
   initOpenHandler(newWindow)
 }

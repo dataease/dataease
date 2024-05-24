@@ -91,7 +91,7 @@
           <el-tooltip class="item" :effect="toolTip" placement="bottom">
             <template #content>
               <div>
-                {{ t('visualization.panel_view_result_tips') }}
+                {{ t('visualization.panel_view_result_tips', [resourceType]) }}
               </div>
             </template>
             <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">

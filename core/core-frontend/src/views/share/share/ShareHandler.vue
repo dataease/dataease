@@ -327,6 +327,10 @@ const expChangeHandler = exp => {
   })
 }
 const beforeClose = async done => {
+  if (!shareEnable.value) {
+    done()
+    return
+  }
   const pwdValid = validatePwdFormat()
   const uuidValid = await validateUuid()
   if (pwdValid && uuidValid) {

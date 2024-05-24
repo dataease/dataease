@@ -224,7 +224,11 @@ onMounted(() => {
         </el-radio-group>
       </el-form-item>
 
-      <div class="position-divider" :class="'position-divider--' + themes"></div>
+      <div
+        v-if="showProperty('orient')"
+        class="position-divider"
+        :class="'position-divider--' + themes"
+      ></div>
 
       <el-form-item
         class="form-item"

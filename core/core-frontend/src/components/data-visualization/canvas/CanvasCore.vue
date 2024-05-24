@@ -1450,7 +1450,7 @@ defineExpose({
     ></canvas-opt-bar>
     <!-- 网格线 -->
     <drag-shadow
-      v-if="infoBox && infoBox.moveItem"
+      v-if="infoBox && infoBox.moveItem && editMode !== 'preview'"
       :base-height="baseHeight"
       :base-width="baseWidth"
       :cur-gap="curGap"

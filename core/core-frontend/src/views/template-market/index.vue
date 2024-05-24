@@ -174,6 +174,7 @@ import { imgUrlTrans } from '@/utils/imgUtils'
 import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { XpackComponent } from '@/components/plugin'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import { Base64 } from 'js-base64'
 const { t } = useI18n()
 const { wsCache } = useCache()
@@ -434,14 +435,29 @@ const apply = template => {
     '&templateParams=' +
     encodeURIComponent(Base64.encode(JSON.stringify(templateTemplate)))
   let newWindow = null
-  let embeddedBaseUrl = ''
   if (isDataEaseBi.value) {
-    embeddedBaseUrl = embeddedStore.baseUrl
+    embeddedStore.clearState()
+    embeddedStore.setCreateType('template')
+    embeddedStore.setTemplateParams(
+      encodeURIComponent(Base64.encode(JSON.stringify(templateTemplate)))
+    )
+    embeddedStore.setOpt('create')
+
+    if (state.pid) {
+      embeddedStore.setPid(state.pid)
+    }
+    useEmitt().emitter.emit(
+      'changeCurrentComponent',
+      ['dataV', 'SCREEN'].includes(state.dvCreateForm.nodeType)
+        ? 'VisualizationEditor'
+        : 'Dashboard'
+    )
+    return
   }
   if (state.pid) {
-    newWindow = window.open(embeddedBaseUrl + baseUrl + `&pid=${state.pid}`, '_blank')
+    newWindow = window.open(baseUrl + `&pid=${state.pid}`, '_blank')
   } else {
-    newWindow = window.open(embeddedBaseUrl + baseUrl, '_blank')
+    newWindow = window.open(baseUrl, '_blank')
   }
   initOpenHandler(newWindow)
 }

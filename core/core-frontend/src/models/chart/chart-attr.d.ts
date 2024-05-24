@@ -232,7 +232,7 @@ declare interface ChartBasicStyle {
   /**
    * 对称柱状图方向
    */
-  layout: 'horizontal' | 'vertical'
+  layout?: 'horizontal' | 'vertical'
 }
 /**
  * 表头属性
@@ -482,6 +482,10 @@ declare interface ChartMiscAttr {
    * 地图线条宽度
    */
   mapLineWidth: number
+  /**
+   * 流向地图动画
+   */
+  mapLineAnimate?: boolean
   /**
    * 流向地图动画间隔
    */
@@ -786,6 +790,10 @@ declare interface ChartIndicatorStyle {
    * 字体颜色
    */
   color: string
+  /**
+   * 背景颜色
+   */
+  backgroundColor: string
   /**
    * 水平位置
    */

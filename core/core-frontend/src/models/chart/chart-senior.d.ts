@@ -124,6 +124,10 @@ declare interface ChartThreshold {
    */
   gaugeThreshold: string
   /**
+   * 水波图阈值: x,y,z
+   */
+  liquidThreshold: string
+  /**
    * 指标卡阈值
    */
   labelThreshold: Threshold[]

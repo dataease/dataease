@@ -25,6 +25,9 @@ interface LinkItem {
   method?: string
 }
 const linkList = ref([{ id: 5, label: t('common.about'), method: 'toAbout' }] as LinkItem[])
+if (!appearanceStore.getShowAbout) {
+  linkList.value.splice(0, 1)
+}
 
 const inPlatformClient = computed(() => !!wsCache.get('de-platform-client'))
 
@@ -118,7 +121,7 @@ if (uid.value === '1') {
   <el-popover
     ref="popoverRef"
     :virtual-ref="buttonRef"
-    trigger="hover"
+    trigger="click"
     title=""
     virtual-triggering
     placement="bottom-start"

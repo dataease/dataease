@@ -253,8 +253,8 @@ const list = [
   },
   {
     component: 'DeVideo',
-    name: '媒体',
-    label: '媒体',
+    name: '视频',
+    label: '视频',
     innerType: 'DeVideo',
     editing: false,
     canvasActive: false,
@@ -272,8 +272,8 @@ const list = [
   },
   {
     component: 'DeStreamMedia',
-    name: '媒体',
-    label: '媒体',
+    name: '流媒体',
+    label: '流媒体',
     innerType: 'DeStreamMedia',
     editing: false,
     canvasActive: false,
@@ -386,7 +386,7 @@ const list = [
   },
   {
     component: 'CanvasBoard',
-    name: '图形',
+    name: '边框',
     label: '边框',
     propValue: '',
     icon: 'other_material_board',
@@ -476,6 +476,29 @@ const list = [
       headHorizontalPosition: 'left',
       headFontColor: '#000000',
       headFontActiveColor: '#000000'
+    }
+  },
+  {
+    component: 'ScrollText',
+    name: '跑马灯',
+    label: '跑马灯',
+    propValue: '双击编辑文字',
+    innerType: 'ScrollText',
+    icon: 'scroll-text',
+    x: 1,
+    y: 1,
+    sizeX: 36,
+    sizeY: 14,
+    style: {
+      width: 400,
+      height: 80,
+      fontSize: 14,
+      fontWeight: 400,
+      letterSpacing: 0,
+      color: '',
+      padding: 4,
+      verticalAlign: 'middle',
+      scrollSpeed: 0
     }
   }
 ]

@@ -108,22 +108,11 @@ const isIndeterminate = ref(false)
 const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
 const parameters = ref([])
-const parametersFilter = computed(() => {
-  return parameters.value.filter(ele => {
-    if (curComponent.value.displayType === '2') {
-      return [2, 3].includes(ele.deType)
-    }
 
-    if (curComponent.value.displayType === '7') {
-      return [1, 7].includes(ele.deType)
-    }
-    return ele.deType === +curComponent.value.displayType
-  })
-})
 const { queryElement } = toRefs(props)
 
 const getDetype = (id, arr) => {
-  return arr.find(ele => ele.id === id)?.deType
+  return arr.flat().find(ele => ele.id === id)?.deType
 }
 const visiblePopover = ref(false)
 const handleVisiblePopover = ev => {
@@ -142,11 +131,19 @@ const showTypeError = computed(() => {
   if (!curComponent.value) return false
   if (!curComponent.value.checkedFields?.length) return false
   if (!fields.value?.length) return false
+  if (!!curComponent.value.parameters.length) {
+    const timeArr = curComponent.value.parameters.map(ele => ele.type[1])
+    if (timeArr.length !== new Set(timeArr).size) {
+      return true
+    }
+  }
   let displayTypeField = null
   return curComponent.value.checkedFields.some(id => {
     const arr = fields.value.find(ele => ele.componentId === id)
     const checkId = curComponent.value.checkedFieldsMap?.[id]
-    const field = (arr?.list || []).find(ele => checkId === ele.id)
+    const field = Object.values(arr?.fields || {})
+      .flat()
+      .find(ele => checkId === ele.id)
     if (!field) return false
     if (displayTypeField === null) {
       displayTypeField = field?.deType
@@ -181,12 +178,32 @@ const handleCheckedFieldsChange = (value: string[]) => {
 
 const inputCom = ref()
 
+const setParameters = () => {
+  const fieldArr = Object.values(curComponent.value.checkedFieldsMap).filter(ele => !!ele)
+  curComponent.value.parameters = fields.value
+    .map(ele => Object.values(ele?.fields || {}).flat())
+    .flat()
+    .filter(ele => fieldArr.includes(ele.id) && !!ele.variableName)
+  nextTick(() => {
+    if (isTimeParameter.value) {
+      curComponent.value.timeGranularity = typeTimeMap[curComponent.value.parameters[0].type[1]]
+    }
+
+    if (!!curComponent.value.parameters.length) {
+      curComponent.value.conditionType = 0
+    }
+  })
+  setType()
+}
+
 const setType = () => {
   if (curComponent.value.checkedFields?.length) {
     const [id] = curComponent.value.checkedFields
     const arr = fields.value.find(ele => ele.componentId === id)
     const checkId = curComponent.value.checkedFieldsMap?.[id]
-    const field = (arr?.list || []).find(ele => checkId === ele.id)
+    const field = Object.values(arr?.fields || {})
+      .flat()
+      .find(ele => checkId === ele.id)
 
     if (field?.deType !== undefined) {
       let displayType = curComponent.value.displayType
@@ -219,6 +236,47 @@ const setTypeChange = () => {
     }
   })
 }
+
+const isTimeParameter = computed(() => {
+  return curComponent.value.parameters?.some(ele => ele.deType === 1 && !!ele.variableName)
+})
+
+const timeList = [
+  {
+    label: '年',
+    value: 'year'
+  },
+  {
+    label: '年月',
+    value: 'month'
+  },
+  {
+    label: '年月日',
+    value: 'date'
+  },
+  {
+    label: '年月日时分秒',
+    value: 'datetime'
+  }
+]
+
+const typeTimeMap = {
+  'DATETIME-YEAR': 'year',
+  'YYYY-MM': 'month',
+  'YYYY/MM': 'month',
+  'YYYY-MM-DD': 'date',
+  'YYYY/MM/DD': 'date',
+  'YYYY-MM-DD HH:mm:ss': 'datetime',
+  'YYYY/MM/DD HH:mm:ss': 'datetime'
+}
+
+const timeParameterList = computed(() => {
+  if (!isTimeParameter.value) return timeList
+  const [_, y] = curComponent.value.parameters?.filter(
+    ele => ele.deType === 1 && !!ele.variableName
+  )[0].type
+  return timeList.filter(ele => ele.value === typeTimeMap[y])
+})
 
 const cancelClick = () => {
   visiblePopover.value = false
@@ -542,7 +600,9 @@ const validate = () => {
       ele.checkedFields.some(id => {
         const arr = fields.value.find(itx => itx.componentId === id)
         const checkId = ele.checkedFieldsMap?.[id]
-        const field = (arr?.list || []).find(itx => checkId === itx.id)
+        const field = Object.values(arr?.fields || {})
+          .flat()
+          .find(itx => checkId === itx.id)
         if (!field) return false
         if (displayTypeField === null) {
           displayTypeField = field?.deType
@@ -642,14 +702,6 @@ const init = (queryId: string) => {
 
   const datasetMapKeyList = Object.keys(datasetMap)
 
-  nextTick(() => {
-    getSqlParams([
-      ...new Set(datasetFieldList.value.map(ele => ele.tableId).filter(ele => !!ele))
-    ]).then(res => {
-      parameters.value = res || []
-    })
-  })
-
   if (datasetFieldIdList.every(ele => datasetMapKeyList.includes(ele))) {
     fields.value = datasetFieldList.value
       .map(ele => {
@@ -660,15 +712,14 @@ const init = (queryId: string) => {
   }
   const params = [...new Set(datasetFieldList.value.map(ele => ele.tableId).filter(ele => !!ele))]
   if (!params.length) return
-  getDsDetailsWithPerm(params)
-    .then(res => {
-      res
-        .filter(ele => !!ele)
-        .forEach(ele => {
-          const { dimensionList, quotaList } = ele.fields
-          ele.list = [...dimensionList, ...quotaList]
-          datasetMap[ele.id] = ele
-        })
+  Promise.all([getDsDetailsWithPerm(params), getSqlParams(params)])
+    .then(([dq, p]) => {
+      dq.filter(ele => !!ele).forEach(ele => {
+        ele.activelist = 'dimensionList'
+        ele.fields.parameterList = p.filter(itx => itx.datasetGroupId === ele.id)
+        ele.hasParameter = !!ele.fields.parameterList.length
+        datasetMap[ele.id] = ele
+      })
       fields.value = datasetFieldList.value
         .map(ele => {
           if (!datasetMap[ele.tableId]) return null
@@ -1169,9 +1220,10 @@ defineExpose({
               >
               <span class="dataset ellipsis">{{ field.name }}</span>
               <el-select
-                @change="setType"
+                @change="setParameters"
                 @focus="handleDialogClick"
                 style="margin-left: 12px"
+                popper-class="field-select--dqp"
                 v-if="curComponent.checkedFields.includes(field.componentId)"
                 v-model="curComponent.checkedFieldsMap[field.componentId]"
                 clearable
@@ -1181,21 +1233,38 @@ defineExpose({
                     <Icon
                       :name="`field_${
                         fieldType[
-                          getDetype(curComponent.checkedFieldsMap[field.componentId], field.list)
+                          getDetype(
+                            curComponent.checkedFieldsMap[field.componentId],
+                            Object.values(field.fields)
+                          )
                         ]
                       }`"
                       :className="`field-icon-${
                         fieldType[
-                          getDetype(curComponent.checkedFieldsMap[field.componentId], field.list)
+                          getDetype(
+                            curComponent.checkedFieldsMap[field.componentId],
+                            Object.values(field.fields)
+                          )
                         ]
                       }`"
                     ></Icon>
                   </el-icon>
                 </template>
+                <template #header>
+                  <el-tabs stretch class="params-select--header" v-model="field.activelist">
+                    <el-tab-pane label="维度" name="dimensionList"></el-tab-pane>
+                    <el-tab-pane label="指标" name="quotaList"></el-tab-pane>
+                    <el-tab-pane
+                      v-if="field.hasParameter"
+                      label="参数"
+                      name="parameterList"
+                    ></el-tab-pane>
+                  </el-tabs>
+                </template>
                 <el-option
-                  v-for="ele in field.list"
+                  v-for="ele in field.fields[field.activelist]"
                   :key="ele.id"
-                  :label="ele.name"
+                  :label="ele.name || ele.variableName"
                   :value="ele.id"
                   :disabled="ele.desensitized"
                 >
@@ -1209,8 +1278,8 @@ defineExpose({
                         :className="`field-icon-${fieldType[ele.deType]}`"
                       ></Icon>
                     </el-icon>
-                    <span>
-                      {{ ele.name }}
+                    <span :title="ele.name || ele.variableName" class="ellipsis">
+                      {{ ele.name || ele.variableName }}
                     </span>
                   </div>
                 </el-option>
@@ -1276,7 +1345,7 @@ defineExpose({
           <div class="list-item" v-if="['1', '7'].includes(curComponent.displayType)">
             <div class="label">时间粒度</div>
             <div class="value">
-              <template v-if="curComponent.displayType === '7'">
+              <template v-if="curComponent.displayType === '7' && !isTimeParameter">
                 <el-select
                   @change="timeGranularityMultipleChange"
                   placeholder="请选择时间粒度"
@@ -1295,10 +1364,12 @@ defineExpose({
                   placeholder="请选择时间粒度"
                   v-model="curComponent.timeGranularity"
                 >
-                  <el-option label="年" value="year" />
-                  <el-option label="年月" value="month" />
-                  <el-option label="年月日" value="date" />
-                  <el-option label="年月日时分秒" value="datetime" />
+                  <el-option
+                    v-for="ele in timeParameterList"
+                    :key="ele.value"
+                    :label="ele.label"
+                    :value="ele.value"
+                  />
                 </el-select>
               </template>
             </div>
@@ -1571,8 +1642,12 @@ defineExpose({
               <div class="value">
                 <el-radio-group class="larger-radio" v-model="curComponent.conditionType">
                   <el-radio :label="0">单条件</el-radio>
-                  <el-radio :label="1">与条件</el-radio>
-                  <el-radio :label="2">或条件</el-radio>
+                  <el-radio :label="1" :disabled="!!curComponent.parameters.length"
+                    >与条件</el-radio
+                  >
+                  <el-radio :label="2" :disabled="!!curComponent.parameters.length"
+                    >或条件</el-radio
+                  >
                 </el-radio-group>
               </div>
             </div>
@@ -1697,95 +1772,6 @@ defineExpose({
                 />
               </el-tooltip>
             </div>
-          </div>
-          <div v-if="!['8'].includes(curComponent.displayType)" class="list-item">
-            <div class="label">
-              <el-tooltip
-                effect="dark"
-                content="空数据不支持传参数"
-                :disabled="!curComponent.showEmpty"
-                placement="top"
-              >
-                <el-checkbox
-                  :disabled="curComponent.showEmpty"
-                  v-model="curComponent.parametersCheck"
-                  label="绑定参数"
-                />
-              </el-tooltip>
-            </div>
-            <template v-if="curComponent.parametersCheck">
-              <div v-if="curComponent.displayType !== '7'" class="parameters">
-                <el-select
-                  popper-class="dataset-parameters"
-                  value-key="id"
-                  multiple
-                  collapse-tags
-                  collapse-tags-tooltip
-                  :max-collapse-tags="3"
-                  @focus="handleDialogClick"
-                  v-model="curComponent.parameters"
-                  clearable
-                >
-                  <el-option
-                    v-for="item in parametersFilter"
-                    :key="item.id"
-                    :label="item.variableName"
-                    :value="item"
-                  >
-                    <div class="variable-name ellipsis">{{ item.variableName }}</div>
-                    <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
-                      <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
-                    </el-tooltip>
-                  </el-option>
-                </el-select>
-              </div>
-              <div v-else class="parameters-range">
-                <div class="range-title">开始时间</div>
-                <div class="range-title">结束时间</div>
-                <div class="params-start">
-                  <el-select
-                    popper-class="dataset-parameters"
-                    value-key="id"
-                    @focus="handleDialogClick"
-                    v-model="curComponent.parametersStart"
-                    clearable
-                  >
-                    <el-option
-                      v-for="item in parametersFilter"
-                      :key="item.id"
-                      :label="item.variableName"
-                      :value="item"
-                    >
-                      <div class="variable-name ellipsis">{{ item.variableName }}</div>
-                      <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
-                        <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
-                      </el-tooltip>
-                    </el-option>
-                  </el-select>
-                </div>
-                <div class="params-end">
-                  <el-select
-                    popper-class="dataset-parameters"
-                    value-key="id"
-                    @focus="handleDialogClick"
-                    v-model="curComponent.parametersEnd"
-                    clearable
-                  >
-                    <el-option
-                      v-for="item in parametersFilter"
-                      :key="item.id"
-                      :label="item.variableName"
-                      :value="item"
-                    >
-                      <div class="variable-name ellipsis">{{ item.variableName }}</div>
-                      <el-tooltip effect="dark" :content="item.datasetFullName" placement="top">
-                        <div class="dataset-full-name ellipsis">{{ item.datasetFullName }}</div>
-                      </el-tooltip>
-                    </el-option>
-                  </el-select>
-                </div>
-              </div>
-            </template>
           </div>
           <div v-if="!['8'].includes(curComponent.displayType)" class="list-item">
             <div class="label">
@@ -1963,6 +1949,19 @@ defineExpose({
 </template>
 
 <style lang="less">
+.field-select--dqp {
+  width: 210px;
+}
+.ed-select-dropdown__header {
+  padding: 0 8px;
+  .params-select--header {
+    --ed-tabs-header-height: 32px;
+    .ed-tabs__item {
+      font-weight: 400;
+      font-size: 15px;
+    }
+  }
+}
 .condition-value-select-popper {
   .ed-select-dropdown__item.selected::after {
     display: none;

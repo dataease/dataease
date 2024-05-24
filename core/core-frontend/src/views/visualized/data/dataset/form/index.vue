@@ -313,7 +313,7 @@ const confirmCustomTime = () => {
 }
 
 watch(searchTable, val => {
-  state.tableData = tableList.filter(ele => ele.name.toLowerCase().includes(val.toLowerCase()))
+  state.tableData = tableList.filter(ele => ele.tableName.toLowerCase().includes(val.toLowerCase()))
 })
 const editeSave = () => {
   const union = []

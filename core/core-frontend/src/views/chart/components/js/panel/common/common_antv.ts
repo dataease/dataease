@@ -26,6 +26,7 @@ import type { Plot as L7Plot, PlotOptions } from '@antv/l7plot/dist/esm'
 import { Zoom } from '@antv/l7'
 import { createL7Icon } from '@antv/l7-component/es/utils/icon'
 import { DOM } from '@antv/l7-utils'
+import { Scene } from '@antv/l7-scene'
 
 export function getPadding(chart: Chart): number[] {
   if (chart.drill) {
@@ -1023,7 +1024,7 @@ class CustomZoom extends Zoom {
     this['updateDisabled']()
   }
 }
-export function configL7Zoom(chart: Chart, plot: L7Plot<PlotOptions>) {
+export function configL7Zoom(chart: Chart, plot: L7Plot<PlotOptions> | Scene) {
   const { basicStyle } = parseJson(chart.customAttr)
   if (
     (basicStyle.suspension === false && basicStyle.showZoom === undefined) ||
@@ -1031,14 +1032,15 @@ export function configL7Zoom(chart: Chart, plot: L7Plot<PlotOptions>) {
   ) {
     return
   }
-  plot.once('loaded', () => {
+  const plotScene = plot instanceof Scene ? plot : plot.scene
+  plotScene.once('loaded', () => {
     const zoomOptions = {
-      initZoom: plot.scene.getZoom(),
-      center: plot.scene.getCenter(),
+      initZoom: plotScene.getZoom(),
+      center: plotScene.getCenter(),
       buttonColor: basicStyle.zoomButtonColor,
       buttonBackground: basicStyle.zoomBackground
     } as any
-    plot.scene.addControl(new CustomZoom(zoomOptions))
+    plotScene.addControl(new CustomZoom(zoomOptions))
   })
 }
 

@@ -388,6 +388,7 @@ export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
   fontFamily: 'Microsoft YaHei',
   letterSpace: 0,
   fontShadow: false,
+  backgroundColor: '#fff',
 
   suffixEnable: true,
   suffix: '',
@@ -675,6 +676,7 @@ export const DEFAULT_ASSIST_LINE_CFG: ChartAssistLineCfg = {
 export const DEFAULT_THRESHOLD: ChartThreshold = {
   enable: false,
   gaugeThreshold: '',
+  liquidThreshold: '',
   labelThreshold: [],
   tableThreshold: [],
   textLabelThreshold: []
@@ -1223,14 +1225,14 @@ export const CHART_TYPE_CONFIGS = [
         category: 'compare',
         value: 'bidirectional-bar',
         title: t('chart.chart_bidirectional_bar'),
-        icon: 'percentage-bar-stack-horizontal'
+        icon: 'bidirectional-bar'
       },
       {
         render: 'antv',
         category: 'compare',
         value: 'progress-bar',
         title: t('chart.chart_progress_bar'),
-        icon: 'percentage-bar-stack-horizontal'
+        icon: 'progress-bar'
       }
     ]
   },
@@ -1308,6 +1310,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'bubble-map',
         title: t('chart.chart_bubble_map'),
         icon: 'bubble-map'
+      },
+      {
+        render: 'antv',
+        category: 'map',
+        value: 'flow-map',
+        title: t('chart.chart_flow_map'),
+        icon: 'flow-map'
       }
     ]
   },

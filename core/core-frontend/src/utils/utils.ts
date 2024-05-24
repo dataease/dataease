@@ -106,7 +106,24 @@ export const cleanPlatformFlag = () => {
   wsCache.delete(platformKey)
   return false
 }
+export const isInIframe = () => {
+  try {
+    return window.top !== window.self
+  } catch (error) {
+    console.error(error)
+    return true
+  }
+}
 
+export const isBtnShow = (val: string) => {
+  if (!val || val === '0') {
+    return true
+  } else if (val === '1') {
+    return false
+  } else {
+    return !isInIframe()
+  }
+}
 export function isMobile() {
   return (
     navigator.userAgent.match(
