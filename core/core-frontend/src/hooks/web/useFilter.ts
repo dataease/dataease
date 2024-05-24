@@ -204,7 +204,6 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               defaultMapValue,
               mapValue,
               parameters = [],
-              parametersCheck = false,
               isTree = false,
               timeGranularity = 'date',
               displayType,
@@ -307,16 +306,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                   fieldId: item.checkedFieldsMap[curComponentId],
                   operator,
                   value: result,
-                  parameters: parametersCheck
-                    ? +displayType === 7
-                      ? [
-                          parametersStart,
-                          parametersEnd?.id
-                            ? { ...parametersEnd, id: `${parametersEnd.id}_START_END_SPLIT` }
-                            : parametersEnd
-                        ]
-                      : parameters
-                    : [],
+                  parameters,
                   isTree
                 })
               }
