@@ -269,4 +269,24 @@ public class FileUtils {
 
         return bytes;
     }
+
+
+    public static boolean deleteDirectoryRecursively(String directoryPath) {
+        File directory = new File(directoryPath);
+        if (!directory.exists()) {
+            return true;
+        }
+
+        File[] files = directory.listFiles();
+        if (files != null) {
+            for (File file : files) {
+                if (file.isDirectory()) {
+                    deleteDirectoryRecursively(file.getAbsolutePath());
+                } else {
+                    boolean deletionSuccess = file.delete();
+                }
+            }
+        }
+        return directory.delete();
+    }
 }

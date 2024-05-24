@@ -71,7 +71,7 @@
 
 <script setup lang="ts">
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
-import { computed, nextTick, ref } from 'vue'
+import { computed, h, nextTick, ref } from 'vue'
 import { toPng } from 'html-to-image'
 import { useI18n } from '@/hooks/web/useI18n'
 import { deepCopy } from '@/utils/utils'
@@ -81,6 +81,8 @@ import { exportExcelDownload } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
 import { assign } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { Button } from 'vant'
+import { ElMessage } from 'element-plus-secondary'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -194,10 +196,46 @@ const downloadViewDetails = () => {
   const chart = { ...viewInfo.value, chartExtRequest, data: viewDataInfo }
   exportLoading.value = true
   exportExcelDownload(chart, () => {
+    console.log('aa')
+    openMessageLoading(exportData)
     exportLoading.value = false
   })
 }
 
+const exportData = () => {
+  // bus.$emit('data-export-center')
+}
+
+const openMessageLoading = cb => {
+  console.log('bb')
+  const iconClass = `el-icon-loading`
+  const customClass = `de-message-loading de-message-export`
+  ElMessage({
+    message: h('p', null, [
+      '后台导出中,可前往',
+      h(
+        Button,
+        {
+          props: {
+            type: 'text',
+            size: 'mini'
+          },
+          class: 'btn-text',
+          on: {
+            click: () => {
+              cb()
+            }
+          }
+        },
+        '数据导出中心'
+      ),
+      '查看进度，进行下载'
+    ]),
+    iconClass,
+    showClose: true,
+    customClass
+  })
+}
 const htmlToImage = () => {
   downLoading.value = true
   useEmitt().emitter.emit('renderChart-' + viewInfo.value.id)

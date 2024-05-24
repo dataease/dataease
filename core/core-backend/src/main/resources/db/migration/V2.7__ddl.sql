@@ -22,3 +22,22 @@ ALTER TABLE `xpack_setting_authentication`
     ADD COLUMN `synced` tinyint(1) NOT NULL DEFAULT 0 COMMENT '已同步' AFTER `plugin_json`;
 ALTER TABLE `xpack_setting_authentication`
     ADD COLUMN `valid` tinyint(1) NOT NULL DEFAULT 0 COMMENT '有效' AFTER `synced`;
+
+
+DROP TABLE IF EXISTS `core_export_task`;
+CREATE TABLE `core_export_task`
+(
+    `id`                  varchar(255) NOT NULL,
+    `user_id`             bigint(20)   NOT NULL,
+    `file_name`           varchar(2048) DEFAULT NULL,
+    `file_size`           DOUBLE        DEFAULT NULL,
+    `file_size_unit`      varchar(255)  DEFAULT NULL,
+    `export_from`         varchar(255)  DEFAULT NULL,
+    `export_status`       varchar(255)  DEFAULT NULL,
+    `export_from_type`    varchar(255)  DEFAULT NULL,
+    `export_time`         bigint(20)    DEFAULT NULL,
+    `export_progress`      varchar(255)  DEFAULT NULL,
+    `export_machine_name` varchar(512)  DEFAULT NULL,
+    `params`              longtext     NOT NULL COMMENT '过滤参数',
+    PRIMARY KEY (`id`)
+) COMMENT='导出任务表';

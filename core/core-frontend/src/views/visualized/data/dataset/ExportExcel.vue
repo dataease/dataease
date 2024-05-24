@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { ref, h, onUnmounted } from 'vue'
 import { EmptyBackground } from '@/components/empty-background'
-import { ElButton, ElMessage, ElMessageBox } from 'element-plus-secondary'
+import { ElButton, ElMessage, ElMessageBox, ElTabPane, ElTabs } from 'element-plus-secondary'
 import { RefreshLeft } from '@element-plus/icons-vue'
 import {
   exportTasks,
@@ -54,7 +54,10 @@ const handleClose = () => {
 onUnmounted(() => {
   clearInterval(timer)
 })
-const handleClick = () => {
+const handleClick = tab => {
+  if (tab) {
+    activeName.value = tab.paneName
+  }
   if (activeName.value === 'ALL') {
     description.value = t('data_export.no_file')
   } else if (activeName.value === 'FAILED') {
@@ -305,7 +308,7 @@ const delAll = () => {
     })
       .then(() => {
         exportDeleteAll(
-          activeName,
+          activeName.value,
           multipleSelection.value.map(ele => ele.id)
         ).then(() => {
           ElMessage.success(t('commons.delete_success'))
@@ -410,8 +413,8 @@ defineExpose({
         <el-table-column prop="exportFromName" :label="$t('data_export.export_obj')" width="200" />
         <el-table-column prop="exportFromType" width="120" :label="$t('data_export.export_from')">
           <template #default="scope">
-            <span v-if="scope.row.exportFromType === 'dataset'">{{ $t('dataset.datalist') }}</span>
-            <span v-if="scope.row.exportFromType === 'chart'">{{ $t('panel.view') }}</span>
+            <span v-if="scope.row.exportFromType === 'dataset'">数据集</span>
+            <span v-if="scope.row.exportFromType === 'chart'">视图</span>
           </template>
         </el-table-column>
         <el-table-column prop="exportTime" width="180" :label="$t('data_export.export_time')">
@@ -419,7 +422,7 @@ defineExpose({
             <span>{{ timestampFormatDate(scope.row.exportTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" prop="operate" width="80" :label="$t('commons.operating')">
+        <el-table-column fixed="right" prop="operate" width="150" :label="$t('commons.operating')">
           <template #default="scope">
             <el-button
               v-if="scope.row.exportStatus === 'SUCCESS'"
@@ -432,18 +435,14 @@ defineExpose({
                 </el-icon>
               </div>
             </el-button>
-            <el-button
-              v-if="scope.row.exportStatus === 'FAILED'"
-              type="text"
-              @click="retry(scope.row)"
-            >
+            <el-button type="text" @click="retry(scope.row)">
               <template #icon>
-                <Icon name="dv-preview-download"></Icon>
+                <Icon name="de-refresh"></Icon>
               </template>
             </el-button>
             <el-button type="text" @click="deleteField(scope.row)">
               <template #icon>
-                <Icon name="dv-preview-download"></Icon>
+                <Icon name="de-delete"></Icon>
               </template>
             </el-button>
           </template>

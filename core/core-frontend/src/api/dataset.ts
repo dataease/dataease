@@ -250,7 +250,7 @@ export const getFunction = async (): Promise<DatasetDetail[]> => {
 
 export const exportTasks = async (type): Promise<IResponse> => {
   return request.post({ url: '/exportCenter/exportTasks/' + type, data: {} }).then(res => {
-    return res?.data
+    return res
   })
 }
 

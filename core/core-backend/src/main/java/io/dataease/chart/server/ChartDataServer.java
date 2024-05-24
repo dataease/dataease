@@ -5,13 +5,16 @@ import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.chart.manage.ChartDataManage;
+import io.dataease.constant.AuthConstant;
 import io.dataease.constant.CommonConstants;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
+import io.dataease.exportCenter.manage.ExportCenterManage;
 import io.dataease.result.ResultCode;
 import io.dataease.utils.LogUtil;
 import io.dataease.visualization.manage.VisualizationTemplateExtendDataManage;
 import jakarta.annotation.Resource;
+import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
@@ -22,12 +25,13 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.context.request.RequestContextHolder;
+import org.springframework.web.context.request.ServletRequestAttributes;
 
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
-import java.util.Map;
 import java.util.stream.Collectors;
 
 /**
@@ -38,10 +42,11 @@ import java.util.stream.Collectors;
 public class ChartDataServer implements ChartDataApi {
     @Resource
     private ChartDataManage chartDataManage;
+    @Resource
+    private ExportCenterManage exportCenterManage;
 
     @Resource
     private VisualizationTemplateExtendDataManage extendDataManage;
-
     @Value("${export.views.limit:500000}")
     private Integer limit;
 
@@ -76,6 +81,12 @@ public class ChartDataServer implements ChartDataApi {
 
     @Override
     public void innerExportDetails(ChartExcelRequest request, HttpServletResponse response) throws Exception {
+        HttpServletRequest httpServletRequest = ((ServletRequestAttributes) RequestContextHolder.getRequestAttributes()).getRequest();
+        String linkToken = httpServletRequest.getHeader(AuthConstant.LINK_TOKEN_KEY);
+        if (StringUtils.isEmpty(linkToken)) {
+            exportCenterManage.addTask(request.getViewId(), "chart", request);
+            return;
+        }
         OutputStream outputStream = response.getOutputStream();
         try {
             findExcelData(request);
