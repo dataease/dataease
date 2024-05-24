@@ -1,5 +1,6 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
+import { clear } from '@/api/sync/syncTaskLog'
 interface AppState {
   type: string
   token: string
@@ -10,6 +11,9 @@ interface AppState {
   pid: string
   chartId: string
   resourceId: string
+  opt: string
+  createType: string
+  templateParams: string
 }
 
 export const userStore = defineStore('embedded', {
@@ -23,12 +27,21 @@ export const userStore = defineStore('embedded', {
       dvId: '',
       pid: '',
       chartId: '',
-      resourceId: ''
+      resourceId: '',
+      opt: '',
+      createType: '',
+      templateParams: ''
     }
   },
   getters: {
     getType(): string {
       return this.type
+    },
+    getCreateType(): string {
+      return this.createType
+    },
+    getTemplateParams(): string {
+      return this.templateParams
     },
     getToken(): string {
       return this.token
@@ -54,6 +67,9 @@ export const userStore = defineStore('embedded', {
     getResourceId(): string {
       return this.resourceId
     },
+    getOpt(): string {
+      return this.opt
+    },
     getIframeData(): any {
       return {
         embeddedToken: this.token,
@@ -70,6 +86,12 @@ export const userStore = defineStore('embedded', {
   actions: {
     setType(type: string) {
       this.type = type
+    },
+    setCreateType(createType: string) {
+      this.createType = createType
+    },
+    setTemplateParams(templateParams: string) {
+      this.templateParams = templateParams
     },
     setToken(token: string) {
       this.token = token
@@ -95,6 +117,9 @@ export const userStore = defineStore('embedded', {
     setResourceId(resourceId: string) {
       this.resourceId = resourceId
     },
+    setOpt(opt: string) {
+      this.opt = opt
+    },
     setIframeData(data: any) {
       this.type = data['type']
       this.token = data['embeddedToken']
@@ -104,6 +129,14 @@ export const userStore = defineStore('embedded', {
       this.chartId = data['chartId']
       this.pid = data['pid']
       this.resourceId = data['resourceId']
+    },
+    clearState() {
+      this.setPid('')
+      this.setOpt('')
+      this.setCreateType('')
+      this.setTemplateParams('')
+      this.setResourceId('')
+      this.setDvId('')
     }
   }
 })
