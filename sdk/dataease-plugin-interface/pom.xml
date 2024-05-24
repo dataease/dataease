@@ -19,7 +19,7 @@
         <dependency>
             <groupId>org.jasig.cas.client</groupId>
             <artifactId>cas-client-core</artifactId>
-            <version>3.5.0</version>
+            <version>3.6.4</version>
         </dependency>
 
         <dependency>
