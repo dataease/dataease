@@ -31,6 +31,8 @@ import DeVideo from '@/custom-component/de-video/Component.vue'
 import DeVideoAttr from '@/custom-component/de-video/Attr.vue'
 import DeStreamMedia from '@/custom-component/de-stream-media/Component.vue'
 import DeStreamMediaAttr from '@/custom-component/de-stream-media/Attr.vue'
+import ScrollText from '@/custom-component/scroll-text/Component.vue'
+import ScrollTextAttr from '@/custom-component/scroll-text/Attr.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -64,7 +66,9 @@ export const componentsMap = {
   DeVideo: DeVideo,
   DeVideoAttr: DeVideoAttr,
   DeStreamMedia: DeStreamMedia,
-  DeStreamMediaAttr: DeStreamMediaAttr
+  DeStreamMediaAttr: DeStreamMediaAttr,
+  ScrollText: ScrollText,
+  ScrollTextAttr: ScrollTextAttr
 }
 
 export default function findComponent(key) {
