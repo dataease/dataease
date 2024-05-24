@@ -350,7 +350,7 @@ const windowsJump = (url, jumpType) => {
   try {
     const newWindow = window.open(url, jumpType)
     initOpenHandler(newWindow)
-    if (jumpType === '_self') {
+    if (jumpType === '_self' && !embeddedStore.baseUrl) {
       location.reload()
     }
   } catch (e) {
