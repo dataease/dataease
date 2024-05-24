@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { keycodes } from '@/utils/DeShortcutKey.js'
 import eventBus from '@/utils/eventBus'
-import { nextTick, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
 import { toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -112,17 +112,30 @@ const selectText = element => {
 onBeforeUnmount(() => {
   eventBus.off('componentClick', onComponentClick)
 })
+
+const varStyle = computed(() => [{ '--scroll-speed': `${element.value.style.scrollSpeed}s` }])
+
+const textStyle = computed(() => {
+  return {
+    verticalAlign: element.value['style'].verticalAlign
+  }
+})
 </script>
 
 <template>
-  <div v-if="editMode == 'edit'" class="v-text" @keydown="handleKeydown" @keyup="handleKeyup">
+  <div
+    v-if="editMode == 'edit'"
+    :style="varStyle"
+    class="v-text"
+    @keydown="handleKeydown"
+    @keyup="handleKeyup"
+  >
     <div
       ref="text"
-      class="marquee-txt"
       :contenteditable="canEdit"
-      :class="{ 'can-edit': canEdit }"
+      :class="{ 'can-edit': canEdit, 'marquee-txt': !canEdit }"
       tabindex="0"
-      :style="{ verticalAlign: element['style'].verticalAlign }"
+      :style="textStyle"
       @dblclick="setEdit"
       @paste="clearStyle"
       @mousedown="handleMousedown"
@@ -132,11 +145,7 @@ onBeforeUnmount(() => {
     ></div>
   </div>
   <div v-else class="v-text preview">
-    <div
-      class="marquee-txt"
-      :style="{ verticalAlign: element['style'].verticalAlign }"
-      v-html="element['propValue']"
-    ></div>
+    <div class="marquee-txt" :style="textStyle" v-html="element['propValue']"></div>
   </div>
 </template>
 
@@ -175,7 +184,7 @@ onBeforeUnmount(() => {
 .marquee-txt {
   display: inline-block;
   padding-left: 100%; /* 从右至左开始滚动 */
-  animation: marqueeAnimation 10s linear infinite;
+  animation: marqueeAnimation var(--scroll-speed) linear infinite;
 }
 @keyframes marqueeAnimation {
   0% {

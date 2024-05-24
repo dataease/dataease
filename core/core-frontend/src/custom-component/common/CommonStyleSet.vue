@@ -84,7 +84,7 @@
                 @change="changeStyle"
               >
                 <template #prefix>
-                  <el-icon>
+                  <el-icon :class="{ 'dark-icon': themes === 'dark' }">
                     <Icon :name="styleOptionKey.icon" />
                   </el-icon>
                 </template>
@@ -266,11 +266,27 @@ const styleMounted = ref({
   opacity: 1,
   fontSize: 22,
   activeFontSize: 22,
+  letterSpacing: 0,
+  scrollSpeed: 0,
   fontWeight: 'normal',
   fontStyle: 'normal',
   textAlign: 'center',
   color: '#000000'
 })
+
+const scrollSpeedList = [
+  { name: '停止', value: 0 },
+  { name: '1', value: 20 },
+  { name: '2', value: 18 },
+  { name: '3', value: 16 },
+  { name: '4', value: 14 },
+  { name: '5', value: 12 },
+  { name: '6', value: 10 },
+  { name: '7', value: 8 },
+  { name: '8', value: 6 },
+  { name: '9', value: 4 },
+  { name: '10', value: 2 }
+]
 
 const opacitySizeList = [
   { name: '0.1', value: 0.1 },
@@ -309,6 +325,17 @@ const styleColorKeyArray = [
   },
   { value: 'backgroundColor', label: '背景色', width: 90, icon: 'dv-style-backgroundColor' }
 ]
+
+const letterSpacingList = computed(() => {
+  const arr = []
+  for (let i = 0; i <= 60; i = i + 1) {
+    arr.push({
+      name: i + '',
+      value: i
+    })
+  }
+  return arr
+})
 
 const fontSizeList = computed(() => {
   const arr = []
@@ -352,6 +379,13 @@ const borderStyleList = [
 //大小随画布缩放动态变化
 const styleOptionMountedKeyArray = [
   {
+    value: 'letterSpacing',
+    label: '字间距',
+    customOption: letterSpacingList.value,
+    width: '90px',
+    icon: 'dv-style-letterSpacing'
+  },
+  {
     value: 'fontSize',
     label: '字体大小',
     customOption: fontSizeList.value,
@@ -369,6 +403,13 @@ const styleOptionMountedKeyArray = [
 
 //大小不变
 const styleOptionKeyArray = [
+  {
+    value: 'scrollSpeed',
+    label: '滚动速度',
+    customOption: scrollSpeedList,
+    width: '90px',
+    icon: 'dv-style-scroll-speed'
+  },
   {
     value: 'opacity',
     label: '不透明度',
