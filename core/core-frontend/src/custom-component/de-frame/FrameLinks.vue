@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-form ref="form" size="small" style="width: 100%">
+    <el-form @submit.prevent ref="form" size="small" style="width: 100%">
       <el-form-item>
         <template #label>
           <span class="data-area-label">

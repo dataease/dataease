@@ -1,6 +1,6 @@
 <template>
   <el-row>
-    <el-form ref="form" size="small" style="width: 100%">
+    <el-form @submit.prevent ref="form" size="small" style="width: 100%">
       <el-form-item :effect="themes" :label="t('visualization.auto_play')">
         <el-switch
           :effect="themes"

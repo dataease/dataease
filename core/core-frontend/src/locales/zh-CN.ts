@@ -953,7 +953,7 @@ export default {
     line_type_dotted: '点',
     value_can_not_empty: '值不能为空',
     value_error: '值必须为数值',
-    threshold: '阈值',
+    threshold: '条件样式',
     threshold_range: '阈值区间',
     gauge_threshold_format_error: '格式错误',
     total_cfg: '总计配置',
