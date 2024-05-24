@@ -693,7 +693,10 @@ defineExpose({
               <el-option v-for="item in schemas" :key="item" :label="item" :value="item" />
             </el-select>
           </el-form-item>
-          <el-form-item :label="t('datasource.extra_params')">
+          <el-form-item
+            :label="t('datasource.extra_params')"
+            v-if="form.configuration.urlType !== 'jdbcUrl'"
+          >
             <el-input
               :placeholder="t('common.inputText') + t('datasource.extra_params')"
               v-model="form.configuration.extraParams"
@@ -760,7 +763,7 @@ defineExpose({
             />
           </el-form-item>
           <el-form-item
-            v-if="form.type == 'oracle'"
+            v-if="form.type == 'oracle' && form.configuration.urlType !== 'jdbcUrl'"
             :label="t('datasource.connection_mode')"
             prop="configuration.connectionType"
           >
