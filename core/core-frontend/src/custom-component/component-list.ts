@@ -477,6 +477,28 @@ const list = [
       headFontColor: '#000000',
       headFontActiveColor: '#000000'
     }
+  },
+  {
+    component: 'ScrollText',
+    name: '跑马灯',
+    label: '跑马灯',
+    propValue: '双击编辑文字',
+    innerType: 'ScrollText',
+    icon: 'scroll-text',
+    x: 1,
+    y: 1,
+    sizeX: 36,
+    sizeY: 14,
+    style: {
+      width: 400,
+      height: 80,
+      fontSize: 14,
+      fontWeight: 400,
+      letterSpacing: 0,
+      color: '',
+      padding: 4,
+      verticalAlign: 'middle'
+    }
   }
 ]
 

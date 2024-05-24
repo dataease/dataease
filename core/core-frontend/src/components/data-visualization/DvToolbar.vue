@@ -227,7 +227,7 @@ eventBus.on('clearCanvas', clearCanvas)
           >
             <query-group :dv-model="dvModel"></query-group>
           </component-group>
-          <component-group is-label :base-width="115" icon-name="dv-text" title="文本">
+          <component-group is-label :base-width="215" icon-name="dv-text" title="文本">
             <text-group></text-group>
           </component-group>
           <component-group
