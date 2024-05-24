@@ -90,7 +90,7 @@ const paste = () => {
 }
 
 const deleteComponent = () => {
-  if (curComponent.value) {
+  if (curComponent.value && !isGroupArea.value) {
     const curInfo = getCurInfo()
     dvMainStore.deleteComponentById(curComponent.value?.id, curInfo.componentData)
   } else if (areaData.value.components.length) {
@@ -153,6 +153,10 @@ const handleComposeMouseDown = e => {
 const composeDivider = computed(() => {
   return !(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')
 })
+
+const isGroupArea = computed(() => {
+  return curComponent.value?.component === 'GroupArea'
+})
 </script>
 
 <template>
@@ -201,7 +205,7 @@ const composeDivider = computed(() => {
         取消组合
       </li>
       <el-divider class="custom-divider" v-show="composeDivider" />
-      <template v-if="curComponent">
+      <template v-if="curComponent && !isGroupArea">
         <template v-if="!curComponent['isLock']">
           <li @click="upComponent">上移一层</li>
           <li @click="downComponent">下移一层</li>
