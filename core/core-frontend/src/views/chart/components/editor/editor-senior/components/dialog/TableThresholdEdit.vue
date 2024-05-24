@@ -1,15 +1,14 @@
 <script lang="tsx" setup>
-import { computed, reactive } from 'vue'
+import { PropType, reactive } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL } from '../../../util/chart'
 import { fieldType } from '@/utils/attr'
-import _ from 'lodash'
 
 const { t } = useI18n()
 
 const props = defineProps({
   chart: {
-    type: Object,
+    type: Object as PropType<ChartObj>,
     required: true
   },
   threshold: {
@@ -164,17 +163,17 @@ const valueOptions = [
 const predefineColors = COLOR_PANEL
 
 const state = reactive({
-  thresholdArr: [],
+  thresholdArr: [] as TableThreshold[],
   fields: [],
   thresholdObj: {
     fieldId: '',
     field: {},
     conditions: []
-  }
+  } as TableThreshold
 })
 
 const init = () => {
-  state.thresholdArr = JSON.parse(JSON.stringify(props.threshold))
+  state.thresholdArr = JSON.parse(JSON.stringify(props.threshold)) as TableThreshold[]
   initFields()
 }
 const initOptions = item => {
@@ -193,33 +192,20 @@ const initOptions = item => {
   }
 }
 const initFields = () => {
-  // 暂时支持指标
+  let fields = []
   if (props.chart.type === 'table-info') {
-    if (Object.prototype.toString.call(props.chart.xAxis) === '[object Array]') {
-      state.fields = JSON.parse(JSON.stringify(props.chart.xAxis))
-    } else {
-      state.fields = JSON.parse(props.chart.xAxis)
-    }
+    fields = JSON.parse(JSON.stringify(props.chart.xAxis))
   } else if (props.chart.type === 'table-pivot') {
-    if (Object.prototype.toString.call(props.chart.yAxis) === '[object Array]') {
-      state.fields = JSON.parse(JSON.stringify(props.chart.yAxis))
-    } else {
-      state.fields = JSON.parse(props.chart.yAxis)
-    }
+    const xAxis = JSON.parse(JSON.stringify(props.chart.xAxis))
+    const xAxisExt = JSON.parse(JSON.stringify(props.chart.xAxisExt))
+    const yAxis = JSON.parse(JSON.stringify(props.chart.yAxis))
+    fields = [...xAxis, ...xAxisExt, ...yAxis]
   } else {
-    if (Object.prototype.toString.call(props.chart.xAxis) === '[object Array]') {
-      state.fields = state.fields.concat(JSON.parse(JSON.stringify(props.chart.xAxis)))
-    } else {
-      state.fields = state.fields.concat(JSON.parse(props.chart.xAxis))
-    }
-    if (Object.prototype.toString.call(props.chart.yAxis) === '[object Array]') {
-      state.fields = state.fields.concat(JSON.parse(JSON.stringify(props.chart.yAxis)))
-    } else {
-      state.fields = state.fields.concat(JSON.parse(props.chart.yAxis))
-    }
+    const xAxis = JSON.parse(JSON.stringify(props.chart.xAxis))
+    const yAxis = JSON.parse(JSON.stringify(props.chart.yAxis))
+    fields = [...xAxis, ...yAxis]
   }
-  // 暂不支持时间
-  // this.fields = this.fields.filter(ele => ele.deType !== 1)
+  state.fields.splice(0, state.fields.length, ...fields)
 }
 const addThreshold = () => {
   state.thresholdArr.push(JSON.parse(JSON.stringify(state.thresholdObj)))
@@ -243,9 +229,6 @@ const removeCondition = (item, index) => {
   changeThreshold()
 }
 
-const computedFields = computed(() => {
-  return _.filter(state.fields, f => f.deType === 2 || f.deType === 3)
-})
 const addField = item => {
   // get field
   if (state.fields && state.fields.length > 0) {
@@ -280,7 +263,7 @@ init()
             <el-select v-model="fieldItem.fieldId" @change="addField(fieldItem)">
               <el-option
                 class="series-select-option"
-                v-for="fieldOption in computedFields"
+                v-for="fieldOption in state.fields"
                 :key="fieldOption.id"
                 :label="fieldOption.name"
                 :value="fieldOption.id"
@@ -344,10 +327,19 @@ init()
             >
               <el-form-item class="form-item">
                 <el-input-number
-                  controls-position="right"
                   v-model="item.value"
-                  class="value-item"
+                  v-if="[2, 3].includes(fieldItem.field.deType)"
                   :placeholder="t('chart.drag_block_label_value')"
+                  controls-position="right"
+                  class="value-item"
+                  clearable
+                  @change="changeThreshold"
+                />
+                <el-input
+                  v-model="item.value"
+                  v-else
+                  :placeholder="t('chart.drag_block_label_value')"
+                  controls-position="right"
                   clearable
                   @change="changeThreshold"
                 />
@@ -355,14 +347,16 @@ init()
             </el-col>
 
             <el-col v-if="item.term === 'between'" :span="4" style="text-align: center">
-              <el-input-number
-                v-model="item.min"
-                controls-position="right"
-                class="between-item"
-                :placeholder="t('chart.axis_value_min')"
-                clearable
-                @change="changeThreshold"
-              />
+              <el-form-item class="form-item">
+                <el-input-number
+                  v-model="item.min"
+                  controls-position="right"
+                  class="between-item"
+                  :placeholder="t('chart.axis_value_min')"
+                  clearable
+                  @change="changeThreshold"
+                />
+              </el-form-item>
             </el-col>
 
             <el-col v-if="item.term === 'between'" :span="2" style="text-align: center">
@@ -372,43 +366,49 @@ init()
             </el-col>
 
             <el-col v-if="item.term === 'between'" :span="4" style="text-align: center">
-              <el-input-number
-                v-model="item.max"
-                controls-position="right"
-                class="between-item"
-                :placeholder="t('chart.axis_value_max')"
-                clearable
-                @change="changeThreshold"
-              />
+              <el-form-item class="form-item">
+                <el-input-number
+                  v-model="item.max"
+                  controls-position="right"
+                  class="between-item"
+                  :placeholder="t('chart.axis_value_max')"
+                  clearable
+                  @change="changeThreshold"
+                />
+              </el-form-item>
             </el-col>
 
             <div
               style="display: flex; align-items: center; justify-content: center; margin-left: 8px"
             >
               <div class="color-title">{{ t('chart.textColor') }}</div>
-              <el-color-picker
-                is-custom
-                size="large"
-                v-model="item.color"
-                show-alpha
-                class="color-picker-style"
-                :predefine="predefineColors"
-                @change="changeThreshold"
-              />
+              <el-form-item class="form-item">
+                <el-color-picker
+                  is-custom
+                  size="large"
+                  v-model="item.color"
+                  show-alpha
+                  class="color-picker-style"
+                  :predefine="predefineColors"
+                  @change="changeThreshold"
+                />
+              </el-form-item>
             </div>
             <div
               style="display: flex; align-items: center; justify-content: center; margin-left: 8px"
             >
               <div class="color-title">{{ t('chart.backgroundColor') }}</div>
-              <el-color-picker
-                is-custom
-                size="large"
-                v-model="item.backgroundColor"
-                show-alpha
-                class="color-picker-style"
-                :predefine="predefineColors"
-                @change="changeThreshold"
-              />
+              <el-form-item class="form-item">
+                <el-color-picker
+                  is-custom
+                  size="large"
+                  v-model="item.backgroundColor"
+                  show-alpha
+                  class="color-picker-style"
+                  :predefine="predefineColors"
+                  @change="changeThreshold"
+                />
+              </el-form-item>
             </div>
             <div
               style="display: flex; align-items: center; justify-content: center; margin-left: 8px"

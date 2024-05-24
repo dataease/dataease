@@ -134,11 +134,25 @@ declare interface ChartThreshold {
   /**
    * 表格阈值
    */
-  tableThreshold: Threshold[]
+  tableThreshold: TableThreshold[]
   /**
    * 文本卡阈值
    */
   textLabelThreshold: Threshold[]
+}
+declare interface TableThreshold {
+  /**
+   * 字段id
+   */
+  fieldId: string
+  /**
+   * 字段
+   */
+  field: ChartViewField
+  /**
+   * 条件
+   */
+  conditions: Threshold[]
 }
 /**
  * 阈值
@@ -157,7 +171,7 @@ declare interface Threshold {
    */
   term: string
   /**
-   *
+   * 字段
    */
   field: ChartViewField
   /**
