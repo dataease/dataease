@@ -3,6 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import { useEmbedded } from '@/store/modules/embedded'
 import { XpackComponent } from '@/components/plugin'
 import {
   computed,
@@ -178,6 +179,7 @@ const resultCount = computed(() => {
   return canvasStyleData.value.dashboard?.resultCount || null
 })
 
+const embeddedStore = useEmbedded()
 // 编辑状态下 不启动刷新
 const buildInnerRefreshTimer = (
   refreshViewEnable = false,
