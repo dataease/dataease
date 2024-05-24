@@ -91,6 +91,12 @@ export default {
     forEach(this.forms, v => {
       if (!v.removed) {
         const f = cloneDeep(v)
+        if (f.type === 'date' && f.settings.dateType === undefined) { // 兼容旧的
+          f.settings.dateType = f.settings.enableTime ? 'datetime' : 'date'
+        }
+        if (f.type === 'dateRange' && f.settings.dateType === undefined) { // 兼容旧的
+          f.settings.dateType = f.settings.enableTime ? 'datetimerange' : 'daterange'
+        }
         if (f.type === 'dateRange') {
           const _start = this.data[f.settings.mapping.columnName1]
           const _end = this.data[f.settings.mapping.columnName2]
@@ -349,46 +355,22 @@ export default {
               </el-checkbox>
             </el-checkbox-group>
             <el-date-picker
-              v-else-if="item.type === 'date' && !item.settings.enableTime"
+              v-else-if="item.type === 'date'"
               v-model="item.value"
               :required="item.settings.required"
               :readonly="readonly"
-              type="date"
+              :type="item.settings.dateType"
               :placeholder="item.settings.placeholder"
               style="width: 100%"
               size="small"
               :picker-options="pickerOptions"
             />
             <el-date-picker
-              v-else-if="item.type === 'date' && item.settings.enableTime"
+              v-else-if="item.type === 'dateRange'"
               v-model="item.value"
               :required="item.settings.required"
               :readonly="readonly"
-              type="datetime"
-              :placeholder="item.settings.placeholder"
-              style="width: 100%"
-              size="small"
-              :picker-options="pickerOptions"
-            />
-            <el-date-picker
-              v-else-if="item.type === 'dateRange' && !item.settings.enableTime"
-              v-model="item.value"
-              :required="item.settings.required"
-              :readonly="readonly"
-              type="daterange"
-              :range-separator="item.settings.rangeSeparator"
-              :start-placeholder="item.settings.startPlaceholder"
-              :end-placeholder="item.settings.endPlaceholder"
-              style="width: 100%"
-              size="small"
-              :picker-options="pickerOptions"
-            />
-            <el-date-picker
-              v-else-if="item.type === 'dateRange' && item.settings.enableTime"
-              v-model="item.value"
-              :required="item.settings.required"
-              :readonly="readonly"
-              type="datetimerange"
+              :type="item.settings.dateType"
               :range-separator="item.settings.rangeSeparator"
               :start-placeholder="item.settings.startPlaceholder"
               :end-placeholder="item.settings.endPlaceholder"

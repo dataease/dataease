@@ -646,6 +646,7 @@ export default {
       start_hint_word: '开始提示词',
       end_hint_word: '结束提示词',
       input_type: '格式类型',
+      date_type: '展示粒度',
       check: '校验',
       set_required: '设置为必填项',
       set_unique: '不允许重复值',

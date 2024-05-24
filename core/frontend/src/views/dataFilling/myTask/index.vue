@@ -212,39 +212,17 @@ export default {
           this.selectedFormTitle = res.data.name
           this.forms = JSON.parse(res.data.forms)
 
-          const _list = []
+          const dateFormatColumns = []
           forEach(this.forms, f => {
             if (f.type === 'dateRange') {
-              _list.push({
-                props: f.settings?.mapping?.columnName1,
-                label: f.settings?.name,
-                date: true,
-                enableTime: f.settings?.enableTime,
-                type: f.type,
-                multiple: !!f.settings.multiple,
-                rangeIndex: 0
-              })
-              _list.push({
-                props: f.settings?.mapping?.columnName2,
-                label: f.settings?.name,
-                date: true,
-                enableTime: f.settings?.enableTime,
-                type: f.type,
-                multiple: !!f.settings.multiple,
-                rangeIndex: 1
-              })
+              dateFormatColumns.push(f.settings?.mapping?.columnName1)
+              dateFormatColumns.push(f.settings?.mapping?.columnName2)
             } else {
-              _list.push({
-                props: f.settings?.mapping?.columnName,
-                label: f.settings?.name,
-                date: f.type === 'date',
-                enableTime: f.type === 'date' && f.settings?.enableTime,
-                type: f.type,
-                multiple: !!f.settings.multiple
-              })
+              if (f.type === 'date') {
+                dateFormatColumns.push(f.settings?.mapping?.columnName)
+              }
             }
           })
-          const dateFormatColumns = map(filter(_list, c => c.date), 'props')
 
           searchTable(row.formId, {
             primaryKeyValue: row.valueId,

@@ -30,6 +30,17 @@ export default {
       disableCreateIndex: false,
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       duplicateOptionRule: { validator: checkDuplicateOptionValidator, trigger: ['blur', 'change'] },
+      dateTypes: [
+        { name: this.$t('chart.y'), value: 'year' },
+        { name: this.$t('chart.y_M'), value: 'month' },
+        { name: this.$t('chart.y_M_d'), value: 'date' },
+        { name: this.$t('chart.y_M_d_H_m_s'), value: 'datetime' }
+      ],
+      dateRangeTypes: [
+        { name: this.$t('chart.y_M'), value: 'monthrange' },
+        { name: this.$t('chart.y_M_d'), value: 'daterange' },
+        { name: this.$t('chart.y_M_d_H_m_s'), value: 'datetimerange' }
+      ],
       inputTypes: [
         { type: 'text', name: this.$t('data_fill.form.text'), rules: [] },
         { type: 'number', name: this.$t('data_fill.form.number'), rules: [] },
@@ -150,7 +161,8 @@ export default {
           id: undefined,
           settings: {
             name: this.$t('commons.component.date'),
-            enableTime: false,
+            enableTime: false, // 弃用
+            dateType: 'date',
             placeholder: '',
             required: false,
             mapping: {
@@ -169,7 +181,8 @@ export default {
           id: undefined,
           settings: {
             name: this.$t('commons.component.dateRange'),
-            enableTime: false,
+            enableTime: false, // 弃用
+            dateType: 'daterange',
             rangeSeparator: '-',
             startPlaceholder: '',
             endPlaceholder: '',
@@ -265,13 +278,20 @@ export default {
         this.formSettings = tempData
         this.formSettings.table = tempData.tableName
         this.formSettings.folder = tempData.pid
-        this.formSettings.forms = filter(JSON.parse(res.data.forms), f => !f.removed)
-        forEach(this.formSettings.forms, f => {
+        const tempForms = filter(JSON.parse(res.data.forms), f => !f.removed)
+        forEach(tempForms, f => {
           f.old = true
           if (f.type === 'checkbox' || f.type === 'select' && f.settings.multiple) {
             f.value = []
           }
+          if (f.type === 'date' && f.settings.dateType === undefined) { // 兼容旧的
+            f.settings.dateType = f.settings.enableTime ? 'datetime' : 'date'
+          }
+          if (f.type === 'dateRange' && f.settings.dateType === undefined) { // 兼容旧的
+            f.settings.dateType = f.settings.enableTime ? 'datetimerange' : 'daterange'
+          }
         })
+        this.formSettings.forms = tempForms
         this.formSettings.oldForms = JSON.parse(res.data.forms)
         this.formSettings.tableIndexes = JSON.parse(res.data.tableIndexes)
 
@@ -717,43 +737,21 @@ export default {
                       </el-checkbox>
                     </el-checkbox-group>
                     <el-date-picker
-                      v-else-if="item.type === 'date' && !item.settings.enableTime"
+                      v-else-if="item.type === 'date'"
                       :key="item.id + 'date'"
                       v-model="item.value"
                       :required="item.settings.required"
-                      type="date"
+                      :type="item.settings.dateType"
                       :placeholder="item.settings.placeholder"
                       style="width: 100%"
                       size="small"
                     />
                     <el-date-picker
-                      v-else-if="item.type === 'date' && item.settings.enableTime"
-                      :key="item.id + 'dateEnableTime'"
+                      v-else-if="item.type === 'dateRange'"
+                      :key="item.id + 'dateRange'"
                       v-model="item.value"
                       :required="item.settings.required"
-                      type="datetime"
-                      :placeholder="item.settings.placeholder"
-                      style="width: 100%"
-                      size="small"
-                    />
-                    <el-date-picker
-                      v-else-if="item.type === 'dateRange' && !item.settings.enableTime"
-                      :key="item.id + 'dateRangeEnableTime'"
-                      v-model="item.value"
-                      :required="item.settings.required"
-                      type="daterange"
-                      :range-separator="item.settings.rangeSeparator"
-                      :start-placeholder="item.settings.startPlaceholder"
-                      :end-placeholder="item.settings.endPlaceholder"
-                      style="width: 100%"
-                      size="small"
-                    />
-                    <el-date-picker
-                      v-else-if="item.type === 'dateRange' && item.settings.enableTime"
-                      :key="item.id + 'datetimerangeRangeEnableTime'"
-                      v-model="item.value"
-                      :required="item.settings.required"
-                      type="datetimerange"
+                      :type="item.settings.dateType"
                       :range-separator="item.settings.rangeSeparator"
                       :start-placeholder="item.settings.startPlaceholder"
                       :end-placeholder="item.settings.endPlaceholder"
@@ -918,6 +916,27 @@ export default {
                 </el-select>
               </el-form-item>
 
+              <el-form-item
+                v-if="selectedComponentItem.type === 'date' || selectedComponentItem.type === 'dateRange'"
+                prop="dateType"
+                class="form-item"
+                :label="$t('data_fill.form.date_type')"
+                :rules="[requiredRule]"
+              >
+                <el-select
+                  v-model="selectedComponentItem.settings.dateType"
+                  style="width: 100%"
+                  required
+                >
+                  <el-option
+                    v-for="(x) in selectedComponentItem.type === 'date' ? dateTypes : dateRangeTypes"
+                    :key="x.value"
+                    :label="x.name"
+                    :value="x.value"
+                  />
+                </el-select>
+              </el-form-item>
+
               <div class="right-check-div">
                 <div class="m-label-container">
                   <span style="width: unset; font-weight: bold">
@@ -954,17 +973,6 @@ export default {
                     @change="changeSelectMultiple(selectedComponentItem, selectedComponentItem.settings.multiple)"
                   >
                     {{ $t('data_fill.form.set_multiple') }}
-                  </el-checkbox>
-                </el-form-item>
-                <el-form-item
-                  v-if="selectedComponentItem.type === 'date' || selectedComponentItem.type === 'dateRange'"
-                  prop="enableTime"
-                  class="form-item"
-                >
-                  <el-checkbox
-                    v-model="selectedComponentItem.settings.enableTime"
-                  >
-                    {{ $t('data_fill.form.use_datetime') }}
                   </el-checkbox>
                 </el-form-item>
 
