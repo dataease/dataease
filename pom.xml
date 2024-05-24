@@ -20,13 +20,13 @@
 
     <properties>
         <dataease.version>2.6.1</dataease.version>
-        <java.version>17</java.version>
+        <java.version>21</java.version>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <spring-cloud-alibaba.version>2023.0.1.0</spring-cloud-alibaba.version>
         <spring-cloud.version>2023.0.1</spring-cloud.version>
         <spring-boot.version>3.3.0</spring-boot.version>
-        <maven.compiler.source>17</maven.compiler.source>
-        <maven.compiler.target>17</maven.compiler.target>
+        <maven.compiler.source>21</maven.compiler.source>
+        <maven.compiler.target>21</maven.compiler.target>
         <mybatis-plus.version>3.5.6</mybatis-plus.version>
         <h2.version>2.2.220</h2.version>
         <knife4j.version>4.4.0</knife4j.version>
