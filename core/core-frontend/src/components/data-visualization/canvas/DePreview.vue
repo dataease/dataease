@@ -322,11 +322,6 @@ defineExpose({
 </template>
 
 <style lang="less" scoped>
-::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
-}
-
 .canvas-container {
   background-size: 100% 100% !important;
   width: 100%;
@@ -334,6 +329,10 @@ defineExpose({
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+  ::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px !important;
+  }
 }
 
 .fix-button {
