@@ -29,6 +29,13 @@ const searchFunction = ref('')
 
 const mirror = ref()
 
+const props = defineProps({
+  crossDs: {
+    type: Boolean,
+    default: () => false
+  }
+})
+
 const fields = [
   { label: t('dataset.text'), value: 0 },
   { label: t('dataset.time'), value: 1 },
@@ -287,9 +294,9 @@ initFunction()
             <span>*</span>
             <el-tooltip class="item" effect="dark" placement="top">
               <template #content>
-                {{ t('dataset.calc_tips.tip1') }}
-                <br />
-                {{ t('dataset.calc_tips.tip2') }}
+                <div v-if="props.crossDs">{{ t('dataset.calc_tips.tip1') }}</div>
+                <div v-else>{{ t('dataset.calc_tips.tip1_1') }}</div>
+                <div>{{ t('dataset.calc_tips.tip2') }}</div>
               </template>
               <el-icon size="16px">
                 <Icon name="icon_info_outlined"></Icon>
