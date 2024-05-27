@@ -2133,7 +2133,7 @@ export default {
   },
   computed: {
     filedList() {
-      return [...this.dimension, ...this.quota].filter(ele => ele.id !== 'count')
+      return [...this.dimension, ...this.quota].filter(ele => ele.id !== 'count' && !ele.chartId)
     },
     obj() {
       return {
