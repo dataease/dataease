@@ -146,7 +146,7 @@
 </template>
 
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, reactive, toRefs, watch } from 'vue'
+import { computed, h, onBeforeUnmount, onMounted, reactive, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -156,7 +156,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import FieldsList from '@/custom-component/rich-text/FieldsList.vue'
-import { ElTooltip } from 'element-plus-secondary'
+import { ElMessage, ElTooltip } from 'element-plus-secondary'
+import { Button } from 'vant'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -312,12 +313,48 @@ const showBarTooltipPosition = computed(() => {
   }
 })
 
+const openMessageLoading = cb => {
+  const iconClass = `el-icon-loading`
+  const customClass = `de-message-loading de-message-export`
+  ElMessage({
+    message: h('p', null, [
+      '后台导出中,可前往',
+      h(
+        Button,
+        {
+          props: {
+            type: 'text',
+            size: 'mini'
+          },
+          class: 'btn-text',
+          on: {
+            click: () => {
+              cb()
+            }
+          }
+        },
+        '数据导出中心'
+      ),
+      '查看进度，进行下载'
+    ]),
+    iconClass,
+    showClose: true,
+    customClass
+  })
+}
+
+const callbackExport = () => {
+  useEmitt().emitter.emit('data-export-center')
+}
+
 const exportAsExcel = () => {
   const viewDataInfo = dvMainStore.getViewDataDetails(element.value.id)
   const chartExtRequest = dvMainStore.getLastViewRequestInfo(element.value.id)
   const viewInfo = dvMainStore.getViewDetails(element.value.id)
   const chart = { ...viewInfo, chartExtRequest, data: viewDataInfo }
-  exportExcelDownload(chart)
+  exportExcelDownload(chart, () => {
+    openMessageLoading(callbackExport)
+  })
 }
 const exportAsImage = () => {
   // do export

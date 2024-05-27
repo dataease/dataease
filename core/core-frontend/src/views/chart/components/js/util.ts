@@ -10,6 +10,7 @@ import { PickOptions } from '@antv/g2plot/esm/core/plot'
 import { innerExportDetails } from '@/api/chart'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
+import { useLinkStoreWithOut } from '@/store/modules/link'
 const { t } = useI18n()
 // 同时支持将hex和rgb，转换成rgba
 export function hexColorToRGBA(hex, alpha) {
@@ -460,18 +461,24 @@ export const exportExcelDownload = (chart, callBack?) => {
     viewInfo: chart,
     detailFields
   }
+  const linkStore = useLinkStoreWithOut()
+
   const method = innerExportDetails
   method(request)
     .then(res => {
-      const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
-      const link = document.createElement('a')
-      link.style.display = 'none'
-      link.href = URL.createObjectURL(blob)
-      link.download = excelName + '.xlsx' // 下载的文件名
-      document.body.appendChild(link)
-      link.click()
-      document.body.removeChild(link)
-      callBack('success')
+      if (linkStore.getLinkToken) {
+        const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
+        const link = document.createElement('a')
+        link.style.display = 'none'
+        link.href = URL.createObjectURL(blob)
+        link.download = excelName + '.xlsx' // 下载的文件名
+        document.body.appendChild(link)
+        link.click()
+        document.body.removeChild(link)
+        callBack('success')
+      } else {
+        callBack && callBack(res)
+      }
     })
     .catch(() => {
       console.error('Excel download error')

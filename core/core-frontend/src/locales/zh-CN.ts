@@ -50,6 +50,37 @@ export default {
     filter_condition: '筛选条件',
     no_auth_tips: '缺少菜单权限，请联系管理员'
   },
+  data_export: {
+    export_center: '数据导出中心',
+    export_info: '查看进度，进行下载',
+    exporting: '后台导出中,可前往',
+    del_all: '全部删除',
+    export_failed: '导出失败',
+    export_from: '导出来源',
+    export_obj: '导出对象',
+    export_time: '导出时间',
+    sure_del_all: '确定删除全部导出记录吗？',
+    sure_del: '确定删除该导出记录吗？',
+    no_failed_file: '暂无失败文件',
+    no_file: '暂无文件',
+    no_task: '暂无任务',
+    download_all: '下载全部',
+    download: '下载'
+  },
+  driver: {
+    driver: '驱动',
+    please_choose_driver: '请选择驱动',
+    mgm: '驱动管理',
+    exit_mgm: '退出驱动管理',
+    add: '添加驱动',
+    modify: '修改',
+    show_info: '驱动信息',
+    file_name: '文件名',
+    version: '版本',
+    please_set_driverClass: '请指定驱动类',
+    please_set_surpportVersions: '请输入支持的数据库大版本',
+    surpportVersions: '支持版本'
+  },
   login: {
     welcome: '欢迎使用',
     btn: '登录',

@@ -84,6 +84,10 @@
             <artifactId>spring-boot-starter-test</artifactId>
         </dependency>
         <dependency>
+            <groupId>org.springframework.boot</groupId>
+            <artifactId>spring-boot-starter-websocket</artifactId>
+        </dependency>
+        <dependency>
             <groupId>com.fit2cloud</groupId>
             <artifactId>quartz-spring-boot-starter</artifactId>
             <version>1.0.8</version>

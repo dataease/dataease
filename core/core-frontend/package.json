@@ -38,6 +38,7 @@
     "lodash-es": "^4.17.21",
     "mathjs": "^11.6.0",
     "mitt": "^3.0.0",
+    "net": "^1.0.2",
     "normalize.css": "^8.0.1",
     "nprogress": "^0.2.0",
     "pinia": "^2.0.32",
@@ -63,6 +64,8 @@
     "@types/element-resize-detector": "^1.1.3",
     "@types/jquery": "^3.5.16",
     "@types/lodash-es": "^4.17.6",
+    "@types/sockjs-client": "^1.5.4",
+    "@types/stompjs": "^2.3.9",
     "@typescript-eslint/eslint-plugin": "^5.53.0",
     "@typescript-eslint/parser": "^5.53.0",
     "@vitejs/plugin-vue": "^4.0.0",
@@ -80,6 +83,8 @@
     "postcss-scss": "^4.0.6",
     "prettier": "^2.8.4",
     "rimraf": "^4.1.2",
+    "sockjs-client": "^1.6.1",
+    "stompjs": "^2.3.3",
     "stylelint": "^15.2.0",
     "stylelint-config-html": "^1.1.0",
     "stylelint-config-recommended": "^10.0.1",
@@ -96,6 +101,7 @@
     "vite-plugin-style-import-secondary": "^2.0.0",
     "vite-plugin-stylelint": "^4.2.0",
     "vite-plugin-svg-icons": "^2.0.1",
-    "vue-tsc": "^1.0.24"
+    "vue-tsc": "^1.0.24",
+    "xss": "^1.0.14"
   }
 }
