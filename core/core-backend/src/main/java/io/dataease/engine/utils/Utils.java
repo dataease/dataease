@@ -68,7 +68,8 @@ public class Utils {
                                     String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
                         } else {
                             originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                                    tableObj.getTableAlias() + "." + datasourceType.getPrefix() + ele.getDataeaseName() + datasourceType.getSuffix());
+                                    datasourceType.getPrefix() + tableObj.getTableAlias() + datasourceType.getSuffix() +
+                                            "." + datasourceType.getPrefix() + ele.getDataeaseName() + datasourceType.getSuffix());
                         }
                     } else {
                         originField = originField.replaceAll("\\[" + ele.getId() + "]", "(" + ele.getOriginName() + ")");
