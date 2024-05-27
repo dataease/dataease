@@ -289,10 +289,9 @@ defineExpose({
     width: 100%;
     height: 100%;
   }
-}
-
-&::-webkit-scrollbar {
-  display: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .render-active {

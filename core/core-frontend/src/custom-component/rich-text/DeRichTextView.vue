@@ -467,11 +467,10 @@ defineExpose({
   height: 100%;
   overflow-y: auto !important;
   position: relative;
-}
-
-::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
+  ::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px !important;
+  }
 }
 
 :deep(.ol) {
