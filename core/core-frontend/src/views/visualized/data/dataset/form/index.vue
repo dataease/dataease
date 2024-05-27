@@ -1894,7 +1894,7 @@ const getDsIconName = data => {
     width="1000px"
     :title="calcTitle"
   >
-    <calc-field-edit ref="calcEdit" />
+    <calc-field-edit ref="calcEdit" :crossDs="crossDatasources" />
     <template #footer>
       <el-button secondary @click="closeEditCalc()">{{ t('dataset.cancel') }} </el-button>
       <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
