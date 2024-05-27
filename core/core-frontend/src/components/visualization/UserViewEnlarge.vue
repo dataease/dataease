@@ -214,7 +214,6 @@ const exportData = () => {
 }
 
 const openMessageLoading = cb => {
-  console.log('bb')
   const iconClass = `el-icon-loading`
   const customClass = `de-message-loading de-message-export`
   ElMessage({

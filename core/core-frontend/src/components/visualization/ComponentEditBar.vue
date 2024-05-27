@@ -313,12 +313,7 @@ const showBarTooltipPosition = computed(() => {
   }
 })
 
-const exportData = () => {
-  // bus.$emit('data-export-center')
-}
-
 const openMessageLoading = cb => {
-  console.log('bb')
   const iconClass = `el-icon-loading`
   const customClass = `de-message-loading de-message-export`
   ElMessage({
@@ -348,13 +343,17 @@ const openMessageLoading = cb => {
   })
 }
 
+const callbackExport = () => {
+  useEmitt().emitter.emit('data-export-center')
+}
+
 const exportAsExcel = () => {
   const viewDataInfo = dvMainStore.getViewDataDetails(element.value.id)
   const chartExtRequest = dvMainStore.getLastViewRequestInfo(element.value.id)
   const viewInfo = dvMainStore.getViewDetails(element.value.id)
   const chart = { ...viewInfo, chartExtRequest, data: viewDataInfo }
   exportExcelDownload(chart, () => {
-    openMessageLoading(exportData)
+    openMessageLoading(callbackExport)
   })
 }
 const exportAsImage = () => {

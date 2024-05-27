@@ -1,8 +1,9 @@
 <script lang="ts" setup>
-import { ref, h, onUnmounted } from 'vue'
+import { ref, h, onUnmounted, onMounted } from 'vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { ElButton, ElMessage, ElMessageBox, ElTabPane, ElTabs } from 'element-plus-secondary'
 import { RefreshLeft } from '@element-plus/icons-vue'
+import eventBus from '@/utils/eventBus'
 import {
   exportTasks,
   exportRetry,
@@ -50,6 +51,9 @@ const handleClose = () => {
   drawer.value = false
   clearInterval(timer)
 }
+onMounted(() => {
+  eventBus.on('task-export-topic-call', taskExportTopicCall)
+})
 
 onUnmounted(() => {
   clearInterval(timer)
@@ -148,25 +152,13 @@ const init = () => {
 const taskExportTopicCall = task => {
   if (JSON.parse(task).exportStatus === 'SUCCESS') {
     openMessageLoading(
-      JSON.parse(task).exportFromName +
-        ' ' +
-        t('excel.export') +
-        t('dataset.completed') +
-        t('dataset.goto'),
+      JSON.parse(task).exportFromName + ' 导出成功，前往',
       'success',
       callbackExport
     )
   }
   if (JSON.parse(task).exportStatus === 'FAILED') {
-    openMessageLoading(
-      JSON.parse(task).exportFromName +
-        ' ' +
-        t('excel.export') +
-        t('dataset.error') +
-        t('dataset.goto'),
-      'error',
-      callbackExport
-    )
+    openMessageLoading(JSON.parse(task).exportFromName + ' 导出失败，前往', 'error', callbackExport)
   }
 }
 
