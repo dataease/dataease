@@ -184,7 +184,7 @@ const state = reactive({
 })
 
 const filedList = computed(() => {
-  return [...state.dimension, ...state.quota].filter(ele => ele.id !== 'count')
+  return [...state.dimension, ...state.quota].filter(ele => ele.id !== 'count' && !!ele.summary)
 })
 
 provide('filedList', () => filedList.value)
