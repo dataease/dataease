@@ -285,6 +285,14 @@ const batchOptStatusChange = value => {
 }
 
 const openOuterParamsSet = () => {
+  if (componentData.value.length === 0) {
+    ElMessage.warning('当前仪表板为空，请先添加组件')
+    return
+  }
+  if (!dvInfo.value.id) {
+    ElMessage.warning('请先保存当前页面')
+    return
+  }
   outerParamsSetRef.value.optInit()
 }
 
