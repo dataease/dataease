@@ -140,11 +140,6 @@ defineExpose({
 </template>
 
 <style lang="less">
-::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
-}
-
 .content {
   background-color: #ffffff;
   width: 100%;
@@ -152,5 +147,9 @@ defineExpose({
   align-items: center;
   overflow-x: hidden;
   overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px !important;
+  }
 }
 </style>

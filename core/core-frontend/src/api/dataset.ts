@@ -36,7 +36,10 @@ export interface DatasetDetail {
   fields: {
     dimensionList: Array<Field>
     quotaList: Array<Field>
+    parameterList?: Array<Field>
   }
+  activelist?: string
+  hasParameter?: boolean
   checkList: string[]
   list: Array<Field>
 }

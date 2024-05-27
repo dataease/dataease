@@ -2,6 +2,39 @@
   <el-row class="custom-row">
     <el-row class="custom-row-inner">
       <el-space wrap>
+        <template v-for="styleOptionKey in styleOptionKeyArrayPre">
+          <el-tooltip
+            :key="styleOptionKey.value"
+            v-if="styleForm[styleOptionKey.value] !== undefined"
+            :effect="themes"
+            placement="bottom"
+          >
+            <template #content> {{ styleOptionKey.label }} </template>
+            <el-form-item class="form-item no-margin-bottom" :class="'form-item-' + themes">
+              <el-select
+                :style="{ width: styleOptionKey.width }"
+                :effect="themes"
+                v-model="styleForm[styleOptionKey.value]"
+                size="small"
+                @change="changeStyle"
+              >
+                <template #prefix>
+                  <el-icon :class="{ 'dark-icon': themes === 'dark' }">
+                    <Icon :name="styleOptionKey.icon" />
+                  </el-icon>
+                </template>
+                <el-option
+                  class="custom-style-option"
+                  v-for="option in styleOptionKey.customOption"
+                  :key="option.value"
+                  :label="option.name"
+                  :value="option.value"
+                />
+              </el-select>
+            </el-form-item>
+          </el-tooltip>
+        </template>
+
         <template v-for="styleColorKey in styleColorKeyArray">
           <el-tooltip
             :key="styleColorKey.value"
@@ -274,18 +307,25 @@ const styleMounted = ref({
   color: '#000000'
 })
 
+const fontFamilyList = [
+  { name: '微软雅黑', value: 'Microsoft YaHei' },
+  { name: '宋体', value: 'SimSun, "Songti SC", STSong' },
+  { name: '黑体', value: 'SimHei, Helvetica' },
+  { name: '楷体', value: 'KaiTi, "Kaiti SC", STKaiti' }
+]
+
 const scrollSpeedList = [
   { name: '停止', value: 0 },
-  { name: '1', value: 20 },
-  { name: '2', value: 18 },
-  { name: '3', value: 16 },
-  { name: '4', value: 14 },
-  { name: '5', value: 12 },
-  { name: '6', value: 10 },
-  { name: '7', value: 8 },
-  { name: '8', value: 6 },
-  { name: '9', value: 4 },
-  { name: '10', value: 2 }
+  { name: '1', value: 80 },
+  { name: '2', value: 60 },
+  { name: '3', value: 40 },
+  { name: '4', value: 20 },
+  { name: '5', value: 10 },
+  { name: '6', value: 8 },
+  { name: '7', value: 6 },
+  { name: '8', value: 4 },
+  { name: '9', value: 2 },
+  { name: '10', value: 1 }
 ]
 
 const opacitySizeList = [
@@ -374,6 +414,16 @@ const borderStyleList = [
   { name: '实线', value: 'solid' },
   { name: '虚线', value: 'dashed' },
   { name: '点线', value: 'dotted' }
+]
+
+const styleOptionKeyArrayPre = [
+  {
+    value: 'fontFamily',
+    label: '字体',
+    customOption: fontFamilyList,
+    width: '188px',
+    icon: 'dv-style-fontFamily'
+  }
 ]
 
 //大小随画布缩放动态变化

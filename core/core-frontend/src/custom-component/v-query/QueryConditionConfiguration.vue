@@ -107,7 +107,6 @@ const activeCondition = ref('')
 const isIndeterminate = ref(false)
 const datasetTree = shallowRef([])
 const fields = ref<DatasetDetail[]>()
-const parameters = ref([])
 
 const { queryElement } = toRefs(props)
 
@@ -191,6 +190,9 @@ const setParameters = () => {
 
     if (!!curComponent.value.parameters.length) {
       curComponent.value.conditionType = 0
+      if (curComponent.value.optionValueSource === 0) {
+        curComponent.value.optionValueSource = 1
+      }
     }
   })
   setType()
@@ -1386,7 +1388,9 @@ defineExpose({
                   @change="handleValueSourceChange"
                   v-model="curComponent.optionValueSource"
                 >
-                  <el-radio :label="0">{{ t('chart.margin_model_auto') }}</el-radio>
+                  <el-radio :disabled="!!curComponent.parameters.length" :label="0">{{
+                    t('chart.margin_model_auto')
+                  }}</el-radio>
                   <el-radio :label="1">{{ t('chart.select_dataset') }}</el-radio>
                   <el-radio :label="2">手动输入</el-radio>
                 </el-radio-group>
