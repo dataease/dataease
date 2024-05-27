@@ -276,16 +276,16 @@ const styleMounted = ref({
 
 const scrollSpeedList = [
   { name: '停止', value: 0 },
-  { name: '1', value: 20 },
-  { name: '2', value: 18 },
-  { name: '3', value: 16 },
-  { name: '4', value: 14 },
-  { name: '5', value: 12 },
-  { name: '6', value: 10 },
-  { name: '7', value: 8 },
-  { name: '8', value: 6 },
-  { name: '9', value: 4 },
-  { name: '10', value: 2 }
+  { name: '1', value: 80 },
+  { name: '2', value: 60 },
+  { name: '3', value: 40 },
+  { name: '4', value: 20 },
+  { name: '5', value: 10 },
+  { name: '6', value: 8 },
+  { name: '7', value: 6 },
+  { name: '8', value: 4 },
+  { name: '9', value: 2 },
+  { name: '10', value: 1 }
 ]
 
 const opacitySizeList = [
