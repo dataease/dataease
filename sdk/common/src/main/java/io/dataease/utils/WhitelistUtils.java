@@ -26,6 +26,7 @@ public class WhitelistUtils {
             "/dekey",
             "/index.html",
             "/model",
+            "/xpackModel",
             "/swagger-resources",
             "/doc.html",
             "/panel.html",
