@@ -201,7 +201,8 @@
         <span class="header-title">
           {{ $t('panel.panel_list') }}
           <el-button
-            style="float: right; padding-right: 7px; margin-top: -8px"
+            v-if="hasDataPermission('manage', rootAuth)"
+            style="float: right; padding-right: 7px; margin-top: -8px; height: 12px"
             icon="el-icon-plus"
             type="text"
             @click="showEditPanel(newFolder)"
@@ -534,6 +535,7 @@ export default {
   mixins: [msgCfm],
   data() {
     return {
+      rootAuth: '',
       originResourceTree: [],
       curSortType: 'time_desc',
       localSortParams: null,
@@ -993,9 +995,11 @@ export default {
         this.sortTypeChange(this.localSortParams)
       }
       groupTree(this.groupForm, !userCache).then((res) => {
-        localStorage.setItem('panel-main-tree', JSON.stringify(res.data || []))
+        this.rootAuth = res.data ? res.data[0]?.privileges||'':''
+        const resMainData = res.data ? res.data[0]?.children || [] : []
+        localStorage.setItem('panel-main-tree', JSON.stringify(resMainData))
         if (!userCache) {
-          this.originResourceTree = res.data || []
+          this.originResourceTree = resMainData
           this.sortTypeChange(this.localSortParams)
         }
         if (this.responseSource === 'appApply') {
