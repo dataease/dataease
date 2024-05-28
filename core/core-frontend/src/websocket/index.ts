@@ -12,24 +12,24 @@ export default {
       }
     ]
 
-    const socket = new SockJS('http://localhost:8100' + '/websocket' + '?userId=1')
-    stompClient = Stomp.over(socket)
-    const heads = {
-      userId: 1
-    }
-    stompClient.connect(
-      heads,
-      res => {
-        console.log('连接成功: ' + res)
-        channels.forEach(channel => {
-          stompClient.subscribe('/user/' + 1 + channel.topic, res => {
-            res && res.body && eventBus.emit(channel.event, res.body)
-          })
-        })
-      },
-      error => {
-        console.log('连接失败: ' + error)
-      }
-    )
+    // const socket = new SockJS('http://localhost:8100' + '/websocket' + '?userId=1')
+    // stompClient = Stomp.over(socket)
+    // const heads = {
+    //   userId: 1
+    // }
+    // stompClient.connect(
+    //   heads,
+    //   res => {
+    //     console.log('连接成功: ' + res)
+    //     channels.forEach(channel => {
+    //       stompClient.subscribe('/user/' + 1 + channel.topic, res => {
+    //         res && res.body && eventBus.emit(channel.event, res.body)
+    //       })
+    //     })
+    //   },
+    //   error => {
+    //     console.log('连接失败: ' + error)
+    //   }
+    // )
   }
 }
