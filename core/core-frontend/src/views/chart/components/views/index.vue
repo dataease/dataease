@@ -346,11 +346,15 @@ const initOpenHandler = newWindow => {
   }
 }
 
+const divEmbedded = type => {
+  useEmitt().emitter.emit('changeCurrentComponent', type)
+}
+
 const windowsJump = (url, jumpType) => {
   try {
     const newWindow = window.open(url, jumpType)
     initOpenHandler(newWindow)
-    if (jumpType === '_self' && !embeddedStore.baseUrl) {
+    if (jumpType === '_self') {
       location.reload()
     }
   } catch (e) {
@@ -384,6 +388,7 @@ const jumpClick = param => {
     param.sourceViewId = param.viewId
     param.sourceFieldId = dimension.id
     let embeddedBaseUrl = ''
+    const divSelf = isDataEaseBi.value && jumpInfo.jumpType === '_self'
     if (isDataEaseBi.value) {
       embeddedBaseUrl = embeddedStore.baseUrl
     }
@@ -406,6 +411,12 @@ const jumpClick = param => {
           const url = `${embeddedBaseUrl}#/preview?dvId=${
             jumpInfo.targetDvId
           }&jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
+          if (divSelf) {
+            embeddedStore.setDvId(jumpInfo.targetDvId)
+            embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
+            divEmbedded('Preview')
+            return
+          }
           windowsJump(url, jumpInfo.jumpType)
         }
       } else {
@@ -415,6 +426,11 @@ const jumpClick = param => {
       const colList = [...param.dimensionList, ...param.quotaList]
       let url = setIdValueTrans('id', 'value', jumpInfo.content, colList)
       url = checkAddHttp(url)
+      if (divSelf) {
+        embeddedStore.setOuterUrl(url)
+        divEmbedded('Iframe')
+        return
+      }
       windowsJump(url, jumpInfo.jumpType)
     }
   } else {

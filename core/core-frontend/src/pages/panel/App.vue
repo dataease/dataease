@@ -10,6 +10,7 @@ const DashboardEditor = defineAsyncComponent(() => import('@/views/dashboard/ind
 
 const Dashboard = defineAsyncComponent(() => import('./DashboardPreview.vue'))
 const ViewWrapper = defineAsyncComponent(() => import('./ViewWrapper.vue'))
+const Iframe = defineAsyncComponent(() => import('./Iframe.vue'))
 const Dataset = defineAsyncComponent(() => import('@/views/visualized/data/dataset/index.vue'))
 const Datasource = defineAsyncComponent(
   () => import('@/views/visualized/data/datasource/index.vue')
@@ -18,6 +19,9 @@ const ScreenPanel = defineAsyncComponent(() => import('@/views/data-visualizatio
 const DashboardPanel = defineAsyncComponent(
   () => import('@/views/dashboard/DashboardPreviewShow.vue')
 )
+
+const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
+
 const props = defineProps({
   componentName: propTypes.string.def('DashboardEditor')
 })
@@ -27,8 +31,10 @@ const componentMap = {
   DashboardEditor,
   VisualizationEditor,
   ViewWrapper,
+  Preview,
   Dashboard,
   Dataset,
+  Iframe,
   Datasource,
   ScreenPanel,
   DashboardPanel
