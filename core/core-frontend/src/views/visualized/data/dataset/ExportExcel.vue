@@ -398,7 +398,7 @@ defineExpose({
             <div v-if="scope.row.exportStatus === 'FAILED'" class="red-line" />
             <el-progress
               v-if="scope.row.exportStatus === 'IN_PROGRESS'"
-              :percentage="+scope.row.exportPogress"
+              :percentage="+scope.row.exportProgress"
             />
           </template>
         </el-table-column>
