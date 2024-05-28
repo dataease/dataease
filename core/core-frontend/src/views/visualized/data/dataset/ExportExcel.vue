@@ -172,7 +172,7 @@ const openMessageLoading = (text, type = 'success', cb) => {
         ElButton,
         {
           text: true,
-          size: 'mini',
+          size: 'small',
           class: 'btn-text',
           onClick: () => {
             cb()
@@ -182,7 +182,6 @@ const openMessageLoading = (text, type = 'success', cb) => {
       )
     ]),
     icon: type === 'loading' ? h(RefreshLeft) : '',
-    duration: 0,
     type,
     showClose: true,
     customClass
