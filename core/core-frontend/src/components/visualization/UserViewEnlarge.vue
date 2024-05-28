@@ -79,10 +79,10 @@ import ChartComponentS2 from '@/views/chart/components/views/components/ChartCom
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import { storeToRefs } from 'pinia'
+import { RefreshLeft } from '@element-plus/icons-vue'
 import { assign } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { Button } from 'vant'
-import { ElMessage } from 'element-plus-secondary'
+import { ElMessage, ElButton } from 'element-plus-secondary'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -220,24 +220,21 @@ const openMessageLoading = cb => {
     message: h('p', null, [
       '后台导出中,可前往',
       h(
-        Button,
+        ElButton,
         {
-          props: {
-            type: 'text',
-            size: 'mini'
-          },
+          text: true,
+          size: 'small',
           class: 'btn-text',
-          on: {
-            click: () => {
-              cb()
-            }
+          onClick: () => {
+            cb()
           }
         },
-        '数据导出中心'
+        t('data_export.export_center')
       ),
       '查看进度，进行下载'
     ]),
     iconClass,
+    icon: h(RefreshLeft),
     showClose: true,
     customClass
   })

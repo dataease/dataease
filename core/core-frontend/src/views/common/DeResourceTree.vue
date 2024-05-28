@@ -295,7 +295,7 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         }
         useEmitt().emitter.emit(
           'changeCurrentComponent',
-          curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'Dashboard'
+          curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
         )
         return
       }
@@ -327,7 +327,7 @@ const addOperation = (
       }
       useEmitt().emitter.emit(
         'changeCurrentComponent',
-        curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'Dashboard'
+        curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
       )
       return
     }
@@ -364,7 +364,7 @@ const resourceEdit = resourceId => {
     }
     useEmitt().emitter.emit(
       'changeCurrentComponent',
-      curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'Dashboard'
+      curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
     )
     return
   }
@@ -393,7 +393,7 @@ const resourceCreateFinish = templateData => {
     }
     useEmitt().emitter.emit(
       'changeCurrentComponent',
-      curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'Dashboard'
+      curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
     )
     return
   }

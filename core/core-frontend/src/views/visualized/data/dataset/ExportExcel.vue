@@ -172,7 +172,7 @@ const openMessageLoading = (text, type = 'success', cb) => {
         ElButton,
         {
           text: true,
-          size: 'mini',
+          size: 'small',
           class: 'btn-text',
           onClick: () => {
             cb()
@@ -182,7 +182,6 @@ const openMessageLoading = (text, type = 'success', cb) => {
       )
     ]),
     icon: type === 'loading' ? h(RefreshLeft) : '',
-    duration: 0,
     type,
     showClose: true,
     customClass
@@ -418,7 +417,7 @@ defineExpose({
           <template #default="scope">
             <el-button
               v-if="scope.row.exportStatus === 'SUCCESS'"
-              type="text"
+              text
               @click="downloadClick(scope.row)"
             >
               <div class="download-export">
@@ -427,12 +426,12 @@ defineExpose({
                 </el-icon>
               </div>
             </el-button>
-            <el-button type="text" @click="retry(scope.row)">
+            <el-button text @click="retry(scope.row)">
               <template #icon>
                 <Icon name="de-refresh"></Icon>
               </template>
             </el-button>
-            <el-button type="text" @click="deleteField(scope.row)">
+            <el-button text @click="deleteField(scope.row)">
               <template #icon>
                 <Icon name="de-delete"></Icon>
               </template>

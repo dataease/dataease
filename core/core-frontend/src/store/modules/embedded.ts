@@ -1,6 +1,5 @@
 import { defineStore } from 'pinia'
 import { store } from '../index'
-import { clear } from '@/api/sync/syncTaskLog'
 interface AppState {
   type: string
   token: string
@@ -14,6 +13,8 @@ interface AppState {
   opt: string
   createType: string
   templateParams: string
+  jumpInfoParam: string
+  outerUrl: string
 }
 
 export const userStore = defineStore('embedded', {
@@ -30,12 +31,20 @@ export const userStore = defineStore('embedded', {
       resourceId: '',
       opt: '',
       createType: '',
-      templateParams: ''
+      templateParams: '',
+      outerUrl: '',
+      jumpInfoParam: ''
     }
   },
   getters: {
     getType(): string {
       return this.type
+    },
+    getJumpInfoParam(): string {
+      return this.jumpInfoParam
+    },
+    getOuterUrl(): string {
+      return this.outerUrl
     },
     getCreateType(): string {
       return this.createType
@@ -87,6 +96,12 @@ export const userStore = defineStore('embedded', {
     setType(type: string) {
       this.type = type
     },
+    setOuterUrl(outerUrl: string) {
+      this.outerUrl = outerUrl
+    },
+    setJumpInfoParam(jumpInfoParam: string) {
+      this.jumpInfoParam = jumpInfoParam
+    },
     setCreateType(createType: string) {
       this.createType = createType
     },
@@ -137,6 +152,8 @@ export const userStore = defineStore('embedded', {
       this.setTemplateParams('')
       this.setResourceId('')
       this.setDvId('')
+      this.setJumpInfoParam('')
+      this.setOuterUrl('')
     }
   }
 })
