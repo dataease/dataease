@@ -843,7 +843,7 @@ export default {
       if (this.componentData) {
         const componentData = deepCopy(this.componentData)
         componentData.forEach(component => {
-          if (component.type === 'custom') {
+          if (component.type === 'custom' && !this._isMobile) {
             const sourceComponent = this.findSourceComponent(component.id)
             if (sourceComponent?.style) {
               component.style = deepCopy(this.findSourceComponent(component.id).style)
