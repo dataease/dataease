@@ -28,8 +28,8 @@ const svgDashinePath = computed(() => {
 })
 
 const init = expressionTree => {
-  const { logic: lg = 'or', items } = expressionTree
-  logic.value = lg
+  const { items } = expressionTree
+  logic.value = expressionTree.logic || 'or'
   relationList.value = dfsInit(items || [])
 }
 const submit = () => {
