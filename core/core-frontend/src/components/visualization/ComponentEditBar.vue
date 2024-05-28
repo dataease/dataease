@@ -156,8 +156,8 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { exportExcelDownload } from '@/views/chart/components/js/util'
 import FieldsList from '@/custom-component/rich-text/FieldsList.vue'
-import { ElMessage, ElTooltip } from 'element-plus-secondary'
-import { Button } from 'vant'
+import { RefreshLeft } from '@element-plus/icons-vue'
+import { ElMessage, ElTooltip, ElButton } from 'element-plus-secondary'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -320,24 +320,21 @@ const openMessageLoading = cb => {
     message: h('p', null, [
       '后台导出中,可前往',
       h(
-        Button,
+        ElButton,
         {
-          props: {
-            type: 'text',
-            size: 'mini'
-          },
+          text: true,
+          size: 'small',
           class: 'btn-text',
-          on: {
-            click: () => {
-              cb()
-            }
+          onClick: () => {
+            cb()
           }
         },
-        '数据导出中心'
+        t('data_export.export_center')
       ),
       '查看进度，进行下载'
     ]),
     iconClass,
+    icon: h(RefreshLeft),
     showClose: true,
     customClass
   })
