@@ -39,7 +39,7 @@ onBeforeMount(async () => {
   }
 
   // 添加外部参数
-  let attachParam
+  let attachParams
   await getOuterParamsInfo(embeddedStore.dvId).then(rsp => {
     dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
   })
@@ -48,7 +48,7 @@ onBeforeMount(async () => {
   if (embeddedStore.outerParams) {
     try {
       const outerPramsParse = JSON.parse(embeddedStore.outerParams)
-      attachParam = outerPramsParse.attachParam
+      attachParams = outerPramsParse.attachParams
       dvMainStore.setEmbeddedCallBack(outerPramsParse.callBackFlag || 'no')
     } catch (e) {
       console.error(e)
@@ -74,8 +74,8 @@ onBeforeMount(async () => {
       nextTick(() => {
         dashboardPreview.value.restore()
       })
-      if (attachParam) {
-        dvMainStore.addOuterParamsFilter(attachParam, canvasDataResult, 'outer')
+      if (attachParams) {
+        dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult, 'outer')
       }
     }
   )

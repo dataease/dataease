@@ -246,9 +246,9 @@ const winMsgHandle = event => {
     msgInfo.type === 'attachParams' &&
     msgInfo.targetSourceId === dvInfo.value.id + ''
   ) {
-    const attachParam = msgInfo.params
-    if (attachParam) {
-      dvMainStore.addOuterParamsFilter(attachParam, componentData.value, 'outer')
+    const attachParams = msgInfo.params
+    if (attachParams) {
+      dvMainStore.addOuterParamsFilter(attachParams, componentData.value, 'outer')
     }
   }
 }

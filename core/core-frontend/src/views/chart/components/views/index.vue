@@ -291,9 +291,12 @@ const onPointClick = param => {
       type: 'de_inner_params',
       sourceDvId: dvInfo.value.id,
       sourceViewId: view.value.id,
-      message: Base64.encode(param)
+      message: Base64.encode(JSON.stringify(param))
     }
-    window.parent.postMessage(msg, '*')
+    if (window['dataease-embedded-host']) {
+      console.info('de_inner_params send to host')
+      window['dataease-embedded-host'].postMessage(msg, '*')
+    }
   } catch (e) {
     console.warn('de_inner_params send error')
   }
