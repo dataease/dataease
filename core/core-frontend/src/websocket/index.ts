@@ -2,11 +2,9 @@ import SockJS from 'sockjs-client/dist/sockjs.min.js'
 import Stomp from 'stompjs'
 import eventBus from '@/utils/eventBus'
 import { useCache } from '@/hooks/web/useCache'
-import { ref } from 'vue'
 const { wsCache } = useCache()
 let stompClient: Stomp.Client
 let timeInterval: NodeJS.Timer | null = null
-const isDisconnect = ref(true)
 
 export default {
   install() {
@@ -32,14 +30,10 @@ export default {
       if (!isLoginStatus()) {
         return
       }
-      let prefix = '/'
-      if (window.DataEaseBi?.baseUrl) {
-        prefix = window.DataEaseBi.baseUrl
-      } else {
-        const href = window.location.href
-        prefix = href.substring(0, href.indexOf('#'))
+      if (stompClient !== null && stompClient != undefined && stompClient.connected) {
+        return
       }
-      const socket = new SockJS(prefix + 'websocket?userId=' + wsCache.get('user.uid'))
+      const socket = new SockJS('http://localhost:8100/websocket?userId=' + wsCache.get('user.uid'))
       stompClient = Stomp.over(socket)
       const heads = {
         userId: wsCache.get('user.uid')
@@ -47,7 +41,6 @@ export default {
       stompClient.connect(
         heads,
         res => {
-          isDisconnect.value = false
           channels.forEach(channel => {
             stompClient.subscribe('/user/' + wsCache.get('user.uid') + channel.topic, res => {
               res && res.body && eventBus.emit(channel.event, res.body)
@@ -61,13 +54,13 @@ export default {
     }
 
     function disconnect() {
-      if (!isDisconnect.value && stompClient != undefined) {
+      if (stompClient !== null && stompClient != undefined && !stompClient.connected) {
         stompClient.disconnect(
           function () {
-            isDisconnect.value = true
+            console.log('断开连接')
           },
           function (error) {
-            isDisconnect.value = false
+            console.log('断开连接失败: ' + error)
           }
         )
       }
@@ -80,12 +73,7 @@ export default {
           disconnect()
           return
         }
-        if (isDisconnect.value) {
-          connection()
-        }
-        try {
-          stompClient.send('heart detection')
-        } catch (error) {
+        if (stompClient !== null && stompClient != undefined && !stompClient.connected) {
           connection()
         }
       }, 5000)

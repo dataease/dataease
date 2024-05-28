@@ -29,7 +29,6 @@ const state = reactive({
 
 // 目标校验： 需要校验targetSourceId 是否是当前可视化资源ID
 const winMsgHandle = event => {
-  console.info('PostMessage Params Received')
   const msgInfo = event.data
   // 校验targetSourceId
   if (msgInfo && msgInfo.type === 'attachParams' && msgInfo.targetSourceId === state.chartId + '') {
