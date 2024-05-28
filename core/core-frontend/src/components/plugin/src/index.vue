@@ -1,9 +1,43 @@
 <script lang="ts" setup>
 import noLic from './nolic.vue'
-import { ref, useAttrs } from 'vue'
+import { ref, useAttrs, nextTick, shallowRef, computed, reactive, watch, onMounted } from 'vue'
 import { execute, randomKey, formatArray } from './convert'
 import { load } from '@/api/plugin'
 import { useCache } from '@/hooks/web/useCache'
+import { useI18n } from '@/hooks/web/useI18n'
+import { i18n } from '@/plugins/vue-i18n'
+import * as Vue from 'vue'
+import axios from 'axios'
+import * as Pinia from 'pinia'
+import * as vueI18n from 'vue-i18n'
+import * as vueRouter from 'vue-router'
+import { useEmitt } from '@/hooks/web/useEmitt'
+
+const target = ref()
+
+onMounted(() => {
+  window.Vue = Vue
+  window.Axios = axios
+  window.Pinia = Pinia
+  window.vueI18n = vueI18n
+  window.vueRouter = vueRouter
+  window.MittAll = useEmitt().emitter.all
+  window.I18n = i18n
+  const xhr = new XMLHttpRequest()
+  xhr.onreadystatechange = () => {
+    if (xhr.readyState !== xhr.DONE) return
+    async function getDEXPack() {
+      const xpack = await window.DEXPack.mapping[attrs.jsname]
+      target.value = xpack.default
+    }
+
+    nextTick(() => {
+      getDEXPack()
+    })
+  }
+  xhr.open('get', 'http://192.168.31.47:8000/DEXPack.umd.js')
+  xhr.send()
+})
 
 const { wsCache } = useCache()
 
