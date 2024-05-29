@@ -50,7 +50,7 @@
         <itextpdf.version>8.0.4</itextpdf.version>
         <flexmark.version>0.62.2</flexmark.version>
         <mybatis-spring.version>3.0.3</mybatis-spring.version>
-        <commons-compress.version>1.26.2</commons-compress.version>
+        <commons-compress.version>1.19</commons-compress.version>
     </properties>
 
     <dependencyManagement>
