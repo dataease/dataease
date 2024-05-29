@@ -432,19 +432,28 @@ export async function decompressionPre(params, callBack) {
   callBack(deTemplateData)
 }
 
-export function trackBarStyleCheck(element, trackbarStyle, scale) {
+export function trackBarStyleCheck(element, trackbarStyle, _scale, trackMenuNumber) {
   const { width, height } = element.style
   const widthReal = width
   const heightReal = height
+  // 浮窗高度
+  function calculateTrackHeight(trackMenuNumber) {
+    if (trackMenuNumber === 2) {
+      return 75
+    } else {
+      const increment = Math.floor(trackMenuNumber - 2) * 35
+      return 75 + increment
+    }
+  }
   if (trackbarStyle.left < 0) {
     trackbarStyle.left = 0
   } else if (widthReal - trackbarStyle.left < 60) {
     trackbarStyle.left = trackbarStyle.left - 60
   }
-
+  const trackMenuHeight = calculateTrackHeight(trackMenuNumber)
   if (trackbarStyle.top < 0) {
     trackbarStyle.top = 0
-  } else if (heightReal - trackbarStyle.top < 100) {
-    trackbarStyle.top = trackbarStyle.top - 100
+  } else if (trackbarStyle.top + trackMenuHeight + 60 > heightReal) {
+    trackbarStyle.top = trackbarStyle.top - trackMenuHeight
   }
 }
