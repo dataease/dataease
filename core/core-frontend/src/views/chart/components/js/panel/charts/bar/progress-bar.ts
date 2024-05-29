@@ -62,7 +62,8 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     isGroup: false,
     isPercent: true,
     isStack: true,
-    xAxis: false
+    xAxis: false,
+    appendPadding: [0, 0, 10, 0]
   }
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Progress>): G2Progress {
@@ -98,13 +99,15 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
     const data1 = defaultTo(sourceData[0]?.data, [])
     const data2 = defaultTo(sourceData[1]?.data, [])
     const currentData = data2.map(item => {
+      const progress = getCompletionRate(data1.find(i => i.field === item.field)?.value, item.value)
       return {
         ...item,
         type: 'current',
         title: item.field,
         id: item.quotaList[0].id,
         originalValue: item.value,
-        progress: getCompletionRate(data1.find(i => i.field === item.field)?.value, item.value)
+        originalProgress: progress,
+        progress: progress >= 100 ? 100 : progress
       }
     })
     const targetData = data1.map(item => {
@@ -223,7 +226,7 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
         if (item.type === 'target') {
           return ''
         }
-        return (item.progress * 100).toFixed(2) + '%'
+        return item.originalProgress.toFixed(2) + '%'
       }
     }
     if (label.position === 'top') {
