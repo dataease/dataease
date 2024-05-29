@@ -34,9 +34,9 @@ const winMsgHandle = event => {
   const msgInfo = event.data
   // 校验targetSourceId
   if (msgInfo && msgInfo.type === 'attachParams' && msgInfo.targetSourceId === state.chartId + '') {
-    const attachParam = msgInfo.params
-    if (attachParam) {
-      dvMainStore.addOuterParamsFilter(attachParam, state.canvasDataPreview, 'outer')
+    const attachParams = msgInfo.params
+    if (attachParams) {
+      dvMainStore.addOuterParamsFilter(attachParams, state.canvasDataPreview, 'outer')
     }
   }
 }
@@ -59,7 +59,7 @@ onBeforeMount(async () => {
   window.addEventListener('message', winMsgHandle)
 
   // 添加外部参数
-  let attachParam
+  let attachParams
   await getOuterParamsInfo(embeddedStore.dvId).then(rsp => {
     dvMainStore.setNowPanelOuterParamsInfo(rsp.data)
   })
@@ -68,7 +68,7 @@ onBeforeMount(async () => {
   if (embeddedStore.outerParams) {
     try {
       const outerPramsParse = JSON.parse(embeddedStore.outerParams)
-      attachParam = outerPramsParse.attachParam
+      attachParams = outerPramsParse.attachParams
       dvMainStore.setEmbeddedCallBack(outerPramsParse.callBackFlag || 'no')
     } catch (e) {
       console.error(e)
@@ -91,8 +91,8 @@ onBeforeMount(async () => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      if (attachParam) {
-        dvMainStore.addOuterParamsFilter(attachParam, canvasDataResult)
+      if (attachParams) {
+        dvMainStore.addOuterParamsFilter(attachParams, canvasDataResult)
       }
 
       viewInfo.value = canvasViewInfoPreview[embeddedStore.chartId]
