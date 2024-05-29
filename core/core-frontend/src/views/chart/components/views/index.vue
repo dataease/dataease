@@ -254,7 +254,7 @@ const initTitle = () => {
       state.title_show = customStyle.text.show
       state.title_class.fontSize = customStyle.text.fontSize * scale.value + 'px'
       state.title_class.color = customStyle.text.color
-      state.title_class.textAlign = customStyle.text.hPosition
+      state.title_class.textAlign = customStyle.text.hPosition as CSSProperties['textAlign']
       state.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
       state.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
 
@@ -654,6 +654,13 @@ const titleIconStyle = computed(() => {
     color: canvasStyleData.value.component.seniorStyleSetting.linkageIconColor
   }
 })
+const chartHover = ref(false)
+const showActionIcons = computed(() => {
+  if (!chartHover.value) {
+    return false
+  }
+  return trackMenu.value.length > 0 || state.title_remark.show
+})
 </script>
 
 <template>
@@ -662,6 +669,8 @@ const titleIconStyle = computed(() => {
     :class="{ 'report-load-finish': !loadingFlag }"
     v-loading="loadingFlag"
     element-loading-background="rgba(0,0,0,0)"
+    @mouseover="chartHover = true"
+    @mouseleave="chartHover = false"
   >
     <div
       class="title-container"
@@ -684,36 +693,38 @@ const titleIconStyle = computed(() => {
           @change="onTitleChange"
         />
       </template>
-      <div
-        class="icons-container"
-        :class="{ 'is-editing': titleEditStatus }"
-        :style="titleIconStyle"
-        v-if="trackMenu.length > 0 || state.title_remark.show"
-      >
-        <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
-          <template #content>
-            <div style="white-space: pre-wrap" v-html="state.title_remark.remark"></div>
-          </template>
-          <el-icon :size="iconSize" class="inner-icon">
-            <Icon name="icon_info_outlined" />
-          </el-icon>
-        </el-tooltip>
-        <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
-          <el-icon :size="iconSize" class="inner-icon">
-            <Icon name="icon_link-record_outlined" />
-          </el-icon>
-        </el-tooltip>
-        <el-tooltip :effect="toolTip" placement="top" content="已设置跳转" v-if="hasJumpIcon">
-          <el-icon :size="iconSize" class="inner-icon">
-            <Icon name="icon_viewinchat_outlined" />
-          </el-icon>
-        </el-tooltip>
-        <el-tooltip :effect="toolTip" placement="top" content="已设置下钻" v-if="hasDrillIcon">
-          <el-icon :size="iconSize" class="inner-icon">
-            <Icon name="icon_drilling_outlined" />
-          </el-icon>
-        </el-tooltip>
-      </div>
+      <transition name="fade">
+        <div
+          class="icons-container"
+          :class="{ 'is-editing': titleEditStatus }"
+          :style="titleIconStyle"
+          v-show="showActionIcons"
+        >
+          <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
+            <template #content>
+              <div style="white-space: pre-wrap" v-html="state.title_remark.remark"></div>
+            </template>
+            <el-icon :size="iconSize" class="inner-icon">
+              <Icon name="icon_info_outlined" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
+            <el-icon :size="iconSize" class="inner-icon">
+              <Icon name="icon_link-record_outlined" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip :effect="toolTip" placement="top" content="已设置跳转" v-if="hasJumpIcon">
+            <el-icon :size="iconSize" class="inner-icon">
+              <Icon name="icon_viewinchat_outlined" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip :effect="toolTip" placement="top" content="已设置下钻" v-if="hasDrillIcon">
+            <el-icon :size="iconSize" class="inner-icon">
+              <Icon name="icon_drilling_outlined" />
+            </el-icon>
+          </el-tooltip>
+        </div>
+      </transition>
     </div>
     <!--这里去渲染不同图库的图表-->
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
@@ -815,5 +826,14 @@ const titleIconStyle = computed(() => {
       cursor: pointer;
     }
   }
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>
