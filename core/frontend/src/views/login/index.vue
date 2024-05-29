@@ -130,7 +130,7 @@
               v-show="codeShow"
               class="code"
             >
-              <el-row class="code-contaniner">
+              <el-row class="code-contaniner" :class="isPad && 'is-pad'">
                 <plugin-com
                   v-if="codeShow && loginTypes.includes(4) && codeIndex === 4"
                   ref="WecomQr"
@@ -228,6 +228,7 @@ export default {
         username: '',
         password: ''
       },
+      isPad: false,
       loginRules: {
         username: [{ required: true, trigger: 'blur', message: this.$t('commons.input_id') }],
         password: [{ required: true, trigger: 'blur', message: this.$t('commons.input_pwd') }]
@@ -358,7 +359,7 @@ export default {
   },
 
   mounted() {
-    // this.loading = false
+    this.isPad = /iPad/.test(navigator.userAgent)
   },
 
   created() {
@@ -715,6 +716,10 @@ export default {
   }
   .code-contaniner {
     height: 410px;
+    &.is-pad {
+      height: 365px;
+      overflow: hidden;
+    }
   }
 }
 .login-third-item {
