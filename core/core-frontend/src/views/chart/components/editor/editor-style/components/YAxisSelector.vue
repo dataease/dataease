@@ -255,7 +255,11 @@ onMounted(() => {
         </el-form-item>
       </template>
     </template>
-    <el-divider class="m-divider" :class="'m-divider--' + themes" />
+    <el-divider
+      v-if="showProperty('splitLine') || showProperty('axisLine')"
+      class="m-divider"
+      :class="'m-divider--' + themes"
+    />
     <el-form-item class="form-item" :class="'form-item-' + themes" v-if="showProperty('axisLine')">
       <el-checkbox
         size="small"
@@ -325,7 +329,11 @@ onMounted(() => {
         </el-select>
       </el-form-item>
     </div>
-    <el-divider class="m-divider" :class="'m-divider--' + themes" />
+    <el-divider
+      v-if="showProperty('axisLabel')"
+      class="m-divider"
+      :class="'m-divider--' + themes"
+    />
     <el-form-item
       class="form-item form-item-checkbox"
       :class="{
