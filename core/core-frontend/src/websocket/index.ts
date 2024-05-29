@@ -33,7 +33,7 @@ export default {
       if (stompClient !== null && stompClient != undefined && stompClient.connected) {
         return
       }
-      const socket = new SockJS('http://localhost:8100/websocket?userId=' + wsCache.get('user.uid'))
+      const socket = new SockJS(prefix + 'websocket?userId=' + wsCache.get('user.uid'))
       stompClient = Stomp.over(socket)
       const heads = {
         userId: wsCache.get('user.uid')
