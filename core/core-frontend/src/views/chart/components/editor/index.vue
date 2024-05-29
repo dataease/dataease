@@ -3291,7 +3291,7 @@ span {
     }
 
     :deep(.ed-tabs__content) {
-      height: calc(100% - 33px);
+      height: calc(100% - 35px);
       overflow-y: auto;
       overflow-x: hidden;
     }
