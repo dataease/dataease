@@ -139,7 +139,7 @@ export abstract class G2PlotChartView<
    * @param chart 数据库图表对象。
    * @param options 各个图表的参数，泛化的 Options，可以自行扩展，比如加个扩展 X 轴或者扩展 Y 轴字段。
    */
-  protected abstract setupOptions(chart: Chart, options: O): O
+  protected abstract setupOptions(chart: Chart, options: O, context?: Record<string, any>): O
   protected constructor(name: string, defaultData: any[]) {
     super(ChartLibraryType.G2_PLOT, name, defaultData)
   }

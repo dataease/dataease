@@ -388,12 +388,12 @@ export function parseJson<T>(str: T | JSONString<T>): T {
   return JSON.parse(str) as T
 }
 
-type FlowFunction<P, R> = (param: P, result: R, extra?: any[]) => R
+type FlowFunction<P, R> = (param: P, result: R, context?: Record<string, any>) => R
 
 export function flow<P, R>(...flows: FlowFunction<P, R>[]): FlowFunction<P, R> {
-  return (param: P, result: R, extra?: any[]) => {
+  return (param: P, result: R, context?: Record<string, any>) => {
     return flows.reduce((result: R, flow: FlowFunction<P, R>) => {
-      return flow(param, result, extra)
+      return flow(param, result, context)
     }, result)
   }
 }

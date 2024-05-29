@@ -105,6 +105,14 @@ declare interface ChartBasicStyle {
    */
   gaugeStyle: string
   /**
+   * 仪表盘刻度显示
+   */
+  gaugeAxisLine: boolean
+  /**
+   * 仪表盘百分比刻度
+   */
+  gaugePercentLabel: boolean
+  /**
    * 配色方案
    */
   colorScheme: string

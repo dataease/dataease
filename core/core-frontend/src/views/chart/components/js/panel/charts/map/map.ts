@@ -96,7 +96,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       // 禁用线上地图数据
       customFetchGeoData: () => null
     }
-    options = this.setupOptions(chart, options, drawOption, geoJson)
+    const context = { drawOption, geoJson }
+    options = this.setupOptions(chart, options, context)
     const view = new Choropleth(container, options)
     this.configZoomButton(chart, view)
     view.once('loaded', () => {
@@ -120,10 +121,10 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   private configBasicStyle(
     chart: Chart,
     options: ChoroplethOptions,
-    extra: any[]
+    context: Record<string, any>
   ): ChoroplethOptions {
-    const { areaId }: L7PlotDrawOptions<any> = extra[0]
-    const geoJson: FeatureCollection = extra[1]
+    const { areaId }: L7PlotDrawOptions<any> = context.drawOption
+    const geoJson: FeatureCollection = context.geoJson
     const { basicStyle, label } = parseJson(chart.customAttr)
     const senior = parseJson(chart.senior)
     const curAreaNameMapping = senior.areaMapping?.[areaId]
@@ -176,7 +177,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   protected setupOptions(
     chart: Chart,
     options: ChoroplethOptions,
-    ...extra: any[]
+    context: Record<string, any>
   ): ChoroplethOptions {
     return flow(
       this.configEmptyDataStrategy,
@@ -185,6 +186,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       this.configTooltip,
       this.configBasicStyle,
       this.configLegend
-    )(chart, options, extra)
+    )(chart, options, context)
   }
 }
