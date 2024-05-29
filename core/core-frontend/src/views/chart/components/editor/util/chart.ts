@@ -1317,6 +1317,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'flow-map',
         title: t('chart.chart_flow_map'),
         icon: 'flow-map'
+      },
+      {
+        render: 'antv',
+        category: 'map',
+        value: 'heat-map',
+        title: t('chart.chart_heat_map'),
+        icon: 'heat-map'
       }
     ]
   },
@@ -1421,6 +1428,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   scatterSymbolSize: 8,
   radarShape: 'polygon',
   mapStyle: 'normal',
+  heatMapType: 'heatmap',
+  heatMapIntensity: 2,
+  heatMapRadius: 20,
   areaBorderColor: '#EBEEF5',
   areaBaseColor: '#ffffff',
   mapSymbolOpacity: 0.7,
