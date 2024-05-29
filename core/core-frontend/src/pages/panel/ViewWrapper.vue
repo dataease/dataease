@@ -9,6 +9,7 @@ import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useI18n } from '@/hooks/web/useI18n'
+import { XpackComponent } from '@/components/plugin'
 const { wsCache } = useCache()
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
@@ -17,7 +18,7 @@ const viewInfo = ref()
 const userViewEnlargeRef = ref()
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
-
+const openHandler = ref(null)
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -124,6 +125,32 @@ onBeforeMount(async () => {
 const userViewEnlargeOpen = () => {
   userViewEnlargeRef.value.dialogInit(state.canvasStylePreview, viewInfo.value, config.value)
 }
+
+const onPointClick = param => {
+  try {
+    console.info('de_inner_params send')
+    if (window['dataease-embedded-host'] && openHandler?.value) {
+      const pm = {
+        methodName: 'embeddedInteractive',
+        args: {
+          eventName: 'de_inner_params',
+          args: param
+        }
+      }
+      openHandler.value.invokeMethod(pm)
+    } else {
+      console.info('de_inner_params send to host')
+      const targetPm = {
+        type: 'dataease-embedded-interactive',
+        eventName: 'de_inner_params',
+        args: param
+      }
+      window.parent.postMessage(targetPm, '*')
+    }
+  } catch (e) {
+    console.warn('de_inner_params send error')
+  }
+}
 </script>
 
 <template>
@@ -136,9 +163,11 @@ const userViewEnlargeOpen = () => {
       :dv-info="state.dvInfo"
       :canvas-view-info="state.canvasViewInfoPreview"
       @userViewEnlargeOpen="userViewEnlargeOpen"
+      @onPointClick="onPointClick"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less" scoped>

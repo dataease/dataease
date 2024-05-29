@@ -50,7 +50,8 @@ const dvMainStore = dvMainStoreWithOut()
 let innerRefreshTimer = null
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-const isIframe = computed(() => appStore.getIsIframe)
+
+const emit = defineEmits(['onPointClick'])
 
 const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData, mobileInPc } =
   storeToRefs(dvMainStore)
@@ -286,17 +287,12 @@ const drillJump = (index: number) => {
 
 const onPointClick = param => {
   try {
-    console.info('de_inner_params send')
     const msg = {
-      type: 'de_inner_params',
       sourceDvId: dvInfo.value.id,
       sourceViewId: view.value.id,
       message: Base64.encode(JSON.stringify(param))
     }
-    if (window['dataease-embedded-host']) {
-      console.info('de_inner_params send to host')
-      window['dataease-embedded-host'].postMessage(msg, '*')
-    }
+    emit('onPointClick', msg)
   } catch (e) {
     console.warn('de_inner_params send error')
   }
