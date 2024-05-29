@@ -5,6 +5,7 @@ import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache()
 let stompClient: Stomp.Client
 let timeInterval: NodeJS.Timer | null = null
+const basePath = import.meta.env.VITE_API_BASEPATH
 
 export default {
   install() {
@@ -14,14 +15,6 @@ export default {
         event: 'task-export-topic-call'
       }
     ]
-    let prefix = '/'
-    if (window.DataEaseBi?.baseUrl) {
-      prefix = window.DataEaseBi.baseUrl
-    } else {
-      const href = window.location.href
-      prefix = href.substring(0, href.indexOf('#'))
-    }
-
     function isLoginStatus() {
       return wsCache.get('user.token')
     }
@@ -33,7 +26,7 @@ export default {
       if (stompClient !== null && stompClient != undefined && stompClient.connected) {
         return
       }
-      const socket = new SockJS(prefix + 'websocket?userId=' + wsCache.get('user.uid'))
+      const socket = new SockJS(basePath + '/websocket?userId=' + wsCache.get('user.uid'))
       stompClient = Stomp.over(socket)
       const heads = {
         userId: wsCache.get('user.uid')
