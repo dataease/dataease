@@ -38,4 +38,7 @@ public class XpackShareGridVO implements Serializable {
 
     private Integer extFlag;
 
+    @Schema(description = "类型")
+    private String type;
+
 }
