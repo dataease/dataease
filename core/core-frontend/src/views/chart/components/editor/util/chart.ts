@@ -349,7 +349,8 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   tableTitleHeight: 36,
   tableHeaderSort: false,
   showColTooltip: false,
-  showRowTooltip: false
+  showRowTooltip: false,
+  showTableHeader: true
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFontColor: '#000000',

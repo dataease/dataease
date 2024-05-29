@@ -257,7 +257,7 @@ init()
           <el-tooltip effect="dark" placement="bottom">
             <el-icon style="margin-left: 10px"><InfoFilled /></el-icon>
             <template #content>
-              阈值设置，决定仪表盘区间颜色，为空则不开启阈值，范围(0-100)，逐级递增
+              条件样式设置，决定仪表盘区间颜色，为空则不开启阈值，范围(0-100)，逐级递增
               <br />
               例如：输入 30,70；表示：分为3段，分别为[0,30],(30,70],(70,100]
             </template>
@@ -292,7 +292,7 @@ init()
           <el-tooltip effect="dark" placement="bottom">
             <el-icon style="margin-left: 10px"><InfoFilled /></el-icon>
             <template #content>
-              阈值设置，决定水波图颜色，为空则不开启阈值，范围(0-100)，逐级递增
+              条件样式设置，决定水波图颜色，为空则不开启阈值，范围(0-100)，逐级递增
               <br />
               例如：输入 30,70；表示：分为3段，分别为[0,30],(30,70],(70,100]
             </template>
@@ -370,7 +370,7 @@ init()
     <el-col v-if="props.chart.type && props.chart.type === 'indicator'">
       <el-col>
         <div class="inner-container">
-          <span class="label" :class="'label-' + props.themes">阈值设置</span>
+          <span class="label" :class="'label-' + props.themes">条件样式设置</span>
           <span class="right-btns">
             <span
               class="set-text-info"
@@ -468,7 +468,7 @@ init()
     <el-col v-show="showProperty('tableThreshold')">
       <el-col>
         <div class="inner-container">
-          <span class="label" :class="'label-' + props.themes">阈值设置</span>
+          <span class="label" :class="'label-' + props.themes">条件样式设置</span>
           <span class="right-btns">
             <span
               class="set-text-info"

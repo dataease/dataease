@@ -1167,7 +1167,8 @@ export default {
     progress_target: '目标值',
     progress_current: '实际值',
     gauge_axis_label: '显示刻度',
-    gauge_percentage_tick: '百分比刻度'
+    gauge_percentage_tick: '百分比刻度',
+    add_style: '添加样式'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

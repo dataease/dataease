@@ -66,7 +66,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form ref="tableHeaderForm" :model="state.tableHeaderForm" label-position="top">
+  <el-form
+    :model="state.tableHeaderForm"
+    :disabled="!state.tableHeaderForm.showTableHeader"
+    ref="tableHeaderForm"
+    label-position="top"
+  >
     <el-form-item
       :label="t('chart.backgroundColor')"
       class="form-item"
