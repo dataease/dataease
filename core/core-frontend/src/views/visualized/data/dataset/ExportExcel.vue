@@ -51,9 +51,6 @@ const handleClose = () => {
   drawer.value = false
   clearInterval(timer)
 }
-onMounted(() => {
-  eventBus.on('task-export-topic-call', taskExportTopicCall)
-})
 
 onUnmounted(() => {
   clearInterval(timer)
@@ -156,6 +153,7 @@ const taskExportTopicCall = task => {
       'success',
       callbackExport
     )
+    return
   }
   if (JSON.parse(task).exportStatus === 'FAILED') {
     openMessageLoading(JSON.parse(task).exportFromName + ' 导出失败，前往', 'error', callbackExport)
@@ -328,6 +326,8 @@ const delAll = () => {
       //   info(t('commons.delete_cancel'))
     })
 }
+
+eventBus.on('task-export-topic-call', taskExportTopicCall)
 
 defineExpose({
   init
