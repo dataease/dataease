@@ -1,13 +1,8 @@
 <template>
 	<view class="page de-main">
-		<!-- <swiper indicator-dots="true">
-			<swiper-item v-for="(img, key) in imgUrls" :key="key"><image :src="img" /></swiper-item>
-		</swiper> -->
 		<view class=" ">
 			<view class="uni-title">
-				
 				<uni-list >
-				        
 				    <uni-list-item v-for="(node, index) in nodes" :key="index" 
 				    :title="node.text"  
 				    :showArrow="node.type === 'folder'"
@@ -16,19 +11,40 @@
 				    clickable
 				    @click="clickHandler(node)"
 				    rightText="" />
-				    
-				    
 				</uni-list>
-
 			</view>
 		</view>
-		<!-- <view style="height: 1000rpx;"></view> -->
+    <uni-popup ref="popup" position="top" @change="popupChange">
+      <view class="action-sheet-container">
+        <view class="action-sheet-content-container">
+          <view
+            class="action-sheet-item"
+            v-for="(item, index) in pickerValueArray"
+            :key="index"
+            :class="{ 'action-sheet-item-selected': selectedIndex === index }"
+            @click="onActionSheetItemClick(index)"
+          >
+            {{ item.label }}
+          </view>
+        </view>
+        <view class="action-sheet-close-container">
+          <view class="action-sheet-item" @click="closePopup">
+            关闭
+          </view>
+        </view>
+      </view>
+    </uni-popup>
 	</view>
 </template>
 
 <script>
-import {requestDir} from '@/api/panel'
+import { requestDir } from '@/api/panel'
+import uniPopup from '@/components/uni-popup/uni-popup.vue'
+import { treeSort } from '@/common/utils'
 export default {
+  components: {
+    uniPopup
+  },
 	data() {
 		return {
 			showSwiper: false,
@@ -36,7 +52,27 @@ export default {
 				'../../../static/panelimg/panel2.png',
 				'../../../static/panelimg/panel1.png'
 				],
-			nodes: []
+			nodes: [],
+			pickerValueArray: [{
+					label: '按创建时间升序',
+					value: 'time_asc'
+				},
+				{
+					label: '按创建时间降序',
+					value: 'time_desc'
+				},
+				{
+					label: '按名称升序',
+					value: 'name_asc'
+				},
+				{
+					label: '按名称降序',
+					value: 'name_desc'
+				}
+			],
+      selectedIndex: 1,
+      originResourceTree: [],
+      curSortType: 'time_desc'
 		};
 	},
 	onLoad() {
@@ -62,7 +98,13 @@ export default {
 	        const param = {pid: pid}
 	        
 	        requestDir(param).then(res => {
-	            this.nodes = res.data
+              this.originResourceTree = res.data
+              if (localStorage.getItem('TreeSort-panel')) {
+                this.curSortType = localStorage.getItem('TreeSort-panel')
+                this.sortTypeChange(this.curSortType)
+              } else {
+                this.nodes = res.data
+              }
 	            uni.stopPullDownRefresh();
 	        }).catch(e => {
 	            uni.stopPullDownRefresh();
@@ -85,7 +127,35 @@ export default {
 	        uni.navigateTo({
 	            url: './folder?detailDate=' + encodeURIComponent(JSON.stringify(param))
 	        });
-	    }
+	    },
+      onActionSheetItemClick(index) {
+        this.selectedIndex = index;
+        this.sortTypeChange(this.pickerValueArray[index].value)
+        const that = this
+        setTimeout(() => {
+          that.closePopup()
+        }, 500)
+      },
+      onNavigationBarButtonTap(e) {
+        let that = this;
+        if (e.index === 0) {
+          this.$refs.popup.open('buttom')
+          uni.hideTabBar()
+        }
+      },
+      popupChange(e) {
+        if (!e.show) {
+          uni.showTabBar()
+        }
+      },
+      closePopup() {
+        this.$refs.popup.close()
+      },
+      sortTypeChange(sortType) {
+        this.nodes = treeSort(this.originResourceTree, this.curSortType, sortType)
+        this.curSortType = sortType
+        localStorage.setItem('TreeSort-panel', this.curSortType)
+      }
 	}
 };
 </script>
@@ -103,5 +173,37 @@ swiper,
 }
 .de-main {
 	padding-top: 60rpx;
+}
+.action-sheet-container {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+}
+.action-sheet-content-container {
+  background-color: #FFFFFF;
+  bottom: 0;
+  left: 0;
+  right: 0;
+}
+.action-sheet-close-container {
+  background-color: #FFFFFF;
+  bottom: 0;
+  left: 0;
+  right: 0;
+  margin-top: 1px;
+}
+ 
+.action-sheet-item {
+  padding: 10px;
+  text-align: center;
+  font-size: 18px;
+  color: #666666;
+}
+ 
+.action-sheet-item-selected {
+  color: #007AFF;
+  font-weight: bold;
 }
 </style>

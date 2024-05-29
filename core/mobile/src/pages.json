@@ -41,7 +41,13 @@
             "type": "transparent",
             "titleColor": "#fff",
             "backgroundColor": "#0faeff",
-            "buttons": [],
+            "buttons": [
+              {
+                "fontSrc":"/static/custom/iconfont.ttf",
+                "text":"\ue61d",
+                "fontSize": "24px"
+              }
+            ],
             "searchInput": {
               "backgroundColor": "#fff",
               "borderRadius": "6px",

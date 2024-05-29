@@ -28,6 +28,7 @@
 
 <script>
 import {requestDir} from '@/api/panel'
+import { treeSort } from '@/common/utils'
 export default {
 	data() {
 		return {
@@ -66,7 +67,13 @@ export default {
             const param = {pid: pid}
             
             requestDir(param).then(res => {
-                this.nodes = res.data
+                this.originResourceTree = res.data
+                if (localStorage.getItem('TreeSort-panel')) {
+                    const curSortType = localStorage.getItem('TreeSort-panel')
+                    this.sortTypeChange(curSortType)
+                } else {
+                    this.nodes = res.data
+                }
             }).catch(e => {
 
             })
@@ -88,6 +95,9 @@ export default {
             uni.navigateTo({
                 url: './folder?detailDate=' + encodeURIComponent(JSON.stringify(param))
             });
+        },
+        sortTypeChange(sortType) {
+            this.nodes = treeSort(this.originResourceTree, sortType, sortType)
         }
     }
 };

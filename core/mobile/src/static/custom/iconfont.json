@@ -1,0 +1,16 @@
+{
+  "id": "4566310",
+  "name": "dataease-v1-mobile",
+  "font_family": "iconfont",
+  "css_prefix_text": "icon-",
+  "description": "",
+  "glyphs": [
+    {
+      "icon_id": "21571824",
+      "name": "排序-降序",
+      "font_class": "paixu-jiangxu",
+      "unicode": "e61d",
+      "unicode_decimal": 58909
+    }
+  ]
+}
