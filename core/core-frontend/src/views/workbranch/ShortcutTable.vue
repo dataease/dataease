@@ -163,24 +163,25 @@ const sortChange = param => {
 
 const handleCellClick = row => {
   if (row) {
+    const sourceId = activeName.value === 'recent' ? row.id : row.resourceId
     if (['dashboard', 'panel'].includes(row.type)) {
-      window.open('#/panel/index?dvId=' + row.id, '_self')
+      window.open('#/panel/index?dvId=' + sourceId, '_self')
     } else if (['dataV', 'screen'].includes(row.type)) {
-      window.open('#/screen/index?dvId=' + row.id, '_self')
+      window.open('#/screen/index?dvId=' + sourceId, '_self')
     } else if (['dataset'].includes(row.type)) {
       const routeName =
         embeddedStore.getToken && appStore.getIsIframe ? 'dataset-embedded' : 'dataset'
       push({
         name: routeName,
         params: {
-          id: row.id
+          id: sourceId
         }
       })
     } else if (['datasource'].includes(row.type)) {
       push({
         name: 'datasource',
         params: {
-          id: row.id
+          id: sourceId
         }
       })
     }
