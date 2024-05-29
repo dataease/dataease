@@ -119,8 +119,8 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
     const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
     const canvasViewInfoPreview = canvasInfo.canvasViewInfo
     //历史字段适配
-    canvasStyleResult.component.seniorStyleSetting =
-      canvasStyleResult.component.seniorStyleSetting || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
+    canvasStyleResult.component['seniorStyleSetting'] =
+      canvasStyleResult.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
 
     canvasDataResult.forEach(componentItem => {
       componentItem['canvasActive'] = false
@@ -420,6 +420,9 @@ export async function decompressionPre(params, callBack) {
         }
       })
       const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])
+      //历史字段适配
+      sourceCanvasStyle.component['seniorStyleSetting'] =
+        sourceCanvasStyle.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
       deTemplateData = {
         canvasStyleData: sourceCanvasStyle,
         componentData: sourceComponentData,

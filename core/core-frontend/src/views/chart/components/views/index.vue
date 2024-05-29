@@ -581,7 +581,7 @@ const chartAreaShow = computed(() => {
   if (view.value['dataFrom'] === 'template') {
     return true
   }
-  if (view.value.customAttr.map.id) {
+  if (view.value.customAttr?.map?.id) {
     const MAP_CHARTS = ['map', 'bubble-map', 'flow-map']
     if (MAP_CHARTS.includes(view.value.type)) {
       return true

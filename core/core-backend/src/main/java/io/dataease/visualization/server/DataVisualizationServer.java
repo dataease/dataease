@@ -31,10 +31,7 @@ import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataMapper;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.JsonUtil;
+import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
@@ -328,6 +325,15 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
         for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
             String originViewId = entry.getKey();
+            Object viewInfo = entry.getValue();
+            try{
+                // 旧模板图表过滤器适配
+                if(viewInfo instanceof Map && ((Map)viewInfo).get("customFilter") instanceof ArrayList){
+                    ((Map)viewInfo).put("customFilter",new HashMap<>());
+                }
+            }catch(Exception e){
+                LogUtil.error("History Adaptor Error",e);
+            }
             String originViewData = JsonUtil.toJSONString(entry.getValue()).toString();
             ChartViewDTO chartView = JsonUtil.parseObject(originViewData, ChartViewDTO.class);
             if (chartView == null) {
