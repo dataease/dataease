@@ -54,19 +54,19 @@ export default {
 				],
 			nodes: [],
 			pickerValueArray: [{
-					label: '按创建时间升序',
+					label: this.$t('dir.create-time-asc'),
 					value: 'time_asc'
 				},
 				{
-					label: '按创建时间降序',
+					label: this.$t('dir.create-time-desc'),
 					value: 'time_desc'
 				},
 				{
-					label: '按名称升序',
+					label: this.$t('dir.create-name-asc'),
 					value: 'name_asc'
 				},
 				{
-					label: '按名称降序',
+					label:  this.$t('dir.create-name-desc'),
 					value: 'name_desc'
 				}
 			],
@@ -139,7 +139,7 @@ export default {
       onNavigationBarButtonTap(e) {
         let that = this;
         if (e.index === 0) {
-          this.$refs.popup.open('buttom')
+          this.$refs.popup.open('bottom')
           uni.hideTabBar()
         }
       },
