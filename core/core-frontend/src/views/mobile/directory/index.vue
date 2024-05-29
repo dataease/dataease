@@ -1,16 +1,19 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted } from 'vue'
+import { ref, computed, onMounted, watch } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useCache } from '@/hooks/web/useCache'
+import treeSort from '@/utils/treeSortUtils'
 import { BusiTreeRequest } from '@/models/tree/TreeNode'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import DashboardCell from '@/views/mobile/components/DashboardCell.vue'
+import { useI18n } from '@/hooks/web/useI18n'
 import { useRouter } from 'vue-router'
 import VanSticky from 'vant/es/sticky'
 import VanNavBar from 'vant/es/nav-bar'
 import 'vant/es/nav-bar/style'
 import 'vant/es/sticky/style'
+import { cloneDeep } from 'lodash-es'
 const anyManage = ref(false)
 const rootManage = ref(false)
 const tableData = ref([])
@@ -21,6 +24,7 @@ const interactiveStore = interactiveStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const { wsCache } = useCache('sessionStorage')
+const { t } = useI18n()
 
 const dfsTree = (ids, arr) => {
   const id = ids.shift()
@@ -36,6 +40,8 @@ const dfsTree = (ids, arr) => {
   }, [])
 }
 
+let rawTableData = []
+
 const activeTableData = computed(() => {
   return directId.value.length ? dfsTree([...directId.value], tableData.value) : tableData.value
 })
@@ -46,6 +52,7 @@ const onClickLeft = () => {
   activeDirectName.value = directName.value[directName.value.length - 1]
   directId.value.pop()
   if (!!directName.value.length) {
+    tableData.value = cloneDeep(rawTableData)
     emits('hiddenTabbar', false)
   }
 }
@@ -70,7 +77,50 @@ const handleCellClick = ele => {
   })
 }
 
+const filterText = ref('')
+const curSortType = ref('time_desc')
+const sortList = [
+  {
+    name: '按创建时间升序',
+    value: 'time_asc'
+  },
+  {
+    name: '按创建时间降序',
+    value: 'time_desc',
+    divided: true
+  },
+  {
+    name: '按照名称升序',
+    value: 'name_asc'
+  },
+  {
+    name: '按照名称降序',
+    value: 'name_desc'
+  }
+]
+const sortTypeChange = sortType => {
+  tableData.value = treeSort(cloneDeep(rawTableData), sortType)
+  curSortType.value = sortType
+}
+
+const searchTree = (tree, val) => {
+  return tree.filter(ele => {
+    if (ele.name?.toLocaleLowerCase().includes(val.toLocaleLowerCase())) {
+      return true
+    } else if (!!ele.children?.length) {
+      ele.children = searchTree(ele.children, val)
+      return !!ele.children.length
+    }
+    return false
+  })
+}
+
+watch(filterText, val => {
+  tableData.value = searchTree(cloneDeep(rawTableData), val)
+})
+
 const dataClick = val => {
+  filterText.value = ''
   if (val.leaf) {
     emits('hiddenTabbar', true)
     handleCellClick(val)
@@ -109,9 +159,11 @@ const getTree = async () => {
   }
   if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
     tableData.value = dfsTableData(nodeData[0]['children'] || [])
+    rawTableData = cloneDeep(tableData.value)
     return
   }
   tableData.value = dfsTableData(nodeData)
+  rawTableData = cloneDeep(tableData.value)
 }
 
 onMounted(() => {
@@ -154,6 +206,41 @@ onMounted(() => {
       </div>
     </van-sticky>
     <div :class="!!directName.length && 'dashboard-cell-group-tab'" class="dashboard-cell-group">
+      <div class="dashboard-cell-group_filter" v-if="!directName.length">
+        <el-input
+          :placeholder="t('commons.search')"
+          v-model="filterText"
+          clearable
+          class="search-bar"
+        >
+          <template #prefix>
+            <el-icon>
+              <Icon name="icon_search-outline_outlined"></Icon>
+            </el-icon>
+          </template>
+        </el-input>
+        <el-dropdown @command="sortTypeChange" trigger="click">
+          <el-icon class="filter-icon-span">
+            <Icon v-if="curSortType.includes('asc')" name="dv-sort-asc" class="opt-icon"></Icon>
+            <Icon v-show="curSortType.includes('desc')" name="dv-sort-desc" class="opt-icon"></Icon>
+          </el-icon>
+          <template #dropdown>
+            <el-dropdown-menu style="width: 246px">
+              <template :key="ele.value" v-for="ele in sortList">
+                <el-dropdown-item
+                  class="ed-select-dropdown__item"
+                  :class="ele.value === curSortType && 'selected'"
+                  :command="ele.value"
+                >
+                  {{ ele.name }}
+                </el-dropdown-item>
+                <li v-if="ele.divided" class="ed-dropdown-menu__item--divided"></li>
+              </template>
+            </el-dropdown-menu>
+          </template>
+        </el-dropdown>
+      </div>
+
       <DashboardCell
         v-for="ele in activeTableData"
         :key="ele.id"
@@ -174,6 +261,37 @@ onMounted(() => {
     overflow-y: auto;
     height: calc(100vh - 102px);
     margin-top: 8px;
+
+    .dashboard-cell-group_filter {
+      padding: 0 8px;
+    }
+
+    .search-bar {
+      padding-bottom: 8px;
+      width: calc(100% - 40px);
+    }
+    .filter-icon-span {
+      border: 1px solid #bbbfc4;
+      width: 32px;
+      height: 32px;
+      border-radius: 4px;
+      color: #1f2329;
+      padding: 8px;
+      margin-left: 8px;
+      font-size: 16px;
+      cursor: pointer;
+
+      .opt-icon:focus {
+        outline: none !important;
+      }
+      &:hover {
+        background: #f5f6f7;
+      }
+
+      &:active {
+        background: #eff0f1;
+      }
+    }
 
     &.dashboard-cell-group-tab {
       margin-top: 0;
