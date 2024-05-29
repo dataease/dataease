@@ -436,7 +436,7 @@ init()
           <template #icon>
             <Icon name="icon_add_outlined" />
           </template>
-          {{ t('chart.add_condition') }}
+          {{ t('chart.add_style') }}
         </el-button>
       </div>
     </div>
@@ -451,7 +451,7 @@ init()
       <template #icon>
         <Icon name="icon_add_outlined" />
       </template>
-      {{ t('chart.add_threshold') }}
+      {{ t('chart.add_condition') }}
     </el-button>
   </el-col>
 </template>

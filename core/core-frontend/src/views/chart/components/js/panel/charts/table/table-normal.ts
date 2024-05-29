@@ -17,7 +17,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
     ...TABLE_EDITOR_PROPERTY_INNER,
     'table-header-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
-      'tableHeaderSort'
+      'tableHeaderSort',
+      'showTableHeader'
     ]
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
@@ -134,8 +135,22 @@ export class TableNormal extends S2ChartView<TableSheet> {
     }
     // tooltip
     this.configTooltip(s2Options)
-    // header interaction
-    this.configHeaderInteraction(chart, s2Options)
+    // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
+    if (customAttr.tableHeader.showTableHeader === false) {
+      s2Options.style.colCfg.height = 1
+      s2Options.interaction = {
+        resize: {
+          colCellVertical: false
+        }
+      }
+      s2Options.colCell = (node, sheet, config) => {
+        node.label = ' '
+        return new TableColCell(node, sheet, config)
+      }
+    } else {
+      // header interaction
+      this.configHeaderInteraction(chart, s2Options)
+    }
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 

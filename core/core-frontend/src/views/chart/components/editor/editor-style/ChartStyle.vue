@@ -371,11 +371,15 @@ watch(
               @onExtTooltipChange="onExtTooltipChange"
             />
           </collapse-switch-item>
-          <el-collapse-item
-            :effect="themes"
-            name="tableHeader"
-            :title="t('chart.table_header')"
+          <collapse-switch-item
             v-if="showProperties('table-header-selector')"
+            v-model="chart.customAttr.tableHeader.showTableHeader"
+            :change-model="chart.customAttr.tableHeader"
+            :effect="themes"
+            :title="t('chart.table_header')"
+            :show-switch="propertyInnerAll['table-header-selector'].includes('showTableHeader')"
+            name="tableHeader"
+            @modelChange="val => onTableHeaderChange(val, 'showTableHeader')"
           >
             <table-header-selector
               :property-inner="propertyInnerAll['table-header-selector']"
@@ -383,7 +387,7 @@ watch(
               :chart="chart"
               @onTableHeaderChange="onTableHeaderChange"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
           <el-collapse-item
             :effect="themes"
             name="tableCell"

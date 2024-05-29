@@ -286,6 +286,10 @@ declare interface ChartTableHeaderAttr {
    * 列头鼠标悬浮提示开关
    */
   showColTooltip: boolean
+  /**
+   * 表头显示开关
+   */
+  showTableHeader: boolean
 }
 /**
  * 单元格属性
