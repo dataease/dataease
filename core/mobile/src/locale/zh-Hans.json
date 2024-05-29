@@ -48,7 +48,11 @@
         "clearConfirm": "确定清除全部历史记录？",
         "noHistory": "您还没有历史记录",
         "contentPrefix": "您输入的内容为 ",
-        "contentSuffix": " 如果点击确定,将记录到历史搜索,并返回.如果取消不做操作"
+        "contentSuffix": " 如果点击确定,将记录到历史搜索,并返回.如果取消不做操作",
+        "create-time-desc": "按创建时间降序",
+        "create-time-asc": "按创建时间升序",
+        "create-name-desc": "按照名称降序",
+        "create-name-asc": "按照名称升序"
     },
     "me": {
         "moreInfo": "更多信息",

@@ -47,7 +47,11 @@
         "clearConfirm": "Are You Sure To Clean All History ?",
         "noHistory": "There Are No Any History",
         "contentPrefix": "The Content Is ",
-        "contentSuffix": "Will Be Marked As History When You Confirm"
+        "contentSuffix": "Will Be Marked As History When You Confirm",
+        "create-time-desc": "Sort by time desc",
+        "create-time-asc": "Sort by time asc",
+        "create-name-desc": "Sort by name desc",
+        "create-name-asc": "Sort by name asc"
     },
     "me": {
         "moreInfo": "More",

@@ -16,6 +16,7 @@ yoy = "yoy"
 YOY = "YOY"
 Leafs = "Leafs"
 leafs = "leafs"
+hiden = "hiden"
 
 [files]
 extend-exclude = [

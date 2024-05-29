@@ -49,7 +49,11 @@
         "clearConfirm": "確定清除全部歷史記錄？",
         "noHistory": "您還沒有歷史記錄",
         "contentPrefix": "您輸入的內容為 ",
-        "contentSuffix": " 如果點擊確定,將紀錄到歷史紀錄"
+        "contentSuffix": " 如果點擊確定,將紀錄到歷史紀錄",
+        "create-time-desc": "按創建時間降序",
+        "create-time-asc": "按創建時間升序",
+        "create-name-desc": "按照名稱降序",
+        "create-name-asc": "按照名稱升序"
     },
     "me": {
         "moreInfo": "更多信息",
