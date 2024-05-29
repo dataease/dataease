@@ -583,6 +583,7 @@ export default {
       }
 
       chart_option.yAxis.max = this.sliderMax;
+      chart_option.yAxis.data = chart.data.xs;
 
       chart_option.animationDurationUpdate = this.sliderTimeout;
 
