@@ -81,5 +81,5 @@ export abstract class L7PlotChartView<
     super(ChartLibraryType.L7_PLOT, name)
     this.defaultData = defaultData
   }
-  protected abstract setupOptions(chart: Chart, options: O): O
+  protected abstract setupOptions(chart: Chart, options: O, context?: Record<string, any>): O
 }

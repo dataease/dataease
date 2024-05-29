@@ -33,7 +33,7 @@ export const dvMainStore = defineStore('dataVisualization', {
         datasetAreaCollapse: false
       },
       embeddedCallBack: 'no', // 嵌入模式是否允许反馈参数
-      editMode: 'edit', // 编辑器模式 edit preview
+      editMode: 'preview', // 编辑器模式 edit preview
       mobileInPc: false,
       firstLoadMap: [],
       canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
