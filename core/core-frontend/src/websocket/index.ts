@@ -23,10 +23,17 @@ export default {
       if (!isLoginStatus()) {
         return
       }
-      if (stompClient !== null && stompClient != undefined && stompClient.connected) {
+      if (stompClient && stompClient.connected) {
         return
       }
-      const socket = new SockJS(basePath + '/websocket?userId=' + wsCache.get('user.uid'))
+      let prefix = '/'
+      if (window.DataEaseBi?.baseUrl) {
+        prefix = window.DataEaseBi.baseUrl
+      } else {
+        const href = window.location.href
+        prefix = href.substring(0, href.indexOf('#'))
+      }
+      const socket = new SockJS(prefix + 'websocket?userId=' + wsCache.get('user.uid'))
       stompClient = Stomp.over(socket)
       const heads = {
         userId: wsCache.get('user.uid')
@@ -47,7 +54,7 @@ export default {
     }
 
     function disconnect() {
-      if (stompClient !== null && stompClient != undefined && !stompClient.connected) {
+      if (stompClient && stompClient.connected) {
         stompClient.disconnect(
           function () {
             console.log('断开连接')
@@ -66,7 +73,7 @@ export default {
           disconnect()
           return
         }
-        if (stompClient !== null && stompClient != undefined && !stompClient.connected) {
+        if (!stompClient || !stompClient.connected) {
           connection()
         }
       }, 5000)

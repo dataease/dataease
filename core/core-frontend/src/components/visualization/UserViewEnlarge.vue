@@ -203,14 +203,13 @@ const downloadViewDetails = () => {
   }
   exportLoading.value = true
   exportExcelDownload(chart, () => {
-    console.log('aa')
     openMessageLoading(exportData)
     exportLoading.value = false
   })
 }
 
 const exportData = () => {
-  // bus.$emit('data-export-center')
+  useEmitt().emitter.emit('data-export-center')
 }
 
 const openMessageLoading = cb => {
