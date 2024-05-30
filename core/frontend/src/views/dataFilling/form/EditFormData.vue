@@ -115,6 +115,19 @@ export default {
             } else {
               f.value = []
             }
+          } else if (f.type === 'select' && !f.settings.multiple || f.type === 'radio') {
+            if (_value) {
+              if (!this.readonly) {
+                const options = map(f.settings.options, f => f.value)
+                if (!includes(options, _value)) {
+                  f.value = undefined
+                } else {
+                  f.value = _value
+                }
+              } else {
+                f.value = _value
+              }
+            }
           } else {
             f.value = _value
           }
