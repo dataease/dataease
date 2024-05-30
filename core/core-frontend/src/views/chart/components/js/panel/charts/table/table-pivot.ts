@@ -200,16 +200,11 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     this.configTooltip(chart, s2Options)
     // 开始渲染
     const s2 = new PivotSheet(containerDom, s2DataConfig, s2Options as unknown as S2Options)
-    // hover
-    const { showColTooltip, showRowTooltip } = customAttr.tableHeader
-    if (showColTooltip) {
+    // tooltip
+    const { show } = customAttr.tooltip
+    if (show) {
       s2.on(S2Event.COL_CELL_HOVER, event => this.showTooltip(s2, event, meta))
-    }
-    if (showRowTooltip) {
       s2.on(S2Event.ROW_CELL_HOVER, event => this.showTooltip(s2, event, meta))
-    }
-    const { showTooltip } = customAttr.tableCell
-    if (showTooltip) {
       s2.on(S2Event.DATA_CELL_HOVER, event => this.showTooltip(s2, event, meta))
     }
     // click

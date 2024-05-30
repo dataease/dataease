@@ -3,7 +3,15 @@ import {
   AntVDrawOptions,
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
-import { S2Theme, SpreadSheet, Style, S2Options, Meta, SERIES_NUMBER_FIELD } from '@antv/s2'
+import {
+  S2Theme,
+  SpreadSheet,
+  Style,
+  S2Options,
+  Meta,
+  SERIES_NUMBER_FIELD,
+  setTooltipContainerStyle
+} from '@antv/s2'
 import {
   configHeaderInteraction,
   configTooltip,
@@ -86,6 +94,8 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
       return
     }
     event.s2Instance = s2Instance
+    const style = s2Instance.options.tooltip.style
+    setTooltipContainerStyle(s2Instance.tooltip.container, { style })
     s2Instance.showTooltip({
       position: {
         x: event.clientX,

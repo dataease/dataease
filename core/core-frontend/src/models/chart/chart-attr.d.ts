@@ -279,10 +279,12 @@ declare interface ChartTableHeaderAttr {
    */
   tableHeaderSort: boolean
   /**
+   * @deprecated since version 2.7.0 由提示统一控制
    * 行头鼠标悬浮提示开关
    */
   showRowTooltip: boolean
   /**
+   * @deprecated since version 2.7.0 由提示统一控制
    * 列头鼠标悬浮提示开关
    */
   showColTooltip: boolean
@@ -324,6 +326,7 @@ declare interface ChartTableCellAttr {
    */
   tableItemSubBgColor: string
   /**
+   * @deprecated since version 2.7.0 由提示统一控制
    * 鼠标悬浮提示
    */
   showTooltip: boolean
