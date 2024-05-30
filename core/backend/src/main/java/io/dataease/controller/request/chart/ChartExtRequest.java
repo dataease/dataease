@@ -51,4 +51,7 @@ public class ChartExtRequest {
 
     private Boolean excelExportFlag = false;
 
+    @ApiModelProperty(hidden = true)
+    private String downloadType;
+
 }

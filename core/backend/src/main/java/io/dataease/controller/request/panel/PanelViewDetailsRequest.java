@@ -44,4 +44,6 @@ public class PanelViewDetailsRequest {
 
     private String downloadType;
 
+    private String viewType;
+
 }
