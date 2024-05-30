@@ -338,7 +338,24 @@ public class ChartViewService {
             if (CommonConstants.VIEW_DATA_FROM.TEMPLATE.equals(view.getDataFrom())) {
                 return extendDataService.getChartDataInfo(id, view);
             } else {
-                return calcData(view, request, request.isCache());
+                String[] dsHeader = null;
+                Integer[] dsTypes = null;
+                //downloadType = dataset 为下载原始名字 这里做数据转换模拟 table-info类型图表导出
+                if("dataset".equals(request.getDownloadType())){
+                    view.setType("table-info");
+                    List<DatasetTableField> sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
+                    dsHeader = sourceFields.stream()
+                            .map(DatasetTableField::getName)
+                            .toArray(String[]::new);
+                    dsTypes = sourceFields.stream()
+                            .map(DatasetTableField::getDeType)
+                            .toArray(Integer[]::new);
+                    view.setXAxis(JSONObject.toJSONString(sourceFields));
+                }
+                ChartViewDTO result = calcData(view, request, request.isCache());
+                result.getData().put("header",dsHeader);
+                result.getData().put("dsTypes",dsTypes);
+                return result;
             }
 
         } catch (Exception e) {
