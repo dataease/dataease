@@ -1,11 +1,13 @@
 import SockJS from 'sockjs-client/dist/sockjs.min.js'
 import Stomp from 'stompjs'
-import eventBus from '@/utils/eventBus'
 import { useCache } from '@/hooks/web/useCache'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const { wsCache } = useCache()
 let stompClient: Stomp.Client
 let timeInterval: NodeJS.Timer | null = null
-const basePath = import.meta.env.VITE_API_BASEPATH
+import dev from '../../config/dev'
+const env = import.meta.env
+const basePath = env.VITE_API_BASEPATH
 
 export default {
   install() {
@@ -13,6 +15,10 @@ export default {
       {
         topic: '/task-export-topic',
         event: 'task-export-topic-call'
+      },
+      {
+        topic: '/report-notici',
+        event: 'report-notici-call'
       }
     ]
     function isLoginStatus() {
@@ -32,6 +38,9 @@ export default {
       } else {
         const href = window.location.href
         prefix = href.substring(0, href.indexOf('#'))
+        if (env.MODE === 'dev') {
+          prefix = dev.server.proxy[basePath].target + '/'
+        }
       }
       const socket = new SockJS(prefix + 'websocket?userId=' + wsCache.get('user.uid'))
       stompClient = Stomp.over(socket)
@@ -40,10 +49,10 @@ export default {
       }
       stompClient.connect(
         heads,
-        res => {
+        () => {
           channels.forEach(channel => {
             stompClient.subscribe('/user/' + wsCache.get('user.uid') + channel.topic, res => {
-              res && res.body && eventBus.emit(channel.event, res.body)
+              res && res.body && useEmitt().emitter.emit(channel.event, res.body)
             })
           })
         },
