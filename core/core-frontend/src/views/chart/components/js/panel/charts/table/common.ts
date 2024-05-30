@@ -46,7 +46,7 @@ export const TABLE_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'letterSpace',
     'fontShadow'
   ],
-  'tooltip-selector': ['fontSize', 'color', 'backgroundColor'],
+  'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'show'],
   'function-cfg': ['emptyDataStrategy'],
   threshold: ['tableThreshold']
 }

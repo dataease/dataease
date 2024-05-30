@@ -234,20 +234,6 @@ onMounted(() => {
         </el-form-item>
       </el-col>
     </el-row>
-    <el-form-item
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('showTooltip')"
-    >
-      <el-checkbox
-        size="small"
-        :effect="themes"
-        v-model="state.tableCellForm.showTooltip"
-        @change="changeTableCell('showTooltip')"
-      >
-        {{ t('chart.table_show_cell_tooltip') }}
-      </el-checkbox>
-    </el-form-item>
   </el-form>
 </template>
 

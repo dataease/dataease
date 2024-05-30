@@ -750,7 +750,8 @@ export function configTooltip(chart: Chart, option: S2Options) {
       boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
       borderRadius: '3px',
       padding: '4px 12px',
-      opacity: 0.95
+      opacity: 0.95,
+      position: 'absolute'
     },
     adjustPosition: ({ event }) => {
       return getTooltipPosition(event)
@@ -791,7 +792,7 @@ export function copyContent(s2Instance, event, fieldMeta) {
 function getTooltipPosition(event) {
   const s2Instance = event.s2Instance
   const { x, y } = event
-  const result = { x: x + 15, y: y + 10 }
+  const result = { x: x + 15, y }
   if (!s2Instance) {
     return result
   }
@@ -809,8 +810,16 @@ function getTooltipPosition(event) {
   if (result.x && result.x + offsetWidth > width) {
     result.x -= result.x + offsetWidth - width
   }
-  if (result.y && result.y + offsetHeight > height) {
-    result.y -= offsetHeight + 15
+  if (result.y) {
+    if (result.y > offsetHeight) {
+      if (result.y - offsetHeight >= 15) {
+        result.y -= offsetHeight + 15
+      } else {
+        result.y = 0
+      }
+    } else {
+      result.y += 15
+    }
   }
   return result
 }
