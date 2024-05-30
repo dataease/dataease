@@ -1,4 +1,4 @@
-import { EXTRA_FIELD, PivotSheet, S2Event, S2Options, TOTAL_VALUE, S2Theme } from '@antv/s2'
+import { EXTRA_FIELD, PivotSheet, S2Event, S2Options, TOTAL_VALUE, S2Theme, Totals } from '@antv/s2'
 import { formatterItem, valueFormatter } from '../../../formatter'
 import { hexColorToRGBA, parseJson } from '../../../util'
 import { S2ChartView, S2DrawOptions } from '../../types/impl/s2'
@@ -20,6 +20,7 @@ export class TablePivot extends S2ChartView<PivotSheet> {
     'table-cell-selector',
     'table-total-selector',
     'title-selector',
+    'tooltip-selector',
     'function-cfg',
     'threshold',
     'linkage',
@@ -183,15 +184,20 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       sortParams: sortParams
     }
     // options
-    const s2Options = {
+    const s2Options: S2Options = {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
       style: this.configStyle(chart),
-      totals: tableTotal,
+      totals: tableTotal as Totals,
       conditions: this.configConditions(chart),
+      tooltip: {
+        getContainer: () => containerDom
+      },
       hierarchyType: basicStyle.tableLayoutMode ?? 'grid'
     }
 
+    // tooltip
+    this.configTooltip(chart, s2Options)
     // 开始渲染
     const s2 = new PivotSheet(containerDom, s2DataConfig, s2Options as unknown as S2Options)
     // hover

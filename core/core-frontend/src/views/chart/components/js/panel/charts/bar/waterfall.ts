@@ -23,7 +23,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gradient'],
     'label-selector': ['fontSize', 'color', 'vPosition', 'labelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'title-selector': [
       'title',
       'fontSize',
