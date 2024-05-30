@@ -353,8 +353,10 @@ public class ChartViewService {
                     view.setXAxis(JSONObject.toJSONString(sourceFields));
                 }
                 ChartViewDTO result = calcData(view, request, request.isCache());
-                result.getData().put("header",dsHeader);
-                result.getData().put("dsTypes",dsTypes);
+                if("dataset".equals(request.getDownloadType())){
+                    result.getData().put("header",dsHeader);
+                    result.getData().put("dsTypes",dsTypes);
+                }
                 return result;
             }
 
