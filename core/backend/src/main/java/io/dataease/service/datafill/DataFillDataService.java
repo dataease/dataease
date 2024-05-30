@@ -477,9 +477,17 @@ public class DataFillDataService {
                 }
                 String name = field.getSettings().getMapping().getColumnName();
 
-                if (data.get(name) == null) {
+                if (!StringUtils.equalsIgnoreCase(field.getType(), "dateRange") && data.get(name) == null) {
                     if (field.getSettings().isRequired()) {
                         DataEaseException.throwException("[" + field.getSettings().getName() + "] 不能为空");
+                    }
+                } else if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                    if (field.getSettings().isRequired()) {
+                        String name1 = field.getSettings().getMapping().getColumnName1();
+                        String name2 = field.getSettings().getMapping().getColumnName2();
+                        if (data.get(name1) == null || data.get(name2) == null) {
+                            DataEaseException.throwException("[" + field.getSettings().getName() + "] 不能为空");
+                        }
                     }
                 }
 
