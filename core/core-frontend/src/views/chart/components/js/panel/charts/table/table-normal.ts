@@ -2,7 +2,11 @@ import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/ty
 import { S2Event, S2Options, TableSheet, TableColCell, ViewMeta, TableDataCell } from '@antv/s2'
 import { parseJson } from '@/views/chart/components/js/util'
 import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
-import { copyContent, getCurrentField } from '@/views/chart/components/js/panel/common/common_table'
+import {
+  copyContent,
+  getCurrentField,
+  SortTooltip
+} from '@/views/chart/components/js/panel/common/common_table'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { isNumber } from 'lodash-es'
@@ -111,7 +115,8 @@ export class TableNormal extends S2ChartView<TableSheet> {
       style: this.configStyle(chart),
       conditions: this.configConditions(chart),
       tooltip: {
-        getContainer: () => containerDom
+        getContainer: () => containerDom,
+        renderTooltip: sheet => new SortTooltip(sheet)
       }
     }
     // 开启序号之后，第一列就是序号列，修改 label 即可
@@ -134,7 +139,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
       }
     }
     // tooltip
-    this.configTooltip(s2Options)
+    this.configTooltip(chart, s2Options)
     // 隐藏表头，保留顶部的分割线, 禁用表头横向 resize
     if (customAttr.tableHeader.showTableHeader === false) {
       s2Options.style.colCfg.height = 1

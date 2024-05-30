@@ -34,7 +34,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
     'label-selector': ['hPosition', 'seriesLabelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'axisLabelFormatter']
   }
   axis: AxisType[] = [...BAR_AXIS_TYPE]
@@ -267,7 +267,7 @@ export class HorizontalStackBar extends HorizontalBar {
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': ['color', 'fontSize', 'hPosition', 'labelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter']
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter', 'show']
   }
   protected configLabel(chart: Chart, options: BarOptions): BarOptions {
     const baseOptions = super.configLabel(chart, options)
@@ -328,7 +328,7 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': ['color', 'fontSize', 'hPosition', 'reserveDecimalCount'],
-    'tooltip-selector': ['color', 'fontSize']
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show']
   }
   protected configLabel(chart: Chart, options: BarOptions): BarOptions {
     const baseOptions = super.configLabel(chart, options)

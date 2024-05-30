@@ -100,6 +100,12 @@ export abstract class AntVAbstractChartView extends AbstractChartView {
   selectorSpec: EditorSelectorSpec = {
     'misc-style-selector': {
       title: `${t('chart.size')}`
+    },
+    'dual-y-axis-selector': {
+      title: `${t('chart.yAxis')}`
+    },
+    'x-axis-selector': {
+      title: `${t('chart.xAxis')}`
     }
   }
   protected constructor(library: ChartLibraryType, name: string, defaultData?: any[]) {

@@ -36,7 +36,7 @@ public interface SyncDatasourceApi {
     void save(@RequestBody SyncDatasourceDTO dataSourceDTO) throws DEException;
 
     @PostMapping("/update")
-    void update(@RequestBody SyncDatasourceDTO dataSourceDTO) throws DEException;
+    Map<String,Object> update(@RequestBody SyncDatasourceDTO dataSourceDTO) throws DEException;
 
     @PostMapping("/delete/{datasourceId}")
     void delete(@PathVariable("datasourceId") String datasourceId) throws DEException;

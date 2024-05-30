@@ -261,7 +261,7 @@ export class StackArea extends Area {
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': ['fontSize', 'color', 'labelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter']
+    'tooltip-selector': ['fontSize', 'color', 'tooltipFormatter', 'show']
   }
   protected configLabel(chart: Chart, options: AreaOptions): AreaOptions {
     const customAttr = parseJson(chart.customAttr)

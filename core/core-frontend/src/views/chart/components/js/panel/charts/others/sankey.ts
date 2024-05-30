@@ -45,7 +45,7 @@ export class RangeBar extends G2PlotChartView<SankeyOptions, Sankey> {
   propertyInner = {
     ...SANKEY_EDITOR_PROPERTY_INNER,
     'label-selector': ['color', 'fontSize'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter']
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter', 'show']
   }
   axis: AxisType[] = [...SANKEY_AXIS_TYPE]
   protected baseOptions: SankeyOptions = {
