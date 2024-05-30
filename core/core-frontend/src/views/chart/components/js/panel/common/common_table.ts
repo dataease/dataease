@@ -611,7 +611,7 @@ export function handleTableEmptyStrategy(chart: Chart) {
   }
   return newData
 }
-class SortTooltip extends BaseTooltip {
+export class SortTooltip extends BaseTooltip {
   show(showOptions) {
     const { iconName } = showOptions
     if (iconName) {
@@ -656,7 +656,10 @@ class SortTooltip extends BaseTooltip {
         top: `${this.position?.y}px`,
         pointerEvents: enterable ? 'all' : 'none',
         zIndex: 9999,
-        position: 'absolute'
+        position: 'absolute',
+        color: 'black',
+        background: 'white',
+        fontSize: '16px'
       },
       visible: true
     })
@@ -736,13 +739,22 @@ export function configHeaderInteraction(chart: Chart, option: S2Options) {
   ]
 }
 
-export function configTooltip(option: S2Options) {
+export function configTooltip(chart: Chart, option: S2Options) {
+  const { tooltip } = parseJson(chart.customAttr)
   option.tooltip = {
     ...option.tooltip,
+    style: {
+      background: tooltip.backgroundColor,
+      fontSize: tooltip.fontSize + 'px',
+      color: tooltip.color,
+      boxShadow: 'rgba(0, 0, 0, 0.1) 0px 4px 8px 0px',
+      borderRadius: '3px',
+      padding: '4px 12px',
+      opacity: 0.95
+    },
     adjustPosition: ({ event }) => {
       return getTooltipPosition(event)
-    },
-    renderTooltip: sheet => new SortTooltip(sheet)
+    }
   }
 }
 

@@ -3,7 +3,7 @@ import {
   AntVDrawOptions,
   ChartLibraryType
 } from '@/views/chart/components/js/panel/types'
-import { S2Theme, SpreadSheet, Style, S2Options, Meta } from '@antv/s2'
+import { S2Theme, SpreadSheet, Style, S2Options, Meta, SERIES_NUMBER_FIELD } from '@antv/s2'
 import {
   configHeaderInteraction,
   configTooltip,
@@ -42,8 +42,8 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     return handleTableEmptyStrategy(chart)
   }
 
-  protected configTooltip(option: S2Options) {
-    configTooltip(option)
+  protected configTooltip(chart: Chart, option: S2Options) {
+    configTooltip(chart, option)
   }
 
   protected configHeaderInteraction(chart: Chart, option: S2Options) {
@@ -62,12 +62,19 @@ export abstract class S2ChartView<P extends SpreadSheet> extends AntVAbstractCha
     switch (cell.cellType) {
       case 'dataCell':
         field = find(metaConfig, item => item.field === meta.valueField)
+        if (meta.fieldValue === 0) {
+          content = '0'
+        }
         if (meta.fieldValue) {
           content = field?.formatter?.(meta.fieldValue)
         }
         break
       case 'rowCell':
       case 'colCell':
+        if (meta.field === SERIES_NUMBER_FIELD) {
+          content = cell.getTextShape()['attrs'].text
+          break
+        }
         content = meta.label
         field = find(metaConfig, item => item.field === content)
         if (field) {

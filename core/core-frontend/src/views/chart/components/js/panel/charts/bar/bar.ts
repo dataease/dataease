@@ -26,7 +26,7 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
     'label-selector': ['vPosition', 'seriesLabelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'y-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['y-axis-selector'], 'axisLabelFormatter']
   }
   protected baseOptions: ColumnOptions = {
@@ -236,7 +236,7 @@ export class StackBar extends Bar {
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': [...BAR_EDITOR_PROPERTY_INNER['label-selector'], 'vPosition'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter']
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter', 'show']
   }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configLabel(chart, options)
@@ -372,7 +372,7 @@ export class PercentageStackBar extends GroupStackBar {
   propertyInner = {
     ...this['propertyInner'],
     'label-selector': ['color', 'fontSize', 'vPosition', 'reserveDecimalCount'],
-    'tooltip-selector': ['color', 'fontSize']
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'show']
   }
   protected configLabel(chart: Chart, options: ColumnOptions): ColumnOptions {
     const baseOptions = super.configLabel(chart, options)

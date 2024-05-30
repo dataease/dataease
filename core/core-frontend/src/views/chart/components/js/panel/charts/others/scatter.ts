@@ -29,7 +29,7 @@ export class Scatter extends G2PlotChartView<ScatterOptions, G2Scatter> {
   propertyInner: EditorPropertyInner = {
     'basic-style-selector': ['colors', 'alpha', 'scatterSymbol', 'scatterSymbolSize'],
     'label-selector': ['fontSize', 'color', 'labelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'x-axis-selector': [
       'position',
       'name',

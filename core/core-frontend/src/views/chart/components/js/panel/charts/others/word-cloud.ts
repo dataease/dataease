@@ -41,7 +41,7 @@ export class WordCloud extends G2PlotChartView<WordCloudOptions, G2WordCloud> {
       'fontShadow'
     ],
     'misc-selector': ['wordSizeRange', 'wordSpacing'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter']
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter', 'show']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
   axisConfig: AxisConfig = {

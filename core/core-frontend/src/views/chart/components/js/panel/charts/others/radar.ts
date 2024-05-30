@@ -24,7 +24,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
   propertyInner: EditorPropertyInner = {
     'basic-style-selector': ['colors', 'alpha', 'radarShape'],
     'label-selector': ['seriesLabelFormatter'],
-    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter'],
+    'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'misc-style-selector': ['showName', 'color', 'fontSize', 'axisColor'],
     'title-selector': [
       'show',
@@ -42,6 +42,7 @@ export class Radar extends G2PlotChartView<RadarOptions, G2Radar> {
     'legend-selector': ['icon', 'orient', 'color', 'fontSize', 'hPosition', 'vPosition']
   }
   selectorSpec: EditorSelectorSpec = {
+    ...this['selectorSpec'],
     'misc-style-selector': {
       title: `${t('chart.tooltip_axis')}`
     }

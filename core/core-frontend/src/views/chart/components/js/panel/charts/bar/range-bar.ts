@@ -39,7 +39,14 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
     'label-selector': ['hPosition', 'color', 'fontSize', 'labelFormatter', 'showGap'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'tooltipFormatter', 'showGap'],
+    'tooltip-selector': [
+      'fontSize',
+      'color',
+      'backgroundColor',
+      'tooltipFormatter',
+      'showGap',
+      'show'
+    ],
     'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'axisLabelFormatter']
   }
   axis: AxisType[] = [...BAR_AXIS_TYPE, 'yAxisExt']
@@ -47,7 +54,7 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
     data: [],
     xField: 'values',
     yField: 'field',
-    colorFiled: 'category',
+    colorField: 'category',
     isGroup: true,
     interactions: [
       {

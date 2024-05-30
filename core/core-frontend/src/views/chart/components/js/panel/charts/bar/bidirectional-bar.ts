@@ -88,7 +88,17 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'function-cfg': ['emptyDataStrategy'],
     'label-selector': ['hPosition', 'seriesLabelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter']
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show']
+  }
+
+  selectorSpec: EditorSelectorSpec = {
+    ...this['selectorSpec'],
+    'dual-y-axis-selector': {
+      title: `${t('chart.xAxis')}`
+    },
+    'x-axis-selector': {
+      title: `${t('chart.yAxis')}`
+    }
   }
 
   drawChart(drawOptions: G2PlotDrawOptions<G2BidirectionalBar>): G2BidirectionalBar {

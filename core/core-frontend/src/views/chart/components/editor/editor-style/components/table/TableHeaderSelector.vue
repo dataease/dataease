@@ -261,7 +261,11 @@ onMounted(() => {
         v-model="state.tableHeaderForm.showColTooltip"
         @change="changeTableHeader('showColTooltip')"
       >
-        {{ t('chart.table_show_col_tooltip') }}
+        {{
+          chart.type === 'table-pivot'
+            ? t('chart.table_show_col_tooltip')
+            : t('chart.table_show_header_tooltip')
+        }}
       </el-checkbox>
     </el-form-item>
     <el-form-item

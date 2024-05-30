@@ -34,7 +34,7 @@ export const MAP_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'showDimension',
     'showQuota'
   ],
-  'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter'],
+  'tooltip-selector': ['color', 'fontSize', 'backgroundColor', 'tooltipFormatter', 'show'],
   'function-cfg': ['emptyDataStrategy'],
   'map-mapping': ['']
 }

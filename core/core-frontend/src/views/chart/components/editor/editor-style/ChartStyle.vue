@@ -354,13 +354,14 @@ watch(
             />
           </collapse-switch-item>
           <collapse-switch-item
-            :themes="themes"
             v-if="showProperties('tooltip-selector')"
             v-model="chart.customAttr.tooltip.show"
+            :themes="themes"
             :change-model="chart.customAttr.tooltip"
-            @modelChange="val => onTooltipChange({ data: val }, 'show')"
-            name="tooltip"
             :title="$t('chart.tooltip')"
+            :show-switch="propertyInnerAll['tooltip-selector'].includes('show')"
+            name="tooltip"
+            @modelChange="val => onTooltipChange({ data: val }, 'show')"
           >
             <tooltip-selector
               class="attr-selector"
@@ -438,7 +439,7 @@ watch(
             :change-model="chart.customStyle.xAxis"
             @modelChange="val => onChangeXAxisForm(val, 'show')"
             name="xAxis"
-            :title="chart.type === 'bidirectional-bar' ? $t('chart.yAxis') : t('chart.xAxis')"
+            :title="selectorSpec['x-axis-selector']?.title"
           >
             <x-axis-selector
               class="attr-selector"
@@ -473,7 +474,7 @@ watch(
             :change-model="chart.customStyle.yAxis"
             @modelChange="val => onChangeYAxisForm(val, 'show')"
             name="yAxis"
-            :title="chart.type === 'bidirectional-bar' ? $t('chart.xAxis') : $t('chart.yAxis')"
+            :title="selectorSpec['dual-y-axis-selector']?.title"
           >
             <dual-y-axis-selector
               class="attr-selector"
