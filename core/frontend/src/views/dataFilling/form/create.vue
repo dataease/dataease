@@ -400,10 +400,8 @@ export default {
         item.value = []
       } else {
         item.value = undefined
-        if (item.settings.mapping.type === 'text') {
-          item.settings.mapping.type = undefined
-        }
       }
+      item.settings.mapping.type = undefined
     },
     getRules(item) {
       let rules = []
