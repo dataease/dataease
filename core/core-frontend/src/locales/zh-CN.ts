@@ -322,6 +322,7 @@ export default {
     please_input_host: '请输入主机',
     please_input_url: '请输入URL地址',
     please_input_port: '请输入端口',
+    please_input_be_port: '请输入BE端口',
     modify: '编辑数据源',
     copy: '复制数据源',
     validate_success: '校验成功',
