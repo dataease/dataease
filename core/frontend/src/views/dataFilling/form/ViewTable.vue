@@ -73,7 +73,7 @@
       >
         <!--  编辑 todo      -->
         <el-button
-          v-if="hasDataPermission('manage', data.privileges)"
+          v-if="hasDataPermission('manage', param.privileges)"
           type="primary"
           @click="editForm(param)"
         >{{ $t('panel.edit') }}</el-button>
