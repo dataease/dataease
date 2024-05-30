@@ -37,7 +37,8 @@ public class CommentWriteHandler implements RowWriteHandler {
             Drawing<?> drawingPatriarch = writeSheetHolder.getSheet().createDrawingPatriarch();
             for (int i = 0; i < fields.size(); i++) {
                 ExtTableField field = fields.get(i);
-                String required = field.getSettings().isRequired() ? "必填" : "";
+                String required = field.getSettings().isRequired() ? "必填 " : "";
+                String unique = field.getSettings().isUnique() && StringUtils.equalsIgnoreCase("input", field.getType()) ? "不允许重复值" : "";
                 String example = "";
                 StringBuilder options = new StringBuilder();
                 switch (field.getSettings().getMapping().getType()) {
@@ -90,7 +91,7 @@ public class CommentWriteHandler implements RowWriteHandler {
                         break;
                 }
 
-                if (StringUtils.isBlank(required) && StringUtils.isBlank(example) && StringUtils.isBlank(options.toString())) {
+                if (StringUtils.isBlank(required) && StringUtils.isBlank(unique) && StringUtils.isBlank(example) && StringUtils.isBlank(options.toString())) {
                     continue;
                 }
 
