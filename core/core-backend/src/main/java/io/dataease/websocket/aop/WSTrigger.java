@@ -1,7 +1,7 @@
 package io.dataease.websocket.aop;
 
-import io.dataease.websocket.entity.WsMessage;
-import io.dataease.websocket.service.WsService;
+import io.dataease.websocket.WsMessage;
+import io.dataease.websocket.WsService;
 import org.apache.commons.lang3.ArrayUtils;
 import org.aspectj.lang.JoinPoint;
 import org.aspectj.lang.annotation.AfterReturning;

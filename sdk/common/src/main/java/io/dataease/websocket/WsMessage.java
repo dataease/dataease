@@ -1,4 +1,4 @@
-package io.dataease.websocket.entity;
+package io.dataease.websocket;
 
 import lombok.AllArgsConstructor;
 import lombok.Data;

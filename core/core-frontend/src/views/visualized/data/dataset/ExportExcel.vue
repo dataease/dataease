@@ -1,9 +1,8 @@
 <script lang="ts" setup>
-import { ref, h, onUnmounted, onMounted } from 'vue'
+import { ref, h, onUnmounted } from 'vue'
 import { EmptyBackground } from '@/components/empty-background'
 import { ElButton, ElMessage, ElMessageBox, ElTabPane, ElTabs } from 'element-plus-secondary'
 import { RefreshLeft } from '@element-plus/icons-vue'
-import eventBus from '@/utils/eventBus'
 import {
   exportTasks,
   exportRetry,
@@ -327,7 +326,7 @@ const delAll = () => {
     })
 }
 
-eventBus.on('task-export-topic-call', taskExportTopicCall)
+useEmitt({ name: 'task-export-topic-call', callback: taskExportTopicCall })
 
 defineExpose({
   init

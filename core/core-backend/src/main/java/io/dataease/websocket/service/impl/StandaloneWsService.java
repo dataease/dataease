@@ -1,7 +1,7 @@
 package io.dataease.websocket.service.impl;
 
-import io.dataease.websocket.entity.WsMessage;
-import io.dataease.websocket.service.WsService;
+import io.dataease.websocket.WsMessage;
+import io.dataease.websocket.WsService;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.messaging.simp.SimpMessagingTemplate;

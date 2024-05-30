@@ -96,7 +96,6 @@ const refresh = async (formEl: FormInstance | undefined) => {
   })
 }
 onMounted(() => {
-  debugger
   if (!wsCache.get(appStore.getDekey)) {
     queryDekey()
       .then(res => {
