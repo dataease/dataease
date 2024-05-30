@@ -32,7 +32,7 @@ public interface SysVariablesApi {
 
     @Operation(summary = "删除")
     @GetMapping("/delete/{id}")
-    void delete(@PathVariable String id);
+    void delete(@PathVariable Long id);
 
     @Operation(summary = "详细信息")
     @GetMapping("/detail/{id}")

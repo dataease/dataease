@@ -354,7 +354,7 @@ defineExpose({
       @click="downLoadAll"
     >
       <template #icon>
-        <Icon name="de-delete"></Icon>
+        <Icon name="dv-preview-download"></Icon>
       </template>
       {{ $t('data_export.download_all') }}
     </el-button>
@@ -426,11 +426,14 @@ defineExpose({
                 </el-icon>
               </div>
             </el-button>
-            <el-button text @click="retry(scope.row)">
-              <template #icon>
-                <Icon name="de-refresh"></Icon>
-              </template>
-            </el-button>
+            <el-tooltip effect="dark" content="重新导出" placement="top">
+              <el-button text @click="retry(scope.row)">
+                <template #icon>
+                  <Icon name="icon_refresh_outlined"></Icon>
+                </template>
+              </el-button>
+            </el-tooltip>
+
             <el-button text @click="deleteField(scope.row)">
               <template #icon>
                 <Icon name="de-delete"></Icon>
