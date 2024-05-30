@@ -989,9 +989,17 @@ export default {
     },
     tree(cache = false) {
       const modelInfo = localStorage.getItem('panel-main-tree')
-      const userCache = modelInfo && cache
+      let preParse
+      if (modelInfo) {
+        try {
+          preParse = JSON.parse(modelInfo)
+        } catch (e) {
+          console.warn('panel-main-tree cache error')
+        }
+      }
+      const userCache = preParse && cache
       if (userCache) {
-        this.originResourceTree = JSON.parse(modelInfo)
+        this.originResourceTree = preParse
         this.sortTypeChange(this.localSortParams)
       }
       groupTree(this.groupForm, !userCache).then((res) => {
@@ -1017,10 +1025,18 @@ export default {
         panelType: 'system'
       }
       const modelInfo = localStorage.getItem('panel-default-tree')
-      const userCache = modelInfo && cache
+      let preParse
+      if (modelInfo) {
+        try {
+          preParse = JSON.parse(modelInfo)
+        } catch (e) {
+          console.warn('panel-default-tree cache error')
+        }
+      }
+      const userCache = preParse && cache
 
       if (userCache) {
-        this.defaultData = JSON.parse(modelInfo)
+        this.defaultData = preParse
         if (showFirst && this.defaultData && this.defaultData.length > 0) {
           this.activeDefaultNodeAndClickOnly(this.defaultData[0].id)
         }
