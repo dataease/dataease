@@ -4,6 +4,7 @@
     :append-to-body="true"
     v-model="dialogShow"
     width="340px"
+    :show-close="false"
     trigger="click"
   >
     <el-row style="height: 20px">
