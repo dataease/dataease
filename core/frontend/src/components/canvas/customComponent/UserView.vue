@@ -1001,7 +1001,8 @@ export default {
       }
     },
     getData(id, cache = true, dataBroadcast = false) {
-      if (this.requestStatus === 'waiting') {
+      // Err1001 已删除的不在重复请求
+      if (this.requestStatus === 'waiting' || (this.message && this.message.indexOf('Err1001'))) {
         return
       }
       if (id) {
@@ -1109,12 +1110,6 @@ export default {
           return true
         }).catch(err => {
           console.error('err-' + err)
-          // 还没有构内部刷新
-          if (!this.innerRefreshTimer && this.editMode === 'preview') {
-            setTimeout(() => {
-              this.getData(this.element.propValue.viewId)
-            }, 120000)
-          }
           this.requestStatus = 'error'
           if (err.message && err.message.indexOf('timeout') > -1) {
             this.message = this.$t('panel.timeout_refresh')
@@ -1130,6 +1125,13 @@ export default {
                 this.message = err
               }
             }
+          }
+
+          // 还没有构内部刷新
+          if (!this.innerRefreshTimer && this.editMode === 'preview') {
+            setTimeout(() => {
+              this.getData(this.element.propValue.viewId)
+            }, 120000)
           }
           this.isFirstLoad = false
           return true
