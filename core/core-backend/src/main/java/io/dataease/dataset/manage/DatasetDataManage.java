@@ -231,7 +231,7 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        String replaceSql = SqlUtils.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, needOrder, false), sqlMeta, crossDs, dsMap);
+        String replaceSql = SqlUtils.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
         map.put("total", getDatasetTotal(datasetGroupInfoDTO, replaceSql, null));
         return map;
     }
