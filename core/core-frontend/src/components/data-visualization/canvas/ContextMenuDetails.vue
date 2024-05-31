@@ -10,6 +10,7 @@ import { computed, toRefs } from 'vue'
 import { ElDivider } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { getCurInfo } from '@/store/modules/data-visualization/common'
+import { useEmitt } from '@/hooks/web/useEmitt'
 const dvMainStore = dvMainStoreWithOut()
 const copyStore = copyStoreWithOut()
 const lockStore = lockStoreWithOut()
@@ -20,6 +21,7 @@ const composeStore = composeStoreWithOut()
 const { areaData } = storeToRefs(composeStore)
 const { curComponent } = storeToRefs(dvMainStore)
 const emit = defineEmits(['close', 'rename'])
+const { emitter } = useEmitt()
 const props = defineProps({
   activePosition: {
     type: String,
@@ -157,6 +159,10 @@ const composeDivider = computed(() => {
 const isGroupArea = computed(() => {
   return curComponent.value?.component === 'GroupArea'
 })
+
+const editQueryCriteria = () => {
+  emitter.emit(`editQueryCriteria${curComponent.value.id}`)
+}
 </script>
 
 <template>
@@ -207,6 +213,8 @@ const isGroupArea = computed(() => {
       <el-divider class="custom-divider" v-show="composeDivider" />
       <template v-if="curComponent && !isGroupArea">
         <template v-if="!curComponent['isLock']">
+          <li v-if="curComponent.component === 'VQuery'" @click="editQueryCriteria">编辑</li>
+          <li @click="upComponent">上移一层</li>
           <li @click="upComponent">上移一层</li>
           <li @click="downComponent">下移一层</li>
           <li @click="topComponent">置于顶层</li>

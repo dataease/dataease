@@ -29,19 +29,23 @@ router.beforeEach(async (to, from, next) => {
   start()
   loadStart()
   checkPlatform()
+  let isDesktop = wsCache.get('app.desktop')
+  if (isDesktop === null) {
+    await appStore.setAppModel()
+    isDesktop = appStore.getDesktop
+  }
   if (isMobile()) {
     done()
     loadDone()
     if (to.name === 'link') {
       window.location.href = window.origin + '/mobile.html#' + to.path
-    } else if (!isPlatformClient() && !isLarkPlatform()) {
+    } else if (
+      wsCache.get('user.token') ||
+      isDesktop ||
+      (!isPlatformClient() && !isLarkPlatform())
+    ) {
       window.location.href = window.origin + '/mobile.html#/index'
     }
-  }
-  let isDesktop = wsCache.get('app.desktop')
-  if (isDesktop === null) {
-    await appStore.setAppModel()
-    isDesktop = appStore.getDesktop
   }
   await appearanceStore.setAppearance()
   if (wsCache.get('user.token') || isDesktop) {

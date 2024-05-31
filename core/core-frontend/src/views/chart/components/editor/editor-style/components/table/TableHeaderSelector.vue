@@ -250,38 +250,6 @@ onMounted(() => {
         {{ t('chart.table_header_sort') }}
       </el-checkbox>
     </el-form-item>
-    <el-form-item
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('showColTooltip')"
-    >
-      <el-checkbox
-        size="small"
-        :effect="themes"
-        v-model="state.tableHeaderForm.showColTooltip"
-        @change="changeTableHeader('showColTooltip')"
-      >
-        {{
-          chart.type === 'table-pivot'
-            ? t('chart.table_show_col_tooltip')
-            : t('chart.table_show_header_tooltip')
-        }}
-      </el-checkbox>
-    </el-form-item>
-    <el-form-item
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('showRowTooltip')"
-    >
-      <el-checkbox
-        size="small"
-        :effect="themes"
-        v-model="state.tableHeaderForm.showRowTooltip"
-        @change="changeTableHeader('showRowTooltip')"
-      >
-        {{ t('chart.table_show_row_tooltip') }}
-      </el-checkbox>
-    </el-form-item>
   </el-form>
 </template>
 
