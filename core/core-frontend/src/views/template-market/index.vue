@@ -450,7 +450,7 @@ const apply = template => {
       'changeCurrentComponent',
       ['dataV', 'SCREEN'].includes(state.dvCreateForm.nodeType)
         ? 'VisualizationEditor'
-        : 'Dashboard'
+        : 'DashboardEditor'
     )
     return
   }
