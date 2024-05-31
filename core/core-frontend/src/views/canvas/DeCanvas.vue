@@ -138,7 +138,7 @@ const canvasInit = (isFistLoad = true) => {
     }
     // afterInit
     dvMainStore.setDataPrepareState(true)
-    if (isMainCanvas(canvasId.value.id) && isFistLoad) {
+    if (isMainCanvas(canvasId.value) && isFistLoad) {
       snapshotStore.recordSnapshotCache('renderChart')
     }
   }, 500)
@@ -289,10 +289,9 @@ defineExpose({
     width: 100%;
     height: 100%;
   }
-}
-
-&::-webkit-scrollbar {
-  display: none;
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .render-active {

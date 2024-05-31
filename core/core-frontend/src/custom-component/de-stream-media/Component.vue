@@ -117,7 +117,6 @@ const destroyPlayer = () => {
   justify-content: center;
   background-color: rgba(245, 245, 220, 0.1);
   font-size: 12px;
-  color: #000000;
 }
 
 .move-bg {

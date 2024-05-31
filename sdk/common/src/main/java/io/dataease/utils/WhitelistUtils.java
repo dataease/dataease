@@ -26,17 +26,18 @@ public class WhitelistUtils {
             "/dekey",
             "/index.html",
             "/model",
+            "/xpackModel",
             "/swagger-resources",
             "/doc.html",
             "/panel.html",
             "/mobile.html",
-            "/lark/info",
+            "/lark/qrinfo",
             "/lark/token",
-            "/larksuite/info",
+            "/larksuite/qrinfo",
             "/larksuite/token",
-            "/dingtalk/info",
+            "/dingtalk/qrinfo",
             "/dingtalk/token",
-            "/wecom/info",
+            "/wecom/qrinfo",
             "/wecom/token",
             "/sysParameter/requestTimeOut",
             "/setting/authentication/status",
@@ -63,6 +64,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/content/")
                 || StringUtils.startsWithAny(requestURI, "/geo/")
+                || StringUtils.startsWithAny(requestURI, "/websocket")
                 || StringUtils.startsWithAny(requestURI, "/map/");
     }
 }

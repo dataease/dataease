@@ -382,7 +382,7 @@ watch(
 
   .image-hint {
     color: #8f959e;
-    size: 14px;
+    font-size: 12px;
     line-height: 22px;
     font-weight: 400;
     margin-top: -6px;

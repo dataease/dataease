@@ -19,6 +19,10 @@ public interface LarksuiteApi {
     @GetMapping("/info")
     LarkInfoVO info();
 
+    @Operation(summary = "查询国际飞书二维码信息")
+    @GetMapping("/qrinfo")
+    LarkInfoVO qrinfo();
+
     @Operation(summary = "保存")
     @PostMapping("/create")
     void save(@RequestBody LarkSettingCreator creator);

@@ -71,6 +71,11 @@ const autoStyle = computed(() => {
     return {}
   }
 })
+const emits = defineEmits(['onPointClick'])
+
+const onPointClick = param => {
+  emits('onPointClick', param)
+}
 </script>
 
 <template>
@@ -83,6 +88,7 @@ const autoStyle = computed(() => {
       :show-position="showPosition"
       :search-count="searchCount"
       :disabled="disabled"
+      @onPointClick="onPointClick"
     ></chart>
   </div>
 </template>

@@ -8,11 +8,13 @@ import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
 import { getOuterParamsInfo } from '@/api/visualization/outerParams'
 import { ElMessage } from 'element-plus-secondary'
+import { useEmbedded } from '@/store/modules/embedded'
 import { useI18n } from '@/hooks/web/useI18n'
 import { XpackComponent } from '@/components/plugin'
 
 const dvMainStore = dvMainStoreWithOut()
 const { t } = useI18n()
+const embeddedStore = useEmbedded()
 const state = reactive({
   canvasDataPreview: null,
   canvasStylePreview: null,
@@ -34,7 +36,7 @@ const props = defineProps({
 })
 
 const loadCanvasDataAsync = async (dvId, dvType) => {
-  const { jumpInfoParam } = router.currentRoute.value.query
+  const jumpInfoParam = embeddedStore.jumpInfoParam || router.currentRoute.value.query.jumpInfoParam
   let jumpParam
   // 获取外部跳转参数
   if (jumpInfoParam) {
@@ -105,7 +107,8 @@ let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
   await new Promise(r => (p = r))
-  const { dvId, dvType, callBackFlag } = router.currentRoute.value.query
+  const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
+  const { dvType, callBackFlag } = router.currentRoute.value.query
   if (dvId) {
     loadCanvasDataAsync(dvId, dvType)
     return
@@ -140,11 +143,6 @@ defineExpose({
 </template>
 
 <style lang="less">
-::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
-}
-
 .content {
   background-color: #ffffff;
   width: 100%;
@@ -152,5 +150,9 @@ defineExpose({
   align-items: center;
   overflow-x: hidden;
   overflow-y: auto;
+  ::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px !important;
+  }
 }
 </style>

@@ -53,6 +53,10 @@ function _generate_compose_file_args() {
       if [[ -f $DE_RUNNING_BASE/docker-compose-task.yml ]];then
          compose_files="${compose_files} -f docker-compose-task.yml"
       fi
+
+      if [[ -f $DE_RUNNING_BASE/docker-compose-selenium.yml ]];then
+         compose_files="${compose_files} -f docker-compose-selenium.yml"
+      fi
    fi
 }
 function _check_apisix_init() {

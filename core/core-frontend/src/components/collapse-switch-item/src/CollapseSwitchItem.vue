@@ -13,6 +13,11 @@ const props = defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
+  },
+  showSwitch: {
+    type: Boolean,
+    required: false,
+    default: true
   }
 })
 const emit = defineEmits(['update:modelValue', 'modelChange'])
@@ -45,12 +50,15 @@ const switchValue = computed({
         <span>
           {{ title }}
         </span>
-        <el-switch
-          :effect="themes"
-          size="small"
-          v-model="switchValue"
-          @click.stop="onSwitchChange"
-        />
+        <div>
+          <el-switch
+            v-show="showSwitch"
+            v-model="switchValue"
+            :effect="themes"
+            size="small"
+            @click.stop="onSwitchChange"
+          />
+        </div>
       </div>
     </template>
     <slot />

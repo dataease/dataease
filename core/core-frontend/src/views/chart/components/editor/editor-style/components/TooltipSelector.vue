@@ -7,12 +7,11 @@ import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
 import { formatterType, unitType } from '../../../js/formatter'
 import { fieldType } from '@/utils/attr'
-import { partition, uniqWith, isEqual } from 'lodash-es'
+import { partition } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useEmitt } from '@/hooks/web/useEmitt'
-import { deepCopy } from '@/utils/utils'
 
 const { t } = useI18n()
 
@@ -41,55 +40,54 @@ const quotaData = ref<Axis[]>(inject('quotaData'))
 const showSeriesTooltipFormatter = computed(() => {
   return showProperty('seriesTooltipFormatter') && !batchOptStatus.value && props.chart.id
 })
-// 初始化系列提示
-const initSeriesTooltip = () => {
+// 切换图表类型直接重置为默认
+const changeChartType = () => {
   if (!showSeriesTooltipFormatter.value) {
     return
   }
+  curSeriesFormatter.value = {}
   const formatter = state.tooltipForm.seriesTooltipFormatter
-  const seriesAxisMap = formatter.reduce((pre, next) => {
-    next.seriesId = next.seriesId ?? next.id
-    pre[next.seriesId] = next
-    return pre
-  }, {})
-  // 新增图表
-  if (!quotaAxis.value?.length) {
-    if (!formatter.length) {
-      quotaData.value?.forEach(i => formatter.push({ ...i, seriesId: i.id, show: false }))
-    }
-    curSeriesFormatter.value = {}
-    return
-  }
   formatter.splice(0, formatter.length)
-  const axisIds = quotaAxis.value?.map(i => i.id)
-  const allQuotaAxis = quotaAxis.value?.concat(
-    quotaData.value?.filter(ele => !axisIds.includes(ele.id))
-  )
-  const axisMap = allQuotaAxis.reduce((pre, next, index) => {
-    let tmp = {
-      ...next,
-      seriesId: next.seriesId ?? next.id,
-      show: index <= quotaAxis.value.length - 1,
-      summary: COUNT_DE_TYPE.includes(next.deType) ? 'count' : 'sum'
-    } as SeriesFormatter
-    if (seriesAxisMap[tmp.seriesId]) {
-      tmp = {
-        ...tmp,
-        formatterCfg: seriesAxisMap[tmp.seriesId].formatterCfg,
-        show: seriesAxisMap[tmp.seriesId].show,
-        summary: seriesAxisMap[tmp.seriesId].summary,
-        chartShowName: seriesAxisMap[tmp.seriesId].chartShowName
-      }
+  const axisIds = []
+  quotaAxis.value.forEach(axis => {
+    formatter.push({
+      ...axis,
+      show: true
+    })
+    axisIds.push(axis.id)
+  })
+  quotaData.value.forEach(quotaAxis => {
+    if (!axisIds.includes(quotaAxis.id)) {
+      formatter.push({
+        ...quotaAxis,
+        seriesId: quotaAxis.id,
+        show: false
+      })
     }
-    formatter.push(tmp)
-    pre[tmp.seriesId] = tmp
-    return pre
-  }, {})
-  if (!curSeriesFormatter.value || !axisMap[curSeriesFormatter.value.seriesId]) {
-    curSeriesFormatter.value = axisMap[formatter[0].seriesId]
-    return
+  })
+  emit('onTooltipChange', { data: state.tooltipForm, render: false }, 'seriesTooltipFormatter')
+  emit('onExtTooltipChange', extTooltip.value)
+}
+// 切换数据集
+const changeDataset = () => {
+  curSeriesFormatter.value = {}
+  const formatter = state.tooltipForm.seriesTooltipFormatter
+  const quotaIds = quotaData.value.map(i => i.id)
+  for (let i = formatter.length - 1; i >= 0; i--) {
+    if (!quotaIds.includes(formatter[i].id)) {
+      formatter.splice(i, 1)
+    }
   }
-  curSeriesFormatter.value = axisMap[curSeriesFormatter.value.seriesId]
+  const formatterIds = formatter.map(i => i.id)
+  quotaData.value.forEach(axis => {
+    if (!formatterIds.includes(axis.id)) {
+      formatter.push({
+        ...axis,
+        seriesId: axis.id,
+        show: false
+      })
+    }
+  })
 }
 const AXIS_PROP: AxisType[] = ['yAxis', 'yAxisExt', 'extBubble']
 const quotaAxis = computed(() => {
@@ -170,16 +168,6 @@ watch(
   [() => props.chart.customAttr.tooltip, () => props.chart.customAttr.tooltip.show],
   () => {
     init()
-  },
-  { deep: false }
-)
-watch(
-  [quotaData, () => props.chart.type],
-  newVal => {
-    if (!newVal?.[0]?.length) {
-      return
-    }
-    initSeriesTooltip()
   },
   { deep: false }
 )
@@ -373,6 +361,8 @@ onMounted(() => {
   useEmitt({ name: 'addAxis', callback: updateSeriesTooltipFormatter })
   useEmitt({ name: 'removeAxis', callback: updateSeriesTooltipFormatter })
   useEmitt({ name: 'updateAxis', callback: updateSeriesTooltipFormatter })
+  useEmitt({ name: 'chart-type-change', callback: changeChartType })
+  useEmitt({ name: 'dataset-change', callback: changeDataset })
 })
 </script>
 

@@ -220,11 +220,12 @@ public class PermissionManage {
 
     private String handleSysVariable(UserFormVO userEntity, String sysVariable) {
         String value = null;
-        System.out.println(sysVariable);
-        System.out.println(JsonUtil.toJSONString(userEntity));
         if (StringUtils.isNotBlank(sysVariable) && sysVariable.startsWith("${") && sysVariable.endsWith("}")) {
             String variableId = sysVariable.substring(2, sysVariable.length() - 1);
             for (SysVariableValueItem variable : userEntity.getVariables()) {
+                if (!variable.isValid()){
+                    continue;
+                }
                 if (variableId.equalsIgnoreCase(variable.getVariableId().toString())) {
                     if (variable.getSysVariableDto().getType().equalsIgnoreCase("text")) {
                         for (SysVariableValueDto sysVariableValueDto : variable.getValueList()) {

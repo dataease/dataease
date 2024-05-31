@@ -23,7 +23,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
     'background-overall-component': ['all'],
     'basic-style-selector': ['colors', 'alpha', 'gradient'],
     'label-selector': ['fontSize', 'color', 'vPosition', 'labelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter'],
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'title-selector': [
       'title',
       'fontSize',
@@ -187,7 +187,7 @@ export class Waterfall extends G2PlotChartView<WaterfallOptions, G2Waterfall> {
             let tmpValue = totalMap[id]
             let color = 'grey'
             if (id === yAxis[0].id) {
-              tmpValue = parseFloat(head.value as unknown as string)
+              tmpValue = head.data.value
               color = head.color
             }
             const value = valueFormatter(tmpValue, formatter.formatterCfg)

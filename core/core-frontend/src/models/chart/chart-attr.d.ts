@@ -105,6 +105,14 @@ declare interface ChartBasicStyle {
    */
   gaugeStyle: string
   /**
+   * 仪表盘刻度显示
+   */
+  gaugeAxisLine: boolean
+  /**
+   * 仪表盘百分比刻度
+   */
+  gaugePercentLabel: boolean
+  /**
    * 配色方案
    */
   colorScheme: string
@@ -274,13 +282,19 @@ declare interface ChartTableHeaderAttr {
    */
   tableHeaderSort: boolean
   /**
+   * @deprecated since version 2.7.0 由提示统一控制
    * 行头鼠标悬浮提示开关
    */
   showRowTooltip: boolean
   /**
+   * @deprecated since version 2.7.0 由提示统一控制
    * 列头鼠标悬浮提示开关
    */
   showColTooltip: boolean
+  /**
+   * 表头显示开关
+   */
+  showTableHeader: boolean
 }
 /**
  * 单元格属性
@@ -315,6 +329,7 @@ declare interface ChartTableCellAttr {
    */
   tableItemSubBgColor: string
   /**
+   * @deprecated since version 2.7.0 由提示统一控制
    * 鼠标悬浮提示
    */
   showTooltip: boolean

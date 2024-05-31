@@ -66,7 +66,12 @@ onMounted(() => {
 </script>
 
 <template>
-  <el-form ref="tableHeaderForm" :model="state.tableHeaderForm" label-position="top">
+  <el-form
+    :model="state.tableHeaderForm"
+    :disabled="!state.tableHeaderForm.showTableHeader"
+    ref="tableHeaderForm"
+    label-position="top"
+  >
     <el-form-item
       :label="t('chart.backgroundColor')"
       class="form-item"
@@ -243,34 +248,6 @@ onMounted(() => {
         @change="changeTableHeader('tableHeaderSort')"
       >
         {{ t('chart.table_header_sort') }}
-      </el-checkbox>
-    </el-form-item>
-    <el-form-item
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('showColTooltip')"
-    >
-      <el-checkbox
-        size="small"
-        :effect="themes"
-        v-model="state.tableHeaderForm.showColTooltip"
-        @change="changeTableHeader('showColTooltip')"
-      >
-        {{ t('chart.table_show_col_tooltip') }}
-      </el-checkbox>
-    </el-form-item>
-    <el-form-item
-      class="form-item"
-      :class="'form-item-' + themes"
-      v-if="showProperty('showRowTooltip')"
-    >
-      <el-checkbox
-        size="small"
-        :effect="themes"
-        v-model="state.tableHeaderForm.showRowTooltip"
-        @change="changeTableHeader('showRowTooltip')"
-      >
-        {{ t('chart.table_show_row_tooltip') }}
       </el-checkbox>
     </el-form-item>
   </el-form>

@@ -184,7 +184,7 @@ const state = reactive({
 })
 
 const filedList = computed(() => {
-  return [...state.dimension, ...state.quota].filter(ele => ele.id !== 'count')
+  return [...state.dimension, ...state.quota].filter(ele => ele.id !== 'count' && !!ele.summary)
 })
 
 provide('filedList', () => filedList.value)
@@ -211,6 +211,7 @@ const getFields = (id, chartId) => {
         state.quota = (res.quotaList as unknown as Field[]) || []
         state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
         state.quotaData = JSON.parse(JSON.stringify(state.quota))
+        emitter.emit('dataset-change')
       })
       .catch(() => {
         state.dimension = []
@@ -739,6 +740,7 @@ const onAreaChange = val => {
 const onTypeChange = (render, type) => {
   view.value.render = render
   view.value.type = type
+  emitter.emit('chart-type-change')
   // 处理配置项默认值，不同图表的同一配置项默认值不同
   const chartViewInstance = chartViewManager.getChartView(view.value.render, view.value.type)
   if (chartViewInstance) {
@@ -3289,7 +3291,7 @@ span {
     }
 
     :deep(.ed-tabs__content) {
-      height: calc(100% - 33px);
+      height: calc(100% - 35px);
       overflow-y: auto;
       overflow-x: hidden;
     }

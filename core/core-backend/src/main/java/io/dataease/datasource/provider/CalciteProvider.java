@@ -932,9 +932,9 @@ public class CalciteProvider {
         Properties props = new Properties();
         if (StringUtils.isNotBlank(configuration.getUsername())) {
             props.setProperty("user", configuration.getUsername());
-            if (StringUtils.isNotBlank(configuration.getPassword())) {
-                props.setProperty("password", configuration.getPassword());
-            }
+        }
+        if (StringUtils.isNotBlank(configuration.getPassword())) {
+            props.setProperty("password", configuration.getPassword());
         }
         String driverClassName = configuration.getDriver();
         ExtendedJdbcClassLoader jdbcClassLoader = extendedJdbcClassLoader;

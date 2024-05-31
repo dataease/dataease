@@ -27,7 +27,7 @@ function prop {
 
 function check_and_prepare_env_params() {
    log "当前时间 : $(date)"
-   log_title "检查安装环境并初始化环境变量"   
+   log_title "检查安装环境并初始化环境变量"
 
    cd ${CURRENT_DIR}
    if [ -f /usr/bin/dectl ]; then
@@ -39,10 +39,10 @@ function check_and_prepare_env_params() {
       log_content "停止 DataEase 服务"
       if [[ -f /etc/systemd/system/dataease.service ]];then
          systemctl stop dataease
-      else   
+      else
          dectl stop
       fi
-      
+
       INSTALL_TYPE='upgrade'
 
       v2_version=$(dectl version | head -n 2 | grep "v2.")
@@ -99,7 +99,7 @@ function prepare_de_run_base() {
    env | grep DE_ >.env
 
    mkdir -p ${DE_RUN_BASE}/{cache,logs,conf}
-   mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance}
+   mkdir -p ${DE_RUN_BASE}/data/{mysql,static-resource,map,etcd_data,geo,appearance,exportData}
    mkdir -p ${DE_RUN_BASE}/apisix/logs
    mkdir -p ${DE_RUN_BASE}/task/logs
    chmod 777 ${DE_RUN_BASE}/apisix/logs ${DE_RUN_BASE}/data/etcd_data ${DE_RUN_BASE}/task/logs
@@ -132,7 +132,7 @@ function update_dectl() {
    \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
    if [ ! -f /usr/bin/dectl ]; then
       ln -s /usr/local/bin/dectl /usr/bin/dectl 2>/dev/null
-   fi   
+   fi
 }
 
 function prepare_system_settings() {

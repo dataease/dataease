@@ -171,6 +171,8 @@ service.interceptors.response.use(
     } else if (response.config.url.match(/^\/map|geo\/\d{3}\/\d+\.json$/)) {
       //   TODO 处理静态文件
       return response
+    } else if (response.config.url.includes('DEXPack.umd.js')) {
+      return response
     } else {
       if (
         !response?.config?.url.startsWith('/xpackComponent/content') &&

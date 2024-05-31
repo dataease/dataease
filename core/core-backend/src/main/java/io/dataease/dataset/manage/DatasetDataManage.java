@@ -207,7 +207,7 @@ public class DatasetDataManage {
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
         String querySQL;
         if (start == null || count == null) {
-            querySQL = SQLProvider.createQuerySQL(sqlMeta, false, false, needOrder);
+            querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, false);
         } else {
             querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, start, count);
         }
@@ -231,7 +231,7 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        String replaceSql = SqlUtils.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, needOrder), sqlMeta, crossDs, dsMap);
+        String replaceSql = SqlUtils.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
         map.put("total", getDatasetTotal(datasetGroupInfoDTO, replaceSql, null));
         return map;
     }

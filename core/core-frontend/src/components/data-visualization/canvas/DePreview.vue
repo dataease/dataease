@@ -13,9 +13,10 @@ import { isMainCanvas } from '@/utils/canvasUtils'
 import { activeWatermark } from '@/components/watermark/watermark'
 import { personInfoApi } from '@/api/user'
 import router from '@/router'
+import { XpackComponent } from '@/components/plugin'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc } = storeToRefs(dvMainStore)
-
+const openHandler = ref(null)
 const props = defineProps({
   canvasStyleData: {
     type: Object,
@@ -238,7 +239,6 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
 
 // 目标校验： 需要校验targetSourceId 是否是当前可视化资源ID
 const winMsgHandle = event => {
-  console.info('PostMessage Params Received')
   const msgInfo = event.data
   // 校验targetSourceId
   if (
@@ -246,9 +246,9 @@ const winMsgHandle = event => {
     msgInfo.type === 'attachParams' &&
     msgInfo.targetSourceId === dvInfo.value.id + ''
   ) {
-    const attachParam = msgInfo.params
-    if (attachParam) {
-      dvMainStore.addOuterParamsFilter(attachParam, componentData.value, 'outer')
+    const attachParams = msgInfo.params
+    if (attachParams) {
+      dvMainStore.addOuterParamsFilter(attachParams, componentData.value, 'outer')
     }
   }
 }
@@ -280,6 +280,32 @@ const userViewEnlargeOpen = (opt, item) => {
 }
 const handleMouseDown = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
+}
+
+const onPointClick = param => {
+  try {
+    console.info('de_inner_params send')
+    if (window['dataease-embedded-host'] && openHandler?.value) {
+      const pm = {
+        methodName: 'embeddedInteractive',
+        args: {
+          eventName: 'de_inner_params',
+          args: param
+        }
+      }
+      openHandler.value.invokeMethod(pm)
+    } else {
+      console.info('de_inner_params send to host')
+      const targetPm = {
+        type: 'dataease-embedded-interactive',
+        eventName: 'de_inner_params',
+        args: param
+      }
+      window.parent.postMessage(targetPm, '*')
+    }
+  } catch (e) {
+    console.warn('de_inner_params send error')
+  }
 }
 defineExpose({
   restore
@@ -316,17 +342,14 @@ defineExpose({
       :scale="mobileInPc ? 100 : scaleWidth"
       :is-selector="props.isSelector"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
+      @onPointClick="onPointClick"
     />
     <user-view-enlarge ref="userViewEnlargeRef"></user-view-enlarge>
   </div>
+  <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
 <style lang="less" scoped>
-::-webkit-scrollbar {
-  width: 0px !important;
-  height: 0px !important;
-}
-
 .canvas-container {
   background-size: 100% 100% !important;
   width: 100%;
@@ -334,6 +357,10 @@ defineExpose({
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
+  ::-webkit-scrollbar {
+    width: 0px !important;
+    height: 0px !important;
+  }
 }
 
 .fix-button {

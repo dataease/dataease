@@ -78,8 +78,6 @@ const clearStyle = e => {
   if (text !== '') {
     document.execCommand('insertText', false, text)
   }
-
-  emit('input', element.value, e.target.innerHTML)
 }
 
 const handleBlur = e => {
@@ -141,11 +139,12 @@ const textStyle = computed(() => {
       @mousedown="handleMousedown"
       @blur="handleBlur"
       @input="handleInput"
-      v-html="element['propValue']"
-    ></div>
+    >
+      {{ element['propValue'] }}
+    </div>
   </div>
-  <div v-else class="v-text preview">
-    <div class="marquee-txt" :style="textStyle" v-html="element['propValue']"></div>
+  <div v-else class="v-text preview" :style="varStyle">
+    <div class="marquee-txt" :style="textStyle">{{ element['propValue'] }}</div>
   </div>
 </template>
 

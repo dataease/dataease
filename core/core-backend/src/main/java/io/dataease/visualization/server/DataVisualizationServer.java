@@ -13,6 +13,7 @@ import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.api.visualization.vo.VisualizationWatermarkVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
+import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.commons.constants.DataVisualizationConstants;
@@ -30,10 +31,7 @@ import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataMapper;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
-import io.dataease.utils.AuthUtils;
-import io.dataease.utils.BeanUtils;
-import io.dataease.utils.IDUtils;
-import io.dataease.utils.JsonUtil;
+import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
@@ -41,6 +39,7 @@ import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
 import jakarta.annotation.Resource;
+import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -48,10 +47,7 @@ import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 
@@ -64,6 +60,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private ChartViewManege chartViewManege;
+    @Resource
+    private CoreChartViewMapper coreChartViewMapper;
 
     @Resource
     private ExtDataVisualizationMapper extDataVisualizationMapper;
@@ -327,6 +325,15 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
         for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
             String originViewId = entry.getKey();
+            Object viewInfo = entry.getValue();
+            try{
+                // 旧模板图表过滤器适配
+                if(viewInfo instanceof Map && ((Map)viewInfo).get("customFilter") instanceof ArrayList){
+                    ((Map)viewInfo).put("customFilter",new HashMap<>());
+                }
+            }catch(Exception e){
+                LogUtil.error("History Adaptor Error",e);
+            }
             String originViewData = JsonUtil.toJSONString(entry.getValue()).toString();
             ChartViewDTO chartView = JsonUtil.parseObject(originViewData, ChartViewDTO.class);
             if (chartView == null) {
@@ -388,6 +395,44 @@ public class DataVisualizationServer implements DataVisualizationApi {
         wrapper.eq("org_id", AuthUtils.getUser().getDefaultOid());
         if (visualizationInfoMapper.exists(wrapper)) {
             DEException.throwException("当前名称已经存在");
+        }
+    }
+
+    public String getAbsPath(String  id) {
+        CoreChartView coreChartView = coreChartViewMapper.selectById(id);
+        if (coreChartView == null) {
+            return null;
+        }
+        if (coreChartView.getSceneId() == null) {
+            return coreChartView.getTitle();
+        }
+        List<DataVisualizationInfo> parents = getParents(coreChartView.getSceneId());
+        StringBuilder stringBuilder = new StringBuilder();
+        parents.forEach(ele -> {
+            if (ObjectUtils.isNotEmpty(ele)) {
+                stringBuilder.append(ele.getName()).append("/");
+            }
+        });
+        stringBuilder.append(coreChartView.getTitle());
+        return stringBuilder.toString();
+    }
+
+    public List<DataVisualizationInfo> getParents(Long id) {
+        List<DataVisualizationInfo> list = new ArrayList<>();
+        DataVisualizationInfo dataVisualizationInfo = visualizationInfoMapper.selectById(id);
+        list.add(dataVisualizationInfo);
+        getParent(list, dataVisualizationInfo);
+        Collections.reverse(list);
+        return list;
+    }
+
+    public void getParent(List<DataVisualizationInfo> list, DataVisualizationInfo dataVisualizationInfo) {
+        if (ObjectUtils.isNotEmpty(dataVisualizationInfo)) {
+            if (dataVisualizationInfo.getPid() != null) {
+                DataVisualizationInfo d = visualizationInfoMapper.selectById(dataVisualizationInfo.getPid());
+                list.add(d);
+                getParent(list, d);
+            }
         }
     }
 

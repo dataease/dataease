@@ -354,13 +354,14 @@ watch(
             />
           </collapse-switch-item>
           <collapse-switch-item
-            :themes="themes"
             v-if="showProperties('tooltip-selector')"
             v-model="chart.customAttr.tooltip.show"
+            :themes="themes"
             :change-model="chart.customAttr.tooltip"
-            @modelChange="val => onTooltipChange({ data: val }, 'show')"
-            name="tooltip"
             :title="$t('chart.tooltip')"
+            :show-switch="propertyInnerAll['tooltip-selector'].includes('show')"
+            name="tooltip"
+            @modelChange="val => onTooltipChange({ data: val }, 'show')"
           >
             <tooltip-selector
               class="attr-selector"
@@ -371,11 +372,15 @@ watch(
               @onExtTooltipChange="onExtTooltipChange"
             />
           </collapse-switch-item>
-          <el-collapse-item
-            :effect="themes"
-            name="tableHeader"
-            :title="t('chart.table_header')"
+          <collapse-switch-item
             v-if="showProperties('table-header-selector')"
+            v-model="chart.customAttr.tableHeader.showTableHeader"
+            :change-model="chart.customAttr.tableHeader"
+            :effect="themes"
+            :title="t('chart.table_header')"
+            :show-switch="propertyInnerAll['table-header-selector'].includes('showTableHeader')"
+            name="tableHeader"
+            @modelChange="val => onTableHeaderChange(val, 'showTableHeader')"
           >
             <table-header-selector
               :property-inner="propertyInnerAll['table-header-selector']"
@@ -383,7 +388,7 @@ watch(
               :chart="chart"
               @onTableHeaderChange="onTableHeaderChange"
             />
-          </el-collapse-item>
+          </collapse-switch-item>
           <el-collapse-item
             :effect="themes"
             name="tableCell"
@@ -434,7 +439,7 @@ watch(
             :change-model="chart.customStyle.xAxis"
             @modelChange="val => onChangeXAxisForm(val, 'show')"
             name="xAxis"
-            :title="chart.type === 'bidirectional-bar' ? $t('chart.yAxis') : t('chart.xAxis')"
+            :title="selectorSpec['x-axis-selector']?.title"
           >
             <x-axis-selector
               class="attr-selector"
@@ -469,7 +474,7 @@ watch(
             :change-model="chart.customStyle.yAxis"
             @modelChange="val => onChangeYAxisForm(val, 'show')"
             name="yAxis"
-            :title="chart.type === 'bidirectional-bar' ? $t('chart.xAxis') : $t('chart.yAxis')"
+            :title="selectorSpec['dual-y-axis-selector']?.title"
           >
             <dual-y-axis-selector
               class="attr-selector"

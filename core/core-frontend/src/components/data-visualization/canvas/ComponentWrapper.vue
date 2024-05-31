@@ -83,7 +83,7 @@ const { config, showPosition, index, canvasStyleData, canvasViewInfo, dvInfo, se
   toRefs(props)
 let currentInstance
 const component = ref(null)
-const emits = defineEmits(['userViewEnlargeOpen'])
+const emits = defineEmits(['userViewEnlargeOpen', 'onPointClick'])
 
 const htmlToImage = () => {
   setTimeout(() => {
@@ -180,6 +180,10 @@ const commonBackgroundSvgInner = computed(() => {
   }
 })
 
+const onPointClick = param => {
+  emits('onPointClick', param)
+}
+
 const deepScale = computed(() => scale.value / 100)
 </script>
 
@@ -234,6 +238,7 @@ const deepScale = computed(() => scale.value / 100)
           :scale="deepScale"
           :disabled="true"
           :is-edit="false"
+          @onPointClick="onPointClick"
         />
       </div>
     </div>

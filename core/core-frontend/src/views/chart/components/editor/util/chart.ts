@@ -349,7 +349,8 @@ export const DEFAULT_TABLE_HEADER: ChartTableHeaderAttr = {
   tableTitleHeight: 36,
   tableHeaderSort: false,
   showColTooltip: false,
-  showRowTooltip: false
+  showRowTooltip: false,
+  showTableHeader: true
 }
 export const DEFAULT_TABLE_CELL: ChartTableCellAttr = {
   tableFontColor: '#000000',
@@ -1445,7 +1446,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   tableLayoutMode: 'grid',
   calcTopN: false,
   topN: 5,
-  topNLabel: '其他'
+  topNLabel: '其他',
+  gaugeAxisLine: true,
+  gaugePercentLabel: true
 }
 
 export const BASE_VIEW_CONFIG = {

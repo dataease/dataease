@@ -16,6 +16,7 @@ import {
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { Options } from '@antv/g2plot/esm'
 const { t } = useI18n()
 /**
  * 对称柱状图
@@ -87,7 +88,17 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'function-cfg': ['emptyDataStrategy'],
     'label-selector': ['hPosition', 'seriesLabelFormatter'],
-    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter']
+    'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show']
+  }
+
+  selectorSpec: EditorSelectorSpec = {
+    ...this['selectorSpec'],
+    'dual-y-axis-selector': {
+      title: `${t('chart.xAxis')}`
+    },
+    'x-axis-selector': {
+      title: `${t('chart.yAxis')}`
+    }
   }
 
   drawChart(drawOptions: G2PlotDrawOptions<G2BidirectionalBar>): G2BidirectionalBar {
@@ -118,11 +129,27 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       },
       interactions: [{ type: 'active-region' }],
       yField: ['value', 'valueExt'],
-      appendPadding: getPadding(chart)
+      appendPadding: getPadding(chart),
+      meta: {
+        field: {
+          type: 'cat'
+        }
+      }
     }
-
-    const options = this.setupOptions(chart, initOptions)
-
+    const customOptions = this.setupOptions(chart, initOptions)
+    const options = {
+      ...customOptions
+    }
+    const xAxis = chart.xAxis
+    if (xAxis?.length === 1 && xAxis[0].deType === 1) {
+      const values = data2.map(item => item.field)
+      options.meta = {
+        field: {
+          type: 'cat',
+          values: values.reverse()
+        }
+      }
+    }
     // 开始渲染
     const newChart = new G2BidirectionalBar(container, options)
 
@@ -416,6 +443,45 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       }
     }
     return { ...options, label }
+  }
+
+  protected configEmptyDataStrategy(
+    chart: Chart,
+    options: BidirectionalBarOptions
+  ): BidirectionalBarOptions {
+    const { data } = options as unknown as Options
+    if (!data?.length) {
+      return options
+    }
+    const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
+    if (strategy === 'ignoreData') {
+      const emptyFields = data
+        .filter(obj => obj['value'] === null || obj['valueExt'] === null)
+        .map(obj => obj['field'])
+      return {
+        ...options,
+        data: data.filter(obj => {
+          if (emptyFields.includes(obj['field'])) {
+            return false
+          }
+          return true
+        })
+      }
+    }
+    const updateValues = (strategy: 'breakLine' | 'setZero', data: any[]) => {
+      data.forEach(obj => {
+        if (obj['value'] === null) {
+          obj['value'] = strategy === 'breakLine' ? null : 0
+        }
+        if (obj['valueExt'] === null) {
+          obj['valueExt'] = strategy === 'breakLine' ? null : 0
+        }
+      })
+    }
+    if (strategy === 'breakLine' || strategy === 'setZero') {
+      updateValues(strategy, data)
+    }
+    return options
   }
 
   protected setupOptions(chart: Chart, options: BidirectionalBarOptions) {

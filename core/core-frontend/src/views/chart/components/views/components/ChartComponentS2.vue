@@ -207,7 +207,8 @@ const initScroll = () => {
       return
     }
     const rowHeight = customAttr.tableCell.tableItemHeight
-    const headerHeight = customAttr.tableHeader.tableTitleHeight
+    const headerHeight =
+      customAttr.tableHeader.showTableHeader === false ? 1 : customAttr.tableHeader.tableTitleHeight
     const scrollBarSize = myChart.theme.scrollBar.size
     const scrollHeight =
       rowHeight * chartData.value.tableRow.length + headerHeight - offsetHeight + scrollBarSize
@@ -261,7 +262,7 @@ const action = param => {
       left: param.x - 50,
       top: param.y + 10
     }
-    trackBarStyleCheck(props.element, barStyleTemp, props.scale)
+    trackBarStyleCheck(props.element, barStyleTemp, props.scale, trackMenu.value.length)
     state.trackBarStyle.left = barStyleTemp.left + 'px'
     state.trackBarStyle.top = barStyleTemp.top + 'px'
     viewTrack.value.trackButtonClick()

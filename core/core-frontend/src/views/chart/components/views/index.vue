@@ -50,7 +50,8 @@ const dvMainStore = dvMainStoreWithOut()
 let innerRefreshTimer = null
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-const isIframe = computed(() => appStore.getIsIframe)
+
+const emit = defineEmits(['onPointClick'])
 
 const { nowPanelJumpInfo, publicLinkStatus, dvInfo, curComponent, canvasStyleData, mobileInPc } =
   storeToRefs(dvMainStore)
@@ -253,7 +254,7 @@ const initTitle = () => {
       state.title_show = customStyle.text.show
       state.title_class.fontSize = customStyle.text.fontSize * scale.value + 'px'
       state.title_class.color = customStyle.text.color
-      state.title_class.textAlign = customStyle.text.hPosition
+      state.title_class.textAlign = customStyle.text.hPosition as CSSProperties['textAlign']
       state.title_class.fontStyle = customStyle.text.isItalic ? 'italic' : 'normal'
       state.title_class.fontWeight = customStyle.text.isBolder ? 'bold' : 'normal'
 
@@ -286,14 +287,12 @@ const drillJump = (index: number) => {
 
 const onPointClick = param => {
   try {
-    console.info('de_inner_params send')
     const msg = {
-      type: 'de_inner_params',
       sourceDvId: dvInfo.value.id,
       sourceViewId: view.value.id,
-      message: Base64.encode(param)
+      message: Base64.encode(JSON.stringify(param))
     }
-    window.parent.postMessage(msg, '*')
+    emit('onPointClick', msg)
   } catch (e) {
     console.warn('de_inner_params send error')
   }
@@ -346,11 +345,15 @@ const initOpenHandler = newWindow => {
   }
 }
 
+const divEmbedded = type => {
+  useEmitt().emitter.emit('changeCurrentComponent', type)
+}
+
 const windowsJump = (url, jumpType) => {
   try {
     const newWindow = window.open(url, jumpType)
     initOpenHandler(newWindow)
-    if (jumpType === '_self' && !embeddedStore.baseUrl) {
+    if (jumpType === '_self') {
       location.reload()
     }
   } catch (e) {
@@ -384,6 +387,7 @@ const jumpClick = param => {
     param.sourceViewId = param.viewId
     param.sourceFieldId = dimension.id
     let embeddedBaseUrl = ''
+    const divSelf = isDataEaseBi.value && jumpInfo.jumpType === '_self'
     if (isDataEaseBi.value) {
       embeddedBaseUrl = embeddedStore.baseUrl
     }
@@ -406,6 +410,12 @@ const jumpClick = param => {
           const url = `${embeddedBaseUrl}#/preview?dvId=${
             jumpInfo.targetDvId
           }&jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
+          if (divSelf) {
+            embeddedStore.setDvId(jumpInfo.targetDvId)
+            embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
+            divEmbedded('Preview')
+            return
+          }
           windowsJump(url, jumpInfo.jumpType)
         }
       } else {
@@ -415,6 +425,11 @@ const jumpClick = param => {
       const colList = [...param.dimensionList, ...param.quotaList]
       let url = setIdValueTrans('id', 'value', jumpInfo.content, colList)
       url = checkAddHttp(url)
+      if (divSelf) {
+        embeddedStore.setOuterUrl(url)
+        divEmbedded('Iframe')
+        return
+      }
       windowsJump(url, jumpInfo.jumpType)
     }
   } else {
@@ -566,7 +581,7 @@ const chartAreaShow = computed(() => {
   if (view.value['dataFrom'] === 'template') {
     return true
   }
-  if (view.value.customAttr.map.id) {
+  if (view.value.customAttr?.map?.id) {
     const MAP_CHARTS = ['map', 'bubble-map', 'flow-map']
     if (MAP_CHARTS.includes(view.value.type)) {
       return true
@@ -639,6 +654,13 @@ const titleIconStyle = computed(() => {
     color: canvasStyleData.value.component.seniorStyleSetting.linkageIconColor
   }
 })
+const chartHover = ref(false)
+const showActionIcons = computed(() => {
+  if (!chartHover.value) {
+    return false
+  }
+  return trackMenu.value.length > 0 || state.title_remark.show
+})
 </script>
 
 <template>
@@ -647,6 +669,8 @@ const titleIconStyle = computed(() => {
     :class="{ 'report-load-finish': !loadingFlag }"
     v-loading="loadingFlag"
     element-loading-background="rgba(0,0,0,0)"
+    @mouseover="chartHover = true"
+    @mouseleave="chartHover = false"
   >
     <div
       class="title-container"
@@ -669,36 +693,38 @@ const titleIconStyle = computed(() => {
           @change="onTitleChange"
         />
       </template>
-      <div
-        class="icons-container"
-        :class="{ 'is-editing': titleEditStatus }"
-        :style="titleIconStyle"
-        v-if="trackMenu.length > 0 || state.title_remark.show"
-      >
-        <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
-          <template #content>
-            <div style="white-space: pre-wrap" v-html="state.title_remark.remark"></div>
-          </template>
-          <el-icon :size="iconSize" class="inner-icon">
-            <Icon name="icon_info_outlined" />
-          </el-icon>
-        </el-tooltip>
-        <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
-          <el-icon :size="iconSize" class="inner-icon">
-            <Icon name="icon_link-record_outlined" />
-          </el-icon>
-        </el-tooltip>
-        <el-tooltip :effect="toolTip" placement="top" content="已设置跳转" v-if="hasJumpIcon">
-          <el-icon :size="iconSize" class="inner-icon">
-            <Icon name="icon_viewinchat_outlined" />
-          </el-icon>
-        </el-tooltip>
-        <el-tooltip :effect="toolTip" placement="top" content="已设置下钻" v-if="hasDrillIcon">
-          <el-icon :size="iconSize" class="inner-icon">
-            <Icon name="icon_drilling_outlined" />
-          </el-icon>
-        </el-tooltip>
-      </div>
+      <transition name="fade">
+        <div
+          class="icons-container"
+          :class="{ 'is-editing': titleEditStatus }"
+          :style="titleIconStyle"
+          v-show="showActionIcons"
+        >
+          <el-tooltip :effect="toolTip" placement="top" v-if="state.title_remark.show">
+            <template #content>
+              <div style="white-space: pre-wrap" v-html="state.title_remark.remark"></div>
+            </template>
+            <el-icon :size="iconSize" class="inner-icon">
+              <Icon name="icon_info_outlined" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip :effect="toolTip" placement="top" content="已设置联动" v-if="hasLinkIcon">
+            <el-icon :size="iconSize" class="inner-icon">
+              <Icon name="icon_link-record_outlined" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip :effect="toolTip" placement="top" content="已设置跳转" v-if="hasJumpIcon">
+            <el-icon :size="iconSize" class="inner-icon">
+              <Icon name="icon_viewinchat_outlined" />
+            </el-icon>
+          </el-tooltip>
+          <el-tooltip :effect="toolTip" placement="top" content="已设置下钻" v-if="hasDrillIcon">
+            <el-icon :size="iconSize" class="inner-icon">
+              <Icon name="icon_drilling_outlined" />
+            </el-icon>
+          </el-tooltip>
+        </div>
+      </transition>
     </div>
     <!--这里去渲染不同图库的图表-->
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
@@ -800,5 +826,14 @@ const titleIconStyle = computed(() => {
       cursor: pointer;
     }
   }
+}
+.fade-enter-active,
+.fade-leave-active {
+  transition: opacity 0.5s ease;
+}
+
+.fade-enter-from,
+.fade-leave-to {
+  opacity: 0;
 }
 </style>

@@ -1,9 +1,16 @@
 <script lang="ts" setup>
 import noLic from './nolic.vue'
-import { ref, useAttrs } from 'vue'
+import { ref, useAttrs, onMounted } from 'vue'
 import { execute, randomKey, formatArray } from './convert'
-import { load } from '@/api/plugin'
+import { load, loadDistributed, xpackModelApi } from '@/api/plugin'
 import { useCache } from '@/hooks/web/useCache'
+import { i18n } from '@/plugins/vue-i18n'
+import * as Vue from 'vue'
+import axios from 'axios'
+import * as Pinia from 'pinia'
+import * as vueI18n from 'vue-i18n'
+import * as vueRouter from 'vue-router'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const { wsCache } = useCache()
 
@@ -73,11 +80,44 @@ const storeCacheProxy = byteArray => {
   })
   wsCache.set(`de-plugin-proxy`, JSON.stringify(result))
 }
-loadComponent()
 const pluginProxy = ref(null)
 const invokeMethod = param => {
   pluginProxy.value['invokeMethod'](param)
 }
+
+onMounted(async () => {
+  const key = 'xpack-model-distributed'
+  let distributed = false
+  if (wsCache.get(key) === null) {
+    const res = await xpackModelApi()
+    wsCache.set('xpack-model-distributed', res.data)
+    distributed = res.data
+  } else {
+    distributed = wsCache.get(key)
+  }
+  if (distributed) {
+    window['Vue'] = Vue
+    window['Axios'] = axios
+    window['Pinia'] = Pinia
+    window['vueI18n'] = vueI18n
+    window['vueRouter'] = vueRouter
+    window['MittAll'] = useEmitt().emitter.all
+    window['i18n'] = i18n
+    if (window['DEXPack']) {
+      const xpack = await window['DEXPack'].mapping[attrs.jsname]
+      plugin.value = xpack.default
+    } else {
+      loadDistributed().then(async res => {
+        new Function(res.data)()
+        const xpack = await window['DEXPack'].mapping[attrs.jsname]
+        plugin.value = xpack.default
+      })
+    }
+  } else {
+    loadComponent()
+  }
+})
+
 const emits = defineEmits(['loadFail'])
 defineExpose({
   invokeMethod

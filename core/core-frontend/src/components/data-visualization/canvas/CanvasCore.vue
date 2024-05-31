@@ -1391,6 +1391,7 @@ onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
     initSnapshotTimer()
     initWatermark()
+    dvMainStore.setEditMode('edit')
   }
   // 获取编辑器元素
   composeStore.getEditor(canvasId.value)

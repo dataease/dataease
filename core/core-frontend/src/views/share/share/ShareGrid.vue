@@ -105,6 +105,29 @@ const getEmptyDesc = (): string => {
 
   return ''
 }
+
+const handleCellClick = row => {
+  if (row) {
+    const sourceId = row.resourceId
+    if (['dashboard', 'panel'].includes(row.type)) {
+      window.open('#/panel/index?dvId=' + sourceId, '_self')
+    } else if (['dataV', 'screen'].includes(row.type)) {
+      window.open('#/screen/index?dvId=' + sourceId, '_self')
+    }
+  }
+}
+
+const iconMap = {
+  panel: 'icon_dashboard_outlined',
+  panelMobile: 'dv-dashboard-spine-mobile',
+  dashboard: 'icon_dashboard_outlined',
+  dashboardMobile: 'dv-dashboard-spine-mobile',
+  screen: 'icon_operation-analysis_outlined',
+  dataV: 'icon_operation-analysis_outlined',
+  dataset: 'icon_app_outlined',
+  datasource: 'icon_database_outlined'
+}
+
 watch(
   () => props.activeName,
   () => {
@@ -159,6 +182,7 @@ watch(
       @sort-change="sortChange"
       :empty-desc="emptyDesc"
       :empty-img="imgType"
+      @cell-click="handleCellClick"
       class="workbranch-grid"
     >
       <el-table-column key="name" width="280" prop="name" :label="t('common.name')">
@@ -167,8 +191,8 @@ watch(
             <el-icon style="margin-right: 12px; font-size: 18px" v-if="scope.row.extFlag">
               <Icon name="dv-dashboard-spine-mobile"></Icon>
             </el-icon>
-            <el-icon class="main-color" v-else>
-              <Icon name="icon_dashboard_outlined" />
+            <el-icon v-else :class="`main-color color-${scope.row.type}`">
+              <Icon :name="iconMap[scope.row.type]" />
             </el-icon>
             <el-tooltip placement="top">
               <template #content>{{ scope.row.name }}</template>

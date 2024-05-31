@@ -834,6 +834,34 @@ onMounted(() => {
         />
       </el-select>
     </el-form-item>
+    <el-form-item
+      v-if="showProperty('gaugeAxisLine')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        v-model="state.basicStyleForm.gaugeAxisLine"
+        :effect="themes"
+        size="small"
+        @change="changeBasicStyle('gaugeAxisLine')"
+      >
+        {{ t('chart.gauge_axis_label') }}</el-checkbox
+      >
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('gaugePercentLabel') && state.basicStyleForm.gaugeAxisLine"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        v-model="state.basicStyleForm.gaugePercentLabel"
+        :effect="themes"
+        size="small"
+        @change="changeBasicStyle('gaugePercentLabel')"
+      >
+        {{ t('chart.gauge_percentage_tick') }}</el-checkbox
+      >
+    </el-form-item>
     <!--gauge end-->
     <!--bar start-->
     <el-form-item
