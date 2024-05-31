@@ -142,7 +142,6 @@ onMounted(() => {
           :label="t('chart.split_line')"
           class="form-item"
           :class="'form-item-' + themes"
-          style="padding-right: 4px"
         >
           <el-color-picker
             v-model="state.quadrantForm.lineStyle.stroke"
@@ -189,12 +188,7 @@ onMounted(() => {
         </el-form-item>
       </div>
       <div style="display: flex">
-        <el-form-item
-          class="form-item"
-          label="X 轴恒线"
-          :class="'form-item-' + themes"
-          style="padding-left: 4px"
-        >
+        <el-form-item class="form-item" label="X 轴恒线" :class="'form-item-' + themes">
           <el-input-number
             controls-position="right"
             style="width: 100%"
@@ -225,7 +219,7 @@ onMounted(() => {
         </el-form-item>
       </div>
     </template>
-    <el-tabs v-model="tabActive" class="quadrant-tab-header" :class="{ dark: themes === 'dark' }">
+    <el-tabs v-model="tabActive" class="tab-header" :class="{ dark: themes === 'dark' }">
       <el-tab-pane
         :name="index + 1"
         v-for="(l, index) in state.quadrantForm.labels"
@@ -239,7 +233,6 @@ onMounted(() => {
               <el-form-item
                 class="form-item"
                 :class="'form-item-' + themes"
-                style="padding-right: 4px"
                 :label="t('chart.backgroundColor')"
               >
                 <el-color-picker
@@ -290,7 +283,6 @@ onMounted(() => {
               <el-form-item
                 class="form-item"
                 :class="'form-item-' + themes"
-                style="padding-right: 4px"
                 :label="t('chart.chart_style')"
               >
                 <el-color-picker
@@ -382,48 +374,6 @@ onMounted(() => {
 
     &.m-divider--dark {
       border-color: rgba(235, 235, 235, 0.15);
-    }
-  }
-  .quadrant-tab-header {
-    --ed-tabs-header-height: 34px;
-    --custom-tab-color: #646a73;
-
-    :deep(.ed-tabs__nav-wrap::after) {
-      background-color: unset;
-    }
-
-    &.dark {
-      --custom-tab-color: #a6a6a6;
-    }
-
-    height: 100%;
-    :deep(.ed-tabs__header) {
-      border-top: solid 1px @side-outline-border-color;
-    }
-    :deep(.ed-tabs__item) {
-      font-weight: 400;
-      font-size: 12px;
-      padding: 0 12px !important;
-      margin-right: 0 !important;
-      color: var(--custom-tab-color);
-    }
-    :deep(.is-active) {
-      font-weight: 500;
-      color: var(--ed-color-primary, #3370ff);
-    }
-
-    :deep(.ed-tabs__nav-scroll) {
-      padding-left: 0 !important;
-    }
-
-    :deep(.ed-tabs__header) {
-      margin: 0 !important;
-    }
-
-    :deep(.ed-tabs__content) {
-      height: calc(100% - 33px);
-      overflow-y: auto;
-      overflow-x: hidden;
     }
   }
   .padding-tab {

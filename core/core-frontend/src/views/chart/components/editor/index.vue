@@ -3166,7 +3166,7 @@ span {
   display: flex;
   transition: 0.5s;
   .padding-lr {
-    padding: 0 8px;
+    padding: 0 10px;
 
     &.no-top-border {
       border-top: none !important;
@@ -3217,7 +3217,7 @@ span {
     }
 
     :deep(.ed-collapse-item__content) {
-      padding: 16px 8px 0;
+      padding: 16px 10px 0;
       border: none;
       :deep(.ed-checkbox) {
         height: 20px;
