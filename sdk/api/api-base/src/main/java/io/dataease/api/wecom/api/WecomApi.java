@@ -19,6 +19,10 @@ public interface WecomApi {
     @GetMapping("/info")
     WecomInfoVO info();
 
+    @Operation(summary = "查询企微二维码信息")
+    @GetMapping("/qrinfo")
+    WecomInfoVO qrinfo();
+
     @Operation(summary = "保存")
     @PostMapping("/create")
     void save(@RequestBody WecomCreator creator);
