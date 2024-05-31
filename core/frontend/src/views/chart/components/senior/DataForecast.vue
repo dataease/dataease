@@ -80,6 +80,7 @@
         />
       </el-form-item>
       <el-form-item
+        v-show="false"
         class="form-item"
         :label="$t('chart.forecast_confidence_interval')"
       >
@@ -97,6 +98,7 @@
         </el-select>
       </el-form-item>
       <el-form-item
+        v-show="false"
         v-if="forecastCfg.ciType === 'custom'"
         class="form-item"
         :label="$t('chart.custom_case')"
