@@ -57,6 +57,7 @@ public class PanelGroupController {
 
     @ApiOperation("查询树")
     @PostMapping("/tree")
+    @I18n
     public List<PanelGroupDTO> tree(@RequestBody PanelGroupRequest request) {
         return panelGroupService.tree(request);
     }
