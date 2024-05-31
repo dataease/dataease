@@ -69,7 +69,7 @@ const switchValue = computed({
   display: flex;
   justify-content: space-between;
   align-items: center;
-  padding-right: 8px;
+  padding-right: 10px;
   flex-grow: 1;
   :deep(.ed-switch.is-checked .ed-switch__core > .ed-switch__action) {
     left: calc(100% - 12px);
