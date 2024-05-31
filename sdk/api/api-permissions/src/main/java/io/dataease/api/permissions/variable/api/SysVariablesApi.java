@@ -32,11 +32,11 @@ public interface SysVariablesApi {
 
     @Operation(summary = "删除")
     @GetMapping("/delete/{id}")
-    void delete(@PathVariable Long id);
+    void delete(@PathVariable("id") Long id);
 
     @Operation(summary = "详细信息")
     @GetMapping("/detail/{id}")
-    SysVariableDto detail(@PathVariable Long id);
+    SysVariableDto detail(@PathVariable("id") Long id);
 
     @Operation(summary = "查询")
     @PostMapping("/query")
@@ -52,7 +52,7 @@ public interface SysVariablesApi {
 
     @Operation(summary = "删除")
     @GetMapping("/value/delete/{id}")
-    void deleteValue(@PathVariable String id);
+    void deleteValue(@PathVariable("id") String id);
 
     @GetMapping("/value/selected/{id}")
     List<SysVariableValueDto> selectVariableValue(@PathVariable("id") Long id);

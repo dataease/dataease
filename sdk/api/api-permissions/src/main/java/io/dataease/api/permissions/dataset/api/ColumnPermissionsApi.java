@@ -2,8 +2,6 @@ package io.dataease.api.permissions.dataset.api;
 
 import com.baomidou.mybatisplus.core.metadata.IPage;
 import io.dataease.api.permissions.dataset.dto.DataSetColumnPermissionsDTO;
-import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
-import io.dataease.api.permissions.dataset.dto.Item;
 import io.dataease.auth.DeApiPath;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -19,7 +17,7 @@ import static io.dataease.constant.AuthResourceEnum.DATASET;
 public interface ColumnPermissionsApi {
 
     @GetMapping("/pager/{datasetId}/{goPage}/{pageSize}")
-    public IPage<DataSetColumnPermissionsDTO> columnPermissions(@PathVariable Long datasetId, @PathVariable int goPage, @PathVariable int pageSize);
+    public IPage<DataSetColumnPermissionsDTO> columnPermissions(@PathVariable("datasetId") Long datasetId, @PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize);
 
     @PostMapping("save")
     public void save(@RequestBody DataSetColumnPermissionsDTO dataSetColumnPermissionsDTO);

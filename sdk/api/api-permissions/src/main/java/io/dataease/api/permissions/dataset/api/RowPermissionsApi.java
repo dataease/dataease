@@ -18,7 +18,7 @@ import static io.dataease.constant.AuthResourceEnum.DATASET;
 public interface RowPermissionsApi {
 
     @GetMapping("/pager/{datasetId}/{goPage}/{pageSize}")
-    public IPage<DataSetRowPermissionsTreeDTO> rowPermissions(@PathVariable Long datasetId, @PathVariable int goPage, @PathVariable int pageSize);
+    public IPage<DataSetRowPermissionsTreeDTO> rowPermissions(@PathVariable("datasetId") Long datasetId, @PathVariable("goPage") int goPage, @PathVariable("pageSize") int pageSize);
 
 
     @PostMapping("save")
@@ -30,7 +30,7 @@ public interface RowPermissionsApi {
 
 
     @GetMapping("/authObjs/{datasetId}/{type}")
-    public List<Item> authObjs(@PathVariable Long datasetId, @PathVariable String type);
+    public List<Item> authObjs(@PathVariable("datasetId") Long datasetId, @PathVariable("type") String type);
 
     @PostMapping("/dataSetRowPermissionInfo")
     public DataSetRowPermissionsTreeDTO dataSetRowPermissionInfo(@RequestBody DataSetRowPermissionsTreeDTO request);
