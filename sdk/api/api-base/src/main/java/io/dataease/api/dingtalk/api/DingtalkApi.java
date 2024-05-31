@@ -19,6 +19,10 @@ public interface DingtalkApi {
     @GetMapping("/info")
     DingtalkInfoVO info();
 
+    @Operation(summary = "查询钉钉二维码信息")
+    @GetMapping("/qrinfo")
+    DingtalkInfoVO qrinfo();
+
     @Operation(summary = "保存")
     @PostMapping("/create")
     void save(@RequestBody DingtalkSettingCreator creator);
