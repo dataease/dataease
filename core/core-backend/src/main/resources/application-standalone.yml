@@ -3,6 +3,10 @@ spring:
     url: jdbc:mysql://localhost:3306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
     username: root
     password: 123456
+#  datasource:
+#    url: jdbc:mysql://39.98.78.97:13306/dataease?autoReconnect=false&useUnicode=true&characterEncoding=UTF-8&characterSetResults=UTF-8&zeroDateTimeBehavior=convertToNull&useSSL=false&allowPublicKeyRetrieval=true
+#    username: root
+#    password: Password123@mysql
   messages:
     basename: i18n/lic,i18n/core,i18n/permissions,i18n/xpack
   flyway:
