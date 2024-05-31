@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, computed, onMounted, watch } from 'vue'
+import { ref, computed, onMounted, watch, onUnmounted } from 'vue'
 import { storeToRefs } from 'pinia'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useCache } from '@/hooks/web/useCache'
@@ -160,11 +160,22 @@ const getTree = async () => {
   if (nodeData.length && nodeData[0]['id'] === '0' && nodeData[0]['name'] === 'root') {
     tableData.value = dfsTableData(nodeData[0]['children'] || [])
     rawTableData = cloneDeep(tableData.value)
+    setSortType()
     return
   }
   tableData.value = dfsTableData(nodeData)
   rawTableData = cloneDeep(tableData.value)
+  setSortType()
 }
+
+const setSortType = () => {
+  const type = wsCache.get('mobile-sort-type')
+  sortTypeChange(type || curSortType.value)
+}
+
+onUnmounted(() => {
+  wsCache.set('mobile-sort-type', curSortType.value)
+})
 
 onMounted(() => {
   getTree()
