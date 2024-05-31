@@ -541,10 +541,8 @@ export default {
       const customAttr = JSON.parse(this.chart.customAttr)
       const senior = JSON.parse(this.chart.senior)
       if (senior?.scrollCfg?.open) {
-        if (this.chart.type !== 'table-normal') {
-          if (this.chart.type === 'table-info' && !this.showPage) {
-            return
-          }
+        if (this.chart.type === 'table-info' && this.showPage) {
+          return
         }
         // 防止多次渲染
         this.myChart.facet.timer?.stop()
