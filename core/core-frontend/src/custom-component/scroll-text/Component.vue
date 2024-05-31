@@ -187,10 +187,10 @@ const textStyle = computed(() => {
 }
 @keyframes marqueeAnimation {
   0% {
-    transform: translate(0, 0);
+    transform: translate(100%, 0);
   }
   100% {
-    transform: translate(-100%, 0);
+    transform: translate(-50%, 0);
   }
 }
 </style>
