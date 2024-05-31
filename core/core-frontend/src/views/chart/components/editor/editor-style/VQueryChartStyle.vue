@@ -38,11 +38,6 @@ const { element, chart, commonBackgroundPop } = toRefs(props)
         <el-collapse-item :effect="themes" name="component" :title="t('visualization.module')">
           <el-form label-position="top">
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox :effect="themes" v-model="element.isHang" size="small">
-                隐藏组件
-              </el-checkbox>
-            </el-form-item>
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
               <el-checkbox
                 :effect="themes"
                 size="small"
