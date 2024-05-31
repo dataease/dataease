@@ -100,9 +100,11 @@ ALTER TABLE `sys_task_email`
 
 DROP TABLE IF EXISTS `sys_login_limit`;
 CREATE TABLE `sys_login_limit` (
+   `id` BIGINT auto_increment NOT NULL,
    `login_type` int(8) NOT NULL,
    `username` varchar(255) NOT NULL,
-   `record_time` bigint(13) NOT NULL
+   `record_time` bigint(13) NOT NULL,
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 UPDATE `sys_menu` SET `pid` = 0, `sub_count` = 0, `type` = 1, `title` = '模板市场', `name` = 'template-market', `component` = 'panel/templateMarket/index', `menu_sort` = 5, `icon` = 'dashboard', `path` = '/templateMarket', `i_frame` = 0, `cache` = 0, `hidden` = 0, `permission` = 'template-market:read', `create_by` = NULL, `update_by` = NULL, `create_time` = NULL, `update_time` = 1620444227389 WHERE `menu_id` = 202;

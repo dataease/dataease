@@ -14,6 +14,7 @@ CREATE TABLE `dataset_row_permissions` (
 
 
 ALTER TABLE `panel_link` ADD COLUMN `user_id` BIGINT(20) NULL DEFAULT NULL, DROP PRIMARY KEY;
+ALTER TABLE `panel_link` ADD `id` BIGINT auto_increment NOT NULL PRIMARY KEY;
 
 ALTER TABLE `panel_link_mapping` ADD COLUMN `user_id` BIGINT(20) NULL DEFAULT NULL ;
 

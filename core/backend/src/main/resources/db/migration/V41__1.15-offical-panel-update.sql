@@ -1822,33 +1822,35 @@ FOREIGN_KEY_CHECKS = 0;
 -- ----------------------------
 CREATE TABLE `demo_alt_4a`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `tourist_attraction` varchar(255) DEFAULT NULL,
-    `number_visitors`    double       DEFAULT NULL
+    `number_visitors`    double       DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_alt_4a
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('滨河景区', 19.18);
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('矿山公园', 14.18);
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('草原石人哈萨克民族文化园', 2.21);
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('乌伦古湖景区', 1.67);
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('草原石城景区', 1.41);
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('中俄老码头风情街', 5.4);
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('三道海子景区', 0.23);
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('哈巴河县白桦林景区', 10.53);
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('五彩滩', 5.57);
-INSERT INTO `demo_alt_4a`
+INSERT INTO `demo_alt_4a`(`tourist_attraction`,`number_visitors`)
 VALUES ('桦林公园', 0.88);
 COMMIT;
 
@@ -1857,17 +1859,19 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_alt_4a_5a`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `tourist_attraction` varchar(255) DEFAULT NULL,
-    `number_visitors`    double       DEFAULT NULL
+    `number_visitors`    double       DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_alt_4a_5a
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_alt_4a_5a`
+INSERT INTO `demo_alt_4a_5a`(`tourist_attraction`,`number_visitors`)
 VALUES ('4A级景区', 61.26);
-INSERT INTO `demo_alt_4a_5a`
+INSERT INTO `demo_alt_4a_5a`(`tourist_attraction`,`number_visitors`)
 VALUES ('5A级景区', 43.87);
 COMMIT;
 
@@ -1876,17 +1880,19 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_alt_5a`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `tourist_attraction` text,
-    `number_visitors`    double DEFAULT NULL
+    `number_visitors`    double DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_alt_5a
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_alt_5a`
+INSERT INTO `demo_alt_5a`(`tourist_attraction`,`number_visitors`)
 VALUES ('喀纳斯景区', 33.95);
-INSERT INTO `demo_alt_5a`
+INSERT INTO `demo_alt_5a`(`tourist_attraction`,`number_visitors`)
 VALUES ('可可托海景区', 9.93);
 COMMIT;
 
@@ -1895,61 +1901,63 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_alt_region`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `city`            varchar(255) DEFAULT NULL,
-    `number_visitors` int(11) DEFAULT NULL
+    `number_visitors` int(11) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_alt_region
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('阿勒泰地区', 31301);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('吐鲁番市', 19174);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('克拉玛依市', 12125);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('和田地区', 2676);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('塔城地区', 9610);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('石河子市', 70920);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('胡杨河市', 43709);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('伊犁哈萨克自治州', 46199);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('昆玉市', 56738);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('乌鲁木齐市', 5230);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('五家渠市', 39032);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('喀什地区', 4047);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('哈密市', 50413);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('昌吉回族自治州', 5632);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('可克达拉市', 34262);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('北屯市', 30443);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('博尔塔拉蒙古自治州', 10495);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('阿拉尔市', 7157);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('巴音郭楞蒙古自治州', 13049);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('克孜勒苏柯尔克孜自治州', 20552);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('图木舒克市', 9189);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('阿克苏地区', 48562);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('铁门关市', 50834);
-INSERT INTO `demo_alt_region`
+INSERT INTO `demo_alt_region`(`city`,`number_visitors`)
 VALUES ('双河市', 37190);
 COMMIT;
 
@@ -1958,38 +1966,40 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_alt_tourist_attractions`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `tourist_attraction`       varchar(255) DEFAULT NULL,
     `number_visitors_internal` double       DEFAULT NULL,
-    `number_visitors_external` double       DEFAULT NULL
+    `number_visitors_external` double       DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_alt_tourist_attractions
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('喀纳斯景区', 16.18, 17.77);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('可可托海景区', 4.7, 5.23);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('滨河景区', 16.07, 3.11);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('中俄老码头风情街', 4.17, 1.24);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('矿山公园', 8.73, 5.45);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('五彩滩', 2.4, 3.17);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('哈巴河县白桦林景区', 9.64, 0.89);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('乌伦古湖景区', 1.31, 0.36);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('桦林公园', 0.36, 0.52);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('草原石人哈萨克民族文化园', 1.68, 0.53);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('三道海子景区', 0.22, 0.01);
-INSERT INTO `demo_alt_tourist_attractions`
+INSERT INTO `demo_alt_tourist_attractions`(`tourist_attraction`,`number_visitors_internal`,`number_visitors_external`)
 VALUES ('草原石城景区', 1, 0.42);
 COMMIT;
 
@@ -1998,16 +2008,18 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_alt_tourists_total`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `number_visitors_internal` double DEFAULT NULL,
     `number_visitors_external` double DEFAULT NULL,
-    `number_visitors_total`    double DEFAULT NULL
+    `number_visitors_total`    double DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_alt_tourists_total
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_alt_tourists_total`
+INSERT INTO `demo_alt_tourists_total`(`number_visitors_internal`,`number_visitors_external`,`number_visitors_total`)
 VALUES (66.47, 38.67, 105.14);
 COMMIT;
 
@@ -2016,17 +2028,19 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_alt_tourists_type`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `tourists_type`   varchar(255) DEFAULT NULL,
-    `number_visitors` double       DEFAULT NULL
+    `number_visitors` double       DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_alt_tourists_type
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_alt_tourists_type`
+INSERT INTO `demo_alt_tourists_type`(`tourists_type`,`number_visitors`)
 VALUES ('疆内游客', 66.47);
-INSERT INTO `demo_alt_tourists_type`
+INSERT INTO `demo_alt_tourists_type`(`tourists_type`,`number_visitors`)
 VALUES ('疆外游客', 38.67);
 COMMIT;
 
@@ -2035,23 +2049,25 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_hntv_age`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `age`        varchar(255) DEFAULT NULL,
-    `proportion` double       DEFAULT NULL
+    `proportion` double       DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_hntv_age
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_hntv_age`
+INSERT INTO `demo_hntv_age`(`age`,`proportion`)
 VALUES ('19岁及以下', 6.42);
-INSERT INTO `demo_hntv_age`
+INSERT INTO `demo_hntv_age`(`age`,`proportion`)
 VALUES ('20-29岁', 42.18);
-INSERT INTO `demo_hntv_age`
+INSERT INTO `demo_hntv_age`(`age`,`proportion`)
 VALUES ('30-39岁', 31.72);
-INSERT INTO `demo_hntv_age`
+INSERT INTO `demo_hntv_age`(`age`,`proportion`)
 VALUES ('40-49岁', 17.59);
-INSERT INTO `demo_hntv_age`
+INSERT INTO `demo_hntv_age`(`age`,`proportion`)
 VALUES ('50岁及以上', 2.09);
 COMMIT;
 
@@ -2060,45 +2076,47 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_hntv_keywords`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `keywords`  varchar(255) DEFAULT NULL,
-    `hot_index` int(11) DEFAULT NULL
+    `hot_index` int(11) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_hntv_keywords
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('河南卫视', 2839);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('洛神', 1789);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('舞蹈', 1298);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('琵琶', 1273);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('晚会', 473);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('舞者', 356);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('国风', 362);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('节目', 876);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('演绎', 739);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('惊艳', 134);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('演奏', 234);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('开挂', 231);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('河南', 132);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('传播', 98);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('呈现', 320);
-INSERT INTO `demo_hntv_keywords`
+INSERT INTO `demo_hntv_keywords`(`keywords`,`hot_index`)
 VALUES ('灯光', 229);
 COMMIT;
 
@@ -2107,33 +2125,35 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_hntv_labels`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `label`     varchar(255) DEFAULT NULL,
-    `hot_index` int(11) DEFAULT NULL
+    `hot_index` int(11) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_hntv_labels
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('美食', 38);
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('旅游', 32);
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('娱乐', 19);
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('文艺', 15);
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('动漫', 15);
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('名人明星', 16);
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('搞笑幽默', 18);
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('音乐', 17);
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('电影', 10);
-INSERT INTO `demo_hntv_labels`
+INSERT INTO `demo_hntv_labels`(`label`,`hot_index`)
 VALUES ('时尚', 7);
 COMMIT;
 
@@ -2142,23 +2162,25 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_hntv_media`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `media`                 varchar(255) DEFAULT NULL,
-    `amount_of_information` int(11) DEFAULT NULL
+    `amount_of_information` int(11) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_hntv_media
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_hntv_media`
+INSERT INTO `demo_hntv_media`(`media`,`amount_of_information`)
 VALUES ('中小新闻媒体', 4824);
-INSERT INTO `demo_hntv_media`
+INSERT INTO `demo_hntv_media`(`media`,`amount_of_information`)
 VALUES ('重点新闻媒体', 1495);
-INSERT INTO `demo_hntv_media`
+INSERT INTO `demo_hntv_media`(`media`,`amount_of_information`)
 VALUES ('省级新闻媒体', 1371);
-INSERT INTO `demo_hntv_media`
+INSERT INTO `demo_hntv_media`(`media`,`amount_of_information`)
 VALUES ('央级新闻媒体', 889);
-INSERT INTO `demo_hntv_media`
+INSERT INTO `demo_hntv_media`(`media`,`amount_of_information`)
 VALUES ('地方新闻媒体', 832);
 COMMIT;
 
@@ -2167,23 +2189,25 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_hntv_messages`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `date`                  varchar(255) DEFAULT NULL,
-    `amount_of_information` double       DEFAULT NULL
+    `amount_of_information` double       DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_hntv_messages
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_hntv_messages`
+INSERT INTO `demo_hntv_messages`(`date`,`amount_of_information`)
 VALUES ('6月12日', 17.83);
-INSERT INTO `demo_hntv_messages`
+INSERT INTO `demo_hntv_messages`(`date`,`amount_of_information`)
 VALUES ('6月13日', 47.89);
-INSERT INTO `demo_hntv_messages`
+INSERT INTO `demo_hntv_messages`(`date`,`amount_of_information`)
 VALUES ('6月14日', 11.83);
-INSERT INTO `demo_hntv_messages`
+INSERT INTO `demo_hntv_messages`(`date`,`amount_of_information`)
 VALUES ('6月15日', 6.38);
-INSERT INTO `demo_hntv_messages`
+INSERT INTO `demo_hntv_messages`(`date`,`amount_of_information`)
 VALUES ('6月16日', 2.87);
 COMMIT;
 
@@ -2192,33 +2216,35 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_hntv_region`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `provinces`             varchar(255) DEFAULT NULL,
-    `amount_of_information` double       DEFAULT NULL
+    `amount_of_information` double       DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_hntv_region
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('北京', 19.1);
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('广东', 10.7);
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('河南', 9.3);
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('江苏', 5.4);
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('浙江', 4.2);
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('上海', 3.8);
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('山东', 3.4);
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('四川', 3.1);
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('湖北', 2.4);
-INSERT INTO `demo_hntv_region`
+INSERT INTO `demo_hntv_region`(`provinces`,`amount_of_information`)
 VALUES ('福建', 2.2);
 COMMIT;
 
@@ -2227,27 +2253,29 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_hntv_shows`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `program`   varchar(255) DEFAULT NULL,
-    `hot_index` double       DEFAULT NULL
+    `hot_index` double       DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_hntv_shows
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_hntv_shows`
+INSERT INTO `demo_hntv_shows`(`program`,`hot_index`)
 VALUES ('洛神水赋', 46.97);
-INSERT INTO `demo_hntv_shows`
+INSERT INTO `demo_hntv_shows`(`program`,`hot_index`)
 VALUES ('丽人行', 20.7);
-INSERT INTO `demo_hntv_shows`
+INSERT INTO `demo_hntv_shows`(`program`,`hot_index`)
 VALUES ('龙舟祭', 17.91);
-INSERT INTO `demo_hntv_shows`
+INSERT INTO `demo_hntv_shows`(`program`,`hot_index`)
 VALUES ('兰陵王入阵曲', 17.33);
-INSERT INTO `demo_hntv_shows`
+INSERT INTO `demo_hntv_shows`(`program`,`hot_index`)
 VALUES ('唐印', 15.3);
-INSERT INTO `demo_hntv_shows`
+INSERT INTO `demo_hntv_shows`(`program`,`hot_index`)
 VALUES ('医圣传人', 12.35);
-INSERT INTO `demo_hntv_shows`
+INSERT INTO `demo_hntv_shows`(`program`,`hot_index`)
 VALUES ('粽横一面', 4.63);
 COMMIT;
 
@@ -2256,31 +2284,33 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_hntv_topics`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `content`          varchar(255) DEFAULT NULL,
     `duration_min`     int(11) DEFAULT NULL,
     `hot_search_list`  text,
-    `hot_search_index` int(11) DEFAULT NULL
+    `hot_search_index` int(11) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_hntv_topics
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_hntv_topics`
+INSERT INTO `demo_hntv_topics`(`content`,`duration_min`,`hot_search_list`,`hot_search_index`)
 VALUES ('如何评价河南卫视端午奇妙游', 6701, '微博话题榜', 39);
-INSERT INTO `demo_hntv_topics`
+INSERT INTO `demo_hntv_topics`(`content`,`duration_min`,`hot_search_list`,`hot_search_index`)
 VALUES ('河南端午奇妙游为何爆火出圈', 6662, '微博热搜榜', 32);
-INSERT INTO `demo_hntv_topics`
+INSERT INTO `demo_hntv_topics`(`content`,`duration_min`,`hot_search_list`,`hot_search_index`)
 VALUES ('如何看待河南卫视接连出圈', 5977, '实时上升热点榜', 27);
-INSERT INTO `demo_hntv_topics`
+INSERT INTO `demo_hntv_topics`(`content`,`duration_min`,`hot_search_list`,`hot_search_index`)
 VALUES ('河南卫视水下飞天洛神舞', 2956, '百度热点榜', 14);
-INSERT INTO `demo_hntv_topics`
+INSERT INTO `demo_hntv_topics`(`content`,`duration_min`,`hot_search_list`,`hot_search_index`)
 VALUES ('在水下泡26个小时拍出水下飞天', 1374, '头条热搜榜', 13);
-INSERT INTO `demo_hntv_topics`
+INSERT INTO `demo_hntv_topics`(`content`,`duration_min`,`hot_search_list`,`hot_search_index`)
 VALUES ('端午五彩洛神惊艳演绎水下飞天', 1365, '知乎热榜', 12);
-INSERT INTO `demo_hntv_topics`
+INSERT INTO `demo_hntv_topics`(`content`,`duration_min`,`hot_search_list`,`hot_search_index`)
 VALUES ('河南卫视端午奇妙游为何爆火出圈', 1341, '搜狗热搜榜', 9);
-INSERT INTO `demo_hntv_topics`
+INSERT INTO `demo_hntv_topics`(`content`,`duration_min`,`hot_search_list`,`hot_search_index`)
 VALUES ('如何评价河南端午奇妙游', 1340, '抖音热搜榜', 9);
 COMMIT;
 
@@ -2289,15 +2319,17 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_stny_carbon dioxide_emissions`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `dataease_uuid` varchar(50) DEFAULT NULL,
-    `co2_emissions` double      DEFAULT NULL
+    `co2_emissions` double      DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_stny_carbon dioxide_emissions
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_stny_carbon dioxide_emissions`
+INSERT INTO `demo_stny_carbon dioxide_emissions`(`dataease_uuid`,`co2_emissions`)
 VALUES ('e0fc9d438f1f35c9d637c8438d528d64', 98.94);
 COMMIT;
 
@@ -2306,31 +2338,33 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_stny_carbon_emission_trend`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `dataease_uuid`    varchar(50) DEFAULT NULL,
     `year`             bigint(20) DEFAULT NULL,
     `carbon_emissions` double      DEFAULT NULL,
-    `proportion`       double      DEFAULT NULL
+    `proportion`       double      DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_stny_carbon_emission_trend
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_stny_carbon_emission_trend`
+INSERT INTO `demo_stny_carbon_emission_trend`(`dataease_uuid`,`year`,`carbon_emissions`,`proportion`)
 VALUES ('397dc55822330f9ba597338c4589b600', 2015, 92.8, 27.9);
-INSERT INTO `demo_stny_carbon_emission_trend`
+INSERT INTO `demo_stny_carbon_emission_trend`(`dataease_uuid`,`year`,`carbon_emissions`,`proportion`)
 VALUES ('4c60c6082d0f161527ec223cbdf27cc9', 2014, 92.93, 28);
-INSERT INTO `demo_stny_carbon_emission_trend`
+INSERT INTO `demo_stny_carbon_emission_trend`(`dataease_uuid`,`year`,`carbon_emissions`,`proportion`)
 VALUES ('ba025f51b5ef3e9322b8ecea2a8de17c', 2013, 92.47, 28);
-INSERT INTO `demo_stny_carbon_emission_trend`
+INSERT INTO `demo_stny_carbon_emission_trend`(`dataease_uuid`,`year`,`carbon_emissions`,`proportion`)
 VALUES ('b3bab3626f8fb4566bcaf3809f4bfe69', 2018, 96.53, 28.1);
-INSERT INTO `demo_stny_carbon_emission_trend`
+INSERT INTO `demo_stny_carbon_emission_trend`(`dataease_uuid`,`year`,`carbon_emissions`,`proportion`)
 VALUES ('564a39d53bd865978853c0cb5eadcc2e', 2020, 98.99, 30.7);
-INSERT INTO `demo_stny_carbon_emission_trend`
+INSERT INTO `demo_stny_carbon_emission_trend`(`dataease_uuid`,`year`,`carbon_emissions`,`proportion`)
 VALUES ('8bb810c9b3e32d397a2550c958dca4f9', 2019, 98.11, 28.6);
-INSERT INTO `demo_stny_carbon_emission_trend`
+INSERT INTO `demo_stny_carbon_emission_trend`(`dataease_uuid`,`year`,`carbon_emissions`,`proportion`)
 VALUES ('ea219025e58fa1a1a8a3944574cb47c6', 2016, 92.79, 27.8);
-INSERT INTO `demo_stny_carbon_emission_trend`
+INSERT INTO `demo_stny_carbon_emission_trend`(`dataease_uuid`,`year`,`carbon_emissions`,`proportion`)
 VALUES ('9525df1e7e4979495a32069cc6a98262', 2017, 94.66, 28.1);
 COMMIT;
 
@@ -2339,15 +2373,17 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_stny_disposable_energy`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `dataease_uuid`           varchar(50) DEFAULT NULL,
-    `total_energy_production` bigint(20) DEFAULT NULL
+    `total_energy_production` bigint(20) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_stny_disposable_energy
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_stny_disposable_energy`
+INSERT INTO `demo_stny_disposable_energy`(`dataease_uuid`,`total_energy_production`)
 VALUES ('1', 408000);
 COMMIT;
 
@@ -2356,22 +2392,24 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_stny_energy_consumption_proportion`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `dataease_uuid`          varchar(50) DEFAULT NULL,
     `consumption_proportion` text,
-    `pr`                     double      DEFAULT NULL
+    `pr`                     double      DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_stny_energy_consumption_proportion
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_stny_energy_consumption_proportion`
+INSERT INTO `demo_stny_energy_consumption_proportion`(`dataease_uuid`,`consumption_proportion`,`pr`)
 VALUES ('8f4af97e0c4431d639d53a530d435c3f', '煤炭', 56.8);
-INSERT INTO `demo_stny_energy_consumption_proportion`
+INSERT INTO `demo_stny_energy_consumption_proportion`(`dataease_uuid`,`consumption_proportion`,`pr`)
 VALUES ('15d7ceaf5c3874c1adf41cc26c8867d0', '其他能源', 15.9);
-INSERT INTO `demo_stny_energy_consumption_proportion`
+INSERT INTO `demo_stny_energy_consumption_proportion`(`dataease_uuid`,`consumption_proportion`,`pr`)
 VALUES ('8c7a045e162980e5828d66c42f7c6e75', '石油', 18.9);
-INSERT INTO `demo_stny_energy_consumption_proportion`
+INSERT INTO `demo_stny_energy_consumption_proportion`(`dataease_uuid`,`consumption_proportion`,`pr`)
 VALUES ('0279a1ad03e46f7a92bf2be90d6e7ce5', '天然气', 8.4);
 COMMIT;
 
@@ -2380,90 +2418,94 @@ COMMIT;
 -- ----------------------------
 CREATE TABLE `demo_stny_energy_consumption_total`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `dataease_uuid`    varchar(50) DEFAULT NULL,
-    `consumption_2020` bigint(20) DEFAULT NULL
+    `consumption_2020` bigint(20) DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_stny_energy_consumption_total
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_stny_energy_consumption_total`
+INSERT INTO `demo_stny_energy_consumption_total`(`dataease_uuid`,`consumption_2020`)
 VALUES ('07e28918dc82d0eb496f60efbb2ab232', 498000);
 COMMIT;
 
 CREATE TABLE `demo_stny_province_city_index`
 (
+    `id` BIGINT(21) NOT NULL AUTO_INCREMENT,
     `dataease_uuid`             varchar(50)   DEFAULT NULL,
     `province`                  varchar(1000) DEFAULT NULL,
-    `peak_neutralization_index` double        DEFAULT NULL
+    `peak_neutralization_index` double        DEFAULT NULL,
+    PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------
 -- Records of demo_stny_province_city_index
 -- ----------------------------
 BEGIN;
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('1', '甘肃省', 40.2);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('2', '湖北省', 52);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('3', '山西省', 33.5);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('4', '山东省', 39.8);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('5', '福建省', 47.6);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('6', '浙江省', 53);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('7', '陕西省', 44);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('8', '新疆维吾尔自治区', 26.4);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('9', '河北省', 37.3);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('10', '云南省', 50.4);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('11', '江苏省', 54.4);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('12', '天津市', 57.27);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('13', '广西壮族自治区', 40);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('14', '宁夏回族自治区', 10.9);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('15', '北京市', 78.7);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('16', '四川省', 57.31);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('17', '西藏自治区', 0);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('18', '安徽省', 45.1);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('19', '广东省', 61.6);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('20', '吉林省', 52.7);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('21', '湖南省', 47);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('22', '重庆市', 53.8);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('23', '青海省', 50.2);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('24', '辽宁省', 41.7);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('25', '上海市', 61.7);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('26', '内蒙古自治区', 24.3);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('27', '黑龙江省', 43.74);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('28', '海南省', 50.9);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('29', '贵州省', 43.75);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('30', '江西省', 47.2);
-INSERT INTO `demo_stny_province_city_index`
+INSERT INTO `demo_stny_province_city_index`(`dataease_uuid`,`province`,`peak_neutralization_index`)
 VALUES ('31', '河南省', 55.2);
 COMMIT;
 

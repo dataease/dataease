@@ -347,10 +347,11 @@ COMMIT;
 -- Table structure for demo_gdp_by_city_top10
 -- ----------------------------
 CREATE TABLE `demo_gdp_by_city_top10` (
-  `id` int(11) NOT NULL DEFAULT '0',
+  `id` int(11) NOT NULL,
   `province` varchar(255) DEFAULT NULL,
   `city` varchar(255) DEFAULT NULL,
-  `gdp` double(255,2) DEFAULT NULL
+  `gdp` double(255,2) DEFAULT NULL,
+  PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 -- ----------------------------

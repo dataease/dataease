@@ -17,22 +17,26 @@ INSERT INTO `demo_recent_local_cases` (`city`, `province`, `new_add`, `existing`
 
 
 CREATE TABLE `demo_vaccination` (
+   `id` BIGINT auto_increment NOT NULL,
    `cumulative`    DECIMAL(10,2) NOT NULL   COMMENT '累计接种',
    `new_add`     DECIMAL(10,2) COMMENT '较上日新增',
-   `vaccination_per_100_people`    DECIMAL(10,2) NOT NULL COMMENT '每百人接种'
+   `vaccination_per_100_people`    DECIMAL(10,2) NOT NULL COMMENT '每百人接种',
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 INSERT INTO `demo_vaccination` (`cumulative`, `new_add`, `vaccination_per_100_people`) VALUES (7.9, 1625.5, 55.17);
 
 
 CREATE TABLE `demo_domestic_epidemic` (
+   `id` BIGINT auto_increment NOT NULL,
    `statistical_time`    varchar(50) NOT NULL DEFAULT '' COMMENT '统计时间',
    `cumulative_cure`     bigint(13) COMMENT '累计治愈',
    `current_diagnosis`     bigint(13) COMMENT '现有确诊',
    `cumulative_diagnosis`     bigint(13) COMMENT '累计确诊',
    `asymptomatic_patient`     bigint(13) COMMENT '无症状感染者',
    `input`     bigint(13) COMMENT '境外输入',
-   `cumulative_death`     bigint(13) COMMENT '累计死亡'
+   `cumulative_death`     bigint(13) COMMENT '累计死亡',
+   PRIMARY KEY (`id`)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE utf8mb4_general_ci;
 
 INSERT INTO `demo_domestic_epidemic` (`statistical_time`, `cumulative_cure`, `current_diagnosis`, `cumulative_diagnosis`, `asymptomatic_patient`, `input` , `cumulative_death`) VALUES ('2021-06-09 10:24:27 ', 99071, 10740, 114929, 361, 6173, 5154);

@@ -54,13 +54,13 @@ UPDATE `sys_theme_item` set `val` = '#F54A45' where `theme_id` = 1 and `key` = '
 UPDATE `sys_theme_item` set `val` = '#1F2329' where `theme_id` = 1 and `key` = 'deTextPrimary' and `val` = '#303133';
 UPDATE `sys_theme_item` set `val` = '#646A73' where `theme_id` = 1 and `key` = 'deTextSecondary' and `val` = '#909399';
 UPDATE `sys_theme_item` set `val` = '#8F959E' where `theme_id` = 1 and `key` = 'deTextPlaceholder' and `val` = '#C0C4CC';
-INSERT INTO `sys_theme_item` VALUES (1, 'deTextDisable', '#BBBFC4');
+INSERT INTO `sys_theme_item` (`theme_id`,`key`,`val`) VALUES (1, 'deTextDisable', '#BBBFC4');
 
-INSERT INTO `sys_theme_item` VALUES (1, 'deComBorderColor', '#BBBFC4');
-INSERT INTO `sys_theme_item` VALUES (1, 'deCardStrokeColor', '#DEE0E3');
+INSERT INTO `sys_theme_item` (`theme_id`,`key`,`val`) VALUES (1, 'deComBorderColor', '#BBBFC4');
+INSERT INTO `sys_theme_item` (`theme_id`,`key`,`val`) VALUES (1, 'deCardStrokeColor', '#DEE0E3');
 UPDATE `sys_theme_item` set `val` = '#1F2329' where `theme_id` = 1 and `key` = 'deBlack' and `val` = '#000000';
 UPDATE `sys_theme_item` set `val` = '#F5F6F7' where `theme_id` = 1 and `key` = 'deBackgroundBase' and `val` = '#F5F7FA';
-INSERT INTO `sys_theme_item` VALUES (1, 'deInputDisableBackground', '#EFF0F1');
+INSERT INTO `sys_theme_item` (`theme_id`,`key`,`val`) VALUES (1, 'deInputDisableBackground', '#EFF0F1');
 
 COMMIT;
 
