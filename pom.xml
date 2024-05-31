@@ -9,7 +9,7 @@
     <packaging>pom</packaging>
 
     <properties>
-        <dataease.version>1.18.19</dataease.version>
+        <dataease.version>1.18.20</dataease.version>
         <poi.version>4.1.1</poi.version>
         <xmlbeans.version>3.1.0</xmlbeans.version>
     </properties>
