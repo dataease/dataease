@@ -27,6 +27,7 @@ import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJu
 import { getNowCanvasComponentData, panelInit } from '@/components/canvas/utils/utils'
 import { getOuterParamsInfo } from '@/api/panel/outerParams'
 import { mapState } from 'vuex'
+import {Base64} from "js-base64";
 
 export default {
   name: 'LinkView',
@@ -140,7 +141,7 @@ export default {
             let attachParam = null
             if (attachParamsEncode) {
               const Base64 = require('js-base64').Base64
-              attachParam = JSON.parse(decodeURIComponent(Base64.decode(attachParamsEncode)))
+              attachParam = JSON.parse(Base64.decode(decodeURIComponent(attachParamsEncode)))
             }
             if (hasArgs) {
               attachParam = Object.assign({}, attachParam, argsObject)
