@@ -50,7 +50,6 @@ export default {
   padding: 10px;
   color: #000000;
   border-radius: 4px;
-  word-break: keep-all;
 }
 ::-webkit-scrollbar {
   width: 0px!important;
