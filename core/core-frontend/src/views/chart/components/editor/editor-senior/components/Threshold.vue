@@ -64,10 +64,15 @@ const changeThreshold = () => {
 const changeSplitThreshold = (threshold: string) => {
   // check input
   if (threshold) {
+    const regex = /^(\d+)(,\d+)*$/
+    if (!regex.test(threshold)) {
+      ElMessage.error(t('chart.gauge_threshold_format_error'))
+      return
+    }
     const arr = threshold.split(',')
     for (let i = 0; i < arr.length; i++) {
       const ele = arr[i]
-      if (parseFloat(ele).toString() === 'NaN' || parseFloat(ele) <= 0 || parseFloat(ele) >= 100) {
+      if (parseFloat(ele) <= 0 || parseFloat(ele) >= 100) {
         ElMessage.error(t('chart.gauge_threshold_format_error'))
         return
       }
