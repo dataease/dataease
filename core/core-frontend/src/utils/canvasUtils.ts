@@ -152,7 +152,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   })
 }
 
-export function initCanvasData(dvId, busiFlag, callBack) {
+export async function initCanvasData(dvId, busiFlag, callBack) {
   initCanvasDataPrepare(
     dvId,
     busiFlag,
