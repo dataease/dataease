@@ -80,7 +80,7 @@ const onBlur = () => {
 }
 init()
 watch(
-  frameLinks.value,
+  () => frameLinks.value,
   () => {
     init()
   },

@@ -1,5 +1,6 @@
 <template>
   <el-row>
+    --{{ linkInfo }}
     <el-form @submit.prevent ref="form" size="small" style="width: 100%">
       <el-form-item :effect="themes" :label="t('visualization.auto_play')">
         <el-switch
@@ -105,7 +106,7 @@ const onBlur = () => {
 init()
 
 watch(
-  linkInfo.value,
+  () => linkInfo.value,
   () => {
     init()
   },
