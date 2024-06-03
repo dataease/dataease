@@ -207,7 +207,11 @@ const deepScale = computed(() => scale.value / 100)
       @userViewEnlargeOpen="opt => emits('userViewEnlargeOpen', opt)"
     ></component-edit-bar>
     <component-selector
-      v-if="props.isSelector && config.component === 'UserView'"
+      v-if="
+        props.isSelector &&
+        config.component === 'UserView' &&
+        config.propValue?.innerType !== 'rich-text'
+      "
       :resource-id="config.id"
     />
     <div class="wrapper-inner" ref="componentWrapperInnerRef" :style="componentBackgroundStyle">
