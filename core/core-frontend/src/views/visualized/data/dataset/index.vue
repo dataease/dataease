@@ -35,7 +35,9 @@ import type { TabPaneName } from 'element-plus-secondary'
 import { timestampFormatDate } from './form/util'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import { XpackComponent } from '@/components/plugin'
+import { useCache } from '@/hooks/web/useCache'
 const interactiveStore = interactiveStoreWithOut()
+const { wsCache } = useCache()
 interface Field {
   fieldShortName: string
   name: string
@@ -86,6 +88,7 @@ let originResourceTree = []
 const sortTypeChange = sortType => {
   state.datasetTree = treeSort(originResourceTree, sortType)
   state.curSortType = sortType
+  wsCache.set('TreeSort-dataset', state.curSortType)
 }
 
 const resourceCreate = (pid, name) => {
@@ -211,10 +214,12 @@ const getData = () => {
         rootManage.value = nodeData[0]['weight'] >= 7
         state.datasetTree = nodeData[0]['children'] || []
         originResourceTree = cloneDeep(unref(state.datasetTree))
+        sortTypeChange(state.curSortType)
         return
       }
       state.datasetTree = nodeData
       originResourceTree = cloneDeep(unref(state.datasetTree))
+      sortTypeChange(state.curSortType)
     })
     .finally(() => {
       dtLoading.value = false
@@ -252,6 +257,7 @@ const dfsDatasetTree = (ds, id) => {
 
 onBeforeMount(() => {
   nodeInfo.id = (route.params.id as string) || ''
+  loadInit()
   getData()
 })
 
@@ -470,6 +476,13 @@ const sortList = [
     value: 'name_desc'
   }
 ]
+
+const loadInit = () => {
+  const historyTreeSort = wsCache.get('TreeSort-dataset')
+  if (historyTreeSort) {
+    state.curSortType = historyTreeSort
+  }
+}
 
 const sortTypeTip = computed(() => {
   return sortList.find(ele => ele.value === state.curSortType).name
