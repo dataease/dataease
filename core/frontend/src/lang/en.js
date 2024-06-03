@@ -1837,7 +1837,9 @@ export default {
     forecast_period: 'Forecast period',
     forecast_confidence_interval: 'Confidence interval',
     forecast_model: 'Forecast model',
-    forecast_degree: 'Degree'
+    forecast_degree: 'Degree',
+    linear_regression: 'Linear regression',
+    polynomial_regression: 'Polynomial regression'
   },
   dataset: {
     scope_edit: 'Effective only when editing',
