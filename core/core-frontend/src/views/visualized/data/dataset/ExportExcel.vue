@@ -347,7 +347,7 @@ defineExpose({
       <el-tab-pane v-for="tab in tabList" :key="tab.name" :label="tab.label" :name="tab.name" />
     </el-tabs>
     <el-button
-      v-show="activeName === 'SUCCESS' && multipleSelection.length === 0"
+      v-if="activeName === 'SUCCESS' && multipleSelection.length === 0"
       secondary
       @click="downLoadAll"
     >
@@ -357,15 +357,15 @@ defineExpose({
       {{ $t('data_export.download_all') }}
     </el-button>
     <el-button
-      v-show="activeName === 'SUCCESS' && multipleSelection.length !== 0"
+      v-if="activeName === 'SUCCESS' && multipleSelection.length !== 0"
       secondary
       @click="downLoadAll"
       ><template #icon> <Icon name="de-delete"></Icon> </template>{{ $t('data_export.download') }}
     </el-button>
-    <el-button v-show="multipleSelection.length === 0" secondary @click="delAll"
+    <el-button v-if="multipleSelection.length === 0" secondary @click="delAll"
       ><template #icon> <Icon name="de-delete"></Icon> </template>{{ $t('data_export.del_all') }}
     </el-button>
-    <el-button v-show="multipleSelection.length !== 0" secondary @click="delAll"
+    <el-button v-if="multipleSelection.length !== 0" secondary @click="delAll"
       ><template #icon> <Icon name="de-delete"></Icon> </template>{{ $t('commons.delete') }}
     </el-button>
     <div class="table-container" :class="!tableData.length && 'hidden-bottom'">

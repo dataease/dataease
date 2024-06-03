@@ -33,6 +33,12 @@ const state = reactive({
 
 const emit = defineEmits(['onChangeYAxisForm'])
 
+const splitLineStyle = [
+  { label: t('chart.line_type_solid'), value: 'solid' },
+  { label: t('chart.line_type_dashed'), value: 'dashed' },
+  { label: t('chart.line_type_dotted'), value: 'dotted' }
+]
+
 watch(
   () => props.form,
   () => {
@@ -284,10 +290,26 @@ onMounted(() => {
             is-custom
           />
         </el-form-item>
+        <el-form-item class="form-item" :class="'form-item-' + themes" style="padding: 0 4px">
+          <el-select
+            :disabled="!state.axisForm.splitLine.show"
+            style="width: 62px"
+            :effect="props.themes"
+            v-model="state.axisForm.splitLine.lineStyle.style"
+            @change="changeAxisStyle('splitLine.lineStyle.style')"
+          >
+            <el-option
+              v-for="option in splitLineStyle"
+              :key="option.value"
+              :value="option.value"
+              :label="option.label"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
           <el-input-number
             :disabled="!state.axisForm.splitLine.show"
-            style="width: 108px"
+            style="width: 74px"
             :effect="props.themes"
             v-model="state.axisForm.splitLine.lineStyle.width"
             :min="1"

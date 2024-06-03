@@ -389,7 +389,7 @@ const autoStyle = computed(() => {
 </script>
 
 <template>
-  <div class="v-query-container" :style="autoStyle">
+  <div class="v-query-container" :style="autoStyle" @keydown.stop @keyup.stop>
     <p v-if="customStyle.titleShow" class="title" :style="titleStyle">
       {{ customStyle.title }}
     </p>

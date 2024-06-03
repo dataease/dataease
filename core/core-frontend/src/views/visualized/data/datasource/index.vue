@@ -42,6 +42,7 @@ import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { cloneDeep } from 'lodash-es'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import treeSort from '@/utils/treeSortUtils'
+import { useCache } from '@/hooks/web/useCache'
 const route = useRoute()
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
@@ -51,7 +52,7 @@ interface Field {
   originName: string
   deType: number
 }
-
+const { wsCache } = useCache()
 const { t } = useI18n()
 const router = useRouter()
 const appStore = useAppStoreWithOut()
@@ -165,6 +166,7 @@ let originResourceTree = []
 const sortTypeChange = sortType => {
   state.datasourceTree = treeSort(originResourceTree, sortType)
   state.curSortType = sortType
+  wsCache.set('TreeSort-datasource', state.curSortType)
 }
 const handleSizeChange = pageSize => {
   state.paginationConfig.currentPage = 1
@@ -391,10 +393,12 @@ const listDs = () => {
         rootManage.value = nodeData[0]['weight'] >= 7
         state.datasourceTree = nodeData[0]['children'] || []
         originResourceTree = cloneDeep(unref(state.datasourceTree))
+        sortTypeChange(state.curSortType)
         return
       }
       originResourceTree = cloneDeep(unref(state.datasourceTree))
       state.datasourceTree = nodeData
+      sortTypeChange(state.curSortType)
     })
     .finally(() => {
       mounted.value = true
@@ -734,8 +738,17 @@ const defaultProps = {
   children: 'children',
   label: 'name'
 }
+
+const loadInit = () => {
+  const historyTreeSort = wsCache.get('TreeSort-datasource')
+  if (historyTreeSort) {
+    state.curSortType = historyTreeSort
+  }
+}
+
 onMounted(() => {
   nodeInfo.id = (route.params.id as string) || ''
+  loadInit()
   listDs()
   const { opt } = router.currentRoute.value.query
   if (opt && opt === 'create') {
