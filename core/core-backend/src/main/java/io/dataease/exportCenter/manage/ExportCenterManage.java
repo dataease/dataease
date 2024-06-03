@@ -160,7 +160,7 @@ public class ExportCenterManage {
         exportTaskMapper.updateById(exportTask);
         FileUtils.deleteDirectoryRecursively(exportData_path + id);
         if (exportTask.getExportFromType().equalsIgnoreCase("chart")) {
-            ChartExcelRequest request = JsonUtil.parse(exportTask.getParams(), ChartExcelRequest.class);
+            ChartExcelRequest request = JsonUtil.parseObject(exportTask.getParams(), ChartExcelRequest.class);
             startViewTask(exportTask, request);
         }
     }

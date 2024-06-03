@@ -426,7 +426,7 @@ defineExpose({
               </div>
             </el-button>
             <el-tooltip effect="dark" content="重新导出" placement="top">
-              <el-button text @click="retry(scope.row)">
+              <el-button v-if="scope.row.exportStatus === 'FAILED'" text @click="retry(scope.row)">
                 <template #icon>
                   <Icon name="icon_refresh_outlined"></Icon>
                 </template>

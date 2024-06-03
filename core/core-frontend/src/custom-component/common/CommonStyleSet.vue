@@ -114,7 +114,7 @@
                 :effect="themes"
                 v-model="styleForm[styleOptionKey.value]"
                 size="small"
-                @change="changeStyle"
+                @change="changeStylePre(styleOptionKey.value)"
               >
                 <template #prefix>
                   <el-icon :class="{ 'dark-icon': themes === 'dark' }">
@@ -279,7 +279,7 @@ const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 
-const { curComponent, canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData } = storeToRefs(dvMainStore)
 
 const props = withDefaults(
   defineProps<{
@@ -294,7 +294,7 @@ const expandIcon = (name: string) => {
   return h(Icon, { className: '', name })
 }
 const { themes, element } = toRefs(props)
-const emits = defineEmits(['onTextChange'])
+const emits = defineEmits(['onStyleAttrChange'])
 const styleMounted = ref({
   opacity: 1,
   fontSize: 22,
@@ -491,24 +491,29 @@ const styleOptionKeyArray = [
 ]
 
 const styleInit = () => {
-  if (curComponent.value) {
+  if (element.value) {
     Object.keys(styleMounted.value).forEach(key => {
       styleMounted.value[key] = Math.round(
-        (curComponent.value.style[key] * 100) / canvasStyleData.value.scale
+        (element.value.style[key] * 100) / canvasStyleData.value.scale
       )
     })
   }
 }
 
-const sizeChange = key => {
-  curComponent.value.style[key] = Math.round(
-    (styleMounted.value[key] * canvasStyleData.value.scale) / 100
-  )
-  changeStyle()
+const changeStylePre = key => {
+  changeStyle({ key: key, value: element.value.style[key] })
 }
 
-const changeStyle = () => {
+const sizeChange = key => {
+  element.value.style[key] = Math.round(
+    (styleMounted.value[key] * canvasStyleData.value.scale) / 100
+  )
+  changeStyle({ key: key, value: element.value.style[key] })
+}
+
+const changeStyle = params => {
   snapshotStore.recordSnapshotCache()
+  emits('onStyleAttrChange', params)
 }
 
 const checkBold = () => {
@@ -517,7 +522,7 @@ const checkBold = () => {
   } else {
     styleForm.value.fontWeight = 'normal'
   }
-  changeStyle()
+  changeStyle({ key: 'fontWeight', value: styleForm.value.fontWeight })
 }
 
 const checkItalic = () => {
@@ -526,16 +531,16 @@ const checkItalic = () => {
   } else {
     styleForm.value.fontStyle = 'normal'
   }
-  changeStyle()
+  changeStyle({ key: 'fontStyle', value: styleForm.value.fontStyle })
 }
 
 function setPosition(key, p: 'left' | 'center' | 'right') {
   styleForm.value[key] = p
-  changeStyle()
+  changeStyle({ key: key, p })
 }
 
 watch(
-  () => curComponent.value,
+  () => element.value,
   () => {
     styleInit()
   },

@@ -105,7 +105,7 @@ const onBlur = () => {
 init()
 
 watch(
-  linkInfo.value,
+  () => linkInfo.value,
   () => {
     init()
   },

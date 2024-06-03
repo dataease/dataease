@@ -190,7 +190,7 @@ onMounted(async () => {
     }
     let deTemplateData
     if (createType === 'template') {
-      const templateParamsApply = JSON.parse(decodeURIComponent(Base64.decode(templateParams + '')))
+      const templateParamsApply = JSON.parse(Base64.decode(decodeURIComponent(templateParams + '')))
       await decompressionPre(templateParamsApply, result => {
         deTemplateData = result
       })

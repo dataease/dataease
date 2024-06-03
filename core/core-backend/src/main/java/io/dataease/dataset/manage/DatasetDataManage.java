@@ -674,6 +674,7 @@ public class DatasetDataManage {
         }
 
         // 排序
+        boolean sortDistinct = true;
         if (ObjectUtils.isNotEmpty(request.getSortId())) {
             DatasetTableFieldDTO field = datasetTableFieldManage.selectById(request.getSortId());
             if (field == null) {
@@ -683,13 +684,14 @@ public class DatasetDataManage {
             BeanUtils.copyBean(deSortField, field);
             deSortField.setOrderDirection(request.getSort());
             datasetGroupInfoDTO.setSortFields(Collections.singletonList(deSortField));
+            sortDistinct = false;
         }
 
         Field2SQLObj.field2sqlObj(sqlMeta, fields, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
         ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
-        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, ids.size() == 1, 0, 1000);
+        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1, 0, 1000);
         querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("calcite data enum sql: " + querySQL);
 
