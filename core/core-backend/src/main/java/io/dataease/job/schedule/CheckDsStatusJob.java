@@ -10,9 +10,9 @@ import org.quartz.JobExecutionContext;
 import org.quartz.JobExecutionException;
 import org.springframework.stereotype.Component;
 
+
 @Component
 public class CheckDsStatusJob implements Job {
-
     @Resource
     private DatasourceServer datasourceServer;
 

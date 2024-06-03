@@ -183,10 +183,19 @@ public class ExportCenterManage {
             if (status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
                 setExportFromAbsName(exportTaskDTO);
             }
+            if (status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
+                setOrgName(exportTaskDTO);
+            }
             result.add(exportTaskDTO);
         });
 
         return result;
+    }
+
+    private void setOrgName(ExportTaskDTO exportTaskDTO) {
+        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
+            exportTaskDTO.setOrgName(dataVisualizationServer.getAbsPath(exportTaskDTO.getExportFrom()));
+        }
     }
 
     private void setExportFromAbsName(ExportTaskDTO exportTaskDTO) {

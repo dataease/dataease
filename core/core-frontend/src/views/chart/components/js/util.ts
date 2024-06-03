@@ -475,7 +475,6 @@ export const exportExcelDownload = (chart, callBack?) => {
         document.body.appendChild(link)
         link.click()
         document.body.removeChild(link)
-        callBack('success')
       } else {
         callBack && callBack(res)
       }

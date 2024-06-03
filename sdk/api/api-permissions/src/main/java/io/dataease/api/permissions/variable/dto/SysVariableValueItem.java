@@ -8,7 +8,6 @@ import java.util.List;
 
 @Data
 public class SysVariableValueItem {
-    @JsonSerialize(using = ToStringSerializer.class)
     private String variableValue;
     @JsonSerialize(using = ToStringSerializer.class)
     private String variableValue2;

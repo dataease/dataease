@@ -30,4 +30,6 @@ public class ExportTaskDTO  {
     private String exportMachineName;
 
     private String exportFromName;
+
+    private String orgName;
 }
