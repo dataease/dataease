@@ -5,6 +5,11 @@ services:
     container_name: de-selenium
     shm_size: 2gb
     privileged: true
+    deploy:
+      resources:
+        limits:
+          cpus: ${DE_SELENIUM_CPU_LIMIT}
+          memory: ${DE_SELENIUM_MEM_LIMIT}
     environment:
       - SE_START_XVFB=false
       - SE_ENABLE_BROWSER_LEFTOVERS_CLEANUP=true
