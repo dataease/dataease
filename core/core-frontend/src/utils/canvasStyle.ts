@@ -125,8 +125,14 @@ export const customAttrTrans = {
     'wordSizeRange',
     'wordSpacing'
   ],
-  label: ['fontSize'],
-  tooltip: ['fontSize'],
+  label: {
+    fontSize: '',
+    seriesLabelFormatter: ['fontSize']
+  },
+  tooltip: {
+    fontSize: '',
+    seriesTooltipFormatter: ['fontSize']
+  },
   indicator: ['fontSize', 'suffixFontSize'],
   indicatorName: ['fontSize', 'nameValueSpacing']
 }
@@ -296,15 +302,25 @@ export function recursionTransObj(template, infoObj, scale, terminal) {
     // 如果是数组 进行赋值计算
     if (template[templateKey] instanceof Array) {
       template[templateKey].forEach(templateProp => {
-        if (infoObj[templateKey] && infoObj[templateKey][templateProp]) {
+        if (
+          infoObj[templateKey] &&
+          (infoObj[templateKey][templateProp] || infoObj[templateKey].length)
+        ) {
           // 移动端特殊属性值设置
           if (terminal === 'mobile' && mobileSpecialProps[templateProp] !== undefined) {
             infoObj[templateKey][templateProp] = mobileSpecialProps[templateProp]
           } else {
-            infoObj[templateKey][templateProp] = getScaleValue(
-              infoObj[templateKey][templateProp],
-              scale
-            )
+            // 数组依次设置
+            if (infoObj[templateKey] instanceof Array) {
+              infoObj[templateKey].forEach(v => {
+                v[templateProp] = getScaleValue(v[templateProp], scale)
+              })
+            } else {
+              infoObj[templateKey][templateProp] = getScaleValue(
+                infoObj[templateKey][templateProp],
+                scale
+              )
+            }
           }
         }
       })
