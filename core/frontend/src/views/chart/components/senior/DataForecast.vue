@@ -1,7 +1,9 @@
 <template>
   <div>
     <el-form
+      ref="forecastForm"
       :model="forecastCfg"
+      :rules="rules"
       label-width="80px"
       size="mini"
       @submit.native.prevent
@@ -43,12 +45,17 @@
       <el-form-item
         v-if="!forecastCfg.allPeriod"
         class="form-item"
+        prop="trainingPeriod"
         :label="$t('chart.forecast_training_period')"
       >
         <el-input-number
           v-model="forecastCfg.trainingPeriod"
           :disabled="!forecastCfg.enable"
           :min="5"
+          :max="1000"
+          :step="1"
+          :precision="0"
+          step-strictly
           size="mini"
           @change="onForecastChange"
         />
@@ -69,12 +76,16 @@
       </el-form-item>
       <el-form-item
         class="form-item"
+        prop="period"
         :label="$t('chart.forecast_period')"
       >
         <el-input-number
           v-model="forecastCfg.period"
           :disabled="!forecastCfg.enable"
           :min="1"
+          :max="100"
+          :precision="0"
+          step-strictly
           size="mini"
           @change="onForecastChange"
         />
@@ -101,6 +112,7 @@
         v-show="false"
         v-if="forecastCfg.ciType === 'custom'"
         class="form-item"
+        prop="confidenceInterval"
         :label="$t('chart.custom_case')"
       >
         <el-input-number
@@ -109,6 +121,8 @@
           :max="0.99"
           :min="0.75"
           :step="0.01"
+          :precision="2"
+          step-strictly
           size="mini"
           @change="onForecastChange"
         />
@@ -133,6 +147,7 @@
       <el-form-item
         v-if="forecastCfg.algorithm === 'polynomial-regression'"
         class="form-item"
+        prop="degree"
         :label="$t('chart.forecast_degree')"
       >
         <el-input-number
@@ -140,6 +155,8 @@
           :disabled="!forecastCfg.enable"
           :max="10"
           :min="1"
+          :precision="0"
+          step-strictly
           size="mini"
           @change="onForecastChange"
         />
@@ -171,15 +188,21 @@ export default {
         degree: 3
       },
       algorithmOptions: [
-        { name: '线性回归', value: 'linear-regression' },
-        { name: '多项式拟合', value: 'polynomial-regression' }
+        { name: this.$t('chart.linear_regression'), value: 'linear-regression' },
+        { name: this.$t('chart.polynomial_regression'), value: 'polynomial-regression' }
       ],
       ciOptions: [
         { name: '90%', value: 0.90 },
         { name: '95%', value: 0.95 },
         { name: '99%', value: 0.99 },
         { name: '自定义', value: 'custom' }
-      ]
+      ],
+      rules: {
+        trainingPeriod: [{ required: true, trigger: 'change', message: this.$t('commons.cannot_be_null') }],
+        period: [{ required: true, trigger: 'change', message: this.$t('commons.cannot_be_null') }],
+        degree: [{ required: true, trigger: 'change', message: this.$t('commons.cannot_be_null') }],
+        confidenceInterval: [{ required: true, trigger: 'change', message: this.$t('commons.cannot_be_null') }]
+      }
     }
   },
   watch: {
@@ -208,10 +231,15 @@ export default {
       }
     },
     onForecastChange() {
-      if (this.forecastCfg.ciType !== 'custom') {
-        this.forecastCfg.confidenceInterval = this.forecastCfg.ciType
-      }
-      this.$emit('onForecastChange', this.forecastCfg)
+      this.$refs.forecastForm.validate((valid) => {
+        if (!valid) {
+          return
+        }
+        if (this.forecastCfg.ciType !== 'custom') {
+          this.forecastCfg.confidenceInterval = this.forecastCfg.ciType
+        }
+        this.$emit('onForecastChange', this.forecastCfg)
+      })
     }
   }
 }

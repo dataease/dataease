@@ -1827,7 +1827,9 @@ export default {
     forecast_period: '预测周期',
     forecast_confidence_interval: '置信区间',
     forecast_model: '预测模型',
-    forecast_degree: '阶数'
+    forecast_degree: '阶数',
+    linear_regression: '线性回归',
+    polynomial_regression: '多项式拟合'
   },
   dataset: {
     goto: ', 前往 ',

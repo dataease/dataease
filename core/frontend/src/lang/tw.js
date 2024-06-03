@@ -1830,7 +1830,9 @@ export default {
     forecast_period: '預測週期',
     forecast_confidence_interval: '置信區間',
     forecast_model: '預測模型',
-    forecast_degree: '階數'
+    forecast_degree: '階數',
+    linear_regression: '線性回歸',
+    polynomial_regression: '多項式擬合'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
