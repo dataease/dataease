@@ -73,6 +73,7 @@ const { icon, name, label, dragInfo, themes } = toRefs(props)
     .drag-icon {
       height: 40px;
       width: 40px;
+      color: #3370ff;
     }
   }
   .label-content {
