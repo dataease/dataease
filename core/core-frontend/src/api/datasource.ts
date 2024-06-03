@@ -147,6 +147,8 @@ export const deleteById = (id: number) => request.get({ url: '/datasource/delete
 
 export const getById = (id: number) => request.get({ url: '/datasource/get/' + id })
 
+export const getHidePwById = (id: number) => request.get({ url: '/datasource/hidePw/' + id })
+
 export const uploadFile = async (data): Promise<IResponse> => {
   return request
     .post({

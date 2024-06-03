@@ -65,8 +65,6 @@ const handleClick = tab => {
   } else {
     description.value = t('data_export.no_task')
   }
-
-  tableData.value = []
   drawerLoading.value = true
   exportTasks(activeName.value)
     .then(res => {
@@ -192,6 +190,7 @@ const callbackExport = () => {
 const downLoadAll = () => {
   if (multipleSelection.value.length === 0) {
     tableData.value.forEach(item => {
+      console.log(item.id)
       downloadFile(item.id)
         .then(res => {
           const blob = new Blob([res], { type: 'application/vnd.ms-excel' })

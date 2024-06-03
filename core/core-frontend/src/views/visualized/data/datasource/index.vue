@@ -8,7 +8,7 @@ import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { HandleMore } from '@/components/handle-more'
 import { Icon } from '@/components/icon-custom'
 import { fieldType } from '@/utils/attr'
-import { listSyncRecord, uploadFile } from '@/api/datasource'
+import { getHidePwById, listSyncRecord, uploadFile } from '@/api/datasource'
 import CreatDsGroup from './form/CreatDsGroup.vue'
 import type { Tree } from '../dataset/form/CreatDsGroup.vue'
 import { previewData, getById } from '@/api/datasource'
@@ -455,7 +455,7 @@ const handleNodeClick = data => {
     dsListTree.value.setCurrentKey(null)
     return
   }
-  return getById(data.id).then(res => {
+  return getHidePwById(data.id).then(res => {
     let {
       name,
       createBy,
@@ -571,7 +571,48 @@ const editDatasource = (editType?: number) => {
   if (nodeInfo.type === 'Excel') {
     nodeInfo.editType = editType
   }
-  datasourceEditor.value.init(nodeInfo)
+  return getById(nodeInfo.id).then(res => {
+    let {
+      name,
+      createBy,
+      id,
+      createTime,
+      creator,
+      type,
+      pid,
+      configuration,
+      syncSetting,
+      apiConfigurationStr,
+      fileName,
+      size,
+      description,
+      lastSyncTime
+    } = res.data
+    if (configuration) {
+      configuration = JSON.parse(Base64.decode(configuration))
+    }
+    if (apiConfigurationStr) {
+      apiConfigurationStr = JSON.parse(Base64.decode(apiConfigurationStr))
+    }
+    let datasource = reactive<Node>(cloneDeep(defaultInfo))
+    Object.assign(datasource, {
+      name,
+      pid,
+      description,
+      fileName,
+      size,
+      createTime,
+      creator,
+      createBy,
+      id,
+      type,
+      configuration,
+      syncSetting,
+      apiConfiguration: apiConfigurationStr,
+      lastSyncTime
+    })
+    datasourceEditor.value.init(datasource)
+  })
 }
 
 const handleEdit = async data => {

@@ -204,8 +204,8 @@ const downloadViewDetails = () => {
   exportLoading.value = true
   exportExcelDownload(chart, () => {
     openMessageLoading(exportData)
-    exportLoading.value = false
   })
+  exportLoading.value = false
 }
 
 const exportData = () => {

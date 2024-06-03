@@ -71,6 +71,11 @@ public interface DatasourceApi {
     @GetMapping("/get/{datasourceId}")
     DatasourceDTO get(@PathVariable("datasourceId") Long datasourceId) throws DEException;
 
+    @DePermit({"#p0+':read'"})
+    @GetMapping("/hidePw/{datasourceId}")
+    DatasourceDTO hidePw(@PathVariable("datasourceId") Long datasourceId) throws DEException;
+
+
     @PostMapping("/getTableField")
     List<TableField> getTableField(@RequestBody Map<String, String> req) throws DEException;
 
