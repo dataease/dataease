@@ -560,7 +560,7 @@ onMounted(() => {
         :effect="themes"
         v-model="state.basicStyleForm.showZoom"
         :predefine="predefineColors"
-        @change="changeBasicStyle('zoomShow')"
+        @change="changeBasicStyle('showZoom')"
       >
         {{ t('chart.show_zoom') }}
       </el-checkbox>
