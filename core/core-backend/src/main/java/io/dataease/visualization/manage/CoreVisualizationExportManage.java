@@ -54,14 +54,18 @@ public class CoreVisualizationExportManage {
         }
         if (CollectionUtils.isEmpty(chartViewDTOS)) return null;
         Map<String, ChartExtRequest> chartExtRequestMap = buildViewRequest(visualization, onlyDisplay);
-        List<ExcelSheetModel> sheets = chartViewDTOS.stream().map(view -> {
+        List<ExcelSheetModel> sheets = new ArrayList<>();
+        for (int i = 0; i < chartViewDTOS.size(); i++) {
+            ChartViewDTO view = chartViewDTOS.get(i);
             ChartExtRequest extRequest = chartExtRequestMap.get(view.getId().toString());
             if (ObjectUtils.isNotEmpty(extRequest)) {
                 view.setChartExtRequest(extRequest);
             }
             view.getChartExtRequest().setUser(AuthUtils.getUser().getUserId());
-            return exportViewData(view);
-        }).toList();
+            view.setTitle((i + 1) + "-" + view.getTitle());
+            sheets.add(exportViewData(view));
+        }
+
         return VisualizationExcelUtils.exportExcel(sheets, visualization.getName(), visualization.getId().toString());
     }
 
