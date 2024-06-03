@@ -2,6 +2,7 @@ package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.api.ds.ext.DEHikariDataSource;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType;
 import io.dataease.api.ds.vo.DatasourceDTO;
@@ -28,7 +29,6 @@ import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.util.CollectionUtils;
@@ -37,6 +37,7 @@ import java.io.File;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 import java.sql.*;
 import java.util.*;
 import java.util.regex.Matcher;
@@ -87,7 +88,9 @@ public class CalciteProvider {
     public List<String> getSchema(DatasourceRequest datasourceRequest) {
         List<String> schemas = new ArrayList<>();
         String queryStr = getSchemaSql(datasourceRequest.getDatasource());
-        try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(queryStr)) {
+        try (Connection con = getConnection(datasourceRequest.getDatasource());
+             Statement statement = getStatement(con, 30);
+             ResultSet resultSet = statement.executeQuery(queryStr)) {
             while (resultSet.next()) {
                 schemas.add(resultSet.getString(1));
             }
@@ -101,7 +104,9 @@ public class CalciteProvider {
         List<DatasetTableDTO> tables = new ArrayList<>();
         List<String> tablesSqls = getTablesSql(datasourceRequest);
         for (String tablesSql : tablesSqls) {
-            try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(tablesSql)) {
+            try (Connection con = getConnection(datasourceRequest.getDatasource());
+                 Statement statement = getStatement(con, 30);
+                 ResultSet resultSet = statement.executeQuery(tablesSql)) {
                 while (resultSet.next()) {
                     tables.add(getTableDesc(datasourceRequest, resultSet));
                 }
@@ -146,7 +151,9 @@ public class CalciteProvider {
                 break;
         }
         String querySql = getTablesSql(datasourceRequest).get(0);
-        try (Connection con = getConnection(datasourceRequest.getDatasource()); Statement statement = getStatement(con, 30); ResultSet resultSet = statement.executeQuery(querySql)) {
+        try (Connection con = getConnection(datasourceRequest.getDatasource());
+             Statement statement = getStatement(con, 30);
+             ResultSet resultSet = statement.executeQuery(querySql)) {
         } catch (Exception e) {
             throw e;
         }
@@ -297,12 +304,12 @@ public class CalciteProvider {
                         row[j] = bigDecimal == null ? null : bigDecimal.toString();
                         break;
                     default:
-                        if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
+                        if (metaData.getColumnTypeName(j + 1).equalsIgnoreCase("blob")) {
                             row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
                         } else {
                             if (charset != null && StringUtils.isNotEmpty(rs.getString(j + 1))) {
                                 String originStr = new String(rs.getString(j + 1).getBytes(charset), targetCharset);
-                                row[j] = new String(originStr.getBytes("UTF-8"), "UTF-8");
+                                row[j] = new String(originStr.getBytes(StandardCharsets.UTF_8), StandardCharsets.UTF_8);
                             } else {
                                 row[j] = rs.getString(j + 1);
                             }
@@ -536,7 +543,7 @@ public class CalciteProvider {
     private void registerDriver() {
         for (String driverClass : getDriver()) {
             try {
-                Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).newInstance();
+                Driver driver = (Driver) extendedJdbcClassLoader.loadClass(driverClass).getDeclaredConstructor().newInstance();
                 DriverManager.registerDriver(new DriverShim(driver));
             } catch (Exception e) {
                 e.printStackTrace();
@@ -570,17 +577,18 @@ public class CalciteProvider {
             DatasourceSchemaDTO ds = next.getValue();
             commonThreadPool.addTask(() -> {
                 try {
-                    BasicDataSource dataSource = new BasicDataSource();
+                    DEHikariDataSource dataSource = new DEHikariDataSource();
                     Schema schema = null;
                     DatasourceConfiguration configuration = null;
                     DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
                     try {
                         if (rootSchema.getSubSchema(ds.getSchemaAlias()) != null) {
                             JdbcSchema jdbcSchema = rootSchema.getSubSchema(ds.getSchemaAlias()).unwrap(JdbcSchema.class);
-                            BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
-                            basicDataSource.close();
+                            DEHikariDataSource hikariDataSource = (DEHikariDataSource) jdbcSchema.getDataSource();
+                            hikariDataSource.close();
                             rootSchema.removeSubSchema(ds.getSchemaAlias());
                         }
+                        int minIdle, maxPoolSize;
                         switch (datasourceType) {
                             case mysql:
                             case mongo:
@@ -589,121 +597,131 @@ public class CalciteProvider {
                             case StarRocks:
                             case doris:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             case impala:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Impala.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             case sqlServer:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Sqlserver.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             case oracle:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Oracle.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             case db2:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Db2.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             case ck:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), CK.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             case pg:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Pg.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             case redshift:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Redshift.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getSchema());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             case h2:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), H2.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                                 break;
                             default:
                                 configuration = JsonUtil.parseObject(ds.getConfiguration(), Mysql.class);
-                                dataSource.setUrl(configuration.getJdbc());
+                                dataSource.setJdbcUrl(configuration.getJdbc());
                                 dataSource.setUsername(configuration.getUsername());
                                 dataSource.setPassword(configuration.getPassword());
-                                dataSource.setInitialSize(configuration.getInitialPoolSize());
-                                dataSource.setMaxTotal(configuration.getMaxPoolSize());
-                                dataSource.setMinIdle(configuration.getMinPoolSize());
-                                dataSource.setDefaultQueryTimeout(Integer.valueOf(configuration.getQueryTimeout()));
+                                minIdle = configuration.getMinPoolSize();
+                                dataSource.setMinimumIdle(minIdle);
+                                maxPoolSize = Math.max(minIdle, Math.max(configuration.getInitialPoolSize(), configuration.getMaxPoolSize()));
+                                dataSource.setMaximumPoolSize(maxPoolSize);
+                                dataSource.setDefaultQueryTimeoutSecs(configuration.getQueryTimeout());
                                 schema = JdbcSchema.create(rootSchema, ds.getSchemaAlias(), dataSource, null, configuration.getDataBase());
                                 rootSchema.add(ds.getSchemaAlias(), schema);
                         }
@@ -737,7 +755,7 @@ public class CalciteProvider {
                             row[j] = rs.getBoolean(j + 1) ? "true" : "false";
                             break;
                         default:
-                            if (metaData.getColumnTypeName(j + 1).toLowerCase().equalsIgnoreCase("blob")) {
+                            if (metaData.getColumnTypeName(j + 1).equalsIgnoreCase("blob")) {
                                 row[j] = rs.getBlob(j + 1) == null ? "" : rs.getBlob(j + 1).toString();
                             } else {
                                 row[j] = rs.getString(j + 1);
@@ -809,7 +827,7 @@ public class CalciteProvider {
                         "                               AND ep.class = 1  \n" +
                         "                               AND ep.name = 'MS_Description'\n" +
                         "where sc.name ='DS_SCHEMA'"
-                        .replace("DS_SCHEMA", configuration.getSchema()));
+                                .replace("DS_SCHEMA", configuration.getSchema()));
                 tableSqls.add("SELECT   \n" +
                         "    t.name AS TableName,  \n" +
                         "    ep.value AS TableDescription  \n" +
@@ -940,7 +958,7 @@ public class CalciteProvider {
         ExtendedJdbcClassLoader jdbcClassLoader = extendedJdbcClassLoader;
         Connection conn = null;
         try {
-            Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
+            Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).getDeclaredConstructor().newInstance();
             conn = driverClass.connect(configuration.getJdbc(), props);
         } catch (Exception e) {
             DEException.throwException(e.getMessage());
@@ -1022,7 +1040,7 @@ public class CalciteProvider {
 
     public void initConnectionPool() {
         LogUtil.info("Begin to init datasource pool...");
-        QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper();
+        QueryWrapper<CoreDatasource> datasourceQueryWrapper = new QueryWrapper<>();
         List<CoreDatasource> coreDatasources = coreDatasourceMapper.selectList(datasourceQueryWrapper).stream().filter(coreDatasource -> !Arrays.asList("folder", "API", "Excel").contains(coreDatasource.getType())).collect(Collectors.toList());
         CoreDatasource engine = engineManage.deEngine();
         if (engine != null) {
@@ -1090,8 +1108,8 @@ public class CalciteProvider {
             SchemaPlus rootSchema = calciteConnection.getRootSchema();
             if (rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()) != null) {
                 JdbcSchema jdbcSchema = rootSchema.getSubSchema(datasourceSchemaDTO.getSchemaAlias()).unwrap(JdbcSchema.class);
-                BasicDataSource basicDataSource = (BasicDataSource) jdbcSchema.getDataSource();
-                basicDataSource.close();
+                DEHikariDataSource hikariDataSource = (DEHikariDataSource) jdbcSchema.getDataSource();
+                hikariDataSource.close();
                 rootSchema.removeSubSchema(datasourceSchemaDTO.getSchemaAlias());
             }
         } catch (Exception e) {

@@ -28,7 +28,8 @@ public class H2EngineProvider extends EngineProvider {
         int queryTimeout = configuration.getQueryTimeout();
         CoreDatasource datasource = new CoreDatasource();
         BeanUtils.copyBean(datasource, engineRequest.getEngine());
-        try (Connection connection = getConnection(datasource); Statement stat = getStatement(connection, queryTimeout)) {
+        try (Connection connection = getConnection(datasource);
+             Statement stat = getStatement(connection, queryTimeout)) {
             PreparedStatement preparedStatement = connection.prepareStatement(engineRequest.getQuery());
             preparedStatement.setQueryTimeout(queryTimeout);
             Boolean result = preparedStatement.execute();
