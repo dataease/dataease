@@ -61,7 +61,7 @@ const onBackgroundChange = val => {
   emits('onAttrChange', { custom: 'commonBackground' })
 }
 
-const onStyleAttrChange = (value, key) => {
+const onStyleAttrChange = ({ key, value }) => {
   snapshotStore.recordSnapshotCache()
   emits('onAttrChange', { custom: 'style', property: key, value: value })
 }
@@ -143,7 +143,11 @@ const stopEvent = e => {
         name="style"
         class="common-style-area"
       >
-        <common-style-set :themes="themes" :element="element"></common-style-set>
+        <common-style-set
+          @onStyleAttrChange="onStyleAttrChange"
+          :themes="themes"
+          :element="element"
+        ></common-style-set>
       </el-collapse-item>
     </el-collapse>
   </div>
