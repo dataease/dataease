@@ -530,7 +530,8 @@ export function getYAxisExt(chart: Chart) {
         line: {
           style: {
             stroke: yAxis.splitLine.lineStyle.color,
-            lineWidth: yAxis.splitLine.lineStyle.width
+            lineWidth: yAxis.splitLine.lineStyle.width,
+            lineDash: getLineDash(yAxis.splitLine.lineStyle.style)
           }
         }
       }
@@ -780,7 +781,7 @@ export function getAnalyseHorizontal(chart: Chart) {
   return assistLine
 }
 
-function getLineDash(type) {
+export function getLineDash(type) {
   switch (type) {
     case 'solid':
       return [0, 0]

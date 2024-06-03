@@ -316,10 +316,26 @@ onMounted(() => {
             is-custom
           />
         </el-form-item>
+        <el-form-item class="form-item" :class="'form-item-' + themes" style="padding: 0 4px">
+          <el-select
+            :disabled="!state.axisForm.splitLine.show"
+            style="width: 62px"
+            :effect="props.themes"
+            v-model="state.axisForm.splitLine.lineStyle.style"
+            @change="changeAxisStyle('splitLine.lineStyle.style')"
+          >
+            <el-option
+              v-for="option in splitLineStyle"
+              :key="option.value"
+              :value="option.value"
+              :label="option.label"
+            ></el-option>
+          </el-select>
+        </el-form-item>
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
           <el-input-number
             :disabled="!state.axisForm.splitLine.show"
-            style="width: 108px"
+            style="width: 74px"
             :effect="props.themes"
             v-model="state.axisForm.splitLine.lineStyle.width"
             :min="1"
@@ -330,22 +346,6 @@ onMounted(() => {
           />
         </el-form-item>
       </div>
-      <el-form-item class="form-item" :class="'form-item-' + themes">
-        <el-select
-          :disabled="!state.axisForm.splitLine.show"
-          style="width: 108px"
-          :effect="props.themes"
-          v-model="state.axisForm.splitLine.lineStyle.style"
-          @change="changeAxisStyle('splitLine.lineStyle')"
-        >
-          <el-option
-            v-for="option in splitLineStyle"
-            :key="option.value"
-            :value="option.value"
-            :label="option.label"
-          ></el-option>
-        </el-select>
-      </el-form-item>
     </div>
     <el-divider class="m-divider" :class="'m-divider--' + themes" />
     <el-form-item
