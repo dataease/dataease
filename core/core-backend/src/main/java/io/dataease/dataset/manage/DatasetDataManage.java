@@ -689,7 +689,7 @@ public class DatasetDataManage {
         ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
-        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, ids.size() == 1, 0, 1000);
+        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, ids.size() == 1, needOrder, ids.size() == 1, 0, 1000);
         querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("calcite data enum sql: " + querySQL);
 
