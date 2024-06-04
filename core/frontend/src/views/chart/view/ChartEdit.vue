@@ -1186,6 +1186,7 @@
                             :chart="chart"
                             @onDimensionItemChange="drillItemChange"
                             @onDimensionItemRemove="drillItemRemove"
+                            @onNameEdit="showRename"
                             @onCustomSort="item => onCustomSort(item, 'drillFields')"
                           />
                         </transition-group>
@@ -3202,6 +3203,8 @@ export default {
             this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'extStack') {
             this.view.extStack[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'drill') {
+            this.view.drillFields[this.itemForm.index].name = this.itemForm.name
           }
           this.calcData(true)
           this.closeRename()
