@@ -19,4 +19,5 @@ public class XpackShareProxyRequest implements Serializable {
     private String uuid;
     @Schema(description = "密钥", requiredMode = Schema.RequiredMode.REQUIRED)
     private String ciphertext;
+    private boolean inIframe;
 }
