@@ -106,6 +106,7 @@ const dvSvgType = computed(() =>
 )
 
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isIframe = computed(() => appStore.getIsIframe)
 
 const resourceTypeList = computed(() => {
   const list = [
@@ -366,6 +367,14 @@ const resourceEdit = resourceId => {
       'changeCurrentComponent',
       curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
     )
+    return
+  }
+
+  if (isIframe.value) {
+    router.push({
+      path: curCanvasType.value === 'dataV' ? 'dvCanvas' : 'dashboard',
+      query: curCanvasType.value === 'dataV' ? { dvId: resourceId } : { resourceId }
+    })
     return
   }
   const newWindow = window.open(baseUrl + resourceId, '_blank')
