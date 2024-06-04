@@ -1819,7 +1819,9 @@ export const TYPE_CONFIGS = [
       'label-selector-ant-v': [
         'show',
         'fontSize',
-        'color'
+        'color',
+        'labelContent',
+        'reserveDecimalCount'
       ],
       'tooltip-selector-ant-v': [
         'show',

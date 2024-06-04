@@ -350,13 +350,6 @@ export default {
   },
   computed: {
     labelContentOptions() {
-      if (this.chart.type.includes('pie')) {
-        return [
-          { name: this.$t('chart.dimension'), value: 'dimension' },
-          { name: this.$t('chart.quota'), value: 'quota' },
-          { name: this.$t('chart.proportion'), value: 'proportion' }
-        ]
-      }
       if (this.chart.type.includes('bar')) {
         return [
           { name: this.$t('chart.chart_group'), value: 'group' },
@@ -364,7 +357,11 @@ export default {
           { name: this.$t('chart.quota'), value: 'quota' }
         ]
       }
-      return []
+      return [
+        { name: this.$t('chart.dimension'), value: 'dimension' },
+        { name: this.$t('chart.quota'), value: 'quota' },
+        { name: this.$t('chart.proportion'), value: 'proportion' }
+      ]
     }
   },
   watch: {
