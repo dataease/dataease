@@ -3,6 +3,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import ChartComponentG2Plot from './components/ChartComponentG2Plot.vue'
 import DeIndicator from '@/custom-component/indicator/DeIndicator.vue'
 import { useAppStoreWithOut } from '@/store/modules/app'
+import router from '@/router'
 import { useEmbedded } from '@/store/modules/embedded'
 import { XpackComponent } from '@/components/plugin'
 import {
@@ -29,6 +30,7 @@ import DrillPath from '@/views/chart/components/views/components/DrillPath.vue'
 import { ElIcon, ElInput, ElMessage } from 'element-plus-secondary'
 import { useFilter } from '@/hooks/web/useFilter'
 import { useCache } from '@/hooks/web/useCache'
+import { parseUrl } from '@/utils/ParseUrl'
 
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { cloneDeep } from 'lodash-es'
@@ -50,6 +52,7 @@ const dvMainStore = dvMainStoreWithOut()
 let innerRefreshTimer = null
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isIframe = computed(() => appStore.getIsIframe)
 
 const emit = defineEmits(['onPointClick'])
 
@@ -388,6 +391,7 @@ const jumpClick = param => {
     param.sourceFieldId = dimension.id
     let embeddedBaseUrl = ''
     const divSelf = isDataEaseBi.value && jumpInfo.jumpType === '_self'
+    const iframeSelf = isIframe.value && jumpInfo.jumpType === '_self'
     if (isDataEaseBi.value) {
       embeddedBaseUrl = embeddedStore.baseUrl
     }
@@ -414,6 +418,11 @@ const jumpClick = param => {
             embeddedStore.setDvId(jumpInfo.targetDvId)
             embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
             divEmbedded('Preview')
+            return
+          }
+
+          if (iframeSelf) {
+            router.push(parseUrl(url))
             return
           }
           windowsJump(url, jumpInfo.jumpType)
