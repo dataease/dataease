@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import flvjs from 'flv.js'
 import '@/style/custom-theme.css'
-import { onMounted, reactive, toRefs, getCurrentInstance } from 'vue'
+import { onMounted, reactive, toRefs, getCurrentInstance, watch, nextTick } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
@@ -74,6 +74,17 @@ onMounted(() => {
   })
   initOption()
 })
+
+watch(
+  () => element.value.streamMediaLinks,
+  () => {
+    destroyPlayer()
+    nextTick(() => {
+      state.pOption = element.value.streamMediaLinks[element.value.streamMediaLinks.videoType]
+      initOption()
+    })
+  }
+)
 
 const initOption = () => {
   if (flvjs.isSupported() && state.pOption.url) {
