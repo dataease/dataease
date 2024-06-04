@@ -69,6 +69,8 @@ export const interactiveStore = defineStore('interactive', {
       const method = apiMap[flag]
       const res = await method(param)
       this.data[flag] = convertInteractive(res)
+      console.log('this.data[flag]', this.data[flag], flag, this, res, busiFlagMap, param)
+
       if (flag === 0) {
         wsCache.set('panel-weight', convertLocalStorage(this.data[flag]))
       }

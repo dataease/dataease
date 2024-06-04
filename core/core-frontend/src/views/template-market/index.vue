@@ -282,6 +282,8 @@ const state = reactive({
 
 const createAuth = computed(() => {
   const authMap = interactiveStore.getData
+  console.log('authMap', authMap)
+
   return {
     PANEL: authMap['0'].menuAuth && authMap['0'].anyManage,
     SCREEN: authMap['1'].menuAuth && authMap['1'].anyManage
