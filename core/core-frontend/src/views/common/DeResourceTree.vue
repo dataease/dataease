@@ -16,6 +16,7 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 const interactiveStore = interactiveStoreWithOut()
 import router from '@/router'
 import { useI18n } from '@/hooks/web/useI18n'
+import { parseUrl } from '@/utils/ParseUrl'
 import _ from 'lodash'
 import DeResourceCreateOptV2 from '@/views/common/DeResourceCreateOptV2.vue'
 import { useCache } from '@/hooks/web/useCache'
@@ -301,6 +302,11 @@ const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
         return
       }
 
+      if (isIframe.value) {
+        router.push(parseUrl(baseUrl))
+        return
+      }
+
       const newWindow = window.open(baseUrl, '_blank')
       initOpenHandler(newWindow)
     })
@@ -330,6 +336,11 @@ const addOperation = (
         'changeCurrentComponent',
         curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
       )
+      return
+    }
+
+    if (isIframe.value) {
+      router.push(parseUrl(data?.id ? baseUrl + `&pid=${data.id}` : baseUrl))
       return
     }
     if (data?.id) {
@@ -371,10 +382,7 @@ const resourceEdit = resourceId => {
   }
 
   if (isIframe.value) {
-    router.push({
-      path: curCanvasType.value === 'dataV' ? 'dvCanvas' : 'dashboard',
-      query: curCanvasType.value === 'dataV' ? { dvId: resourceId } : { resourceId }
-    })
+    router.push(parseUrl(baseUrl + resourceId))
     return
   }
   const newWindow = window.open(baseUrl + resourceId, '_blank')
@@ -403,6 +411,13 @@ const resourceCreateFinish = templateData => {
     useEmitt().emitter.emit(
       'changeCurrentComponent',
       curCanvasType.value === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
+    )
+    return
+  }
+
+  if (isIframe.value) {
+    router.push(
+      parseUrl(state.templateCreatePid ? baseUrl + `&pid=${state.templateCreatePid}` : baseUrl)
     )
     return
   }
