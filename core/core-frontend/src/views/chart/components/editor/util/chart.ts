@@ -1401,6 +1401,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   tableColumnWidth: 100,
   tableFieldWidth: [],
   tablePageMode: 'page',
+  tablePageStyle: 'simple',
   tablePageSize: 20,
   gaugeStyle: 'default',
   colorScheme: 'default',

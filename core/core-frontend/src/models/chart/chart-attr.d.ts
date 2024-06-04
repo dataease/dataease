@@ -93,6 +93,10 @@ declare interface ChartBasicStyle {
    */
   tablePageMode: 'page' | 'pull'
   /**
+   * 表格分页器风格
+   */
+  tablePageStyle: 'simple' | 'general'
+  /**
    * 表格分页大小
    */
   tablePageSize: number
