@@ -208,7 +208,7 @@ const list = [
     name: '查询',
     label: '查询',
     propValue: '',
-    icon: 'other_text',
+    icon: 'icon_search',
     innerType: 'VQuery',
     isHang: false,
     x: 1,
