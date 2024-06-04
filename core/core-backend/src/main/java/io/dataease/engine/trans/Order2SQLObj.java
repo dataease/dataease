@@ -22,17 +22,17 @@ import java.util.Objects;
  */
 public class Order2SQLObj {
 
-    public static void getOrders(SQLMeta meta, List<DatasetTableFieldDTO> fields, List<DeSortField> sortFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
+    public static void getOrders(SQLMeta meta, List<DeSortField> sortFields, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, DatasourceSchemaDTO> dsMap) {
         SQLObj tableObj = meta.getTable();
         List<SQLObj> xOrders = meta.getXOrders() == null ? new ArrayList<>() : meta.getXOrders();
         if (ObjectUtils.isEmpty(tableObj)) {
             return;
         }
         if (ObjectUtils.isNotEmpty(sortFields)) {
-            int step = fields.size();
+            int step = originFields.size();
             for (int i = step; i < (step + sortFields.size()); i++) {
                 DeSortField deSortField = sortFields.get(i - step);
-                SQLObj order = buildSortField(deSortField, tableObj, i, fields, isCross, dsMap);
+                SQLObj order = buildSortField(deSortField, tableObj, i, originFields, isCross, dsMap);
                 xOrders.add(order);
             }
             meta.setXOrders(xOrders);
