@@ -423,8 +423,8 @@ const autoStyle = computed(() => {
                   <el-tooltip effect="dark" :content="ele.name" placement="top">
                     {{ ele.name }}
                   </el-tooltip>
-                  <span v-if="ele.required" class="required">*</span>
                 </div>
+                <span v-if="ele.required" class="required">*</span>
               </div>
               <div
                 class="label-wrapper-tooltip"
@@ -573,13 +573,13 @@ const autoStyle = computed(() => {
           font-style: normal;
           font-weight: 400;
           line-height: 22px;
+        }
 
-          .required {
-            font-size: 14px;
-            color: #f54a45;
-            margin-left: 3px;
-            line-height: 22px;
-          }
+        .required {
+          font-size: 14px;
+          color: #f54a45;
+          margin-left: 3px;
+          line-height: 22px;
         }
         .label-wrapper-tooltip {
           align-items: center;
