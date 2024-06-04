@@ -424,7 +424,6 @@ const handleInnerMouseDownOnShape = e => {
     if (curComponent.value && curComponent.value.id !== element.value.id) {
       areaDataPush(curComponent.value)
     }
-    dvMainStore.setCurComponent({ component: null, index: null })
     e.stopPropagation()
     return
   }
