@@ -5,7 +5,7 @@
         <el-switch
           :effect="themes"
           @change="onChange"
-          v-model="state.linkInfoTemp[state.linkInfoTemp.videoType].autoPlay"
+          v-model="state.linkInfoTemp[state.linkInfoTemp.videoType].autoplay"
           size="mini"
         />
       </el-form-item>
