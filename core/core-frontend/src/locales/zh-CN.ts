@@ -2222,6 +2222,7 @@ export default {
     dsExecuteTime: '数据源检测频率',
     frontTimeOut: '请求超时时间（秒）',
     logLiveTime: '操作日志保留时间（天）',
+    exportFileLiveTime: '后台导出文件保留时间（天）',
     platformOid: '第三方平台用户组织',
     platformRid: '第三方平台用户角色',
     pwdStrategy: '开启密码策略',
