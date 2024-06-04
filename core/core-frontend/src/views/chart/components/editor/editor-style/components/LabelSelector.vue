@@ -220,7 +220,37 @@ const isBarRangeTime = computed<boolean>(() => {
   }
   return false
 })
+watch(
+  () => props.chart.customAttr.basicStyle.layout,
+  () => {
+    const layout = props.chart.customAttr.basicStyle.layout
+    if (layout === 'horizontal') {
+      if (state?.labelForm?.position === 'top') {
+        state.labelForm.position = 'right'
+      }
+      if (state?.labelForm?.position === 'bottom') {
+        state.labelForm.position = 'left'
+      }
+    }
+    if (layout === 'vertical') {
+      if (state?.labelForm?.position === 'left') {
+        state.labelForm.position = 'bottom'
+      }
+      if (state?.labelForm?.position === 'right') {
+        state.labelForm.position = 'top'
+      }
+    }
+    changeLabelAttr('position')
+  },
+  { deep: true }
+)
 
+const isBarBidirectionalAndVertical = computed(() => {
+  if (props.chart.type !== 'bidirectional-bar') {
+    return true
+  }
+  return props.chart.customAttr.basicStyle.layout === 'vertical'
+})
 onMounted(() => {
   init()
 })
@@ -298,7 +328,7 @@ onMounted(() => {
       </el-select>
     </el-form-item>
     <el-form-item
-      v-if="showProperty('hPosition')"
+      v-if="showProperty('hPosition') && !isBarBidirectionalAndVertical"
       :label="t('chart.label_position')"
       class="form-item"
       :class="'form-item-' + themes"
@@ -319,7 +349,7 @@ onMounted(() => {
       </el-select>
     </el-form-item>
     <el-form-item
-      v-if="showProperty('vPosition')"
+      v-if="showProperty('vPosition') && isBarBidirectionalAndVertical"
       :label="t('chart.label_position')"
       class="form-item"
       :class="'form-item-' + themes"

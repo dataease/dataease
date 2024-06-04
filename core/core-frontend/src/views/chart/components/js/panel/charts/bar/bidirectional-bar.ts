@@ -87,7 +87,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
     ],
     'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
     'function-cfg': ['emptyDataStrategy'],
-    'label-selector': ['hPosition', 'seriesLabelFormatter'],
+    'label-selector': ['hPosition', 'vPosition', 'seriesLabelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show']
   }
 
@@ -386,6 +386,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       ...chart.customAttr.label,
       position: 'right'
     }
+    chart.customAttr.basicStyle.layout = 'horizontal'
     return chart
   }
 
@@ -399,6 +400,7 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
       return pre
     }, {})
     let customAttr: DeepPartial<ChartAttr>
+    const layoutHorizontal = options.layout === 'horizontal'
     if (chart.customAttr) {
       customAttr = parseJson(chart.customAttr)
       // label
@@ -434,12 +436,46 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
               } else {
                 res = valueFormatter(value, l.labelFormatter)
               }
-              return res
+              const group = new G2PlotChartView.engine.Group({})
+              const isValue = param['series-field-key'] === 'value'
+              const textAlign = isValue && layoutHorizontal ? 'end' : 'start'
+              const isMiddle = label.position === 'middle'
+              group.addShape({
+                type: 'text',
+                attrs: {
+                  x:
+                    isValue && layoutHorizontal && !isMiddle
+                      ? -6
+                      : !isValue && layoutHorizontal && !isMiddle
+                      ? 6
+                      : 0,
+                  y:
+                    isValue && !layoutHorizontal && !isMiddle
+                      ? -8
+                      : !isValue && !layoutHorizontal && !isMiddle
+                      ? 8
+                      : 0,
+                  text: res,
+                  textAlign: label.position === 'middle' ? 'start' : textAlign,
+                  textBaseline: 'top',
+                  fontSize: labelCfg.fontSize,
+                  fill: labelCfg.color
+                }
+              })
+              return group
             }
           }
         } else {
           label = false
         }
+      }
+    }
+    if (!layoutHorizontal) {
+      if (label.position === 'left') {
+        label.position = 'bottom'
+      }
+      if (label.position === 'right') {
+        label.position = 'top'
       }
     }
     return { ...options, label }
