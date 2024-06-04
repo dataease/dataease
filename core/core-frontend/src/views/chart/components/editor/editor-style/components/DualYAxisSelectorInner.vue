@@ -309,7 +309,7 @@ onMounted(() => {
         <el-form-item class="form-item" :class="'form-item-' + themes" style="padding-left: 4px">
           <el-input-number
             :disabled="!state.axisForm.splitLine.show"
-            style="width: 74px"
+            style="width: 70px"
             :effect="props.themes"
             v-model="state.axisForm.splitLine.lineStyle.width"
             :min="1"
