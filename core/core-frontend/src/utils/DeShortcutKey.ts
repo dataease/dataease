@@ -101,7 +101,7 @@ let isShiftDown = false
 // 全局监听按键操作并执行相应命令
 export function listenGlobalKeyDown() {
   window.onkeydown = e => {
-    if (!isInEditor.value || editMode.value === 'preview' || checkDialog()) return
+    if (editMode.value === 'preview' || checkDialog()) return
     const { keyCode } = e
     if (positionMoveKey[keyCode] && curComponent.value) {
       positionMoveKey[keyCode](keyCode)
