@@ -46,7 +46,7 @@
     "snowflake-id": "^1.1.0",
     "tinymce": "^5.8.2",
     "vant": "^4.8.3",
-    "video.js": "^8.12.0",
+    "video.js": "^7.21.6",
     "vue": "^3.3.4",
     "vue-clipboard3": "^2.0.0",
     "vue-codemirror": "^6.1.1",
