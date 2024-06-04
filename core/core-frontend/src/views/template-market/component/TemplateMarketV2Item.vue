@@ -23,7 +23,7 @@
 
 <script setup lang="ts">
 import { useI18n } from '@/hooks/web/useI18n'
-import { computed } from 'vue'
+import { computed, onMounted } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 const { t } = useI18n()
 
@@ -54,6 +54,11 @@ const props = defineProps({
       }
     }
   }
+})
+
+onMounted(() => {
+  console.log('template', props.template)
+  console.log('createAuth', props.createAuth)
 })
 
 const classBackground = computed(() => {
