@@ -20,8 +20,10 @@ public class DeWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
     public void afterConnectionEstablished(WebSocketSession session) throws Exception {
         Optional.ofNullable(session.getPrincipal()).ifPresent(principal -> {
             String name = principal.getName();
-            Long userId = Long.parseLong(name);
-            WsUtil.onLine(userId);
+            if(name != null){
+                Long userId = Long.parseLong(name);
+                WsUtil.onLine(userId);
+            }
         });
         super.afterConnectionEstablished(session);
     }
@@ -30,8 +32,10 @@ public class DeWebSocketHandlerDecorator extends WebSocketHandlerDecorator {
     public void afterConnectionClosed(WebSocketSession session, CloseStatus closeStatus) throws Exception {
         Optional.ofNullable(session.getPrincipal()).ifPresent(principal -> {
             String name = principal.getName();
-            Long userId = Long.parseLong(name);
-            WsUtil.offLine(userId);
+            if(name != null){
+                Long userId = Long.parseLong(name);
+                WsUtil.offLine(userId);
+            }
         });
 
         super.afterConnectionClosed(session, closeStatus);
