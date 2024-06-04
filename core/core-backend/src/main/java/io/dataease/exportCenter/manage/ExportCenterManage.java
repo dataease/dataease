@@ -17,7 +17,6 @@ import io.dataease.utils.*;
 import io.dataease.visualization.server.DataVisualizationServer;
 import io.dataease.websocket.WsMessage;
 import io.dataease.websocket.WsService;
-import io.dataease.xpack.base.log.dao.auto.entity.XpackLog;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
