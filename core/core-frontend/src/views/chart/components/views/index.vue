@@ -356,9 +356,6 @@ const windowsJump = (url, jumpType) => {
   try {
     const newWindow = window.open(url, jumpType)
     initOpenHandler(newWindow)
-    if (jumpType === '_self') {
-      location.reload()
-    }
   } catch (e) {
     ElMessage.error(t('visualization.url_check_error') + ':' + url)
   }
@@ -415,6 +412,7 @@ const jumpClick = param => {
             jumpInfo.targetDvId
           }&jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
           if (divSelf) {
+            embeddedStore.clearState()
             embeddedStore.setDvId(jumpInfo.targetDvId)
             embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
             divEmbedded('Preview')
@@ -435,6 +433,7 @@ const jumpClick = param => {
       let url = setIdValueTrans('id', 'value', jumpInfo.content, colList)
       url = checkAddHttp(url)
       if (divSelf) {
+        embeddedStore.clearState()
         embeddedStore.setOuterUrl(url)
         divEmbedded('Iframe')
         return
