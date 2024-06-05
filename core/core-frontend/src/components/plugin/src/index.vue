@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import noLic from './nolic.vue'
-import { ref, useAttrs, onMounted } from 'vue'
+import { ref, useAttrs, onMounted, watch } from 'vue'
 import { execute, randomKey, formatArray } from './convert'
 import { load, loadDistributed, xpackModelApi } from '@/api/plugin'
 import { useCache } from '@/hooks/web/useCache'
@@ -8,7 +8,6 @@ import { i18n } from '@/plugins/vue-i18n'
 import * as Vue from 'vue'
 import axios from 'axios'
 import * as Pinia from 'pinia'
-import * as vueI18n from 'vue-i18n'
 import * as vueRouter from 'vue-router'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
@@ -99,10 +98,9 @@ onMounted(async () => {
     window['Vue'] = Vue
     window['Axios'] = axios
     window['Pinia'] = Pinia
-    window['vueI18n'] = vueI18n
     window['vueRouter'] = vueRouter
     window['MittAll'] = useEmitt().emitter.all
-    window['i18n'] = i18n
+    window['I18n'] = i18n
     if (window['DEXPack']) {
       const xpack = await window['DEXPack'].mapping[attrs.jsname]
       plugin.value = xpack.default
@@ -118,6 +116,16 @@ onMounted(async () => {
   }
 })
 
+watch(
+  () => attrs.jsname,
+  () => {
+    if (window['DEXPack']) {
+      const xpack = window['DEXPack'].mapping[attrs.jsname]
+      plugin.value = xpack.default
+    }
+  }
+)
+
 const emits = defineEmits(['loadFail'])
 defineExpose({
   invokeMethod
@@ -125,7 +133,13 @@ defineExpose({
 </script>
 
 <template>
-  <component ref="pluginProxy" :is="plugin" v-loading="loading" v-bind="attrs"></component>
+  <component
+    :class="attrs.jsname"
+    ref="pluginProxy"
+    :is="plugin"
+    v-loading="loading"
+    v-bind="attrs"
+  ></component>
 </template>
 
 <style lang="less" scoped></style>
