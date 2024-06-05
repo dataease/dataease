@@ -116,6 +116,9 @@ const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
       tableItemBgColor: '#FFFFFF',
       tableFontColor: '#7C7E81',
       enableTableCrossBG: false
+    },
+    tooltip: {
+      show: false
     }
   }
 }
