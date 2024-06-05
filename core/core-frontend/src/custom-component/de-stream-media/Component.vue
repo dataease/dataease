@@ -75,37 +75,30 @@ onMounted(() => {
   initOption()
 })
 
-watch(
-  () => element.value.streamMediaLinks,
-  () => {
-    destroyPlayer()
-    nextTick(() => {
-      state.pOption = element.value.streamMediaLinks[element.value.streamMediaLinks.videoType]
-      initOption()
-    })
-  }
-)
-
 const initOption = () => {
-  if (flvjs.isSupported() && state.pOption.url) {
-    destroyPlayer()
-    const video = currentInstance.proxy.$refs['player-' + element.value.id]
-    if (video) {
-      try {
-        state.flvPlayer = flvjs.createPlayer(state.pOption, {
-          enableWorker: false, // 不启用分离线程
-          enableStashBuffer: false, // 关闭IO隐藏缓冲区
-          isLive: state.pOption.isLive,
-          lazyLoad: false
-        })
-        state.flvPlayer.attachMediaElement(video)
-        state.flvPlayer.load()
-        state.flvPlayer.play()
-      } catch (error) {
-        console.error('flvjs err ignore', error)
+  state.pOption = element.value.streamMediaLinks[element.value.streamMediaLinks.videoType]
+  delete state.pOption.segments
+  nextTick(() => {
+    if (flvjs.isSupported() && state.pOption.url) {
+      destroyPlayer()
+      const video = currentInstance.proxy.$refs['player-' + element.value.id]
+      if (video) {
+        try {
+          state.flvPlayer = flvjs.createPlayer(state.pOption, {
+            enableWorker: false, // 不启用分离线程
+            enableStashBuffer: false, // 关闭IO隐藏缓冲区
+            isLive: state.pOption.isLive,
+            lazyLoad: false
+          })
+          state.flvPlayer.attachMediaElement(video)
+          state.flvPlayer.load()
+          state.flvPlayer.play()
+        } catch (error) {
+          console.error('flvjs err ignore', error)
+        }
       }
     }
-  }
+  })
 }
 
 const destroyPlayer = () => {
