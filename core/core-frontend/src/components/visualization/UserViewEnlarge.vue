@@ -8,7 +8,12 @@
     trigger="click"
   >
     <div class="export-button">
-      <el-select v-if="optType === 'enlarge'" v-model="pixel" class="pixel-select" size="small">
+      <el-select
+        v-if="optType === 'enlarge' && dvInfo.weight > 3"
+        v-model="pixel"
+        class="pixel-select"
+        size="small"
+      >
         <el-option-group v-for="group in pixelOptions" :key="group.label" :label="group.label">
           <el-option
             v-for="item in group.options"
@@ -21,7 +26,7 @@
 
       <el-button
         class="m-button"
-        v-if="optType === 'enlarge'"
+        v-if="optType === 'enlarge' && dvInfo.weight > 3"
         link
         icon="Download"
         size="middle"
@@ -31,7 +36,7 @@
       </el-button>
       <el-button
         class="m-button"
-        v-if="optType === 'details'"
+        v-if="optType === 'details' && dvInfo.weight > 3"
         link
         icon="Download"
         size="middle"
