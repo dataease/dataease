@@ -94,17 +94,19 @@ onMounted(async () => {
   } else {
     distributed = wsCache.get(key)
   }
+  console.log('distributed', distributed, attrs, window['DEXPack'])
+
   if (distributed) {
-    window['Vue'] = Vue
-    window['Axios'] = axios
-    window['Pinia'] = Pinia
-    window['vueRouter'] = vueRouter
-    window['MittAll'] = useEmitt().emitter.all
-    window['I18n'] = i18n
     if (window['DEXPack']) {
       const xpack = await window['DEXPack'].mapping[attrs.jsname]
       plugin.value = xpack.default
     } else {
+      window['Vue'] = Vue
+      window['Axios'] = axios
+      window['Pinia'] = Pinia
+      window['vueRouter'] = vueRouter
+      window['MittAll'] = useEmitt().emitter.all
+      window['I18n'] = i18n
       loadDistributed().then(async res => {
         new Function(res.data)()
         const xpack = await window['DEXPack'].mapping[attrs.jsname]
@@ -116,16 +118,6 @@ onMounted(async () => {
   }
 })
 
-watch(
-  () => attrs.jsname,
-  () => {
-    if (window['DEXPack']) {
-      const xpack = window['DEXPack'].mapping[attrs.jsname]
-      plugin.value = xpack.default
-    }
-  }
-)
-
 const emits = defineEmits(['loadFail'])
 defineExpose({
   invokeMethod
@@ -134,7 +126,7 @@ defineExpose({
 
 <template>
   <component
-    :class="attrs.jsname"
+    :key="attrs.jsname"
     ref="pluginProxy"
     :is="plugin"
     v-loading="loading"
