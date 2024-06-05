@@ -94,8 +94,6 @@ onMounted(async () => {
   } else {
     distributed = wsCache.get(key)
   }
-  console.log('distributed', distributed, attrs, window['DEXPack'])
-
   if (distributed) {
     if (window['DEXPack']) {
       const xpack = await window['DEXPack'].mapping[attrs.jsname]
