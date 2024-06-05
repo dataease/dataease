@@ -8,6 +8,7 @@ import { useEmbedded } from '@/store/modules/embedded'
 import { canvasSave } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { backCanvasData } from '@/utils/canvasUtils'
 import { storeToRefs } from 'pinia'
 import { debounce } from 'lodash-es'
 import mobileHeader from '@/assets/img/mobile-header.png'
@@ -175,6 +176,7 @@ onBeforeUnmount(() => {
 })
 
 const addToMobile = com => {
+  if (mobileLoading.value) return
   com.inMobile = true
   changeTimes.value++
   mobileStatusChange('addToMobile', JSON.parse(JSON.stringify(unref(com))))
@@ -194,7 +196,10 @@ const handleBack = () => {
     showClose: false
   }).then(() => {
     setTimeout(() => {
-      mobileStatusChange('mobilePatch', undefined)
+      backCanvasData(dvInfo.value.id, 'dashboard', () => {
+        changeTimes.value = 0
+        emits('pcMode')
+      })
     }, 100)
   })
 }
