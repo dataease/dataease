@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import flvjs from 'flv.js'
 import '@/style/custom-theme.css'
-import { onMounted, reactive, toRefs, getCurrentInstance, watch, nextTick } from 'vue'
+import { onMounted, reactive, toRefs, getCurrentInstance, nextTick, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
@@ -109,6 +109,10 @@ const destroyPlayer = () => {
     state.flvPlayer = null
   }
 }
+
+onBeforeUnmount(() => {
+  destroyPlayer()
+})
 </script>
 
 <style lang="less" scoped>
