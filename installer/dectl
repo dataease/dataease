@@ -67,7 +67,7 @@ function _check_apisix_init() {
 function _prepare_apisix() {
    if [[ -z $DE_APISIX_KEY ]];then
       need_init_apisix=true
-      DE_APISIX_KEY=$(uuidgen | sed 's/-//g')
+      DE_APISIX_KEY=$(head -c 32 /dev/urandom | base64)
       export DE_APISIX_KEY=$DE_APISIX_KEY
       cd $DE_RUNNING_BASE
       env | grep DE_ >.env
