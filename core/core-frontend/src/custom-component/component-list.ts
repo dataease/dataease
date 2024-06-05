@@ -16,8 +16,8 @@ export const STREAMMEDIALINKS = {
     isLive: false,
     cors: true, // 允许跨域
     loop: true,
-    autoplay: false
-    // url: null // 网络动画视频
+    autoplay: false,
+    url: null // 网络动画视频
   }
 }
 
