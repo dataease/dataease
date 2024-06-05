@@ -1063,30 +1063,30 @@ function customCalcFunc(query, data, totalCfgMap) {
   switch (aggregation) {
     case 'SUM': {
       return data.reduce((p, n) => {
-        return p + n[query[EXTRA_FIELD]]
+        return p + parseFloat(n[query[EXTRA_FIELD]])
       }, 0)
     }
     case 'AVG': {
       const sum = data.reduce((p, n) => {
-        return p + n[query[EXTRA_FIELD]]
+        return p + parseFloat(n[query[EXTRA_FIELD]])
       }, 0)
       return sum / data.length
     }
     case 'MIN': {
       const result = minBy(data, n => {
-        return n[query[EXTRA_FIELD]]
+        return parseFloat(n[query[EXTRA_FIELD]])
       })
       return result?.[query[EXTRA_FIELD]]
     }
     case 'MAX': {
       const result = maxBy(data, n => {
-        return n[query[EXTRA_FIELD]]
+        return parseFloat(n[query[EXTRA_FIELD]])
       })
       return result?.[query[EXTRA_FIELD]]
     }
     default: {
       return data.reduce((p, n) => {
-        return p + n[query[EXTRA_FIELD]]
+        return p + parseFloat(n[query[EXTRA_FIELD]])
       }, 0)
     }
   }
