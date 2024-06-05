@@ -246,57 +246,63 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       ...options
     }
 
+    tempOption.yAxis = {}
     if (!yAxis) {
       //左右轴都要隐藏
-      tempOption.yAxis = {
-        value: false,
-        valueExt: false
-      }
+      tempOption.yAxis.value = false
     } else {
-      tempOption.yAxis = {
-        value: undefined,
-        valueExt: undefined
+      tempOption.yAxis.value = undefined
+      yAxis.position = 'left'
+
+      const yAxisTmp = parseJson(chart.customStyle).yAxis
+      if (yAxis.label) {
+        yAxis.label.style.textAlign = 'end'
+        yAxis.label.formatter = value => {
+          return valueFormatter(value, yAxisTmp.axisLabelFormatter)
+        }
+      }
+      const axisValue = yAxisTmp.axisValue
+      if (!axisValue?.auto) {
+        tempOption.yAxis.value = {
+          ...yAxis,
+          min: axisValue.min,
+          max: axisValue.max,
+          minLimit: axisValue.min,
+          maxLimit: axisValue.max,
+          tickCount: axisValue.splitCount
+        }
+      } else {
+        tempOption.yAxis.value = yAxis
       }
     }
 
-    const yAxisTmp = parseJson(chart.customStyle).yAxis
-    if (yAxis.label) {
-      yAxis.label.formatter = value => {
-        return valueFormatter(value, yAxisTmp.axisLabelFormatter)
-      }
-    }
-    const axisValue = yAxisTmp.axisValue
-    if (!axisValue?.auto) {
-      tempOption.yAxis.value = {
-        ...yAxis,
-        min: axisValue.min,
-        max: axisValue.max,
-        minLimit: axisValue.min,
-        maxLimit: axisValue.max,
-        tickCount: axisValue.splitCount
-      }
+    if (!yAxisExt) {
+      //左右轴都要隐藏
+      tempOption.yAxis.valueExt = false
     } else {
-      tempOption.yAxis.value = yAxis
-    }
+      tempOption.yAxis.valueExt = undefined
+      yAxisExt.position = 'right'
 
-    const yAxisExtTmp = parseJson(chart.customStyle).yAxisExt
-    if (yAxisExt.label) {
-      yAxisExt.label.formatter = value => {
-        return valueFormatter(value, yAxisExtTmp.axisLabelFormatter)
+      const yAxisExtTmp = parseJson(chart.customStyle).yAxisExt
+      if (yAxisExt.label) {
+        yAxisExt.label.style.textAlign = 'start'
+        yAxisExt.label.formatter = value => {
+          return valueFormatter(value, yAxisExtTmp.axisLabelFormatter)
+        }
       }
-    }
-    const axisExtValue = yAxisExtTmp.axisValue
-    if (!axisExtValue?.auto) {
-      tempOption.yAxis.valueExt = {
-        ...yAxisExt,
-        min: axisExtValue.min,
-        max: axisExtValue.max,
-        minLimit: axisExtValue.min,
-        maxLimit: axisExtValue.max,
-        tickCount: axisExtValue.splitCount
+      const axisExtValue = yAxisExtTmp.axisValue
+      if (!axisExtValue?.auto) {
+        tempOption.yAxis.valueExt = {
+          ...yAxisExt,
+          min: axisExtValue.min,
+          max: axisExtValue.max,
+          minLimit: axisExtValue.min,
+          maxLimit: axisExtValue.max,
+          tickCount: axisExtValue.splitCount
+        }
+      } else {
+        tempOption.yAxis.valueExt = yAxisExt
       }
-    } else {
-      tempOption.yAxis.valueExt = yAxisExt
     }
 
     return tempOption
