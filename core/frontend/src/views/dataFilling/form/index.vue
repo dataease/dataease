@@ -3,7 +3,7 @@ import DeContainer from '@/components/dataease/DeContainer.vue'
 import DeAsideContainer from '@/components/dataease/DeAsideContainer.vue'
 import NoSelect from './NoSelect.vue'
 import ViewTable from './ViewTable.vue'
-import { listForm, saveForm, updateForm, deleteForm, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
+import { listForm, saveForm, updateFormName, deleteForm, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
 import { forEach, cloneDeep, find } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
 import DataFillingFormMoveSelector from './MoveSelector.vue'
@@ -108,11 +108,17 @@ export default {
         case 'rename':
           this.openUpdateForm(param)
           break
+        case 'edit':
+          this.editForm(param.data)
+          break
         case 'delete':
           this.delete(param.data)
           break
         case 'move':
           this.moveTo(param.data)
+          break
+        case 'copy':
+          this.copyForm(param.data)
           break
       }
     },
@@ -135,7 +141,7 @@ export default {
             id: this.updateFormData.id,
             name: this.updateFormData.name
           }
-          updateForm(data).then(res => {
+          updateFormName(data).then(res => {
             this.closeUpdateForm()
             listForm({}).then(res => {
               this.formList = res.data || []
@@ -169,6 +175,12 @@ export default {
         })
       }).catch(() => {
       })
+    },
+    copyForm(data) {
+      this.$router.push({ name: 'data-filling-form-create', query: { copy: data.id }})
+    },
+    editForm(data) {
+      this.$router.push({ name: 'data-filling-form-create', query: { id: data.id }})
     },
     onMoveSuccess() {
       this.moveGroup = false
@@ -279,7 +291,10 @@ export default {
             {{ $t('data_fill.form_manage') }}
           </span>
 
-          <div style="padding-left: 20px;padding-right: 20px;">
+          <div
+            style="padding-left: 20px;padding-right: 20px;"
+            class="de-tree"
+          >
 
             <div style="display: flex;flex-direction: row;justify-content: space-between;align-items: center;">
               {{ $t('data_fill.form.form_list_name') }}
@@ -372,6 +387,18 @@ export default {
                     </template>
 
                     <span
+                      v-if="data.nodeType !== 'folder'"
+                      @click.stop
+                    >
+                      <el-button
+                        icon="el-icon-edit"
+                        type="text"
+                        size="small"
+                        @click="editForm(data)"
+                      />
+                    </span>
+
+                    <span
                       style="margin-left: 12px"
                       @click.stop
                     >
@@ -395,10 +422,24 @@ export default {
                             {{ $t('panel.rename') }}
                           </el-dropdown-item>
                           <el-dropdown-item
+                            v-if="data.nodeType !== 'folder'"
+                            icon="el-icon-edit"
+                            :command="beforeClickMore('edit', data, node)"
+                          >
+                            {{ $t('panel.edit') }}
+                          </el-dropdown-item>
+                          <el-dropdown-item
                             icon="el-icon-right"
-                            :command="beforeClickMore('move',data,node)"
+                            :command="beforeClickMore('move', data, node)"
                           >
                             {{ $t('dataset.move_to') }}
+                          </el-dropdown-item>
+                          <el-dropdown-item
+                            v-if="data.nodeType !== 'folder'"
+                            icon="el-icon-document-copy"
+                            :command="beforeClickMore('copy', data, node)"
+                          >
+                            {{ $t('dataset.copy') }}
                           </el-dropdown-item>
                           <el-dropdown-item
                             icon="el-icon-delete"
@@ -427,6 +468,7 @@ export default {
       <view-table
         v-else
         :param="displayFormData"
+        @editForm="editForm"
       />
     </el-main>
 
@@ -626,6 +668,59 @@ export default {
   .no-tdata-new {
     cursor: pointer;
     color: var(--primary, #3370ff);
+  }
+}
+.de-tree {
+  .el-tree-node.is-current.is-focusable {
+    &>.el-tree-node__content {
+      background-color: var(--deWhiteHover, #e0eaff);
+      color: var(--primary, #3370ff);
+    }
+  }
+
+  .el-tree-node__content, .de-el-tree-node__content {
+
+    .el-icon-more,
+    .el-icon-plus {
+      width: 24px;
+      height: 24px;
+      line-height: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: #646a73;
+      cursor: pointer;
+    }
+
+    .el-icon-more:hover,
+    .el-icon-plus:hover {
+      background: rgba(31, 35, 41, 0.1);
+      border-radius: 4px;
+    }
+
+    .el-icon-more:active,
+    .el-icon-plus:active {
+      background: rgba(31, 35, 41, 0.2);
+      border-radius: 4px;
+    }
+  }
+  .el-tree-node__content {
+    height: 40px;
+    border-radius: 4px;
+
+    &:hover {
+      background: rgba(31, 35, 41, 0.1);
+    }
+  }
+
+  .de-el-tree-node__content {
+    .el-button--text {
+      padding: 0 !important;
+    }
+    .el-icon-more {
+      width: 32px;
+      height: 32px;
+      line-height: 32px;
+    }
   }
 }
 </style>

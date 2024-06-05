@@ -16,6 +16,7 @@
             @change="changeScrollCfg"
           >{{ $t('chart.open') }}</el-checkbox>
           <el-tooltip
+            v-show="chart.type === 'table-info'"
             class="item"
             effect="dark"
             placement="bottom"

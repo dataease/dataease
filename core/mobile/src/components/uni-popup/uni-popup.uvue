@@ -1,0 +1,90 @@
+<template>
+  <view class="popup-root" v-if="isOpen" v-show="isShow" @click="clickMask">
+    <view @click.stop>
+      <slot></slot>
+    </view>
+  </view>
+</template>
+
+<script>
+  type CloseCallBack = ()=> void;
+  let closeCallBack:CloseCallBack = () :void => {};
+  export default {
+    emits:["close","clickMask"],
+    data() {
+      return {
+        isShow:false,
+        isOpen:false
+      }
+    },
+    props: {
+      maskClick: {
+        type: Boolean,
+        default: true
+      },
+    },
+    watch: {
+      // 设置show = true 时，如果没有 open 需要设置为 open
+      isShow:{
+        handler(isShow) {
+          // console.log("isShow",isShow)
+          if(isShow && this.isOpen == false){
+            this.isOpen = true
+          }
+        },
+        immediate:true
+      },
+      // 设置isOpen = true 时，如果没有 isShow 需要设置为 isShow
+      isOpen:{
+        handler(isOpen) {
+          // console.log("isOpen",isOpen)
+          if(isOpen && this.isShow == false){
+            this.isShow = true
+          }
+        },
+        immediate:true
+      }
+    },
+    methods:{
+      open(){
+        // ...funs : CloseCallBack[]
+        // if(funs.length > 0){
+        //   closeCallBack = funs[0]
+        // }
+        this.isOpen = true;
+      },
+      clickMask(){
+        if(this.maskClick == true){
+          this.$emit('clickMask')
+          this.close()
+        }
+      },
+      close(): void{
+        this.isOpen = false;
+        this.$emit('close')
+        closeCallBack()
+      },
+      hiden(){
+        this.isShow = false
+      },
+      show(){
+        this.isShow = true
+      }
+    }
+  }
+</script>
+
+<style>
+.popup-root {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 750rpx;
+  height: 100%;
+  flex: 1;
+  background-color: rgba(0, 0, 0, 0.3);
+  justify-content: center;
+  align-items: center;
+  z-index: 99;
+}
+</style>

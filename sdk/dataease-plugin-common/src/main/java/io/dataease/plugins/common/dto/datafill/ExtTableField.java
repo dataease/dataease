@@ -25,6 +25,8 @@ public class ExtTableField implements Serializable {
 
     private ExtTableFieldSetting settings;
 
+    private boolean removed;
+
     @Data
     @Builder
     @AllArgsConstructor
@@ -37,6 +39,7 @@ public class ExtTableField implements Serializable {
 
         private ExtTableFieldMapping mapping;
 
+        //弃用
         private boolean enableTime;
 
         private String rangeSeparator;
@@ -44,6 +47,8 @@ public class ExtTableField implements Serializable {
         private boolean unique;
 
         private String inputType;
+
+        private String dateType;
 
         private String placeholder;
         private String startPlaceholder;
@@ -79,6 +84,10 @@ public class ExtTableField implements Serializable {
         private String columnName1;
         private String columnName2;
 
+        private String oldColumnName;
+        private String oldColumnName1;
+        private String oldColumnName2;
+
         private BaseType type;
 
         //长度
@@ -104,6 +113,8 @@ public class ExtTableField implements Serializable {
     public static class TableField {
 
         private String columnName;
+
+        private String oldColumnName;
 
         private BaseType type;
 

@@ -23,7 +23,22 @@ public class DefaultExtDDLProvider extends ExtDDLProvider {
     }
 
     @Override
+    public String addTableColumnSql(String table, List<ExtTableField> formFieldsToCreate, List<ExtTableField> formFieldsToModify) {
+        return null;
+    }
+
+    @Override
+    public String dropTableColumnSql(String table, List<ExtTableField> formFields) {
+        return null;
+    }
+
+    @Override
     public List<String> createTableIndexSql(String table, List<ExtIndexField> indexFields) {
+        return null;
+    }
+
+    @Override
+    public List<String> dropTableIndexSql(String table, List<ExtIndexField> indexFields) {
         return null;
     }
 

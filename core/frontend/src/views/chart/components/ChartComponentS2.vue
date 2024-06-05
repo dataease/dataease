@@ -540,7 +540,10 @@ export default {
     initScroll() {
       const customAttr = JSON.parse(this.chart.customAttr)
       const senior = JSON.parse(this.chart.senior)
-      if (senior?.scrollCfg?.open && (this.chart.type === 'table-normal' || (this.chart.type === 'table-info' && !this.showPage))) {
+      if (senior?.scrollCfg?.open) {
+        if (this.chart.type === 'table-info' && this.showPage) {
+          return
+        }
         // 防止多次渲染
         this.myChart.facet.timer?.stop()
         if (this.myChart.store.get('scrollY') !== 0) {
@@ -556,15 +559,27 @@ export default {
         }
         const rowHeight = customAttr.size.tableItemHeight
         const headerHeight = customAttr.size.tableTitleHeight
-        const scrollBarSize = this.myChart.theme.scrollBar.size
-        const scrollHeight = rowHeight * this.chart.data.tableRow.length + headerHeight - offsetHeight + scrollBarSize
-        // 显示内容没撑满
-        if (scrollHeight < scrollBarSize) {
-          return
+        let duration, scrollHeight
+        if (this.chart.type === 'table-pivot') {
+          const totalHeight = this.myChart.facet.viewCellHeights.getTotalHeight()
+          const viewHeight = this.myChart.facet.rowHeader.cfg.viewportHeight
+          if (totalHeight <= viewHeight) {
+            return
+          }
+          scrollHeight = totalHeight - viewHeight
+          const scrollViewCount = (totalHeight - viewHeight) / rowHeight
+          duration = scrollViewCount / senior.scrollCfg.row * senior.scrollCfg.interval
+        } else {
+          const scrollBarSize = this.myChart.theme.scrollBar.size
+          scrollHeight = rowHeight * this.chart.data.tableRow.length + headerHeight - offsetHeight + scrollBarSize
+          // 显示内容没撑满
+          if (scrollHeight < scrollBarSize) {
+            return
+          }
+          const viewHeight = offsetHeight - headerHeight - scrollBarSize
+          const scrollViewCount = this.chart.data.tableRow.length - viewHeight / rowHeight
+          duration = scrollViewCount / senior.scrollCfg.row * senior.scrollCfg.interval
         }
-        const viewHeight = offsetHeight - headerHeight - scrollBarSize
-        const scrollViewCount = this.chart.data.tableRow.length - viewHeight / rowHeight
-        const duration = scrollViewCount / senior.scrollCfg.row * senior.scrollCfg.interval
         this.myChart.facet.scrollWithAnimation({
           offsetY: {
             value: scrollHeight,

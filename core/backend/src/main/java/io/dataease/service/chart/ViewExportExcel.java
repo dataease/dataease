@@ -48,9 +48,13 @@ public class ViewExportExcel {
         Map<String, ChartExtRequest> stringChartExtRequestMap = buildViewRequest(panelDto, justView);
         List<File> results = new ArrayList<>();
         List<ExcelSheetModel> sheets = viewIds.stream().map(viewId -> viewFiles(viewId, stringChartExtRequestMap.get(viewId))).collect(Collectors.toList());
-        File excelFile = ExcelUtils.exportExcel(sheets, panelDto.getName(), panelDto.getId() + "_" + taskId);
+        File excelFile = ExcelUtils.exportExcel(sheets, getSafeFileName(panelDto.getName()), panelDto.getId() + "_" + taskId);
         results.add(excelFile);
         return results;
+    }
+
+    private String getSafeFileName(String fileName) {
+        return fileName.replace("/", "_");
     }
 
 

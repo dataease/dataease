@@ -447,7 +447,7 @@ export default {
           icon: '',
           hyperlinks: HYPERLINKS,
           mobileStyle: BASE_MOBILE_STYLE,
-          propValue: imgUrlTrans(fileUrl),
+          propValue: fileUrl,
           commonBackground: deepCopy(COMMON_BACKGROUND),
           style: {
             ...PIC_STYLE

@@ -76,6 +76,8 @@ public class DatasourceController {
         datasource.setCreateTime(null);
         datasource.setType(updataDsRequest.getType());
         datasource.setUpdateTime(System.currentTimeMillis());
+        datasource.setEnableDataFill(updataDsRequest.getEnableDataFill());
+        datasource.setEnableDataFillCreateTable(updataDsRequest.getEnableDataFillCreateTable());
         if (StringUtils.isNotEmpty(updataDsRequest.getId())) {
             datasource.setId(updataDsRequest.getId());
         }

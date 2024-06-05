@@ -94,6 +94,39 @@ export function baseLineOptionAntV(container, chart, action) {
       }
     }
   }
+  // forecast
+  if (chart.data?.forecastData?.length) {
+    const { forecastData } = chart.data
+    const templateData = data?.[data.length - 1]
+    forecastData.forEach(item => {
+      data.push({
+        ...templateData,
+        field: item.dimension,
+        name: item.dimension,
+        value: item.quota,
+        forecast: true
+      })
+    })
+    analyse.push({
+      type: 'region',
+      start: (xScale) => {
+        if (forecastData.length > 1) {
+          return [forecastData[0].dimension, 'min']
+        }
+        const ratio = xScale.ticks ? 1 / xScale.ticks.length : 1
+        const x = xScale.scale(forecastData[0].dimension) - ratio / 2
+        return [`${x * 100}%`, '0%']
+      },
+      end: (xScale) => {
+        if (forecastData.length > 1) {
+          return [forecastData[forecastData.length - 1].dimension, 'max']
+        }
+        const ratio = xScale.ticks ? 1 / xScale.ticks.length : 1
+        const x = xScale.scale(forecastData[forecastData.length - 1].dimension) + ratio / 2
+        return [`${x * 100}%`, '100%']
+      }
+    })
+  }
   // custom color
   options.color = antVCustomColor(chart)
   // 处理空值

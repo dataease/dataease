@@ -201,7 +201,8 @@
         <span class="header-title">
           {{ $t('panel.panel_list') }}
           <el-button
-            style="float: right; padding-right: 7px; margin-top: -8px"
+            v-if="hasDataPermission('manage', rootAuth)"
+            style="float: right; padding-right: 7px; margin-top: -8px; height: 12px"
             icon="el-icon-plus"
             type="text"
             @click="showEditPanel(newFolder)"
@@ -534,6 +535,7 @@ export default {
   mixins: [msgCfm],
   data() {
     return {
+      rootAuth: '',
       originResourceTree: [],
       curSortType: 'time_desc',
       localSortParams: null,
@@ -987,15 +989,25 @@ export default {
     },
     tree(cache = false) {
       const modelInfo = localStorage.getItem('panel-main-tree')
-      const userCache = modelInfo && cache
+      let preParse
+      if (modelInfo) {
+        try {
+          preParse = JSON.parse(modelInfo)
+        } catch (e) {
+          console.warn('panel-main-tree cache error')
+        }
+      }
+      const userCache = preParse && cache
       if (userCache) {
-        this.originResourceTree = JSON.parse(modelInfo)
+        this.originResourceTree = preParse
         this.sortTypeChange(this.localSortParams)
       }
       groupTree(this.groupForm, !userCache).then((res) => {
-        localStorage.setItem('panel-main-tree', JSON.stringify(res.data || []))
+        this.rootAuth = res.data ? res.data[0]?.privileges||'':''
+        const resMainData = res.data ? res.data[0]?.children || [] : []
+        localStorage.setItem('panel-main-tree', JSON.stringify(resMainData))
         if (!userCache) {
-          this.originResourceTree = res.data || []
+          this.originResourceTree = resMainData
           this.sortTypeChange(this.localSortParams)
         }
         if (this.responseSource === 'appApply') {
@@ -1013,10 +1025,18 @@ export default {
         panelType: 'system'
       }
       const modelInfo = localStorage.getItem('panel-default-tree')
-      const userCache = modelInfo && cache
+      let preParse
+      if (modelInfo) {
+        try {
+          preParse = JSON.parse(modelInfo)
+        } catch (e) {
+          console.warn('panel-default-tree cache error')
+        }
+      }
+      const userCache = preParse && cache
 
       if (userCache) {
-        this.defaultData = JSON.parse(modelInfo)
+        this.defaultData = preParse
         if (showFirst && this.defaultData && this.defaultData.length > 0) {
           this.activeDefaultNodeAndClickOnly(this.defaultData[0].id)
         }

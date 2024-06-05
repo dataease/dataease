@@ -116,6 +116,7 @@ export const customAttrTrans = {
     'tableItemFontSize',
     'tableTitleHeight',
     'tableItemHeight',
+    'tableColumnWidth',
     'dimensionFontSize',
     'quotaFontSize',
     'spaceSplit', // 间隔

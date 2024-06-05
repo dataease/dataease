@@ -116,6 +116,7 @@ export function baseTableInfo(container, chart, action, tableData, pageInfo, vue
     // 移除所有下钻字段，调整当前下钻字段到下钻入口位置
     fields = fields.filter(item => !drillFilters.includes(item.id))
     fields.splice(drillEnterFieldIndex, 0, curDrillField)
+    nameMap[curDrillField.dataeaseName] = curDrillField
   }
   fields.forEach(ele => {
     const f = nameMap[ele.dataeaseName]
@@ -1062,30 +1063,30 @@ function customCalcFunc(query, data, totalCfgMap) {
   switch (aggregation) {
     case 'SUM': {
       return data.reduce((p, n) => {
-        return p + n[query[EXTRA_FIELD]]
+        return p + parseFloat(n[query[EXTRA_FIELD]])
       }, 0)
     }
     case 'AVG': {
       const sum = data.reduce((p, n) => {
-        return p + n[query[EXTRA_FIELD]]
+        return p + parseFloat(n[query[EXTRA_FIELD]])
       }, 0)
       return sum / data.length
     }
     case 'MIN': {
       const result = minBy(data, n => {
-        return n[query[EXTRA_FIELD]]
+        return parseFloat(n[query[EXTRA_FIELD]])
       })
       return result?.[query[EXTRA_FIELD]]
     }
     case 'MAX': {
       const result = maxBy(data, n => {
-        return n[query[EXTRA_FIELD]]
+        return parseFloat(n[query[EXTRA_FIELD]])
       })
       return result?.[query[EXTRA_FIELD]]
     }
     default: {
       return data.reduce((p, n) => {
-        return p + n[query[EXTRA_FIELD]]
+        return p + parseFloat(n[query[EXTRA_FIELD]])
       }, 0)
     }
   }

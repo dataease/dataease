@@ -57,6 +57,7 @@ public class PanelGroupController {
 
     @ApiOperation("查询树")
     @PostMapping("/tree")
+    @I18n
     public List<PanelGroupDTO> tree(@RequestBody PanelGroupRequest request) {
         return panelGroupService.tree(request);
     }
@@ -185,12 +186,7 @@ public class PanelGroupController {
     @DePermissionProxy(value = "proxy")
     @I18n
     public void innerExportDetails(@RequestBody PanelViewDetailsRequest request) throws Exception {
-        if("dataset".equals(request.getDownloadType())){
-            DataSetExportRequest exportRequest = panelGroupService.composeDatasetExportRequest(request);
-            exportCenterService.addTask(exportRequest.getId(), "dataset", exportRequest);
-        }else{
-            exportCenterService.addTask(request.getViewId(), "chart", request);
-        }
+        exportCenterService.addTask(request.getViewId(), "chart", request);
     }
 
     @ApiOperation("更新仪表板状态")

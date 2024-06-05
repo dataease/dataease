@@ -1186,6 +1186,7 @@
                             :chart="chart"
                             @onDimensionItemChange="drillItemChange"
                             @onDimensionItemRemove="drillItemRemove"
+                            @onNameEdit="showRename"
                             @onCustomSort="item => onCustomSort(item, 'drillFields')"
                           />
                         </transition-group>
@@ -1359,6 +1360,18 @@
                       :chart="chart"
                       :quota-data="view.yaxis"
                       @onTrendLineChange="onTrendLineChange"
+                    />
+                  </el-collapse-item>
+                  <el-collapse-item
+                    v-if="showDataForecastCfg"
+                    name="data-forecast"
+                    title="数据预测"
+                  >
+                    <data-forecast
+                      class="attr-selector"
+                      :chart="chart"
+                      :quota-data="view.yaxis"
+                      @onForecastChange="onForecastChange"
                     />
                   </el-collapse-item>
                 </el-collapse>
@@ -1937,9 +1950,11 @@ import PositionAdjust from '@/views/chart/view/PositionAdjust'
 import MarkMapDataEditor from '@/views/chart/components/map/MarkMapDataEditor'
 import TrendLine from '@/views/chart/components/senior/TrendLine'
 import ChartTitleUpdate from './ChartTitleUpdate'
+import DataForecast from '@/views/chart/components/senior/DataForecast'
 export default {
   name: 'ChartEdit',
   components: {
+    DataForecast,
     PositionAdjust,
     ScrollCfg,
     CalcChartFieldEdit,
@@ -2119,7 +2134,7 @@ export default {
   },
   computed: {
     filedList() {
-      return [...this.dimension, ...this.quota].filter(ele => ele.id !== 'count')
+      return [...this.dimension, ...this.quota].filter(ele => ele.id !== 'count' && !ele.chartId)
     },
     obj() {
       return {
@@ -2174,7 +2189,7 @@ export default {
         equalsAny(this.view.type, 'map', 'text')
     },
     showScrollCfg() {
-      return equalsAny(this.view.type, 'table-normal', 'table-info')
+      return equalsAny(this.view.type, 'table-normal', 'table-info', 'table-pivot')
     },
     showAnalyseCfg() {
       if (this.view.type === 'bidirectional-bar' || this.view.type === 'bar-time-range') {
@@ -2190,6 +2205,9 @@ export default {
     },
     showTrendLineCfg() {
       return this.view.render === 'antv' && equalsAny(this.view.type, 'line')
+    },
+    showDataForecastCfg() {
+      return this.view.render === 'antv' && equalsAny(this.view.type, 'line', 'bar')
     },
     showThresholdCfg() {
       if (this.view.type === 'bidirectional-bar') {
@@ -3077,7 +3095,10 @@ export default {
       this.view.senior.trendLine = val
       this.calcData()
     },
-
+    onForecastChange(val) {
+      this.view.senior.forecastCfg = val
+      this.calcData()
+    },
     onThresholdChange(val) {
       this.view.senior.threshold = val
       this.calcData()
@@ -3182,6 +3203,8 @@ export default {
             this.view.xaxisExt[this.itemForm.index].name = this.itemForm.name
           } else if (this.itemForm.renameType === 'extStack') {
             this.view.extStack[this.itemForm.index].name = this.itemForm.name
+          } else if (this.itemForm.renameType === 'drill') {
+            this.view.drillFields[this.itemForm.index].name = this.itemForm.name
           }
           this.calcData(true)
           this.closeRename()
@@ -3598,8 +3621,18 @@ export default {
         aCode = this.currentAcreaNode.code
       }
       const currentNode = this.findEntityByCode(aCode || this.view.customAttr.areaCode, this.places)
+      let mappingName = null
+      if (this.chart.senior) {
+        const senior = JSON.parse(this.chart.senior)
+        if (senior?.mapMapping[currentNode.code]) {
+          const mapping = senior.mapMapping[currentNode.code]
+          if (mapping[name]) {
+            mappingName = mapping[name]
+          }
+        }
+      }
       if (currentNode && currentNode.children && currentNode.children.length > 0) {
-        const nextNode = currentNode.children.find(item => item.name === name)
+        const nextNode = currentNode.children.find(item => item.name === name || (mappingName && item.name === mappingName))
         if (!nextNode || !nextNode.code) return null
         this.currentAcreaNode = nextNode
         const current = this.$refs.dynamicChart

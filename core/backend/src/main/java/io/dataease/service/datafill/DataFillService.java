@@ -11,7 +11,6 @@ import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.datafill.DataFillFormRequest;
-import io.dataease.dto.DatasourceDTO;
 import io.dataease.dto.datafill.DataFillFormDTO;
 import io.dataease.ext.ExtDataFillFormMapper;
 import io.dataease.i18n.Translator;
@@ -28,7 +27,6 @@ import io.dataease.plugins.datasource.provider.ExtDDLProvider;
 import io.dataease.plugins.datasource.provider.Provider;
 import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.provider.datasource.JdbcProvider;
-import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -52,8 +50,7 @@ public class DataFillService {
     private DataFillFormMapper dataFillFormMapper;
     @Resource
     private ExtDataFillFormMapper extDataFillFormMapper;
-    @Resource
-    private DatasourceService datasource;
+
     @Resource
     private SysAuthService sysAuthService;
     @Resource
@@ -86,25 +83,43 @@ public class DataFillService {
             List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
             }.getType());
 
-            List<ExtIndexField> indexes = new ArrayList<>();
+            List<ExtIndexField> indexesToCreate = new ArrayList<>();
             if (dataFillForm.getCreateIndex()) {
-                indexes = gson.fromJson(dataFillForm.getTableIndexes(), new TypeToken<List<ExtIndexField>>() {
+                List<ExtIndexField> indexes = gson.fromJson(dataFillForm.getTableIndexes(), new TypeToken<List<ExtIndexField>>() {
                 }.getType());
+
+                Map<String, String> indexColumnItems = new HashMap<>();
+                fields.forEach(f -> {
+                    if (StringUtils.equalsIgnoreCase(f.getType(), "dateRange")) {
+                        indexColumnItems.put(f.getId() + "_1", f.getSettings().getMapping().getColumnName1());
+                        indexColumnItems.put(f.getId() + "_2", f.getSettings().getMapping().getColumnName2());
+                    } else {
+                        indexColumnItems.put(f.getId(), f.getSettings().getMapping().getColumnName());
+                    }
+                });
+
+                indexes.forEach(f -> {
+                    ExtIndexField index = gson.fromJson(gson.toJson(f), ExtIndexField.class);
+                    index.getColumns().forEach(c -> {
+                        //根据id获取实际的column名
+                        c.setColumn(indexColumnItems.get(c.getColumn()));
+                    });
+                    indexesToCreate.add(index);
+                });
+
             }
 
-            DatasourceDTO datasourceDTO = datasource.getDataSourceDetails(dataFillForm.getDatasource());
-
-            datasourceDTO.setConfiguration(new String(java.util.Base64.getDecoder().decode(datasourceDTO.getConfiguration())));
+            Datasource ds = dataFillDataService.getDataSource(dataFillForm.getDatasource(), true);
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(datasourceDTO);
+            datasourceRequest.setDatasource(ds);
             datasourceRequest.setQuery("SELECT VERSION()");
 
             JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
             String version = jdbcProvider.getData(datasourceRequest).get(0)[0];
 
             //拼sql
-            ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(datasourceDTO.getType());
+            ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
             String sql = extDDLProvider.createTableSql(dataFillForm.getTableName(), fields);
             //创建表
             datasourceRequest.setQuery(sql);
@@ -112,7 +127,7 @@ public class DataFillService {
 
             if (dataFillForm.getCreateIndex()) {
                 try {
-                    List<String> sqls = extDDLProvider.createTableIndexSql(dataFillForm.getTableName(), indexes);
+                    List<String> sqls = extDDLProvider.createTableIndexSql(dataFillForm.getTableName(), indexesToCreate);
 
                     for (String indexSql : sqls) {
                         datasourceRequest.setQuery(indexSql);
@@ -175,6 +190,151 @@ public class DataFillService {
 
         return ResultHolder.success(dataFillForm.getId());
     }
+
+    @DeCleaner(value = DePermissionType.DATA_FILL, key = "pid")
+    public ResultHolder updateForm(DataFillFormWithBLOBs dataFillForm) throws Exception {
+        if (!CommonBeanFactory.getBean(AuthUserService.class).pluginLoaded()) {
+            DataEaseException.throwException("invalid");
+        }
+
+        Assert.notNull(dataFillForm.getId(), "id cannot be null");
+
+        checkName(dataFillForm.getId(), dataFillForm.getName(), dataFillForm.getPid(), dataFillForm.getNodeType(), DataFillConstants.OPT_TYPE_UPDATE);
+
+        DataFillFormWithBLOBs oldForm = dataFillFormMapper.selectByPrimaryKey(dataFillForm.getId());
+        List<ExtTableField> oldFields = gson.fromJson(oldForm.getForms(), new TypeToken<List<ExtTableField>>() {
+        }.getType());
+        List<String> oldFieldIds = oldFields.stream().map(ExtTableField::getId).collect(Collectors.toList());
+        List<String> oldIndexNames;
+        if (oldForm.getCreateIndex()) {
+            List<ExtIndexField> oldIndexes = gson.fromJson(oldForm.getTableIndexes(), new TypeToken<List<ExtIndexField>>() {
+            }.getType());
+            oldIndexNames = oldIndexes.stream().map(ExtIndexField::getName).collect(Collectors.toList());
+        } else {
+            oldIndexNames = new ArrayList<>();
+        }
+        List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
+        }.getType());
+        List<ExtIndexField> indexes = new ArrayList<>();
+        if (dataFillForm.getCreateIndex()) {
+            indexes = gson.fromJson(dataFillForm.getTableIndexes(), new TypeToken<List<ExtIndexField>>() {
+            }.getType());
+        }
+
+        List<ExtTableField> fieldsToCreate = fields.stream().filter(f -> !oldFieldIds.contains(f.getId())).collect(Collectors.toList());
+        //这里是表单中被删除的字段
+        List<String> fieldsIds = fields.stream().map(ExtTableField::getId).collect(Collectors.toList());
+        List<ExtTableField> removedFields = oldFields.stream().filter(f -> !fieldsIds.contains(f.getId()) && !f.isRemoved()).collect(Collectors.toList());
+        List<ExtTableField> alreadyRemovedFields = oldFields.stream().filter(ExtTableField::isRemoved).collect(Collectors.toList());
+        //需要修改列名的字段
+        List<ExtTableField> fieldsToModify = removedFields.stream().filter(f -> !f.isRemoved()).collect(Collectors.toList());
+        fieldsToModify.forEach(f -> {
+            f.setRemoved(true);
+            if (StringUtils.equalsIgnoreCase(f.getType(), "dateRange")) {
+                f.getSettings().getMapping().setOldColumnName1(f.getSettings().getMapping().getColumnName1());
+                f.getSettings().getMapping().setOldColumnName2(f.getSettings().getMapping().getColumnName2());
+                f.getSettings().getMapping().setColumnName1(f.getId() + "_1");
+                f.getSettings().getMapping().setColumnName2(f.getId() + "_2");
+            } else {
+                f.getSettings().getMapping().setOldColumnName(f.getSettings().getMapping().getColumnName());
+                f.getSettings().getMapping().setColumnName(f.getId());
+            }
+        });
+        Map<String, String> indexColumnItems = new HashMap<>();
+        fields.forEach(f -> {
+            if (StringUtils.equalsIgnoreCase(f.getType(), "dateRange")) {
+                indexColumnItems.put(f.getId() + "_1", f.getSettings().getMapping().getColumnName1());
+                indexColumnItems.put(f.getId() + "_2", f.getSettings().getMapping().getColumnName2());
+            } else {
+                indexColumnItems.put(f.getId(), f.getSettings().getMapping().getColumnName());
+            }
+        });
+        List<ExtIndexField> indexesToCreate = new ArrayList<>();
+        indexes.stream()
+                .filter(f -> !oldIndexNames.contains(f.getName())).collect(Collectors.toList())
+                .forEach(f -> {
+                    ExtIndexField index = gson.fromJson(gson.toJson(f), ExtIndexField.class);
+                    index.getColumns().forEach(c -> {
+                        //根据id获取实际的column名
+                        c.setColumn(indexColumnItems.get(c.getColumn()));
+                    });
+                    indexesToCreate.add(index);
+                });
+
+        if (CollectionUtils.isNotEmpty(fieldsToCreate) || CollectionUtils.isNotEmpty(indexesToCreate) || CollectionUtils.isNotEmpty(fieldsToModify)) {
+
+            Datasource ds = dataFillDataService.getDataSource(dataFillForm.getDatasource());
+
+            DatasourceRequest datasourceRequest = new DatasourceRequest();
+            datasourceRequest.setDatasource(ds);
+            datasourceRequest.setQuery("SELECT VERSION()");
+
+            JdbcProvider jdbcProvider = CommonBeanFactory.getBean(JdbcProvider.class);
+            String version = jdbcProvider.getData(datasourceRequest).get(0)[0];
+
+            //拼sql
+            ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
+
+            if (CollectionUtils.isNotEmpty(fieldsToCreate) || CollectionUtils.isNotEmpty(fieldsToModify)) {
+                String sql = extDDLProvider.addTableColumnSql(dataFillForm.getTableName(), fieldsToCreate, fieldsToModify);
+                //创建
+                datasourceRequest.setQuery(sql);
+                jdbcProvider.exec(datasourceRequest);
+            }
+
+            if (CollectionUtils.isNotEmpty(indexesToCreate)) {
+                List<ExtIndexField> successCreatedIndex = new ArrayList<>();
+                try {
+                    List<String> sqls = extDDLProvider.createTableIndexSql(dataFillForm.getTableName(), indexesToCreate);
+
+                    for (int i = 0; i < sqls.size(); i++) {
+                        String indexSql = sqls.get(i);
+                        datasourceRequest.setQuery(indexSql);
+                        jdbcProvider.exec(datasourceRequest);
+                        successCreatedIndex.add(indexesToCreate.get(i));
+                    }
+                } catch (Exception e) {
+                    if (CollectionUtils.isNotEmpty(successCreatedIndex)) {
+                        List<String> sqls = extDDLProvider.dropTableIndexSql(dataFillForm.getTableName(), indexesToCreate);
+                        for (String sql : sqls) {
+                            try {
+                                datasourceRequest.setQuery(sql);
+                                jdbcProvider.exec(datasourceRequest);
+                            } catch (Exception e1) {
+                                //e1.printStackTrace();
+                            }
+                        }
+                    }
+
+                    if (CollectionUtils.isNotEmpty(fieldsToCreate)) {
+                        // 执行到这里说明表已经建成功了，创建index出错，那就需要回滚删除创建的字段
+                        datasourceRequest.setQuery(extDDLProvider.dropTableColumnSql(dataFillForm.getTableName(), fields));
+                        jdbcProvider.exec(datasourceRequest);
+                    }
+
+                    throw e;
+                }
+
+            }
+
+        }
+
+        //处理被删除的form
+        if (CollectionUtils.isNotEmpty(fieldsToModify) || CollectionUtils.isNotEmpty(alreadyRemovedFields)) {
+            List<ExtTableField> finalFields = new ArrayList<>(fields);
+            finalFields.addAll(fieldsToModify);
+            finalFields.addAll(alreadyRemovedFields);
+            dataFillForm.setForms(new Gson().toJson(finalFields));
+        }
+
+        dataFillForm.setUpdateTime(new Date());
+        dataFillFormMapper.updateByPrimaryKeySelective(dataFillForm);
+
+        DeLogUtils.save(SysLogConstants.OPERATE_TYPE.MODIFY, SysLogConstants.SOURCE_TYPE.DATA_FILL_FORM, dataFillForm.getId(), dataFillForm.getPid(), null, null);
+
+        return ResultHolder.success(dataFillForm.getId());
+    }
+
 
     private void checkName(String id, String name, String pid, String nodeType, String optType) {
         DataFillFormExample example = new DataFillFormExample();
@@ -239,7 +399,7 @@ public class DataFillService {
             result.setCreatorName(sysUsers.get(0).getNickName());
         }
 
-        Datasource d = datasource.get(result.getDatasource());
+        Datasource d = dataFillDataService.getDataSource(result.getDatasource());
         if (d != null) {
             result.setDatasourceName(d.getName());
         }
@@ -321,7 +481,7 @@ public class DataFillService {
         } else {
             DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
 
-            Datasource ds = datasource.get(dataFillForm.getDatasource());
+            Datasource ds = dataFillDataService.getDataSource(dataFillForm.getDatasource());
             Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
             ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
@@ -356,6 +516,9 @@ public class DataFillService {
 
         List<ExtTableField> fields = new ArrayList<>();
         for (ExtTableField field : formFields) {
+            if (field.isRemoved()) {
+                continue;
+            }
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                 ExtTableField start = gson.fromJson(gson.toJson(field), ExtTableField.class);
                 start.getSettings().getMapping().setColumnName(start.getSettings().getMapping().getColumnName1());
@@ -380,6 +543,9 @@ public class DataFillService {
         List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
         }.getType());
         for (ExtTableField formField : fields) {
+            if (formField.isRemoved()) {
+                continue;
+            }
             String name = formField.getSettings().getName();
 
             if (StringUtils.equalsIgnoreCase(formField.getType(), "dateRange")) {

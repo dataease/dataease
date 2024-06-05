@@ -1,12 +1,20 @@
 <script>
-import { filter, forEach, find, split, get } from 'lodash-es'
-import { listDatasource, listDatasourceType } from '@/api/system/datasource'
-import { listForm, saveForm } from '@/views/dataFilling/form/dataFilling'
+import { filter, forEach, find, split, get, groupBy, keys, includes, cloneDeep } from 'lodash-es'
+import { listDatasource } from '@/api/system/datasource'
+import { listForm, saveForm, updateForm } from '@/views/dataFilling/form/dataFilling'
 import { hasDataPermission } from '@/utils/permission'
 
 export default {
   name: 'DataFillingFormSave',
   props: {
+    isEdit: {
+      type: Boolean,
+      default: false
+    },
+    disableCreateIndex: {
+      type: Boolean,
+      default: false
+    },
     form: {
       type: Object,
       required: true
@@ -22,18 +30,22 @@ export default {
         return callback(new Error(this.$t('commons.component.required')))
       }
       let count = 0
-      forEach(this.formData.forms, f => {
-        if (f.type === 'dateRange') {
-          if (f.settings.mapping.columnName1 === value) {
-            count++
-          }
-          if (f.settings.mapping.columnName2 === value) {
-            count++
+      forEach(this.computedFormList, f => {
+        if (!f.deleted) {
+          if (f.type === 'dateRange') {
+            if (f.settings.mapping.columnName1 === value) {
+              count++
+            }
+            if (f.settings.mapping.columnName2 === value) {
+              count++
+            }
+          } else {
+            if (f.settings.mapping.columnName === value) {
+              count++
+            }
           }
         } else {
-          if (f.settings.mapping.columnName === value) {
-            count++
-          }
+          // 后台会讲删除的字段名处理成uuid，正常不会有重复的
         }
       })
       if (count > 1) {
@@ -46,7 +58,7 @@ export default {
         return callback(new Error(this.$t('commons.component.required')))
       }
       let count = 0
-      forEach(this.formData.tableIndexes, f => {
+      forEach(this.computedTableIndexList, f => {
         if (f.name === value) {
           count++
         }
@@ -57,13 +69,19 @@ export default {
       callback()
     }
     const checkInvalidColumnValidator = (rule, value, callback) => {
+      const f = split(rule.field, '.')[0]
+      const _index = get(this.formData, f)
+      if (_index.old) {
+        // 旧的 index 跳过校验
+        callback()
+      }
       if (!value) {
         return callback(new Error(this.$t('commons.component.required')))
       }
       if (this.columnsList.length === 0) {
         return callback(new Error(this.$t('data_fill.form.value_not_exists')))
       }
-      if (find(this.columnsList, c => c === value) === undefined) {
+      if (find(this.columnsList, c => c.value === value) === undefined) {
         callback(new Error(this.$t('data_fill.form.value_not_exists')))
       }
       callback()
@@ -102,10 +120,26 @@ export default {
   },
   computed: {
     datasourceList() {
-      const _types = filter(this.allDatasourceTypes, t => t.type === 'mysql' || t.type === 'mariadb')
-      forEach(_types, t => {
-        t.options = filter(this.allDatasourceList, d => d.type === t.type)
-      })
+      const dsMap = groupBy(this.allDatasourceList, d => d.type)
+      const _types = [{
+        name: this.$t('data_fill.form.default'),
+        type: 'default',
+        options: [{
+          id: 'default-built-in',
+          name: this.$t('data_fill.form.default_built_in')
+        }]
+      }]
+      if (dsMap) {
+        forEach(keys(dsMap), type => {
+          if (type === 'mysql' || type === 'mariadb') {
+            _types.push({
+              name: dsMap[type][0]?.typeDesc,
+              type: type,
+              options: filter(dsMap[type], d => d.enableDataFill && d.enableDataFillCreateTable)
+            })
+          }
+        })
+      }
       return _types
     },
     selectDatasets() {
@@ -113,25 +147,84 @@ export default {
       this.flattenFolder(this.folders, result)
       return result
     },
-    columnsList() {
+    computedFormList() {
+      if (this.isEdit) {
+        const _list = []
+        const columnIds = []
+        for (let i = 0; i < this.formData.forms.length; i++) {
+          const row = cloneDeep(this.formData.forms[i])
+          columnIds.push(row.id)
+          _list.push(row)
+        }
+        for (let i = 0; i < this.formData.oldForms.length; i++) {
+          const row = cloneDeep(this.formData.oldForms[i])
+          if (includes(columnIds, row.id)) {
+            continue
+          }
+          row.deleted = true
+          _list.push(row)
+        }
+        return _list
+      } else {
+        return this.formData.forms
+      }
+    },
+    computedTableIndexList() {
+      if (this.isEdit) {
+        const _list = []
+        const columnIds = []
+        for (let i = 0; i < this.formData.tableIndexes.length; i++) {
+          const row = this.formData.tableIndexes[i]
+          columnIds.push(row.id)
+          _list.push(row)
+        }
+        for (let i = 0; i < this.formData.oldTableIndexes.length; i++) {
+          const row = this.formData.oldTableIndexes[i]
+          if (includes(columnIds, row.id)) {
+            continue
+          }
+          columnIds.push(row.id)
+          _list.push(row)
+        }
+        return _list
+      } else {
+        return this.formData.tableIndexes
+      }
+    },
+    allColumnsList() {
       const _list = []
-      for (let i = 0; i < this.formData.forms.length; i++) {
-        const row = this.formData.forms[i]
+      for (let i = 0; i < this.computedFormList.length; i++) {
+        const row = this.computedFormList[i]
         if (row.type === 'dateRange') {
           if (row.settings.mapping.columnName1 !== undefined && row.settings.mapping.columnName1 !== '') {
-            _list.push(row.settings.mapping.columnName1)
+            _list.push({
+              name: !row.deleted ? row.settings.mapping.columnName1 : row.id + '_1',
+              value: row.id + '_1',
+              deleted: !!row.deleted
+            })
           }
           if (row.settings.mapping.columnName2 !== undefined && row.settings.mapping.columnName2 !== '') {
-            _list.push(row.settings.mapping.columnName2)
+            _list.push({
+              name: !row.deleted ? row.settings.mapping.columnName2 : row.id + '_2',
+              value: row.id + '_2',
+              deleted: !!row.deleted
+            })
           }
         } else {
           if (row.settings.mapping.columnName !== undefined && row.settings.mapping.columnName !== '' && row.settings.mapping.type !== 'text') {
-            _list.push(row.settings.mapping.columnName)
+            _list.push({
+              name: !row.deleted ? row.settings.mapping.columnName : row.id,
+              value: row.id,
+              deleted: !!row.deleted
+            })
           }
         }
       }
 
       return _list
+    },
+    columnsList() {
+      return filter(this.allColumnsList, c => !c.deleted)
     }
   },
   watch: {
@@ -152,16 +245,13 @@ export default {
         f.settings.mapping.type = f.settings.mapping.typeOptions[0].value
       }
     })
-    const p1 = listDatasourceType()
-    const p2 = listDatasource()
-    const p3 = listForm({ nodeType: 'folder' })
+    const p1 = listDatasource()
+    const p2 = listForm({ nodeType: 'folder' })
 
-    Promise.all([p1, p2, p3]).then((val) => {
-      this.allDatasourceTypes = val[0].data
+    Promise.all([p1, p2]).then((val) => {
+      this.allDatasourceList = val[0].data
 
-      this.allDatasourceList = val[1].data
-
-      this.folders = this.filterListDeep(val[2].data) || []
+      this.folders = this.filterListDeep(val[1].data) || []
       if (this.formData.folder) {
         this.$nextTick(() => {
           this.$refs.tree.setCurrentKey(this.formData.folder)
@@ -265,6 +355,34 @@ export default {
     filterNode(value, data) {
       if (!value) return true
       return data.name.indexOf(value) !== -1
+    },
+    doEdit() {
+      this.loading = true
+      this.$refs['mRightForm'].validate((valid) => {
+        if (valid) {
+          const data = {
+            id: this.formData.id,
+            name: this.formData.name,
+            tableName: this.formData.table,
+            datasource: this.formData.datasource,
+            pid: this.formData.folder,
+            level: this.formData.level,
+            forms: JSON.stringify(this.formData.forms),
+            createIndex: this.formData.createIndex,
+            tableIndexes: JSON.stringify(this.formData.tableIndexes),
+            nodeType: 'form'
+          }
+          updateForm(data).then(res => {
+            this.closeSave()
+            this.$router.replace({ name: 'data-filling-form', query: { id: res.data }})
+          }).finally(() => {
+            this.loading = false
+          })
+        } else {
+          this.loading = false
+          return false
+        }
+      })
     },
     doSave() {
       this.loading = true
@@ -415,6 +533,7 @@ export default {
         </el-form-item>
 
         <el-form-item
+          v-if="!isEdit"
           prop="datasource"
           class="form-item"
           :rules="[requiredRule]"
@@ -448,6 +567,7 @@ export default {
         </el-form-item>
 
         <el-form-item
+          v-if="!isEdit"
           prop="table"
           class="form-item"
           :rules="[requiredRule]"
@@ -495,6 +615,7 @@ export default {
               >
                 <el-input
                   v-model.trim="scope.row.settings.mapping.columnName"
+                  :disabled="isEdit && scope.row.old"
                   :placeholder="$t('fu.search_bar.please_input')"
                   size="small"
                   maxlength="50"
@@ -510,6 +631,7 @@ export default {
                 >
                   <el-input
                     v-model.trim="scope.row.settings.mapping.columnName1"
+                    :disabled="isEdit && scope.row.old"
                     :placeholder="$t('data_fill.form.please_insert_start')"
                     size="small"
                     maxlength="50"
@@ -524,6 +646,7 @@ export default {
                 >
                   <el-input
                     v-model.trim="scope.row.settings.mapping.columnName2"
+                    :disabled="isEdit && scope.row.old"
                     :placeholder="$t('data_fill.form.please_insert_end')"
                     size="small"
                     maxlength="50"
@@ -545,6 +668,7 @@ export default {
               >
                 <el-select
                   v-model="scope.row.settings.mapping.type"
+                  :disabled="isEdit && scope.row.old"
                   :placeholder="$t('data_fill.form.please_select')"
                   size="small"
                   required
@@ -570,6 +694,7 @@ export default {
           >
             <el-checkbox
               v-model="formData.createIndex"
+              :disabled="disableCreateIndex"
               :label="$t('data_fill.form.create_index')"
               size="small"
             />
@@ -599,10 +724,12 @@ export default {
               <el-form-item
                 :prop="'tableIndexes['+scope.$index+'].name'"
                 class="form-item"
+                :class="scope.row.columns.length === 1 && (isEdit && scope.row.old) ? 'no-margin-bottom' : ''"
                 :rules="[requiredRule, duplicateIndexRule]"
               >
                 <el-input
                   v-model="scope.row.name"
+                  :disabled="isEdit && scope.row.old"
                   :placeholder="$t('fu.search_bar.please_input')"
                   size="small"
                   maxlength="50"
@@ -648,18 +775,18 @@ export default {
                 >
                   <el-select
                     v-model="indexRow.column"
+                    :disabled="isEdit && scope.row.old"
                     :placeholder="$t('data_fill.form.please_select')"
                     size="small"
                     required
                     style="width: 100%"
                   >
                     <el-option
-                      v-for="(x, $index) in columnsList"
+                      v-for="(x, $index) in (isEdit && scope.row.old ? allColumnsList : columnsList)"
                       :key="$index"
-                      :value="x"
-                      :label="x"
-                    >{{ x }}
-                    </el-option>
+                      :value="x.value"
+                      :label="x.name"
+                    />
                   </el-select>
                 </el-form-item>
 
@@ -670,6 +797,7 @@ export default {
                 >
                   <el-select
                     v-model="indexRow.order"
+                    :disabled="isEdit && scope.row.old"
                     :placeholder="$t('data_fill.form.please_select')"
                     size="small"
                     required
@@ -690,7 +818,7 @@ export default {
                   </el-select>
                 </el-form-item>
                 <div
-                  v-if="scope.row.columns.length > 1"
+                  v-if="scope.row.columns.length > 1 && !(isEdit && scope.row.old)"
                   class="btn-item"
                   @click="removeIndexColumn(scope.row.columns, $index)"
                 >
@@ -698,7 +826,7 @@ export default {
                 </div>
               </div>
               <el-button
-                v-if="scope.row.columns.length < 5"
+                v-if="scope.row.columns.length < 5 && !(isEdit && scope.row.old)"
                 type="text"
                 @click="addColumn(scope.row.columns)"
               >+ {{ $t('data_fill.form.add_column') }}
@@ -709,6 +837,7 @@ export default {
           <el-table-column width="50">
             <template slot-scope="scope">
               <div
+                v-if="!(isEdit && scope.row.old)"
                 class="btn-item"
                 @click="removeIndex(scope.$index)"
               >
@@ -724,8 +853,15 @@ export default {
     <el-footer class="de-footer">
       <el-button @click="closeSave">{{ $t("commons.cancel") }}</el-button>
       <el-button
+        v-if="!isEdit"
         type="primary"
         @click="doSave"
+      >{{ $t("commons.confirm") }}
+      </el-button>
+      <el-button
+        v-else
+        type="primary"
+        @click="doEdit"
       >{{ $t("commons.confirm") }}
       </el-button>
     </el-footer>

@@ -62,7 +62,6 @@
                 :is-relation="isRelation"
                 :element="element"
                 :in-draw="inDraw"
-                :in-screen="inScreen"
                 @filter-loaded="filterLoaded"
               />
             </div>

@@ -233,6 +233,44 @@
               :component-name="datasourceType.type"
               :obj="{ form, disabled }"
             />
+
+            <el-form-item
+              v-if="form.type === 'mysql' || form.type === 'mariadb'"
+              prop="enableDataFill"
+              class="data-fill-form-item"
+            >
+              <span style="display: inline-block; width: 80px; font-weight: 700; color: #606266;">{{ $t('data_fill.data_fill') }}</span>
+              <el-checkbox
+                v-model="form.enableDataFill"
+                :disabled="disableEditDataFill"
+              >
+                {{ $t('data_fill.enable') }}
+                <el-tooltip
+                  class="item"
+                  effect="dark"
+                >
+                  <div slot="content">
+                    {{ $t('data_fill.enable_hint') }}
+                  </div>
+                  <i
+                    class="el-icon-info"
+                    style="cursor: pointer;"
+                  />
+                </el-tooltip>
+              </el-checkbox>
+            </el-form-item>
+
+            <el-form-item
+              v-if="(form.type === 'mysql' || form.type === 'mariadb') && form.enableDataFill"
+              prop="enableDataFill"
+              label-position="left"
+            >
+              <span style="display: inline-block; width: 80px; font-weight: 700; color: #606266;">{{ $t('data_fill.permission') }}</span>
+              <el-checkbox
+                v-model="form.enableDataFillCreateTable"
+              >允许新建表</el-checkbox>
+            </el-form-item>
+
           </el-form>
         </div>
       </div>
@@ -424,6 +462,7 @@ export default {
         ],
         datasourceHistoryId: [{ required: true, message: i18n.t('dataset.pls_slc_data_source'), trigger: 'blur' }]
       },
+      disableEditDataFill: false,
       form: {
         configuration: {
           initialPoolSize: 5,
@@ -758,6 +797,7 @@ export default {
         if (res.data.apiConfigurationStr) {
           res.data.apiConfiguration = JSON.parse(Base64.decode(res.data.apiConfigurationStr))
         }
+        this.disableEditDataFill = res.data.enableDataFill
         this.params = { ...res.data, showModel }
         if (showModel === 'copy') {
           this.params.id = ''
@@ -1364,6 +1404,9 @@ export default {
 }
 </script>
 <style lang="scss" scoped>
+.data-fill-form-item {
+  margin-bottom: 14px !important;
+}
 .de-ds-cont {
   display: flex;
   width: 100%;

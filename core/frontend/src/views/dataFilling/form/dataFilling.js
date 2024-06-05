@@ -16,6 +16,14 @@ export function updateForm(data) {
     data
   })
 }
+export function updateFormName(data) {
+  return request({
+    url: 'dataFilling/form/updateName',
+    method: 'post',
+    loading: true,
+    data
+  })
+}
 export function moveForm(data) {
   return request({
     url: 'dataFilling/form/move',

@@ -597,6 +597,9 @@ export default {
   },
   data_fill: {
     data_fill: '數據填報',
+    permission: '填報權限',
+    enable: '開啟',
+    enable_hint: '數據填報開啟后，可將表單數據存放至數據源中，一旦開啟后，后期不允許關閉。',
     new_folder: '新建文件夾',
     form_manage: '表單管理',
     my_job: '我的填報',
@@ -605,6 +608,8 @@ export default {
       rename: '重命名',
       untitled: '未命名表單',
       create_new_form: '新建表單',
+      copy_new_form: '復制表單',
+      edit_form: '編輯表單',
       title: '標題',
       no_form: '暫無表單，點擊',
       form_list_name: '填報表單',
@@ -643,6 +648,7 @@ export default {
       start_hint_word: '開始提示詞',
       end_hint_word: '結束提示詞',
       input_type: '格式類型',
+      date_type: '展示粒度',
       check: '校驗',
       set_required: '設置為必填項',
       set_unique: '不允許重復值',
@@ -670,7 +676,9 @@ export default {
       add_column: '新增字段',
       please_insert_start: '請輸入開始時間',
       please_insert_end: '請輸入結束時間',
-      save_form: '保存表單'
+      save_form: '保存表單',
+      default: '默認',
+      default_built_in: '內建數據庫'
     },
     database: {
       nvarchar: '字符串',
@@ -720,7 +728,7 @@ export default {
       delete: '刪除',
       no_time_limit: '不限時',
       todo: '待辦項',
-      finished: '已完成',
+      finished: '已提交',
       expired: '已過期',
 
       task_finish_in: '在任務下發',
@@ -1813,7 +1821,18 @@ export default {
     trend_line: '趨勢線',
     field_enum: '枚舉值',
     main_axis_label: '主軸標籤',
-    sub_axis_label: '副軸標籤'
+    sub_axis_label: '副軸標籤',
+    forecast_enable: '啟用預測',
+    forecast_all_period: '全量數據',
+    forecast_all_period_tip: '是否使用所有數據作為馴良數據進行預測',
+    forecast_training_period: '訓練數據',
+    forecast_training_period_tip: '從所有數據中截取最近的數據作為訓練數據',
+    forecast_period: '預測週期',
+    forecast_confidence_interval: '置信區間',
+    forecast_model: '預測模型',
+    forecast_degree: '階數',
+    linear_regression: '線性回歸',
+    polynomial_regression: '多項式擬合'
   },
   dataset: {
     scope_edit: '僅編輯時生效',

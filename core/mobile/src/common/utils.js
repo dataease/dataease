@@ -156,3 +156,46 @@ export function getUrlParams(url){
   }
   return Params
 }
+
+
+export function deepCopy(target) {
+  if (typeof target === 'object' && target !== null) {
+    const result = Array.isArray(target) ? [] : {}
+    for (const key in target) {
+      if (typeof target[key] === 'object') {
+        result[key] = deepCopy(target[key])
+      } else {
+        result[key] = target[key]
+      }
+    }
+
+    return result
+  }
+
+  return target
+}
+export function treeSort(tree, hisSortType, sortType) {
+  const result = deepCopy(tree)
+  sortCircle(result, hisSortType, sortType)
+  return result
+}
+
+export function sortCircle(tree, hisSortType, sortType) {
+  sortPer(tree, hisSortType, sortType)
+  tree.forEach(node => {
+    if (node.children && node.children.length > 0) {
+      sortCircle(node.children, hisSortType, sortType)
+    }
+  })
+  return tree
+}
+
+export function sortPer(subTree, hisSortType, sortType) {
+  if (sortType === 'name_desc') {
+    subTree.sort((a, b) => b.text.localeCompare(a.text, 'zh-Hans-CN', { sensitivity: 'accent' }))
+  } else if (sortType === 'name_asc') {
+    subTree.sort((a, b) => a.text.localeCompare(b.text, 'zh-Hans-CN', { sensitivity: 'accent' }))
+  } else if (sortType === 'time_asc') {
+    subTree.reverse()
+  }
+}

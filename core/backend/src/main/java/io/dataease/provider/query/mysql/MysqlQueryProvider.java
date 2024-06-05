@@ -1450,7 +1450,7 @@ public class MysqlQueryProvider extends QueryProvider {
                 if (request.getDatasetTableField().getDeType() == 1) {
                     if (request.getDatasetTableField().getDeExtractType() == 1) {
                         SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
-                        String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0)) - 1000));
+                        String startTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(0))));
                         String endTime = simpleDateFormat.format(new Date(Long.parseLong(value.get(1))));
                         whereValue = String.format(MySQLConstants.WHERE_BETWEEN, startTime, endTime);
                     } else {

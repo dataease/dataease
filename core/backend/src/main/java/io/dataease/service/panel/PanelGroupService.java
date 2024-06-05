@@ -159,7 +159,7 @@ public class PanelGroupService {
         panelGroupRequest.setUserId(userId);
         panelGroupRequest.setIsAdmin(AuthUtils.getUser().getIsAdmin());
         List<PanelGroupDTO> panelGroupDTOList = extPanelGroupMapper.panelGroupList(panelGroupRequest);
-        return TreeUtils.mergeTree(panelGroupDTOList, "panel_list");
+        return TreeUtils.mergeTree(panelGroupDTOList, "0");
     }
 
     public List<PanelGroupDTO> defaultTree(PanelGroupRequest panelGroupRequest) {

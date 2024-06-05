@@ -17,6 +17,17 @@ uni-app {
 .fix-left-window {
     padding-left: var(--window-left);
 }
+.uni-page-head-ft {
+    margin-left: 8px;
+    .uni-page-head-btn {
+        background: none;
+        border: 1px solid #BBBFC4;
+        border-radius: 4px;
+        .uni-btn-icon {
+            color: #bbbfc4 !important;
+        }
+    }
+}
 
 .pc-hide {
     display: none !important;

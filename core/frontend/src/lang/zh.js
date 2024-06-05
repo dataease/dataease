@@ -595,6 +595,9 @@ export default {
   },
   data_fill: {
     data_fill: '数据填报',
+    permission: '填报权限',
+    enable: '开启',
+    enable_hint: '数据填报开启后，可将表单数据存放至数据源中，一旦开启后，后期不允许关闭。',
     new_folder: '新建文件夹',
     form_manage: '表单管理',
     my_job: '我的填报',
@@ -603,6 +606,8 @@ export default {
       rename: '重命名',
       untitled: '未命名表单',
       create_new_form: '新建表单',
+      copy_new_form: '复制表单',
+      edit_form: '编辑表单',
       title: '标题',
       no_form: '暂无表单，点击',
       form_list_name: '填报表单',
@@ -641,6 +646,7 @@ export default {
       start_hint_word: '开始提示词',
       end_hint_word: '结束提示词',
       input_type: '格式类型',
+      date_type: '展示粒度',
       check: '校验',
       set_required: '设置为必填项',
       set_unique: '不允许重复值',
@@ -668,7 +674,9 @@ export default {
       add_column: '新增字段',
       please_insert_start: '请输入开始时间',
       please_insert_end: '请输入结束时间',
-      save_form: '保存表单'
+      save_form: '保存表单',
+      default: '默认',
+      default_built_in: '内建数据库'
     },
     database: {
       nvarchar: '字符串',
@@ -718,7 +726,7 @@ export default {
       delete: '删除',
       no_time_limit: '不限时',
       todo: '待办项',
-      finished: '已完成',
+      finished: '已提交',
       expired: '已过期',
       task_finish_in: '在任务下发',
       task_finish_in_suffix: '内完成填报'
@@ -1810,7 +1818,18 @@ export default {
     trend_line: '趋势线',
     field_enum: '枚举值',
     main_axis_label: '主轴标签',
-    sub_axis_label: '副轴标签'
+    sub_axis_label: '副轴标签',
+    forecast_enable: '启用预测',
+    forecast_all_period: '全量数据',
+    forecast_all_period_tip: '是否使用所有数据作为训练数据进行预测',
+    forecast_training_period: '训练数据',
+    forecast_training_period_tip: '从所有数据中截取最近的数据作为训练数据',
+    forecast_period: '预测周期',
+    forecast_confidence_interval: '置信区间',
+    forecast_model: '预测模型',
+    forecast_degree: '阶数',
+    linear_regression: '线性回归',
+    polynomial_regression: '多项式拟合'
   },
   dataset: {
     goto: ', 前往 ',

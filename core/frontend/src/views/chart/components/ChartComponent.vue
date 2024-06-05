@@ -450,11 +450,12 @@ export default {
       const base_json = JSON.parse(JSON.stringify(BASE_MAP))
       base_json.geo.map = mapId
       let themeStyle = null
+      let panelColor = '#FFFFFF'
       if (this.themeStyle) {
         themeStyle = JSON.parse(JSON.stringify(this.themeStyle))
 
         if (themeStyle && themeStyle.backgroundColorSelect) {
-          const panelColor = themeStyle.color
+          panelColor = themeStyle.color
           if (panelColor !== '#FFFFFF') {
             const reverseValue = reverseColor(panelColor)
             this.buttonTextColor = reverseValue
@@ -462,7 +463,7 @@ export default {
             this.buttonTextColor = null
           }
         } else if (this.canvasStyleData.openCommonStyle && this.canvasStyleData.panel.backgroundType === 'color') {
-          const panelColor = this.canvasStyleData.panel.color
+          panelColor = this.canvasStyleData.panel.color
           if (panelColor !== '#FFFFFF') {
             const reverseValue = reverseColor(panelColor)
             this.buttonTextColor = reverseValue
@@ -474,6 +475,13 @@ export default {
         }
       }
       const chart_option = baseMapOption(base_json, geoJson, chart, this.buttonTextColor, curAreaCode, this.currentSeriesId)
+      if (chart_option.geo.itemStyle.normal) {
+        chart_option.geo.itemStyle.normal.areaColor = `${panelColor}33`
+      } else {
+        chart_option.geo.itemStyle.normal = {
+          areaColor: `${panelColor}33`
+        }
+      }
       if (chart_option.series?.length) {
         const dataNames = []
         chart_option.series.filter(se => se.type === 'map').forEach(se => {

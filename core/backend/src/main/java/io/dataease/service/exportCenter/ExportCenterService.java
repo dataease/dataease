@@ -294,7 +294,7 @@ public class ExportCenterService {
                                 // with DataType
                                 if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && rowData[j] != null) {
                                     cell.setCellValue(Double.valueOf(rowData[j].toString()));
-                                } else if(rowData[j] != null){
+                                } else if (rowData[j] != null) {
                                     cell.setCellValue(String.valueOf(rowData[j]));
                                 }
                             } catch (Exception e) {
@@ -309,8 +309,8 @@ public class ExportCenterService {
 
     public void findExcelData(PanelViewDetailsRequest request) {
         ChartViewWithBLOBs viewInfo = chartViewService.get(request.getViewId());
-        request.setDownloadType(viewInfo.getType());
-        if ("table-info".equals(viewInfo.getType())) {
+        request.setViewType(viewInfo.getType());
+        if ("table-info".equals(viewInfo.getType()) || "dataset".equals(request.getDownloadType())) {
             try {
                 ChartExtRequest componentFilterInfo = request.getComponentFilterInfo();
                 componentFilterInfo.setGoPage(1L);
@@ -318,9 +318,14 @@ public class ExportCenterService {
                 componentFilterInfo.setExcelExportFlag(true);
                 componentFilterInfo.setProxy(request.getProxy());
                 componentFilterInfo.setUser(request.getUserId());
+                componentFilterInfo.setDownloadType(request.getDownloadType());
                 ChartViewDTO chartViewInfo = chartViewService.getData(request.getViewId(), componentFilterInfo);
                 List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
                 request.setDetails(tableRow);
+                if("dataset".equals(request.getDownloadType())){
+                    request.setHeader((String[]) chartViewInfo.getData().get("header"));
+                    request.setExcelTypes((Integer[]) chartViewInfo.getData().get("dsTypes"));
+                }
             } catch (Exception e) {
                 throw new RuntimeException(e);
             }
@@ -409,7 +414,7 @@ public class ExportCenterService {
                 cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
                 //设置单元格填充样式(使用纯色背景颜色填充)
                 cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                if ("table-info".equals(request.getDownloadType())) {
+                if ("table-info".equals(request.getViewType())||"dataset".equals(request.getDownloadType())) {
                     exportTableDetails(request, wb, cellStyle, detailsSheet);
                 } else {
                     Boolean mergeHead = false;
@@ -501,7 +506,7 @@ public class ExportCenterService {
                                             // with DataType
                                             if ((excelTypes[j].equals(DeTypeConstants.DE_INT) || excelTypes[j].equals(DeTypeConstants.DE_FLOAT)) && StringUtils.isNotEmpty(cellValObj.toString())) {
                                                 cell.setCellValue(Double.valueOf(cellValObj.toString()));
-                                            } else if(cellValObj != null){
+                                            } else if (cellValObj != null) {
                                                 cell.setCellValue(cellValObj.toString());
                                             }
                                         } catch (Exception e) {
@@ -533,6 +538,7 @@ public class ExportCenterService {
 
                 try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + request.getViewName() + ".xlsx")) {
                     wb.write(outputStream);
+                    outputStream.flush();
                 }
                 wb.close();
 
@@ -546,7 +552,7 @@ public class ExportCenterService {
                 exportTask.setExportPogress("100");
                 exportTask.setExportStatus("SUCCESS");
 
-                setFileSize(dataPath + "/" + dataPath + "/" + request.getViewName() + ".xlsx", exportTask);
+                setFileSize(dataPath + "/" + request.getViewName() + ".xlsx", exportTask);
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
                 exportTask.setExportStatus("FAILED");
@@ -754,6 +760,7 @@ public class ExportCenterService {
                         exportTaskMapper.updateByPrimaryKey(exportTask);
                     }
                     wb.write(fileOutputStream);
+                    fileOutputStream.flush();
                     fileOutputStream.close();
                     wb.close();
                 }

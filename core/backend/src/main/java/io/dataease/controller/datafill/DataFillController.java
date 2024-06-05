@@ -52,9 +52,15 @@ public class DataFillController {
     }
 
     @ApiIgnore
+    @PostMapping("/form/updateName")
+    public ResultHolder updateFormName(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
+        return dataFillService.updateForm(dataFillForm, null);
+    }
+
+    @ApiIgnore
     @PostMapping("/form/update")
     public ResultHolder updateForm(@RequestBody DataFillFormWithBLOBs dataFillForm) throws Exception {
-        return dataFillService.updateForm(dataFillForm, null);
+        return dataFillService.updateForm(dataFillForm);
     }
 
     @ApiIgnore

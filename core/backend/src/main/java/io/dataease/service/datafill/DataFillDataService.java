@@ -13,6 +13,7 @@ import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.datafill.DataFillFormTableDataRequest;
 import io.dataease.controller.response.datafill.DataFillFormTableDataResponse;
 import io.dataease.dto.datafill.DataFillCommitLogDTO;
+import io.dataease.dto.datasource.MysqlConfiguration;
 import io.dataease.ext.ExtDataFillFormMapper;
 import io.dataease.i18n.Translator;
 import io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs;
@@ -45,6 +46,8 @@ import java.math.RoundingMode;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.*;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 @Service
@@ -67,6 +70,63 @@ public class DataFillDataService {
 
 
     private final static Gson gson = new Gson();
+
+
+    private Datasource getBuiltInDataSource() {
+        MysqlConfiguration mysqlConfiguration = new MysqlConfiguration();
+        Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)");
+        Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
+        if (!matcher.find()) {
+            return null;
+        }
+        mysqlConfiguration.setHost(matcher.group(1));
+        mysqlConfiguration.setPort(Integer.valueOf(matcher.group(2)));
+        String[] databasePrams = matcher.group(3).split("\\?");
+        mysqlConfiguration.setDataBase(databasePrams[0]);
+        if (databasePrams.length == 2) {
+            mysqlConfiguration.setExtraParams(databasePrams[1]);
+        }
+        if (StringUtils.isNotEmpty(mysqlConfiguration.getExtraParams()) && !mysqlConfiguration.getExtraParams().contains("connectionCollation")) {
+            mysqlConfiguration.setExtraParams(mysqlConfiguration.getExtraParams() + "&connectionCollation=utf8mb4_general_ci");
+        }
+        mysqlConfiguration.setUsername(env.getProperty("spring.datasource.username"));
+        mysqlConfiguration.setPassword(env.getProperty("spring.datasource.password"));
+
+        Datasource datasource = new Datasource();
+        datasource.setId("default-built-in");
+        datasource.setType("mysql");
+        datasource.setName(Translator.get("I18N_DATA_FILL_DATASOURCE_DEFAULT_BUILT_IN"));
+        datasource.setConfiguration(new Gson().toJson(mysqlConfiguration));
+
+        return datasource;
+    }
+
+    public Datasource getDataSource(String datasourceId) {
+        return getDataSource(datasourceId, false);
+    }
+
+    public Datasource getDataSource(String datasourceId, boolean withCreatePrivileges) {
+        Datasource ds = null;
+        if (StringUtils.equals("default-built-in", datasourceId)) {
+            ds = getBuiltInDataSource();
+        } else {
+            if (!withCreatePrivileges) {
+                ds = datasource.get(datasourceId);
+            } else {
+                ds = datasource.getDataSourceDetails(datasourceId);
+                if (ds.getEnableDataFill() && ds.getEnableDataFillCreateTable()) {
+                    ds.setConfiguration(new String(java.util.Base64.getDecoder().decode(ds.getConfiguration())));
+                } else {
+                    return null;
+                }
+            }
+        }
+
+        if (ds == null) {
+            DataEaseException.throwException(Translator.get("I18N_DATA_FILL_DATASOURCE_NOT_EXIST"));
+        }
+        return ds;
+    }
 
     public static void setLowerCaseRequest(Datasource ds, Provider datasourceProvider, ExtDDLProvider extDDLProvider, DatasourceRequest datasourceRequest) throws Exception {
         DatasourceTypes datasourceType = DatasourceTypes.valueOf(ds.getType());
@@ -94,7 +154,7 @@ public class DataFillDataService {
         List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
         }.getType());
 
-        Datasource ds = datasource.get(dataFillForm.getDatasource());
+        Datasource ds = getDataSource(dataFillForm.getDatasource());
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
 
         DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -125,6 +185,10 @@ public class DataFillDataService {
 
         //核对一下字段
         for (ExtTableField field : fields) {
+            if (field.isRemoved()) {
+                continue;
+            }
+
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                 String name1 = field.getSettings().getMapping().getColumnName1();
                 extTableFieldTypeMap.put(name1, field.getSettings().getMapping().getType());
@@ -264,7 +328,7 @@ public class DataFillDataService {
         if (StringUtils.equals(dataFillForm.getNodeType(), "folder")) {
             return;
         }
-        Datasource ds = datasource.get(dataFillForm.getDatasource());
+        Datasource ds = getDataSource(dataFillForm.getDatasource());
 
         ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
@@ -316,7 +380,7 @@ public class DataFillDataService {
         List<ExtTableField> fields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
         }.getType());
 
-        Datasource ds = datasource.get(dataFillForm.getDatasource());
+        Datasource ds = getDataSource(dataFillForm.getDatasource());
         Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
         ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
@@ -367,6 +431,10 @@ public class DataFillDataService {
 
             Map<String, Object> data = row.getData();
             for (ExtTableField field : fields) {
+                if (field.isRemoved()) {
+                    continue;
+                }
+
                 String name = field.getSettings().getMapping().getColumnName();
 
                 if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
@@ -404,7 +472,25 @@ public class DataFillDataService {
             Map<String, Object> data = row.getData();
             //一条条去判断
             for (ExtTableField field : fields) {
+                if (field.isRemoved()) {
+                    continue;
+                }
                 String name = field.getSettings().getMapping().getColumnName();
+
+                if (!StringUtils.equalsIgnoreCase(field.getType(), "dateRange") && data.get(name) == null) {
+                    if (field.getSettings().isRequired()) {
+                        DataEaseException.throwException("[" + field.getSettings().getName() + "] 不能为空");
+                    }
+                } else if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                    if (field.getSettings().isRequired()) {
+                        String name1 = field.getSettings().getMapping().getColumnName1();
+                        String name2 = field.getSettings().getMapping().getColumnName2();
+                        if (data.get(name1) == null || data.get(name2) == null) {
+                            DataEaseException.throwException("[" + field.getSettings().getName() + "] 不能为空");
+                        }
+                    }
+                }
+
                 if (StringUtils.equalsIgnoreCase(field.getType(), "input")) { //input框支持unique
                     if (field.getSettings().isUnique() && data.get(name) != null) {
                         DatasourceRequest.TableFieldWithValue uniqueField = new DatasourceRequest.TableFieldWithValue()
@@ -472,6 +558,9 @@ public class DataFillDataService {
             searchFields.add(pk);
 
             for (ExtTableField field : fields) {
+                if (field.isRemoved()) {
+                    continue;
+                }
                 if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                     String name1 = field.getSettings().getMapping().getColumnName1();
                     String name2 = field.getSettings().getMapping().getColumnName2();
@@ -538,6 +627,9 @@ public class DataFillDataService {
         DatasourceRequest.TableFieldWithValue pk = gson.fromJson(gson.toJson(pkField), DatasourceRequest.TableFieldWithValue.class).setValue(rowId);
 
         for (ExtTableField field : fields) {
+            if (field.isRemoved()) {
+                continue;
+            }
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                 String name1 = field.getSettings().getMapping().getColumnName1();
                 String name2 = field.getSettings().getMapping().getColumnName2();
@@ -659,6 +751,9 @@ public class DataFillDataService {
         List<ExtTableField> fields = new ArrayList<>();
         Map<String, String> dateRangeNameMap = new HashMap<>();
         for (ExtTableField field : formFields) {
+            if (field.isRemoved()) {
+                continue;
+            }
             if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
                 dateRangeNameMap.put(field.getId(), field.getSettings().getName());
 
@@ -847,16 +942,53 @@ public class DataFillDataService {
             return null;
         }
         SimpleDateFormat sdf = new SimpleDateFormat("yyyy-MM-dd"); //默认会拿到这种格式的
-        if (field.getSettings().isEnableTime()) {
-            sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+        switch (field.getSettings().getDateType()) {
+            case "year":
+                sdf = new SimpleDateFormat("yyyy");
+                break;
+            case "month":
+            case "monthrange":
+                sdf = new SimpleDateFormat("yyyy-MM");
+                break;
+            case "datetime":
+            case "datetimerange":
+                sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                break;
+            case "date":
+            case "daterange":
+                sdf = new SimpleDateFormat("yyyy-MM-dd");
+                break;
+            default:
+                if (field.getSettings().isEnableTime()) { //兼容旧版
+                    sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
+                }
         }
+
         Date date = null;
         try {
             date = sdf.parse(excelRowData);
         } catch (ParseException e) {
             sdf = new SimpleDateFormat("yyyy/MM/dd"); //以防万一也加上这种
-            if (field.getSettings().isEnableTime()) {
-                sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+            switch (field.getSettings().getDateType()) {
+                case "year":
+                    sdf = new SimpleDateFormat("yyyy");
+                    break;
+                case "month":
+                case "monthrange":
+                    sdf = new SimpleDateFormat("yyyy/MM");
+                    break;
+                case "datetime":
+                case "datetimerange":
+                    sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    break;
+                case "date":
+                case "daterange":
+                    sdf = new SimpleDateFormat("yyyy/MM/dd");
+                    break;
+                default:
+                    if (field.getSettings().isEnableTime()) { //兼容旧版
+                        sdf = new SimpleDateFormat("yyyy/MM/dd HH:mm:ss");
+                    }
             }
             date = sdf.parse(excelRowData);
         }

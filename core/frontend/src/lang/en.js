@@ -597,6 +597,9 @@ export default {
   },
   data_fill: {
     data_fill: 'Data Filling',
+    permission: 'Data Filling Permission',
+    enable: 'Enable',
+    enable_hint: 'Cannot disable after enable',
     new_folder: 'New Folder',
     form_manage: 'Form Manage',
     my_job: 'My Job',
@@ -605,6 +608,8 @@ export default {
       rename: 'Rename',
       untitled: 'Untitled',
       create_new_form: 'Create New Form',
+      copy_new_form: 'Copy Form',
+      edit_form: 'Edit Form',
       title: 'Title',
       no_form: 'Click to Create New',
       form_list_name: 'Form List',
@@ -643,6 +648,7 @@ export default {
       start_hint_word: 'Start Hint Word',
       end_hint_word: 'End Hint Word',
       input_type: 'Input Type',
+      date_type: 'Date Format',
       check: 'Check',
       set_required: 'Set Required',
       set_unique: 'Set Unique',
@@ -670,7 +676,9 @@ export default {
       add_column: 'Add Column',
       please_insert_start: 'Start Time Column Name',
       please_insert_end: 'End Time Column Name',
-      save_form: 'Save Form'
+      save_form: 'Save Form',
+      default: 'default',
+      default_built_in: 'Built-in Database'
     },
     database: {
       nvarchar: 'Nvarchar',
@@ -720,7 +728,7 @@ export default {
       delete: 'Delete',
       no_time_limit: 'No Time Limit',
       todo: 'Todo',
-      finished: 'Finished',
+      finished: 'Committed',
       expired: 'Expired',
 
       task_finish_in: 'Task Finished in ',
@@ -1820,7 +1828,18 @@ export default {
     trend_line: 'Trend Line',
     field_enum: 'Enumeration values',
     main_axis_label: 'Main Axis Label',
-    sub_axis_label: 'Sub Axis Label'
+    sub_axis_label: 'Sub Axis Label',
+    forecast_enable: 'Enable forecast',
+    forecast_all_period: 'Use full data',
+    forecast_all_period_tip: 'Whether to use all data as training data for predictions',
+    forecast_training_period: 'Training data',
+    forecast_training_period_tip: 'Intercept the most recent data from all the data as the training data',
+    forecast_period: 'Forecast period',
+    forecast_confidence_interval: 'Confidence interval',
+    forecast_model: 'Forecast model',
+    forecast_degree: 'Degree',
+    linear_regression: 'Linear regression',
+    polynomial_regression: 'Polynomial regression'
   },
   dataset: {
     scope_edit: 'Effective only when editing',

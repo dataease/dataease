@@ -2,9 +2,10 @@
 import DeContainer from '@/components/dataease/DeContainer.vue'
 import DataFillingFormSave from './save.vue'
 import clickoutside from 'element-ui/src/utils/clickoutside.js'
-import { filter, cloneDeep, find, concat } from 'lodash-es'
+import { filter, cloneDeep, find, concat, forEach } from 'lodash-es'
 import { v4 as uuidv4 } from 'uuid'
 import { EMAIL_REGEX, PHONE_REGEX } from '@/utils/validate'
+import { getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
 
 export default {
   name: 'DataFillingFormCreate',
@@ -24,10 +25,22 @@ export default {
       callback()
     }
     return {
-      moveId: undefined,
       showDrawer: false,
+      isEdit: false,
+      disableCreateIndex: false,
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       duplicateOptionRule: { validator: checkDuplicateOptionValidator, trigger: ['blur', 'change'] },
+      dateTypes: [
+        { name: this.$t('chart.y'), value: 'year' },
+        { name: this.$t('chart.y_M'), value: 'month' },
+        { name: this.$t('chart.y_M_d'), value: 'date' },
+        { name: this.$t('chart.y_M_d_H_m_s'), value: 'datetime' }
+      ],
+      dateRangeTypes: [
+        { name: this.$t('chart.y_M'), value: 'monthrange' },
+        { name: this.$t('chart.y_M_d'), value: 'daterange' },
+        { name: this.$t('chart.y_M_d_H_m_s'), value: 'datetimerange' }
+      ],
       inputTypes: [
         { type: 'text', name: this.$t('data_fill.form.text'), rules: [] },
         { type: 'number', name: this.$t('data_fill.form.number'), rules: [] },
@@ -148,7 +161,8 @@ export default {
           id: undefined,
           settings: {
             name: this.$t('commons.component.date'),
-            enableTime: false,
+            enableTime: false, // 弃用
+            dateType: 'date',
             placeholder: '',
             required: false,
             mapping: {
@@ -167,7 +181,8 @@ export default {
           id: undefined,
           settings: {
             name: this.$t('commons.component.dateRange'),
-            enableTime: false,
+            enableTime: false, // 弃用
+            dateType: 'daterange',
             rangeSeparator: '-',
             startPlaceholder: '',
             endPlaceholder: '',
@@ -221,32 +236,94 @@ export default {
         return find(this.formSettings.forms, f => f.id === this.selectedItemId)
       }
       return undefined
+    },
+    selectedComponentItemInputTypes() {
+      if (this.selectedComponentItem && this.selectedComponentItem.type === 'input') {
+        if (this.isEdit && this.selectedComponentItem.old) {
+          if (this.selectedComponentItem.settings.inputType === 'number') {
+            return filter(this.inputTypes, t => t.type === 'number')
+          } else {
+            return filter(this.inputTypes, t => t.type !== 'number')
+          }
+        }
+      }
+      return this.inputTypes
     }
 
   },
   beforeDestroy() {
   },
   created() {
+    this.isEdit = false
+    this.disableCreateIndex = false
     if (this.$route.query.folder !== undefined) {
       this.formSettings.folder = this.$route.query.folder
     }
     if (this.$route.query.level !== undefined) {
       this.formSettings.level = this.$route.query.level
     }
+    if (this.$route.query.copy !== undefined) {
+      const id = this.$route.query.copy
+      getWithPrivileges(id).then(res => {
+        const tempData = res.data
+        this.formSettings.folder = tempData.pid
+        this.formSettings.level = tempData.level
+        this.formSettings.forms = JSON.parse(tempData.forms)
+      })
+    } else if (this.$route.query.id !== undefined) {
+      const id = this.$route.query.id
+      getWithPrivileges(id).then(res => {
+        this.isEdit = true
+        const tempData = cloneDeep(res.data)
+        this.formSettings = tempData
+        this.formSettings.table = tempData.tableName
+        this.formSettings.folder = tempData.pid
+        const tempForms = filter(JSON.parse(res.data.forms), f => !f.removed)
+        forEach(tempForms, f => {
+          f.old = true
+          if (f.type === 'checkbox' || f.type === 'select' && f.settings.multiple) {
+            f.value = []
+          }
+          if (f.type === 'date' && f.settings.dateType === undefined) { // 兼容旧的
+            f.settings.dateType = f.settings.enableTime ? 'datetime' : 'date'
+          }
+          if (f.type === 'dateRange' && f.settings.dateType === undefined) { // 兼容旧的
+            f.settings.dateType = f.settings.enableTime ? 'datetimerange' : 'daterange'
+          }
+        })
+        this.formSettings.forms = tempForms
+        this.formSettings.oldForms = JSON.parse(res.data.forms)
+        this.formSettings.tableIndexes = JSON.parse(res.data.tableIndexes)
+
+        if (res.data.createIndex) {
+          forEach(this.formSettings.tableIndexes, f => {
+            f.old = true
+          })
+          this.formSettings.oldTableIndexes = JSON.parse(res.data.tableIndexes)
+        } else {
+          this.formSettings.oldTableIndexes = []
+        }
+
+        this.disableCreateIndex = res.data.createIndex
+      })
+    }
   },
   methods: {
     closeCreate: function() {
       // back to forms list
-      this.$router.replace('/data-filling/forms')
+      if (this.$route.query.copy) {
+        this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.copy }})
+      } else if (this.$route.query.id) {
+        this.$router.replace({ name: 'data-filling-form', query: { id: this.$route.query.id }})
+      } else {
+        this.$router.replace('/data-filling/forms')
+      }
     },
     onMoveInComponentList(e, originalEvent) {
       if (e.relatedContext?.component?.$el?.id === 'form-drag-place') {
         return true
       }
       return false
-    },
-    addInComponentList(e) {
-      console.log(e)
     },
     addComponent(e) {
       this.formSettings.forms = cloneDeep(this.formSettings.forms)
@@ -287,6 +364,10 @@ export default {
     copyItem(item, index) {
       const copyItem = cloneDeep(item)
       copyItem.id = uuidv4()
+      delete copyItem.old
+      delete copyItem.settings.mapping.columnName
+      delete copyItem.settings.mapping.columnName1
+      delete copyItem.settings.mapping.columnName2
       this.formSettings.forms.splice(index + 1, 0, copyItem)
 
       this.selectedItemId = copyItem.id
@@ -319,10 +400,8 @@ export default {
         item.value = []
       } else {
         item.value = undefined
-        if (item.settings.mapping.type === 'text') {
-          item.settings.mapping.type = undefined
-        }
       }
+      item.settings.mapping.type = undefined
     },
     getRules(item) {
       let rules = []
@@ -418,7 +497,22 @@ export default {
           class="toolbar-icon-active icon20"
           @click="closeCreate"
         />
-        <span class="text16 margin-left12">
+        <span
+          v-if="$route.query.copy"
+          class="text16 margin-left12"
+        >
+          {{ $t('data_fill.form.copy_new_form') }}
+        </span>
+        <span
+          v-else-if="$route.query.id"
+          class="text16 margin-left12"
+        >
+          {{ $t('data_fill.form.edit_form') }}
+        </span>
+        <span
+          v-else
+          class="text16 margin-left12"
+        >
           {{ $t('data_fill.form.create_new_form') }}
         </span>
       </div>
@@ -641,43 +735,21 @@ export default {
                       </el-checkbox>
                     </el-checkbox-group>
                     <el-date-picker
-                      v-else-if="item.type === 'date' && !item.settings.enableTime"
+                      v-else-if="item.type === 'date'"
                       :key="item.id + 'date'"
                       v-model="item.value"
                       :required="item.settings.required"
-                      type="date"
+                      :type="item.settings.dateType"
                       :placeholder="item.settings.placeholder"
                       style="width: 100%"
                       size="small"
                     />
                     <el-date-picker
-                      v-else-if="item.type === 'date' && item.settings.enableTime"
-                      :key="item.id + 'dateEnableTime'"
+                      v-else-if="item.type === 'dateRange'"
+                      :key="item.id + 'dateRange'"
                       v-model="item.value"
                       :required="item.settings.required"
-                      type="datetime"
-                      :placeholder="item.settings.placeholder"
-                      style="width: 100%"
-                      size="small"
-                    />
-                    <el-date-picker
-                      v-else-if="item.type === 'dateRange' && !item.settings.enableTime"
-                      :key="item.id + 'dateRangeEnableTime'"
-                      v-model="item.value"
-                      :required="item.settings.required"
-                      type="daterange"
-                      :range-separator="item.settings.rangeSeparator"
-                      :start-placeholder="item.settings.startPlaceholder"
-                      :end-placeholder="item.settings.endPlaceholder"
-                      style="width: 100%"
-                      size="small"
-                    />
-                    <el-date-picker
-                      v-else-if="item.type === 'dateRange' && item.settings.enableTime"
-                      :key="item.id + 'datetimerangeRangeEnableTime'"
-                      v-model="item.value"
-                      :required="item.settings.required"
-                      type="datetimerange"
+                      :type="item.settings.dateType"
                       :range-separator="item.settings.rangeSeparator"
                       :start-placeholder="item.settings.startPlaceholder"
                       :end-placeholder="item.settings.endPlaceholder"
@@ -834,10 +906,31 @@ export default {
                   @change="selectedComponentItem.settings.mapping.type = undefined"
                 >
                   <el-option
-                    v-for="(x) in inputTypes"
+                    v-for="(x) in selectedComponentItemInputTypes"
                     :key="x.type"
                     :label="x.name"
                     :value="x.type"
+                  />
+                </el-select>
+              </el-form-item>
+
+              <el-form-item
+                v-if="selectedComponentItem.type === 'date' || selectedComponentItem.type === 'dateRange'"
+                prop="dateType"
+                class="form-item"
+                :label="$t('data_fill.form.date_type')"
+                :rules="[requiredRule]"
+              >
+                <el-select
+                  v-model="selectedComponentItem.settings.dateType"
+                  style="width: 100%"
+                  required
+                >
+                  <el-option
+                    v-for="(x) in selectedComponentItem.type === 'date' ? dateTypes : dateRangeTypes"
+                    :key="x.value"
+                    :label="x.name"
+                    :value="x.value"
                   />
                 </el-select>
               </el-form-item>
@@ -874,20 +967,10 @@ export default {
                 >
                   <el-checkbox
                     v-model="selectedComponentItem.settings.multiple"
+                    :disabled="selectedComponentItem.old"
                     @change="changeSelectMultiple(selectedComponentItem, selectedComponentItem.settings.multiple)"
                   >
                     {{ $t('data_fill.form.set_multiple') }}
-                  </el-checkbox>
-                </el-form-item>
-                <el-form-item
-                  v-if="selectedComponentItem.type === 'date' || selectedComponentItem.type === 'dateRange'"
-                  prop="multiple"
-                  class="form-item"
-                >
-                  <el-checkbox
-                    v-model="selectedComponentItem.settings.enableTime"
-                  >
-                    {{ $t('data_fill.form.use_datetime') }}
                   </el-checkbox>
                 </el-form-item>
 
@@ -1001,6 +1084,8 @@ export default {
     >
       <data-filling-form-save
         v-if="showDrawer"
+        :is-edit="isEdit"
+        :disable-create-index="disableCreateIndex"
         :form.sync="formSettings"
         :show-drawer.sync="showDrawer"
       />
