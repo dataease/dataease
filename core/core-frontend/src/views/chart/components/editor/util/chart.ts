@@ -1449,7 +1449,7 @@ export const BASE_VIEW_CONFIG = {
   type: 'bar',
   render: 'antv',
   resultCount: 1000,
-  resultMode: 'all',
+  resultMode: 'custom',
   refreshViewEnable: false,
   refreshTime: 5,
   refreshUnit: 'minute',
