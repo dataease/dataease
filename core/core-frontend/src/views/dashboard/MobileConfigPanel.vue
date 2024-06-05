@@ -279,7 +279,11 @@ const save = () => {
                 :scale="80"
               />
             </div>
-            <div class="mobile-com-mask" @click="addToMobile(item)"></div>
+            <div class="mobile-com-mask" @click="addToMobile(item)">
+              <span v-show="item.component === 'DeStreamMedia'" style="color: #909399"
+                >IOS可能无法显示</span
+              >
+            </div>
             <div class="pc-select-to-mobile" @click="addToMobile(item)" v-if="!mobileLoading"></div>
           </div>
         </template>
@@ -511,6 +515,9 @@ const save = () => {
       left: 0;
       z-index: 10;
       cursor: pointer;
+      display: flex;
+      align-items: center;
+      justify-content: center;
     }
 
     .pc-select-to-mobile {
