@@ -341,6 +341,70 @@ public class CalciteProvider {
                     }
                 }
                 break;
+            case pg:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Pg.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split("\\?")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
+            case redshift:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Redshift.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split("\\?")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
+            case ck:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), CK.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split("\\?")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
+            case impala:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Impala.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split(";")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
             default:
                 break;
         }
