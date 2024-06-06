@@ -411,16 +411,15 @@ const jumpClick = param => {
           const url = `${embeddedBaseUrl}#/preview?dvId=${
             jumpInfo.targetDvId
           }&jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
-          if (divSelf) {
+
+          if (isIframe.value || isDataEaseBi.value) {
             embeddedStore.clearState()
+          }
+          if (divSelf) {
             embeddedStore.setDvId(jumpInfo.targetDvId)
             embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
             divEmbedded('Preview')
             return
-          }
-
-          if (isIframe.value) {
-            embeddedStore.clearState()
           }
 
           if (iframeSelf) {
@@ -436,16 +435,16 @@ const jumpClick = param => {
       const colList = [...param.dimensionList, ...param.quotaList]
       let url = setIdValueTrans('id', 'value', jumpInfo.content, colList)
       url = checkAddHttp(url)
-      if (divSelf) {
+
+      if (isIframe.value || isDataEaseBi.value) {
         embeddedStore.clearState()
+      }
+      if (divSelf) {
         embeddedStore.setOuterUrl(url)
         divEmbedded('Iframe')
         return
       }
 
-      if (isIframe.value) {
-        embeddedStore.clearState()
-      }
       windowsJump(url, jumpInfo.jumpType)
     }
   } else {
