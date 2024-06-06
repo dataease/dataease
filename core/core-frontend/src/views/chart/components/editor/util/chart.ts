@@ -1318,6 +1318,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'flow-map',
         title: t('chart.chart_flow_map'),
         icon: 'flow-map'
+      },
+      {
+        render: 'antv',
+        category: 'map',
+        value: 'heat-map',
+        title: t('chart.chart_heat_map'),
+        icon: 'heat-map'
       }
     ]
   },
@@ -1394,6 +1401,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   tableColumnWidth: 100,
   tableFieldWidth: [],
   tablePageMode: 'page',
+  tablePageStyle: 'simple',
   tablePageSize: 20,
   gaugeStyle: 'default',
   colorScheme: 'default',
@@ -1415,6 +1423,8 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   lineSymbolSize: 4,
   lineSmooth: true,
   barDefault: true,
+  radiusColumnBar: 'rightAngle',
+  columnBarRightAngleRadius: 20,
   barWidth: 40,
   barGap: 0.4,
   lineType: 'solid',
@@ -1422,6 +1432,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   scatterSymbolSize: 8,
   radarShape: 'polygon',
   mapStyle: 'normal',
+  heatMapType: 'heatmap',
+  heatMapIntensity: 2,
+  heatMapRadius: 20,
   areaBorderColor: '#EBEEF5',
   areaBaseColor: '#ffffff',
   mapSymbolOpacity: 0.7,
@@ -1449,7 +1462,7 @@ export const BASE_VIEW_CONFIG = {
   type: 'bar',
   render: 'antv',
   resultCount: 1000,
-  resultMode: 'all',
+  resultMode: 'custom',
   refreshViewEnable: false,
   refreshTime: 5,
   refreshUnit: 'minute',

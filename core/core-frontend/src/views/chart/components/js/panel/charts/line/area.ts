@@ -86,24 +86,25 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
     const { chart, container, action } = drawOptions
-    if (chart?.data) {
-      // data
-      const data = cloneDeep(chart.data.data)
-
-      const initOptions: AreaOptions = {
-        ...this.baseOptions,
-        data,
-        appendPadding: getPadding(chart)
-      }
-      // options
-      const options = this.setupOptions(chart, initOptions)
-      // 开始渲染
-      const newChart = new G2Area(container, options)
-
-      newChart.on('point:click', action)
-
-      return newChart
+    if (!chart.data.data?.length) {
+      return
     }
+    // data
+    const data = cloneDeep(chart.data.data)
+
+    const initOptions: AreaOptions = {
+      ...this.baseOptions,
+      data,
+      appendPadding: getPadding(chart)
+    }
+    // options
+    const options = this.setupOptions(chart, initOptions)
+    // 开始渲染
+    const newChart = new G2Area(container, options)
+
+    newChart.on('point:click', action)
+
+    return newChart
   }
 
   protected configLabel(chart: Chart, options: AreaOptions): AreaOptions {
@@ -177,8 +178,12 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
     let areaStyle
     if (customAttr.basicStyle.gradient) {
       const colorMap = new Map()
+      const yAxis = parseJson(chart.customStyle).yAxis
+      const axisValue = yAxis.axisValue
+      const start =
+        !axisValue?.auto && axisValue.min && axisValue.max ? axisValue.min / axisValue.max : 0
       areaStyle = item => {
-        let ele
+        let ele: string
         const key = `${item.field}-${item.category}`
         if (colorMap.has(key)) {
           ele = colorMap.get(key)
@@ -188,8 +193,11 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
         }
         if (ele) {
           return {
-            fill: setGradientColor(hexColorToRGBA(ele, alpha), true, 270)
+            fill: setGradientColor(hexColorToRGBA(ele, alpha), true, 270, start)
           }
+        }
+        return {
+          fill: 'rgba(255,255,255,0)'
         }
       }
     }

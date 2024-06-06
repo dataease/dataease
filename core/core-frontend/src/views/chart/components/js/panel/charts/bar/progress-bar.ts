@@ -163,6 +163,20 @@ export class ProgressBar extends G2PlotChartView<BarOptions, G2Progress> {
         }
       }
     }
+    if (basicStyle.radiusColumnBar === 'roundAngle') {
+      const barStyle = {
+        radius: [
+          basicStyle.columnBarRightAngleRadius,
+          basicStyle.columnBarRightAngleRadius,
+          basicStyle.columnBarRightAngleRadius,
+          basicStyle.columnBarRightAngleRadius
+        ]
+      }
+      options = {
+        ...options,
+        barStyle
+      }
+    }
     return options
   }
   protected configTooltip(chart: Chart, options: BarOptions): BarOptions {

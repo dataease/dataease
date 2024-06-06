@@ -53,6 +53,7 @@ function check_and_prepare_env_params() {
    fi
 
    set -a
+   source ${CURRENT_DIR}/install.conf
    if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
       source $DE_BASE/dataease2.0/.env
       INSTALL_TYPE='upgrade'
@@ -64,7 +65,6 @@ function check_and_prepare_env_params() {
       fi
       log_content "升级安装"
    else
-      source ${CURRENT_DIR}/install.conf
       INSTALL_TYPE='install'
       mkdir -p ${DE_BASE}
       log_content "全新安装"

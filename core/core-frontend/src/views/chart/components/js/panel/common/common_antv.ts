@@ -800,11 +800,20 @@ export function getLineDash(type) {
  * @param rawColor 原始 RGBA 颜色
  * @param show
  * @param angle 渐变角度
+ * @param start 起始值
  */
-export function setGradientColor(rawColor: string, show = false, angle = 0) {
+export function setGradientColor(rawColor: string, show = false, angle = 0, start = 0) {
   const item = rawColor.split(',')
   item.splice(3, 1, '0.3)')
-  return show ? `l(${angle}) 0:${item.join(',')} 1:${rawColor}` : rawColor
+  let color: string
+  if (start == 0) {
+    color = `l(${angle}) 0:${item.join(',')} 1:${rawColor}`
+  } else if (start > 0) {
+    color = `l(${angle}) 0:rgba(255,255,255,0) ${start}:${item.join(',')} 1:${rawColor}`
+  } else {
+    color = `l(${angle}) 0:rgba(255,255,255,0) 0.1:${item.join(',')} 1:${rawColor}`
+  }
+  return show ? color : rawColor
 }
 
 export function transAxisPosition(position: string): string {

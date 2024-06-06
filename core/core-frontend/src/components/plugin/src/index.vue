@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import noLic from './nolic.vue'
-import { ref, useAttrs, onMounted, watch } from 'vue'
+import { ref, useAttrs, onMounted } from 'vue'
 import { execute, randomKey, formatArray } from './convert'
 import { load, loadDistributed, xpackModelApi } from '@/api/plugin'
 import { useCache } from '@/hooks/web/useCache'
@@ -81,7 +81,11 @@ const storeCacheProxy = byteArray => {
 }
 const pluginProxy = ref(null)
 const invokeMethod = param => {
-  pluginProxy.value['invokeMethod'](param)
+  if (pluginProxy.value['invokeMethod']) {
+    pluginProxy.value['invokeMethod'](param)
+  } else {
+    pluginProxy.value[param.methodName](param.args)
+  }
 }
 
 onMounted(async () => {
@@ -95,16 +99,16 @@ onMounted(async () => {
     distributed = wsCache.get(key)
   }
   if (distributed) {
-    window['Vue'] = Vue
-    window['Axios'] = axios
-    window['Pinia'] = Pinia
-    window['vueRouter'] = vueRouter
-    window['MittAll'] = useEmitt().emitter.all
-    window['I18n'] = i18n
     if (window['DEXPack']) {
       const xpack = await window['DEXPack'].mapping[attrs.jsname]
       plugin.value = xpack.default
     } else {
+      window['Vue'] = Vue
+      window['Axios'] = axios
+      window['Pinia'] = Pinia
+      window['vueRouter'] = vueRouter
+      window['MittAll'] = useEmitt().emitter.all
+      window['I18n'] = i18n
       loadDistributed().then(async res => {
         new Function(res.data)()
         const xpack = await window['DEXPack'].mapping[attrs.jsname]
@@ -116,16 +120,6 @@ onMounted(async () => {
   }
 })
 
-watch(
-  () => attrs.jsname,
-  () => {
-    if (window['DEXPack']) {
-      const xpack = window['DEXPack'].mapping[attrs.jsname]
-      plugin.value = xpack.default
-    }
-  }
-)
-
 const emits = defineEmits(['loadFail'])
 defineExpose({
   invokeMethod
@@ -134,7 +128,7 @@ defineExpose({
 
 <template>
   <component
-    :class="attrs.jsname"
+    :key="attrs.jsname"
     ref="pluginProxy"
     :is="plugin"
     v-loading="loading"

@@ -93,6 +93,10 @@ declare interface ChartBasicStyle {
    */
   tablePageMode: 'page' | 'pull'
   /**
+   * 表格分页器风格
+   */
+  tablePageStyle: 'simple' | 'general'
+  /**
    * 表格分页大小
    */
   tablePageSize: number
@@ -149,6 +153,14 @@ declare interface ChartBasicStyle {
    */
   barWidth: number
   /**
+   * 柱子形状：直角｜圆角
+   */
+  radiusColumnBar?: 'rightAngle' | 'roundAngle'
+  /**
+   * 圆角柱倒角
+   */
+  columnBarRightAngleRadius: number
+  /**
    * 柱间距
    */
   barGap: number
@@ -176,6 +188,9 @@ declare interface ChartBasicStyle {
    * 地图主题风格
    */
   mapStyle: string
+  heatMapType?: string
+  heatMapIntensity?: number
+  heatMapRadius?: number
   /**
    * 地图边线颜色
    */

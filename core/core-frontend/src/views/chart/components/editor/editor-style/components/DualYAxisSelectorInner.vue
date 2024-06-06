@@ -14,6 +14,7 @@ const props = withDefaults(
     propertyInner?: Array<string>
     type?: 'left' | 'right'
     chartType?: string
+    layout?: string
   }>(),
   {
     themes: 'dark',
@@ -75,6 +76,14 @@ const init = () => {
 
 const showProperty = prop => props.propertyInner?.includes(prop)
 
+const isBidirectionalBar = computed(() => {
+  return props.chartType === 'bidirectional-bar'
+})
+
+const isVerticalLayout = computed(() => {
+  return props.layout === 'vertical'
+})
+
 onMounted(() => {
   init()
 })
@@ -99,9 +108,19 @@ onMounted(() => {
         size="small"
         @change="changeAxisStyle('position')"
       >
-        <div v-if="chartType === 'bidirectional-bar'">
-          <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_top') }}</el-radio>
-          <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_bottom') }}</el-radio>
+        <div v-if="isBidirectionalBar">
+          <div v-if="isVerticalLayout">
+            <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>
+            <el-radio :effect="props.themes" label="right">{{
+              t('chart.text_pos_right')
+            }}</el-radio>
+          </div>
+          <div v-else>
+            <el-radio :effect="props.themes" label="right">{{ t('chart.text_pos_top') }}</el-radio>
+            <el-radio :effect="props.themes" label="left">{{
+              t('chart.text_pos_bottom')
+            }}</el-radio>
+          </div>
         </div>
         <div v-else>
           <el-radio :effect="props.themes" label="left">{{ t('chart.text_pos_left') }}</el-radio>

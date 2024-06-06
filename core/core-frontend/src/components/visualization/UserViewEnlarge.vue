@@ -8,7 +8,12 @@
     trigger="click"
   >
     <div class="export-button">
-      <el-select v-if="optType === 'enlarge'" v-model="pixel" class="pixel-select" size="small">
+      <el-select
+        v-if="optType === 'enlarge' && authShow"
+        v-model="pixel"
+        class="pixel-select"
+        size="small"
+      >
         <el-option-group v-for="group in pixelOptions" :key="group.label" :label="group.label">
           <el-option
             v-for="item in group.options"
@@ -21,7 +26,7 @@
 
       <el-button
         class="m-button"
-        v-if="optType === 'enlarge'"
+        v-if="optType === 'enlarge' && authShow"
         link
         icon="Download"
         size="middle"
@@ -31,7 +36,7 @@
       </el-button>
       <el-button
         class="m-button"
-        v-if="optType === 'details'"
+        v-if="optType === 'details' && authShow"
         link
         icon="Download"
         size="middle"
@@ -40,7 +45,7 @@
       >
         导出Excel
       </el-button>
-      <el-divider class="close-divider" direction="vertical" />
+      <el-divider class="close-divider" direction="vertical" v-if="authShow" />
     </div>
     <div
       v-loading="downLoading"
@@ -112,7 +117,7 @@ const { t } = useI18n()
 const optType = ref(null)
 const chartComponentDetails = ref(null)
 const chartComponentDetails2 = ref(null)
-const { dvInfo } = storeToRefs(dvMainStore)
+const { dvInfo, editMode } = storeToRefs(dvMainStore)
 const exportLoading = ref(false)
 const sourceViewType = ref()
 const activeName = ref('left')
@@ -131,9 +136,14 @@ const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
       tableItemBgColor: '#FFFFFF',
       tableFontColor: '#7C7E81',
       enableTableCrossBG: false
+    },
+    tooltip: {
+      show: false
     }
   }
 }
+
+const authShow = computed(() => editMode.value === 'edit' || dvInfo.value.weight > 3)
 
 const customExport = computed(() => {
   if (downLoading.value) {

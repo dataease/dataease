@@ -356,9 +356,6 @@ const windowsJump = (url, jumpType) => {
   try {
     const newWindow = window.open(url, jumpType)
     initOpenHandler(newWindow)
-    if (jumpType === '_self') {
-      location.reload()
-    }
   } catch (e) {
     ElMessage.error(t('visualization.url_check_error') + ':' + url)
   }
@@ -414,6 +411,10 @@ const jumpClick = param => {
           const url = `${embeddedBaseUrl}#/preview?dvId=${
             jumpInfo.targetDvId
           }&jumpInfoParam=${encodeURIComponent(Base64.encode(JSON.stringify(param)))}`
+
+          if (isIframe.value || isDataEaseBi.value) {
+            embeddedStore.clearState()
+          }
           if (divSelf) {
             embeddedStore.setDvId(jumpInfo.targetDvId)
             embeddedStore.setJumpInfoParam(encodeURIComponent(Base64.encode(JSON.stringify(param))))
@@ -434,11 +435,16 @@ const jumpClick = param => {
       const colList = [...param.dimensionList, ...param.quotaList]
       let url = setIdValueTrans('id', 'value', jumpInfo.content, colList)
       url = checkAddHttp(url)
+
+      if (isIframe.value || isDataEaseBi.value) {
+        embeddedStore.clearState()
+      }
       if (divSelf) {
         embeddedStore.setOuterUrl(url)
         divEmbedded('Iframe')
         return
       }
+
       windowsJump(url, jumpInfo.jumpType)
     }
   } else {

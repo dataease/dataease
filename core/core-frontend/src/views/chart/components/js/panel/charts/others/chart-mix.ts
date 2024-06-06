@@ -227,7 +227,21 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       tempOption.geometryOptions[1].smooth = smooth
       tempOption.geometryOptions[1].point = point
       tempOption.geometryOptions[1].lineStyle = lineStyle
+
+      if (s.radiusColumnBar === 'roundAngle') {
+        const columnStyle = {
+          radius: [
+            s.columnBarRightAngleRadius,
+            s.columnBarRightAngleRadius,
+            s.columnBarRightAngleRadius,
+            s.columnBarRightAngleRadius
+          ]
+        }
+        tempOption.geometryOptions[0].columnStyle = columnStyle
+        tempOption.geometryOptions[1].columnStyle = columnStyle
+      }
     }
+
     return tempOption
   }
 

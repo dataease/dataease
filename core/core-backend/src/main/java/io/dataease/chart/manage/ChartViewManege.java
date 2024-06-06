@@ -4,8 +4,8 @@ import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import io.dataease.api.chart.dto.*;
-import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.api.chart.filter.FilterTreeObj;
+import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.api.dataset.union.model.SQLObj;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
@@ -20,6 +20,7 @@ import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
+import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
@@ -120,6 +121,7 @@ public class ChartViewManege {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
         wrapper.eq("checked", true);
+        wrapper.isNull("chart_id");
 
         List<CoreDatasetTableField> fields = coreDatasetTableFieldMapper.selectList(wrapper);
         List<DatasetTableFieldDTO> collect = fields.stream().map(ele -> {
@@ -171,6 +173,36 @@ public class ChartViewManege {
         map.put("dimensionList", dimensionList);
         map.put("quotaList", quotaList);
         return map;
+    }
+
+    public void copyField(Long id, Long chartId) {
+        CoreDatasetTableField coreDatasetTableField = coreDatasetTableFieldMapper.selectById(id);
+        QueryWrapper<CoreDatasetTableField> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("dataset_group_id", coreDatasetTableField.getDatasetGroupId());
+        List<CoreDatasetTableField> coreDatasetTableFields = coreDatasetTableFieldMapper.selectList(queryWrapper);
+        HashMap<String, String> map = new HashMap<>();
+        for (CoreDatasetTableField ele : coreDatasetTableFields) {
+            map.put(ele.getName(), ele.getName());
+        }
+        newName(map, coreDatasetTableField, coreDatasetTableField.getName());
+        coreDatasetTableField.setChartId(chartId);
+        coreDatasetTableField.setExtField(2);
+        coreDatasetTableField.setOriginName("[" + id + "]");
+        coreDatasetTableField.setId(IDUtils.snowID());
+        coreDatasetTableFieldMapper.insert(coreDatasetTableField);
+    }
+
+    private void newName(HashMap<String, String> map, CoreDatasetTableField coreDatasetTableField, String name) {
+        name = name + "_copy";
+        if (map.containsKey(name)) {
+            newName(map, coreDatasetTableField, name);
+        } else {
+            coreDatasetTableField.setName(name);
+        }
+    }
+
+    public void deleteField(Long id) {
+        coreDatasetTableFieldMapper.deleteById(id);
     }
 
     public DatasetTableFieldDTO createCountField(Long id) {
