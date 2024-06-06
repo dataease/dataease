@@ -488,12 +488,20 @@ public class DatasourceServer implements DatasourceApi {
         return calciteProvider.getSchema(datasourceRequest);
     }
 
+    @Override
+    public DatasourceDTO hidePw(Long datasourceId) throws DEException {
+        return getDatasourceDTOById(datasourceId, true);
+    }
 
     @Override
     public DatasourceDTO get(Long datasourceId) throws DEException {
+        return getDatasourceDTOById(datasourceId, false);
+    }
+
+    private DatasourceDTO getDatasourceDTOById(Long datasourceId, boolean hidePw) throws DEException {
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         CoreDatasource datasource = datasourceMapper.selectById(datasourceId);
-        if(datasource == null){
+        if (datasource == null) {
             DEException.throwException("不存在的数据源！");
         }
         BeanUtils.copyBean(datasourceDTO, datasource);
@@ -547,15 +555,18 @@ public class DatasourceServer implements DatasourceApi {
             if (task != null) {
                 datasourceDTO.setLastSyncTime(task.getStartTime());
             }
+        } else {
+            if (hidePw) {
+                calciteProvider.hidePW(datasourceDTO);
+            }
+
         }
         if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.Excel.toString())) {
             datasourceDTO.setFileName(ExcelUtils.getFileName(datasource));
             datasourceDTO.setSize(ExcelUtils.getSize(datasource));
         }
         datasourceDTO.setConfiguration(new String(Base64.getEncoder().encode(datasourceDTO.getConfiguration().getBytes())));
-
         datasourceDTO.setCreator(coreUserManage.getUserName(Long.valueOf(datasourceDTO.getCreateBy())));
-
         return datasourceDTO;
     }
 
@@ -750,7 +761,7 @@ public class DatasourceServer implements DatasourceApi {
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
             datasourceRequest.setTable(tableName);
-            List<TableField> tableFields = (List<TableField>) calciteProvider.fetchTableField(datasourceRequest) ;
+            List<TableField> tableFields = (List<TableField>) calciteProvider.fetchTableField(datasourceRequest);
             return tableFields.stream().filter(tableField -> {
                 return !tableField.getOriginName().equalsIgnoreCase("dataease_uuid");
             }).collect(Collectors.toList());

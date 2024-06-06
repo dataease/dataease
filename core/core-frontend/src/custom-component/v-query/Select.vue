@@ -334,15 +334,19 @@ watch(
 
 watch(
   () => config.value.optionValueSource,
-  val => {
-    debounceOptions(val)
+  (valNew, newOld) => {
+    if ([valNew, newOld].includes(2)) {
+      selectValue.value = Array.isArray(selectValue.value) ? [] : undefined
+      config.value.selectValue = cloneDeep(selectValue.value)
+      config.value.defaultValue = cloneDeep(selectValue.value)
+    }
+    debounceOptions(valNew)
   }
 )
 
 watch(
   [() => config.value.checkedFields, () => config.value.checkedFieldsMap],
   () => {
-    if (!props.isConfig) return
     debounceOptions(config.value.optionValueSource)
   },
   {

@@ -12,6 +12,7 @@ import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskMapper;
+import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.server.DataVisualizationServer;
 import io.dataease.websocket.WsMessage;
@@ -50,6 +51,8 @@ public class ExportCenterManage {
     private CoreChartViewMapper coreChartViewMapper;
     @Autowired
     private WsService wsService;
+    @Resource
+    private  SysParameterManage sysParameterManage;
 
     @Value("${export.dataset.limit:100000}")
     private int limit;
@@ -183,10 +186,19 @@ public class ExportCenterManage {
             if (status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
                 setExportFromAbsName(exportTaskDTO);
             }
+            if (status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
+                setOrgName(exportTaskDTO);
+            }
             result.add(exportTaskDTO);
         });
 
         return result;
+    }
+
+    private void setOrgName(ExportTaskDTO exportTaskDTO) {
+        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
+            exportTaskDTO.setOrgName(dataVisualizationServer.getAbsPath(exportTaskDTO.getExportFrom()));
+        }
     }
 
     private void setExportFromAbsName(ExportTaskDTO exportTaskDTO) {
@@ -408,6 +420,21 @@ public class ExportCenterManage {
 
     private static final String LOG_RETENTION = "30";
 
+    public void cleanLog() {
+        String key = "basic.exportFileLiveTime";
+        String val = sysParameterManage.singleVal(key);
+        if (StringUtils.isBlank(val)) {
+            DEException.throwException("未获取到文件保留时间");
+        }
+        QueryWrapper<CoreExportTask> queryWrapper = new QueryWrapper<>();
+        long expTime = Long.parseLong(val) * 24L * 3600L * 1000L;
+        long threshold = System.currentTimeMillis() - expTime;
+        queryWrapper.lt("export_time", threshold);
+        exportTaskMapper.selectList(queryWrapper).forEach(coreExportTask -> {
+            delete(coreExportTask.getId());
+        });
+
+    }
 
 }
 

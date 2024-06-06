@@ -261,6 +261,29 @@ const trackClick = trackAction => {
   if (state.pointParam.data.dimensionList.length > 1) {
     checkName = state.pointParam.data.dimensionList[0].id
   }
+  // 跳转字段处理
+  let jumpName = state.pointParam.data.name
+  if (state.pointParam.data.dimensionList.length > 1) {
+    const fieldIds = []
+    // 优先下钻字段
+    if (curView.drill) {
+      const curFiled = curView.drillFields[curView.drillFilters.length]
+      fieldIds.push(curFiled.id)
+    }
+    chartData.value?.fields.forEach(field => {
+      if (!fieldIds.includes(field.id)) {
+        fieldIds.push(field.id)
+      }
+    })
+    for (let i = 0; i < fieldIds.length; i++) {
+      const id = fieldIds[i]
+      const sourceInfo = view.value.id + '#' + id
+      if (nowPanelJumpInfo.value[sourceInfo]) {
+        jumpName = id
+        break
+      }
+    }
+  }
   let quotaList = state.pointParam.data.quotaList
   if (curView.type === 'bar-range') {
     quotaList = state.pointParam.data.dimensionList
@@ -276,7 +299,7 @@ const trackClick = trackAction => {
   }
   const jumpParam = {
     option: 'jump',
-    name: checkName,
+    name: jumpName,
     viewId: view.value.id,
     dimensionList: state.pointParam.data.dimensionList,
     quotaList: quotaList

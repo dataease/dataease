@@ -1380,6 +1380,11 @@ const groupAreaClickChange = async () => {
     groupAreaCom.style.top = areaData.value.style.top
     groupAreaCom.style.width = areaData.value.style.width
     groupAreaCom.style.height = areaData.value.style.height
+    dvMainStore.setClickComponentStatus(true)
+    dvMainStore.setCurComponent({
+      component: groupAreaCom,
+      index: dvMainStore.componentData.length - 1
+    })
   } else if (groupAreaCom) {
     groupAreaHis.forEach(ele => {
       dvMainStore.deleteComponentById(ele.id)

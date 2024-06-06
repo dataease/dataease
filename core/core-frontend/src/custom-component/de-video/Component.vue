@@ -1,7 +1,7 @@
 <template>
   <el-row ref="mainPlayer">
     <div v-if="element.videoLinks[element.videoLinks.videoType].src" class="player">
-      <video-play v-bind="playerOptions" />
+      <VideoPlayer :src="playerOptions.src" :options="playerOptions" />
     </div>
     <div v-else class="info-class">
       <span>{{ t('visualization.video_add_tips') }}</span>
@@ -10,8 +10,8 @@
 </template>
 
 <script setup lang="ts">
-import { videoPlay } from 'vue3-video-play/lib/index' // 引入组件
-import 'vue3-video-play/dist/style.css' // 引入css
+import { VideoPlayer } from '@videojs-player/vue'
+import 'video.js/dist/video-js.css'
 import { computed, nextTick, reactive, toRefs, watch, onMounted, ref } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'

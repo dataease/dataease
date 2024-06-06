@@ -1,7 +1,6 @@
 package io.dataease.dataset.manage;
 
 import io.dataease.api.chart.dto.ChartExtFilterDTO;
-import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.chart.request.ChartExtRequest;
@@ -204,7 +203,7 @@ public class DatasetDataManage {
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
         Field2SQLObj.field2sqlObj(sqlMeta, fields, fields, crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
-        Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
+        Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), fields, crossDs, dsMap);
         String querySQL;
         if (start == null || count == null) {
             querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, false);
@@ -425,13 +424,9 @@ public class DatasetDataManage {
             }
             List<DatasetTableFieldDTO> allFields = new ArrayList<>();
             // 根据图表计算字段，获取数据集
-            Long datasetGroupId;
-            if (field.getDatasetGroupId() == null && field.getChartId() != null) {
-                ChartViewDTO chart = chartViewManege.getChart(field.getChartId());
-                datasetGroupId = chart.getTableId();
+            Long datasetGroupId = field.getDatasetGroupId();
+            if (field.getChartId() != null) {
                 allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
-            } else {
-                datasetGroupId = field.getDatasetGroupId();
             }
             DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
 
@@ -471,9 +466,9 @@ public class DatasetDataManage {
                 rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
             }
 
-            Field2SQLObj.field2sqlObj(sqlMeta, fields, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
-            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
-            Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
+            Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap);
+            WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap);
+            Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap);
             String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
             querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
             logger.info("calcite data enum sql: " + querySQL);
@@ -539,20 +534,18 @@ public class DatasetDataManage {
             }
         }
 
+        List<DatasetTableFieldDTO> allFields = new ArrayList<>();
+
         for (Long id : ids) {
             DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);
             if (field == null) {
                 DEException.throwException(Translator.get("i18n_no_field"));
             }
-            List<DatasetTableFieldDTO> allFields = new ArrayList<>();
+
             // 根据图表计算字段，获取数据集
-            Long datasetGroupId;
-            if (field.getDatasetGroupId() == null && field.getChartId() != null) {
-                ChartViewDTO chart = chartViewManege.getChart(field.getChartId());
-                datasetGroupId = chart.getTableId();
+            Long datasetGroupId = field.getDatasetGroupId();
+            if (field.getChartId() != null) {
                 allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
-            } else {
-                datasetGroupId = field.getDatasetGroupId();
             }
             datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
 
@@ -687,10 +680,10 @@ public class DatasetDataManage {
             sortDistinct = false;
         }
 
-        Field2SQLObj.field2sqlObj(sqlMeta, fields, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
-        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, datasetGroupInfoDTO.getAllFields(), crossDs, dsMap);
-        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, fields, crossDs, dsMap);
-        Order2SQLObj.getOrders(sqlMeta, fields, datasetGroupInfoDTO.getSortFields(), crossDs, dsMap);
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap);
+        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, allFields, crossDs, dsMap);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap);
+        Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap);
         String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1, 0, 1000);
         querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("calcite data enum sql: " + querySQL);

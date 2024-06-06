@@ -22,7 +22,7 @@ export default {
       }
     ]
     function isLoginStatus() {
-      return wsCache.get('user.token')
+      return wsCache.get('user.token') && wsCache.get('user.uid')
     }
 
     function connection() {
