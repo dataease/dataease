@@ -101,6 +101,7 @@ onMounted(() => {
         :themes="themes"
         type="left"
         :chart-type="chart.type"
+        :layout="chart.customAttr.basicStyle.layout"
         @on-change-y-axis-form="changeAxisStyle"
       />
     </el-tab-pane>
@@ -120,6 +121,7 @@ onMounted(() => {
         :themes="themes"
         type="right"
         :chart-type="chart.type"
+        :layout="chart.customAttr.basicStyle.layout"
         @on-change-y-axis-form="changeSubAxisStyle"
       />
     </el-tab-pane>

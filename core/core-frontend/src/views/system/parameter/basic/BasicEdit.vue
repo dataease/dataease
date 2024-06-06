@@ -125,6 +125,15 @@ const edit = (list, orgOptions, roleOptions) => {
         }
       ]
     }
+    if (pkey === 'basic.exportFileLiveTime') {
+      rule[pkey.split('.')[1]] = [
+        {
+          required: true,
+          message: t('common.require'),
+          trigger: ['blur', 'change']
+        }
+      ]
+    }
     item['label'] = `setting_${pkey}`
     item['pkey'] = pkey.split('.')[1]
     let pval = item.pval
@@ -300,6 +309,19 @@ defineExpose({
               :value="item.value"
             />
           </el-select>
+        </div>
+        <div v-else-if="item.pkey === 'exportFileLiveTime'">
+          <el-input-number
+            v-model="state.form[item.pkey]"
+            autocomplete="off"
+            step-strictly
+            class="text-left edit-all-line"
+            :min="1"
+            :max="4000"
+            :placeholder="t('common.inputText')"
+            controls-position="right"
+            type="number"
+          />
         </div>
         <v-else />
       </el-form-item>

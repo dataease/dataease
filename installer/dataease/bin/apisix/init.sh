@@ -138,6 +138,7 @@ curl http://127.0.0.1:9180/apisix/admin/routes -X POST -H "X-API-KEY: $DE_APISIX
     ]
   ],
   "upstream_id": "1",
+  "enable_websocket": true,
   "status": 1
 }'
 

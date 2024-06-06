@@ -325,6 +325,18 @@ export function getStyle(chart: Chart): Style {
             p[n.fieldId] = n
             return p
           }, {}) || {}
+        // 下钻字段使用入口字段的宽度
+        if (chart.drill) {
+          const { xAxis } = parseJson(chart)
+          const curDrillField = chart.drillFields[chart.drillFilters.length]
+          const drillEnterFieldIndex = xAxis.findIndex(
+            item => item.id === chart.drillFilters[0].fieldId
+          )
+          const drillEnterField = xAxis[drillEnterFieldIndex]
+          fieldMap[curDrillField.dataeaseName] = {
+            width: fieldMap[drillEnterField.dataeaseName]?.width
+          }
+        }
         style.colCfg.width = node => {
           const width = node.spreadsheet.container.cfg.el.offsetWidth
           if (!basicStyle.tableFieldWidth?.length) {

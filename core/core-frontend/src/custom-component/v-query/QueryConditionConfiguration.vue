@@ -501,7 +501,6 @@ const validate = () => {
       const isMultiple = +ele.displayType === 7 || ele.multiple
       ele.selectValue = isMultiple ? [] : undefined
       ele.defaultValue = isMultiple ? [] : undefined
-      return false
     }
 
     if (ele.displayType === '1') {
@@ -587,7 +586,7 @@ const validate = () => {
       return false
     }
 
-    if (ele.optionValueSource === 2 && !ele.valueSource?.length) {
+    if (ele.optionValueSource === 2 && !ele.valueSource?.filter(ele => !!ele).length) {
       ElMessage.error('手工输入-选项值不能为空')
       return true
     }
@@ -687,6 +686,19 @@ const setConditionOut = () => {
   init(conditions.value[conditions.value.length - 1].id)
 }
 
+const setActiveSelectTab = (arr, id) => {
+  let activelist = 'dimensionList'
+  arr.some((ele, index) => {
+    if ((ele || []).some(itx => itx.id === id)) {
+      activelist = ['dimensionList', 'quotaList', 'parameterList'][index]
+      return true
+    }
+    return false
+  })
+
+  return activelist
+}
+
 const init = (queryId: string) => {
   if (!datasetTree.value.length) {
     initDataset()
@@ -725,7 +737,12 @@ const init = (queryId: string) => {
       fields.value = datasetFieldList.value
         .map(ele => {
           if (!datasetMap[ele.tableId]) return null
-          return { ...datasetMap[ele.tableId], componentId: ele.id }
+          const activeCom = datasetMap[ele.tableId].fields || {}
+          const activelist = setActiveSelectTab(
+            [activeCom.dimensionList, activeCom.quotaList, activeCom.parameterList],
+            curComponent.value.checkedFieldsMap[ele.id]
+          )
+          return { ...datasetMap[ele.tableId], componentId: ele.id, activelist }
         })
         .filter(ele => !!ele)
     })
@@ -813,6 +830,13 @@ const handleCondition = item => {
     idMap.includes(ele)
   )
   if (!!fields.value?.length) {
+    fields.value.forEach(ele => {
+      const activeCom = ele.fields
+      ele.activelist = setActiveSelectTab(
+        [activeCom.dimensionList, activeCom.quotaList, activeCom.parameterList],
+        curComponent.value.checkedFieldsMap[ele.componentId]
+      )
+    })
     handleCheckedFieldsChange(curComponent.value.checkedFields)
   }
   multipleChange(curComponent.value.multiple)
@@ -1337,7 +1361,7 @@ defineExpose({
                   value="1"
                 />
                 <el-option
-                  :disabled="!['1', '7'].includes(curComponent.displayType)"
+                  :disabled="!['1', '7'].includes(curComponent.displayType) || isTimeParameter"
                   label="时间范围"
                   value="7"
                 />
@@ -1544,11 +1568,7 @@ defineExpose({
                       </el-icon>
                     </template>
                     <el-option
-                      v-for="ele in curComponent.dataset.fields.filter(
-                        ele =>
-                          ele.deType === +curComponent.displayType ||
-                          ([3, 4].includes(ele.deType) && +curComponent.displayType === 2)
-                      )"
+                      v-for="ele in curComponent.dataset.fields"
                       :key="ele.id"
                       :label="ele.name"
                       :value="ele.id"
@@ -1603,6 +1623,13 @@ defineExpose({
                       <div :key="index" v-for="(_, index) in valueSource" class="select-item">
                         <el-input
                           maxlength="20"
+                          v-if="curComponent.displayType === '2'"
+                          @blur="weightlessness"
+                          v-model.number="valueSource[index]"
+                        ></el-input>
+                        <el-input
+                          maxlength="20"
+                          v-else
                           @blur="weightlessness"
                           v-model="valueSource[index]"
                         ></el-input>

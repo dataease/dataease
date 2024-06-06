@@ -52,3 +52,6 @@ CREATE TABLE `xpack_platform_token`
     PRIMARY KEY (`id`)
 );
 
+
+
+UPDATE `QRTZ_JOB_DETAILS` SET `JOB_CLASS_NAME` = 'io.dataease.job.schedule.CheckDsStatusJob' WHERE (`SCHED_NAME` = 'deSyncJob') and (`JOB_NAME` = 'Datasource') and (`JOB_GROUP` = 'check_status');

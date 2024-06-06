@@ -1,5 +1,6 @@
 import request from '@/config/axios'
 import { useCache } from '@/hooks/web/useCache'
+import { isInIframe } from '@/utils/utils'
 const { wsCache } = useCache()
 export interface ProxyInfo {
   resourceId: string
@@ -7,6 +8,7 @@ export interface ProxyInfo {
   exp?: boolean
   pwdValid?: boolean
   type: string
+  inIframeError: boolean
 }
 class ShareProxy {
   uuid: string
@@ -28,7 +30,8 @@ class ShareProxy {
     }
     const uuid = this.uuid
     const url = '/share/proxyInfo'
-    const param = { uuid, ciphertext: null }
+    const inIframe = isInIframe()
+    const param = { uuid, ciphertext: null, inIframe }
     const ciphertext = wsCache.get(`link-${uuid}`)
     if (ciphertext) {
       param['ciphertext'] = ciphertext
