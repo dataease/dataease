@@ -117,8 +117,12 @@ const handleLogin = () => {
           if (!xpackLoadFail.value && xpackInvalidPwd.value?.invokeMethod) {
             const param = {
               methodName: 'init',
-              args: () => {
-                duringLogin.value = false
+              args: r => {
+                duringLogin.value = !!r
+                if (r) {
+                  const queryRedirectPath = getCurLocation()
+                  router.push({ path: queryRedirectPath })
+                }
               }
             }
             xpackInvalidPwd?.value.invokeMethod(param)
