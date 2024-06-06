@@ -57,4 +57,14 @@ public class ChartViewServer implements ChartViewApi {
     public List<ViewSelectorVO> viewOption(Long resourceId) {
         return chartViewManege.viewOption(resourceId);
     }
+
+    @Override
+    public void copyField(Long id, Long chartId) {
+        chartViewManege.copyField(id, chartId);
+    }
+
+    @Override
+    public void deleteField(Long id) {
+        chartViewManege.deleteField(id);
+    }
 }

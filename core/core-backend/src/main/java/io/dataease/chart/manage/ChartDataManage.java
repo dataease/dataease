@@ -175,7 +175,7 @@ public class ChartDataManage {
         FilterTreeObj fieldCustomFilter = view.getCustomFilter();
         List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
 
-        DatasetGroupInfoDTO table = datasetGroupManage.get(view.getTableId(), null);
+        DatasetGroupInfoDTO table = datasetGroupManage.getDatasetGroupInfoDTO(view.getTableId(), null);
         if (table == null) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
         }

@@ -169,7 +169,9 @@ import { nextTick, reactive, watch, onMounted, ref, computed } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { ElMessage } from 'element-plus-secondary'
 import { useCache } from '@/hooks/web/useCache'
+import router from '@/router'
 import MarketPreviewV2 from '@/views/template-market/component/MarketPreviewV2.vue'
+import { parseUrl } from '@/utils/ParseUrl'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import CategoryTemplateV2 from '@/views/template-market/component/CategoryTemplateV2.vue'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
@@ -192,6 +194,7 @@ const close = () => {
 
 const title = computed(() => (state.curPosition === 'branch' ? '模板中心' : '使用模板新建'))
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isIframe = computed(() => appStore.getIsIframe)
 const state = reactive({
   initReady: true,
   curPosition: 'branch',
@@ -283,8 +286,8 @@ const state = reactive({
 const createAuth = computed(() => {
   const authMap = interactiveStore.getData
   return {
-    PANEL: authMap['0'].menuAuth && authMap['0'].anyManage,
-    SCREEN: authMap['1'].menuAuth && authMap['1'].anyManage
+    PANEL: authMap['0']?.menuAuth && authMap['0']?.anyManage,
+    SCREEN: authMap['1']?.menuAuth && authMap['1']?.anyManage
   }
 })
 
@@ -452,6 +455,11 @@ const apply = template => {
         ? 'VisualizationEditor'
         : 'DashboardEditor'
     )
+    return
+  }
+
+  if (isIframe.value) {
+    router.push(parseUrl(state.pid ? baseUrl + `&pid=${state.pid}` : baseUrl))
     return
   }
   if (state.pid) {

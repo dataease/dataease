@@ -117,9 +117,9 @@ public class CalciteProvider {
         tableDesc.setDatasourceId(datasourceRequest.getDatasource().getId());
         tableDesc.setType("db");
         tableDesc.setTableName(resultSet.getString(1));
-        if(resultSet.getMetaData().getColumnCount() > 1){
+        if (resultSet.getMetaData().getColumnCount() > 1) {
             tableDesc.setName(resultSet.getString(2));
-        }else {
+        } else {
             tableDesc.setName(resultSet.getString(1));
         }
         return tableDesc;
@@ -316,10 +316,104 @@ public class CalciteProvider {
         return list;
     }
 
+    public void hidePW(DatasourceDTO datasourceDTO) {
+        DatasourceConfiguration configuration = null;
+        DatasourceType datasourceType = DatasourceType.valueOf(datasourceDTO.getType());
+        switch (datasourceType) {
+            case mysql:
+            case mongo:
+            case mariadb:
+            case TiDB:
+            case StarRocks:
+            case doris:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Mysql.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split("\\?")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
+            case pg:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Pg.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split("\\?")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
+            case redshift:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Redshift.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split("\\?")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
+            case ck:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), CK.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split("\\?")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
+            case impala:
+                configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Impala.class);
+                if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
+                    if (configuration.getJdbcUrl().contains("password=")) {
+                        String[] params = configuration.getJdbcUrl().split(";")[1].split("&");
+                        String pd = "";
+                        for (int i = 0; i < params.length; i++) {
+                            if (params[i].contains("password=")) {
+                                pd = params[i];
+                            }
+                        }
+                        configuration.setJdbcUrl(configuration.getJdbcUrl().replace(pd, "password=******"));
+                        datasourceDTO.setConfiguration(JsonUtil.toJSONString(configuration).toString());
+                    }
+                }
+                break;
+            default:
+                break;
+        }
+    }
+
     private String getTableFiledSql(DatasourceRequest datasourceRequest) {
         String sql = "";
         DatasourceConfiguration configuration = null;
-        String database="";
+        String database = "";
         DatasourceType datasourceType = DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
@@ -440,7 +534,8 @@ public class CalciteProvider {
         return sql;
     }
 
-    private TableField getTableFieldDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
+    private TableField getTableFieldDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws
+            SQLException {
         TableField tableField = new TableField();
         tableField.setOriginName(resultSet.getString(1));
         tableField.setType(resultSet.getString(2).toUpperCase());
@@ -809,7 +904,7 @@ public class CalciteProvider {
                         "                               AND ep.class = 1  \n" +
                         "                               AND ep.name = 'MS_Description'\n" +
                         "where sc.name ='DS_SCHEMA'"
-                        .replace("DS_SCHEMA", configuration.getSchema()));
+                                .replace("DS_SCHEMA", configuration.getSchema()));
                 tableSqls.add("SELECT   \n" +
                         "    t.name AS TableName,  \n" +
                         "    ep.value AS TableDescription  \n" +

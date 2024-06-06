@@ -8,7 +8,6 @@ import { i18n } from '@/plugins/vue-i18n'
 import * as Vue from 'vue'
 import axios from 'axios'
 import * as Pinia from 'pinia'
-import * as vueI18n from 'vue-i18n'
 import * as vueRouter from 'vue-router'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
@@ -82,7 +81,11 @@ const storeCacheProxy = byteArray => {
 }
 const pluginProxy = ref(null)
 const invokeMethod = param => {
-  pluginProxy.value['invokeMethod'](param)
+  if (pluginProxy.value['invokeMethod']) {
+    pluginProxy.value['invokeMethod'](param)
+  } else {
+    pluginProxy.value[param.methodName](param.args)
+  }
 }
 
 onMounted(async () => {
@@ -96,17 +99,16 @@ onMounted(async () => {
     distributed = wsCache.get(key)
   }
   if (distributed) {
-    window['Vue'] = Vue
-    window['Axios'] = axios
-    window['Pinia'] = Pinia
-    window['vueI18n'] = vueI18n
-    window['vueRouter'] = vueRouter
-    window['MittAll'] = useEmitt().emitter.all
-    window['i18n'] = i18n
     if (window['DEXPack']) {
       const xpack = await window['DEXPack'].mapping[attrs.jsname]
       plugin.value = xpack.default
     } else {
+      window['Vue'] = Vue
+      window['Axios'] = axios
+      window['Pinia'] = Pinia
+      window['vueRouter'] = vueRouter
+      window['MittAll'] = useEmitt().emitter.all
+      window['I18n'] = i18n
       loadDistributed().then(async res => {
         new Function(res.data)()
         const xpack = await window['DEXPack'].mapping[attrs.jsname]
@@ -125,7 +127,13 @@ defineExpose({
 </script>
 
 <template>
-  <component ref="pluginProxy" :is="plugin" v-loading="loading" v-bind="attrs"></component>
+  <component
+    :key="attrs.jsname"
+    ref="pluginProxy"
+    :is="plugin"
+    v-loading="loading"
+    v-bind="attrs"
+  ></component>
 </template>
 
 <style lang="less" scoped></style>

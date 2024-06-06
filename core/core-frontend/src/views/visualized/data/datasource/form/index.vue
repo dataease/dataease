@@ -73,8 +73,8 @@ const selectDsType = (type: string) => {
   currentDsType.value = type
   activeStep.value = 1
   activeApiStep.value = 1
-  detail.value.initForm(type)
   nextTick(() => {
+    detail.value.initForm(type)
     if (!dsTree.value) return
     currentTypeList.value
       .map(ele => ele.dbList)
@@ -493,7 +493,9 @@ const init = (nodeInfo: Form | Param, id?: string, res?: object) => {
           excel.value.appendReplaceExcel(res)
         })
       }
-      detail.value.clearForm()
+      nextTick(() => {
+        detail.value.clearForm()
+      })
     })
   }
 }
@@ -653,7 +655,7 @@ defineExpose({
             :form="form"
             :editDs="editDs"
             :active-step="activeApiStep"
-            v-show="activeStep !== 0 && currentDsType && currentDsType !== 'Excel'"
+            v-if="activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible"
           ></editor-detail>
           <template v-if="activeStep !== 0 && currentDsType == 'Excel'">
             <excel-detail :editDs="editDs" ref="excel" :param="form2"></excel-detail>

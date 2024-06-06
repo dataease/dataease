@@ -458,7 +458,7 @@ defineExpose({
         </div>
         <el-form-item :label="$t('datasource.query_timeout')" prop="apiQueryTimeout">
           <el-input v-model="apiItem.apiQueryTimeout" autocomplete="off" type="number" :min="0">
-            <template v-slot:append>{{ $t('panel.second') }}</template>
+            <template v-slot:append>{{ $t('chart.second') }}</template>
           </el-input>
         </el-form-item>
         <div class="title-form_primary request-info">

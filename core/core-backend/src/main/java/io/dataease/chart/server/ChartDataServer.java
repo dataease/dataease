@@ -4,6 +4,7 @@ import io.dataease.api.chart.ChartDataApi;
 import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
+import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.constant.AuthConstant;
 import io.dataease.constant.CommonConstants;
@@ -69,7 +70,12 @@ public class ChartDataServer implements ChartDataApi {
         try {
             ChartViewDTO viewDTO = request.getViewInfo();
             viewDTO.setIsExcelExport(true);
-            viewDTO.setResultCount(limit);
+            if(ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(viewDTO.getResultMode())){
+                Integer limitCount = viewDTO.getResultCount();
+                viewDTO.setResultCount(limitCount>limit?limit:limitCount);
+            }else{
+                viewDTO.setResultCount(limit);
+            }
             ChartViewDTO chartViewInfo = getData(viewDTO);
             List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
             request.setDetails(tableRow);

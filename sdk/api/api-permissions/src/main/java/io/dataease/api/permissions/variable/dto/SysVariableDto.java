@@ -10,7 +10,9 @@ public class SysVariableDto {
     private Long id;
     private String type;
     private String name;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long min;
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long max;
     private String startTime;
     private String endTime;

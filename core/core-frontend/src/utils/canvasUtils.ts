@@ -152,7 +152,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   })
 }
 
-export function initCanvasData(dvId, busiFlag, callBack) {
+export async function initCanvasData(dvId, busiFlag, callBack) {
   initCanvasDataPrepare(
     dvId,
     busiFlag,
@@ -172,6 +172,48 @@ export function initCanvasData(dvId, busiFlag, callBack) {
       callBack({ canvasDataResult, canvasStyleResult, dvInfo, canvasViewInfoPreview })
     }
   )
+}
+
+export async function backCanvasData(dvId, busiFlag, callBack) {
+  initCanvasDataPrepare(dvId, busiFlag, function ({ canvasDataResult, canvasStyleResult }) {
+    const componentDataCopy = canvasDataResult.filter(ele => !!ele.inMobile)
+    const componentDataId = componentDataCopy.map(ele => ele.id)
+    componentData.value.forEach(ele => {
+      ele.inMobile = componentDataId.includes(ele.id)
+      if (ele.inMobile) {
+        const { mx, my, mSizeX, mSizeY } = componentDataCopy.find(itx => itx.id === ele.id)
+        ele.mx = mx
+        ele.my = my
+        ele.mSizeX = mSizeX
+        ele.mSizeY = mSizeY
+        if (ele.component === 'DeTabs') {
+          ele.propValue.forEach(tabItem => {
+            tabItem.componentData.forEach(tabComponent => {
+              tabComponent.mx = tabComponent.mx
+              tabComponent.my = tabComponent.my
+              tabComponent.mSizeX = tabComponent.mSizeX
+              tabComponent.mSizeY = tabComponent.mSizeY
+            })
+          })
+        }
+      }
+    })
+    dvMainStore.setComponentData(componentData.value)
+    const canvasStyleDataCopy = cloneDeep(canvasStyleData.value)
+    if (!canvasStyleDataCopy.mobileSetting) {
+      canvasStyleDataCopy.mobileSetting = {
+        backgroundColorSelect: false,
+        background: '',
+        color: '#ffffff',
+        backgroundImageEnable: false,
+        customSetting: false
+      }
+    } else {
+      canvasStyleDataCopy.mobileSetting = canvasStyleResult.mobileSetting
+    }
+    dvMainStore.setCanvasStyle(canvasStyleDataCopy)
+    callBack()
+  })
 }
 
 export function initCanvasDataMobile(dvId, busiFlag, callBack) {
