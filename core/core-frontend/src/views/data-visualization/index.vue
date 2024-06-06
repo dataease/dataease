@@ -79,7 +79,7 @@ const dvLayout = ref(null)
 const canvasCenterRef = ref(null)
 const state = reactive({
   datasetTree: [],
-  scaleHistory: 100,
+  scaleHistory: null,
   canvasId: 'canvas-main',
   canvasInitStatus: false,
   sourcePid: null,
@@ -204,10 +204,10 @@ const doUseCache = flag => {
   }
 }
 
-const initLocalCanvasData = () => {
+const initLocalCanvasData = async () => {
   const { opt, sourcePid, resourceId } = state
   const busiFlg = opt === 'copy' ? 'dataV-copy' : 'dataV'
-  initCanvasData(resourceId, busiFlg, function () {
+  await initCanvasData(resourceId, busiFlg, function () {
     state.canvasInitStatus = true
     // afterInit
     nextTick(() => {
@@ -238,7 +238,9 @@ watch(
   () => editMode.value,
   val => {
     if (val === 'edit') {
-      canvasStyleData.value.scale = state.scaleHistory
+      if (state.scaleHistory) {
+        canvasStyleData.value.scale = state.scaleHistory
+      }
       initScroll()
     } else {
       previewScaleChange()
@@ -288,7 +290,7 @@ onMounted(async () => {
     if (canvasCache) {
       canvasCacheOutRef.value?.dialogInit({ canvasType: 'dataV', resourceId: dvId })
     } else {
-      initLocalCanvasData()
+      await initLocalCanvasData()
     }
   } else if (opt && opt === 'create') {
     state.canvasInitStatus = false
@@ -303,7 +305,7 @@ onMounted(async () => {
     }
     let deTemplateData
     if (createType === 'template') {
-      const templateParamsApply = JSON.parse(decodeURIComponent(Base64.decode(templateParams + '')))
+      const templateParamsApply = JSON.parse(Base64.decode(decodeURIComponent(templateParams + '')))
       await decompressionPre(templateParamsApply, result => {
         deTemplateData = result
       })

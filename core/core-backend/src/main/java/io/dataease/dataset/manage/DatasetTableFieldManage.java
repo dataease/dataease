@@ -156,6 +156,7 @@ public class DatasetTableFieldManage {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
         wrapper.eq("checked", true);
+        wrapper.isNull("chart_id");
         return transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
     }
 

@@ -37,7 +37,7 @@ const handleMouseDown = e => {
     return
   }
   const index = areaData.value.components.findIndex(component => component === props.element)
-  if (index != -1) {
+  if (index != -1 && props.element.component !== 'GroupArea') {
     areaData.value.components.splice(index, 1)
     e.stopPropagation()
   }

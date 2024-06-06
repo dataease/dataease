@@ -16,8 +16,8 @@ export const STREAMMEDIALINKS = {
     isLive: false,
     cors: true, // 允许跨域
     loop: true,
-    autoplay: false
-    // url: null // 网络动画视频
+    autoplay: false,
+    url: null // 网络动画视频
   }
 }
 
@@ -26,21 +26,20 @@ export const VIDEO_LINKS_DE2 = {
   videoType: 'web',
   poster: null,
   web: {
-    width: '100%', //播放器宽度
-    height: '100%', //播放器高度
-    color: '#409eff', //主题色
-    title: '', //视频名称
     src: null, //视频源
-    muted: false, //静音
-    webFullScreen: false,
-    speedRate: ['0.75', '1.0', '1.25', '1.5', '2.0'], //播放倍速
-    autoPlay: true, //自动播放
-    loop: false, //循环播放
-    mirror: false, //镜像画面
-    lightOff: false, //关灯模式
-    volume: 0.3, //默认音量大小
-    control: true, //是否显示控制
-    controlBtns: ['audioTrack', 'quality', 'volume', 'fullScreen'] //显示所有按钮,
+    autoplay: true, // 如果true,浏览器准备好时开始回放。
+    muted: true, // 默认情况下将会消除任何音频。
+    loop: true, // 导致视频一结束就重新开始。
+    preload: 'auto', // 建议浏览器在<video>加载元素后是否应该开始下载视频数据。auto浏览器选择最佳行为,立即开始加载视频（如果浏览器支持）
+    language: 'zh-CN',
+    fluid: true, // 当true时，Video.js player将拥有流体大小。换句话说，它将按比例缩放以适应其容器。
+    notSupportedMessage: '此视频暂无法播放，请稍后再试', // 允许覆盖Video.js无法播放媒体源时显示的默认信息。
+    controls: true,
+    controlBar: {
+      timeDivider: true,
+      remainingTimeDisplay: false,
+      fullscreenToggle: true // 全屏按钮
+    }
   },
   rtmp: {
     sources: [
@@ -209,7 +208,7 @@ const list = [
     name: '查询',
     label: '查询',
     propValue: '',
-    icon: 'other_text',
+    icon: 'icon_search',
     innerType: 'VQuery',
     isHang: false,
     x: 1,

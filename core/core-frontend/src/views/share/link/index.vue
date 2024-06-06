@@ -1,6 +1,7 @@
 <template>
   <div class="link-container" v-loading="loading">
-    <LinkError v-if="!loading && !linkExist" />
+    <IframeError v-if="!loading && iframeError" />
+    <LinkError v-else-if="!loading && !linkExist" />
     <Exp v-else-if="!loading && linkExp" />
     <PwdTips v-else-if="!loading && !pwdValid" />
     <PreviewCanvas
@@ -18,13 +19,21 @@ import { ProxyInfo, shareProxy } from './ShareProxy'
 import Exp from './exp.vue'
 import LinkError from './error.vue'
 import PwdTips from './pwd.vue'
+import IframeError from './IframeError.vue'
 const pcanvas = ref(null)
+const iframeError = ref(true)
 const linkExist = ref(false)
 const loading = ref(true)
 const linkExp = ref(false)
 const pwdValid = ref(false)
 onMounted(async () => {
   const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
+  if (proxyInfo?.inIframeError) {
+    loading.value = false
+    iframeError.value = true
+    return
+  }
+  iframeError.value = false
   if (!proxyInfo?.resourceId) {
     loading.value = false
     return

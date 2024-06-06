@@ -93,10 +93,13 @@ const saveCanvasWithCheck = () => {
 const saveResource = () => {
   wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   if (styleChangeTimes.value > 0) {
-    snapshotStore.resetStyleChangeTimes()
-    canvasSave(() => {
-      ElMessage.success('保存成功')
-      window.history.pushState({}, '', `#/dvCanvas?dvId=${dvInfo.value.id}`)
+    eventBus.emit('hideArea-canvas-main')
+    nextTick(() => {
+      snapshotStore.resetStyleChangeTimes()
+      canvasSave(() => {
+        ElMessage.success('保存成功')
+        window.history.pushState({}, '', `#/dvCanvas?dvId=${dvInfo.value.id}`)
+      })
     })
   }
 }

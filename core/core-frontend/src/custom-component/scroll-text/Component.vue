@@ -81,14 +81,14 @@ const clearStyle = e => {
 }
 
 const handleBlur = e => {
-  element.value.propValue = e.target.innerHTML || '&nbsp;'
+  element.value.propValue = e.target.innerHTML || ''
   const html = e.target.innerHTML
   if (html !== '') {
     element.value.propValue = e.target.innerHTML
   } else {
     element.value.propValue = ''
     nextTick(function () {
-      element.value.propValue = '&nbsp;'
+      element.value.propValue = ''
     })
   }
   canEdit.value = false

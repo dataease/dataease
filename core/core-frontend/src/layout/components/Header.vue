@@ -23,7 +23,8 @@ import AiTips from '@/layout/components/AiTips.vue'
 const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
 const route = useRoute()
-
+import { useCache } from '@/hooks/web/useCache'
+const { wsCache } = useCache('localStorage')
 const aiBaseUrl = ref(null)
 const handleIconClick = () => {
   if (route.path === '/workbranch/index') return
@@ -69,7 +70,7 @@ const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const navigate = computed(() => appearanceStore.getNavigate)
 
 const initAiBase = async () => {
-  const aiTipsCheck = localStorage.getItem('DE-AI-TIPS-CHECK')
+  const aiTipsCheck = wsCache.get('DE-AI-TIPS-CHECK')
   if (aiTipsCheck === 'CHECKED') {
     showOverlay.value = false
   } else {
@@ -84,7 +85,7 @@ const initAiBase = async () => {
 }
 
 const aiTipsConfirm = () => {
-  localStorage.setItem('DE-AI-TIPS-CHECK', 'CHECKED')
+  wsCache.set('DE-AI-TIPS-CHECK', 'CHECKED')
   showOverlay.value = false
 }
 onMounted(() => {

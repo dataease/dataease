@@ -14,12 +14,13 @@ import io.dataease.constant.AuthConstant;
 import io.dataease.constant.BusiResourceEnum;
 import io.dataease.exception.DEException;
 import io.dataease.license.config.XpackInteract;
-import io.dataease.share.dao.auto.mapper.XpackShareMapper;
-import io.dataease.utils.*;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.share.dao.auto.entity.XpackShare;
+import io.dataease.share.dao.auto.mapper.XpackShareMapper;
 import io.dataease.share.dao.ext.mapper.XpackShareExtMapper;
 import io.dataease.share.dao.ext.po.XpackSharePO;
 import io.dataease.share.util.LinkTokenUtil;
+import io.dataease.utils.*;
 import jakarta.annotation.Resource;
 import jakarta.servlet.http.HttpServletResponse;
 import org.apache.commons.collections4.CollectionUtils;
@@ -125,7 +126,6 @@ public class XpackShareManage {
     }
 
 
-
     public IPage<XpackSharePO> querySharePage(int goPage, int pageSize, VisualizationWorkbranchQueryRequest request) {
         Long uid = AuthUtils.getUser().getUserId();
         QueryWrapper<Object> queryWrapper = new QueryWrapper<>();
@@ -174,7 +174,7 @@ public class XpackShareManage {
         return pos.stream().map(po ->
                 new XpackShareGridVO(
                         po.getShareId(), po.getResourceId(), po.getName(), po.getCreator().toString(),
-                        po.getTime(), po.getExp(), 9,po.getExtFlag(),po.getType())).toList();
+                        po.getTime(), po.getExp(), 9, po.getExtFlag(), po.getType())).toList();
     }
 
     private XpackShareManage proxy() {
@@ -182,6 +182,10 @@ public class XpackShareManage {
     }
 
     public XpackShareProxyVO proxyInfo(XpackShareProxyRequest request) {
+        boolean inIframeError = request.isInIframe() && !LicenseUtil.licenseValid();
+        if (inIframeError) {
+            return new XpackShareProxyVO();
+        }
         QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("uuid", request.getUuid());
         XpackShare xpackShare = xpackShareMapper.selectOne(queryWrapper);
@@ -192,7 +196,7 @@ public class XpackShareManage {
         response.addHeader(AuthConstant.LINK_TOKEN_KEY, linkToken);
         Integer type = xpackShare.getType();
         String typeText = (ObjectUtils.isNotEmpty(type) && type == 1) ? "dashboard" : "dataV";
-        return new XpackShareProxyVO(xpackShare.getResourceId(), xpackShare.getCreator(), linkExp(xpackShare), pwdValid(xpackShare, request.getCiphertext()), typeText);
+        return new XpackShareProxyVO(xpackShare.getResourceId(), xpackShare.getCreator(), linkExp(xpackShare), pwdValid(xpackShare, request.getCiphertext()), typeText, inIframeError);
     }
 
     private boolean linkExp(XpackShare xpackShare) {

@@ -1327,10 +1327,10 @@ const getDsIconName = data => {
             </el-icon>
             <span class="label">自定义SQL</span>
           </div>
-          <template v-for="ele in state.tableData" :key="ele.name">
+          <template v-for="ele in state.tableData" :key="ele.tableName">
             <div
               class="list-item_primary"
-              :title="ele.name"
+              :title="ele.tableName"
               @dragstart="$event => dragstart($event, ele)"
               @dragend="maskShow = false"
               :draggable="true"

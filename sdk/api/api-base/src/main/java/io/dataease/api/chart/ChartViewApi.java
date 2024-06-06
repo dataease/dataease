@@ -43,4 +43,12 @@ public interface ChartViewApi {
     @Operation(summary = "查询仪表板下视图项")
     @GetMapping("/viewOption/{resourceId}")
     List<ViewSelectorVO> viewOption(@PathVariable("resourceId") Long resourceId);
+
+    @Operation(summary = "视图复制字段")
+    @PostMapping("copyField/{id}/{chartId}")
+    void copyField(@PathVariable Long id, @PathVariable Long chartId);
+
+    @Operation(summary = "视图删除字段")
+    @PostMapping("deleteField/{id}")
+    void deleteField(@PathVariable Long id);
 }

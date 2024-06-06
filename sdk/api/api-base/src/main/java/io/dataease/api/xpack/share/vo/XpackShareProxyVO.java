@@ -31,4 +31,5 @@ public class XpackShareProxyVO implements Serializable {
     private boolean pwdValid;
     @Schema(description = "类型")
     private String type;
+    private boolean inIframeError = true;
 }

@@ -86,24 +86,25 @@ export class Area extends G2PlotChartView<AreaOptions, G2Area> {
 
   drawChart(drawOptions: G2PlotDrawOptions<G2Area>): G2Area {
     const { chart, container, action } = drawOptions
-    if (chart?.data) {
-      // data
-      const data = cloneDeep(chart.data.data)
-
-      const initOptions: AreaOptions = {
-        ...this.baseOptions,
-        data,
-        appendPadding: getPadding(chart)
-      }
-      // options
-      const options = this.setupOptions(chart, initOptions)
-      // 开始渲染
-      const newChart = new G2Area(container, options)
-
-      newChart.on('point:click', action)
-
-      return newChart
+    if (!chart.data.data?.length) {
+      return
     }
+    // data
+    const data = cloneDeep(chart.data.data)
+
+    const initOptions: AreaOptions = {
+      ...this.baseOptions,
+      data,
+      appendPadding: getPadding(chart)
+    }
+    // options
+    const options = this.setupOptions(chart, initOptions)
+    // 开始渲染
+    const newChart = new G2Area(container, options)
+
+    newChart.on('point:click', action)
+
+    return newChart
   }
 
   protected configLabel(chart: Chart, options: AreaOptions): AreaOptions {

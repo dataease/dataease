@@ -21,7 +21,7 @@
 <script lang="ts" setup>
 import flvjs from 'flv.js'
 import '@/style/custom-theme.css'
-import { onMounted, reactive, toRefs, getCurrentInstance } from 'vue'
+import { onMounted, reactive, toRefs, getCurrentInstance, nextTick, onBeforeUnmount } from 'vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
@@ -76,25 +76,29 @@ onMounted(() => {
 })
 
 const initOption = () => {
-  if (flvjs.isSupported() && state.pOption.url) {
-    destroyPlayer()
-    const video = currentInstance.proxy.$refs['player-' + element.value.id]
-    if (video) {
-      try {
-        state.flvPlayer = flvjs.createPlayer(state.pOption, {
-          enableWorker: false, // 不启用分离线程
-          enableStashBuffer: false, // 关闭IO隐藏缓冲区
-          isLive: state.pOption.isLive,
-          lazyLoad: false
-        })
-        state.flvPlayer.attachMediaElement(video)
-        state.flvPlayer.load()
-        state.flvPlayer.play()
-      } catch (error) {
-        console.error('flvjs err ignore', error)
+  state.pOption = element.value.streamMediaLinks[element.value.streamMediaLinks.videoType]
+  delete state.pOption.segments
+  nextTick(() => {
+    if (flvjs.isSupported() && state.pOption.url) {
+      destroyPlayer()
+      const video = currentInstance.proxy.$refs['player-' + element.value.id]
+      if (video) {
+        try {
+          state.flvPlayer = flvjs.createPlayer(state.pOption, {
+            enableWorker: false, // 不启用分离线程
+            enableStashBuffer: false, // 关闭IO隐藏缓冲区
+            isLive: state.pOption.isLive,
+            lazyLoad: false
+          })
+          state.flvPlayer.attachMediaElement(video)
+          state.flvPlayer.load()
+          state.flvPlayer.play()
+        } catch (error) {
+          console.error('flvjs err ignore', error)
+        }
       }
     }
-  }
+  })
 }
 
 const destroyPlayer = () => {
@@ -105,6 +109,10 @@ const destroyPlayer = () => {
     state.flvPlayer = null
   }
 }
+
+onBeforeUnmount(() => {
+  destroyPlayer()
+})
 </script>
 
 <style lang="less" scoped>
