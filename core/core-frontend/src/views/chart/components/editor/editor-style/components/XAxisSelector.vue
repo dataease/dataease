@@ -100,6 +100,14 @@ const init = () => {
 
 const showProperty = prop => props.propertyInner?.includes(prop)
 
+const isBidirectionalBar = computed(() => {
+  return props.chart.type === 'bidirectional-bar'
+})
+
+const isHorizontalLayout = computed(() => {
+  return props.chart.customAttr.basicStyle.layout === 'horizontal'
+})
+
 onMounted(() => {
   init()
 })
@@ -124,8 +132,10 @@ onMounted(() => {
         size="small"
         @change="changeAxisStyle('position')"
       >
-        <div v-if="chart.type === 'bidirectional-bar'">
-          <el-radio :effect="props.themes" label="top">{{ t('chart.text_pos_left') }}</el-radio>
+        <div v-if="isBidirectionalBar">
+          <el-radio :effect="props.themes" label="top">{{
+            isHorizontalLayout ? t('chart.text_pos_left') : t('chart.text_pos_top')
+          }}</el-radio>
           <el-radio :effect="props.themes" label="bottom">{{
             t('chart.text_pos_center')
           }}</el-radio>
