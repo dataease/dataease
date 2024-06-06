@@ -173,6 +173,20 @@ export class Bar extends G2PlotChartView<ColumnOptions, Column> {
         color
       }
     }
+    if (basicStyle.radiusColumnBar === 'roundAngle') {
+      const columnStyle = {
+        radius: [
+          basicStyle.columnBarRightAngleRadius,
+          basicStyle.columnBarRightAngleRadius,
+          basicStyle.columnBarRightAngleRadius,
+          basicStyle.columnBarRightAngleRadius
+        ]
+      }
+      options = {
+        ...options,
+        columnStyle
+      }
+    }
     return options
   }
 

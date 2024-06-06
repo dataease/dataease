@@ -274,6 +274,23 @@ onMounted(() => {
     </div>
 
     <el-form-item
+      class="form-item"
+      v-if="showProperty('radiusColumnBar')"
+      :label="t('chart.radiusColumnBar')"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.radiusColumnBar"
+        @change="changeBasicStyle('radiusColumnBar')"
+      >
+        <el-radio label="rightAngle" :effect="themes">{{ t('chart.rightAngle') }}</el-radio>
+        <el-radio label="roundAngle" :effect="themes">{{ t('chart.roundAngle') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+
+    <el-form-item
       :label="t('chart.orient')"
       class="form-item"
       :class="'form-item-' + themes"

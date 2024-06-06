@@ -149,6 +149,14 @@ declare interface ChartBasicStyle {
    */
   barWidth: number
   /**
+   * 柱子形状：直角｜圆角
+   */
+  radiusColumnBar?: 'rightAngle' | 'roundAngle'
+  /**
+   * 圆角柱倒角
+   */
+  columnBarRightAngleRadius: number
+  /**
    * 柱间距
    */
   barGap: number

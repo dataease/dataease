@@ -1422,6 +1422,8 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   lineSymbolSize: 4,
   lineSmooth: true,
   barDefault: true,
+  radiusColumnBar: 'rightAngle',
+  columnBarRightAngleRadius: 20,
   barWidth: 40,
   barGap: 0.4,
   lineType: 'solid',

@@ -23,7 +23,8 @@ export const CHART_MIX_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'lineWidth',
     'lineSymbol',
     'lineSymbolSize',
-    'lineSmooth'
+    'lineSmooth',
+    'radiusColumnBar'
   ],
   'x-axis-selector': [
     'name',
