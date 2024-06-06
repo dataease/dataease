@@ -718,49 +718,61 @@ onMounted(() => {
       </el-col>
     </el-row>
 
-    <el-row :gutter="8">
-      <el-col :span="12" v-if="showProperty('tablePageMode')">
-        <el-form-item
-          :label="t('chart.table_page_mode')"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-select
-            :effect="themes"
-            v-model="state.basicStyleForm.tablePageMode"
-            :placeholder="t('chart.table_page_mode')"
-            @change="changeBasicStyle('tablePageMode', true)"
-          >
-            <el-option :label="t('chart.page_mode_page')" value="page" />
-            <el-option :label="t('chart.page_mode_pull')" value="pull" />
-          </el-select>
-        </el-form-item>
-      </el-col>
-      <el-col
-        :span="12"
-        v-if="showProperty('tablePageMode') && state.basicStyleForm.tablePageMode === 'page'"
+    <el-form-item
+      v-if="showProperty('tablePageMode')"
+      :label="t('chart.table_page_mode')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        :effect="themes"
+        v-model="state.basicStyleForm.tablePageMode"
+        @change="changeBasicStyle('tablePageMode', true)"
       >
-        <el-form-item
-          :label="t('chart.table_page_size')"
-          class="form-item"
-          :class="'form-item-' + themes"
-        >
-          <el-select
-            :effect="themes"
-            v-model="state.basicStyleForm.tablePageSize"
-            :placeholder="t('chart.table_page_size')"
-            @change="changeBasicStyle('tablePageSize', true)"
-          >
-            <el-option
-              v-for="item in pageSizeOptions"
-              :key="item.value"
-              :label="item.name"
-              :value="item.value"
-            />
-          </el-select>
-        </el-form-item>
-      </el-col>
-    </el-row>
+        <el-radio :effect="themes" label="page">{{ t('chart.page_mode_page') }}</el-radio>
+        <el-radio :effect="themes" label="pull">{{ t('chart.page_mode_pull') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('tablePageMode')"
+      :label="t('chart.table_pager_style')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-radio-group
+        :effect="themes"
+        v-model="state.basicStyleForm.tablePageStyle"
+        @change="changeBasicStyle('tablePageStyle', true)"
+      >
+        <el-radio :effect="themes" label="simple">{{ t('chart.page_pager_simple') }}</el-radio>
+        <el-radio :effect="themes" label="general">{{ t('chart.page_pager_general') }}</el-radio>
+      </el-radio-group>
+    </el-form-item>
+    <el-form-item
+      v-if="
+        showProperty('tablePageMode') &&
+        state.basicStyleForm.tablePageMode === 'page' &&
+        state.basicStyleForm.tablePageStyle === 'simple'
+      "
+      :label="t('chart.table_page_size')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-select
+        :effect="themes"
+        v-model="state.basicStyleForm.tablePageSize"
+        :placeholder="t('chart.table_page_size')"
+        @change="changeBasicStyle('tablePageSize', true)"
+      >
+        <el-option
+          v-for="item in pageSizeOptions"
+          :key="item.value"
+          :label="item.name"
+          :value="item.value"
+        />
+      </el-select>
+    </el-form-item>
+
     <!--table end-->
 
     <!--table2 start-->

@@ -90,7 +90,9 @@ const state = reactive({
     currentPage: 1
   },
   totalItems: 0,
-  showPage: false
+  showPage: false,
+  pageStyle: 'simple',
+  currentPageSize: 0
 })
 // 图表数据不用全响应式
 let chartData = shallowRef<Partial<Chart['data']>>({
@@ -182,6 +184,12 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   if (resetPageInfo) {
     state.pageInfo.currentPage = 1
   }
+  state.pageStyle = customAttr.basicStyle.tablePageStyle
+  if (state.pageStyle === 'general') {
+    if (state.currentPageSize == 0) {
+      state.currentPageSize = pageInfo.pageSize
+    }
+  }
 }
 
 const initScroll = () => {
@@ -242,6 +250,16 @@ const handleCurrentChange = pageNum => {
   const chart = { ...view.value, chartExtRequest: extReq }
   calcData(chart, null, false)
 }
+
+const handlePageSizeChange = pageSize => {
+  let extReq = { pageSize: pageSize }
+  if (chartExtRequest.value) {
+    extReq = { ...extReq, ...chartExtRequest.value }
+  }
+  const chart = { ...view.value, chartExtRequest: extReq }
+  calcData(chart, null, false)
+}
+
 const pointClickTrans = () => {
   if (embeddedCallBack.value === 'yes') {
     trackClick('pointClick')
@@ -457,6 +475,7 @@ const tabStyle = computed(() => [
       <div class="table-page-info" :style="tabStyle">
         <div>共{{ state.pageInfo.total }}条</div>
         <el-pagination
+          v-if="state.pageStyle !== 'general'"
           class="table-page-content"
           layout="prev, pager, next"
           v-model:page-size="state.pageInfo.pageSize"
@@ -464,6 +483,17 @@ const tabStyle = computed(() => [
           :pager-count="5"
           :total="state.pageInfo.total"
           @update:current-page="handleCurrentChange"
+        />
+        <el-pagination
+          v-else
+          class="table-page-content"
+          layout="prev, pager, next, sizes, jumper"
+          v-model:page-size="state.currentPageSize"
+          v-model:current-page="state.pageInfo.currentPage"
+          :pager-count="5"
+          :total="state.pageInfo.total"
+          @update:current-page="handleCurrentChange"
+          @update:page-size="handlePageSizeChange"
         />
       </div>
     </el-row>
