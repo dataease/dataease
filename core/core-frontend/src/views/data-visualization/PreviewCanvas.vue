@@ -73,8 +73,6 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
       ElMessage.error(t('visualization.outer_param_decode_error'))
     }
   }
-  console.log('PreviewCanvas', dvId, jumpParam, attachParam)
-
   initCanvasData(
     dvId,
     dvType,
@@ -108,7 +106,6 @@ let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
   await new Promise(r => (p = r))
-  console.log('embeddedStore', embeddedStore, router)
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
   const { dvType, callBackFlag } = router.currentRoute.value.query
   if (dvId) {
