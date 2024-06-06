@@ -64,11 +64,29 @@
           show-position="viewDialog"
         />
         <chart-component-s2
-          v-if="optType === 'details'"
+          v-if="optType === 'details' && sourceViewType !== 'chart-mix'"
           :view="viewInfo"
           show-position="viewDialog"
           ref="chartComponentDetails"
         />
+        <template v-else-if="optType === 'details' && sourceViewType === 'chart-mix'">
+          <el-tabs class="tab-header" v-model="activeName" @tab-change="handleClick">
+            <el-tab-pane :label="t('chart.drag_block_value_axis_left')" name="left"></el-tab-pane>
+            <el-tab-pane :label="t('chart.drag_block_value_axis_right')" name="right"></el-tab-pane>
+          </el-tabs>
+          <chart-component-s2
+            v-if="activeName === 'left'"
+            :view="viewInfo"
+            show-position="viewDialog"
+            ref="chartComponentDetails"
+          />
+          <chart-component-s2
+            v-else-if="activeName === 'right'"
+            :view="viewInfo"
+            show-position="viewDialog"
+            ref="chartComponentDetails2"
+          />
+        </template>
       </div>
     </div>
   </el-dialog>
@@ -98,9 +116,11 @@ const viewContainer = ref(null)
 const { t } = useI18n()
 const optType = ref(null)
 const chartComponentDetails = ref(null)
+const chartComponentDetails2 = ref(null)
 const { dvInfo, editMode } = storeToRefs(dvMainStore)
 const exportLoading = ref(false)
 const sourceViewType = ref()
+const activeName = ref('left')
 const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
   render: 'antv',
   type: 'table-info',
@@ -194,7 +214,23 @@ const dialogInit = (canvasStyle, view, item, opt) => {
 const dataDetailsOpt = () => {
   nextTick(() => {
     const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
-    chartComponentDetails.value.renderChartFromDialog(viewInfo.value, viewDataInfo)
+    if (sourceViewType.value === 'chart-mix') {
+      chartComponentDetails.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.left)
+      chartComponentDetails2.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.right)
+    } else {
+      chartComponentDetails.value.renderChartFromDialog(viewInfo.value, viewDataInfo)
+    }
+  })
+}
+
+const handleClick = tab => {
+  nextTick(() => {
+    const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
+    if (tab === 'left') {
+      chartComponentDetails.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.left)
+    } else if (tab === 'right') {
+      chartComponentDetails2.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.right)
+    }
   })
 }
 
@@ -327,6 +363,44 @@ defineExpose({
   .enlarge-wrapper {
     width: 100%;
     height: 100%;
+  }
+}
+.tab-header {
+  --ed-tabs-header-height: 34px;
+  --custom-tab-color: #646a73;
+
+  :deep(.ed-tabs__nav-wrap::after) {
+    background-color: unset;
+  }
+
+  &.dark {
+    --custom-tab-color: #a6a6a6;
+  }
+
+  :deep(.ed-tabs__item) {
+    font-weight: 400;
+    font-size: 12px;
+    padding: 0 8px !important;
+    margin-right: 12px;
+    color: var(--custom-tab-color);
+  }
+  :deep(.is-active) {
+    font-weight: 500;
+    color: var(--ed-color-primary, #3370ff);
+  }
+
+  :deep(.ed-tabs__nav-scroll) {
+    padding-left: 0 !important;
+  }
+
+  :deep(.ed-tabs__header) {
+    margin: 0 !important;
+  }
+
+  :deep(.ed-tabs__content) {
+    height: calc(100% - 35px);
+    overflow-y: auto;
+    overflow-x: hidden;
   }
 }
 </style>

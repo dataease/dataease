@@ -17,6 +17,21 @@ declare interface Chart {
     dynamicAssistLines?: AssistLine[]
     fields: ChartViewField[]
     tableRow: []
+    //chart-mix
+    left: {
+      data: any[]
+      series?: any[]
+      dynamicAssistLines?: AssistLine[]
+      fields: ChartViewField[]
+      tableRow: []
+    }
+    right: {
+      data: any[]
+      series?: any[]
+      dynamicAssistLines?: AssistLine[]
+      fields: ChartViewField[]
+      tableRow: []
+    }
   }
   xAxis?: Axis[]
   xAxisExt?: Axis[]

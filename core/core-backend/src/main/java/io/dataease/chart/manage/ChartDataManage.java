@@ -82,7 +82,6 @@ public class ChartDataManage {
             chartExtRequest = new ChartExtRequest();
         }
 
-        ChartViewDTO chartViewDTO = new ChartViewDTO();
         if (ObjectUtils.isEmpty(view)) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_delete"));
         }
@@ -108,6 +107,54 @@ public class ChartDataManage {
 
         // get all fields
         List<ChartViewFieldDTO> allFields = getAllChartFields(view);
+        ChartViewDTO chartViewDTO = null;
+
+        if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
+            //左轴右轴需要分别调用一次查询
+            String viewJson = (String) JsonUtil.toJSONString(view);
+            Map<String, Object> data = new HashMap<>();
+            //针对左轴，删除yAxisExt
+            ChartViewDTO view1 = JsonUtil.parseObject(viewJson, ChartViewDTO.class);
+            view1.setYAxisExt(new ArrayList<>());
+            if (view1.getSenior() != null) {
+                ChartSeniorAssistCfgDTO assistLineCfg1 = JsonUtil.parseObject((String) JsonUtil.toJSONString(view1.getSenior().get("assistLineCfg")), ChartSeniorAssistCfgDTO.class);
+                if (assistLineCfg1 != null && assistLineCfg1.isEnable()) {
+                    List<ChartSeniorAssistDTO> assistLines = assistLineCfg1.getAssistLine();
+                    //去除右轴辅助线
+                    assistLineCfg1.setAssistLine(assistLines.stream().filter(d -> StringUtils.equalsIgnoreCase(d.getYAxisType(), "left")).collect(Collectors.toList()));
+                    view1.getSenior().put("assistLineCfg", assistLineCfg1);
+                }
+            }
+            ChartViewDTO left = calcData(view1, chartExtRequest, allFields, viewFields);
+            data.put("left", left.getData());
+            //针对右轴，删除yAxis
+            ChartViewDTO view2 = JsonUtil.parseObject(viewJson, ChartViewDTO.class);
+            view2.setYAxis(new ArrayList<>());
+            if (view2.getSenior() != null) {
+                ChartSeniorAssistCfgDTO assistLineCfg2 = JsonUtil.parseObject((String) JsonUtil.toJSONString(view2.getSenior().get("assistLineCfg")), ChartSeniorAssistCfgDTO.class);
+                if (assistLineCfg2 != null && assistLineCfg2.isEnable()) {
+                    List<ChartSeniorAssistDTO> assistLines = assistLineCfg2.getAssistLine();
+                    //去除左轴辅助线
+                    assistLineCfg2.setAssistLine(assistLines.stream().filter(d -> StringUtils.equalsIgnoreCase(d.getYAxisType(), "right")).collect(Collectors.toList()));
+                    view2.getSenior().put("assistLineCfg", assistLineCfg2);
+                }
+            }
+            ChartViewDTO right = calcData(view2, chartExtRequest, allFields, viewFields);
+            data.put("right", right.getData());
+
+            //重新组装
+            chartViewDTO = BeanUtils.copyBean(new ChartViewDTO(), left);
+            chartViewDTO.setYAxisExt(view.getYAxisExt());
+            chartViewDTO.setData(data);
+            chartViewDTO.setSenior(view.getSenior());
+        } else {
+            chartViewDTO = calcData(view, chartExtRequest, allFields, viewFields);
+        }
+
+        return chartViewDTO;
+    }
+
+    public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest chartExtRequest, List<ChartViewFieldDTO> allFields, List<ChartViewFieldDTO> viewFields) throws Exception {
 
         List<ChartViewFieldDTO> xAxisBase = new ArrayList<>(view.getXAxis());
         List<ChartViewFieldDTO> xAxis = new ArrayList<>(view.getXAxis());
@@ -557,7 +604,7 @@ public class ChartDataManage {
             } else if (StringUtils.containsIgnoreCase(view.getType(), "quadrant")) {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 yAxis.addAll(extBubble);
-                if(ObjectUtils.isNotEmpty(view.getExtTooltip())){
+                if (ObjectUtils.isNotEmpty(view.getExtTooltip())) {
                     yAxis.addAll(new ArrayList<>(view.getExtTooltip()));
                 }
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
@@ -805,7 +852,7 @@ public class ChartDataManage {
         } else {
             mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, data, extStack, desensitizationList);
         }
-        chartViewDTO = uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);
+        ChartViewDTO chartViewDTO = uniteViewResult(datasourceRequest.getQuery(), mapChart, mapTableNormal, view, isDrill, drillFilters, dynamicAssistFields, assistData);
         chartViewDTO.setTotalPage(totalPage);
         chartViewDTO.setTotalItems(totalItems);
         return chartViewDTO;
