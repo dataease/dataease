@@ -419,6 +419,10 @@ const jumpClick = param => {
             return
           }
 
+          if (isIframe.value) {
+            embeddedStore.clearState()
+          }
+
           if (iframeSelf) {
             router.push(parseUrl(url))
             return
@@ -437,6 +441,10 @@ const jumpClick = param => {
         embeddedStore.setOuterUrl(url)
         divEmbedded('Iframe')
         return
+      }
+
+      if (isIframe.value) {
+        embeddedStore.clearState()
       }
       windowsJump(url, jumpInfo.jumpType)
     }
