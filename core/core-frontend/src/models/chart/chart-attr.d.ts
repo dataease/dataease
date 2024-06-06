@@ -176,6 +176,9 @@ declare interface ChartBasicStyle {
    * 地图主题风格
    */
   mapStyle: string
+  heatMapType?: string
+  heatMapIntensity?: number
+  heatMapRadius?: number
   /**
    * 地图边线颜色
    */

@@ -788,6 +788,8 @@ public class ChartDataManage {
                 mapChart = ChartDataBuild.transMixChartDataAntV(xAxis, yAxis, view, data, isDrill);
             } else if (StringUtils.equalsIgnoreCase(view.getType(), "bar-range")) {
                 mapChart = ChartDataBuild.transBarRangeDataAntV(skipBarRange, barRangeDate, xAxisBase, xAxis, yAxis, view, data, isDrill);
+            } else if(StringUtils.equalsIgnoreCase(view.getType(), "heat-map")){
+                mapChart = ChartDataBuild.transHeatMapChartDataAntV(xAxisBase, xAxis, yAxis, view, data, isDrill);
             } else {
                 mapChart = ChartDataBuild.transChartDataAntV(xAxis, yAxis, view, data, isDrill);
             }
