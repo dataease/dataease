@@ -325,8 +325,9 @@ export class BidirectionalHorizontalBar extends G2PlotChartView<
         valueExt: undefined
       }
     }
+    const layoutHorizontal = options.layout === 'horizontal'
     // 处理横轴标题方向不对
-    if (yAxis && yAxis['title']) {
+    if (yAxis && yAxis['title'] && layoutHorizontal) {
       yAxis['title'].autoRotate = false
     }
     const yAxisTmp = parseJson(chart.customStyle).yAxis
