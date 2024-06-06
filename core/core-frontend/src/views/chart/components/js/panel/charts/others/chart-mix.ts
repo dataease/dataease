@@ -12,7 +12,7 @@ import {
   setGradientColor
 } from '../../common/common_antv'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep, isEmpty, defaultTo, map, filter } from 'lodash-es'
+import { cloneDeep, isEmpty, defaultTo, map, filter, union } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   CHART_MIX_AXIS_TYPE,
@@ -55,21 +55,23 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   }
   drawChart(drawOptions: G2PlotDrawOptions<DualAxes>): DualAxes {
     const { chart, action, container } = drawOptions
-    if (!chart.data.data?.length) {
+    if (!chart.data.left.data?.length && !chart.data.right.data?.length) {
       return
     }
-    const data = cloneDeep(chart.data.data)
+    const left = cloneDeep(chart.data?.left?.data)
+    const right = cloneDeep(chart.data?.right?.data)
 
-    const data1Type = data[0]?.type === 'bar' ? 'column' : data[0]?.type
-    const data2Type = data[1]?.type === 'bar' ? 'column' : data[1]?.type
+    const data1Type = (left[0]?.type === 'bar' ? 'column' : left[0]?.type) ?? 'column'
+    const data2Type = (right[0]?.type === 'bar' ? 'column' : right[0]?.type) ?? 'column'
 
-    const data1 = defaultTo(data[0]?.data, [])
-    const data2 = map(defaultTo(data[1]?.data, []), d => {
+    const data1 = defaultTo(left[0]?.data, [])
+    const data2 = map(defaultTo(right[0]?.data, []), d => {
       return {
         ...d,
         valueExt: d.value
       }
     })
+
     // custom color
     const customAttr = parseJson(chart.customAttr)
     let color = customAttr.basicStyle.colors
@@ -368,14 +370,16 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   protected configLegend(chart: Chart, options: DualAxesOptions): DualAxesOptions {
     const o = super.configLegend(chart, options)
     if (o.legend) {
-      const data = chart.data.data
+      const left = cloneDeep(chart.data?.left?.data)
+      const right = cloneDeep(chart.data?.right?.data)
+
       o.legend.itemName = {
         formatter: (text: string, item: any, index: number) => {
           let name = undefined
           if (index === 0 && text === 'value') {
-            name = data[0]?.name
+            name = left[0]?.name
           } else if (index === 1 && text === 'valueExt') {
-            name = data[1]?.name
+            name = right[0]?.name
           }
           if (name === undefined) {
             return text
@@ -389,6 +393,10 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   }
 
   protected configAnalyse(chart: Chart, options: DualAxesOptions): DualAxesOptions {
+    chart.data.dynamicAssistLines = union(
+      defaultTo(chart.data?.left?.dynamicAssistLines, []),
+      defaultTo(chart.data?.right?.dynamicAssistLines, [])
+    )
     const list = getAnalyse(chart)
     const annotations = {
       value: filter(list, l => l.yAxisType === 'left'),

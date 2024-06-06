@@ -11,6 +11,7 @@ import { innerExportDetails } from '@/api/chart'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useLinkStoreWithOut } from '@/store/modules/link'
+
 const { t } = useI18n()
 // 同时支持将hex和rgb，转换成rgba
 export function hexColorToRGBA(hex, alpha) {
@@ -420,17 +421,16 @@ export const getGeoJsonFile = async (areaId: string): Promise<FeatureCollection>
   return toRaw(geoJson)
 }
 
-export const exportExcelDownload = (chart, callBack?) => {
-  const fields = JSON.parse(JSON.stringify(chart.data.fields))
-  const tableRow = JSON.parse(JSON.stringify(chart.data.tableRow))
+const getExcelDownloadRequest = data => {
+  const fields = JSON.parse(JSON.stringify(data.fields))
+  const tableRow = JSON.parse(JSON.stringify(data.tableRow))
   const excelHeader = fields.map(item => item.chartShowName ?? item.name)
   const excelTypes = fields.map(item => item.deType)
   const excelHeaderKeys = fields.map(item => item.dataeaseName)
   let excelData = tableRow.map(item => excelHeaderKeys.map(i => item[i]))
-  const excelName = chart.title
   let detailFields = []
-  if (chart.data.detailFields?.length) {
-    detailFields = chart.data.detailFields.map(item => {
+  if (data.detailFields?.length) {
+    detailFields = data.detailFields.map(item => {
       return {
         name: item.name,
         deType: item.deType,
@@ -450,21 +450,41 @@ export const exportExcelDownload = (chart, callBack?) => {
       })
     })
   }
-  const request = {
-    proxy: null,
-    viewId: chart.id,
-    viewName: excelName,
+  return {
     header: excelHeader,
     details: excelData,
     excelTypes: excelTypes,
     excelHeaderKeys: excelHeaderKeys,
-    viewInfo: chart,
-    detailFields
+    detailFields: detailFields
   }
+}
+
+export const exportExcelDownload = (chart, callBack?) => {
+  const excelName = chart.title
+  let request: any = {
+    proxy: null,
+    viewId: chart.id,
+    viewInfo: chart,
+    viewName: excelName
+  }
+  if (chart.type === 'chart-mix') {
+    const req1 = getExcelDownloadRequest(chart.data.left)
+    const req2 = getExcelDownloadRequest(chart.data.right)
+    request = {
+      ...request,
+      multiInfo: [req1, req2]
+    }
+  } else {
+    const req = getExcelDownloadRequest(chart.data)
+    request = {
+      ...request,
+      ...req
+    }
+  }
+
   const linkStore = useLinkStoreWithOut()
 
-  const method = innerExportDetails
-  method(request)
+  innerExportDetails(request)
     .then(res => {
       if (linkStore.getLinkToken) {
         const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
