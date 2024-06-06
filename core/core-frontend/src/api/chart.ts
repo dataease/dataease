@@ -32,6 +32,18 @@ export const getFieldByDQ = async (id, chartId): Promise<IResponse> => {
   })
 }
 
+export const copyChartField = async (id, chartId): Promise<IResponse> => {
+  return request.post({ url: `/chart/copyField/${id}/${chartId}`, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
+export const deleteChartField = async (id): Promise<IResponse> => {
+  return request.post({ url: `/chart/deleteField/${id}`, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
 // 通过图表对象获取数据
 export const getData = async (data): Promise<IResponse> => {
   delete data.data

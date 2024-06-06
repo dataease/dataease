@@ -50,7 +50,7 @@ import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
 import { set, concat, keys } from 'lodash-es'
-import { Field, getFieldByDQ } from '@/api/chart'
+import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/chart'
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
 import { XpackComponent } from '@/components/plugin'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -205,12 +205,15 @@ watch(
 )
 const getFields = (id, chartId) => {
   if (id && chartId) {
+    fieldLoading.value = true
     getFieldByDQ(id, chartId)
       .then(res => {
         state.dimension = (res.dimensionList as unknown as Field[]) || []
         state.quota = (res.quotaList as unknown as Field[]) || []
         state.dimensionData = JSON.parse(JSON.stringify(state.dimension))
         state.quotaData = JSON.parse(JSON.stringify(state.quota))
+
+        fieldLoading.value = false
         emitter.emit('dataset-change')
       })
       .catch(() => {
@@ -218,12 +221,16 @@ const getFields = (id, chartId) => {
         state.quota = []
         state.dimensionData = []
         state.quotaData = []
+
+        fieldLoading.value = false
       })
   } else {
     state.dimension = []
     state.quota = []
     state.dimensionData = []
     state.quotaData = []
+
+    fieldLoading.value = false
   }
 }
 
@@ -1488,6 +1495,30 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     }
   }
 }
+
+const fieldLoading = ref(false)
+
+const copyChartFieldItem = id => {
+  fieldLoading.value = true
+  copyChartField(id, view.value.id)
+    .then(() => {
+      getFields(view.value.tableId, view.value.id)
+    })
+    .catch(() => {
+      fieldLoading.value = false
+    })
+}
+
+const deleteChartFieldItem = id => {
+  fieldLoading.value = true
+  deleteChartField(id)
+    .then(() => {
+      getFields(view.value.tableId, view.value.id)
+    })
+    .catch(() => {
+      fieldLoading.value = false
+    })
+}
 </script>
 
 <template>
@@ -2472,7 +2503,11 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                 </template>
               </el-input>
             </el-row>
-            <div ref="elDrag" style="height: calc(100% - 137px); min-height: 120px">
+            <div
+              v-loading="fieldLoading"
+              ref="elDrag"
+              style="height: calc(100% - 137px); min-height: 120px"
+            >
               <div
                 class="padding-lr field-height first right-dimension"
                 :class="{ dark: themes === 'dark', 'user-select': isDragging }"
@@ -2490,7 +2525,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                     @dragstart="$event => singleDragStartD($event, element, 'dimension')"
                     :draggable="true"
                     @dragend="singleDragEnd"
-                    class="item"
+                    class="item father"
                     v-for="element in dimensionData"
                     :key="element.id"
                   >
@@ -2508,9 +2543,30 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                           :name="`field_${fieldType[element.deType]}`"
                         />
                       </el-icon>
-                      <span class="field-name ellipsis" :class="{ dark: themes === 'dark' }">{{
-                        element.name
-                      }}</span>
+                      <span
+                        class="field-name ellipsis"
+                        :class="{ dark: themes === 'dark' }"
+                        :title="element.name"
+                        >{{ element.name }}</span
+                      >
+                      <el-icon
+                        v-if="element.id !== '-1' && !element.chartId"
+                        class="field-setting child"
+                        :class="{ 'remove-icon--dark': themes === 'dark' }"
+                        size="14px"
+                        @click.stop="copyChartFieldItem(element.id)"
+                      >
+                        <Icon class-name="inner-class" name="icon_copy_outlined" />
+                      </el-icon>
+                      <el-icon
+                        v-if="element.id !== '-1' && element.chartId"
+                        class="field-setting child"
+                        :class="{ 'remove-icon--dark': themes === 'dark' }"
+                        size="14px"
+                        @click.stop="deleteChartFieldItem(element.id)"
+                      >
+                        <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                      </el-icon>
                       <el-dropdown
                         v-if="element.id !== '-1' && false"
                         :effect="props.themes"
@@ -2615,7 +2671,7 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                     @click.meta="setActiveCtrl(element, 'quota')"
                     @click.exact="setActive(element, 'quota')"
                     @click.shift="setActiveShift(element, 'quota')"
-                    class="item"
+                    class="item father"
                     @dragstart="$event => singleDragStart($event, element, 'quota')"
                     :draggable="true"
                     @dragend="singleDragEnd"
@@ -2636,9 +2692,30 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
                           :name="`field_${fieldType[element.deType]}`"
                         ></Icon>
                       </el-icon>
-                      <span class="field-name ellipsis" :class="{ dark: themes === 'dark' }">{{
-                        element.name
-                      }}</span>
+                      <span
+                        class="field-name ellipsis"
+                        :class="{ dark: themes === 'dark' }"
+                        :title="element.name"
+                        >{{ element.name }}</span
+                      >
+                      <el-icon
+                        v-if="element.id !== '-1' && !element.chartId"
+                        class="field-setting child"
+                        :class="{ 'remove-icon--dark': themes === 'dark' }"
+                        size="14px"
+                        @click.stop="copyChartFieldItem(element.id)"
+                      >
+                        <Icon class-name="inner-class" name="icon_copy_outlined" />
+                      </el-icon>
+                      <el-icon
+                        v-if="element.id !== '-1' && element.chartId"
+                        class="field-setting child"
+                        :class="{ 'remove-icon--dark': themes === 'dark' }"
+                        size="14px"
+                        @click.stop="deleteChartFieldItem(element.id)"
+                      >
+                        <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                      </el-icon>
                       <el-dropdown
                         v-if="element.id !== '-1' && false"
                         :effect="props.themes"
