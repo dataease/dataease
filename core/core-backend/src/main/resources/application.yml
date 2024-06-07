@@ -46,6 +46,7 @@ quartz:
 
 dataease:
   version: '@project.version@'
+  xpack-front-distributed: true
   origin-list: http://192.168.2.70:9080
   apisix-api:
     domain: http://192.168.2.70:9180
