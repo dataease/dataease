@@ -5,6 +5,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import type { ManipulateType } from 'dayjs'
 import { type TimeRange } from './time-format'
 import dayjs from 'dayjs'
+import { useShortcuts } from './shortcuts'
 import { getThisStart, getLastStart, getAround } from './time-format-dayjs'
 import VanPopup from 'vant/es/popup'
 import VanDatePicker from 'vant/es/date-picker'
@@ -80,6 +81,11 @@ watch(
     })
   }
 )
+const callback = () => {
+  return true
+}
+
+const { shortcuts } = useShortcuts(callback)
 
 watch(
   () => config.value.id,
@@ -376,6 +382,7 @@ const formatDate = computed(() => {
     @calendar-change="calendarChange"
     :format="formatDate"
     v-if="multiple"
+    :shortcuts="shortcuts"
     @change="handleValueChange"
     :range-separator="$t('cron.to')"
     :start-placeholder="$t('datasource.start_time')"

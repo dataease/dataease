@@ -50,6 +50,46 @@ export default {
     filter_condition: '筛选条件',
     no_auth_tips: '缺少菜单权限，请联系管理员'
   },
+  dynamic_time: {
+    set_default: '设置默认值',
+    fix: '固定时间',
+    dynamic: '动态时间',
+    relative: '相对当前',
+    today: '今天',
+    yesterday: '昨天',
+    firstOfMonth: '月初',
+    firstOfYear: '年初',
+    custom: '自定义',
+    date: '日',
+    week: '周',
+    month: '月',
+    year: '年',
+    before: '前',
+    after: '后',
+    preview: '预览',
+    set: '设置',
+
+    cweek: '本周',
+    lweek: '上周',
+    cmonth: '本月',
+    cquarter: '本季',
+    lquarter: '上季',
+    cyear: '本年'
+  },
+  dynamic_year: {
+    fix: '固定年份',
+    dynamic: '动态年份',
+    current: '今年',
+    last: '去年'
+  },
+  dynamic_month: {
+    fix: '固定年月',
+    dynamic: '动态年月',
+    current: '当月',
+    last: '上月',
+    firstOfYear: '当年首月',
+    sameMonthLastYear: '去年同月'
+  },
   data_export: {
     export_center: '数据导出中心',
     export_info: '查看进度，进行下载',
