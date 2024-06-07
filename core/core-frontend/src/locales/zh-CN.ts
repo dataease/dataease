@@ -2216,6 +2216,9 @@ export default {
     export_time: '导出时间',
     you_can_type_here: '可以在这里输入其他内容'
   },
+  link_ticket: {
+    require: 'Ticket 必填'
+  },
   pblink: {
     key_pwd: '请输入密码打开链接',
     input_placeholder: '请输入4～10位数字或字母',

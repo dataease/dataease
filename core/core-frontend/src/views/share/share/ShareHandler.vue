@@ -16,7 +16,7 @@
   <el-dialog
     v-if="dialogVisible && props.weight >= 7"
     class="copy-link_dialog"
-    :class="{ 'hidden-footer': !shareEnable }"
+    :class="{ 'hidden-footer': !shareEnable || showTicket }"
     v-model="dialogVisible"
     :close-on-click-modal="true"
     :append-to-body="true"
@@ -25,7 +25,7 @@
     width="480px"
     :show-close="false"
   >
-    <div class="share-dialog-container">
+    <div class="share-dialog-container" :class="{ 'hidden-link-container': showTicket }">
       <div class="copy-link">
         <div class="open-share flex-align-center">
           <el-switch size="small" v-model="shareEnable" @change="enableSwitcher" />
@@ -117,8 +117,12 @@
         </div>
       </div>
     </div>
+    <div v-if="shareEnable && showTicket" class="share-ticket-container">
+      <share-ticket :link-url="linkAddr" @close="closeTicket" />
+    </div>
     <template #footer>
       <span class="dialog-footer">
+        <!-- <el-button secondary @click="openTicket">Ticket 设置</el-button> -->
         <el-button :disabled="!shareEnable || expError" type="primary" @click.stop="copyInfo">
           {{ t('visualization.copy_link') }}
         </el-button>
@@ -135,6 +139,8 @@ import { propTypes } from '@/utils/propTypes'
 import { ShareInfo, SHARE_BASE, shortcuts } from './option'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import useClipboard from 'vue-clipboard3'
+import ShareTicket from './ShareTicket.vue'
+
 const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const props = defineProps({
@@ -154,6 +160,7 @@ const linkAddr = ref('')
 const expError = ref(false)
 const linkCustom = ref(false)
 const linkUuidRef = ref(null)
+const showTicket = ref(false)
 const state = reactive({
   detailInfo: {
     id: '',
@@ -447,6 +454,13 @@ const getUuid = () => {
   return result
 }
 
+const openTicket = () => {
+  showTicket.value = true
+}
+const closeTicket = () => {
+  showTicket.value = false
+}
+
 const execute = () => {
   share()
 }
@@ -595,6 +609,9 @@ onMounted(() => {
         left: 0px;
       }
     }
+  }
+  .hidden-link-container {
+    display: none;
   }
 }
 </style>
