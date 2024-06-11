@@ -760,9 +760,10 @@ const getMenuList = (val: boolean) => {
           </div>
           <template v-if="['dataPreview', 'structPreview'].includes(activeName)">
             <div class="info-table" :class="[{ 'struct-preview': activeName === 'structPreview' }]">
-              <el-auto-resizer>
+              <el-auto-resizer v-if="activeName === 'structPreview'">
                 <template #default="{ height, width }">
                   <el-table-v2
+                    key="structPreview"
                     :columns="columns"
                     v-loading="dataPreviewLoading"
                     header-class="header-cell"
@@ -775,6 +776,42 @@ const getMenuList = (val: boolean) => {
                   ></el-table-v2>
                 </template>
               </el-auto-resizer>
+              <template v-if="activeName === 'dataPreview'">
+                <el-table
+                  v-loading="dataPreviewLoading"
+                  header-class="header-cell"
+                  :data="tableData"
+                  key="dataPreview"
+                  border
+                  style="width: 100%; height: 100%"
+                >
+                  <el-table-column
+                    :key="column.dataKey"
+                    v-for="(column, index) in columns"
+                    :prop="column.dataKey"
+                    :label="column.title"
+                    :width="columns.length - 1 === index ? 150 : auto"
+                    :fixed="columns.length - 1 === index ? 'right' : false"
+                  >
+                    <template #header>
+                      <div class="flex-align-center">
+                        <ElIcon style="margin-right: 6px">
+                          <Icon
+                            :name="`field_${fieldType[column.deType]}`"
+                            :className="`field-icon-${fieldType[column.deType]}`"
+                          ></Icon>
+                        </ElIcon>
+                        <span class="ellipsis" :title="column.title" style="width: 120px">
+                          {{ column.title }}
+                        </span>
+                      </div>
+                    </template>
+                  </el-table-column>
+                  <template #empty>
+                    <empty-background description="暂无数据" img-type="noneWhite" />
+                  </template>
+                </el-table>
+              </template>
             </div>
           </template>
           <template v-if="['row', 'column'].includes(activeName)">
