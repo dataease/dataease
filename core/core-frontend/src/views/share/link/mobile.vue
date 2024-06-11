@@ -3,22 +3,13 @@
     <LinkError v-if="!loading && !linkExist" />
     <Exp v-else-if="!loading && linkExp" />
     <PwdTips v-else-if="!loading && !pwdValid" />
-    <de-preview
-      ref="dashboardPreview"
-      v-else-if="state.canvasStylePreview && dataInitState && curType === 'dashboard'"
-      :component-data="state.canvasDataPreview"
-      :canvas-style-data="state.canvasStylePreview"
-      :canvas-view-info="state.canvasViewInfoPreview"
-      :dv-info="state.dvInfo"
-      :cur-gap="state.curPreviewGap"
-    ></de-preview>
+    <PreviewCanvas v-else :class="{ 'hidden-link': loading }" ref="pcanvas" public-link-status />
   </div>
 </template>
 <script lang="ts" setup>
-import { onMounted, nextTick, ref, reactive } from 'vue'
-import { initCanvasDataMobile } from '@/utils/canvasUtils'
+import { onMounted, nextTick, ref } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
+import PreviewCanvas from '@/views/data-visualization/PreviewCanvasMobile.vue'
 import { ProxyInfo, shareProxy } from './ShareProxy'
 import Exp from './exp.vue'
 import router from '@/router/mobile'
@@ -29,54 +20,12 @@ const loading = ref(true)
 const linkExp = ref(false)
 const pwdValid = ref(false)
 const dvMainStore = dvMainStoreWithOut()
-const state = reactive({
-  canvasDataPreview: null,
-  canvasStylePreview: null,
-  canvasViewInfoPreview: null,
-  dvInfo: {
-    name: '',
-    mobileLayout: false
-  },
-  curPreviewGap: 0
-})
-const dataInitState = ref(true)
-const dashboardPreview = ref(null)
-const loadCanvasData = (dvId, weight?) => {
-  dataInitState.value = false
-  initCanvasDataMobile(
-    dvId,
-    'dashboard',
-    function ({
-      canvasDataResult,
-      canvasStyleResult,
-      dvInfo,
-      canvasViewInfoPreview,
-      curPreviewGap
-    }) {
-      dvInfo['weight'] = weight
-      state.canvasDataPreview = canvasDataResult
-      state.canvasStylePreview = canvasStyleResult
-      state.canvasViewInfoPreview = canvasViewInfoPreview
-      state.dvInfo = dvInfo
-      state.curPreviewGap = curPreviewGap
-      dataInitState.value = true
-      if (!state.dvInfo.mobileLayout) {
-        const href = window.location.href.replace('/de-link', '/pc/de-link')
-        window.location.href = href
-        return
-      }
-      nextTick(() => {
-        document.title = dvInfo.name
-        dashboardPreview.value.restore()
-      })
-    }
-  )
-}
-
+const pcanvas = ref(null)
 const curType = ref('')
 onMounted(async () => {
   const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
   curType.value = proxyInfo.type || 'dashboard'
+  dvMainStore.setInMobile(true)
   dvMainStore.setMobileInPc(curType.value === 'dashboard')
   if (!proxyInfo?.resourceId) {
     loading.value = false
@@ -87,8 +36,10 @@ onMounted(async () => {
   pwdValid.value = !!proxyInfo.pwdValid
   nextTick(() => {
     if (curType.value === 'dashboard') {
-      loadCanvasData(proxyInfo.resourceId, proxyInfo.type)
-      dvMainStore.setPublicLinkStatus(true)
+      const method = pcanvas?.value?.loadCanvasDataAsync
+      if (method) {
+        method(proxyInfo.resourceId, 'dashboard', null)
+      }
       loading.value = false
     } else {
       loading.value = false

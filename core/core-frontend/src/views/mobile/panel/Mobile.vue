@@ -53,6 +53,7 @@ const router = useRouter()
 let fromPage, cache
 onBeforeMount(() => {
   dvMainStore.setMobileInPc(true)
+  dvMainStore.setInMobile(true)
   const dvId = route.query.dvId as unknown as string
   fromPage = route.query.from as unknown as string
   cache = route.query.cache as unknown as string
