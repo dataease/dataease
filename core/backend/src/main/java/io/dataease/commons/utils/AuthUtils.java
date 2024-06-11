@@ -54,6 +54,10 @@ public class AuthUtils {
         return userDto;
     }
 
+    public static void setUser(CurrentUserDto user) {
+        USER_INFO.set(user);
+    }
+
     public static void setProxyUser(Long userId) {
         CurrentUserDto currentUserDto = proxyAuthService.queryCacheUserDto(userId);
         USER_INFO.set(currentUserDto);

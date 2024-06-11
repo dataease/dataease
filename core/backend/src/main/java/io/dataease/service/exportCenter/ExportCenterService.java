@@ -322,7 +322,7 @@ public class ExportCenterService {
                 ChartViewDTO chartViewInfo = chartViewService.getData(request.getViewId(), componentFilterInfo);
                 List<Object[]> tableRow = (List) chartViewInfo.getData().get("sourceData");
                 request.setDetails(tableRow);
-                if("dataset".equals(request.getDownloadType())){
+                if ("dataset".equals(request.getDownloadType())) {
                     request.setHeader((String[]) chartViewInfo.getData().get("header"));
                     request.setExcelTypes((Integer[]) chartViewInfo.getData().get("dsTypes"));
                 }
@@ -388,7 +388,9 @@ public class ExportCenterService {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
+        CurrentUserDto currentUserDto = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            AuthUtils.setUser(currentUserDto);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateByPrimaryKey(exportTask);
@@ -414,7 +416,7 @@ public class ExportCenterService {
                 cellStyle.setFillForegroundColor(IndexedColors.GREY_25_PERCENT.getIndex());
                 //设置单元格填充样式(使用纯色背景颜色填充)
                 cellStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
-                if ("table-info".equals(request.getViewType())||"dataset".equals(request.getDownloadType())) {
+                if ("table-info".equals(request.getViewType()) || "dataset".equals(request.getDownloadType())) {
                     exportTableDetails(request, wb, cellStyle, detailsSheet);
                 } else {
                     Boolean mergeHead = false;
@@ -542,7 +544,7 @@ public class ExportCenterService {
                 }
                 wb.close();
 
-                if (ObjectUtils.isNotEmpty(AuthUtils.getUser())) {
+                if (ObjectUtils.isNotEmpty(currentUserDto)) {
                     String viewId = request.getViewId();
                     ChartViewWithBLOBs chartViewWithBLOBs = chartViewService.get(viewId);
                     String pid = chartViewWithBLOBs.getSceneId();
@@ -1342,6 +1344,7 @@ public class ExportCenterService {
         map.put("data", jsonArray);
         return map;
     }
+
     private static final String LOG_RETENTION = "30";
 
     public void cleanLog() {

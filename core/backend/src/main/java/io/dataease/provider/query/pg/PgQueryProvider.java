@@ -988,13 +988,7 @@ public class PgQueryProvider extends QueryProvider {
     }
 
     public String getTotalCount(boolean isTable, String sql, Datasource ds) {
-        if (isTable) {
-            String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
-            String tableWithSchema = String.format(PgConstants.KEYWORD_TABLE, schema) + "." + String.format(PgConstants.KEYWORD_TABLE, sql);
-            return "SELECT COUNT(*) from " + tableWithSchema;
-        } else {
-            return null;
-        }
+        return null;
     }
 
     @Override
@@ -1007,7 +1001,7 @@ public class PgQueryProvider extends QueryProvider {
         if (ds != null) {
             String schema = new Gson().fromJson(ds.getConfiguration(), JdbcConfiguration.class).getSchema();
             String tableWithSchema = String.format(SqlServerSQLConstants.KEYWORD_TABLE, schema) + "." + String.format(SqlServerSQLConstants.KEYWORD_TABLE, table);
-            return MessageFormat.format("SELECT {0} FROM {1}  LIMIT DE_PAGE_SIZE OFFSET DE_OFFSET ", StringUtils.join(array, ","), tableWithSchema);
+            return MessageFormat.format("SELECT {0} FROM {1}  ", StringUtils.join(array, ","), tableWithSchema);
         } else {
             return MessageFormat.format("SELECT {0} FROM {1} ", StringUtils.join(array, ","), table);
         }
