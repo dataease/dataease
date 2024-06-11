@@ -39,13 +39,19 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       'seriesTooltipFormatter'
     ]
   }
-  axis: AxisType[] = [...CHART_MIX_AXIS_TYPE, 'yAxisExt']
+  axis: AxisType[] = [...CHART_MIX_AXIS_TYPE, 'xAxisExtRight', 'yAxisExt']
   axisConfig = {
     ...this['axisConfig'],
     yAxis: {
       name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.column_quota')}`,
       limit: 1,
       type: 'q'
+    },
+    extBubble: {
+      //用这个字段存放右轴分类
+      name: `${t('chart.drag_block_type_axis_right')} / ${t('chart.dimension')}`,
+      limit: 1,
+      type: 'd'
     },
     yAxisExt: {
       name: `${t('chart.drag_block_value_axis_right')} / ${t('chart.line_quota')}`,
@@ -65,6 +71,8 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     // const data2Type = (right[0]?.type === 'bar' ? 'column' : right[0]?.type) ?? 'column'
     const data1Type = 'column'
     const data2Type = 'line'
+
+    const seriesField2 = chart.extBubble?.length > 0 ? 'category' : undefined
 
     const data1 = defaultTo(left[0]?.data, [])
     const data2 = map(defaultTo(right[0]?.data, []), d => {
@@ -100,7 +108,8 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
         },
         {
           geometry: data2Type,
-          color: color[1]
+          color: seriesField2 ? color : color[1],
+          seriesField: seriesField2
         }
       ],
       interactions: [
@@ -335,7 +344,6 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
         tooltip: false
       }
     }
-    const xAxisExt = chart.xAxisExt
     const formatterMap = tooltipAttr.seriesTooltipFormatter
       ?.filter(i => i.show)
       .reduce((pre, next) => {
@@ -360,10 +368,8 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
           .forEach(item => {
             const formatter = formatterMap[item.data.quotaList[0].id]
             const value = valueFormatter(parseFloat(item.value as string), formatter.formatterCfg)
-            let name = isEmpty(formatter.chartShowName) ? formatter.name : formatter.chartShowName
-            if (xAxisExt?.length > 0) {
-              name = item.data.category
-            }
+            const name = item.data.category
+
             result.push({ ...item, name, value })
           })
         head.data.dynamicTooltipValue?.forEach(item => {

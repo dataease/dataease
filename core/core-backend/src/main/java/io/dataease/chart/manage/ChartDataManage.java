@@ -139,6 +139,8 @@ public class ChartDataManage {
                     view2.getSenior().put("assistLineCfg", assistLineCfg2);
                 }
             }
+            view2.setXAxisExt(view2.getExtBubble());
+            view2.setExtBubble(new ArrayList<>());
             ChartViewDTO right = calcData(view2, chartExtRequest, allFields, viewFields);
             data.put("right", right.getData());
 
@@ -164,6 +166,7 @@ public class ChartDataManage {
                 || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
                 || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
                 || StringUtils.equalsIgnoreCase(view.getType(), "sankey")
+                || StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
         ) {
             xAxis.addAll(xAxisExt);
         }
@@ -825,17 +828,18 @@ public class ChartDataManage {
                     || StringUtils.containsIgnoreCase(view.getType(), "gauge")
                     || StringUtils.equalsIgnoreCase("liquid", view.getType())) {
                 mapChart = ChartDataBuild.transNormalChartData(xAxis, yAxis, view, data, isDrill);
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")
-                    || StringUtils.containsIgnoreCase(view.getType(), "bidirectional-bar")
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "bidirectional-bar")
                     || StringUtils.containsIgnoreCase(view.getType(), "progress-bar")) {
-                mapChart = ChartDataBuild.transMixChartDataAntV(xAxis, yAxis, view, data, isDrill);
+                mapChart = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, new ArrayList<>(), yAxis, view, data, isDrill);
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
+                mapChart = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "label")) {
                 mapChart = ChartDataBuild.transLabelChartData(xAxis, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "quadrant")) {
-                mapChart = ChartDataBuild.transMixChartDataAntV(xAxis, yAxis, view, data, isDrill);
+                mapChart = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, new ArrayList<>(), yAxis, view, data, isDrill);
             } else if (StringUtils.equalsIgnoreCase(view.getType(), "bar-range")) {
                 mapChart = ChartDataBuild.transBarRangeDataAntV(skipBarRange, barRangeDate, xAxisBase, xAxis, yAxis, view, data, isDrill);
-            } else if(StringUtils.equalsIgnoreCase(view.getType(), "heat-map")){
+            } else if (StringUtils.equalsIgnoreCase(view.getType(), "heat-map")) {
                 mapChart = ChartDataBuild.transHeatMapChartDataAntV(xAxisBase, xAxis, yAxis, view, data, isDrill);
             } else {
                 mapChart = ChartDataBuild.transChartDataAntV(xAxis, yAxis, view, data, isDrill);

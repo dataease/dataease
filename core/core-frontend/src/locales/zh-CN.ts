@@ -843,6 +843,8 @@ export default {
     chart_data: '数据',
     chart_style: '样式',
     drag_block_type_axis: '类别轴',
+    drag_block_type_axis_left: '左子类别',
+    drag_block_type_axis_right: '右子类别',
     drag_block_type_axis_start: '源',
     drag_block_type_axis_end: '目的',
     drag_block_value_axis: '值轴',
