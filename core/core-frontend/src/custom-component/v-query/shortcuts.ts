@@ -37,70 +37,75 @@ let callback: Function = () => {}
 const shortcuts = [
   {
     text: 'dynamic_time.cweek',
-    onClick: ({ attrs, slots, emit }) => {
-      if (
-        callback([
-          new Date(+new Date(getThisStart('week')) + 24 * 1000 * 3600),
-          new Date(+new Date(getThisEnd('week')) + 24 * 1000 * 3600)
-        ])
-      )
-        return
-      emit('pick', [
-        dayjs(new Date(+new Date(getThisStart('week')) + 24 * 1000 * 3600)),
-        dayjs(new Date(+new Date(getThisEnd('week')) + 24 * 1000 * 3600))
-      ])
+    onClick: ({ emit }) => {
+      const startTime = new Date(+new Date(getThisStart('week')) + 24 * 1000 * 3600)
+      const endTime = new Date(+new Date(getThisEnd('week')) + 24 * 1000 * 3600)
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
   },
   {
     text: 'dynamic_month.current',
-    value: () => {
-      return [getThisStart('month'), getThisEnd('month')]
-    },
-    onClick: () => {
-      console.log(113)
+    onClick: ({ emit }) => {
+      const startTime = getThisStart('month')
+      const endTime = getThisEnd('month')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
   },
   {
     text: 'dynamic_time.cquarter',
-    value: () => {
-      return [getThisStart('quarter'), getThisEnd('quarter')]
-    },
-    onClick: () => {
-      console.log(113)
+    onClick: ({ emit }) => {
+      const startTime = getThisStart('quarter')
+      const endTime = getThisEnd('quarter')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
   },
   {
     text: 'dynamic_year.current',
-    value: () => {
-      return [getThisStart('year'), getThisEnd('year')]
+    onClick: ({ emit }) => {
+      const startTime = getThisStart('year')
+      const endTime = getThisEnd('year')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
   },
 
   {
     text: 'dynamic_time.lweek',
-    value: () => {
-      return [
-        new Date(+new Date(getLastStart('week')) + 24 * 1000 * 3600),
-        new Date(+new Date(getLastEnd('week')) + 24 * 1000 * 3600)
-      ]
+    onClick: ({ emit }) => {
+      const startTime = new Date(+new Date(getLastStart('week')) + 24 * 1000 * 3600)
+      const endTime = new Date(+new Date(getLastEnd('week')) + 24 * 1000 * 3600)
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
   },
   {
     text: 'dynamic_month.last',
-    value: () => {
-      return [getLastStart('month'), getLastEnd('month')]
+    onClick: ({ emit }) => {
+      const startTime = getLastStart('month')
+      const endTime = getLastEnd('month')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
   },
   {
     text: 'dynamic_time.lquarter',
-    value: () => {
-      return [getLastStart('quarter'), getLastEnd('quarter')]
+    onClick: ({ emit }) => {
+      const startTime = getLastStart('quarter')
+      const endTime = getLastEnd('quarter')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
   },
   {
     text: 'dynamic_year.last',
-    value: () => {
-      return [getLastStart('year'), getLastEnd('year')]
+    onClick: ({ emit }) => {
+      const startTime = getLastStart('year')
+      const endTime = getLastEnd('year')
+      if (callback([startTime, endTime])) return
+      emit('pick', [dayjs(startTime), dayjs(endTime)])
     }
   }
 ]
