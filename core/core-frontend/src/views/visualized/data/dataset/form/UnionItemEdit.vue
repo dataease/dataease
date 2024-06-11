@@ -8,7 +8,8 @@ const { t } = useI18n()
 const iconName = {
   left: 'icon_left-association',
   right: 'icon_right-association',
-  inner: 'icon_intersect'
+  inner: 'icon_intersect',
+  full: 'icon_full-association'
 }
 const props = defineProps({
   tableName: {
@@ -32,7 +33,8 @@ const props = defineProps({
 const unionOptions = [
   { label: t('dataset.left_join'), value: 'left' },
   { label: t('dataset.right_join'), value: 'right' },
-  { label: t('dataset.inner_join'), value: 'inner' }
+  { label: t('dataset.inner_join'), value: 'inner' },
+  { label: t('dataset.full_join'), value: 'full' }
 ]
 
 const init = () => {
