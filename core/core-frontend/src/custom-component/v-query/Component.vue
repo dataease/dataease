@@ -225,6 +225,19 @@ const updateQueryCriteria = () => {
         })
         ele.checkedFields = checkedFields
         ele.checkedFieldsMap = checkedFieldsMap
+      } else {
+        const checkedFields = []
+        datasetFieldList.value.forEach(itx => {
+          if (itx.tableId === ele.dataset.id) {
+            checkedFields.push(itx.id)
+          }
+        })
+        ele.checkedFields.forEach(itx => {
+          if (!checkedFields.includes(itx)) {
+            ele.checkedFieldsMap[itx] = ''
+          }
+        })
+        ele.checkedFields = ele.checkedFields.filter(itx => checkedFields.includes(itx))
       }
     })
 }
