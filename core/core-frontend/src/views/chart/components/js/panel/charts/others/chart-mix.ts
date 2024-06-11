@@ -43,12 +43,12 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   axisConfig = {
     ...this['axisConfig'],
     yAxis: {
-      name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.quota')}`,
+      name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.column_quota')}`,
       limit: 1,
       type: 'q'
     },
     yAxisExt: {
-      name: `${t('chart.drag_block_value_axis_right')} / ${t('chart.quota')}`,
+      name: `${t('chart.drag_block_value_axis_right')} / ${t('chart.line_quota')}`,
       limit: 1,
       type: 'q'
     }
@@ -61,8 +61,10 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     const left = cloneDeep(chart.data?.left?.data)
     const right = cloneDeep(chart.data?.right?.data)
 
-    const data1Type = (left[0]?.type === 'bar' ? 'column' : left[0]?.type) ?? 'column'
-    const data2Type = (right[0]?.type === 'bar' ? 'column' : right[0]?.type) ?? 'column'
+    // const data1Type = (left[0]?.type === 'bar' ? 'column' : left[0]?.type) ?? 'column'
+    // const data2Type = (right[0]?.type === 'bar' ? 'column' : right[0]?.type) ?? 'column'
+    const data1Type = 'column'
+    const data2Type = 'line'
 
     const data1 = defaultTo(left[0]?.data, [])
     const data2 = map(defaultTo(right[0]?.data, []), d => {
