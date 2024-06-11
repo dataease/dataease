@@ -36,8 +36,6 @@ import org.springframework.util.CollectionUtils;
 
 import java.text.MessageFormat;
 import java.util.*;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import java.util.stream.Collectors;
 
 /**
@@ -153,6 +151,7 @@ public class DatasetSQLManage {
             }
         }
         // build sql
+        boolean isFullJoin = false;
         if (!CollectionUtils.isEmpty(unionList)) {
             // field
             StringBuilder field = new StringBuilder();
@@ -167,6 +166,12 @@ public class DatasetSQLManage {
             for (UnionParamDTO unionParamDTO : unionList) {
                 // get join type
                 String joinType = convertUnionTypeToSQL(unionParamDTO.getUnionType());
+                // 如果不是全连接则需要校验连接方式
+                if (!isFullJoin) {
+                    if (StringUtils.equalsIgnoreCase(unionParamDTO.getUnionType(), "full")) {
+                        isFullJoin = true;
+                    }
+                }
 
                 SQLObj parentSQLObj = unionParamDTO.getParentSQLObj();
                 SQLObj currentSQLObj = unionParamDTO.getCurrentSQLObj();
@@ -253,6 +258,7 @@ public class DatasetSQLManage {
         map.put("field", checkedFields);
         map.put("join", unionList);
         map.put("dsMap", dsMap);
+        map.put("isFullJoin", isFullJoin);
         return map;
     }
 
