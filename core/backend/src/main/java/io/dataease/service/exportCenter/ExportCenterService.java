@@ -388,6 +388,7 @@ public class ExportCenterService {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
+        CurrentUserDto currentUserDto = AuthUtils.getUser();
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
@@ -542,7 +543,7 @@ public class ExportCenterService {
                 }
                 wb.close();
 
-                if (ObjectUtils.isNotEmpty(AuthUtils.getUser())) {
+                if (ObjectUtils.isNotEmpty(currentUserDto)) {
                     String viewId = request.getViewId();
                     ChartViewWithBLOBs chartViewWithBLOBs = chartViewService.get(viewId);
                     String pid = chartViewWithBLOBs.getSceneId();
