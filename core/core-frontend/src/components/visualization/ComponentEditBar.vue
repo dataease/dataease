@@ -10,6 +10,16 @@
     ]"
     @mousedown="fieldsAreaDown"
   >
+    <el-tooltip
+      effect="dark"
+      placement="top"
+      :content="'排序'"
+      v-if="element.component === 'DeTabs' && showPosition === 'canvas'"
+    >
+      <el-icon class="bar-base-icon" @click="tabSort">
+        <Sort />
+      </el-icon>
+    </el-tooltip>
     <template v-if="element.component === 'VQuery' && showPosition === 'canvas'">
       <span title="添加查询条件">
         <el-icon class="bar-base-icon" @click="addQueryCriteria">
@@ -142,11 +152,12 @@
       </template>
       <fields-list :fields="state.curFields" :element="element" />
     </el-popover>
+    <custom-tabs-sort ref="customTabsSortRef" :element="element"></custom-tabs-sort>
   </div>
 </template>
 
 <script lang="ts" setup>
-import { computed, h, onBeforeUnmount, onMounted, reactive, toRefs, watch } from 'vue'
+import { computed, h, onBeforeUnmount, onMounted, reactive, ref, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -158,9 +169,11 @@ import { exportExcelDownload } from '@/views/chart/components/js/util'
 import FieldsList from '@/custom-component/rich-text/FieldsList.vue'
 import { RefreshLeft } from '@element-plus/icons-vue'
 import { ElMessage, ElTooltip, ElButton } from 'element-plus-secondary'
+import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
+const customTabsSortRef = ref(null)
 const emits = defineEmits([
   'userViewEnlargeOpen',
   'closePreview',
@@ -272,6 +285,10 @@ const state = reactive({
   viewXArray: [],
   batchOptCheckModel: false
 })
+
+const tabSort = () => {
+  customTabsSortRef.value.sortInit()
+}
 
 const downloadClick = () => {
   dvMainStore.setCurComponent({ component: element.value, index: index.value })
