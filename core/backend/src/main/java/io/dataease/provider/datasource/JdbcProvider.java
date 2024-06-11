@@ -951,7 +951,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
                 break;
             case pg:
                 PgConfiguration pgConfiguration = new Gson().fromJson(datasource.getConfiguration(), PgConfiguration.class);
-                if (!pgConfiguration.getDataBase().matches("^[0-9a-zA-Z_]{1,}$")) {
+                if (!pgConfiguration.getDataBase().matches("^[0-9a-zA-Z_.-]{1,}$")) {
                     throw new Exception("Invalid database name");
                 }
                 break;
