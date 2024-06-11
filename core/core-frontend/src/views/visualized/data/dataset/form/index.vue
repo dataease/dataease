@@ -1461,21 +1461,39 @@ const getDsIconName = data => {
               </div>
             </div>
             <div class="preview-data">
-              <el-auto-resizer>
-                <template #default="{ height, width }">
-                  <el-table-v2
-                    :columns="columns"
-                    header-class="header-cell"
-                    :data="tableData"
-                    :width="width"
-                    :height="height"
-                    fixed
-                    ><template #empty>
-                      <empty-background description="暂无数据" img-type="noneWhite" />
-                    </template>
-                  </el-table-v2>
+              <el-table
+                v-loading="dataPreviewLoading"
+                header-class="header-cell"
+                :data="tableData"
+                border
+                style="width: 100%; height: 100%"
+              >
+                <el-table-column
+                  :key="column.dataKey"
+                  v-for="(column, index) in columns"
+                  :prop="column.dataKey"
+                  :label="column.title"
+                  :width="columns.length - 1 === index ? 150 : auto"
+                  :fixed="columns.length - 1 === index ? 'right' : false"
+                >
+                  <template #header>
+                    <div class="flex-align-center">
+                      <ElIcon style="margin-right: 6px">
+                        <Icon
+                          :name="`field_${fieldType[column.deType]}`"
+                          :className="`field-icon-${fieldType[column.deType]}`"
+                        ></Icon>
+                      </ElIcon>
+                      <span class="ellipsis" :title="column.title" style="width: 120px">
+                        {{ column.title }}
+                      </span>
+                    </div>
+                  </template>
+                </el-table-column>
+                <template #empty>
+                  <empty-background description="暂无数据" img-type="noneWhite" />
                 </template>
-              </el-auto-resizer>
+              </el-table>
             </div>
           </div>
           <div v-show="tabActive !== 'preview' && !!allfields.length" class="batch-area">
