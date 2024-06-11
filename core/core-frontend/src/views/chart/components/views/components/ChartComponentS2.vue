@@ -29,8 +29,14 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import { trackBarStyleCheck } from '@/utils/canvasUtils'
 
 const dvMainStore = dvMainStoreWithOut()
-const { nowPanelTrackInfo, nowPanelJumpInfo, mobileInPc, canvasStyleData, embeddedCallBack } =
-  storeToRefs(dvMainStore)
+const {
+  nowPanelTrackInfo,
+  nowPanelJumpInfo,
+  mobileInPc,
+  canvasStyleData,
+  embeddedCallBack,
+  inMobile
+} = storeToRefs(dvMainStore)
 const { emitter } = useEmitt()
 
 const props = defineProps({
@@ -332,7 +338,7 @@ const trackClick = trackAction => {
       dvMainStore.addViewTrackFilter(linkageParam)
       break
     case 'jump':
-      if (mobileInPc.value) return
+      if (mobileInPc.value && !inMobile.value) return
       emit('onJumpClick', jumpParam)
       break
     default:
@@ -356,7 +362,10 @@ const trackMenu = computed(() => {
       jumpCount++
     }
   })
-  jumpCount && view.value?.jumpActive && !mobileInPc.value && trackMenuInfo.push('jump')
+  jumpCount &&
+    view.value?.jumpActive &&
+    (!mobileInPc.value || inMobile.value) &&
+    trackMenuInfo.push('jump')
   linkageCount && view.value?.linkageActive && trackMenuInfo.push('linkage')
   view.value.drillFields.length && trackMenuInfo.push('drill')
   // 如果同时配置jump linkage drill 切配置联动时同时下钻 在实际只显示两个 '跳转' '联动和下钻'

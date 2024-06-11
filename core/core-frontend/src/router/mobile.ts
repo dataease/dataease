@@ -58,6 +58,20 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/mobile/panel/NotSupport.vue')
+  },
+  {
+    path: '/DashboardEmpty',
+    name: 'DashboardEmpty',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/mobile/panel/DashboardEmpty.vue')
+  },
+  {
+    path: '/preview',
+    name: 'preview',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/data-visualization/PreviewCanvasMobile.vue')
   }
 ]
 

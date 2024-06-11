@@ -35,6 +35,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       embeddedCallBack: 'no', // 嵌入模式是否允许反馈参数
       editMode: 'preview', // 编辑器模式 edit preview
       mobileInPc: false,
+      inMobile: false,
       firstLoadMap: [],
       canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
       // 当前展示画布缓存数据
@@ -191,6 +192,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     aceSetCanvasData(value) {
       this.canvasStyleData = value
+    },
+    setInMobile(value) {
+      this.inMobile = value
     },
 
     aceSetCurComponent(value) {
