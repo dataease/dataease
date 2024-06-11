@@ -532,11 +532,11 @@ const mousedownDrag = () => {
                 <div class="table-filed" v-loading="gridDataLoading">
                   <div class="top flex-align-center">
                     <div class="title ellipsis">
-                      {{ ele.name }}
+                      {{ ele.name || ele.tableName }}
                     </div>
                     <el-icon
                       class="hover-icon de-hover-icon-primary"
-                      @click.stop="copyInfo(ele.name)"
+                      @click.stop="copyInfo(ele.name || ele.tableName)"
                     >
                       <Icon name="icon_copy_outlined"></Icon>
                     </el-icon>
@@ -565,6 +565,11 @@ const mousedownDrag = () => {
                             </el-icon>
                             {{ scope.row.originName }}
                           </div>
+                        </template>
+                      </el-table-column>
+                      <el-table-column :label="t('common.label')">
+                        <template #default="scope">
+                          {{ scope.row.description || '-' }}
                         </template>
                       </el-table-column>
                       <el-table-column :label="t('common.operate')">
