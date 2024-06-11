@@ -37,6 +37,7 @@ import { onMounted, ref, toRefs } from 'vue'
 import { deepCopy } from '@/utils/utils'
 import { ElButton } from 'element-plus-secondary'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import eventBus from '@/utils/eventBus'
 const snapshotStore = snapshotStoreWithOut()
 const props = defineProps({
   element: {
@@ -66,6 +67,7 @@ const closeDialog = () => {
 const save = () => {
   element.value.propValue = deepCopy(sortList.value)
   snapshotStore.recordSnapshotCache()
+  eventBus.emit('onTabSortChange-' + element.value.id)
   closeDialog()
 }
 
