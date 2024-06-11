@@ -40,6 +40,7 @@ declare type AxisType =
   | 'xAxis'
   | 'yAxis'
   | 'xAxisExt'
+  | 'xAxisExtRight'
   | 'yAxisExt'
   | 'extBubble'
   | 'drill'

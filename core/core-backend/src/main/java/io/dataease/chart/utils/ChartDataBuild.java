@@ -515,7 +515,7 @@ public class ChartDataBuild {
     }
 
     // antV组合图形
-    public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
+    public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis,List<ChartViewFieldDTO> xAxisExt,  List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
         List<Series> series = new ArrayList<>();
@@ -540,14 +540,23 @@ public class ChartDataBuild {
                 if (isDrill) {
                     a.append(d[xAxis.size() - 1]);
                 } else {
-                    for (int ii = 0; ii < xAxis.size(); ii++) {
-                        if (ii == xAxis.size() - 1) {
+                    for (int ii = 0; ii < xAxisBase.size(); ii++) {
+                        if (ii == xAxisBase.size() - 1) {
                             a.append(d[ii]);
                         } else {
                             a.append(d[ii]).append("\n");
                         }
                     }
                 }
+                StringBuilder b = new StringBuilder();
+                for (int ii = xAxisBase.size(); ii < xAxisBase.size() + xAxisExt.size(); ii++) {
+                    if (ii == xAxisBase.size() + xAxisExt.size() - 1) {
+                        b.append(d[ii]);
+                    } else {
+                        b.append(d[ii]).append("\n");
+                    }
+                }
+
                 axisChartDataDTO.setName(a.toString());
                 axisChartDataDTO.setField(a.toString());
 
@@ -572,7 +581,9 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
+                axisChartDataDTO.setCategory(
+                        StringUtils.defaultIfBlank(b.toString(),
+                        StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName())));
                 buildDynamicValue(view, axisChartDataDTO, d, size, extSize);
                 series.get(j).getData().add(axisChartDataDTO);
             }

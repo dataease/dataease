@@ -371,6 +371,8 @@ const dimensionItemRemove = item => {
     view.value.yAxis.splice(item.index, 1)
   } else if (item.removeType === 'quotaExt') {
     view.value.yAxisExt.splice(item.index, 1)
+  } else if (item.removeType === 'xAxisExtRight') {
+    view.value.extBubble.splice(item.index, 1)
   }
 }
 
@@ -459,6 +461,13 @@ const onExtCustomSort = item => {
   recordSnapshotInfo('render')
   state.customSortField = view.value.xAxisExt[item.index]
   customSortAxis.value = 'xAxisExt'
+  customSort()
+}
+
+const onExtCustomRightSort = item => {
+  recordSnapshotInfo('render')
+  state.customSortField = view.value.extBubble[item.index]
+  customSortAxis.value = 'extBubble'
   customSort()
 }
 
@@ -1023,6 +1032,7 @@ const saveRename = ref => {
   ref.validate(valid => {
     if (valid) {
       const { renameType, index, chartShowName } = state.itemForm
+      console.log(renameType)
       let axisType, axis
       switch (renameType) {
         case 'quota':
@@ -1040,6 +1050,9 @@ const saveRename = ref => {
           break
         case 'dimensionExt':
           view.value.xAxisExt[index].chartShowName = chartShowName
+          break
+        case 'xAxisExtRight':
+          view.value.extBubble[index].chartShowName = chartShowName
           break
         case 'dimensionStack':
           view.value.extStack[index].chartShowName = chartShowName
@@ -1861,6 +1874,62 @@ const deleteChartFieldItem = id => {
                             </template>
                           </draggable>
                           <drag-placeholder :drag-list="view.yAxis" />
+                        </div>
+                      </el-row>
+                      <!-- xAxisExtRight -->
+                      <el-row class="padding-lr drag-data" v-if="showAxis('xAxisExtRight')">
+                        <div class="form-draggable-title">
+                          <span>
+                            {{ chartViewInstance.axisConfig.extBubble.name }}
+                          </span>
+                          <el-tooltip
+                            :effect="toolTip"
+                            placement="top"
+                            :content="t('common.delete')"
+                          >
+                            <el-icon
+                              class="remove-icon"
+                              :class="{ 'remove-icon--dark': themes === 'dark' }"
+                              size="14px"
+                              @click="removeItems('extBubble')"
+                            >
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                            </el-icon>
+                          </el-tooltip>
+                        </div>
+                        <div
+                          @drop="$event => drop($event, 'extBubble')"
+                          @dragenter="dragEnter"
+                          @dragover="$event => dragOver($event)"
+                        >
+                          <draggable
+                            :list="view.extBubble"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            :class="{ dark: themes === 'dark' }"
+                            @add="addExtBubble"
+                            @change="e => onAxisChange(e, 'extBubble')"
+                          >
+                            <template #item="{ element, index }">
+                              <dimension-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                :themes="props.themes"
+                                type="xAxisExtRight"
+                                @onDimensionItemChange="dimensionItemChange"
+                                @onDimensionItemRemove="dimensionItemRemove"
+                                @onNameEdit="showRename"
+                                @onCustomSort="onExtCustomRightSort"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :drag-list="view.extBubble" />
                         </div>
                       </el-row>
                       <!--yAxisExt-->
