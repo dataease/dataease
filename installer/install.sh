@@ -33,6 +33,7 @@ function check_and_prepare_env_params() {
    if [ -f /usr/bin/dectl ]; then
       # 获取已安装的 DataEase 的运行目录
       DE_BASE=$(grep "^DE_BASE=" /usr/bin/dectl | cut -d'=' -f2)
+      DE_BASE_OLD=$DE_BASE
       sed -i -e "s#DE_BASE=.*#DE_BASE=${DE_BASE}#g" dectl
       \cp dectl /usr/local/bin && chmod +x /usr/local/bin/dectl
 
@@ -54,6 +55,10 @@ function check_and_prepare_env_params() {
 
    set -a
    source ${CURRENT_DIR}/install.conf
+   if [[ $DE_BASE_OLD ]];then
+      DE_BASE=$DE_BASE_OLD
+      export DE_BASE=$DE_BASE_OLD
+   fi
    if [[ -d $DE_BASE ]] && [[ -f $DE_BASE/dataease2.0/.env ]]; then
       source $DE_BASE/dataease2.0/.env
       INSTALL_TYPE='upgrade'
@@ -61,7 +66,7 @@ function check_and_prepare_env_params() {
       conf_install_mode=$(prop $CURRENT_DIR/install.conf DE_INSTALL_MODE)
       if [[ $DE_INSTALL_MODE == 'community' ]] && [[ $conf_install_mode == 'enterprise' ]];then
          DE_INSTALL_MODE=$conf_install_mode
-         export DE_INSTALL_MODE
+         export DE_INSTALL_MODE=$conf_install_mode
       fi
       log_content "升级安装"
    else
