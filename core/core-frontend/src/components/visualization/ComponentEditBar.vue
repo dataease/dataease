@@ -131,7 +131,7 @@
     <el-dropdown
       trigger="click"
       placement="right-start"
-      v-if="element.innerType !== 'rich-text' && barShowCheck('previewDownload')"
+      v-if="element.innerType !== 'rich-text' && barShowCheck('previewDownload') && authShow"
     >
       <el-icon @click="downloadClick" class="bar-base-icon">
         <el-tooltip :content="t('chart.export')" effect="dark" placement="bottom">
@@ -174,6 +174,7 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
 const customTabsSortRef = ref(null)
+const authShow = computed(() => dvInfo.value.weight > 3)
 const emits = defineEmits([
   'userViewEnlargeOpen',
   'closePreview',
@@ -264,8 +265,15 @@ const props = defineProps({
 })
 
 const { element, index, showPosition, canvasId } = toRefs(props)
-const { batchOptStatus, pcMatrixCount, curComponent, componentData, canvasViewInfo, mobileInPc } =
-  storeToRefs(dvMainStore)
+const {
+  batchOptStatus,
+  pcMatrixCount,
+  curComponent,
+  componentData,
+  canvasViewInfo,
+  mobileInPc,
+  dvInfo
+} = storeToRefs(dvMainStore)
 
 const state = reactive({
   systemOS: 'Mac',
