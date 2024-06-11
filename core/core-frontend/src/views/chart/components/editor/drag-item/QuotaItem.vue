@@ -345,7 +345,7 @@ onMounted(() => {
           class="drop-style"
           :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
         >
-          <el-dropdown-item @click.prevent v-if="chart.type === 'chart-mix'">
+          <!--          <el-dropdown-item @click.prevent v-if="chart.type === 'chart-mix'">
             <el-dropdown
               :effect="themes"
               placement="right-start"
@@ -376,7 +376,7 @@ onMounted(() => {
                       :class="'bar' === item.chartType ? 'content-active' : ''"
                     >
                       {{ t('chart.chart_bar') }}
-                      <el-icon class="sub-menu-content--icon">
+                      <el-icon class="sub-menu-content&#45;&#45;icon">
                         <Icon name="icon_done_outlined" v-if="'bar' === item.chartType" />
                       </el-icon>
                     </span>
@@ -387,7 +387,7 @@ onMounted(() => {
                       :class="'line' === item.chartType ? 'content-active' : ''"
                     >
                       {{ t('chart.chart_line') }}
-                      <el-icon class="sub-menu-content--icon">
+                      <el-icon class="sub-menu-content&#45;&#45;icon">
                         <Icon name="icon_done_outlined" v-if="'line' === item.chartType" />
                       </el-icon>
                     </span>
@@ -395,11 +395,10 @@ onMounted(() => {
                 </el-dropdown-menu>
               </template>
             </el-dropdown>
-          </el-dropdown-item>
+          </el-dropdown-item>-->
           <el-dropdown-item
             @click.prevent
             v-if="!item.chartId && chart.type !== 'table-info' && item.summary !== ''"
-            :divided="chart.type === 'chart-mix'"
           >
             <el-dropdown
               :effect="themes"
