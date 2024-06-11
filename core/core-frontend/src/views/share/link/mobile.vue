@@ -1,8 +1,5 @@
 <template>
-  <div
-    :class="curType === 'dashboard' ? 'mobile-link-container' : 'link-container'"
-    v-loading="loading"
-  >
+  <div class="mobile-link-container" v-loading="loading">
     <LinkError v-if="!loading && !linkExist" />
     <Exp v-else-if="!loading && linkExp" />
     <PwdTips v-else-if="!loading && !pwdValid" />
@@ -15,22 +12,16 @@
       :dv-info="state.dvInfo"
       :cur-gap="state.curPreviewGap"
     ></de-preview>
-    <PreviewCanvas
-      v-else-if="curType !== 'dashboard'"
-      :class="{ 'hidden-link': loading }"
-      ref="pcanvas"
-      public-link-status="true"
-    />
   </div>
 </template>
 <script lang="ts" setup>
 import { onMounted, nextTick, ref, reactive } from 'vue'
 import { initCanvasDataMobile } from '@/utils/canvasUtils'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import PreviewCanvas from '@/views/data-visualization/PreviewCanvas.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { ProxyInfo, shareProxy } from './ShareProxy'
 import Exp from './exp.vue'
+import router from '@/router/mobile'
 import LinkError from './error.vue'
 import PwdTips from './pwd.vue'
 const linkExist = ref(false)
@@ -83,8 +74,6 @@ const loadCanvasData = (dvId, weight?) => {
 }
 
 const curType = ref('')
-const pcanvas = ref(null)
-
 onMounted(async () => {
   const proxyInfo = (await shareProxy.loadProxy()) as ProxyInfo
   curType.value = proxyInfo.type || 'dashboard'
@@ -102,11 +91,8 @@ onMounted(async () => {
       dvMainStore.setPublicLinkStatus(true)
       loading.value = false
     } else {
-      const method = pcanvas?.value?.loadCanvasDataAsync
-      if (method) {
-        method(proxyInfo.resourceId, proxyInfo.type, null)
-      }
       loading.value = false
+      router.push('/dvCanvas')
     }
   })
 })
@@ -117,17 +103,5 @@ onMounted(async () => {
   height: 100vh;
   overflow-y: auto;
   position: relative;
-}
-</style>
-<style lang="less" scoped>
-.link-container {
-  position: absolute !important;
-  top: 0;
-  bottom: 0;
-  left: 0;
-  right: 0;
-}
-.hidden-link {
-  display: none !important;
 }
 </style>
