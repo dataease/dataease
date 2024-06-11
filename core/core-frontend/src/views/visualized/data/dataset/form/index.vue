@@ -117,20 +117,12 @@ const fieldOptions = [
         label: 'yyyy/MM/dd'
       },
       {
-        value: 'yyyyMMdd',
-        label: 'yyyyMMdd'
-      },
-      {
         value: 'yyyy-MM-dd HH:mm:ss',
         label: 'yyyy-MM-dd HH:mm:ss'
       },
       {
         value: 'yyyy/MM/dd HH:mm:ss',
         label: 'yyyy/MM/dd HH:mm:ss'
-      },
-      {
-        value: 'yyyyMMdd HH:mm:ss',
-        label: 'yyyyMMdd HH:mm:ss'
       },
       {
         value: 'custom',
