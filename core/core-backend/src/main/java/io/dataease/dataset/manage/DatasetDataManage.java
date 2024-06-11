@@ -77,6 +77,8 @@ public class DatasetDataManage {
 
     private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
+    private static final List<String> notFullDs = List.of("mysql", "mariadb", "Excel", "API");
+
     public List<DatasetTableFieldDTO> getTableFields(DatasetTableDTO datasetTableDTO) throws Exception {
         List<DatasetTableFieldDTO> list = null;
         List<TableField> tableFields = null;
@@ -189,6 +191,9 @@ public class DatasetDataManage {
         boolean needOrder = Utils.isNeedOrder(dsList);
         boolean crossDs = Utils.isCrossDs(dsMap);
         if (!crossDs) {
+            if (notFullDs.contains(dsMap.entrySet().iterator().next().getValue().getType()) && (boolean) sqlMap.get("isFullJoin")) {
+                DEException.throwException(Translator.get("i18n_not_full"));
+            }
             sql = Utils.replaceSchemaAlias(sql, dsMap);
         }
 
