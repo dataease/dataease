@@ -51,6 +51,13 @@ export const routes: AppRouteRecordRaw[] = [
     hidden: true,
     meta: {},
     component: () => import('@/views/mobile/panel/Mobile.vue')
+  },
+  {
+    path: '/dvCanvas',
+    name: 'dv',
+    hidden: true,
+    meta: {},
+    component: () => import('@/views/mobile/panel/NotSupport.vue')
   }
 ]
 

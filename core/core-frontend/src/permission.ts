@@ -39,6 +39,8 @@ router.beforeEach(async (to, from, next) => {
     loadDone()
     if (to.name === 'link') {
       window.location.href = window.origin + '/mobile.html#' + to.path
+    } else if (to.path === '/dvCanvas') {
+      window.location.href = window.origin + '/mobile.html#' + to.path
     } else if (
       wsCache.get('user.token') ||
       isDesktop ||
