@@ -36,7 +36,8 @@ const primaryColor = computed(() => {
 const iconName = {
   left: 'icon_left-association',
   right: 'icon_right-association',
-  inner: 'icon_intersect'
+  inner: 'icon_intersect',
+  full: 'icon_full-association'
 }
 const { t } = useI18n()
 const editSqlField = ref(false)
