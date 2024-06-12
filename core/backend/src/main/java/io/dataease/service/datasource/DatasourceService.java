@@ -181,7 +181,7 @@ public class DatasourceService {
         });
         if (!datasourceDTO.getType().equalsIgnoreCase(DatasourceTypes.api.toString())) {
             JdbcConfiguration configuration = new Gson().fromJson(datasourceDTO.getConfiguration(), JdbcConfiguration.class);
-            if (StringUtils.isNotEmpty(configuration.getCustomDriver()) && !configuration.getCustomDriver().startsWith("default-")) {
+            if (StringUtils.isNotEmpty(configuration.getCustomDriver()) && !configuration.getCustomDriver().contains("default")) {
                 datasourceDTO.setCalculationMode(DatasourceCalculationMode.DIRECT);
             }
             JSONObject jsonObject = JSONObject.parseObject(datasourceDTO.getConfiguration());
