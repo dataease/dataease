@@ -203,6 +203,7 @@ const buildInnerRefreshTimer = (
 // 清除相同sourceViewId 的 联动条件
 const clearViewLinkage = () => {
   dvMainStore.clearViewLinkage(element.value.id)
+  useEmitt().emitter.emit('clearPanelLinkage', { viewId: element.value.id })
 }
 
 watch(
@@ -501,6 +502,14 @@ onMounted(() => {
   if (!listenerEnable.value) {
     return
   }
+  useEmitt({
+    name: 'clearPanelLinkage',
+    callback: function (param) {
+      if (param.viewId === 'all' || param.viewId === element.value.id) {
+        chartComponent?.value?.clearLinkage()
+      }
+    }
+  })
   useEmitt({
     name: 'snapshotChangeToView',
     callback: function (cacheViewInfo) {

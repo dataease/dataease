@@ -479,6 +479,7 @@ const existLinkage = computed(() => {
 // 清除相同sourceViewId 的 联动条件
 const clearLinkage = () => {
   dvMainStore.clearViewLinkage(element.value.id)
+  useEmitt().emitter.emit('clearPanelLinkage', { viewId: element.value.id })
 }
 
 // 富文本-Begin
