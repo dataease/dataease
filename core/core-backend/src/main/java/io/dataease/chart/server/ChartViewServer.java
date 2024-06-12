@@ -67,4 +67,9 @@ public class ChartViewServer implements ChartViewApi {
     public void deleteField(Long id) {
         chartViewManege.deleteField(id);
     }
+
+    @Override
+    public void deleteFieldByChart(Long chartId) {
+        chartViewManege.deleteFieldByChartId(chartId);
+    }
 }

@@ -13,6 +13,7 @@ import io.dataease.chart.dao.ext.mapper.ExtChartViewMapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.manage.PermissionManage;
+import io.dataease.dataset.utils.TableUtils;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
@@ -189,6 +190,8 @@ public class ChartViewManege {
         coreDatasetTableField.setExtField(2);
         coreDatasetTableField.setOriginName("[" + id + "]");
         coreDatasetTableField.setId(IDUtils.snowID());
+        coreDatasetTableField.setDataeaseName(TableUtils.fieldNameShort(coreDatasetTableField.getId() + "_" + coreDatasetTableField.getOriginName()));
+        coreDatasetTableField.setFieldShortName(coreDatasetTableField.getDataeaseName());
         coreDatasetTableFieldMapper.insert(coreDatasetTableField);
     }
 
@@ -203,6 +206,12 @@ public class ChartViewManege {
 
     public void deleteField(Long id) {
         coreDatasetTableFieldMapper.deleteById(id);
+    }
+
+    public void deleteFieldByChartId(Long chartId) {
+        QueryWrapper<CoreDatasetTableField> queryWrapper = new QueryWrapper<>();
+        queryWrapper.eq("chart_id", chartId);
+        coreDatasetTableFieldMapper.delete(queryWrapper);
     }
 
     public DatasetTableFieldDTO createCountField(Long id) {
