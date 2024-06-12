@@ -209,15 +209,27 @@ public class XpackShareManage {
         if (StringUtils.isBlank(ciphertext)) return false;
         String text = RsaUtils.decryptStr(ciphertext);
         int splitIndex = text.indexOf(",");
-        String pwd = text.substring(splitIndex + 1);
+        String pwd;
+        if (splitIndex == -1) {
+            splitIndex = 8;
+            pwd = text.substring(splitIndex);
+        } else {
+            pwd = text.substring(splitIndex + 1);
+        }
         String uuid = text.substring(0, splitIndex);
         return StringUtils.equals(xpackShare.getUuid(), uuid) && StringUtils.equals(xpackShare.getPwd(), pwd);
     }
 
     public boolean validatePwd(XpackSharePwdValidator validator) {
         String ciphertext = RsaUtils.decryptStr(validator.getCiphertext());
+        String pwd;
         int splitIndex = ciphertext.indexOf(",");
-        String pwd = ciphertext.substring(splitIndex + 1);
+        if (splitIndex == -1) {
+            splitIndex = 8;
+            pwd = ciphertext.substring(splitIndex);
+        } else {
+            pwd = ciphertext.substring(splitIndex + 1);
+        }
         String uuid = ciphertext.substring(0, splitIndex);
         QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
         queryWrapper.eq("uuid", uuid);
