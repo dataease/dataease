@@ -11,7 +11,6 @@ import io.dataease.utils.StaticResourceUtils;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.util.Assert;
-import org.springframework.util.Base64Utils;
 import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
@@ -24,6 +23,7 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Base64;
 import java.util.HashMap;
 import java.util.Map;
 
@@ -91,7 +91,7 @@ public class StaticResourceServer implements StaticResourceApi {
             } else {
                 if (StringUtils.isNotEmpty(content)) {
                     Files.createFile(uploadPath);
-                    FileCopyUtils.copy(Base64Utils.decodeFromString(content), Files.newOutputStream(uploadPath));
+                    FileCopyUtils.copy(Base64.getDecoder().decode(content), Files.newOutputStream(uploadPath));
                 }
             }
         } catch (Exception e) {
