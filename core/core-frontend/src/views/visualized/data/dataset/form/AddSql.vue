@@ -785,6 +785,8 @@ const mousedownDrag = () => {
               v-if="scope.row.type[0] === 'DATETIME-YEAR'"
               v-model="scope.row.defaultValue"
               type="year"
+              format="YYYY"
+              value-format="YYYY"
               :placeholder="t('dataset.select_year')"
             />
 
