@@ -385,12 +385,14 @@ initFunction()
           {{ t('dataset.click_ref_function') }}
           <el-tooltip class="item" effect="dark" placement="bottom">
             <template #content>
-              {{ t('dataset.calc_tips.tip6') }}
-              <br />
-              {{ t('dataset.calc_tips.tip7') }}
-              <br />
-              {{ t('dataset.calc_tips.tip8') }}
-              https://calcite.apache.org/docs/reference.html
+              <div v-if="props.crossDs">
+                {{ t('dataset.calc_tips.tip6') }}
+                <br />
+                {{ t('dataset.calc_tips.tip8') }}
+                <br />
+                https://calcite.apache.org/docs/reference.html
+              </div>
+              <div v-else>{{ t('dataset.calc_tips.tip7') }}</div>
             </template>
             <el-icon size="16px">
               <Icon name="icon_info_outlined"></Icon>
