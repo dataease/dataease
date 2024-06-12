@@ -1,5 +1,14 @@
 <script lang="ts" setup>
-import { computed, onBeforeUnmount, onMounted, reactive, ref, shallowRef, toRefs } from 'vue'
+import {
+  computed,
+  nextTick,
+  onBeforeUnmount,
+  onMounted,
+  reactive,
+  ref,
+  shallowRef,
+  toRefs
+} from 'vue'
 import { getData } from '@/api/chart'
 import { ChartLibraryType } from '@/views/chart/components/js/panel/types'
 import { G2PlotChartView } from '@/views/chart/components/js/panel/types/impl/g2plot'
@@ -68,6 +77,8 @@ const { view, showPosition, scale, terminal } = toRefs(props)
 
 const isError = ref(false)
 const errMsg = ref('')
+const linkageActiveHistory = ref(false)
+const antVRenderStatus = ref(false)
 
 const state = reactive({
   trackBarStyle: {
@@ -85,6 +96,52 @@ let chartData = shallowRef<Partial<Chart['data']>>({
 
 const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
+
+const clearLinkage = () => {
+  linkageActiveHistory.value = false
+  myChart?.setState('active', () => true, false)
+  myChart?.setState('inactive', () => true, false)
+  myChart?.setState('selected', () => true, false)
+}
+const reDrawView = () => {
+  linkageActiveHistory.value = false
+  myChart?.render()
+}
+const linkageActivePre = () => {
+  if (linkageActiveHistory.value) {
+    reDrawView()
+  }
+  nextTick(() => {
+    linkageActive()
+  })
+}
+const linkageActive = () => {
+  linkageActiveHistory.value = true
+  myChart?.setState('selected', param => {
+    if (Array.isArray(param)) {
+      return false
+    } else {
+      if (checkSelected(param)) {
+        return true
+      }
+    }
+  })
+  myChart?.setState('inactive', param => {
+    if (Array.isArray(param)) {
+      return false
+    } else {
+      if (!checkSelected(param)) {
+        return true
+      }
+    }
+  })
+}
+const checkSelected = param => {
+  return (
+    state.linkageActiveParam.name.indexOf(param.name) > -1 &&
+    state.linkageActiveParam.category === param.category
+  )
+}
 
 const calcData = async (view, callback) => {
   if (view.tableId || view['dataFrom'] === 'template') {
@@ -165,6 +222,9 @@ const renderG2Plot = (chart, chartView: G2PlotChartView<any, any>) => {
     quadrantDefaultBaseline
   })
   myChart?.render()
+  if (linkageActiveHistory.value) {
+    linkageActive()
+  }
 }
 
 const dynamicAreaId = ref('')
@@ -325,6 +385,7 @@ const trackClick = trackAction => {
       emit('onChartClick', param)
       break
     case 'linkage':
+      linkageActivePre()
       dvMainStore.addViewTrackFilter(linkageParam)
       break
     case 'jump':
@@ -373,7 +434,8 @@ const quadrantDefaultBaseline = defaultQuadrant => {
 defineExpose({
   calcData,
   renderChart,
-  trackMenu
+  trackMenu,
+  clearLinkage
 })
 let resizeObserver
 const TOLERANCE = 0.01
