@@ -51,4 +51,8 @@ public interface ChartViewApi {
     @Operation(summary = "视图删除字段")
     @PostMapping("deleteField/{id}")
     void deleteField(@PathVariable Long id);
+
+    @Operation(summary = "清空当前视图计算字段")
+    @PostMapping("deleteFieldByChart/{chartId}")
+    void deleteFieldByChart(@PathVariable Long chartId);
 }

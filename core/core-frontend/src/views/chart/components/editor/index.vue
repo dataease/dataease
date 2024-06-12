@@ -50,7 +50,13 @@ import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
 import { set, concat, keys } from 'lodash-es'
-import { Field, getFieldByDQ, copyChartField, deleteChartField } from '@/api/chart'
+import {
+  Field,
+  getFieldByDQ,
+  copyChartField,
+  deleteChartField,
+  deleteChartFieldByChartId
+} from '@/api/chart'
 import ChartTemplateInfo from '@/views/chart/components/editor/common/ChartTemplateInfo.vue'
 import { XpackComponent } from '@/components/plugin'
 import { useEmbedded } from '@/store/modules/embedded'
@@ -191,15 +197,22 @@ provide('filedList', () => filedList.value)
 watch(
   [() => view.value['tableId']],
   () => {
-    getFields(props.view.tableId, props.view.id)
-    const nodeId = view.value['tableId']
-    if (!!nodeId) {
-      cacheId = nodeId as unknown as string
-    }
-    const node = datasetSelector?.value?.getNode(nodeId)
-    if (node?.data) {
-      curDatasetWeight.value = node.data.weight
-    }
+    fieldLoading.value = true
+    deleteChartFieldByChartId(props.view.id)
+      .then(() => {
+        getFields(props.view.tableId, props.view.id)
+        const nodeId = view.value['tableId']
+        if (!!nodeId) {
+          cacheId = nodeId as unknown as string
+        }
+        const node = datasetSelector?.value?.getNode(nodeId)
+        if (node?.data) {
+          curDatasetWeight.value = node.data.weight
+        }
+      })
+      .catch(() => {
+        fieldLoading.value = false
+      })
   },
   { deep: true }
 )

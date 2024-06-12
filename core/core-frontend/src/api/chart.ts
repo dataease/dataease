@@ -44,6 +44,12 @@ export const deleteChartField = async (id): Promise<IResponse> => {
   })
 }
 
+export const deleteChartFieldByChartId = async (chartId): Promise<IResponse> => {
+  return request.post({ url: `/chart/deleteFieldByChart/${chartId}`, data: {} }).then(res => {
+    return res?.data
+  })
+}
+
 // 通过图表对象获取数据
 export const getData = async (data): Promise<IResponse> => {
   delete data.data
