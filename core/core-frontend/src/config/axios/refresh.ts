@@ -1,6 +1,8 @@
 import { useCache } from '@/hooks/web/useCache'
 import { refreshApi } from '@/api/login'
 import { useUserStoreWithOut } from '@/store/modules/user'
+
+import { isLink } from '@/utils/utils'
 const { wsCache } = useCache()
 const userStore = useUserStoreWithOut()
 const refreshUrl = '/login/refresh'
@@ -37,6 +39,9 @@ const cacheRequest = cb => {
 export const configHandler = config => {
   const desktop = wsCache.get('app.desktop')
   if (desktop) {
+    return config
+  }
+  if (isLink()) {
     return config
   }
   if (wsCache.get('user.token')) {

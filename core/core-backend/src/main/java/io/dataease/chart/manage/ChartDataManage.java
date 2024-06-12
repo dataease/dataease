@@ -30,6 +30,7 @@ import io.dataease.exception.DEException;
 import io.dataease.i18n.Translator;
 import io.dataease.result.ResultCode;
 import io.dataease.system.manage.CorePermissionManage;
+import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;
@@ -85,6 +86,10 @@ public class ChartDataManage {
         if (ObjectUtils.isEmpty(view)) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_delete"));
         }
+        if (ObjectUtils.isNotEmpty(AuthUtils.getUser())) {
+            chartExtRequest.setUser(AuthUtils.getUser().getUserId());
+        }
+
 
         //如果是excel导出  如果是从仪表板获取图表数据，则仪表板的查询模式，查询结果的数量，覆盖图表对应的属性
         if (view.getIsExcelExport()) {
