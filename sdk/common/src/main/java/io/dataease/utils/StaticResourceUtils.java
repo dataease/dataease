@@ -3,11 +3,11 @@ package io.dataease.utils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.lang.NonNull;
 import org.springframework.util.Assert;
-import org.springframework.util.Base64Utils;
 
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.Base64;
 
 import static io.dataease.constant.StaticResourceConstants.*;
 
@@ -86,7 +86,7 @@ public class StaticResourceUtils {
         }
         // Encode byte array as Base64
         if (buffer != null) {
-            return Base64Utils.encodeToString(buffer);
+            return Base64.getEncoder().encodeToString(buffer);
         } else {
             return null;
         }
