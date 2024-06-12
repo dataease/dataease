@@ -15,6 +15,7 @@
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { computed } from 'vue'
 import { isMainCanvas } from '@/utils/canvasUtils'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const dvMainStore = dvMainStoreWithOut()
 
@@ -36,6 +37,7 @@ const props = defineProps({
 
 const clearAllLinkage = () => {
   dvMainStore.clearPanelLinkageInfo()
+  useEmitt().emitter.emit('clearPanelLinkage', { viewId: 'all' })
 }
 
 const dvEditMode = computed(() => {
