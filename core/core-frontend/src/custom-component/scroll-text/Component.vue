@@ -32,7 +32,7 @@ const props = defineProps({
 
 const { element } = toRefs(props)
 const dvMainStore = dvMainStoreWithOut()
-const { editMode, curComponent } = storeToRefs(dvMainStore)
+const { editMode, curComponent, canvasStyleData } = storeToRefs(dvMainStore)
 
 const onComponentClick = () => {
   if (curComponent.value.id !== element.value.id) {
@@ -94,6 +94,10 @@ const handleBlur = e => {
   canEdit.value = false
 }
 
+const marqueeTxt = computed(
+  () => !canEdit.value && !element.value['resizing'] && !element.value['dragging']
+)
+
 const setEdit = () => {
   if (element.value['isLock']) return
   canEdit.value = true
@@ -111,7 +115,18 @@ onBeforeUnmount(() => {
   eventBus.off('componentClick', onComponentClick)
 })
 
-const varStyle = computed(() => [{ '--scroll-speed': `${element.value.style.scrollSpeed}s` }])
+// 滚动速度已px为单位 注意 这里的总宽度是还原到缩放前的 这样不同缩放比例下的跑马灯视觉上滚动速度（按照比例）一致
+const varStyle = computed(() => [
+  {
+    '--scroll-speed': `${
+      element.value.style.scrollSpeed === 0 || !text.value
+        ? 0
+        : (text.value.clientWidth * 100) /
+          canvasStyleData.value.scale /
+          element.value.style.scrollSpeed
+    }s`
+  }
+])
 
 const textStyle = computed(() => {
   return {
@@ -131,7 +146,7 @@ const textStyle = computed(() => {
     <div
       ref="text"
       :contenteditable="canEdit"
-      :class="{ 'can-edit': canEdit, 'marquee-txt': !canEdit }"
+      :class="{ 'can-edit': canEdit, 'marquee-txt': marqueeTxt }"
       tabindex="0"
       :style="textStyle"
       @dblclick="setEdit"

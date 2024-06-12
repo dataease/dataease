@@ -165,6 +165,9 @@ export const commonAttr = {
   maintainRadio: false, // 布局时保持宽高比例
   aspectRatio: 1, // 锁定时的宽高比例
   isShow: true, // 是否显示组件
+  // 当前组件动作
+  dragging: false,
+  resizing: false,
   collapseName: [
     'position',
     'background',
