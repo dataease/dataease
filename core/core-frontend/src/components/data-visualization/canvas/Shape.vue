@@ -508,6 +508,7 @@ const handleMouseDownOnShape = e => {
       dashboardActive.value &&
       (isFirst || (!tabMoveInActiveId.value && !tabCollisionActiveId.value))
     ) {
+      element.value['dragging'] = true
       emit('onDragging', e)
     }
 
@@ -543,6 +544,7 @@ const handleMouseDownOnShape = e => {
 
   const up = () => {
     dashboardActive.value && emit('onMouseUp')
+    element.value['dragging'] = false
     hasMove && snapshotStore.recordSnapshotCache('shape-handleMouseDownOnShape-up')
     // 触发元素停止移动事件，用于隐藏标线
     eventBus.emit('unMove')
@@ -699,6 +701,7 @@ const handleMouseDownOnPoint = (point, e) => {
     dvMainStore.setShapeStyle(style, areaData.value.components, 'resize', baseGroupComponentsRadio)
     // 矩阵逻辑 如果当前是仪表板（矩阵模式）则要进行矩阵重排
     dashboardActive.value && emit('onResizing', moveEvent)
+    element.value['resizing'] = true
     //如果当前组件是Group分组 则要进行内部组件深度计算
     element.value.component === 'Group' && groupSizeStyleAdaptor(element.value)
     //如果当前画布是Group内部画布 则对应组件定位在resize时要还原到groupStyle中
@@ -712,6 +715,7 @@ const handleMouseDownOnPoint = (point, e) => {
 
   const up = () => {
     dashboardActive.value && emit('onMouseUp')
+    element.value['resizing'] = false
     document.removeEventListener('mousemove', move)
     document.removeEventListener('mouseup', up)
     needSave && snapshotStore.recordSnapshotCache('shape-handleMouseDownOnPoint-up')
