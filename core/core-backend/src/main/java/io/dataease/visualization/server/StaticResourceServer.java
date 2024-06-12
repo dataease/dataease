@@ -16,9 +16,15 @@ import org.springframework.util.FileCopyUtils;
 import org.springframework.web.bind.annotation.RequestMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.multipart.MultipartFile;
+import org.w3c.dom.Document;
+import org.xml.sax.SAXException;
 
 import javax.imageio.ImageIO;
+import javax.xml.parsers.DocumentBuilder;
+import javax.xml.parsers.DocumentBuilderFactory;
+import javax.xml.parsers.ParserConfigurationException;
 import java.awt.image.BufferedImage;
+import java.io.File;
 import java.io.IOException;
 import java.io.InputStream;
 import java.nio.file.Files;
@@ -65,7 +71,12 @@ public class StaticResourceServer implements StaticResourceApi {
             LogUtil.error(e.getMessage(), e);
             return false;
         }
-        if (image == null || image.getWidth() <= 0 || image.getHeight() <= 0) {
+        // 判断是否为SVG
+        if(isValidSVG(file)){
+            return true;
+        }
+        // 判断其他图片
+        if (image == null || image.getWidth() <= 0 || image.getHeight() <= 0 || !isValidSVG(file)) {
             return false;
         }
         return true;
@@ -116,4 +127,27 @@ public class StaticResourceServer implements StaticResourceApi {
         return null;
     }
 
+    private static boolean isValidSVG(MultipartFile file) {
+        if (file == null || file.isEmpty()) {
+            return false;
+        }
+
+        DocumentBuilderFactory dbf = DocumentBuilderFactory.newInstance();
+        dbf.setNamespaceAware(true);
+
+        try (InputStream inputStream = file.getInputStream()) {
+            DocumentBuilder db = dbf.newDocumentBuilder();
+            Document doc = db.parse(inputStream);
+
+            // 检查根元素是否是<svg>
+            if ("svg".equals(doc.getDocumentElement().getNodeName())) {
+                return true;
+            } else {
+                return false;
+            }
+        } catch (ParserConfigurationException | SAXException | IOException e) {
+            // 如果出现任何解析错误，说明该文件不是合法的SVG
+            return false;
+        }
+    }
 }
