@@ -435,19 +435,21 @@ export function baseTableNormal(container, chart, action, tableData, vueCom, res
     heightByField[newData.length] = customAttr.size.tableTitleHeight
     s2Options.style.rowCfg = { heightByField }
     // 计算汇总加入到数据里，冻结最后一行
-    s2Options.frozenTrailingRowCount = 1
+    const xAxis = JSON.parse(chart.xaxis)
     const yAxis = JSON.parse(chart.yaxis)
-    const summaryObj = newData.reduce((p, n) => {
+    s2Options.frozenTrailingRowCount = 1
+    const summaryObj = yAxis.length > 0 ? newData.reduce((p, n) => {
       yAxis.forEach(axis => {
         p[axis.dataeaseName] = (n[axis.dataeaseName] || 0) + (p[axis.dataeaseName] || 0)
       })
       return p
-    }, { SUMMARY: true })
+    }, { SUMMARY: true }) : {}
     newData.push(summaryObj)
     s2Options.dataCell = viewMeta => {
       if (viewMeta.rowIndex === newData.length - 1) {
-        if (viewMeta.colIndex === 0 && yAxis.length !== 0) {
+        if (viewMeta.colIndex === 0 && xAxis.length !== 0) {
           viewMeta.fieldValue = customAttr.size.summaryLabel ?? '总计'
+          viewMeta.summaryLabel = viewMeta.fieldValue
         }
         return new SummaryCell(viewMeta, viewMeta.spreadsheet)
       }
@@ -1043,7 +1045,7 @@ function showTooltipValue(s2Instance, event, meta) {
     return
   }
   let value = cellMeta.data[valueField]
-  if (valueField === SERIES_NUMBER_FIELD) {
+  if (cellMeta.summaryLabel) {
     value = cellMeta.fieldValue
   }
   if (!value) {
