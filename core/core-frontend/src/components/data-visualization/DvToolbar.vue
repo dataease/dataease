@@ -19,6 +19,8 @@ import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
 import { XpackComponent } from '@/components/plugin'
 import { useCache } from '@/hooks/web/useCache'
 import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
+import ComponentButton from '@/components/visualization/ComponentButton.vue'
+import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -27,10 +29,11 @@ const snapshotStore = snapshotStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const resourceGroupOpt = ref(null)
 const dvToolbarMain = ref(null)
-const { canvasStyleData, dvInfo, editMode } = storeToRefs(dvMainStore)
+const { componentData, canvasStyleData, dvInfo, editMode } = storeToRefs(dvMainStore)
 let scaleEdit = 100
 const { wsCache } = useCache('localStorage')
 const dvModel = 'dataV'
+const outerParamsSetRef = ref(null)
 
 const closeEditCanvasName = () => {
   nameEdit.value = false
@@ -167,6 +170,18 @@ const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 eventBus.on('preview', preview)
 eventBus.on('save', saveCanvasWithCheck)
 eventBus.on('clearCanvas', clearCanvas)
+
+const openOuterParamsSet = () => {
+  if (componentData.value.length === 0) {
+    ElMessage.warning('当前仪表板为空，请先添加组件')
+    return
+  }
+  if (!dvInfo.value.id) {
+    ElMessage.warning('请先保存当前页面')
+    return
+  }
+  outerParamsSetRef.value.optInit()
+}
 </script>
 
 <template>
@@ -251,6 +266,15 @@ eventBus.on('clearCanvas', clearCanvas)
         </div>
       </template>
       <div class="right-area">
+        <el-tooltip effect="dark" content="外部参数设置" placement="bottom">
+          <component-button
+            v-show="editMode === 'edit'"
+            tips="外部参数设置"
+            @custom-click="openOuterParamsSet"
+            icon-name="icon_params_setting"
+          />
+        </el-tooltip>
+        <div v-show="editMode === 'edit'" class="divider"></div>
         <el-button
           v-if="editMode === 'preview'"
           icon="EditPen"
@@ -292,6 +316,7 @@ eventBus.on('clearCanvas', clearCanvas)
       ref="resourceGroupOpt"
     />
   </div>
+  <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
@@ -401,5 +426,12 @@ eventBus.on('clearCanvas', clearCanvas)
     border-color: #616774;
     background-color: #1e2637;
   }
+}
+
+.divider {
+  background: #ffffff4d;
+  width: 1px;
+  height: 18px;
+  margin-right: 12px;
 }
 </style>
