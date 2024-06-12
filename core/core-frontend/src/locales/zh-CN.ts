@@ -2271,6 +2271,11 @@ export default {
     sure_bt: '确定',
     back_parent: '返回上一级'
   },
+  plugin: {
+    'flag-all': '全部',
+    'flag-ds': '数据源插件',
+    'flag-view': '图表插件'
+  },
   online_map: {
     geometry: '地理信息',
     onlinemap: '在线地图',
