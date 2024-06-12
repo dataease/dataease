@@ -508,18 +508,28 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
       })
     })
   }
-  if (chart.render === 'echarts' && chart.type === 'table-normal') {
+  if (chart.type === 'table-normal') {
     const initTotal = fields.map(i => [2, 3].includes(i.deType) ? 0 : undefined)
     initTotal[0] = '合计'
-    tableRow.reduce((p, n) => {
-      p.forEach((v, i) => {
-        if (!isNaN(v)) {
-          p[i] = v + n[excelHeaderKeys[i]]
-        }
-      })
-      return p
-    }, initTotal)
-    excelData.push(initTotal)
+    let exportSum = true
+    if (chart.render === 'antv') {
+      const { size } = JSON.parse(chart.customAttr)
+      initTotal[0] = size.summaryLabel
+      if (size.showSummary === false) {
+        exportSum = false
+      }
+    }
+    if (exportSum) {
+      tableRow.reduce((p, n) => {
+        p.forEach((v, i) => {
+          if (!isNaN(v)) {
+            p[i] = v + n[excelHeaderKeys[i]]
+          }
+        })
+        return p
+      }, initTotal)
+      excelData.push(initTotal)
+    }
   }
   const request = {
     proxy: null,

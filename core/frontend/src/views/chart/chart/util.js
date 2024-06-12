@@ -69,7 +69,9 @@ export const TYPE_CONFIGS = [
         'tableColTooltip',
         'tableCellTooltip',
         'showTableHeader',
-        'tableHeaderSort'
+        'tableHeaderSort',
+        'showSummary',
+        'summaryLabel'
       ],
       'title-selector-ant-v': [
         'show',

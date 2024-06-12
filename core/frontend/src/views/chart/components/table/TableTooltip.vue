@@ -25,6 +25,8 @@
 </template>
 <script>
 import i18n from '@/lang'
+import { S2Event } from '@antv/s2'
+import { cloneDeep } from 'lodash'
 export default {
   name: 'TableTooltip',
   props: {
@@ -40,13 +42,39 @@ export default {
   methods: {
     sort(type) {
       this.table.updateSortMethodMap(this.meta.field, type, true)
-      this.table.emit('sort:range-sort', {
+      this.table.emit(S2Event.RANGE_SORT, [{
         sortFieldId: this.meta.field,
-        sortMethod: type
-      })
+        sortMethod: type,
+        sortFunc: this.sortFunc,
+        meta: this.meta
+      }])
     },
     __t(key) {
       return i18n.t(key)
+    },
+    sortFunc(sortParams) {
+      if (!sortParams.sortMethod) {
+        return sortParams.data
+      }
+      const data = cloneDeep(sortParams.data)
+      return data.sort((a, b) => {
+        if (a === b) {
+          return 0
+        }
+        if (a.SUMMARY) {
+          return 1
+        }
+        if (sortParams.sortMethod === 'asc') {
+          if (typeof a === 'number') {
+            return a - b
+          }
+          return a < b ? 1 : -1
+        }
+        if (typeof a === 'number') {
+          return b - a
+        }
+        return a > b ? 1 : -1
+      })
     }
   }
 }

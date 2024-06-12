@@ -16,7 +16,8 @@
           <el-checkbox
             v-model="sizeForm.barDefault"
             @change="changeBarSizeCase('barDefault')"
-          >{{ $t('chart.adapt') }}</el-checkbox>
+          >{{ $t('chart.adapt') }}
+          </el-checkbox>
         </el-form-item>
         <el-form-item
           v-if="showProperty('barGap')"
@@ -26,12 +27,12 @@
           <el-slider
             v-model="sizeForm.barGap"
             :disabled="sizeForm.barDefault"
-            show-input
-            :show-input-controls="false"
-            input-size="mini"
-            :min="0"
             :max="5"
+            :min="0"
+            :show-input-controls="false"
             :step="0.1"
+            input-size="mini"
+            show-input
             @change="changeBarSizeCase('barGap')"
           />
         </el-form-item>
@@ -44,11 +45,11 @@
         >
           <el-slider
             v-model="sizeForm.lineWidth"
-            show-input
+            :max="10"
+            :min="0"
             :show-input-controls="false"
             input-size="mini"
-            :min="0"
-            :max="10"
+            show-input
             @change="changeBarSizeCase('lineWidth')"
           />
         </el-form-item>
@@ -77,11 +78,11 @@
         >
           <el-slider
             v-model="sizeForm.lineSymbolSize"
-            show-input
+            :max="20"
+            :min="0"
             :show-input-controls="false"
             input-size="mini"
-            :min="0"
-            :max="20"
+            show-input
             @change="changeBarSizeCase('lineSymbolSize')"
           />
         </el-form-item>
@@ -106,11 +107,11 @@
         >
           <el-slider
             v-model="sizeForm.pieInnerRadius"
-            show-input
+            :max="100"
+            :min="0"
             :show-input-controls="false"
             input-size="mini"
-            :min="0"
-            :max="100"
+            show-input
             @change="changeBarSizeCase('pieInnerRadius')"
           />
         </el-form-item>
@@ -121,11 +122,11 @@
         >
           <el-slider
             v-model="sizeForm.pieOuterRadius"
-            show-input
+            :max="100"
+            :min="0"
             :show-input-controls="false"
             input-size="mini"
-            :min="0"
-            :max="100"
+            show-input
             @change="changeBarSizeCase('pieOuterRadius')"
           />
         </el-form-item>
@@ -152,11 +153,11 @@
         >
           <el-slider
             v-model="sizeForm.radarSize"
-            show-input
+            :max="100"
+            :min="0"
             :show-input-controls="false"
             input-size="mini"
-            :min="0"
-            :max="100"
+            show-input
             @change="changeBarSizeCase('radarSize')"
           />
         </el-form-item>
@@ -205,11 +206,11 @@
         >
           <el-slider
             v-model="sizeForm.tableItemHeight"
-            :min="20"
             :max="100"
-            show-input
+            :min="20"
             :show-input-controls="false"
             input-size="mini"
+            show-input
             @change="changeBarSizeCase('tableItemHeight')"
           />
         </el-form-item>
@@ -290,32 +291,28 @@
         </el-form-item>
         <el-form-item
           v-if="showProperty('tableColumnMode') && sizeForm.tableColumnMode === 'custom'"
-          label=""
           class="form-item form-item-slider"
+          label=""
         >
           <el-slider
             v-model="sizeForm.tableColumnWidth"
-            :min="10"
             :max="500"
-            show-input
+            :min="10"
             :show-input-controls="false"
             input-size="mini"
+            show-input
             @change="changeBarSizeCase('tableColumnWidth')"
           />
         </el-form-item>
         <el-form-item
           v-if="showProperty('tableColumnMode') && sizeForm.tableColumnMode === 'field'"
-          label=""
           class="form-item"
+          label=""
         >
           <el-row>
             <el-col :span="10">
               <el-select
                 v-model="fieldColumnWidth.fieldId"
-                :min="10"
-                :max="500"
-                show-input
-                :show-input-controls="false"
                 input-size="mini"
                 @change="changeFieldColumn()"
               >
@@ -328,14 +325,14 @@
               </el-select>
             </el-col>
             <el-col
-              :span="12"
               :offset="2"
+              :span="12"
             >
               <el-input
                 v-model.number="fieldColumnWidth.width"
-                type="number"
-                :min="0"
                 :max="100"
+                :min="0"
+                type="number"
                 @change="changeFieldColumnWidth()"
               >
                 <template #append>%</template>
@@ -351,8 +348,8 @@
           <span>{{ $t('dynamic_time.before') }} </span>
           <el-input-number
             v-model="sizeForm.tableColumnFreezeHead"
-            :min="0"
             :max="100"
+            :min="0"
             :step-strictly="true"
             @change="changeBarSizeCase('tableColumnFreezeHead')"
           />
@@ -361,8 +358,8 @@
           <span>{{ $t('dynamic_time.before') }} </span>
           <el-input-number
             v-model="sizeForm.tableRowFreezeHead"
-            :min="0"
             :max="1000"
+            :min="0"
             :step-strictly="true"
             @change="changeBarSizeCase('tableRowFreezeHead')"
           />
@@ -475,11 +472,11 @@
           >
             <el-slider
               v-model="sizeForm.tableTitleHeight"
-              :min="20"
               :max="100"
-              show-input
+              :min="20"
               :show-input-controls="false"
               input-size="mini"
+              show-input
               @change="changeBarSizeCase('tableTitleHeight')"
             />
           </el-form-item>
@@ -503,13 +500,35 @@
               @change="changeBarSizeCase('tableColTooltip')"
             />
           </el-form-item>
+          <el-form-item
+            v-if="showProperty('showSummary')"
+            :label="$t('chart.show_summary')"
+            class="form-item"
+          >
+            <el-checkbox
+              v-model="sizeForm.showSummary"
+              @change="changeBarSizeCase('showSummary')"
+            />
+          </el-form-item>
+          <el-form-item
+            v-if="showProperty('summaryLabel') && sizeForm.showSummary"
+            :label="$t('chart.summary_label')"
+            class="form-item"
+          >
+            <el-input
+              v-model="sizeForm.summaryLabel"
+              type="text"
+              :max-length="10"
+              @blur="changeBarSizeCase('summaryLabel')"
+            />
+          </el-form-item>
         </div>
         <!--table-end-->
         <!--chart-mix-start-->
         <span v-if="showProperty('mix')">
           <el-divider
-            content-position="center"
             class="divider-style"
+            content-position="center"
           >{{ $t('chart.chart_bar') }}</el-divider>
           <el-form-item
             :label="$t('chart.adapt')"
@@ -527,18 +546,18 @@
             <el-slider
               v-model="sizeForm.barGap"
               :disabled="sizeForm.barDefault"
-              show-input
-              :show-input-controls="false"
-              input-size="mini"
-              :min="0"
               :max="5"
+              :min="0"
+              :show-input-controls="false"
               :step="0.1"
+              input-size="mini"
+              show-input
               @change="changeBarSizeCase('barGap')"
             />
           </el-form-item>
           <el-divider
-            content-position="center"
             class="divider-style"
+            content-position="center"
           >{{ $t('chart.chart_line') }}</el-divider>
           <el-form-item
             :label="$t('chart.line_width')"
@@ -546,11 +565,11 @@
           >
             <el-slider
               v-model="sizeForm.lineWidth"
-              show-input
+              :max="10"
+              :min="0"
               :show-input-controls="false"
               input-size="mini"
-              :min="0"
-              :max="10"
+              show-input
               @change="changeBarSizeCase('lineWidth')"
             />
           </el-form-item>
@@ -577,11 +596,11 @@
           >
             <el-slider
               v-model="sizeForm.lineSymbolSize"
-              show-input
+              :max="20"
+              :min="0"
               :show-input-controls="false"
               input-size="mini"
-              :min="0"
-              :max="20"
+              show-input
               @change="changeBarSizeCase('lineSymbolSize')"
             />
           </el-form-item>
@@ -596,8 +615,8 @@
             </el-checkbox>
           </el-form-item>
           <el-divider
-            content-position="center"
             class="divider-style"
+            content-position="center"
           >{{ $t('chart.chart_scatter') }}</el-divider>
           <el-form-item
             :label="$t('chart.bubble_symbol')"
@@ -622,11 +641,11 @@
           >
             <el-slider
               v-model="sizeForm.scatterSymbolSize"
-              show-input
+              :max="40"
+              :min="1"
               :show-input-controls="false"
               input-size="mini"
-              :min="1"
-              :max="40"
+              show-input
               @change="changeBarSizeCase('scatterSymbolSize')"
             />
           </el-form-item>
@@ -685,23 +704,23 @@
                 <span style="float: left">
                   <svg-icon
                     v-if="item.deType === 0"
-                    icon-class="field_text"
                     class="field-icon-text"
+                    icon-class="field_text"
                   />
                   <svg-icon
                     v-if="item.deType === 1"
-                    icon-class="field_time"
                     class="field-icon-time"
+                    icon-class="field_time"
                   />
                   <svg-icon
                     v-if="item.deType === 2 || item.deType === 3"
-                    icon-class="field_value"
                     class="field-icon-value"
+                    icon-class="field_value"
                   />
                   <svg-icon
                     v-if="item.deType === 5"
-                    icon-class="field_location"
                     class="field-icon-location"
+                    icon-class="field_location"
                   />
                 </span>
                 <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
@@ -715,49 +734,49 @@
               <el-option
                 v-if="validMinField"
                 key="sum"
-                value="sum"
                 :label="$t('chart.sum')"
+                value="sum"
               />
               <el-option
                 v-if="validMinField"
                 key="avg"
-                value="avg"
                 :label="$t('chart.avg')"
+                value="avg"
               />
               <el-option
                 v-if="validMinField"
                 key="max"
-                value="max"
                 :label="$t('chart.max')"
+                value="max"
               />
               <el-option
                 v-if="validMinField"
                 key="min"
-                value="min"
                 :label="$t('chart.min')"
+                value="min"
               />
               <el-option
                 v-if="validMinField"
                 key="stddev_pop"
-                value="stddev_pop"
                 :label="$t('chart.stddev_pop')"
+                value="stddev_pop"
               />
               <el-option
                 v-if="validMinField"
                 key="var_pop"
-                value="var_pop"
                 :label="$t('chart.var_pop')"
+                value="var_pop"
               />
               <el-option
                 key="count"
-                value="count"
                 :label="$t('chart.count')"
+                value="count"
               />
               <el-option
                 v-if="minField.id !== 'count'"
                 key="count_distinct"
-                value="count_distinct"
                 :label="$t('chart.count_distinct')"
+                value="count_distinct"
               />
             </el-select>
           </el-form-item>
@@ -804,23 +823,23 @@
                 <span style="float: left">
                   <svg-icon
                     v-if="item.deType === 0"
-                    icon-class="field_text"
                     class="field-icon-text"
+                    icon-class="field_text"
                   />
                   <svg-icon
                     v-if="item.deType === 1"
-                    icon-class="field_time"
                     class="field-icon-time"
+                    icon-class="field_time"
                   />
                   <svg-icon
                     v-if="item.deType === 2 || item.deType === 3"
-                    icon-class="field_value"
                     class="field-icon-value"
+                    icon-class="field_value"
                   />
                   <svg-icon
                     v-if="item.deType === 5"
-                    icon-class="field_location"
                     class="field-icon-location"
+                    icon-class="field_location"
                   />
                 </span>
                 <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
@@ -834,49 +853,49 @@
               <el-option
                 v-if="validMaxField"
                 key="sum"
-                value="sum"
                 :label="$t('chart.sum')"
+                value="sum"
               />
               <el-option
                 v-if="validMaxField"
                 key="avg"
-                value="avg"
                 :label="$t('chart.avg')"
+                value="avg"
               />
               <el-option
                 v-if="validMaxField"
                 key="max"
-                value="max"
                 :label="$t('chart.max')"
+                value="max"
               />
               <el-option
                 v-if="validMaxField"
                 key="min"
-                value="min"
                 :label="$t('chart.min')"
+                value="min"
               />
               <el-option
                 v-if="validMaxField"
                 key="stddev_pop"
-                value="stddev_pop"
                 :label="$t('chart.stddev_pop')"
+                value="stddev_pop"
               />
               <el-option
                 v-if="validMaxField"
                 key="var_pop"
-                value="var_pop"
                 :label="$t('chart.var_pop')"
+                value="var_pop"
               />
               <el-option
                 key="count"
-                value="count"
                 :label="$t('chart.count')"
+                value="count"
               />
               <el-option
                 v-if="maxField.id !== 'count'"
                 key="count_distinct"
-                value="count_distinct"
                 :label="$t('chart.count_distinct')"
+                value="count_distinct"
               />
             </el-select>
           </el-form-item>
@@ -889,11 +908,11 @@
         >
           <el-slider
             v-model="sizeForm.gaugeStartAngle"
-            show-input
+            :max="360"
+            :min="-360"
             :show-input-controls="false"
             input-size="mini"
-            :min="-360"
-            :max="360"
+            show-input
             @change="changeBarSizeCase('gaugeStartAngle')"
           />
         </el-form-item>
@@ -904,11 +923,11 @@
         >
           <el-slider
             v-model="sizeForm.gaugeEndAngle"
-            show-input
+            :max="360"
+            :min="-360"
             :show-input-controls="false"
             input-size="mini"
-            :min="-360"
-            :max="360"
+            show-input
             @change="changeBarSizeCase('gaugeEndAngle')"
           />
         </el-form-item>
@@ -989,11 +1008,13 @@
           <el-checkbox
             v-model="sizeForm.quotaFontIsItalic"
             @change="changeBarSizeCase('quotaFontIsItalic')"
-          >{{ $t('chart.italic') }}</el-checkbox>
+          >{{ $t('chart.italic') }}
+          </el-checkbox>
           <el-checkbox
             v-model="sizeForm.quotaFontIsBolder"
             @change="changeBarSizeCase('quotaFontIsBolder')"
-          >{{ $t('chart.bolder') }}</el-checkbox>
+          >{{ $t('chart.bolder') }}
+          </el-checkbox>
         </el-form-item>
         <el-form-item
           v-if="showProperty('quotaLetterSpace')"
@@ -1021,7 +1042,8 @@
           <el-checkbox
             v-model="sizeForm.quotaFontShadow"
             @change="changeBarSizeCase('quotaFontShadow')"
-          >{{ $t('chart.font_shadow') }}</el-checkbox>
+          >{{ $t('chart.font_shadow') }}
+          </el-checkbox>
         </el-form-item>
         <el-form-item
           v-if="showProperty('hPosition')"
@@ -1034,17 +1056,20 @@
             @change="changeBarSizeCase('hPosition')"
           >
             <el-option
-              value="start"
               :label="$t('chart.p_left')"
-            >{{ $t('chart.p_left') }}</el-option>
+              value="start"
+            >{{ $t('chart.p_left') }}
+            </el-option>
             <el-option
-              value="center"
               :label="$t('chart.p_center')"
-            >{{ $t('chart.p_center') }}</el-option>
+              value="center"
+            >{{ $t('chart.p_center') }}
+            </el-option>
             <el-option
-              value="end"
               :label="$t('chart.p_right')"
-            >{{ $t('chart.p_right') }}</el-option>
+              value="end"
+            >{{ $t('chart.p_right') }}
+            </el-option>
           </el-select>
         </el-form-item>
         <el-form-item
@@ -1058,17 +1083,20 @@
             @change="changeBarSizeCase('vPosition')"
           >
             <el-option
-              value="start"
               :label="$t('chart.p_top')"
-            >{{ $t('chart.p_top') }}</el-option>
+              value="start"
+            >{{ $t('chart.p_top') }}
+            </el-option>
             <el-option
-              value="center"
               :label="$t('chart.p_center')"
-            >{{ $t('chart.p_center') }}</el-option>
+              value="center"
+            >{{ $t('chart.p_center') }}
+            </el-option>
             <el-option
-              value="end"
               :label="$t('chart.p_bottom')"
-            >{{ $t('chart.p_bottom') }}</el-option>
+              value="end"
+            >{{ $t('chart.p_bottom') }}
+            </el-option>
           </el-select>
         </el-form-item>
         <el-divider v-if="showProperty('quotaSuffix')" />
@@ -1126,11 +1154,13 @@
           <el-checkbox
             v-model="sizeForm.quotaSuffixFontIsItalic"
             @change="changeBarSizeCase('quotaSuffixFontIsItalic')"
-          >{{ $t('chart.italic') }}</el-checkbox>
+          >{{ $t('chart.italic') }}
+          </el-checkbox>
           <el-checkbox
             v-model="sizeForm.quotaSuffixFontIsBolder"
             @change="changeBarSizeCase('quotaSuffixFontIsBolder')"
-          >{{ $t('chart.bolder') }}</el-checkbox>
+          >{{ $t('chart.bolder') }}
+          </el-checkbox>
         </el-form-item>
         <el-form-item
           v-if="showProperty('quotaSuffixLetterSpace')"
@@ -1158,7 +1188,8 @@
           <el-checkbox
             v-model="sizeForm.quotaSuffixFontShadow"
             @change="changeBarSizeCase('quotaSuffixFontShadow')"
-          >{{ $t('chart.font_shadow') }}</el-checkbox>
+          >{{ $t('chart.font_shadow') }}
+          </el-checkbox>
         </el-form-item>
         <el-divider v-if="showProperty('dimensionShow')" />
         <el-form-item
@@ -1169,7 +1200,8 @@
           <el-checkbox
             v-model="sizeForm.dimensionShow"
             @change="changeBarSizeCase('dimensionShow')"
-          >{{ $t('chart.show') }}</el-checkbox>
+          >{{ $t('chart.show') }}
+          </el-checkbox>
         </el-form-item>
         <div v-if="sizeForm.dimensionShow">
           <el-form-item
@@ -1216,11 +1248,13 @@
             <el-checkbox
               v-model="sizeForm.dimensionFontIsItalic"
               @change="changeBarSizeCase('dimensionFontIsItalic')"
-            >{{ $t('chart.italic') }}</el-checkbox>
+            >{{ $t('chart.italic') }}
+            </el-checkbox>
             <el-checkbox
               v-model="sizeForm.dimensionFontIsBolder"
               @change="changeBarSizeCase('dimensionFontIsBolder')"
-            >{{ $t('chart.bolder') }}</el-checkbox>
+            >{{ $t('chart.bolder') }}
+            </el-checkbox>
           </el-form-item>
           <el-form-item
             v-if="showProperty('dimensionLetterSpace')"
@@ -1248,7 +1282,8 @@
             <el-checkbox
               v-model="sizeForm.dimensionFontShadow"
               @change="changeBarSizeCase('dimensionFontShadow')"
-            >{{ $t('chart.font_shadow') }}</el-checkbox>
+            >{{ $t('chart.font_shadow') }}
+            </el-checkbox>
           </el-form-item>
           <el-form-item
             v-if="showProperty('spaceSplit')"
@@ -1290,11 +1325,11 @@
         >
           <el-slider
             v-model="sizeForm.scatterSymbolSize"
-            show-input
+            :max="40"
+            :min="1"
             :show-input-controls="false"
             input-size="mini"
-            :min="1"
-            :max="40"
+            show-input
             @change="changeBarSizeCase('scatterSymbolSize')"
           />
         </el-form-item>
@@ -1361,23 +1396,23 @@
               <span style="float: left">
                 <svg-icon
                   v-if="item.deType === 0"
-                  icon-class="field_text"
                   class="field-icon-text"
+                  icon-class="field_text"
                 />
                 <svg-icon
                   v-if="item.deType === 1"
-                  icon-class="field_time"
                   class="field-icon-time"
+                  icon-class="field_time"
                 />
                 <svg-icon
                   v-if="item.deType === 2 || item.deType === 3"
-                  icon-class="field_value"
                   class="field-icon-value"
+                  icon-class="field_value"
                 />
                 <svg-icon
                   v-if="item.deType === 5"
-                  icon-class="field_location"
                   class="field-icon-location"
+                  icon-class="field_location"
                 />
               </span>
               <span style="float: left; color: #8492a6; font-size: 12px">{{ item.name }}</span>
@@ -1391,49 +1426,49 @@
             <el-option
               v-if="validLiquidMaxField"
               key="sum"
-              value="sum"
               :label="$t('chart.sum')"
+              value="sum"
             />
             <el-option
               v-if="validLiquidMaxField"
               key="avg"
-              value="avg"
               :label="$t('chart.avg')"
+              value="avg"
             />
             <el-option
               v-if="validLiquidMaxField"
               key="max"
-              value="max"
               :label="$t('chart.max')"
+              value="max"
             />
             <el-option
               v-if="validLiquidMaxField"
               key="min"
-              value="min"
               :label="$t('chart.min')"
+              value="min"
             />
             <el-option
               v-if="validLiquidMaxField"
               key="stddev_pop"
-              value="stddev_pop"
               :label="$t('chart.stddev_pop')"
+              value="stddev_pop"
             />
             <el-option
               v-if="validLiquidMaxField"
               key="var_pop"
-              value="var_pop"
               :label="$t('chart.var_pop')"
+              value="var_pop"
             />
             <el-option
               key="count"
-              value="count"
               :label="$t('chart.count')"
+              value="count"
             />
             <el-option
               v-if="liquidMaxField.id !== 'count'"
               key="count_distinct"
-              value="count_distinct"
               :label="$t('chart.count_distinct')"
+              value="count_distinct"
             />
           </el-select>
         </el-form-item>
@@ -1445,11 +1480,11 @@
         >
           <el-slider
             v-model="sizeForm.liquidSize"
-            show-input
+            :max="100"
+            :min="1"
             :show-input-controls="false"
             input-size="mini"
-            :min="1"
-            :max="100"
+            show-input
             @change="changeBarSizeCase('liquidSize')"
           />
         </el-form-item>
@@ -1461,11 +1496,11 @@
         >
           <el-slider
             v-model="sizeForm.symbolOpacity"
-            show-input
+            :max="10"
+            :min="0"
             :show-input-controls="false"
             input-size="mini"
-            :min="0"
-            :max="10"
+            show-input
             @change="changeBarSizeCase('symbolOpacity')"
           />
         </el-form-item>
@@ -1477,11 +1512,11 @@
         >
           <el-slider
             v-model="sizeForm.symbolStrokeWidth"
-            show-input
+            :max="5"
+            :min="0"
             :show-input-controls="false"
             input-size="mini"
-            :min="0"
-            :max="5"
+            show-input
             @change="changeBarSizeCase('symbolStrokeWidth')"
           />
         </el-form-item>
@@ -1500,8 +1535,8 @@
         >
           <el-slider
             v-model="sizeForm.mapPitch"
-            :min="0"
             :max="90"
+            :min="0"
             @change="changeBarSizeCase('mapPitch')"
           />
         </el-form-item>
@@ -1517,9 +1552,9 @@
             <el-option
               v-for="item in lineTypeOptions"
               :key="item.name"
+              :disabled="checkMapLineType(item)"
               :label="item.name"
               :value="item.value"
-              :disabled="checkMapLineType(item)"
             />
           </el-select>
         </el-form-item>
@@ -1530,8 +1565,8 @@
         >
           <el-slider
             v-model="sizeForm.mapLineWidth"
-            :min="1"
             :max="10"
+            :min="1"
             @change="changeBarSizeCase('mapLineWidth')"
           />
         </el-form-item>
@@ -1554,8 +1589,8 @@
           >
             <el-slider
               v-model="sizeForm.mapLineAnimateDuration"
-              :min="0"
               :max="20"
+              :min="0"
               @change="changeBarSizeCase('mapLineAnimateDuration')"
             />
           </el-form-item>
@@ -1566,8 +1601,8 @@
           >
             <el-slider
               v-model="sizeForm.mapLineAnimateInterval"
-              :min="0"
               :max="1"
+              :min="0"
               :step="0.1"
               @change="changeBarSizeCase('mapLineAnimateInterval')"
             />
@@ -1579,8 +1614,8 @@
           >
             <el-slider
               v-model="sizeForm.mapLineAnimateTrailLength"
-              :min="0"
               :max="1"
+              :min="0"
               :step="0.1"
               @change="changeBarSizeCase('mapLineAnimateTrailLength')"
             />
@@ -1593,8 +1628,8 @@
           >
             <el-slider
               v-model="sizeForm.wordSizeRange"
-              :min="1"
               :max="100"
+              :min="1"
               range
               @change="changeBarSizeCase('wordSizeRange')"
             />
@@ -1606,11 +1641,11 @@
           >
             <el-slider
               v-model="sizeForm.wordSpacing"
-              show-input
+              :max="20"
+              :min="0"
               :show-input-controls="false"
               input-size="mini"
-              :min="0"
-              :max="20"
+              show-input
               @change="changeBarSizeCase('wordSpacing')"
             />
           </el-form-item>
@@ -1797,6 +1832,7 @@ export default {
           this.sizeForm.tableColumnFreezeHead = this.sizeForm.tableColumnFreezeHead ?? DEFAULT_SIZE.tableColumnFreezeHead
           this.sizeForm.tableColumnFreezeTail = this.sizeForm.tableColumnFreezeTail ?? DEFAULT_SIZE.tableColumnFreezeTail
           this.sizeForm.tableRowFreezeHead = this.sizeForm.tableRowFreezeHead ?? DEFAULT_SIZE.tableRowFreezeHead
+          this.sizeForm.summaryLabel = this.sizeForm.summaryLabel ?? DEFAULT_SIZE.summaryLabel
 
           this.sizeForm.showIndex = this.sizeForm.showIndex ? this.sizeForm.showIndex : DEFAULT_SIZE.showIndex
           this.sizeForm.showTableHeader = this.sizeForm.showTableHeader !== false
@@ -2069,71 +2105,75 @@ export default {
 </script>
 
 <style scoped>
-  .shape-item {
-    padding: 6px;
-    border: none;
-    width: 100%;
-    display: flex;
-    justify-content: space-between;
-    align-items: center;
-  }
+.shape-item {
+  padding: 6px;
+  border: none;
+  width: 100%;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
 
-  .form-item-slider ::v-deep .el-form-item__label {
-    font-size: 12px;
-    line-height: 38px;
-  }
+.form-item-slider ::v-deep .el-form-item__label {
+  font-size: 12px;
+  line-height: 38px;
+}
 
-  .form-item-range-slider ::v-deep .el-form-item__content {
-    padding-right: 6px
-  }
+.form-item-range-slider ::v-deep .el-form-item__content {
+  padding-right: 6px
+}
 
-  .form-item ::v-deep .el-form-item__label {
-    font-size: 12px;
-  }
+.form-item ::v-deep .el-form-item__label {
+  font-size: 12px;
+}
 
 .form-item ::v-deep .el-checkbox__label {
   font-size: 12px;
 }
+
 .form-item ::v-deep .el-radio__label {
   font-size: 12px;
 }
 
-  .el-select-dropdown__item {
-    padding: 0 20px;
-  }
+.el-select-dropdown__item {
+  padding: 0 20px;
+}
 
-  span {
-    font-size: 12px
-  }
+span {
+  font-size: 12px
+}
 
-  .el-form-item {
-    margin-bottom: 6px;
-  }
+.el-form-item {
+  margin-bottom: 6px;
+}
 
-  .el-divider--horizontal {
-    margin: 10px 0
-  }
+.el-divider--horizontal {
+  margin: 10px 0
+}
 
-  .divider-style ::v-deep .el-divider__text {
-    color: #606266;
-    font-size: 12px;
-    font-weight: 400;
-    padding: 0 10px;
-  }
-  .form-flex >>> .el-form-item__content {
-    display: flex;
-  }
-  ::v-deep input::-webkit-outer-spin-button,
-  ::v-deep input::-webkit-inner-spin-button {
-    -webkit-appearance: none !important;
-  }
+.divider-style ::v-deep .el-divider__text {
+  color: #606266;
+  font-size: 12px;
+  font-weight: 400;
+  padding: 0 10px;
+}
 
-  ::v-deep input[type="number"] {
-    -moz-appearance: textfield !important;
+.form-flex >>> .el-form-item__content {
+  display: flex;
+}
+
+::v-deep input::-webkit-outer-spin-button,
+::v-deep input::-webkit-inner-spin-button {
+  -webkit-appearance: none !important;
+}
+
+::v-deep input[type="number"] {
+  -moz-appearance: textfield !important;
+}
+
+.column-radio {
+  label {
+    margin-right: 10px;
   }
-  .column-radio {
-    label {
-      margin-right: 10px;
-    }
-  }
+}
 </style>
