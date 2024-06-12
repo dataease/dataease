@@ -197,25 +197,32 @@ provide('filedList', () => filedList.value)
 watch(
   [() => view.value['tableId']],
   () => {
-    fieldLoading.value = true
-    deleteChartFieldByChartId(props.view.id)
-      .then(() => {
-        getFields(props.view.tableId, props.view.id)
-        const nodeId = view.value['tableId']
-        if (!!nodeId) {
-          cacheId = nodeId as unknown as string
-        }
-        const node = datasetSelector?.value?.getNode(nodeId)
-        if (node?.data) {
-          curDatasetWeight.value = node.data.weight
-        }
-      })
-      .catch(() => {
-        fieldLoading.value = false
-      })
+    if (props.view.id) {
+      fieldLoading.value = true
+      deleteChartFieldByChartId(props.view.id)
+        .then(() => {
+          watchDs()
+        })
+        .catch(() => {
+          fieldLoading.value = false
+        })
+    } else {
+      watchDs()
+    }
   },
   { deep: true }
 )
+const watchDs = () => {
+  getFields(props.view.tableId, props.view.id)
+  const nodeId = view.value['tableId']
+  if (!!nodeId) {
+    cacheId = nodeId as unknown as string
+  }
+  const node = datasetSelector?.value?.getNode(nodeId)
+  if (node?.data) {
+    curDatasetWeight.value = node.data.weight
+  }
+}
 const getFields = (id, chartId) => {
   if (id && chartId) {
     fieldLoading.value = true
