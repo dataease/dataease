@@ -94,7 +94,7 @@
                 class="image-hint"
                 :class="`image-hint_${themes}`"
               >
-                支持JPG、PNG、GIF，大小不超过 1M
+                支持JPG、PNG、GIF、SVG，大小不超过 1M
               </span>
               <el-button
                 size="small"
