@@ -330,11 +330,24 @@ const trackClick = trackAction => {
       const curFiled = curView.drillFields[curView.drillFilters.length]
       fieldIds.push(curFiled.id)
     }
-    chartData.value?.fields.forEach(field => {
-      if (!fieldIds.includes(field.id)) {
-        fieldIds.push(field.id)
-      }
-    })
+    if (curView.type.includes('chart-mix')) {
+      chartData.value?.left?.fields?.forEach(field => {
+        if (!fieldIds.includes(field.id)) {
+          fieldIds.push(field.id)
+        }
+      })
+      chartData.value?.right?.fields?.forEach(field => {
+        if (!fieldIds.includes(field.id)) {
+          fieldIds.push(field.id)
+        }
+      })
+    } else {
+      chartData.value?.fields?.forEach(field => {
+        if (!fieldIds.includes(field.id)) {
+          fieldIds.push(field.id)
+        }
+      })
+    }
     for (let i = 0; i < fieldIds.length; i++) {
       const id = fieldIds[i]
       const sourceInfo = view.value.id + '#' + id
