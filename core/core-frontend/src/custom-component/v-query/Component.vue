@@ -69,15 +69,46 @@ const defaultStyle = {
   titleShow: false,
   titleColor: '',
   textColorShow: false,
-  labelColor: '',
   bgColorShow: false,
   borderShow: false,
-  labelColorShow: false,
-  title: ''
+  labelShow: true,
+  title: '',
+  labelColor: '#1f2329',
+  fontSize: '14',
+  fontWeight: '',
+  fontStyle: '',
+  fontSizeBtn: '14',
+  fontWeightBtn: '',
+  fontStyleBtn: '',
+  queryConditionWidth: 227,
+  nameboxSpacing: 8,
+  queryConditionSpacing: 16,
+  btnColor: '#3370ff',
+  labelColorBtn: '#ffffff'
 }
 const customStyle = reactive({ ...defaultStyle })
 const snapshotStore = snapshotStoreWithOut()
 
+const btnStyle = computed(() => {
+  const style = {
+    backgroundColor: customStyle.btnColor,
+    borderColor: customStyle.btnColor,
+    color: customStyle.labelColorBtn
+  } as CSSProperties
+  if (customStyle.fontSizeBtn) {
+    style.fontSize = customStyle.fontSizeBtn + 'px'
+  }
+
+  if (customStyle.fontWeightBtn) {
+    style.fontWeight = customStyle.fontWeightBtn
+  }
+
+  if (customStyle.fontStyleBtn) {
+    style.fontStyle = customStyle.fontStyleBtn
+  }
+
+  return style
+})
 const curComponentView = computed(() => {
   return (canvasViewInfo.value[element.value.id] || {}).customStyle
 })
@@ -92,14 +123,25 @@ const setCustomStyle = val => {
     btnList,
     titleLayout,
     labelColor,
-    labelColorShow,
     text,
     bgColor,
     layout,
     titleShow,
     titleColor,
     textColorShow,
-    title
+    title,
+    fontSize,
+    fontWeight,
+    fontStyle,
+    fontSizeBtn,
+    fontWeightBtn,
+    fontStyleBtn,
+    queryConditionWidth,
+    nameboxSpacing,
+    queryConditionSpacing,
+    labelColorBtn,
+    btnColor,
+    labelShow
   } = val
   customStyle.background = bgColorShow ? bgColor || '' : ''
   customStyle.border = borderShow ? borderColor || '' : ''
@@ -107,10 +149,22 @@ const setCustomStyle = val => {
   customStyle.layout = layout
   customStyle.titleShow = titleShow
   customStyle.titleColor = titleColor
-  customStyle.labelColor = labelColorShow ? labelColor || '' : ''
+  customStyle.labelColor = labelShow ? labelColor || '' : ''
+  customStyle.fontSize = labelShow ? fontSize || '14' : '14'
+  customStyle.fontWeight = labelShow ? fontWeight || '' : ''
+  customStyle.fontStyle = labelShow ? fontStyle || '' : ''
   customStyle.title = title
   customStyle.text = textColorShow ? text || '' : ''
   customStyle.titleLayout = titleLayout
+  customStyle.fontSizeBtn = fontSizeBtn || '14'
+  customStyle.fontWeightBtn = fontWeightBtn
+  customStyle.fontStyleBtn = fontStyleBtn
+  customStyle.queryConditionWidth = queryConditionWidth ?? 227
+  customStyle.nameboxSpacing = nameboxSpacing ?? 8
+  customStyle.queryConditionSpacing = queryConditionSpacing ?? 16
+  customStyle.labelColorBtn = labelColorBtn || '#ffffff'
+  customStyle.labelShow = labelShow ?? true
+  customStyle.btnColor = btnColor || '#3370ff'
 }
 
 watch(
@@ -196,10 +250,14 @@ const queryDataForId = id => {
     emitter.emit(`query-data-${ele}`)
   })
 }
-
+const getQueryConditionWidth = () => {
+  return customStyle.queryConditionWidth
+}
 provide('unmount-select', unMountSelect)
 provide('release-unmount-select', releaseSelect)
 provide('query-data-for-id', queryDataForId)
+provide('com-width', getQueryConditionWidth)
+
 onBeforeUnmount(() => {
   emitter.off(`addQueryCriteria${element.value.id}`)
   emitter.off(`editQueryCriteria${element.value.id}`)
@@ -384,9 +442,21 @@ const titleStyle = computed(() => {
 })
 
 const labelStyle = computed(() => {
-  return {
-    color: customStyle.labelColor || '#1f2329'
+  const style = {
+    fontSize: customStyle.fontSize + 'px'
   } as CSSProperties
+  if (customStyle.fontWeight) {
+    style.fontWeight = customStyle.fontWeight
+  }
+
+  if (customStyle.fontStyle) {
+    style.fontStyle = customStyle.fontStyle
+  }
+
+  if (customStyle.labelColor) {
+    style.color = customStyle.labelColor
+  }
+  return style
 })
 const autoStyle = computed(() => {
   return {
@@ -428,10 +498,15 @@ const autoStyle = computed(() => {
         </div>
       </div>
       <div class="query-fields-container">
-        <div class="query-item" :key="ele.id" v-for="(ele, index) in listVisible">
+        <div
+          class="query-item"
+          :style="{ marginRight: `${customStyle.queryConditionSpacing}px` }"
+          :key="ele.id"
+          v-for="(ele, index) in listVisible"
+        >
           <div class="query-field">
-            <div class="label">
-              <div class="label-wrapper">
+            <div class="label" :style="{ marginRight: `${customStyle.nameboxSpacing}px` }">
+              <div class="label-wrapper" v-show="customStyle.labelShow">
                 <div class="label-wrapper-text" :style="labelStyle">
                   <el-tooltip effect="dark" :content="ele.name" placement="top">
                     {{ ele.name }}
@@ -470,6 +545,7 @@ const autoStyle = computed(() => {
           <el-button
             @click.stop="queryData"
             style="margin-right: 7px"
+            :style="btnStyle"
             v-if="customStyle.btnList.includes('sure')"
             type="primary"
           >
@@ -614,14 +690,9 @@ const autoStyle = computed(() => {
         position: relative;
 
         :deep(.ed-date-editor) {
-          width: 227px;
           .ed-input__wrapper {
             width: 100%;
           }
-        }
-
-        :deep(.ed-select-v2) {
-          min-width: 170px;
         }
       }
     }

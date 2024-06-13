@@ -200,8 +200,8 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
 
 const initScroll = () => {
   // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
-  const customAttr = actualChart.customAttr
-  const senior = actualChart.senior
+  const customAttr = actualChart?.customAttr
+  const senior = actualChart?.senior
   if (
     senior?.scrollCfg?.open &&
     chartData.value.tableRow?.length &&
