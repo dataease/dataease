@@ -417,7 +417,19 @@ export const dvMainStore = defineStore('dataVisualization', {
               titleColor,
               titleLayout,
               layout,
-              btnList: ['sure']
+              btnList: ['sure'],
+              fontSize: '14',
+              labelShow: true,
+              fontWeight: '',
+              fontStyle: '',
+              fontSizeBtn: '14',
+              fontWeightBtn: '',
+              fontStyleBtn: '',
+              queryConditionWidth: 227,
+              nameboxSpacing: 8,
+              queryConditionSpacing: 16,
+              labelColorBtn: '#ffffff',
+              btnColor: '#3370ff'
             }
           }
         }

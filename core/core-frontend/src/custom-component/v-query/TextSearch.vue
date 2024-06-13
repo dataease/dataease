@@ -1,5 +1,7 @@
 <script lang="ts" setup>
-import { toRefs, onBeforeMount, type PropType, inject, type CSSProperties } from 'vue'
+import { toRefs, onBeforeMount, type PropType, inject } from 'vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { storeToRefs } from 'pinia'
 interface SelectConfig {
   conditionValueOperatorF: string
   conditionValueF: string
@@ -22,7 +24,8 @@ const operators = [
     value: 'like'
   }
 ]
-
+const dvMainStore = dvMainStoreWithOut()
+const { dvInfo } = storeToRefs(dvMainStore)
 const props = defineProps({
   config: {
     type: Object as PropType<SelectConfig>,
@@ -65,6 +68,7 @@ const customStyle = inject<{ background: string }>('$custom-style-filter')
     <div class="condition-type">
       <el-select
         class="condition-value-select"
+        :effect="dvInfo.type === 'dataV' ? 'dark' : ''"
         popper-class="condition-value-select-popper"
         v-model="config.conditionValueOperatorF"
       >
@@ -78,6 +82,7 @@ const customStyle = inject<{ background: string }>('$custom-style-filter')
       <sapn class="condition-type-tip">{{ config.conditionType === 1 ? '与' : '或' }}</sapn>
       <el-select
         class="condition-value-select"
+        :effect="dvInfo.type === 'dataV' ? 'dark' : ''"
         popper-class="condition-value-select-popper"
         v-model="config.conditionValueOperatorS"
       >

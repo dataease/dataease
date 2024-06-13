@@ -167,9 +167,13 @@ const showApiData = () => {
       const data = Base64.encode(JSON.stringify(apiItem))
       loading.value = true
       cancelMap['/datasource/checkApiDatasource']?.()
-      checkApiItem({ data: data, type: 'apiStructure' }).then(response => {
-        originFieldItem.jsonFields = response.data.jsonFields
-      })
+      checkApiItem({ data: data, type: 'apiStructure' })
+        .then(response => {
+          originFieldItem.jsonFields = response.data.jsonFields
+        })
+        .catch(error => {
+          console.log(error?.message)
+        })
       loading.value = false
     } else {
       return false
@@ -232,13 +236,18 @@ const next = () => {
         }
       }
       cancelMap['/datasource/checkApiDatasource']?.()
-      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) }).then(response => {
-        apiItem.jsonFields = response.data.jsonFields
-        apiItem.fields = []
-        handleFiledChange(apiItem)
-        previewData()
-        active.value += 1
-      })
+
+      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) })
+        .then(response => {
+          apiItem.jsonFields = response.data.jsonFields
+          apiItem.fields = []
+          handleFiledChange(apiItem)
+          previewData()
+          active.value += 1
+        })
+        .catch(error => {
+          console.log(error?.message)
+        })
     }
   })
 }

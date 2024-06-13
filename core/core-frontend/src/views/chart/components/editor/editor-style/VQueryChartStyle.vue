@@ -1,11 +1,12 @@
 <script lang="tsx" setup>
 import { useI18n } from '@/hooks/web/useI18n'
-import { PropType, toRefs } from 'vue'
+import { PropType, toRefs, computed } from 'vue'
 import { COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
-const { t } = useI18n()
+import CollapseSwitchItem from '@/components/collapse-switch-item/src/CollapseSwitchItem.vue'
 
+const { t } = useI18n()
 const state = {
-  styleActiveNames: ['component']
+  styleActiveNames: ['basicStyle']
 }
 
 const props = defineProps({
@@ -26,16 +27,35 @@ const props = defineProps({
     default: 'dark'
   }
 })
+const toolTip = computed(() => {
+  return props.themes === 'dark' ? 'ndark' : 'dark'
+})
 const predefineColors = COLOR_PANEL
+const fontSizeList = []
+for (let i = 10; i <= 60; i = i + 2) {
+  fontSizeList.push({
+    name: i + '',
+    value: i + ''
+  })
+}
 
-const { element, chart, commonBackgroundPop } = toRefs(props)
+const checkBold = type => {
+  if (!chart.value.customStyle.component.labelShow) return
+  chart.value.customStyle.component[type] = chart.value.customStyle.component[type] ? '' : 'bold'
+}
+
+const checkItalic = type => {
+  if (!chart.value.customStyle.component.labelShow) return
+  chart.value.customStyle.component[type] = chart.value.customStyle.component[type] ? '' : 'italic'
+}
+const { chart, commonBackgroundPop } = toRefs(props)
 </script>
 
 <template>
   <div class="attr-style">
     <el-row class="de-collapse-style">
       <el-collapse v-model="state.styleActiveNames" class="style-collapse">
-        <el-collapse-item :effect="themes" name="component" :title="t('visualization.module')">
+        <el-collapse-item :effect="themes" name="basicStyle" :title="t('chart.basic_style')">
           <el-form label-position="top">
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
               <el-checkbox
@@ -95,29 +115,10 @@ const { element, chart, commonBackgroundPop } = toRefs(props)
                 :predefine="predefineColors"
               />
             </el-form-item>
-            <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
-              <el-checkbox
-                :effect="themes"
-                size="small"
-                v-model="chart.customStyle.component.labelColorShow"
-              >
-                标签颜色
-              </el-checkbox>
-            </el-form-item>
-            <el-form-item
-              class="form-item"
-              style="padding-left: 20px"
-              :class="'form-item-' + themes"
-            >
-              <el-color-picker
-                :effect="themes"
-                :trigger-width="108"
-                is-custom
-                v-model="chart.customStyle.component.labelColor"
-                :disabled="!chart.customStyle.component.labelColorShow"
-                :predefine="predefineColors"
-              />
-            </el-form-item>
+          </el-form>
+        </el-collapse-item>
+        <el-collapse-item :effect="themes" name="addition" title="查询条件">
+          <el-form label-position="top">
             <el-form-item class="form-item margin-bottom-8" :class="'form-item-' + themes">
               <el-checkbox
                 :effect="themes"
@@ -187,8 +188,134 @@ const { element, chart, commonBackgroundPop } = toRefs(props)
                 :predefine="predefineColors"
               />
             </el-form-item>
+            <el-form-item
+              :effect="themes"
+              class="form-item"
+              label="查询条件宽度"
+              :class="'form-item-' + themes"
+            >
+              <el-input-number
+                v-model="chart.customStyle.component.queryConditionWidth"
+                :min="0"
+                controls-position="right"
+              />
+            </el-form-item>
+            <el-form-item
+              :effect="themes"
+              class="form-item"
+              label="查询条件间距"
+              :class="'form-item-' + themes"
+            >
+              <el-input-number
+                v-model="chart.customStyle.component.queryConditionSpacing"
+                :min="0"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-form>
+        </el-collapse-item>
+        <collapse-switch-item
+          :themes="themes"
+          v-model="chart.customStyle.component.labelShow"
+          name="legend"
+          title="查询条件名称"
+        >
+          <el-form
+            :class="!chart.customStyle.component.labelShow && 'is-disabled'"
+            :disabled="!chart.customStyle.component.labelShow"
+            label-position="top"
+          >
+            <el-form-item
+              :effect="themes"
+              class="form-item"
+              :label="t('visualization.position_adjust')"
+              :class="'form-item-' + themes"
+            >
+              <el-radio-group :effect="themes" v-model="chart.customStyle.component.layout">
+                <el-radio label="vertical"> 上侧 </el-radio>
+                <el-radio label="horizontal"> 左侧 </el-radio>
+              </el-radio-group>
+            </el-form-item>
+            <el-form-item
+              :label="t('chart.textColor')"
+              class="form-item margin-bottom-8"
+              :class="'form-item-' + themes"
+            >
+              <el-color-picker
+                :effect="themes"
+                is-custom
+                v-model="chart.customStyle.component.labelColor"
+                :predefine="predefineColors"
+              /><el-tooltip content="字号" :effect="toolTip" placement="top">
+                <el-select
+                  style="width: 80px; margin: 0 8px"
+                  :effect="themes"
+                  v-model="chart.customStyle.component.fontSize"
+                  :placeholder="t('chart.text_fontsize')"
+                  size="small"
+                >
+                  <el-option
+                    v-for="option in fontSizeList"
+                    :key="option.value"
+                    :label="option.name"
+                    :value="option.value"
+                  />
+                </el-select>
+              </el-tooltip>
+              <el-tooltip effect="dark" placement="bottom">
+                <template #content>
+                  {{ t('chart.bolder') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: chart.customStyle.component.fontWeight === 'bold'
+                  }"
+                  style="margin-right: 8px"
+                  @click="checkBold('fontWeight')"
+                >
+                  <el-icon>
+                    <Icon name="icon_bold_outlined" />
+                  </el-icon>
+                </div>
+              </el-tooltip>
 
-            <el-divider :effect="themes" class="m-divider" />
+              <el-tooltip effect="dark" placement="bottom">
+                <template #content>
+                  {{ t('chart.italic') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: chart.customStyle.component.fontStyle === 'italic'
+                  }"
+                  @click="checkItalic('fontStyle')"
+                >
+                  <el-icon>
+                    <Icon name="icon_italic_outlined" />
+                  </el-icon>
+                </div>
+              </el-tooltip>
+            </el-form-item>
+            <el-form-item
+              :effect="themes"
+              class="form-item"
+              label="名称与选框间距"
+              :class="'form-item-' + themes"
+            >
+              <el-input-number
+                v-model="chart.customStyle.component.nameboxSpacing"
+                :min="0"
+                :max="50"
+                controls-position="right"
+              />
+            </el-form-item>
+          </el-form>
+        </collapse-switch-item>
+        <el-collapse-item :effect="themes" name="button" :title="t('commons.button')">
+          <el-form label-position="top">
             <el-form-item
               :effect="themes"
               class="form-item"
@@ -207,55 +334,77 @@ const { element, chart, commonBackgroundPop } = toRefs(props)
                 </el-checkbox>
               </el-checkbox-group>
             </el-form-item>
+            <el-form-item class="form-item" label="按钮颜色" :class="'form-item-' + themes">
+              <el-color-picker
+                :effect="themes"
+                :trigger-width="108"
+                is-custom
+                v-model="chart.customStyle.component.btnColor"
+                :predefine="predefineColors"
+              />
+            </el-form-item>
             <el-form-item
-              :effect="themes"
-              class="form-item"
-              :label="t('chart.label_position')"
+              label="按钮文字"
+              class="form-item margin-bottom-8"
               :class="'form-item-' + themes"
             >
-              <el-radio-group
+              <el-color-picker
                 :effect="themes"
-                class="icon-radio-group"
-                v-model="chart.customStyle.component.layout"
-              >
-                <el-radio :effect="themes" label="vertical">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_top') }}
-                    </template>
-                    <div
-                      class="icon-btn"
-                      :class="{
-                        dark: themes === 'dark',
-                        active: chart.customStyle.component.layout === 'vertical'
-                      }"
-                    >
-                      <el-icon>
-                        <Icon name="icon_title-top-align_outlined" />
-                      </el-icon>
-                    </div>
-                  </el-tooltip>
-                </el-radio>
+                is-custom
+                v-model="chart.customStyle.component.labelColorBtn"
+                :predefine="predefineColors"
+              /><el-tooltip content="字号" :effect="toolTip" placement="top">
+                <el-select
+                  style="width: 80px; margin: 0 8px"
+                  :effect="themes"
+                  v-model="chart.customStyle.component.fontSizeBtn"
+                  :placeholder="t('chart.text_fontsize')"
+                  size="small"
+                >
+                  <el-option
+                    v-for="option in fontSizeList"
+                    :key="option.value"
+                    :label="option.name"
+                    :value="option.value"
+                  />
+                </el-select>
+              </el-tooltip>
+              <el-tooltip effect="dark" placement="bottom">
+                <template #content>
+                  {{ t('chart.bolder') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: chart.customStyle.component.fontWeightBtn === 'bold'
+                  }"
+                  style="margin-right: 8px"
+                  @click="checkBold('fontWeightBtn')"
+                >
+                  <el-icon>
+                    <Icon name="icon_bold_outlined" />
+                  </el-icon>
+                </div>
+              </el-tooltip>
 
-                <el-radio label="horizontal">
-                  <el-tooltip effect="dark" placement="top">
-                    <template #content>
-                      {{ t('chart.text_pos_left') }}
-                    </template>
-                    <div
-                      class="icon-btn"
-                      :class="{
-                        dark: themes === 'dark',
-                        active: chart.customStyle.component.layout === 'horizontal'
-                      }"
-                    >
-                      <el-icon>
-                        <Icon name="icon_title-left-align_outlined" />
-                      </el-icon>
-                    </div>
-                  </el-tooltip>
-                </el-radio>
-              </el-radio-group>
+              <el-tooltip effect="dark" placement="bottom">
+                <template #content>
+                  {{ t('chart.italic') }}
+                </template>
+                <div
+                  class="icon-btn"
+                  :class="{
+                    dark: themes === 'dark',
+                    active: chart.customStyle.component.fontStyleBtn === 'italic'
+                  }"
+                  @click="checkItalic('fontStyleBtn')"
+                >
+                  <el-icon>
+                    <Icon name="icon_italic_outlined" />
+                  </el-icon>
+                </div>
+              </el-tooltip>
             </el-form-item>
           </el-form>
         </el-collapse-item>
