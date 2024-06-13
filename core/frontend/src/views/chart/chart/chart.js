@@ -222,7 +222,10 @@ export const DEFAULT_LABEL = {
   reserveDecimalCount: 2,
   labelContent: ['dimension', 'proportion'],
   showConversion: false,
-  conversionLabel: '转换率'
+  conversionLabel: '转换率',
+  showTotal: false,
+  totalFontSize: '12',
+  totalColor: '#909399'
 }
 export const DEFAULT_TOOLTIP = {
   show: true,
