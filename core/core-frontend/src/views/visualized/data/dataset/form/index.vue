@@ -1462,7 +1462,7 @@ const getDsIconName = data => {
             </div>
             <div class="preview-data">
               <el-table
-                v-loading="dataPreviewLoading"
+                v-loading="datasetPreviewLoading"
                 header-class="header-cell"
                 :data="tableData"
                 border
@@ -1473,7 +1473,7 @@ const getDsIconName = data => {
                   v-for="(column, index) in columns"
                   :prop="column.dataKey"
                   :label="column.title"
-                  :width="columns.length - 1 === index ? 150 : auto"
+                  :width="columns.length - 1 === index ? 150 : 'auto'"
                   :fixed="columns.length - 1 === index ? 'right' : false"
                 >
                   <template #header>
@@ -1955,6 +1955,11 @@ const getDsIconName = data => {
 
 <style lang="less" scoped>
 @import '@/style/mixin.less';
+
+.ed-table {
+  --ed-table-header-bg-color: #f5f6f7;
+}
+
 .de-dataset-form {
   color: #1f2329;
   .top {

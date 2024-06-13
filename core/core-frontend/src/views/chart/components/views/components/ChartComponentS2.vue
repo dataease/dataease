@@ -464,8 +464,16 @@ const autoHeightStyle = computed(() => {
 })
 
 const tabStyle = computed(() => [
-  { '--de-pager-color': canvasStyleData.value.component.seniorStyleSetting.pagerColor }
+  { '--de-pager-color': canvasStyleData.value.component.seniorStyleSetting?.pagerColor }
 ])
+
+const tablePageClass = computed(() => {
+  return (
+    ['#ffffff', '#A6A6A6FF'].includes(
+      canvasStyleData.value.component.seniorStyleSetting?.pagerColor
+    ) && 'table-page-info_dark'
+  )
+})
 </script>
 
 <template>
@@ -481,7 +489,7 @@ const tabStyle = computed(() => [
       <div style="position: relative; height: 100%" :id="containerId"></div>
     </div>
     <el-row :style="autoStyle" v-if="showPage && !isError">
-      <div class="table-page-info" :style="tabStyle">
+      <div class="table-page-info" :class="tablePageClass" :style="tabStyle">
         <div>共{{ state.pageInfo.total }}条</div>
         <el-pagination
           v-if="state.pageStyle !== 'general'"
@@ -525,7 +533,13 @@ const tabStyle = computed(() => [
     overflow: hidden;
   }
 }
+
+.table-page-info_dark {
+  --ed-fill-color-blank: #00000000;
+}
+
 .table-page-info {
+  --ed-text-color-regular: var(--de-pager-color);
   position: relative;
   padding-left: 4px;
   margin: 4px;
