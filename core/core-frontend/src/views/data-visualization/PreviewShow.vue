@@ -13,7 +13,8 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
-import { download2AppTemplate, downloadCanvas, downloadCanvas2 } from '@/utils/imgUtils'
+import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
+import MultiplexPreviewShow from '@/views/data-visualization/MultiplexPreviewShow.vue'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -31,6 +32,11 @@ defineProps({
     required: false,
     type: String,
     default: 'preview'
+  },
+  noClose: {
+    required: false,
+    type: Boolean,
+    default: false
   }
 })
 
@@ -76,7 +82,7 @@ const loadCanvasData = (dvId, weight?) => {
       dvMainStore.updateCurDvInfo(dvInfo)
       dataInitState.value = true
       nextTick(() => {
-        dvPreview.value.restore()
+        dvPreview.value?.restore()
       })
     }
   )
@@ -143,6 +149,7 @@ onBeforeMount(() => {
 <template>
   <div class="dv-preview">
     <ArrowSide
+      v-if="!noClose"
       :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
       @change-side-tree-status="changeSideTreeStatus"
       :isInside="!sideTreeStatus"
@@ -156,6 +163,7 @@ onBeforeMount(() => {
       :style="{ width: width + 'px' }"
     >
       <ArrowSide
+        v-if="!noClose"
         :isInside="!sideTreeStatus"
         :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
         @change-side-tree-status="changeSideTreeStatus"
@@ -179,12 +187,20 @@ onBeforeMount(() => {
       </div>
       <template v-if="dvInfo.name">
         <preview-head
-          v-show="showPosition === 'preview'"
+          v-if="showPosition === 'preview'"
           @reload="reload"
           @download="download"
           @downloadAsAppTemplate="downloadAsAppTemplate"
         />
-        <div ref="previewCanvasContainer" class="content">
+        <div v-if="showPosition === 'multiplexing'" class="content multiplexing-content">
+          <multiplex-preview-show
+            :component-data="state.canvasDataPreview"
+            :canvas-style-data="state.canvasStylePreview"
+            :canvas-view-info="state.canvasViewInfoPreview"
+            :dv-info="state.dvInfo"
+          ></multiplex-preview-show>
+        </div>
+        <div v-if="showPosition === 'preview'" ref="previewCanvasContainer" class="content">
           <div class="content-outer">
             <div class="content-inner">
               <de-preview
@@ -299,5 +315,10 @@ onBeforeMount(() => {
   border-top: 1px solid #d7d7d7;
   border-right: 1px solid #d7d7d7;
   border-bottom: 1px solid #d7d7d7;
+}
+
+.multiplexing-content {
+  padding: 12px;
+  background-color: rgb(245, 246, 247);
 }
 </style>

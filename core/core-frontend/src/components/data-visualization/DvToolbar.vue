@@ -21,6 +21,8 @@ import { useCache } from '@/hooks/web/useCache'
 import QueryGroup from '@/custom-component/component-group/QueryGroup.vue'
 import ComponentButton from '@/components/visualization/ComponentButton.vue'
 import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
+import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
+import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabel.vue'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -166,6 +168,7 @@ const getFullScale = () => {
 }
 const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const multiplexingRef = ref(null)
 
 eventBus.on('preview', preview)
 eventBus.on('save', saveCanvasWithCheck)
@@ -181,6 +184,10 @@ const openOuterParamsSet = () => {
     return
   }
   outerParamsSetRef.value.optInit()
+}
+
+const multiplexingCanvasOpen = () => {
+  multiplexingRef.value.dialogInit('dataV')
 }
 </script>
 
@@ -260,9 +267,21 @@ const openOuterParamsSet = () => {
           <component-group is-label :base-width="215" icon-name="dv-more-com" title="更多">
             <more-com-group></more-com-group>
           </component-group>
-          <component-group is-label :base-width="410" icon-name="dv-material" title="素材">
+          <component-group
+            is-label
+            :base-width="410"
+            icon-name="dv-material"
+            :show-split-line="true"
+            title="素材"
+          >
             <common-group></common-group>
           </component-group>
+          <component-button-label
+            icon-name="icon_copy_filled"
+            title="复用"
+            is-label
+            @customClick="multiplexingCanvasOpen"
+          ></component-button-label>
         </div>
       </template>
       <div class="right-area">
@@ -316,6 +335,7 @@ const openOuterParamsSet = () => {
       ref="resourceGroupOpt"
     />
   </div>
+  <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
   <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
