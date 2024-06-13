@@ -42,6 +42,7 @@ export const copyStore = defineStore('copy', {
     ) {
       // eslint-disable-next-line @typescript-eslint/no-this-alias
       const _this = this
+      const { width, height, scale } = canvasStyleData.value
       Object.keys(outerMultiplexingComponents).forEach(function (componentId, index) {
         const newComponent = deepCopy(outerMultiplexingComponents[componentId])
         newComponent.canvasId = 'canvas-main'
@@ -56,10 +57,10 @@ export const copyStore = defineStore('copy', {
           newComponent.x = newComponent.sizeX * xPositionOffset + 1
           newComponent.y = 200
           // dataV 数据大屏
-          newComponent.style.width = canvasStyleData.value.width / 3
-          newComponent.style.height = canvasStyleData.value.height / 3
-          newComponent.style.left = newComponent.style.width * xPositionOffset
-          newComponent.style.top = newComponent.style.height * yPositionOffset
+          newComponent.style.width = (width * scale) / 400
+          newComponent.style.height = (height * scale) / 400
+          newComponent.style.left = 0
+          newComponent.style.top = 0
         }
         _this.copyData = {
           data: [newComponent],
@@ -84,6 +85,8 @@ export const copyStore = defineStore('copy', {
         return
       }
       const dataArray = this.copyData.data
+
+      console.log('past=' + JSON.stringify(dataArray))
 
       let i = 0
       const copyDataTemp = this.copyData
