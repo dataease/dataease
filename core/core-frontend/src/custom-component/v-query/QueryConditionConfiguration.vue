@@ -130,9 +130,10 @@ const showTypeError = computed(() => {
   if (!curComponent.value) return false
   if (!curComponent.value.checkedFields?.length) return false
   if (!fields.value?.length) return false
-  if (!!curComponent.value.parameters.length) {
+  if (!!curComponent.value.parameters.length && isTimeParameter.value) {
     const timeArr = curComponent.value.parameters.map(ele => ele.type[1])
-    if (timeArr.length !== new Set(timeArr).size) {
+    const [typeOne] = timeArr
+    if (timeArr.some(ele => ele !== typeOne)) {
       return true
     }
   }
