@@ -41,7 +41,7 @@ const quotaExtFields = computed<Array<any>>(() => {
 })
 
 const useQuotaExt = computed<boolean>(() => {
-  return props.chart.type === 'chart-mix'
+  return props.chart.type.includes('chart-mix')
 })
 
 const state = reactive({

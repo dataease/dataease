@@ -69,6 +69,8 @@ const options = shallowRef([])
 const unMountSelect: Ref = inject('unmount-select')
 const releaseSelect = inject('release-unmount-select', Function, true)
 const queryDataForId = inject('query-data-for-id', Function, true)
+const queryConditionWidth = inject('com-width', Function, true)
+
 const setDefaultMapValue = arr => {
   const { displayId, field } = config.value
   if (!displayId) {
@@ -444,7 +446,7 @@ const init = () => {
 }
 
 const selectStyle = computed(() => {
-  return props.isConfig ? {} : { width: '227px' }
+  return props.isConfig ? {} : { width: queryConditionWidth() + 'px' }
 })
 
 const mult = ref()

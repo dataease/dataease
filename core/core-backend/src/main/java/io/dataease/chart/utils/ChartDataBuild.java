@@ -8,6 +8,7 @@ import io.dataease.i18n.Lang;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ArrayUtils;
 import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.ObjectUtils;
@@ -175,7 +176,7 @@ public class ChartDataBuild {
                 axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
                 buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
 
-                Map<String, Object> object = JsonUtil.parse((String) JsonUtil.toJSONString(axisChartDataDTO) , HashMap.class);
+                Map<String, Object> object = JsonUtil.parse((String) JsonUtil.toJSONString(axisChartDataDTO), HashMap.class);
 
                 object.put("x", new BigDecimal(row[0]));
                 object.put("y", new BigDecimal(row[1]));
@@ -518,7 +519,7 @@ public class ChartDataBuild {
     }
 
     // antV组合图形
-    public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis,List<ChartViewFieldDTO> xAxisExt,  List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
+    public static Map<String, Object> transMixChartDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> xAxisExt, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
         List<Series> series = new ArrayList<>();
@@ -529,6 +530,8 @@ public class ChartDataBuild {
             series1.setData(new ArrayList<>());
             series.add(series1);
         }
+        Set<String> categories = new HashSet<>();
+
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] d = data.get(i1);
 
@@ -584,13 +587,107 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                axisChartDataDTO.setCategory(
-                        StringUtils.defaultIfBlank(b.toString(),
-                        StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName())));
+                String category = StringUtils.defaultIfBlank(b.toString(),
+                        StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
+                axisChartDataDTO.setCategory(category);
+                categories.add(category);
+
                 buildDynamicValue(view, axisChartDataDTO, d, size, extSize);
                 series.get(j).getData().add(axisChartDataDTO);
             }
         }
+        series.get(0).setCategories(categories);
+
+        map.put("data", series);
+        return map;
+    }
+
+    public static Map<String, Object> transMixChartStackDataAntV(List<ChartViewFieldDTO> xAxisBase, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> extStack, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
+
+        if (CollectionUtils.isEmpty(extStack)) {
+            return transMixChartDataAntV(xAxisBase, xAxis, new ArrayList<>(), yAxis, view, data, isDrill);
+        }
+
+        Map<String, Object> map = new HashMap<>();
+
+        List<Series> series = new ArrayList<>();
+        for (ChartViewFieldDTO y : yAxis) {
+            Series series1 = new Series();
+            series1.setName(y.getName());
+            series1.setType(y.getChartType());
+            series1.setData(new ArrayList<>());
+            series.add(series1);
+        }
+        Set<String> categories = new HashSet<>();
+
+        for (int i1 = 0; i1 < data.size(); i1++) {
+            String[] row = data.get(i1);
+
+            StringBuilder a = new StringBuilder();
+            if (isDrill) {
+                a.append(row[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(row[i]);
+                    } else {
+                        a.append(row[i]).append("\n");
+                    }
+                }
+            }
+
+            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+            int size = xAxis.size() + extStack.size() + yAxis.size();
+            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
+            int i = xAxis.size();
+            AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
+            axisChartDataDTO.setField(a.toString());
+            axisChartDataDTO.setName(a.toString());
+            String category = row[xAxis.size()];
+            axisChartDataDTO.setCategory(category);
+            if (category != null) {
+                categories.add(category);
+            }
+
+            List<ChartDimensionDTO> dimensionList = new ArrayList<>();
+            List<ChartQuotaDTO> quotaList = new ArrayList<>();
+
+            for (int k = 0; k < xAxis.size(); k++) {
+                ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+                chartDimensionDTO.setId(xAxis.get(k).getId());
+                chartDimensionDTO.setValue(row[k]);
+                dimensionList.add(chartDimensionDTO);
+            }
+            ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
+            chartDimensionDTO.setId(extStack.get(0).getId());
+            chartDimensionDTO.setValue(row[xAxis.size()]);
+            dimensionList.add(chartDimensionDTO);
+            axisChartDataDTO.setDimensionList(dimensionList);
+
+            int j = i - xAxis.size();
+            int valueIndex = xAxis.size() + extStack.size();
+            if (ObjectUtils.isNotEmpty(yAxis)) {
+                ChartQuotaDTO chartQuotaDTO = new ChartQuotaDTO();
+                chartQuotaDTO.setId(yAxis.get(j).getId());
+                quotaList.add(chartQuotaDTO);
+                axisChartDataDTO.setQuotaList(quotaList);
+                try {
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[valueIndex]) ? null : new BigDecimal(row[valueIndex]));
+                } catch (Exception e) {
+                    axisChartDataDTO.setValue(new BigDecimal(0));
+                }
+                buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
+            } else {
+                axisChartDataDTO.setQuotaList(quotaList);
+                axisChartDataDTO.setValue(new BigDecimal(0));
+            }
+
+            series.get(j).getData().add(axisChartDataDTO);
+        }
+
+        series.get(0).setCategories(categories);
+
 
         map.put("data", series);
         return map;
