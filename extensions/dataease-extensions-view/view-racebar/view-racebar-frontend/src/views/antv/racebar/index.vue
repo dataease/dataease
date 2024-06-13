@@ -480,6 +480,8 @@ export default {
           chart_option.graphic.elements[0].style.text = "";
         }
 
+        chart_option.yAxis.data = chart.data.groupXs[_currentIndex];
+
         this.currentIndex = _currentIndex;
 
         _chart.setOption(chart_option);
@@ -583,7 +585,7 @@ export default {
       }
 
       chart_option.yAxis.max = this.sliderMax;
-      chart_option.yAxis.data = chart.data.xs;
+      //chart_option.yAxis.data = chart.data.xs;
 
       chart_option.animationDurationUpdate = this.sliderTimeout;
 

@@ -172,6 +172,19 @@ public class RaceBarService extends ViewPluginService {
                 })
         );
 
+        Map<String, List<String>> groupXs = data.stream().collect(Collectors.toMap(
+                k -> StringUtils.defaultString(k[(Integer) map.get("extIndex")], StringUtils.EMPTY),
+                v -> {
+                    List<String> list = new ArrayList<>();
+                    list.add(v[encode.get("y")]);
+                    return list;
+                },
+                (oldList, newList) -> {
+                    oldList.addAll(newList);
+                    return oldList;
+                })
+        );
+
 
         map.put("groupData", groupData);
 
@@ -179,6 +192,7 @@ public class RaceBarService extends ViewPluginService {
 
         map.put("xs", xs);
 
+        map.put("groupXs", groupXs);
 
         return map;
     }
