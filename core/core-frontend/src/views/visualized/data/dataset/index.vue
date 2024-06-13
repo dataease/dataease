@@ -790,7 +790,7 @@ const getMenuList = (val: boolean) => {
                     v-for="(column, index) in columns"
                     :prop="column.dataKey"
                     :label="column.title"
-                    :width="columns.length - 1 === index ? 150 : auto"
+                    :width="columns.length - 1 === index ? 150 : 'auto'"
                     :fixed="columns.length - 1 === index ? 'right' : false"
                   >
                     <template #header>
@@ -845,6 +845,10 @@ const getMenuList = (val: boolean) => {
 
 <style lang="less" scoped>
 @import '@/style/mixin.less';
+
+.ed-table {
+  --ed-table-header-bg-color: #f5f6f7;
+}
 
 .filter-icon-span {
   border: 1px solid #bbbfc4;
