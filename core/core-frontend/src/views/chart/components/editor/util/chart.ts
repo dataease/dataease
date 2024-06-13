@@ -1380,14 +1380,14 @@ export const CHART_TYPE_CONFIGS = [
         category: 'dual_axes',
         value: 'chart-mix-group',
         title: t('chart.chart_mix_group_column'),
-        icon: 'chart-mix'
+        icon: 'chart-mix-group'
       },
       {
         render: 'antv',
         category: 'dual_axes',
         value: 'chart-mix-stack',
         title: t('chart.chart_mix_stack_column'),
-        icon: 'chart-mix'
+        icon: 'chart-mix-stack'
       }
     ]
   },
