@@ -2,7 +2,7 @@ package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.dataease.api.chart.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
 import io.dataease.api.visualization.DataVisualizationApi;

@@ -1,9 +1,9 @@
 package io.dataease.engine.utils;
 
-import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.constant.SqlPlaceholderConstants;
@@ -32,6 +32,22 @@ public class Utils {
             if (dsMap != null && dsMap.entrySet().iterator().hasNext()) {
                 Map.Entry<Long, DatasourceSchemaDTO> next = dsMap.entrySet().iterator().next();
                 datasourceType = DatasourceConfiguration.DatasourceType.valueOf(next.getValue().getType());
+            }
+            return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType);
+        } catch (Exception e) {
+            DEException.throwException(Translator.get("i18n_field_circular_ref"));
+        }
+        return null;
+    }
+
+    public static String calcSimpleFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields,
+                                        boolean isCross, Map<Long, String> dsTypeMap) {
+        try {
+            int i = 0;
+            DatasourceConfiguration.DatasourceType datasourceType = null;
+            if (dsTypeMap != null && dsTypeMap.entrySet().iterator().hasNext()) {
+                Map.Entry<Long, String> next = dsTypeMap.entrySet().iterator().next();
+                datasourceType = DatasourceConfiguration.DatasourceType.valueOf(next.getValue());
             }
             return buildCalcField(originField, tableObj, originFields, i, isCross, datasourceType);
         } catch (Exception e) {

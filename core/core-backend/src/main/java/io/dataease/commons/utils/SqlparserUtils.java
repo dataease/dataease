@@ -1,7 +1,7 @@
 package io.dataease.commons.utils;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.api.dataset.dto.SqlVariableDetails;
+import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.exception.DEException;

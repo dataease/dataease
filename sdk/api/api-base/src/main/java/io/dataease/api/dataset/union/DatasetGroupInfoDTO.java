@@ -2,7 +2,7 @@ package io.dataease.api.dataset.union;
 
 import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.dataset.dto.DatasetNodeDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
 import java.util.List;

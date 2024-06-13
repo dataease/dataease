@@ -1,7 +1,7 @@
 package io.dataease.visualization.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.chart.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.exception.DEException;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataMapper;
@@ -11,8 +11,6 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
-import java.util.Map;
-
 
 
 /**

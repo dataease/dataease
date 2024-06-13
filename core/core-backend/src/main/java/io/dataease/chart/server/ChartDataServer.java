@@ -1,7 +1,7 @@
 package io.dataease.chart.server;
 
 import io.dataease.api.chart.ChartDataApi;
-import io.dataease.api.chart.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.chart.request.ChartExcelRequestInner;

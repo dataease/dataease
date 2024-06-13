@@ -1,7 +1,8 @@
 package io.dataease.api.visualization.dto;
 
-import io.dataease.api.chart.dto.ChartViewDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
+
+import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
 import java.util.List;

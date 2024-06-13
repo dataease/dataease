@@ -1,10 +1,10 @@
 package io.dataease.engine.trans;
 
 import io.dataease.api.chart.dto.DeSortField;
-import io.dataease.api.dataset.union.model.SQLMeta;
-import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.extensions.view.model.SQLMeta;
+import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;

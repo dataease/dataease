@@ -2,7 +2,7 @@
 <!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN" "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="io.dataease.visualization.dao.ext.mapper.ExtVisualizationLinkageMapper">
 
-    <resultMap id="TableFieldMap" type="io.dataease.dto.dataset.DatasetTableFieldDTO">
+    <resultMap id="TableFieldMap" type="io.dataease.extensions.view.dto.DatasetTableFieldDTO">
         <result column="id" jdbcType="BIGINT" property="id"/>
         <result column="table_id" jdbcType="BIGINT" property="datasetTableId"/>
         <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
@@ -17,7 +17,7 @@
         <result column="targetViewName" jdbcType="VARCHAR" property="targetViewName"/>
         <result column="sourceViewId" jdbcType="BIGINT" property="sourceViewId"/>
         <result column="linkageActive" property="linkageActive"/>
-        <collection property="targetViewFields" ofType="io.dataease.dto.dataset.DatasetTableFieldDTO" column="table_id"
+        <collection property="targetViewFields" ofType="io.dataease.extensions.view.dto.DatasetTableFieldDTO" column="table_id"
                     select="queryTableField">
         </collection>
         <collection property="linkageFields" ofType="io.dataease.api.visualization.vo.VisualizationLinkageFieldVO">

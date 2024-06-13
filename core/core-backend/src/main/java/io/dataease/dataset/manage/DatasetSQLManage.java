@@ -1,11 +1,11 @@
 package io.dataease.dataset.manage;
 
-import io.dataease.api.chart.dto.ChartExtFilterDTO;
-import io.dataease.api.chart.request.ChartExtRequest;
+import io.dataease.extensions.view.dto.ChartExtFilterDTO;
+import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.dataset.dto.SqlVariableDetails;
+import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.*;
-import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.commons.utils.SqlparserUtils;
@@ -18,7 +18,7 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.EngineManage;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;

@@ -2,10 +2,10 @@ package io.dataease.chart.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.api.chart.dto.ChartCustomFilterItemDTO;
-import io.dataease.api.chart.dto.ChartFieldCustomFilterDTO;
-import io.dataease.api.chart.filter.FilterTreeItem;
-import io.dataease.api.chart.filter.FilterTreeObj;
+import io.dataease.extensions.view.dto.ChartCustomFilterItemDTO;
+import io.dataease.extensions.view.dto.ChartFieldCustomFilterDTO;
+import io.dataease.extensions.view.filter.FilterTreeItem;
+import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.utils.JsonUtil;

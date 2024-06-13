@@ -124,6 +124,12 @@
             </exclusions>
         </dependency>
 
+        <dependency>
+            <groupId>io.dataease</groupId>
+            <artifactId>extensions-view</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+
     </dependencies>
 
 </project>

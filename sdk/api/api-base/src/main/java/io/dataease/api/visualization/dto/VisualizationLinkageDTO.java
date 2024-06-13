@@ -4,7 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.visualization.vo.VisualizationLinkageFieldVO;
 import io.dataease.api.visualization.vo.VisualizationLinkageVO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
 import java.util.ArrayList;

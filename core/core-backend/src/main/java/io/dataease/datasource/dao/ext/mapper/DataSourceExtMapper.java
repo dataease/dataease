@@ -3,7 +3,6 @@ package io.dataease.datasource.dao.ext.mapper;
 import com.baomidou.mybatisplus.core.mapper.BaseMapper;
 import io.dataease.datasource.dao.ext.po.Ctimestamp;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import org.apache.ibatis.annotations.*;
 
 @Mapper

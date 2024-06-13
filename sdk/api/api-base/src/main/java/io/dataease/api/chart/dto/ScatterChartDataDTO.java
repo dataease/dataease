@@ -1,5 +1,6 @@
 package io.dataease.api.chart.dto;
 
+import io.dataease.extensions.view.dto.ChartDimensionDTO;
 import lombok.Data;
 
 import java.util.List;
