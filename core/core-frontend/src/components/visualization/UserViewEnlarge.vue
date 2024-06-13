@@ -64,12 +64,12 @@
           show-position="viewDialog"
         />
         <chart-component-s2
-          v-if="optType === 'details' && sourceViewType !== 'chart-mix'"
+          v-if="optType === 'details' && !sourceViewType.includes('chart-mix')"
           :view="viewInfo"
           show-position="viewDialog"
           ref="chartComponentDetails"
         />
-        <template v-else-if="optType === 'details' && sourceViewType === 'chart-mix'">
+        <template v-else-if="optType === 'details' && sourceViewType.includes('chart-mix')">
           <el-tabs class="tab-header" v-model="activeName" @tab-change="handleClick">
             <el-tab-pane :label="t('chart.drag_block_value_axis_left')" name="left"></el-tab-pane>
             <el-tab-pane :label="t('chart.drag_block_value_axis_right')" name="right"></el-tab-pane>
@@ -214,7 +214,7 @@ const dialogInit = (canvasStyle, view, item, opt) => {
 const dataDetailsOpt = () => {
   nextTick(() => {
     const viewDataInfo = dvMainStore.getViewDataDetails(viewInfo.value.id)
-    if (sourceViewType.value === 'chart-mix') {
+    if (sourceViewType.value.includes('chart-mix')) {
       chartComponentDetails.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.left)
       chartComponentDetails2.value?.renderChartFromDialog(viewInfo.value, viewDataInfo.right)
     } else {

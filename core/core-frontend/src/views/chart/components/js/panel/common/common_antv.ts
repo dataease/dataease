@@ -676,7 +676,8 @@ export function getAnalyse(chart: Chart) {
       return (
         dynamicLineFields?.includes(item.fieldId) &&
         (!!_.find(quotaFields, d => d.id === item.fieldId) ||
-          (!!_.find(quotaExtFields, d => d.id === item.fieldId) && chart.type === 'chart-mix'))
+          (!!_.find(quotaExtFields, d => d.id === item.fieldId) &&
+            chart.type.includes('chart-mix')))
       )
     })
     const lines = fixedLines.concat(dynamicLines)

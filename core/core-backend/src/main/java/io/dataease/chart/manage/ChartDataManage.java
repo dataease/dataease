@@ -109,12 +109,26 @@ public class ChartDataManage {
         List<ChartViewFieldDTO> allFields = getAllChartFields(view);
         ChartViewDTO chartViewDTO = null;
 
-        if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
+        if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
+            // 需要排除掉除类别轴以外所有的排序
+            view.getXAxisExt().forEach(dto -> dto.setSort("none"));
+            view.getExtBubble().forEach(dto -> dto.setSort("none"));
+            view.getExtStack().forEach(dto -> dto.setSort("none"));
+            view.getYAxis().forEach(dto -> dto.setSort("none"));
+            view.getYAxisExt().forEach(dto -> dto.setSort("none"));
+
             //左轴右轴需要分别调用一次查询
             String viewJson = (String) JsonUtil.toJSONString(view);
             Map<String, Object> data = new HashMap<>();
             //针对左轴，删除yAxisExt
             ChartViewDTO view1 = JsonUtil.parseObject(viewJson, ChartViewDTO.class);
+            if (!StringUtils.equalsIgnoreCase(view.getType(), "chart-mix-group")) {
+                view1.setXAxisExt(new ArrayList<>());
+            }
+            if (!StringUtils.equalsIgnoreCase(view.getType(), "chart-mix-stack")) {
+                view1.setExtStack(new ArrayList<>());
+            }
+            view1.setExtBubble(new ArrayList<>());
             view1.setYAxisExt(new ArrayList<>());
             if (view1.getSenior() != null) {
                 ChartSeniorAssistCfgDTO assistLineCfg1 = JsonUtil.parseObject((String) JsonUtil.toJSONString(view1.getSenior().get("assistLineCfg")), ChartSeniorAssistCfgDTO.class);
@@ -140,13 +154,17 @@ public class ChartDataManage {
                 }
             }
             view2.setXAxisExt(view2.getExtBubble());
+            view2.setExtStack(new ArrayList<>());
             view2.setExtBubble(new ArrayList<>());
             ChartViewDTO right = calcData(view2, chartExtRequest, allFields, viewFields);
             data.put("right", right.getData());
 
             //重新组装
             chartViewDTO = BeanUtils.copyBean(new ChartViewDTO(), left);
+            chartViewDTO.setXAxisExt(view.getXAxisExt());
+            chartViewDTO.setExtStack(view.getExtStack());
             chartViewDTO.setYAxisExt(view.getYAxisExt());
+            chartViewDTO.setExtBubble(view.getExtBubble());
             chartViewDTO.setData(data);
             chartViewDTO.setSenior(view.getSenior());
         } else {
@@ -166,12 +184,12 @@ public class ChartDataManage {
                 || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
                 || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
                 || StringUtils.equalsIgnoreCase(view.getType(), "sankey")
-                || StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
+                || StringUtils.containsIgnoreCase(view.getType(), "chart-mix")
         ) {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
-        if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
+        if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")
                 || StringUtils.equalsIgnoreCase(view.getType(), "bidirectional-bar")
                 || StringUtils.equalsIgnoreCase(view.getType(), "quadrant")
                 || StringUtils.containsIgnoreCase(view.getType(), "progress-bar")) {
@@ -831,8 +849,15 @@ public class ChartDataManage {
             } else if (StringUtils.containsIgnoreCase(view.getType(), "bidirectional-bar")
                     || StringUtils.containsIgnoreCase(view.getType(), "progress-bar")) {
                 mapChart = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, new ArrayList<>(), yAxis, view, data, isDrill);
-            } else if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix") && !StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 mapChart = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill);
+            } else if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix") && StringUtils.containsIgnoreCase(view.getType(), "stack")) {
+                if (CollectionUtils.isNotEmpty(extStack)) {
+                    mapChart = ChartDataBuild.transMixChartStackDataAntV(xAxisBase, xAxis, extStack, yAxis, view, data, isDrill);
+                } else {
+                    //右轴还是走原逻辑
+                    mapChart = ChartDataBuild.transMixChartDataAntV(xAxisBase, xAxis, xAxisExt, yAxis, view, data, isDrill);
+                }
             } else if (StringUtils.containsIgnoreCase(view.getType(), "label")) {
                 mapChart = ChartDataBuild.transLabelChartData(xAxis, yAxis, view, data, isDrill);
             } else if (StringUtils.containsIgnoreCase(view.getType(), "quadrant")) {
@@ -1316,7 +1341,7 @@ public class ChartDataManage {
             xAxis.addAll(xAxisExt);
         }
         List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
-        if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")) {
+        if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
             List<ChartViewFieldDTO> yAxisExt = new ArrayList<>(view.getYAxisExt());
             yAxis.addAll(yAxisExt);
         }

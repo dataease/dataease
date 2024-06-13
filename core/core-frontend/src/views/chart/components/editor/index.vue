@@ -614,7 +614,7 @@ const addAxis = (e, axis: AxisType) => {
       emitter.emit('removeAxis', { axisType: 'yAxis', axis, editType: 'remove' })
     }
   }
-  if (view.value.type === 'chart-mix') {
+  if (view.value.type.includes('chart-mix')) {
     if (axis === 'yAxis') {
       if (view.value.yAxisExt.length > 0) {
         const chartType = view.value.yAxisExt[0].chartType
@@ -1032,7 +1032,6 @@ const saveRename = ref => {
   ref.validate(valid => {
     if (valid) {
       const { renameType, index, chartShowName } = state.itemForm
-      console.log(renameType)
       let axisType, axis
       switch (renameType) {
         case 'quota':

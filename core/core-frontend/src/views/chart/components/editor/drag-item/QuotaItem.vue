@@ -665,7 +665,10 @@ onMounted(() => {
           <el-dropdown-item
             @click.prevent
             v-if="
-              props.type !== 'extLabel' && props.type !== 'extTooltip' && props.type !== 'extBubble'
+              props.type !== 'extLabel' &&
+              props.type !== 'extTooltip' &&
+              props.type !== 'extBubble' &&
+              !chart.type.includes('chart-mix')
             "
             :divided="chart.type !== 'table-info'"
           >
@@ -739,6 +742,7 @@ onMounted(() => {
             "
             :icon="Filter"
             :command="beforeClickItem('filter')"
+            :divided="chart.type.includes('chart-mix')"
           >
             <span>{{ t('chart.filter') }}...</span>
           </el-dropdown-item>
