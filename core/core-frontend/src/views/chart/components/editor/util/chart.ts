@@ -389,7 +389,7 @@ export const DEFAULT_INDICATOR_STYLE: ChartIndicatorStyle = {
   fontFamily: 'Microsoft YaHei',
   letterSpace: 0,
   fontShadow: false,
-  backgroundColor: '#fff',
+  backgroundColor: '',
 
   suffixEnable: true,
   suffix: '',
