@@ -21,7 +21,7 @@ const props = defineProps({
         (props.view.type.includes('bar') ||
           props.view.type.includes('line') ||
           props.view.type.includes('scatter') ||
-          props.view.type === 'chart-mix' ||
+          props.view.type.includes('chart-mix') ||
           props.view.type === 'waterfall' ||
           props.view.type === 'area' ||
           props.view.type === 'area-stack')

@@ -226,7 +226,13 @@ onMounted(() => {
           class="drop-style"
           :class="themes === 'dark' ? 'dark-dimension-quota' : ''"
         >
-          <el-dropdown-item @click.prevent>
+          <el-dropdown-item
+            @click.prevent
+            v-if="
+              !chart.type.includes('chart-mix') ||
+              (chart.type.includes('chart-mix') && type === 'dimension')
+            "
+          >
             <el-dropdown
               :effect="themes"
               popper-class="data-dropdown_popper_mr9"
@@ -305,7 +311,14 @@ onMounted(() => {
             </el-dropdown>
           </el-dropdown-item>
 
-          <el-dropdown-item @click.prevent v-if="item.deType === 1" divided>
+          <el-dropdown-item
+            @click.prevent
+            v-if="item.deType === 1"
+            :divided="
+              !chart.type.includes('chart-mix') ||
+              (chart.type.includes('chart-mix') && type === 'dimension')
+            "
+          >
             <el-dropdown
               :effect="themes"
               placement="right-start"
@@ -495,7 +508,14 @@ onMounted(() => {
               </template>
             </el-dropdown>
           </el-dropdown-item>
-          <el-dropdown-item class="menu-item-padding" divided :command="beforeClickItem('rename')">
+          <el-dropdown-item
+            class="menu-item-padding"
+            :divided="
+              !chart.type.includes('chart-mix') ||
+              (chart.type.includes('chart-mix') && type === 'dimension')
+            "
+            :command="beforeClickItem('rename')"
+          >
             <el-icon>
               <icon name="icon_edit_outlined"></icon>
             </el-icon>

@@ -467,7 +467,7 @@ export const exportExcelDownload = (chart, callBack?) => {
     viewInfo: chart,
     viewName: excelName
   }
-  if (chart.type === 'chart-mix') {
+  if (chart.type.includes('chart-mix')) {
     const req1 = getExcelDownloadRequest(chart.data.left)
     const req2 = getExcelDownloadRequest(chart.data.right)
     request = {

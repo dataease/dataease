@@ -883,6 +883,8 @@ export default {
     last_layer: '当前已经是最后一级',
     radar_size: '大小',
     chart_mix: '柱线组合图',
+    chart_mix_group_column: '分组柱线组合图',
+    chart_mix_stack_column: '堆叠柱线组合图',
     axis_value: '轴值',
     axis_value_min: '最小值',
     axis_value_max: '最大值',

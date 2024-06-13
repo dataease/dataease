@@ -72,6 +72,9 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     const data1Type = 'column'
     const data2Type = 'line'
 
+    const isGroup = this.name === 'chart-mix-group' && chart.xAxisExt?.length > 0
+    const isStack = this.name === 'chart-mix-stack' && chart.extStack?.length > 0
+    const seriesField = isGroup ? 'category' : isStack ? 'category' : undefined
     const seriesField2 = chart.extBubble?.length > 0 ? 'category' : undefined
 
     const data1 = defaultTo(left[0]?.data, [])
@@ -104,7 +107,11 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       geometryOptions: [
         {
           geometry: data1Type,
-          color: color[0]
+          color: isGroup || isStack ? color : color[0],
+
+          isGroup: isGroup,
+          isStack: isStack,
+          seriesField: seriesField
         },
         {
           geometry: data2Type,
@@ -398,11 +405,12 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
       o.legend.itemName = {
         formatter: (text: string, item: any, index: number) => {
           let name = undefined
-          if (index === 0 && text === 'value') {
+          if (item.viewId === 'left-axes-view' && text === 'value') {
             name = left[0]?.name
-          } else if (index === 1 && text === 'valueExt') {
+          } else if (item.viewId === 'right-axes-view' && text === 'valueExt') {
             name = right[0]?.name
           }
+          item.id = item.id + '__' + index //防止重复的图例出现问题，但是左右轴如果有相同的怎么办
           if (name === undefined) {
             return text
           } else {
@@ -445,5 +453,34 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
 
   constructor(name = 'chart-mix') {
     super(name, DEFAULT_DATA)
+  }
+}
+
+export class GroupColumnLineMix extends ColumnLineMix {
+  axis: AxisType[] = [...this['axis'], 'xAxisExt']
+  axisConfig = {
+    ...this['axisConfig'],
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.column_quota')}`,
+      limit: 1,
+      type: 'q'
+    }
+  }
+  constructor(name = 'chart-mix-group') {
+    super(name)
+  }
+}
+export class StackColumnLineMix extends ColumnLineMix {
+  axis: AxisType[] = [...this['axis'], 'extStack']
+  axisConfig = {
+    ...this['axisConfig'],
+    yAxis: {
+      name: `${t('chart.drag_block_value_axis_left')} / ${t('chart.column_quota')}`,
+      limit: 1,
+      type: 'q'
+    }
+  }
+  constructor(name = 'chart-mix-stack') {
+    super(name)
   }
 }
