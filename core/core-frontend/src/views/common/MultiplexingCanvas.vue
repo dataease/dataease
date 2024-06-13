@@ -8,12 +8,19 @@
     custom-class="custom-drawer"
   >
     <dashboard-preview-show
-      v-if="dialogShow"
+      v-if="dialogShow && curDvType === 'dashboard'"
       ref="multiplexingPreviewShowRef"
       class="multiplexing-area"
       no-close
       show-position="multiplexing"
     ></dashboard-preview-show>
+    <preview-show
+      v-if="dialogShow && curDvType === 'dataV'"
+      ref="multiplexingPreviewShowRef"
+      class="multiplexing-area"
+      no-close
+      show-position="multiplexing"
+    ></preview-show>
     <template #footer>
       <el-row class="multiplexing-footer">
         <el-col class="adapt-count">
@@ -55,6 +62,7 @@ import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import PreviewShow from '@/views/data-visualization/PreviewShow.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const dialogShow = ref(false)
@@ -67,10 +75,12 @@ const state = reactive({
     { label: '保持源样式', value: false }
   ]
 })
+const curDvType = ref('dashboard')
 
 const selectComponentCount = computed(() => Object.keys(curMultiplexingComponents.value).length)
 
-const dialogInit = () => {
+const dialogInit = (dvType = 'dashboard') => {
+  curDvType.value = dvType
   dialogShow.value = true
   dvMainStore.initCurMultiplexingComponents()
 }
