@@ -475,7 +475,7 @@ interface CanvasViewInfo {
 }
 
 const colors = ['labelColor', 'borderColor', 'text', 'bgColor']
-const colorsSwitch = ['labelColorShow', 'borderShow', 'textColorShow', 'bgColorShow']
+const colorsSwitch = ['borderShow', 'textColorShow', 'bgColorShow']
 
 export function adaptCurThemeFilterStyleAllKeyComponent(component) {
   if (isFilterComponent(component.type)) {

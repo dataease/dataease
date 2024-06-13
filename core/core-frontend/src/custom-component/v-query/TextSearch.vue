@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { toRefs, onBeforeMount, type PropType, inject } from 'vue'
+import { toRefs, onBeforeMount, type PropType, inject, computed } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 interface SelectConfig {
@@ -60,7 +60,15 @@ const setParams = () => {
 onBeforeMount(() => {
   setParams()
 })
+const queryConditionWidth = inject('com-width', Function, true)
 const customStyle = inject<{ background: string }>('$custom-style-filter')
+const selectStyle = computed(() => {
+  return { width: queryConditionWidth() + 'px' }
+})
+
+const lineWidth = computed(() => {
+  return { width: queryConditionWidth() - 15 + 'px' }
+})
 </script>
 
 <template>
@@ -75,8 +83,12 @@ const customStyle = inject<{ background: string }>('$custom-style-filter')
         <el-option v-for="ele in operators" :key="ele.value" :label="ele.label" :value="ele.value">
         </el-option>
       </el-select>
-      <el-input class="condition-value-input" v-model="config.conditionValueF" />
-      <div class="bottom-line"></div>
+      <el-input
+        :style="selectStyle"
+        class="condition-value-input"
+        v-model="config.conditionValueF"
+      />
+      <div :style="lineWidth" class="bottom-line"></div>
     </div>
     <div class="condition-type" v-if="[1, 2].includes(config.conditionType)">
       <sapn class="condition-type-tip">{{ config.conditionType === 1 ? '与' : '或' }}</sapn>
@@ -89,8 +101,12 @@ const customStyle = inject<{ background: string }>('$custom-style-filter')
         <el-option v-for="ele in operators" :key="ele.value" :label="ele.label" :value="ele.value">
         </el-option>
       </el-select>
-      <el-input class="condition-value-input" v-model="config.conditionValueS" />
-      <div class="bottom-line next-line"></div>
+      <el-input
+        :style="selectStyle"
+        class="condition-value-input"
+        v-model="config.conditionValueS"
+      />
+      <div :style="lineWidth" class="bottom-line next-line"></div>
     </div>
   </div>
 </template>
@@ -150,12 +166,7 @@ const customStyle = inject<{ background: string }>('$custom-style-filter')
       position: absolute;
       right: 5px;
       bottom: 3px;
-      width: 195px;
       z-index: 10;
-
-      &.next-line {
-        width: 195px;
-      }
     }
   }
 }

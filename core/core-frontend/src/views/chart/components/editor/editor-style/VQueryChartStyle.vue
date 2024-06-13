@@ -49,6 +49,23 @@ const checkItalic = type => {
   chart.value.customStyle.component[type] = chart.value.customStyle.component[type] ? '' : 'italic'
 }
 const { chart, commonBackgroundPop } = toRefs(props)
+if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
+  chart.value.customStyle.component = {
+    ...chart.value.customStyle.component,
+    labelShow: true,
+    fontWeight: '',
+    fontStyle: '',
+    fontSize: '14',
+    fontSizeBtn: '14',
+    fontWeightBtn: '',
+    fontStyleBtn: '',
+    queryConditionWidth: 227,
+    nameboxSpacing: 8,
+    queryConditionSpacing: 16,
+    labelColorBtn: '#ffffff',
+    btnColor: '#3370ff'
+  }
+}
 </script>
 
 <template>

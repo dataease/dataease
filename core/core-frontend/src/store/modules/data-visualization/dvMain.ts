@@ -407,7 +407,6 @@ export const dvMainStore = defineStore('dataVisualization', {
               borderShow: false,
               text,
               textColorShow: false,
-              labelColorShow: false,
               labelColor,
               borderColor,
               title: '',

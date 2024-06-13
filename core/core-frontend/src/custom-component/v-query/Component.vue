@@ -24,7 +24,6 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { comInfo } from './com-info'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import StyleInject from './StyleInject.vue'
-import { backgroundSize } from 'html2canvas/dist/types/css/property-descriptors/background-size'
 const props = defineProps({
   view: {
     type: Object,
@@ -72,7 +71,6 @@ const defaultStyle = {
   textColorShow: false,
   bgColorShow: false,
   borderShow: false,
-  labelColorShow: false,
   labelShow: true,
   title: '',
   labelColor: '#1f2329',
@@ -91,6 +89,26 @@ const defaultStyle = {
 const customStyle = reactive({ ...defaultStyle })
 const snapshotStore = snapshotStoreWithOut()
 
+const btnStyle = computed(() => {
+  const style = {
+    backgroundColor: customStyle.btnColor,
+    borderColor: customStyle.btnColor,
+    color: customStyle.labelColorBtn
+  } as CSSProperties
+  if (customStyle.fontSizeBtn) {
+    style.fontSize = customStyle.fontSizeBtn + 'px'
+  }
+
+  if (customStyle.fontWeightBtn) {
+    style.fontWeight = customStyle.fontWeightBtn
+  }
+
+  if (customStyle.fontStyleBtn) {
+    style.fontStyle = customStyle.fontStyleBtn
+  }
+
+  return style
+})
 const curComponentView = computed(() => {
   return (canvasViewInfo.value[element.value.id] || {}).customStyle
 })
@@ -141,11 +159,11 @@ const setCustomStyle = val => {
   customStyle.fontSizeBtn = fontSizeBtn || '14'
   customStyle.fontWeightBtn = fontWeightBtn
   customStyle.fontStyleBtn = fontStyleBtn
-  customStyle.queryConditionWidth = queryConditionWidth || 227
-  customStyle.nameboxSpacing = nameboxSpacing || 8
-  customStyle.queryConditionSpacing = queryConditionSpacing || 16
+  customStyle.queryConditionWidth = queryConditionWidth ?? 227
+  customStyle.nameboxSpacing = nameboxSpacing ?? 8
+  customStyle.queryConditionSpacing = queryConditionSpacing ?? 16
   customStyle.labelColorBtn = labelColorBtn || '#ffffff'
-  customStyle.labelShow = labelShow || true
+  customStyle.labelShow = labelShow ?? true
   customStyle.btnColor = btnColor || '#3370ff'
 }
 
@@ -232,10 +250,14 @@ const queryDataForId = id => {
     emitter.emit(`query-data-${ele}`)
   })
 }
-
+const getQueryConditionWidth = () => {
+  return customStyle.queryConditionWidth
+}
 provide('unmount-select', unMountSelect)
 provide('release-unmount-select', releaseSelect)
 provide('query-data-for-id', queryDataForId)
+provide('com-width', getQueryConditionWidth)
+
 onBeforeUnmount(() => {
   emitter.off(`addQueryCriteria${element.value.id}`)
   emitter.off(`editQueryCriteria${element.value.id}`)
@@ -420,9 +442,21 @@ const titleStyle = computed(() => {
 })
 
 const labelStyle = computed(() => {
-  return {
-    color: customStyle.labelColor || '#1f2329'
+  const style = {
+    fontSize: customStyle.fontSize + 'px'
   } as CSSProperties
+  if (customStyle.fontWeight) {
+    style.fontWeight = customStyle.fontWeight
+  }
+
+  if (customStyle.fontStyle) {
+    style.fontStyle = customStyle.fontStyle
+  }
+
+  if (customStyle.labelColor) {
+    style.color = customStyle.labelColor
+  }
+  return style
 })
 const autoStyle = computed(() => {
   return {
@@ -464,9 +498,14 @@ const autoStyle = computed(() => {
         </div>
       </div>
       <div class="query-fields-container">
-        <div class="query-item" :key="ele.id" v-for="(ele, index) in listVisible">
+        <div
+          class="query-item"
+          :style="{ marginRight: `${customStyle.queryConditionSpacing}px` }"
+          :key="ele.id"
+          v-for="(ele, index) in listVisible"
+        >
           <div class="query-field">
-            <div class="label">
+            <div class="label" :style="{ marginRight: `${customStyle.nameboxSpacing}px` }">
               <div class="label-wrapper" v-show="customStyle.labelShow">
                 <div class="label-wrapper-text" :style="labelStyle">
                   <el-tooltip effect="dark" :content="ele.name" placement="top">
@@ -506,11 +545,7 @@ const autoStyle = computed(() => {
           <el-button
             @click.stop="queryData"
             style="margin-right: 7px"
-            :style="{
-              backgroundColor: customStyle.btnColor,
-              borderColor: customStyle.btnColor,
-              color: customStyle.labelColorBtn
-            }"
+            :style="btnStyle"
             v-if="customStyle.btnList.includes('sure')"
             type="primary"
           >
@@ -655,14 +690,9 @@ const autoStyle = computed(() => {
         position: relative;
 
         :deep(.ed-date-editor) {
-          width: 227px;
           .ed-input__wrapper {
             width: 100%;
           }
-        }
-
-        :deep(.ed-select-v2) {
-          min-width: 170px;
         }
       }
     }
