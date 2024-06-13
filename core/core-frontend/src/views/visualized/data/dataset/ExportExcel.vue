@@ -19,6 +19,8 @@ const { t } = useI18n()
 const tableData = ref([])
 const drawerLoading = ref(false)
 const drawer = ref(false)
+const msgDialogVisible = ref(false)
+const msg = ref('')
 const exportDatasetLoading = ref(false)
 const activeName = ref('ALL')
 const multipleSelection = ref([])
@@ -224,6 +226,11 @@ const downLoadAll = () => {
       })
   })
 }
+const showMsg = item => {
+  msg.value = ''
+  msg.value = item.msg
+  msgDialogVisible.value = true
+}
 const timestampFormatDate = value => {
   if (!value) {
     return '-'
@@ -383,7 +390,11 @@ defineExpose({
               </el-icon>
               <div class="name-content">
                 <div class="fileName">{{ scope.row.fileName }}</div>
-                <div v-if="scope.row.exportStatus === 'FAILED'" class="failed">
+                <div
+                  v-if="scope.row.exportStatus === 'FAILED'"
+                  class="failed"
+                  @click="showMsg(scope.row)"
+                >
                   {{ $t('data_export.export_failed') }}
                 </div>
                 <div v-if="scope.row.exportStatus === 'SUCCESS'" class="success">
@@ -444,6 +455,15 @@ defineExpose({
       </el-table>
     </div>
   </el-drawer>
+
+  <el-dialog title="失败原因" v-model="msgDialogVisible" width="30%">
+    <span>{{ msg }}</span>
+    <template v-slot:footer>
+      <span class="dialog-footer">
+        <el-button type="primary" @click="msgDialogVisible = false">关闭</el-button>
+      </span>
+    </template>
+  </el-dialog>
 </template>
 
 <style lang="less">
@@ -497,6 +517,7 @@ defineExpose({
           font-weight: 400;
           line-height: 20px;
           color: #f54a45;
+          cursor: pointer;
         }
 
         .success {

@@ -21,6 +21,8 @@ public class ExportTaskDTO  {
 
     private String exportStatus;
 
+    private String msg;
+
     private String exportFromType;
 
     private Long exportTime;

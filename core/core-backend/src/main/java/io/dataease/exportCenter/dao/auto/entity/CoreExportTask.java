@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-05-23
+ * @since 2024-06-12
  */
 @TableName("core_export_task")
 public class CoreExportTask implements Serializable {
@@ -42,6 +42,11 @@ public class CoreExportTask implements Serializable {
      * 过滤参数
      */
     private String params;
+
+    /**
+     * 错误信息
+     */
+    private String msg;
 
     public String getId() {
         return id;
@@ -139,6 +144,14 @@ public class CoreExportTask implements Serializable {
         this.params = params;
     }
 
+    public String getMsg() {
+        return msg;
+    }
+
+    public void setMsg(String msg) {
+        this.msg = msg;
+    }
+
     @Override
     public String toString() {
         return "CoreExportTask{" +
@@ -154,6 +167,7 @@ public class CoreExportTask implements Serializable {
         ", exportProgress = " + exportProgress +
         ", exportMachineName = " + exportMachineName +
         ", params = " + params +
+        ", msg = " + msg +
         "}";
     }
 }

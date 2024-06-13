@@ -293,19 +293,16 @@ public class ExportCenterManage {
                         ChartDataServer.setExcelData(detailsSheet, cellStyle, header, details, detailFields, excelTypes);
                     }
                 }
-
-
                 try (FileOutputStream outputStream = new FileOutputStream(dataPath + "/" + request.getViewName() + ".xlsx")) {
                     wb.write(outputStream);
                     outputStream.flush();
                 }
                 wb.close();
-
                 exportTask.setExportProgress("100");
                 exportTask.setExportStatus("SUCCESS");
                 setFileSize(dataPath + "/" + request.getViewName() + ".xlsx", exportTask);
             } catch (Exception e) {
-                e.printStackTrace();
+                exportTask.setMsg(e.getMessage());
                 LogUtil.error("Failed to export data", e);
                 exportTask.setExportStatus("FAILED");
             } finally {
