@@ -1832,7 +1832,9 @@ export default {
     forecast_model: '預測模型',
     forecast_degree: '階數',
     linear_regression: '線性回歸',
-    polynomial_regression: '多項式擬合'
+    polynomial_regression: '多項式擬合',
+    show_summary: '顯示總計',
+    summary_label: '總計標籤'
   },
   dataset: {
     scope_edit: '僅編輯時生效',

@@ -336,6 +336,10 @@ export default {
       } else {
         rowData = this.myChart.dataSet.getRowData(meta)
       }
+      // 忽略汇总表总计行
+      if (rowData.SUMMARY) {
+        return
+      }
       const dimensionList = []
       for (const key in rowData) {
         if (nameIdMap[key]) {

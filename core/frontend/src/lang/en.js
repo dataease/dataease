@@ -1839,7 +1839,9 @@ export default {
     forecast_model: 'Forecast model',
     forecast_degree: 'Degree',
     linear_regression: 'Linear regression',
-    polynomial_regression: 'Polynomial regression'
+    polynomial_regression: 'Polynomial regression',
+    show_summary: 'Show summary',
+    summary_label: 'Summary label'
   },
   dataset: {
     scope_edit: 'Effective only when editing',

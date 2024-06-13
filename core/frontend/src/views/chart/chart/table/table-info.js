@@ -9,7 +9,8 @@ import {
   getAutoAdjustPosition,
   getTooltipDefaultOptions,
   setTooltipContainerStyle,
-  SERIES_NUMBER_FIELD
+  SERIES_NUMBER_FIELD,
+  TableDataCell
 } from '@antv/s2'
 import { getCustomTheme, getSize } from '@/views/chart/chart/common/common_table'
 import { DEFAULT_COLOR_CASE, DEFAULT_TOTAL } from '@/views/chart/chart/chart'
@@ -75,6 +76,15 @@ class SortTooltip extends BaseTooltip {
       },
       visible: true
     })
+  }
+}
+class SummaryCell extends TableDataCell {
+  getTextStyle() {
+    return this.theme.colCell.bolderText
+  }
+  getBackgroundColor() {
+    const { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
+    return { backgroundColor, backgroundColorOpacity }
   }
 }
 export function baseTableInfo(container, chart, action, tableData, pageInfo, vueCom, resizeFunc) {
@@ -416,6 +426,34 @@ export function baseTableNormal(container, chart, action, tableData, vueCom, res
     }
     s2Options.colCell = (node) => {
       node.label = ' '
+    }
+  }
+  // 总计
+  if (customAttr.size.showSummary) {
+    // 设置汇总行高度和表头一致
+    const heightByField = {}
+    heightByField[newData.length] = customAttr.size.tableTitleHeight
+    s2Options.style.rowCfg = { heightByField }
+    // 计算汇总加入到数据里，冻结最后一行
+    const xAxis = JSON.parse(chart.xaxis)
+    const yAxis = JSON.parse(chart.yaxis)
+    s2Options.frozenTrailingRowCount = 1
+    const summaryObj = yAxis.length > 0 ? newData.reduce((p, n) => {
+      yAxis.forEach(axis => {
+        p[axis.dataeaseName] = (n[axis.dataeaseName] || 0) + (p[axis.dataeaseName] || 0)
+      })
+      return p
+    }, { SUMMARY: true }) : {}
+    newData.push(summaryObj)
+    s2Options.dataCell = viewMeta => {
+      if (viewMeta.rowIndex === newData.length - 1) {
+        if (viewMeta.colIndex === 0 && xAxis.length !== 0) {
+          viewMeta.fieldValue = customAttr.size.summaryLabel ?? '总计'
+          viewMeta.summaryLabel = viewMeta.fieldValue
+        }
+        return new SummaryCell(viewMeta, viewMeta.spreadsheet)
+      }
+      return new TableDataCell(viewMeta, viewMeta.spreadsheet)
     }
   }
 
@@ -1006,7 +1044,13 @@ function showTooltipValue(s2Instance, event, meta) {
   if (!cellMeta.data) {
     return
   }
-  const value = cellMeta.data[valueField]
+  let value = cellMeta.data[valueField]
+  if (cellMeta.summaryLabel) {
+    value = cellMeta.fieldValue
+  }
+  if (!value) {
+    return
+  }
   const metaObj = find(meta, m =>
     m.field === valueField
   )

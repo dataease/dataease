@@ -185,7 +185,9 @@ export const DEFAULT_SIZE = {
   tableColumnFreezeHead: 0,
   tableColumnFreezeTail: 0,
   tableRowFreezeHead: 0,
-  tableHeaderSort: false
+  tableHeaderSort: false,
+  showSummary: false,
+  summaryLabel: '总计'
 }
 export const DEFAULT_SUSPENSION = {
   show: true
