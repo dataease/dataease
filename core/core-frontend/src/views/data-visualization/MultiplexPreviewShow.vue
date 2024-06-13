@@ -1,6 +1,7 @@
 <script lang="ts" setup>
-import { nextTick, onBeforeMount, reactive, ref, toRefs, watch } from 'vue'
+import { computed, nextTick, onBeforeMount, reactive, ref, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+import { getCanvasStyle } from '@/utils/style'
 const dvMainStore = dvMainStoreWithOut()
 const viewShow = ref(true)
 
@@ -24,6 +25,8 @@ const props = defineProps({
 })
 
 const { canvasStyleData, componentData, canvasViewInfo, dvInfo } = toRefs(props)
+
+const canvasStyle = computed(() => getCanvasStyle(canvasStyleData.value))
 
 const filterNodeMethod = (value, data) => {
   return !value || data.multiplexActive
@@ -79,6 +82,13 @@ watch(
     if (dvInfo.value) {
       init()
     }
+  }
+)
+
+watch(
+  () => state.showSelected,
+  newValue => {
+    multiplexInfoTree.value?.filter(newValue)
   }
 )
 
@@ -162,16 +172,19 @@ onBeforeMount(() => {
       </el-tree>
     </el-col>
     <el-col :span="18" class="preview-show">
-      <div class="view-show-content">
-        <ComponentWrapper
-          v-if="viewShow && state.multiplexInfo && state.multiplexInfo.id"
-          class="wrapper-content"
-          :view-info="canvasViewInfo[state.multiplexInfo.id]"
-          :config="state.multiplexInfo"
-          :canvas-style-data="canvasStyleData"
-          :dv-info="dvInfo"
-          :canvas-view-info="canvasViewInfo"
-        />
+      <div class="view-show-content-outer">
+        <div class="view-show-content">
+          <ComponentWrapper
+            v-if="viewShow && state.multiplexInfo && state.multiplexInfo.id"
+            class="wrapper-content"
+            :style="canvasStyle"
+            :view-info="canvasViewInfo[state.multiplexInfo.id]"
+            :config="state.multiplexInfo"
+            :canvas-style-data="canvasStyleData"
+            :dv-info="dvInfo"
+            :canvas-view-info="canvasViewInfo"
+          />
+        </div>
       </div>
     </el-col>
   </el-row>
@@ -514,14 +527,20 @@ span {
   width: 100%;
   height: 100%;
 }
+.view-show-content-outer {
+  width: 100%;
+  height: 100%;
+  padding: 12px;
+  background: #ffffff;
+}
 .view-show-content {
   position: relative;
   width: 100%;
   height: 100%;
-  background: #ffffff;
   .wrapper-content {
     width: 100%;
     height: 100%;
+    background-size: 100% 100% !important;
   }
 }
 </style>

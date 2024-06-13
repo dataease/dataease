@@ -8,7 +8,7 @@ import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { storeToRefs } from 'pinia'
 import { useAppStoreWithOut } from '@/store/modules/app'
-import { initCanvasData } from '@/utils/canvasUtils'
+import { initCanvasData, initCanvasDataPrepare } from '@/utils/canvasUtils'
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
@@ -27,7 +27,7 @@ const dataInitState = ref(true)
 const downloadStatus = ref(false)
 const { width, node } = useMoveLine('DASHBOARD')
 
-defineProps({
+const props = defineProps({
   showPosition: {
     required: false,
     type: String,
@@ -62,8 +62,9 @@ function createNew() {
 }
 
 const loadCanvasData = (dvId, weight?) => {
+  const initMethod = props.showPosition === 'multiplexing' ? initCanvasDataPrepare : initCanvasData
   dataInitState.value = false
-  initCanvasData(
+  initMethod(
     dvId,
     'dataV',
     function ({
@@ -141,6 +142,14 @@ const mouseleave = () => {
   appStore.setArrowSide(false)
 }
 
+const getPreviewStateInfo = () => {
+  return state
+}
+
+defineExpose({
+  getPreviewStateInfo
+})
+
 onBeforeMount(() => {
   dvMainStore.canvasDataInit()
 })
@@ -192,7 +201,10 @@ onBeforeMount(() => {
           @download="download"
           @downloadAsAppTemplate="downloadAsAppTemplate"
         />
-        <div v-if="showPosition === 'multiplexing'" class="content multiplexing-content">
+        <div
+          v-if="showPosition === 'multiplexing' && dataInitState"
+          class="content multiplexing-content"
+        >
           <multiplex-preview-show
             :component-data="state.canvasDataPreview"
             :canvas-style-data="state.canvasStylePreview"
