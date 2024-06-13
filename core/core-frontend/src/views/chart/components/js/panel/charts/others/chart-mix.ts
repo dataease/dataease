@@ -12,7 +12,7 @@ import {
   setGradientColor
 } from '../../common/common_antv'
 import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
-import { cloneDeep, isEmpty, defaultTo, map, filter, union } from 'lodash-es'
+import { cloneDeep, isEmpty, defaultTo, map, filter, union, slice } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   CHART_MIX_AXIS_TYPE,
@@ -61,7 +61,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
   }
   drawChart(drawOptions: G2PlotDrawOptions<DualAxes>): DualAxes {
     const { chart, action, container } = drawOptions
-    if (!chart.data.left.data?.length && !chart.data.right.data?.length) {
+    if (!chart.data?.left?.data?.length && !chart.data?.right?.data?.length) {
       return
     }
     const left = cloneDeep(chart.data?.left?.data)
@@ -89,6 +89,8 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     const customAttr = parseJson(chart.customAttr)
     let color = customAttr.basicStyle.colors
 
+    const colorSize = color.length
+
     color = color.map(ele => {
       const tmp = hexColorToRGBA(ele, customAttr.basicStyle.alpha)
       if (customAttr.basicStyle.gradient) {
@@ -97,6 +99,14 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
         return tmp
       }
     })
+
+    const color2StartNum = defaultTo(left[0]?.categories?.length, 1)
+    const color2StartIndex = color2StartNum % colorSize
+
+    const color2 =
+      color2StartIndex === 0
+        ? cloneDeep(color)
+        : union(slice(color, color2StartIndex), slice(color, 0, color2StartIndex))
 
     // options
     const initOptions: DualAxesOptions = {
@@ -115,7 +125,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
         },
         {
           geometry: data2Type,
-          color: seriesField2 ? color : color[1],
+          color: seriesField2 ? color2 : color2[0],
           seriesField: seriesField2
         }
       ],

@@ -527,6 +527,8 @@ public class ChartDataBuild {
             series1.setData(new ArrayList<>());
             series.add(series1);
         }
+        Set<String> categories = new HashSet<>();
+
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] d = data.get(i1);
 
@@ -582,13 +584,16 @@ public class ChartDataBuild {
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                axisChartDataDTO.setCategory(
-                        StringUtils.defaultIfBlank(b.toString(),
-                                StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName())));
+                String category = StringUtils.defaultIfBlank(b.toString(),
+                        StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
+                axisChartDataDTO.setCategory(category);
+                categories.add(category);
+
                 buildDynamicValue(view, axisChartDataDTO, d, size, extSize);
                 series.get(j).getData().add(axisChartDataDTO);
             }
         }
+        series.get(0).setCategories(categories);
 
         map.put("data", series);
         return map;
@@ -610,6 +615,7 @@ public class ChartDataBuild {
             series1.setData(new ArrayList<>());
             series.add(series1);
         }
+        Set<String> categories = new HashSet<>();
 
         for (int i1 = 0; i1 < data.size(); i1++) {
             String[] row = data.get(i1);
@@ -635,7 +641,11 @@ public class ChartDataBuild {
             AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
             axisChartDataDTO.setField(a.toString());
             axisChartDataDTO.setName(a.toString());
-            axisChartDataDTO.setCategory(row[xAxis.size()]);
+            String category = row[xAxis.size()];
+            axisChartDataDTO.setCategory(category);
+            if (category != null) {
+                categories.add(category);
+            }
 
             List<ChartDimensionDTO> dimensionList = new ArrayList<>();
             List<ChartQuotaDTO> quotaList = new ArrayList<>();
@@ -672,6 +682,8 @@ public class ChartDataBuild {
 
             series.get(j).getData().add(axisChartDataDTO);
         }
+
+        series.get(0).setCategories(categories);
 
 
         map.put("data", series);
