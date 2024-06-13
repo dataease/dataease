@@ -1,5 +1,7 @@
 package io.dataease.api.chart.filter;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import lombok.Data;
 
@@ -13,6 +15,7 @@ import java.util.List;
 public class FilterTreeItem implements Serializable {
     private String type;// 'item' or 'tree'
     // item
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long fieldId;
     private DatasetTableFieldDTO field;// field object
     private String filterType;// 'logic' or 'enum'
