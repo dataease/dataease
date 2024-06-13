@@ -10,7 +10,7 @@ import org.apache.ibatis.annotations.Mapper;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-05-23
+ * @since 2024-06-12
  */
 @Mapper
 public interface CoreExportTaskMapper extends BaseMapper<CoreExportTask> {
