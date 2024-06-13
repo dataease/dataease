@@ -1,5 +1,6 @@
 package io.dataease.chart.manage;
 
+import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
@@ -569,6 +570,7 @@ public class ChartDataManage {
         datasourceRequest.setDsList(dsMap);
 
         List<String[]> data = new ArrayList<>();
+        List<String[]> yoyData = new ArrayList<>();
 
         // senior dynamic assist
         DatasourceRequest datasourceAssistRequest = new DatasourceRequest();
@@ -595,7 +597,36 @@ public class ChartDataManage {
             }
         }).collect(Collectors.toList());
 
+        // extFilterList，如果参与计算同环比的日期字段有过滤，则多加1年，再请求一次，计算出同环比后，再和正确的过滤结果对比取交集
+        boolean isYOY = false;
+        String json = (String) JsonUtil.toJSONString(extFilterList);
+        // 复制一个list，这个是最终正确过滤的结果
+        List<ChartExtFilterDTO> yoyFilterList = JsonUtil.parseList(json, new TypeReference<>() {
+        });
+        for (ChartExtFilterDTO filterDTO : extFilterList) {
+            for (ChartViewFieldDTO chartViewFieldDTO : yAxis) {
+                ChartFieldCompareDTO compareCalc = chartViewFieldDTO.getCompareCalc();
+                if (ObjectUtils.isEmpty(compareCalc)) {
+                    continue;
+                }
+                if (StringUtils.isNotEmpty(compareCalc.getType())
+                        && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none")) {
+                    if (Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType())) {
+                        if (StringUtils.equalsIgnoreCase(compareCalc.getField() + "", filterDTO.getFieldId())) {
+                            // -1 year
+                            Calendar calendar = Calendar.getInstance();
+                            calendar.setTime(new Date(Long.parseLong(filterDTO.getValue().getFirst())));
+                            calendar.add(Calendar.YEAR, -1);
+                            filterDTO.getValue().set(0, String.valueOf(calendar.getTime().getTime()));
+                            isYOY = true;
+                        }
+                    }
+                }
+            }
+        }
+
         String querySql = null;
+        String yoySql = null;
         long totalPage = 0L;
         long totalItems = 0L;
         String totalPageSql = null;
@@ -637,6 +668,10 @@ public class ChartDataManage {
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                if (isYOY) {
+                    ExtWhere2Str.extWhere2sqlOjb(sqlMeta, yoyFilterList, transFields(allFields), crossDs, dsMap);
+                    yoySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                }
             } else if (StringUtils.containsIgnoreCase(view.getType(), "stack")) {
                 List<ChartViewFieldDTO> xFields = new ArrayList<>();
                 xFields.addAll(xAxis);
@@ -644,6 +679,10 @@ public class ChartDataManage {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xFields, transFields(allFields), crossDs, dsMap);
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                if (isYOY) {
+                    ExtWhere2Str.extWhere2sqlOjb(sqlMeta, yoyFilterList, transFields(allFields), crossDs, dsMap);
+                    yoySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                }
             } else if (StringUtils.containsIgnoreCase(view.getType(), "scatter")) {
                 List<ChartViewFieldDTO> yFields = new ArrayList<>();
                 yFields.addAll(yAxis);
@@ -651,6 +690,10 @@ public class ChartDataManage {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yFields, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                if (isYOY) {
+                    ExtWhere2Str.extWhere2sqlOjb(sqlMeta, yoyFilterList, transFields(allFields), crossDs, dsMap);
+                    yoySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                }
             } else if (StringUtils.equalsIgnoreCase("table-info", view.getType())) {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 String originSql = SQLProvider.createQuerySQL(sqlMeta, false, true, view);// 明细表强制加排序
@@ -665,6 +708,10 @@ public class ChartDataManage {
                 }
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                if (isYOY) {
+                    ExtWhere2Str.extWhere2sqlOjb(sqlMeta, yoyFilterList, transFields(allFields), crossDs, dsMap);
+                    yoySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                }
             } else if (StringUtils.equalsIgnoreCase("bar-range", view.getType())) {
                 sqlMeta.setChartType(view.getType());
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
@@ -679,6 +726,10 @@ public class ChartDataManage {
                     String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                     detailFieldSql = originSql + limit;
                 }
+                if (isYOY) {
+                    ExtWhere2Str.extWhere2sqlOjb(sqlMeta, yoyFilterList, transFields(allFields), crossDs, dsMap);
+                    yoySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                }
             } else {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
@@ -691,6 +742,10 @@ public class ChartDataManage {
                     String originSql = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, view);
                     String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
                     detailFieldSql = originSql + limit;
+                }
+                if (isYOY) {
+                    ExtWhere2Str.extWhere2sqlOjb(sqlMeta, yoyFilterList, transFields(allFields), crossDs, dsMap);
+                    yoySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
                 }
             }
 
@@ -719,6 +774,14 @@ public class ChartDataManage {
             if (StringUtils.isNotBlank(detailFieldSql)) {
                 datasourceRequest.setQuery(detailFieldSql);
                 detailData = (List<String[]>) calciteProvider.fetchResultField(datasourceRequest).get("data");
+            }
+
+            // 请求正确过滤的data
+            if (isYOY) {
+                yoySql = SqlUtils.rebuildSQL(yoySql, sqlMeta, crossDs, dsMap);
+                datasourceRequest.setQuery(yoySql);
+                logger.info("calcite chart sql real yoy: " + yoySql);
+                yoyData = (List<String[]>) calciteProvider.fetchResultField(datasourceRequest).get("data");
             }
         }
         // 自定义排序
@@ -840,6 +903,29 @@ public class ChartDataManage {
                     }
                 }
             }
+        }
+
+        // 如果同环比有横轴日期过滤，过滤掉不要的数据
+        if (isYOY) {
+            List<String[]> resultData = new ArrayList<>();
+            for (String[] res1 : data) {
+                StringBuilder x1 = new StringBuilder();
+                for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                    x1.append(res1[i]);
+                }
+                for (String[] res2 : yoyData) {
+                    StringBuilder x2 = new StringBuilder();
+                    for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                        x2.append(res2[i]);
+                    }
+                    if (StringUtils.equals(x1, x2)) {
+                        resultData.add(res1);
+                        break;
+                    }
+                }
+            }
+            data.clear();
+            data.addAll(resultData);
         }
 
         // 构建结果
