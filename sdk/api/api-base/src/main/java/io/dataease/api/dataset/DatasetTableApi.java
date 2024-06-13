@@ -3,7 +3,7 @@ package io.dataease.api.dataset;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.dataset.dto.MultFieldValuesRequest;
 import io.dataease.api.dataset.engine.SQLFunctionDTO;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;

@@ -1,6 +1,6 @@
 package io.dataease.visualization.template;
 
-import io.dataease.api.chart.dto.ChartExtFilterDTO;
+import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import org.apache.commons.lang3.StringUtils;
 
 import java.util.ArrayList;

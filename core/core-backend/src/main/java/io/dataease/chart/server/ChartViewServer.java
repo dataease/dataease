@@ -1,8 +1,8 @@
 package io.dataease.chart.server;
 
 import io.dataease.api.chart.ChartViewApi;
-import io.dataease.api.chart.dto.ChartViewDTO;
-import io.dataease.api.chart.dto.ChartViewFieldDTO;
+import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import io.dataease.api.chart.vo.ViewSelectorVO;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.exception.DEException;

@@ -6,7 +6,7 @@ import io.dataease.api.dataset.dto.EnumValueRequest;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestMapping;

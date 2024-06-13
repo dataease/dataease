@@ -1,6 +1,6 @@
 package io.dataease.api.chart.request;
 
-import io.dataease.api.chart.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewDTO;
 import lombok.Data;
 
 import java.io.Serial;

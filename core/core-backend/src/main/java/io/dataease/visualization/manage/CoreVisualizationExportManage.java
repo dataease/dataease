@@ -1,10 +1,10 @@
 package io.dataease.visualization.manage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.api.chart.dto.ChartExtFilterDTO;
-import io.dataease.api.chart.dto.ChartViewDTO;
-import io.dataease.api.chart.dto.ChartViewFieldDTO;
-import io.dataease.api.chart.request.ChartExtRequest;
+import io.dataease.extensions.view.dto.ChartExtFilterDTO;
+import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.extensions.view.dto.ChartViewFieldDTO;
+import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.chart.manage.ChartDataManage;
 import io.dataease.chart.manage.ChartViewManege;

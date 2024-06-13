@@ -2,14 +2,13 @@ package io.dataease.api.visualization.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.dataease.api.chart.dto.ChartViewDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
+import io.dataease.extensions.view.dto.ChartViewDTO;
 import lombok.Data;
 import lombok.NoArgsConstructor;
 
 import java.io.Serializable;
 import java.util.HashMap;
-import java.util.List;
 import java.util.Map;
 
 @Data
@@ -159,7 +158,7 @@ public class DataVisualizationVO implements Serializable {
     private VisualizationWatermarkVO watermarkInfo;
 
 
-    public DataVisualizationVO(Long id, String name, String type,Integer version, String canvasStyleData, String componentData, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo) {
+    public DataVisualizationVO(Long id, String name, String type, Integer version, String canvasStyleData, String componentData, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo) {
         this.id = id;
         this.name = name;
         this.type = type;

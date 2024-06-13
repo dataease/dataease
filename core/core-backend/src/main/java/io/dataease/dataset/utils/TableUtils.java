@@ -1,6 +1,6 @@
 package io.dataease.dataset.utils;
 
-import io.dataease.api.dataset.union.model.SQLObj;
+import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.utils.Md5Utils;

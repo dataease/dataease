@@ -1,12 +1,8 @@
 package io.dataease.chart.manage;
 
-import io.dataease.api.chart.dto.*;
-import io.dataease.api.chart.filter.FilterTreeObj;
-import io.dataease.api.chart.request.ChartDrillRequest;
-import io.dataease.api.chart.request.ChartExtRequest;
-import io.dataease.api.dataset.dto.SqlVariableDetails;
+import io.dataease.api.chart.dto.ColumnPermissionItem;
+import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
-import io.dataease.api.dataset.union.model.SQLMeta;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.chart.constant.ChartConstants;
@@ -20,13 +16,17 @@ import io.dataease.dataset.manage.PermissionManage;
 import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.view.dto.*;
+import io.dataease.extensions.view.factory.PluginsChartFactory;
+import io.dataease.extensions.view.filter.FilterTreeObj;
+import io.dataease.extensions.view.model.SQLMeta;
+import io.dataease.extensions.view.template.PluginsChartTemplate;
 import io.dataease.i18n.Translator;
 import io.dataease.result.ResultCode;
 import io.dataease.system.manage.CorePermissionManage;
@@ -162,73 +162,98 @@ public class ChartDataManage {
     }
 
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest chartExtRequest, List<ChartViewFieldDTO> allFields, List<ChartViewFieldDTO> viewFields) throws Exception {
-
-        List<ChartViewFieldDTO> xAxisBase = new ArrayList<>(view.getXAxis());
-        List<ChartViewFieldDTO> xAxis = new ArrayList<>(view.getXAxis());
-        List<ChartViewFieldDTO> xAxisExt = new ArrayList<>(view.getXAxisExt());
-        if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")
-                || StringUtils.containsIgnoreCase(view.getType(), "group")
-                || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
-                || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
-                || StringUtils.equalsIgnoreCase(view.getType(), "sankey")
-                || StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
-        ) {
-            xAxis.addAll(xAxisExt);
-        }
-        List<ChartViewFieldDTO> yAxis = new ArrayList<>(view.getYAxis());
-        if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
-                || StringUtils.equalsIgnoreCase(view.getType(), "bidirectional-bar")
-                || StringUtils.equalsIgnoreCase(view.getType(), "quadrant")
-                || StringUtils.containsIgnoreCase(view.getType(), "progress-bar")) {
-            List<ChartViewFieldDTO> yAxisExt = new ArrayList<>(view.getYAxisExt());
-            yAxis.addAll(yAxisExt);
-        }
-        if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsAnyIgnoreCase(view.getType(), "gauge", "liquid")) {
-            List<ChartViewFieldDTO> sizeField = getSizeField(view);
-            yAxis.addAll(sizeField);
-        }
+        List<ChartViewFieldDTO> xAxisBase = null;
+        List<ChartViewFieldDTO> xAxis = null;
+        List<ChartViewFieldDTO> xAxisExt = null;
+        List<ChartViewFieldDTO> yAxis = null;
+        List<ChartViewFieldDTO> extStack = null;
+        List<ChartViewFieldDTO> extBubble = null;
+        List<ChartViewFieldDTO> drill = null;
+        PluginsChartTemplate instance = null;
         boolean skipBarRange = false;
         boolean barRangeDate = false;
-        if (StringUtils.equalsIgnoreCase(view.getType(), "bar-range")) { //针对区间条形图进行处理
-            yAxis.clear();
-            if (CollectionUtils.isNotEmpty(view.getYAxis()) && CollectionUtils.isNotEmpty(view.getYAxisExt())) {
-                ChartViewFieldDTO axis1 = view.getYAxis().get(0);
-                ChartViewFieldDTO axis2 = view.getYAxisExt().get(0);
+        if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
+            instance = PluginsChartFactory.getInstance(view.getRender(), view.getType());
+            String key = view.getRender() + "_" + view.getType();
+            if (ObjectUtils.isEmpty(instance)) DEException.throwException(String.format("此视图插件【%s】不存在！", key));
+            Map<String, List<ChartViewFieldDTO>> axisMap = instance.formatChartAxis(view);
+            xAxisBase = axisMap.get("axisMap");
+            xAxis = axisMap.get("xAxis");
+            xAxisExt = axisMap.get("xAxisExt");
+            yAxis = axisMap.get("yAxis");
+            extStack = axisMap.get("extStack");
+            extBubble = axisMap.get("extBubble");
+            drill = axisMap.get("drill");
+            viewFields = axisMap.get("viewFields");
+        } else {
+            xAxisBase = new ArrayList<>(view.getXAxis());
+            xAxis = new ArrayList<>(view.getXAxis());
+            xAxisExt = new ArrayList<>(view.getXAxisExt());
+            if (StringUtils.equalsIgnoreCase(view.getType(), "table-pivot")
+                    || StringUtils.containsIgnoreCase(view.getType(), "group")
+                    || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
+                    || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
+                    || StringUtils.equalsIgnoreCase(view.getType(), "sankey")
+                    || StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
+            ) {
+                xAxis.addAll(xAxisExt);
+            }
+            yAxis = new ArrayList<>(view.getYAxis());
+            if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
+                    || StringUtils.equalsIgnoreCase(view.getType(), "bidirectional-bar")
+                    || StringUtils.equalsIgnoreCase(view.getType(), "quadrant")
+                    || StringUtils.containsIgnoreCase(view.getType(), "progress-bar")) {
+                List<ChartViewFieldDTO> yAxisExt = new ArrayList<>(view.getYAxisExt());
+                yAxis.addAll(yAxisExt);
+            }
+            if (StringUtils.equalsIgnoreCase(view.getRender(), "antv") && StringUtils.equalsAnyIgnoreCase(view.getType(), "gauge", "liquid")) {
+                List<ChartViewFieldDTO> sizeField = getSizeField(view);
+                yAxis.addAll(sizeField);
+            }
 
-                if (StringUtils.equalsIgnoreCase(axis1.getGroupType(), "q") && StringUtils.equalsIgnoreCase(axis2.getGroupType(), "q")) {
-                    yAxis.add(axis1);
-                    yAxis.add(axis2);
-                } else if (StringUtils.equalsIgnoreCase(axis1.getGroupType(), "d") && axis1.getDeType() == 1 && StringUtils.equalsIgnoreCase(axis2.getGroupType(), "d") && axis2.getDeType() == 1) {
-                    barRangeDate = true;
-                    if (BooleanUtils.isTrue(view.getAggregate())) {
-                        axis1.setSummary("min");
-                        axis2.setSummary("max");
+            if (StringUtils.equalsIgnoreCase(view.getType(), "bar-range")) { //针对区间条形图进行处理
+                yAxis.clear();
+                if (CollectionUtils.isNotEmpty(view.getYAxis()) && CollectionUtils.isNotEmpty(view.getYAxisExt())) {
+                    ChartViewFieldDTO axis1 = view.getYAxis().get(0);
+                    ChartViewFieldDTO axis2 = view.getYAxisExt().get(0);
+
+                    if (StringUtils.equalsIgnoreCase(axis1.getGroupType(), "q") && StringUtils.equalsIgnoreCase(axis2.getGroupType(), "q")) {
                         yAxis.add(axis1);
                         yAxis.add(axis2);
+                    } else if (StringUtils.equalsIgnoreCase(axis1.getGroupType(), "d") && axis1.getDeType() == 1 && StringUtils.equalsIgnoreCase(axis2.getGroupType(), "d") && axis2.getDeType() == 1) {
+                        barRangeDate = true;
+                        if (BooleanUtils.isTrue(view.getAggregate())) {
+                            axis1.setSummary("min");
+                            axis2.setSummary("max");
+                            yAxis.add(axis1);
+                            yAxis.add(axis2);
+                        } else {
+                            xAxis.add(axis1);
+                            xAxis.add(axis2);
+                        }
                     } else {
-                        xAxis.add(axis1);
-                        xAxis.add(axis2);
+                        skipBarRange = true;
                     }
                 } else {
                     skipBarRange = true;
                 }
-            } else {
-                skipBarRange = true;
             }
-        }
 
-        List<ChartViewFieldDTO> extStack = new ArrayList<>(view.getExtStack());
-        List<ChartViewFieldDTO> extBubble = new ArrayList<>(view.getExtBubble());
-        if (ObjectUtils.isNotEmpty(view.getExtLabel()) && enableExtData(view.getType())) {
-            List<ChartViewFieldDTO> extLabel = new ArrayList<>(view.getExtLabel());
-            yAxis.addAll(extLabel);
-        }
-        if (ObjectUtils.isNotEmpty(view.getExtTooltip()) && enableExtData(view.getType())) {
-            List<ChartViewFieldDTO> extTooltip = new ArrayList<>(view.getExtTooltip());
-            yAxis.addAll(extTooltip);
+            extStack = new ArrayList<>(view.getExtStack());
+            extBubble = new ArrayList<>(view.getExtBubble());
+            if (ObjectUtils.isNotEmpty(view.getExtLabel()) && enableExtData(view.getType())) {
+                List<ChartViewFieldDTO> extLabel = new ArrayList<>(view.getExtLabel());
+                yAxis.addAll(extLabel);
+            }
+            if (ObjectUtils.isNotEmpty(view.getExtTooltip()) && enableExtData(view.getType())) {
+                List<ChartViewFieldDTO> extTooltip = new ArrayList<>(view.getExtTooltip());
+                yAxis.addAll(extTooltip);
+            }
+            drill = new ArrayList<>(view.getDrillFields());
         }
         FilterTreeObj fieldCustomFilter = view.getCustomFilter();
-        List<ChartViewFieldDTO> drill = new ArrayList<>(view.getDrillFields());
+
+        // 以上是formatAxis内容
 
         DatasetGroupInfoDTO table = datasetGroupManage.getDatasetGroupInfoDTO(view.getTableId(), null);
         if (table == null) {
@@ -291,42 +316,43 @@ public class ChartDataManage {
             chartExtRequest.setPageSize(null);
         }
 
-        switch (view.getType()) {
-            case "label":
-                xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                xAxisBase = xAxisBase.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                yAxis = new ArrayList<>();
-                if (ObjectUtils.isEmpty(xAxis)) {
-                    return emptyChartViewDTO(view);
-                }
-                break;
-            case "indicator":
-            case "gauge":
-            case "liquid":
-                xAxis = new ArrayList<>();
-                yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                if (ObjectUtils.isEmpty(yAxis)) {
-                    return emptyChartViewDTO(view);
-                }
-                break;
-            case "table-info":
-                yAxis = new ArrayList<>();
-                xAxis = xAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                xAxisBase = xAxisBase.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                if (ObjectUtils.isEmpty(xAxis)) {
-                    return emptyChartViewDTO(view);
-                }
-                break;
-            case "table-normal":
-                xAxis = xAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                xAxisBase = xAxisBase.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                yAxis = yAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                break;
-            default:
-                xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                xAxisBase = xAxisBase.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-                yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
-        }
+        if (ObjectUtils.isEmpty(instance))
+            switch (view.getType()) {
+                case "label":
+                    xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    xAxisBase = xAxisBase.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    yAxis = new ArrayList<>();
+                    if (ObjectUtils.isEmpty(xAxis)) {
+                        return emptyChartViewDTO(view);
+                    }
+                    break;
+                case "indicator":
+                case "gauge":
+                case "liquid":
+                    xAxis = new ArrayList<>();
+                    yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    if (ObjectUtils.isEmpty(yAxis)) {
+                        return emptyChartViewDTO(view);
+                    }
+                    break;
+                case "table-info":
+                    yAxis = new ArrayList<>();
+                    xAxis = xAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    xAxisBase = xAxisBase.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    if (ObjectUtils.isEmpty(xAxis)) {
+                        return emptyChartViewDTO(view);
+                    }
+                    break;
+                case "table-normal":
+                    xAxis = xAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    xAxisBase = xAxisBase.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    yAxis = yAxis.stream().filter(item -> dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    break;
+                default:
+                    xAxis = xAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    xAxisBase = xAxisBase.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+                    yAxis = yAxis.stream().filter(item -> !desensitizationList.keySet().contains(item.getDataeaseName()) && dataeaseNames.contains(item.getDataeaseName())).collect(Collectors.toList());
+            }
 
         // 过滤来自仪表板的条件
         List<ChartExtFilterDTO> extFilterList = new ArrayList<>();
@@ -585,6 +611,10 @@ public class ChartDataManage {
             CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields), crossDs, dsMap);
             ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, transFields(allFields), crossDs, dsMap);
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap);
+            Map<Long, String> dsTypeMap = dsMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getType()));
+            if (ObjectUtils.isNotEmpty(instance)) {
+                return instance.calcResult(sqlMeta, xAxis, yAxis, transFields(allFields), crossDs, dsTypeMap);
+            }
 
             if (StringUtils.equalsAnyIgnoreCase(view.getType(), "indicator", "gauge", "liquid")) {
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);

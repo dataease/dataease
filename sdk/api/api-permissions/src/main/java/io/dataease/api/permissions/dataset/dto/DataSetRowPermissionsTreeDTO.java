@@ -4,6 +4,7 @@ import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import io.dataease.api.permissions.role.vo.RoleVO;
 import io.dataease.api.permissions.user.vo.UserFormVO;
+import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
 import lombok.Getter;
 import lombok.Setter;
 

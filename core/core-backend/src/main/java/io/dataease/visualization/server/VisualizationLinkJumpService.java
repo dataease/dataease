@@ -1,7 +1,5 @@
 package io.dataease.visualization.server;
 
-import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.api.visualization.VisualizationLinkJumpApi;
 import io.dataease.api.visualization.dto.VisualizationComponentDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkJumpDTO;
@@ -11,8 +9,7 @@ import io.dataease.api.visualization.response.VisualizationLinkJumpBaseResponse;
 import io.dataease.api.visualization.vo.VisualizationViewTableVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
-import io.dataease.dto.dataset.DatasetTableFieldDTO;
-import io.dataease.license.config.XpackInteract;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;

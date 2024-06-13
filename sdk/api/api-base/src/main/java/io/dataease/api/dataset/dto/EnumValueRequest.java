@@ -1,6 +1,6 @@
 package io.dataease.api.dataset.dto;
 
-import io.dataease.api.chart.dto.ChartExtFilterDTO;
+import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import lombok.Data;
 
 import java.util.List;
