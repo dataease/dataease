@@ -734,7 +734,7 @@ onMounted(() => {
       </el-radio-group>
     </el-form-item>
     <el-form-item
-      v-if="showProperty('tablePageMode')"
+      v-if="showProperty('tablePageMode') && state.basicStyleForm.tablePageMode !== 'pull'"
       :label="t('chart.table_pager_style')"
       class="form-item"
       :class="'form-item-' + themes"
