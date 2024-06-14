@@ -15,10 +15,9 @@ import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
 import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
 import MultiplexPreviewShow from '@/views/data-visualization/MultiplexPreviewShow.vue'
-import screenfull from 'screenfull'
 
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo } = storeToRefs(dvMainStore)
+const { dvInfo, fullscreenFlag } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
 const dvPreview = ref(null)
 const slideShow = ref(true)
@@ -27,7 +26,6 @@ const permissionStore = usePermissionStoreWithOut()
 const dataInitState = ref(true)
 const downloadStatus = ref(false)
 const { width, node } = useMoveLine('DASHBOARD')
-const fullscreenFlag = ref(false)
 const props = defineProps({
   showPosition: {
     required: false,
@@ -100,13 +98,6 @@ const download = type => {
       downloadStatus.value = false
     })
   }, 200)
-}
-
-const fullscreenPreview = () => {
-  const ele = document.getElementById('de-preview-content') //指定全屏区域元素
-  if (screenfull.isEnabled) {
-    screenfull.request(ele)
-  }
 }
 
 const downloadAsAppTemplate = downloadType => {
@@ -212,7 +203,6 @@ onBeforeMount(() => {
           @reload="reload"
           @download="download"
           @downloadAsAppTemplate="downloadAsAppTemplate"
-          @fullscreenPreview="fullscreenPreview"
         />
         <div
           v-if="showPosition === 'multiplexing' && dataInitState"
@@ -226,7 +216,11 @@ onBeforeMount(() => {
           ></multiplex-preview-show>
         </div>
         <div v-if="showPosition === 'preview'" ref="previewCanvasContainer" class="content">
-          <div id="de-preview-content" class="content-outer">
+          <div
+            id="de-preview-content"
+            :class="{ 'de-screen-full': fullscreenFlag }"
+            class="content-outer"
+          >
             <div class="content-inner">
               <de-preview
                 ref="dvPreview"
