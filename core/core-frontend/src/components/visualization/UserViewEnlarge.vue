@@ -54,7 +54,14 @@
       class="enlarge-outer"
       v-if="dialogShow"
     >
-      <div class="enlarge-inner" ref="viewContainer" :style="customExport">
+      <div
+        class="enlarge-inner"
+        :class="{
+          'enlarge-inner-with-header': optType === 'details' && sourceViewType.includes('chart-mix')
+        }"
+        ref="viewContainer"
+        :style="customExport"
+      >
         <component-wrapper
           v-if="optType === 'enlarge'"
           class="enlarge-wrapper"
@@ -74,18 +81,20 @@
             <el-tab-pane :label="t('chart.drag_block_value_axis_left')" name="left"></el-tab-pane>
             <el-tab-pane :label="t('chart.drag_block_value_axis_right')" name="right"></el-tab-pane>
           </el-tabs>
-          <chart-component-s2
-            v-if="activeName === 'left'"
-            :view="viewInfo"
-            show-position="viewDialog"
-            ref="chartComponentDetails"
-          />
-          <chart-component-s2
-            v-else-if="activeName === 'right'"
-            :view="viewInfo"
-            show-position="viewDialog"
-            ref="chartComponentDetails2"
-          />
+          <div style="flex: 1">
+            <chart-component-s2
+              v-if="activeName === 'left'"
+              :view="viewInfo"
+              show-position="viewDialog"
+              ref="chartComponentDetails"
+            />
+            <chart-component-s2
+              v-else-if="activeName === 'right'"
+              :view="viewInfo"
+              show-position="viewDialog"
+              ref="chartComponentDetails2"
+            />
+          </div>
         </template>
       </div>
     </div>
@@ -360,12 +369,18 @@ defineExpose({
     width: 100%;
     height: 100%;
   }
+  .enlarge-inner-with-header {
+    display: flex;
+    flex-direction: column;
+  }
   .enlarge-wrapper {
     width: 100%;
     height: 100%;
   }
 }
 .tab-header {
+  margin-top: -10px;
+  margin-bottom: 10px;
   --ed-tabs-header-height: 34px;
   --custom-tab-color: #646a73;
 
