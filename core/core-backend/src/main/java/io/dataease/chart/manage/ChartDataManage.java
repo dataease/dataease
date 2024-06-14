@@ -213,12 +213,12 @@ public class ChartDataManage {
                     || ("antv".equalsIgnoreCase(view.getRender()) && "line".equalsIgnoreCase(view.getType()))
                     || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
                     || StringUtils.equalsIgnoreCase(view.getType(), "sankey")
-                    || StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
+                    || StringUtils.containsIgnoreCase(view.getType(), "chart-mix")
             ) {
                 xAxis.addAll(xAxisExt);
             }
             yAxis = new ArrayList<>(view.getYAxis());
-            if (StringUtils.equalsIgnoreCase(view.getType(), "chart-mix")
+            if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")
                     || StringUtils.equalsIgnoreCase(view.getType(), "bidirectional-bar")
                     || StringUtils.equalsIgnoreCase(view.getType(), "quadrant")
                     || StringUtils.containsIgnoreCase(view.getType(), "progress-bar")) {
