@@ -118,7 +118,7 @@ public class ChartViewManege {
         return chartDataManage.calcData(details);
     }
 
-    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId) {
+    public Map<String, List<ChartViewFieldDTO>> listByDQ(Long id, Long chartId, ChartViewDTO chartViewDTO) {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
         wrapper.eq("checked", true);
@@ -133,6 +133,9 @@ public class ChartViewManege {
         // filter column disable field
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         List<DatasetTableFieldDTO> datasetTableFieldDTOS = permissionManage.filterColumnPermissions(collect, desensitizationList, id, null);
+        if (!chartViewDTO.getType().equalsIgnoreCase("table-info")) {
+            datasetTableFieldDTOS = datasetTableFieldDTOS.stream().filter(datasetTableFieldDTO -> !desensitizationList.keySet().contains(datasetTableFieldDTO.getDataeaseName())).collect(Collectors.toList());
+        }
 
         datasetTableFieldDTOS.add(createCountField(id));
         List<ChartViewFieldDTO> list = transFieldDTO(datasetTableFieldDTOS);

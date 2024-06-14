@@ -26,8 +26,8 @@ export interface ComponentInfo {
   datasetId: string
 }
 
-export const getFieldByDQ = async (id, chartId): Promise<IResponse> => {
-  return request.post({ url: `/chart/listByDQ/${id}/${chartId}`, data: {} }).then(res => {
+export const getFieldByDQ = async (id, chartId, data): Promise<IResponse> => {
+  return request.post({ url: `/chart/listByDQ/${id}/${chartId}`, data: data }).then(res => {
     return res?.data
   })
 }
