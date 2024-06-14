@@ -28,6 +28,7 @@ import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 import { XpackComponent } from '@/components/plugin'
 import DbMoreComGroup from '@/custom-component/component-group/DbMoreComGroup.vue'
 import { useCache } from '@/hooks/web/useCache'
+import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
@@ -521,12 +522,7 @@ const initOpenHandler = newWindow => {
           </el-button>
           <template #dropdown>
             <el-dropdown-menu class="drop-style">
-              <el-dropdown-item @click="previewInner()">
-                <el-icon style="margin-right: 8px; font-size: 16px">
-                  <Icon name="dv-preview-inner" />
-                </el-icon>
-                当前预览
-              </el-dropdown-item>
+              <de-fullscreen :show-position="'edit'"></de-fullscreen>
               <el-dropdown-item @click="previewOuter()">
                 <el-icon style="margin-right: 8px; font-size: 16px">
                   <Icon name="dv-preview-outer" />
