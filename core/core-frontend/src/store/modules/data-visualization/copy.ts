@@ -115,10 +115,10 @@ export const copyStore = defineStore('copy', {
             newComponent.canvasId = 'canvas-main'
           }
           dvMainStore.addCopyComponent(newComponent, idMap, copyDataTemp.copyCanvasViewInfo)
+          if (dvMainStore.multiplexingStyleAdapt && copyDataTemp.copyFrom === 'multiplexing') {
+            adaptCurThemeCommonStyle(newComponent)
+          }
           if (dvInfo.value.type === 'dashboard') {
-            if (dvMainStore.multiplexingStyleAdapt && copyDataTemp.copyFrom === 'multiplexing') {
-              adaptCurThemeCommonStyle(newComponent)
-            }
             eventBus.emit('addDashboardItem-' + newComponent.canvasId, newComponent)
           }
           if (i === dataArray.length - 1) {

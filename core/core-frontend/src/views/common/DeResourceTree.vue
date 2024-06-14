@@ -164,7 +164,7 @@ const menuList = computed(() => {
 })
 
 const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
-if (dvId) {
+if (dvId && showPosition.value === 'preview') {
   selectedNodeKey.value = dvId
   returnMounted.value = true
 }
