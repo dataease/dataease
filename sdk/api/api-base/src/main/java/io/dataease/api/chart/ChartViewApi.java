@@ -26,7 +26,7 @@ public interface ChartViewApi {
 
     @Operation(summary = "获取图表字段")
     @PostMapping("listByDQ/{id}/{chartId}")
-    Map<String, List<ChartViewFieldDTO>> listByDQ(@PathVariable Long id, @PathVariable Long chartId);
+    Map<String, List<ChartViewFieldDTO>> listByDQ(@PathVariable Long id, @PathVariable Long chartId, @RequestBody ChartViewDTO dto);
 
     @Operation(summary = "保存图表")
     @PostMapping("save")

@@ -1594,7 +1594,7 @@ public class ChartDataManage {
 
     private List<ChartViewFieldDTO> getAllChartFields(ChartViewDTO view) {
         // get all fields
-        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId());
+        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId(), view);
         List<ChartViewFieldDTO> dimensionList = stringListMap.get("dimensionList");
         List<ChartViewFieldDTO> quotaList = stringListMap.get("quotaList");
         List<ChartViewFieldDTO> allFields = new ArrayList<>();
