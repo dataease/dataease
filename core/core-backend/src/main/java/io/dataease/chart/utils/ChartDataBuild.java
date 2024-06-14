@@ -596,7 +596,9 @@ public class ChartDataBuild {
                 series.get(j).getData().add(axisChartDataDTO);
             }
         }
-        series.get(0).setCategories(categories);
+        if (CollectionUtils.isNotEmpty(series)) {
+            series.get(0).setCategories(categories);
+        }
 
         map.put("data", series);
         return map;
@@ -685,9 +687,9 @@ public class ChartDataBuild {
 
             series.get(j).getData().add(axisChartDataDTO);
         }
-
-        series.get(0).setCategories(categories);
-
+        if (CollectionUtils.isNotEmpty(series)) {
+            series.get(0).setCategories(categories);
+        }
 
         map.put("data", series);
         return map;
