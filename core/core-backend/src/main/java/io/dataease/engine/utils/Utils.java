@@ -1,13 +1,13 @@
 package io.dataease.engine.utils;
 
-import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -40,8 +40,7 @@ public class Utils {
         return null;
     }
 
-    public static String calcSimpleFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields,
-                                        boolean isCross, Map<Long, String> dsTypeMap) {
+    public static String calcSimpleFieldRegex(String originField, SQLObj tableObj, List<DatasetTableFieldDTO> originFields, boolean isCross, Map<Long, String> dsTypeMap) {
         try {
             int i = 0;
             DatasourceConfiguration.DatasourceType datasourceType = null;
@@ -80,12 +79,9 @@ public class Utils {
                     // 计算字段允许二次引用，这里递归查询完整引用链
                     if (Objects.equals(ele.getExtField(), ExtFieldConstant.EXT_NORMAL)) {
                         if (isCross) {
-                            originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                                    String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
+                            originField = originField.replaceAll("\\[" + ele.getId() + "]", String.format(SQLConstants.FIELD_NAME, tableObj.getTableAlias(), ele.getDataeaseName()));
                         } else {
-                            originField = originField.replaceAll("\\[" + ele.getId() + "]",
-                                    datasourceType.getPrefix() + tableObj.getTableAlias() + datasourceType.getSuffix() +
-                                            "." + datasourceType.getPrefix() + ele.getDataeaseName() + datasourceType.getSuffix());
+                            originField = originField.replaceAll("\\[" + ele.getId() + "]", datasourceType.getPrefix() + tableObj.getTableAlias() + datasourceType.getSuffix() + "." + datasourceType.getPrefix() + ele.getDataeaseName() + datasourceType.getSuffix());
                         }
                     } else {
                         originField = originField.replaceAll("\\[" + ele.getId() + "]", "(" + ele.getOriginName() + ")");
@@ -235,7 +231,7 @@ public class Utils {
     public static boolean matchFunction(String func, String originField) {
         String pattern = func + "\\s*\\((.*?)\\)";
         Pattern r = Pattern.compile(pattern, Pattern.CASE_INSENSITIVE);
-        Matcher m = r.matcher(originField);
+        Matcher m = r.matcher(originField.replaceAll("[\\t\\n\\r]", ""));
         while (m.find()) {
             return true;
         }
