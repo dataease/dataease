@@ -23,6 +23,7 @@ import { get, set } from 'lodash-es'
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
     return {
+      fullscreenFlag: false, // 全屏启用标识
       staticResourcePath: '/static-resource/',
       canvasCollapse: {
         defaultSide: false,
@@ -441,6 +442,9 @@ export const dvMainStore = defineStore('dataVisualization', {
       this.linkageSettingStatus = true
       this.curLinkageView = this.curComponent
       this.targetLinkageInfo = targetLinkageInfo
+    },
+    setFullscreenFlag(val) {
+      this.fullscreenFlag = val
     },
     removeViewFilter(componentId) {
       this.componentData = this.componentData.map(item => {

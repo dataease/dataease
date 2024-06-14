@@ -8,10 +8,11 @@ import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
 import { ref, watch, computed } from 'vue'
 import ShareVisualHead from '@/views/share/share/ShareVisualHead.vue'
 import { XpackComponent } from '@/components/plugin'
+import DeFullscreenButton from '@/components/visualization/common/DeFullscreenButton.vue'
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
-const emit = defineEmits(['reload', 'download', 'downloadAsAppTemplate', 'fullscreenPreview'])
+const emit = defineEmits(['reload', 'download', 'downloadAsAppTemplate'])
 const { t } = useI18n()
 
 const favorited = ref(false)
@@ -21,10 +22,6 @@ const preview = () => {
   initOpenHandler(newWindow)
 }
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
-
-const fullscreenPreview = () => {
-  emit('fullscreenPreview', dvInfo.value.id)
-}
 
 const reload = () => {
   emit('reload', dvInfo.value.id)
@@ -106,12 +103,7 @@ const initOpenHandler = newWindow => {
       </el-popover>
     </div>
     <div class="canvas-opt-button">
-      <el-button secondary v-if="!isDataEaseBi" @click="fullscreenPreview()">
-        <template #icon>
-          <icon name="icon_pc_fullscreen"></icon>
-        </template>
-        全屏</el-button
-      >
+      <de-fullscreen-button v-if="!isDataEaseBi"></de-fullscreen-button>
       <el-button secondary v-if="!isDataEaseBi" @click="preview()">
         <template #icon>
           <icon name="icon_pc_outlined"></icon>

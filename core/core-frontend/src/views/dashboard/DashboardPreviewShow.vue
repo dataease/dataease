@@ -13,7 +13,7 @@ import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
 import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
-import screenfull from 'screenfull'
+import { storeToRefs } from 'pinia'
 
 const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
@@ -31,6 +31,8 @@ const state = reactive({
   dvInfo: null,
   curPreviewGap: 0
 })
+
+const { fullscreenFlag } = storeToRefs(dvMainStore)
 
 const { width, node } = useMoveLine('DASHBOARD')
 
@@ -154,13 +156,6 @@ const mouseleave = () => {
   appStore.setArrowSide(false)
 }
 
-const fullscreenPreview = () => {
-  const ele = document.getElementById('de-preview-content') //指定全屏区域元素
-  if (screenfull.isEnabled) {
-    screenfull.request(ele)
-  }
-}
-
 defineExpose({
   getPreviewStateInfo
 })
@@ -216,9 +211,13 @@ defineExpose({
           @reload="reload"
           @download="downloadH2"
           @downloadAsAppTemplate="downloadAsAppTemplate"
-          @fullscreenPreview="fullscreenPreview"
         />
-        <div ref="previewCanvasContainer" class="content" id="de-preview-content">
+        <div
+          ref="previewCanvasContainer"
+          class="content"
+          id="de-preview-content"
+          :class="{ 'de-screen-full': fullscreenFlag }"
+        >
           <de-preview
             ref="dashboardPreview"
             v-if="state.canvasStylePreview && dataInitState"
