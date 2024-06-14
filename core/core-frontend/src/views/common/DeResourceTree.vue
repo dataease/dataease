@@ -134,6 +134,11 @@ const resourceTypeList = computed(() => {
 const menuList = computed(() => {
   const list = [
     {
+      label: '复制',
+      command: 'copy',
+      svgName: 'dv-copy-dark'
+    },
+    {
       label: '移动到',
       command: 'move',
       svgName: 'dv-move'
@@ -148,23 +153,13 @@ const menuList = computed(() => {
       command: 'delete',
       svgName: 'dv-delete',
       divided: true
-    },
-    {
-      label: '编辑',
-      command: 'edit',
-      svgName: 'dv-edit'
-    },
-    {
-      label: '复制',
-      command: 'copy',
-      svgName: 'dv-copy-dark'
     }
   ]
   return list
 })
 
 const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
-if (dvId) {
+if (dvId && showPosition.value === 'preview') {
   selectedNodeKey.value = dvId
   returnMounted.value = true
 }
