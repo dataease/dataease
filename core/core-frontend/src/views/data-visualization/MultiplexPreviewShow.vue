@@ -95,7 +95,7 @@ watch(
 const init = () => {
   dvMainStore.initCurMultiplexingComponents()
   curMultiplexTargetComponentsInfo.value = []
-  componentData.value.forEach(item => {
+  componentData.value?.forEach(item => {
     curMultiplexTargetComponentsInfo.value.push({
       id: item.id,
       label: item.label,
