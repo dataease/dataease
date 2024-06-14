@@ -520,7 +520,7 @@ export default {
       }
     },
     setTabLayout: _.debounce(function() {
-      this.headClassScroll = !!this.$refs?.deTabsConstom?.$refs?.tabsConstom?.$refs?.nav?.scrollable ? 'head-class-scroll' : ''
+      this.headClassScroll = this.$refs?.deTabsConstom?.$refs?.tabsConstom?.$refs?.nav?.scrollable ? 'head-class-scroll' : ''
     }, 100),
     calcTabLength() {
       this.$nextTick(() => {

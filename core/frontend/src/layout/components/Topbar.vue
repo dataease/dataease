@@ -125,8 +125,15 @@
     </div>
 
     <ExportExcel ref="ExportExcelRef" />
-    <ai-tips @confirm="aiTipsConfirm" v-if="showOverlay" class="ai-icon-tips"></ai-tips>
-    <div v-if="showOverlay" class="overlay"></div>
+    <ai-tips
+      v-if="showOverlay"
+      class="ai-icon-tips"
+      @confirm="aiTipsConfirm"
+    />
+    <div
+      v-if="showOverlay"
+      class="overlay"
+    />
 
     <ai-component
       v-if="aiBaseUrl"
@@ -167,7 +174,7 @@ import TemplateMarket from '@/views/panel/templateMarket'
 import { changeFavicon, inOtherPlatform } from '@/utils/index'
 import AiComponent from '@/layout/components/AiComponent'
 import { findBaseParams } from '@/api/ai/aiComponent'
-import AiTips from "@/layout/components/AiTips.vue";
+import AiTips from '@/layout/components/AiTips.vue'
 export default {
   name: 'Topbar',
   components: {
@@ -313,7 +320,7 @@ export default {
     })
   },
   methods: {
-    aiTipsConfirm(){
+    aiTipsConfirm() {
       localStorage.setItem('DE1.0-AI-TIPS-CHECK', 'CHECKED')
       this.showOverlay = false
     },

@@ -54,12 +54,19 @@ import org.apache.poi.xssf.streaming.SXSSFWorkbook;
 import org.apache.shiro.SecurityUtils;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Value;
+import org.springframework.core.io.InputStreamResource;
+
+import org.springframework.http.HttpHeaders;
+import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
+import org.springframework.http.ResponseEntity;
 import org.springframework.scheduling.annotation.Scheduled;
 import org.springframework.stereotype.Service;
 import org.springframework.util.Base64Utils;
 
 import javax.annotation.PostConstruct;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.io.*;
 import java.net.InetAddress;
@@ -148,22 +155,25 @@ public class ExportCenterService {
         }
     }
 
-    public void download(String id, HttpServletResponse response) throws Exception {
+    public ResponseEntity<org.springframework.core.io.Resource> download(String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
         ExportTask exportTask = exportTaskMapper.selectByPrimaryKey(id);
-        OutputStream outputStream = response.getOutputStream();
-        response.setContentType("application/vnd.ms-excel");
-        //文件名称
-        response.setHeader("Content-disposition", "attachment;filename=" + exportTask.getFileName());
-        InputStream fileInputStream = new FileInputStream(exportData_path + id + "/" + exportTask.getFileName());
-        byte[] buffer = new byte[4096];
-        int bytesRead;
-        while ((bytesRead = fileInputStream.read(buffer)) != -1) {
-            outputStream.write(buffer, 0, bytesRead);
+        try {
+            InputStreamResource resource = new InputStreamResource(new FileInputStream(exportData_path + id + "/" + exportTask.getFileName()));
+            String contentType = "application/octet-stream";
+            long contentLength = new File(exportData_path + id + "/" + exportTask.getFileName()).length(); // 如果有的话
+
+            HttpHeaders headers = new HttpHeaders();
+            headers.setContentDispositionFormData("attachment", exportTask.getFileName());
+            headers.setContentType(MediaType.parseMediaType(contentType));
+            if (contentLength > 0) {
+                headers.setContentLength(contentLength);
+            }
+            return ResponseEntity.ok()
+                    .headers(headers)
+                    .body(resource);
+        } catch (IOException e) {
+            return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).build();
         }
-        outputStream.flush();
-        outputStream.close();
-        fileInputStream.close();
-        response.flushBuffer();
     }
 
     public void delete(String id) {
@@ -557,6 +567,7 @@ public class ExportCenterService {
                 setFileSize(dataPath + "/" + request.getViewName() + ".xlsx", exportTask);
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
+                exportTask.setMsg(e.getMessage());
                 exportTask.setExportStatus("FAILED");
             } finally {
                 exportTaskMapper.updateByPrimaryKey(exportTask);
@@ -771,6 +782,7 @@ public class ExportCenterService {
                 setFileSize(dataPath + "/" + request.getFilename() + ".xlsx", exportTask);
             } catch (Exception e) {
                 LogUtil.error("Failed to export data", e);
+                exportTask.setMsg(e.getMessage());
                 exportTask.setExportStatus("FAILED");
             } finally {
                 exportTaskMapper.updateByPrimaryKey(exportTask);

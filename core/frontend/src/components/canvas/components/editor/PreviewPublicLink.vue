@@ -5,7 +5,7 @@
     class="bg"
     :style="customStyle"
   >
-    <link-opt-bar/>
+    <link-opt-bar />
     <Preview />
   </div>
 </template>

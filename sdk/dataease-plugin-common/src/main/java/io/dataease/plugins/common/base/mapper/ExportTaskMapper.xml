@@ -13,6 +13,7 @@
     <result column="export_time" jdbcType="BIGINT" property="exportTime" />
     <result column="export_pogress" jdbcType="VARCHAR" property="exportPogress" />
     <result column="export_machine_name" jdbcType="VARCHAR" property="exportMachineName" />
+    <result column="msg" jdbcType="VARCHAR" property="msg" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.ExportTask">
     <result column="params" jdbcType="LONGVARCHAR" property="params" />
@@ -77,7 +78,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, user_id, file_name, file_size, file_size_unit, export_from, export_status, export_from_type, 
-    export_time, export_pogress, export_machine_name
+    export_time, export_pogress, export_machine_name, msg
   </sql>
   <sql id="Blob_Column_List">
     params
@@ -134,13 +135,13 @@
     insert into export_task (id, user_id, file_name, 
       file_size, file_size_unit, export_from, 
       export_status, export_from_type, export_time, 
-      export_pogress, export_machine_name, params
-      )
+      export_pogress, export_machine_name, msg, 
+      params)
     values (#{id,jdbcType=VARCHAR}, #{userId,jdbcType=BIGINT}, #{fileName,jdbcType=VARCHAR}, 
       #{fileSize,jdbcType=DOUBLE}, #{fileSizeUnit,jdbcType=VARCHAR}, #{exportFrom,jdbcType=VARCHAR}, 
       #{exportStatus,jdbcType=VARCHAR}, #{exportFromType,jdbcType=VARCHAR}, #{exportTime,jdbcType=BIGINT}, 
-      #{exportPogress,jdbcType=VARCHAR}, #{exportMachineName,jdbcType=VARCHAR}, #{params,jdbcType=LONGVARCHAR}
-      )
+      #{exportPogress,jdbcType=VARCHAR}, #{exportMachineName,jdbcType=VARCHAR}, #{msg,jdbcType=VARCHAR}, 
+      #{params,jdbcType=LONGVARCHAR})
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.ExportTask">
     insert into export_task
@@ -177,6 +178,9 @@
       </if>
       <if test="exportMachineName != null">
         export_machine_name,
+      </if>
+      <if test="msg != null">
+        msg,
       </if>
       <if test="params != null">
         params,
@@ -215,6 +219,9 @@
       </if>
       <if test="exportMachineName != null">
         #{exportMachineName,jdbcType=VARCHAR},
+      </if>
+      <if test="msg != null">
+        #{msg,jdbcType=VARCHAR},
       </if>
       <if test="params != null">
         #{params,jdbcType=LONGVARCHAR},
@@ -263,6 +270,9 @@
       <if test="record.exportMachineName != null">
         export_machine_name = #{record.exportMachineName,jdbcType=VARCHAR},
       </if>
+      <if test="record.msg != null">
+        msg = #{record.msg,jdbcType=VARCHAR},
+      </if>
       <if test="record.params != null">
         params = #{record.params,jdbcType=LONGVARCHAR},
       </if>
@@ -284,6 +294,7 @@
       export_time = #{record.exportTime,jdbcType=BIGINT},
       export_pogress = #{record.exportPogress,jdbcType=VARCHAR},
       export_machine_name = #{record.exportMachineName,jdbcType=VARCHAR},
+      msg = #{record.msg,jdbcType=VARCHAR},
       params = #{record.params,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
@@ -301,7 +312,8 @@
       export_from_type = #{record.exportFromType,jdbcType=VARCHAR},
       export_time = #{record.exportTime,jdbcType=BIGINT},
       export_pogress = #{record.exportPogress,jdbcType=VARCHAR},
-      export_machine_name = #{record.exportMachineName,jdbcType=VARCHAR}
+      export_machine_name = #{record.exportMachineName,jdbcType=VARCHAR},
+      msg = #{record.msg,jdbcType=VARCHAR}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -339,6 +351,9 @@
       <if test="exportMachineName != null">
         export_machine_name = #{exportMachineName,jdbcType=VARCHAR},
       </if>
+      <if test="msg != null">
+        msg = #{msg,jdbcType=VARCHAR},
+      </if>
       <if test="params != null">
         params = #{params,jdbcType=LONGVARCHAR},
       </if>
@@ -357,6 +372,7 @@
       export_time = #{exportTime,jdbcType=BIGINT},
       export_pogress = #{exportPogress,jdbcType=VARCHAR},
       export_machine_name = #{exportMachineName,jdbcType=VARCHAR},
+      msg = #{msg,jdbcType=VARCHAR},
       params = #{params,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
@@ -371,7 +387,8 @@
       export_from_type = #{exportFromType,jdbcType=VARCHAR},
       export_time = #{exportTime,jdbcType=BIGINT},
       export_pogress = #{exportPogress,jdbcType=VARCHAR},
-      export_machine_name = #{exportMachineName,jdbcType=VARCHAR}
+      export_machine_name = #{exportMachineName,jdbcType=VARCHAR},
+      msg = #{msg,jdbcType=VARCHAR}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>
