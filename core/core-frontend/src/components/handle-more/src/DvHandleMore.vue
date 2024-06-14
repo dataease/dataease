@@ -52,7 +52,8 @@ const handleCommand = (command: string | number | object) => {
 }
 const callBack = param => {
   if (props.node.leaf && props.node?.weight >= 7) {
-    menus.value.splice(2, 0, param)
+    menus.value[0]['divided'] = true
+    menus.value.splice(0, 0, param)
   }
 }
 const emit = defineEmits(['handleCommand'])
