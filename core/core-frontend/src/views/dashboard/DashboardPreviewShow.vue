@@ -12,7 +12,8 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
-import { download2AppTemplate, downloadCanvas, downloadCanvas2 } from '@/utils/imgUtils'
+import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
+import screenfull from 'screenfull'
 
 const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
@@ -153,6 +154,13 @@ const mouseleave = () => {
   appStore.setArrowSide(false)
 }
 
+const fullscreenPreview = () => {
+  const ele = document.getElementById('de-preview-content') //指定全屏区域元素
+  if (screenfull.isEnabled) {
+    screenfull.request(ele)
+  }
+}
+
 defineExpose({
   getPreviewStateInfo
 })
@@ -208,8 +216,9 @@ defineExpose({
           @reload="reload"
           @download="downloadH2"
           @downloadAsAppTemplate="downloadAsAppTemplate"
+          @fullscreenPreview="fullscreenPreview"
         />
-        <div ref="previewCanvasContainer" class="content">
+        <div ref="previewCanvasContainer" class="content" id="de-preview-content">
           <de-preview
             ref="dashboardPreview"
             v-if="state.canvasStylePreview && dataInitState"
