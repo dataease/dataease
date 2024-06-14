@@ -80,11 +80,13 @@ const loadCanvasData = (dvId, weight?) => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      dvMainStore.updateCurDvInfo(dvInfo)
       dataInitState.value = true
-      nextTick(() => {
-        dvPreview.value?.restore()
-      })
+      if (props.showPosition === 'preview') {
+        dvMainStore.updateCurDvInfo(dvInfo)
+        nextTick(() => {
+          dvPreview.value?.restore()
+        })
+      }
     }
   )
 }
@@ -151,7 +153,9 @@ defineExpose({
 })
 
 onBeforeMount(() => {
-  dvMainStore.canvasDataInit()
+  if (props.showPosition === 'preview') {
+    dvMainStore.canvasDataInit()
+  }
 })
 </script>
 
