@@ -469,8 +469,8 @@ const tabStyle = computed(() => [
 
 const tablePageClass = computed(() => {
   return (
-    ['#ffffff', '#A6A6A6FF'].includes(
-      canvasStyleData.value.component.seniorStyleSetting?.pagerColor
+    ['#ffffff', '#ffffffff', '#a6a6a6ff'].includes(
+      canvasStyleData.value.component.seniorStyleSetting?.pagerColor.toLowerCase()
     ) && 'table-page-info_dark'
   )
 })
