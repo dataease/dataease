@@ -39,7 +39,7 @@ router.beforeEach(async (to, _, next) => {
       next()
     }
   } else {
-    if (whiteList.includes(to.path) || to.path.includes('/de-link')) {
+    if (whiteList.includes(to.path) || to.name === 'link') {
       next()
     } else {
       next('/login') // 否则全部重定向到登录页

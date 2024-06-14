@@ -22,7 +22,7 @@ const { start, done } = useNProgress()
 
 const { loadStart, loadDone } = usePageLoading()
 
-const whiteList = ['/login', '/de-link', '/chart-view'] // 不重定向白名单
+const whiteList = ['/login', '/de-link', '/chart-view', '/notSupport'] // 不重定向白名单
 const embeddedWindowWhiteList = ['/dvCanvas', '/dashboard', '/preview', '/dataset-embedded-form']
 const embeddedRouteWhiteList = ['/dataset-embedded', '/dataset-form', '/dataset-embedded-form']
 router.beforeEach(async (to, from, next) => {
@@ -34,13 +34,13 @@ router.beforeEach(async (to, from, next) => {
     await appStore.setAppModel()
     isDesktop = appStore.getDesktop
   }
-  if (isMobile()) {
+  if (isMobile() && to.path !== '/notSupport') {
     done()
     loadDone()
     if (to.name === 'link') {
       window.location.href = window.origin + '/mobile.html#' + to.path
     } else if (to.path === '/dvCanvas') {
-      window.location.href = window.origin + '/mobile.html#' + to.path
+      next('/notSupport')
     } else if (
       wsCache.get('user.token') ||
       isDesktop ||
