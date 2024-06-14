@@ -11,7 +11,7 @@ import { XpackComponent } from '@/components/plugin'
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
-const emit = defineEmits(['reload', 'download', 'downloadAsAppTemplate'])
+const emit = defineEmits(['reload', 'download', 'downloadAsAppTemplate', 'fullscreenPreview'])
 const { t } = useI18n()
 
 const favorited = ref(false)
@@ -21,6 +21,10 @@ const preview = () => {
   initOpenHandler(newWindow)
 }
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+
+const fullscreenPreview = () => {
+  emit('fullscreenPreview', dvInfo.value.id)
+}
 
 const reload = () => {
   emit('reload', dvInfo.value.id)
@@ -102,6 +106,12 @@ const initOpenHandler = newWindow => {
       </el-popover>
     </div>
     <div class="canvas-opt-button">
+      <el-button secondary v-if="!isDataEaseBi" @click="fullscreenPreview()">
+        <template #icon>
+          <icon name="icon_pc_fullscreen"></icon>
+        </template>
+        全屏</el-button
+      >
       <el-button secondary v-if="!isDataEaseBi" @click="preview()">
         <template #icon>
           <icon name="icon_pc_outlined"></icon>
