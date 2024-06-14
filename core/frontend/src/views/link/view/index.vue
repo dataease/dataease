@@ -27,7 +27,7 @@ import { queryPanelJumpInfo, queryTargetPanelJumpInfo } from '@/api/panel/linkJu
 import { getNowCanvasComponentData, panelInit } from '@/components/canvas/utils/utils'
 import { getOuterParamsInfo } from '@/api/panel/outerParams'
 import { mapState } from 'vuex'
-import {Base64} from "js-base64";
+import { Base64 } from 'js-base64'
 
 export default {
   name: 'LinkView',

@@ -8,7 +8,7 @@ let labelFormatter = null
 export function baseLiquid(container, chart) {
   let value = 0
   const colors = []
-  let max, radius, bgColor, shape, labelContent, liquidStyle, originVal = 0
+  let max; let radius; let bgColor; let shape; let labelContent; let liquidStyle; let originVal = 0
   if (chart.data?.series.length > 0) {
     value = chart.data.series[0].data[0]
   }

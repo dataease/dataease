@@ -27,6 +27,8 @@ public class ExportTask implements Serializable {
 
     private String exportMachineName;
 
+    private String msg;
+
     private String params;
 
     private static final long serialVersionUID = 1L;

@@ -78,6 +78,7 @@
                 <div
                   v-if="scope.row.exportStatus==='FAILED'"
                   class="failed"
+                  @click="showMsg(scope.row)"
                 >{{ $t("data_export.export_failed") }}</div>
                 <div
                   v-if="scope.row.exportStatus==='SUCCESS'"
@@ -169,6 +170,14 @@
         />
       </el-table>
     </div>
+    <el-dialog
+      title="失败原因"
+      :visible.sync="msgDialogVisible"
+      append-to-body
+      width="30%"
+    >
+      <span>{{ msg }}</span>
+    </el-dialog>
   </el-drawer>
 </template>
 <script>
@@ -211,7 +220,9 @@ export default {
           name: 'ALL'
         }
       ],
-      loading: false
+      loading: false,
+      msgDialogVisible: false,
+      msg: ''
     }
   },
   created() {
@@ -436,6 +447,11 @@ export default {
       }
       this.handlerConfirm(options)
     },
+    showMsg(item) {
+      this.msg = ''
+      this.msg = item.msg
+      this.msgDialogVisible = true
+    },
     delAll() {
       if (this.multipleSelection.length === 0) {
         this.$confirm(this.$t('data_export.sure_del_all'), '', {
@@ -547,6 +563,7 @@ export default {
           font-weight: 400;
           line-height: 20px;
           color: #F54A45;
+          cursor: pointer;
         }
 
         .success {
