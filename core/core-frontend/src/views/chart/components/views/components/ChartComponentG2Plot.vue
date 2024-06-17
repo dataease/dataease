@@ -416,15 +416,36 @@ const trackMenu = computed(() => {
   if (!['multiplexing', 'viewDialog'].includes(showPosition.value)) {
     let linkageCount = 0
     let jumpCount = 0
-    chartData.value?.fields?.forEach(item => {
-      const sourceInfo = view.value.id + '#' + item.id
-      if (nowPanelTrackInfo.value[sourceInfo]) {
-        linkageCount++
-      }
-      if (nowPanelJumpInfo.value[sourceInfo]) {
-        jumpCount++
-      }
-    })
+    if (curView?.type?.includes('chart-mix')) {
+      chartData.value?.left?.fields?.forEach(item => {
+        const sourceInfo = view.value.id + '#' + item.id
+        if (nowPanelTrackInfo.value[sourceInfo]) {
+          linkageCount++
+        }
+        if (nowPanelJumpInfo.value[sourceInfo]) {
+          jumpCount++
+        }
+      })
+      chartData.value?.right?.fields?.forEach(item => {
+        const sourceInfo = view.value.id + '#' + item.id
+        if (nowPanelTrackInfo.value[sourceInfo]) {
+          linkageCount++
+        }
+        if (nowPanelJumpInfo.value[sourceInfo]) {
+          jumpCount++
+        }
+      })
+    } else {
+      chartData.value?.fields?.forEach(item => {
+        const sourceInfo = view.value.id + '#' + item.id
+        if (nowPanelTrackInfo.value[sourceInfo]) {
+          linkageCount++
+        }
+        if (nowPanelJumpInfo.value[sourceInfo]) {
+          jumpCount++
+        }
+      })
+    }
     jumpCount &&
       view.value?.jumpActive &&
       (!mobileInPc.value || inMobile.value) &&

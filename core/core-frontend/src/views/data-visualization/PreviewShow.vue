@@ -17,7 +17,7 @@ import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
 import MultiplexPreviewShow from '@/views/data-visualization/MultiplexPreviewShow.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo } = storeToRefs(dvMainStore)
+const { dvInfo, fullscreenFlag } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
 const dvPreview = ref(null)
 const slideShow = ref(true)
@@ -26,7 +26,6 @@ const permissionStore = usePermissionStoreWithOut()
 const dataInitState = ref(true)
 const downloadStatus = ref(false)
 const { width, node } = useMoveLine('DASHBOARD')
-
 const props = defineProps({
   showPosition: {
     required: false,
@@ -80,11 +79,13 @@ const loadCanvasData = (dvId, weight?) => {
       state.canvasViewInfoPreview = canvasViewInfoPreview
       state.dvInfo = dvInfo
       state.curPreviewGap = curPreviewGap
-      dvMainStore.updateCurDvInfo(dvInfo)
       dataInitState.value = true
-      nextTick(() => {
-        dvPreview.value?.restore()
-      })
+      if (props.showPosition === 'preview') {
+        dvMainStore.updateCurDvInfo(dvInfo)
+        nextTick(() => {
+          dvPreview.value?.restore()
+        })
+      }
     }
   )
 }
@@ -151,7 +152,9 @@ defineExpose({
 })
 
 onBeforeMount(() => {
-  dvMainStore.canvasDataInit()
+  if (props.showPosition === 'preview') {
+    dvMainStore.canvasDataInit()
+  }
 })
 </script>
 
@@ -213,7 +216,11 @@ onBeforeMount(() => {
           ></multiplex-preview-show>
         </div>
         <div v-if="showPosition === 'preview'" ref="previewCanvasContainer" class="content">
-          <div class="content-outer">
+          <div
+            id="de-preview-content"
+            :class="{ 'de-screen-full': fullscreenFlag }"
+            class="content-outer"
+          >
             <div class="content-inner">
               <de-preview
                 ref="dvPreview"

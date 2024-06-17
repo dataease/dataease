@@ -104,7 +104,7 @@ export default {
     no_failed_file: '暂无失败文件',
     no_file: '暂无文件',
     no_task: '暂无任务',
-    download_all: '下载全部',
+    download_all: '全部下载',
     download: '下载'
   },
   driver: {

@@ -378,6 +378,7 @@ defineExpose({
       <el-table
         ref="multipleTable"
         :data="tableData"
+        height="100%"
         style="width: 100%"
         @selection-change="handleSelectionChange"
       >
@@ -385,8 +386,8 @@ defineExpose({
         <el-table-column prop="fileName" :label="$t('driver.file_name')" width="332">
           <template #default="scope">
             <div class="name-excel">
-              <el-icon>
-                <Icon name="file-excel_colorful"></Icon>
+              <el-icon style="font-size: 24px">
+                <Icon name="icon_file-excel_colorful"></Icon>
               </el-icon>
               <div class="name-content">
                 <div class="fileName">{{ scope.row.fileName }}</div>
@@ -421,18 +422,18 @@ defineExpose({
             <span>{{ timestampFormatDate(scope.row.exportTime) }}</span>
           </template>
         </el-table-column>
-        <el-table-column fixed="right" prop="operate" width="150" :label="$t('commons.operating')">
+        <el-table-column fixed="right" prop="operate" width="90" :label="$t('commons.operating')">
           <template #default="scope">
             <el-button
               v-if="scope.row.exportStatus === 'SUCCESS'"
               text
               @click="downloadClick(scope.row)"
             >
-              <div class="download-export">
+              <template #icon>
                 <el-icon>
                   <Icon name="dv-preview-download"></Icon>
                 </el-icon>
-              </div>
+              </template>
             </el-button>
             <el-tooltip effect="dark" content="重新导出" placement="top">
               <el-button v-if="scope.row.exportStatus === 'FAILED'" text @click="retry(scope.row)">
@@ -468,6 +469,9 @@ defineExpose({
 
 <style lang="less">
 .de-export-excel {
+  .ed-drawer__body {
+    padding-bottom: 24px;
+  }
   .ed-drawer__header {
     border-bottom: none;
   }
@@ -478,12 +482,9 @@ defineExpose({
     }
   }
 
-  .download-export {
-    font-size: 16px;
-  }
-
   .table-container {
     margin-top: 16px;
+    height: calc(100vh - 190px);
 
     .ed-table .cell {
       padding-left: 12px;

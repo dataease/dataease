@@ -12,7 +12,8 @@ import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
 import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
-import { download2AppTemplate, downloadCanvas, downloadCanvas2 } from '@/utils/imgUtils'
+import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
+import { storeToRefs } from 'pinia'
 
 const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
@@ -30,6 +31,8 @@ const state = reactive({
   dvInfo: null,
   curPreviewGap: 0
 })
+
+const { fullscreenFlag } = storeToRefs(dvMainStore)
 
 const { width, node } = useMoveLine('DASHBOARD')
 
@@ -209,7 +212,12 @@ defineExpose({
           @download="downloadH2"
           @downloadAsAppTemplate="downloadAsAppTemplate"
         />
-        <div ref="previewCanvasContainer" class="content">
+        <div
+          ref="previewCanvasContainer"
+          class="content"
+          id="de-preview-content"
+          :class="{ 'de-screen-full': fullscreenFlag }"
+        >
           <de-preview
             ref="dashboardPreview"
             v-if="state.canvasStylePreview && dataInitState"

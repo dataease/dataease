@@ -1273,7 +1273,9 @@ const getMenuList = (val: boolean) => {
               <div v-for="api in nodeInfo.apiConfiguration" :key="api.id" class="api-card">
                 <el-row>
                   <el-col :span="19">
-                    <span class="name ellipsis">{{ api.name }}</span>
+                    <span class="name">
+                      <span class="ellipsis" :title="api.name">{{ api.name }}</span>
+                    </span>
                     <span v-if="api.status === 'Error'" class="de-tag error-color">{{
                       t('datasource.invalid')
                     }}</span>
@@ -1693,6 +1695,7 @@ const getMenuList = (val: boolean) => {
       font-weight: 500;
       margin-right: 8px;
       max-width: 80%;
+      display: inline-flex;
     }
     .req-title,
     .req-value {

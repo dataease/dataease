@@ -45,6 +45,7 @@
     "nprogress": "^0.2.0",
     "pinia": "^2.0.32",
     "qs": "^6.11.0",
+    "screenfull": "^6.0.2",
     "snowflake-id": "^1.1.0",
     "tinymce": "^5.8.2",
     "vant": "^4.8.3",

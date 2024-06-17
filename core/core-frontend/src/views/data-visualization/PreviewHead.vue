@@ -8,6 +8,7 @@ import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
 import { ref, watch, computed } from 'vue'
 import ShareVisualHead from '@/views/share/share/ShareVisualHead.vue'
 import { XpackComponent } from '@/components/plugin'
+import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
@@ -102,6 +103,7 @@ const initOpenHandler = newWindow => {
       </el-popover>
     </div>
     <div class="canvas-opt-button">
+      <de-fullscreen v-if="!isDataEaseBi"></de-fullscreen>
       <el-button secondary v-if="!isDataEaseBi" @click="preview()">
         <template #icon>
           <icon name="icon_pc_outlined"></icon>

@@ -541,11 +541,18 @@ public class ChartDataManage {
                 ChartExtFilterDTO tmpFilter = new ChartExtFilterDTO();
                 DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(tmpField.getId());
                 tmpFilter.setDatasetTableField(datasetTableField);
-                tmpFilter.setOperator("in");
                 tmpFilter.setDateStyle(fieldMap.get(tmpField.getId()).getDateStyle());
                 tmpFilter.setDatePattern(fieldMap.get(tmpField.getId()).getDatePattern());
                 tmpFilter.setFieldId(String.valueOf(tmpField.getId()));
-                tmpFilter.setValue(Collections.singletonList(dimValMap.get(tmpField.getId())));
+                if (datasetTableField.getDeType() == 1) {
+                    tmpFilter.setOperator("between");
+                    // 把value类似过滤组件处理，获得start time和end time
+                    Map<String, Long> stringLongMap = Utils.parseDateTimeValue(dimValMap.get(tmpField.getId()));
+                    tmpFilter.setValue(Arrays.asList(String.valueOf(stringLongMap.get("startTime")), String.valueOf(stringLongMap.get("endTime"))));
+                } else {
+                    tmpFilter.setOperator("in");
+                    tmpFilter.setValue(Collections.singletonList(dimValMap.get(tmpField.getId())));
+                }
                 extFilterList.add(tmpFilter);
                 drillFilters.add(tmpFilter);
             }
@@ -614,11 +621,14 @@ public class ChartDataManage {
                     if (Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType())) {
                         if (StringUtils.equalsIgnoreCase(compareCalc.getField() + "", filterDTO.getFieldId())) {
                             // -1 year
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(new Date(Long.parseLong(filterDTO.getValue().getFirst())));
-                            calendar.add(Calendar.YEAR, -1);
-                            filterDTO.getValue().set(0, String.valueOf(calendar.getTime().getTime()));
-                            isYOY = true;
+                            try {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(new Date(Long.parseLong(filterDTO.getValue().getFirst())));
+                                calendar.add(Calendar.YEAR, -1);
+                                filterDTO.getValue().set(0, String.valueOf(calendar.getTime().getTime()));
+                                isYOY = true;
+                            } catch (Exception e) {
+                            }
                         }
                     }
                 }
@@ -1594,7 +1604,7 @@ public class ChartDataManage {
 
     private List<ChartViewFieldDTO> getAllChartFields(ChartViewDTO view) {
         // get all fields
-        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId());
+        Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId(), view);
         List<ChartViewFieldDTO> dimensionList = stringListMap.get("dimensionList");
         List<ChartViewFieldDTO> quotaList = stringListMap.get("quotaList");
         List<ChartViewFieldDTO> allFields = new ArrayList<>();

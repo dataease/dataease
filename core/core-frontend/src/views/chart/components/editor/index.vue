@@ -214,7 +214,7 @@ watch(
   { deep: true }
 )
 const watchDs = () => {
-  getFields(props.view.tableId, props.view.id)
+  getFields(props.view.tableId, props.view.id, props.view.type)
   const nodeId = view.value['tableId']
   if (!!nodeId) {
     cacheId = nodeId as unknown as string
@@ -224,10 +224,10 @@ const watchDs = () => {
     curDatasetWeight.value = node.data.weight
   }
 }
-const getFields = (id, chartId) => {
+const getFields = (id, chartId, type) => {
   if (id && chartId) {
     fieldLoading.value = true
-    getFieldByDQ(id, chartId)
+    getFieldByDQ(id, chartId, { type: type })
       .then(res => {
         state.dimension = (res.dimensionList as unknown as Field[]) || []
         state.quota = (res.quotaList as unknown as Field[]) || []
@@ -1298,7 +1298,7 @@ const confirmEditCalc = () => {
   const obj = cloneDeep(calcEdit.value.fieldForm)
   setFieldDefaultValue(obj)
   saveField(obj).then(() => {
-    getFields(view.value.tableId, view.value.id)
+    getFields(view.value.tableId, view.value.id, view.value.type)
     closeEditCalc()
   })
 }
@@ -1314,7 +1314,7 @@ const chartFieldEdit = param => {
       state.currEditField.name = getFieldName(state.dimension.concat(state.quota), param.item.name)
 
       saveField(state.currEditField).then(() => {
-        getFields(view.value.tableId, view.value.id)
+        getFields(view.value.tableId, view.value.id, view.value.type)
       })
       break
     case 'edit':
@@ -1322,7 +1322,7 @@ const chartFieldEdit = param => {
       break
     case 'delete':
       deleteField(param.item?.id).then(() => {
-        getFields(view.value.tableId, view.value.id)
+        getFields(view.value.tableId, view.value.id, view.value.type)
       })
       break
   }
@@ -1538,7 +1538,7 @@ const copyChartFieldItem = id => {
   fieldLoading.value = true
   copyChartField(id, view.value.id)
     .then(() => {
-      getFields(view.value.tableId, view.value.id)
+      getFields(view.value.tableId, view.value.id, view.value.type)
     })
     .catch(() => {
       fieldLoading.value = false
@@ -1549,7 +1549,7 @@ const deleteChartFieldItem = id => {
   fieldLoading.value = true
   deleteChartField(id)
     .then(() => {
-      getFields(view.value.tableId, view.value.id)
+      getFields(view.value.tableId, view.value.id, view.value.type)
     })
     .catch(() => {
       fieldLoading.value = false
@@ -2570,7 +2570,7 @@ const deleteChartFieldItem = id => {
                     <el-icon
                       class="field-search-icon-btn"
                       :class="{ dark: themes === 'dark' }"
-                      @click="getFields(view.tableId, view.id)"
+                      @click="getFields(view.tableId, view.id, view.type)"
                     >
                       <Icon
                         name="icon_refresh_outlined"

@@ -2,6 +2,7 @@
 import { computed, nextTick, onBeforeMount, reactive, ref, toRefs, watch } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { getCanvasStyle } from '@/utils/style'
+import EmptyBackground from '../../components/empty-background/src/EmptyBackground.vue'
 const dvMainStore = dvMainStoreWithOut()
 const viewShow = ref(true)
 
@@ -95,7 +96,7 @@ watch(
 const init = () => {
   dvMainStore.initCurMultiplexingComponents()
   curMultiplexTargetComponentsInfo.value = []
-  componentData.value.forEach(item => {
+  componentData.value?.forEach(item => {
     curMultiplexTargetComponentsInfo.value.push({
       id: item.id,
       label: item.label,
@@ -138,7 +139,7 @@ onBeforeMount(() => {
         class="custom-tree"
         menu
         ref="multiplexInfoTree"
-        :empty-text="'暂无可用图表'"
+        :empty-text="'暂无可用组件'"
         :filter-node-method="filterNodeMethod"
         :data="curMultiplexTargetComponentsInfo"
         node-key="targetViewId"
@@ -184,6 +185,7 @@ onBeforeMount(() => {
             :dv-info="dvInfo"
             :canvas-view-info="canvasViewInfo"
           />
+          <empty-background v-else description="当前未选择组件" img-type="select" />
         </div>
       </div>
     </el-col>
