@@ -1193,7 +1193,7 @@ public class ChartDataBuild {
         Map<String, Object> map = transTableNormal(fields, null, data, desensitizationList);
         List<Map<String, Object>> tableRow = (List<Map<String, Object>>) map.get("tableRow");
         final int xEndIndex = detailIndex;
-        Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> "(" + StringUtils.join(ArrayUtils.subarray(item, 0, xEndIndex), "-de-") + ")"));
+        Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> "(" + StringUtils.join(ArrayUtils.subarray(item, 0, xEndIndex), ")-de-(") + ")"));
 
         tableRow.forEach(row -> {
             String key = xAxis.stream().map(x -> String.format(format, row.get(x.getDataeaseName()).toString())).collect(Collectors.joining("-de-"));

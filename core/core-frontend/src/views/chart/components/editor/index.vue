@@ -2458,6 +2458,7 @@ const deleteChartFieldItem = id => {
                       :themes="themes"
                       :dimension-data="state.dimension"
                       :quota-data="state.quota"
+                      :all-fields="allFields"
                       @onColorChange="onColorChange"
                       @onMiscChange="onMiscChange"
                       @onLabelChange="onLabelChange"

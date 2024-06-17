@@ -306,7 +306,11 @@ const action = param => {
     }
     trackBarStyleCheck(props.element, barStyleTemp, props.scale, trackMenu.value.length)
     state.trackBarStyle.left = barStyleTemp.left + 'px'
-    state.trackBarStyle.top = barStyleTemp.top + 'px'
+    if (curView.type === 'symbolic-map') {
+      state.trackBarStyle.top = param.y + 10 + 'px'
+    } else {
+      state.trackBarStyle.top = barStyleTemp.top + 'px'
+    }
     viewTrack.value.trackButtonClick()
   }
 }

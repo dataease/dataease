@@ -5,10 +5,14 @@ import {
   ChartLibraryType,
   ChartWrapper
 } from '@/views/chart/components/js/panel/types'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { parseJson } from '@/views/chart/components/js/util'
 import { ILayer } from '@antv/l7plot'
-import { configL7Zoom } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  configL7Label,
+  configL7Tooltip,
+  configL7Zoom
+} from '@/views/chart/components/js/panel/common/common_antv'
 
 export type L7DrawConfig<P> = AntVDrawOptions<P>
 export interface L7Config extends ILayer {
@@ -48,10 +52,12 @@ export class L7Wrapper<
   }
 
   handleConfig = (config: L7Config) => {
-    if (config.handleConfig) {
-      config.handleConfig?.(this.scene)
-    } else {
-      this.scene.addLayer(config)
+    if (config) {
+      if (config.handleConfig) {
+        config.handleConfig?.(this.scene)
+      } else {
+        this.scene.addLayer(config)
+      }
     }
   }
 }
@@ -86,6 +92,18 @@ export abstract class L7ChartView<
 
   protected configZoomButton(chart: Chart, plot: S) {
     configL7Zoom(chart, plot)
+  }
+
+  protected configLabel(chart: Chart, options: O): O {
+    const label = configL7Label(chart)
+    defaultsDeep(options.label, label)
+    return options
+  }
+
+  protected configTooltip(chart: Chart, options: O): O {
+    const tooltip = configL7Tooltip(chart)
+    defaultsDeep(options.tooltip, tooltip)
+    return options
   }
 
   protected constructor(name: string, defaultData: any[]) {
