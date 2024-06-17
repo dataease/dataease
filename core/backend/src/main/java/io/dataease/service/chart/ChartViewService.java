@@ -1182,6 +1182,7 @@ public class ChartViewService {
                         }
                     }
                 }
+                logger.info("result data list:" + gson.toJson(resultData));
                 data.clear();
                 data.addAll(resultData);
             }
