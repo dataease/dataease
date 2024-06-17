@@ -43,6 +43,7 @@ import DragInfo from '@/components/visualization/common/DragInfo.vue'
 import { activeWatermark } from '@/components/watermark/watermark'
 import { personInfoApi } from '@/api/user'
 import ComponentHangPopver from '@/custom-component/independent-hang/ComponentHangPopver.vue'
+
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -1490,9 +1491,27 @@ defineExpose({
       @linkageSetOpen="linkageSetOpen(item)"
     >
       <!--如果是图表 则动态获取预存的chart-view数据-->
+      <!-- <PluginComponent
+        v-if="item['isPlugin']"
+        :jsname="item['pluginFlag'] || 'L2NvbXBvbmVudC9pbmRleA=='"
+        class="component"
+        :id="'component' + item.id"
+        :active="item.id === curComponentId"
+        :dv-type="dvInfo.type"
+        :scale="curBaseScale"
+        :style="getComponentStyle(item.style)"
+        :prop-value="item.propValue"
+        :is-edit="true"
+        :view="canvasViewInfo[item.id]"
+        :element="item"
+        :request="item.request"
+        @input="handleInput"
+        :dv-info="dvInfo"
+        :canvas-active="canvasActive"
+      /> -->
       <component
         :is="findComponent(item.component)"
-        v-if="item.component === 'UserView'"
+        v-if="item.component === 'UserView' || item['isPlugin']"
         class="component"
         :id="'component' + item.id"
         :active="item.id === curComponentId"

@@ -384,7 +384,11 @@ export const dvMainStore = defineStore('dataVisualization', {
           ...defaultConfig,
           id: component.id,
           type: component.innerType,
-          render: component.render
+          render: component.render,
+          plugin: {
+            isPlugin: component.isPlugin,
+            pluginResourceId: component.pluginResourceId
+          }
         } as unknown as ChartObj
         // 处理配置项默认值，不同图表的同一配置项默认值不同
         const chartViewInstance = chartViewManager.getChartView(newView.render, newView.type)

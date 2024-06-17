@@ -50,6 +50,7 @@ import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
 import { set, concat, keys } from 'lodash-es'
+import { PluginComponent } from '@/components/plugin'
 import {
   Field,
   getFieldByDQ,
@@ -259,6 +260,9 @@ const chartStyleShow = computed(() => {
 })
 
 const chartViewInstance = computed(() => {
+  if (view.value.render === 'highchart') {
+    return chartViewManager.getChartView('antv', view.value.type)
+  }
   return chartViewManager.getChartView(view.value.render, view.value.type)
 })
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
@@ -1597,6 +1601,15 @@ const deleteChartFieldItem = id => {
                 />
               </div>
             </div>
+            <plugin-component
+              v-else-if="view.plugin?.isPlugin"
+              jsname="L2NvbXBvbmVudC9lZGl0b3IvaW5kZXg="
+              :view="view"
+              :dimension="state.dimension"
+              :quota="state.quota"
+              :themes="themes"
+              @update-chart-data="updateChartData"
+            />
             <el-tabs
               v-else
               v-model="tabActive"

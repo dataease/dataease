@@ -6,6 +6,7 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import router from '@/router'
 import { useEmbedded } from '@/store/modules/embedded'
 import { XpackComponent } from '@/components/plugin'
+import { PluginComponent } from '@/components/plugin'
 import {
   computed,
   CSSProperties,
@@ -752,8 +753,23 @@ const showActionIcons = computed(() => {
     </div>
     <!--这里去渲染不同图库的图表-->
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
+      <plugin-component
+        v-if="view.plugin?.isPlugin"
+        jsname="L2NvbXBvbmVudC9pbmRleA=="
+        :scale="scale"
+        :dynamic-area-id="dynamicAreaId"
+        :view="view"
+        :show-position="showPosition"
+        :element="element"
+        ref="chartComponent"
+        @onChartClick="chartClick"
+        @onPointClick="onPointClick"
+        @onDrillFilters="onDrillFilters"
+        @onJumpClick="jumpClick"
+        @resetLoading="() => (loading = false)"
+      />
       <de-rich-text-view
-        v-if="showChartView(ChartLibraryType.RICH_TEXT)"
+        v-else-if="showChartView(ChartLibraryType.RICH_TEXT)"
         :themes="canvasStyleData.dashboard.themeColor"
         ref="chartComponent"
         :element="element"

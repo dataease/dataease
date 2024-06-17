@@ -10,6 +10,10 @@ import java.util.Map;
 
 public abstract class PluginsChartTemplate {
 
+    public abstract String getConfig();
+
+
+
     public abstract Map<String, List<ChartViewFieldDTO>> formatChartAxis(ChartViewDTO view);
 
     /*public Map<String, List<ChartViewFieldDTO>> formatChartAxis(ChartViewDTO view) {

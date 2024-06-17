@@ -44,7 +44,7 @@ export function findDragComponent(componentInfo) {
   return findNewComponent(componentName, innerType)
 }
 
-export function findNewComponent(componentName, innerType) {
+export function findNewComponent(componentName, innerType, isPlugin?: boolean) {
   let newComponent
   componentList.forEach(comp => {
     if (comp.component === componentName || comp.component === innerType) {
@@ -67,6 +67,7 @@ export function findNewComponent(componentName, innerType) {
     newComponent.name = viewConfig?.title
     newComponent.label = viewConfig?.title
     newComponent.render = viewConfig?.render
+    newComponent.isPlugin = !!isPlugin
   }
   return newComponent
 }

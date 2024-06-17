@@ -514,7 +514,12 @@ for (let i = 0, len = list.length; i < len; i++) {
   list[i] = { ...commonAttr, ...item }
 }
 
-export function findNewComponentFromList(componentName, innerType, curOriginThemes) {
+export function findNewComponentFromList(
+  componentName,
+  innerType,
+  curOriginThemes,
+  isPlugin?: boolean
+) {
   let newComponent
   list.forEach(comp => {
     if (comp.component === componentName) {
@@ -534,6 +539,7 @@ export function findNewComponentFromList(componentName, innerType, curOriginThem
     newComponent.name = viewConfig?.title
     newComponent.label = viewConfig?.title
     newComponent.render = viewConfig?.render
+    newComponent.isPlugin = !!isPlugin
   }
   return newComponent
 }
