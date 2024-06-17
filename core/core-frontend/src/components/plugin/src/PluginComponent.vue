@@ -34,9 +34,9 @@ const generateRamStr = (len: number) => {
 
 const importProxy = (bytesArray: any[]) => {
   const promise = import(
-    `../../../../../../../${formatArray(bytesArray[6])}/${formatArray(bytesArray[7])}/${formatArray(
-      bytesArray[8]
-    )}/${formatArray(bytesArray[9])}/${formatArray(bytesArray[10])}.vue`
+    `../../../../../../../${formatArray(bytesArray[7])}/${formatArray(bytesArray[8])}/${formatArray(
+      bytesArray[9]
+    )}/${formatArray(bytesArray[10])}/${formatArray(bytesArray[11])}.vue`
   )
   promise
     .then((res: any) => {
@@ -50,7 +50,7 @@ const importProxy = (bytesArray: any[]) => {
 
 const loadComponent = () => {
   loading.value = true
-  const byteArray = wsCache.get(`de-plugin-proxy`)
+  const byteArray = wsCache.get(`de-plugin-proxy-plugin`)
   if (byteArray) {
     importProxy(JSON.parse(byteArray))
     loading.value = false
@@ -77,7 +77,7 @@ const storeCacheProxy = byteArray => {
   byteArray.forEach(item => {
     result.push([...item])
   })
-  wsCache.set(`de-plugin-proxy`, JSON.stringify(result))
+  wsCache.set(`de-plugin-proxy-plugin`, JSON.stringify(result))
 }
 const pluginProxy = ref(null)
 const invokeMethod = param => {

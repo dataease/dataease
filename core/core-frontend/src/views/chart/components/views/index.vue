@@ -754,7 +754,7 @@ const showActionIcons = computed(() => {
     <!--这里去渲染不同图库的图表-->
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
       <plugin-component
-        v-if="view?.isPlugin"
+        v-if="view.plugin?.isPlugin"
         jsname="L2NvbXBvbmVudC9pbmRleA=="
         :scale="scale"
         :dynamic-area-id="dynamicAreaId"

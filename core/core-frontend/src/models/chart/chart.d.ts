@@ -56,15 +56,18 @@ declare interface Chart {
   linkageActive: boolean
   jumpActive: boolean
   aggregate?: boolean
+  plugin?: CustomPlugin
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>
 declare type CustomSenior = DeepPartial<ChartSenior> | JSONString<DeepPartial<ChartSenior>>
+declare type CustomPlugin = DeepPartial<ChartPlugin> | JSONString<DeepPartial<ChartPlugin>>
 
-declare type ChartObj = Omit<Chart, 'customAttr' | 'customStyle' | 'senior'> & {
+declare type ChartObj = Omit<Chart, 'customAttr' | 'customStyle' | 'senior' | 'plugin'> & {
   customAttr: ChartAttr
   customStyle: ChartStyle
   senior: ChartSenior
+  plugin?: ChartPlugin
 }
 
 /**
