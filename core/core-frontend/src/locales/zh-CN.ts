@@ -1229,7 +1229,12 @@ export default {
     progress_current: '实际值',
     gauge_axis_label: '显示刻度',
     gauge_percentage_tick: '百分比刻度',
-    add_style: '添加样式'
+    add_style: '添加样式',
+    map_symbol_marker: '标记',
+    map_symbol_pentagon: '五角形',
+    map_symbol_hexagon: '六角形',
+    map_symbol_octagon: '八角形',
+    map_symbol_hexagram: '菱形'
   },
   dataset: {
     scope_edit: '仅编辑时生效',

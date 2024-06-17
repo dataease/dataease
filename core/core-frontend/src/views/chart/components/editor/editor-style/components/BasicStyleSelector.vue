@@ -198,6 +198,16 @@ const flowLineTypeOptions = [
   { name: t('chart.map_line_type_arc_3d'), value: 'arc3d' }
 ]
 
+const mapSymbolOptions = [
+  { name: t('chart.line_symbol_circle'), value: 'circle' },
+  { name: t('chart.line_symbol_rect'), value: 'square' },
+  { name: t('chart.line_symbol_triangle'), value: 'triangle' },
+  { name: t('chart.map_symbol_pentagon'), value: 'pentagon' },
+  { name: t('chart.map_symbol_hexagon'), value: 'hexagon' },
+  { name: t('chart.map_symbol_octagon'), value: 'octogon' },
+  { name: t('chart.line_symbol_diamond'), value: 'rhombus' }
+]
+
 onMounted(() => {
   init()
 })
@@ -326,7 +336,7 @@ onMounted(() => {
         />
       </el-select>
     </el-form-item>
-    <div class="map-style" v-if="showProperty('mapStyle') || showProperty('heatMapStyle')">
+    <div class="map-style" v-if="showProperty('mapBaseStyle') || showProperty('heatMapStyle')">
       <el-row style="flex: 1">
         <el-col>
           <el-form-item
@@ -337,7 +347,7 @@ onMounted(() => {
             <el-select
               :effect="themes"
               v-model="state.basicStyleForm.mapStyle"
-              @change="changeBasicStyle('mapStyle')"
+              @change="changeBasicStyle('mapBaseStyle')"
             >
               <el-option
                 v-for="item in mapStyleOptions"
@@ -368,7 +378,7 @@ onMounted(() => {
         </el-row>
       </div>
     </div>
-    <div class="map-flow-style" v-if="showProperty('mapStyle')">
+    <div class="map-flow-style" v-if="showProperty('mapLineStyle')">
       <el-row style="flex: 1">
         <el-col>
           <el-form-item
@@ -587,6 +597,80 @@ onMounted(() => {
           </el-form-item>
         </el-col>
       </el-row>
+    </div>
+    <div class="map-flow-style" v-if="showProperty('symbolicMapStyle')">
+      <el-row style="flex: 1">
+        <el-col>
+          <el-form-item :label="'符号形状'" class="form-item" :class="'form-item-' + themes">
+            <el-select
+              :effect="themes"
+              v-model="state.basicStyleForm.mapSymbol"
+              @change="changeBasicStyle('mapSymbol')"
+            >
+              <el-option
+                v-for="item in mapSymbolOptions"
+                :key="item.name"
+                :label="item.name"
+                :value="item.value"
+              />
+            </el-select>
+          </el-form-item>
+        </el-col>
+      </el-row>
+      <div class="alpha-setting">
+        <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+          {{ t('chart.size') }}
+        </label>
+        <el-row style="flex: 1">
+          <el-col>
+            <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+              <el-slider
+                :effect="themes"
+                :min="1"
+                :max="40"
+                v-model="state.basicStyleForm.mapSymbolSize"
+                @change="changeBasicStyle('mapSymbolSize')"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="alpha-setting">
+        <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+          {{ t('chart.not_alpha') }}
+        </label>
+        <el-row style="flex: 1">
+          <el-col>
+            <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+              <el-slider
+                :effect="themes"
+                :min="1"
+                :max="10"
+                v-model="state.basicStyleForm.mapSymbolOpacity"
+                @change="changeBasicStyle('mapSymbolOpacity')"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
+      <div class="alpha-setting">
+        <label class="alpha-label" :class="{ dark: 'dark' === themes }">
+          {{ t('visualization.borderWidth') }}
+        </label>
+        <el-row style="flex: 1">
+          <el-col>
+            <el-form-item class="form-item alpha-slider" :class="'form-item-' + themes">
+              <el-slider
+                :effect="themes"
+                :min="1"
+                :max="5"
+                v-model="state.basicStyleForm.mapSymbolStrokeWidth"
+                @change="changeBasicStyle('mapSymbolStrokeWidth')"
+              />
+            </el-form-item>
+          </el-col>
+        </el-row>
+      </div>
     </div>
     <!--flow map end-->
     <!--map start-->

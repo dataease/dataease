@@ -75,6 +75,10 @@ const props = defineProps({
     default: () => {
       return {}
     }
+  },
+  allFields: {
+    type: Array,
+    required: true
   }
 })
 
@@ -350,6 +354,7 @@ watch(
               :themes="themes"
               class="attr-selector"
               :chart="chart"
+              :all-fields="props.allFields"
               @onLabelChange="onLabelChange"
             />
           </collapse-switch-item>
@@ -368,6 +373,7 @@ watch(
               :property-inner="propertyInnerAll['tooltip-selector']"
               :themes="themes"
               :chart="chart"
+              :all-fields="props.allFields"
               @onTooltipChange="onTooltipChange"
               @onExtTooltipChange="onExtTooltipChange"
             />

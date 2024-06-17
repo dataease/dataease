@@ -1,14 +1,16 @@
 <script lang="ts" setup>
-import { computed, onMounted, PropType, reactive, ref, watch } from 'vue'
+import { computed, inject, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
-import { ElSpace } from 'element-plus-secondary'
+import { ElIcon, ElSpace } from 'element-plus-secondary'
 import { formatterType, unitType } from '../../../js/formatter'
 import { defaultsDeep, cloneDeep, intersection, union, defaultTo } from 'lodash-es'
 import { includesAny } from '../../util/StringUtils'
 import { fieldType } from '@/utils/attr'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
+import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
+import { deepCopy } from '@/utils/utils'
 
 const { t } = useI18n()
 
@@ -17,9 +19,21 @@ const props = defineProps({
     type: Object as PropType<ChartObj>,
     required: true
   },
+  dimensionData: {
+    type: Array<any>,
+    required: false
+  },
+  quotaData: {
+    type: Array<any>,
+    required: false
+  },
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
+  },
+  allFields: {
+    type: Array<any>,
+    required: false
   },
   propertyInner: {
     type: Array<string>
@@ -48,6 +62,7 @@ watch(
   },
   { deep: true }
 )
+
 const curSeriesFormatter = ref<Partial<SeriesFormatter>>({})
 const formatterEditable = computed(() => {
   return showProperty('seriesLabelFormatter') && yAxis.value?.length
@@ -150,7 +165,6 @@ const state = reactive<{ labelForm: ChartLabelAttr | any }>({
 })
 
 const emit = defineEmits(['onLabelChange'])
-
 const changeLabelAttr = prop => {
   emit('onLabelChange', state.labelForm, prop)
 }
@@ -263,6 +277,25 @@ watch(
   { deep: true }
 )
 
+const allFields = computed(() => {
+  return defaultTo(props.allFields, []).map(item => ({
+    key: item.dataeaseName,
+    name: item.name,
+    value: `${item.dataeaseName}@${item.name}`,
+    disabled: false
+  }))
+})
+
+const defaultPlaceholder = computed(() => {
+  if (state.labelForm.showFields && state.labelForm.showFields.length > 0) {
+    return state.labelForm.showFields
+      .map(field => {
+        return '${' + field.split('@')[1] + '}'
+      })
+      .join(',')
+  }
+  return ''
+})
 onMounted(() => {
   init()
 })
@@ -275,7 +308,7 @@ onMounted(() => {
     :model="state.labelForm"
     label-position="top"
   >
-    <el-row v-show="showEmpty" style="margin-bottom: 12px"> 无其他可设置的属性 </el-row>
+    <el-row v-show="showEmpty" style="margin-bottom: 12px"> 无其他可设置的属性</el-row>
     <el-space>
       <el-form-item
         class="form-item"
@@ -317,10 +350,56 @@ onMounted(() => {
         </el-tooltip>
       </el-form-item>
     </el-space>
-
+    <div v-if="showProperty('showFields')">
+      <el-form-item :label="t('chart.label')" class="form-item" :class="'form-item-' + themes">
+        <el-select
+          size="small"
+          :effect="themes"
+          filterable
+          multiple
+          collapse-tags
+          collapse-tags-tooltip
+          v-model="state.labelForm.showFields"
+          @change="changeLabelAttr('showFields')"
+        >
+          <el-option
+            v-for="option in allFields"
+            :key="option.key"
+            :label="option.name"
+            :value="option.value"
+            :disabled="option.disabled"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="showProperty('customContent')" class="form-item">
+        <template #label>
+          <span class="data-area-label">
+            <span>
+              {{ t('chart.content_formatter') }}
+            </span>
+            <el-tooltip class="item" :effect="toolTip" placement="bottom">
+              <template #content>
+                <div>可以${fieldName}的形式读取字段值（不支持换行）</div>
+              </template>
+              <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+                <Icon name="icon_info_outlined" />
+              </el-icon>
+            </el-tooltip>
+          </span>
+        </template>
+        <el-input
+          style="font-size: smaller; font-weight: normal"
+          v-model="state.labelForm.customContent"
+          type="textarea"
+          :autosize="{ minRows: 4, maxRows: 4 }"
+          :placeholder="defaultPlaceholder"
+          @blur="changeLabelAttr('customContent')"
+        />
+      </el-form-item>
+    </div>
     <el-form-item
       v-if="showProperty('rPosition')"
-      :label="t('chart.label_position')"
+      :label="t('chart.label')"
       class="form-item"
       :class="'form-item-' + themes"
     >
@@ -876,22 +955,26 @@ onMounted(() => {
 .form-item-checkbox {
   margin-bottom: 8px !important;
 }
+
 .series-select {
   :deep(.ed-select__prefix--light) {
     padding-right: unset;
     border-right: unset;
   }
+
   :deep(.ed-select__prefix--dark) {
     padding-right: unset;
     border-right: unset;
   }
 }
+
 .series-select-option {
   display: flex;
   align-items: center;
   justify-content: flex-start;
   padding: 0 11px;
 }
+
 .m-divider {
   margin: 0 0 16px;
   border-color: rgba(31, 35, 41, 0.15);

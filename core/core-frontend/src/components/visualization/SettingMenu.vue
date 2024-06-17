@@ -175,7 +175,8 @@ const state = reactive({
     'label',
     'word-cloud',
     'flow-map',
-    'bidirectional-bar'
+    'bidirectional-bar',
+    'symbolic-map'
   ],
   linkageExcludeViewType: [
     'richTextView',
@@ -185,7 +186,8 @@ const state = reactive({
     'label',
     'word-cloud',
     'flow-map',
-    'bidirectional-bar'
+    'bidirectional-bar',
+    'symbolic-map'
   ],
   copyData: null,
   hyperlinksSetVisible: false,
