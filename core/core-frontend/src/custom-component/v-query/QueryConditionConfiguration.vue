@@ -1,6 +1,15 @@
 getLastStart
 <script lang="ts" setup>
-import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
+import {
+  ref,
+  reactive,
+  nextTick,
+  computed,
+  shallowRef,
+  toRefs,
+  watch,
+  defineAsyncComponent
+} from 'vue'
 import { storeToRefs } from 'pinia'
 import { addQueryCriteriaConfig } from './options'
 import { getCustomTime } from './time-format'
@@ -434,6 +443,12 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
       isDynamicWindowTime
     )
   }
+}
+
+const CascadeDialog = defineAsyncComponent(() => import('./QueryCascade.vue'))
+const cascadeDialog = ref()
+const openCascadeDialog = () => {
+  cascadeDialog.value.init()
 }
 
 const validateConditionType = ({
@@ -1989,11 +2004,13 @@ defineExpose({
     </div>
     <template #footer>
       <div class="dialog-footer">
+        <el-button class="query-cascade" @click="openCascadeDialog">查询组件级联配置</el-button>
         <el-button @click="cancelClick">{{ t('chart.cancel') }} </el-button>
         <el-button @click="confirmClick" type="primary">{{ t('chart.confirm') }} </el-button>
       </div>
     </template>
   </el-dialog>
+  <CascadeDialog ref="cascadeDialog"></CascadeDialog>
 </template>
 
 <style lang="less">
@@ -2039,6 +2056,12 @@ defineExpose({
 }
 .query-condition-configuration {
   --ed-font-weight-primary: 400;
+
+  .query-cascade {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+  }
 
   .ed-dialog__headerbtn {
     top: 21px;
