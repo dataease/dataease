@@ -118,9 +118,8 @@ public class ChartMixService extends ViewPluginService {
 
     }
 
-
     @Override
-    public Map<String, Object> formatResult(PluginViewParam pluginViewParam, List<String[]> data, Boolean isDrill) {
+    public List<String[]> yoy(PluginViewParam pluginViewParam, List<String[]> data) {
         List<PluginViewField> xAxis = new ArrayList<>();
         List<PluginViewField> yAxis = new ArrayList<>();
 
@@ -133,17 +132,7 @@ public class ChartMixService extends ViewPluginService {
                 yAxis.add(pluginViewField);
             }
         });
-        Map<String, Object> map = new HashMap<>();
 
-        List<PluginSeries> series = format(pluginViewParam.getPluginViewLimit().getType(), data, xAxis, yAxis);
-
-        map.put("data", series);
-
-
-        return map;
-    }
-
-    private List<PluginSeries> format(String type, List<String[]> data, List<PluginViewField> xAxis, List<PluginViewField> yAxis) {
         // 同比/环比计算
         // 调整data数据
         for (int i = 0; i < yAxis.size(); i++) {
@@ -247,9 +236,35 @@ public class ChartMixService extends ViewPluginService {
             }
         }
 
-
         // 同比/环比计算 over
+        return data;
+    }
 
+    @Override
+    public Map<String, Object> formatResult(PluginViewParam pluginViewParam, List<String[]> data, Boolean isDrill) {
+        List<PluginViewField> xAxis = new ArrayList<>();
+        List<PluginViewField> yAxis = new ArrayList<>();
+
+
+        pluginViewParam.getPluginViewFields().forEach(pluginViewField -> {
+            if (StringUtils.equals(pluginViewField.getTypeField(), "xAxis")) {
+                xAxis.add(pluginViewField);
+            }
+            if (StringUtils.equals(pluginViewField.getTypeField(), "yAxis")) {
+                yAxis.add(pluginViewField);
+            }
+        });
+        Map<String, Object> map = new HashMap<>();
+
+        List<PluginSeries> series = format(pluginViewParam.getPluginViewLimit().getType(), data, xAxis, yAxis);
+
+        map.put("data", series);
+
+
+        return map;
+    }
+
+    private List<PluginSeries> format(String type, List<String[]> data, List<PluginViewField> xAxis, List<PluginViewField> yAxis) {
         List<PluginSeries> series = new ArrayList<>();
         for (PluginViewField y : yAxis) {
             PluginSeries series1 = new PluginSeries();

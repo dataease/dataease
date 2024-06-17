@@ -50,6 +50,12 @@
           class="exp-style"
         >(本期数据 / |上期数据| - 1) * 100%</span>
       </el-form-item>
+
+      <el-form-item :label="$t('chart.tip')">
+        <span
+          class="exp-style"
+        >当对比日期需要过滤时，请使用过滤组件实现过滤；使用视图过滤器，仪表板下钻和联动等功能，会导致结果不一致</span>
+      </el-form-item>
     </el-form>
   </div>
 </template>
