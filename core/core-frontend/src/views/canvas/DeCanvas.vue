@@ -73,9 +73,10 @@ const editStyle = computed(() => {
 
 // 通过实时监听的方式直接添加组件
 const handleNewFromCanvasMain = newComponentInfo => {
-  const { componentName, innerType } = newComponentInfo
+  const { componentName, innerType, isPlugin } = newComponentInfo
   if (componentName) {
-    const component = findNewComponentFromList(componentName, innerType, curOriginThemes)
+    const component = findNewComponentFromList(componentName, innerType, curOriginThemes, isPlugin)
+    component.isPlugin = !!isPlugin
     syncShapeItemStyle(component, baseWidth.value, baseHeight.value)
     component.id = guid()
     component.y = 200

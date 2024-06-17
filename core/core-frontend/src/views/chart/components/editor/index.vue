@@ -50,6 +50,7 @@ import chartViewManager from '@/views/chart/components/js/panel'
 import DatasetSelect from '@/views/chart/components/editor/dataset-select/DatasetSelect.vue'
 import { useDraggable } from '@vueuse/core'
 import { set, concat, keys } from 'lodash-es'
+import { PluginComponent } from '@/components/plugin'
 import {
   Field,
   getFieldByDQ,
@@ -1597,6 +1598,14 @@ const deleteChartFieldItem = id => {
                 />
               </div>
             </div>
+            <plugin-component
+              v-else-if="view?.isPlugin"
+              jsname="L2NvbXBvbmVudC9lZGl0b3IvaW5kZXg="
+              :view="view"
+              :dimension="state.dimension"
+              :quota="state.quota"
+              :themes="themes"
+            />
             <el-tabs
               v-else
               v-model="tabActive"
