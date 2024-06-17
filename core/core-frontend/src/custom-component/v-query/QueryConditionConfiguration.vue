@@ -656,11 +656,27 @@ const cancelValueSource = () => {
 }
 
 const confirmValueSource = () => {
-  if (valueSource.value.some(ele => !ele.trim())) {
+  if (
+    valueSource.value.some(ele => {
+      if (typeof ele === 'string') {
+        return !ele.trim()
+      }
+      return false
+    })
+  ) {
     ElMessage.error('手工输入-选项值不能为空')
     return
   }
-  curComponent.value.valueSource = cloneDeep(valueSource.value.filter(ele => ele.trim()))
+  console.log(cloneDeep(valueSource.value), 'valueSource')
+
+  curComponent.value.valueSource = cloneDeep(
+    valueSource.value.filter(ele => {
+      if (typeof ele === 'string') {
+        return ele.trim()
+      }
+      return true
+    })
+  )
   handleValueSourceChange()
   cancelValueSource()
 }
