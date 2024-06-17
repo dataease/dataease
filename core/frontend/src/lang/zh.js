@@ -1831,7 +1831,8 @@ export default {
     linear_regression: '线性回归',
     polynomial_regression: '多项式拟合',
     show_summary: '显示总计',
-    summary_label: '总计标签'
+    summary_label: '总计标签',
+    tip: '提示'
   },
   dataset: {
     goto: ', 前往 ',

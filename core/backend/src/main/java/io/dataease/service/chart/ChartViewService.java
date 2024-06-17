@@ -341,7 +341,7 @@ public class ChartViewService {
                 String[] dsHeader = null;
                 Integer[] dsTypes = null;
                 //downloadType = dataset 为下载原始名字 这里做数据转换模拟 table-info类型图表导出
-                if("dataset".equals(request.getDownloadType())){
+                if ("dataset".equals(request.getDownloadType())) {
                     view.setType("table-info");
                     List<DatasetTableField> sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
                     dsHeader = sourceFields.stream()
@@ -353,9 +353,9 @@ public class ChartViewService {
                     view.setXAxis(JSONObject.toJSONString(sourceFields));
                 }
                 ChartViewDTO result = calcData(view, request, request.isCache());
-                if("dataset".equals(request.getDownloadType())){
-                    result.getData().put("header",dsHeader);
-                    result.getData().put("dsTypes",dsTypes);
+                if ("dataset".equals(request.getDownloadType())) {
+                    result.getData().put("header", dsHeader);
+                    result.getData().put("dsTypes", dsTypes);
                 }
                 return result;
             }
@@ -1107,11 +1107,15 @@ public class ChartViewService {
                     if (Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType())) {
                         if (StringUtils.equalsIgnoreCase(compareCalc.getField() + "", filterDTO.getFieldId())) {
                             // -1 year
-                            Calendar calendar = Calendar.getInstance();
-                            calendar.setTime(new Date(Long.parseLong(filterDTO.getValue().get(0))));
-                            calendar.add(Calendar.YEAR, -1);
-                            filterDTO.getValue().set(0, String.valueOf(calendar.getTime().getTime()));
-                            isYOY = true;
+                            try {
+                                Calendar calendar = Calendar.getInstance();
+                                calendar.setTime(new Date(Long.parseLong(filterDTO.getValue().get(0))));
+                                calendar.add(Calendar.YEAR, -1);
+                                filterDTO.getValue().set(0, String.valueOf(calendar.getTime().getTime()));
+                                isYOY = true;
+                            } catch (Exception e) {
+
+                            }
                         }
                     }
                 }
@@ -1146,9 +1150,11 @@ public class ChartViewService {
             datasourceRequest.setQuery(sql);
             data = datasourceProvider.getData(datasourceRequest);
             data = resultCustomSort(xAxis, data);
-            Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
+
             // 请求正确的数据，然后取值
             if (isYOY) {
+                // 如果有同环比，先走插件同环比计算逻辑
+                data = pluginViewYOY(pluginViewParam, view, data);
                 PluginViewParam yoyPluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, yoyFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
                 String yoySql = pluginViewSql(yoyPluginViewParam, view);
                 if (StringUtils.isBlank(yoySql)) {
@@ -1177,6 +1183,7 @@ public class ChartViewService {
                 data.clear();
                 data.addAll(resultData);
             }
+            Map<String, Object> mapChart = pluginViewResult(pluginViewParam, view, data, isDrill);
 
             Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(fieldMap, view, data, desensitizationList);
 
@@ -1832,7 +1839,7 @@ public class ChartViewService {
         return chartViewDTO;
     }
 
-    private List<? extends ForecastDataVO<?,?>> forecastData(ChartSeniorForecastDTO forecastCfg, List<String[]> data, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view) throws ParseException {
+    private List<? extends ForecastDataVO<?, ?>> forecastData(ChartSeniorForecastDTO forecastCfg, List<String[]> data, List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view) throws ParseException {
         List<String[]> trainingData = data;
         if (!forecastCfg.isAllPeriod() && data.size() > forecastCfg.getTrainingPeriod()) {
             trainingData = data.subList(data.size() - forecastCfg.getTrainingPeriod(), data.size() - 1);
@@ -1842,7 +1849,7 @@ public class ChartViewService {
             String lastTime = data.get(data.size() - 1)[0];
             ChartViewFieldDTO timeAxis = xAxis.get(0);
             List<String> forecastPeriod = DateUtils.getForecastPeriod(lastTime, forecastCfg.getPeriod(), timeAxis.getDateStyle(), timeAxis.getDatePattern());
-            if(!forecastPeriod.isEmpty()){
+            if (!forecastPeriod.isEmpty()) {
                 ForecastAlgo algo = ForecastAlgoManager.getAlgo(forecastCfg.getAlgorithm());
                 List<ForecastDataDTO> forecastData = algo.forecast(forecastCfg, trainingData, view);
                 if (forecastPeriod.size() == forecastData.size()) {
@@ -1998,6 +2005,11 @@ public class ChartViewService {
         ViewPluginService viewPluginService = getPluginService(view.getType());
         Map<String, Object> result = viewPluginService.formatResult(param, args, isDrill);
         return result;
+    }
+
+    private List<String[]> pluginViewYOY(PluginViewParam param, ChartViewDTO view, List<String[]> args) {
+        ViewPluginService viewPluginService = getPluginService(view.getType());
+        return viewPluginService.yoy(param, args);
     }
 
     private ChartViewDTO emptyChartViewDTO(ChartViewDTO view) {

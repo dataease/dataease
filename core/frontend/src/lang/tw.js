@@ -1834,7 +1834,8 @@ export default {
     linear_regression: '線性回歸',
     polynomial_regression: '多項式擬合',
     show_summary: '顯示總計',
-    summary_label: '總計標籤'
+    summary_label: '總計標籤',
+    tip: '提示'
   },
   dataset: {
     scope_edit: '僅編輯時生效',
