@@ -2,17 +2,17 @@ package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
-import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.provider.CalciteProvider;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
@@ -158,6 +158,19 @@ public class DatasetTableFieldManage {
         wrapper.eq("checked", true);
         wrapper.isNull("chart_id");
         return transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
+    }
+
+    public Map<String, List<DatasetTableFieldDTO>> selectByDatasetGroupIds(List<Long> ids) {
+        Map<String, List<DatasetTableFieldDTO>> map = new HashMap<>();
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        for (Long id : ids) {
+            wrapper.eq("dataset_group_id", id);
+            wrapper.eq("checked", true);
+            wrapper.isNull("chart_id");
+            wrapper.eq("ext_field", 0);
+            map.put(String.valueOf(id), transDTO(coreDatasetTableFieldMapper.selectList(wrapper)));
+        }
+        return map;
     }
 
     public List<DatasetTableFieldDTO> selectByFieldIds(List<Long> ids) {

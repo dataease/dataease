@@ -44,6 +44,11 @@ public class DatasetFieldServer implements DatasetTableApi {
     }
 
     @Override
+    public Map<String, List<DatasetTableFieldDTO>> listByDsIds(List<Long> ids) {
+        return datasetTableFieldManage.selectByDatasetGroupIds(ids);
+    }
+
+    @Override
     public void delete(Long id) {
         datasetTableFieldManage.deleteById(id);
     }
