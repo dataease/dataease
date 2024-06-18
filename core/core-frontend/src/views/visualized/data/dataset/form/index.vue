@@ -1352,21 +1352,6 @@ const getDsIconName = data => {
               </div>
             </template>
           </FixedSizeList>
-          <!-- <template v-for="ele in datasourceTableData" :key="ele.tableName">
-            <div
-              class="list-item_primary"
-              :title="ele.tableName"
-              @dragstart="$event => dragstart($event, ele)"
-              @dragend="maskShow = false"
-              :draggable="true"
-              @click="setActiveName(ele)"
-            >
-              <el-icon class="icon-color">
-                <Icon name="reference-table"></Icon>
-              </el-icon>
-              <span class="label">{{ ele.tableName }}</span>
-            </div>
-          </template> -->
         </div>
       </div>
       <div class="drag-right" :style="{ width: `calc(100vw - ${showLeft ? LeftWidth : 0}px)` }">
@@ -1502,7 +1487,7 @@ const getDsIconName = data => {
                 style="width: 100%; height: 100%"
               >
                 <el-table-column
-                  :key="column.dataKey"
+                  :key="column.dataKey + column.deType"
                   v-for="(column, index) in columns"
                   :prop="column.dataKey"
                   :label="column.title"

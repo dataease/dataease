@@ -667,8 +667,6 @@ const confirmValueSource = () => {
     ElMessage.error('手工输入-选项值不能为空')
     return
   }
-  console.log(cloneDeep(valueSource.value), 'valueSource')
-
   curComponent.value.valueSource = cloneDeep(
     valueSource.value.filter(ele => {
       if (typeof ele === 'string') {
