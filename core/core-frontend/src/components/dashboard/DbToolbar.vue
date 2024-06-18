@@ -47,6 +47,7 @@ const {
 } = storeToRefs(dvMainStore)
 const dvModel = 'dashboard'
 const multiplexingRef = ref(null)
+const fullScreeRef = ref(null)
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -97,7 +98,7 @@ const redo = () => {
 }
 
 const previewInner = () => {
-  dvMainStore.setEditMode('preview')
+  fullScreeRef.value.toggleFullscreen()
 }
 
 const previewOuter = () => {
@@ -522,7 +523,12 @@ const initOpenHandler = newWindow => {
           </el-button>
           <template #dropdown>
             <el-dropdown-menu class="drop-style">
-              <de-fullscreen :show-position="'edit'"></de-fullscreen>
+              <el-dropdown-item @click="previewInner">
+                <el-icon style="margin-right: 8px; font-size: 16px">
+                  <Icon name="icon_pc_fullscreen" />
+                </el-icon>
+                全屏预览
+              </el-dropdown-item>
               <el-dropdown-item @click="previewOuter()">
                 <el-icon style="margin-right: 8px; font-size: 16px">
                   <Icon name="dv-preview-outer" />
@@ -615,6 +621,7 @@ const initOpenHandler = newWindow => {
     />
     <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
   </div>
+  <de-fullscreen show-position="edit" ref="fullScreeRef"></de-fullscreen>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
 </template>
 
