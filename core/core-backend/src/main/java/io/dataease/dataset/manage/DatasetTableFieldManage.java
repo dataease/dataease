@@ -162,8 +162,8 @@ public class DatasetTableFieldManage {
 
     public Map<String, List<DatasetTableFieldDTO>> selectByDatasetGroupIds(List<Long> ids) {
         Map<String, List<DatasetTableFieldDTO>> map = new HashMap<>();
-        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         for (Long id : ids) {
+            QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
             wrapper.eq("dataset_group_id", id);
             wrapper.eq("checked", true);
             wrapper.isNull("chart_id");
