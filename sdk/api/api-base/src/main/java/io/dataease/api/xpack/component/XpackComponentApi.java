@@ -1,7 +1,7 @@
 package io.dataease.api.xpack.component;
 
 import io.dataease.api.xpack.component.vo.XpackMenuVO;
-import io.dataease.api.xpack.component.vo.XpackPluginsViewVO;
+import io.dataease.extensions.view.vo.XpackPluginsViewVO;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
 
