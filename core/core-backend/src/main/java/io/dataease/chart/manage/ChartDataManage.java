@@ -750,7 +750,7 @@ public class ChartDataManage {
                 yAxis.addAll(yFields);
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-                List<Long> xAxisIds =  xAxis.stream().map(ChartViewFieldDTO::getId).toList();
+                List<Long> xAxisIds = xAxis.stream().map(ChartViewFieldDTO::getId).toList();
                 viewFields.addAll(xAxis);
                 viewFields.addAll(allFields.stream().filter(field -> !xAxisIds.contains(field.getId())).toList());
                 if (ObjectUtils.isNotEmpty(viewFields)) {
@@ -944,12 +944,12 @@ public class ChartDataManage {
             List<String[]> resultData = new ArrayList<>();
             for (String[] res1 : data) {
                 StringBuilder x1 = new StringBuilder();
-                for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                for (int i = 0; i < xAxis.size(); i++) {
                     x1.append(res1[i]);
                 }
                 for (String[] res2 : yoyData) {
                     StringBuilder x2 = new StringBuilder();
-                    for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                    for (int i = 0; i < xAxis.size(); i++) {
                         x2.append(res2[i]);
                     }
                     if (StringUtils.equals(x1, x2)) {
