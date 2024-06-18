@@ -43,6 +43,7 @@ const eventCheck = e => {
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const {
+  fullscreenFlag,
   componentData,
   curComponent,
   canvasStyleData,
@@ -234,7 +235,7 @@ onUnmounted(() => {
       :class="{ 'preview-content': editMode === 'preview' }"
     >
       <!-- 中间画布 -->
-      <main class="center">
+      <main class="center" :class="{ 'de-screen-full': fullscreenFlag }">
         <de-canvas
           style="overflow-x: hidden"
           v-if="dataInitState"
@@ -257,7 +258,6 @@ onUnmounted(() => {
         :side-name="'componentProp'"
         :aside-position="'right'"
         class="left-sidebar"
-        :class="{ 'preview-aside': editMode === 'preview' }"
       >
         <component :is="findComponent(curComponent['component'] + 'Attr')" :themes="'light'" />
       </dv-sidebar>
@@ -268,15 +268,10 @@ onUnmounted(() => {
         :width="420"
         aside-position="right"
         class="left-sidebar"
-        :class="{ 'preview-aside': editMode === 'preview' }"
       >
         <DbCanvasAttr></DbCanvasAttr>
       </dv-sidebar>
-      <div
-        v-show="viewEditorShow"
-        style="height: 100%"
-        :class="{ 'preview-aside': editMode === 'preview' }"
-      >
+      <div v-show="viewEditorShow" style="height: 100%">
         <view-editor
           :themes="'light'"
           :view="canvasViewInfo[curComponent ? curComponent.id : 'default']"
@@ -291,7 +286,6 @@ onUnmounted(() => {
         aside-position="right"
         class="left-sidebar"
         :side-name="'batchOpt'"
-        :class="{ 'preview-aside': editMode === 'preview' }"
       >
         <chart-style-batch-set></chart-style-batch-set>
       </dv-sidebar>
