@@ -1167,12 +1167,12 @@ public class ChartViewService {
                 List<String[]> resultData = new ArrayList<>();
                 for (String[] res1 : data) {
                     StringBuilder x1 = new StringBuilder();
-                    for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                    for (int i = 0; i < xAxis.size(); i++) {
                         x1.append(res1[i]);
                     }
                     for (String[] res2 : yoyData) {
                         StringBuilder x2 = new StringBuilder();
-                        for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                        for (int i = 0; i < xAxis.size(); i++) {
                             x2.append(res2[i]);
                         }
                         if (StringUtils.equals(x1, x2)) {
@@ -1742,15 +1742,14 @@ public class ChartViewService {
             List<String[]> resultData = new ArrayList<>();
             for (String[] res1 : data) {
                 StringBuilder x1 = new StringBuilder();
-                for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                for (int i = 0; i < xAxis.size(); i++) {
                     x1.append(res1[i]);
                 }
                 for (String[] res2 : yoyData) {
                     StringBuilder x2 = new StringBuilder();
-                    for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                    for (int i = 0; i < xAxis.size(); i++) {
                         x2.append(res2[i]);
                     }
-                    logger.info("data compare:" + x1 + "---" + x2 + "-----" + StringUtils.equals(x1, x2));
                     if (StringUtils.equals(x1, x2)) {
                         resultData.add(res1);
                         break;
