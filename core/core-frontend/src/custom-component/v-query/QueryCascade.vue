@@ -40,7 +40,6 @@ const init = (cascadeMap: cascadeMap) => {
           ele => ele.deType === Object.values(cascadeMap).find(ele => ele.datasetId === i).deType
         )
       }
-      console.log('res', res)
       optionsMap.value = res
     })
     .finally(() => {
@@ -106,26 +105,32 @@ const addCascadeItem = item => {
     placeholder: item.length ? '' : '第一级无需配置被级联字段',
     id: guid()
   })
-  setPlaceholder(item.length - 1, item)
 }
 
-const setPlaceholder = (idx, item) => {
-  if (
-    item[idx] &&
-    item[idx - 1] &&
-    item[idx].datasetId &&
-    item[idx].datasetId === item[idx - 1].datasetId
-  ) {
-    item[idx].placeholder = '与上一级使用同一个数据集,无需配置被级联字段'
-    item[idx].fieldId = ''
-  }
+const setPlaceholder = () => {
+  cascadeList.value.forEach(ele => {
+    ele.forEach((item, idx) => {
+      if (idx) {
+        item.placeholder = ''
+      }
+      if (
+        item &&
+        ele[idx - 1] &&
+        item.datasetId &&
+        item.datasetId.split('--')[0] === ele[idx - 1].datasetId.split('--')[0]
+      ) {
+        item.placeholder = '与上一级使用同一个数据集,无需配置被级联字段'
+        item.fieldId = ''
+      }
+    })
+  })
 }
 
 const deleteCascade = (idx, item) => {
   item.splice(idx, 1)
   item[0].fieldId = ''
   item[0].placeholder = '第一级无需配置被级联字段'
-  setPlaceholder(idx, item)
+  setPlaceholder()
 }
 
 const addCascadeBlock = () => {
@@ -188,6 +193,7 @@ defineExpose({
           <el-select
             @visible-change="val => visibleChange(val, index, idx)"
             v-model="ele.datasetId"
+            @change="setPlaceholder"
             style="width: 300px"
           >
             <el-option
