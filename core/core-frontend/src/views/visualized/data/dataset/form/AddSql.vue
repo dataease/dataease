@@ -1,7 +1,9 @@
 <script lang="tsx" setup>
-import { ref, reactive, onMounted, PropType, toRefs, watch, onBeforeUnmount } from 'vue'
+import { ref, reactive, onMounted, PropType, toRefs, watch, onBeforeUnmount, shallowRef } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { Base64 } from 'js-base64'
+import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
+import { useWindowSize } from '@vueuse/core'
 import useClipboard from 'vue-clipboard3'
 import { ElMessage, ElMessageBox, ElIcon } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
@@ -56,7 +58,6 @@ const state = reactive({
   sqlData: [],
   variablesTmp: [],
   dataSourceList: [],
-  tableData: [],
   table: {
     name: '',
     id: ''
@@ -65,6 +66,8 @@ const state = reactive({
     tableId: 0
   }
 })
+
+const datasourceTableData = shallowRef([])
 
 const paginationConfig = reactive({
   currentPage: 1,
@@ -76,6 +79,7 @@ const setActiveName = ({ name, enableCheck }) => {
   if (!enableCheck) return
   activeName.value = name
 }
+const { height: windowHeight } = useWindowSize()
 
 const generateColumns = (arr: Field[]) =>
   arr.map(ele => ({
@@ -295,7 +299,7 @@ const getSQLPreview = () => {
 
 let tableList = []
 watch(searchTable, val => {
-  state.tableData = tableList.filter(ele => ele.tableName.includes(val))
+  datasourceTableData.value = tableList.filter(ele => ele.tableName.includes(val))
 })
 
 const getIconName = (type: string) => {
@@ -328,7 +332,7 @@ const dsChange = (val: string) => {
   getTables({ datasourceId: val })
     .then(res => {
       tableList = res || []
-      state.tableData = [...tableList]
+      datasourceTableData.value = [...tableList]
     })
     .finally(() => {
       dsLoading.value = false
@@ -473,7 +477,7 @@ const mousedownDrag = () => {
             <el-icon class="icon-color">
               <Icon name="reference-table"></Icon>
             </el-icon>
-            {{ state.tableData.length }}
+            {{ datasourceTableData.length }}
           </span>
         </p>
         <el-input
@@ -489,7 +493,7 @@ const mousedownDrag = () => {
           </template>
         </el-input>
       </div>
-      <div v-if="!state.tableData.length && searchTable !== ''" class="el-empty">
+      <div v-if="!datasourceTableData.length && searchTable !== ''" class="el-empty">
         <div
           class="el-empty__description"
           style="margin-top: 80px; color: #5e6d82; text-align: center"
@@ -498,97 +502,118 @@ const mousedownDrag = () => {
         </div>
       </div>
       <div v-else class="table-checkbox-list">
-        <template v-for="ele in state.tableData" :key="ele.tableName">
-          <div
-            :class="[{ active: activeName === ele.tableName }]"
-            class="list-item_primary"
-            :title="ele.tableName"
-            @click="setActiveName(ele)"
-          >
-            <el-icon class="icon-color">
-              <Icon name="icon_form_outlined"></Icon>
-            </el-icon>
-            <span class="label">{{ ele.tableName }}</span>
-            <span class="name-copy">
-              <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
-                <el-icon class="hover-icon" @click="copyInfo(ele.tableName)">
-                  <Icon name="icon_copy_outlined"></Icon>
-                </el-icon>
-              </el-tooltip>
-
-              <el-popover
-                popper-class="sql-table-info"
-                placement="right"
-                :width="502"
-                :persistent="false"
-                @show="getNodeField(ele)"
-                trigger="click"
-              >
-                <template #reference>
-                  <el-icon class="hover-icon">
-                    <Icon name="icon_info_outlined"></Icon>
+        <FixedSizeList
+          :itemSize="40"
+          :data="datasourceTableData"
+          :total="datasourceTableData.length"
+          :width="223"
+          :height="windowHeight - 350"
+          :scrollbarAlwaysOn="false"
+          class-name="el-select-dropdown__list"
+          layout="vertical"
+        >
+          <template #default="{ index, style }">
+            <div
+              :class="[{ active: activeName === datasourceTableData[index].tableName }]"
+              class="list-item_primary"
+              :style="style"
+              :title="datasourceTableData[index].tableName"
+              @click="setActiveName(datasourceTableData[index])"
+            >
+              <el-icon class="icon-color">
+                <Icon name="icon_form_outlined"></Icon>
+              </el-icon>
+              <span class="label">{{ datasourceTableData[index].tableName }}</span>
+              <span class="name-copy">
+                <el-tooltip effect="dark" :content="t('common.copy')" placement="top">
+                  <el-icon
+                    class="hover-icon"
+                    @click="copyInfo(datasourceTableData[index].tableName)"
+                  >
+                    <Icon name="icon_copy_outlined"></Icon>
                   </el-icon>
-                </template>
-                <div class="table-filed" v-loading="gridDataLoading">
-                  <div class="top flex-align-center">
-                    <div class="title ellipsis">
-                      {{ ele.name || ele.tableName }}
-                    </div>
-                    <el-icon
-                      class="hover-icon de-hover-icon-primary"
-                      @click.stop="copyInfo(ele.name || ele.tableName)"
-                    >
-                      <Icon name="icon_copy_outlined"></Icon>
+                </el-tooltip>
+
+                <el-popover
+                  popper-class="sql-table-info"
+                  placement="right"
+                  :width="502"
+                  :persistent="false"
+                  @show="getNodeField(datasourceTableData[index])"
+                  trigger="click"
+                >
+                  <template #reference>
+                    <el-icon class="hover-icon">
+                      <Icon name="icon_info_outlined"></Icon>
                     </el-icon>
-                    <div class="num flex-align-center">
-                      <el-icon>
-                        <Icon name="icon_text-box_outlined"></Icon>
+                  </template>
+                  <div class="table-filed" v-loading="gridDataLoading">
+                    <div class="top flex-align-center">
+                      <div class="title ellipsis">
+                        {{
+                          datasourceTableData[index].name || datasourceTableData[index].tableName
+                        }}
+                      </div>
+                      <el-icon
+                        class="hover-icon de-hover-icon-primary"
+                        @click.stop="
+                          copyInfo(
+                            datasourceTableData[index].name || datasourceTableData[index].tableName
+                          )
+                        "
+                      >
+                        <Icon name="icon_copy_outlined"></Icon>
                       </el-icon>
-                      {{ gridData.length }}
+                      <div class="num flex-align-center">
+                        <el-icon>
+                          <Icon name="icon_text-box_outlined"></Icon>
+                        </el-icon>
+                        {{ gridData.length }}
+                      </div>
+                    </div>
+                    <div class="table-grid">
+                      <el-table
+                        height="405"
+                        style="width: 100%"
+                        header-cell-class-name="header-cell"
+                        :data="gridData"
+                      >
+                        <el-table-column label="物理字段名">
+                          <template #default="scope">
+                            <div class="flex-align-center icon">
+                              <el-icon>
+                                <Icon
+                                  :className="`field-icon-${fieldType[scope.row.deType]}`"
+                                  :name="`field_${fieldType[scope.row.deType]}`"
+                                ></Icon>
+                              </el-icon>
+                              {{ scope.row.originName }}
+                            </div>
+                          </template>
+                        </el-table-column>
+                        <el-table-column :label="t('common.label')">
+                          <template #default="scope">
+                            {{ scope.row.description || '-' }}
+                          </template>
+                        </el-table-column>
+                        <el-table-column :label="t('common.operate')">
+                          <template #default="scope">
+                            <el-icon
+                              class="hover-icon de-hover-icon-primary"
+                              @click.stop="copyInfo(scope.row.originName)"
+                            >
+                              <Icon name="icon_copy_outlined"></Icon>
+                            </el-icon>
+                          </template>
+                        </el-table-column>
+                      </el-table>
                     </div>
                   </div>
-                  <div class="table-grid">
-                    <el-table
-                      height="405"
-                      style="width: 100%"
-                      header-cell-class-name="header-cell"
-                      :data="gridData"
-                    >
-                      <el-table-column label="物理字段名">
-                        <template #default="scope">
-                          <div class="flex-align-center icon">
-                            <el-icon>
-                              <Icon
-                                :className="`field-icon-${fieldType[scope.row.deType]}`"
-                                :name="`field_${fieldType[scope.row.deType]}`"
-                              ></Icon>
-                            </el-icon>
-                            {{ scope.row.originName }}
-                          </div>
-                        </template>
-                      </el-table-column>
-                      <el-table-column :label="t('common.label')">
-                        <template #default="scope">
-                          {{ scope.row.description || '-' }}
-                        </template>
-                      </el-table-column>
-                      <el-table-column :label="t('common.operate')">
-                        <template #default="scope">
-                          <el-icon
-                            class="hover-icon de-hover-icon-primary"
-                            @click.stop="copyInfo(scope.row.originName)"
-                          >
-                            <Icon name="icon_copy_outlined"></Icon>
-                          </el-icon>
-                        </template>
-                      </el-table-column>
-                    </el-table>
-                  </div>
-                </div>
-              </el-popover>
-            </span>
-          </div>
-        </template>
+                </el-popover>
+              </span>
+            </div>
+          </template>
+        </FixedSizeList>
       </div>
     </div>
     <div class="sql-code-right" :style="{ width: `calc(100% - ${showLeft ? LeftWidth : 0}px)` }">
