@@ -603,6 +603,9 @@ const chartAreaShow = computed(() => {
   if (view.value.type === 'rich-text') {
     return true
   }
+  if (view.value?.plugin?.isPlugin) {
+    return true
+  }
   if (view.value['dataFrom'] === 'template') {
     return true
   }
