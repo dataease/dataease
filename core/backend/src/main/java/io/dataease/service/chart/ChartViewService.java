@@ -1151,11 +1151,11 @@ public class ChartViewService {
             data = datasourceProvider.getData(datasourceRequest);
             data = resultCustomSort(xAxis, data);
 
+            // 插件同环比
+            data = pluginViewYOY(pluginViewParam, view, data);
+
             // 请求正确的数据，然后取值
             if (isYOY) {
-                // 如果有同环比，先走插件同环比计算逻辑
-                data = pluginViewYOY(pluginViewParam, view, data);
-                logger.info("more data list:" + gson.toJson(data));
                 PluginViewParam yoyPluginViewParam = buildPluginParam(fieldMap, fieldCustomFilter, yoyFilterList, ds, table, view, rowPermissionsTree, chartExtRequest);
                 String yoySql = pluginViewSql(yoyPluginViewParam, view);
                 if (StringUtils.isBlank(yoySql)) {
@@ -1164,7 +1164,6 @@ public class ChartViewService {
                 logger.info("plugin_yoy_sql:" + yoySql);
                 datasourceRequest.setQuery(yoySql);
                 yoyData = datasourceProvider.getData(datasourceRequest);
-                logger.info("less data list:" + gson.toJson(yoyData));
                 List<String[]> resultData = new ArrayList<>();
                 for (String[] res1 : data) {
                     StringBuilder x1 = new StringBuilder();
@@ -1182,7 +1181,6 @@ public class ChartViewService {
                         }
                     }
                 }
-                logger.info("result data list:" + gson.toJson(resultData));
                 data.clear();
                 data.addAll(resultData);
             }
