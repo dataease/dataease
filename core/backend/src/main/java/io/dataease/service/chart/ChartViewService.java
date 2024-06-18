@@ -1750,6 +1750,7 @@ public class ChartViewService {
                     for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
                         x2.append(res2[i]);
                     }
+                    logger.info("data compare:" + x1 + "---" + x2 + "-----" + StringUtils.equals(x1, x2));
                     if (StringUtils.equals(x1, x2)) {
                         resultData.add(res1);
                         break;
