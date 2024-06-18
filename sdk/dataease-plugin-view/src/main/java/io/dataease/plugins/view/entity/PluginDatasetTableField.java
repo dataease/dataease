@@ -22,4 +22,5 @@ public class PluginDatasetTableField implements Serializable {
     private Boolean checked;
     private Integer columnIndex;
     private Long lastSyncTime;
+    private String dateFormat;
 }
