@@ -35,4 +35,6 @@ public class PluginChartViewFieldBase implements Serializable {
 
     private String name;
 
+    private String dateFormat;
+
 }
