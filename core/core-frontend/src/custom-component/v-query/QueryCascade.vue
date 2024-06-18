@@ -2,7 +2,15 @@
 import { ref, shallowRef } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
+import { listByDsIds } from '@/api/dataset'
+interface Cascade {
+  datasetId: string
+  name: string
+  queryId: string
+  deType: string
+}
 
+type cascadeMap = Record<string, Cascade>
 const { t } = useI18n()
 
 const dialogVisible = ref(false)
@@ -20,8 +28,24 @@ const confirmClick = () => {
   handleBeforeClose()
 }
 
-const init = () => {
-  dialogVisible.value = true
+const init = (cascadeMap: cascadeMap) => {
+  datasetMap.value = Object.values(cascadeMap).map(ele => ({
+    label: ele.name,
+    value: `${ele.datasetId}--${ele.queryId}`
+  }))
+  listByDsIds(datasetMap.value.map(ele => ele.value.split('--')[0]))
+    .then(res => {
+      for (let i in res || {}) {
+        res[i] = res[i].filter(
+          ele => ele.deType === Object.values(cascadeMap).find(ele => ele.datasetId === i).deType
+        )
+      }
+      console.log('res', res)
+      optionsMap.value = res
+    })
+    .finally(() => {
+      dialogVisible.value = true
+    })
 }
 
 const disabledDatasetId = shallowRef([])
@@ -161,11 +185,14 @@ defineExpose({
       <div class="cascade-item" v-for="(ele, idx) in item" :key="ele.id">
         <div class="label">第{{ indexCascade[idx + 1] }}级</div>
         <div class="item-name">
-          <el-select v-model="ele.datasetId" style="width: 300px">
+          <el-select
+            @visible-change="val => visibleChange(val, index, idx)"
+            v-model="ele.datasetId"
+            style="width: 300px"
+          >
             <el-option
               v-for="item in datasetMap"
               :key="item.value"
-              @visible-change="val => visibleChange(val, index, idx)"
               :label="item.label"
               :value="item.value"
               :disabled="disabledDatasetId.includes(item.value)"
@@ -185,10 +212,10 @@ defineExpose({
             style="width: 300px"
           >
             <el-option
-              v-for="item in optionsMap[ele.datasetId]"
-              :key="item.value"
-              :label="item.label"
-              :value="item.value"
+              v-for="item in optionsMap[ele.datasetId.split('--')[0]]"
+              :key="item.id"
+              :label="item.name"
+              :value="item.id"
             />
           </el-select>
         </div>

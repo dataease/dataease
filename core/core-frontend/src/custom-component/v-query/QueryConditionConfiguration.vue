@@ -448,7 +448,18 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
 const CascadeDialog = defineAsyncComponent(() => import('./QueryCascade.vue'))
 const cascadeDialog = ref()
 const openCascadeDialog = () => {
-  cascadeDialog.value.init()
+  const cascadeMap = conditions.value
+    .filter(ele => [0, 2, 5].includes(+ele.displayType))
+    .reduce((pre, next) => {
+      pre[next.id] = {
+        datasetId: next.dataset.id,
+        name: next.name,
+        queryId: next.id,
+        deType: next.field.deType
+      }
+      return pre
+    }, {})
+  cascadeDialog.value.init(cascadeMap)
 }
 
 const validateConditionType = ({
@@ -682,7 +693,6 @@ const confirmValueSource = () => {
     ElMessage.error('手工输入-选项值不能为空')
     return
   }
-  console.log(cloneDeep(valueSource.value), 'valueSource')
 
   curComponent.value.valueSource = cloneDeep(
     valueSource.value.filter(ele => {

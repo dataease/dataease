@@ -286,3 +286,9 @@ export const exportDeletePost = async (data): Promise<IResponse> => {
     return res?.data
   })
 }
+
+export const listByDsIds = async (data): Promise<IResponse> => {
+  return request.post({ url: 'datasetField/listByDsIds', data }).then(res => {
+    return res?.data
+  })
+}
