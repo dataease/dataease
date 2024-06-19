@@ -231,8 +231,13 @@ const closeSqlNode = () => {
       tableName,
       type: 'sql'
     }).then(res => {
+      const idOriginNameMap = allfields.value.reduce((pre, next) => {
+        pre[`${next.datasetTableId}${next.originName}`] = next.id
+        return pre
+      }, {})
       nodeField.value = res as unknown as Field[]
       nodeField.value.forEach(ele => {
+        ele.id = idOriginNameMap[`${id}${ele.originName}`]
         ele.checked = true
       })
       state.nodeList[0].currentDsFields = cloneDeep(res)
