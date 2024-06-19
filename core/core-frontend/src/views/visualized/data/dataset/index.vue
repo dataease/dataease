@@ -531,7 +531,7 @@ const getMenuList = (val: boolean) => {
 </script>
 
 <template>
-  <div class="dataset-manage" v-loading="dtLoading">
+  <div class="dataset-manage" :class="isIframe && 'de-100vh'" v-loading="dtLoading">
     <ArrowSide
       :style="{ left: (sideTreeStatus ? width - 12 : 0) + 'px' }"
       @change-side-tree-status="changeSideTreeStatus"
@@ -683,7 +683,7 @@ const getMenuList = (val: boolean) => {
     <div
       class="dataset-content"
       :class="{
-        auto: isDataEaseBi
+        auto: isIframe || isDataEaseBi
       }"
     >
       <template v-if="!state.datasetTree.length && mounted">
@@ -878,6 +878,10 @@ const getMenuList = (val: boolean) => {
   height: 100%;
   background: #fff;
   position: relative;
+
+  &.de-100vh {
+    height: 100vh;
+  }
 
   .resource-area {
     position: relative;
