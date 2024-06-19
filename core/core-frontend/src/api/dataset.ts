@@ -17,6 +17,7 @@ export interface EnumValue {
   sortId?: string
   sort?: string
   searchText: string
+  filter?: Array<{}>
 }
 
 interface Fields {
@@ -283,6 +284,12 @@ export const exportDeleteAll = async (type, data): Promise<IResponse> => {
 
 export const exportDeletePost = async (data): Promise<IResponse> => {
   return request.post({ url: '/exportCenter/delete', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const listByDsIds = async (data): Promise<IResponse> => {
+  return request.post({ url: 'datasetField/listByDsIds', data }).then(res => {
     return res?.data
   })
 }

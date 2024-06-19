@@ -253,10 +253,15 @@ const queryDataForId = id => {
 const getQueryConditionWidth = () => {
   return customStyle.queryConditionWidth
 }
+
+const getCascadeList = () => {
+  return props.element.cascade
+}
 provide('unmount-select', unMountSelect)
 provide('release-unmount-select', releaseSelect)
 provide('query-data-for-id', queryDataForId)
 provide('com-width', getQueryConditionWidth)
+provide('cascade-list', getCascadeList)
 
 onBeforeUnmount(() => {
   emitter.off(`addQueryCriteria${element.value.id}`)

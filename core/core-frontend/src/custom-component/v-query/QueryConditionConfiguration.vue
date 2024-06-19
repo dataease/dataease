@@ -1,6 +1,16 @@
 getLastStart
 <script lang="ts" setup>
-import { ref, reactive, nextTick, computed, shallowRef, toRefs, watch } from 'vue'
+import {
+  ref,
+  reactive,
+  nextTick,
+  computed,
+  shallowRef,
+  toRefs,
+  watch,
+  defineAsyncComponent,
+  provide
+} from 'vue'
 import { storeToRefs } from 'pinia'
 import { addQueryCriteriaConfig } from './options'
 import { getCustomTime } from './time-format'
@@ -100,6 +110,29 @@ const datasetFieldList = computed(() => {
     })
     .filter(ele => !!ele)
 })
+const setCascadeDefault = val => {
+  conditions.value.forEach(ele => {
+    if (
+      ele.optionValueSource === 1 &&
+      [0, 2, 5].includes(+ele.displayType) &&
+      val.includes(ele.id)
+    ) {
+      ele.selectValue = Array.isArray(ele.selectValue) ? [] : undefined
+      ele.defaultValue = Array.isArray(ele.defaultValue) ? [] : undefined
+      ele.mapValue = Array.isArray(ele.mapValue) ? [] : undefined
+      ele.defaultMapValue = Array.isArray(ele.defaultMapValue) ? [] : undefined
+    }
+  })
+}
+let cascadeArr = []
+const saveCascade = arr => {
+  cascadeArr = arr
+}
+const getCascadeList = () => {
+  return cascadeArr
+}
+provide('set-cascade-default', setCascadeDefault)
+provide('cascade-list', getCascadeList)
 
 const curComponent = ref()
 const manual = ref()
@@ -436,6 +469,24 @@ const isInRange = (ele, startWindowTime, timeStamp) => {
   }
 }
 
+const CascadeDialog = defineAsyncComponent(() => import('./QueryCascade.vue'))
+const cascadeDialog = ref()
+const openCascadeDialog = () => {
+  const cascadeMap = conditions.value
+    .filter(ele => [0, 2, 5].includes(+ele.displayType) && ele.optionValueSource === 1)
+    .reduce((pre, next) => {
+      pre[next.id] = {
+        datasetId: next.dataset.id,
+        name: next.name,
+        queryId: next.id,
+        fieldId: next.field.id,
+        deType: next.field.deType
+      }
+      return pre
+    }, {})
+  cascadeDialog.value.init(cascadeMap)
+}
+
 const validateConditionType = ({
   defaultConditionValueF,
   defaultConditionValueS,
@@ -643,6 +694,8 @@ const confirmClick = () => {
     )
   })
   queryElement.value.propValue = cloneDeep(conditions.value)
+  queryElement.value.cascade = cloneDeep(cascadeArr)
+  cascadeArr = []
   snapshotStore.recordSnapshotCache()
 }
 
@@ -667,6 +720,7 @@ const confirmValueSource = () => {
     ElMessage.error('手工输入-选项值不能为空')
     return
   }
+
   curComponent.value.valueSource = cloneDeep(
     valueSource.value.filter(ele => {
       if (typeof ele === 'string') {
@@ -720,7 +774,7 @@ const init = (queryId: string) => {
   }
   renameInput.value = []
   handleCondition({ id: queryId })
-
+  cascadeArr = cloneDeep(queryElement.value.cascade || [])
   dialogVisible.value = true
   const datasetFieldIdList = datasetFieldList.value.map(ele => ele.tableId)
   for (const i in datasetMap) {
@@ -1987,11 +2041,13 @@ defineExpose({
     </div>
     <template #footer>
       <div class="dialog-footer">
+        <el-button class="query-cascade" @click="openCascadeDialog">查询组件级联配置</el-button>
         <el-button @click="cancelClick">{{ t('chart.cancel') }} </el-button>
         <el-button @click="confirmClick" type="primary">{{ t('chart.confirm') }} </el-button>
       </div>
     </template>
   </el-dialog>
+  <CascadeDialog @saveCascade="saveCascade" ref="cascadeDialog"></CascadeDialog>
 </template>
 
 <style lang="less">
@@ -2037,6 +2093,12 @@ defineExpose({
 }
 .query-condition-configuration {
   --ed-font-weight-primary: 400;
+
+  .query-cascade {
+    position: absolute;
+    left: 24px;
+    bottom: 24px;
+  }
 
   .ed-dialog__headerbtn {
     top: 21px;
