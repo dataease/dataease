@@ -420,6 +420,9 @@ function main() {
       --help)
          usage
          ;;
+      "")
+         usage
+         ;;
       *)
          echo "不支持的参数，请使用 help 或 --help 参数获取帮助"
          ;;
