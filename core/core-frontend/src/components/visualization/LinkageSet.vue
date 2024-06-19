@@ -65,7 +65,7 @@
               node-key="targetViewId"
               highlight-current
               :props="state.treeProp"
-              @node-click="nodeClick"
+              @node-click="nodeClickPre($event, 'sameDs')"
             >
               <template #default="{ data }">
                 <span class="custom-tree-node">
@@ -112,7 +112,7 @@
               node-key="targetViewId"
               highlight-current
               :props="state.treeProp"
-              @node-click="nodeClick"
+              @node-click="nodeClickPre($event, 'diffDs')"
             >
               <template #default="{ data }">
                 <span class="custom-tree-node">
@@ -474,6 +474,17 @@ const cancelLinkageSetting = () => {
   dvMainStore.clearLinkageSettingInfo()
 }
 
+const nodeClickPre = (data, treeName) => {
+  if (treeName === 'sameDs') {
+    linkageInfoTree.value.setCurrentKey(data.targetViewId)
+    linkageInfoTreeDiffDs.value.setCurrentKey(null)
+  } else {
+    linkageInfoTree.value.setCurrentKey(null)
+    linkageInfoTreeDiffDs.value.setCurrentKey(data.targetViewId)
+  }
+  nodeClick(data)
+}
+
 const nodeClick = data => {
   state.linkageInfo = data
 }
@@ -567,6 +578,7 @@ watch(
   () => state.showSelected,
   newValue => {
     linkageInfoTree.value?.filter(newValue)
+    linkageInfoTreeDiffDs.value?.filter(newValue)
   }
 )
 
