@@ -1,5 +1,6 @@
 package io.dataease.extensions.view.template;
 
+import io.dataease.exception.DEException;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
@@ -23,9 +24,16 @@ public abstract class PluginsChartTemplate implements DataEasePlugin {
 
 
     public XpackPluginsViewVO getConfig() {
-        DataEasePluginVO pluginInfo = getPluginInfo();
+        DataEasePluginVO pluginInfo = null;
+        try {
+            pluginInfo = getPluginInfo();
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
         String config = pluginInfo.getConfig();
-        return JsonUtil.parseObject(config, XpackPluginsViewVO.class);
+        XpackPluginsViewVO vo = JsonUtil.parseObject(config, XpackPluginsViewVO.class);
+        vo.setIcon(pluginInfo.getIcon());
+        return vo;
     }
 
 
