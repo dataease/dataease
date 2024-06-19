@@ -44,6 +44,7 @@ import { Base64 } from 'js-base64'
 import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
+import { viewFieldTimeTrans } from '@/utils/viewUtils'
 
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
@@ -143,6 +144,7 @@ const state = reactive({
     whiteSpace: 'pre-wrap'
   } as CSSProperties,
   drillFilters: [],
+  viewInfoData: null,
   drillClickDimensionList: []
 })
 
@@ -385,6 +387,8 @@ const jumpClick = param => {
     }
   }
   if (jumpInfo) {
+    // 维度日期类型转换
+    viewFieldTimeTrans(dvMainStore.getViewDataDetails(param.viewId), param)
     param.sourceDvId = dvInfo.value.id
     param.sourceViewId = param.viewId
     param.sourceFieldId = dimension.id
