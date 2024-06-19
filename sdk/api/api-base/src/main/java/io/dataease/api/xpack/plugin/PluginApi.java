@@ -19,12 +19,13 @@ public interface PluginApi {
     @GetMapping("/query")
     List<PluginVO> query();
 
-    @PostMapping("/install")
+    @PostMapping(value = "/install", consumes = {"multipart/form-data"})
     void install(@RequestPart(value = "file") MultipartFile file);
 
     @PostMapping("/uninstall/{id}")
     void uninstall(@PathVariable("id") String id);
 
+    @PostMapping(value = "/update", consumes = {"multipart/form-data"})
     void update(@RequestPart("request") PluginEditor request, @RequestPart(value = "file") MultipartFile file);
 
 }
