@@ -20,6 +20,7 @@ import {
   findBaseDeFaultAttr
 } from '@/custom-component/component-list'
 import { get, set } from 'lodash-es'
+import { viewFieldTimeTrans } from '@/utils/viewUtils'
 
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
@@ -845,6 +846,8 @@ export const dvMainStore = defineStore('dataVisualization', {
     addViewTrackFilter(data) {
       const viewId = data.viewId
       let trackInfo
+      // 维度日期类型转换
+      viewFieldTimeTrans(this.canvasViewDataInfo[viewId], data)
       if (data.option === 'linkage') {
         trackInfo = this.nowPanelTrackInfo
       } else {
@@ -1006,12 +1009,24 @@ export const dvMainStore = defineStore('dataVisualization', {
           if (element.component === 'UserView' && element.id === targetViewId) {
             // 如果目标图表 和 当前循环组件id相等 则进行条件增减
             const targetFieldId = targetInfoArray[1] // 目标图表列ID
-            const condition = {
-              fieldId: targetFieldId,
-              operator: 'eq',
-              value: [QDItem.value],
-              viewIds: [targetViewId],
-              sourceViewId: viewId
+            let condition
+            if (QDItem.timeValue && Array.isArray(QDItem.timeValue)) {
+              // 如果dimension.timeValue存在值且是数组 目前判断为是时间组件
+              condition = {
+                fieldId: targetFieldId,
+                operator: 'between',
+                value: QDItem.timeValue,
+                viewIds: [targetViewId],
+                sourceViewId: viewId
+              }
+            } else {
+              condition = {
+                fieldId: targetFieldId,
+                operator: 'eq',
+                value: [QDItem.value],
+                viewIds: [targetViewId],
+                sourceViewId: viewId
+              }
             }
             let j = currentFilters.length
             while (j--) {
