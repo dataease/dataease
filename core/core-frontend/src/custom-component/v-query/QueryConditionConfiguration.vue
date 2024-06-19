@@ -8,7 +8,8 @@ import {
   shallowRef,
   toRefs,
   watch,
-  defineAsyncComponent
+  defineAsyncComponent,
+  provide
 } from 'vue'
 import { storeToRefs } from 'pinia'
 import { addQueryCriteriaConfig } from './options'
@@ -109,6 +110,29 @@ const datasetFieldList = computed(() => {
     })
     .filter(ele => !!ele)
 })
+const setCascadeDefault = val => {
+  conditions.value.forEach(ele => {
+    if (
+      ele.optionValueSource === 1 &&
+      [0, 2, 5].includes(+ele.displayType) &&
+      val.includes(ele.id)
+    ) {
+      ele.selectValue = Array.isArray(ele.selectValue) ? [] : undefined
+      ele.defaultValue = Array.isArray(ele.defaultValue) ? [] : undefined
+      ele.mapValue = Array.isArray(ele.mapValue) ? [] : undefined
+      ele.defaultMapValue = Array.isArray(ele.defaultMapValue) ? [] : undefined
+    }
+  })
+}
+let cascadeArr = []
+const saveCascade = arr => {
+  cascadeArr = arr
+}
+const getCascadeList = () => {
+  return cascadeArr
+}
+provide('set-cascade-default', setCascadeDefault)
+provide('cascade-list', getCascadeList)
 
 const curComponent = ref()
 const manual = ref()
@@ -449,12 +473,13 @@ const CascadeDialog = defineAsyncComponent(() => import('./QueryCascade.vue'))
 const cascadeDialog = ref()
 const openCascadeDialog = () => {
   const cascadeMap = conditions.value
-    .filter(ele => [0, 2, 5].includes(+ele.displayType))
+    .filter(ele => [0, 2, 5].includes(+ele.displayType) && ele.optionValueSource === 1)
     .reduce((pre, next) => {
       pre[next.id] = {
         datasetId: next.dataset.id,
         name: next.name,
         queryId: next.id,
+        fieldId: next.field.id,
         deType: next.field.deType
       }
       return pre
@@ -669,6 +694,8 @@ const confirmClick = () => {
     )
   })
   queryElement.value.propValue = cloneDeep(conditions.value)
+  queryElement.value.cascade = cloneDeep(cascadeArr)
+  cascadeArr = []
   snapshotStore.recordSnapshotCache()
 }
 
@@ -747,7 +774,7 @@ const init = (queryId: string) => {
   }
   renameInput.value = []
   handleCondition({ id: queryId })
-
+  cascadeArr = cloneDeep(queryElement.value.cascade || [])
   dialogVisible.value = true
   const datasetFieldIdList = datasetFieldList.value.map(ele => ele.tableId)
   for (const i in datasetMap) {
@@ -2020,7 +2047,7 @@ defineExpose({
       </div>
     </template>
   </el-dialog>
-  <CascadeDialog ref="cascadeDialog"></CascadeDialog>
+  <CascadeDialog @saveCascade="saveCascade" ref="cascadeDialog"></CascadeDialog>
 </template>
 
 <style lang="less">

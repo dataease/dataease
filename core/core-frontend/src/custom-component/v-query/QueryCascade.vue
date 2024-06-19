@@ -1,17 +1,22 @@
 <script lang="ts" setup>
 import { ref, shallowRef } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { ElMessage } from 'element-plus-secondary'
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { listByDsIds } from '@/api/dataset'
+import { cloneDeep } from 'lodash-es'
 interface Cascade {
   datasetId: string
   name: string
   queryId: string
   deType: string
+  fieldId: string
 }
 
 type cascadeMap = Record<string, Cascade>
 const { t } = useI18n()
+let deTypeMap = shallowRef({})
+const emits = defineEmits(['saveCascade'])
 
 const dialogVisible = ref(false)
 const handleBeforeClose = () => {
@@ -25,14 +30,47 @@ const cancelClick = () => {
 }
 
 const confirmClick = () => {
+  const { isError, arr } = setCascadeArrBack()
+  if (isError) {
+    ElMessage.error('查询条件或字段不能为空!')
+    return
+  }
+  emits('saveCascade', arr)
   handleBeforeClose()
+}
+
+const setCascadeArrBack = () => {
+  let isError = false
+  const arr = cloneDeep(cascadeList.value)
+  arr.forEach(ele => {
+    ele.forEach(item => {
+      if (!item.placeholder && !item.fieldId) {
+        isError = true
+      }
+      if (!item.datasetId) {
+        isError = true
+      }
+      item.selectValue = []
+    })
+  })
+
+  return {
+    arr,
+    isError
+  }
 }
 
 const init = (cascadeMap: cascadeMap) => {
   datasetMap.value = Object.values(cascadeMap).map(ele => ({
     label: ele.name,
-    value: `${ele.datasetId}--${ele.queryId}`
+    deType: ele.deType,
+    value: `${ele.datasetId}--${ele.queryId}--${ele.fieldId}`
   }))
+  let obj = {}
+  Object.values(cascadeMap).forEach(ele => {
+    obj[`${ele.datasetId}--${ele.queryId}--${ele.fieldId}`] = ele.deType
+  })
+  deTypeMap.value = obj
   listByDsIds(datasetMap.value.map(ele => ele.value.split('--')[0]))
     .then(res => {
       for (let i in res || {}) {
@@ -93,14 +131,15 @@ const visibleChange = (val, index, idx) => {
   })
 
   if (val) {
-    disabledDatasetId.value = [...new Set([...topIdArr.flat(), ...bottomIdArr.flat()])]
+    disabledDatasetId.value = [...new Set([...topIdArr.flat(), ...bottomIdArr.flat()])].filter(
+      ele => !!ele
+    )
   }
 }
 
 const addCascadeItem = item => {
   item.push({
     datasetId: '',
-    topLevelIsSameDataset: false,
     fieldId: '',
     placeholder: item.length ? '' : '第一级无需配置被级联字段',
     id: guid()
@@ -175,7 +214,7 @@ defineExpose({
       添加级联配置
     </el-button>
     <div class="cascade-content" v-for="(item, index) in cascadeList" :key="index">
-      <el-button text @click="addCascadeItem(item)">
+      <el-button :disabled="item.length === 5" text @click="addCascadeItem(item)">
         <template #icon>
           <Icon name="icon_add_outlined"></Icon>
         </template>
@@ -201,7 +240,10 @@ defineExpose({
               :key="item.value"
               :label="item.label"
               :value="item.value"
-              :disabled="disabledDatasetId.includes(item.value)"
+              :disabled="
+                disabledDatasetId.includes(item.value) ||
+                (!!ele.datasetId && deTypeMap[ele.datasetId] !== item.deType)
+              "
             />
           </el-select>
         </div>

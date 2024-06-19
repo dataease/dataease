@@ -14,6 +14,7 @@ import {
 } from 'vue'
 import { enumValueObj, type EnumValue, getEnumValue } from '@/api/dataset'
 import { cloneDeep, debounce } from 'lodash-es'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 interface SelectConfig {
   selectValue: any
@@ -28,6 +29,9 @@ interface SelectConfig {
   sort: string
   sortId: string
   checkedFields: string[]
+  dataset: {
+    id: string
+  }
   field: {
     id: string
   }
@@ -70,6 +74,12 @@ const unMountSelect: Ref = inject('unmount-select')
 const releaseSelect = inject('release-unmount-select', Function, true)
 const queryDataForId = inject('query-data-for-id', Function, true)
 const queryConditionWidth = inject('com-width', Function, true)
+const cascadeList = inject('cascade-list', Function, true)
+const setCascadeDefault = inject('set-cascade-default', Function, true)
+
+const cascade = computed(() => {
+  return cascadeList() || []
+})
 
 const setDefaultMapValue = arr => {
   const { displayId, field } = config.value
@@ -96,6 +106,71 @@ onUnmounted(() => {
   enumValueArr = []
 })
 
+const setCascadeValueBack = val => {
+  cascade.value.forEach(ele => {
+    ele.forEach(item => {
+      if (item.datasetId.split('--')[1] === config.value.id) {
+        item.selectValue = Array.isArray(val) ? [...val] : val
+      }
+    })
+  })
+}
+
+const emitCascade = () => {
+  cascade.value.forEach(ele => {
+    let trigger = false
+    ele.forEach(item => {
+      if (item.datasetId.split('--')[1] === config.value.id) {
+        trigger = true
+      } else if (trigger) {
+        useEmitt().emitter.emit(`${item.datasetId.split('--')[1]}-select`)
+        trigger = false
+      }
+    })
+  })
+}
+
+const emitCascadeConfig = () => {
+  const arr = []
+  cascade.value.forEach(ele => {
+    let trigger = false
+    ele.forEach(item => {
+      if (item.datasetId.split('--')[1] === config.value.id) {
+        trigger = true
+      } else if (trigger) {
+        arr.push(item.datasetId.split('--')[1])
+        trigger = false
+      }
+    })
+  })
+  return arr
+}
+
+const getCascadeFieldId = () => {
+  const filter = []
+  cascade.value.forEach(ele => {
+    let condition = null
+    ele.forEach(item => {
+      const [_, queryId, fieldId] = item.datasetId.split('--')
+      if (queryId === config.value.id && condition) {
+        if (item.fieldId) {
+          condition.fieldId = item.fieldId
+        }
+        filter.push(condition)
+      } else {
+        if (!!item.selectValue.length) {
+          condition = {
+            fieldId: fieldId,
+            operator: 'in',
+            value: [...item.selectValue]
+          }
+        }
+      }
+    })
+  })
+  return filter
+}
+
 const handleValueChange = () => {
   const value = Array.isArray(selectValue.value) ? [...selectValue.value] : selectValue.value
   if (!props.isConfig) {
@@ -105,8 +180,12 @@ const handleValueChange = () => {
     config.value.mapValue = setDefaultMapValue(
       Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
     )
+    setCascadeValueBack(config.value.mapValue)
+    emitCascade()
     return
   }
+
+  setCascadeDefault(emitCascadeConfig())
 
   config.value.defaultValue = value
   config.value.mapValue = setDefaultMapValue(
@@ -115,6 +194,7 @@ const handleValueChange = () => {
   config.value.defaultMapValue = setDefaultMapValue(
     Array.isArray(selectValue.value) ? [...selectValue.value] : [selectValue.value]
   )
+  setCascadeValueBack(config.value.mapValue)
 }
 
 const displayTypeChange = () => {
@@ -406,7 +486,8 @@ const setOptions = (num: number) => {
           displayId: displayId || field.id,
           sort,
           sortId,
-          searchText: searchText.value
+          searchText: searchText.value,
+          filter: getCascadeFieldId()
         })
       } else {
         options.value = []
@@ -452,8 +533,17 @@ const selectStyle = computed(() => {
 const mult = ref()
 const single = ref()
 
+const getOptionFromCascade = () => {
+  if (config.value.optionValueSource !== 1 || ![0, 2, 5].includes(+config.value.displayType)) return
+  debounceOptions(1)
+}
+
 onBeforeMount(() => {
   init()
+  useEmitt({
+    name: `${config.value.id}-select`,
+    callback: getOptionFromCascade
+  })
 })
 
 defineExpose({
