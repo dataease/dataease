@@ -1841,7 +1841,8 @@ export default {
     linear_regression: 'Linear regression',
     polynomial_regression: 'Polynomial regression',
     show_summary: 'Show summary',
-    summary_label: 'Summary label'
+    summary_label: 'Summary label',
+    tip: 'Tip'
   },
   dataset: {
     scope_edit: 'Effective only when editing',

@@ -130,7 +130,10 @@
               v-show="codeShow"
               class="code"
             >
-              <el-row class="code-contaniner" :class="isPad && 'is-pad'">
+              <el-row
+                class="code-contaniner"
+                :class="isPad && 'is-pad'"
+              >
                 <plugin-com
                   v-if="codeShow && loginTypes.includes(4) && codeIndex === 4"
                   ref="WecomQr"

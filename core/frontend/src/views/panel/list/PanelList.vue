@@ -1003,7 +1003,7 @@ export default {
         this.sortTypeChange(this.localSortParams)
       }
       groupTree(this.groupForm, !userCache).then((res) => {
-        this.rootAuth = res.data ? res.data[0]?.privileges||'':''
+        this.rootAuth = res.data ? res.data[0]?.privileges || '' : ''
         const resMainData = res.data ? res.data[0]?.children || [] : []
         localStorage.setItem('panel-main-tree', JSON.stringify(resMainData))
         if (!userCache) {

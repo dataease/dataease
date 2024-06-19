@@ -45,8 +45,7 @@ export default {
       this.table.emit(S2Event.RANGE_SORT, [{
         sortFieldId: this.meta.field,
         sortMethod: type,
-        sortFunc: this.sortFunc,
-        meta: this.meta
+        sortFunc: this.sortFunc
       }])
     },
     __t(key) {
@@ -58,22 +57,26 @@ export default {
       }
       const data = cloneDeep(sortParams.data)
       return data.sort((a, b) => {
-        if (a === b) {
-          return 0
-        }
+        // 总计行放最后
         if (a.SUMMARY) {
           return 1
         }
+        const field = sortParams.sortFieldId
+        const aValue = a[field]
+        const bValue = b[field]
+        if (aValue === bValue) {
+          return 0
+        }
         if (sortParams.sortMethod === 'asc') {
-          if (typeof a === 'number') {
-            return a - b
+          if (typeof aValue === 'number') {
+            return aValue - bValue
           }
-          return a < b ? 1 : -1
+          return aValue < bValue ? 1 : -1
         }
-        if (typeof a === 'number') {
-          return b - a
+        if (typeof aValue === 'number') {
+          return bValue - aValue
         }
-        return a > b ? 1 : -1
+        return aValue > bValue ? 1 : -1
       })
     }
   }

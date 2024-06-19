@@ -1,5 +1,5 @@
 <template>
-  <div class="line-shape"></div>
+  <div class="line-shape" />
 </template>
 
 <script>

@@ -63,14 +63,10 @@
 
 
 
-        <table tableName="panel_link_ticket">
 
+        <table tableName="export_task">
+            <columnOverride column="msg"    jdbcType="VARCHAR"/>
         </table>
-
-<!--        <table tableName="dataset_table_field">-->
-<!--            <columnOverride column="origin_name"    jdbcType="VARCHAR"/>-->
-<!--            <columnOverride column="name"    jdbcType="VARCHAR"/>-->
-<!--        </table>-->
 
 
     </context>

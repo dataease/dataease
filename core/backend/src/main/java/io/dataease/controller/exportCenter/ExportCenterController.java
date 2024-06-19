@@ -3,8 +3,10 @@ package io.dataease.controller.exportCenter;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.dto.ExportTaskDTO;
 import io.dataease.service.exportCenter.ExportCenterService;
+import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import javax.annotation.Resource;
+import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import java.util.List;
 
@@ -15,8 +17,6 @@ public class ExportCenterController {
 
     @Resource
     private ExportCenterService exportCenterService;
-
-
 
     @PostMapping("/exportTasks/{status}")
     public List<ExportTaskDTO> exportTasks(@PathVariable String status) {
@@ -40,8 +40,8 @@ public class ExportCenterController {
     }
 
     @GetMapping("/download/{id}")
-    public void download(@PathVariable String id, HttpServletResponse response) throws Exception {
-        exportCenterService.download(id, response);
+    public ResponseEntity<org.springframework.core.io.Resource> download(@PathVariable String id, HttpServletResponse response, HttpServletRequest request) throws Exception {
+       return exportCenterService.download(id, response, request);
     }
 
     @PostMapping("/retry/{id}")

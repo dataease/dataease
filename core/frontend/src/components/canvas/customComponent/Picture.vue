@@ -20,10 +20,9 @@
 </template>
 
 <script>
-import {imgUrlTrans} from "@/components/canvas/utils/utils";
+import { imgUrlTrans } from '@/components/canvas/utils/utils'
 
 export default {
-  methods: {imgUrlTrans},
   props: {
     element: {
       type: Object,
@@ -53,7 +52,8 @@ export default {
       }
       return style
     }
-  }
+  },
+  methods: { imgUrlTrans }
 }
 </script>
 

@@ -15,7 +15,8 @@ import {
   configAxisLabelLengthLimit
 } from '@/views/chart/chart/common/common_antv'
 import { antVCustomColor, getColors, handleEmptyDataStrategy, hexColorToRGBA, handleStackSort } from '@/views/chart/chart/util'
-import { cloneDeep, find } from 'lodash-es'
+import { cloneDeep, find, groupBy, each } from 'lodash-es'
+import { formatterItem, valueFormatter } from '@/views/chart/chart/formatter'
 
 export function baseBarOptionAntV(container, chart, action, isGroup, isStack) {
   // theme
@@ -139,6 +140,22 @@ export function baseBarOptionAntV(container, chart, action, isGroup, isStack) {
         const x = xScale.scale(forecastData[forecastData.length - 1].dimension) + ratio / 2
         return [`${x * 100}%`, '100%']
       }
+    })
+  }
+  // total label
+  if (chart.type === 'bar-stack' && customAttr.label.showTotal) {
+    const yAxis = JSON.parse(chart.yaxis)
+    const formatterCfg = yAxis?.[0]?.formatterCfg ?? formatterItem
+    each(groupBy(data, 'field'), (values, key) => {
+      const total = values.reduce((a, b) => a + b.value, 0)
+      const value = valueFormatter(total, formatterCfg)
+      analyse.push({
+        type: 'text',
+        position: [key, total],
+        content: `${value}`,
+        style: { textAlign: 'center', fontSize: customAttr.label.totalFontSize, fill: customAttr.label.totalColor },
+        offsetY: -(parseInt(customAttr.label.totalFontSize) / 2)
+      })
     })
   }
   // 目前只有百分比堆叠柱状图需要这个属性，先直接在这边判断而不作为参数传过来

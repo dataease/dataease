@@ -463,6 +463,7 @@ public class OracleQueryProvider extends QueryProvider {
 
         } else {
             if (pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) {
+                System.out.println("SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, OrgFieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, fieldCustomFilter)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize());
                 return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, OrgFieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, fieldCustomFilter)) + ") DE_RESULT_TMP " + " WHERE DE_ROWNUM > " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize();
             } else {
                 return "SELECT * FROM (" + sqlFix(originalTableInfo("(" + sqlFix(table) + ")", xAxis, OrgFieldCustomFilter, rowPermissionsTree, extFilterRequestList, ds, view, fieldCustomFilter)) + ") DE_RESULT_TMP ";
@@ -476,16 +477,14 @@ public class OracleQueryProvider extends QueryProvider {
                 .tableAlias(String.format(OracleConstants.ALIAS_FIX, String.format(TABLE_ALIAS_PREFIX, 0)))
                 .build();
         setSchema(tableObj, ds);
+        boolean isPage = false;
         List<SQLObj> xFields = new ArrayList<>();
         List<SQLObj> xOrders = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(xAxis)) {
             for (int i = 0; i < xAxis.size(); i++) {
                 ChartViewFieldDTO x = xAxis.get(i);
                 if (x.getOriginName().equalsIgnoreCase("ROWNUM")) {
-                    xFields.add(SQLObj.builder()
-                            .fieldName(x.getOriginName())
-                            .fieldAlias("DE_ROWNUM")
-                            .build());
+                    isPage = true;
                     continue;
                 }
                 String originField;
@@ -540,19 +539,42 @@ public class OracleQueryProvider extends QueryProvider {
         ST st_sql = stg.getInstanceOf("previewSql");
         st_sql.add("isGroup", false);
         if (CollectionUtils.isNotEmpty(xFields)) st_sql.add("groups", xFields);
-        if (CollectionUtils.isNotEmpty(wheres)) st_sql.add("filters", wheres);
+        if (CollectionUtils.isNotEmpty(orders)) st_sql.add("orders", orders);
         if (ObjectUtils.isNotEmpty(tableObj)) st_sql.add("table", tableObj);
         String sql = st_sql.render();
 
         ST st = stg.getInstanceOf("previewSql");
         st.add("isGroup", false);
+        st.add("notUseAs", true);
         SQLObj tableSQL = SQLObj.builder()
                 .tableName(String.format(OracleConstants.BRACKETS, sql))
                 .tableAlias(String.format(TABLE_ALIAS_PREFIX, 1))
                 .build();
-        if (CollectionUtils.isNotEmpty(orders)) st.add("orders", orders);
+        List<SQLObj> xFields2 = new ArrayList<>();
+        xFields2.add(SQLObj.builder()
+                .fieldName(tableSQL.getTableAlias() + ".*")
+                .build());
+        if (isPage) {
+            xFields2.add(SQLObj.builder()
+                    .fieldName("ROWNUM AS DE_ROWNUM")
+                    .fieldAlias("DE_ROWNUM")
+                    .build());
+        }
+
+        if (CollectionUtils.isNotEmpty(xFields)) st.add("groups", xFields2);
         if (ObjectUtils.isNotEmpty(tableSQL)) st.add("table", tableSQL);
-        return st.render();
+        sql = st.render();
+
+        ST st2 = stg.getInstanceOf("previewSql");
+        st2.add("isGroup", false);
+        SQLObj tableSQL2 = SQLObj.builder()
+                .tableName(String.format(OracleConstants.BRACKETS, sql))
+                .tableAlias(String.format(TABLE_ALIAS_PREFIX, 2))
+                .build();
+        if (CollectionUtils.isNotEmpty(wheres)) st2.add("filters", wheres);
+        if (ObjectUtils.isNotEmpty(tableSQL)) st2.add("table", tableSQL2);
+
+        return st2.render();
     }
 
     @Override
