@@ -172,6 +172,10 @@ const deleteCascade = (idx, item) => {
   setPlaceholder()
 }
 
+const deleteCascadeBlock = idx => {
+  cascadeList.value.splice(idx, 1)
+}
+
 const addCascadeBlock = () => {
   const arr = []
   addCascadeItem(arr)
@@ -214,12 +218,19 @@ defineExpose({
       添加级联配置
     </el-button>
     <div class="cascade-content" v-for="(item, index) in cascadeList" :key="index">
-      <el-button :disabled="item.length === 5" text @click="addCascadeItem(item)">
-        <template #icon>
-          <Icon name="icon_add_outlined"></Icon>
-        </template>
-        添加级联条件
-      </el-button>
+      <div style="display: flex; align-items: center; justify-content: space-between">
+        <el-button :disabled="item.length === 5" text @click="addCascadeItem(item)">
+          <template #icon>
+            <Icon name="icon_add_outlined"></Icon>
+          </template>
+          添加级联条件
+        </el-button>
+        <el-button @click="deleteCascadeBlock(index)" class="cascade-delete-block" text>
+          <template #icon>
+            <Icon name="icon_delete-trash_outlined"></Icon>
+          </template>
+        </el-button>
+      </div>
       <div class="cascade-item">
         <div class="label">查询条件层级</div>
         <div class="item-name">请选择查询条件</div>
@@ -267,7 +278,7 @@ defineExpose({
             />
           </el-select>
         </div>
-        <el-button @click="deleteCascade(idx, item)" class="cascade-delete" text>
+        <el-button v-show="idx !== 0" @click="deleteCascade(idx, item)" class="cascade-delete" text>
           <template #icon>
             <Icon name="icon_delete-trash_outlined"></Icon>
           </template>
@@ -345,13 +356,14 @@ defineExpose({
       .item-field {
         width: 300px;
       }
+    }
 
-      .cascade-delete {
-        width: 40px;
-        font-size: 20px;
-        color: #646a73;
-        margin-left: 20px;
-      }
+    .cascade-delete-block,
+    .cascade-delete {
+      width: 40px;
+      font-size: 20px;
+      color: #646a73;
+      margin-left: 20px;
     }
   }
 }
