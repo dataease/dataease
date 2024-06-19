@@ -469,7 +469,7 @@ const calcData = params => {
   dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
   if (chartComponent?.value) {
     loading.value = true
-    chartComponent?.value?.calcData?.(params, () => {
+    chartComponent?.value?.calcData?.(params, res => {
       loading.value = false
     })
   }

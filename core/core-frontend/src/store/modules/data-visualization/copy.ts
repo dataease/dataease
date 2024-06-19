@@ -85,9 +85,6 @@ export const copyStore = defineStore('copy', {
         return
       }
       const dataArray = this.copyData.data
-
-      console.log('past=' + JSON.stringify(dataArray))
-
       let i = 0
       const copyDataTemp = this.copyData
       const moveTime = dataArray.length > 1 ? 300 : 10
