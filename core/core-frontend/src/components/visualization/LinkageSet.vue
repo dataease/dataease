@@ -40,13 +40,28 @@
                 >仅看已选 <el-switch size="small" v-model="state.showSelected" />
               </span>
             </el-row>
+            <el-row class="tree-dataset-head" v-show="sameDsShow"
+              ><span
+                ><el-icon class="toggle-icon" @click="() => (toggleSameDs = !toggleSameDs)">
+                  <CaretBottom v-show="toggleSameDs" />
+                  <CaretRight v-show="!toggleSameDs" /> </el-icon
+                ><span>同数据集</span></span
+              >
+              <el-checkbox
+                v-model="sameDatasetComponentCheckAll"
+                :indeterminate="checkAllIsIndeterminate"
+                @change="batchSelectChange"
+                >全选</el-checkbox
+              ></el-row
+            >
             <el-tree
+              v-show="toggleSameDs && sameDsShow"
               class="custom-tree"
               menu
               ref="linkageInfoTree"
               :empty-text="'暂无可用图表'"
               :filter-node-method="filterNodeMethod"
-              :data="curLinkageTargetViewsInfo"
+              :data="curLinkageTargetViewsInfoSameDs"
               node-key="targetViewId"
               highlight-current
               :props="state.treeProp"
@@ -60,7 +75,54 @@
                         <!--？？？-->
                         <el-checkbox
                           v-model="data.linkageActive"
-                          @change="targetViewCheckedChange(data)"
+                          @change="targetViewCheckedChange('sameDs', data)"
+                        />
+                      </span>
+                    </div>
+                  </span>
+                  <span>
+                    <span class="tree-select-field">
+                      <Icon
+                        class-name="view-type-icon"
+                        style="margin-right: 4px"
+                        :name="data.targetViewType"
+                      />
+                      {{ data.targetViewName }}
+                    </span>
+                  </span>
+                </span>
+              </template>
+            </el-tree>
+            <el-row class="tree-dataset-head tree-dataset-head-top" v-show="diffDsShow"
+              ><span
+                ><el-icon class="toggle-icon" @click="() => (toggleDiffDs = !toggleDiffDs)">
+                  <CaretBottom v-show="toggleDiffDs" />
+                  <CaretRight v-show="!toggleDiffDs" /> </el-icon
+                ><span>不同数据集</span></span
+              >
+            </el-row>
+            <el-tree
+              v-show="toggleDiffDs && diffDsShow"
+              class="custom-tree"
+              menu
+              ref="linkageInfoTreeDiffDs"
+              :empty-text="'暂无可用图表'"
+              :filter-node-method="filterNodeMethod"
+              :data="curLinkageTargetViewsInfoDiffDs"
+              node-key="targetViewId"
+              highlight-current
+              :props="state.treeProp"
+              @node-click="nodeClick"
+            >
+              <template #default="{ data }">
+                <span class="custom-tree-node">
+                  <span>
+                    <div @click.stop>
+                      <span class="auth-span">
+                        <!--？？？-->
+                        <el-checkbox
+                          v-model="data.linkageActive"
+                          @change="targetViewCheckedChange('diffDs', data)"
                         />
                       </span>
                     </div>
@@ -208,10 +270,13 @@ import { ACTION_SELECTION } from '@/custom-component/component-list'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewInfo, componentData, curComponent } = storeToRefs(dvMainStore)
 const linkageInfoTree = ref(null)
+const linkageInfoTreeDiffDs = ref(null)
 const { t } = useI18n()
 const dialogShow = ref(false)
 const loading = ref(false)
 const curLinkageTargetViewsInfo = ref([])
+const curLinkageTargetViewsInfoSameDs = ref([])
+const curLinkageTargetViewsInfoDiffDs = ref([])
 const snapshotStore = snapshotStoreWithOut()
 const state = reactive({
   sourceLinkageInfo: {},
@@ -220,6 +285,7 @@ const state = reactive({
   curDatasetInfo: {},
   initState: false,
   viewId: null,
+  tableId: null,
   treeProp: {
     id: 'targetViewId',
     label: 'targetViewName',
@@ -227,8 +293,47 @@ const state = reactive({
   },
   linkageInfo: null
 })
+const sameDatasetComponentCheckAll = ref(false)
+
+const checkAllIsIndeterminate = ref(false)
 
 const customLinkageActive = ref(deepCopy(ACTION_SELECTION))
+
+const toggleSameDs = ref(true)
+
+const toggleDiffDs = ref(true)
+
+const sameDsTreeSelectedChange = () => {
+  const checkedCount = curLinkageTargetViewsInfoSameDs.value.filter(
+    viewInfo => viewInfo.linkageActive
+  ).length
+  sameDatasetComponentCheckAll.value = checkedCount === curLinkageTargetViewsInfoSameDs.value.length
+  checkAllIsIndeterminate.value =
+    checkedCount > 0 && checkedCount < curLinkageTargetViewsInfoSameDs.value.length
+}
+
+const batchSelectChange = value => {
+  // do change
+  curLinkageTargetViewsInfoSameDs.value.forEach(viewInfo => {
+    if (value) {
+      viewInfo.linkageActive = true
+      sameDatasetComponentCheckAll.value = true
+      linkageFieldAdaptor(viewInfo)
+    } else {
+      viewInfo.linkageActive = false
+      sameDatasetComponentCheckAll.value = false
+    }
+  })
+  checkAllIsIndeterminate.value = false
+}
+
+const sameDsShow = computed(
+  () => curLinkageTargetViewsInfoSameDs.value && curLinkageTargetViewsInfoSameDs.value.length > 0
+)
+
+const diffDsShow = computed(
+  () => curLinkageTargetViewsInfoDiffDs.value && curLinkageTargetViewsInfoDiffDs.value.length > 0
+)
 
 const dialogInit = viewItem => {
   state.showSelected = false
@@ -260,16 +365,36 @@ const linkageSetting = curViewId => {
     curLinkageTargetViewsInfo.value = curLinkageTargetViewsInfo.value.filter(
       viewInfo => viewInfo.targetViewId !== state.viewId
     )
+
+    curLinkageTargetViewsInfoSameDs.value = curLinkageTargetViewsInfo.value.filter(
+      viewInfo => viewInfo.tableId === state.tableId
+    )
+
+    curLinkageTargetViewsInfoDiffDs.value = curLinkageTargetViewsInfo.value.filter(
+      viewInfo => viewInfo.tableId !== state.tableId
+    )
+
     let firstNode
-    if (curLinkageTargetViewsInfo.value && curLinkageTargetViewsInfo.value.length > 0) {
-      firstNode = curLinkageTargetViewsInfo.value[0]
+    let linkageTreeName
+    if (curLinkageTargetViewsInfoSameDs.value && curLinkageTargetViewsInfoSameDs.value.length > 0) {
+      firstNode = curLinkageTargetViewsInfoSameDs.value[0]
+      linkageTreeName = 'sameDs'
+    } else if (
+      curLinkageTargetViewsInfoDiffDs.value &&
+      curLinkageTargetViewsInfoDiffDs.value.length > 0
+    ) {
+      firstNode = curLinkageTargetViewsInfoDiffDs.value[0]
+      linkageTreeName = 'diffDs'
     }
     state.initState = true
     nextTick(() => {
       if (firstNode) {
-        linkageInfoTree.value.setCurrentKey(firstNode.targetViewId)
+        const linkageTree =
+          linkageTreeName === 'sameDs' ? linkageInfoTree.value : linkageInfoTreeDiffDs.value
+        linkageTree.setCurrentKey(firstNode.targetViewId)
       }
       nodeClick(firstNode)
+      sameDsTreeSelectedChange()
     })
   })
 }
@@ -281,6 +406,7 @@ const init = viewItem => {
   const chartDetails = canvasViewInfo.value[state.viewId]
   state.curLinkageViewInfo = chartDetails
   if (chartDetails.tableId) {
+    state.tableId = chartDetails.tableId
     // 获取当前数据集信息
     getDatasetDetails(chartDetails.tableId).then(res => {
       state.curDatasetInfo = res || {}
@@ -352,6 +478,14 @@ const nodeClick = data => {
   state.linkageInfo = data
 }
 
+const addLinkageFieldAdaptor = (data, sourceFieldId?, targetFieldId?) => {
+  const linkageFieldItem = {
+    sourceField: sourceFieldId,
+    targetField: targetFieldId
+  }
+  data.linkageFields.push(linkageFieldItem)
+}
+
 const addLinkageField = (sourceFieldId?, targetFieldId?) => {
   const linkageFieldItem = {
     sourceField: sourceFieldId,
@@ -369,18 +503,25 @@ const linkageFieldAdaptor = async data => {
     const targetChartDetails = canvasViewInfo.value[data.targetViewId]
     if (targetChartDetails && targetChartDetails.tableId && data.linkageFields.length === 0) {
       if (state.curLinkageViewInfo.tableId === targetChartDetails.tableId) {
-        const curCheckAllAxisStr =
-          JSON.stringify(state.curLinkageViewInfo.xAxis) +
-          JSON.stringify(state.curLinkageViewInfo.xAxisExt)
-        const targetCheckAllAxisStr =
-          JSON.stringify(targetChartDetails.xAxis) + JSON.stringify(targetChartDetails.xAxisExt)
-        state.sourceLinkageInfo.targetViewFields.forEach(item => {
-          if (curCheckAllAxisStr.includes(item.id) && targetCheckAllAxisStr.includes(item.id)) {
-            addLinkageField(item.id, item.id)
-          }
-        })
+        // 只匹配联动字段为0的 避免已经匹配过的重新匹配
+        if (data.linkageFields && data.linkageFields.length === 0) {
+          const curCheckAllAxisStr =
+            JSON.stringify(state.curLinkageViewInfo.xAxis) +
+            JSON.stringify(state.curLinkageViewInfo.xAxisExt)
+          const targetCheckAllAxisStr =
+            JSON.stringify(targetChartDetails.xAxis) + JSON.stringify(targetChartDetails.xAxisExt)
+          state.sourceLinkageInfo.targetViewFields.forEach(item => {
+            if (
+              curCheckAllAxisStr.includes(item.id) &&
+              targetCheckAllAxisStr.includes(item.id) &&
+              data.linkageFields
+            ) {
+              addLinkageFieldAdaptor(data, item.id, item.id)
+            }
+          })
+        }
       } else {
-        addLinkageField('', '')
+        addLinkageFieldAdaptor(data, '', '')
       }
     }
   }
@@ -399,11 +540,18 @@ const sourceLinkageInfoFilter = computed(() => {
   }
 })
 
-const targetViewCheckedChange = data => {
+const targetViewCheckedChange = (treeName, data) => {
   nextTick(() => {
-    linkageInfoTree.value.setCurrentKey(data.targetViewId)
+    if (treeName === 'sameDs') {
+      linkageInfoTree.value.setCurrentKey(data.targetViewId)
+      linkageInfoTreeDiffDs.value.setCurrentKey(null)
+    } else {
+      linkageInfoTree.value.setCurrentKey(null)
+      linkageInfoTreeDiffDs.value.setCurrentKey(data.targetViewId)
+    }
     nodeClick(data)
     linkageFieldAdaptor(data)
+    sameDsTreeSelectedChange()
   })
 }
 const cancel = () => {
@@ -734,7 +882,7 @@ span {
 }
 
 .custom-tree {
-  height: 100%;
+  max-height: 100%;
   overflow-y: auto;
 }
 .m-del-icon-btn {
@@ -757,5 +905,28 @@ span {
   font-size: 14px;
   display: flex;
   align-items: center;
+}
+
+.tree-dataset-head {
+  height: 40px;
+  font-size: 14px;
+  align-items: center;
+  padding: 0 14px;
+  justify-content: space-between;
+  span {
+    font-size: 14px;
+    font-weight: 400;
+    text-align: left;
+    color: #646a73;
+  }
+}
+
+.tree-dataset-head-top {
+  border-top: 1px solid rgba(31, 35, 41, 0.15);
+}
+
+.toggle-icon {
+  cursor: pointer;
+  margin-right: 8px;
 }
 </style>
