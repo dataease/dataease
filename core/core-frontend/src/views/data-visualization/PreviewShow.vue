@@ -3,7 +3,6 @@ import DeResourceTree from '@/views/common/DeResourceTree.vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
 import { nextTick, onBeforeMount, reactive, ref, computed } from 'vue'
-import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import PreviewHead from '@/views/data-visualization/PreviewHead.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { storeToRefs } from 'pinia'
@@ -15,11 +14,12 @@ import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
 import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
 import MultiplexPreviewShow from '@/views/data-visualization/MultiplexPreviewShow.vue'
+import DvPreview from '@/views/data-visualization/DvPreview.vue'
 
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo, fullscreenFlag } = storeToRefs(dvMainStore)
+const { dvInfo } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
-const dvPreview = ref(null)
+const dvPreviewRef = ref(null)
 const slideShow = ref(true)
 const requestStore = useRequestStoreWithOut()
 const permissionStore = usePermissionStoreWithOut()
@@ -83,7 +83,7 @@ const loadCanvasData = (dvId, weight?) => {
       if (props.showPosition === 'preview') {
         dvMainStore.updateCurDvInfo(dvInfo)
         nextTick(() => {
-          dvPreview.value?.restore()
+          dvPreviewRef.value?.restore()
         })
       }
     }
@@ -216,25 +216,17 @@ onBeforeMount(() => {
           ></multiplex-preview-show>
         </div>
         <div v-if="showPosition === 'preview'" ref="previewCanvasContainer" class="content">
-          <div
-            id="de-preview-content"
-            :class="{ 'de-screen-full': fullscreenFlag }"
-            class="content-outer"
-          >
-            <div class="content-inner">
-              <de-preview
-                ref="dvPreview"
-                v-if="state.canvasStylePreview && dataInitState"
-                :component-data="state.canvasDataPreview"
-                :canvas-style-data="state.canvasStylePreview"
-                :canvas-view-info="state.canvasViewInfoPreview"
-                :dv-info="state.dvInfo"
-                :cur-gap="state.curPreviewGap"
-                :show-position="showPosition"
-                :download-status="downloadStatus"
-              ></de-preview>
-            </div>
-          </div>
+          <dv-preview
+            ref="dvPreviewRef"
+            v-if="state.canvasStylePreview && dataInitState"
+            :show-position="showPosition"
+            :canvas-data-preview="state.canvasDataPreview"
+            :canvas-style-preview="state.canvasStylePreview"
+            :canvas-view-info-preview="state.canvasViewInfoPreview"
+            :dv-info="state.dvInfo"
+            :cur-preview-gap="state.curPreviewGap"
+            :download-status="downloadStatus"
+          ></dv-preview>
         </div>
       </template>
       <template v-else-if="hasTreeData && mounted">

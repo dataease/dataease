@@ -4,7 +4,8 @@ import { deepCopy } from '@/utils/utils'
 import {
   BASE_VIEW_CONFIG,
   DEFAULT_INDICATOR_NAME_STYLE,
-  DEFAULT_INDICATOR_STYLE
+  DEFAULT_INDICATOR_STYLE,
+  SENIOR_STYLE_SETTING_LIGHT
 } from '@/views/chart/components/editor/util/chart'
 import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
@@ -224,6 +225,8 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
 
     setCanvasStyle(style) {
+      style.component['seniorStyleSetting'] =
+        style.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
       this.canvasStyleData = style
     },
     setCanvasViewInfo(canvasViewInfo) {

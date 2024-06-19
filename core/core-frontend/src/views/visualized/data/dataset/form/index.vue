@@ -15,10 +15,12 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElIcon, ElMessageBox, ElMessage } from 'element-plus-secondary'
+import FixedSizeList from 'element-plus-secondary/es/components/virtual-list/src/components/fixed-size-list.mjs'
 import type { Action } from 'element-plus-secondary'
 import FieldMore from './FieldMore.vue'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { Icon } from '@/components/icon-custom'
+import { useWindowSize } from '@vueuse/core'
 import CalcFieldEdit from './CalcFieldEdit.vue'
 import { useRoute, useRouter } from 'vue-router'
 import UnionEdit from './UnionEdit.vue'
@@ -201,6 +203,8 @@ const dfsName = (arr, id) => {
   return name
 }
 
+const { height } = useWindowSize()
+
 const dfsChild = arr => {
   return arr.filter(ele => {
     if (ele.leaf) {
@@ -305,7 +309,9 @@ const confirmCustomTime = () => {
 }
 
 watch(searchTable, val => {
-  state.tableData = tableList.filter(ele => ele.tableName.toLowerCase().includes(val.toLowerCase()))
+  datasourceTableData.value = tableList.filter(ele =>
+    ele.tableName.toLowerCase().includes(val.toLowerCase())
+  )
 })
 const editeSave = () => {
   const union = []
@@ -560,7 +566,7 @@ const dsChange = (val: string) => {
   return getTables({ datasourceId: val })
     .then(res => {
       tableList = res || []
-      state.tableData = [...tableList]
+      datasourceTableData.value = [...tableList]
     })
     .finally(() => {
       dsLoading.value = false
@@ -664,10 +670,10 @@ const state = reactive({
   nodeNameList: [],
   editArr: [],
   dataSourceList: [],
-  tableData: [],
   fieldCollapse: ['dimension', 'quota']
 })
 
+const datasourceTableData = shallowRef([])
 const getIconName = (type: number) => {
   if (type === 1) {
     return 'time'
@@ -1281,7 +1287,7 @@ const getDsIconName = data => {
               <el-icon class="icon-color">
                 <Icon name="reference-table"></Icon>
               </el-icon>
-              {{ state.tableData.length }}
+              {{ datasourceTableData.length }}
             </span>
           </p>
           <el-input
@@ -1297,7 +1303,7 @@ const getDsIconName = data => {
             </template>
           </el-input>
         </div>
-        <div v-if="!state.tableData.length && searchTable !== ''" class="el-empty">
+        <div v-if="!datasourceTableData.length && searchTable !== ''" class="el-empty">
           <div
             class="el-empty__description"
             style="margin-top: 80px; color: #5e6d82; text-align: center"
@@ -1319,21 +1325,33 @@ const getDsIconName = data => {
             </el-icon>
             <span class="label">自定义SQL</span>
           </div>
-          <template v-for="ele in state.tableData" :key="ele.tableName">
-            <div
-              class="list-item_primary"
-              :title="ele.tableName"
-              @dragstart="$event => dragstart($event, ele)"
-              @dragend="maskShow = false"
-              :draggable="true"
-              @click="setActiveName(ele)"
-            >
-              <el-icon class="icon-color">
-                <Icon name="reference-table"></Icon>
-              </el-icon>
-              <span class="label">{{ ele.tableName }}</span>
-            </div>
-          </template>
+          <FixedSizeList
+            :itemSize="40"
+            :data="datasourceTableData"
+            :total="datasourceTableData.length"
+            :width="223"
+            :height="height - 305"
+            :scrollbarAlwaysOn="false"
+            class-name="el-select-dropdown__list"
+            layout="vertical"
+          >
+            <template #default="{ index, style }">
+              <div
+                class="list-item_primary"
+                :style="style"
+                :title="datasourceTableData[index].tableName"
+                @dragstart="$event => dragstart($event, datasourceTableData[index])"
+                @dragend="maskShow = false"
+                :draggable="true"
+                @click="setActiveName(datasourceTableData[index])"
+              >
+                <el-icon class="icon-color">
+                  <Icon name="reference-table"></Icon>
+                </el-icon>
+                <span class="label">{{ datasourceTableData[index].tableName }}</span>
+              </div>
+            </template>
+          </FixedSizeList>
         </div>
       </div>
       <div class="drag-right" :style="{ width: `calc(100vw - ${showLeft ? LeftWidth : 0}px)` }">
@@ -1469,7 +1487,7 @@ const getDsIconName = data => {
                 style="width: 100%; height: 100%"
               >
                 <el-table-column
-                  :key="column.dataKey"
+                  :key="column.dataKey + column.deType"
                   v-for="(column, index) in columns"
                   :prop="column.dataKey"
                   :label="column.title"

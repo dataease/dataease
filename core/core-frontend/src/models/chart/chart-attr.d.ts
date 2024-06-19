@@ -698,6 +698,18 @@ declare interface ChartLabelAttr {
    */
   seriesLabelFormatter: SeriesFormatter[]
 
+  /**
+   * 显示字段，通过字段名称显示对应的值
+   * @example
+   * ['name', 'value']
+   */
+  showFields?: string[]
+
+  /**
+   * 自定义显示内容
+   */
+  customContent?: string
+
   showGap?: boolean
 }
 /**
@@ -732,6 +744,18 @@ declare interface ChartTooltipAttr {
   seriesTooltipFormatter: SeriesFormatter[]
 
   showGap?: boolean
+
+  /**
+   * 显示字段，通过字段名称显示对应的值
+   * @example
+   * ['name', 'value']
+   */
+  showFields?: string[]
+
+  /**
+   * 自定义显示内容
+   */
+  customContent?: string
 }
 
 /**

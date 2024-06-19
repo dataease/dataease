@@ -2,16 +2,18 @@
 import { PropType, computed, onMounted, reactive, watch, ref, inject } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_TOOLTIP } from '@/views/chart/components/editor/util/chart'
-import { ElSpace } from 'element-plus-secondary'
+import { ElIcon, ElSpace } from 'element-plus-secondary'
 import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
 import { formatterType, unitType } from '../../../js/formatter'
 import { fieldType } from '@/utils/attr'
-import { partition } from 'lodash-es'
+import { defaultTo, partition } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
+import { deepCopy } from '@/utils/utils'
 
 const { t } = useI18n()
 
@@ -23,6 +25,10 @@ const props = defineProps({
   themes: {
     type: String as PropType<EditorTheme>,
     default: 'dark'
+  },
+  allFields: {
+    type: Array<any>,
+    required: false
   },
   propertyInner: {
     type: Array<string>
@@ -40,6 +46,7 @@ const quotaData = ref<Axis[]>(inject('quotaData'))
 const showSeriesTooltipFormatter = computed(() => {
   return showProperty('seriesTooltipFormatter') && !batchOptStatus.value && props.chart.id
 })
+
 // 切换图表类型直接重置为默认
 const changeChartType = () => {
   if (!showSeriesTooltipFormatter.value) {
@@ -89,6 +96,7 @@ const changeDataset = () => {
     }
   })
 }
+
 const AXIS_PROP: AxisType[] = ['yAxis', 'yAxisExt', 'extBubble']
 const quotaAxis = computed(() => {
   let result = []
@@ -356,6 +364,20 @@ const updateAxis = (form: AxisEditForm) => {
     }
   })
 }
+const allFields = computed(() => {
+  return defaultTo(props.allFields, [])
+})
+const defaultPlaceholder = computed(() => {
+  if (state.tooltipForm.showFields && state.tooltipForm.showFields.length > 0) {
+    return state.tooltipForm.showFields
+      .map(field => {
+        const v = field.split('@')
+        return v[1] + ': ${' + field.split('@')[1] + '}'
+      })
+      .join('\n')
+  }
+  return ''
+})
 onMounted(() => {
   init()
   useEmitt({ name: 'addAxis', callback: updateSeriesTooltipFormatter })
@@ -374,6 +396,7 @@ onMounted(() => {
     label-position="top"
   >
     <el-form-item
+      v-if="props.chart.type !== 'symbolic-map'"
       :label="t('chart.background') + t('chart.color')"
       class="form-item"
       :class="'form-item-' + themes"
@@ -430,6 +453,54 @@ onMounted(() => {
         </el-tooltip>
       </el-form-item>
     </el-space>
+
+    <div v-if="showProperty('showFields')">
+      <el-form-item :label="t('chart.tooltip')" class="form-item" :class="'form-item-' + themes">
+        <el-select
+          size="small"
+          :effect="themes"
+          filterable
+          multiple
+          collapse-tags
+          collapse-tags-tooltip
+          v-model="state.tooltipForm.showFields"
+          @change="changeTooltipAttr('showFields')"
+        >
+          <el-option
+            v-for="option in allFields"
+            :key="option.dataeaseName"
+            :label="option.name"
+            :value="option.dataeaseName + '@' + option.name"
+          />
+        </el-select>
+      </el-form-item>
+      <el-form-item v-if="showProperty('customContent')" class="form-item">
+        <template #label>
+          <span class="data-area-label">
+            <span>
+              {{ t('chart.content_formatter') }}
+            </span>
+            <el-tooltip class="item" :effect="toolTip" placement="bottom">
+              <template #content>
+                <div>可以${fieldName}的形式读取字段值（支持HTML）</div>
+              </template>
+              <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+                <Icon name="icon_info_outlined" />
+              </el-icon>
+            </el-tooltip>
+          </span>
+        </template>
+        <el-input
+          style="font-size: smaller; font-weight: normal"
+          v-model="state.tooltipForm.customContent"
+          type="textarea"
+          :autosize="{ minRows: 4, maxRows: 4 }"
+          :placeholder="defaultPlaceholder"
+          @blur="changeTooltipAttr('customContent')"
+        />
+      </el-form-item>
+    </div>
+
     <template v-if="showProperty('tooltipFormatter') && !isBarRangeTime">
       <el-form-item
         :label="t('chart.value_formatter_type')"

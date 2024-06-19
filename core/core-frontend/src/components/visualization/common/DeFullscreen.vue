@@ -4,6 +4,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
 import screenfull from 'screenfull'
 import { onBeforeUnmount, onMounted, toRefs } from 'vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const props = defineProps({
   themes: {
@@ -25,6 +26,18 @@ const { themes, componentType } = toRefs(props)
 const fullscreenChange = () => {
   if (screenfull.isEnabled) {
     dvMainStore.setFullscreenFlag(screenfull.isFullscreen)
+    // 编辑界面使用
+    if (props.showPosition === 'edit') {
+      if (screenfull.isFullscreen) {
+        dvMainStore.setEditMode('preview')
+      } else {
+        dvMainStore.setEditMode('edit')
+      }
+    }
+    // 大屏编辑使用
+    if (props.showPosition === 'dvEdit') {
+      useEmitt().emitter.emit('canvasScrollRestore')
+    }
   }
 }
 
@@ -33,11 +46,6 @@ const toggleFullscreen = () => {
     const bodyNode = document.querySelector('body')
     screenfull.toggle(bodyNode)
   }
-}
-
-const editToggleFullscreen = () => {
-  dvMainStore.setEditMode('preview')
-  toggleFullscreen()
 }
 
 onMounted(() => {
@@ -49,21 +57,12 @@ onMounted(() => {
 onBeforeUnmount(() => {
   screenfull.off('change', fullscreenChange)
 })
+
+defineExpose({
+  toggleFullscreen
+})
 </script>
 
-<template>
-  <el-button v-if="showPosition === 'preview'" secondary @click="toggleFullscreen">
-    <template #icon>
-      <icon name="icon_pc_fullscreen"></icon>
-    </template>
-    全屏</el-button
-  >
-  <el-dropdown-item v-else @click="editToggleFullscreen()">
-    <el-icon style="margin-right: 8px; font-size: 16px">
-      <icon name="icon_pc_fullscreen"></icon>
-    </el-icon>
-    全屏预览
-  </el-dropdown-item>
-</template>
+<template><span></span></template>
 
 <style lang="less" scoped></style>

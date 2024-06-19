@@ -24,6 +24,7 @@ declare type EditorProperty =
   | 'indicator-value-selector'
   | 'indicator-name-selector'
   | 'quadrant-selector'
+  | 'map-symbolic-selector'
 declare type EditorPropertyInner = {
   [key in EditorProperty]?: string[]
 }

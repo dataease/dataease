@@ -40,6 +40,10 @@ public interface DatasetTableApi {
     @PostMapping("listByDatasetGroup/{id}")
     List<DatasetTableFieldDTO> listByDatasetGroup(@PathVariable Long id);
 
+    @Operation(summary = "获取数据集字段map")
+    @PostMapping("listByDsIds")
+    Map<String, List<DatasetTableFieldDTO>> listByDsIds(@RequestBody List<Long> ids);
+
     @Operation(summary = "删除字段")
     @PostMapping("delete/{id}")
     void delete(@PathVariable Long id);

@@ -1325,6 +1325,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'heat-map',
         title: t('chart.chart_heat_map'),
         icon: 'heat-map'
+      },
+      {
+        render: 'antv',
+        category: 'map',
+        value: 'symbolic-map',
+        title: '符号地图',
+        icon: 'symbolic-map'
       }
     ]
   },
@@ -1454,7 +1461,7 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   mapSymbolOpacity: 0.7,
   mapSymbolStrokeWidth: 2,
   mapSymbol: 'circle',
-  mapSymbolSize: 20,
+  mapSymbolSize: 6,
   radius: 80,
   innerRadius: 60,
   showZoom: true,

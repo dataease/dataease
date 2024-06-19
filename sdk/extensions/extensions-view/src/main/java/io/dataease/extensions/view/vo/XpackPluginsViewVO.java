@@ -1,4 +1,4 @@
-package io.dataease.api.xpack.component.vo;
+package io.dataease.extensions.view.vo;
 
 import lombok.Data;
 

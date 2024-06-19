@@ -214,6 +214,7 @@ public class ChartDataManage {
                     || StringUtils.equalsIgnoreCase(view.getType(), "flow-map")
                     || StringUtils.equalsIgnoreCase(view.getType(), "sankey")
                     || StringUtils.containsIgnoreCase(view.getType(), "chart-mix")
+                    || StringUtils.equalsIgnoreCase(view.getType(), "symbolic-map")
             ) {
                 xAxis.addAll(xAxisExt);
             }
@@ -740,6 +741,28 @@ public class ChartDataManage {
                     ExtWhere2Str.extWhere2sqlOjb(sqlMeta, yoyFilterList, transFields(allFields), crossDs, dsMap);
                     yoySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
                 }
+            } else if (StringUtils.equalsIgnoreCase("symbolic-map", view.getType())) {
+                Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
+                List<ChartViewFieldDTO> yFields = new ArrayList<>();
+                yFields.addAll(chartViewManege.transFieldDTO(Collections.singletonList(chartViewManege.createCountField(view.getTableId()))));
+                yFields.addAll(extBubble);
+                yAxis.addAll(yFields);
+                Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
+                querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+                List<Long> xAxisIds = xAxis.stream().map(ChartViewFieldDTO::getId).toList();
+                viewFields.addAll(xAxis);
+                viewFields.addAll(allFields.stream().filter(field -> !xAxisIds.contains(field.getId())).toList());
+                if (ObjectUtils.isNotEmpty(viewFields)) {
+                    detailFieldList.addAll(viewFields);
+                    SQLMeta sqlMeta1 = new SQLMeta();
+                    BeanUtils.copyBean(sqlMeta1, sqlMeta);
+                    sqlMeta1.setYFields(new ArrayList<>());
+                    Dimension2SQLObj.dimension2sqlObj(sqlMeta1, detailFieldList, transFields(allFields), crossDs, dsMap);
+                    String originSql = SQLProvider.createQuerySQL(sqlMeta1, false, needOrder, view);
+                    String limit = ((pageInfo.getGoPage() != null && pageInfo.getPageSize() != null) ? " LIMIT " + pageInfo.getPageSize() + " OFFSET " + (pageInfo.getGoPage() - 1) * pageInfo.getPageSize() : "");
+                    detailFieldSql = originSql + limit;
+                }
             } else {
                 Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, transFields(allFields), crossDs, dsMap);
                 Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, transFields(allFields), crossDs, dsMap);
@@ -782,6 +805,7 @@ public class ChartDataManage {
             }
 
             if (StringUtils.isNotBlank(detailFieldSql)) {
+                detailFieldSql = SqlUtils.rebuildSQL(detailFieldSql, sqlMeta, crossDs, dsMap);
                 datasourceRequest.setQuery(detailFieldSql);
                 detailData = (List<String[]>) calciteProvider.fetchResultField(datasourceRequest).get("data");
             }
@@ -920,12 +944,12 @@ public class ChartDataManage {
             List<String[]> resultData = new ArrayList<>();
             for (String[] res1 : data) {
                 StringBuilder x1 = new StringBuilder();
-                for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                for (int i = 0; i < xAxis.size(); i++) {
                     x1.append(res1[i]);
                 }
                 for (String[] res2 : yoyData) {
                     StringBuilder x2 = new StringBuilder();
-                    for (int i = 0; i < xAxis.size() + xAxisExt.size(); i++) {
+                    for (int i = 0; i < xAxis.size(); i++) {
                         x2.append(res2[i]);
                     }
                     if (StringUtils.equals(x1, x2)) {

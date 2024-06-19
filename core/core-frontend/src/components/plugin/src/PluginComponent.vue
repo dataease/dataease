@@ -33,8 +33,13 @@ const generateRamStr = (len: number) => {
 }
 
 const importProxy = (bytesArray: any[]) => {
-  const promise = import(
+  /* const promise = import(
     `../../../../../../../${formatArray(bytesArray[7])}/${formatArray(bytesArray[8])}/${formatArray(
+      bytesArray[9]
+    )}/${formatArray(bytesArray[10])}/${formatArray(bytesArray[11])}.vue`
+  ) */
+  const promise = import(
+    `../../../../../../../extensions-view-3dpie/${formatArray(bytesArray[8])}/${formatArray(
       bytesArray[9]
     )}/${formatArray(bytesArray[10])}/${formatArray(bytesArray[11])}.vue`
   )

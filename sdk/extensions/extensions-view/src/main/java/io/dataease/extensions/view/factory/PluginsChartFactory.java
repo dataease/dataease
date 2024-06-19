@@ -1,6 +1,7 @@
 package io.dataease.extensions.view.factory;
 
 import io.dataease.extensions.view.template.PluginsChartTemplate;
+import io.dataease.extensions.view.vo.XpackPluginsViewVO;
 
 import java.util.List;
 import java.util.Map;
@@ -21,7 +22,7 @@ public class PluginsChartFactory {
         templateMap.put(key, template);
     }
 
-    public static List<String> getViewConfigList() {
+    public static List<XpackPluginsViewVO> getViewConfigList() {
         return templateMap.values().stream().map(PluginsChartTemplate::getConfig).toList();
     }
 

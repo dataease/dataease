@@ -761,7 +761,9 @@ const calcData = (view, resetDrill = false, updateQuery = '') => {
     })
   }
 }
-
+const updateChartDataTest = arg => {
+  updateChartData(arg)
+}
 const updateChartData = view => {
   curComponent.value['state'] = 'ready'
   calcData(view, true, 'updateQuery')
@@ -1608,7 +1610,7 @@ const deleteChartFieldItem = id => {
               :dimension="state.dimension"
               :quota="state.quota"
               :themes="themes"
-              @update-chart-data="updateChartData"
+              @update-chart-data-test="updateChartDataTest"
             />
             <el-tabs
               v-else
@@ -2458,6 +2460,7 @@ const deleteChartFieldItem = id => {
                       :themes="themes"
                       :dimension-data="state.dimension"
                       :quota-data="state.quota"
+                      :all-fields="allFields"
                       @onColorChange="onColorChange"
                       @onMiscChange="onMiscChange"
                       @onLabelChange="onLabelChange"

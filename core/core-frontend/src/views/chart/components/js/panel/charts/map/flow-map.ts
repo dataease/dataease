@@ -25,7 +25,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
   ]
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
-    'basic-style-selector': ['mapStyle', 'zoom']
+    'basic-style-selector': ['mapBaseStyle', 'mapLineStyle', 'zoom']
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'filter']
   axisConfig: AxisConfig = {

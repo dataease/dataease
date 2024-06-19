@@ -16,6 +16,7 @@ const emit = defineEmits(['reload', 'download', 'downloadAsAppTemplate'])
 const { t } = useI18n()
 
 const favorited = ref(false)
+const fullScreeRef = ref(null)
 const preview = () => {
   const url = '#/preview?dvId=' + dvInfo.value.id
   const newWindow = window.open(url, '_blank')
@@ -103,7 +104,13 @@ const initOpenHandler = newWindow => {
       </el-popover>
     </div>
     <div class="canvas-opt-button">
-      <de-fullscreen v-if="!isDataEaseBi"></de-fullscreen>
+      <de-fullscreen ref="fullScreeRef"></de-fullscreen>
+      <el-button v-if="!isDataEaseBi" secondary @click="() => fullScreeRef.toggleFullscreen()">
+        <template #icon>
+          <icon name="icon_pc_fullscreen"></icon>
+        </template>
+        全屏</el-button
+      >
       <el-button secondary v-if="!isDataEaseBi" @click="preview()">
         <template #icon>
           <icon name="icon_pc_outlined"></icon>
