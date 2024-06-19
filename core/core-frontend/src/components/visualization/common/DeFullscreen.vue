@@ -4,6 +4,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const dvMainStore = dvMainStoreWithOut()
 import screenfull from 'screenfull'
 import { onBeforeUnmount, onMounted, toRefs } from 'vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const props = defineProps({
   themes: {
@@ -32,6 +33,10 @@ const fullscreenChange = () => {
       } else {
         dvMainStore.setEditMode('edit')
       }
+    }
+    // 大屏编辑使用
+    if (props.showPosition === 'dvEdit') {
+      useEmitt().emitter.emit('canvasScrollRestore')
     }
   }
 }

@@ -38,9 +38,11 @@ import { XpackComponent } from '@/components/plugin'
 import { Base64 } from 'js-base64'
 import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { deepCopy } from '@/utils/utils'
+import DvPreview from '@/views/data-visualization/DvPreview.vue'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
+const dvPreviewRef = ref(null)
 const eventCheck = e => {
   if (e.key === 'screen-weight' && !compareStorage(e.oldValue, e.newValue)) {
     const opt = embeddedStore.opt || router.currentRoute.value.query.opt
@@ -63,6 +65,7 @@ const composeStore = composeStoreWithOut()
 const canvasCacheOutRef = ref(null)
 
 const {
+  fullscreenFlag,
   componentData,
   curComponent,
   isClickComponent,
@@ -454,6 +457,15 @@ eventBus.on('handleNew', handleNew)
     @load-fail="XpackLoaded"
   />
   <canvas-cache-dialog ref="canvasCacheOutRef" @doUseCache="doUseCache"></canvas-cache-dialog>
+  <dv-preview
+    v-if="fullscreenFlag"
+    style="z-index: 10"
+    ref="dvPreviewRef"
+    :canvas-data-preview="componentData"
+    :canvas-style-preview="canvasStyleData"
+    :canvas-view-info-preview="canvasViewInfo"
+    :dv-info="dvInfo"
+  ></dv-preview>
 </template>
 
 <style lang="less">

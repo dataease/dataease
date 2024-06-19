@@ -23,6 +23,7 @@ import ComponentButton from '@/components/visualization/ComponentButton.vue'
 import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabel.vue'
+import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -36,6 +37,7 @@ let scaleEdit = 100
 const { wsCache } = useCache('localStorage')
 const dvModel = 'dataV'
 const outerParamsSetRef = ref(null)
+const fullScreeRef = ref(null)
 
 const closeEditCanvasName = () => {
   nameEdit.value = false
@@ -303,7 +305,12 @@ const multiplexingCanvasOpen = () => {
         >
           编辑
         </el-button>
-        <el-button v-else class="preview-button" @click="preview()" style="float: right">
+        <el-button
+          v-else
+          class="preview-button"
+          @click="() => fullScreeRef.toggleFullscreen()"
+          style="float: right"
+        >
           预览
         </el-button>
         <el-button
@@ -335,6 +342,7 @@ const multiplexingCanvasOpen = () => {
       ref="resourceGroupOpt"
     />
   </div>
+  <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>
   <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>
   <outer-params-set ref="outerParamsSetRef"> </outer-params-set>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />

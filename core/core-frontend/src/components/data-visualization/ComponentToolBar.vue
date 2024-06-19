@@ -94,6 +94,13 @@ onMounted(() => {
       useEmitt().emitter.emit('initScroll')
     })
   }, 1000)
+  useEmitt({
+    name: 'canvasScrollRestore',
+    callback: function () {
+      // 用于全屏后还原编辑状态大小
+      changeSizeWithScale(scale.value)
+    }
+  })
 })
 
 onUnmounted(() => {
