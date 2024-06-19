@@ -846,9 +846,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     addViewTrackFilter(data) {
       const viewId = data.viewId
       let trackInfo
-      // 维度日期类型转换
-      viewFieldTimeTrans(this.canvasViewDataInfo[viewId], data)
       if (data.option === 'linkage') {
+        // 维度日期类型转换
+        viewFieldTimeTrans(this.canvasViewDataInfo[viewId], data)
         trackInfo = this.nowPanelTrackInfo
       } else {
         trackInfo = this.nowPanelJumpInfoTargetPanel
