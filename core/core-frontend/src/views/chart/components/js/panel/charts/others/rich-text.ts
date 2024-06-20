@@ -6,9 +6,10 @@ const { t } = useI18n()
  * 富文本图表
  */
 export class RichTextChartView extends AbstractChartView {
-  properties: EditorProperty[] = ['background-overall-component']
+  properties: EditorProperty[] = ['background-overall-component', 'threshold']
   propertyInner: EditorPropertyInner = {
-    'background-overall-component': ['all']
+    'background-overall-component': ['all'],
+    threshold: ['tableThreshold']
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'filter']
   axisConfig: AxisConfig = {
