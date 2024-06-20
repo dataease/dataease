@@ -48,8 +48,8 @@ const anchorPosition = anchor => {
   scrollTo(element.offsetTop)
 }
 
-const newComponent = (innerType, isPlugin) => {
-  eventBus.emit('handleNew', { componentName: 'UserView', innerType: innerType, isPlugin })
+const newComponent = (innerType, staticMap) => {
+  eventBus.emit('handleNew', { componentName: 'UserView', innerType: innerType, staticMap })
 }
 
 const handleDragStart = e => {
@@ -66,14 +66,15 @@ const groupActiveChange = category => {
 }
 const loadPluginCategory = data => {
   data.forEach(item => {
-    const { category, title, render, chartValue, chartTitle, icon } = item
+    const { category, title, render, chartValue, chartTitle, icon, staticMap } = item
     const node = {
       render,
       category,
       icon,
       value: chartValue,
       title: chartTitle,
-      isPlugin: true
+      isPlugin: true,
+      staticMap
     }
     const stack = [...state.chartGroupList]
     let findParent = false
@@ -128,7 +129,7 @@ const loadPluginCategory = data => {
             :key="chartInfo.title"
           >
             <div
-              v-on:click="newComponent(chartInfo.value, chartInfo['isPlugin'])"
+              v-on:click="newComponent(chartInfo.value, chartInfo['staticMap'])"
               class="item-top"
               draggable="true"
               :data-id="'UserView&' + chartInfo.value"

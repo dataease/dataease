@@ -762,7 +762,7 @@ const showActionIcons = computed(() => {
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
       <plugin-component
         v-if="view.plugin?.isPlugin"
-        jsname="L2NvbXBvbmVudC9pbmRleA=="
+        :jsname="view.plugin.staticMap['index']"
         :scale="scale"
         :dynamic-area-id="dynamicAreaId"
         :view="view"

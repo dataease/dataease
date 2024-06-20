@@ -2,7 +2,7 @@
 import noLic from './nolic.vue'
 import { ref, useAttrs, onMounted } from 'vue'
 import { execute, randomKey, formatArray } from './convert'
-import { loadPluginApi, loadDistributed, xpackModelApi } from '@/api/plugin'
+import { loadPluginApi, xpackModelApi } from '@/api/plugin'
 import { useCache } from '@/hooks/web/useCache'
 import { i18n } from '@/plugins/vue-i18n'
 import * as Vue from 'vue'
@@ -10,7 +10,7 @@ import axios from 'axios'
 import * as Pinia from 'pinia'
 import * as vueRouter from 'vue-router'
 import { useEmitt } from '@/hooks/web/useEmitt'
-
+import request from '@/config/axios'
 const { wsCache } = useCache()
 
 const plugin = ref()
@@ -33,15 +33,12 @@ const generateRamStr = (len: number) => {
 }
 
 const importProxy = (bytesArray: any[]) => {
-  /* const promise = import(
-    `../../../../../../../${formatArray(bytesArray[7])}/${formatArray(bytesArray[8])}/${formatArray(
-      bytesArray[9]
-    )}/${formatArray(bytesArray[10])}/${formatArray(bytesArray[11])}.vue`
-  ) */
   const promise = import(
-    `../../../../../../../extensions-view-3dpie/${formatArray(bytesArray[8])}/${formatArray(
+    `../../../../../../../extensions/${formatArray(bytesArray[8])}/${formatArray(
       bytesArray[9]
-    )}/${formatArray(bytesArray[10])}/${formatArray(bytesArray[11])}.vue`
+    )}/${formatArray(bytesArray[10])}/${formatArray(bytesArray[11])}/${formatArray(
+      bytesArray[12]
+    )}.vue`
   )
   promise
     .then((res: any) => {
@@ -53,16 +50,23 @@ const importProxy = (bytesArray: any[]) => {
     })
 }
 
+const getModuleName = () => {
+  const jsPath = window.atob(attrs.jsname.toString())
+  return jsPath.split('/')[0]
+}
 const loadComponent = () => {
+  const moduleName = getModuleName()
   loading.value = true
-  const byteArray = wsCache.get(`de-plugin-proxy-plugin`)
+  const byteArray = wsCache.get(`de-plugin-proxy-${moduleName}`)
   if (byteArray) {
     importProxy(JSON.parse(byteArray))
     loading.value = false
     return
   }
   const key = generateRamStr(randomKey())
-  loadPluginApi(key)
+  const moduleNameKey = window.btoa(moduleName)
+  const saltKey = `${key},${moduleNameKey}`
+  loadPluginApi(saltKey)
     .then(response => {
       let code = response.data
       const byteArray = execute(code, key)
@@ -82,7 +86,8 @@ const storeCacheProxy = byteArray => {
   byteArray.forEach(item => {
     result.push([...item])
   })
-  wsCache.set(`de-plugin-proxy-plugin`, JSON.stringify(result))
+  const moduleName = getModuleName()
+  wsCache.set(`de-plugin-proxy-${moduleName}`, JSON.stringify(result))
 }
 const pluginProxy = ref(null)
 const invokeMethod = param => {
@@ -104,8 +109,9 @@ onMounted(async () => {
     distributed = wsCache.get(key)
   }
   if (distributed) {
-    if (window['DEXPack']) {
-      const xpack = await window['DEXPack'].mapping[attrs.jsname]
+    const moduleName = getModuleName()
+    if (window[moduleName]) {
+      const xpack = await window[moduleName].mapping[attrs.jsname]
       plugin.value = xpack.default
     } else {
       window['Vue'] = Vue
@@ -114,9 +120,10 @@ onMounted(async () => {
       window['vueRouter'] = vueRouter
       window['MittAll'] = useEmitt().emitter.all
       window['I18n'] = i18n
-      loadDistributed().then(async res => {
-        new Function(res.data)()
-        const xpack = await window['DEXPack'].mapping[attrs.jsname]
+      const url = `/xpackComponent/pluginStaticInfo/${moduleName}`
+      request.get({ url }).then(async res => {
+        new Function(res.data || res)()
+        const xpack = await window[moduleName].mapping[attrs.jsname]
         plugin.value = xpack.default
       })
     }

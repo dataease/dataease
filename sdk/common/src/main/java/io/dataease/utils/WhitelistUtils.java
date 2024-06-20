@@ -63,6 +63,7 @@ public class WhitelistUtils {
                 || StringUtils.startsWithAny(requestURI, "/appearance/image/")
                 || StringUtils.startsWithAny(requestURI, "/share/proxyInfo")
                 || StringUtils.startsWithAny(requestURI, "/xpackComponent/content")
+                || StringUtils.startsWithAny(requestURI, "/xpackComponent/pluginStaticInfo")
                 || StringUtils.startsWithAny(requestURI, "/geo/")
                 || StringUtils.startsWithAny(requestURI, "/websocket")
                 || StringUtils.startsWithAny(requestURI, "/map/")

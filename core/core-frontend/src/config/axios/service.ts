@@ -173,6 +173,8 @@ service.interceptors.response.use(
       return response
     } else if (response.config.url.includes('DEXPack.umd.js')) {
       return response
+    } else if (response.config.url.startsWith('/xpackComponent/pluginStaticInfo/extensions-')) {
+      return response
     } else {
       if (
         !response?.config?.url.startsWith('/xpackComponent/content') &&
