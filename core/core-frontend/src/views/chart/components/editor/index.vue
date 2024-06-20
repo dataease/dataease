@@ -3072,8 +3072,8 @@ const deleteChartFieldItem = id => {
         <el-button type="primary" @click="confirmEditCalc()">{{ t('dataset.confirm') }} </el-button>
       </template>
     </el-dialog>
-    <FilterTree ref="filterTree" @filter-data="changeFilterData" />
   </div>
+  <FilterTree ref="filterTree" @filter-data="changeFilterData" />
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
   <Teleport v-if="componentNameEdit" :to="'#component-name'">
     <input

@@ -102,7 +102,7 @@ const dimensions = computed(() => {
   return computedFiledList.value.filter(ele => ele.name.includes(keywords.value))
 })
 const computedFiledList = computed(() => {
-  return filedList.value || []
+  return Object.values(filedList.value || {})
 })
 
 watch(checkResult, () => {
@@ -263,7 +263,12 @@ const emits = defineEmits(['update:item', 'del'])
         </el-input>
         <template #dropdown>
           <el-dropdown-menu class="de-el-dropdown-menu">
-            <el-input :placeholder="t('auth.enter_keywords')" size="small" v-model="keywords">
+            <el-input
+              @keydown.stop
+              :placeholder="t('auth.enter_keywords')"
+              size="small"
+              v-model="keywords"
+            >
               <template #prefix>
                 <el-icon>
                   <Icon name="icon_search-outline_outlined"></Icon>
