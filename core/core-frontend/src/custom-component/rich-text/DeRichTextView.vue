@@ -29,7 +29,7 @@
 
 <script setup lang="ts">
 import { formatDataEaseBi } from '@/utils/url'
-import deTinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
+import tinymce from 'tinymce/tinymce' // tinymce默认hidden，不引入不显示
 import Editor from '@tinymce/tinymce-vue' // 编辑器引入
 import 'tinymce/themes/silver/theme' // 编辑器主题
 import 'tinymce/icons/default' // 引入编辑器图标icon，不引入则不显示对应图标
@@ -48,7 +48,7 @@ import 'tinymce/plugins/directionality'
 import 'tinymce/plugins/nonbreaking'
 import 'tinymce/plugins/pagebreak'
 import '@npkg/tinymce-plugins/letterspacing'
-import '@/custom-component/rich-text/plugins' //自定义插件
+import './plugins' //自定义插件
 import { computed, nextTick, reactive, ref, toRefs, watch, onMounted, PropType } from 'vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import eventBus from '@/utils/eventBus'
@@ -153,7 +153,7 @@ watch(
   () => active.value,
   val => {
     if (!val) {
-      const ed = deTinymce.editors[tinymceId]
+      const ed = window.tinymce.editors[tinymceId]
       if (canEdit.value) {
         element.value.propValue.textValue = ed.getContent()
       }
@@ -169,7 +169,7 @@ watch(
   () => myValue.value,
   () => {
     if (canEdit.value) {
-      const ed = deTinymce.editors[tinymceId]
+      const ed = window.tinymce.editors[tinymceId]
       element.value.propValue.textValue = ed.getContent()
     }
     if (initReady.value && canEdit.value) {
@@ -207,7 +207,7 @@ const viewInit = () => {
       fieldSelect(val)
     }
   })
-  deTinymce.init({})
+  tinymce.init({})
   myValue.value = assignment(element.value.propValue.textValue)
 }
 const initCurFieldsChange = () => {
@@ -250,7 +250,7 @@ const assignment = content => {
   return content
 }
 const fieldSelect = field => {
-  const ed = deTinymce.editors[tinymceId]
+  const ed = window.tinymce.editors[tinymceId]
   const fieldId = 'changeText-' + guid()
   const value =
     '<span id="' +
@@ -267,12 +267,12 @@ const fieldSelect = field => {
 }
 const onClick = () => {
   if (canEdit.value) {
-    const node = deTinymce.activeEditor.selection.getNode()
+    const node = window.tinymce.activeEditor.selection.getNode()
     resetSelect(node)
   }
 }
 const resetSelect = (node?) => {
-  const edInner = deTinymce.get(tinymceId)
+  const edInner = window.tinymce.get(tinymceId)
   if (edInner?.dom) {
     const nodeArray = edInner.dom.select('.base-selected')
     if (nodeArray) {
@@ -321,7 +321,7 @@ const setEdit = () => {
     canEdit.value = true
     element.value['editing'] = true
     myValue.value = element.value.propValue.textValue
-    const ed = deTinymce.editors[tinymceId]
+    const ed = window.tinymce.editors[tinymceId]
     ed.setContent(myValue.value)
     reShow()
   }
