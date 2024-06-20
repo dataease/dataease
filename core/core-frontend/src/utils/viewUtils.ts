@@ -1,18 +1,25 @@
 import { getRange } from '@/utils/timeUitils'
+import { union } from 'lodash-es'
 
 export function viewFieldTimeTrans(viewDataInfo, params) {
   if (viewDataInfo && params && params.dimensionList) {
-    const idNameMap = viewDataInfo.fields.reduce((pre, next) => {
+    const fields = viewDataInfo.fields
+      ? viewDataInfo.fields
+      : viewDataInfo.left?.fields || viewDataInfo.right?.fields
+      ? union(viewDataInfo.left?.fields, viewDataInfo.right?.fields)
+      : []
+
+    const idNameMap = fields.reduce((pre, next) => {
       pre[next['id']] = next['dataeaseName']
       return pre
     }, {})
 
-    const nameTypeMap = viewDataInfo.fields.reduce((pre, next) => {
+    const nameTypeMap = fields.reduce((pre, next) => {
       pre[next['dataeaseName']] = next['deType']
       return pre
     }, {})
 
-    const nameDateStyleMap = viewDataInfo.fields.reduce((pre, next) => {
+    const nameDateStyleMap = fields.reduce((pre, next) => {
       pre[next['dataeaseName']] = next['dateStyle']
       return pre
     }, {})
