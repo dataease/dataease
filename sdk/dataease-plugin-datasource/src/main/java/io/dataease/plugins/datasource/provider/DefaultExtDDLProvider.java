@@ -53,6 +53,11 @@ public class DefaultExtDDLProvider extends ExtDDLProvider {
     }
 
     @Override
+    public String searchColumnData(String table, String column, String order) {
+        return null;
+    }
+
+    @Override
     public String countSql(String table, List<TableField> formFields, String whereSql) {
         return null;
     }

@@ -2,10 +2,12 @@
 import DeContainer from '@/components/dataease/DeContainer.vue'
 import DataFillingFormSave from './save.vue'
 import clickoutside from 'element-ui/src/utils/clickoutside.js'
-import { filter, cloneDeep, find, concat, forEach } from 'lodash-es'
+import { filter, cloneDeep, find, concat, forEach, groupBy, keys } from 'lodash-es'
 import { v4 as uuidv4 } from 'uuid'
 import { EMAIL_REGEX, PHONE_REGEX } from '@/utils/validate'
-import { getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
+import { getTableColumnData, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
+import { getColumnList, listDatasource } from '@/api/dataset/dataset'
+import { getTableList } from '@/api/system/datasource'
 
 export default {
   name: 'DataFillingFormCreate',
@@ -25,6 +27,12 @@ export default {
       callback()
     }
     return {
+      baseLoading: false,
+      loading: false,
+      allDatasourceList: [],
+      tableList: [],
+      columnList: [],
+      optionFormData: {},
       showDrawer: false,
       isEdit: false,
       disableCreateIndex: false,
@@ -47,14 +55,24 @@ export default {
         {
           type: 'tel',
           name: this.$t('data_fill.form.tel'),
-          rules: [{ pattern: PHONE_REGEX, message: this.$t('user.mobile_number_format_is_incorrect'), trigger: ['blur', 'change'] }]
+          rules: [{
+            pattern: PHONE_REGEX,
+            message: this.$t('user.mobile_number_format_is_incorrect'),
+            trigger: ['blur', 'change']
+          }]
         },
         {
           type: 'email',
           name: this.$t('data_fill.form.email'),
-          rules: [{ pattern: EMAIL_REGEX, message: this.$t('user.email_format_is_incorrect'), trigger: ['blur', 'change'] }]
+          rules: [{
+            pattern: EMAIL_REGEX,
+            message: this.$t('user.email_format_is_incorrect'),
+            trigger: ['blur', 'change']
+          }]
         }
       ],
+      showEditBindColumn: false,
+      asyncOptions: {},
       componentList: [
         {
           type: 'input',
@@ -104,6 +122,10 @@ export default {
             options: [{ name: this.$t('data_fill.form.option') + ' 1', value: this.$t('data_fill.form.option') + ' 1' },
               { name: this.$t('data_fill.form.option') + ' 2', value: this.$t('data_fill.form.option') + ' 2' }],
             optionSourceType: 1,
+            optionDatasource: undefined,
+            optionTable: undefined,
+            optionColumn: undefined,
+            optionOrder: 'asc',
             placeholder: '',
             multiple: false, required: false,
             mapping: {
@@ -124,6 +146,10 @@ export default {
             options: [{ name: this.$t('data_fill.form.option') + ' 1', value: this.$t('data_fill.form.option') + ' 1' },
               { name: this.$t('data_fill.form.option') + ' 2', value: this.$t('data_fill.form.option') + ' 2' }],
             optionSourceType: 1,
+            optionDatasource: undefined,
+            optionTable: undefined,
+            optionColumn: undefined,
+            optionOrder: 'asc',
             required: false,
             mapping: {
 
@@ -144,6 +170,10 @@ export default {
             options: [{ name: this.$t('data_fill.form.option') + ' 1', value: this.$t('data_fill.form.option') + ' 1' },
               { name: this.$t('data_fill.form.option') + ' 2', value: this.$t('data_fill.form.option') + ' 2' }],
             optionSourceType: 1,
+            optionDatasource: undefined,
+            optionTable: undefined,
+            optionColumn: undefined,
+            optionOrder: 'asc',
             required: false,
             mapping: {
 
@@ -225,6 +255,22 @@ export default {
     }
   },
   computed: {
+    datasourceList() {
+      const dsMap = groupBy(this.allDatasourceList, d => d.type)
+      const _types = []
+      if (dsMap) {
+        forEach(keys(dsMap), type => {
+          if (type === 'mysql' || type === 'mariadb') {
+            _types.push({
+              name: dsMap[type][0]?.typeDesc,
+              type: type,
+              options: dsMap[type]
+            })
+          }
+        })
+      }
+      return _types
+    },
     componentList1() {
       return filter(this.componentList, c => c.order % 2 === 0)
     },
@@ -268,7 +314,10 @@ export default {
         const tempData = res.data
         this.formSettings.folder = tempData.pid
         this.formSettings.level = tempData.level
-        this.formSettings.forms = JSON.parse(tempData.forms)
+        this.baseLoading = true
+        this.initData(tempData, () => {
+          this.baseLoading = false
+        })
       })
     } else if (this.$route.query.id !== undefined) {
       const id = this.$route.query.id
@@ -278,37 +327,84 @@ export default {
         this.formSettings = tempData
         this.formSettings.table = tempData.tableName
         this.formSettings.folder = tempData.pid
-        const tempForms = filter(JSON.parse(res.data.forms), f => !f.removed)
-        forEach(tempForms, f => {
-          f.old = true
-          if (f.type === 'checkbox' || f.type === 'select' && f.settings.multiple) {
-            f.value = []
+        this.baseLoading = true
+        this.initData(res.data, () => {
+          if (res.data.createIndex) {
+            forEach(this.formSettings.tableIndexes, f => {
+              f.old = true
+            })
+            this.formSettings.oldTableIndexes = JSON.parse(res.data.tableIndexes)
+          } else {
+            this.formSettings.oldTableIndexes = []
           }
-          if (f.type === 'date' && f.settings.dateType === undefined) { // 兼容旧的
-            f.settings.dateType = f.settings.enableTime ? 'datetime' : 'date'
-          }
-          if (f.type === 'dateRange' && f.settings.dateType === undefined) { // 兼容旧的
-            f.settings.dateType = f.settings.enableTime ? 'datetimerange' : 'daterange'
-          }
+
+          this.disableCreateIndex = res.data.createIndex
+          this.baseLoading = false
         })
-        this.formSettings.forms = tempForms
-        this.formSettings.oldForms = JSON.parse(res.data.forms)
-        this.formSettings.tableIndexes = JSON.parse(res.data.tableIndexes)
-
-        if (res.data.createIndex) {
-          forEach(this.formSettings.tableIndexes, f => {
-            f.old = true
-          })
-          this.formSettings.oldTableIndexes = JSON.parse(res.data.tableIndexes)
-        } else {
-          this.formSettings.oldTableIndexes = []
-        }
-
-        this.disableCreateIndex = res.data.createIndex
       })
     }
+    // 获取用户的数据源
+    listDatasource().then(data => {
+      this.allDatasourceList = data.data
+    })
   },
   methods: {
+    initData(data, callback) {
+      const tempForms = filter(JSON.parse(data.forms), f => !f.removed)
+      forEach(tempForms, f => {
+        f.old = true
+        if (f.type === 'checkbox' || f.type === 'select' && f.settings.multiple) {
+          f.value = []
+        }
+        if (f.type === 'date' && f.settings.dateType === undefined) { // 兼容旧的
+          f.settings.dateType = f.settings.enableTime ? 'datetime' : 'date'
+        }
+        if (f.type === 'dateRange' && f.settings.dateType === undefined) { // 兼容旧的
+          f.settings.dateType = f.settings.enableTime ? 'datetimerange' : 'daterange'
+        }
+      })
+      this.initFormOptionsData(tempForms, () => {
+        this.formSettings.forms = tempForms
+        this.formSettings.oldForms = JSON.parse(data.forms)
+        this.formSettings.tableIndexes = JSON.parse(data.tableIndexes)
+
+        if (callback) {
+          callback()
+        }
+      })
+    },
+    initFormOptionsData(forms, callback) {
+      const queries = []
+      const queryIds = []
+      forEach(forms, f => {
+        if (f.type === 'checkbox' || f.type === 'select' || f.type === 'radio') {
+          if (f.settings && f.settings.optionSourceType === 2 && f.settings.optionDatasource && f.settings.optionTable && f.settings.optionColumn && f.settings.optionOrder) {
+            const id = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
+
+            const p = getTableColumnData(f.settings.optionDatasource, f.settings.optionTable, f.settings.optionColumn, f.settings.optionOrder)
+            queries.push(p)
+            queryIds.push(id)
+          }
+        }
+      })
+
+      if (queries.length > 0) {
+        Promise.all(queries).then((val) => {
+          for (let i = 0; i < queryIds.length; i++) {
+            const id = queryIds[i]
+            this.asyncOptions[id] = val[i].data
+          }
+        }).finally(() => {
+          if (callback) {
+            callback()
+          }
+        })
+      } else {
+        if (callback) {
+          callback()
+        }
+      }
+    },
     closeCreate: function() {
       // back to forms list
       if (this.$route.query.copy) {
@@ -417,6 +513,133 @@ export default {
 
       return rules
     },
+    onOptionSourceTypeChange(type, itemSettings) {
+      if (type === 2) {
+        this.getAsyncOption({
+          optionSourceType: type,
+          optionDatasource: itemSettings.optionDatasource,
+          optionTable: itemSettings.optionTable,
+          optionColumn: itemSettings.optionColumn,
+          optionOrder: itemSettings.optionOrder
+        })
+      }
+    },
+    getAsyncOption(itemSettings, callback) {
+      if (itemSettings.optionSourceType === 2 && itemSettings.optionDatasource && itemSettings.optionTable && itemSettings.optionColumn && itemSettings.optionOrder) {
+        const id = itemSettings.optionDatasource + '_' + itemSettings.optionTable + '_' + itemSettings.optionColumn + '_' + itemSettings.optionOrder
+        if (this.asyncOptions[id] === undefined || this.asyncOptions[id].length === 0) {
+          getTableColumnData(itemSettings.optionDatasource, itemSettings.optionTable, itemSettings.optionColumn, itemSettings.optionOrder).then(data => {
+            this.asyncOptions[id] = data.data
+          }).finally(() => {
+            if (callback) {
+              callback()
+            }
+          })
+        } else {
+          if (callback) {
+            callback()
+          }
+        }
+      }
+    },
+    openEditBindColumn(settings) {
+      this.tableList = []
+      this.columnList = []
+      this.optionFormData = cloneDeep({
+        optionSourceType: 2,
+        optionDatasource: settings.optionDatasource,
+        optionTable: settings.optionTable,
+        optionColumn: settings.optionColumn,
+        optionOrder: settings.optionOrder ?? 'asc'
+      })
+      const p1 = settings.optionDatasource ? getTableList(settings.optionDatasource) : undefined
+      const p2 = settings.optionDatasource && settings.optionTable ? getColumnList(settings.optionDatasource, settings.optionTable) : undefined
+      const promiseList = []
+      if (p1) {
+        promiseList.push(p1)
+        if (p2) {
+          promiseList.push(p2)
+        }
+      }
+      if (promiseList.length > 1) {
+        this.loading = true
+        Promise.all(promiseList).then((val) => {
+          this.tableList = val[0].data
+          if (find(this.tableList, t => t.name === this.optionFormData.optionTable)) {
+            if (promiseList.length > 1) {
+              this.columnList = val[1].data
+              if (!find(this.columnList, t => t.fieldName === this.optionFormData.optionColumn)) {
+                this.optionFormData.optionColumn = undefined
+              }
+            }
+          } else {
+            this.optionFormData.optionTable = undefined
+            this.optionFormData.optionColumn = undefined
+          }
+        }).finally(() => {
+          this.loading = false
+        })
+      }
+      this.showEditBindColumn = true
+    },
+    onDataSourceChange(datasource) {
+      this.tableList = []
+      this.columnList = []
+      if (datasource) {
+        this.loading = true
+        getTableList(datasource).then(res => {
+          this.tableList = res.data
+
+          if (this.optionFormData.optionTable) {
+            if (find(this.tableList, t => t.name === this.optionFormData.optionTable)) {
+              this.onTableChange(datasource, this.optionFormData.optionTable)
+            } else {
+              this.optionFormData.optionTable = undefined
+              this.optionFormData.optionColumn = undefined
+            }
+          }
+        }).finally(() => {
+          this.loading = false
+        })
+      }
+    },
+    onTableChange(datasource, table) {
+      this.columnList = []
+      if (datasource && table) {
+        this.loading = true
+        getColumnList(datasource, table).then(res => {
+          this.columnList = res.data
+
+          if (this.optionFormData.optionColumn) {
+            if (!find(this.columnList, t => t.fieldName === this.optionFormData.optionColumn)) {
+              this.optionFormData.optionColumn = undefined
+            }
+          }
+        }).finally(() => {
+          this.loading = false
+        })
+      }
+    },
+    closeEditBindColumn() {
+      this.showEditBindColumn = false
+    },
+    doEditBindColumn() {
+      this.$refs['optionForm'].validate((valid, invalidFields) => {
+        if (valid) {
+          this.loading = true
+          this.getAsyncOption(this.optionFormData, () => {
+            this.selectedComponentItem.settings.optionSourceType = this.optionFormData.optionSourceType
+            this.selectedComponentItem.settings.optionDatasource = this.optionFormData.optionDatasource
+            this.selectedComponentItem.settings.optionTable = this.optionFormData.optionTable
+            this.selectedComponentItem.settings.optionColumn = this.optionFormData.optionColumn
+            this.selectedComponentItem.settings.optionOrder = this.optionFormData.optionOrder
+            this.loading = false
+
+            this.closeEditBindColumn()
+          })
+        }
+      })
+    },
     addOption(list) {
       list.push({ name: '', value: '' })
     },
@@ -488,7 +711,10 @@ export default {
 </script>
 
 <template>
-  <div class="data-filling-form">
+  <div
+    v-loading="baseLoading"
+    class="data-filling-form"
+  >
     <el-header class="de-header">
       <div class="panel-info-area">
         <!--back to panelList-->
@@ -520,7 +746,8 @@ export default {
       <el-button
         style="margin-right: 20px"
         @click="toSave"
-      >{{ $t('commons.save') }}</el-button>
+      >{{ $t('commons.save') }}
+      </el-button>
     </el-header>
     <de-container class="form-main-container">
       <div class="tools-window-left">
@@ -617,9 +844,9 @@ export default {
                   :key="item.id"
                   class="m-item m-form-item"
                   :class="{'selectedClass': item.id === selectedItemId}"
+                  :data-var="tempId = item.settings ? item.settings.optionDatasource + '_' + item.settings.optionTable + '_' + item.settings.optionColumn + '_' + item.settings.optionOrder : 'unset'"
                   @click.stop="selectItem(item.id)"
                 >
-
                   <div class="m-label-container">
                     <span style="width: unset">
                       {{ item.settings.name }}
@@ -699,7 +926,7 @@ export default {
                       clearable
                     >
                       <el-option
-                        v-for="(x, $index) in item.settings.options"
+                        v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
                         :key="$index"
                         :label="x.name"
                         :value="x.value"
@@ -714,7 +941,7 @@ export default {
                       size="small"
                     >
                       <el-radio
-                        v-for="(x, $index) in item.settings.options"
+                        v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
                         :key="$index"
                         :label="x.value"
                       >{{ x.name }}
@@ -728,7 +955,7 @@ export default {
                       size="small"
                     >
                       <el-checkbox
-                        v-for="(x, $index) in item.settings.options"
+                        v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
                         :key="$index"
                         :label="x.value"
                       >{{ x.name }}
@@ -990,47 +1217,78 @@ export default {
                   <el-radio-group
                     v-model="selectedComponentItem.settings.optionSourceType"
                     size="small"
+                    @change="onOptionSourceTypeChange(selectedComponentItem.settings.optionSourceType, selectedComponentItem.settings)"
                   >
                     <el-radio :label="1">
                       {{ $t('data_fill.form.custom') }}
                     </el-radio>
+                    <el-radio :label="2">
+                      {{ $t('data_fill.form.use_datasource') }}
+                    </el-radio>
                   </el-radio-group>
                 </el-form-item>
 
-                <el-button
-                  type="text"
-                  @click="addOption(selectedComponentItem.settings.options)"
-                >+ {{ $t('data_fill.form.add_option') }}
-                </el-button>
+                <template v-if="selectedComponentItem.settings.optionSourceType === 1">
+                  <el-button
+                    type="text"
+                    @click="addOption(selectedComponentItem.settings.options)"
+                  >+ {{ $t('data_fill.form.add_option') }}
+                  </el-button>
 
-                <div
-                  v-for="(x,$index) in selectedComponentItem.settings.options"
-                  :key="$index"
-                  class="option-list-div"
-                >
-                  <el-form-item
-                    :prop="'options['+$index+'].value'"
-                    class="form-item no-margin-bottom"
-                    style="width: 100%"
-                    :rules="[requiredRule, duplicateOptionRule]"
-                  >
-                    <el-input
-                      v-model="x.value"
-                      required
-                      size="small"
-                      minlength="1"
-                      maxlength="50"
-                      show-word-limit
-                      @change="onOptionValueChange(x, x.value)"
-                    />
-                  </el-form-item>
                   <div
-                    class="btn-item"
-                    @click.prevent.stop="removeOption(selectedComponentItem.settings.options, $index)"
+                    v-for="(x,$index) in selectedComponentItem.settings.options"
+                    :key="$index"
+                    class="option-list-div"
                   >
-                    <svg-icon icon-class="icon_delete-trash_outlined" />
+                    <el-form-item
+                      :prop="'options['+$index+'].value'"
+                      class="form-item no-margin-bottom"
+                      style="width: 100%"
+                      :rules="[requiredRule, duplicateOptionRule]"
+                    >
+                      <el-input
+                        v-model="x.value"
+                        required
+                        size="small"
+                        minlength="1"
+                        maxlength="50"
+                        show-word-limit
+                        @change="onOptionValueChange(x, x.value)"
+                      />
+                    </el-form-item>
+                    <div
+                      class="btn-item"
+                      @click.prevent.stop="removeOption(selectedComponentItem.settings.options, $index)"
+                    >
+                      <svg-icon icon-class="icon_delete-trash_outlined" />
+                    </div>
                   </div>
-                </div>
+                </template>
+                <template v-else>
+                  <el-button
+                    v-if="!selectedComponentItem.settings.optionColumn"
+                    type="text"
+                    @click="openEditBindColumn({})"
+                  >+ {{ $t('data_fill.form.bind_column') }}
+                  </el-button>
+                  <div
+                    v-else
+                    style="display: flex; flex-direction: row; align-items: center; font-size: 14px;"
+                  >
+                    <div style="width: 28px;" />
+                    <div style="flex:2">{{ selectedComponentItem.settings.optionTable }}
+                      ({{ selectedComponentItem.settings.optionColumn }})
+                    </div>
+                    <div style="flex:1; color: #8F959E;">{{ $t('data_fill.form.bind_complete') }}</div>
+                    <el-button
+                      :title="$t('chart.edit')"
+                      icon="el-icon-edit"
+                      type="text"
+                      @click="openEditBindColumn(selectedComponentItem.settings)"
+                    />
+                  </div>
+
+                </template>
 
               </div>
 
@@ -1091,10 +1349,137 @@ export default {
       />
     </el-drawer>
 
+    <el-dialog
+      v-dialogDrag
+      append-to-body
+      :title="$t('data_fill.form.use_datasource')"
+      :visible.sync="showEditBindColumn"
+      :show-close="true"
+      width="600px"
+      class="m-dialog"
+    >
+      <el-container
+        v-loading="loading"
+        style="width: 100%"
+        direction="vertical"
+      >
+        <el-form
+          ref="optionForm"
+          class="m-form"
+          :model="optionFormData"
+          label-position="right"
+          label-width="140px"
+          hide-required-asterisk
+          @submit.native.prevent
+        >
+          <el-main>
+            <el-form-item
+              prop="optionDatasource"
+              class="form-item"
+              :label="$t('data_fill.form.datasource')"
+              :rules="[requiredRule]"
+            >
+              <el-select
+                v-model="optionFormData.optionDatasource"
+                required
+                style="width: 100%"
+                size="small"
+                filterable
+                @change="onDataSourceChange"
+              >
+                <el-option-group
+                  v-for="(x, $index) in datasourceList"
+                  :key="$index"
+                  :label="x.name"
+                >
+                  <el-option
+                    v-for="d in x.options"
+                    :key="d.id"
+                    :value="d.id"
+                    :label="d.name"
+                  >{{ d.name }}
+                  </el-option>
+                </el-option-group>
+              </el-select>
+            </el-form-item>
+            <el-form-item
+              prop="optionTable"
+              class="form-item"
+              :label="$t('data_fill.form.table')"
+              :rules="[requiredRule]"
+            >
+              <el-select
+                v-model="optionFormData.optionTable"
+                required
+                style="width: 100%"
+                size="small"
+                filterable
+                @change="onTableChange(optionFormData.optionDatasource, optionFormData.optionTable)"
+              >
+                <el-option
+                  v-for="d in tableList"
+                  :key="d.name"
+                  :value="d.name"
+                  :label="d.name"
+                >{{ d.name }}
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item
+              prop="optionColumn"
+              class="form-item"
+              :label="$t('data_fill.form.column_name')"
+              :rules="[requiredRule]"
+            >
+              <el-select
+                v-model="optionFormData.optionColumn"
+                required
+                style="width: 100%"
+                size="small"
+                filterable
+              >
+                <el-option
+                  v-for="d in columnList"
+                  :key="d.fieldName"
+                  :value="d.fieldName"
+                  :label="d.fieldName"
+                >{{ d.fieldName }}
+                </el-option>
+              </el-select>
+            </el-form-item>
+            <el-form-item
+              prop="optionOrder"
+              class="form-item"
+              :label="$t('data_fill.form.order')"
+              :rules="[requiredRule]"
+            >
+              <el-radio-group
+                v-model="optionFormData.optionOrder"
+                required
+                style="width: 100%"
+                size="small"
+              >
+                <el-radio label="asc">{{ $t('data_fill.form.order_asc') }}</el-radio>
+                <el-radio label="desc">{{ $t('data_fill.form.order_desc') }}</el-radio>
+              </el-radio-group>
+            </el-form-item>
+          </el-main>
+        </el-form>
+        <el-footer class="de-footer">
+          <el-button @click="closeEditBindColumn">{{ $t("commons.cancel") }}</el-button>
+          <el-button
+            type="primary"
+            @click="doEditBindColumn"
+          >{{ $t("commons.confirm") }}
+          </el-button>
+        </el-footer>
+      </el-container>
+    </el-dialog>
+
   </div>
 </template>
 
-<style  lang="scss" scoped>
+<style lang="scss" scoped>
 .data-filling-form {
   ::v-deep .el-form-item__error {
     position: relative;
@@ -1208,7 +1593,7 @@ export default {
     flex-direction: row;
     align-items: center;
 
-  //styleName: Title 3 / 16px; font-family: PingFang SC; font-size: 16px; font-weight: 500; line-height: 24px; text-align: left;
+    //styleName: Title 3 / 16px; font-family: PingFang SC; font-size: 16px; font-weight: 500; line-height: 24px; text-align: left;
 
   }
 
@@ -1462,6 +1847,11 @@ export default {
     }
 
   }
-
+}
+.de-footer {
+  display: flex;
+  flex-direction: row;
+  align-items: center;
+  justify-content: flex-end
 }
 </style>

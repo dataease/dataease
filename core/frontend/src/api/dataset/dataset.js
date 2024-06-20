@@ -303,4 +303,13 @@ export function downloadFile(id) {
   })
 }
 
-export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs, exportDataset }
+export function getColumnList(datasource, table) {
+  return request({
+    url: 'dataset/table/getFields',
+    method: 'post',
+    loading: true,
+    data: { dataSourceId: datasource, info: JSON.stringify({ table: table }) }
+  })
+}
+
+export default { loadTable, getScene, addGroup, delGroup, addTable, delTable, groupTree, checkCustomDs, exportDataset, getColumnList }
