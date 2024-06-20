@@ -227,7 +227,7 @@ const addFields = () => {
     return pre
   }, new Set([]))
   if (list.size) {
-    checklist.value = [...checklist.value, ...Array.from(list)]
+    checklist.value = [...new Set([...checklist.value, ...Array.from(list)])]
   }
   showTextArea.value = false
 }
