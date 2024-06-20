@@ -689,6 +689,35 @@ public class DataFillDataService {
         return rowId;
     }
 
+    public List<ExtTableField.Option> listColumnData(String optionDatasource, String optionTable, String optionColumn, String optionOrder) throws Exception {
+        Datasource ds = datasource.get(optionDatasource);
+        Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+
+        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
+
+        String sql = extDDLProvider.searchColumnData(optionTable, optionColumn, optionOrder);
+
+        datasourceRequest.setQuery(sql);
+
+        List<String[]> data = datasourceProvider.getData(datasourceRequest);
+
+        List<ExtTableField.Option> result = new ArrayList<>();
+        for (String[] datum : data) {
+            ExtTableField.Option option = new ExtTableField.Option();
+            if (StringUtils.isBlank(datum[0])) {
+                continue;
+            }
+            option.setName(datum[0]);
+            option.setValue(datum[0]);
+            result.add(option);
+        }
+
+        return result;
+    }
+
     @Data
     public static class ExcelDataListener extends AnalysisEventListener<Map<Integer, String>> {
         private List<List<String>> data = new ArrayList<>();
@@ -840,7 +869,16 @@ public class DataFillDataService {
                         default:
                             if (StringUtils.equalsIgnoreCase(field.getType(), "select") && !field.getSettings().isMultiple() || StringUtils.equalsIgnoreCase(field.getType(), "radio")) {
                                 boolean has = false;
-                                for (ExtTableField.Option option : field.getSettings().getOptions()) {
+                                List<ExtTableField.Option> options = field.getSettings().getOptions();
+                                if (field.getSettings().getOptionSourceType() == 2
+                                        && StringUtils.isNotBlank(field.getSettings().getOptionDatasource())
+                                        && StringUtils.isNotBlank(field.getSettings().getOptionTable())
+                                        && StringUtils.isNotBlank(field.getSettings().getOptionColumn())
+                                ) {
+                                    options = listColumnData(field.getSettings().getOptionDatasource(), field.getSettings().getOptionTable(), field.getSettings().getOptionColumn(), field.getSettings().getOptionOrder());
+                                }
+
+                                for (ExtTableField.Option option : options) {
                                     if (StringUtils.equals((String) option.getValue(), excelRowData)) {
                                         has = true;
                                         break;
@@ -867,9 +905,19 @@ public class DataFillDataService {
 
                                 List<String> result = new ArrayList<>();
                                 if (CollectionUtils.isNotEmpty(list)) {
+
+                                    List<ExtTableField.Option> options = field.getSettings().getOptions();
+                                    if (field.getSettings().getOptionSourceType() == 2
+                                            && StringUtils.isNotBlank(field.getSettings().getOptionDatasource())
+                                            && StringUtils.isNotBlank(field.getSettings().getOptionTable())
+                                            && StringUtils.isNotBlank(field.getSettings().getOptionColumn())
+                                    ) {
+                                        options = listColumnData(field.getSettings().getOptionDatasource(), field.getSettings().getOptionTable(), field.getSettings().getOptionColumn(), field.getSettings().getOptionOrder());
+                                    }
+
                                     for (String str : list) {
                                         boolean has = false;
-                                        for (ExtTableField.Option option : field.getSettings().getOptions()) {
+                                        for (ExtTableField.Option option : options) {
                                             if (StringUtils.equals((String) option.getValue(), str)) {
                                                 has = true;
                                                 break;
@@ -877,6 +925,8 @@ public class DataFillDataService {
                                         }
                                         if (has) {
                                             result.add(str);
+                                        } else {
+                                            DataEaseException.throwException("[" + field.getSettings().getName() + "] 输入值[" + str + "]不在范围内");
                                         }
                                     }
                                     if (CollectionUtils.isEmpty(result)) {

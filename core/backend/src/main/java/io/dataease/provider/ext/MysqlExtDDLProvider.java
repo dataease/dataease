@@ -90,6 +90,18 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
     }
 
     @Override
+    public String searchColumnData(String table, String column, String order) {
+        String baseSql = "SELECT DISTINCT `$Column_Field$` FROM `$TABLE_NAME$` ORDER BY `$Column_Field$` $Column_Order$;";
+        baseSql = baseSql.replace("$TABLE_NAME$", table).replace("$Column_Field$", column).replace("$Column_Field$", column);
+        if (StringUtils.equalsIgnoreCase(order, "desc")) {
+            baseSql = baseSql.replace("$Column_Order$", "DESC");
+        } else {
+            baseSql = baseSql.replace("$Column_Order$", "ASC");
+        }
+        return baseSql;
+    }
+
+    @Override
     public String whereSql(String tableName, List<TableField> searchFields) {
         StringBuilder builder = new StringBuilder("WHERE 1 = 1 ");
         for (TableField searchField : searchFields) {

@@ -3,6 +3,7 @@ package io.dataease.controller.datafill;
 import com.alibaba.excel.EasyExcel;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
+import com.google.gson.Gson;
 import io.dataease.commons.utils.AuthUtils;
 import io.dataease.commons.utils.PageUtils;
 import io.dataease.commons.utils.Pager;
@@ -25,10 +26,7 @@ import javax.annotation.Resource;
 import javax.servlet.http.HttpServletResponse;
 import java.net.URLEncoder;
 import java.nio.charset.StandardCharsets;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @ApiIgnore
 @RequestMapping("dataFilling")
@@ -193,20 +191,33 @@ public class DataFillController {
     @ApiIgnore
     @PostMapping("/form/{formId}/excel/template")
     public void getExcelTemplate(@PathVariable String formId, HttpServletResponse response) throws Exception {
-        response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
-        response.setCharacterEncoding("utf-8");
-        // 这里URLEncoder.encode可以防止中文乱码
-        String fileName = URLEncoder.encode("template", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
-        response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
-        // 这里需要设置不关闭流
-        EasyExcel.write(response.getOutputStream())
-                .head(dataFillService.getExcelHead(formId))
-                .automaticMergeHead(false)
-                .inMemory(true)
-                .registerWriteHandler(dataFillService.getCommentWriteHandler(formId))
-                .autoCloseStream(Boolean.FALSE)
-                .sheet("模板")
-                .doWrite(new ArrayList());
+        try {
+            response.setContentType("application/vnd.openxmlformats-officedocument.spreadsheetml.sheet");
+            response.setCharacterEncoding("utf-8");
+            // 这里URLEncoder.encode可以防止中文乱码
+            String fileName = URLEncoder.encode("template", StandardCharsets.UTF_8).replaceAll("\\+", "%20");
+            response.setHeader("Content-disposition", "attachment;filename*=utf-8''" + fileName + ".xlsx");
+            // 这里需要设置不关闭流
+            EasyExcel.write(response.getOutputStream())
+                    .head(dataFillService.getExcelHead(formId))
+                    .automaticMergeHead(false)
+                    .inMemory(true)
+                    .registerWriteHandler(dataFillService.getCommentWriteHandler(formId))
+                    .autoCloseStream(Boolean.FALSE)
+                    .sheet("模板")
+                    .doWrite(new ArrayList());
+        } catch (Exception e) {
+            e.printStackTrace();
+            // 重置response
+            response.reset();
+            response.setContentType("application/json");
+            response.setCharacterEncoding("utf-8");
+            response.setStatus(500);
+            Map<String, Object> map = new HashMap<>();
+            map.put("success", false);
+            map.put("message", e.getMessage());
+            response.getWriter().println(new Gson().toJson(map));
+        }
     }
 
     @ApiIgnore
@@ -214,6 +225,12 @@ public class DataFillController {
     public void excelUpload(@RequestParam("file") MultipartFile file, @PathVariable String formId) throws Exception {
         String filename = file.getOriginalFilename();
         dataFillDataService.importExcelData(file, formId);
+    }
+
+    @ApiIgnore
+    @PostMapping("/form/{optionDatasource}/{optionTable}/{optionColumn}/options/{optionOrder}")
+    public List<ExtTableField.Option> listColumnData(@PathVariable String optionDatasource, @PathVariable String optionTable, @PathVariable String optionColumn, @PathVariable String optionOrder) throws Exception {
+        return dataFillDataService.listColumnData(optionDatasource, optionTable, optionColumn, optionOrder);
     }
 
 }
