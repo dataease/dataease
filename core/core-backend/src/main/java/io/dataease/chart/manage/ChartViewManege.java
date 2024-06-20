@@ -133,10 +133,7 @@ public class ChartViewManege {
         // filter column disable field
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         List<DatasetTableFieldDTO> datasetTableFieldDTOS = permissionManage.filterColumnPermissions(collect, desensitizationList, id, null);
-        if (!chartViewDTO.getType().equalsIgnoreCase("table-info")) {
-            datasetTableFieldDTOS = datasetTableFieldDTOS.stream().filter(datasetTableFieldDTO -> !desensitizationList.keySet().contains(datasetTableFieldDTO.getDataeaseName())).collect(Collectors.toList());
-        }
-
+        datasetTableFieldDTOS.forEach(ele -> ele.setDesensitized(desensitizationList.containsKey(ele.getDataeaseName())));
         datasetTableFieldDTOS.add(createCountField(id));
         List<ChartViewFieldDTO> list = transFieldDTO(datasetTableFieldDTOS);
 
