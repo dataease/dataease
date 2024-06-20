@@ -575,6 +575,7 @@ public class JdbcProvider extends DefaultJdbcProvider {
 
                 if (StringUtils.isNotEmpty(hiveConfiguration.getAuthMethod()) && hiveConfiguration.getAuthMethod().equalsIgnoreCase("kerberos")) {
                     System.setProperty("java.security.krb5.conf", "/opt/dataease/conf/krb5.conf");
+                    System.setProperty("javax.security.auth.useSubjectCredsOnly", "false");
                     ExtendedJdbcClassLoader classLoader;
                     if (isDefaultClassLoader(customDriver)) {
                         classLoader = extendedJdbcClassLoader;
