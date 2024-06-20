@@ -1605,7 +1605,7 @@ const deleteChartFieldItem = id => {
             </div>
             <plugin-component
               v-else-if="view.plugin?.isPlugin"
-              jsname="L2NvbXBvbmVudC9lZGl0b3IvaW5kZXg="
+              :jsname="view.plugin.staticMap['editor']"
               :view="view"
               :dimension="state.dimension"
               :quota="state.quota"

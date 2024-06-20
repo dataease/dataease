@@ -20,4 +20,7 @@ public interface XpackComponentApi {
 
     @GetMapping("/viewPlugins")
     List<XpackPluginsViewVO> viewPlugins();
+
+    @GetMapping("/pluginStaticInfo/{moduleName}")
+    void pluginStaticInfo(@PathVariable("moduleName") String moduleName);
 }

@@ -518,8 +518,9 @@ export function findNewComponentFromList(
   componentName,
   innerType,
   curOriginThemes,
-  isPlugin?: boolean
+  staticMap?: object
 ) {
+  const isPlugin = !!staticMap
   let newComponent
   list.forEach(comp => {
     if (comp.component === componentName) {
@@ -540,6 +541,9 @@ export function findNewComponentFromList(
     newComponent.label = viewConfig?.title
     newComponent.render = viewConfig?.render
     newComponent.isPlugin = !!isPlugin
+    if (isPlugin) {
+      newComponent.staticMap = staticMap
+    }
   }
   return newComponent
 }
