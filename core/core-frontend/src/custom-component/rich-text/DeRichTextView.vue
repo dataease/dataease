@@ -59,6 +59,8 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { parseJson } from '@/views/chart/components/js/util'
+import { mappingColor } from '@/views/chart/components/js/panel/common/common_table'
 const snapshotStore = snapshotStoreWithOut()
 const errMsg = ref('')
 const dvMainStore = dvMainStoreWithOut()
@@ -103,6 +105,7 @@ const { element, editMode, active, disabled, showPosition } = toRefs(props)
 
 const state = reactive({
   data: null,
+  viewDataInfo: null,
   totalItems: 0
 })
 const dataRowSelect = ref({})
@@ -216,16 +219,18 @@ const initCurFieldsChange = () => {
 const assignment = content => {
   const on = content.match(/\[(.+?)\]/g)
   if (on) {
+    const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
     on.forEach(itm => {
       if (dataRowFiledName.value.includes(itm)) {
         const ele = itm.slice(1, -1)
         if (initReady.value) {
-          content = content.replace(
-            itm,
-            dataRowNameSelect.value[ele] !== undefined
-              ? dataRowNameSelect.value[ele]
-              : '[未获取字段值]'
-          )
+          const thresholdStyle = thresholdStyleInfo[ele]
+          let value =
+            dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
+          if (value && thresholdStyle) {
+            value = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${value}</span>`
+          }
+          content = content.replace(itm, !!value ? value : '[未获取字段值]')
         } else {
           content = content.replace(
             itm,
@@ -359,6 +364,7 @@ const calcData = (view: Chart, callback) => {
           errMsg.value = res.msg
         } else {
           state.data = res?.data
+          state.viewDataInfo = res
           state.totalItems = res?.totalItems
           const curViewInfo = canvasViewInfo.value[element.value.id]
           curViewInfo['curFields'] = res.data.fields
@@ -447,6 +453,40 @@ const initCurFields = chartDetails => {
 
 const renderChart = () => {
   initCurFieldsChange()
+}
+
+const conditionAdaptor = (chart: Chart) => {
+  if (!chart) {
+    return
+  }
+  const { threshold } = parseJson(chart.senior)
+  if (!threshold.enable) {
+    return
+  }
+  const res = {}
+  const conditions = threshold.tableThreshold ?? []
+  if (conditions?.length > 0) {
+    for (let i = 0; i < conditions.length; i++) {
+      const field = conditions[i]
+      let defaultValueColor = 'none'
+      let defaultBgColor = 'none'
+      res[field.field.name] = {
+        color: mappingColor(
+          dataRowNameSelect.value[field.field.name],
+          defaultValueColor,
+          field,
+          'color'
+        ),
+        backgroundColor: mappingColor(
+          dataRowNameSelect.value[field.field.name],
+          defaultBgColor,
+          field,
+          'backgroundColor'
+        )
+      }
+    }
+  }
+  return res
 }
 
 onMounted(() => {
