@@ -223,21 +223,15 @@ const assignment = content => {
     on.forEach(itm => {
       if (dataRowFiledName.value.includes(itm)) {
         const ele = itm.slice(1, -1)
-        if (initReady.value) {
+        let value = dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
+        if (value && thresholdStyleInfo && thresholdStyleInfo[ele]) {
           const thresholdStyle = thresholdStyleInfo[ele]
-          let value =
-            dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
-          if (value && thresholdStyle) {
-            value = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${value}</span>`
-          }
+          value = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${value}</span>`
+        }
+        if (initReady.value) {
           content = content.replace(itm, !!value ? value : '[未获取字段值]')
         } else {
-          content = content.replace(
-            itm,
-            dataRowNameSelect.value[ele] !== undefined
-              ? dataRowNameSelect.value[ele]
-              : '[获取中...]'
-          )
+          content = content.replace(itm, !!value ? value : '[获取中...]')
         }
       }
     })
