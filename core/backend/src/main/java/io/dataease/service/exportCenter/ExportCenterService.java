@@ -2,6 +2,7 @@ package io.dataease.service.exportCenter;
 
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentUserDto;
+import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
@@ -124,7 +125,8 @@ public class ExportCenterService {
     private int corePoolSize = 10;
     private int keepAliveSeconds = 600;
     private Map<String, Future> Running_Task = new HashMap<>();
-
+    @Resource
+    private AuthUserService authUserService;
     @Autowired
     private WsService wsService;
 
@@ -394,11 +396,10 @@ public class ExportCenterService {
     }
 
     private void startViewTask(ExportTask exportTask, PanelViewDetailsRequest request) {
-
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-        CurrentUserDto currentUserDto = AuthUtils.getUser();
+        CurrentUserDto currentUserDto = (CurrentUserDto) authUserService.getUserById(exportTask.getUserId());
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             AuthUtils.setUser(currentUserDto);
             try {
@@ -597,7 +598,9 @@ public class ExportCenterService {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
+        CurrentUserDto user = (CurrentUserDto) authUserService.getUserById(exportTask.getUserId());
         Future future = scheduledThreadPoolExecutor.submit(() -> {
+            AuthUtils.setUser(user);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateByPrimaryKey(exportTask);
