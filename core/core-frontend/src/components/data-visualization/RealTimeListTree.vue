@@ -160,6 +160,7 @@ const dragOnEnd = ({ oldIndex, newIndex }) => {
   componentData.value.splice(comLength - 1 - oldIndex, 1)
   componentData.value.splice(comLength - 1 - newIndex, 0, target)
   dvMainStore.setCurComponent({ component: target, index: transformIndex(comLength - oldIndex) })
+  snapshotStore.recordSnapshotCache()
 }
 
 const getIconName = item => {
