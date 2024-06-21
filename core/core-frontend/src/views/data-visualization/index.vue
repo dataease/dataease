@@ -64,6 +64,7 @@ const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 const canvasCacheOutRef = ref(null)
+const deWRulerRef = ref(null)
 
 const {
   fullscreenFlag,
@@ -357,6 +358,10 @@ const canvasPropertiesShow = computed(
 const viewsPropertiesShow = computed(
   () => !!(curComponent.value && ['UserView', 'VQuery'].includes(curComponent.value.component))
 )
+
+const scrollCanvas = e => {
+  deWRulerRef.value.rulerScroll(e)
+}
 eventBus.on('handleNew', handleNew)
 </script>
 
@@ -388,7 +393,13 @@ eventBus.on('handleNew', handleNew)
       </dv-sidebar>
       <!-- 中间画布 -->
       <main id="dv-main-center" class="center" ref="canvasCenterRef">
-        <el-scrollbar ref="canvasOut" class="content" :class="{ 'preview-content': previewStatus }">
+        <de-ruler ref="deWRulerRef"></de-ruler>
+        <el-scrollbar
+          ref="canvasOut"
+          @scroll="scrollCanvas"
+          class="content"
+          :class="{ 'preview-content': previewStatus }"
+        >
           <div
             id="canvas-dv-outer"
             ref="canvasInner"
