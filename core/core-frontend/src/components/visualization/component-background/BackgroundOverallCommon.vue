@@ -4,7 +4,7 @@
       id="input"
       ref="files"
       type="file"
-      accept=".jpeg,.jpg,.png,.gif"
+      accept=".jpeg,.jpg,.png,.gif,.svg"
       hidden
       @click="
         e => {

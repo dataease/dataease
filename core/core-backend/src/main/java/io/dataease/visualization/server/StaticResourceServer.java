@@ -76,7 +76,7 @@ public class StaticResourceServer implements StaticResourceApi {
             return true;
         }
         // 判断其他图片
-        if (image == null || image.getWidth() <= 0 || image.getHeight() <= 0 || !isValidSVG(file)) {
+        if (image == null || image.getWidth() <= 0 || image.getHeight() <= 0) {
             return false;
         }
         return true;
