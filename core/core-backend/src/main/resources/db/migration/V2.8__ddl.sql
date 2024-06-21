@@ -21,3 +21,16 @@ CREATE TABLE `xpack_plugin`
 
 ALTER TABLE `xpack_share`
     ADD COLUMN `ticket_require` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'ticket必须' AFTER `auto_pwd`;
+
+
+DROP TABLE IF EXISTS `core_share_ticket`;
+CREATE TABLE `core_share_ticket`
+(
+    `id`          bigint       NOT NULL COMMENT 'ID',
+    `uuid`        varchar(255) NOT NULL COMMENT '分享uuid',
+    `ticket`      varchar(255) NOT NULL COMMENT 'ticket',
+    `exp`         bigint DEFAULT NULL COMMENT 'ticket有效期',
+    `args`        longtext COMMENT 'ticket参数',
+    `access_time` bigint DEFAULT NULL COMMENT '首次访问时间',
+    PRIMARY KEY (`id`)
+) COMMENT ='分享Ticket表';
