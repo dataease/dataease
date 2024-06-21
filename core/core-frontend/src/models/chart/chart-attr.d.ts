@@ -612,6 +612,22 @@ declare interface ChartMiscAttr {
    * 词云图文字间距
    */
   wordSpacing: number
+  /**
+   * 自动图例
+   */
+  mapAutoLegend: boolean
+  /**
+   * 图例最大值
+   */
+  mapLegendMax: number
+  /**
+   * 图例最小值
+   */
+  mapLegendMin: number
+  /**
+   * 显示图例个数
+   */
+  mapLegendNumber: number
 }
 /**
  * 动态极值配置

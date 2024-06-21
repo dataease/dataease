@@ -527,3 +527,68 @@ export const copyString = (content: string, notify = false) => {
     }
   })
 }
+
+/**
+ * 计算动态区间和颜色
+ * @param minValue
+ * @param maxValue
+ * @param intervals
+ * @param colors
+ */
+export const getDynamicColorScale = (
+  minValue: number,
+  maxValue: number,
+  intervals: number,
+  colors: string[]
+) => {
+  const step = (maxValue - minValue) / intervals
+
+  const colorScale = []
+  for (let i = 0; i < intervals; i++) {
+    colorScale.push({
+      value: [minValue + i * step, minValue + (i + 1) * step],
+      color: colors[i],
+      label: `${(minValue + i * step).toFixed(2)} - ${(minValue + (i + 1) * step).toFixed(2)}`
+    })
+  }
+
+  return colorScale
+}
+/**
+ * 过滤掉不在区间的数据
+ * @param data
+ * @param maxValue
+ * @param minValue
+ */
+export const filterChartDataByRange = (data: any[], maxValue: number, minValue: number) => {
+  return data.filter(
+    item =>
+      item.value === null ||
+      item.value === undefined ||
+      (item.value >= minValue && item.value <= maxValue)
+  )
+}
+
+/**
+ * 获取地图默认最大最小值根据数据
+ * @param data
+ * @param maxValue
+ * @param minValue
+ * @param callback
+ */
+export const setMapChartDefaultMaxAndMinValueByData = (
+  data: any[],
+  maxValue: number,
+  minValue: number,
+  callback: (max: number, min: number) => void
+) => {
+  if (minValue === 0 && maxValue === 0) {
+    const maxResult = data.reduce((max, current) => {
+      return current.value > max ? current.value : max
+    }, Number.MIN_SAFE_INTEGER)
+    const minResult = data.reduce((min, current) => {
+      return current.value < min ? current.value : min
+    }, Number.MAX_SAFE_INTEGER)
+    callback(maxResult, minResult)
+  }
+}

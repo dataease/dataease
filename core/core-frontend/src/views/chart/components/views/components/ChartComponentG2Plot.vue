@@ -287,6 +287,10 @@ const pointClickTrans = () => {
 }
 
 const action = param => {
+  if (param.from === 'map') {
+    emitter.emit('map-default-range', param)
+    return
+  }
   state.pointParam = param.data
   // 点击
   pointClickTrans()
