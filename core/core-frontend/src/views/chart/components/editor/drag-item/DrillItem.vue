@@ -45,7 +45,7 @@ const emit = defineEmits(['onDimensionItemRemove'])
 const { item } = toRefs(props)
 
 watch(
-  [() => props.dimensionData, () => props.item],
+  [() => props.dimensionData, () => props.item, () => props.chart.type],
   () => {
     getItemTagType()
   },
@@ -102,7 +102,7 @@ onMounted(() => {
           </el-icon>
         </span>
         <span class="item-span-style" :title="item.name"
-          >{{ item.name }}{{ item.desensitized && '(已脱敏)' }}</span
+          >{{ item.name }}{{ item.desensitized ? '(已脱敏)' : '' }}</span
         >
         <el-icon class="child remove-icon" size="14px">
           <Icon name="icon_delete-trash_outlined" class-name="inner-class" @click="removeItem" />

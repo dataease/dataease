@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
-import { computed, onBeforeMount, PropType, toRefs } from 'vue'
+import { computed, onBeforeMount, PropType, toRefs, inject, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { KeyValue } from './ApiTestModel.js'
 import draggable from 'vuedraggable'
@@ -44,6 +44,8 @@ onBeforeMount(() => {
   }
 })
 
+const activeName = inject('api-active-name')
+
 const remove = (index: number) => {
   if (isDisable()) return
   // 移除整行输入控件及内容
@@ -66,6 +68,18 @@ const createFilter = (queryString: string) => {
     return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
   }
 }
+const options = [
+  {
+    label: '参数',
+    value: 'params'
+  },
+  {
+    label: '固定值',
+    value: 'fixed'
+  }
+]
+
+const value = ref('')
 </script>
 
 <template>
@@ -77,7 +91,7 @@ const createFilter = (queryString: string) => {
             <el-icon class="drag handle">
               <Icon name="icon_drag_outlined"></Icon>
             </el-icon>
-            <el-col :span="8" v-if="!unShowSelect">
+            <el-col :span="activeName === 'third' ? 8 : 6" v-if="!unShowSelect">
               <el-input
                 v-if="!suggestions"
                 v-model="element.name"
@@ -96,7 +110,16 @@ const createFilter = (queryString: string) => {
                 show-word-limit
               />
             </el-col>
-
+            <el-col :span="3" v-if="activeName === 'fourth'">
+              <el-select v-model="value">
+                <el-option
+                  v-for="item in options"
+                  :key="item.value"
+                  :label="item.label"
+                  :value="item.value"
+                />
+              </el-select>
+            </el-col>
             <el-col :span="8" v-if="unShowSelect">
               <el-input
                 v-if="!!suggestions.length"
@@ -108,12 +131,19 @@ const createFilter = (queryString: string) => {
               />
             </el-col>
 
-            <el-col :span="7">
+            <el-col :span="activeName === 'third' ? 7 : 6">
               <el-input
-                v-if="!needMock"
+                v-if="!needMock && activeName === 'third'"
                 v-model="element.value"
                 :disabled="isReadOnly"
                 :placeholder="unShowSelect ? t('common.description') : valueText"
+                show-word-limit
+              />
+              <el-input
+                v-if="!needMock && activeName === 'fourth'"
+                v-model="element.value"
+                :disabled="isReadOnly"
+                :placeholder="value === 'params' ? '参数名称' : '值'"
                 show-word-limit
               />
             </el-col>

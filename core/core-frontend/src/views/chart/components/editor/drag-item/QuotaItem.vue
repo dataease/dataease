@@ -68,7 +68,7 @@ const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
 watch(
-  [() => props.quotaData, () => props.item],
+  [() => props.quotaData, () => props.item, () => props.chart.type],
   () => {
     getItemTagType()
   },
@@ -310,7 +310,7 @@ onMounted(() => {
           <span class="item-span-style">
             <span class="item-name"
               >{{ item.chartShowName ? item.chartShowName : item.name
-              }}{{ item.desensitized && '(已脱敏)' }}</span
+              }}{{ item.desensitized ? '(已脱敏)' : '' }}</span
             >
             <span v-if="item.summary !== ''" class="item-right-summary">
               ({{ t('chart.' + item.summary) }})

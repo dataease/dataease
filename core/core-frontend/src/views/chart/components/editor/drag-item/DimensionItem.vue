@@ -64,7 +64,7 @@ const showValueFormatter = computed<boolean>(() => {
 })
 
 watch(
-  [() => props.dimensionData, () => props.item],
+  [() => props.dimensionData, () => props.item, () => props.chart.type],
   () => {
     getItemTagType()
   },
@@ -210,7 +210,7 @@ onMounted(() => {
           <span class="item-span-style">
             <span class="item-name"
               >{{ item.chartShowName ? item.chartShowName : item.name
-              }}{{ item.desensitized && '(已脱敏)' }}</span
+              }}{{ item.desensitized ? '(已脱敏)' : '' }}</span
             >
           </span>
         </el-tooltip>
