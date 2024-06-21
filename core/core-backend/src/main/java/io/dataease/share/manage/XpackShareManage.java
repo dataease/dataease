@@ -7,6 +7,7 @@ import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest
 import io.dataease.api.xpack.share.request.XpackShareProxyRequest;
 import io.dataease.api.xpack.share.request.XpackSharePwdValidator;
 import io.dataease.api.xpack.share.request.XpackShareUuidEditor;
+import io.dataease.api.xpack.share.vo.TicketValidVO;
 import io.dataease.api.xpack.share.vo.XpackShareGridVO;
 import io.dataease.api.xpack.share.vo.XpackShareProxyVO;
 import io.dataease.auth.bo.TokenUserBO;
@@ -28,6 +29,7 @@ import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.RandomStringUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
+import org.springframework.transaction.annotation.Transactional;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -46,6 +48,9 @@ public class XpackShareManage {
     @Resource(name = "xpackShareExtMapper")
     private XpackShareExtMapper xpackShareExtMapper;
 
+    @Resource
+    private ShareTicketManage shareTicketManage;
+
     public XpackShare queryByResource(Long resourceId) {
         Long userId = AuthUtils.getUser().getUserId();
         QueryWrapper<XpackShare> queryWrapper = new QueryWrapper<>();
@@ -54,10 +59,12 @@ public class XpackShareManage {
         return xpackShareMapper.selectOne(queryWrapper);
     }
 
+    @Transactional
     public void switcher(Long resourceId) {
         XpackShare originData = queryByResource(resourceId);
         if (ObjectUtils.isNotEmpty(originData)) {
             xpackShareMapper.deleteById(originData.getId());
+            shareTicketManage.deleteByShare(originData.getUuid());
             return;
         }
         TokenUserBO user = AuthUtils.getUser();
@@ -74,6 +81,7 @@ public class XpackShareManage {
         xpackShareMapper.insert(xpackShare);
     }
 
+    @Transactional
     public String editUuid(XpackShareUuidEditor editor) {
         Long resourceId = editor.getResourceId();
         String uuid = editor.getUuid();
@@ -98,6 +106,7 @@ public class XpackShareManage {
         if (!matcher.matches()) {
             return "仅支持8-16位(字母数字)，请重新输入！";
         }
+        shareTicketManage.updateByUuidChange(originData.getUuid(), uuid);
         originData.setUuid(uuid);
         xpackShareMapper.updateById(originData);
         return "";
@@ -196,7 +205,8 @@ public class XpackShareManage {
         response.addHeader(AuthConstant.LINK_TOKEN_KEY, linkToken);
         Integer type = xpackShare.getType();
         String typeText = (ObjectUtils.isNotEmpty(type) && type == 1) ? "dashboard" : "dataV";
-        return new XpackShareProxyVO(xpackShare.getResourceId(), xpackShare.getCreator(), linkExp(xpackShare), pwdValid(xpackShare, request.getCiphertext()), typeText, inIframeError);
+        TicketValidVO validVO = shareTicketManage.validateTicket(request.getTicket(), xpackShare);
+        return new XpackShareProxyVO(xpackShare.getResourceId(), xpackShare.getCreator(), linkExp(xpackShare), pwdValid(xpackShare, request.getCiphertext()), typeText, inIframeError, validVO);
     }
 
     private boolean linkExp(XpackShare xpackShare) {

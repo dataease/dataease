@@ -18,3 +18,6 @@ CREATE TABLE `xpack_plugin`
     `jar_name`        varchar(255) NOT NULL COMMENT 'Jar包名称',
     PRIMARY KEY (`id`)
 ) COMMENT ='插件表';
+
+ALTER TABLE `xpack_share`
+    ADD COLUMN `ticket_require` tinyint(1) NOT NULL DEFAULT 0 COMMENT 'ticket必须' AFTER `auto_pwd`;

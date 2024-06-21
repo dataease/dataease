@@ -32,4 +32,6 @@ public class XpackShareProxyVO implements Serializable {
     @Schema(description = "类型")
     private String type;
     private boolean inIframeError = true;
+
+    private TicketValidVO ticketValidVO;
 }
