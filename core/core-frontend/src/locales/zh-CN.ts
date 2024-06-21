@@ -660,6 +660,7 @@ export default {
     horizontal: '水平',
     vertical: '垂直',
     legend: '图例',
+    legend_num: '图例数',
     shape: '形状',
     polygon: '多边形',
     circle: '圆形',

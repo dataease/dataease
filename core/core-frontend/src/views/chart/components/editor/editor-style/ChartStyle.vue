@@ -260,6 +260,7 @@ watch(
               :themes="themes"
               :chart="chart"
               @onLegendChange="onLegendChange"
+              @onMiscChange="onMiscChange"
             />
           </collapse-switch-item>
           <el-collapse-item
