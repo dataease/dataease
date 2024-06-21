@@ -18,6 +18,10 @@ const props = defineProps({
     type: Object,
     required: true
   },
+  chart: {
+    type: Object,
+    required: true
+  },
   index: {
     type: Number,
     required: true
@@ -70,6 +74,10 @@ const removeItem = () => {
   emit('onDimensionItemRemove', item.value)
 }
 const getItemTagType = () => {
+  if (props.chart.type !== 'table-info' && props.item.desensitized) {
+    tagType.value = '#F54A45'
+    return
+  }
   tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
 }
 onMounted(() => {
@@ -93,7 +101,9 @@ onMounted(() => {
             ></Icon>
           </el-icon>
         </span>
-        <span class="item-span-style" :title="item.name">{{ item.name }}</span>
+        <span class="item-span-style" :title="item.name"
+          >{{ item.name }}{{ item.desensitized && '(已脱敏)' }}</span
+        >
         <el-icon class="child remove-icon" size="14px">
           <Icon name="icon_delete-trash_outlined" class-name="inner-class" @click="removeItem" />
         </el-icon>
