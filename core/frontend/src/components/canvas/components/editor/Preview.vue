@@ -322,6 +322,7 @@ export default {
         'letterSpacing'
       ],
       scaleWidth: '100',
+      scaleWidthLay: '100',
       scaleHeight: '100',
       timer: null,
       componentDataShow: [],
@@ -451,7 +452,7 @@ export default {
       if (this.backScreenShot) {
         style.height = this.mainHeight
       } else {
-        style.padding = '5px'
+        style.padding = '0px'
       }
       return style
     },
@@ -806,7 +807,7 @@ export default {
     restore() {
       const canvasHeight = document.getElementById(this.previewDomId).offsetHeight
       const canvasWidth = document.getElementById(this.previewDomId).offsetWidth
-      this.scaleWidth = (canvasWidth) * 100 / this.canvasStyleData.width // 获取宽度比
+      this.scaleWidth = (canvasWidth) * 100 / (this.canvasStyleData.width - 8) // 获取宽度比
       // 如果是后端截图方式使用 的高度伸缩比例和宽度比例相同
       if (this.backScreenShot) {
         this.scaleHeight = this.scaleWidth
