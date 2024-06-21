@@ -4,6 +4,7 @@ export interface ShareInfo {
   uuid: string
   pwd?: string
   autoPwd: boolean
+  ticketRequire?: boolean
 }
 
 export const SHARE_BASE = '/de-link/'

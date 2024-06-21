@@ -9,7 +9,7 @@ import java.io.Serializable;
  * </p>
  *
  * @author fit2cloud
- * @since 2024-04-07
+ * @since 2024-06-21
  */
 @TableName("xpack_share")
 public class XpackShare implements Serializable {
@@ -65,6 +65,11 @@ public class XpackShare implements Serializable {
      * 自动生成密码
      */
     private Boolean autoPwd;
+
+    /**
+     * ticket必须
+     */
+    private Boolean ticketRequire;
 
     public Long getId() {
         return id;
@@ -146,6 +151,14 @@ public class XpackShare implements Serializable {
         this.autoPwd = autoPwd;
     }
 
+    public Boolean getTicketRequire() {
+        return ticketRequire;
+    }
+
+    public void setTicketRequire(Boolean ticketRequire) {
+        this.ticketRequire = ticketRequire;
+    }
+
     @Override
     public String toString() {
         return "XpackShare{" +
@@ -159,6 +172,7 @@ public class XpackShare implements Serializable {
         ", oid = " + oid +
         ", type = " + type +
         ", autoPwd = " + autoPwd +
+        ", ticketRequire = " + ticketRequire +
         "}";
     }
 }

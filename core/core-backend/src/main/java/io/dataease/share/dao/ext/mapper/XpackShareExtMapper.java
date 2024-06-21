@@ -6,6 +6,7 @@ import io.dataease.share.dao.ext.po.XpackSharePO;
 import org.apache.ibatis.annotations.Mapper;
 import org.apache.ibatis.annotations.Param;
 import org.apache.ibatis.annotations.Select;
+import org.apache.ibatis.annotations.Update;
 
 @Mapper
 public interface XpackShareExtMapper {
@@ -28,4 +29,7 @@ public interface XpackShareExtMapper {
 
     @Select("select type from data_visualization_info where id = #{id}")
     String visualizationType(@Param("id") Long id);
+
+    @Update("update core_share_ticket set uuid = #{ticketUuid} where uuid = #{originUuid}")
+    void updateTicketUuid(@Param("originUuid") String originUuid, @Param("ticketUuid") String ticketUuid);
 }
