@@ -161,6 +161,7 @@ watch(
       canEdit.value = false
       reShow()
       myValue.value = assignment(element.value.propValue.textValue)
+      ed.setContent(myValue.value)
     }
   }
 )
