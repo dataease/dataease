@@ -393,7 +393,7 @@ public class CalciteProvider {
                 configuration = JsonUtil.parseObject(datasourceDTO.getConfiguration(), Impala.class);
                 if (StringUtils.isNotEmpty(configuration.getUrlType()) && configuration.getUrlType().equalsIgnoreCase("jdbcUrl")) {
                     if (configuration.getJdbcUrl().contains("password=")) {
-                        String[] params = configuration.getJdbcUrl().split(";")[1].split("&");
+                        String[] params = configuration.getJdbcUrl().split(";");
                         String pd = "";
                         for (int i = 0; i < params.length; i++) {
                             if (params[i].contains("password=")) {
