@@ -39,6 +39,7 @@ import { Base64 } from 'js-base64'
 import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { deepCopy } from '@/utils/utils'
 import DvPreview from '@/views/data-visualization/DvPreview.vue'
+import DeRuler from '@/custom-component/common/DeRuler.vue'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -100,9 +101,6 @@ const contentStyle = computed(() => {
     }
   } else {
     return {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
       width: width * 1.5 + 'px',
       height: height * 1.5 + 'px'
     }
@@ -400,15 +398,17 @@ eventBus.on('handleNew', handleNew)
             @mousedown="handleMouseDown"
             @mouseup="deselectCurComponent"
           >
-            <canvas-core
-              class="canvas-area-shadow editor-main"
-              v-if="state.canvasInitStatus"
-              ref="mainCanvasCoreRef"
-              :component-data="componentData"
-              :canvas-style-data="canvasStyleData"
-              :canvas-view-info="canvasViewInfo"
-              :canvas-id="state.canvasId"
-            ></canvas-core>
+            <div class="canvas-dv-inner">
+              <canvas-core
+                class="canvas-area-shadow editor-main"
+                v-if="state.canvasInitStatus"
+                ref="mainCanvasCoreRef"
+                :component-data="componentData"
+                :canvas-style-data="canvasStyleData"
+                :canvas-view-info="canvasViewInfo"
+                :canvas-id="state.canvasId"
+              ></canvas-core>
+            </div>
           </div>
         </el-scrollbar>
         <ComponentToolBar :class="{ 'preview-aside-x': previewStatus }"></ComponentToolBar>
@@ -534,5 +534,13 @@ eventBus.on('handleNew', handleNew)
   width: 100%;
   height: 1px;
   background: #000;
+}
+
+.canvas-dv-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
 }
 </style>
