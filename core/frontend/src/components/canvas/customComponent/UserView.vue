@@ -1002,7 +1002,7 @@ export default {
     },
     getData(id, cache = true, dataBroadcast = false) {
       // Err1001 已删除的不在重复请求
-      if (this.requestStatus === 'waiting' || (this.message && this.message.indexOf('Err1001'))) {
+      if (this.requestStatus === 'waiting' || (this.message && this.message.indexOf('Err1001')> -1)) {
         return
       }
       if (id) {
