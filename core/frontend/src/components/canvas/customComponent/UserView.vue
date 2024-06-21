@@ -1444,7 +1444,7 @@ export default {
       let mappingName = null
       if (this.chart.senior) {
         const senior = JSON.parse(this.chart.senior)
-        if (senior?.mapMapping[currentNode.code]) {
+        if (senior?.mapMapping?.[currentNode.code]) {
           const mapping = senior.mapMapping[currentNode.code]
           if (mapping[name]) {
             mappingName = mapping[name]
