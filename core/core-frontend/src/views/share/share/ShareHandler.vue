@@ -346,12 +346,14 @@ const expChangeHandler = exp => {
 }
 const beforeClose = async done => {
   if (!shareEnable.value) {
+    showTicket.value = false
     done()
     return
   }
   const pwdValid = validatePwdFormat()
   const uuidValid = await validateUuid()
   if (pwdValid && uuidValid) {
+    showTicket.value = false
     done()
   }
 }

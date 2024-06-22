@@ -2269,7 +2269,10 @@ export default {
     you_can_type_here: '可以在这里输入其他内容'
   },
   link_ticket: {
-    require: 'Ticket 必填'
+    require: '必选',
+    back: '返回公共链接设置页面',
+    refresh: '刷新',
+    time_tips: '单位: 分钟，范围: [0-1440],0代表无期限，自首次使用ticket访问开始'
   },
   pblink: {
     key_pwd: '请输入密码打开链接',

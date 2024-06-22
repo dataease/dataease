@@ -4,7 +4,7 @@
       <div class="ticket-model-start">
         <el-tooltip class="item" effect="dark" :content="$t('link_ticket.back')" placement="top">
           <span class="back-tips">
-            <el-icon class="custom-el-icon back-icon" @click="close">
+            <el-icon class="custom-el-icon back-icon" @click.stop="close">
               <Icon class="toolbar-icon" name="icon_left_outlined" />
             </el-icon>
           </span>
@@ -20,7 +20,7 @@
       </div>
     </div>
     <div class="ticket-add">
-      <el-button @click="addRow" text>
+      <el-button @click.stop="addRow" text>
         <template #icon>
           <icon name="icon_add_outlined"></icon>
         </template>
@@ -29,29 +29,16 @@
     </div>
     <div class="ticket-table">
       <el-table :data="state.tableData" style="width: 100%" size="small">
-        <el-table-column prop="ticket" label="ticket" width="130">
+        <el-table-column prop="ticket" label="Ticket" width="130">
           <template v-slot="scope">
             <div class="ticket-row">
-              <span>{{ scope.row.ticket }}</span>
+              <span :title="scope.row.ticket">{{ scope.row.ticket }}</span>
               <el-tooltip class="item" effect="dark" :content="$t('commons.copy')" placement="top">
-                <el-button
-                  text
-                  v-clipboard:copy="`${props.linkUrl}?ticket=${scope.row.ticket}`"
-                  v-clipboard:success="onCopy"
-                  v-clipboard:error="onError"
-                >
+                <el-button text @click.stop="copyTicket(scope.row.ticket)">
                   <template #icon>
                     <Icon name="de-copy"></Icon>
                   </template>
                 </el-button>
-                <!-- <span
-                  v-clipboard:copy="`${props.linkUrl}?ticket=${scope.row.ticket}`"
-                  v-clipboard:success="onCopy"
-                  v-clipboard:error="onError"
-                  class="copy-i"
-                >
-                  <icon name="de-copy"></icon>
-                </span> -->
               </el-tooltip>
               <el-tooltip
                 class="item"
@@ -59,14 +46,11 @@
                 :content="`${$t('link_ticket.refresh')} ticket`"
                 placement="top"
               >
-                <el-button text @click="refreshTicket(scope.row)">
+                <el-button text @click.stop="refreshTicket(scope.row)">
                   <template #icon>
                     <Icon name="icon_refresh_outlined"></Icon>
                   </template>
                 </el-button>
-                <!-- <span class="refresh-i" @click="refreshTicket(scope.row)">
-                  <icon name="icon_refresh_outlined" />
-                </span> -->
               </el-tooltip>
             </div>
           </template>
@@ -74,17 +58,17 @@
 
         <el-table-column prop="exp" :label="$t('visualization.over_time')" width="100">
           <template v-slot:header>
-            <span>{{ $t('visualization.over_time') }}</span>
-            <el-tooltip
-              class="item"
-              effect="dark"
-              :content="$t('link_ticket.time_tips')"
-              placement="top"
-            >
-              <span class="check-tips">
-                <svg-icon icon-class="de-icon-info" />
-              </span>
-            </el-tooltip>
+            <div class="ticket-exp-head">
+              <span>{{ $t('visualization.over_time') }}</span>
+              <el-tooltip
+                class="item"
+                effect="dark"
+                :content="$t('link_ticket.time_tips')"
+                placement="top"
+              >
+                <Icon name="dv-info"></Icon>
+              </el-tooltip>
+            </div>
           </template>
           <template v-slot="scope">
             <el-input
@@ -129,7 +113,7 @@
                 :content="$t('commons.delete')"
                 placement="top"
               >
-                <el-button text @click="deleteTicket(scope.row, scope.$idnex)">
+                <el-button text @click.stop="deleteTicket(scope.row, scope.$index)">
                   <template #icon>
                     <Icon name="icon_delete-trash_outlined"></Icon>
                   </template>
@@ -141,12 +125,12 @@
                 :content="scope.row.isEdit ? $t('commons.save') : $t('commons.edit')"
                 placement="top"
               >
-                <el-button v-if="!scope.row.isEdit" text @click="editRow(scope.row)">
+                <el-button v-if="!scope.row.isEdit" text @click.stop="editRow(scope.row)">
                   <template #icon>
                     <Icon name="icon_edit_outlined"></Icon>
                   </template>
                 </el-button>
-                <el-button v-else text @click="saveRow(scope.row, scope.$index)">
+                <el-button v-else text @click.stop="saveRow(scope.row, scope.$index)">
                   <template #icon>
                     <Icon name="edit-done"></Icon>
                   </template>
@@ -169,8 +153,9 @@ import { ref, reactive, onMounted, toRefs } from 'vue'
 import { propTypes } from '@/utils/propTypes'
 import { useI18n } from '@/hooks/web/useI18n'
 import request from '@/config/axios'
-import { ElMessage } from 'element-plus-secondary'
-
+import { ElMessage, ElMessageBox } from 'element-plus-secondary'
+import useClipboard from 'vue-clipboard3'
+const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const props = defineProps({
   linkUrl: propTypes.string.def(null),
@@ -214,8 +199,27 @@ const requireTicketChange = val => {
     emits('requireChange', val)
   })
 }
-
+const createLimit = (count?: number) => {
+  const realCount = count ? count : state.tableData.length || 0
+  if (realCount > 4) {
+    ElMessageBox.confirm('提示', {
+      confirmButtonType: 'primary',
+      type: 'warning',
+      confirmButtonText: t('common.roger_that'),
+      cancelButtonText: t('dataset.cancel'),
+      autofocus: false,
+      showClose: false,
+      showCancelButton: false,
+      tip: '最多支持创建5个Ticket'
+    })
+    return false
+  }
+  return true
+}
 const addRow = () => {
+  if (!createLimit()) {
+    return
+  }
   const row = {
     ticket: '',
     exp: 30,
@@ -230,6 +234,15 @@ const addRow = () => {
   })
 }
 
+const copyTicket = async ticket => {
+  const url = `${props.linkUrl}?ticket=${ticket}`
+  try {
+    await toClipboard(url)
+    ElMessage.success(t('common.copy_success'))
+  } catch (e) {
+    ElMessage.warning(t('common.copy_unsupported'), e)
+  }
+}
 const refreshTicket = row => {
   const url = '/ticket/saveTicket'
   const param = JSON.parse(JSON.stringify(row))
@@ -311,12 +324,7 @@ const saveRow = (row, index) => {
 const editRow = row => {
   row.isEdit = true
 }
-const onCopy = () => {
-  ElMessage.success('复制成功')
-}
-const onError = e => {
-  console.log(e)
-}
+
 const finish = () => {
   close()
 }
@@ -325,7 +333,7 @@ const loadTicketData = () => {
   const resourceId = props.resourceId
   const url = `/ticket/query/${resourceId}`
   request.get({ url }).then(res => {
-    state.tableData = res.data
+    state.tableData = res.data || []
   })
 }
 onMounted(() => {
@@ -335,7 +343,7 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .ticket {
-  height: 261px;
+  min-height: 280px;
   .ticket-model {
     display: flex;
     height: 22px;
@@ -343,6 +351,7 @@ onMounted(() => {
     padding: 0;
     .ticket-model-start {
       display: flex;
+      align-items: center;
       color: #1f2329;
       font-family: PingFang SC;
       font-weight: 500;
@@ -385,6 +394,8 @@ onMounted(() => {
     }
   }
   .ticket-table {
+    border-top: 1px solid #d5d7d8;
+    min-height: 156px;
     padding: 0 0;
     height: 50px;
     overflow-y: overlay;
@@ -399,19 +410,35 @@ onMounted(() => {
       margin-bottom: 12px;
       margin-right: -80px;
     }
-    :deep(.check-tips) {
-      margin-left: 4px;
+    :deep(.ticket-exp-head) {
+      display: flex;
+      line-height: 22px;
+      height: 22px;
+      align-items: center;
+      svg {
+        margin-left: 4px;
+        width: 16px;
+        height: 16px;
+        cursor: pointer;
+      }
     }
     :deep(.ticket-row) {
+      display: flex;
+      align-items: center;
+      height: 22px;
       span {
+        width: 66px;
         margin-right: 8px;
+        overflow: hidden;
+        white-space: nowrap;
+        text-overflow: ellipsis;
       }
       button {
         height: 16px;
         line-height: 16px;
         width: 16px;
       }
-      height: 22px;
+
       .ed-button + .ed-button {
         margin-left: 8px;
       }
@@ -451,7 +478,7 @@ onMounted(() => {
     }
   }
   .ticket-btn {
-    margin-top: 16px;
+    margin: 16px 0;
     float: right;
   }
 }
