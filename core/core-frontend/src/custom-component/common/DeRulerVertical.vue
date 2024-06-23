@@ -9,10 +9,6 @@ const props = defineProps({
     type: Function,
     default: value => value.toString() // 刻度标签格式化函数，默认直接转为字符串
   },
-  size: {
-    type: Number,
-    default: 300 // 尺子方向
-  },
   direction: {
     type: String,
     default: 'horizontal' // 尺子方向
@@ -23,14 +19,10 @@ const labelInterval = 5
 
 const { canvasStyleData } = storeToRefs(dvMainStore)
 
-const rulerSize = computed(() =>
-  props.direction === 'horizontal' ? canvasStyleData.value.width : canvasStyleData.value.height
-)
-
 const ticks = computed(() => {
   const result = []
   let currentValue = 0
-  while (currentValue <= rulerSize.value) {
+  while (currentValue <= canvasStyleData.value.height) {
     const isLong = currentValue % (labelInterval * tickSize.value) === 0
     const label = isLong ? props.tickLabelFormatter(currentValue) : ''
     result.push({ position: (currentValue * canvasStyleData.value.scale) / 100, label, isLong })
@@ -39,34 +31,24 @@ const ticks = computed(() => {
   return result
 })
 
-const wStyle = computed(() => {
+const hStyle = computed(() => {
   return {
-    width: rulerSize.value * 1.5 + 'px'
+    height: canvasStyleData.value.height * 1.5 + 'px'
   }
 })
-
-const radio = computed(() => rulerSize.value / canvasStyleData.value.width)
 const tickSize = computed(
   () =>
     10 *
-    Math.max(
-      Math.floor((200000 * radio.value) / (rulerSize.value * canvasStyleData.value.scale)),
-      1
-    )
+    Math.max(Math.floor(200000 / (canvasStyleData.value.height * canvasStyleData.value.scale)), 1)
 )
 
-const scaleWidth = computed(() => (rulerSize.value * canvasStyleData.value.scale) / 100)
+const scaleHeight = computed(
+  () => (canvasStyleData.value.height * canvasStyleData.value.scale) / 100
+)
 
 const rulerScroll = e => {
-  const left = props.direction === 'vertical' ? e.scrollTop : e.scrollLeft
-  wRuleRef.value.scrollTo(left, 0)
+  wRuleRef.value.scrollTo(0, e.scrollHeight)
 }
-
-const outerStyle = computed(() => {
-  return {
-    width: props.direction === 'vertical' ? props.size - 30 + 'px' : '100%'
-  }
-})
 
 defineExpose({
   rulerScroll
@@ -74,17 +56,13 @@ defineExpose({
 </script>
 
 <template>
-  <div
-    class="ruler-outer"
-    :style="outerStyle"
-    :class="{ 'ruler-vertical': direction === 'vertical' }"
-    ref="wRuleRef"
-  >
+  <div class="ruler-outer-vertical" ref="wRuleRef">
+    testtest
     <!--覆盖着尺子上方防止鼠标移到尺子位置滑动-->
-    <div class="ruler-shadow" :style="outerStyle"></div>
-    <div :style="wStyle" class="ruler-outer-scroll">
-      <div class="ruler" :style="{ width: `${scaleWidth}px` }">
-        <div class="ruler-line" :style="{ width: `${scaleWidth}px` }"></div>
+    <div class="ruler-shadow-vertical"></div>
+    <div :style="hStyle" class="ruler-outer-vertical-scroll">
+      <div class="ruler" :style="{ height: `${scaleHeight}px` }">
+        <div class="ruler-line" :style="{ height: `${scaleHeight}px` }"></div>
         <div
           v-for="(tick, index) in ticks"
           :key="index"
@@ -104,49 +82,34 @@ defineExpose({
   width: 0px !important;
   height: 0px !important;
 }
-.ruler-vertical {
+.ruler-shadow-vertical {
   position: absolute;
-  left: 30px;
-  top: 30px;
-  transform-origin: top left;
-  transform: rotate(90deg);
-  overflow-y: auto;
-  overflow-x: hidden;
-  z-index: 1;
-  .ruler {
-    .ruler-line {
-      top: 0;
-    }
-    .ruler-tick {
-      top: 0;
-      .tick-label {
-        transform: rotate(180deg);
-      }
-    }
-  }
-}
-
-.ruler-shadow {
-  position: absolute;
-  height: 30px;
+  width: 30px;
+  height: 100%;
   z-index: 10;
   overflow: hidden;
 }
 
-.ruler-outer {
-  overflow-x: auto;
+.ruler-outer-vertical {
+  position: absolute;
+  width: 30px;
+  height: 100%;
+  overflow-y: auto;
   background-color: #2c2c2c;
 }
 
-.ruler-outer-scroll {
+.ruler-outer-vertical-scroll {
   display: flex;
+  align-items: center;
   justify-content: center;
 }
 .ruler {
-  position: relative;
-  height: 30px;
-  display: flex;
-  align-items: center;
+  position: absolute;
+  top: 0;
+  left: 50%;
+  transform: translateX(-50%);
+  height: 100%;
+  border-left: 1px solid #974e4e;
   background-color: #2c2c2c;
 }
 

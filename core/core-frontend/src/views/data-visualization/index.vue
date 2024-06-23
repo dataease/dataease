@@ -65,6 +65,7 @@ const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 const canvasCacheOutRef = ref(null)
 const deWRulerRef = ref(null)
+const deHRulerRef = ref(null)
 
 const {
   fullscreenFlag,
@@ -82,6 +83,7 @@ const canvasInner = ref(null)
 const leftSidebarRef = ref(null)
 const dvLayout = ref(null)
 const canvasCenterRef = ref(null)
+const mainHeight = ref(300)
 const state = reactive({
   datasetTree: [],
   scaleHistory: null,
@@ -179,9 +181,9 @@ const initScroll = () => {
   nextTick(() => {
     const { width, height } = canvasStyleData.value
     const mainWidth = canvasCenterRef.value.clientWidth
-    const mainHeight = canvasCenterRef.value.clientHeight
+    mainHeight.value = canvasCenterRef.value.clientHeight
     const scrollX = (1.5 * width - mainWidth) / 2
-    const scrollY = (1.5 * height - mainHeight) / 2 + 20
+    const scrollY = (1.5 * height - mainHeight.value) / 2 + 20
     // 设置画布初始滚动条位置
     canvasOut.value.scrollTo(scrollX, scrollY)
   })
@@ -361,7 +363,9 @@ const viewsPropertiesShow = computed(
 
 const scrollCanvas = e => {
   deWRulerRef.value.rulerScroll(e)
+  deHRulerRef.value.rulerScroll(e)
 }
+
 eventBus.on('handleNew', handleNew)
 </script>
 
@@ -393,7 +397,13 @@ eventBus.on('handleNew', handleNew)
       </dv-sidebar>
       <!-- 中间画布 -->
       <main id="dv-main-center" class="center" ref="canvasCenterRef">
+        <div class="de-ruler-icon-outer">
+          <el-icon class="de-ruler-icon">
+            <Icon name="dv-ruler" />
+          </el-icon>
+        </div>
         <de-ruler ref="deWRulerRef"></de-ruler>
+        <de-ruler direction="vertical" :size="mainHeight" ref="deHRulerRef"></de-ruler>
         <el-scrollbar
           ref="canvasOut"
           @scroll="scrollCanvas"
@@ -553,5 +563,20 @@ eventBus.on('handleNew', handleNew)
   display: flex;
   justify-content: center;
   align-items: center;
+}
+
+.de-ruler-icon-outer {
+  background: #2c2c2c;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  z-index: 3;
+  color: #ebebeb;
+  .de-ruler-icon {
+    margin-left: 6px;
+    margin-top: 6px;
+    font-size: 24px;
+    color: #ebebeb;
+  }
 }
 </style>
