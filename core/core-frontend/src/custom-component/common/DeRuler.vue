@@ -21,11 +21,42 @@ const props = defineProps({
 
 const labelInterval = 5
 
-const { canvasStyleData } = storeToRefs(dvMainStore)
+const { canvasStyleData, curComponent } = storeToRefs(dvMainStore)
 
 const rulerSize = computed(() =>
   props.direction === 'horizontal' ? canvasStyleData.value.width : canvasStyleData.value.height
 )
+
+const curComponentSize = computed(() => {
+  if (curComponent.value) {
+    return (
+      ((props.direction === 'horizontal'
+        ? curComponent.value.style.width
+        : curComponent.value.style.height) *
+        canvasStyleData.value.scale) /
+      100
+    )
+  } else {
+    return 0
+  }
+})
+
+const curComponentShadow = computed(() => {
+  if (curComponent.value) {
+    return {
+      left:
+        (props.direction === 'horizontal'
+          ? curComponent.value.style.left
+          : curComponent.value.style.top) + 'px',
+      width:
+        (props.direction === 'horizontal'
+          ? curComponent.value.style.width
+          : curComponent.value.style.height) + 'px'
+    }
+  } else {
+    return {}
+  }
+})
 
 const ticks = computed(() => {
   const result = []
@@ -84,6 +115,7 @@ defineExpose({
     <div class="ruler-shadow" :style="outerStyle"></div>
     <div :style="wStyle" class="ruler-outer-scroll">
       <div class="ruler" :style="{ width: `${scaleWidth}px` }">
+        <div v-if="curComponent" :style="curComponentShadow" class="cur-shadow"></div>
         <div class="ruler-line" :style="{ width: `${scaleWidth}px` }"></div>
         <div
           v-for="(tick, index) in ticks"
@@ -177,5 +209,11 @@ defineExpose({
   left: 50%;
   transform: translateX(2%);
   white-space: nowrap;
+}
+
+.cur-shadow {
+  background: rgba(10, 123, 224, 0.3);
+  height: 30px;
+  position: absolute;
 }
 </style>
