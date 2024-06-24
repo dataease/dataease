@@ -856,6 +856,7 @@ public class ChartViewService {
                         ChartExtFilterRequest filterRequest = new ChartExtFilterRequest();
                         BeanUtils.copyBean(filterRequest, request);
                         filterRequest.setDatasetTableFieldList(new ArrayList<>());
+                        filterRequest.setFilterType(0);
                         for (String fId : fieldIds) {
                             DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
                             if (datasetTableField == null) {
@@ -881,6 +882,7 @@ public class ChartViewService {
                             ChartExtFilterRequest filterRequest = new ChartExtFilterRequest();
                             BeanUtils.copyBean(filterRequest, request);
                             filterRequest.setFieldId(fId);
+                            filterRequest.setFilterType(0);
 
                             DatasetTableField datasetTableField = dataSetTableFieldsService.get(fId);
                             if (datasetTableField == null) {
@@ -921,6 +923,7 @@ public class ChartViewService {
                 DatasetTableField datasetTableField = dataSetTableFieldsService.get(request.getFieldId());
                 if (!desensitizationList.keySet().contains(datasetTableField.getDataeaseName()) && dataeaseNames.contains(datasetTableField.getDataeaseName())) {
                     request.setDatasetTableField(datasetTableField);
+                    request.setFilterType(2);
                     if (StringUtils.equalsIgnoreCase(datasetTableField.getTableId(), view.getTableId())) {
 //                         设置日期格式，以视图字段设置的格式为准，先不处理组件的条件，因为格式无法统一。
                         if (request.getDatasetTableField() != null) {
@@ -1026,6 +1029,7 @@ public class ChartViewService {
                 tmpFilter.setDatePattern(chartFieldMap.get(tmpField.getId()).getDatePattern());
                 tmpFilter.setFieldId(tmpField.getId());
                 tmpFilter.setValue(Collections.singletonList(dimValMap.get(tmpField.getId())));
+                tmpFilter.setFilterType(1);
                 extFilterList.add(tmpFilter);
                 drillFilters.add(tmpFilter);
             }
@@ -1105,7 +1109,7 @@ public class ChartViewService {
                 if (StringUtils.isNotEmpty(compareCalc.getType())
                         && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none")) {
                     if (Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType())) {
-                        if (StringUtils.equalsIgnoreCase(compareCalc.getField() + "", filterDTO.getFieldId())) {
+                        if (StringUtils.equalsIgnoreCase(compareCalc.getField() + "", filterDTO.getFieldId()) && filterDTO.getFilterType() == 0) {
                             // -1 year
                             try {
                                 Calendar calendar = Calendar.getInstance();
