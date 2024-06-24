@@ -407,6 +407,7 @@ public class ChartDataManage {
                         ChartExtFilterDTO filterRequest = new ChartExtFilterDTO();
                         BeanUtils.copyBean(filterRequest, request);
                         filterRequest.setDatasetTableFieldList(new ArrayList<>());
+                        filterRequest.setFilterType(0);
                         for (Long fId : fieldIds) {
                             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(fId);
                             if (datasetTableField == null) {
@@ -430,6 +431,7 @@ public class ChartDataManage {
                             ChartExtFilterDTO filterRequest = new ChartExtFilterDTO();
                             BeanUtils.copyBean(filterRequest, request);
                             filterRequest.setFieldId(fId + "");
+                            filterRequest.setFilterType(0);
 
                             DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(fId);
                             if (datasetTableField == null) {
@@ -467,6 +469,7 @@ public class ChartDataManage {
             for (ChartExtFilterDTO request : filters) {
                 DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(Long.valueOf(request.getFieldId()));
                 request.setDatasetTableField(datasetTableField);
+                request.setFilterType(2);
                 // 相同数据集
                 if (Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
                     if (ObjectUtils.isNotEmpty(request.getViewIds())) {
@@ -554,6 +557,7 @@ public class ChartDataManage {
                     tmpFilter.setOperator("in");
                     tmpFilter.setValue(Collections.singletonList(dimValMap.get(tmpField.getId())));
                 }
+                tmpFilter.setFilterType(1);
                 extFilterList.add(tmpFilter);
                 drillFilters.add(tmpFilter);
             }
@@ -620,7 +624,7 @@ public class ChartDataManage {
                 if (StringUtils.isNotEmpty(compareCalc.getType())
                         && !StringUtils.equalsIgnoreCase(compareCalc.getType(), "none")) {
                     if (Arrays.asList(ChartConstants.M_Y).contains(compareCalc.getType())) {
-                        if (StringUtils.equalsIgnoreCase(compareCalc.getField() + "", filterDTO.getFieldId())) {
+                        if (StringUtils.equalsIgnoreCase(compareCalc.getField() + "", filterDTO.getFieldId()) && filterDTO.getFilterType() == 0) {
                             // -1 year
                             try {
                                 Calendar calendar = Calendar.getInstance();
