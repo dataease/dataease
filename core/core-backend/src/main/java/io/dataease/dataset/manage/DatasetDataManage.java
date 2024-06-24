@@ -1,13 +1,10 @@
 package io.dataease.dataset.manage;
 
-import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.chart.dto.DeSortField;
-import io.dataease.extensions.view.dto.ChartExtRequest;
 import io.dataease.api.dataset.dto.*;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
-import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.api.ds.vo.TableField;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
@@ -16,16 +13,13 @@ import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.dto.DatasourceSchemaDTO;
-import io.dataease.dataset.utils.FieldUtils;
-import io.dataease.dataset.utils.SqlUtils;
-import io.dataease.dataset.utils.TableUtils;
+import io.dataease.dataset.utils.*;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.utils.DatasourceUtils;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.constant.SqlPlaceholderConstants;
@@ -34,11 +28,16 @@ import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.view.dto.ChartExtFilterDTO;
+import io.dataease.extensions.view.dto.ChartExtRequest;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
+import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
+import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
@@ -732,5 +731,119 @@ public class DatasetDataManage {
             }
         }
         return previewData;
+    }
+
+    public List<BaseTreeNodeDTO> getFieldValueTree(List<Long> ids) throws Exception {
+        if (ids.isEmpty()) {
+            DEException.throwException("no field selected.");
+        }
+        // 根据前端传的查询组件field ids，获取所有字段枚举值并去重合并
+        List<List<String>> list = new ArrayList<>();
+        List<DatasetTableFieldDTO> fields = new ArrayList<>();
+
+        // 根据图表计算字段，获取数据集
+        List<DatasetTableFieldDTO> allFields = new ArrayList<>();
+        DatasetTableFieldDTO field = datasetTableFieldManage.selectById(ids.getFirst());
+        Long datasetGroupId = field.getDatasetGroupId();
+        if (field.getChartId() != null) {
+            allFields.addAll(datasetTableFieldManage.getChartCalcFields(field.getChartId()));
+        }
+        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(datasetGroupId, null);
+
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, new ChartExtRequest());
+        String sql = (String) sqlMap.get("sql");
+
+        allFields.addAll(datasetGroupInfoDTO.getAllFields());
+
+        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        if (!crossDs) {
+            sql = Utils.replaceSchemaAlias(sql, dsMap);
+        }
+
+        // build query sql
+        SQLMeta sqlMeta = new SQLMeta();
+        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
+
+        for (Long id : ids) {
+            DatasetTableFieldDTO f = datasetTableFieldManage.selectById(id);
+            if (f == null) {
+                DEException.throwException(Translator.get("i18n_no_field"));
+            }
+            // 获取allFields
+            fields.add(f);
+        }
+
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        fields = permissionManage.filterColumnPermissions(fields, desensitizationList, datasetGroupInfoDTO.getId(), null);
+        if (ObjectUtils.isEmpty(fields)) {
+            DEException.throwException(Translator.get("i18n_no_column_permission"));
+        }
+        buildFieldName(sqlMap, fields);
+
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+        boolean needOrder = Utils.isNeedOrder(dsList);
+
+        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = new ArrayList<>();
+        TokenUserBO user = AuthUtils.getUser();
+        if (user != null) {
+            rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
+        }
+
+        Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap);
+        Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap);
+        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, 1000);
+        querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
+        logger.info("filter tree sql: " + querySQL);
+
+        // 通过数据源请求数据
+        // 调用数据源的calcite获得data
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setQuery(querySQL);
+        datasourceRequest.setDsList(dsMap);
+        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+        List<String[]> rows = (List<String[]>) data.get("data");
+
+        // 重新构造data
+        Set<String> pkSet = new HashSet<>();
+//        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(rows) && existExtSortField && originSize > 0) {
+//            rows = rows.stream().map(row -> ArrayUtils.subarray(row, 0, originSize)).collect(Collectors.toList());
+//        }
+        rows = rows.stream().filter(row -> {
+            int length = row.length;
+            boolean allEmpty = true;
+            for (String s : row) {
+                if (StringUtils.isNotBlank(s)) {
+                    allEmpty = false;
+                }
+            }
+            return !allEmpty;
+        }).toList();
+        List<BaseTreeNodeDTO> treeNodes = rows.stream().map(row -> buildTreeNode(row, pkSet)).flatMap(Collection::stream).collect(Collectors.toList());
+        List<BaseTreeNodeDTO> tree = DatasetUtils.mergeDuplicateTree(treeNodes, "root");
+        return tree;
+    }
+
+    private List<BaseTreeNodeDTO> buildTreeNode(String[] row, Set<String> pkSet) {
+        List<BaseTreeNodeDTO> nodes = new ArrayList<>();
+        List<String> parentPkList = new ArrayList<>();
+        for (int i = 0; i < row.length; i++) {
+            String text = row[i];
+
+            parentPkList.add(text);
+            String val = String.join(TreeUtils.SEPARATOR, parentPkList);
+            String parentVal = i == 0 ? TreeUtils.DEFAULT_ROOT : row[i - 1];
+            String pk = String.join(TreeUtils.SEPARATOR, parentPkList);
+            if (pkSet.contains(pk)) continue;
+            pkSet.add(pk);
+            BaseTreeNodeDTO node = new BaseTreeNodeDTO(val, parentVal, StringUtils.isNotBlank(text) ? text.trim() : text, pk + TreeUtils.SEPARATOR + i);
+            nodes.add(node);
+        }
+        return nodes;
+
     }
 }
