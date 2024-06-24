@@ -9,6 +9,7 @@ import * as Vue from 'vue'
 import axios from 'axios'
 import * as Pinia from 'pinia'
 import * as vueRouter from 'vue-router'
+import tinymce from 'tinymce/tinymce'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
 const { wsCache } = useCache()
@@ -109,6 +110,9 @@ onMounted(async () => {
       window['vueRouter'] = vueRouter
       window['MittAll'] = useEmitt().emitter.all
       window['I18n'] = i18n
+      if (!window.tinymce) {
+        window.tinymce = tinymce
+      }
       loadDistributed().then(async res => {
         new Function(res.data)()
         const xpack = await window['DEXPack'].mapping[attrs.jsname]
