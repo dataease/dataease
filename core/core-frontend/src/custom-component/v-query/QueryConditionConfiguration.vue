@@ -34,11 +34,12 @@ import draggable from 'vuedraggable'
 import RangeFilterTime from './RangeFilterTime.vue'
 import type { ManipulateType } from 'dayjs'
 import dayjs from 'dayjs'
+import ConditionDefaultConfiguration from '@/custom-component/v-query/ConditionDefaultConfiguration.vue'
 
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const { componentData, canvasViewInfo } = storeToRefs(dvMainStore)
-
+const defaultConfigurationRef = ref(null)
 interface DatasetField {
   type?: string
   innerType?: string
@@ -145,11 +146,6 @@ const { queryElement } = toRefs(props)
 
 const getDetype = (id, arr) => {
   return arr.flat().find(ele => ele.id === id)?.deType
-}
-const visiblePopover = ref(false)
-const handleVisiblePopover = ev => {
-  ev.stopPropagation()
-  visiblePopover.value = !visiblePopover.value
 }
 const showConfiguration = computed(() => {
   if (!curComponent.value) return false
@@ -315,7 +311,7 @@ const timeParameterList = computed(() => {
 })
 
 const cancelClick = () => {
-  visiblePopover.value = false
+  handleDialogClick()
   dialogVisible.value = false
 }
 
@@ -353,24 +349,7 @@ const handleValueSourceChange = () => {
 }
 
 const multipleChange = (val: boolean, isMultipleChange = false) => {
-  if (isMultipleChange) {
-    curComponent.value.defaultValue = val ? [] : undefined
-  }
-  const { defaultValue } = curComponent.value
-  if (Array.isArray(defaultValue)) {
-    curComponent.value.selectValue = val ? defaultValue : undefined
-  } else {
-    curComponent.value.selectValue = val
-      ? defaultValue !== undefined
-        ? [defaultValue]
-        : []
-      : defaultValue
-  }
-  if (curComponent.value.field.deType === 1) {
-    curComponent.value.multiple = val
-    return
-  }
-  curComponent.value.multiple = val
+  defaultConfigurationRef.value?.multipleChange(val, isMultipleChange)
 }
 
 const isInRange = (ele, startWindowTime, timeStamp) => {
@@ -675,7 +654,6 @@ const handleBeforeClose = () => {
   inputCom.value?.single?.handleClickOutside?.()
   handleDialogClick()
   dialogVisible.value = false
-  visiblePopover.value = false
 }
 
 const confirmClick = () => {
@@ -683,7 +661,6 @@ const confirmClick = () => {
   inputCom.value?.mult?.handleClickOutside?.()
   inputCom.value?.single?.handleClickOutside?.()
   handleDialogClick()
-  visiblePopover.value = false
   dialogVisible.value = false
   conditions.value.forEach(ele => {
     curComponent.value = ele
@@ -941,7 +918,7 @@ const showError = computed(() => {
   return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
 })
 const handleDialogClick = () => {
-  visiblePopover.value = false
+  defaultConfigurationRef.value?.handleDialogClick()
 }
 
 const operators = [
@@ -1752,284 +1729,10 @@ defineExpose({
               </div>
             </div>
           </div>
-          <div class="list-item top-item" v-if="curComponent.displayType === '8'">
-            <div class="label">设置默认值</div>
-            <div class="value">
-              <div class="condition-type">
-                <el-select
-                  class="condition-value-select"
-                  popper-class="condition-value-select-popper"
-                  v-model="curComponent.defaultConditionValueOperatorF"
-                >
-                  <el-option
-                    v-for="ele in operators"
-                    :key="ele.value"
-                    :label="ele.label"
-                    :value="ele.value"
-                  >
-                  </el-option>
-                </el-select>
-                <el-input
-                  class="condition-value-input"
-                  v-model="curComponent.defaultConditionValueF"
-                />
-                <div class="bottom-line"></div>
-              </div>
-              <div class="condition-type" v-if="[1, 2].includes(curComponent.conditionType)">
-                <sapn class="condition-type-tip">{{
-                  curComponent.conditionType === 1 ? '与' : '或'
-                }}</sapn>
-                <el-select
-                  class="condition-value-select"
-                  popper-class="condition-value-select-popper"
-                  v-model="curComponent.defaultConditionValueOperatorS"
-                >
-                  <el-option
-                    v-for="ele in operators"
-                    :key="ele.value"
-                    :label="ele.label"
-                    :value="ele.value"
-                  >
-                  </el-option>
-                </el-select>
-                <el-input
-                  class="condition-value-input"
-                  v-model="curComponent.defaultConditionValueS"
-                />
-                <div class="bottom-line next-line"></div>
-              </div>
-            </div>
-          </div>
-          <div v-if="!['1', '7', '8'].includes(curComponent.displayType)" class="list-item">
-            <div class="label">选项类型</div>
-            <div class="value">
-              <el-radio-group
-                class="larger-radio"
-                @change="val => multipleChange(val as boolean, true)"
-                v-model="multiple"
-              >
-                <el-radio :label="false">{{ t('visualization.single_choice') }}</el-radio>
-                <el-radio :label="true">{{ t('visualization.multiple_choice') }}</el-radio>
-              </el-radio-group>
-            </div>
-          </div>
-          <div v-if="curComponent.displayType === '7'" class="list-item">
-            <div class="label">
-              <el-checkbox v-model="curComponent.setTimeRange" label="设置时间筛选范围" />
-            </div>
-            <div class="setting-content">
-              <el-popover
-                :show-arrow="false"
-                popper-class="range-filter-time"
-                placement="bottom-start"
-                :width="452"
-                :visible="visiblePopover"
-                :offset="4"
-              >
-                <template #reference>
-                  <el-button
-                    :disabled="!curComponent.setTimeRange"
-                    @click="handleVisiblePopover($event)"
-                    text
-                    style="margin-left: -4px"
-                  >
-                    <template #icon>
-                      <Icon name="icon_admin_outlined"></Icon>
-                    </template>
-                    设置
-                  </el-button>
-                </template>
-                <RangeFilterTime
-                  :timeRange="curComponent.timeRange"
-                  :timeGranularityMultiple="curComponent.timeGranularityMultiple"
-                />
-              </el-popover>
-              <span
-                v-if="
-                  curComponent.timeRange.intervalType !== 'none' ||
-                  curComponent.timeRange.dynamicWindow
-                "
-                class="config-flag range-filter-time-flag"
-                >已配置</span
-              >
-            </div>
-          </div>
-          <div
-            class="list-item"
-            v-if="+curComponent.displayType === 0 && curComponent.optionValueSource !== 1"
-          >
-            <div class="label">
-              <el-tooltip
-                effect="dark"
-                content="绑定参数后，不支持传空数据"
-                :disabled="!curComponent.parametersCheck"
-                placement="top"
-              >
-                <el-checkbox
-                  :disabled="curComponent.parametersCheck"
-                  v-model="curComponent.showEmpty"
-                  label="选项值包含空数据"
-                />
-              </el-tooltip>
-            </div>
-          </div>
-          <div v-if="!['8'].includes(curComponent.displayType)" class="list-item">
-            <div class="label">
-              <el-checkbox v-model="curComponent.defaultValueCheck" label="设置默认值" />
-            </div>
-            <div
-              class="setting-content"
-              v-if="curComponent.defaultValueCheck && ['1', '7'].includes(curComponent.displayType)"
-            >
-              <div class="setting">
-                <el-radio-group v-model="curComponent.timeType">
-                  <el-radio label="fixed">固定时间</el-radio>
-                  <el-radio label="dynamic">动态时间</el-radio>
-                </el-radio-group>
-              </div>
-              <template v-if="dynamicTime && curComponent.displayType === '1'">
-                <div class="setting">
-                  <div class="setting-label">相对当前</div>
-                  <div class="setting-value select">
-                    <el-select @focus="handleDialogClick" v-model="curComponent.relativeToCurrent">
-                      <el-option
-                        v-for="item in relativeToCurrentList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                  </div>
-                </div>
-                <div class="setting" v-if="curComponent.relativeToCurrent === 'custom'">
-                  <div
-                    class="setting-input"
-                    :class="curComponent.timeGranularity === 'datetime' && 'with-date'"
-                  >
-                    <el-input-number
-                      v-model="curComponent.timeNum"
-                      :min="0"
-                      controls-position="right"
-                    />
-                    <el-select
-                      @focus="handleDialogClick"
-                      v-model="curComponent.relativeToCurrentType"
-                    >
-                      <el-option
-                        v-for="item in relativeToCurrentTypeList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                    <el-select @focus="handleDialogClick" v-model="curComponent.around">
-                      <el-option
-                        v-for="item in aroundList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                    <el-time-picker
-                      v-if="curComponent.timeGranularity === 'datetime'"
-                      v-model="curComponent.arbitraryTime"
-                    />
-                  </div>
-                </div>
-              </template>
-              <template v-else-if="dynamicTime && curComponent.displayType === '7'">
-                <div
-                  class="setting"
-                  :class="
-                    ['yearrange', 'monthrange', 'daterange'].includes(
-                      curComponent.timeGranularityMultiple
-                    ) && 'is-year-month-range'
-                  "
-                >
-                  <div class="setting-label">开始时间</div>
-                  <div class="setting-input with-date range">
-                    <el-input-number
-                      v-model="curComponent.timeNum"
-                      :min="0"
-                      controls-position="right"
-                    />
-                    <el-select
-                      @focus="handleDialogClick"
-                      v-model="curComponent.relativeToCurrentType"
-                    >
-                      <el-option
-                        v-for="item in relativeToCurrentTypeList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                    <el-select @focus="handleDialogClick" v-model="curComponent.around">
-                      <el-option
-                        v-for="item in aroundList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                    <el-time-picker v-model="curComponent.arbitraryTime" />
-                  </div>
-                </div>
-                <div
-                  class="setting"
-                  :class="
-                    ['yearrange', 'monthrange', 'daterange'].includes(
-                      curComponent.timeGranularityMultiple
-                    ) && 'is-year-month-range'
-                  "
-                >
-                  <div class="setting-label">结束时间</div>
-                  <div class="setting-input with-date range">
-                    <el-input-number
-                      v-model="curComponent.timeNumRange"
-                      :min="0"
-                      controls-position="right"
-                    />
-                    <el-select
-                      @focus="handleDialogClick"
-                      v-model="curComponent.relativeToCurrentTypeRange"
-                    >
-                      <el-option
-                        v-for="item in relativeToCurrentTypeList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                    <el-select @focus="handleDialogClick" v-model="curComponent.aroundRange">
-                      <el-option
-                        v-for="item in aroundList"
-                        :key="item.value"
-                        :label="item.label"
-                        :value="item.value"
-                      />
-                    </el-select>
-                    <el-time-picker v-model="curComponent.arbitraryTimeRange" />
-                  </div>
-                </div>
-              </template>
-            </div>
-            <div
-              v-if="curComponent.defaultValueCheck"
-              class="parameters"
-              :class="dynamicTime && 'setting'"
-            >
-              <div class="setting-label" v-if="dynamicTime">预览</div>
-              <div :class="dynamicTime ? 'setting-value' : 'w100'">
-                <component
-                  :config="curComponent"
-                  isConfig
-                  ref="inputCom"
-                  :is="filterTypeCom"
-                ></component>
-              </div>
-            </div>
-          </div>
+          <condition-default-configuration
+            ref="defaultConfigurationRef"
+            :cur-component="curComponent"
+          ></condition-default-configuration>
         </div>
         <div v-if="showTypeError && showConfiguration" class="empty">
           <empty-background description="所选字段类型不一致，无法进行查询配置" img-type="error" />
