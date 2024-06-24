@@ -1002,7 +1002,7 @@ export default {
     },
     getData(id, cache = true, dataBroadcast = false) {
       // Err1001 已删除的不在重复请求
-      if (this.requestStatus === 'waiting' || (this.message && this.message.indexOf('Err1001'))) {
+      if (this.requestStatus === 'waiting' || (this.message && this.message.indexOf('Err1001')> -1)) {
         return
       }
       if (id) {
@@ -1444,7 +1444,7 @@ export default {
       let mappingName = null
       if (this.chart.senior) {
         const senior = JSON.parse(this.chart.senior)
-        if (senior?.mapMapping[currentNode.code]) {
+        if (senior?.mapMapping?.[currentNode.code]) {
           const mapping = senior.mapMapping[currentNode.code]
           if (mapping[name]) {
             mappingName = mapping[name]

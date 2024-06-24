@@ -527,6 +527,21 @@ public class DataFillService {
                 ExtTableField end = gson.fromJson(gson.toJson(field), ExtTableField.class);
                 end.getSettings().getMapping().setColumnName(end.getSettings().getMapping().getColumnName2());
                 fields.add(end);
+            } else if (StringUtils.equalsIgnoreCase(field.getType(), "select") || StringUtils.equalsIgnoreCase(field.getType(), "radio") || StringUtils.equalsIgnoreCase(field.getType(), "checkbox")) {
+                if (field.getSettings().getOptionSourceType() == 2
+                        && StringUtils.isNotBlank(field.getSettings().getOptionDatasource())
+                        && StringUtils.isNotBlank(field.getSettings().getOptionTable())
+                        && StringUtils.isNotBlank(field.getSettings().getOptionColumn())
+                ) {
+                    List<ExtTableField.Option> columnData = new ArrayList<>();
+                    try {
+                        columnData = dataFillDataService.listColumnData(field.getSettings().getOptionDatasource(), field.getSettings().getOptionTable(), field.getSettings().getOptionColumn(), field.getSettings().getOptionOrder());
+                    } catch (Exception e) {
+                        e.printStackTrace();
+                    }
+                    field.getSettings().setOptions(columnData);
+                }
+                fields.add(field);
             } else {
                 fields.add(field);
             }

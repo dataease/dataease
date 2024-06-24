@@ -932,7 +932,7 @@ export default {
   height: calc(100% - 56px);
   overflow-x: hidden;
   overflow-y: auto;
-  /*padding: 5px;*/
+  padding: 5px;
 }
 
 .custom-position {

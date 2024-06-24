@@ -1,7 +1,12 @@
 <script>
 import { forEach, find, concat, cloneDeep, floor, map, filter, includes } from 'lodash-es'
 import { PHONE_REGEX, EMAIL_REGEX } from '@/utils/validate'
-import { newFormRowData, saveFormRowData, userFillFormData } from '@/views/dataFilling/form/dataFilling'
+import {
+  getTableColumnData,
+  newFormRowData,
+  saveFormRowData,
+  userFillFormData
+} from '@/views/dataFilling/form/dataFilling'
 
 export default {
   name: 'EditFormData',
@@ -61,6 +66,7 @@ export default {
     }
     return {
       loading: false,
+      asyncOptions: {},
       formData: {},
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       dateRangeRequiredRule: { validator: checkDateRangeRequireValidator, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
@@ -87,7 +93,9 @@ export default {
   },
   watch: {},
   mounted() {
+    const _tempForms = []
     this.formData = []
+    this.asyncOptions = {}
     forEach(this.forms, v => {
       if (!v.removed) {
         const f = cloneDeep(v)
@@ -103,13 +111,27 @@ export default {
           f.value = [_start, _end]
         } else {
           const _value = this.data[f.settings.mapping.columnName]
+          // 交给后面处理
+          f.value = _value
+        }
+        _tempForms.push(f)
+      }
+    })
+
+    this.loading = true
+    this.initFormOptionsData(_tempForms, () => {
+      // 最后处理选项值
+      _tempForms.forEach(f => {
+        if (f.type !== 'dateRange') {
+          const _value = this.data[f.settings.mapping.columnName]
           if (f.type === 'select' && f.settings.multiple || f.type === 'checkbox') {
             if (_value) {
               // 过滤一下选项值
               if (this.readonly) {
                 f.value = JSON.parse(_value)
               } else {
-                const options = map(f.settings.options, f => f.value)
+                const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
+                const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
                 f.value = filter(JSON.parse(_value), v => includes(options, v))
               }
             } else {
@@ -118,7 +140,8 @@ export default {
           } else if (f.type === 'select' && !f.settings.multiple || f.type === 'radio') {
             if (_value) {
               if (!this.readonly) {
-                const options = map(f.settings.options, f => f.value)
+                const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
+                const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
                 if (!includes(options, _value)) {
                   f.value = undefined
                 } else {
@@ -128,15 +151,47 @@ export default {
                 f.value = _value
               }
             }
-          } else {
-            f.value = _value
           }
         }
-        this.formData.push(f)
-      }
+      })
+      // 赋值到表单
+      this.formData = _tempForms
+      this.loading = false
     })
   },
   methods: {
+    initFormOptionsData(forms, callback) {
+      const queries = []
+      const queryIds = []
+      forEach(forms, f => {
+        if (f.type === 'checkbox' || f.type === 'select' || f.type === 'radio') {
+          if (f.settings && f.settings.optionSourceType === 2 && f.settings.optionDatasource && f.settings.optionTable && f.settings.optionColumn && f.settings.optionOrder) {
+            const id = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
+
+            const p = getTableColumnData(f.settings.optionDatasource, f.settings.optionTable, f.settings.optionColumn, f.settings.optionOrder)
+            queries.push(p)
+            queryIds.push(id)
+          }
+        }
+      })
+
+      if (queries.length > 0) {
+        Promise.all(queries).then((val) => {
+          for (let i = 0; i < queryIds.length; i++) {
+            const id = queryIds[i]
+            this.asyncOptions[id] = val[i].data
+          }
+        }).finally(() => {
+          if (callback) {
+            callback()
+          }
+        })
+      } else {
+        if (callback) {
+          callback()
+        }
+      }
+    },
     getRules(item) {
       let rules = []
       if (item.settings.required) {
@@ -266,6 +321,7 @@ export default {
         <div
           v-for="(item, $index) in formData"
           :key="item.id"
+          :data-var="tempId = item.settings ? item.settings.optionDatasource + '_' + item.settings.optionTable + '_' + item.settings.optionColumn + '_' + item.settings.optionOrder : 'unset'"
           class="m-item m-form-item"
         >
 
@@ -332,7 +388,7 @@ export default {
               clearable
             >
               <el-option
-                v-for="(x, $index) in item.settings.options"
+                v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
                 :key="$index"
                 :label="x.name"
                 :value="x.value"
@@ -347,7 +403,7 @@ export default {
               size="small"
             >
               <el-radio
-                v-for="(x, $index) in item.settings.options"
+                v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
                 :key="$index"
                 :label="x.value"
               >{{ x.name }}
@@ -361,7 +417,7 @@ export default {
               size="small"
             >
               <el-checkbox
-                v-for="(x, $index) in item.settings.options"
+                v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
                 :key="$index"
                 :label="x.value"
               >{{ x.name }}
