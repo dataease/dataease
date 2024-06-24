@@ -1,10 +1,11 @@
 <script setup lang="ts">
 import { ElColorPicker, ElPopover } from 'element-plus-secondary'
-import { computed, ref } from 'vue'
+import { computed, onMounted, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_CASES, COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
 import GradientColorSelector from '@/views/chart/components/editor/editor-style/components/GradientColorSelector.vue'
 import { getMapColorCases, stepsColor } from '@/views/chart/components/js/util'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const { t } = useI18n()
 
@@ -24,7 +25,15 @@ const props = withDefaults(
 )
 
 const emits = defineEmits(['update:modelValue', 'changeBasicStyle'])
-
+const changeChartType = () => {
+  if (isColorGradient.value) {
+    state.value.basicStyleForm.colorScheme = 'default'
+    changeColorOption({ value: 'default' })
+  }
+}
+onMounted(() => {
+  useEmitt({ name: 'chart-type-change', callback: changeChartType })
+})
 const state = computed({
   get() {
     return props.modelValue
