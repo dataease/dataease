@@ -1214,7 +1214,7 @@ export function getTooltipContainer(id) {
   g2Tooltip.classList.add('g2-tooltip')
   // 最多半屏，鼠标移入可滚动
   g2Tooltip.style.maxHeight = '50%'
-  g2Tooltip.style.overflow = 'scroll'
+  g2Tooltip.style.overflowY = 'scroll'
   g2Tooltip.style.display = 'none'
   g2Tooltip.style.position = 'fixed'
   g2Tooltip.style.left = '0px'
