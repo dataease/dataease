@@ -1,6 +1,7 @@
 package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DatasetDataApi;
+import io.dataease.api.dataset.dto.BaseTreeNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.EnumValueRequest;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
@@ -69,5 +70,16 @@ public class DatasetDataServer implements DatasetDataApi {
     @Override
     public Long getDatasetCount(DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception {
         return datasetDataManage.getDatasetTotal(datasetGroupInfoDTO.getId());
+    }
+
+    @Override
+    public List<BaseTreeNodeDTO> getFieldValueTree(List<Long> ids) throws Exception {
+        try {
+            return datasetDataManage.getFieldValueTree(ids);
+        } catch (Exception e) {
+            e.printStackTrace();
+            LogUtil.error(e);
+            return null;
+        }
     }
 }
