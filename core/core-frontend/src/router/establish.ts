@@ -3,6 +3,7 @@ import { cloneDeep } from 'lodash'
 import { XpackComponent } from '@/components/plugin'
 const modules = import.meta.glob('../views/**/*.vue')
 export const Layout = () => import('@/layout/index.vue')
+export const LayoutTransition = () => import('@/layout/components/LayoutTransition.vue')
 const pluginComponent = 'components/plugin'
 // 后端控制路由生成
 export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRecordRaw[] => {
@@ -37,12 +38,14 @@ export const generateRoutesFn2 = (routes: AppCustomRouteRecordRaw[]): AppRouteRe
       let comModule = null
       if (route.component === pluginComponent) {
         comModule = XpackComponent
-      } else {
+      } else if (!route.component.startsWith('Layout')) {
         comModule = modules[`../views/${route.component}/index.vue`]
       }
 
       if (route.component === 'Layout') {
         data.component = Layout
+      } else if (route.component === 'LayoutTransition') {
+        data.component = LayoutTransition
       } else if (!comModule) {
       } else {
         data.component = comModule
