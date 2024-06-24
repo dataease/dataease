@@ -33,6 +33,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   properties: EditorProperty[] = [...MAP_EDITOR_PROPERTY, 'legend-selector']
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
+    'basic-style-selector': ['colors', 'alpha', 'areaBorderColor', 'zoom', 'gradient-color'],
     'legend-selector': ['icon', 'fontSize', 'color']
   }
   axis = MAP_AXIS_TYPE
@@ -177,6 +178,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const colors = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
     const { legend } = parseJson(chart.customStyle)
     let data = []
+    data = sourceData
     let colorScale = []
     if (legend.show) {
       let minValue = misc.mapLegendMin
@@ -196,7 +198,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       // 定义最大值、最小值、区间数量和对应的颜色
       colorScale = getDynamicColorScale(minValue, maxValue, mapLegendNumber, colors)
     } else {
-      data = sourceData
       colorScale = colors
     }
     const areaMap = data.reduce((obj, value) => {
