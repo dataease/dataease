@@ -218,6 +218,7 @@ onMounted(() => {
       <custom-color-style-select
         v-model="state"
         :themes="themes"
+        :property-inner="propertyInner"
         @change-basic-style="changeBasicStyle('colors')"
       />
     </template>

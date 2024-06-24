@@ -592,3 +592,59 @@ export const setMapChartDefaultMaxAndMinValueByData = (
     callback(maxResult, minResult)
   }
 }
+
+export const stepsColor = (start, end, steps, gamma) => {
+  let i
+  let j
+  let ms
+  let me
+  const output = []
+  const so = []
+  gamma = gamma || 1
+  const normalize = function (channel) {
+    return Math.pow(channel / 255, gamma)
+  }
+  start = parseColor(start).map(normalize)
+  end = parseColor(end).map(normalize)
+  for (i = 0; i < steps; i++) {
+    ms = steps - 1 === 0 ? 0 : i / (steps - 1)
+    me = 1 - ms
+    for (j = 0; j < 3; j++) {
+      so[j] = pad(Math.round(Math.pow(start[j] * me + end[j] * ms, 1 / gamma) * 255).toString(16))
+    }
+    output.push('#' + so.join(''))
+  }
+  function parseColor(hexStr) {
+    return hexStr.length === 4
+      ? hexStr
+          .substr(1)
+          .split('')
+          .map(function (s) {
+            return 0x11 * parseInt(s, 16)
+          })
+      : [hexStr.substr(1, 2), hexStr.substr(3, 2), hexStr.substr(5, 2)].map(function (s) {
+          return parseInt(s, 16)
+        })
+  }
+  function pad(s) {
+    return s.length === 1 ? '0' + s : s
+  }
+  return output
+}
+
+export const getMapColorCases = colorCases => {
+  const cloneColorCases = JSON.parse(JSON.stringify(colorCases))
+  return cloneColorCases.map(colorItem => {
+    const curColors = colorItem.colors
+    const len = curColors.length
+    const start = curColors[0]
+    const end = curColors[len - 1]
+    const itemResult = {
+      name: colorItem.name,
+      value: colorItem.value + '_split_gradient',
+      baseColors: [start, end],
+      colors: stepsColor(start, end, 9, 1)
+    }
+    return itemResult
+  })
+}

@@ -3,6 +3,9 @@ import { ElColorPicker, ElPopover } from 'element-plus-secondary'
 import { computed, ref } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_CASES, COLOR_PANEL } from '@/views/chart/components/editor/util/chart'
+import GradientColorSelector from '@/views/chart/components/editor/editor-style/components/GradientColorSelector.vue'
+import { getMapColorCases, stepsColor } from '@/views/chart/components/js/util'
+
 const { t } = useI18n()
 
 const props = withDefaults(
@@ -13,6 +16,7 @@ const props = withDefaults(
       customColor: any
       colorIndex: number
     }
+    propertyInner: Array<string>
   }>(),
   {
     themes: 'light'
@@ -41,30 +45,48 @@ const customColorPickerRef = ref<InstanceType<typeof ElColorPicker>>()
 function selectColorCase(option) {
   state.value.basicStyleForm.colorScheme = option.value
   colorCaseSelectorRef.value?.hide()
-  changeColorOption()
-}
-const changeColorOption = () => {
-  const items = colorCases.filter(ele => {
-    return ele.value === state.value.basicStyleForm.colorScheme
-  })
-  state.value.basicStyleForm.colors = [...items[0].colors]
-
-  state.value.customColor = state.value.basicStyleForm.colors[0]
-  state.value.colorIndex = 0
-
-  changeBasicStyle()
+  changeColorOption(option)
 }
 
+const changeColorOption = (option?) => {
+  let isGradient = option?.value?.endsWith('_split_gradient') || isColorGradient.value
+  const getColorItems = isGradient ? getMapColorCases(colorCases) : colorCases
+  const items = getColorItems.filter(ele => ele.value === state.value.basicStyleForm.colorScheme)
+
+  if (items.length > 0) {
+    state.value.basicStyleForm.colors = [...items[0].colors]
+    state.value.customColor = state.value.basicStyleForm.colors[0]
+    state.value.colorIndex = 0
+    changeBasicStyle()
+  }
+}
 const resetCustomColor = () => {
   changeColorOption()
 }
 
 const switchColorCase = () => {
-  state.value.basicStyleForm.colors[state.value.colorIndex] = state.value.customColor
+  const { colorIndex, customColor, basicStyleForm } = state.value
+  const colors = basicStyleForm.colors
+
+  if (isColorGradient.value) {
+    let startColor = colorIndex === 0 ? customColor : colors[0]
+    let endColor = colorIndex === 0 ? colors[8] : customColor
+    basicStyleForm.colors = stepsColor(startColor, endColor, 9, 1)
+  } else {
+    colors[colorIndex] = customColor
+  }
   changeBasicStyle()
 }
-
+const isColorGradient = computed(() =>
+  state.value.basicStyleForm.colorScheme.endsWith('_split_gradient')
+)
+const showColorGradientIndex = index => {
+  return index === 0 || index === state.value.basicStyleForm.colors.length - 1
+}
 const switchColor = (index, c) => {
+  if (isColorGradient.value && !showColorGradientIndex(index)) {
+    return
+  }
   state.value.colorIndex = index
   state.value.customColor = c
   customColorPickerRef.value?.show()
@@ -81,6 +103,21 @@ function onPopoverShow() {
 function onPopoverHide() {
   _popoverShow.value = false
 }
+const showProperty = prop => props.propertyInner?.includes(prop)
+const colorItemBorderColor = (index, state) => {
+  const isCurrentColorActive = state.colorIndex === index
+  if (isColorGradient.value) {
+    if (showColorGradientIndex(index)) {
+      // 渐变色的第一个和最后一个颜色
+      return isCurrentColorActive ? 'var(--ed-color-primary)' : 'rgb(230,230,230)'
+    } else {
+      // 渐变色中非边缘的颜色
+      return 'rgb(230,230,230,0.01)'
+    }
+  }
+  // 非渐变色情况
+  return isCurrentColorActive ? 'var(--ed-color-primary)' : ''
+}
 </script>
 
 <template>
@@ -90,6 +127,20 @@ function onPopoverHide() {
   >
     <el-row>
       <el-form-item
+        v-if="showProperty('gradient-color')"
+        :label="$t('chart.color_case')"
+        class="form-item"
+        :class="'form-item-' + themes"
+        style="flex: 1; padding-right: 8px; margin-bottom: 16px"
+      >
+        <gradient-color-selector
+          v-model="state"
+          :themes="themes"
+          @select-color-case="selectColorCase"
+        />
+      </el-form-item>
+      <el-form-item
+        v-if="!showProperty('gradient-color')"
         :label="t('chart.color_case')"
         class="form-item"
         :class="'form-item-' + themes"
@@ -187,14 +238,34 @@ function onPopoverHide() {
           :key="index"
           @click="switchColor(index, c)"
           class="color-item"
-          :class="{ active: state.colorIndex === index }"
+          :class="{
+            active: state.colorIndex === index,
+            hover: isColorGradient ? showColorGradientIndex(index) : true
+          }"
+          :style="{
+            'border-color': colorItemBorderColor(index, state)
+          }"
         >
           <div
             class="color-item__inner"
             :style="{
               backgroundColor: c
             }"
-          ></div>
+          >
+            <el-icon
+              v-if="isColorGradient && showColorGradientIndex(index)"
+              class="input-arrow-icon"
+              :style="{
+                color: 'white',
+                'font-size': 'x-small',
+                left: '2px',
+                bottom: '2px'
+              }"
+              :class="{ reverse: _popoverShow }"
+            >
+              <ArrowDown />
+            </el-icon>
+          </div>
         </div>
         <div class="inner-selector">
           <el-color-picker
@@ -298,7 +369,9 @@ function onPopoverHide() {
         height: 14px;
         border-radius: 1px;
       }
-
+      &:not(.hover) {
+        cursor: initial;
+      }
       &:hover {
         border-color: var(--ed-color-primary-99, rgba(51, 112, 255, 0.6));
       }
