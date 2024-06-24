@@ -4,6 +4,7 @@ import lombok.Data;
 
 import java.io.Serial;
 import java.io.Serializable;
+import java.util.Map;
 
 @Data
 public class XpackPluginsViewVO implements Serializable {
@@ -25,5 +26,7 @@ public class XpackPluginsViewVO implements Serializable {
     private String chartTitle;
 
     private String render;
+
+    private Map<String, String> staticMap;
 
 }

@@ -262,7 +262,11 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   mapLineSourceColor: '#146C94',
   mapLineTargetColor: '#576CBC',
   wordSizeRange: [8, 32],
-  wordSpacing: 6
+  wordSpacing: 6,
+  mapAutoLegend: true,
+  mapLegendMax: 0,
+  mapLegendMin: 0,
+  mapLegendNumber: 9
 }
 
 export const DEFAULT_MARK = {

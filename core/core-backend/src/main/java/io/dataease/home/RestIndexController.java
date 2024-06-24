@@ -1,5 +1,6 @@
 package io.dataease.home;
 
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.utils.ModelUtils;
 import io.dataease.utils.RsaUtils;
 import org.springframework.beans.factory.annotation.Value;
@@ -31,7 +32,7 @@ public class RestIndexController {
     @GetMapping("/xpackModel")
     @ResponseBody
     public boolean xpackModel() {
-        return xpackFrontDistributed;
+        return xpackFrontDistributed && LicenseUtil.licenseValid();
     }
 
 }

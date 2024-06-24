@@ -64,7 +64,7 @@ const showValueFormatter = computed<boolean>(() => {
 })
 
 watch(
-  [() => props.dimensionData, () => props.item],
+  [() => props.dimensionData, () => props.item, () => props.chart.type],
   () => {
     getItemTagType()
   },
@@ -159,6 +159,10 @@ const removeItem = () => {
 }
 
 const getItemTagType = () => {
+  if (props.chart.type !== 'table-info' && props.item.desensitized) {
+    tagType.value = '#F54A45'
+    return
+  }
   tagType.value = getItemType(props.dimensionData, props.quotaData, props.item)
 }
 
@@ -204,7 +208,10 @@ onMounted(() => {
           :content="item.chartShowName ? item.chartShowName : item.name"
         >
           <span class="item-span-style">
-            <span class="item-name">{{ item.chartShowName ? item.chartShowName : item.name }}</span>
+            <span class="item-name"
+              >{{ item.chartShowName ? item.chartShowName : item.name
+              }}{{ item.desensitized ? '(已脱敏)' : '' }}</span
+            >
           </span>
         </el-tooltip>
 

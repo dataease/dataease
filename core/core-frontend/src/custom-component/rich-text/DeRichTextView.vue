@@ -59,6 +59,8 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import ChartError from '@/views/chart/components/views/components/ChartError.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { parseJson } from '@/views/chart/components/js/util'
+import { mappingColor } from '@/views/chart/components/js/panel/common/common_table'
 const snapshotStore = snapshotStoreWithOut()
 const errMsg = ref('')
 const dvMainStore = dvMainStoreWithOut()
@@ -103,6 +105,7 @@ const { element, editMode, active, disabled, showPosition } = toRefs(props)
 
 const state = reactive({
   data: null,
+  viewDataInfo: null,
   totalItems: 0
 })
 const dataRowSelect = ref({})
@@ -150,7 +153,7 @@ watch(
   () => active.value,
   val => {
     if (!val) {
-      const ed = tinymce.editors[tinymceId]
+      const ed = window.tinymce.editors[tinymceId]
       if (canEdit.value) {
         element.value.propValue.textValue = ed.getContent()
       }
@@ -158,6 +161,7 @@ watch(
       canEdit.value = false
       reShow()
       myValue.value = assignment(element.value.propValue.textValue)
+      ed.setContent(myValue.value)
     }
   }
 )
@@ -166,7 +170,7 @@ watch(
   () => myValue.value,
   () => {
     if (canEdit.value) {
-      const ed = tinymce.editors[tinymceId]
+      const ed = window.tinymce.editors[tinymceId]
       element.value.propValue.textValue = ed.getContent()
     }
     if (initReady.value && canEdit.value) {
@@ -216,23 +220,19 @@ const initCurFieldsChange = () => {
 const assignment = content => {
   const on = content.match(/\[(.+?)\]/g)
   if (on) {
+    const thresholdStyleInfo = conditionAdaptor(state.viewDataInfo)
     on.forEach(itm => {
       if (dataRowFiledName.value.includes(itm)) {
         const ele = itm.slice(1, -1)
+        let value = dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
+        if (value && thresholdStyleInfo && thresholdStyleInfo[ele]) {
+          const thresholdStyle = thresholdStyleInfo[ele]
+          value = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${value}</span>`
+        }
         if (initReady.value) {
-          content = content.replace(
-            itm,
-            dataRowNameSelect.value[ele] !== undefined
-              ? dataRowNameSelect.value[ele]
-              : '[未获取字段值]'
-          )
+          content = content.replace(itm, !!value ? value : '[未获取字段值]')
         } else {
-          content = content.replace(
-            itm,
-            dataRowNameSelect.value[ele] !== undefined
-              ? dataRowNameSelect.value[ele]
-              : '[获取中...]'
-          )
+          content = content.replace(itm, !!value ? value : '[获取中...]')
         }
       }
     })
@@ -245,7 +245,7 @@ const assignment = content => {
   return content
 }
 const fieldSelect = field => {
-  const ed = tinymce.editors[tinymceId]
+  const ed = window.tinymce.editors[tinymceId]
   const fieldId = 'changeText-' + guid()
   const value =
     '<span id="' +
@@ -262,12 +262,12 @@ const fieldSelect = field => {
 }
 const onClick = () => {
   if (canEdit.value) {
-    const node = tinymce.activeEditor.selection.getNode()
+    const node = window.tinymce.activeEditor.selection.getNode()
     resetSelect(node)
   }
 }
 const resetSelect = (node?) => {
-  const edInner = tinymce.get(tinymceId)
+  const edInner = window.tinymce.get(tinymceId)
   if (edInner?.dom) {
     const nodeArray = edInner.dom.select('.base-selected')
     if (nodeArray) {
@@ -316,7 +316,7 @@ const setEdit = () => {
     canEdit.value = true
     element.value['editing'] = true
     myValue.value = element.value.propValue.textValue
-    const ed = tinymce.editors[tinymceId]
+    const ed = window.tinymce.editors[tinymceId]
     ed.setContent(myValue.value)
     reShow()
   }
@@ -359,6 +359,7 @@ const calcData = (view: Chart, callback) => {
           errMsg.value = res.msg
         } else {
           state.data = res?.data
+          state.viewDataInfo = res
           state.totalItems = res?.totalItems
           const curViewInfo = canvasViewInfo.value[element.value.id]
           curViewInfo['curFields'] = res.data.fields
@@ -447,6 +448,40 @@ const initCurFields = chartDetails => {
 
 const renderChart = () => {
   initCurFieldsChange()
+}
+
+const conditionAdaptor = (chart: Chart) => {
+  if (!chart) {
+    return
+  }
+  const { threshold } = parseJson(chart.senior)
+  if (!threshold.enable) {
+    return
+  }
+  const res = {}
+  const conditions = threshold.tableThreshold ?? []
+  if (conditions?.length > 0) {
+    for (let i = 0; i < conditions.length; i++) {
+      const field = conditions[i]
+      let defaultValueColor = 'none'
+      let defaultBgColor = 'none'
+      res[field.field.name] = {
+        color: mappingColor(
+          dataRowNameSelect.value[field.field.name],
+          defaultValueColor,
+          field,
+          'color'
+        ),
+        backgroundColor: mappingColor(
+          dataRowNameSelect.value[field.field.name],
+          defaultBgColor,
+          field,
+          'backgroundColor'
+        )
+      }
+    }
+  }
+  return res
 }
 
 onMounted(() => {

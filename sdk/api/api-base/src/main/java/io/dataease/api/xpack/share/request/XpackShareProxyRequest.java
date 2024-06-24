@@ -20,4 +20,6 @@ public class XpackShareProxyRequest implements Serializable {
     @Schema(description = "密钥", requiredMode = Schema.RequiredMode.REQUIRED)
     private String ciphertext;
     private boolean inIframe;
+
+    private String ticket;
 }

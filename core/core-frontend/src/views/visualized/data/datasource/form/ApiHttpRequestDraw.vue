@@ -1,5 +1,5 @@
 <script lang="tsx" setup>
-import { nextTick, reactive, ref, shallowRef } from 'vue'
+import { nextTick, reactive, ref, shallowRef, provide } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
 import { ElIcon, ElMessage } from 'element-plus-secondary'
@@ -150,8 +150,10 @@ const rule = reactive<FormRules>({
     }
   ]
 })
-
-const initApiItem = (val: ApiItem, apiList) => {
+const activeName = ref('third')
+provide('api-active-name', activeName)
+const initApiItem = (val: ApiItem, apiList, name) => {
+  activeName.value = name
   apiItemList = apiList
   Object.assign(apiItem, val)
   edit_api_item.value = true
@@ -406,7 +408,9 @@ defineExpose({
               <span class="icon">
                 {{ active <= 1 ? '2' : '' }}
               </span>
-              <span class="title">{{ t('datasource.api_step_2') }}</span>
+              <span class="title">{{
+                activeName === 'third' ? t('datasource.api_step_2') : '提取参数'
+              }}</span>
             </div>
           </template>
         </el-step>

@@ -6,11 +6,12 @@ import EmptyBackground from '@/components/empty-background/src/EmptyBackground.v
 import { cloneDeep } from 'lodash-es'
 import ApiHttpRequestDraw from './ApiHttpRequestDraw.vue'
 import type { Configuration, ApiConfiguration, SyncSetting } from './option'
+import { fieldType, fieldTypeText } from '@/utils/attr'
 import { Icon } from '@/components/icon-custom'
 import { getSchema } from '@/api/datasource'
 import { Base64 } from 'js-base64'
 import { CustomPassword } from '@/components/custom-password'
-import { ElForm, ElMessage } from 'element-plus-secondary'
+import { ElForm, ElMessage, ElMessageBox } from 'element-plus-secondary'
 import Cron from '@/components/cron/src/Cron.vue'
 import { ComponentPublicInstance } from 'vue'
 const { t } = useI18n()
@@ -324,9 +325,11 @@ const addApiItem = item => {
         : 0
   }
   nextTick(() => {
-    editApiItem.value.initApiItem(apiItem, form.value.apiConfiguration)
+    editApiItem.value.initApiItem(apiItem, form.value.apiConfiguration, activeName.value)
   })
 }
+
+const activeName = ref('third')
 const showPriority = ref(false)
 
 const deleteItem = (item, idx) => {
@@ -470,7 +473,149 @@ const apiRule = {
     }
   ]
 }
+const dialogEditParams = ref(false)
+const dialogRenameApi = ref(false)
+const activeParamsName = ref('')
+const apiParams = ref([
+  {
+    id: 1,
+    name: '接口1'
+  }
+])
+const paramsObj = ref({
+  name: '',
+  id: 1,
+  deType: 0
+})
 
+const apiObj = ref({
+  name: '',
+  id: 1
+})
+const paramsObjRules = {
+  name: [
+    {
+      required: true,
+      message: '请输入参数名称',
+      trigger: 'change'
+    },
+    {
+      min: 2,
+      max: 64,
+      message: '参数名称限制2～64字符',
+      trigger: 'blur'
+    }
+  ]
+}
+
+const apiObjRules = {
+  name: [
+    {
+      required: true,
+      message: '请输入接口名称',
+      trigger: 'change'
+    },
+    {
+      min: 2,
+      max: 64,
+      message: '接口名称限制2～64字符',
+      trigger: 'blur'
+    }
+  ]
+}
+const setActiveName = val => {
+  activeParamsName.value = val.name
+}
+
+const paramsObjRef = ref()
+const apiObjRef = ref()
+
+const saveParamsObj = () => {
+  paramsObjRef.value.validate(result => {
+    if (result) {
+      gridData.value.forEach(ele => {
+        if (ele.id === paramsObj.value.id) {
+          ele.name = paramsObj.value.name
+        }
+      })
+    }
+  })
+}
+
+const saveApiObj = () => {
+  apiObjRef.value.validate(result => {
+    if (result) {
+      apiParams.value.forEach(ele => {
+        if (ele.id === apiObj.value.id) {
+          ele.name = apiObj.value.name
+        }
+      })
+    }
+  })
+}
+
+const paramsResetForm = () => {
+  dialogEditParams.value = false
+}
+
+const apiResetForm = () => {
+  dialogRenameApi.value = false
+}
+
+const gridData = ref([
+  {
+    name: 'name',
+    deType: 0,
+    id: 0
+  }
+])
+const handleApiParams = (cmd: string, data) => {
+  if (cmd === 'rename') {
+    dialogRenameApi.value = true
+    paramsObj.value.name = data.name
+  }
+  if (cmd === 'delete') {
+    ElMessageBox.confirm('确定删除吗?', {
+      confirmButtonType: 'danger',
+      type: 'warning',
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      apiParams.value.splice(0, 1)
+    })
+  }
+
+  if (cmd === 'edit') {
+    addApiItem(data)
+  }
+}
+
+const editParams = data => {
+  dialogEditParams.value = true
+}
+
+const delParams = data => {
+  ElMessageBox.confirm('确定删除吗?', {
+    confirmButtonType: 'danger',
+    type: 'warning',
+    autofocus: false,
+    showClose: false
+  }).then(() => {
+    apiParams.value.splice(0, 1)
+  })
+}
+const datasetTypeList = [
+  {
+    label: '重命名',
+    svgName: 'icon_rename_outlined',
+    command: 'rename'
+  },
+  {
+    label: '删除',
+    svgName: 'icon_delete-trash_outlined',
+    command: 'delete'
+  }
+]
 defineExpose({
   submitForm,
   resetForm,
@@ -522,7 +667,10 @@ defineExpose({
         </el-form-item>
         <template v-if="form.type === 'API'">
           <div class="title-form_primary flex-space table-info-mr" v-show="activeStep !== 2">
-            <span>{{ t('datasource.data_table') }}</span>
+            <el-tabs v-model="activeName" class="api-tabs">
+              <el-tab-pane :label="t('datasource.data_table')" name="third"></el-tab-pane>
+              <el-tab-pane label="接口参数" name="fourth"></el-tab-pane>
+            </el-tabs>
             <el-button type="primary" style="margin-left: auto" @click="() => addApiItem(null)">
               <template #icon>
                 <Icon name="icon_add_outlined"></Icon>
@@ -536,7 +684,7 @@ defineExpose({
             :description="t('datasource.no_data_table')"
             img-type="noneWhite"
           />
-          <template v-if="form.type === 'API' && activeStep === 1">
+          <template v-if="form.type === 'API' && activeStep === 1 && activeName === 'third'">
             <div class="api-card-content">
               <div
                 v-for="(api, idx) in form.apiConfiguration"
@@ -609,6 +757,77 @@ defineExpose({
               </div>
             </div>
           </template>
+          <div
+            style="display: flex"
+            v-if="form.type === 'API' && activeStep === 1 && activeName === 'fourth'"
+          >
+            <div class="left-api_params">
+              <div
+                v-for="ele in apiParams"
+                :class="[{ active: activeParamsName === ele.name }]"
+                class="list-item_primary"
+                :title="ele.name"
+                :key="ele.id"
+                @click="setActiveName(ele)"
+              >
+                <span class="label">{{ ele.name }}</span>
+                <span class="name-copy">
+                  <el-icon class="hover-icon" @click.stop="handleApiParams('edit', ele)">
+                    <icon name="icon_edit_outlined"></icon>
+                  </el-icon>
+                  <handle-more
+                    icon-size="24px"
+                    @handle-command="cmd => handleApiParams(cmd, ele)"
+                    :menu-list="datasetTypeList"
+                    placement="bottom-start"
+                  ></handle-more>
+                </span>
+              </div>
+            </div>
+            <div class="right-api_params">
+              <el-table
+                height="300"
+                style="width: 100%"
+                header-cell-class-name="header-cell"
+                :data="gridData"
+              >
+                <el-table-column :label="t('visualization.param_name')">
+                  <template #default="scope">
+                    {{ scope.row.name || '-' }}
+                  </template>
+                </el-table-column>
+                <el-table-column :label="t('deDataset.parameter_type')">
+                  <template #default="scope">
+                    <div class="flex-align-center icon">
+                      <el-icon>
+                        <Icon
+                          :className="`field-icon-${fieldType[scope.row.deType]}`"
+                          :name="`field_${fieldType[scope.row.deType]}`"
+                        ></Icon>
+                      </el-icon>
+                      {{ fieldTypeText[scope.row.deType] }}
+                    </div>
+                  </template>
+                </el-table-column>
+
+                <el-table-column :label="t('common.operate')">
+                  <template #default="scope">
+                    <el-button text @click.stop="editParams(scope.row)">
+                      <template #icon>
+                        <Icon name="icon_edit_outlined"></Icon>
+                      </template>
+                    </el-button>
+
+                    <el-button text @click.stop="delParams(scope.row)">
+                      <template #icon>
+                        <Icon name="icon_delete-trash_outlined"></Icon>
+                      </template>
+                    </el-button>
+                  </template>
+                </el-table-column>
+              </el-table>
+            </div>
+          </div>
         </template>
         <template v-if="notapiexcelconfig">
           <el-form-item label="连接方式" prop="type">
@@ -957,6 +1176,61 @@ defineExpose({
           </el-form-item>
         </div>
       </el-form>
+      <el-dialog
+        title="编辑参数"
+        v-model="dialogEditParams"
+        width="420px"
+        class="create-dialog"
+        :before-close="paramsResetForm"
+      >
+        <el-form
+          label-position="top"
+          require-asterisk-position="right"
+          ref="paramsObjRef"
+          @keydown.stop.prevent.enter
+          :model="paramsObj"
+          :rules="paramsObjRules"
+        >
+          <el-form-item :label="t('visualization.param_name')" prop="name">
+            <el-input placeholder="请输入参数名称" v-model="paramsObj.name" />
+          </el-form-item>
+          <el-form-item :label="t('deDataset.parameter_type')" prop="deType">
+            <el-radio-group v-model="paramsObj.deType">
+              <el-radio :value="0" label="文本"></el-radio>
+              <el-radio :value="2" label="数值"></el-radio>
+              <el-radio :value="3" label="数值(小数)"></el-radio>
+            </el-radio-group>
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <el-button secondary @click="paramsResetForm">{{ t('dataset.cancel') }} </el-button>
+          <el-button type="primary" @click="saveParamsObj">{{ t('dataset.confirm') }} </el-button>
+        </template>
+      </el-dialog>
+      <el-dialog
+        title="重命名"
+        v-model="dialogRenameApi"
+        width="420px"
+        class="create-dialog"
+        :before-close="apiResetForm"
+      >
+        <el-form
+          label-position="top"
+          require-asterisk-position="right"
+          ref="paramsObjRef"
+          @keydown.stop.prevent.enter
+          :model="apiObj"
+          :rules="apiObjRules"
+        >
+          <el-form-item label="接口名称" prop="name">
+            <el-input placeholder="请输入接口名称" v-model="apiObj.name" />
+          </el-form-item>
+        </el-form>
+        <template #footer>
+          <el-button secondary @click="apiResetForm">{{ t('dataset.cancel') }} </el-button>
+          <el-button type="primary" @click="saveApiObj">{{ t('dataset.confirm') }} </el-button>
+        </template>
+      </el-dialog>
 
       <api-http-request-draw @return-item="returnItem" ref="editApiItem"></api-http-request-draw>
     </div>
@@ -1037,8 +1311,44 @@ defineExpose({
       margin: 24px 0 16px 0;
     }
 
+    .left-api_params {
+      border-top-left-radius: 4px;
+      border-bottom-left-radius: 4px;
+      border: 1px solid #bbbfc4;
+      width: 300px;
+      padding: 16px;
+      .name-copy {
+        display: none;
+        line-height: 24px;
+        margin-left: 4px;
+      }
+
+      .list-item_primary:hover {
+        .name-copy {
+          display: inline;
+        }
+
+        .label {
+          width: 74% !important;
+        }
+      }
+    }
+
+    .right-api_params {
+      border-top-right-radius: 4px;
+      border-bottom-right-radius: 4px;
+      border: 1px solid #bbbfc4;
+      border-left: none;
+      width: calc(100% - 200px);
+    }
+
     .table-info-mr {
       margin: 28px 0 12px 0;
+      .api-tabs {
+        :deep(.ed-tabs__nav-wrap::after) {
+          display: none;
+        }
+      }
     }
 
     .info-update {

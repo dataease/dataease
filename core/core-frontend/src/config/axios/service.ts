@@ -173,6 +173,8 @@ service.interceptors.response.use(
       return response
     } else if (response.config.url.includes('DEXPack.umd.js')) {
       return response
+    } else if (response.config.url.startsWith('/xpackComponent/pluginStaticInfo/extensions-')) {
+      return response
     } else {
       if (
         !response?.config?.url.startsWith('/xpackComponent/content') &&
@@ -269,18 +271,9 @@ const executeVersionHandler = (response: AxiosResponse) => {
     return
   }
   if (executeVersion && executeVersion !== cacheVal) {
+    wsCache.clear()
     wsCache.set(key, executeVersion)
     showMsg('系统有升级，请点击刷新页面', '-sys-upgrade-')
-    /*  ElMessageBox.confirm('系统有升级，请点击刷新页面', {
-      confirmButtonType: 'primary',
-      type: 'warning',
-      confirmButtonText: '刷新',
-      cancelButtonText: '取消',
-      autofocus: false,
-      showClose: false
-    }).then(() => {
-      window.location.reload()
-    }) */
   }
 }
 export { service, cancelMap }

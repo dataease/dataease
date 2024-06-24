@@ -19,6 +19,8 @@ import 'tinymce/plugins/table' // 插入表格插件
 import 'tinymce/plugins/lists' // 列表插件
 import 'tinymce/plugins/wordcount' // 字数统计插件
 import 'tinymce/plugins/code' // 源码
+import './plugins' //自定义插件
+import '@npkg/tinymce-plugins/letterspacing'
 
 //接下来定义编辑器所需要的插件数据
 import { reactive, ref } from 'vue'
@@ -49,7 +51,7 @@ const props = defineProps({
   toolbar: {
     type: [String, Array],
     default:
-      'codesample bold italic underline alignleft aligncenter alignright alignjustify | undo redo | formatselect | fontselect | fontsizeselect | forecolor backcolor | bullist numlist outdent indent | lists link table code | removeformat '
+      'codesample bold italic underline alignleft aligncenter alignright alignjustify | undo redo | formatselect | fontselect | fontsizeselect | forecolor backcolor | bullist numlist outdent indent | lists link table code | removeformat letterspacing '
   } //必填
 })
 //用于接收外部传递进来的富文本

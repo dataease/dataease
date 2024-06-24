@@ -16,7 +16,10 @@
   <el-dialog
     v-if="dialogVisible && props.weight >= 7"
     class="copy-link_dialog"
-    :class="{ 'hidden-footer': !shareEnable || showTicket }"
+    :class="{
+      'hidden-footer': !shareEnable || showTicket,
+      'is-ticket-dialog': shareEnable && showTicket
+    }"
     v-model="dialogVisible"
     :close-on-click-modal="true"
     :append-to-body="true"
@@ -118,11 +121,18 @@
       </div>
     </div>
     <div v-if="shareEnable && showTicket" class="share-ticket-container">
-      <share-ticket :link-url="linkAddr" @close="closeTicket" />
+      <share-ticket
+        :link-url="linkAddr"
+        :uuid="state.detailInfo.uuid"
+        :resource-id="props.resourceId"
+        :ticket-require="state.detailInfo.ticketRequire"
+        @require-change="updateRequireTicket"
+        @close="closeTicket"
+      />
     </div>
     <template #footer>
       <span class="dialog-footer">
-        <!-- <el-button secondary @click="openTicket">Ticket 设置</el-button> -->
+        <el-button secondary @click="openTicket">Ticket 设置</el-button>
         <el-button :disabled="!shareEnable || expError" type="primary" @click.stop="copyInfo">
           {{ t('visualization.copy_link') }}
         </el-button>
@@ -167,7 +177,8 @@ const state = reactive({
     uuid: '',
     pwd: '',
     exp: 0,
-    autoPwd: true
+    autoPwd: true,
+    ticketRequire: false
   } as ShareInfo
 })
 const emits = defineEmits(['loaded'])
@@ -335,12 +346,14 @@ const expChangeHandler = exp => {
 }
 const beforeClose = async done => {
   if (!shareEnable.value) {
+    showTicket.value = false
     done()
     return
   }
   const pwdValid = validatePwdFormat()
   const uuidValid = await validateUuid()
   if (pwdValid && uuidValid) {
+    showTicket.value = false
     done()
   }
 }
@@ -460,6 +473,9 @@ const openTicket = () => {
 const closeTicket = () => {
   showTicket.value = false
 }
+const updateRequireTicket = val => {
+  state.detailInfo.ticketRequire = val
+}
 
 const execute = () => {
   share()
@@ -480,6 +496,11 @@ onMounted(() => {
 })
 </script>
 <style lang="less">
+.is-ticket-dialog {
+  .ed-dialog__header {
+    display: none;
+  }
+}
 .copy-link_dialog {
   .ed-dialog__header {
     padding: 16px 16px 10px !important;

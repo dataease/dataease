@@ -157,6 +157,7 @@ onUnmounted(() => {
   background-color: @side-area-background;
   border-top: 1px solid @side-outline-border-color;
   color: #fff;
+  z-index: 2;
   transition: 0.5s;
   .scale-area {
     display: flex;

@@ -39,6 +39,7 @@ import { Base64 } from 'js-base64'
 import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { deepCopy } from '@/utils/utils'
 import DvPreview from '@/views/data-visualization/DvPreview.vue'
+import DeRuler from '@/custom-component/common/DeRuler.vue'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -63,6 +64,8 @@ const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 const composeStore = composeStoreWithOut()
 const canvasCacheOutRef = ref(null)
+const deWRulerRef = ref(null)
+const deHRulerRef = ref(null)
 
 const {
   fullscreenFlag,
@@ -80,6 +83,7 @@ const canvasInner = ref(null)
 const leftSidebarRef = ref(null)
 const dvLayout = ref(null)
 const canvasCenterRef = ref(null)
+const mainHeight = ref(300)
 const state = reactive({
   datasetTree: [],
   scaleHistory: null,
@@ -100,9 +104,6 @@ const contentStyle = computed(() => {
     }
   } else {
     return {
-      display: 'flex',
-      justifyContent: 'center',
-      alignItems: 'center',
       width: width * 1.5 + 'px',
       height: height * 1.5 + 'px'
     }
@@ -180,9 +181,9 @@ const initScroll = () => {
   nextTick(() => {
     const { width, height } = canvasStyleData.value
     const mainWidth = canvasCenterRef.value.clientWidth
-    const mainHeight = canvasCenterRef.value.clientHeight
+    mainHeight.value = canvasCenterRef.value.clientHeight
     const scrollX = (1.5 * width - mainWidth) / 2
-    const scrollY = (1.5 * height - mainHeight) / 2 + 20
+    const scrollY = (1.5 * height - mainHeight.value) / 2 + 20
     // 设置画布初始滚动条位置
     canvasOut.value.scrollTo(scrollX, scrollY)
   })
@@ -359,6 +360,12 @@ const canvasPropertiesShow = computed(
 const viewsPropertiesShow = computed(
   () => !!(curComponent.value && ['UserView', 'VQuery'].includes(curComponent.value.component))
 )
+
+const scrollCanvas = e => {
+  deWRulerRef.value.rulerScroll(e)
+  deHRulerRef.value.rulerScroll(e)
+}
+
 eventBus.on('handleNew', handleNew)
 </script>
 
@@ -390,7 +397,19 @@ eventBus.on('handleNew', handleNew)
       </dv-sidebar>
       <!-- 中间画布 -->
       <main id="dv-main-center" class="center" ref="canvasCenterRef">
-        <el-scrollbar ref="canvasOut" class="content" :class="{ 'preview-content': previewStatus }">
+        <div class="de-ruler-icon-outer">
+          <el-icon class="de-ruler-icon">
+            <Icon name="dv-ruler" />
+          </el-icon>
+        </div>
+        <de-ruler ref="deWRulerRef"></de-ruler>
+        <de-ruler direction="vertical" :size="mainHeight" ref="deHRulerRef"></de-ruler>
+        <el-scrollbar
+          ref="canvasOut"
+          @scroll="scrollCanvas"
+          class="content"
+          :class="{ 'preview-content': previewStatus }"
+        >
           <div
             id="canvas-dv-outer"
             ref="canvasInner"
@@ -400,15 +419,17 @@ eventBus.on('handleNew', handleNew)
             @mousedown="handleMouseDown"
             @mouseup="deselectCurComponent"
           >
-            <canvas-core
-              class="canvas-area-shadow editor-main"
-              v-if="state.canvasInitStatus"
-              ref="mainCanvasCoreRef"
-              :component-data="componentData"
-              :canvas-style-data="canvasStyleData"
-              :canvas-view-info="canvasViewInfo"
-              :canvas-id="state.canvasId"
-            ></canvas-core>
+            <div class="canvas-dv-inner">
+              <canvas-core
+                class="canvas-area-shadow editor-main"
+                v-if="state.canvasInitStatus"
+                ref="mainCanvasCoreRef"
+                :component-data="componentData"
+                :canvas-style-data="canvasStyleData"
+                :canvas-view-info="canvasViewInfo"
+                :canvas-id="state.canvasId"
+              ></canvas-core>
+            </div>
           </div>
         </el-scrollbar>
         <ComponentToolBar :class="{ 'preview-aside-x': previewStatus }"></ComponentToolBar>
@@ -534,5 +555,28 @@ eventBus.on('handleNew', handleNew)
   width: 100%;
   height: 1px;
   background: #000;
+}
+
+.canvas-dv-inner {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.de-ruler-icon-outer {
+  background: #2c2c2c;
+  position: absolute;
+  width: 30px;
+  height: 30px;
+  z-index: 3;
+  color: #ebebeb;
+  .de-ruler-icon {
+    margin-left: 6px;
+    margin-top: 6px;
+    font-size: 24px;
+    color: #ebebeb;
+  }
 }
 </style>

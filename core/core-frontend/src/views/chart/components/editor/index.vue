@@ -1519,18 +1519,29 @@ const dragOver = (ev: MouseEvent) => {
 }
 
 const drop = (ev: MouseEvent, type = 'xAxis') => {
+  let hasSesensitized = false
   ev.preventDefault()
   const arr = activeDimension.value.length ? activeDimension.value : activeQuota.value
   for (let i = 0; i < arr.length; i++) {
     const obj = cloneDeep(arr[i])
+    if (obj.desensitized && view.value.type !== 'table-info') {
+      hasSesensitized = true
+      continue
+    }
+
     state.moveId = obj.id as unknown as number
     view.value[type].push(obj)
     const e = { newDraggableIndex: view.value[type].length - 1 }
+
     if ('drillFields' === type) {
       addDrill(e)
     } else {
       addAxis(e, type as AxisType)
     }
+  }
+
+  if (hasSesensitized) {
+    ElMessage.error('脱敏字段不能用于制作该图表!')
   }
 }
 
@@ -1605,7 +1616,7 @@ const deleteChartFieldItem = id => {
             </div>
             <plugin-component
               v-else-if="view.plugin?.isPlugin"
-              jsname="L2NvbXBvbmVudC9lZGl0b3IvaW5kZXg="
+              :jsname="view.plugin.staticMap['editor']"
               :view="view"
               :dimension="state.dimension"
               :quota="state.quota"
@@ -2277,6 +2288,7 @@ const deleteChartFieldItem = id => {
                             <drill-item
                               :key="element.id"
                               :index="index"
+                              :chart="view"
                               :item="element"
                               :dimension-data="state.dimension"
                               :quota-data="state.quota"

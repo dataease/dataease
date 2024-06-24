@@ -1,8 +1,14 @@
 <script lang="tsx" setup>
 import { computed, onMounted, reactive, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
-import { COLOR_PANEL, DEFAULT_LEGEND_STYLE } from '@/views/chart/components/editor/util/chart'
-import { ElSpace } from 'element-plus-secondary'
+import {
+  COLOR_PANEL,
+  DEFAULT_LEGEND_STYLE,
+  DEFAULT_MISC
+} from '@/views/chart/components/editor/util/chart'
+import { ElCol, ElRow, ElSpace } from 'element-plus-secondary'
+import { cloneDeep } from 'lodash-es'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const { t } = useI18n()
 
@@ -14,8 +20,11 @@ const props = withDefaults(
   }>(),
   { themes: 'dark' }
 )
-
-const emit = defineEmits(['onLegendChange'])
+useEmitt({
+  name: 'map-default-range',
+  callback: args => mapDefaultRange(args)
+})
+const emit = defineEmits(['onLegendChange', 'onMiscChange'])
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
@@ -36,7 +45,15 @@ const iconSymbolOptions = [
 ]
 
 const state = reactive({
-  legendForm: JSON.parse(JSON.stringify(DEFAULT_LEGEND_STYLE))
+  legendForm: {
+    ...JSON.parse(JSON.stringify(DEFAULT_LEGEND_STYLE)),
+    miscForm: JSON.parse(JSON.stringify(DEFAULT_MISC)) as ChartMiscAttr
+  }
+})
+
+const chartType = computed(() => {
+  const chart = JSON.parse(JSON.stringify(props.chart))
+  return chart?.type
 })
 
 const fontSizeList = computed(() => {
@@ -54,6 +71,10 @@ const changeLegendStyle = prop => {
   emit('onLegendChange', state.legendForm, prop)
 }
 
+const changeMisc = prop => {
+  emit('onMiscChange', { data: state.legendForm.miscForm, requestData: true }, prop)
+}
+
 const init = () => {
   const chart = JSON.parse(JSON.stringify(props.chart))
   if (chart.customStyle) {
@@ -63,13 +84,21 @@ const init = () => {
     } else {
       customStyle = JSON.parse(chart.customStyle)
     }
+    const miscStyle = cloneDeep(props.chart.customAttr.misc)
     if (customStyle.legend) {
       state.legendForm = customStyle.legend
+      state.legendForm.miscForm = miscStyle
     }
   }
 }
 const showProperty = prop => props.propertyInner?.includes(prop)
-
+const mapDefaultRange = args => {
+  if (args.from === 'map') {
+    state.legendForm.miscForm.mapLegendMax = args.data.max
+    state.legendForm.miscForm.mapLegendMin = args.data.min
+    state.legendForm.miscForm.mapLegendNumber = args.data.legendNumber
+  }
+}
 onMounted(() => {
   init()
 })
@@ -145,6 +174,82 @@ onMounted(() => {
         </el-tooltip>
       </el-form-item>
     </el-space>
+    <el-space>
+      <div v-if="chartType === 'map'">
+        <el-row>
+          <el-col>
+            <el-form-item
+              class="form-item"
+              :class="'form-item-' + themes"
+              :label="t('chart.legend')"
+            >
+              <el-checkbox
+                size="small"
+                :effect="themes"
+                v-model="state.legendForm.miscForm.mapAutoLegend"
+                @change="changeMisc('mapAutoLegend')"
+              >
+                {{ t('chart.margin_model_auto') }}
+              </el-checkbox>
+            </el-form-item>
+          </el-col>
+        </el-row>
+        <div v-if="!state.legendForm.miscForm.mapAutoLegend">
+          <el-row :gutter="8">
+            <el-col :span="12">
+              <el-form-item
+                :label="t('chart.max')"
+                class="form-item"
+                :class="'form-item-' + themes"
+              >
+                <el-input-number
+                  :effect="themes"
+                  v-model="state.legendForm.miscForm.mapLegendMax"
+                  size="small"
+                  controls-position="right"
+                  @change="changeMisc('mapLegendMax')"
+                />
+              </el-form-item>
+            </el-col>
+            <el-col :span="12">
+              <el-form-item
+                :label="t('chart.min')"
+                class="form-item"
+                :class="'form-item-' + themes"
+              >
+                <el-input-number
+                  :effect="themes"
+                  v-model="state.legendForm.miscForm.mapLegendMin"
+                  size="small"
+                  controls-position="right"
+                  @change="changeMisc('mapLegendMin')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+          <el-row>
+            <el-col>
+              <el-form-item
+                class="form-item"
+                :class="'form-item-' + themes"
+                :label="t('chart.legend_num')"
+              >
+                <el-input-number
+                  :effect="themes"
+                  v-model="state.legendForm.miscForm.mapLegendNumber"
+                  size="small"
+                  :min="1"
+                  :max="9"
+                  controls-position="right"
+                  @change="changeMisc('mapLegendNumber')"
+                />
+              </el-form-item>
+            </el-col>
+          </el-row>
+        </div>
+      </div>
+    </el-space>
+
     <el-form-item
       :label="t('chart.orient')"
       class="form-item"

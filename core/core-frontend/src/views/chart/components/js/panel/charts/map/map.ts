@@ -3,7 +3,15 @@ import {
   L7PlotDrawOptions
 } from '@/views/chart/components/js/panel/types/impl/l7plot'
 import { Choropleth, ChoroplethOptions } from '@antv/l7plot/dist/esm/plots/choropleth'
-import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  filterChartDataByRange,
+  flow,
+  getDynamicColorScale,
+  getGeoJsonFile,
+  setMapChartDefaultMaxAndMinValueByData,
+  hexColorToRGBA,
+  parseJson
+} from '@/views/chart/components/js/util'
 import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { cloneDeep } from 'lodash-es'
@@ -50,6 +58,30 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     if (!areaId) {
       return
     }
+    const sourceData = JSON.parse(JSON.stringify(chart.data?.data || []))
+    let data = []
+    const { misc } = parseJson(chart.customAttr)
+    const { legend } = parseJson(chart.customStyle)
+    // 自定义图例
+    if (!misc.mapAutoLegend && legend.show) {
+      let minValue = misc.mapLegendMin
+      let maxValue = misc.mapLegendMax
+      setMapChartDefaultMaxAndMinValueByData(sourceData, maxValue, minValue, (max, min) => {
+        maxValue = max
+        minValue = min
+        action({
+          from: 'map',
+          data: {
+            max: maxValue,
+            min: minValue,
+            legendNumber: 9
+          }
+        })
+      })
+      data = filterChartDataByRange(sourceData, maxValue, minValue)
+    } else {
+      data = sourceData
+    }
     const geoJson = cloneDeep(await getGeoJsonFile(areaId))
     let options: ChoroplethOptions = {
       preserveDrawingBuffer: true,
@@ -61,7 +93,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         type: 'geojson'
       },
       source: {
-        data: chart.data?.data || [],
+        data: data,
         joinBy: {
           sourceField: 'name',
           geoField: 'name',
@@ -125,7 +157,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
   ): ChoroplethOptions {
     const { areaId }: L7PlotDrawOptions<any> = context.drawOption
     const geoJson: FeatureCollection = context.geoJson
-    const { basicStyle, label } = parseJson(chart.customAttr)
+    const { basicStyle, label, misc } = parseJson(chart.customAttr)
     const senior = parseJson(chart.senior)
     const curAreaNameMapping = senior.areaMapping?.[areaId]
     handleGeoJson(geoJson, curAreaNameMapping)
@@ -141,7 +173,32 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       options.label && (options.label.field = 'name')
       return options
     }
-    const data = chart.data.data
+    const sourceData = JSON.parse(JSON.stringify(chart.data.data))
+    const colors = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
+    const { legend } = parseJson(chart.customStyle)
+    let data = []
+    let colorScale = []
+    if (legend.show) {
+      let minValue = misc.mapLegendMin
+      let maxValue = misc.mapLegendMax
+      let mapLegendNumber = misc.mapLegendNumber
+      setMapChartDefaultMaxAndMinValueByData(sourceData, maxValue, minValue, (max, min) => {
+        maxValue = max
+        minValue = min
+        mapLegendNumber = 9
+      })
+      // 非自动，过滤数据
+      if (!misc.mapAutoLegend) {
+        data = filterChartDataByRange(sourceData, maxValue, minValue)
+      } else {
+        mapLegendNumber = 9
+      }
+      // 定义最大值、最小值、区间数量和对应的颜色
+      colorScale = getDynamicColorScale(minValue, maxValue, mapLegendNumber, colors)
+    } else {
+      data = sourceData
+      colorScale = colors
+    }
     const areaMap = data.reduce((obj, value) => {
       obj[value['field']] = value.value
       return obj
@@ -164,12 +221,11 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         item.properties['_DE_LABEL_'] = content.join('\n\n')
       }
     })
-    let colors = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))
-    if (validArea < colors.length) {
-      colors = colors.slice(0, validArea)
+    if (validArea < colorScale.length && !misc.mapAutoLegend) {
+      colorScale = colorScale.map(item => (item.color ? item.color : item)).slice(0, validArea)
     }
-    if (colors.length) {
-      options.color['value'] = colors
+    if (colorScale.length) {
+      options.color['value'] = colorScale.map(item => (item.color ? item.color : item))
     }
     return options
   }

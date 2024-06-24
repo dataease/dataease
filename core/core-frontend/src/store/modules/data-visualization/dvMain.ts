@@ -391,7 +391,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           render: component.render,
           plugin: {
             isPlugin: component.isPlugin,
-            pluginResourceId: component.pluginResourceId
+            staticMap: component.staticMap
           }
         } as unknown as ChartObj
         // 处理配置项默认值，不同图表的同一配置项默认值不同

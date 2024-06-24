@@ -5,7 +5,7 @@
     width="480"
     placement="bottom-start"
     :show-arrow="false"
-    popper-class="share-popover"
+    :popper-class="`share-popover ${showTicket ? 'share-ticket-popover' : ''}`"
     @show="share"
   >
     <template #reference>
@@ -21,15 +21,12 @@
         {{ t('visualization.share') }}
       </el-button>
     </template>
-    <div class="share-container">
+    <div class="share-container" :class="{ 'hidden-link-container': showTicket }">
       <div class="share-title share-padding">公共链接分享</div>
       <div class="open-share flex-align-center share-padding">
         <el-switch size="small" v-model="shareEnable" @change="enableSwitcher" />
         {{ shareTips }}
       </div>
-      <!-- <div v-if="shareEnable" class="text share-padding">
-        <el-input v-model="linkAddr" disabled />
-      </div> -->
       <div v-if="shareEnable" class="custom-link-line share-padding">
         <el-input
           ref="linkUuidRef"
@@ -117,10 +114,21 @@
 
       <el-divider v-if="shareEnable" class="share-divider" />
       <div v-if="shareEnable" class="share-foot share-padding">
+        <el-button secondary @click="openTicket">Ticket 设置</el-button>
         <el-button :disabled="!shareEnable || expError" type="primary" @click="copyInfo">
           {{ t('visualization.copy_link') }}
         </el-button>
       </div>
+    </div>
+    <div v-if="shareEnable && showTicket" class="share-ticket-container">
+      <share-ticket
+        :link-url="linkAddr"
+        :uuid="state.detailInfo.uuid"
+        :resource-id="props.resourceId"
+        :ticket-require="state.detailInfo.ticketRequire"
+        @require-change="updateRequireTicket"
+        @close="closeTicket"
+      />
     </div>
   </el-popover>
 </template>
@@ -133,6 +141,8 @@ import { propTypes } from '@/utils/propTypes'
 import { ShareInfo, SHARE_BASE, shortcuts } from './option'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import useClipboard from 'vue-clipboard3'
+import ShareTicket from './ShareTicket.vue'
+
 const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const props = defineProps({
@@ -150,6 +160,7 @@ const linkAddr = ref('')
 const expError = ref(false)
 const linkCustom = ref(false)
 const linkUuidRef = ref(null)
+const showTicket = ref(false)
 const state = reactive({
   detailInfo: {
     id: '',
@@ -186,6 +197,7 @@ const clickOutPopover = e => {
 }
 const openPopover = () => {
   if (!popoverVisible.value) {
+    showTicket.value = false
     popoverVisible.value = true
   }
 }
@@ -468,6 +480,16 @@ const finishEditUuid = async () => {
   linkCustom.value = !uuidValid
 }
 
+const openTicket = () => {
+  showTicket.value = true
+}
+const closeTicket = () => {
+  showTicket.value = false
+}
+const updateRequireTicket = val => {
+  state.detailInfo.ticketRequire = val
+}
+
 const execute = () => {
   share()
 }
@@ -477,12 +499,21 @@ defineExpose({
 </script>
 
 <style lang="less">
-.share-popover {
+.share-popover:not(.share-ticket-popover) {
   padding: 16px 0px !important;
+}
+.share-ticket-popover {
+  padding: 0 !important;
 }
 </style>
 
 <style lang="less" scoped>
+.hidden-link-container {
+  display: none;
+}
+.share-ticket-container {
+  padding: 16px;
+}
 .share-container {
   .share-title {
     font-weight: 500;

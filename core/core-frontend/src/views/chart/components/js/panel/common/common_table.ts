@@ -458,7 +458,7 @@ export function getConditions(chart: Chart) {
   return res
 }
 
-function mappingColor(value, defaultColor, field, type) {
+export function mappingColor(value, defaultColor, field, type) {
   let color
   for (let i = 0; i < field.conditions.length; i++) {
     let flag = false

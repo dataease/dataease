@@ -29,4 +29,6 @@ public class XpackShareVO implements Serializable {
     private String pwd;
     @Schema(description = "自动生成密码")
     private Boolean autoPwd = true;
+    @Schema(description = "ticket必须")
+    private Boolean ticketRequire = false;
 }
