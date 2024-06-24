@@ -1235,7 +1235,8 @@ export default {
     map_symbol_pentagon: '五角形',
     map_symbol_hexagon: '六角形',
     map_symbol_octagon: '八角形',
-    map_symbol_hexagram: '菱形'
+    map_symbol_hexagram: '菱形',
+    tip: '提示'
   },
   dataset: {
     scope_edit: '仅编辑时生效',
