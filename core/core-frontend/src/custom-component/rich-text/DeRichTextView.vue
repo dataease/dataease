@@ -153,7 +153,7 @@ watch(
   () => active.value,
   val => {
     if (!val) {
-      const ed = window.tinymce.editors[tinymceId]
+      const ed = tinymce.editors[tinymceId]
       if (canEdit.value) {
         element.value.propValue.textValue = ed.getContent()
       }
@@ -170,7 +170,7 @@ watch(
   () => myValue.value,
   () => {
     if (canEdit.value) {
-      const ed = window.tinymce.editors[tinymceId]
+      const ed = tinymce.editors[tinymceId]
       element.value.propValue.textValue = ed.getContent()
     }
     if (initReady.value && canEdit.value) {
@@ -245,7 +245,7 @@ const assignment = content => {
   return content
 }
 const fieldSelect = field => {
-  const ed = window.tinymce.editors[tinymceId]
+  const ed = tinymce.editors[tinymceId]
   const fieldId = 'changeText-' + guid()
   const value =
     '<span id="' +
@@ -262,12 +262,12 @@ const fieldSelect = field => {
 }
 const onClick = () => {
   if (canEdit.value) {
-    const node = window.tinymce.activeEditor.selection.getNode()
+    const node = tinymce.activeEditor.selection.getNode()
     resetSelect(node)
   }
 }
 const resetSelect = (node?) => {
-  const edInner = window.tinymce.get(tinymceId)
+  const edInner = tinymce.get(tinymceId)
   if (edInner?.dom) {
     const nodeArray = edInner.dom.select('.base-selected')
     if (nodeArray) {
@@ -316,7 +316,7 @@ const setEdit = () => {
     canEdit.value = true
     element.value['editing'] = true
     myValue.value = element.value.propValue.textValue
-    const ed = window.tinymce.editors[tinymceId]
+    const ed = tinymce.editors[tinymceId]
     ed.setContent(myValue.value)
     reShow()
   }
