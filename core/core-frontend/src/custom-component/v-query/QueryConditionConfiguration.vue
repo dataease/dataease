@@ -24,14 +24,9 @@ import type { DatasetDetail } from '@/api/dataset'
 import { getDsDetailsWithPerm, getSqlParams, listFieldsWithPermissions } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
 import { cloneDeep } from 'lodash-es'
-import Select from './Select.vue'
-import Time from './Time.vue'
-import DynamicTime from './DynamicTime.vue'
-import DynamicTimeRange from './DynamicTimeRange.vue'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
 import draggable from 'vuedraggable'
-import RangeFilterTime from './RangeFilterTime.vue'
 import type { ManipulateType } from 'dayjs'
 import dayjs from 'dayjs'
 import ConditionDefaultConfiguration from '@/custom-component/v-query/ConditionDefaultConfiguration.vue'
@@ -710,17 +705,6 @@ const confirmValueSource = () => {
   cancelValueSource()
 }
 
-const filterTypeCom = computed(() => {
-  const { displayType, timeType = 'fixed' } = curComponent.value
-  return ['1', '7'].includes(displayType)
-    ? timeType === 'dynamic'
-      ? displayType === '1'
-        ? DynamicTime
-        : DynamicTimeRange
-      : Time
-    : Select
-})
-
 const setCondition = (queryId: string) => {
   conditions.value = cloneDeep(props.queryElement.propValue) || []
   init(queryId)
@@ -1013,36 +997,6 @@ const relativeToCurrentList = computed(() => {
   ]
 })
 
-const dynamicTime = computed(() => {
-  const { displayType, timeType } = curComponent.value
-  return timeType === 'dynamic' && [1, 7].includes(+displayType)
-})
-
-const relativeToCurrentTypeList = computed(() => {
-  if (!curComponent.value) return []
-  let index = ['year', 'month', 'date', 'datetime'].indexOf(curComponent.value.timeGranularity) + 1
-  if (+curComponent.value.displayType === 7) {
-    index =
-      ['yearrange', 'monthrange', 'daterange', 'datetimerange'].indexOf(
-        curComponent.value.timeGranularityMultiple
-      ) + 1
-  }
-  return [
-    {
-      label: '年',
-      value: 'year'
-    },
-    {
-      label: '月',
-      value: 'month'
-    },
-    {
-      label: '日',
-      value: 'date'
-    }
-  ].slice(0, index)
-})
-
 const timeGranularityChange = (val: string) => {
   if (
     ['year', 'month', 'date', 'datetime'].indexOf(val) <
@@ -1085,17 +1039,6 @@ const timeGranularityMultipleChange = (val: string) => {
     aroundRange: 'f'
   }
 }
-const aroundList = [
-  {
-    label: '前',
-    value: 'f'
-  },
-  {
-    label: '后',
-    value: 'b'
-  }
-]
-
 watch(
   () => showError.value,
   val => {
