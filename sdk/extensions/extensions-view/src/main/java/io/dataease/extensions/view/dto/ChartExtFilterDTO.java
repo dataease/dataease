@@ -18,4 +18,5 @@ public class ChartExtFilterDTO {
     private List<DatasetTableFieldDTO> datasetTableFieldList;
     private String dateStyle;
     private String datePattern;
+    private int filterType;// 0-过滤组件，1-下钻，2-联动，外部参数
 }
