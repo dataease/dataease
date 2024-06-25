@@ -8,6 +8,7 @@ import DynamicTime from '@/custom-component/v-query/DynamicTime.vue'
 import DynamicTimeRange from '@/custom-component/v-query/DynamicTimeRange.vue'
 import Time from '@/custom-component/v-query/Time.vue'
 import Select from '@/custom-component/v-query/Select.vue'
+import Tree from '@/custom-component/v-query/Tree.vue'
 const { t } = useI18n()
 
 const visiblePopover = ref(false)
@@ -29,6 +30,8 @@ const filterTypeCom = computed(() => {
         ? DynamicTime
         : DynamicTimeRange
       : Time
+    : '9' === displayType
+    ? Tree
     : Select
 })
 

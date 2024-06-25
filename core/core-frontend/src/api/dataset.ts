@@ -293,3 +293,9 @@ export const listByDsIds = async (data): Promise<IResponse> => {
     return res?.data
   })
 }
+
+export const getFieldTree = async (data): Promise<IResponse> => {
+  return request.post({ url: 'datasetData/getFieldTree', data }).then(res => {
+    return res?.data
+  })
+}
