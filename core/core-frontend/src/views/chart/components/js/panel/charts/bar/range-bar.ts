@@ -394,7 +394,6 @@ export class RangeBar extends G2PlotChartView<BarOptions, Bar> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyseHorizontal,
       this.configEmptyDataStrategy
     )(chart, options)
   }
