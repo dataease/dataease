@@ -471,6 +471,7 @@ const handleNodeClick = data => {
       configuration,
       syncSetting,
       apiConfigurationStr,
+      paramsStr,
       fileName,
       size,
       description,
@@ -481,6 +482,9 @@ const handleNodeClick = data => {
     }
     if (apiConfigurationStr) {
       apiConfigurationStr = JSON.parse(Base64.decode(apiConfigurationStr))
+    }
+    if (paramsStr) {
+      paramsStr = JSON.parse(Base64.decode(paramsStr))
     }
     Object.assign(nodeInfo, {
       name,
@@ -496,6 +500,7 @@ const handleNodeClick = data => {
       configuration,
       syncSetting,
       apiConfiguration: apiConfigurationStr,
+      paramsConfiguration: paramsStr,
       weight: data.weight,
       lastSyncTime
     })
@@ -587,6 +592,7 @@ const editDatasource = (editType?: number) => {
       configuration,
       syncSetting,
       apiConfigurationStr,
+      paramsStr,
       fileName,
       size,
       description,
@@ -594,6 +600,9 @@ const editDatasource = (editType?: number) => {
     } = res.data
     if (configuration) {
       configuration = JSON.parse(Base64.decode(configuration))
+    }
+    if (paramsStr) {
+      paramsStr = JSON.parse(Base64.decode(paramsStr))
     }
     if (apiConfigurationStr) {
       apiConfigurationStr = JSON.parse(Base64.decode(apiConfigurationStr))
@@ -613,6 +622,7 @@ const editDatasource = (editType?: number) => {
       configuration,
       syncSetting,
       apiConfiguration: apiConfigurationStr,
+      paramsConfiguration: paramsStr,
       lastSyncTime
     })
     datasourceEditor.value.init(datasource)

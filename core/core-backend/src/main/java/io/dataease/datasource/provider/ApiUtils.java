@@ -41,6 +41,9 @@ public class ApiUtils {
         };
         List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
         for (ApiDefinition apiDefinition : apiDefinitionList) {
+            if (StringUtils.isNotEmpty(apiDefinition.getType()) && apiDefinition.getType().equalsIgnoreCase("params")) {
+                continue;
+            }
             DatasetTableDTO datasetTableDTO = new DatasetTableDTO();
             datasetTableDTO.setTableName(apiDefinition.getDeTableName());
             datasetTableDTO.setName(apiDefinition.getName());
@@ -59,7 +62,7 @@ public class ApiUtils {
         if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
-        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout());
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), params(datasourceRequest));
         fieldList = getTableFields(apiDefinition);
         result.put("fieldList", fieldList);
         dataList = fetchResult(response, apiDefinition);
@@ -116,19 +119,38 @@ public class ApiUtils {
         if (apiDefinition == null) {
             DEException.throwException("未找到");
         }
-        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout());
+        String response = execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), params(datasourceRequest));
         return fetchResult(response, apiDefinition);
     }
 
 
-    public static String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout) {
+    public static String execHttpRequest(ApiDefinition apiDefinition, int socketTimeout, List<ApiDefinition> paramsList) {
         String response = "";
         HttpClientConfig httpClientConfig = new HttpClientConfig();
         httpClientConfig.setSocketTimeout(socketTimeout * 1000);
         ApiDefinitionRequest apiDefinitionRequest = apiDefinition.getRequest();
         for (Map header : apiDefinitionRequest.getHeaders()) {
             if (header.get("name") != null && StringUtils.isNotEmpty(header.get("name").toString()) && header.get("value") != null && StringUtils.isNotEmpty(header.get("value").toString())) {
-                httpClientConfig.addHeader(header.get("name").toString(), header.get("value").toString());
+                if (header.get("nameType") != null && header.get("nameType").toString().equalsIgnoreCase("params")) {
+                    String param = header.get("value").toString();
+                    for (ApiDefinition definition : paramsList) {
+                        for (int i = 0; i < definition.getFields().size(); i++) {
+                            TableField field = definition.getFields().get(i);
+                            if (field.getOriginName().equalsIgnoreCase(param)) {
+                                String resultStr = execHttpRequest(definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
+                                List<String[]> dataList = fetchResult(resultStr, definition);
+                                System.out.println(dataList.get(0)[i]);
+                                if (dataList.size() > 0) {
+                                    httpClientConfig.addHeader(header.get("name").toString(), dataList.get(0)[i]);
+                                }
+                            }
+                        }
+
+                    }
+                } else {
+                    httpClientConfig.addHeader(header.get("name").toString(), header.get("value").toString());
+                }
+
             }
         }
         if (apiDefinitionRequest.getAuthManager() != null
@@ -194,7 +216,7 @@ public class ApiUtils {
         return response;
     }
 
-    private static void previewNum(List<Map<String, Object>> field){
+    private static void previewNum(List<Map<String, Object>> field) {
         for (Map<String, Object> stringObjectMap : field) {
             JSONArray newArray = new JSONArray();
             if (stringObjectMap.get("value") != null) {
@@ -202,7 +224,7 @@ public class ApiUtils {
                     TypeReference<JSONArray> listTypeReference = new TypeReference<JSONArray>() {
                     };
                     JSONArray array = objectMapper.readValue(stringObjectMap.get("value").toString(), listTypeReference);
-                    if(array.size() > 100){
+                    if (array.size() > 100) {
                         for (int i = 0; i < Math.min(100, array.size()); i++) {
                             newArray.add(array.get(i));
                         }
@@ -254,8 +276,8 @@ public class ApiUtils {
             }
             int i = 0;
             try {
-                LinkedHashMap data  =  currentData.get(0);
-            }catch (Exception e){
+                LinkedHashMap data = currentData.get(0);
+            } catch (Exception e) {
                 DEException.throwException("数据不符合规范, " + e.getMessage());
             }
             for (LinkedHashMap data : currentData) {
@@ -539,6 +561,18 @@ public class ApiUtils {
         return dataList;
     }
 
+
+    private static List<ApiDefinition> params(DatasourceRequest datasourceRequest) {
+        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
+        };
+        List<ApiDefinition> apiDefinitionListTemp = null;
+        try {
+            apiDefinitionListTemp = objectMapper.readValue(datasourceRequest.getDatasource().getConfiguration(), listTypeReference);
+        } catch (Exception e) {
+            DEException.throwException(e);
+        }
+        return apiDefinitionListTemp.stream().filter(apiDefinition -> apiDefinition.getType() != null && apiDefinition.getType().equalsIgnoreCase("params")).collect(Collectors.toList());
+    }
 
     private static ApiDefinition checkApiDefinition(DatasourceRequest datasourceRequest) throws DEException {
         List<ApiDefinition> apiDefinitionList = new ArrayList<>();

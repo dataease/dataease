@@ -24,6 +24,7 @@ export interface Field {
 export interface ApiItem {
   status: string
   name: string
+  type: string
   deTableName?: string
   url: string
   method: string
@@ -57,10 +58,12 @@ const originFieldItem = reactive({
 })
 
 let apiItemList = reactive<ApiConfiguration[]>([])
+let paramsList = reactive<ApiConfiguration[]>([])
 
 let apiItem = reactive<ApiItem>({
   status: '',
   name: '',
+  type: 'table',
   url: '',
   method: 'GET',
   request: {
@@ -95,6 +98,7 @@ const edit_api_item = ref(false)
 const active = ref(1)
 const loading = ref(false)
 const columns = shallowRef([])
+const valueList = shallowRef([])
 const tableData = shallowRef([])
 const apiItemBasicInfo = ref<FormInstance>()
 const isNumber = (rule, value, callback) => {
@@ -152,9 +156,16 @@ const rule = reactive<FormRules>({
 })
 const activeName = ref('third')
 provide('api-active-name', activeName)
-const initApiItem = (val: ApiItem, apiList, name) => {
+const initApiItem = (val: ApiItem, from, name) => {
   activeName.value = name
-  apiItemList = apiList
+  apiItemList = from.apiConfiguration
+  paramsList = from.paramsConfiguration
+  if (val.type !== 'params') {
+    valueList.value = []
+    for (let i = 0; i < paramsList.length; i++) {
+      valueList.value = valueList.value.concat(paramsList[i].fields)
+    }
+  }
   Object.assign(apiItem, val)
   edit_api_item.value = true
   active.value = 0
@@ -167,9 +178,10 @@ const showApiData = () => {
   apiItemBasicInfo.value.validate(valid => {
     if (valid) {
       const data = Base64.encode(JSON.stringify(apiItem))
+      const params = Base64.encode(JSON.stringify(paramsList))
       loading.value = true
       cancelMap['/datasource/checkApiDatasource']?.()
-      checkApiItem({ data: data, type: 'apiStructure' })
+      checkApiItem({ data: data, type: 'apiStructure', paramsList: params })
         .then(response => {
           originFieldItem.jsonFields = response.data.jsonFields
         })
@@ -203,7 +215,7 @@ const fieldOptions = [
 ]
 const disabledNext = ref(false)
 const saveItem = () => {
-  if (apiItem.fields.length === 0) {
+  if (apiItem.type !== 'params' && apiItem.fields.length === 0) {
     ElMessage.error(t('datasource.api_field_not_empty'))
     return
   }
@@ -239,7 +251,8 @@ const next = () => {
       }
       cancelMap['/datasource/checkApiDatasource']?.()
 
-      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) })
+      const params = Base64.encode(JSON.stringify(paramsList))
+      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)), paramsList: params })
         .then(response => {
           apiItem.jsonFields = response.data.jsonFields
           apiItem.fields = []
@@ -465,6 +478,7 @@ defineExpose({
             <api-http-request-form
               v-if="edit_api_item"
               :request="apiItem.request"
+              :value-list="valueList"
               @changeId="changeId"
             />
           </el-form-item>
@@ -572,7 +586,11 @@ defineExpose({
               </template>
             </el-table-column>
 
-            <el-table-column prop="deExtractType" :label="t('datasource.field_type')">
+            <el-table-column
+              prop="deExtractType"
+              :label="t('datasource.field_type')"
+              :disabled="apiItem.type == 'params'"
+            >
               <template #default="scope">
                 <el-select
                   v-model="scope.row.deExtractType"

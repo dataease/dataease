@@ -36,6 +36,7 @@ interface Form {
   type: string
   configuration?: Configuration
   apiConfiguration?: ApiConfiguration[]
+  paramsConfiguration?: ApiConfiguration[]
   syncSetting?: SyncSetting
 }
 
@@ -353,7 +354,10 @@ const saveDS = () => {
         request.apiConfiguration[i].fields[j].value = []
       }
     }
-    request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
+    let apiItems = []
+    apiItems = apiItems.concat(request.apiConfiguration)
+    apiItems = apiItems.concat(request.paramsConfiguration)
+    request.configuration = Base64.encode(JSON.stringify(apiItems))
     request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
     request.syncSetting.endTime = new Date(request.syncSetting.endTime).getTime()
   } else {
@@ -421,7 +425,8 @@ const defaultForm = {
   name: '',
   description: '',
   type: 'API',
-  apiConfiguration: []
+  apiConfiguration: [],
+  paramsConfiguration: []
 }
 const form = reactive<Form>(cloneDeep(defaultForm))
 const defaultForm2 = {

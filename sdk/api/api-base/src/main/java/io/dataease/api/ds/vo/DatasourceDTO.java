@@ -46,6 +46,7 @@ public class DatasourceDTO implements Serializable {
     private String configuration;
 
     private String apiConfigurationStr;
+    private String paramsStr;
 
     /**
      * Create timestamp
