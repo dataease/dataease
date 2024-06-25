@@ -810,11 +810,7 @@ public class DatasetDataManage {
 
         // 重新构造data
         Set<String> pkSet = new HashSet<>();
-//        if (org.apache.commons.collections4.CollectionUtils.isNotEmpty(rows) && existExtSortField && originSize > 0) {
-//            rows = rows.stream().map(row -> ArrayUtils.subarray(row, 0, originSize)).collect(Collectors.toList());
-//        }
         rows = rows.stream().filter(row -> {
-            int length = row.length;
             boolean allEmpty = true;
             for (String s : row) {
                 if (StringUtils.isNotBlank(s)) {
