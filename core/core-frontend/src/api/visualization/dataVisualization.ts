@@ -20,14 +20,15 @@ export const findCopyResource = async (dvId, busiFlag): Promise<IResponse> => {
   return request.get({ url: '/dataVisualization/findCopyResource/' + dvId + '/' + busiFlag })
 }
 
-export const findById = async (dvId, busiFlag): Promise<IResponse> => {
+export const findById = async (dvId, busiFlag, source = 'main'): Promise<IResponse> => {
   let busiFlagResult = busiFlag
   if (!busiFlagResult) {
     await findDvType(dvId).then(res => {
       busiFlagResult = res.data
     })
   }
-  return request.get({ url: '/dataVisualization/findById/' + dvId + '/' + busiFlagResult })
+  const data = { id: dvId, busiFlag: busiFlagResult, source }
+  return request.post({ url: '/dataVisualization/findById', data })
 }
 
 export const queryTreeApi = async (data: BusiTreeRequest): Promise<IResponse> => {

@@ -403,4 +403,20 @@
         WHERE core_chart_view.scene_id = #{dvId}
           AND core_chart_view.id IS NOT NULL and core_chart_view.`type` != 'VQuery'
     </select>
+
+    <select id="queryReportFilter" resultType="io.dataease.api.visualization.vo.VisualizationReportFilterVO">
+        SELECT
+            `id`,
+            `resource_id`,
+            `dv_type`,
+            `component_id`,
+            `filter_id`,
+            `filter_info`,
+            `filter_version`,
+            `create_time`,
+            `create_user`
+        FROM
+            visualization_report_filter
+        where visualization_report_filter.resource_id = #{dvId} and visualization_report_filter.id = #{reportId}
+    </select>
 </mapper>
