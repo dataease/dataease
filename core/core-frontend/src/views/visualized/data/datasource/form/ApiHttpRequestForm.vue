@@ -22,6 +22,10 @@ const props = defineProps({
     type: Boolean,
     default: true
   },
+  valueList: {
+    type: Array as PropType<Item[]>,
+    default: () => []
+  },
   request: {
     type: Object as PropType<ApiRequest>,
     default: () => ({
@@ -143,6 +147,7 @@ const emits = defineEmits(['changeId'])
           :show-desc="true"
           :suggestions="headerSuggestions"
           :items="apiRequest.headers"
+          :value-list="valueList"
         />
       </el-tab-pane>
 

@@ -141,6 +141,7 @@ export interface Configuration {
 export interface ApiConfiguration {
   id: string
   name: string
+  type: string
   deTableName: string
   method: string
   url: string
@@ -176,6 +177,7 @@ export interface Node {
   editType?: number
   configuration?: Configuration
   apiConfiguration?: ApiConfiguration[]
+  paramsConfiguration?: ApiConfiguration[]
   weight?: number
   lastSyncTime?: number | string
 }

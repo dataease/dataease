@@ -22,6 +22,10 @@ const props = defineProps({
     type: Array as PropType<Item[]>,
     default: () => []
   },
+  valueList: {
+    type: Array as PropType<Item[]>,
+    default: () => []
+  },
   suggestions: {
     type: Array,
     default: () => []
@@ -78,7 +82,6 @@ const options = [
     value: 'fixed'
   }
 ]
-
 const value = ref('')
 </script>
 
@@ -91,7 +94,7 @@ const value = ref('')
             <el-icon class="drag handle">
               <Icon name="icon_drag_outlined"></Icon>
             </el-icon>
-            <el-col :span="activeName === 'third' ? 8 : 6" v-if="!unShowSelect">
+            <el-col :span="activeName === 'params' ? 8 : 6" v-if="!unShowSelect">
               <el-input
                 v-if="!suggestions"
                 v-model="element.name"
@@ -110,8 +113,8 @@ const value = ref('')
                 show-word-limit
               />
             </el-col>
-            <el-col :span="3" v-if="activeName === 'fourth'">
-              <el-select v-model="value">
+            <el-col :span="3" v-if="activeName === 'table'">
+              <el-select v-model="element.nameType">
                 <el-option
                   v-for="item in options"
                   :key="item.value"
@@ -131,19 +134,31 @@ const value = ref('')
               />
             </el-col>
 
-            <el-col :span="activeName === 'third' ? 7 : 6">
+            <el-col :span="activeName === 'params' ? 7 : 6">
               <el-input
-                v-if="!needMock && activeName === 'third'"
+                v-if="!needMock && activeName === 'params'"
                 v-model="element.value"
                 :disabled="isReadOnly"
                 :placeholder="unShowSelect ? t('common.description') : valueText"
                 show-word-limit
               />
+              <el-select
+                v-model="element.value"
+                v-if="!needMock && activeName === 'table' && element.nameType === 'params'"
+              >
+                <el-option
+                  v-for="item in valueList"
+                  :key="item.originName"
+                  :label="item.name"
+                  :value="item.originName"
+                />
+              </el-select>
+
               <el-input
-                v-if="!needMock && activeName === 'fourth'"
+                v-if="!needMock && activeName === 'table' && element.nameType !== 'params'"
                 v-model="element.value"
                 :disabled="isReadOnly"
-                :placeholder="value === 'params' ? '参数名称' : '值'"
+                :placeholder="'值'"
                 show-word-limit
               />
             </el-col>

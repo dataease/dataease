@@ -107,6 +107,8 @@ public class DatasourceServer implements DatasourceApi {
         all_scope, add_scope
     }
 
+    private TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
+    };
     @Resource
     private CommonThreadPool commonThreadPool;
 
@@ -505,11 +507,11 @@ public class DatasourceServer implements DatasourceApi {
             DEException.throwException("不存在的数据源！");
         }
         BeanUtils.copyBean(datasourceDTO, datasource);
-        TypeReference<List<ApiDefinition>> listTypeReference = new TypeReference<List<ApiDefinition>>() {
-        };
+
         if (datasourceDTO.getType().equalsIgnoreCase(DatasourceConfiguration.DatasourceType.API.toString())) {
             List<ApiDefinition> apiDefinitionList = JsonUtil.parseList(datasourceDTO.getConfiguration(), listTypeReference);
             List<ApiDefinition> apiDefinitionListWithStatus = new ArrayList<>();
+            List<ApiDefinition> params = new ArrayList<>();
             int success = 0;
             for (ApiDefinition apiDefinition : apiDefinitionList) {
                 String status = null;
@@ -534,9 +536,16 @@ public class DatasourceServer implements DatasourceApi {
                 if (log != null) {
                     apiDefinition.setUpdateTime(log.getStartTime());
                 }
-                apiDefinitionListWithStatus.add(apiDefinition);
+
+
+                if (StringUtils.isEmpty(apiDefinition.getType()) || apiDefinition.getType().equalsIgnoreCase("table")) {
+                    apiDefinitionListWithStatus.add(apiDefinition);
+                } else {
+                    params.add(apiDefinition);
+                }
             }
             datasourceDTO.setApiConfigurationStr(new String(Base64.getEncoder().encode(Objects.requireNonNull(JsonUtil.toJSONString(apiDefinitionListWithStatus)).toString().getBytes())));
+            datasourceDTO.setParamsStr(new String(Base64.getEncoder().encode(Objects.requireNonNull(JsonUtil.toJSONString(params)).toString().getBytes())));
             if (success == apiDefinitionList.size()) {
                 datasourceDTO.setStatus("Success");
             } else {
@@ -847,12 +856,13 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     public ApiDefinition checkApiDatasource(Map<String, String> request) throws DEException {
+
         ApiDefinition apiDefinition = JsonUtil.parseObject(new String(java.util.Base64.getDecoder().decode(request.get("data"))), ApiDefinition.class);
-        String response = ApiUtils.execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout());
+        List<ApiDefinition> paramsList = JsonUtil.parseList(new String(java.util.Base64.getDecoder().decode(request.get("paramsList"))), listTypeReference);
+        String response = ApiUtils.execHttpRequest(apiDefinition, apiDefinition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), paramsList);
         if (request.keySet().contains("type") && request.get("type").equals("apiStructure")) {
             apiDefinition.setShowApiStructure(true);
         }
-
         ApiUtils.checkApiDefinition(apiDefinition, response);
         if (apiDefinition.getRequest().getAuthManager() != null && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getUsername()) && StringUtils.isNotBlank(apiDefinition.getRequest().getAuthManager().getPassword()) && apiDefinition.getRequest().getAuthManager().getVerification().equals("Basic Auth")) {
             apiDefinition.getRequest().getAuthManager().setUsername(new String(Base64.getEncoder().encode(apiDefinition.getRequest().getAuthManager().getUsername().getBytes())));
