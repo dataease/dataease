@@ -3,6 +3,7 @@ package io.dataease.service.exportCenter;
 import com.google.gson.Gson;
 import io.dataease.auth.api.dto.CurrentUserDto;
 import io.dataease.auth.service.AuthUserService;
+import io.dataease.auth.service.ProxyAuthService;
 import io.dataease.commons.constants.ParamConstants;
 import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
@@ -126,7 +127,7 @@ public class ExportCenterService {
     private int keepAliveSeconds = 600;
     private Map<String, Future> Running_Task = new HashMap<>();
     @Resource
-    private AuthUserService authUserService;
+    private ProxyAuthService proxyAuthService;
     @Autowired
     private WsService wsService;
 
@@ -399,9 +400,9 @@ public class ExportCenterService {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-        CurrentUserDto currentUserDto = (CurrentUserDto) authUserService.getUserById(exportTask.getUserId());
+        CurrentUserDto user = proxyAuthService.queryCacheUserDto(exportTask.getUserId());
         Future future = scheduledThreadPoolExecutor.submit(() -> {
-            AuthUtils.setUser(currentUserDto);
+            AuthUtils.setUser(user);
             try {
                 exportTask.setExportStatus("IN_PROGRESS");
                 exportTaskMapper.updateByPrimaryKey(exportTask);
@@ -555,7 +556,7 @@ public class ExportCenterService {
                 }
                 wb.close();
 
-                if (ObjectUtils.isNotEmpty(currentUserDto)) {
+                if (ObjectUtils.isNotEmpty(user)) {
                     String viewId = request.getViewId();
                     ChartViewWithBLOBs chartViewWithBLOBs = chartViewService.get(viewId);
                     String pid = chartViewWithBLOBs.getSceneId();
@@ -598,7 +599,8 @@ public class ExportCenterService {
         String dataPath = exportData_path + exportTask.getId();
         File directory = new File(dataPath);
         boolean isCreated = directory.mkdir();
-        CurrentUserDto user = (CurrentUserDto) authUserService.getUserById(exportTask.getUserId());
+        CurrentUserDto user = proxyAuthService.queryCacheUserDto(exportTask.getUserId());
+
         Future future = scheduledThreadPoolExecutor.submit(() -> {
             AuthUtils.setUser(user);
             try {

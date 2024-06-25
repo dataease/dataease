@@ -36,4 +36,6 @@ public class ChartExtFilterRequest {
     private String dateStyle;
     @ApiModelProperty("日期格式")
     private String datePattern;
+    @ApiModelProperty("过滤类型")
+    private int filterType;// 0-过滤组件，1-下钻，2-联动，外部参数
 }
