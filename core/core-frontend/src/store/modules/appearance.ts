@@ -152,10 +152,12 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       if (this.loaded) {
         return
       }
+      document.title = ''
       const res = await uiLoadApi()
       this.loaded = true
       const resData = res.data
       if (!resData?.length) {
+        document.title = 'DataEase'
         return
       }
       const data: AppearanceState = { loaded: false, community: true }
@@ -223,6 +225,8 @@ export const useAppearanceStore = defineStore('appearanceStore', {
       this.footContent = data.footContent
       if (this.name) {
         document.title = this.name
+      } else {
+        document.title = 'DataEase'
       }
       if (isDataEaseBi) return
       const link = document.querySelector('link[rel="icon"]')
