@@ -194,10 +194,12 @@ const multipleChange = (val: boolean, isMultipleChange = false) => {
         : []
       : defaultValue
   }
+
   if (curComponent.value.field.deType === 1) {
     curComponent.value.multiple = val
     return
   }
+
   curComponent.value.multiple = val
 }
 

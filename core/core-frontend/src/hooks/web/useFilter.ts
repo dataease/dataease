@@ -88,6 +88,20 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   displayType: string,
   displayId: string
 ) => {
+  if (+displayType === 9) {
+    if (firstLoad) {
+      return defaultValueCheck
+        ? multiple
+          ? defaultValue.map(ele => ele.split('-de-').join(','))
+          : (defaultValue || '').split('-de-').join(',')
+        : []
+    }
+    return selectValue?.length
+      ? multiple
+        ? selectValue.map(ele => ele.split('-de-').join(','))
+        : (selectValue || '').split('-de-').join(',')
+      : []
+  }
   if (
     optionValueSource === 1 &&
     (defaultMapValue?.length || displayId) &&
@@ -186,9 +200,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             const {
               selectValue: value,
               timeGranularityMultiple,
-              parametersStart,
-              parametersEnd,
               conditionType = 0,
+              treeFieldList = [],
               defaultConditionValueOperatorF = 'eq',
               defaultConditionValueF = '',
               defaultConditionValueOperatorS = 'like',
@@ -204,12 +217,13 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               defaultMapValue,
               mapValue,
               parameters = [],
-              isTree = false,
               timeGranularity = 'date',
               displayType,
               displayId,
               multiple
             } = item
+
+            const isTree = +displayType === 9
 
             if (timeType === 'dynamic' && [1, 7].includes(+displayType) && firstLoad) {
               if (+displayType === 1) {
@@ -303,7 +317,9 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               if (result?.length) {
                 filter.push({
                   componentId: ele.id,
-                  fieldId: item.checkedFieldsMap[curComponentId],
+                  fieldId: isTree
+                    ? treeFieldList.map(ele => ele.id).join(',')
+                    : item.checkedFieldsMap[curComponentId],
                   operator,
                   value: result,
                   parameters,

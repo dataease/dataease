@@ -364,7 +364,26 @@ const handleValueSourceChange = () => {
 }
 
 const multipleChange = (val: boolean, isMultipleChange = false) => {
-  defaultConfigurationRef.value?.multipleChange(val, isMultipleChange)
+  if (isMultipleChange) {
+    curComponent.value.defaultValue = val ? [] : undefined
+  }
+  const { defaultValue } = curComponent.value
+  if (Array.isArray(defaultValue)) {
+    curComponent.value.selectValue = val ? defaultValue : undefined
+  } else {
+    curComponent.value.selectValue = val
+      ? defaultValue !== undefined
+        ? [defaultValue]
+        : []
+      : defaultValue
+  }
+
+  if (curComponent.value.field.deType === 1) {
+    curComponent.value.multiple = val
+    return
+  }
+
+  curComponent.value.multiple = val
 }
 
 const isInRange = (ele, startWindowTime, timeStamp) => {
