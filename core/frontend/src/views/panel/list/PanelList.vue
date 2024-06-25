@@ -94,7 +94,7 @@
           </el-dropdown>
         </el-col>
       </el-row>
-      <el-row class="de-tree">
+      <el-row class="de-tree" v-if="hasDataPermission('view', rootDefaultAuth)">
         <span class="header-title">{{ $t('panel.default_panel') }}</span>
         <div class="block">
           <el-tree
@@ -356,7 +356,7 @@
                         {{ $t('panel.create_public_links') }}
                       </el-dropdown-item>
                       <el-dropdown-item
-                        v-if="data.nodeType === 'panel'"
+                        v-if="data.nodeType === 'panel' && hasDataPermission('manage', rootDefaultAuth)"
                         :disabled="data.isDefault"
                         icon="el-icon-copy-document"
                         :command="beforeClickMore('toDefaultPanel', data, node)"
@@ -536,6 +536,7 @@ export default {
   data() {
     return {
       rootAuth: '',
+      rootDefaultAuth: 'view',
       originResourceTree: [],
       curSortType: 'time_desc',
       localSortParams: null,
@@ -1041,11 +1042,12 @@ export default {
           this.activeDefaultNodeAndClickOnly(this.defaultData[0].id)
         }
       }
-      const currentKey = this.$refs.default_panel_tree.getCurrentKey()
       defaultTree(requestInfo, false).then((res) => {
-        localStorage.setItem('panel-default-tree', JSON.stringify(res.data))
+        this.rootDefaultAuth = res.data ? res.data[0]?.privileges || '' : ''
+        const resDefaultData = res.data ? res.data[0]?.children || [] : []
+        localStorage.setItem('panel-default-tree', JSON.stringify(resDefaultData))
         if (!userCache) {
-          this.defaultData = res.data || []
+          this.defaultData = resDefaultData
           if (showFirst && this.defaultData && this.defaultData.length > 0) {
             this.activeDefaultNodeAndClickOnly(this.defaultData[0].id)
           }
@@ -1055,11 +1057,14 @@ export default {
             this.$refs.default_panel_tree.filter(this.filterText)
           })
         }
-        if (currentKey) {
           this.$nextTick(() => {
-            this.$refs.default_panel_tree.setCurrentKey(currentKey)
+            const currentKey = this.$refs.default_panel_tree?.getCurrentKey()
+            if (currentKey) {
+              this.$nextTick(() =>{
+                this.$refs.default_panel_tree.setCurrentKey(currentKey)
+              })
+            }
           })
-        }
       })
     },
 
