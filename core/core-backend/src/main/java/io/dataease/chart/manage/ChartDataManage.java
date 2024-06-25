@@ -6,6 +6,8 @@ import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
+import io.dataease.chart.charts.AbstractChartHandler;
+import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.constant.AuthEnum;
@@ -51,6 +53,8 @@ import java.util.*;
 import java.util.stream.Collectors;
 import java.util.stream.Stream;
 
+import static io.dataease.extensions.view.dto.ChartAxis.*;
+
 /**
  * @Author Junjun
  */
@@ -70,6 +74,8 @@ public class ChartDataManage {
     private PermissionManage permissionManage;
     @Resource
     private ChartFilterTreeService chartFilterTreeService;
+    @Resource
+    private ChartHandlerManager chartHandlerManager;
 
     @Resource
     private CorePermissionManage corePermissionManage;
@@ -115,6 +121,9 @@ public class ChartDataManage {
         List<ChartViewFieldDTO> allFields = getAllChartFields(view);
         ChartViewDTO chartViewDTO = null;
 
+        if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
+            calcData1(view, chartExtRequest, allFields, viewFields);
+        }
         if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
             // 需要排除掉除类别轴以外所有的排序
             view.getXAxisExt().forEach(dto -> dto.setSort("none"));
@@ -145,7 +154,7 @@ public class ChartDataManage {
                     view1.getSenior().put("assistLineCfg", assistLineCfg1);
                 }
             }
-            ChartViewDTO left = calcData(view1, chartExtRequest, allFields, viewFields);
+            ChartViewDTO left = calcData1(view1, chartExtRequest, allFields, viewFields);
             data.put("left", left.getData());
             //针对右轴，删除yAxis
             ChartViewDTO view2 = JsonUtil.parseObject(viewJson, ChartViewDTO.class);
@@ -162,7 +171,7 @@ public class ChartDataManage {
             view2.setXAxisExt(view2.getExtBubble());
             view2.setExtStack(new ArrayList<>());
             view2.setExtBubble(new ArrayList<>());
-            ChartViewDTO right = calcData(view2, chartExtRequest, allFields, viewFields);
+            ChartViewDTO right = calcData1(view2, chartExtRequest, allFields, viewFields);
             data.put("right", right.getData());
 
             //重新组装
@@ -181,6 +190,273 @@ public class ChartDataManage {
     }
 
     public ChartViewDTO calcData(ChartViewDTO view, ChartExtRequest chartExtRequest, List<ChartViewFieldDTO> allFields, List<ChartViewFieldDTO> viewFields) throws Exception {
+        AbstractChartHandler chartHandler = chartHandlerManager.getChartHandler(view.getRender(), view.getType());
+        AxisFormatResult formatResult = chartHandler.formatAxis(view);
+        var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
+        var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+
+        DatasetGroupInfoDTO table = datasetGroupManage.getDatasetGroupInfoDTO(view.getTableId(), null);
+        if (table == null) {
+            DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
+        }
+        // check permission
+        BusiPerCheckDTO dto = new BusiPerCheckDTO();
+        dto.setId(table.getId());
+        dto.setAuthEnum(AuthEnum.READ);
+        boolean checked = corePermissionManage.checkAuth(dto);
+        if (!checked) {
+            DEException.throwException(Translator.get("i18n_no_datasource_permission"));
+        }
+
+        // column permission
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        List<DatasetTableFieldDTO> columnPermissionFields = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser());
+        // row permission
+        List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
+        //将没有权限的列删掉
+        List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
+        dataeaseNames.add("*");
+        var axisMap = formatResult.getAxisMap();
+        axisMap.forEach((axis, fields) -> {
+            Iterator<ChartViewFieldDTO> iterator = fields.iterator();
+            while (iterator.hasNext()) {
+                ChartViewFieldDTO fieldDTO = iterator.next();
+                if (desensitizationList.containsKey(fieldDTO.getDataeaseName()) || !dataeaseNames.contains(fieldDTO.getDataeaseName())) {
+                    iterator.remove();
+                }
+            }
+        });
+
+        if (ObjectUtils.isEmpty(xAxis) && ObjectUtils.isEmpty(yAxis)) {
+            return emptyChartViewDTO(view);
+        }
+
+        // 过滤来自仪表板的条件
+        List<ChartExtFilterDTO> extFilterList = new ArrayList<>();
+        //组件过滤条件
+        if (ObjectUtils.isNotEmpty(chartExtRequest.getFilter())) {
+            for (ChartExtFilterDTO request : chartExtRequest.getFilter()) {
+                // 解析多个fieldId,fieldId是一个逗号分隔的字符串
+                String fieldId = request.getFieldId();
+                if (request.getIsTree() == null) {
+                    request.setIsTree(false);
+                }
+
+                boolean hasParameters = false;
+                List<SqlVariableDetails> sqlVariables = datasetGroupManage.getSqlParams(Arrays.asList(view.getTableId()));
+                if (CollectionUtils.isNotEmpty(sqlVariables)) {
+                    for (SqlVariableDetails parameter : Optional.ofNullable(request.getParameters()).orElse(new ArrayList<>())) {
+                        String parameterId = StringUtils.endsWith(parameter.getId(), START_END_SEPARATOR) ? parameter.getId().split(START_END_SEPARATOR)[0] : parameter.getId();
+                        if (sqlVariables.stream().map(SqlVariableDetails::getId).collect(Collectors.toList()).contains(parameterId)) {
+                            hasParameters = true;
+                        }
+                    }
+                }
+
+                if (hasParameters) {
+                    continue;
+                }
+
+                if (StringUtils.isNotEmpty(fieldId)) {
+                    List<Long> fieldIds = Arrays.stream(fieldId.split(",")).map(Long::valueOf).collect(Collectors.toList());
+
+                    if (request.getIsTree()) {
+                        ChartExtFilterDTO filterRequest = new ChartExtFilterDTO();
+                        BeanUtils.copyBean(filterRequest, request);
+                        filterRequest.setFilterType(0);
+                        filterRequest.setDatasetTableFieldList(new ArrayList<>());
+                        for (Long fId : fieldIds) {
+                            DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(fId);
+                            if (datasetTableField == null) {
+                                continue;
+                            }
+                            if (Objects.equals(datasetTableField.getDatasetTableId(), view.getTableId())) {
+                                if (ObjectUtils.isNotEmpty(filterRequest.getViewIds())) {
+                                    if (filterRequest.getViewIds().contains(view.getId())) {
+                                        filterRequest.getDatasetTableFieldList().add(datasetTableField);
+                                    }
+                                } else {
+                                    filterRequest.getDatasetTableFieldList().add(datasetTableField);
+                                }
+                            }
+                        }
+                        if (ObjectUtils.isNotEmpty(filterRequest.getDatasetTableFieldList())) {
+                            extFilterList.add(filterRequest);
+                        }
+                    } else {
+                        for (Long fId : fieldIds) {
+                            ChartExtFilterDTO filterRequest = new ChartExtFilterDTO();
+                            BeanUtils.copyBean(filterRequest, request);
+                            filterRequest.setFilterType(0);
+                            filterRequest.setFieldId(fId + "");
+
+                            DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(fId);
+                            if (datasetTableField == null) {
+                                continue;
+                            }
+                            filterRequest.setDatasetTableField(datasetTableField);
+                            if (Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
+                                if (ObjectUtils.isNotEmpty(filterRequest.getViewIds())) {
+                                    if (filterRequest.getViewIds().contains(view.getId())) {
+                                        extFilterList.add(filterRequest);
+                                    }
+                                } else {
+                                    extFilterList.add(filterRequest);
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        }
+
+        List<ChartExtFilterDTO> filters = new ArrayList<>();
+        // 联动条件
+        if (ObjectUtils.isNotEmpty(chartExtRequest.getLinkageFilters())) {
+            filters.addAll(chartExtRequest.getLinkageFilters());
+        }
+
+        // 外部参数条件
+        if (ObjectUtils.isNotEmpty(chartExtRequest.getOuterParamsFilters())) {
+            filters.addAll(chartExtRequest.getOuterParamsFilters());
+        }
+
+        //联动过滤条件和外部参数过滤条件全部加上
+        if (ObjectUtils.isNotEmpty(filters)) {
+            for (ChartExtFilterDTO request : filters) {
+                DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(Long.valueOf(request.getFieldId()));
+                request.setDatasetTableField(datasetTableField);
+                request.setFilterType(2);
+                // 相同数据集
+                if (Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
+                    if (ObjectUtils.isNotEmpty(request.getViewIds())) {
+                        if (request.getViewIds().contains(view.getId())) {
+                            extFilterList.add(request);
+                        }
+                    } else {
+                        extFilterList.add(request);
+                    }
+                }
+            }
+        }
+
+        // 下钻
+        List<ChartDrillRequest> drillRequestList = chartExtRequest.getDrill();
+        var drill = formatResult.getAxisMap().get(ChartAxis.drill);
+        if (ObjectUtils.isNotEmpty(drillRequestList) && (drill.size() > drillRequestList.size())) {
+            var fields = xAxis.stream().map(ChartViewFieldDTO::getId).collect(Collectors.toSet());
+            for (int i = 0; i < drillRequestList.size(); i++) {
+                ChartDrillRequest request = drillRequestList.get(i);
+                for (ChartDimensionDTO dim : request.getDimensionList()) {
+                    ChartViewFieldDTO viewField = drill.get(i);
+                    // 将钻取值作为条件传递，将所有钻取字段作为xAxis并加上下一个钻取字段
+                    if (Objects.equals(dim.getId(), viewField.getId())) {
+                        DatasetTableFieldDTO datasetTableField = datasetTableFieldManage.selectById(dim.getId());
+                        ChartViewFieldDTO d = new ChartViewFieldDTO();
+                        BeanUtils.copyBean(d, datasetTableField);
+
+                        ChartExtFilterDTO drillFilter = new ChartExtFilterDTO();
+                        drillFilter.setFieldId(String.valueOf(dim.getId()));
+                        drillFilter.setDatasetTableField(datasetTableField);
+                        drillFilter.setDatePattern(viewField.getDatePattern());
+                        drillFilter.setDateStyle(viewField.getDateStyle());
+                        drillFilter.setFilterType(1);
+                        if (datasetTableField.getDeType() == 1) {
+                            drillFilter.setOperator("between");
+                            // 把value类似过滤组件处理，获得start time和end time
+                            Map<String, Long> stringLongMap = Utils.parseDateTimeValue(dim.getValue());
+                            drillFilter.setValue(Arrays.asList(String.valueOf(stringLongMap.get("startTime")), String.valueOf(stringLongMap.get("endTime"))));
+                        } else {
+                            drillFilter.setOperator("in");
+                            drillFilter.setValue(Collections.singletonList(dim.getValue()));
+                        }
+                        extFilterList.add(drillFilter);
+
+                        if (!fields.contains(dim.getId())) {
+                            viewField.setSource(FieldSource.DRILL);
+                            xAxis.add(viewField);
+                            fields.add(dim.getId());
+                        }
+                        if (i == drillRequestList.size() - 1) {
+                            ChartViewFieldDTO nextDrillField = drill.get(i + 1);
+                            if (!fields.contains(nextDrillField.getId())) {
+                                viewField.setSource(FieldSource.DRILL);
+                                nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
+                                xAxis.add(nextDrillField);
+                                fields.add(nextDrillField.getId());
+                            }
+                        }
+                    }
+                }
+            }
+        }
+        //转义特殊字符
+        extFilterList = extFilterList.stream().peek(ele -> {
+            if (ObjectUtils.isNotEmpty(ele.getValue())) {
+                List<String> collect = ele.getValue().stream().map(SQLUtils::transKeyword).collect(Collectors.toList());
+                ele.setValue(collect);
+            }
+        }).collect(Collectors.toList());
+        // 视图自定义过滤逻辑
+        CustomFilterResult filterResult = chartHandler.customFilter(view, extFilterList, formatResult);
+        // 字段过滤器
+        FilterTreeObj fieldCustomFilter = view.getCustomFilter();
+        chartFilterTreeService.searchFieldAndSet(fieldCustomFilter);
+        fieldCustomFilter = chartFilterTreeService.charReplace(fieldCustomFilter);
+        // 获取dsMap,union sql
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(table, chartExtRequest);
+        String sql = (String) sqlMap.get("sql");
+        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        List<String> dsList = new ArrayList<>();
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            dsList.add(next.getValue().getType());
+        }
+        boolean needOrder = Utils.isNeedOrder(dsList);
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        if (!crossDs) {
+            sql = Utils.replaceSchemaAlias(sql, dsMap);
+        }
+
+        List<ChartViewFieldDTO> detailFieldList = new ArrayList<>();
+        String detailFieldSql = null;
+        List<String[]> detailData = new ArrayList<>();
+        if (ObjectUtils.isEmpty(dsMap)) {
+            DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_datasource_delete"));
+        }
+        for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
+            DatasourceSchemaDTO ds = next.getValue();
+            if (StringUtils.isNotEmpty(ds.getStatus()) && "Error".equalsIgnoreCase(ds.getStatus())) {
+                DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_invalid_ds"));
+            }
+        }
+
+        SQLMeta sqlMeta = new SQLMeta();
+        Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
+        CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields), crossDs, dsMap);
+        ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, transFields(allFields), crossDs, dsMap);
+        WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap);
+        Map<Long, String> dsTypeMap = dsMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getType()));
+        ChartCalcDataResult calcResult = chartHandler.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, calciteProvider);
+        // 如果是表格导出查询 则在此处直接就可以返回
+        var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);
+        if (view.getIsExcelExport()) {
+            Map<String, Object> sourceInfo = ChartDataBuild.transTableNormal(xAxis, yAxis, view, calcResult.getOriginData(), extStack, desensitizationList);
+            sourceInfo.put("sourceData", calcResult.getOriginData());
+            view.setData(sourceInfo);
+            return view;
+        }
+
+        // 构建结果
+        Map<String, Object> map = new TreeMap<>();
+        // 图表组件可再扩展
+        Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, calcResult.getOriginData(), extStack, desensitizationList);
+        var drillFilters = filterResult.getFilterList().stream().filter(f -> f.getFilterType() == 1).collect(Collectors.toList());
+        var isDrill = CollectionUtils.isNotEmpty(drillFilters);
+        ChartViewDTO chartViewDTO = uniteViewResult(calcResult.getQuerySql(), calcResult.getData(), mapTableNormal, view, isDrill, drillFilters, calcResult.getDynamicAssistFields(), calcResult.getAssistData());
+        return chartViewDTO;
+    }
+
+    public ChartViewDTO calcData1(ChartViewDTO view, ChartExtRequest chartExtRequest, List<ChartViewFieldDTO> allFields, List<ChartViewFieldDTO> viewFields) throws Exception {
         List<ChartViewFieldDTO> xAxisBase = null;
         List<ChartViewFieldDTO> xAxis = null;
         List<ChartViewFieldDTO> xAxisExt = null;

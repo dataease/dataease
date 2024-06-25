@@ -699,28 +699,38 @@ public class ChartDataBuild {
     public static Map<String, Object> transChartData(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, ChartViewDTO view, List<String[]> data, boolean isDrill) {
         Map<String, Object> map = new HashMap<>();
 
-        List<String> x = new ArrayList<>();
-        List<Series> series = new ArrayList<>();
-        for (ChartViewFieldDTO y : yAxis) {
-            Series series1 = new Series();
-            series1.setName(y.getName());
-            series1.setType(view.getType());
-            series1.setData(new ArrayList<>());
-            series.add(series1);
-        }
+        List<AxisChartDataAntVDTO> dataList = new ArrayList<>();
         for (int i1 = 0; i1 < data.size(); i1++) {
-            String[] d = data.get(i1);
+            String[] row = data.get(i1);
 
             StringBuilder a = new StringBuilder();
-            for (int i = xAxis.size(); i < xAxis.size() + yAxis.size(); i++) {
+            if (isDrill) {
+                a.append(row[xAxis.size() - 1]);
+            } else {
+                for (int i = 0; i < xAxis.size(); i++) {
+                    if (i == xAxis.size() - 1) {
+                        a.append(row[i]);
+                    } else {
+                        a.append(row[i]).append("\n");
+                    }
+                }
+            }
+            // yAxis最后的数据对应extLabel和extTooltip，将他们从yAxis中去掉，同时转换成动态值
+            int size = xAxis.size() + yAxis.size();
+            int extSize = view.getExtLabel().size() + view.getExtTooltip().size();
+
+            for (int i = xAxis.size(); i < size - extSize; i++) {
+                AxisChartDataAntVDTO axisChartDataDTO = new AxisChartDataAntVDTO();
+                axisChartDataDTO.setField(a.toString());
+                axisChartDataDTO.setName(a.toString());
+
                 List<ChartDimensionDTO> dimensionList = new ArrayList<>();
                 List<ChartQuotaDTO> quotaList = new ArrayList<>();
-                AxisChartDataDTO axisChartDataDTO = new AxisChartDataDTO();
 
                 for (int j = 0; j < xAxis.size(); j++) {
                     ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();
                     chartDimensionDTO.setId(xAxis.get(j).getId());
-                    chartDimensionDTO.setValue(d[j]);
+                    chartDimensionDTO.setValue(row[j]);
                     dimensionList.add(chartDimensionDTO);
                 }
                 axisChartDataDTO.setDimensionList(dimensionList);
@@ -731,28 +741,16 @@ public class ChartDataBuild {
                 quotaList.add(chartQuotaDTO);
                 axisChartDataDTO.setQuotaList(quotaList);
                 try {
-                    axisChartDataDTO.setValue(StringUtils.isEmpty(d[i]) ? null : new BigDecimal(d[i]));
+                    axisChartDataDTO.setValue(StringUtils.isEmpty(row[i]) ? null : new BigDecimal(row[i]));
                 } catch (Exception e) {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
-                series.get(j).getData().add(axisChartDataDTO);
+                axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
+                buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
+                dataList.add(axisChartDataDTO);
             }
-            if (isDrill) {
-                a.append(d[xAxis.size() - 1]);
-            } else {
-                for (int i = 0; i < xAxis.size(); i++) {
-                    if (i == xAxis.size() - 1) {
-                        a.append(d[i]);
-                    } else {
-                        a.append(d[i]).append("\n");
-                    }
-                }
-            }
-            x.add(a.toString());
         }
-
-        map.put("x", x);
-        map.put("series", series);
+        map.put("data", dataList);
         return map;
     }
 
