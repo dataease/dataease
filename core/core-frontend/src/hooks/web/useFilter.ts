@@ -76,6 +76,15 @@ const getDayEnd = timestamp => {
   return [+new Date(timestamp), +new Date(timestamp) + 60 * 1000 * 60 * 24 - 1000]
 }
 
+const getFieldId = (arr, result) => {
+  const [obj] = result
+  const idArr = obj.split(',')
+  return arr
+    .map(ele => ele.id)
+    .slice(0, idArr.length)
+    .join(',')
+}
+
 const getValueByDefaultValueCheckOrFirstLoad = (
   defaultValueCheck: boolean,
   defaultValue: any,
@@ -88,6 +97,20 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   displayType: string,
   displayId: string
 ) => {
+  if (+displayType === 9) {
+    if (firstLoad) {
+      return defaultValueCheck
+        ? multiple
+          ? defaultValue.map(ele => ele.split('-de-').join(','))
+          : (defaultValue || '').split('-de-').join(',')
+        : []
+    }
+    return selectValue?.length
+      ? multiple
+        ? selectValue.map(ele => ele.split('-de-').join(','))
+        : (selectValue || '').split('-de-').join(',')
+      : []
+  }
   if (
     optionValueSource === 1 &&
     (defaultMapValue?.length || displayId) &&
@@ -152,6 +175,9 @@ const getOperator = (
   conditionValueS,
   firstLoad
 ) => {
+  if (+displayType === 9) {
+    return multiple ? 'in' : 'eq'
+  }
   const valueF = firstLoad ? defaultConditionValueF : conditionValueF
   const valueS = firstLoad ? defaultConditionValueS : conditionValueS
   const operatorF = firstLoad ? defaultConditionValueOperatorF : conditionValueOperatorF
@@ -186,9 +212,8 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             const {
               selectValue: value,
               timeGranularityMultiple,
-              parametersStart,
-              parametersEnd,
               conditionType = 0,
+              treeFieldList = [],
               defaultConditionValueOperatorF = 'eq',
               defaultConditionValueF = '',
               defaultConditionValueOperatorS = 'like',
@@ -204,12 +229,13 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               defaultMapValue,
               mapValue,
               parameters = [],
-              isTree = false,
               timeGranularity = 'date',
               displayType,
               displayId,
               multiple
             } = item
+
+            const isTree = +displayType === 9
 
             if (timeType === 'dynamic' && [1, 7].includes(+displayType) && firstLoad) {
               if (+displayType === 1) {
@@ -303,7 +329,9 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
               if (result?.length) {
                 filter.push({
                   componentId: ele.id,
-                  fieldId: item.checkedFieldsMap[curComponentId],
+                  fieldId: isTree
+                    ? getFieldId(treeFieldList, result)
+                    : item.checkedFieldsMap[curComponentId],
                   operator,
                   value: result,
                   parameters,

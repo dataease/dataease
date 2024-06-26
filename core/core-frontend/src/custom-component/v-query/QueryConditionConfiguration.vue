@@ -23,6 +23,7 @@ import { ElMessage, ElSelect } from 'element-plus-secondary'
 import type { DatasetDetail } from '@/api/dataset'
 import { getDsDetailsWithPerm, getSqlParams, listFieldsWithPermissions } from '@/api/dataset'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import TreeFieldDialog from '@/custom-component/v-query/TreeFieldDialog.vue'
 import { cloneDeep } from 'lodash-es'
 import { getDatasetTree } from '@/api/dataset'
 import { Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
@@ -176,6 +177,23 @@ const showTypeError = computed(() => {
     return displayTypeField !== field?.deType
   })
 })
+
+const showDatasetError = computed(() => {
+  if (!curComponent.value) return false
+  if (!curComponent.value.checkedFields?.length) return false
+  if (!fields.value?.length) return false
+  let displayField = null
+  return curComponent.value.checkedFields.some(id => {
+    const arr = fields.value.find(itx => itx.componentId === id)
+    const field = arr.id
+    if (!field) return false
+    if (displayField === null) {
+      displayField = field
+      return false
+    }
+    return displayField !== field
+  })
+})
 const typeList = [
   {
     label: '重命名',
@@ -234,10 +252,12 @@ const setType = () => {
 
     if (field?.deType !== undefined) {
       let displayType = curComponent.value.displayType
+      if (curComponent.value.displayType === '9') {
+        return
+      }
       if (!(field?.deType === 1 && curComponent.value.displayType === '7')) {
         curComponent.value.displayType = `${[3, 4].includes(field?.deType) ? 2 : field?.deType}`
       }
-
       if (
         displayType !== curComponent.value.displayType &&
         !([3, 4].includes(+displayType) && +curComponent.value.displayType === 2)
@@ -299,10 +319,10 @@ const typeTimeMap = {
 
 const timeParameterList = computed(() => {
   if (!isTimeParameter.value) return timeList
-  const [_, y] = curComponent.value.parameters?.filter(
+  const [year, y] = curComponent.value.parameters?.filter(
     ele => ele.deType === 1 && !!ele.variableName
   )[0].type
-  return timeList.filter(ele => ele.value === typeTimeMap[y])
+  return timeList.filter(ele => ele.value === (typeTimeMap[y] || typeTimeMap[year]))
 })
 
 const cancelClick = () => {
@@ -344,7 +364,26 @@ const handleValueSourceChange = () => {
 }
 
 const multipleChange = (val: boolean, isMultipleChange = false) => {
-  defaultConfigurationRef.value?.multipleChange(val, isMultipleChange)
+  if (isMultipleChange) {
+    curComponent.value.defaultValue = val ? [] : undefined
+  }
+  const { defaultValue } = curComponent.value
+  if (Array.isArray(defaultValue)) {
+    curComponent.value.selectValue = val ? defaultValue : undefined
+  } else {
+    curComponent.value.selectValue = val
+      ? defaultValue !== undefined
+        ? [defaultValue]
+        : []
+      : defaultValue
+  }
+
+  if (curComponent.value.field.deType === 1) {
+    curComponent.value.multiple = val
+    return
+  }
+
+  curComponent.value.multiple = val
 }
 
 const isInRange = (ele, startWindowTime, timeStamp) => {
@@ -460,6 +499,8 @@ const openCascadeDialog = () => {
     }, {})
   cascadeDialog.value.init(cascadeMap)
 }
+
+const indexCascade = ' 一二三四五'
 
 const validateConditionType = ({
   defaultConditionValueF,
@@ -612,12 +653,16 @@ const validate = () => {
       return false
     }
 
-    if (ele.optionValueSource === 2 && !ele.valueSource?.filter(ele => !!ele).length) {
+    if (
+      ele.displayType !== '9' &&
+      ele.optionValueSource === 2 &&
+      !ele.valueSource?.filter(ele => !!ele).length
+    ) {
       ElMessage.error('手工输入-选项值不能为空')
       return true
     }
 
-    if (ele.optionValueSource === 1 && !ele.field.id) {
+    if (ele.displayType !== '9' && ele.optionValueSource === 1 && !ele.field.id) {
       ElMessage.error('请选择数据集的选项值字段')
       return true
     }
@@ -829,7 +874,8 @@ const parameterCompletion = () => {
       timeNumRange: 0,
       relativeToCurrentTypeRange: 'year',
       aroundRange: 'f'
-    }
+    },
+    treeFieldList: []
   }
   Object.entries(attributes).forEach(([key, val]) => {
     !curComponent.value[key] && (curComponent.value[key] = val)
@@ -888,6 +934,18 @@ const getOptions = (id, component) => {
   })
 }
 
+const treeDialog = ref()
+const startTreeDesign = () => {
+  treeDialog.value.init(
+    curComponent.value.dataset?.fields.filter(
+      ele => ele.deType === +curComponent.value.field.deType
+    ),
+    curComponent.value.treeFieldList
+  )
+}
+const saveTree = arr => {
+  curComponent.value.treeFieldList = arr
+}
 const showError = computed(() => {
   if (!curComponent.value) return false
   const { optionValueSource, checkedFieldsMap, checkedFields, field, valueSource, displayType } =
@@ -898,6 +956,20 @@ const showError = computed(() => {
   }
   if ([1, 7, 8].includes(+displayType)) {
     return false
+  }
+
+  if (displayType === '9') {
+    let displayField = null
+    return checkedFields.some(id => {
+      const arr = fields.value.find(itx => itx.componentId === id)
+      const field = arr.id
+      if (!field) return false
+      if (displayField === null) {
+        displayField = field
+        return false
+      }
+      return displayField !== field
+    })
   }
   return (optionValueSource === 1 && !field.id) || (optionValueSource === 2 && !valueSource.length)
 })
@@ -1313,7 +1385,10 @@ defineExpose({
             label="必填项"
           />
         </div>
-        <div v-show="showConfiguration && !showTypeError" class="configuration-list">
+        <div
+          v-show="showConfiguration && !showTypeError && !showDatasetError"
+          class="configuration-list"
+        >
           <div class="list-item">
             <div class="label">展示类型</div>
             <div class="value">
@@ -1323,14 +1398,19 @@ defineExpose({
                 v-model="curComponent.displayType"
               >
                 <el-option
-                  :disabled="!['0', '8'].includes(curComponent.displayType)"
+                  :disabled="!['0', '8', '9'].includes(curComponent.displayType)"
                   label="文本下拉"
                   value="0"
                 />
                 <el-option
-                  :disabled="!['0', '8'].includes(curComponent.displayType)"
+                  :disabled="!['0', '8', '9'].includes(curComponent.displayType)"
                   label="文本搜索"
                   value="8"
+                />
+                <el-option
+                  :disabled="!['0', '8', '9'].includes(curComponent.displayType)"
+                  label="下拉树"
+                  value="9"
                 />
                 <el-option
                   v-if="curComponent.displayType === '2'"
@@ -1356,6 +1436,42 @@ defineExpose({
                 />
               </el-select>
             </div>
+          </div>
+          <div class="list-item" v-if="curComponent.displayType === '9'">
+            <div class="label" style="width: 135px; height: 26px; line-height: 26px">
+              下拉树结构设计
+              <el-button v-if="!!curComponent.treeFieldList.length" text @click="startTreeDesign">
+                <template #icon>
+                  <icon name="icon_edit_outlined"></icon>
+                </template>
+              </el-button>
+            </div>
+            <div class="search-tree">
+              <template v-if="!!curComponent.treeFieldList.length">
+                <div
+                  v-for="(ele, index) in curComponent.treeFieldList"
+                  :key="ele.id"
+                  class="tree-field"
+                >
+                  <span class="level-index">层级{{ indexCascade[index + 1] }}</span>
+                  <span class="field-type"
+                    ><el-icon>
+                      <Icon
+                        :name="`field_${fieldType[ele.deType]}`"
+                        :className="`field-icon-${fieldType[ele.deType]}`"
+                      ></Icon> </el-icon
+                  ></span>
+                  <span class="field-tree_name">{{ ele.name }}</span>
+                </div>
+              </template>
+              <el-button @click="startTreeDesign" v-else text>
+                <template #icon>
+                  <Icon name="icon_add_outlined"></Icon>
+                </template>
+                点击进行树结构设计
+              </el-button>
+            </div>
+            <TreeFieldDialog ref="treeDialog" @save-tree="saveTree"></TreeFieldDialog>
           </div>
           <div class="list-item" v-if="['1', '7'].includes(curComponent.displayType)">
             <div class="label">时间粒度</div>
@@ -1391,7 +1507,7 @@ defineExpose({
           </div>
           <div
             class="list-item top-item"
-            v-if="!['1', '7', '8'].includes(curComponent.displayType)"
+            v-if="!['1', '7', '8', '9'].includes(curComponent.displayType)"
           >
             <div class="label">选项值来源</div>
             <div class="value">
@@ -1680,6 +1796,9 @@ defineExpose({
         <div v-if="showTypeError && showConfiguration" class="empty">
           <empty-background description="所选字段类型不一致，无法进行查询配置" img-type="error" />
         </div>
+        <div v-else-if="showDatasetError && showConfiguration" class="empty">
+          <empty-background description="图表所使用的数据集不同, 无法展示配置项" img-type="error" />
+        </div>
         <div v-else-if="!showConfiguration" class="empty">
           <empty-background description="请先勾选需要联动的图表及字段" img-type="noneWhite" />
         </div>
@@ -1874,6 +1993,7 @@ defineExpose({
           display: flex;
           align-items: center;
           margin-bottom: 8px;
+
           .ed-checkbox__label {
             display: inline-flex;
             align-items: center;
@@ -1970,6 +2090,41 @@ defineExpose({
           justify-content: space-between;
           margin-bottom: 10.5px;
           flex-wrap: wrap;
+          .search-tree {
+            width: 100%;
+            height: 200px;
+            margin-top: 8px;
+            position: relative;
+            padding: 16px;
+            box-shadow: 0px 0px 12px rgba(0, 0, 0, 0.12);
+
+            .ed-button {
+              position: absolute;
+              left: 50%;
+              top: 50%;
+              transform: translate(-50%, -50%);
+            }
+
+            .tree-field {
+              display: flex;
+              align-items: center;
+              margin-bottom: 16px;
+              .level-index {
+                margin-right: 40px;
+              }
+
+              .field-type {
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 16px;
+              }
+
+              .field-tree_name {
+                margin-left: 8px;
+              }
+            }
+          }
 
           .setting-content {
             width: 100%;
