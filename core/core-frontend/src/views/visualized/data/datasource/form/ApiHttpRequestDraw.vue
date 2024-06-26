@@ -97,6 +97,7 @@ const showEmpty = ref(false)
 const edit_api_item = ref(false)
 const active = ref(1)
 const loading = ref(false)
+const formLoading = ref(false)
 const columns = shallowRef([])
 const valueList = shallowRef([])
 const tableData = shallowRef([])
@@ -252,8 +253,12 @@ const next = () => {
       cancelMap['/datasource/checkApiDatasource']?.()
 
       const params = Base64.encode(JSON.stringify(paramsList))
+      disabledNext.value = true
+      formLoading.value = true
       checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)), paramsList: params })
         .then(response => {
+          disabledNext.value = false
+          formLoading.value = false
           apiItem.jsonFields = response.data.jsonFields
           apiItem.fields = []
           handleFiledChange(apiItem)
@@ -261,6 +266,8 @@ const next = () => {
           active.value += 1
         })
         .catch(error => {
+          disabledNext.value = false
+          formLoading.value = false
           console.log(error?.message)
         })
     }
@@ -438,6 +445,7 @@ defineExpose({
         label-width="100px"
         require-asterisk-position="right"
         :rules="rule"
+        v-loading="formLoading"
       >
         <div class="title-form_primary base-info">
           <span>{{ t('datasource.base_info') }}</span>

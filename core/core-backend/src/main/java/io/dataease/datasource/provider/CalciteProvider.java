@@ -854,12 +854,14 @@ public class CalciteProvider {
         DatasourceConfiguration configuration = null;
         String database = "";
         switch (datasourceType) {
+            case StarRocks:
+            case doris:
+                tableSqls.add("show tables");
+                break;
             case mysql:
             case mongo:
             case mariadb:
             case TiDB:
-            case StarRocks:
-            case doris:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Mysql.class);
                 if (StringUtils.isEmpty(configuration.getUrlType()) || configuration.getUrlType().equalsIgnoreCase("hostName")) {
                     database = configuration.getDataBase();

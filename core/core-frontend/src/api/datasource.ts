@@ -122,7 +122,7 @@ export const checkRepeat = async (data = {}): Promise<Dataset> => {
 }
 
 export const checkApiItem = async (data = {}): Promise<IResponse> => {
-  return request.post({ url: '/datasource/checkApiDatasource', data }).then(res => {
+  return request.post({ url: '/datasource/checkApiDatasource', data, loading: true }).then(res => {
     return res
   })
 }
