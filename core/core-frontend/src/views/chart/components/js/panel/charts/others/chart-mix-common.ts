@@ -58,7 +58,7 @@ export const CHART_MIX_EDITOR_PROPERTY_INNER: EditorPropertyInner = {
     'fontShadow'
   ],
   'legend-selector': ['icon', 'orient', 'fontSize', 'color', 'hPosition', 'vPosition'],
-  'function-cfg': ['slider', 'emptyDataStrategy']
+  'function-cfg': ['emptyDataStrategy']
 }
 
 export const CHART_MIX_AXIS_TYPE: AxisType[] = [
