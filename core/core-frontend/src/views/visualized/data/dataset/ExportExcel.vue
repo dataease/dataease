@@ -14,6 +14,7 @@ import {
 import { useI18n } from '@/hooks/web/useI18n'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Icon from '@/components/icon-custom/src/Icon.vue'
+import { useCache } from '@/hooks/web/useCache'
 
 const { t } = useI18n()
 const tableData = ref([])
@@ -52,6 +53,8 @@ const handleClose = () => {
   drawer.value = false
   clearInterval(timer)
 }
+const { wsCache } = useCache()
+const xpack = wsCache.get('xpack-model-distributed')
 
 onUnmounted(() => {
   clearInterval(timer)
@@ -428,6 +431,7 @@ defineExpose({
             <span v-if="scope.row.exportFromType === 'chart'">视图</span>
           </template>
         </el-table-column>
+        <el-table-column v-show="xpack" prop="orgName" label="所属组织" width="200" />
         <el-table-column prop="exportTime" width="180" :label="$t('data_export.export_time')">
           <template #default="scope">
             <span>{{ timestampFormatDate(scope.row.exportTime) }}</span>
