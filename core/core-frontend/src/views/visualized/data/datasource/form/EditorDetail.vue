@@ -27,6 +27,7 @@ const prop = defineProps({
         syncSetting?: SyncSetting
         configuration?: Configuration
         apiConfiguration?: ApiConfiguration[]
+        paramsConfiguration?: ApiConfiguration[]
       }>({
         id: 0,
         name: '',
@@ -80,6 +81,7 @@ const defaultApiItem = {
   name: '',
   deTableName: '',
   url: '',
+  type: '',
   serialNumber: 0,
   method: 'GET',
   request: {
@@ -319,17 +321,24 @@ const addApiItem = item => {
     apiItem = cloneDeep(item)
   } else {
     apiItem = cloneDeep(defaultApiItem)
-    apiItem.serialNumber =
+    apiItem.type = activeName.value
+    let serialNumber1 =
       form.value.apiConfiguration.length > 0
         ? form.value.apiConfiguration[form.value.apiConfiguration.length - 1].serialNumber + 1
         : 0
+    let serialNumber2 =
+      form.value.paramsConfiguration.length > 0
+        ? form.value.paramsConfiguration[form.value.paramsConfiguration.length - 1].serialNumber + 1
+        : 0
+
+    apiItem.serialNumber = serialNumber1 + serialNumber2
   }
   nextTick(() => {
-    editApiItem.value.initApiItem(apiItem, form.value.apiConfiguration, activeName.value)
+    editApiItem.value.initApiItem(apiItem, form.value, activeName.value)
   })
 }
 
-const activeName = ref('third')
+const activeName = ref('table')
 const showPriority = ref(false)
 
 const deleteItem = (item, idx) => {
@@ -354,15 +363,28 @@ const resetForm = () => {
 
 const returnItem = apiItem => {
   var find = false
-  for (let i = 0; i < form.value.apiConfiguration.length; i++) {
-    if (form.value.apiConfiguration[i].serialNumber === apiItem.serialNumber) {
-      find = true
-      form.value.apiConfiguration[i] = apiItem
+  if (apiItem.type !== 'params') {
+    for (let i = 0; i < form.value.apiConfiguration.length; i++) {
+      if (form.value.apiConfiguration[i].serialNumber === apiItem.serialNumber) {
+        find = true
+        form.value.apiConfiguration[i] = apiItem
+      }
     }
-  }
-  if (!find) {
-    state.itemRef = []
-    form.value.apiConfiguration.push(apiItem)
+    if (!find) {
+      state.itemRef = []
+      form.value.apiConfiguration.push(apiItem)
+    }
+  } else {
+    for (let i = 0; i < form.value.paramsConfiguration.length; i++) {
+      if (form.value.paramsConfiguration[i].serialNumber === apiItem.serialNumber) {
+        find = true
+        form.value.paramsConfiguration[i] = apiItem
+      }
+    }
+    if (!find) {
+      state.itemRef = []
+      form.value.paramsConfiguration.push(apiItem)
+    }
   }
 }
 
@@ -476,12 +498,6 @@ const apiRule = {
 const dialogEditParams = ref(false)
 const dialogRenameApi = ref(false)
 const activeParamsName = ref('')
-const apiParams = ref([
-  {
-    id: 1,
-    name: '接口1'
-  }
-])
 const paramsObj = ref({
   name: '',
   id: 1,
@@ -490,7 +506,7 @@ const paramsObj = ref({
 
 const apiObj = ref({
   name: '',
-  id: 1
+  serialNumber: 1
 })
 const paramsObjRules = {
   name: [
@@ -524,6 +540,7 @@ const apiObjRules = {
   ]
 }
 const setActiveName = val => {
+  gridData.value = val.fields
   activeParamsName.value = val.name
 }
 
@@ -545,12 +562,13 @@ const saveParamsObj = () => {
 const saveApiObj = () => {
   apiObjRef.value.validate(result => {
     if (result) {
-      apiParams.value.forEach(ele => {
-        if (ele.id === apiObj.value.id) {
+      form.value.paramsConfiguration.forEach(ele => {
+        if (ele.serialNumber === apiObj.value.serialNumber) {
           ele.name = apiObj.value.name
         }
       })
     }
+    dialogRenameApi.value = false
   })
 }
 
@@ -562,17 +580,12 @@ const apiResetForm = () => {
   dialogRenameApi.value = false
 }
 
-const gridData = ref([
-  {
-    name: 'name',
-    deType: 0,
-    id: 0
-  }
-])
+const gridData = ref([])
 const handleApiParams = (cmd: string, data) => {
   if (cmd === 'rename') {
     dialogRenameApi.value = true
-    paramsObj.value.name = data.name
+    apiObj.value.name = data.name
+    apiObj.value.serialNumber = data.serialNumber
   }
   if (cmd === 'delete') {
     ElMessageBox.confirm('确定删除吗?', {
@@ -581,7 +594,10 @@ const handleApiParams = (cmd: string, data) => {
       autofocus: false,
       showClose: false
     }).then(() => {
-      apiParams.value.splice(0, 1)
+      form.value.paramsConfiguration.splice(0, 1)
+      if (activeParamsName.value === data.name) {
+        gridData.value = []
+      }
     })
   }
 
@@ -601,7 +617,7 @@ const delParams = data => {
     autofocus: false,
     showClose: false
   }).then(() => {
-    apiParams.value.splice(0, 1)
+    gridData.value.splice(0, 1)
   })
 }
 const datasetTypeList = [
@@ -668,8 +684,8 @@ defineExpose({
         <template v-if="form.type === 'API'">
           <div class="title-form_primary flex-space table-info-mr" v-show="activeStep !== 2">
             <el-tabs v-model="activeName" class="api-tabs">
-              <el-tab-pane :label="t('datasource.data_table')" name="third"></el-tab-pane>
-              <el-tab-pane label="接口参数" name="fourth"></el-tab-pane>
+              <el-tab-pane :label="t('datasource.data_table')" name="table"></el-tab-pane>
+              <el-tab-pane label="接口参数" name="params"></el-tab-pane>
             </el-tabs>
             <el-button type="primary" style="margin-left: auto" @click="() => addApiItem(null)">
               <template #icon>
@@ -680,11 +696,11 @@ defineExpose({
           </div>
           <empty-background
             v-show="activeStep !== 2"
-            v-if="!form.apiConfiguration.length"
+            v-if="!form.apiConfiguration.length && activeName === 'table'"
             :description="t('datasource.no_data_table')"
             img-type="noneWhite"
           />
-          <template v-if="form.type === 'API' && activeStep === 1 && activeName === 'third'">
+          <template v-if="form.type === 'API' && activeStep === 1 && activeName === 'table'">
             <div class="api-card-content">
               <div
                 v-for="(api, idx) in form.apiConfiguration"
@@ -759,11 +775,11 @@ defineExpose({
           </template>
           <div
             style="display: flex"
-            v-if="form.type === 'API' && activeStep === 1 && activeName === 'fourth'"
+            v-if="form.type === 'API' && activeStep === 1 && activeName === 'params'"
           >
             <div class="left-api_params">
               <div
-                v-for="ele in apiParams"
+                v-for="ele in form.paramsConfiguration"
                 :class="[{ active: activeParamsName === ele.name }]"
                 class="list-item_primary"
                 :title="ele.name"
@@ -812,12 +828,6 @@ defineExpose({
 
                 <el-table-column :label="t('common.operate')">
                   <template #default="scope">
-                    <el-button text @click.stop="editParams(scope.row)">
-                      <template #icon>
-                        <Icon name="icon_edit_outlined"></Icon>
-                      </template>
-                    </el-button>
-
                     <el-button text @click.stop="delParams(scope.row)">
                       <template #icon>
                         <Icon name="icon_delete-trash_outlined"></Icon>
@@ -1217,7 +1227,7 @@ defineExpose({
         <el-form
           label-position="top"
           require-asterisk-position="right"
-          ref="paramsObjRef"
+          ref="apiObjRef"
           @keydown.stop.prevent.enter
           :model="apiObj"
           :rules="apiObjRules"

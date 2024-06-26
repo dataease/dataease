@@ -80,6 +80,7 @@
               min="0"
               max="1440"
               size="small"
+              @input="v => handleInput(v, scope.$index)"
               @change="val => validateExp(val, scope.$index)"
             />
             <span v-else>
@@ -251,7 +252,12 @@ const refreshTicket = row => {
     row.ticket = res.data
   })
 }
-
+const handleInput = (val, index) => {
+  if (val === null || val === '') {
+    return
+  }
+  state.tableData[index]['exp'] = val.replace(/[^\d]/g, '')
+}
 const validateExp = (val, index) => {
   const cref = expRefs.value[index]
   const e = cref.input
