@@ -76,6 +76,15 @@ const getDayEnd = timestamp => {
   return [+new Date(timestamp), +new Date(timestamp) + 60 * 1000 * 60 * 24 - 1000]
 }
 
+const getFieldId = (arr, result) => {
+  const [obj] = result
+  const idArr = obj.split(',')
+  return arr
+    .map(ele => ele.id)
+    .slice(0, idArr.length)
+    .join(',')
+}
+
 const getValueByDefaultValueCheckOrFirstLoad = (
   defaultValueCheck: boolean,
   defaultValue: any,
@@ -166,6 +175,9 @@ const getOperator = (
   conditionValueS,
   firstLoad
 ) => {
+  if (+displayType === 9) {
+    return multiple ? 'in' : 'eq'
+  }
   const valueF = firstLoad ? defaultConditionValueF : conditionValueF
   const valueS = firstLoad ? defaultConditionValueS : conditionValueS
   const operatorF = firstLoad ? defaultConditionValueOperatorF : conditionValueOperatorF
@@ -318,7 +330,7 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
                 filter.push({
                   componentId: ele.id,
                   fieldId: isTree
-                    ? treeFieldList.map(ele => ele.id).join(',')
+                    ? getFieldId(treeFieldList, result)
                     : item.checkedFieldsMap[curComponentId],
                   operator,
                   value: result,

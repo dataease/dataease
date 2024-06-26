@@ -319,10 +319,10 @@ const typeTimeMap = {
 
 const timeParameterList = computed(() => {
   if (!isTimeParameter.value) return timeList
-  const [_, y] = curComponent.value.parameters?.filter(
+  const [year, y] = curComponent.value.parameters?.filter(
     ele => ele.deType === 1 && !!ele.variableName
   )[0].type
-  return timeList.filter(ele => ele.value === typeTimeMap[y])
+  return timeList.filter(ele => ele.value === (typeTimeMap[y] || typeTimeMap[year]))
 })
 
 const cancelClick = () => {

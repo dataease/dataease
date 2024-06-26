@@ -1,5 +1,15 @@
 <script lang="ts" setup>
-import { ref, PropType, toRefs, nextTick, watch, onMounted, computed, inject } from 'vue'
+import {
+  ref,
+  PropType,
+  toRefs,
+  nextTick,
+  watch,
+  onMounted,
+  computed,
+  inject,
+  shallowRef
+} from 'vue'
 import { cloneDeep, debounce } from 'lodash-es'
 import { getFieldTree } from '@/api/dataset'
 interface SelectConfig {
@@ -72,7 +82,6 @@ watch(
   () => config.value.treeFieldList,
   () => {
     treeValue.value = config.value.multiple ? [] : undefined
-    cacheData.value = []
     showOrHide.value = false
     getTreeOption()
   }
@@ -81,19 +90,10 @@ watch(
 const init = () => {
   const { defaultValueCheck, multiple: plus, defaultValue } = config.value
   if (defaultValueCheck) {
-    const arr = Array.isArray(defaultValue) ? '' : (defaultValue || '').split('-de-')
     config.value.selectValue = Array.isArray(defaultValue)
       ? cloneDeep([...defaultValue])
       : defaultValue
     treeValue.value = Array.isArray(defaultValue) ? cloneDeep([...defaultValue]) : defaultValue
-    cacheData.value = Array.isArray(defaultValue)
-      ? defaultValue.map(ele => ({
-          value: ele,
-          label: ele.split('-de-')[ele.split('-de-').length - 1]
-        }))
-      : arr.length
-      ? [arr[arr.length - 1]]
-      : []
   } else {
     config.value.selectValue = plus ? [] : undefined
     treeValue.value = plus ? [] : undefined
@@ -149,12 +149,8 @@ watch(
     if (val) {
       treeValue.value = []
     }
-
     nextTick(() => {
       multiple.value = val
-      nextTick(() => {
-        resolveFunc(treeOptionList)
-      })
       if (!val) {
         nextTick(() => {
           treeValue.value = undefined
@@ -164,7 +160,7 @@ watch(
   }
 )
 let cacheId = ''
-let treeOptionList = []
+let treeOptionList = shallowRef([])
 
 const dfs = arr => {
   return (arr || []).map(ele => {
@@ -176,16 +172,16 @@ const dfs = arr => {
   })
 }
 
+const loading = ref(false)
+
 const getTreeOption = debounce(() => {
+  loading.value = true
   getFieldTree(props.config.treeFieldList.map(ele => ele.id))
     .then(res => {
-      treeOptionList = dfs(res)
+      treeOptionList.value = dfs(res)
     })
     .finally(() => {
-      showOrHide.value = true
-      nextTick(() => {
-        resolveFunc(treeOptionList)
-      })
+      loading.value = false
     })
 }, 300)
 watch(
@@ -199,25 +195,8 @@ watch(
     }
   }
 )
-const propsTree = {
-  label: 'label',
-  children: 'children',
-  isLeaf: data => !data.children?.length
-}
+const fakeValue = ''
 const treeValue = ref()
-let cacheData = ref([])
-
-let resolveFunc = (arr = []) => {
-  arr = cloneDeep(arr)
-}
-const load = (node, resolve) => {
-  resolveFunc = debounce(resolve, 500)
-  if (!node.data?.children?.length) return resolve([])
-  setTimeout(() => {
-    resolve([...node.data?.children])
-  }, 400)
-}
-
 const selectStyle = computed(() => {
   return props.isConfig ? {} : { width: queryConditionWidth() + 'px' }
 })
@@ -226,39 +205,36 @@ const selectStyle = computed(() => {
 <template>
   <el-tree-select
     v-model="treeValue"
-    lazy
-    v-if="multiple && showOrHide"
+    :data="treeOptionList"
+    v-if="multiple && !loading"
+    clearable
     @change="handleValueChange"
-    check-strictly
     :render-after-expand="false"
+    show-checkbox
     key="multipleTree"
     filterable
     :style="selectStyle"
     multiple
-    :cache-data="cacheData"
-    :load="load"
-    :props="propsTree"
   />
   <el-tree-select
     v-model="treeValue"
     @change="handleValueChange"
-    lazy
+    :data="treeOptionList"
     check-strictly
+    clearable
     :render-after-expand="false"
-    v-else-if="showOrHide"
+    v-else-if="!loading"
     key="singleTree"
     :style="selectStyle"
     filterable
-    :cache-data="cacheData"
-    :load="load"
-    :props="propsTree"
   />
   <el-tree-select
-    v-model="treeValue"
-    v-loading="!showOrHide"
+    v-model="fakeValue"
+    v-loading="loading"
     :data="[]"
+    :render-after-expand="false"
     v-else
-    key="hideTree"
+    key="fakeTree"
     :style="selectStyle"
   />
 </template>
