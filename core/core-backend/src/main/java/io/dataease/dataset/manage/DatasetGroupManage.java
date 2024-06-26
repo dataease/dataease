@@ -3,7 +3,6 @@ package io.dataease.dataset.manage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
@@ -20,11 +19,13 @@ import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
@@ -264,25 +265,27 @@ public class DatasetGroupManage {
     }
 
     public void checkName(DatasetGroupInfoDTO dto) {
-        QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
-        if (ObjectUtils.isNotEmpty(dto.getPid())) {
-            wrapper.eq("pid", dto.getPid());
-        }
-        if (StringUtils.isNotEmpty(dto.getName())) {
-            wrapper.eq("name", dto.getName());
-        }
-        if (ObjectUtils.isNotEmpty(dto.getId())) {
-            wrapper.ne("id", dto.getId());
-        }
-        if (ObjectUtils.isNotEmpty(dto.getLevel())) {
-            wrapper.eq("level", dto.getLevel());
-        }
-        if (ObjectUtils.isNotEmpty(dto.getNodeType())) {
-            wrapper.eq("node_type", dto.getNodeType());
-        }
-        List<CoreDatasetGroup> list = coreDatasetGroupMapper.selectList(wrapper);
-        if (list.size() > 0) {
-            DEException.throwException(Translator.get("i18n_ds_name_exists"));
+        if (!LicenseUtil.licenseValid()) {
+            QueryWrapper<CoreDatasetGroup> wrapper = new QueryWrapper<>();
+            if (ObjectUtils.isNotEmpty(dto.getPid())) {
+                wrapper.eq("pid", dto.getPid());
+            }
+            if (StringUtils.isNotEmpty(dto.getName())) {
+                wrapper.eq("name", dto.getName());
+            }
+            if (ObjectUtils.isNotEmpty(dto.getId())) {
+                wrapper.ne("id", dto.getId());
+            }
+            if (ObjectUtils.isNotEmpty(dto.getLevel())) {
+                wrapper.eq("level", dto.getLevel());
+            }
+            if (ObjectUtils.isNotEmpty(dto.getNodeType())) {
+                wrapper.eq("node_type", dto.getNodeType());
+            }
+            List<CoreDatasetGroup> list = coreDatasetGroupMapper.selectList(wrapper);
+            if (list.size() > 0) {
+                DEException.throwException(Translator.get("i18n_ds_name_exists"));
+            }
         }
     }
 
