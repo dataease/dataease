@@ -1,5 +1,6 @@
 package io.dataease.chart.charts.impl;
 
+import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.chart.charts.AbstractChartHandler;
 import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.chart.constant.ChartConstants;
@@ -24,6 +25,7 @@ import io.dataease.utils.JsonUtil;
 import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.Getter;
+import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -114,6 +116,65 @@ public class DefaultChartHandler extends AbstractChartHandler {
         return calcResult;
     }
 
+    @Override
+    public ChartViewDTO buildChart(ChartViewDTO view, ChartCalcDataResult calcResult, AxisFormatResult formatResult, CustomFilterResult filterResult) {
+        var desensitizationList = (Map<String, ColumnPermissionItem>) filterResult.getContext().get("desensitizationList");
+        var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
+        var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+        // 如果是表格导出查询 则在此处直接就可以返回
+        var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);
+        if (view.getIsExcelExport()) {
+            Map<String, Object> sourceInfo = ChartDataBuild.transTableNormal(xAxis, yAxis, view, calcResult.getOriginData(), extStack, desensitizationList);
+            sourceInfo.put("sourceData", calcResult.getOriginData());
+            view.setData(sourceInfo);
+            return view;
+        }
+        // 构建结果
+        Map<String, Object> map = new TreeMap<>();
+        // 图表组件可再扩展
+        Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, calcResult.getOriginData(), extStack, desensitizationList);
+        var drillFilters = filterResult.getFilterList().stream().filter(f -> f.getFilterType() == 1).collect(Collectors.toList());
+        var isDrill = CollectionUtils.isNotEmpty(drillFilters);
+        ChartViewDTO chartViewDTO = uniteViewResult(calcResult.getQuerySql(), calcResult.getData(), mapTableNormal, view, isDrill, drillFilters, calcResult.getDynamicAssistFields(), calcResult.getAssistData());
+        return chartViewDTO;
+    }
+
+
+    public ChartViewDTO uniteViewResult(String sql, Map<String, Object> chartData, Map<String, Object> tableData, ChartViewDTO view, Boolean isDrill, List<ChartExtFilterDTO> drillFilters, List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData) {
+
+        Map<String, Object> map = new HashMap<>();
+        map.putAll(chartData);
+        map.putAll(tableData);
+
+        // get all fields
+        List<ChartViewFieldDTO> allFields = getAllChartFields(view);
+        map.put("sourceFields", allFields);
+        // merge assist result
+        mergeAssistField(dynamicAssistFields, assistData);
+        map.put("dynamicAssistLines", dynamicAssistFields);
+
+        ChartViewDTO dto = new ChartViewDTO();
+        BeanUtils.copyBean(dto, view);
+        dto.setData(map);
+        dto.setSql(java.util.Base64.getEncoder().encodeToString(sql.getBytes()));
+        dto.setDrill(isDrill);
+        dto.setDrillFilters(drillFilters);
+        return dto;
+    }
+
+    protected void mergeAssistField(List<ChartSeniorAssistDTO> dynamicAssistFields, List<String[]> assistData) {
+        if (ObjectUtils.isEmpty(assistData)) {
+            return;
+        }
+        String[] strings = assistData.get(0);
+        for (int i = 0; i < dynamicAssistFields.size(); i++) {
+            if (i < strings.length) {
+                ChartSeniorAssistDTO chartSeniorAssistDTO = dynamicAssistFields.get(i);
+                chartSeniorAssistDTO.setValue(strings[i]);
+            }
+        }
+    }
+
     protected List<ChartViewFieldDTO> getAllChartFields(ChartViewDTO view) {
         // get all fields
         Map<String, List<ChartViewFieldDTO>> stringListMap = chartViewManege.listByDQ(view.getTableId(), view.getId(), view);
@@ -125,7 +186,7 @@ public class DefaultChartHandler extends AbstractChartHandler {
         return allFields.stream().filter(ele -> ele.getId() != -1L).collect(Collectors.toList());
     }
 
-    protected List<ChartSeniorAssistDTO> getDynamicAssistFields(ChartViewDTO view) throws Exception {
+    protected List<ChartSeniorAssistDTO> getDynamicAssistFields(ChartViewDTO view) {
         List<ChartSeniorAssistDTO> list = new ArrayList<>();
 
         Map<String, Object> senior = view.getSenior();
