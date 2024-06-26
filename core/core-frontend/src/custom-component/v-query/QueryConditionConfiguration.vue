@@ -936,10 +936,13 @@ const getOptions = (id, component) => {
 
 const treeDialog = ref()
 const startTreeDesign = () => {
+  const [comId] = curComponent.value.checkedFields
+  const componentObj = fields.value.find(ele => ele.componentId === comId)
   treeDialog.value.init(
-    curComponent.value.dataset?.fields.filter(
-      ele => ele.deType === +curComponent.value.field.deType
-    ),
+    (curComponent.value.optionValueSource === 0
+      ? componentObj?.fields?.dimensionList
+      : curComponent.value.dataset?.fields
+    ).filter(ele => ele.deType === +curComponent.value.field.deType),
     curComponent.value.treeFieldList
   )
 }
@@ -977,16 +980,6 @@ const handleDialogClick = () => {
   defaultConfigurationRef.value?.handleDialogClick()
 }
 
-const operators = [
-  {
-    label: '精确匹配',
-    value: 'eq'
-  },
-  {
-    label: '模糊匹配',
-    value: 'like'
-  }
-]
 const relativeToCurrentList = computed(() => {
   let list = []
   if (!curComponent.value) return list
