@@ -7,10 +7,11 @@ import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
 import io.dataease.datasource.provider.EngineProvider;
 import io.dataease.datasource.provider.ProviderUtil;
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.type.H2;
 import io.dataease.datasource.type.Mysql;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.result.ResultMessage;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
@@ -76,7 +77,7 @@ public class EngineManage {
         try {
             EngineProvider provider = ProviderUtil.getEngineProvider(engine.getType());
             DatasourceRequest datasourceRequest = new DatasourceRequest();
-            CoreDatasource datasource = new CoreDatasource();
+            DatasourceDTO datasource = new DatasourceDTO();
             BeanUtils.copyBean(datasource, engine);
             datasourceRequest.setDatasource(datasource);
             provider.checkStatus(datasourceRequest);
@@ -155,23 +156,23 @@ public class EngineManage {
         }
     }
 
-    public void initLocalDataSource(){
+    public void initLocalDataSource() {
         QueryWrapper<CoreDatasource> queryWrapper = new QueryWrapper<>();
-        queryWrapper.eq("id",985188400292302848L);
-        queryWrapper.ne("create_time",1715053684176L);
-        if(!datasourceMapper.exists(queryWrapper) && !ModelUtils.isDesktop()){
+        queryWrapper.eq("id", 985188400292302848L);
+        queryWrapper.ne("create_time", 1715053684176L);
+        if (!datasourceMapper.exists(queryWrapper) && !ModelUtils.isDesktop()) {
             Pattern WITH_SQL_FRAGMENT = Pattern.compile("jdbc:mysql://(.*):(\\d+)/(.*)\\?(.*)");
             Matcher matcher = WITH_SQL_FRAGMENT.matcher(env.getProperty("spring.datasource.url"));
             if (!matcher.find()) {
                 return;
             }
             Map configuration = new HashMap<>();
-            configuration.put("dataBase",matcher.group(3));
-            configuration.put("username",env.getProperty("spring.datasource.username"));
-            configuration.put("password",env.getProperty("spring.datasource.password"));
-            configuration.put("host",matcher.group(1));
-            configuration.put("port",Integer.valueOf(matcher.group(2)));
-            configuration.put("extraParams","");
+            configuration.put("dataBase", matcher.group(3));
+            configuration.put("username", env.getProperty("spring.datasource.username"));
+            configuration.put("password", env.getProperty("spring.datasource.password"));
+            configuration.put("host", matcher.group(1));
+            configuration.put("port", Integer.valueOf(matcher.group(2)));
+            configuration.put("extraParams", "");
 
             CoreDatasource initDatasource = new CoreDatasource();
             initDatasource.setId(985188400292302848L);

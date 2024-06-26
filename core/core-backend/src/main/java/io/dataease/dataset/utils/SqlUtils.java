@@ -1,9 +1,9 @@
 package io.dataease.dataset.utils;
 
 import com.google.common.collect.ImmutableList;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.exception.DEException;
 import org.apache.calcite.config.Lex;

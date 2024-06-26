@@ -1,10 +1,10 @@
 package io.dataease.engine.trans;
 
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.filter.FilterTreeItem;
 import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.extensions.view.model.SQLObj;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.constant.SqlPlaceholderConstants;

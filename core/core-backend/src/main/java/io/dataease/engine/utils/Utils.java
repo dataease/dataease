@@ -1,11 +1,11 @@
 package io.dataease.engine.utils;
 
 import io.dataease.api.ds.vo.DatasourceConfiguration;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.i18n.Translator;

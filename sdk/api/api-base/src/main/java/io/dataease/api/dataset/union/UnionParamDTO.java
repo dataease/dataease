@@ -1,6 +1,6 @@
 package io.dataease.api.dataset.union;
 
-import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.view.model.SQLObj;
 import lombok.Data;
 

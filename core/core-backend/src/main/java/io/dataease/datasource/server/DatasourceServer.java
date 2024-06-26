@@ -7,7 +7,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
-import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
 import io.dataease.api.ds.vo.*;
@@ -16,7 +15,6 @@ import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.constant.DataSourceType;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.*;
@@ -31,9 +29,9 @@ import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.ApiUtils;
 import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.provider.ExcelUtils;
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.*;
 import io.dataease.i18n.Translator;
 import io.dataease.job.schedule.CheckDsStatusJob;
 import io.dataease.job.schedule.ScheduleManager;
@@ -249,23 +247,24 @@ public class DatasourceServer implements DatasourceApi {
         }
         preCheckDs(dataSourceDTO);
         dataSourceDTO.setId(IDUtils.snowID());
+        dataSourceDTO.setCreateTime(System.currentTimeMillis());
+        dataSourceDTO.setUpdateTime(System.currentTimeMillis());
+        try {
+            checkDatasourceStatus(dataSourceDTO);
+        } catch (Exception ignore) {
+            dataSourceDTO.setStatus("Error");
+        }
+        dataSourceDTO.setTaskStatus(TaskStatus.WaitingForExecution.name());
+        dataSourceDTO.setCreateBy(AuthUtils.getUser().getUserId().toString());
+        dataSourceDTO.setUpdateBy(AuthUtils.getUser().getUserId());
+
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
-        coreDatasource.setCreateTime(System.currentTimeMillis());
-        coreDatasource.setUpdateTime(System.currentTimeMillis());
-        try {
-            checkDatasourceStatus(coreDatasource);
-        } catch (Exception ignore) {
-            coreDatasource.setStatus("Error");
-        }
-        coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        coreDatasource.setCreateBy(AuthUtils.getUser().getUserId().toString());
-        coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
         dataSourceManage.innerSave(coreDatasource);
 
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(coreDatasource);
+            datasourceRequest.setDatasource(dataSourceDTO);
             List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
             for (DatasetTableDTO table : tables) {
                 datasourceRequest.setTable(table.getTableName());
@@ -298,7 +297,7 @@ public class DatasourceServer implements DatasourceApi {
             datasourceTaskServer.insert(coreDatasourceTask);
             datasourceSyncManage.addSchedule(coreDatasourceTask);
             DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(coreDatasource);
+            datasourceRequest.setDatasource(dataSourceDTO);
             List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
             checkName(tables.stream().map(DatasetTableDTO::getName).collect(Collectors.toList()));
             for (DatasetTableDTO api : tables) {
@@ -325,25 +324,26 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(pk = dataSourceDTO.getId())) {
             return save(dataSourceDTO);
         }
-        CoreDatasource sourceData = datasourceMapper.selectById(pk);
+        DatasourceDTO sourceData = dataSourceManage.getDs(pk);
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         dataSourceDTO.setPid(sourceData.getPid());
         preCheckDs(dataSourceDTO);
 
+        dataSourceDTO.setUpdateTime(System.currentTimeMillis());
+        dataSourceDTO.setUpdateBy(AuthUtils.getUser().getUserId());
+        try {
+            checkDatasourceStatus(dataSourceDTO);
+        } catch (Exception e) {
+            dataSourceDTO.setStatus("Error");
+        }
+
         CoreDatasource requestDatasource = new CoreDatasource();
         BeanUtils.copyBean(requestDatasource, dataSourceDTO);
-        requestDatasource.setUpdateTime(System.currentTimeMillis());
-        requestDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
-        try {
-            checkDatasourceStatus(requestDatasource);
-        } catch (Exception e) {
-            requestDatasource.setStatus("Error");
-        }
 
         DatasourceRequest sourceTableRequest = new DatasourceRequest();
         sourceTableRequest.setDatasource(sourceData);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(requestDatasource);
+        datasourceRequest.setDatasource(dataSourceDTO);
         List<String> toCreateTables = new ArrayList<>();
         List<String> toDeleteTables = new ArrayList<>();
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
@@ -474,7 +474,7 @@ public class DatasourceServer implements DatasourceApi {
         dataSourceDTO.setConfiguration(new String(Base64.getDecoder().decode(dataSourceDTO.getConfiguration())));
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
-        checkDatasourceStatus(coreDatasource);
+        checkDatasourceStatus(dataSourceDTO);
         DatasourceDTO result = new DatasourceDTO();
         result.setStatus(coreDatasource.getStatus());
         return result;
@@ -486,7 +486,7 @@ public class DatasourceServer implements DatasourceApi {
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(coreDatasource);
+        datasourceRequest.setDatasource(dataSourceDTO);
         return calciteProvider.getSchema(datasourceRequest);
     }
 
@@ -592,9 +592,11 @@ public class DatasourceServer implements DatasourceApi {
         if (ObjectUtils.isEmpty(coreDatasource)) {
             return;
         }
+        DatasourceDTO datasourceDTO = new DatasourceDTO();
+        BeanUtils.copyBean(datasourceDTO, coreDatasource);
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(coreDatasource);
+            datasourceRequest.setDatasource(datasourceDTO);
             List<DatasetTableDTO> tables = ExcelUtils.getTables(datasourceRequest);
             for (DatasetTableDTO table : tables) {
                 datasourceRequest.setTable(table.getTableName());
@@ -607,7 +609,7 @@ public class DatasourceServer implements DatasourceApi {
         }
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.API.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(coreDatasource);
+            datasourceRequest.setDatasource(datasourceDTO);
             List<DatasetTableDTO> tables = ApiUtils.getTables(datasourceRequest);
             for (DatasetTableDTO api : tables) {
                 datasourceRequest.setTable(api.getTableName());
@@ -677,7 +679,7 @@ public class DatasourceServer implements DatasourceApi {
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         try {
-            checkDatasourceStatus(coreDatasource);
+            checkDatasourceStatus(datasourceDTO);
             calciteProvider.updateDsPoolAfterCheckStatus(datasourceDTO);
         } catch (Exception e) {
             coreDatasource.setStatus("Error");
@@ -736,8 +738,10 @@ public class DatasourceServer implements DatasourceApi {
     @Override
     public List<DatasetTableDTO> getTables(DatasetTableDTO datasetTableDTO) throws DEException {
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasetTableDTO.getDatasourceId());
+        DatasourceDTO datasourceDTO = new DatasourceDTO();
+        BeanUtils.copyBean(datasourceDTO, coreDatasource);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(coreDatasource);
+        datasourceRequest.setDatasource(datasourceDTO);
         if (coreDatasource.getType().equals("API")) {
             List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
             datasetTableDTOS.forEach(datasetTableDTO1 -> {
@@ -761,9 +765,9 @@ public class DatasourceServer implements DatasourceApi {
         String datasourceId = req.get("datasourceId");
         CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(coreDatasource);
+        datasourceRequest.setDatasource(transDTO(coreDatasource));
         if (coreDatasource.getType().equals("API") || coreDatasource.getType().equals("Excel")) {
-            datasourceRequest.setDatasource(engineManage.getDeEngine());
+            datasourceRequest.setDatasource(transDTO(engineManage.getDeEngine()));
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, engineManage.getDeEngine());
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
@@ -809,7 +813,7 @@ public class DatasourceServer implements DatasourceApi {
             CoreDatasource coreDatasource = datasourceMapper.selectById(datasourceId);
             if (coreDatasource != null) {
                 DatasourceRequest datasourceRequest = new DatasourceRequest();
-                datasourceRequest.setDatasource(coreDatasource);
+                datasourceRequest.setDatasource(transDTO(coreDatasource));
                 List<DatasetTableDTO> datasetTableDTOS = ExcelUtils.getTables(datasourceRequest);
                 List<ExcelSheetData> excelSheetDataList = new ArrayList<>();
                 for (ExcelSheetData sheet : excelFileData.getSheets()) {
@@ -877,7 +881,7 @@ public class DatasourceServer implements DatasourceApi {
         }
     }
 
-    public void checkDatasourceStatus(CoreDatasource coreDatasource) {
+    public void checkDatasourceStatus(DatasourceDTO coreDatasource) {
         if (coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name()) || coreDatasource.getType().equals(DatasourceConfiguration.DatasourceType.folder.name())) {
             return;
         }
@@ -944,7 +948,7 @@ public class DatasourceServer implements DatasourceApi {
         IPage<CoreDatasourceTaskLogDTO> pager = taskLogExtMapper.pager(page, wrapper);
         CoreDatasource coreDatasource = datasourceMapper.selectById(dsId);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
-        datasourceRequest.setDatasource(coreDatasource);
+        datasourceRequest.setDatasource(transDTO(coreDatasource));
         List<DatasetTableDTO> datasetTableDTOS = ApiUtils.getTables(datasourceRequest);
         for (int i = 0; i < pager.getRecords().size(); i++) {
             for (int i1 = 0; i1 < datasetTableDTOS.size(); i1++) {
@@ -1028,5 +1032,11 @@ public class DatasourceServer implements DatasourceApi {
         CoreDsFinishPage coreDsFinishPage = new CoreDsFinishPage();
         coreDsFinishPage.setId(AuthUtils.getUser().getUserId());
         coreDsFinishPageMapper.insert(coreDsFinishPage);
+    }
+
+    private DatasourceDTO transDTO(CoreDatasource record) {
+        DatasourceDTO datasourceDTO = new DatasourceDTO();
+        BeanUtils.copyBean(datasourceDTO, record);
+        return datasourceDTO;
     }
 }

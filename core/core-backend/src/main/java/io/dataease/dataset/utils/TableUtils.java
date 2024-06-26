@@ -1,8 +1,8 @@
 package io.dataease.dataset.utils;
 
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.utils.Md5Utils;
 import org.apache.calcite.avatica.util.Quoting;
 import org.apache.commons.lang3.StringUtils;

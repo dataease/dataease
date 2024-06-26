@@ -2,7 +2,7 @@ package io.dataease.api.dataset.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
-import io.dataease.api.ds.vo.DatasourceDTO;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import lombok.Data;
 
 import java.io.Serial;

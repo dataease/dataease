@@ -3,13 +3,13 @@ package io.dataease.datasource.server;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.api.ds.DatasourceDriverApi;
 
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.DriveDTO;
 import io.dataease.api.ds.vo.DriveJarDTO;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.entity.CoreDriverJar;
 import io.dataease.datasource.dao.auto.mapper.CoreDriverJarMapper;
 import io.dataease.datasource.dao.auto.mapper.CoreDriverMapper;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.FileUtils;
 import io.dataease.utils.Md5Utils;

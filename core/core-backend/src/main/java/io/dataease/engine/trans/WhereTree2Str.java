@@ -1,11 +1,11 @@
 package io.dataease.engine.trans;
 
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeItem;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;

@@ -1,4 +1,4 @@
-package io.dataease.api.ds.vo;
+package io.dataease.extensions.datasource.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;

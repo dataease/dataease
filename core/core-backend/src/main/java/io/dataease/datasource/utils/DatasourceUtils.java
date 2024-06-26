@@ -1,7 +1,7 @@
 package io.dataease.datasource.utils;
 
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.i18n.Translator;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

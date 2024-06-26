@@ -1,10 +1,10 @@
 package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;

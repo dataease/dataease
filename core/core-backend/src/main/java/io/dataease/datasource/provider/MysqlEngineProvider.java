@@ -2,12 +2,12 @@ package io.dataease.datasource.provider;
 
 
 import io.dataease.api.ds.vo.DatasourceConfiguration;
-import io.dataease.api.ds.vo.TableField;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.type.Mysql;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -30,7 +30,7 @@ public class MysqlEngineProvider extends EngineProvider {
     public void exec(EngineRequest engineRequest) throws Exception {
         DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), Mysql.class);
         int queryTimeout = configuration.getQueryTimeout();
-        CoreDatasource datasource = new CoreDatasource();
+        DatasourceDTO datasource = new DatasourceDTO();
         BeanUtils.copyBean(datasource, engineRequest.getEngine());
         try (Connection connection = getConnection(datasource); Statement stat = getStatement(connection, queryTimeout)) {
             PreparedStatement preparedStatement = connection.prepareStatement(engineRequest.getQuery());
@@ -90,7 +90,6 @@ public class MysqlEngineProvider extends EngineProvider {
         String dropTableSql = "DROP TABLE IF EXISTS `TABLE_NAME`".replace("TABLE_NAME", TableUtils.tmpName(name));
         return replaceTableSql + ";" + dropTableSql;
     }
-
 
     @Override
     public String createTableSql(String tableName, List<TableField> tableFields, CoreDeEngine engine) {

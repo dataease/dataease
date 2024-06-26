@@ -1,28 +1,18 @@
 package io.dataease.chart.charts.impl.bar;
 
-import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.chart.charts.impl.YoyChartHandler;
-import io.dataease.chart.constant.ChartConstants;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
-import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.datasource.provider.CalciteProvider;
-import io.dataease.datasource.request.DatasourceRequest;
-import io.dataease.engine.sql.SQLProvider;
-import io.dataease.engine.trans.ExtWhere2Str;
-import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.dto.DatasourceRequest;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.dto.*;
-import io.dataease.chart.charts.impl.DefaultChartHandler;
 import io.dataease.extensions.view.model.SQLMeta;
-import io.dataease.extensions.view.util.FieldUtil;
-import io.dataease.utils.JsonUtil;
-import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
-import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
 
 @Component
 public class BarHandler extends YoyChartHandler {

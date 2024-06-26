@@ -2,9 +2,9 @@ package io.dataease.api.ds;
 
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.vo.DriveDTO;
 import io.dataease.api.ds.vo.DriveJarDTO;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
