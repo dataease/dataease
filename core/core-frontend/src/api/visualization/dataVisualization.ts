@@ -20,14 +20,18 @@ export const findCopyResource = async (dvId, busiFlag): Promise<IResponse> => {
   return request.get({ url: '/dataVisualization/findCopyResource/' + dvId + '/' + busiFlag })
 }
 
-export const findById = async (dvId, busiFlag, source = 'main'): Promise<IResponse> => {
+export const findById = async (
+  dvId,
+  busiFlag,
+  attachInfo = { source: 'main' }
+): Promise<IResponse> => {
   let busiFlagResult = busiFlag
   if (!busiFlagResult) {
     await findDvType(dvId).then(res => {
       busiFlagResult = res.data
     })
   }
-  const data = { id: dvId, busiFlag: busiFlagResult, source }
+  const data = { id: dvId, busiFlag: busiFlagResult, ...attachInfo }
   return request.post({ url: '/dataVisualization/findById', data })
 }
 

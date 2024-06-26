@@ -36,10 +36,10 @@ import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
-import io.dataease.visualization.dao.auto.mapper.VisualizationReportFilterMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
+import io.dataease.xpack.base.report.dao.auto.mapper.VisualizationReportFilterMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -124,9 +124,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
             BeanUtils.copyBean(watermarkVO, watermark);
             result.setWatermarkInfo(watermarkVO);
 
-            if(DataVisualizationConstants.QUERY_SOURCE.REPORT.equals(request.getSource()) && request.getReportId() != null){
+            if(DataVisualizationConstants.QUERY_SOURCE.REPORT.equals(request.getSource()) && request.getTaskId() != null){
                 //获取定时报告过自定义过滤组件信息
-                List<VisualizationReportFilterVO> filterVOS = extDataVisualizationMapper.queryReportFilter(dvId,request.getReportId());
+                List<VisualizationReportFilterVO> filterVOS = extDataVisualizationMapper.queryReportFilter(dvId,request.getTaskId());
                 if (!CollectionUtils.isEmpty(filterVOS)) {
                     Map<Long, VisualizationReportFilterVO> reportFilterInfo = filterVOS.stream().collect(Collectors.toMap(VisualizationReportFilterVO::getFilterId, filterVo ->filterVo));
                     result.setReportFilterInfo(reportFilterInfo);

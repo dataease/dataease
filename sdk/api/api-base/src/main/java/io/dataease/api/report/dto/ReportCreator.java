@@ -2,6 +2,7 @@ package io.dataease.api.report.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import io.dataease.api.visualization.vo.VisualizationReportFilterVO;
 import lombok.Data;
 
 import java.io.Serial;
@@ -51,4 +52,6 @@ public class ReportCreator implements Serializable {
     private Long startTime;
 
     private Long endTime;
+
+    private List<VisualizationReportFilterVO> reportFilter;
 }

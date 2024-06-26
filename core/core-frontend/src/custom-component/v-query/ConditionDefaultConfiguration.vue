@@ -205,7 +205,7 @@ defineExpose({
 </script>
 
 <template>
-  <div class="list-item top-item" v-if="curComponent.displayType === '8'">
+  <div class="list-item top-item" v-if="curComponent.displayType === '8'" @click.stop>
     <div class="label">设置默认值</div>
     <div class="value">
       <div class="condition-type">

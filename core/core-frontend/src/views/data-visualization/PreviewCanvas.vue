@@ -121,7 +121,7 @@ const XpackLoaded = () => p(true)
 onMounted(async () => {
   await new Promise(r => (p = r))
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
-  const { dvType, callBackFlag } = router.currentRoute.value.query
+  const { dvType, callBackFlag, taskId } = router.currentRoute.value.query
   if (dvId) {
     loadCanvasDataAsync(dvId, dvType)
     return
