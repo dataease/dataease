@@ -30,10 +30,11 @@ public interface DataVisualizationApi {
      *
      * @return
      */
-    @GetMapping("/findById/{dvId}/{busiFlag}")
-    @DePermit(value = {"#p0+':read'"}, busiFlag = "#p1")
+    @PostMapping("/findById")
+    @DePermit(value = {"#p0.id+':read'"}, busiFlag = "#p0.busiFlag")
     @Operation(summary = "查询可视化资源")
-    DataVisualizationVO findById(@PathVariable("dvId") Long dvId,@PathVariable("busiFlag") String busiFlag);
+    DataVisualizationVO findById(@RequestBody DataVisualizationBaseRequest request);
+
 
     @GetMapping("/findCopyResource/{dvId}/{busiFlag}")
     @Operation(summary = "查询临时复制资源")
