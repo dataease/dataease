@@ -12,7 +12,11 @@ import {
   hexColorToRGBA,
   parseJson
 } from '@/views/chart/components/js/util'
-import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  handleGeoJson,
+  mapRendered,
+  mapRendering
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { cloneDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
@@ -133,7 +137,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     options = this.setupOptions(chart, options, context)
     const view = new Choropleth(container, options)
     this.configZoomButton(chart, view)
+    mapRendering(container)
     view.once('loaded', () => {
+      mapRendered(container)
       view.scene.map['keyboard'].disable()
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
         const data = ev.feature.properties
@@ -147,7 +153,6 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         })
       })
     })
-
     return view
   }
 

@@ -12,6 +12,7 @@ import { GaodeMap } from '@antv/l7-maps'
 import { Scene } from '@antv/l7-scene'
 import { LineLayer } from '@antv/l7-layers'
 import { queryMapKeyApi } from '@/api/setting/sysParameter'
+import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
 const { t } = useI18n()
 
 /**
@@ -77,6 +78,10 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
         zoom: 2.5
       })
     })
+    mapRendering(container)
+    scene.once('loaded', () => {
+      mapRendered(container)
+    })
     if (xAxis?.length < 2 || xAxisExt?.length < 2) {
       return new L7Wrapper(scene, undefined)
     }
@@ -115,6 +120,9 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
         })
         .color(flowLineStyle.sourceColor)
     }
+    config.once('inited', () => {
+      mapRendered(container)
+    })
     this.configZoomButton(chart, scene)
     return new L7Wrapper(scene, config)
   }
