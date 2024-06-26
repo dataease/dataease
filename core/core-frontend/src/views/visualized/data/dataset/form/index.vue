@@ -1908,10 +1908,8 @@ const getDsIconName = data => {
     >
       <union-edit ref="fieldUnion" :editArr="state.editArr" />
       <template #footer>
-        <el-button secondary @click="closeEditUnion()">{{ t('dataset.cancel') }} </el-button>
-        <el-button type="primary" @click="confirmEditUnion()"
-          >{{ t('dataset.confirm') }}
-        </el-button>
+        <el-button secondary @click="closeEditUnion">{{ t('dataset.cancel') }} </el-button>
+        <el-button type="primary" @click="confirmEditUnion">{{ t('dataset.confirm') }} </el-button>
       </template>
     </el-drawer>
   </div>

@@ -135,6 +135,9 @@ interface Node {
   sqlVariableDetails: string
   currentDsFields: Field[]
   children?: Node[]
+  confirm?: boolean
+  isShadow?: boolean
+  flag?: string
 }
 
 interface Field {

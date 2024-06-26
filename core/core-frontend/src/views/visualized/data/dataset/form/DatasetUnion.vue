@@ -16,7 +16,6 @@ import { useAppearanceStoreWithOut } from '@/store/modules/appearance'
 const appearanceStore = useAppearanceStoreWithOut()
 const state = reactive({
   nodeList: [],
-  pathList: [],
   visualNode: null,
   visualNodeParent: null,
   visualPath: null
