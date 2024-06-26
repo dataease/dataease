@@ -12,6 +12,7 @@ import io.dataease.chart.server.ChartDataServer;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.dao.auto.entity.CoreExportTask;
 import io.dataease.exportCenter.dao.auto.mapper.CoreExportTaskMapper;
+import io.dataease.license.config.XpackInteract;
 import io.dataease.system.manage.SysParameterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.server.DataVisualizationServer;
@@ -177,14 +178,11 @@ public class ExportCenterManage {
         exportTasks.forEach(exportTask -> {
             ExportTaskDTO exportTaskDTO = new ExportTaskDTO();
             BeanUtils.copyBean(exportTaskDTO, exportTask);
-            if (status.equalsIgnoreCase("ALL")) {
+            if (status.equalsIgnoreCase("ALL") || status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
                 setExportFromAbsName(exportTaskDTO);
             }
-            if (status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
-                setExportFromAbsName(exportTaskDTO);
-            }
-            if (status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
-                setOrgName(exportTaskDTO);
+            if (status.equalsIgnoreCase("ALL") || status.equalsIgnoreCase(exportTaskDTO.getExportStatus())) {
+                proxy().setOrg(exportTaskDTO);
             }
             result.add(exportTaskDTO);
         });
@@ -192,10 +190,11 @@ public class ExportCenterManage {
         return result;
     }
 
-    private void setOrgName(ExportTaskDTO exportTaskDTO) {
-        if (exportTaskDTO.getExportFromType().equalsIgnoreCase("chart")) {
-            exportTaskDTO.setOrgName(dataVisualizationServer.getAbsPath(exportTaskDTO.getExportFrom()));
-        }
+    @XpackInteract(value = "exportCenter", before = false)
+    public void setOrg(ExportTaskDTO exportTaskDTO) {}
+
+    private ExportCenterManage proxy() {
+        return CommonBeanFactory.getBean(ExportCenterManage.class);
     }
 
     private void setExportFromAbsName(ExportTaskDTO exportTaskDTO) {
