@@ -49,7 +49,7 @@ public interface ExtDataVisualizationMapper {
 
     List<VisualizationViewTableDTO> getVisualizationViewDetails(@Param("dvId") Long dvId);
 
-    List<VisualizationReportFilterVO> queryReportFilter(@Param("dvId") Long dvId,@Param("reportId") Long reportId);
+    List<VisualizationReportFilterVO> queryReportFilter(@Param("dvId") Long dvId,@Param("taskId") Long taskId);
 
 
 }

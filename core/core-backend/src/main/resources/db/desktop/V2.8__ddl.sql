@@ -34,10 +34,11 @@ CREATE TABLE `core_share_ticket`
     `access_time` bigint DEFAULT NULL COMMENT '首次访问时间',
     PRIMARY KEY (`id`)
 ) COMMENT ='分享Ticket表';
-
 DROP TABLE IF EXISTS `visualization_report_filter`;
 CREATE TABLE `visualization_report_filter` (
-                                               `id` bigint NOT NULL COMMENT '报告ID',
+                                               `id` bigint NOT NULL COMMENT 'id',
+                                               `report_id` bigint DEFAULT NULL COMMENT '定时报告id',
+                                               `task_id` bigint DEFAULT NULL COMMENT '任务id',
                                                `resource_id` bigint DEFAULT NULL COMMENT '资源id',
                                                `dv_type` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '资源类型',
                                                `component_id` bigint DEFAULT NULL COMMENT '组件id',

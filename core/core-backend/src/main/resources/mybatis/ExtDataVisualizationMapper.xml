@@ -406,17 +406,9 @@
 
     <select id="queryReportFilter" resultType="io.dataease.api.visualization.vo.VisualizationReportFilterVO">
         SELECT
-            `id`,
-            `resource_id`,
-            `dv_type`,
-            `component_id`,
-            `filter_id`,
-            `filter_info`,
-            `filter_version`,
-            `create_time`,
-            `create_user`
+            `id`, `report_id`, `resource_id`, `dv_type`, `component_id`, `filter_id`, `filter_info`, `filter_version`, `create_time`, `create_user`
         FROM
             visualization_report_filter
-        where visualization_report_filter.resource_id = #{dvId} and visualization_report_filter.id = #{reportId}
+        where visualization_report_filter.resource_id = #{dvId} and visualization_report_filter.task_id = #{taskId}
     </select>
 </mapper>
