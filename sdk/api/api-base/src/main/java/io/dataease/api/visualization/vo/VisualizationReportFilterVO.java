@@ -13,13 +13,22 @@ import java.io.Serializable;
  * @since 2024-06-25
  */
 public class VisualizationReportFilterVO implements Serializable {
-
     private static final long serialVersionUID = 1L;
 
     /**
-     * 报告ID
+     * id
      */
     private Long id;
+
+    /**
+     * 定时报告id
+     */
+    private Long reportId;
+
+    /**
+     * 任务id
+     */
+    private Long taskId;
 
     /**
      * 资源id
@@ -67,6 +76,22 @@ public class VisualizationReportFilterVO implements Serializable {
 
     public void setId(Long id) {
         this.id = id;
+    }
+
+    public Long getReportId() {
+        return reportId;
+    }
+
+    public void setReportId(Long reportId) {
+        this.reportId = reportId;
+    }
+
+    public Long getTaskId() {
+        return taskId;
+    }
+
+    public void setTaskId(Long taskId) {
+        this.taskId = taskId;
     }
 
     public Long getResourceId() {
@@ -136,15 +161,17 @@ public class VisualizationReportFilterVO implements Serializable {
     @Override
     public String toString() {
         return "VisualizationReportFilter{" +
-        "id = " + id +
-        ", resourceId = " + resourceId +
-        ", dvType = " + dvType +
-        ", componentId = " + componentId +
-        ", filterId = " + filterId +
-        ", filterInfo = " + filterInfo +
-        ", filterVersion = " + filterVersion +
-        ", createTime = " + createTime +
-        ", createUser = " + createUser +
-        "}";
+                "id = " + id +
+                ", reportId = " + reportId +
+                ", taskId = " + taskId +
+                ", resourceId = " + resourceId +
+                ", dvType = " + dvType +
+                ", componentId = " + componentId +
+                ", filterId = " + filterId +
+                ", filterInfo = " + filterInfo +
+                ", filterVersion = " + filterVersion +
+                ", createTime = " + createTime +
+                ", createUser = " + createUser +
+                "}";
     }
 }

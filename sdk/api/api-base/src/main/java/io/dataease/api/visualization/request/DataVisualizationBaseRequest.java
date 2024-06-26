@@ -34,6 +34,9 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
     // 定时报告id
     private Long reportId;
 
+    // 定时报告任务id
+    private Long taskId;
+
 
     public DataVisualizationBaseRequest(Long id,String busiFlag) {
         this.busiFlag = busiFlag;
