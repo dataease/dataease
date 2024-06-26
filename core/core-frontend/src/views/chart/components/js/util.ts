@@ -238,12 +238,19 @@ export const quotaViews = ['label', 'richTextView', 'indicator', 'gauge', 'liqui
 
 export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, options: O): O {
   const { data } = options as unknown as Options
+  const isChartMix = chart.type.includes('chart-mix')
   if (!data?.length) {
     return options
   }
   const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
   if (strategy === 'ignoreData') {
-    handleIgnoreData(data)
+    if (isChartMix) {
+      for (let i = 0; i < data.length; i++) {
+        handleIgnoreData(data[i] as Record<string, any>[])
+      }
+    } else {
+      handleIgnoreData(data)
+    }
     return options
   }
   const { yAxis, xAxisExt, extStack } = chart
@@ -252,7 +259,13 @@ export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, opt
     case 'breakLine': {
       if (multiDimension) {
         // 多维度保持空
-        handleBreakLineMultiDimension(data)
+        if (isChartMix) {
+          for (let i = 0; i < data.length; i++) {
+            handleBreakLineMultiDimension(data[i] as Record<string, any>[])
+          }
+        } else {
+          handleBreakLineMultiDimension(data)
+        }
       }
       return {
         ...options,
@@ -262,10 +275,22 @@ export function handleEmptyDataStrategy<O extends PickOptions>(chart: Chart, opt
     case 'setZero': {
       if (multiDimension) {
         // 多维度置0
-        handleSetZeroMultiDimension(data)
+        if (isChartMix) {
+          for (let i = 0; i < data.length; i++) {
+            handleSetZeroMultiDimension(data[i] as Record<string, any>[])
+          }
+        } else {
+          handleSetZeroMultiDimension(data)
+        }
       } else {
         // 单维度置0
-        handleSetZeroSingleDimension(data)
+        if (isChartMix) {
+          for (let i = 0; i < data.length; i++) {
+            handleSetZeroSingleDimension(data[i] as Record<string, any>[])
+          }
+        } else {
+          handleSetZeroSingleDimension(data)
+        }
       }
       break
     }
