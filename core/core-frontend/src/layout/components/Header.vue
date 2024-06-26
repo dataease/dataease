@@ -45,8 +45,8 @@ const activeIndex = computed(() => {
 
 const permissionStore = usePermissionStore()
 const ExportExcelRef = ref()
-const downloadClick = () => {
-  ExportExcelRef.value.init()
+const downloadClick = params => {
+  ExportExcelRef.value.init(params)
 }
 const routers: any[] = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
 const showSystem = ref(false)
@@ -94,7 +94,9 @@ onMounted(() => {
   initAiBase()
   useEmitt({
     name: 'data-export-center',
-    callback: downloadClick
+    callback: function (params) {
+      ExportExcelRef.value.init(params)
+    }
   })
 })
 </script>

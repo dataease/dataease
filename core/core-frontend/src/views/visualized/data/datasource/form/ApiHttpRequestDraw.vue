@@ -282,7 +282,8 @@ const validate = () => {
         return
       }
       cancelMap['/datasource/checkApiDatasource']?.()
-      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)) })
+      const params = Base64.encode(JSON.stringify(paramsList))
+      checkApiItem({ data: Base64.encode(JSON.stringify(apiItem)), paramsList: params })
         .then(response => {
           apiItem.jsonFields = response.data.jsonFields
           apiItem.fields = []
@@ -302,6 +303,17 @@ const closeEditItem = () => {
 }
 
 const disabledByChildren = item => {
+  if (item.hasOwnProperty('children') && item.children.length > 0) {
+    return true
+  } else {
+    return false
+  }
+}
+
+const disabledChangeFieldByChildren = item => {
+  if (apiItem.type == 'params') {
+    return true
+  }
   if (item.hasOwnProperty('children') && item.children.length > 0) {
     return true
   } else {
@@ -602,7 +614,7 @@ defineExpose({
               <template #default="scope">
                 <el-select
                   v-model="scope.row.deExtractType"
-                  :disabled="disabledByChildren(scope.row)"
+                  :disabled="disabledChangeFieldByChildren(scope.row)"
                   class="select-type"
                   style="display: inline-block; width: 120px"
                 >

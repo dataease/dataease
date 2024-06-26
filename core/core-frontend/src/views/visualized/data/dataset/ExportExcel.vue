@@ -105,8 +105,11 @@ const handleClick = tab => {
     })
 }
 
-const init = () => {
+const init = params => {
   drawer.value = true
+  if (params && params.activeName !== undefined) {
+    activeName.value = params.activeName
+  }
   handleClick()
   timer = setInterval(() => {
     if (activeName.value === 'IN_PROGRESS') {
@@ -150,12 +153,16 @@ const taskExportTopicCall = task => {
     openMessageLoading(
       JSON.parse(task).exportFromName + ' 导出成功，前往',
       'success',
-      callbackExport
+      callbackExportSuc
     )
     return
   }
   if (JSON.parse(task).exportStatus === 'FAILED') {
-    openMessageLoading(JSON.parse(task).exportFromName + ' 导出失败，前往', 'error', callbackExport)
+    openMessageLoading(
+      JSON.parse(task).exportFromName + ' 导出失败，前往',
+      'error',
+      callbackExportError
+    )
   }
 }
 
@@ -185,8 +192,12 @@ const openMessageLoading = (text, type = 'success', cb) => {
   })
 }
 
-const callbackExport = () => {
-  useEmitt().emitter.emit('data-export-center')
+const callbackExportError = () => {
+  useEmitt().emitter.emit('data-export-center', { activeName: 'FAILED' })
+}
+
+const callbackExportSuc = () => {
+  useEmitt().emitter.emit('data-export-center', { activeName: 'SUCCESS' })
 }
 
 const downLoadAll = () => {
@@ -424,17 +435,20 @@ defineExpose({
         </el-table-column>
         <el-table-column fixed="right" prop="operate" width="90" :label="$t('commons.operating')">
           <template #default="scope">
-            <el-button
-              v-if="scope.row.exportStatus === 'SUCCESS'"
-              text
-              @click="downloadClick(scope.row)"
-            >
-              <template #icon>
-                <el-icon>
-                  <Icon name="dv-preview-download"></Icon>
-                </el-icon>
-              </template>
-            </el-button>
+            <el-tooltip effect="dark" content="下载" placement="top">
+              <el-button
+                v-if="scope.row.exportStatus === 'SUCCESS'"
+                text
+                @click="downloadClick(scope.row)"
+              >
+                <template #icon>
+                  <el-icon>
+                    <Icon name="dv-preview-download"></Icon>
+                  </el-icon>
+                </template>
+              </el-button>
+            </el-tooltip>
+
             <el-tooltip effect="dark" content="重新导出" placement="top">
               <el-button v-if="scope.row.exportStatus === 'FAILED'" text @click="retry(scope.row)">
                 <template #icon>
@@ -443,11 +457,13 @@ defineExpose({
               </el-button>
             </el-tooltip>
 
-            <el-button text @click="deleteField(scope.row)">
-              <template #icon>
-                <Icon name="de-delete"></Icon>
-              </template>
-            </el-button>
+            <el-tooltip effect="dark" content="删除" placement="top">
+              <el-button text @click="deleteField(scope.row)">
+                <template #icon>
+                  <Icon name="de-delete"></Icon>
+                </template>
+              </el-button>
+            </el-tooltip>
           </template>
         </el-table-column>
         <template #empty>

@@ -366,7 +366,7 @@ const openMessageLoading = cb => {
 }
 
 const callbackExport = () => {
-  useEmitt().emitter.emit('data-export-center')
+  useEmitt().emitter.emit('data-export-center', { activeName: 'IN_PROGRESS' })
 }
 
 const exportAsExcel = () => {
