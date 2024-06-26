@@ -122,7 +122,7 @@ public class ChartDataManage {
         ChartViewDTO chartViewDTO = null;
 
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
-            calcData1(view, chartExtRequest, allFields, viewFields);
+            return calcData1(view, chartExtRequest, allFields, viewFields);
         }
         if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
             // 需要排除掉除类别轴以外所有的排序
