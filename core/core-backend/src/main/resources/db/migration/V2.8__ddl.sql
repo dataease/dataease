@@ -34,3 +34,17 @@ CREATE TABLE `core_share_ticket`
     `access_time` bigint DEFAULT NULL COMMENT '首次访问时间',
     PRIMARY KEY (`id`)
 ) COMMENT ='分享Ticket表';
+
+DROP TABLE IF EXISTS `visualization_report_filter`;
+CREATE TABLE `visualization_report_filter` (
+                                               `id` bigint NOT NULL COMMENT '报告ID',
+                                               `resource_id` bigint DEFAULT NULL COMMENT '资源id',
+                                               `dv_type` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '资源类型',
+                                               `component_id` bigint DEFAULT NULL COMMENT '组件id',
+                                               `filter_id` bigint DEFAULT NULL COMMENT '过滤项id',
+                                               `filter_info` longtext COLLATE utf8mb4_general_ci COMMENT '过滤组件内容',
+                                               `filter_version` int DEFAULT NULL COMMENT '过滤组件版本',
+                                               `create_time` bigint DEFAULT NULL COMMENT '创建时间',
+                                               `create_user` varchar(255) COLLATE utf8mb4_general_ci DEFAULT NULL COMMENT '创建人',
+                                               PRIMARY KEY (`id`)
+);
