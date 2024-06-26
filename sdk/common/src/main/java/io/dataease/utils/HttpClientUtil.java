@@ -8,10 +8,7 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.client.entity.EntityBuilder;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpDelete;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.methods.HttpPatch;
-import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.*;
 import org.apache.http.config.Registry;
 import org.apache.http.config.RegistryBuilder;
 import org.apache.http.conn.HttpClientConnectionManager;
@@ -210,6 +207,41 @@ public class HttpClientUtil {
             httpPost.setEntity(requestEntity);
 
             HttpResponse response = httpClient.execute(httpPost);
+            return getResponseStr(response, config);
+        } catch (Exception e) {
+            logger.error("HttpClient查询失败", e);
+            throw new DEException(SYSTEM_INNER_ERROR.code(), "HttpClient查询失败: " + e.getMessage());
+        } finally {
+            try {
+                if (httpClient != null) {
+                    httpClient.close();
+                }
+            } catch (Exception e) {
+                logger.error("HttpClient关闭连接失败", e);
+            }
+        }
+    }
+
+    public static String put(String url, String json, HttpClientConfig config) {
+        CloseableHttpClient httpClient = null;
+        try {
+            httpClient = buildHttpClient(url);
+            HttpPut httpPut = new HttpPut(url);
+            if (config == null) {
+                config = new HttpClientConfig();
+            }
+            httpPut.setConfig(config.buildRequestConfig());
+            Map<String, String> header = config.getHeader();
+            for (String key : header.keySet()) {
+                httpPut.addHeader(key, header.get(key));
+            }
+            EntityBuilder entityBuilder = EntityBuilder.create();
+            entityBuilder.setText(json);
+            entityBuilder.setContentType(ContentType.APPLICATION_JSON);
+            HttpEntity requestEntity = entityBuilder.build();
+            httpPut.setEntity(requestEntity);
+
+            HttpResponse response = httpClient.execute(httpPut);
             return getResponseStr(response, config);
         } catch (Exception e) {
             logger.error("HttpClient查询失败", e);

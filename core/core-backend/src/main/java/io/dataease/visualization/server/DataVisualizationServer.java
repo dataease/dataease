@@ -2,6 +2,7 @@ package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.dataease.api.visualization.vo.VisualizationReportFilterVO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
@@ -35,6 +36,7 @@ import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
+import io.dataease.visualization.dao.auto.mapper.VisualizationReportFilterMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
@@ -90,9 +92,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private VisualizationWatermarkMapper watermarkMapper;
 
+    @Resource
+    private VisualizationReportFilterMapper reportFilterMapper;
+
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
-        DataVisualizationVO result = findById(dvId, busiFlag);
+        DataVisualizationVO result = findById(new DataVisualizationBaseRequest(dvId, busiFlag));
         if (result != null && result.getPid() == -1) {
             return result;
         } else {
@@ -100,10 +105,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
     }
 
-    @DeLog(id = "#p0", ot = LogOT.READ, stExp = "#p1")
+    @DeLog(id = "#p0.id", ot = LogOT.READ, stExp = "#p0.busiFlag")
     @Override
     @XpackInteract(value = "dataVisualizationServer", original = true)
-    public DataVisualizationVO findById(Long dvId, String busiFlag) {
+    public DataVisualizationVO findById(DataVisualizationBaseRequest request) {
+        Long dvId = request.getId();
+        String busiFlag = request.getBusiFlag();
         DataVisualizationVO result = extDataVisualizationMapper.findDvInfo(dvId, busiFlag);
         if (result != null) {
             //获取图表信息
@@ -116,6 +123,16 @@ public class DataVisualizationServer implements DataVisualizationApi {
             VisualizationWatermarkVO watermarkVO = new VisualizationWatermarkVO();
             BeanUtils.copyBean(watermarkVO, watermark);
             result.setWatermarkInfo(watermarkVO);
+
+            if(DataVisualizationConstants.QUERY_SOURCE.REPORT.equals(request.getSource()) && request.getReportId() != null){
+                //获取定时报告过自定义过滤组件信息
+                List<VisualizationReportFilterVO> filterVOS = extDataVisualizationMapper.queryReportFilter(dvId,request.getReportId());
+                if (!CollectionUtils.isEmpty(filterVOS)) {
+                    Map<Long, VisualizationReportFilterVO> reportFilterInfo = filterVOS.stream().collect(Collectors.toMap(VisualizationReportFilterVO::getFilterId, filterVo ->filterVo));
+                    result.setReportFilterInfo(reportFilterInfo);
+                }
+            }
+
             return result;
         } else {
             DEException.throwException("资源不存在或已经被删除...");

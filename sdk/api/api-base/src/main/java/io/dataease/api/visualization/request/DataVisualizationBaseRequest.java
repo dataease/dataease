@@ -2,8 +2,10 @@ package io.dataease.api.visualization.request;
 
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 @Data
+@NoArgsConstructor
 public class DataVisualizationBaseRequest extends DataVisualizationVO {
 
     private String opt;
@@ -24,4 +26,17 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
 
     private String templateUrl;
 
+    private String busiFlag;
+
+    // 查询来源 main=主工程 report=定时报告
+    private String source;
+
+    // 定时报告id
+    private Long reportId;
+
+
+    public DataVisualizationBaseRequest(Long id,String busiFlag) {
+        this.busiFlag = busiFlag;
+        super.setId(id);
+    }
 }

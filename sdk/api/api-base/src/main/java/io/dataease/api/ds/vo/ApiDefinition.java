@@ -28,4 +28,5 @@ public class ApiDefinition {
     private String orgName;
     private boolean showApiStructure;
     private Long updateTime;
+    private String type = "table";
 }

@@ -19,7 +19,7 @@ export const useAppStore = defineStore('app', {
     return {
       size: true, // 尺寸图标
       pageLoading: false, // 路由跳转loading
-      title: 'DataEase',
+      title: '',
       dekey: 'DataEaseKey',
       isDataEaseBi: false,
       isIframe: false,

@@ -152,6 +152,12 @@ public class DataVisualizationVO implements Serializable {
      */
     private Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
 
+
+    /**
+     * 定时报告自定义过滤数据
+     */
+    private Map<Long,VisualizationReportFilterVO> reportFilterInfo = new HashMap<>();
+
     /**
      * 水印信息
      */

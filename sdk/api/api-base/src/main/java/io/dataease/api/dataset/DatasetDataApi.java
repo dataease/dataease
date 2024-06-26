@@ -1,6 +1,7 @@
 package io.dataease.api.dataset;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
+import io.dataease.api.dataset.dto.BaseTreeNodeDTO;
 import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.EnumValueRequest;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
@@ -47,4 +48,8 @@ public interface DatasetDataApi {
     @Operation(summary = "获取数据集总数据量", hidden = true)
     @PostMapping("getDatasetCount")
     Long getDatasetCount(@RequestBody DatasetGroupInfoDTO datasetGroupInfoDTO) throws Exception;
+
+    @Operation(summary = "获取下拉树数据", hidden = true)
+    @PostMapping("getFieldTree")
+    List<BaseTreeNodeDTO> getFieldValueTree(@RequestBody List<Long> ids) throws Exception;
 }
