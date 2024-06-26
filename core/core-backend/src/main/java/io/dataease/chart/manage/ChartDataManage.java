@@ -270,7 +270,7 @@ public class ChartDataManage {
                             if (datasetTableField == null) {
                                 continue;
                             }
-                            if (Objects.equals(datasetTableField.getDatasetTableId(), view.getTableId())) {
+                            if (Objects.equals(datasetTableField.getDatasetGroupId(), view.getTableId())) {
                                 if (ObjectUtils.isNotEmpty(filterRequest.getViewIds())) {
                                     if (filterRequest.getViewIds().contains(view.getId())) {
                                         filterRequest.getDatasetTableFieldList().add(datasetTableField);
