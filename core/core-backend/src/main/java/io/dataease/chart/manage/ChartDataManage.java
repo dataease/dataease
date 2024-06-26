@@ -122,66 +122,7 @@ public class ChartDataManage {
         ChartViewDTO chartViewDTO = null;
 
         if (ObjectUtils.isNotEmpty(view.getIsPlugin()) && view.getIsPlugin()) {
-            return calcData1(view, chartExtRequest, allFields, viewFields);
-        }
-        if (StringUtils.containsIgnoreCase(view.getType(), "chart-mix")) {
-            // 需要排除掉除类别轴以外所有的排序
-            view.getXAxisExt().forEach(dto -> dto.setSort("none"));
-            view.getExtBubble().forEach(dto -> dto.setSort("none"));
-            view.getExtStack().forEach(dto -> dto.setSort("none"));
-            view.getYAxis().forEach(dto -> dto.setSort("none"));
-            view.getYAxisExt().forEach(dto -> dto.setSort("none"));
-
-            //左轴右轴需要分别调用一次查询
-            String viewJson = (String) JsonUtil.toJSONString(view);
-            Map<String, Object> data = new HashMap<>();
-            //针对左轴，删除yAxisExt
-            ChartViewDTO view1 = JsonUtil.parseObject(viewJson, ChartViewDTO.class);
-            if (!StringUtils.equalsIgnoreCase(view.getType(), "chart-mix-group")) {
-                view1.setXAxisExt(new ArrayList<>());
-            }
-            if (!StringUtils.equalsIgnoreCase(view.getType(), "chart-mix-stack")) {
-                view1.setExtStack(new ArrayList<>());
-            }
-            view1.setExtBubble(new ArrayList<>());
-            view1.setYAxisExt(new ArrayList<>());
-            if (view1.getSenior() != null) {
-                ChartSeniorAssistCfgDTO assistLineCfg1 = JsonUtil.parseObject((String) JsonUtil.toJSONString(view1.getSenior().get("assistLineCfg")), ChartSeniorAssistCfgDTO.class);
-                if (assistLineCfg1 != null && assistLineCfg1.isEnable()) {
-                    List<ChartSeniorAssistDTO> assistLines = assistLineCfg1.getAssistLine();
-                    //去除右轴辅助线
-                    assistLineCfg1.setAssistLine(assistLines.stream().filter(d -> StringUtils.equalsIgnoreCase(d.getYAxisType(), "left")).collect(Collectors.toList()));
-                    view1.getSenior().put("assistLineCfg", assistLineCfg1);
-                }
-            }
-            ChartViewDTO left = calcData1(view1, chartExtRequest, allFields, viewFields);
-            data.put("left", left.getData());
-            //针对右轴，删除yAxis
-            ChartViewDTO view2 = JsonUtil.parseObject(viewJson, ChartViewDTO.class);
-            view2.setYAxis(new ArrayList<>());
-            if (view2.getSenior() != null) {
-                ChartSeniorAssistCfgDTO assistLineCfg2 = JsonUtil.parseObject((String) JsonUtil.toJSONString(view2.getSenior().get("assistLineCfg")), ChartSeniorAssistCfgDTO.class);
-                if (assistLineCfg2 != null && assistLineCfg2.isEnable()) {
-                    List<ChartSeniorAssistDTO> assistLines = assistLineCfg2.getAssistLine();
-                    //去除左轴辅助线
-                    assistLineCfg2.setAssistLine(assistLines.stream().filter(d -> StringUtils.equalsIgnoreCase(d.getYAxisType(), "right")).collect(Collectors.toList()));
-                    view2.getSenior().put("assistLineCfg", assistLineCfg2);
-                }
-            }
-            view2.setXAxisExt(view2.getExtBubble());
-            view2.setExtStack(new ArrayList<>());
-            view2.setExtBubble(new ArrayList<>());
-            ChartViewDTO right = calcData1(view2, chartExtRequest, allFields, viewFields);
-            data.put("right", right.getData());
-
-            //重新组装
-            chartViewDTO = BeanUtils.copyBean(new ChartViewDTO(), left);
-            chartViewDTO.setXAxisExt(view.getXAxisExt());
-            chartViewDTO.setExtStack(view.getExtStack());
-            chartViewDTO.setYAxisExt(view.getYAxisExt());
-            chartViewDTO.setExtBubble(view.getExtBubble());
-            chartViewDTO.setData(data);
-            chartViewDTO.setSenior(view.getSenior());
+            chartViewDTO =  calcData1(view, chartExtRequest, allFields, viewFields);
         } else {
             chartViewDTO = calcData(view, chartExtRequest, allFields, viewFields);
         }
@@ -437,23 +378,8 @@ public class ChartDataManage {
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, transFields(allFields), crossDs, dsMap);
         Map<Long, String> dsTypeMap = dsMap.entrySet().stream().collect(Collectors.toMap(Map.Entry::getKey, entry -> entry.getValue().getType()));
         ChartCalcDataResult calcResult = chartHandler.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, calciteProvider);
-        // 如果是表格导出查询 则在此处直接就可以返回
-        var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);
-        if (view.getIsExcelExport()) {
-            Map<String, Object> sourceInfo = ChartDataBuild.transTableNormal(xAxis, yAxis, view, calcResult.getOriginData(), extStack, desensitizationList);
-            sourceInfo.put("sourceData", calcResult.getOriginData());
-            view.setData(sourceInfo);
-            return view;
-        }
-
-        // 构建结果
-        Map<String, Object> map = new TreeMap<>();
-        // 图表组件可再扩展
-        Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, calcResult.getOriginData(), extStack, desensitizationList);
-        var drillFilters = filterResult.getFilterList().stream().filter(f -> f.getFilterType() == 1).collect(Collectors.toList());
-        var isDrill = CollectionUtils.isNotEmpty(drillFilters);
-        ChartViewDTO chartViewDTO = uniteViewResult(calcResult.getQuerySql(), calcResult.getData(), mapTableNormal, view, isDrill, drillFilters, calcResult.getDynamicAssistFields(), calcResult.getAssistData());
-        return chartViewDTO;
+        formatResult.getContext().put("desensitizationList", desensitizationList);
+        return chartHandler.buildChart(view, calcResult, formatResult, filterResult);
     }
 
     public ChartViewDTO calcData1(ChartViewDTO view, ChartExtRequest chartExtRequest, List<ChartViewFieldDTO> allFields, List<ChartViewFieldDTO> viewFields) throws Exception {
