@@ -154,11 +154,7 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
           }
         },
         {
-          type: 'active-region',
-          cfg: {
-            start: [{ trigger: 'element:mousemove', action: 'active-region:show' }],
-            end: [{ trigger: 'element:mouseleave', action: 'active-region:hide' }]
-          }
+          type: 'active-region'
         }
       ]
     }
