@@ -13,6 +13,7 @@ import { Scene } from '@antv/l7-scene'
 import { HeatmapLayer } from '@antv/l7-layers'
 import { queryMapKeyApi } from '@/api/setting/sysParameter'
 import { DEFAULT_BASIC_STYLE } from '@/views/chart/components/editor/util/chart'
+import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
 const { t } = useI18n()
 
 /**
@@ -55,7 +56,6 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
       basicStyle = parseJson(chart.customAttr).basicStyle
       miscStyle = parseJson(chart.customAttr).misc
     }
-    console.log(basicStyle)
     const mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
     const key = await this.getMapKey()
     // 底层
@@ -69,10 +69,13 @@ export class HeatMap extends L7ChartView<Scene, L7Config> {
         zoom: 2.5
       })
     })
+    mapRendering(container)
+    scene.once('loaded', () => {
+      mapRendered(container)
+    })
     if (xAxis?.length < 2 || yAxis?.length < 1) {
       return new L7Wrapper(scene, undefined)
     }
-    console.log(chart.data?.data)
     const config: L7Config = new HeatmapLayer({
       name: 'line',
       blend: 'normal',

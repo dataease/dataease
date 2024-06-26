@@ -13,6 +13,7 @@ import { Scene } from '@antv/l7-scene'
 import { PointLayer } from '@antv/l7-layers'
 import { LayerPopup } from '@antv/l7'
 import { queryMapKeyApi } from '@/api/setting/sysParameter'
+import { mapRendered, mapRendering } from '@/views/chart/components/js/panel/common/common_antv'
 const { t } = useI18n()
 
 /**
@@ -80,6 +81,10 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
         center: [104.434765, 38.256735],
         zoom: 1.8
       })
+    })
+    mapRendering(container)
+    scene.once('loaded', () => {
+      mapRendered(container)
     })
     if (xAxis?.length < 2 || xAxisExt?.length < 1) {
       return new L7Wrapper(scene, undefined)

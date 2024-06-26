@@ -15,7 +15,11 @@ import {
 import { flow, getGeoJsonFile, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { cloneDeep } from 'lodash-es'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
-import { handleGeoJson } from '@/views/chart/components/js/panel/common/common_antv'
+import {
+  handleGeoJson,
+  mapRendered,
+  mapRendering
+} from '@/views/chart/components/js/panel/common/common_antv'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 
 const { t } = useI18n()
@@ -100,8 +104,12 @@ export class BubbleMap extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     const view = new Choropleth(container, options)
     const dotLayer = this.getDotLayer(chart, geoJson, drawOption)
     this.configZoomButton(chart, view)
+    mapRendering(container)
     view.once('loaded', () => {
       view.addLayer(dotLayer)
+      dotLayer.once('add', () => {
+        mapRendered(container)
+      })
       view.scene.map['keyboard'].disable()
       view.on('fillAreaLayer:click', (ev: MapMouseEvent) => {
         const data = ev.feature.properties
