@@ -1081,3 +1081,17 @@ function setStyle(elements: HTMLElement[], styleProp: string, value) {
     e.style[styleProp] = value
   })
 }
+
+export function mapRendering(dom: HTMLElement | string) {
+  if (typeof dom === 'string') {
+    dom = document.getElementById(dom)
+  }
+  dom.classList.add('de-map-rendering')
+}
+
+export function mapRendered(dom: HTMLElement | string) {
+  if (typeof dom === 'string') {
+    dom = document.getElementById(dom)
+  }
+  dom.classList.add('de-map-rendered')
+}
