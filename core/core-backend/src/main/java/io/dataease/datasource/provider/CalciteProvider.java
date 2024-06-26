@@ -1,22 +1,19 @@
 package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType;
-import io.dataease.api.ds.vo.DatasourceDTO;
-import io.dataease.api.ds.vo.TableField;
 import io.dataease.commons.utils.CommonThreadPool;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDriver;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.EngineManage;
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.datasource.type.*;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.*;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
@@ -45,7 +42,7 @@ import java.util.stream.Collectors;
 
 
 @Component("calciteProvider")
-public class CalciteProvider {
+public class CalciteProvider extends Provider {
 
     @Resource
     protected CoreDatasourceMapper coreDatasourceMapper;
@@ -84,6 +81,7 @@ public class CalciteProvider {
         }
     }
 
+    @Override
     public List<String> getSchema(DatasourceRequest datasourceRequest) {
         List<String> schemas = new ArrayList<>();
         String queryStr = getSchemaSql(datasourceRequest.getDatasource());
@@ -97,6 +95,7 @@ public class CalciteProvider {
         return schemas;
     }
 
+    @Override
     public List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest) {
         List<DatasetTableDTO> tables = new ArrayList<>();
         List<String> tablesSqls = getTablesSql(datasourceRequest);
@@ -132,6 +131,7 @@ public class CalciteProvider {
         return drivers;
     }
 
+    @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
@@ -153,6 +153,7 @@ public class CalciteProvider {
         return "Success";
     }
 
+    @Override
     public Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException {
         // 不跨数据源
         if (datasourceRequest.getDsList().size() == 1) {
@@ -547,7 +548,7 @@ public class CalciteProvider {
         return tableField;
     }
 
-
+    @Override
     public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException {
         List<TableField> datasetTableFields = new ArrayList<>();
         DatasourceSchemaDTO datasourceSchemaDTO = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
@@ -967,7 +968,7 @@ public class CalciteProvider {
 
     }
 
-    private String getSchemaSql(CoreDatasource datasource) throws DEException {
+    private String getSchemaSql(DatasourceDTO datasource) throws DEException {
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasource.getType());
         switch (datasourceType) {
             case oracle:
@@ -986,8 +987,8 @@ public class CalciteProvider {
         }
     }
 
-
-    public Connection getConnection(CoreDatasource coreDatasource) throws DEException {
+    @Override
+    public Connection getConnection(DatasourceDTO coreDatasource) throws DEException {
         DatasourceConfiguration configuration = null;
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
         switch (datasourceType) {

@@ -1,11 +1,11 @@
 package io.dataease.datasource.server;
 
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.api.ds.EngineApi;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.dao.auto.mapper.CoreDeEngineMapper;
 import io.dataease.datasource.manage.EngineManage;
 import io.dataease.datasource.provider.CalciteProvider;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import jakarta.annotation.Resource;

@@ -1,11 +1,8 @@
 package io.dataease.datasource.provider;
 
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
-import io.dataease.api.ds.vo.TableField;
-
 import io.dataease.datasource.request.EngineRequest;
-import io.dataease.exception.DEException;
-
+import io.dataease.extensions.datasource.dto.TableField;
 
 import java.util.List;
 

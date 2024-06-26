@@ -1,4 +1,4 @@
-package io.dataease.api.ds.vo;
+package io.dataease.extensions.datasource.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
@@ -58,6 +58,7 @@ public class DatasourceDTO implements Serializable {
      */
     private Long updateTime;
 
+    private Long updateBy;
     /**
      * 创建人ID
      */
@@ -80,4 +81,12 @@ public class DatasourceDTO implements Serializable {
      * 上次成功更新时间
      */
     private Long lastSyncTime;
+
+
+    private String qrtzInstance;
+
+    /**
+     * 任务状态
+     */
+    private String taskStatus;
 }

@@ -2,13 +2,13 @@ package io.dataease.chart.charts.impl;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.datasource.provider.CalciteProvider;
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.dto.DatasourceRequest;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.extensions.view.util.FieldUtil;
@@ -54,10 +54,11 @@ public class YoyChartHandler extends DefaultChartHandler {
 
     /**
      * 构建同环比类型的数据
-     * @param view 视图对象
+     *
+     * @param view         视图对象
      * @param formatResult 处理后的轴
      * @param filterResult 处理后的过滤器
-     * @param data 原始数据
+     * @param data         原始数据
      * @return 视图构建结果
      */
     public Map<String, Object> buildNormalResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, List<String[]> data) {

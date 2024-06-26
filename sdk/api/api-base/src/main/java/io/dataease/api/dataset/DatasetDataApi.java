@@ -2,10 +2,10 @@ package io.dataease.api.dataset;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.dataset.dto.BaseTreeNodeDTO;
-import io.dataease.api.dataset.dto.DatasetTableDTO;
 import io.dataease.api.dataset.dto.EnumValueRequest;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;

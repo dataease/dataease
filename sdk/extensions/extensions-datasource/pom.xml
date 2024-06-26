@@ -5,34 +5,22 @@
     <modelVersion>4.0.0</modelVersion>
     <parent>
         <groupId>io.dataease</groupId>
-        <artifactId>sdk</artifactId>
+        <artifactId>extensions</artifactId>
         <version>${dataease.version}</version>
     </parent>
 
-    <packaging>pom</packaging>
-    <modules>
-        <module>extensions-view</module>
-        <module>extensions-datasource</module>
-    </modules>
-
-    <artifactId>extensions</artifactId>
+    <artifactId>extensions-datasource</artifactId>
 
     <properties>
         <maven.compiler.source>21</maven.compiler.source>
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-
     <dependencies>
         <dependency>
-            <groupId>com.fasterxml.jackson.core</groupId>
-            <artifactId>jackson-databind</artifactId>
-        </dependency>
-
-        <dependency>
             <groupId>io.dataease</groupId>
-            <artifactId>dataease-license-sdk</artifactId>
-            <version>${project.version}</version>
+            <artifactId>extensions-view</artifactId>
+            <version>${dataease.version}</version>
         </dependency>
     </dependencies>
 

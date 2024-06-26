@@ -2,14 +2,13 @@ package io.dataease.chart.charts.impl.table;
 
 import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.chart.charts.impl.DefaultChartHandler;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.datasource.provider.CalciteProvider;
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
-import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.dto.DatasourceRequest;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.extensions.view.util.ChartDataUtil;

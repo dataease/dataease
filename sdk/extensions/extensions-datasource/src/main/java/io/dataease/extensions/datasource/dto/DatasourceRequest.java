@@ -1,21 +1,20 @@
-package io.dataease.datasource.request;
+package io.dataease.extensions.datasource.dto;
 
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import lombok.Data;
 import org.springframework.util.StringUtils;
 
+import java.io.Serializable;
 import java.util.Map;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 @Data
-public class DatasourceRequest {
+public class DatasourceRequest implements Serializable {
     private final String REG_WITH_SQL_FRAGMENT = "((?i)WITH[\\s\\S]+(?i)AS?\\s*\\([\\s\\S]+\\))\\s*(?i)SELECT";
     private Pattern WITH_SQL_FRAGMENT = Pattern.compile("((?i)WITH[\\s\\S]+(?i)AS?\\s*\\([\\s\\S]+\\))\\s*(?i)SELECT");
     protected String query;
     protected String table;
-    protected CoreDatasource datasource;
+    protected DatasourceDTO datasource;
     private Integer pageSize;
     private Integer page;
     private Integer realSize;

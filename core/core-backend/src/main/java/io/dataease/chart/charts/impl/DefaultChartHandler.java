@@ -1,21 +1,21 @@
 package io.dataease.chart.charts.impl;
 
 import io.dataease.chart.charts.AbstractChartHandler;
+import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.chart.constant.ChartConstants;
 import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.chart.utils.ChartDataBuild;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.datasource.provider.CalciteProvider;
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.dto.DatasourceRequest;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.dto.*;
-import io.dataease.chart.charts.ChartHandlerManager;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.extensions.view.util.ChartDataUtil;
 import io.dataease.extensions.view.util.FieldUtil;
@@ -33,7 +33,6 @@ import java.math.RoundingMode;
 import java.text.SimpleDateFormat;
 import java.util.*;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class DefaultChartHandler extends AbstractChartHandler {
@@ -49,7 +48,7 @@ public class DefaultChartHandler extends AbstractChartHandler {
     private String type = "*";
 
     @PostConstruct
-    public void init(){
+    public void init() {
         chartHandlerManager.registerChartHandler(this.getRender(), this.getType(), this);
     }
 
@@ -392,7 +391,7 @@ public class DefaultChartHandler extends AbstractChartHandler {
         return false;
     }
 
-    protected boolean checkYoyFilter(List<ChartExtFilterDTO> filter, List<ChartViewFieldDTO> yoyAxis){
+    protected boolean checkYoyFilter(List<ChartExtFilterDTO> filter, List<ChartViewFieldDTO> yoyAxis) {
         boolean flag = false;
         for (ChartExtFilterDTO filterDTO : filter) {
             for (ChartViewFieldDTO chartViewFieldDTO : yoyAxis) {
@@ -419,7 +418,9 @@ public class DefaultChartHandler extends AbstractChartHandler {
             }
         }
         return flag;
-    };
+    }
+
+    ;
 
     protected void groupStackDrill(List<ChartViewFieldDTO> xAxis,
                                    List<ChartExtFilterDTO> filterList,

@@ -1,6 +1,7 @@
 package io.dataease.api.ds.vo;
 
 
+import io.dataease.extensions.datasource.dto.TableField;
 import lombok.Data;
 
 import java.util.ArrayList;

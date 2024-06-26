@@ -2,16 +2,15 @@ package io.dataease.chart.charts.impl.line;
 
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
-import io.dataease.dataset.dto.DatasourceSchemaDTO;
 import io.dataease.datasource.provider.CalciteProvider;
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.dto.DatasourceRequest;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.model.SQLMeta;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;

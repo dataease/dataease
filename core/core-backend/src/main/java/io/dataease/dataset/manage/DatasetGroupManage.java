@@ -2,11 +2,11 @@ package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.api.dataset.dto.DatasetTableDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;

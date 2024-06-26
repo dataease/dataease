@@ -2,7 +2,6 @@ package io.dataease.datasource.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
-import io.dataease.api.ds.vo.DatasourceDTO;
 import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.DataSourceType;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -11,12 +10,14 @@ import io.dataease.datasource.dao.ext.mapper.DataSourceExtMapper;
 import io.dataease.datasource.dao.ext.po.DataSourceNodePO;
 import io.dataease.datasource.dto.DatasourceNodeBO;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
 import io.dataease.operation.manage.CoreOptRecentManage;
 import io.dataease.utils.AuthUtils;
+import io.dataease.utils.BeanUtils;
 import io.dataease.utils.TreeUtils;
 import jakarta.annotation.Resource;
 import org.apache.commons.collections4.CollectionUtils;
@@ -133,5 +134,12 @@ public class DataSourceManage {
         checkName(sourceData);
         coreDatasourceMapper.updateById(sourceData);
         coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
+    }
+
+    public DatasourceDTO getDs(Long id) {
+        CoreDatasource coreDatasource = coreDatasourceMapper.selectById(id);
+        DatasourceDTO dto = new DatasourceDTO();
+        BeanUtils.copyBean(dto,coreDatasource);
+        return dto;
     }
 }

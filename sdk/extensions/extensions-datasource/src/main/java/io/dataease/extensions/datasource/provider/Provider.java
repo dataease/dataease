@@ -1,10 +1,10 @@
-package io.dataease.datasource.provider;
+package io.dataease.extensions.datasource.provider;
 
-import io.dataease.api.dataset.dto.DatasetTableDTO;
-import io.dataease.api.ds.vo.TableField;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
-import io.dataease.datasource.request.DatasourceRequest;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.dto.DatasourceRequest;
+import io.dataease.extensions.datasource.dto.TableField;
 
 import java.sql.Connection;
 import java.util.List;
@@ -18,7 +18,7 @@ public abstract class Provider {
 
     public abstract List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest);
 
-    public abstract Connection getConnection(CoreDatasource coreDatasource) throws DEException;
+    public abstract Connection getConnection(DatasourceDTO coreDatasource) throws DEException;
 
     public abstract String checkStatus(DatasourceRequest datasourceRequest) throws Exception;
 

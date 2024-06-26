@@ -2,12 +2,12 @@ package io.dataease.datasource.provider;
 
 
 import io.dataease.api.ds.vo.DatasourceConfiguration;
-import io.dataease.api.ds.vo.TableField;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.type.H2;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
+import io.dataease.extensions.datasource.dto.TableField;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
@@ -26,7 +26,7 @@ public class H2EngineProvider extends EngineProvider {
     public void exec(EngineRequest engineRequest) throws Exception {
         DatasourceConfiguration configuration = JsonUtil.parseObject(engineRequest.getEngine().getConfiguration(), H2.class);
         int queryTimeout = configuration.getQueryTimeout();
-        CoreDatasource datasource = new CoreDatasource();
+        DatasourceDTO datasource = new DatasourceDTO();
         BeanUtils.copyBean(datasource, engineRequest.getEngine());
         try (Connection connection = getConnection(datasource); Statement stat = getStatement(connection, queryTimeout)) {
             PreparedStatement preparedStatement = connection.prepareStatement(engineRequest.getQuery());
@@ -81,7 +81,7 @@ public class H2EngineProvider extends EngineProvider {
 
     @Override
     public String replaceTable(String name) {
-        return  "ALTER TABLE `FROM_TABLE` rename to `FROM_TABLE_tmp`; ALTER TABLE `TO_TABLE` rename to `FROM_TABLE`; DROP TABLE IF EXISTS `FROM_TABLE_tmp`;".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
+        return "ALTER TABLE `FROM_TABLE` rename to `FROM_TABLE_tmp`; ALTER TABLE `TO_TABLE` rename to `FROM_TABLE`; DROP TABLE IF EXISTS `FROM_TABLE_tmp`;".replace("FROM_TABLE", name).replace("TO_TABLE", TableUtils.tmpName(name));
     }
 
 
