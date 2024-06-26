@@ -273,6 +273,17 @@ export class ColumnLineMix extends G2PlotChartView<DualAxesOptions, DualAxes> {
     return tempOption
   }
 
+  setupDefaultOptions(chart: ChartObj): ChartObj {
+    const { customAttr, senior } = chart
+    if (
+      senior.functionCfg.emptyDataStrategy == undefined ||
+      senior.functionCfg.emptyDataStrategy === 'ignoreData'
+    ) {
+      senior.functionCfg.emptyDataStrategy = 'breakLine'
+    }
+    return chart
+  }
+
   protected configCustomColors(chart: Chart, options: DualAxesOptions): DualAxesOptions {
     const basicStyle = parseJson(chart.customAttr).basicStyle
     const color = basicStyle.colors.map(item => hexColorToRGBA(item, basicStyle.alpha))

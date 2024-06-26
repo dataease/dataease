@@ -54,7 +54,10 @@ const init = () => {
   }
 }
 const showIgnoreOption = computed(() => {
-  return !equalsAny(props.chart.type, 'table-pivot', 'table-info', 'indicator')
+  return !(
+    equalsAny(props.chart.type, 'table-pivot', 'table-info', 'indicator') ||
+    props.chart.type.includes('chart-mix')
+  )
 })
 
 const showEmptyDataFieldCtrl = computed(() => {
