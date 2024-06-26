@@ -32,7 +32,10 @@ const defaultNode = {
   unionType: 'left' as UnionType,
   unionFields: [],
   currentDsFields: [],
-  sqlVariableDetails: null
+  sqlVariableDetails: null,
+  confirm: false,
+  isShadow: false,
+  flag: ''
 }
 const parentField = ref<Field[]>([])
 const nodeField = ref<Field[]>([])
@@ -54,6 +57,12 @@ const clearState = () => {
 }
 
 const initState = () => {
+  node.confirm = false
+  node.isShadow = false
+  node.flag = ''
+  parent.confirm = false
+  parent.isShadow = false
+  parent.flag = ''
   Object.assign(node, cloneDeep(props.editArr[0]))
   Object.assign(parent, cloneDeep(props.editArr[1]))
   getFields()
