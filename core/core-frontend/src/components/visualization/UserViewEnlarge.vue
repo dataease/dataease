@@ -264,7 +264,7 @@ const downloadViewDetails = () => {
 }
 
 const exportData = () => {
-  useEmitt().emitter.emit('data-export-center')
+  useEmitt().emitter.emit('data-export-center', { activeName: 'IN_PROGRESS' })
 }
 
 const openMessageLoading = cb => {

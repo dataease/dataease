@@ -690,9 +690,7 @@ public class DatasourceServer implements DatasourceApi {
             wrapper.eq("id", coreDatasource.getId());
             CoreDatasource originData = datasourceMapper.selectById(coreDatasource.getId());
             String originStatus = originData.getStatus();
-            if (!StringUtils.equals(coreDatasource.getStatus(), originStatus)) {
-                dataSourceManage.innerEditStatus(coreDatasource);
-            }
+            dataSourceManage.innerEditStatus(coreDatasource);
         }
         datasourceDTO.setConfiguration("");
         return datasourceDTO;
