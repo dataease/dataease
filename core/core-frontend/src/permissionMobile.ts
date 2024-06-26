@@ -23,7 +23,9 @@ router.beforeEach(async (to, _, next) => {
   start()
   loadStart()
   await appearanceStore.setAppearance()
-  if (wsCache.get('user.token')) {
+  if (to.name === 'link') {
+    next()
+  } else if (wsCache.get('user.token')) {
     if (!userStore.getUid) {
       await userStore.setUser()
     }
