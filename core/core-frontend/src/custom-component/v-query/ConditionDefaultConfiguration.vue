@@ -1,4 +1,3 @@
-getLastStart
 <script lang="ts" setup>
 import { ElSelect } from 'element-plus-secondary'
 import { computed, ref, toRefs } from 'vue'
@@ -39,8 +38,14 @@ const props = defineProps({
   curComponent: {
     type: Object,
     required: true
+  },
+  showPosition: {
+    type: String,
+    default: 'main'
   }
 })
+
+const showFlag = computed(() => props.showPosition === 'main')
 
 const { curComponent } = toRefs(props)
 
@@ -250,7 +255,7 @@ defineExpose({
       </div>
     </div>
   </div>
-  <div v-if="!['1', '7', '8'].includes(curComponent.displayType)" class="list-item">
+  <div v-if="!['1', '7', '8'].includes(curComponent.displayType) && showFlag" class="list-item">
     <div class="label">选项类型</div>
     <div class="value">
       <el-radio-group
@@ -263,7 +268,7 @@ defineExpose({
       </el-radio-group>
     </div>
   </div>
-  <div v-if="curComponent.displayType === '7'" class="list-item">
+  <div v-if="curComponent.displayType === '7' && showFlag" class="list-item">
     <div class="label">
       <el-checkbox v-model="curComponent.setTimeRange" label="设置时间筛选范围" />
     </div>
@@ -305,7 +310,7 @@ defineExpose({
   </div>
   <div
     class="list-item"
-    v-if="+curComponent.displayType === 0 && curComponent.optionValueSource !== 1"
+    v-if="+curComponent.displayType === 0 && curComponent.optionValueSource !== 1 && showFlag"
   >
     <div class="label">
       <el-tooltip
