@@ -88,6 +88,12 @@ const init = () => {
     if (customStyle.legend) {
       state.legendForm = customStyle.legend
       state.legendForm.miscForm = miscStyle
+      if (chartType.value === 'map') {
+        // 解决存量地图，没有设置mapAutoLegend的情况，设置默认值
+        if (!state.legendForm.miscForm.hasOwnProperty('mapAutoLegend')) {
+          state.legendForm.miscForm.mapAutoLegend = true
+        }
+      }
     }
   }
 }
@@ -238,8 +244,10 @@ onMounted(() => {
                   :effect="themes"
                   v-model="state.legendForm.miscForm.mapLegendNumber"
                   size="small"
+                  :precision="0"
                   :min="1"
                   :max="9"
+                  :step="1"
                   controls-position="right"
                   @change="changeMisc('mapLegendNumber')"
                 />
