@@ -77,4 +77,7 @@ public interface InteractiveAuthApi {
 
     @GetMapping("/checkEmpty")
     boolean checkEmpty();
+
+    @GetMapping("/OrgNameForResource")
+    String OrgNameForResource(Long id);
 }
