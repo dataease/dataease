@@ -14,6 +14,7 @@ services:
       - ${DE_BASE}/dataease2.0/data/geo:/opt/dataease2.0/data/geo
       - ${DE_BASE}/dataease2.0/data/appearance:/opt/dataease2.0/data/appearance
       - ${DE_BASE}/dataease2.0/data/exportData:/opt/dataease2.0/data/exportData
+      - ${DE_BASE}/dataease2.0/data/plugin:/opt/dataease2.0/data/plugin
     depends_on:
       DE_MYSQL_HOST:
         condition: service_healthy
