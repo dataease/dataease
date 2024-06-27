@@ -7,13 +7,12 @@ import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
 import { formatterType, unitType } from '../../../js/formatter'
 import { fieldType } from '@/utils/attr'
-import { defaultTo, partition } from 'lodash-es'
+import { defaultTo, partition, union } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
-import { deepCopy } from '@/utils/utils'
 
 const { t } = useI18n()
 
@@ -42,7 +41,13 @@ const toolTip = computed(() => {
 })
 const emit = defineEmits(['onTooltipChange', 'onExtTooltipChange'])
 const curSeriesFormatter = ref<DeepPartial<SeriesFormatter>>({})
-const quotaData = ref<Axis[]>(inject('quotaData'))
+const realQuota = ref<Axis[]>(inject('quotaData'))
+const yAxis = computed(() => {
+  return union(defaultTo(props.chart.yAxis, []), defaultTo(props.chart.yAxisExt, []))
+})
+const quotaData = computed<Axis[]>(() => {
+  return props.chart.type.includes('chart-mix') ? yAxis.value : realQuota.value
+})
 const showSeriesTooltipFormatter = computed(() => {
   return showProperty('seriesTooltipFormatter') && !batchOptStatus.value && props.chart.id
 })
