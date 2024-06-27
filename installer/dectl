@@ -75,10 +75,6 @@ function _prepare_apisix() {
       sed -i -e "s/DE_APISIX_KEY/${DE_APISIX_KEY}/g" $DE_RUNNING_BASE/conf/application.yml
    fi
 }
-function _init_apisix() {
-   DE_APISIX_KEY=$DE_APISIX_KEY sh $DE_RUNNING_BASE/bin/apisix/init.sh
-}
-
 function _healthcheck() {
    echo
    container_name=$(grep "container_name" $DE_RUNNING_BASE/docker-compose.yml | awk -F': ' '{print $2}')
@@ -224,9 +220,6 @@ function start() {
    cd ${DE_RUNNING_BASE}
    ${compose_cmd} ${compose_files} up -d
    _healthcheck
-   if [ $? -eq 0 ] && [[ $need_init_apisix = true ]]; then
-      _init_apisix
-   fi
 }
 function stop() {
    echo
