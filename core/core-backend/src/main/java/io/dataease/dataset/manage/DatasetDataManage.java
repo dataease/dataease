@@ -2,7 +2,10 @@ package io.dataease.dataset.manage;
 
 import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.chart.dto.DeSortField;
-import io.dataease.api.dataset.dto.*;
+import io.dataease.api.dataset.dto.BaseTreeNodeDTO;
+import io.dataease.api.dataset.dto.EnumValueRequest;
+import io.dataease.api.dataset.dto.PreviewSqlDTO;
+import io.dataease.api.dataset.dto.SqlLogDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
@@ -11,7 +14,10 @@ import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
-import io.dataease.dataset.utils.*;
+import io.dataease.dataset.utils.DatasetUtils;
+import io.dataease.dataset.utils.FieldUtils;
+import io.dataease.dataset.utils.SqlUtils;
+import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.EngineManage;
@@ -486,6 +492,16 @@ public class DatasetDataManage {
             datasourceRequest.setDsList(dsMap);
             Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
             List<String[]> dataList = (List<String[]>) data.get("data");
+            dataList = dataList.stream().filter(row -> {
+                boolean hasEmpty = false;
+                for (String s : row) {
+                    if (StringUtils.isBlank(s)) {
+                        hasEmpty = true;
+                        break;
+                    }
+                }
+                return !hasEmpty;
+            }).toList();
             List<String> previewData = new ArrayList<>();
             if (ObjectUtils.isNotEmpty(dataList)) {
                 List<String> tmpData = dataList.stream().map(ele -> (ObjectUtils.isNotEmpty(ele) && ele.length > 0) ? ele[0] : null).collect(Collectors.toList());
@@ -701,6 +717,16 @@ public class DatasetDataManage {
         datasourceRequest.setDsList(dsMap);
         Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
         List<String[]> dataList = (List<String[]>) data.get("data");
+        dataList = dataList.stream().filter(row -> {
+            boolean hasEmpty = false;
+            for (String s : row) {
+                if (StringUtils.isBlank(s)) {
+                    hasEmpty = true;
+                    break;
+                }
+            }
+            return !hasEmpty;
+        }).toList();
         Map<String, String[]> distinctData = new LinkedHashMap<>();
         for (String[] arr : dataList) {
             String key = Arrays.toString(arr);
@@ -812,13 +838,14 @@ public class DatasetDataManage {
         // 重新构造data
         Set<String> pkSet = new HashSet<>();
         rows = rows.stream().filter(row -> {
-            boolean allEmpty = true;
+            boolean hasEmpty = false;
             for (String s : row) {
-                if (StringUtils.isNotBlank(s)) {
-                    allEmpty = false;
+                if (StringUtils.isBlank(s)) {
+                    hasEmpty = true;
+                    break;
                 }
             }
-            return !allEmpty;
+            return !hasEmpty;
         }).toList();
         List<BaseTreeNodeDTO> treeNodes = rows.stream().map(row -> buildTreeNode(row, pkSet)).flatMap(Collection::stream).collect(Collectors.toList());
         List<BaseTreeNodeDTO> tree = DatasetUtils.mergeDuplicateTree(treeNodes, "root");
