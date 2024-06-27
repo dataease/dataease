@@ -18,7 +18,7 @@ import {
   mapRendering
 } from '@/views/chart/components/js/panel/common/common_antv'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
-import { cloneDeep } from 'lodash-es'
+import { cloneDeep, defaultsDeep } from 'lodash-es'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '../../../formatter'
 import {
@@ -27,6 +27,14 @@ import {
   MAP_EDITOR_PROPERTY_INNER,
   MapMouseEvent
 } from '@/views/chart/components/js/panel/charts/map/common'
+import { CategoryLegendListItem } from '@antv/l7plot-component/dist/lib/types/legend'
+import createDom from '@antv/dom-util/esm/create-dom'
+import {
+  CONTAINER_TPL,
+  ITEM_TPL,
+  LIST_CLASS
+} from '@antv/l7plot-component/dist/esm/legend/category/constants'
+import substitute from '@antv/util/esm/substitute'
 
 const { t } = useI18n()
 
@@ -185,9 +193,9 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
     let data = []
     data = sourceData
     let colorScale = []
+    let minValue = misc.mapLegendMin
+    let maxValue = misc.mapLegendMax
     if (legend.show) {
-      let minValue = misc.mapLegendMin
-      let maxValue = misc.mapLegendMax
       let mapLegendNumber = misc.mapLegendNumber
       setMapChartDefaultMaxAndMinValueByData(sourceData, maxValue, minValue, (max, min) => {
         maxValue = max
@@ -209,12 +217,8 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       obj[value['field']] = value.value
       return obj
     }, {})
-    let validArea = 0
     geoJson.features.forEach(item => {
       const name = item.properties['name']
-      if (areaMap[name]) {
-        validArea += 1
-      }
       // trick, maybe move to configLabel, here for perf
       if (label.show) {
         const content = []
@@ -227,12 +231,86 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
         item.properties['_DE_LABEL_'] = content.join('\n\n')
       }
     })
-    if (validArea < colorScale.length && !misc.mapAutoLegend) {
-      colorScale = colorScale.map(item => (item.color ? item.color : item)).slice(0, validArea)
-    }
     if (colorScale.length) {
       options.color['value'] = colorScale.map(item => (item.color ? item.color : item))
+      if (colorScale[0].value && !misc.mapAutoLegend) {
+        options.color['scale']['domain'] = [minValue, maxValue]
+      }
     }
+    return options
+  }
+
+  private customConfigLegend(
+    chart: Chart,
+    options: ChoroplethOptions,
+    _context: Record<string, any>
+  ): ChoroplethOptions {
+    const { basicStyle } = parseJson(chart.customAttr)
+    if (basicStyle.suspension === false && basicStyle.showZoom === undefined) {
+      return options
+    }
+    const { legend } = parseJson(chart.customStyle)
+    if (!legend.show) {
+      return options
+    }
+    const LEGEND_SHAPE_STYLE_MAP = {
+      circle: {
+        borderRadius: '50%'
+      },
+      square: {},
+      triangle: {
+        borderLeft: '5px solid transparent',
+        borderRight: '5px solid transparent',
+        borderBottom: '10px solid var(--bgColor)',
+        background: 'unset'
+      },
+      diamond: {
+        transform: 'rotate(45deg)'
+      }
+    }
+    const customLegend = {
+      position: 'bottomleft',
+      customContent: (_: string, items: CategoryLegendListItem[]) => {
+        const showItems = items?.length > 30 ? items.slice(0, 30) : items
+        if (showItems?.length) {
+          const containerDom = createDom(CONTAINER_TPL) as HTMLElement
+          const listDom = containerDom.getElementsByClassName(LIST_CLASS)[0] as HTMLElement
+          showItems.forEach(item => {
+            let value = '-'
+            if (item.value !== '') {
+              if (Array.isArray(item.value)) {
+                item.value.forEach((v, i) => {
+                  item.value[i] = Number.isNaN(v) || v === 'NaN' ? 'NaN' : parseFloat(v).toFixed(0)
+                })
+                value = item.value.join('-')
+              } else {
+                const tmp = item.value as string
+                value = Number.isNaN(tmp) || tmp === 'NaN' ? 'NaN' : parseFloat(tmp).toFixed(0)
+              }
+            }
+            const substituteObj = { ...item, value }
+
+            const domStr = substitute(ITEM_TPL, substituteObj)
+            const itemDom = createDom(domStr)
+            // 给 legend 形状用的
+            itemDom.style.setProperty('--bgColor', item.color)
+            listDom.appendChild(itemDom)
+          })
+          return listDom
+        }
+        return ''
+      },
+      domStyles: {
+        'l7plot-legend__category-value': {
+          fontSize: legend.fontSize + 'px',
+          color: legend.color
+        },
+        'l7plot-legend__category-marker': {
+          ...LEGEND_SHAPE_STYLE_MAP[legend.icon]
+        }
+      }
+    }
+    defaultsDeep(options, { legend: customLegend })
     return options
   }
 
@@ -247,7 +325,7 @@ export class Map extends L7PlotChartView<ChoroplethOptions, Choropleth> {
       this.configStyle,
       this.configTooltip,
       this.configBasicStyle,
-      this.configLegend
+      this.customConfigLegend
     )(chart, options, context)
   }
 }
