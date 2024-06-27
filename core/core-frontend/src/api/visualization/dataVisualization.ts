@@ -23,7 +23,7 @@ export const findCopyResource = async (dvId, busiFlag): Promise<IResponse> => {
 export const findById = async (
   dvId,
   busiFlag,
-  attachInfo = { source: 'main' }
+  attachInfo = { source: 'main', taskId: null }
 ): Promise<IResponse> => {
   let busiFlagResult = busiFlag
   if (!busiFlagResult) {

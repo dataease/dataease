@@ -93,7 +93,11 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   const copyFlag = busiFlag != null && busiFlag.includes('-copy')
   const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag
   const method = copyFlag ? findCopyResource : findById
-  method(dvId, busiFlagCustom).then(res => {
+  let attachInfo = { source: 'main' }
+  if (dvMainStore.canvasAttachInfo && !!dvMainStore.canvasAttachInfo.taskId) {
+    attachInfo = { source: 'report', taskId: dvMainStore.canvasAttachInfo.taskId }
+  }
+  method(dvId, busiFlagCustom, attachInfo).then(res => {
     const canvasInfo = res.data
     const watermarkInfo = {
       ...canvasInfo.watermarkInfo,
@@ -122,9 +126,21 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
     //历史字段适配
     canvasStyleResult.component['seniorStyleSetting'] =
       canvasStyleResult.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
-
+    const reportFilterInfo = canvasInfo.reportFilterInfo
     canvasDataResult.forEach(componentItem => {
       componentItem['canvasActive'] = false
+      // 定时报告过滤组件适配 如果当前是定时报告默认切有设置对应的过滤组件默认值，则替换过滤组件
+      if (
+        componentItem.component === 'VQuery' &&
+        attachInfo.source === 'report' &&
+        !!reportFilterInfo
+      ) {
+        componentItem.propValue.forEach((filterItem, index) => {
+          if (reportFilterInfo[filterItem.id]) {
+            componentItem.propValue[index] = JSON.parse(reportFilterInfo[filterItem.id].filterInfo)
+          }
+        })
+      }
       if (componentItem.component === 'Group') {
         componentItem.expand = componentItem.expand || false
       }

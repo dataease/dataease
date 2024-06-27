@@ -39,7 +39,6 @@ import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import io.dataease.visualization.dao.auto.mapper.VisualizationWatermarkMapper;
 import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
-import io.dataease.xpack.base.report.dao.auto.mapper.VisualizationReportFilterMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.transaction.annotation.Transactional;
@@ -91,9 +90,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private VisualizationWatermarkMapper watermarkMapper;
-
-    @Resource
-    private VisualizationReportFilterMapper reportFilterMapper;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
