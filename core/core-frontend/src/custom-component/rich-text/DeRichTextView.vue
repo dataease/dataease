@@ -214,6 +214,8 @@ const viewInit = () => {
 const initCurFieldsChange = () => {
   if (!canEdit.value) {
     myValue.value = assignment(element.value.propValue.textValue)
+    const ed = tinymce.editors[tinymceId]
+    ed.setContent(myValue.value)
   }
 }
 
@@ -446,8 +448,8 @@ const initCurFields = chartDetails => {
   }
 }
 
-const renderChart = () => {
-  initCurFieldsChange()
+const renderChart = viewInfo => {
+  calcData(viewInfo)
 }
 
 const conditionAdaptor = (chart: Chart) => {
