@@ -41,6 +41,7 @@ public class NumbericChartHandler extends DefaultChartHandler {
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
         querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
+        logger.info("calcite chart sql: " + querySql);
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         boolean isdrill = filterResult
                 .getFilterList()
