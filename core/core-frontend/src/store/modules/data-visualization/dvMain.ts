@@ -25,6 +25,7 @@ import { viewFieldTimeTrans } from '@/utils/viewUtils'
 export const dvMainStore = defineStore('dataVisualization', {
   state: () => {
     return {
+      canvasAttachInfo: {}, // 仪表板附加信息
       fullscreenFlag: false, // 全屏启用标识
       staticResourcePath: '/static-resource/',
       canvasCollapse: {
@@ -178,6 +179,9 @@ export const dvMainStore = defineStore('dataVisualization', {
     }
   },
   actions: {
+    setCanvasAttachInfo(value) {
+      this.canvasAttachInfo = value
+    },
     setEmbeddedCallBack(value) {
       this.embeddedCallBack = value
     },
