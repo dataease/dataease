@@ -11,7 +11,7 @@ public class FieldUtil {
     public static List<DatasetTableFieldDTO> transFields(List<? extends ChartViewFieldBaseDTO> list) {
         return list.stream().map(ele -> {
             DatasetTableFieldDTO dto = new DatasetTableFieldDTO();
-            BeanUtils.copyProperties(dto, ele);
+            BeanUtils.copyProperties(ele, dto);
             return dto;
         }).collect(Collectors.toList());
     }
