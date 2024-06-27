@@ -3,7 +3,7 @@
     :visible="popoverVisible"
     title=""
     width="480"
-    placement="bottom-start"
+    placement="bottom-end"
     :show-arrow="false"
     :popper-class="`share-popover ${showTicket ? 'share-ticket-popover' : ''}`"
     @show="share"
@@ -31,11 +31,12 @@
         <el-input
           ref="linkUuidRef"
           placeholder=""
+          :class="!linkCustom && 'maxW380'"
           v-model="state.detailInfo.uuid"
           :disabled="!linkCustom"
           @blur="finishEditUuid"
         >
-          <template #prefix>
+          <template v-if="!linkCustom" #prefix>
             {{ formatLinkBase() }}
           </template>
         </el-input>
@@ -190,6 +191,7 @@ const hideShare = async () => {
   }
 }
 const clickOutPopover = e => {
+  console.log(e, 'e', popoverVisible.value, e.target.closest('[class*="share-popover"]'))
   if (!popoverVisible.value || e.target.closest('[class*="share-popover"]')) {
     return
   }
@@ -545,6 +547,12 @@ defineExpose({
     display: flex;
     margin-bottom: 16px;
     align-items: center;
+    .maxW380 {
+      :deep(.ed-input__prefix) {
+        overflow: hidden;
+        max-width: 380px;
+      }
+    }
     button {
       width: 40px;
       min-width: 40px;
