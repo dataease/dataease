@@ -1774,4 +1774,44 @@ public class ChartDataBuild {
         }
     }
 
+    public static Map<String, Object> transSymbolicMapNormalWithDetail(List<ChartViewFieldDTO> xAxis, List<ChartViewFieldDTO> yAxis, List<String[]> data, List<ChartViewFieldDTO> detailFields, List<String[]> detailData) {
+        int detailIndex = xAxis.size();
+
+        List<ChartViewFieldDTO> realDetailFields = detailFields.subList(detailIndex, detailFields.size());
+
+        List<ChartViewFieldDTO> fields = new ArrayList<>();
+        if (ObjectUtils.isNotEmpty(xAxis))
+            fields.addAll(xAxis);
+        if (ObjectUtils.isNotEmpty(yAxis))
+            fields.addAll(yAxis);
+        Map<String, Object> map = transTableNormal(fields, null, data, new HashMap<>());
+        List<Map<String, Object>> tableRow = (List<Map<String, Object>>) map.get("tableRow");
+        final int xEndIndex = detailIndex;
+        Map<String, List<String[]>> groupDataList = detailData.stream().collect(Collectors.groupingBy(item -> "(" + StringUtils.join(ArrayUtils.subarray(item, 0, xEndIndex), ")-de-(") + ")"));
+
+        tableRow.forEach(row -> {
+            String key = xAxis.stream().map(x -> String.format(format, row.get(x.getDataeaseName()).toString())).collect(Collectors.joining("-de-"));
+            List<String[]> detailFieldValueList = groupDataList.get(key);
+            List<Map<String, Object>> detailValueMapList = Optional.ofNullable(detailFieldValueList).orElse(new ArrayList<>()).stream().map((detailArr -> {
+                Map<String, Object> temp = new HashMap<>();
+                for (int i = 0; i < realDetailFields.size(); i++) {
+                    ChartViewFieldDTO realDetailField = realDetailFields.get(i);
+                    temp.put(realDetailField.getDataeaseName(), detailArr[detailIndex + i]);
+                }
+                return temp;
+            })).collect(Collectors.toList());
+            row.put("details", detailValueMapList);
+        });
+
+        ChartViewFieldDTO detailFieldDTO = new ChartViewFieldDTO();
+        detailFieldDTO.setId(IDUtils.snowID());
+        detailFieldDTO.setName("detail");
+        detailFieldDTO.setDataeaseName("detail");
+        fields.add(detailFieldDTO);
+        map.put("fields", fields);
+        map.put("detailFields", realDetailFields);
+        map.put("tableRow", tableRow);
+        return map;
+    }
+
 }
