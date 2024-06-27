@@ -97,6 +97,7 @@ public class TableInfoHandler extends DefaultChartHandler {
             totalPageSql = SqlUtils.rebuildSQL(totalPageSql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(totalPageSql);
             datasourceRequest.setTotalPageFlag(true);
+            logger.info("calcite total sql: " + totalPageSql);
             List<String[]> tmpData = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
             var totalItems = ObjectUtils.isEmpty(tmpData) ? 0 : Long.valueOf(tmpData.get(0)[0]);
             if (StringUtils.equalsIgnoreCase(view.getResultMode(), "custom")) {
@@ -109,6 +110,7 @@ public class TableInfoHandler extends DefaultChartHandler {
 
         querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
+        logger.info("calcite chart sql: " + querySql);
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         //自定义排序
         data = ChartDataUtil.resultCustomSort(xAxis, data);
