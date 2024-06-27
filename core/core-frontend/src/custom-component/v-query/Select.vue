@@ -83,7 +83,7 @@ const cascade = computed(() => {
 
 const setDefaultMapValue = arr => {
   const { displayId, field } = config.value
-  if (!displayId) {
+  if (config.value.optionValueSource !== 1) {
     return []
   }
   let defaultMapValue = {}
@@ -92,8 +92,8 @@ const setDefaultMapValue = arr => {
     defaultMapValue[ele] = []
   })
   enumValueArr.forEach(ele => {
-    if (defaultMapValue[ele[displayId]]) {
-      defaultMapValue[ele[displayId]].push(ele[field?.id])
+    if (defaultMapValue[ele[displayId || field?.id]]) {
+      defaultMapValue[ele[displayId || field?.id]].push(ele[field?.id])
     }
   })
   Object.values(defaultMapValue).forEach(ele => {

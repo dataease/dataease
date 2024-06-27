@@ -497,7 +497,7 @@ const openCascadeDialog = () => {
       }
       return pre
     }, {})
-  cascadeDialog.value.init(cascadeMap)
+  cascadeDialog.value.init(cascadeMap, cascadeArr)
 }
 
 const indexCascade = ' 一二三四五'

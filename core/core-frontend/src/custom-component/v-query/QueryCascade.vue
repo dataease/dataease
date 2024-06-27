@@ -60,7 +60,8 @@ const setCascadeArrBack = () => {
   }
 }
 
-const init = (cascadeMap: cascadeMap) => {
+const init = (cascadeMap: cascadeMap, arr) => {
+  cascadeList.value = cloneDeep(arr)
   datasetMap.value = Object.values(cascadeMap).map(ele => ({
     label: ele.name,
     deType: ele.deType,
