@@ -219,7 +219,7 @@ defineExpose({
     </el-button>
     <div class="cascade-content" v-for="(item, index) in cascadeList" :key="index">
       <div style="display: flex; align-items: center; justify-content: space-between">
-        <el-button :disabled="item.length === 5" text @click="addCascadeItem(item)">
+        <el-button :disabled="item.length === 2" text @click="addCascadeItem(item)">
           <template #icon>
             <Icon name="icon_add_outlined"></Icon>
           </template>
