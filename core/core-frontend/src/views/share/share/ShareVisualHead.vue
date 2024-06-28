@@ -191,7 +191,6 @@ const hideShare = async () => {
   }
 }
 const clickOutPopover = e => {
-  console.log(e, 'e', popoverVisible.value, e.target.closest('[class*="share-popover"]'))
   if (!popoverVisible.value || e.target.closest('[class*="share-popover"]')) {
     return
   }
