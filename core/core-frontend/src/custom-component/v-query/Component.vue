@@ -540,7 +540,11 @@ const autoStyle = computed(() => {
               </div>
             </div>
             <div class="query-select">
-              <StyleInject :customStyle="customStyle" :config="ele"></StyleInject>
+              <StyleInject
+                v-if="customStyle.queryConditionWidth !== 0"
+                :customStyle="customStyle"
+                :config="ele"
+              ></StyleInject>
             </div>
           </div>
         </div>

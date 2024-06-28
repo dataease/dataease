@@ -775,9 +775,7 @@ const setActiveSelectTab = (arr, id) => {
 }
 
 const init = (queryId: string) => {
-  if (!datasetTree.value.length) {
-    initDataset()
-  }
+  initDataset()
   renameInput.value = []
   handleCondition({ id: queryId })
   cascadeArr = cloneDeep(queryElement.value.cascade || [])
