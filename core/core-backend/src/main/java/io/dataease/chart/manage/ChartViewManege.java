@@ -23,11 +23,14 @@ import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.IDUtils;
 import io.dataease.utils.JsonUtil;
+import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
+import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.util.CollectionUtils;
 
 import java.util.*;
 import java.util.stream.Collectors;
@@ -45,6 +48,9 @@ public class ChartViewManege {
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
     @Resource
     private PermissionManage permissionManage;
+
+    @Resource
+    private DataVisualizationInfoMapper visualizationInfoMapper;
 
     @Resource
     private ExtChartViewMapper extChartViewMapper;
@@ -319,6 +325,13 @@ public class ChartViewManege {
     }
 
     public List<ViewSelectorVO> viewOption(Long resourceId) {
-        return extChartViewMapper.queryViewOption(resourceId);
+        List<ViewSelectorVO> result = extChartViewMapper.queryViewOption(resourceId);
+        DataVisualizationInfo dvInfo = visualizationInfoMapper.selectById(resourceId);
+        if(dvInfo != null && !CollectionUtils.isEmpty(result)){
+            String componentData = dvInfo.getComponentData();
+            return result.stream().filter(item ->componentData.indexOf(String.valueOf(item.getId()))>0).toList();
+        }else{
+            return result;
+        }
     }
 }
