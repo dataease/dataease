@@ -154,7 +154,7 @@ watch(
     if (!val) {
       const ed = tinymce.editors[tinymceId]
       if (canEdit.value) {
-        element.value.propValue.textValue = ed.getContent()
+        element.value.propValue.textValue = ed?.getContent()
       }
       element.value['editing'] = false
       canEdit.value = false
@@ -170,7 +170,7 @@ watch(
   () => {
     if (canEdit.value) {
       const ed = tinymce.editors[tinymceId]
-      element.value.propValue.textValue = ed.getContent()
+      element.value.propValue.textValue = ed?.getContent()
     }
     if (initReady.value && canEdit.value) {
       snapshotStore.recordSnapshotCache('renderChart', element.value.id)
