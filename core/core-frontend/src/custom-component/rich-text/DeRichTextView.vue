@@ -154,7 +154,7 @@ watch(
     if (!val) {
       const ed = tinymce.editors[tinymceId]
       if (canEdit.value) {
-        element.value.propValue.textValue = ed.getContent()
+        element.value.propValue.textValue = ed?.getContent()
       }
       element.value['editing'] = false
       canEdit.value = false
@@ -170,7 +170,7 @@ watch(
   () => {
     if (canEdit.value) {
       const ed = tinymce.editors[tinymceId]
-      element.value.propValue.textValue = ed.getContent()
+      element.value.propValue.textValue = ed?.getContent()
     }
     if (initReady.value && canEdit.value) {
       snapshotStore.recordSnapshotCache('renderChart', element.value.id)
@@ -231,7 +231,7 @@ const assignment = content => {
           value = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${value}</span>`
         }
         if (initReady.value) {
-          content = content.replace(itm, !!value ? value : '[未获取字段值]')
+          content = content.replace(itm, !!value ? value : '-')
         } else {
           content = content.replace(itm, !!value ? value : '[获取中...]')
         }
