@@ -14,6 +14,7 @@
     <result column="create_time" jdbcType="TIMESTAMP" property="createTime" />
     <result column="update_by" jdbcType="VARCHAR" property="updateBy" />
     <result column="update_time" jdbcType="TIMESTAMP" property="updateTime" />
+    <result column="commit_new_update" jdbcType="BIT" property="commitNewUpdate" />
   </resultMap>
   <resultMap extends="BaseResultMap" id="ResultMapWithBLOBs" type="io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs">
     <result column="forms" jdbcType="LONGVARCHAR" property="forms" />
@@ -79,7 +80,7 @@
   </sql>
   <sql id="Base_Column_List">
     id, `name`, pid, `level`, node_type, `table_name`, datasource, create_index, create_by, 
-    create_time, update_by, update_time
+    create_time, update_by, update_time, commit_new_update
   </sql>
   <sql id="Blob_Column_List">
     forms, table_indexes
@@ -137,12 +138,14 @@
       `level`, node_type, `table_name`, 
       datasource, create_index, create_by, 
       create_time, update_by, update_time, 
-      forms, table_indexes)
+      commit_new_update, forms, table_indexes
+      )
     values (#{id,jdbcType=VARCHAR}, #{name,jdbcType=VARCHAR}, #{pid,jdbcType=VARCHAR}, 
       #{level,jdbcType=INTEGER}, #{nodeType,jdbcType=VARCHAR}, #{tableName,jdbcType=VARCHAR}, 
       #{datasource,jdbcType=VARCHAR}, #{createIndex,jdbcType=BIT}, #{createBy,jdbcType=VARCHAR}, 
       #{createTime,jdbcType=TIMESTAMP}, #{updateBy,jdbcType=VARCHAR}, #{updateTime,jdbcType=TIMESTAMP}, 
-      #{forms,jdbcType=LONGVARCHAR}, #{tableIndexes,jdbcType=LONGVARCHAR})
+      #{commitNewUpdate,jdbcType=BIT}, #{forms,jdbcType=LONGVARCHAR}, #{tableIndexes,jdbcType=LONGVARCHAR}
+      )
   </insert>
   <insert id="insertSelective" parameterType="io.dataease.plugins.common.base.domain.DataFillFormWithBLOBs">
     insert into data_fill_form
@@ -182,6 +185,9 @@
       </if>
       <if test="updateTime != null">
         update_time,
+      </if>
+      <if test="commitNewUpdate != null">
+        commit_new_update,
       </if>
       <if test="forms != null">
         forms,
@@ -226,6 +232,9 @@
       </if>
       <if test="updateTime != null">
         #{updateTime,jdbcType=TIMESTAMP},
+      </if>
+      <if test="commitNewUpdate != null">
+        #{commitNewUpdate,jdbcType=BIT},
       </if>
       <if test="forms != null">
         #{forms,jdbcType=LONGVARCHAR},
@@ -280,6 +289,9 @@
       <if test="record.updateTime != null">
         update_time = #{record.updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="record.commitNewUpdate != null">
+        commit_new_update = #{record.commitNewUpdate,jdbcType=BIT},
+      </if>
       <if test="record.forms != null">
         forms = #{record.forms,jdbcType=LONGVARCHAR},
       </if>
@@ -305,6 +317,7 @@
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_by = #{record.updateBy,jdbcType=VARCHAR},
       update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      commit_new_update = #{record.commitNewUpdate,jdbcType=BIT},
       forms = #{record.forms,jdbcType=LONGVARCHAR},
       table_indexes = #{record.tableIndexes,jdbcType=LONGVARCHAR}
     <if test="_parameter != null">
@@ -324,7 +337,8 @@
       create_by = #{record.createBy,jdbcType=VARCHAR},
       create_time = #{record.createTime,jdbcType=TIMESTAMP},
       update_by = #{record.updateBy,jdbcType=VARCHAR},
-      update_time = #{record.updateTime,jdbcType=TIMESTAMP}
+      update_time = #{record.updateTime,jdbcType=TIMESTAMP},
+      commit_new_update = #{record.commitNewUpdate,jdbcType=BIT}
     <if test="_parameter != null">
       <include refid="Update_By_Example_Where_Clause" />
     </if>
@@ -365,6 +379,9 @@
       <if test="updateTime != null">
         update_time = #{updateTime,jdbcType=TIMESTAMP},
       </if>
+      <if test="commitNewUpdate != null">
+        commit_new_update = #{commitNewUpdate,jdbcType=BIT},
+      </if>
       <if test="forms != null">
         forms = #{forms,jdbcType=LONGVARCHAR},
       </if>
@@ -387,6 +404,7 @@
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_by = #{updateBy,jdbcType=VARCHAR},
       update_time = #{updateTime,jdbcType=TIMESTAMP},
+      commit_new_update = #{commitNewUpdate,jdbcType=BIT},
       forms = #{forms,jdbcType=LONGVARCHAR},
       table_indexes = #{tableIndexes,jdbcType=LONGVARCHAR}
     where id = #{id,jdbcType=VARCHAR}
@@ -403,7 +421,8 @@
       create_by = #{createBy,jdbcType=VARCHAR},
       create_time = #{createTime,jdbcType=TIMESTAMP},
       update_by = #{updateBy,jdbcType=VARCHAR},
-      update_time = #{updateTime,jdbcType=TIMESTAMP}
+      update_time = #{updateTime,jdbcType=TIMESTAMP},
+      commit_new_update = #{commitNewUpdate,jdbcType=BIT}
     where id = #{id,jdbcType=VARCHAR}
   </update>
 </mapper>

@@ -30,5 +30,7 @@ public class DataFillForm implements Serializable {
 
     private Date updateTime;
 
+    private Boolean commitNewUpdate;
+
     private static final long serialVersionUID = 1L;
 }

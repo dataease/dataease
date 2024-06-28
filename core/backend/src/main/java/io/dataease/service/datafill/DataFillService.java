@@ -1,7 +1,7 @@
 package io.dataease.service.datafill;
 
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.annotation.DeCleaner;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.constants.DataFillConstants;
@@ -11,6 +11,8 @@ import io.dataease.commons.constants.SysLogConstants;
 import io.dataease.commons.utils.*;
 import io.dataease.controller.ResultHolder;
 import io.dataease.controller.request.datafill.DataFillFormRequest;
+import io.dataease.controller.request.datafill.DataFillFormTableDataRequest;
+import io.dataease.controller.response.datafill.DataFillFormTableDataResponse;
 import io.dataease.dto.datafill.DataFillFormDTO;
 import io.dataease.ext.ExtDataFillFormMapper;
 import io.dataease.i18n.Translator;
@@ -29,6 +31,7 @@ import io.dataease.plugins.datasource.provider.ProviderFactory;
 import io.dataease.provider.datasource.JdbcProvider;
 import io.dataease.service.sys.SysAuthService;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.pentaho.di.core.util.UUIDUtil;
 import org.springframework.core.env.Environment;
@@ -452,7 +455,7 @@ public class DataFillService {
     }
 
 
-    public void fillFormData(String userTaskId, Map<String, Object> data) throws Exception {
+    public void fillFormData(String userTaskId, List<Map<String, Object>> data) throws Exception {
         if (!CommonBeanFactory.getBean(AuthUserService.class).pluginLoaded()) {
             DataEaseException.throwException("invalid");
         }
@@ -475,35 +478,116 @@ public class DataFillService {
 
         String formId = task.getFormId();
 
-        String rowId = null;
-        if (StringUtils.isNotBlank(task.getValueId())) {
-            rowId = task.getValueId();
-        } else {
-            DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
 
-            Datasource ds = dataFillDataService.getDataSource(dataFillForm.getDatasource());
-            Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
-            ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
+        DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(formId);
 
-            DatasourceRequest datasourceRequest = new DatasourceRequest();
-            datasourceRequest.setDatasource(ds);
-            datasourceRequest.setTable(dataFillForm.getTableName());
+        Datasource ds = dataFillDataService.getDataSource(dataFillForm.getDatasource());
+        Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+        ExtDDLProvider extDDLProvider = ProviderFactory.gerExtDDLProvider(ds.getType());
 
-            DataFillDataService.setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
+        DatasourceRequest datasourceRequest = new DatasourceRequest();
+        datasourceRequest.setDatasource(ds);
+        datasourceRequest.setTable(dataFillForm.getTableName());
 
-            List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
+        DataFillDataService.setLowerCaseRequest(ds, datasourceProvider, extDDLProvider, datasourceRequest);
 
-            for (TableField tableField : tableFields) {
-                if (tableField.isPrimaryKey()) {
-                    rowId = (String) data.get(tableField.getFieldName());
-                    break;
-                }
+        List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
+
+        String pk = "";
+        for (TableField tableField : tableFields) {
+            if (tableField.isPrimaryKey()) {
+                pk = tableField.getFieldName();
+                break;
             }
         }
 
-        rowId = dataFillDataService.updateOrInsertRowData(formId, Collections.singletonList(new RowDataDatum().setId(rowId).setData(data))).get(0);
+        List<RowDataDatum> updateDatumList = new ArrayList<>();
+        List<RowDataDatum> insertDatumList = new ArrayList<>();
 
-        task.setValueId(rowId);
+        List<RowDataDatum> valueList = new ArrayList<>();
+
+        for (Map<String, Object> datum : data) {
+            String pkv = (String) datum.get(pk);
+            if (pkv == null) {
+                insertDatumList.add(new RowDataDatum().setData(datum));
+            } else {
+                updateDatumList.add(new RowDataDatum().setId(pkv).setData(datum));
+            }
+        }
+
+        //针对没有id的数据，即第一次提交的新数据，需要根据表单提交模式进行判断
+        if (CollectionUtils.isNotEmpty(insertDatumList)) {
+            //表单提交模式为更新时，需要根据条件加上主键id
+            List<ExtTableField> formFields = gson.fromJson(dataFillForm.getForms(), new TypeToken<List<ExtTableField>>() {
+            }.getType());
+
+            List<ExtTableField> fields = new ArrayList<>();
+            for (ExtTableField field : formFields) {
+                if (field.isRemoved()) {
+                    continue;
+                }
+                if (StringUtils.equalsIgnoreCase(field.getType(), "dateRange")) {
+                    ExtTableField start = gson.fromJson(gson.toJson(field), ExtTableField.class);
+                    start.getSettings().getMapping().setColumnName(start.getSettings().getMapping().getColumnName1());
+                    start.getSettings().setName(start.getSettings().getName() + "（开始）");
+                    fields.add(start);
+
+                    ExtTableField end = gson.fromJson(gson.toJson(field), ExtTableField.class);
+                    end.getSettings().setName(end.getSettings().getName() + "（结束）");
+                    end.getSettings().getMapping().setColumnName(end.getSettings().getMapping().getColumnName2());
+                    fields.add(end);
+                } else {
+                    fields.add(field);
+                }
+            }
+
+            boolean updateMode = false;
+            List<ExtTableField> fieldsForCheck = new ArrayList<>();
+            if (BooleanUtils.isTrue(dataFillForm.getCommitNewUpdate())) {
+                //这里把所有数据都拿出来遍历真的合适吗？
+                for (ExtTableField field : fields) {
+                    if (field.getSettings().isUpdateRuleCheck()) {
+                        updateMode = true;
+                        fieldsForCheck.add(field);
+                    }
+                }
+            }
+
+            if (!updateMode) {
+                valueList = new ArrayList<>(insertDatumList);
+            } else {
+                DataFillFormTableDataRequest req = new DataFillFormTableDataRequest();
+                req.setId(dataFillForm.getId());
+                DataFillFormTableDataResponse res = dataFillDataService.listData(req, false);
+                List<Map<String, Object>> searchData = new ArrayList<>();
+                if (res != null && res.getData() != null) {
+                    searchData = (List<Map<String, Object>>) res.getData();
+                }
+
+                for (RowDataDatum datum : insertDatumList) {
+                    boolean hasUpdate = false;
+                    for (Map<String, Object> searchDatum : searchData) {
+                        if (DataFillDataService.processValueList(valueList, pk, datum, searchDatum, fieldsForCheck)) {
+                            hasUpdate = true;
+                        }
+                    }
+                    if (!hasUpdate) {
+                        RowDataDatum row = new RowDataDatum()
+                                .setInsert(true)
+                                .setData(new HashMap<>(datum.getData()));
+                        valueList.add(row);
+                    }
+                }
+
+            }
+
+        }
+
+        valueList.addAll(updateDatumList);
+
+        List<String> rowIds = dataFillDataService.updateOrInsertRowData(formId, valueList);
+
+        task.setValueId(String.join(",", rowIds));
         task.setFinishTime(new Date());
 
         dataFillUserTaskMapper.updateByPrimaryKeySelective(task);

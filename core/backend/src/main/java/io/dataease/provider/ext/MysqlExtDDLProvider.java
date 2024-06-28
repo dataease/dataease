@@ -76,7 +76,10 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
 
     @Override
     public String searchSql(String table, List<TableField> formFields, String whereSql, long limit, long offset) {
-        String baseSql = "SELECT $Column_Fields$ FROM `$TABLE_NAME$` $WHERE_SQL$ LIMIT $OFFSET_COUNT$, $LIMIT_COUNT$ ;";
+        String baseSql = "SELECT $Column_Fields$ FROM `$TABLE_NAME$` $WHERE_SQL$ ;";
+        if (limit > 0) {
+            baseSql = "SELECT $Column_Fields$ FROM `$TABLE_NAME$` $WHERE_SQL$ LIMIT $OFFSET_COUNT$, $LIMIT_COUNT$ ;";
+        }
         baseSql = baseSql.replace("$TABLE_NAME$", table)
                 .replace("$OFFSET_COUNT$", Long.toString(offset))
                 .replace("$LIMIT_COUNT$", Long.toString(limit));

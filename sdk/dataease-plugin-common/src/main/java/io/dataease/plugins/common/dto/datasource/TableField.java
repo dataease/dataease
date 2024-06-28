@@ -17,4 +17,6 @@ public class TableField {
     //java.sql.Types
     private Integer type;
 
+    private int inCount;
+
 }

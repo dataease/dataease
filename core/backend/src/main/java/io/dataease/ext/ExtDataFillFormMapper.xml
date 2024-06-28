@@ -231,7 +231,8 @@
             <include refid="io.dataease.plugins.common.base.mapper.DataFillUserTaskMapper.Base_Column_List" />
         FROM data_fill_user_task
         WHERE user = #{userId}
-        AND finish_time IS NOT NULL) t1
+        AND finish_time IS NOT NULL
+        AND (end_time IS NULL OR end_time &gt;= #{current})) t1
         LEFT JOIN (SELECT id, `name` FROM data_fill_form) t2 ON t1.form_id = t2.id
         LEFT JOIN (SELECT id, `name`, `creator` FROM data_fill_task) t3 ON t1.task_id = t3.id
         LEFT JOIN (SELECT user_id, nick_name FROM sys_user) t4 ON t3.creator = t4.user_id

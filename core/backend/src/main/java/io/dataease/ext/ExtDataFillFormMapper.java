@@ -25,6 +25,6 @@ public interface ExtDataFillFormMapper {
     List<DataFillTask> selectActiveDataFillTasks();
 
     List<DataFillUserTaskDTO> listTodoUserTask(long userId, Date current, String taskName);
-    List<DataFillUserTaskDTO> listFinishedUserTask(long userId, String taskName);
+    List<DataFillUserTaskDTO> listFinishedUserTask(long userId, Date current, String taskName);
     List<DataFillUserTaskDTO> listExpiredUserTask(long userId, Date current, String taskName);
 }
