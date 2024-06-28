@@ -2,13 +2,13 @@ package io.dataease.dataset.server;
 
 import io.dataease.api.dataset.DatasetTreeApi;
 import io.dataease.api.dataset.dto.DatasetNodeDTO;
-import io.dataease.extensions.datasource.dto.DatasetTableDTO;
-import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.dataset.manage.DatasetGroupManage;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
+import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -72,7 +72,7 @@ public class DatasetTreeServer implements DatasetTreeApi {
 
     @Override
     public DatasetGroupInfoDTO details(Long id) throws Exception {
-        return datasetGroupManage.get(id, null);
+        return datasetGroupManage.getDetail(id);
     }
 
     @Override
