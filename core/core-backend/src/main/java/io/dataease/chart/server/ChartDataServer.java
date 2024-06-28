@@ -1,7 +1,6 @@
 package io.dataease.chart.server;
 
 import io.dataease.api.chart.ChartDataApi;
-import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.api.chart.dto.ViewDetailField;
 import io.dataease.api.chart.request.ChartExcelRequest;
 import io.dataease.api.chart.request.ChartExcelRequestInner;
@@ -12,6 +11,7 @@ import io.dataease.constant.CommonConstants;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.exception.DEException;
 import io.dataease.exportCenter.manage.ExportCenterManage;
+import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.result.ResultCode;
 import io.dataease.utils.LogUtil;
 import io.dataease.visualization.manage.VisualizationTemplateExtendDataManage;
@@ -70,10 +70,10 @@ public class ChartDataServer implements ChartDataApi {
         try {
             ChartViewDTO viewDTO = request.getViewInfo();
             viewDTO.setIsExcelExport(true);
-            if(ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(viewDTO.getResultMode())){
+            if (ChartConstants.VIEW_RESULT_MODE.CUSTOM.equals(viewDTO.getResultMode())) {
                 Integer limitCount = viewDTO.getResultCount();
-                viewDTO.setResultCount(limitCount>limit?limit:limitCount);
-            }else{
+                viewDTO.setResultCount(limitCount > limit ? limit : limitCount);
+            } else {
                 viewDTO.setResultCount(limit);
             }
             ChartViewDTO chartViewInfo = getData(viewDTO);
