@@ -11,9 +11,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class StackMixHandler extends MixHandler{
+public class StackMixHandler extends MixHandler {
     @Getter
-    private String type = "chart-mix-stack";
+    private final String type = "chart-mix-stack";
 
     @Override
     public AxisFormatResult formatAxis(ChartViewDTO view) {
@@ -88,7 +88,7 @@ public class StackMixHandler extends MixHandler{
         rightFields.addAll(view.getYAxisExt());
         var rightOriginData = rightCalcResult.getOriginData();
         var rightTable = ChartDataBuild.transTableNormal(rightFields, view, rightOriginData, desensitizationList);
-        var rightData = new HashMap<String, Object>(leftTable);
+        var rightData = new HashMap<String, Object>(rightTable);
         rightData.putAll(rightCalcResult.getData());
         rightData.put("dynamicAssistLines", rightCalcResult.getDynamicAssistFields());
 
