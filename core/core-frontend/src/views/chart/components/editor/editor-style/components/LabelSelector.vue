@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { computed, inject, onMounted, PropType, reactive, ref, watch } from 'vue'
+import { computed, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { COLOR_PANEL, DEFAULT_LABEL } from '@/views/chart/components/editor/util/chart'
 import { ElIcon, ElSpace } from 'element-plus-secondary'
@@ -10,7 +10,6 @@ import { fieldType } from '@/utils/attr'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import Icon from '../../../../../../components/icon-custom/src/Icon.vue'
-import { deepCopy } from '@/utils/utils'
 
 const { t } = useI18n()
 
@@ -439,12 +438,25 @@ onMounted(() => {
         />
       </el-select>
     </el-form-item>
-    <el-form-item
-      v-if="showPositionV"
-      :label="t('chart.label_position')"
-      class="form-item"
-      :class="'form-item-' + themes"
-    >
+    <el-form-item v-if="showPositionV" class="form-item" :class="'form-item-' + themes">
+      <template #label>
+        {{ t('chart.label_position') }}
+        <el-tooltip
+          class="item"
+          :effect="toolTip"
+          placement="top"
+          v-if="chart.type.includes('chart-mix')"
+        >
+          <template #content>
+            <span v-html="t('chart.chart_mix_label_only_left')"></span>
+          </template>
+          <span style="vertical-align: middle">
+            <el-icon style="cursor: pointer">
+              <Icon name="icon_info_outlined" />
+            </el-icon>
+          </span>
+        </el-tooltip>
+      </template>
       <el-select
         size="small"
         :effect="themes"
