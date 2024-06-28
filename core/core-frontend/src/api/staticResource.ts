@@ -7,6 +7,7 @@ export const uploadFile = (fileId: number | string, param) =>
   request.post({
     url: '/staticResource/upload/' + fileId,
     headersType: 'multipart/form-data',
+    loading: true,
     data: param
   })
 

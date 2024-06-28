@@ -28,6 +28,8 @@ import { Base64 } from 'js-base64'
 import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { deepCopy } from '@/utils/utils'
 const interactiveStore = interactiveStoreWithOut()
+import { useRequestStoreWithOut } from '@/store/modules/request'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const canvasCacheOutRef = ref(null)
@@ -42,6 +44,8 @@ const eventCheck = e => {
 }
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
+const requestStore = useRequestStoreWithOut()
+const permissionStore = usePermissionStoreWithOut()
 const {
   fullscreenFlag,
   componentData,
@@ -233,6 +237,8 @@ onUnmounted(() => {
     <el-container
       class="dv-layout-container"
       :class="{ 'preview-content': editMode === 'preview' }"
+      v-loading="requestStore.loadingMap[permissionStore.currentPath]"
+      element-loading-background="rgba(0, 0, 0, 0)"
     >
       <!-- 中间画布 -->
       <main class="center" :class="{ 'de-screen-full': fullscreenFlag }">
