@@ -40,6 +40,8 @@ import CanvasCacheDialog from '@/components/visualization/CanvasCacheDialog.vue'
 import { deepCopy } from '@/utils/utils'
 import DvPreview from '@/views/data-visualization/DvPreview.vue'
 import DeRuler from '@/custom-component/common/DeRuler.vue'
+import { useRequestStoreWithOut } from '@/store/modules/request'
+import { usePermissionStoreWithOut } from '@/store/modules/permission'
 const interactiveStore = interactiveStoreWithOut()
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
@@ -66,7 +68,8 @@ const composeStore = composeStoreWithOut()
 const canvasCacheOutRef = ref(null)
 const deWRulerRef = ref(null)
 const deHRulerRef = ref(null)
-
+const requestStore = useRequestStoreWithOut()
+const permissionStore = usePermissionStoreWithOut()
 const {
   fullscreenFlag,
   componentData,
@@ -379,6 +382,8 @@ eventBus.on('handleNew', handleNew)
     <div class="custom-dv-divider" />
     <el-container
       v-if="loadFinish"
+      v-loading="requestStore.loadingMap[permissionStore.currentPath]"
+      element-loading-background="rgba(0, 0, 0, 0)"
       class="dv-layout-container"
       :class="{ 'preview-layout-container': previewStatus }"
     >
