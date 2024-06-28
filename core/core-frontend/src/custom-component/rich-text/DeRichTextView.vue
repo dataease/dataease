@@ -128,10 +128,9 @@ const init = ref({
     'vertical-content advlist autolink link image lists charmap  media wordcount table contextmenu directionality pagebreak letterspacing', // 插件
   // 工具栏
   toolbar:
-    'undo redo | fontselect fontsizeselect |forecolor backcolor bold italic letterspacing |underline strikethrough link| formatselect |' +
+    'undo redo | fontselect fontsizeselect |forecolor backcolor bold italic letterspacing |underline strikethrough link lineheight| formatselect |' +
     'top-align center-align bottom-align | alignleft aligncenter alignright | bullist numlist |' +
-    ' blockquote subscript superscript removeformat | table image | fullscreen ' +
-    '| bdmap indent2em lineheight formatpainter axupimgs',
+    ' blockquote subscript superscript removeformat | table image ',
   toolbar_location: '/',
   font_formats:
     '阿里巴巴普惠体=阿里巴巴普惠体 3.0 55 Regular L3;微软雅黑=Microsoft YaHei;宋体=SimSun;黑体=SimHei;仿宋=FangSong;华文黑体=STHeiti;华文楷体=STKaiti;华文宋体=STSong;华文仿宋=STFangsong;Andale Mono=andale mono,times;Arial=arial,helvetica,sans-serif;Arial Black=arial black,avant garde;Book Antiqua=book antiqua,palatino;Comic Sans MS=comic sans ms,sans-serif;Courier New=courier new,courier;Georgia=georgia,palatino;Helvetica=helvetica;Impact=impact,chicago;Symbol=symbol;Tahoma=tahoma,arial,helvetica,sans-serif;Terminal=terminal,monaco;Times New Roman=times new roman,times;Trebuchet MS=trebuchet ms,geneva;Verdana=verdana,geneva;Webdings=webdings;Wingdings=wingdings',
