@@ -174,7 +174,7 @@ const calcData = async (view, callback) => {
         callback?.()
       })
   } else {
-    if (['bubble-map', 'map', 'flow-map'].includes(view.type)) {
+    if (['bubble-map', 'map', 'flow-map', 'heat-map'].includes(view.type)) {
       await renderChart(view, callback)
     }
     callback?.()
@@ -484,7 +484,7 @@ defineExpose({
 })
 let resizeObserver
 const TOLERANCE = 0.01
-const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map']
+const RESIZE_MONITOR_CHARTS = ['map', 'bubble-map', 'flow-map', 'heat-map']
 onMounted(() => {
   const containerDom = document.getElementById(containerId)
   const { offsetWidth, offsetHeight } = containerDom

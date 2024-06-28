@@ -301,7 +301,8 @@ const boardMoveActive = computed(() => {
     'table-info',
     'table-normal',
     'table-pivot',
-    'symbolic-map'
+    'symbolic-map',
+    'heat-map'
   ]
   return CHARTS.includes(element.value.innerType)
 })
