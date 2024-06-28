@@ -1,4 +1,4 @@
---
+--
 ---- Licensed to the Apache Software Foundation (ASF) under one or more
 ---- contributor license agreements.  See the NOTICE file distributed with
 ---- this work for additional information regarding copyright ownership.
@@ -34,6 +34,7 @@ local schema = {
         idp_uri = {type = "string"},
         cas_callback_uri = {type = "string"},
         logout_uri = {type = "string"},
+        cas_callback_domain={type="string"}
     },
     required = {
         "idp_uri", "cas_callback_uri", "logout_uri"
@@ -52,8 +53,12 @@ function _M.check_schema(conf)
 end
 
 local function uri_without_ticket(conf, ctx)
-    return ctx.var.scheme .. "://" .. ctx.var.host .. ":" ..
-        ctx.var.server_port .. conf.cas_callback_uri
+    if conf.cas_callback_domain == nil then
+        return ctx.var.scheme .. "://" .. ctx.var.host .. ":" ..
+            ctx.var.server_port .. conf.cas_callback_uri
+    else
+        return conf.cas_callback_domain .. conf.cas_callback_uri
+    end
 end
 
 local function get_session_id(ctx)
@@ -113,7 +118,7 @@ local function validate(conf, ctx, ticket)
     local httpc = http.new()
     local res, err = httpc:request_uri(conf.idp_uri ..
         "/serviceValidate",
-        { query = { ticket = ticket, service = uri_without_ticket(conf, ctx) } })
+        { query = { ticket = ticket, service = uri_without_ticket(conf, ctx) }, ssl_verify = false })
 
     if res and res.status == ngx.HTTP_OK and res.body ~= nil then
         if core.string.find(res.body, "<cas:authenticationSuccess>") then
