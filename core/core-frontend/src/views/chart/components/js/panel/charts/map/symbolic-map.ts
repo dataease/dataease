@@ -60,7 +60,6 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
   async drawChart(drawOption: L7DrawConfig<L7Config>) {
     const { chart, container, action } = drawOption
     const xAxis = deepCopy(chart.xAxis)
-    const xAxisExt = deepCopy(chart.xAxisExt)
     let basicStyle
     let miscStyle
     if (chart.customAttr) {
@@ -86,7 +85,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     scene.once('loaded', () => {
       mapRendered(container)
     })
-    if (xAxis?.length < 2 || xAxisExt?.length < 1) {
+    if (xAxis?.length < 2) {
       return new L7Wrapper(scene, undefined)
     }
     const configList: L7Config[] = []
@@ -100,16 +99,37 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     this.configZoomButton(chart, scene)
     symbolicLayer.on('click', ev => {
       const data = ev.feature
+      const dimensionList = []
+      const quotaList = []
+      chart.data.fields.forEach((item, index) => {
+        Object.keys(data).forEach(key => {
+          if (key.startsWith('f_') && item.dataeaseName === key) {
+            if (index === 0) {
+              dimensionList.push({
+                id: item.id,
+                dataeaseName: item.dataeaseName,
+                value: data[key]
+              })
+            } else {
+              quotaList.push({
+                id: item.id,
+                dataeaseName: item.dataeaseName,
+                value: data[key]
+              })
+            }
+          }
+        })
+      })
       action({
         x: ev.x,
         y: ev.y,
         data: {
           data: {
             ...data,
-            dimensionList: chart.data.data.filter(item => item.field === ev.feature.field)?.[0]
-              ?.dimensionList,
-            quotaList: chart.data.data.filter(item => item.field === ev.feature.field)?.[0]
-              ?.quotaList
+            value: quotaList[0].value,
+            name: dimensionList[0].id,
+            dimensionList: dimensionList,
+            quotaList: quotaList
           }
         }
       })
@@ -127,26 +147,30 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     const extBubble = deepCopy(chart.extBubble)
     const { mapSymbolOpacity, mapSymbolSize, mapSymbol, mapSymbolStrokeWidth, colors, alpha } =
       deepCopy(basicStyle)
-    const c = []
-    colors.forEach(ele => {
-      c.push(hexColorToRGBA(ele, alpha))
-    })
+    const colorsWithAlpha = colors.map(color => hexColorToRGBA(color, alpha))
+    let colorIndex = 0
+    // 存储已分配的颜色
+    const colorAssignments = new Map()
     const sizeKey = extBubble.length > 0 ? extBubble[0].dataeaseName : ''
     const data = chart.data?.tableRow
-      ? chart.data?.tableRow.map((item, index) => ({
-          ...item,
-          color: c[index % c.length],
-          size: item[sizeKey] ? item[sizeKey] : mapSymbolSize,
-          field:
-            item[xAxis[0].dataeaseName] +
-            '000\n' +
-            item[xAxis[1].dataeaseName] +
-            '000\n' +
-            item[xAxisExt[0].dataeaseName],
-          name: item[xAxisExt[0].dataeaseName]
-        }))
+      ? chart.data.tableRow.map(item => {
+          // 颜色标识
+          const identifier = item[xAxisExt[0]?.dataeaseName]
+          // 检查该标识是否已有颜色分配，如果没有则分配
+          let color = colorAssignments.get(identifier)
+          if (!color) {
+            color = colorsWithAlpha[colorIndex++ % colorsWithAlpha.length]
+            // 记录分配的颜色
+            colorAssignments.set(identifier, color)
+          }
+          return {
+            ...item,
+            color,
+            size: item[sizeKey] ?? mapSymbolSize,
+            name: identifier
+          }
+        })
       : []
-    const color = xAxisExt && xAxisExt.length > 0 ? 'color' : c[0]
     const pointLayer = new PointLayer()
       .source(data, {
         parser: {
@@ -156,17 +180,24 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
         }
       })
       .shape(mapSymbol)
-      .color(color)
-      .style({
+      .active(true)
+    if (xAxisExt[0]?.dataeaseName) {
+      pointLayer.color(xAxisExt[0]?.dataeaseName, colorsWithAlpha)
+      pointLayer.style({
         stroke: {
           field: 'color'
         },
         strokeWidth: mapSymbolStrokeWidth,
-        opacity: {
-          field: (mapSymbolOpacity / 100) * 10
-        }
+        opacity: mapSymbolOpacity / 10
       })
-      .active(true)
+    } else {
+      pointLayer.color(colorsWithAlpha[0])
+      pointLayer.style({
+        stroke: colorsWithAlpha[0],
+        strokeWidth: mapSymbolStrokeWidth,
+        opacity: mapSymbolOpacity / 10
+      })
+    }
     if (sizeKey) {
       pointLayer.size('size', [4, 30])
     } else {
@@ -329,11 +360,12 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
   setupDefaultOptions(chart: ChartObj): ChartObj {
     chart.customAttr.label = {
       ...chart.customAttr.label,
-      show: false
+      show: true
     }
     chart.customAttr.basicStyle = {
       ...chart.customAttr.basicStyle,
-      mapSymbolOpacity: 5
+      mapSymbolOpacity: 5,
+      mapStyle: 'normal'
     }
     return chart
   }
