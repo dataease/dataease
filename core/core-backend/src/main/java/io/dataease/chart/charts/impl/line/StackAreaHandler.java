@@ -101,6 +101,7 @@ public class StackAreaHandler extends YoyChartHandler {
                 req.setDsList(dsMap);
                 var assistSql = assistSQL(originSql, assistFields);
                 req.setQuery(assistSql);
+                logger.info("calcite assist sql: " + assistSql);
                 var assistData = (List<String[]>) provider.fetchResultField(req).get("data");
                 result.setAssistData(assistData);
                 result.setDynamicAssistFields(dynamicAssistFields);

@@ -1,17 +1,19 @@
 package io.dataease.dataset.utils;
 
 import com.google.common.collect.ImmutableList;
-import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.engine.constant.SqlPlaceholderConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.view.model.SQLMeta;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.*;
 import org.apache.calcite.sql.dialect.*;
 import org.apache.calcite.sql.parser.SqlParseException;
 import org.apache.calcite.sql.parser.SqlParser;
 import org.apache.commons.collections4.MapUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import java.util.HashMap;
 import java.util.List;
@@ -24,6 +26,8 @@ import static org.apache.calcite.sql.SqlKind.*;
  * @Author Junjun
  */
 public class SqlUtils {
+    public static Logger logger = LoggerFactory.getLogger(SqlUtils.class);
+
     public static String addSchema(String sql, String schema) {
         if (sql.trim().endsWith(";")) {
             sql = sql.substring(0, sql.length() - 1);
@@ -118,6 +122,7 @@ public class SqlUtils {
     }
 
     public static String rebuildSQL(String sql, SQLMeta sqlMeta, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap) {
+        logger.info("calcite sql: " + sql);
         if (crossDs) {
             return sql;
         }
