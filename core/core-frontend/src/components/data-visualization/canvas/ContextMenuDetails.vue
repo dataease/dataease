@@ -284,6 +284,6 @@ const editQueryCriteria = () => {
 
 .custom-divider {
   border-color: #434343 !important;
-  margin: 0px;
+  margin: 0 !important;
 }
 </style>
