@@ -904,6 +904,66 @@ public class DataFillFormExample {
             addCriterion("update_time not between", value1, value2, "updateTime");
             return (Criteria) this;
         }
+
+        public Criteria andCommitNewUpdateIsNull() {
+            addCriterion("commit_new_update is null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateIsNotNull() {
+            addCriterion("commit_new_update is not null");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateEqualTo(Boolean value) {
+            addCriterion("commit_new_update =", value, "commitNewUpdate");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateNotEqualTo(Boolean value) {
+            addCriterion("commit_new_update <>", value, "commitNewUpdate");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateGreaterThan(Boolean value) {
+            addCriterion("commit_new_update >", value, "commitNewUpdate");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateGreaterThanOrEqualTo(Boolean value) {
+            addCriterion("commit_new_update >=", value, "commitNewUpdate");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateLessThan(Boolean value) {
+            addCriterion("commit_new_update <", value, "commitNewUpdate");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateLessThanOrEqualTo(Boolean value) {
+            addCriterion("commit_new_update <=", value, "commitNewUpdate");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateIn(List<Boolean> values) {
+            addCriterion("commit_new_update in", values, "commitNewUpdate");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateNotIn(List<Boolean> values) {
+            addCriterion("commit_new_update not in", values, "commitNewUpdate");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateBetween(Boolean value1, Boolean value2) {
+            addCriterion("commit_new_update between", value1, value2, "commitNewUpdate");
+            return (Criteria) this;
+        }
+
+        public Criteria andCommitNewUpdateNotBetween(Boolean value1, Boolean value2) {
+            addCriterion("commit_new_update not between", value1, value2, "commitNewUpdate");
+            return (Criteria) this;
+        }
     }
 
     public static class Criteria extends GeneratedCriteria {

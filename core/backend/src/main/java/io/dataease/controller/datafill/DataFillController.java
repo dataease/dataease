@@ -79,7 +79,7 @@ public class DataFillController {
 
     @ApiIgnore
     @PostMapping("/form/delete/{id}")
-    public void saveForm(@PathVariable String id) throws Exception {
+    public void deleteForm(@PathVariable String id) throws Exception {
         dataFillService.deleteForm(id);
     }
 
@@ -184,7 +184,7 @@ public class DataFillController {
 
     @ApiIgnore
     @PostMapping("/myTask/fill/{taskId}")
-    public void userFillData(@PathVariable String taskId, @RequestBody Map<String, Object> data) throws Exception {
+    public void userFillData(@PathVariable String taskId, @RequestBody List<Map<String, Object>> data) throws Exception {
         dataFillService.fillFormData(taskId, data);
     }
 

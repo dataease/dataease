@@ -64,8 +64,8 @@
 
 
 
-        <table tableName="export_task">
-            <columnOverride column="msg"    jdbcType="VARCHAR"/>
+        <table tableName="data_fill_form">
+            <!--<columnOverride column="forms"    jdbcType="VARCHAR"/>-->
         </table>
 
 

@@ -370,6 +370,7 @@ export default {
             forms: JSON.stringify(this.formData.forms),
             createIndex: this.formData.createIndex,
             tableIndexes: JSON.stringify(this.formData.tableIndexes),
+            commitNewUpdate: this.formData.commitNewUpdate,
             nodeType: 'form'
           }
           updateForm(data).then(res => {
@@ -397,6 +398,7 @@ export default {
             forms: JSON.stringify(this.formData.forms),
             createIndex: this.formData.createIndex,
             tableIndexes: JSON.stringify(this.formData.tableIndexes),
+            commitNewUpdate: this.formData.commitNewUpdate,
             nodeType: 'form'
           }
           saveForm(data).then(res => {
