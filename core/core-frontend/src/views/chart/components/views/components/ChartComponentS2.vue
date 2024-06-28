@@ -109,6 +109,14 @@ const containerId = 'container-' + showPosition.value + '-' + view.value.id
 const viewTrack = ref(null)
 
 const calcData = (view: Chart, callback, resetPageInfo = true) => {
+  if (view.customAttr.basicStyle.tablePageStyle === 'general') {
+    if (state.currentPageSize !== 0) {
+      view.chartExtRequest.pageSize = state.currentPageSize
+    }
+  } else {
+    delete view.chartExtRequest.pageSize
+  }
+  console.log(view)
   if (view.tableId || view['dataFrom'] === 'template') {
     isError.value = false
     const v = JSON.parse(JSON.stringify(view))
@@ -258,6 +266,9 @@ const handleCurrentChange = pageNum => {
 }
 
 const handlePageSizeChange = pageSize => {
+  if (state.pageStyle === 'general') {
+    state.currentPageSize = pageSize
+  }
   let extReq = { pageSize: pageSize }
   if (chartExtRequest.value) {
     extReq = { ...extReq, ...chartExtRequest.value }
