@@ -127,7 +127,6 @@
         </el-dropdown-menu>
       </template>
     </el-dropdown>
-
     <el-dropdown
       trigger="click"
       placement="right-start"
@@ -174,7 +173,7 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
 const customTabsSortRef = ref(null)
-const authShow = computed(() => dvInfo.value.weight > 3)
+const authShow = computed(() => !dvInfo.value.weight || dvInfo.value.weight > 3)
 const emits = defineEmits([
   'userViewEnlargeOpen',
   'closePreview',
