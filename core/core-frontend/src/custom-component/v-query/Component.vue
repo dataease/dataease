@@ -165,6 +165,7 @@ const setCustomStyle = val => {
   customStyle.labelColorBtn = labelColorBtn || '#ffffff'
   customStyle.labelShow = labelShow ?? true
   customStyle.btnColor = btnColor || '#3370ff'
+  snapshotStore.recordSnapshotCache()
 }
 
 watch(
@@ -450,7 +451,8 @@ const titleStyle = computed(() => {
 
 const labelStyle = computed(() => {
   const style = {
-    fontSize: customStyle.fontSize + 'px'
+    fontSize: customStyle.fontSize + 'px',
+    lineHeight: +customStyle.fontSize + 8 + 'px'
   } as CSSProperties
   if (customStyle.fontWeight) {
     style.fontWeight = customStyle.fontWeight
