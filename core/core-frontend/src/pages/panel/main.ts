@@ -65,6 +65,7 @@ import { setupStore } from '@/store'
 import { useEmbedded } from '@/store/modules/embedded'
 import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
 import { setupRouter } from '@/router/embedded'
+import { installDirective } from '@/directive'
 
 const setupAll = async (
   dom: string,
@@ -79,6 +80,7 @@ const setupAll = async (
   resourceId: string
 ): Promise<App<Element>> => {
   const app = createApp(AppElement, { componentName: type })
+  installDirective(app)
   await setupI18n(app)
   setupStore(app)
   setupRouter(app)
