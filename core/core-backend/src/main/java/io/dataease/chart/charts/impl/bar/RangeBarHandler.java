@@ -1,6 +1,5 @@
 package io.dataease.chart.charts.impl.bar;
 
-import io.dataease.chart.charts.impl.DefaultChartHandler;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.datasource.provider.CalciteProvider;
@@ -19,13 +18,14 @@ import java.util.Map;
 @Component
 public class RangeBarHandler extends YoyChartHandler {
     @Getter
-    private String type = "bar-range";
+    private final String type = "bar-range";
 
     @Override
     public AxisFormatResult formatAxis(ChartViewDTO view) {
         var result = super.formatAxis(view);
         var yAxis = new ArrayList<ChartViewFieldDTO>();
         var xAxis = new ArrayList<ChartViewFieldDTO>(view.getXAxis());
+        var xAxisBase = new ArrayList<ChartViewFieldDTO>(view.getXAxis());
         boolean skipBarRange = false;
         boolean barRangeDate = false;
         if (CollectionUtils.isNotEmpty(view.getYAxis()) && CollectionUtils.isNotEmpty(view.getYAxisExt())) {
@@ -56,6 +56,7 @@ public class RangeBarHandler extends YoyChartHandler {
         result.getContext().put("barRangeDate", barRangeDate);
         result.getAxisMap().put(ChartAxis.xAxis, xAxis);
         result.getAxisMap().put(ChartAxis.yAxis, yAxis);
+        result.getContext().put("xAxisBase", xAxisBase);
         return result;
     }
 
@@ -67,9 +68,10 @@ public class RangeBarHandler extends YoyChartHandler {
                 .anyMatch(ele -> ele.getFilterType() == 1);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+        var xAxisBase = (List<ChartViewFieldDTO>) formatResult.getContext().get("xAxisBase");
         var skipBarRange = (boolean) formatResult.getContext().get("skipBarRange");
         var barRangeDate = (boolean) formatResult.getContext().get("barRangeDate");
-        Map<String, Object> result = ChartDataBuild.transBarRangeDataAntV(skipBarRange, barRangeDate, xAxis, xAxis, yAxis, view, data, isDrill);
+        Map<String, Object> result = ChartDataBuild.transBarRangeDataAntV(skipBarRange, barRangeDate, xAxisBase, xAxis, yAxis, view, data, isDrill);
         return result;
     }
 
