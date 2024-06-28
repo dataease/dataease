@@ -11,9 +11,9 @@ import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
-public class GroupMixHandler extends MixHandler{
+public class GroupMixHandler extends MixHandler {
     @Getter
-    private String type = "chart-mix-group";
+    private final String type = "chart-mix-group";
 
     @Override
     public AxisFormatResult formatAxis(ChartViewDTO view) {
@@ -21,7 +21,7 @@ public class GroupMixHandler extends MixHandler{
         var context = new HashMap<String, Object>();
         AxisFormatResult result = new AxisFormatResult(axisMap, context);
         //左轴分组子维度,非分组不需要
-        axisMap.put(ChartAxis.xAxisExt,view.getXAxisExt());
+        axisMap.put(ChartAxis.xAxisExt, view.getXAxisExt());
         //左轴堆叠子维度,非堆叠不需要
         axisMap.put(ChartAxis.extStack, Collections.emptyList());
         //左轴指标
@@ -72,7 +72,7 @@ public class GroupMixHandler extends MixHandler{
         rightFields.addAll(view.getYAxisExt());
         var rightOriginData = rightCalcResult.getOriginData();
         var rightTable = ChartDataBuild.transTableNormal(rightFields, view, rightOriginData, desensitizationList);
-        var rightData = new HashMap<String, Object>(leftTable);
+        var rightData = new HashMap<String, Object>(rightTable);
         rightData.putAll(rightCalcResult.getData());
         rightData.put("dynamicAssistLines", rightCalcResult.getDynamicAssistFields());
 

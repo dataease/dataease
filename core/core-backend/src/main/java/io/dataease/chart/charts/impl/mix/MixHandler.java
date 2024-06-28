@@ -44,9 +44,8 @@ public class MixHandler extends YoyChartHandler {
         axisMap.put(ChartAxis.extLabel, view.getExtLabel());
         axisMap.put(ChartAxis.extTooltip, view.getExtTooltip());
         //图表整体主维度
-        var xAxis = new ArrayList<>(view.getXAxis());
-        axisMap.put(ChartAxis.xAxis, xAxis);
-        context.put("xAxisBase", xAxis);
+        axisMap.put(ChartAxis.xAxis, new ArrayList<>(view.getXAxis()));
+        context.put("xAxisBase", new ArrayList<>(view.getXAxis()));
         return result;
     }
 
@@ -159,7 +158,7 @@ public class MixHandler extends YoyChartHandler {
         mergeAssistField(rightCalcResult.getDynamicAssistFields(), rightCalcResult.getAssistData());
         var rightOriginData = rightCalcResult.getOriginData();
         var rightTable = ChartDataBuild.transTableNormal(rightFields, view, rightOriginData, desensitizationList);
-        var rightData = new HashMap<String, Object>(leftTable);
+        var rightData = new HashMap<String, Object>(rightTable);
         rightData.putAll(rightCalcResult.getData());
         rightData.put("dynamicAssistLines", rightCalcResult.getDynamicAssistFields());
 
