@@ -2,8 +2,6 @@ package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.extensions.datasource.dto.DatasetTableDTO;
-import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.api.dataset.vo.DataSetBarVO;
@@ -21,6 +19,8 @@ import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
@@ -376,6 +376,42 @@ public class DatasetGroupManage {
 
     public DatasetGroupInfoDTO getDatasetGroupInfoDTO(Long id, String type) throws Exception {
         return get(id, type);
+    }
+
+    public DatasetGroupInfoDTO getDetail(Long id) throws Exception {
+        CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(id);
+        if (coreDatasetGroup == null) {
+            return null;
+        }
+        DatasetGroupInfoDTO dto = new DatasetGroupInfoDTO();
+        BeanUtils.copyBean(dto, coreDatasetGroup);
+        // get creator
+        String userName = coreUserManage.getUserName(Long.valueOf(dto.getCreateBy()));
+        if (StringUtils.isNotBlank(userName)) {
+            dto.setCreator(userName);
+        }
+        String updateUserName = coreUserManage.getUserName(Long.valueOf(dto.getUpdateBy()));
+        if (StringUtils.isNotBlank(updateUserName)) {
+            dto.setUpdater(updateUserName);
+        }
+        dto.setUnionSql(null);
+        if (StringUtils.equalsIgnoreCase(dto.getNodeType(), "dataset")) {
+            List<UnionDTO> unionDTOList = JsonUtil.parseList(coreDatasetGroup.getInfo(), new TypeReference<>() {
+            });
+            dto.setUnion(unionDTOList);
+
+            // 获取field
+            List<DatasetTableFieldDTO> dsFields = datasetTableFieldManage.selectByDatasetGroupId(id);
+            List<DatasetTableFieldDTO> allFields = dsFields.stream().map(ele -> {
+                DatasetTableFieldDTO datasetTableFieldDTO = new DatasetTableFieldDTO();
+                BeanUtils.copyBean(datasetTableFieldDTO, ele);
+                datasetTableFieldDTO.setFieldShortName(ele.getDataeaseName());
+                return datasetTableFieldDTO;
+            }).collect(Collectors.toList());
+
+            dto.setAllFields(allFields);
+        }
+        return dto;
     }
 
     public DatasetGroupInfoDTO get(Long id, String type) throws Exception {
