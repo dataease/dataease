@@ -1,4 +1,4 @@
---
+--
 ---- Licensed to the Apache Software Foundation (ASF) under one or more
 ---- contributor license agreements.  See the NOTICE file distributed with
 ---- this work for additional information regarding copyright ownership.
@@ -118,7 +118,7 @@ local function validate(conf, ctx, ticket)
     local httpc = http.new()
     local res, err = httpc:request_uri(conf.idp_uri ..
         "/serviceValidate",
-        { query = { ticket = ticket, service = uri_without_ticket(conf, ctx) }, ssl_verify = false })
+        { query = { ticket = ticket, service = uri_without_ticket(conf, ctx) } ,ssl_verify = false})
 
     if res and res.status == ngx.HTTP_OK and res.body ~= nil then
         if core.string.find(res.body, "<cas:authenticationSuccess>") then
