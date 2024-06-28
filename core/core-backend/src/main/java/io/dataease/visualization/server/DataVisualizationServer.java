@@ -380,7 +380,14 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public List<VisualizationViewTableDTO> detailList(Long dvId) {
-        return extDataVisualizationMapper.getVisualizationViewDetails(dvId);
+        List<VisualizationViewTableDTO> result = extDataVisualizationMapper.getVisualizationViewDetails(dvId);
+        DataVisualizationInfo dvInfo = visualizationInfoMapper.selectById(dvId);
+        if(dvInfo != null && !CollectionUtils.isEmpty(result)){
+            String componentData = dvInfo.getComponentData();
+            return result.stream().filter(item ->componentData.indexOf(String.valueOf(item.getId()))>0).toList();
+        }else{
+            return result;
+        }
     }
 
 
