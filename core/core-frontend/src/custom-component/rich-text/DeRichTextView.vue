@@ -231,7 +231,7 @@ const assignment = content => {
           value = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${value}</span>`
         }
         if (initReady.value) {
-          content = content.replace(itm, !!value ? value : '[未获取字段值]')
+          content = content.replace(itm, !!value ? value : '-')
         } else {
           content = content.replace(itm, !!value ? value : '[获取中...]')
         }
