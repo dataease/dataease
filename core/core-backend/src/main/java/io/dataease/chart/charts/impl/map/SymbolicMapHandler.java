@@ -73,6 +73,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
         querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
+        logger.info("calcite chart sql: " + querySql);
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         // 获取所有字段数据作为数据详情返回
         List<String[]> detailData = new ArrayList<>();
@@ -88,6 +89,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
             String originSql = SQLProvider.createQuerySQL(sqlMeta1, false, needOrder, view);
             originSql = SqlUtils.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(originSql);
+            logger.info("calcite detail field sql: " + querySql);
             detailData = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         }
         //自定义排序
