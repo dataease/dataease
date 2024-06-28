@@ -208,9 +208,14 @@ const multipleChange = (val: boolean, isMultipleChange = false) => {
   curComponent.value.multiple = val
 }
 
+const changeMultiple = val => {
+  multiple.value = val
+}
+
 defineExpose({
   multipleChange,
-  handleDialogClick
+  handleDialogClick,
+  changeMultiple
 })
 </script>
 

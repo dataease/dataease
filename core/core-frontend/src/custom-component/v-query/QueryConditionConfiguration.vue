@@ -378,11 +378,6 @@ const multipleChange = (val: boolean, isMultipleChange = false) => {
       : defaultValue
   }
 
-  if (curComponent.value.field.deType === 1) {
-    curComponent.value.multiple = val
-    return
-  }
-
   curComponent.value.multiple = val
 }
 
@@ -886,8 +881,9 @@ const handleCondition = item => {
   activeCondition.value = item.id
   curComponent.value = conditions.value.find(ele => ele.id === item.id)
   curComponent.value.dataset.fields = []
-
-  multiple.value = curComponent.value.multiple
+  nextTick(() => {
+    defaultConfigurationRef.value.changeMultiple(curComponent.value.multiple)
+  })
   if (curComponent.value.dataset.id) {
     listFieldsWithPermissions(curComponent.value.dataset.id).then(res => {
       curComponent.value.dataset.fields = res.data
