@@ -11,7 +11,7 @@ import java.util.List;
 public interface ExtChartViewMapper {
 
     @Select("""
-            select id, scene_id as pid, title, type from core_chart_view where scene_id = #{resourceId}
+            select id, scene_id as pid, title, type from core_chart_view where type != 'VQuery' and scene_id = #{resourceId}
             """)
     List<ViewSelectorVO> queryViewOption(@Param("resourceId") Long resourceId);
 }
