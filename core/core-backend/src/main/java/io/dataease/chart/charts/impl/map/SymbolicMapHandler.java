@@ -1,16 +1,15 @@
 package io.dataease.chart.charts.impl.map;
 
-import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.chart.charts.impl.GroupChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.dataset.utils.SqlUtils;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.extensions.view.util.ChartDataUtil;
@@ -21,11 +20,7 @@ import org.apache.commons.collections4.CollectionUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.springframework.stereotype.Component;
 
-import java.lang.reflect.Field;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 import java.util.stream.Collectors;
 
 @Component
@@ -54,7 +49,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
     }
 
     @Override
-    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, CalciteProvider provider) {
+    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, Provider provider) {
         var dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         List<String> dsList = new ArrayList<>();
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
@@ -66,8 +61,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
         datasourceRequest.setDsList(dsMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-        var allFields = getAllChartFields(view);
-        filterResult.getContext().put("allFields", allFields);
+        var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
@@ -109,6 +103,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
     @Override
     public ChartViewDTO buildChart(ChartViewDTO view, ChartCalcDataResult calcResult, AxisFormatResult formatResult, CustomFilterResult filterResult) {
         var desensitizationList = (Map<String, ColumnPermissionItem>) filterResult.getContext().get("desensitizationList");
+        var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         // 如果是表格导出查询 则在此处直接就可以返回
@@ -123,6 +118,17 @@ public class SymbolicMapHandler extends GroupChartHandler {
         Map<String, Object> mapTableNormal = calcResult.getData();
         var drillFilters = filterResult.getFilterList().stream().filter(f -> f.getFilterType() == 1).collect(Collectors.toList());
         var isDrill = CollectionUtils.isNotEmpty(drillFilters);
-        return uniteViewResult(calcResult.getQuerySql(), calcResult.getData(), mapTableNormal, view, isDrill, drillFilters, calcResult.getDynamicAssistFields(), calcResult.getAssistData());
+        // 构建结果
+        Map<String, Object> dataMap = new TreeMap<>();
+        dataMap.putAll(calcResult.getData());
+        dataMap.putAll(mapTableNormal);
+        dataMap.put("sourceFields", allFields);
+        mergeAssistField(calcResult.getDynamicAssistFields(), calcResult.getAssistData());
+        dataMap.put("dynamicAssistLines", calcResult.getDynamicAssistFields());
+        view.setData(dataMap);
+        view.setSql(Base64.getEncoder().encodeToString(calcResult.getQuerySql().getBytes()));
+        view.setDrill(isDrill);
+        view.setDrillFilters(drillFilters);
+        return view;
     }
 }

@@ -2,7 +2,7 @@ package io.dataease.visualization.dao.ext.mapper;
 
 import io.dataease.api.visualization.dto.LinkageInfoDTO;
 import io.dataease.api.visualization.dto.VisualizationLinkageDTO;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkage;
 import io.dataease.visualization.dao.auto.entity.VisualizationLinkageField;
 import org.apache.ibatis.annotations.Mapper;

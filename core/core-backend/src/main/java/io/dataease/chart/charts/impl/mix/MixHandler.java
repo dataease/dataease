@@ -1,12 +1,11 @@
 package io.dataease.chart.charts.impl.mix;
 
-import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.model.SQLMeta;
 import lombok.Getter;
@@ -64,7 +63,7 @@ public class MixHandler extends YoyChartHandler {
     }
 
     @Override
-    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, CalciteProvider provider) {
+    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, Provider provider) {
         //计算左轴, 包含 xAxis, yAxis
         var dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         List<String> dsList = new ArrayList<>();
@@ -162,7 +161,6 @@ public class MixHandler extends YoyChartHandler {
         rightData.putAll(rightCalcResult.getData());
         rightData.put("dynamicAssistLines", rightCalcResult.getDynamicAssistFields());
 
-        var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         // 构建结果
         Map<String, Object> chartData = new TreeMap<>();
         chartData.put("left", leftData);

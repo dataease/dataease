@@ -1,4 +1,4 @@
-package io.dataease.api.chart.dto;
+package io.dataease.extensions.view.dto;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;

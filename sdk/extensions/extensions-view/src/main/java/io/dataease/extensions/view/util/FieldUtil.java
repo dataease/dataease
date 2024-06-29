@@ -1,7 +1,7 @@
 package io.dataease.extensions.view.util;
 
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldBaseDTO;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import org.springframework.beans.BeanUtils;
 
 import java.util.List;

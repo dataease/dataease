@@ -1,16 +1,16 @@
 package io.dataease.chart.charts.impl.bar;
 
 import io.dataease.chart.utils.ChartDataBuild;
-import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.view.dto.*;
 import lombok.Getter;
 import org.apache.commons.lang3.ObjectUtils;
-import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
 
-import java.util.*;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 import java.util.stream.Collectors;
-import java.util.stream.Stream;
 
 @Component
 public class GroupBarHandler extends BarHandler {
@@ -32,7 +32,7 @@ public class GroupBarHandler extends BarHandler {
     }
 
     @Override
-    public <T extends CustomFilterResult, K extends AxisFormatResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, K formatResult) {
+    public <T extends CustomFilterResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, AxisFormatResult formatResult) {
         var result = super.customFilter(view, filterList, formatResult);
         List<ChartDrillRequest> drillRequestList = view.getChartExtRequest().getDrill();
         var drillFields = formatResult.getAxisMap().get(ChartAxis.drill);

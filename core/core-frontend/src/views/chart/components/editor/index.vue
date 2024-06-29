@@ -10,7 +10,9 @@ import {
   onBeforeMount,
   provide,
   h,
-  unref
+  unref,
+  getCurrentInstance,
+  onMounted
 } from 'vue'
 import Icon from '@/components/icon-custom/src/Icon.vue'
 import type { FormInstance, FormRules } from 'element-plus-secondary'
@@ -559,7 +561,7 @@ const showAggregate = computed<boolean>(() => {
 
 const addAxis = (e, axis: AxisType) => {
   recordSnapshotInfo('calcData')
-  const axisSpec = chartViewInstance.value.axisConfig[axis]
+  const axisSpec = chartViewInstance.value?.axisConfig[axis]
   if (!axisSpec) {
     return
   }
@@ -761,9 +763,7 @@ const calcData = (view, resetDrill = false, updateQuery = '') => {
     })
   }
 }
-const updateChartDataTest = arg => {
-  updateChartData(arg)
-}
+
 const updateChartData = view => {
   curComponent.value['state'] = 'ready'
   calcData(view, true, 'updateQuery')
@@ -780,6 +780,18 @@ const onAreaChange = val => {
 }
 
 const onTypeChange = (render, type) => {
+  const viewConf = getViewConfig(type)
+  console.log(view.value)
+  if (viewConf.isPlugin) {
+    view.value.plugin = {
+      isPlugin: true,
+      staticMap: viewConf.staticMap
+    }
+    view.value.isPlugin = true
+  } else {
+    view.value.isPlugin = false
+    delete view.value.plugin
+  }
   view.value.render = render
   view.value.type = type
   emitter.emit('chart-type-change')
@@ -1568,6 +1580,16 @@ const deleteChartFieldItem = id => {
       fieldLoading.value = false
     })
 }
+
+const callMethod = (method, ...args) => {
+  editorInstance?.setupState[method](...args)
+}
+
+let editorInstance = null
+onMounted(() => {
+  editorInstance = getCurrentInstance()
+  console.log(editorInstance)
+})
 </script>
 
 <template>
@@ -1621,7 +1643,8 @@ const deleteChartFieldItem = id => {
               :dimension="state.dimension"
               :quota="state.quota"
               :themes="themes"
-              @update-chart-data-test="updateChartDataTest"
+              :emitter="emitter"
+              :call-method="callMethod"
             />
             <el-tabs
               v-else

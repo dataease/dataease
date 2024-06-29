@@ -3,12 +3,12 @@ package io.dataease.chart.charts.impl;
 
 import com.fasterxml.jackson.core.type.TypeReference;
 import io.dataease.dataset.utils.SqlUtils;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.extensions.view.util.FieldUtil;
@@ -25,7 +25,7 @@ import java.util.Map;
  */
 public class YoyChartHandler extends DefaultChartHandler {
     @Override
-    public <T extends CustomFilterResult, K extends AxisFormatResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, K formatResult) {
+    public <T extends CustomFilterResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, AxisFormatResult formatResult) {
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         String originFilterJson = (String) JsonUtil.toJSONString(filterList);
         // 如果设置了同环比的指标字段设置了过滤器，那就需要把该过滤器的时间往前回调一年
@@ -66,7 +66,7 @@ public class YoyChartHandler extends DefaultChartHandler {
     }
 
     @Override
-    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, CalciteProvider provider) {
+    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, Provider provider) {
         var dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         List<String> dsList = new ArrayList<>();
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {

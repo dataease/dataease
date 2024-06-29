@@ -1,6 +1,5 @@
 package io.dataease.chart.charts.impl.mix;
 
-import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.extensions.view.dto.*;
 import lombok.Getter;

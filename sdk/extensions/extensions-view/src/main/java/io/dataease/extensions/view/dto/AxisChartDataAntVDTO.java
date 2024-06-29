@@ -1,6 +1,5 @@
-package io.dataease.api.chart.dto;
+package io.dataease.extensions.view.dto;
 
-import io.dataease.extensions.view.dto.ChartDimensionDTO;
 import lombok.Data;
 
 import java.math.BigDecimal;
