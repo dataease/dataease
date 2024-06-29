@@ -1,10 +1,10 @@
 package io.dataease.chart.charts.impl.bar;
 
 import io.dataease.chart.charts.impl.YoyChartHandler;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.model.SQLMeta;
 import org.apache.commons.collections4.CollectionUtils;
@@ -35,7 +35,7 @@ public class BarHandler extends YoyChartHandler {
     }
 
     @Override
-    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, CalciteProvider provider) {
+    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, Provider provider) {
         var dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         List<String> dsList = new ArrayList<>();
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {

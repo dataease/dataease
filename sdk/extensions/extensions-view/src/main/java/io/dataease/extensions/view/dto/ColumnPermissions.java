@@ -1,4 +1,4 @@
-package io.dataease.api.chart.dto;
+package io.dataease.extensions.view.dto;
 
 import lombok.Data;
 

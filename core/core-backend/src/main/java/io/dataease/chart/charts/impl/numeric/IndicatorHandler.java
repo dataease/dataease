@@ -1,11 +1,10 @@
-package io.dataease.chart.charts.impl.numberic;
+package io.dataease.chart.charts.impl.numeric;
 
-import io.dataease.chart.charts.impl.DefaultChartHandler;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 @Component
-public class IndicatorHandler extends NumbericChartHandler {
+public class IndicatorHandler extends NumericalChartHandler {
     @Getter
     private String render = "custom";
     @Getter

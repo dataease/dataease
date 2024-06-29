@@ -32,7 +32,7 @@ public class StackBarHandler extends BarHandler {
         return result;
     }
     @Override
-    public <T extends CustomFilterResult, K extends AxisFormatResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, K formatResult) {
+    public <T extends CustomFilterResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, AxisFormatResult formatResult) {
         var result = super.customFilter(view, filterList, formatResult);
         List<ChartDrillRequest> drillRequestList = view.getChartExtRequest().getDrill();
         var drillFields = formatResult.getAxisMap().get(ChartAxis.drill);

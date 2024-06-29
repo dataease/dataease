@@ -379,7 +379,7 @@
         <result column="table_id" property="tableId"/>
         <result column="type" property="type"/>
         <result column="render" property="render"/>
-        <collection property="tableFields" ofType="io.dataease.extensions.view.dto.DatasetTableFieldDTO">
+        <collection property="tableFields" ofType="io.dataease.extensions.datasource.dto.DatasetTableFieldDTO">
             <result column="field_id" jdbcType="VARCHAR" property="id"/>
             <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
             <result column="field_name" jdbcType="VARCHAR" property="name"/>

@@ -16,12 +16,5 @@
         <maven.compiler.target>21</maven.compiler.target>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
-    <dependencies>
-        <dependency>
-            <groupId>io.dataease</groupId>
-            <artifactId>extensions-view</artifactId>
-            <version>${dataease.version}</version>
-        </dependency>
-    </dependencies>
 
 </project>

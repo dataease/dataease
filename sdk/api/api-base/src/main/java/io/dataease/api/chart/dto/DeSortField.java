@@ -1,6 +1,6 @@
 package io.dataease.api.chart.dto;
 
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
 @Data

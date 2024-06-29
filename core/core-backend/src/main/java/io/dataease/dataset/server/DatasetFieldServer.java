@@ -6,7 +6,7 @@ import io.dataease.api.dataset.engine.SQLFunctionDTO;
 import io.dataease.api.dataset.engine.SQLFunctionsEnum;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import jakarta.annotation.Resource;
 import org.springframework.web.bind.annotation.RequestBody;
 import org.springframework.web.bind.annotation.RequestMapping;

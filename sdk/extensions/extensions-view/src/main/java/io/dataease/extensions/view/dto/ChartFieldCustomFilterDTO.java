@@ -1,5 +1,6 @@
 package io.dataease.extensions.view.dto;
 
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
 import java.util.List;

@@ -1,9 +1,11 @@
-package io.dataease.chart.charts.impl.numberic;
+package io.dataease.chart.charts.impl.numeric;
 
 import io.dataease.extensions.view.dto.AxisFormatResult;
 import io.dataease.extensions.view.dto.ChartAxis;
+import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.extensions.view.dto.ChartViewFieldDTO;
+import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.springframework.stereotype.Component;
 
@@ -13,19 +15,25 @@ import java.util.List;
 import java.util.Map;
 
 @Component
-public class LiquidHandler extends NumbericChartHandler {
+public class GaugeHandler extends NumericalChartHandler {
     @Getter
-    private String type = "liquid";
+    private String type = "gauge";
+    @Resource
+    private DatasetTableFieldManage datasetTableFieldManage;
 
     @Override
     public AxisFormatResult formatAxis(ChartViewDTO view) {
         var axisMap = new HashMap<ChartAxis, List<ChartViewFieldDTO>>();
         var yAxis = new ArrayList<>(view.getYAxis());
         Map<String, Object> customAttr = view.getCustomAttr();
-        Map<String, Object> misc = (Map<String, Object>) customAttr.get("misc");
-        ChartViewFieldDTO liquidMaxViewField = getDynamicField(misc, "liquidMaxType", "liquidMaxField");
-        if (liquidMaxViewField != null) {
-            yAxis.add(liquidMaxViewField);
+        Map<String, Object> size = (Map<String, Object>) customAttr.get("misc");
+        ChartViewFieldDTO gaugeMinViewField = getDynamicField(size, "gaugeMinType", "gaugeMinField");
+        if (gaugeMinViewField != null) {
+            yAxis.add(gaugeMinViewField);
+        }
+        ChartViewFieldDTO gaugeMaxViewField = getDynamicField(size, "gaugeMaxType", "gaugeMaxField");
+        if (gaugeMaxViewField != null) {
+            yAxis.add(gaugeMaxViewField);
         }
         axisMap.put(ChartAxis.xAxis, new ArrayList<>());
         axisMap.put(ChartAxis.yAxis, yAxis);
@@ -33,4 +41,5 @@ public class LiquidHandler extends NumbericChartHandler {
         var result = new AxisFormatResult(axisMap, context);
         return result;
     }
+
 }

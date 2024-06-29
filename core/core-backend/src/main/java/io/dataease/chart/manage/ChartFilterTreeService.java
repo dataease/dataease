@@ -1,10 +1,10 @@
 package io.dataease.chart.manage;
 
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.filter.FilterTreeItem;
 import io.dataease.extensions.view.filter.FilterTreeObj;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.engine.utils.SQLUtils;
 import io.dataease.utils.BeanUtils;
 import jakarta.annotation.Resource;

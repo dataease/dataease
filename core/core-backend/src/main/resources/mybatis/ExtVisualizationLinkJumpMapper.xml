@@ -53,7 +53,7 @@
         <result column="type" jdbcType="VARCHAR" property="type"/>
         <result column="dv_id" jdbcType="BIGINT" property="dvId"/>
         <collection property="tableFields"
-                    ofType="io.dataease.extensions.view.dto.DatasetTableFieldDTO">
+                    ofType="io.dataease.extensions.datasource.dto.DatasetTableFieldDTO">
             <result column="field_id" jdbcType="BIGINT" property="id"/>
             <result column="origin_name" jdbcType="VARCHAR" property="originName"/>
             <result column="field_name" jdbcType="VARCHAR" property="name"/>

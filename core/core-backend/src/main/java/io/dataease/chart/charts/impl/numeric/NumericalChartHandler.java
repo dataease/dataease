@@ -1,15 +1,16 @@
-package io.dataease.chart.charts.impl.numberic;
+package io.dataease.chart.charts.impl.numeric;
 
 import io.dataease.chart.charts.impl.DefaultChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.dataset.utils.SqlUtils;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.extensions.view.util.FieldUtil;
@@ -22,9 +23,9 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
-public class NumbericChartHandler extends DefaultChartHandler {
+public class NumericalChartHandler extends DefaultChartHandler {
     @Override
-    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, CalciteProvider provider) {
+    public <T extends ChartCalcDataResult> T calcChartResult(ChartViewDTO view, AxisFormatResult formatResult, CustomFilterResult filterResult, Map<String, Object> sqlMap, SQLMeta sqlMeta, Provider provider) {
         var dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
         List<String> dsList = new ArrayList<>();
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
@@ -36,7 +37,7 @@ public class NumbericChartHandler extends DefaultChartHandler {
         datasourceRequest.setDsList(dsMap);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
-        var allFields = getAllChartFields(view);
+        var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
         querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);

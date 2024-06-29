@@ -94,7 +94,16 @@ const groupActiveChange = category => {
               :class="props.type === chartInfo.value ? 'item-active' : ''"
               :data-id="'UserView&' + chartInfo.value"
             >
-              <Icon class-name="item-top-icon" :name="chartInfo.icon" />
+              <Icon
+                class-name="item-top-icon"
+                v-if="chartInfo['isPlugin']"
+                :static-content="chartInfo.icon"
+              />
+              <Icon
+                v-else
+                class-name="item-top-icon"
+                :name="chartInfo.icon + (props.themes === 'dark' ? '-dark' : '')"
+              />
             </div>
             <div class="item-bottom">
               <span>{{ chartInfo.title }}</span>

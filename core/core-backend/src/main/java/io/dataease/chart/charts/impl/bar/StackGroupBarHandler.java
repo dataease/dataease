@@ -38,7 +38,7 @@ public class StackGroupBarHandler extends BarHandler {
     }
 
     @Override
-    public <T extends CustomFilterResult, K extends AxisFormatResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, K formatResult) {
+    public <T extends CustomFilterResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, AxisFormatResult formatResult) {
         var result = super.customFilter(view, filterList, formatResult);
         List<ChartDrillRequest> drillRequestList = view.getChartExtRequest().getDrill();
         var drillFields = formatResult.getAxisMap().get(ChartAxis.drill);
@@ -52,7 +52,6 @@ public class StackGroupBarHandler extends BarHandler {
                     .stream()
                     .filter(ele -> ele.getSource() != FieldSource.DRILL)
                     .collect(Collectors.toList());
-            List<ChartExtFilterDTO> drillFilters = new ArrayList<>();
             ArrayList<ChartViewFieldDTO> fieldsToFilter = new ArrayList<>();
             var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
             var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);

@@ -1,9 +1,7 @@
 package io.dataease.chart.utils;
 
 import io.dataease.api.chart.dto.*;
-import io.dataease.extensions.view.dto.ChartDimensionDTO;
-import io.dataease.extensions.view.dto.ChartViewDTO;
-import io.dataease.extensions.view.dto.ChartViewFieldDTO;
+import io.dataease.extensions.view.dto.*;
 import io.dataease.i18n.Lang;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.IDUtils;
@@ -1383,7 +1381,7 @@ public class ChartDataBuild {
                 axisChartDataDTO.setName(xField.toString());
 
                 List<ChartDimensionDTO> dimensionList = new ArrayList<>();
-                List<ChartQuotaDTO> quotaList = new ArrayList<>();
+                List<io.dataease.extensions.view.dto.ChartQuotaDTO> quotaList = new ArrayList<>();
 
                 for (int j = 0; j < xAxis.size(); j++) {
                     ChartDimensionDTO chartDimensionDTO = new ChartDimensionDTO();

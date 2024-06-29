@@ -2,8 +2,6 @@ package io.dataease.dataset.manage;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.api.chart.dto.ColumnPermissionItem;
-import io.dataease.api.chart.dto.ColumnPermissions;
 import io.dataease.api.permissions.dataset.api.ColumnPermissionsApi;
 import io.dataease.api.permissions.dataset.api.RowPermissionsApi;
 import io.dataease.api.permissions.dataset.dto.*;
@@ -11,9 +9,11 @@ import io.dataease.api.permissions.user.vo.UserFormVO;
 import io.dataease.api.permissions.variable.dto.SysVariableValueDto;
 import io.dataease.api.permissions.variable.dto.SysVariableValueItem;
 import io.dataease.constant.ColumnPermissionConstants;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.ColumnPermissionItem;
+import io.dataease.extensions.view.dto.ColumnPermissions;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeItem;
 import io.dataease.extensions.view.dto.DatasetRowPermissionsTreeObj;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
 import io.dataease.utils.AuthUtils;
 import io.dataease.utils.JsonUtil;
 import jakarta.annotation.Resource;

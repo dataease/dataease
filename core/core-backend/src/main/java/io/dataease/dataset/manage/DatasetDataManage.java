@@ -1,6 +1,5 @@
 package io.dataease.dataset.manage;
 
-import io.dataease.api.chart.dto.ColumnPermissionItem;
 import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.api.dataset.dto.BaseTreeNodeDTO;
 import io.dataease.api.dataset.dto.EnumValueRequest;
@@ -31,13 +30,11 @@ import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
-import io.dataease.extensions.datasource.dto.DatasetTableDTO;
-import io.dataease.extensions.datasource.dto.DatasourceRequest;
-import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.datasource.dto.TableField;
+import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
-import io.dataease.extensions.view.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.extensions.view.model.SQLMeta;
 import io.dataease.i18n.Translator;
