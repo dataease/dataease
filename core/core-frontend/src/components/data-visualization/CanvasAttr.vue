@@ -29,6 +29,7 @@ const onColorChange = val => {
 
 const onBaseChange = () => {
   snapshotStore.recordSnapshotCache('renderChart')
+  useEmitt().emitter.emit('initScroll')
 }
 
 const themeAttrChange = (custom, property, value) => {
