@@ -62,7 +62,12 @@ public class SymbolicMapHandler extends GroupChartHandler {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
+        SQLMeta sqlMeta1 = new SQLMeta();
+        BeanUtils.copyBean(sqlMeta1, sqlMeta);
         Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
+        List<ChartViewFieldDTO> yFields = new ArrayList<>();
+        yFields.addAll(chartViewManege.transFieldDTO(Collections.singletonList(chartViewManege.createCountField(view.getTableId()))));
+        yAxis.addAll(yFields);
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
         querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
@@ -76,15 +81,16 @@ public class SymbolicMapHandler extends GroupChartHandler {
         detailFields.addAll(xAxis);
         detailFields.addAll(allFields.stream().filter(field -> !xAxisIds.contains(field.getId())).toList());
         if (ObjectUtils.isNotEmpty(detailFields)) {
-            SQLMeta sqlMeta1 = new SQLMeta();
-            BeanUtils.copyBean(sqlMeta1, sqlMeta);
-            sqlMeta1.setYFields(new ArrayList<>());
             Dimension2SQLObj.dimension2sqlObj(sqlMeta1, detailFields, FieldUtil.transFields(allFields), crossDs, dsMap);
+            // 为了不添加limit,要查所有数据，否则无法跟前面的数据对上，因为前面使用了group by
+            String defaultResultMode = view.getResultMode();
+            view.setResultMode("");
             String originSql = SQLProvider.createQuerySQL(sqlMeta1, false, needOrder, view);
             originSql = SqlUtils.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(originSql);
             logger.info("calcite detail field sql: " + querySql);
             detailData = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
+            view.setResultMode(defaultResultMode);
         }
         //自定义排序
         data = ChartDataUtil.resultCustomSort(xAxis, data);
