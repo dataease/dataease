@@ -6,7 +6,7 @@
           <el-tooltip
             :key="styleOptionKey.value"
             v-if="styleForm[styleOptionKey.value] !== undefined"
-            :effect="themes"
+            effect="dark"
             placement="bottom"
           >
             <template #content> {{ styleOptionKey.label }} </template>
@@ -104,7 +104,7 @@
           <el-tooltip
             :key="styleOptionKey.value"
             v-if="styleForm[styleOptionKey.value] !== undefined"
-            :effect="themes"
+            effect="dark"
             placement="bottom"
           >
             <template #content> {{ styleOptionKey.label }} </template>
