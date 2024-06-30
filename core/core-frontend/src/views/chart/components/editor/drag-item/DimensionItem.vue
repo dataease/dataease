@@ -171,7 +171,12 @@ const valueFormatter = () => {
   item.value.formatterType = props.type
   emit('valueFormatter', item.value)
 }
-
+const showCustomSort = item => {
+  if (props.chart.type === 'symbolic-map') {
+    return false
+  }
+  return !item.chartId && (item.deType === 0 || item.deType === 5)
+}
 onMounted(() => {
   getItemTagType()
 })
@@ -300,7 +305,7 @@ onMounted(() => {
                   </el-dropdown-item>
                   <el-dropdown-item
                     class="menu-item-padding"
-                    v-if="!item.chartId && (item.deType === 0 || item.deType === 5)"
+                    v-if="showCustomSort(item)"
                     :command="beforeSort('custom_sort')"
                   >
                     <span
