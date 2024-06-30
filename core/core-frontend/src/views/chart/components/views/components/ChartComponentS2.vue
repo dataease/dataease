@@ -500,7 +500,13 @@ const tablePageClass = computed(() => {
       <div style="position: relative; height: 100%" :id="containerId"></div>
     </div>
     <el-row :style="autoStyle" v-if="showPage && !isError">
-      <div class="table-page-info" :class="tablePageClass" :style="tabStyle">
+      <div
+        class="table-page-info"
+        :class="tablePageClass"
+        :style="tabStyle"
+        @keydown.stop
+        @keyup.stop
+      >
         <div>共{{ state.pageInfo.total }}条</div>
         <el-pagination
           v-if="state.pageStyle !== 'general'"
