@@ -119,6 +119,7 @@ import { canvasChangeAdaptor, findComponentIndexById } from '@/utils/canvasUtils
 import DeCustomTab from '@/custom-component/de-tabs/DeCustomTab.vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import { getPanelAllLinkageInfo } from '@/api/visualization/linkage'
 const dvMainStore = dvMainStoreWithOut()
 const { tabMoveInActiveId, bashMatrixInfo, editMode, mobileInPc } = storeToRefs(dvMainStore)
 const tabComponentRef = ref(null)
@@ -255,6 +256,13 @@ function handleCommand(command) {
   }
 }
 
+const reloadLinkage = () => {
+  // 刷新联动信息
+  getPanelAllLinkageInfo(dvInfo.value.id).then(rsp => {
+    dvMainStore.setNowPanelTrackInfo(rsp.data)
+  })
+}
+
 const componentMoveIn = component => {
   element.value.propValue.forEach((tabItem, index) => {
     if (editableTabsValue.value === tabItem.name) {
@@ -279,6 +287,8 @@ const componentMoveIn = component => {
       }
     }
   })
+
+  reloadLinkage()
 }
 
 const componentMoveOut = component => {
@@ -288,6 +298,7 @@ const componentMoveOut = component => {
   dvMainStore.setCurComponent({ component: null, index: null })
   // 主画布中添加
   eventBus.emit('moveOutFromTab-canvas-main', component)
+  reloadLinkage()
 }
 
 const moveActive = computed(() => {
