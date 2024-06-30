@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { keycodes } from '@/utils/DeShortcutKey.js'
 import eventBus from '@/utils/eventBus'
-import { computed, nextTick, onBeforeUnmount, ref } from 'vue'
+import { computed, nextTick, onBeforeUnmount, onMounted, ref } from 'vue'
 import { toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -12,6 +12,9 @@ const isCtrlDown = ref(false)
 
 const emit = defineEmits(['input'])
 const text = ref(null)
+const textOut = ref(null)
+const scrollScale = ref('100%')
+let timeId = null
 
 const props = defineProps({
   propValue: {
@@ -113,6 +116,10 @@ const selectText = element => {
 }
 onBeforeUnmount(() => {
   eventBus.off('componentClick', onComponentClick)
+  if (timeId) {
+    clearInterval(timeId)
+    timeId = null
+  }
 })
 
 // 滚动速度已px为单位 注意 这里的总宽度是还原到缩放前的 这样不同缩放比例下的跑马灯视觉上滚动速度（按照比例）一致
@@ -124,14 +131,32 @@ const varStyle = computed(() => [
         : (text.value.clientWidth * 100) /
           canvasStyleData.value.scale /
           element.value.style.scrollSpeed
-    }s`
+    }s`,
+    '--scroll-scale': `${scrollScale.value}`
   }
 ])
+
+const init = () => {
+  timeId = setInterval(() => {
+    if (textOut.value && text.value) {
+      const result =
+        (element.value.style.width * canvasStyleData.value.scale) / text.value.clientWidth + '%'
+      console.log('===result=' + result)
+      scrollScale.value = result
+    } else {
+      scrollScale.value = '100%'
+    }
+  }, 1000)
+}
 
 const textStyle = computed(() => {
   return {
     verticalAlign: element.value['style'].verticalAlign
   }
+})
+
+onMounted(() => {
+  init()
 })
 </script>
 
@@ -140,6 +165,7 @@ const textStyle = computed(() => {
     v-if="editMode == 'edit'"
     :style="varStyle"
     class="v-text"
+    ref="textOut"
     @keydown="handleKeydown"
     @keyup="handleKeyup"
   >
@@ -197,15 +223,14 @@ const textStyle = computed(() => {
 }
 .marquee-txt {
   display: inline-block;
-  padding-left: 100%; /* 从右至左开始滚动 */
   animation: marqueeAnimation var(--scroll-speed) linear infinite;
 }
 @keyframes marqueeAnimation {
   0% {
-    transform: translate(100%, 0);
+    transform: translate(var(--scroll-scale), 0);
   }
   100% {
-    transform: translate(-50%, 0);
+    transform: translate(-100%, 0);
   }
 }
 </style>
