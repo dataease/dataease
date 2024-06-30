@@ -1798,7 +1798,8 @@ public class ChartDataBuild {
                 }
                 return temp;
             })).collect(Collectors.toList());
-            row.put("details", detailValueMapList);
+            //详情只要一个
+            row.put("details", !detailValueMapList.isEmpty() ?Collections.singletonList(detailValueMapList.getFirst()):detailValueMapList);
         });
 
         ChartViewFieldDTO detailFieldDTO = new ChartViewFieldDTO();
