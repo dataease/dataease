@@ -126,9 +126,9 @@ onBeforeUnmount(() => {
 const varStyle = computed(() => [
   {
     '--scroll-speed': `${
-      element.value.style.scrollSpeed === 0 || !text.value
+      element.value.style.scrollSpeed === 0 || !textOut.value
         ? 0
-        : (text.value.clientWidth * 100) /
+        : (textOut.value.clientWidth * 100) /
           canvasStyleData.value.scale /
           element.value.style.scrollSpeed
     }s`,
@@ -168,6 +168,7 @@ onMounted(() => {
     ref="textOut"
     @keydown="handleKeydown"
     @keyup="handleKeyup"
+    @dblclick="setEdit"
   >
     <div
       ref="text"
@@ -175,7 +176,6 @@ onMounted(() => {
       :class="{ 'can-edit': canEdit, 'marquee-txt': marqueeTxt }"
       tabindex="0"
       :style="textStyle"
-      @dblclick="setEdit"
       @paste="clearStyle"
       @mousedown="handleMousedown"
       @blur="handleBlur"
@@ -184,8 +184,8 @@ onMounted(() => {
       {{ element['propValue'] }}
     </div>
   </div>
-  <div v-else class="v-text preview" :style="varStyle">
-    <div class="marquee-txt" :style="textStyle">{{ element['propValue'] }}</div>
+  <div v-else class="v-text preview" ref="textOut" :style="varStyle">
+    <div class="marquee-txt" :style="textStyle" ref="text">{{ element['propValue'] }}</div>
   </div>
 </template>
 
