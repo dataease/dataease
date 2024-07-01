@@ -57,7 +57,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     }
     const flowLineStyle = {
       type: miscStyle.mapLineType,
-      size: miscStyle.mapLineWidth,
+      size: miscStyle.mapLineType === 'line' ? miscStyle.mapLineWidth / 2 : miscStyle.mapLineWidth,
       animate: miscStyle.mapLineAnimate,
       animateDuration: miscStyle.mapLineAnimateDuration,
       gradient: miscStyle.mapLineGradient,
