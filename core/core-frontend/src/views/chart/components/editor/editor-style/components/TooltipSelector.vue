@@ -7,7 +7,7 @@ import cloneDeep from 'lodash-es/cloneDeep'
 import defaultsDeep from 'lodash-es/defaultsDeep'
 import { formatterType, unitType } from '../../../js/formatter'
 import { fieldType } from '@/utils/attr'
-import { defaultTo, partition, union } from 'lodash-es'
+import { defaultTo, partition, map, includes } from 'lodash-es'
 import chartViewManager from '../../../js/panel'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
@@ -41,13 +41,7 @@ const toolTip = computed(() => {
 })
 const emit = defineEmits(['onTooltipChange', 'onExtTooltipChange'])
 const curSeriesFormatter = ref<DeepPartial<SeriesFormatter>>({})
-const realQuota = ref<Axis[]>(inject('quotaData'))
-const yAxis = computed(() => {
-  return union(defaultTo(props.chart.yAxis, []), defaultTo(props.chart.yAxisExt, []))
-})
-const quotaData = computed<Axis[]>(() => {
-  return props.chart.type.includes('chart-mix') ? yAxis.value : realQuota.value
-})
+const quotaData = ref<Axis[]>(inject('quotaData'))
 const showSeriesTooltipFormatter = computed(() => {
   return showProperty('seriesTooltipFormatter') && !batchOptStatus.value && props.chart.id
 })
@@ -116,6 +110,18 @@ const quotaAxis = computed(() => {
   })
   return result
 })
+
+const quotaAxisIds = computed(() => {
+  return map(quotaAxis.value, a => a.id)
+})
+
+function showOption(item) {
+  if (props.chart.type.includes('chart-mix')) {
+    return includes(quotaAxisIds.value, item.id)
+  }
+  return true
+}
+
 const extTooltip = computed(() => {
   const quotaIds = quotaAxis.value?.map(i => i.id)
   return state.tooltipForm.seriesTooltipFormatter.filter(
@@ -617,24 +623,25 @@ onMounted(() => {
               />
             </el-icon>
           </template>
-          <el-option
-            class="series-select-option"
-            :key="item.seriesId"
-            :value="item"
-            :label="`${item.name}${
-              item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''
-            }`"
-            v-for="item in state.tooltipForm.seriesTooltipFormatter"
-          >
-            <el-icon style="margin-right: 8px">
-              <Icon
-                :className="`field-icon-${fieldType[item.deType]}`"
-                :name="`field_${fieldType[item.deType]}`"
-              />
-            </el-icon>
-            {{ item.name }}
-            {{ item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : '' }}
-          </el-option>
+          <template v-for="item in state.tooltipForm.seriesTooltipFormatter" :key="item.seriesId">
+            <el-option
+              class="series-select-option"
+              :value="item"
+              :label="`${item.name}${
+                item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : ''
+              }`"
+              v-if="showOption(item)"
+            >
+              <el-icon style="margin-right: 8px">
+                <Icon
+                  :className="`field-icon-${fieldType[item.deType]}`"
+                  :name="`field_${fieldType[item.deType]}`"
+                />
+              </el-icon>
+              {{ item.name }}
+              {{ item.summary !== '' ? '(' + t('chart.' + item.summary) + ')' : '' }}
+            </el-option>
+          </template>
         </el-select>
       </el-form-item>
       <template v-if="curSeriesFormatter?.seriesId">
