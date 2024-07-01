@@ -65,7 +65,6 @@ import { setupStore } from '@/store'
 import { useEmbedded } from '@/store/modules/embedded'
 import { setupElementPlus, setupElementPlusIcons } from '@/plugins/element-plus'
 import { setupRouter } from '@/router/embedded'
-import { installDirective } from '@/directive'
 
 const setupAll = async (
   dom: string,
@@ -95,7 +94,8 @@ const setupAll = async (
   embeddedStore.setPid(pid)
   embeddedStore.setChartId(chartId)
   embeddedStore.setResourceId(resourceId)
-  installDirective(app)
+  const directive = await import('@/directive')
+  directive.installDirective(app)
   const res = await import('@/store/modules/user')
   const userStore = res.userStore()
   userStore.setUser()
