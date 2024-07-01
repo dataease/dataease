@@ -216,6 +216,7 @@ public class DatasourceServer implements DatasourceApi {
         }
         CoreDatasource datasource = datasourceMapper.selectById(dataSourceDTO.getId());
         datasource.setName(dataSourceDTO.getName());
+        dataSourceManage.checkName(dataSourceDTO);
         dataSourceManage.innerEdit(datasource);
         return dataSourceDTO;
     }
@@ -228,10 +229,7 @@ public class DatasourceServer implements DatasourceApi {
         dataSourceDTO.setType(dataSourceDTO.getNodeType());
         dataSourceDTO.setId(IDUtils.snowID());
         dataSourceDTO.setConfiguration("");
-        CoreDatasource coreDatasource = new CoreDatasource();
-        coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
-        BeanUtils.copyBean(coreDatasource, dataSourceDTO);
-        dataSourceManage.innerSave(coreDatasource);
+        dataSourceManage.innerSave(dataSourceDTO);
         return dataSourceDTO;
     }
 
@@ -260,7 +258,7 @@ public class DatasourceServer implements DatasourceApi {
 
         CoreDatasource coreDatasource = new CoreDatasource();
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
-        dataSourceManage.innerSave(coreDatasource);
+        dataSourceManage.innerSave(dataSourceDTO);
 
         if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
@@ -398,6 +396,7 @@ public class DatasourceServer implements DatasourceApi {
             }
             datasourceSyncManage.deleteSchedule(datasourceTaskServer.selectByDSId(dataSourceDTO.getId()));
             datasourceSyncManage.addSchedule(coreDatasourceTask);
+            dataSourceManage.checkName(dataSourceDTO);
             dataSourceManage.innerEdit(requestDatasource);
         } else if (dataSourceDTO.getType().equals(DatasourceConfiguration.DatasourceType.Excel.name())) {
             List<String> sourceTables = ExcelUtils.getTables(sourceTableRequest).stream().map(DatasetTableDTO::getTableName).collect(Collectors.toList());
@@ -421,13 +420,16 @@ public class DatasourceServer implements DatasourceApi {
                     }
                 }
                 datasourceSyncManage.extractExcelData(requestDatasource, "all_scope");
+                dataSourceManage.checkName(dataSourceDTO);
                 dataSourceManage.innerEdit(requestDatasource);
             } else {
                 datasourceSyncManage.extractExcelData(requestDatasource, "add_scope");
+                dataSourceManage.checkName(dataSourceDTO);
                 dataSourceManage.innerEdit(requestDatasource);
             }
         } else {
             checkParams(dataSourceDTO.getConfiguration());
+            dataSourceManage.checkName(dataSourceDTO);
             dataSourceManage.innerEdit(requestDatasource);
             calciteProvider.update(dataSourceDTO);
         }

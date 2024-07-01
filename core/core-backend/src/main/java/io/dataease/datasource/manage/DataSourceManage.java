@@ -3,6 +3,7 @@ package io.dataease.datasource.manage;
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.conditions.update.UpdateWrapper;
 import io.dataease.commons.constants.OptConstants;
+import io.dataease.commons.constants.TaskStatus;
 import io.dataease.constant.DataSourceType;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
@@ -74,13 +75,16 @@ public class DataSourceManage {
 
 
     @XpackInteract(value = "datasourceResourceTree", before = false)
-    public void innerSave(CoreDatasource coreDatasource) {
-        checkName(coreDatasource);
+    public void innerSave(DatasourceDTO dataSourceDTO) {
+        CoreDatasource coreDatasource = new CoreDatasource();
+        coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
+        BeanUtils.copyBean(coreDatasource, dataSourceDTO);
+        checkName(dataSourceDTO);
         coreDatasourceMapper.insert(coreDatasource);
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.NEW);
     }
 
-    public void checkName(CoreDatasource dto) {
+    public void checkName(DatasourceDTO dto) {
         QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
         if (ObjectUtils.isNotEmpty(dto.getPid())) {
             wrapper.eq("pid", dto.getPid());
@@ -91,8 +95,13 @@ public class DataSourceManage {
         if (ObjectUtils.isNotEmpty(dto.getId())) {
             wrapper.ne("id", dto.getId());
         }
-        if (ObjectUtils.isNotEmpty(dto.getType()) && dto.getType().equalsIgnoreCase("folder")) {
-            wrapper.ne("type", dto.getType());
+        if (ObjectUtils.isNotEmpty(dto.getNodeType())   ) {
+            if(dto.getNodeType().equalsIgnoreCase("folder")){
+                wrapper.eq("type", dto.getType());
+            }else {
+                wrapper.ne("type", "folder");
+            }
+
         }
         List<CoreDatasource> list = coreDatasourceMapper.selectList(wrapper);
         if (list.size() > 0) {
@@ -131,7 +140,7 @@ public class DataSourceManage {
         sourceData.setUpdateBy(AuthUtils.getUser().getUserId());
         sourceData.setPid(dataSourceDTO.getPid());
         sourceData.setName(dataSourceDTO.getName());
-        checkName(sourceData);
+        checkName(dataSourceDTO);
         coreDatasourceMapper.updateById(sourceData);
         coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
@@ -139,7 +148,7 @@ public class DataSourceManage {
     public DatasourceDTO getDs(Long id) {
         CoreDatasource coreDatasource = coreDatasourceMapper.selectById(id);
         DatasourceDTO dto = new DatasourceDTO();
-        BeanUtils.copyBean(dto,coreDatasource);
+        BeanUtils.copyBean(dto, coreDatasource);
         return dto;
     }
 }
