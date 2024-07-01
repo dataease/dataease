@@ -348,7 +348,7 @@ onMounted(() => {
             <el-select
               :effect="themes"
               v-model="state.basicStyleForm.mapStyle"
-              @change="changeBasicStyle('mapBaseStyle')"
+              @change="changeBasicStyle('mapStyle')"
             >
               <el-option
                 v-for="item in mapStyleOptions"
