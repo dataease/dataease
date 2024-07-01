@@ -71,6 +71,7 @@ public class GroupMixHandler extends MixHandler {
         rightFields.addAll(view.getYAxisExt());
         var rightOriginData = rightCalcResult.getOriginData();
         var rightTable = ChartDataBuild.transTableNormal(rightFields, view, rightOriginData, desensitizationList);
+        mergeAssistField(rightCalcResult.getDynamicAssistFields(), rightCalcResult.getAssistData());
         var rightData = new HashMap<String, Object>(rightTable);
         rightData.putAll(rightCalcResult.getData());
         rightData.put("dynamicAssistLines", rightCalcResult.getDynamicAssistFields());
