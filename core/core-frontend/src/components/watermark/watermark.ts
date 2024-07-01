@@ -45,7 +45,7 @@ export function watermark(settings, domId) {
       defaultSettings.watermark_x +
         defaultSettings.watermark_width * defaultSettings.watermark_cols +
         defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)
-    ) > page_width
+    ) < page_width
   ) {
     defaultSettings.watermark_cols = Math.floor(
       (page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) /

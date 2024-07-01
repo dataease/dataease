@@ -24,7 +24,7 @@ public class AiBaseService implements AiComponentApi {
     @Override
     public Map<String, String> findTargetUrl() {
         Map<String, String> templateParams = sysParameterManage.groupVal("ai.");
-        if (templateParams != null && StringUtils.isNotEmpty(templateParams.get("ai.baseUrl")) && UrlTestUtils.isURLAvailable(templateParams.get("ai.baseUrl"))) {
+        if (templateParams != null && StringUtils.isNotEmpty(templateParams.get("ai.baseUrl"))) {
             return templateParams;
 
         } else {
