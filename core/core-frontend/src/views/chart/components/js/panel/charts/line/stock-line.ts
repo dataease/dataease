@@ -7,6 +7,7 @@ import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/uti
 import { LINE_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/line/common'
 import { useI18n } from '@/hooks/web/useI18n'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
+import { Options } from '@antv/g2plot/esm'
 
 const { t } = useI18n()
 const DEFAULT_DATA = []
@@ -421,23 +422,19 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
 
     const showFiled = chart.data.fields
     const customTooltipItems = originalItems => {
-      const formattedItems = originalItems
-        .filter(item => item.value !== undefined)
-        .map(item => {
-          const fieldObj = showFiled.find(q => q.dataeaseName === item.name)
-          const displayName = fieldObj?.chartShowName || fieldObj?.name || item.name
-          const formattedName = displayName.startsWith('ma')
-            ? displayName.toUpperCase()
-            : displayName
-          const formattedValue = valueFormatter(item.value, tooltipAttr.tooltipFormatter)
+      const formattedItems = originalItems.map(item => {
+        const fieldObj = showFiled.find(q => q.dataeaseName === item.name)
+        const displayName = fieldObj?.chartShowName || fieldObj?.name || item.name
+        const formattedName = displayName.startsWith('ma') ? displayName.toUpperCase() : displayName
+        const formattedValue = valueFormatter(item.value, tooltipAttr.tooltipFormatter)
 
-          return {
-            ...item,
-            name: formattedName,
-            value: formattedValue,
-            color: item.color
-          }
-        })
+        return {
+          ...item,
+          name: formattedName,
+          value: formattedValue,
+          color: item.color
+        }
+      })
 
       const hasKLine = formattedItems.some(item => !item.name.startsWith('MA'))
       const kLines = formattedItems.filter(item => !item.name.startsWith('MA'))
@@ -469,7 +466,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
           </div>
           <div style="display: flex; justify-content: space-between; width: 100%;">
             <span style="margin-right: 15px;">${item.name}</span>
-            <span>${item.value || ''}</span>
+            <span>${item.name.startsWith('MA') && item.value === '0' ? '-' : item.value}</span>
           </div>
         </li>
       `
@@ -489,6 +486,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
       tooltip: {
         showMarkers: true,
         showCrosshairs: true,
+        showNil: true,
         crosshairs: {
           follow: false
         },
@@ -583,13 +581,45 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
     }
   }
 
+  protected customConfigEmptyDataStrategy(chart: Chart, options: MixOptions): MixOptions {
+    const { data } = options as unknown as Options
+    if (!data?.length) {
+      return options
+    }
+    const strategy = parseJson(chart.senior).functionCfg.emptyDataStrategy
+    if (strategy === 'ignoreData') {
+      for (let i = data.length - 1; i >= 0; i--) {
+        const item = data[i]
+        Object.keys(item).forEach(key => {
+          if (key.startsWith('f_') && item[key] === null) {
+            data.splice(i, 1)
+          }
+        })
+      }
+    }
+    const updateValues = (strategy: 'breakLine' | 'setZero', data: any[]) => {
+      data.forEach(obj => {
+        Object.keys(obj).forEach(key => {
+          if (obj[key] === null) {
+            obj[key] = strategy === 'breakLine' ? null : 0
+          }
+        })
+      })
+    }
+    if (strategy === 'breakLine' || strategy === 'setZero') {
+      updateValues(strategy, data)
+    }
+    return options
+  }
+
   protected setupOptions(chart: Chart, options: MixOptions): MixOptions {
     return flow(
       this.configTheme,
       this.configBasicStyle,
       this.configXAxis,
       this.configYAxis,
-      this.configTooltip
+      this.configTooltip,
+      this.customConfigEmptyDataStrategy
     )(chart, options)
   }
 
