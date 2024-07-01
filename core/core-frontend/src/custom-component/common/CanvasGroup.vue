@@ -77,6 +77,7 @@ const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, 
     :prop-value="element.propValue"
     :show-position="showPosition"
     :scale="scale * 100"
+    :canvas-view-info="canvasViewInfo"
   ></group-preview>
 </template>
 
