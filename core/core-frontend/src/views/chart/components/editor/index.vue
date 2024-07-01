@@ -262,9 +262,6 @@ const chartStyleShow = computed(() => {
 })
 
 const chartViewInstance = computed(() => {
-  if (view.value.render === 'highchart') {
-    return chartViewManager.getChartView('antv', view.value.type)
-  }
   return chartViewManager.getChartView(view.value.render, view.value.type)
 })
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
@@ -557,6 +554,33 @@ const showAggregate = computed<boolean>(() => {
     }
   }
   return false
+})
+
+const disableUpdate = computed(() => {
+  let flag = false
+  if (view.value.type === 'table-info') {
+    return flag
+  }
+  if (!chartViewInstance.value) {
+    return flag
+  }
+  const axisConfig = chartViewInstance.value.axisConfig
+  if (!axisConfig) {
+    return flag
+  }
+  for (const key in axisConfig) {
+    if (Object.prototype.hasOwnProperty.call(axisConfig, key)) {
+      const axis = view.value[key]
+      if (axis instanceof Array) {
+        axis.forEach(a => {
+          if (a.desensitized) {
+            flag = true
+          }
+        })
+      }
+    }
+  }
+  return flag
 })
 
 const addAxis = (e, axis: AxisType) => {
@@ -2482,6 +2506,7 @@ onMounted(() => {
                       </div>
 
                       <el-button
+                        :disabled="disableUpdate"
                         type="primary"
                         class="result-style-button"
                         @click="updateChartData(view)"
