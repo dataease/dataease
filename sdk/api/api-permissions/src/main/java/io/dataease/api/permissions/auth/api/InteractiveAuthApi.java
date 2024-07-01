@@ -72,6 +72,11 @@ public interface InteractiveAuthApi {
     @PostMapping("/checkAuth")
     void checkAuth(@RequestBody BusiPerCheckDTO checkDTO);
 
+    @Operation(summary = "权限查询")
+    @ApiOperationSupport(order = 9)
+    @PostMapping("/queryAuth")
+    Integer queryAuth(@RequestBody BusiPerCheckDTO checkDTO);
+
     @GetMapping("/query2Root/{id}/{flag}")
     List<ResourceNodeVO> query2Root(@PathVariable("id") Long id, @PathVariable("flag") Integer flag);
 
