@@ -21,17 +21,8 @@ const embeddedStore = useEmbedded()
 const favorited = ref(false)
 const fullScreeRef = ref(null)
 const preview = () => {
-  if (isDataEaseBi.value) {
-    embeddedStore.clearState()
-    if (dvInfo.value.type === 'dataV') {
-      embeddedStore.setDvId(dvInfo.value.id)
-    } else {
-      embeddedStore.setResourceId(dvInfo.value.id)
-    }
-    useEmitt().emitter.emit('changeCurrentComponent', 'Preview')
-    return
-  }
-  const url = '#/preview?dvId=' + dvInfo.value.id
+  const baseUrl = isDataEaseBi.value ? embeddedStore.baseUrl : ''
+  const url = baseUrl + '#/preview?dvId=' + dvInfo.value.id
   const newWindow = window.open(url, '_blank')
   initOpenHandler(newWindow)
 }
