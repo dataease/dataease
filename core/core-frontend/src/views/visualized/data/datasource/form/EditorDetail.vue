@@ -379,6 +379,9 @@ const returnItem = apiItem => {
       if (form.value.paramsConfiguration[i].serialNumber === apiItem.serialNumber) {
         find = true
         form.value.paramsConfiguration[i] = apiItem
+        if (apiItem.serialNumber === activeParamsID.value) {
+          setActiveName(apiItem)
+        }
       }
     }
     if (!find) {
@@ -498,6 +501,7 @@ const apiRule = {
 const dialogEditParams = ref(false)
 const dialogRenameApi = ref(false)
 const activeParamsName = ref('')
+const activeParamsID = ref(0)
 const paramsObj = ref({
   name: '',
   id: 1,
@@ -542,6 +546,7 @@ const apiObjRules = {
 const setActiveName = val => {
   gridData.value = val.fields
   activeParamsName.value = val.name
+  activeParamsName.value = val.serialNumber
 }
 
 const paramsObjRef = ref()

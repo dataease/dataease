@@ -453,13 +453,15 @@ public class CalciteProvider extends Provider {
                 if (StringUtils.isEmpty(configuration.getSchema())) {
                     DEException.throwException(Translator.get("i18n_schema_is_empty"));
                 }
+
                 sql = String.format("SELECT \n" +
-                        "    c.name ,t.name,ep.value  \n" +
+                        "    c.name ,t.name ,ep.value  \n" +
                         "FROM \n" +
                         "    sys.columns AS c\n" +
                         "LEFT JOIN  sys.extended_properties AS ep ON c.object_id = ep.major_id AND c.column_id = ep.minor_id\n" +
                         "LEFT JOIN sys.types AS t ON c.user_type_id = t.user_type_id\n" +
-                        "WHERE  c.object_id = OBJECT_ID('%s') ", datasourceRequest.getTable());
+                        "LEFT JOIN sys.objects AS o ON c.object_id = o.object_id\n" +
+                        "WHERE  o.name = '%s'", datasourceRequest.getTable());
                 break;
             case pg:
                 configuration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), Pg.class);
