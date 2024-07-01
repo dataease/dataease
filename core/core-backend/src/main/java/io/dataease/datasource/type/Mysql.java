@@ -1,7 +1,7 @@
 package io.dataease.datasource.type;
 
-import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import lombok.Data;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;

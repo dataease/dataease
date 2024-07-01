@@ -1,8 +1,6 @@
 package io.dataease.datasource.provider;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
-import io.dataease.api.ds.vo.DatasourceConfiguration;
-import io.dataease.api.ds.vo.DatasourceConfiguration.DatasourceType;
 import io.dataease.commons.utils.CommonThreadPool;
 import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
@@ -14,6 +12,7 @@ import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.provider.Provider;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.i18n.Translator;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.CommonBeanFactory;
@@ -218,7 +217,7 @@ public class CalciteProvider extends Provider {
         ResultSet resultSet = null;
         try (Connection con = getConnection(datasourceRequest.getDatasource());
              Statement statement = getStatement(con, datasourceConfiguration.getQueryTimeout())) {
-            if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceType.oracle) {
+            if (DatasourceConfiguration.DatasourceType.valueOf(value.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                 statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
             }
             resultSet = statement.executeQuery(datasourceRequest.getQuery());
@@ -319,7 +318,7 @@ public class CalciteProvider extends Provider {
 
     public void hidePW(DatasourceDTO datasourceDTO) {
         DatasourceConfiguration configuration = null;
-        DatasourceType datasourceType = DatasourceType.valueOf(datasourceDTO.getType());
+        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceDTO.getType());
         switch (datasourceType) {
             case mysql:
             case mongo:
@@ -415,7 +414,7 @@ public class CalciteProvider extends Provider {
         String sql = "";
         DatasourceConfiguration configuration = null;
         String database = "";
-        DatasourceType datasourceType = DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
+        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
         switch (datasourceType) {
             case mysql:
             case mongo:
@@ -561,7 +560,7 @@ public class CalciteProvider extends Provider {
             ResultSet resultSet = null;
             try (Connection con = getConnection(datasourceRequest.getDatasource());
                  Statement statement = getStatement(con, 30)) {
-                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceType.oracle) {
+                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                     statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
                 }
                 resultSet = statement.executeQuery(datasourceRequest.getQuery());
@@ -581,7 +580,7 @@ public class CalciteProvider extends Provider {
             ResultSet resultSet = null;
             try (Connection con = getConnection(datasourceRequest.getDatasource());
                  Statement statement = getStatement(con, 30)) {
-                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceType.oracle) {
+                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
                     statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
                 }
                 resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
@@ -669,7 +668,7 @@ public class CalciteProvider extends Provider {
                     BasicDataSource dataSource = new BasicDataSource();
                     Schema schema = null;
                     DatasourceConfiguration configuration = null;
-                    DatasourceType datasourceType = DatasourceType.valueOf(ds.getType());
+                    DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(ds.getType());
                     try {
                         if (rootSchema.getSubSchema(ds.getSchemaAlias()) != null) {
                             JdbcSchema jdbcSchema = rootSchema.getSubSchema(ds.getSchemaAlias()).unwrap(JdbcSchema.class);
