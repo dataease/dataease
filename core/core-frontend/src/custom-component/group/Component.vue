@@ -6,7 +6,7 @@ import CanvasGroup from '@/custom-component/common/CanvasGroup.vue'
 import { deepCopy } from '@/utils/utils'
 import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
 const dvMainStore = dvMainStoreWithOut()
-const { canvasViewInfo, canvasStyleData, curComponent } = storeToRefs(dvMainStore)
+const { canvasStyleData, curComponent } = storeToRefs(dvMainStore)
 const sourceCanvasStyle = deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK)
 
 const props = defineProps({
@@ -50,10 +50,14 @@ const props = defineProps({
   active: {
     type: Boolean,
     default: false
+  },
+  canvasViewInfo: {
+    type: Object,
+    required: true
   }
 })
 
-const { propValue, dvInfo, element, scale } = toRefs(props)
+const { propValue, dvInfo, element, scale, canvasViewInfo } = toRefs(props)
 const customCanvasStyle = computed(() => {
   const result = sourceCanvasStyle
   result.scale = canvasStyleData.value.scale

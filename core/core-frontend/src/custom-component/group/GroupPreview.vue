@@ -1,11 +1,7 @@
 <script setup lang="ts">
 import { toRefs } from 'vue'
-import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { storeToRefs } from 'pinia'
 import ComponentWrapper from '@/components/data-visualization/canvas/ComponentWrapper.vue'
 import { toPercent } from '@/utils/translate'
-const dvMainStore = dvMainStoreWithOut()
-const { canvasViewInfo } = storeToRefs(dvMainStore)
 
 const props = defineProps({
   propValue: {
@@ -39,10 +35,14 @@ const props = defineProps({
     type: Number,
     required: false,
     default: 1
+  },
+  canvasViewInfo: {
+    type: Object,
+    required: true
   }
 })
 
-const { propValue, dvInfo, searchCount, scale } = toRefs(props)
+const { propValue, dvInfo, searchCount, scale, canvasViewInfo } = toRefs(props)
 
 const customGroupStyle = item => {
   return {
