@@ -110,6 +110,7 @@ const state = reactive({
 })
 const dataRowSelect = ref({})
 const dataRowNameSelect = ref({})
+const dataRowNameSelectSource = ref({})
 const dataRowFiledName = ref([])
 const initReady = ref(false)
 const editShow = ref(true)
@@ -390,6 +391,7 @@ const initCurFields = chartDetails => {
   dataRowFiledName.value = []
   dataRowSelect.value = {}
   dataRowNameSelect.value = {}
+  dataRowNameSelectSource.value = {} // 记录原格式，部分数字是经过格式化的，再匹配颜色时会有问题
   if (chartDetails.data && chartDetails.data.sourceFields) {
     const checkAllAxisStr =
       JSON.stringify(chartDetails.xAxis) +
@@ -430,11 +432,13 @@ const initCurFields = chartDetails => {
     for (const key in rowData) {
       dataRowSelect.value[nameIdMap[key]] = rowData[key]
       let rowDataValue = rowData[key]
+      const rowDataValueSource = rowData[key]
       const f = valueFieldMap[key]
       if (f && f.formatterCfg) {
         rowDataValue = valueFormatter(rowDataValue, f.formatterCfg)
       }
       dataRowNameSelect.value[sourceFieldNameIdMap[key]] = rowDataValue
+      dataRowNameSelectSource.value[sourceFieldNameIdMap[key]] = rowDataValueSource
     }
   }
   element.value.propValue['innerType'] = chartDetails.type
@@ -468,13 +472,13 @@ const conditionAdaptor = (chart: Chart) => {
       let defaultBgColor = 'none'
       res[field.field.name] = {
         color: mappingColor(
-          dataRowNameSelect.value[field.field.name],
+          dataRowNameSelectSource.value[field.field.name],
           defaultValueColor,
           field,
           'color'
         ),
         backgroundColor: mappingColor(
-          dataRowNameSelect.value[field.field.name],
+          dataRowNameSelectSource.value[field.field.name],
           defaultBgColor,
           field,
           'backgroundColor'
