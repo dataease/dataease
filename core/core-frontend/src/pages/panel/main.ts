@@ -80,7 +80,6 @@ const setupAll = async (
   resourceId: string
 ): Promise<App<Element>> => {
   const app = createApp(AppElement, { componentName: type })
-  installDirective(app)
   await setupI18n(app)
   setupStore(app)
   setupRouter(app)
@@ -96,6 +95,7 @@ const setupAll = async (
   embeddedStore.setPid(pid)
   embeddedStore.setChartId(chartId)
   embeddedStore.setResourceId(resourceId)
+  installDirective(app)
   const res = await import('@/store/modules/user')
   const userStore = res.userStore()
   userStore.setUser()
