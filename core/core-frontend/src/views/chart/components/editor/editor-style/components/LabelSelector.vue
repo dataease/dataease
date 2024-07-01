@@ -370,7 +370,7 @@ onMounted(() => {
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="showProperty('customContent')" class="form-item">
+      <el-form-item v-if="showProperty('customContent')" :class="'form-item-' + themes">
         <template #label>
           <span class="data-area-label">
             <span>
@@ -389,6 +389,7 @@ onMounted(() => {
         <el-input
           style="font-size: smaller; font-weight: normal"
           v-model="state.labelForm.customContent"
+          :effect="themes"
           type="textarea"
           :autosize="{ minRows: 4, maxRows: 4 }"
           :placeholder="defaultPlaceholder"

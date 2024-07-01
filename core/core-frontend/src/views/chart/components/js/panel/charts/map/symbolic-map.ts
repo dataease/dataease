@@ -33,7 +33,14 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     ...MAP_EDITOR_PROPERTY_INNER,
     'basic-style-selector': ['colors', 'alpha', 'mapBaseStyle', 'symbolicMapStyle', 'zoom'],
     'label-selector': ['color', 'fontSize', 'showFields', 'customContent'],
-    'tooltip-selector': ['color', 'fontSize', 'showFields', 'customContent', 'show']
+    'tooltip-selector': [
+      'color',
+      'fontSize',
+      'showFields',
+      'customContent',
+      'show',
+      'backgroundColor'
+    ]
   }
   axis: AxisType[] = ['xAxis', 'xAxisExt', 'extBubble', 'filter', 'extLabel', 'extTooltip']
   axisConfig: AxisConfig = {
@@ -91,7 +98,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     const configList: L7Config[] = []
     const symbolicLayer = this.buildSymbolicLayer(chart, basicStyle)
     configList.push(symbolicLayer)
-    const tooltipLayer = this.buildTooltip(chart, symbolicLayer)
+    const tooltipLayer = this.buildTooltip(chart, container, symbolicLayer)
     if (tooltipLayer) {
       scene.addPopup(tooltipLayer)
     }
@@ -233,7 +240,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
    * @param chart
    * @param pointLayer
    */
-  buildTooltip = (chart, pointLayer) => {
+  buildTooltip = (chart, container, pointLayer) => {
     const customAttr = chart.customAttr ? parseJson(chart.customAttr) : null
     if (customAttr?.tooltip?.show) {
       const { tooltip } = deepCopy(customAttr)
@@ -244,9 +251,19 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
           ...chart.xAxis.map(i => `${i.dataeaseName}@${i.name}`)
         ]
       }
+      // 修改背景色
+      const style = document.createElement('style')
+      style.innerHTML = `
+          #${container} .l7-popup-content {
+            background-color: ${tooltip.backgroundColor} !important;
+          }
+          #${container} .l7-popup-tip {
+           border-top-color: ${tooltip.backgroundColor} !important;
+          }
+        `
+      document.head.appendChild(style)
       const htmlPrefix = `<div style='font-size:${tooltip.fontSize}px;color:${tooltip.color}'>`
       const htmlSuffix = '</div>'
-
       return new LayerPopup({
         items: [
           {
@@ -360,7 +377,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
   setupDefaultOptions(chart: ChartObj): ChartObj {
     chart.customAttr.label = {
       ...chart.customAttr.label,
-      show: true
+      show: false
     }
     chart.customAttr.basicStyle = {
       ...chart.customAttr.basicStyle,
@@ -371,6 +388,6 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
   }
 
   protected setupOptions(chart: Chart, config: L7Config): L7Config {
-    return flow(this.configEmptyDataStrategy, this.configTooltip, this.configLabel)(chart, config)
+    return flow(this.configEmptyDataStrategy, this.configLabel)(chart, config)
   }
 }
