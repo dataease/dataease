@@ -4,25 +4,39 @@ import { storeToRefs } from 'pinia'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import DvDetailInfo from '@/views/common/DvDetailInfo.vue'
+import { useEmbedded } from '@/store/modules/embedded'
 import { storeApi, storeStatusApi } from '@/api/visualization/dataVisualization'
 import { ref, watch, computed } from 'vue'
 import ShareVisualHead from '@/views/share/share/ShareVisualHead.vue'
 import { XpackComponent } from '@/components/plugin'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 const dvMainStore = dvMainStoreWithOut()
 const appStore = useAppStoreWithOut()
 const { dvInfo } = storeToRefs(dvMainStore)
 const emit = defineEmits(['reload', 'download', 'downloadAsAppTemplate'])
 const { t } = useI18n()
+const embeddedStore = useEmbedded()
 
 const favorited = ref(false)
 const fullScreeRef = ref(null)
 const preview = () => {
+  if (isDataEaseBi.value) {
+    embeddedStore.clearState()
+    if (dvInfo.value.type === 'dataV') {
+      embeddedStore.setDvId(dvInfo.value.id)
+    } else {
+      embeddedStore.setResourceId(dvInfo.value.id)
+    }
+    useEmitt().emitter.emit('changeCurrentComponent', 'Preview')
+    return
+  }
   const url = '#/preview?dvId=' + dvInfo.value.id
   const newWindow = window.open(url, '_blank')
   initOpenHandler(newWindow)
 }
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
+const isIframe = computed(() => appStore.getIsIframe)
 
 const reload = () => {
   emit('reload', dvInfo.value.id)
@@ -36,6 +50,19 @@ const downloadAsAppTemplate = downloadType => {
 }
 
 const dvEdit = () => {
+  if (isDataEaseBi.value) {
+    embeddedStore.clearState()
+    if (dvInfo.value.type === 'dataV') {
+      embeddedStore.setDvId(dvInfo.value.id)
+    } else {
+      embeddedStore.setResourceId(dvInfo.value.id)
+    }
+    useEmitt().emitter.emit(
+      'changeCurrentComponent',
+      dvInfo.value.type === 'dataV' ? 'VisualizationEditor' : 'DashboardEditor'
+    )
+    return
+  }
   const baseUrl = dvInfo.value.type === 'dataV' ? '#/dvCanvas?dvId=' : '#/dashboard?resourceId='
   const newWindow = window.open(baseUrl + dvInfo.value.id, '_blank')
   initOpenHandler(newWindow)
@@ -105,13 +132,13 @@ const initOpenHandler = newWindow => {
     </div>
     <div class="canvas-opt-button">
       <de-fullscreen ref="fullScreeRef"></de-fullscreen>
-      <el-button v-if="!isDataEaseBi" secondary @click="() => fullScreeRef.toggleFullscreen()">
+      <el-button v-if="!isIframe" secondary @click="() => fullScreeRef.toggleFullscreen()">
         <template #icon>
           <icon name="icon_pc_fullscreen"></icon>
         </template>
         全屏</el-button
       >
-      <el-button secondary v-if="!isDataEaseBi" @click="preview()">
+      <el-button secondary @click="preview()">
         <template #icon>
           <icon name="icon_pc_outlined"></icon>
         </template>
@@ -122,12 +149,7 @@ const initOpenHandler = newWindow => {
         :weight="dvInfo.weight"
         :resource-type="dvInfo.type"
       />
-      <el-button
-        class="custom-button"
-        v-if="dvInfo.weight > 6 && !isDataEaseBi"
-        type="primary"
-        @click="dvEdit()"
-      >
+      <el-button class="custom-button" v-if="dvInfo.weight > 6" type="primary" @click="dvEdit()">
         <template #icon>
           <icon name="icon_edit_outlined"></icon>
         </template>
