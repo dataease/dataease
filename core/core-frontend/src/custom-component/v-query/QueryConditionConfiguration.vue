@@ -60,7 +60,6 @@ const renameInput = ref([])
 const valueSource = ref([])
 const conditions = ref([])
 const checkAll = ref(false)
-const multiple = ref(false)
 const activeConditionForRename = reactive({
   id: '',
   name: '',
@@ -209,12 +208,59 @@ const handleCheckAllChange = (val: boolean) => {
   curComponent.value.checkedFields = val ? fields.value.map(ele => ele.componentId) : []
   isIndeterminate.value = false
 }
+
+const setTreeDefault = () => {
+  if (!!curComponent.value.checkedFields.length) {
+    let checkId = ''
+    let tableId = ''
+    let comId = ''
+    fields.value.forEach(ele => {
+      if (
+        curComponent.value.checkedFields.includes(ele.componentId) &&
+        curComponent.value.checkedFieldsMap[ele.componentId] &&
+        !checkId
+      ) {
+        checkId = curComponent.value.checkedFieldsMap[ele.componentId]
+        comId = ele.componentId
+        tableId = datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId
+      }
+    })
+    if (checkId && tableId) {
+      const componentObj = fields.value.find(ele => ele.componentId === comId)
+      const fieldArr = (
+        curComponent.value.optionValueSource === 0
+          ? componentObj?.fields?.dimensionList
+          : curComponent.value.dataset?.fields
+      ).filter(ele => ele.deType === +curComponent.value.field.deType)
+      fields.value.forEach(ele => {
+        if (curComponent.value.checkedFields.includes(ele.componentId)) {
+          if (datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId === tableId) {
+            curComponent.value.checkedFieldsMap[ele.componentId] = checkId
+          }
+        }
+      })
+      const fieldObj = fieldArr.find(element => element.id === checkId)
+      if (!!curComponent.value.treeFieldList.length) {
+        const [fir] = curComponent.value.treeFieldList
+        if (fir.field !== checkId) {
+          curComponent.value.treeFieldList = [fieldObj]
+        }
+      } else {
+        curComponent.value.treeFieldList = [fieldObj]
+      }
+    }
+  }
+}
 const handleCheckedFieldsChange = (value: string[]) => {
-  if (curComponent.value.displayType === '8') return
   handleDialogClick()
   const checkedCount = value.length
   checkAll.value = checkedCount === fields.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
+  if (curComponent.value.displayType === '8') return
+  if (curComponent.value.displayType === '9') {
+    setTreeDefault()
+    return
+  }
   setType()
 }
 
@@ -280,6 +326,10 @@ const setTypeChange = () => {
       )
     ) {
       curComponent.value.timeGranularityMultiple = curComponent.value.timeGranularity
+    }
+
+    if (curComponent.value.displayType === '9') {
+      setTreeDefault()
     }
   })
 }

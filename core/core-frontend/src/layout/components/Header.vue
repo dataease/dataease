@@ -133,7 +133,6 @@ onMounted(() => {
         <el-icon
           class="preview-download_icon"
           :class="navigateBg === 'light' && 'is-light-setting'"
-          style="margin: 0 10px"
         >
           <Icon name="dv-preview-download" @click="downloadClick" />
         </el-icon>
@@ -160,7 +159,6 @@ onMounted(() => {
 
 <style lang="less" scoped>
 .preview-download_icon {
-  margin: 0 10px;
   padding: 5px;
   height: 28px;
   width: 28px;
