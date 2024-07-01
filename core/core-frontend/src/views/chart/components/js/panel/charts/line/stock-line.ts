@@ -282,6 +282,7 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
           xField: xAxisDataeaseName,
           yField: key,
           color: colors[index - 1],
+          xAxis: null,
           yAxis: {
             label: false,
             min: minValue,
@@ -398,20 +399,26 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
 
   protected configTooltip(chart: Chart, options: MixOptions): MixOptions {
     const tooltipAttr = parseJson(chart.customAttr).tooltip
-    if (!tooltipAttr.show) {
-      return {
-        ...options,
-        tooltip: {
-          showContent: false
-        }
-      }
-    }
     const newPlots = []
     const linePlotList = options.plots.filter(item => item.type === 'line')
     linePlotList.forEach(item => {
       newPlots.push(item)
     })
     const stockPlot = options.plots.filter(item => item.type === 'stock')[0]
+    if (!tooltipAttr.show) {
+      const stockOption = {
+        ...stockPlot.options,
+        tooltip: {
+          showContent: false
+        }
+      }
+      newPlots.push({ ...stockPlot, options: stockOption })
+      return {
+        ...options,
+        plots: newPlots
+      }
+    }
+
     const showFiled = chart.data.fields
     const customTooltipItems = originalItems => {
       const formattedItems = originalItems
@@ -510,10 +517,15 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
       ...stockPlot,
       options: {
         ...stockPlot.options,
-        xAxis: {
-          ...stockPlot.options['xAxis'],
-          ...xAxisOptions['xAxis']
-        }
+        xAxis: xAxisOptions['xAxis']
+          ? {
+              ...stockPlot.options['xAxis'],
+              ...xAxisOptions['xAxis']
+            }
+          : {
+              label: false,
+              line: null
+            }
       }
     }
     newPlots.push(newStockPlot)
@@ -548,11 +560,17 @@ export class StockLine extends G2PlotChartView<MixOptions, Mix> {
       ...stockPlot,
       options: {
         ...stockPlot.options,
-        yAxis: {
-          ...stockPlot.options['yAxis'],
-          ...yAxisOptions['yAxis'],
-          label
-        }
+        yAxis: label
+          ? {
+              ...stockPlot.options['yAxis'],
+              ...yAxisOptions['yAxis'],
+              label
+            }
+          : {
+              label,
+              grid: null,
+              line: null
+            }
       }
     }
     newPlots.push(newStockPlot)
