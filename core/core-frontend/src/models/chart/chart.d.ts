@@ -57,6 +57,7 @@ declare interface Chart {
   jumpActive: boolean
   aggregate?: boolean
   plugin?: CustomPlugin
+  isPlugin: boolean
 }
 declare type CustomAttr = DeepPartial<ChartAttr> | JSONString<DeepPartial<ChartAttr>>
 declare type CustomStyle = DeepPartial<ChartStyle> | JSONString<DeepPartial<ChartStyle>>
