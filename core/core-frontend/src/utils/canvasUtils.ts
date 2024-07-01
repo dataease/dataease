@@ -116,6 +116,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       createTime: canvasInfo.createTime,
       updateTime: canvasInfo.updateTime,
       watermarkInfo: watermarkInfo,
+      weight: canvasInfo.weight,
       mobileLayout: canvasInfo.mobileLayout || false
     }
     const canvasVersion = canvasInfo.version
