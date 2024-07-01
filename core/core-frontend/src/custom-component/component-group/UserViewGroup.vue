@@ -81,7 +81,10 @@ const loadPluginCategory = data => {
     while (stack?.length) {
       const parent = stack.pop()
       if (parent.category === category) {
-        parent.details.push(node)
+        const chart = parent.details.find(chart => chart.value === node.value)
+        if (!chart) {
+          parent.details.push(node)
+        }
         findParent = true
       }
     }

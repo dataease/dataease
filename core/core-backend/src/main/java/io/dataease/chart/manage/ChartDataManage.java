@@ -352,6 +352,7 @@ public class ChartDataManage {
             Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
             Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
             String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+            querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
             filterResult.getContext().put("querySql", querySql);
         }
         ChartCalcDataResult calcResult = chartHandler.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, calciteProvider);

@@ -45,6 +45,7 @@ import DeRichTextView from '@/custom-component/rich-text/DeRichTextView.vue'
 import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmptyInfo.vue'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { viewFieldTimeTrans } from '@/utils/viewUtils'
+import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
 
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
@@ -473,9 +474,21 @@ const calcData = params => {
   dvMainStore.setLastViewRequestInfo(params.id, params.chartExtRequest)
   if (chartComponent?.value) {
     loading.value = true
-    chartComponent?.value?.calcData?.(params, res => {
-      loading.value = false
-    })
+    if (view.value.isPlugin) {
+      chartComponent?.value?.invokeMethod({
+        methodName: 'calcData',
+        args: [
+          params,
+          res => {
+            loading.value = false
+          }
+        ]
+      })
+    } else {
+      chartComponent?.value?.calcData?.(params, res => {
+        loading.value = false
+      })
+    }
   }
 }
 
@@ -693,6 +706,55 @@ const showActionIcons = computed(() => {
   }
   return trackMenu.value.length > 0 || state.title_remark.show
 })
+const chartConfigs = ref(CHART_TYPE_CONFIGS)
+const pluginLoaded = computed(() => {
+  let result = false
+  chartConfigs.value.forEach(cat => {
+    result = cat.details.find(chart => view.value?.type === chart.value) !== undefined
+  })
+  return result
+})
+// TODO 统一加载
+const loadPluginCategory = data => {
+  data.forEach(item => {
+    const { category, title, render, chartValue, chartTitle, icon, staticMap } = item
+    const node = {
+      render,
+      category,
+      icon,
+      value: chartValue,
+      title: chartTitle,
+      isPlugin: true,
+      staticMap
+    }
+    if (view.value?.type === node.value) {
+      view.value.plugin = {
+        isPlugin: true,
+        staticMap
+      }
+    }
+    const stack = [...chartConfigs.value]
+    let findParent = false
+    while (stack?.length) {
+      const parent = stack.pop()
+      if (parent.category === category) {
+        const chart = parent.details.find(chart => chart.value === node.value)
+        if (!chart) {
+          parent.details.push(node)
+        }
+        findParent = true
+      }
+    }
+    if (!findParent) {
+      stack.push({
+        category,
+        title,
+        display: 'show',
+        details: [node]
+      })
+    }
+  })
+}
 </script>
 
 <template>
@@ -761,7 +823,7 @@ const showActionIcons = computed(() => {
     <!--这里去渲染不同图库的图表-->
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
       <plugin-component
-        v-if="view.plugin?.isPlugin"
+        v-if="view.isPlugin"
         :jsname="view.plugin.staticMap['index']"
         :scale="scale"
         :dynamic-area-id="dynamicAreaId"
@@ -830,6 +892,11 @@ const showActionIcons = computed(() => {
     <XpackComponent
       ref="openHandler"
       jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI="
+    />
+    <XpackComponent
+      v-if="!pluginLoaded && view.isPlugin"
+      jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvVmlld0NhdGVnb3J5SGFuZGxlcg=="
+      @load-plugin-category="loadPluginCategory"
     />
   </div>
 </template>
