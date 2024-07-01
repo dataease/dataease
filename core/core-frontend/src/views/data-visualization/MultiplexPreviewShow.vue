@@ -136,7 +136,7 @@ onBeforeMount(() => {
         </span>
       </el-row>
       <el-tree
-        class="custom-tree"
+        class="custom-tree-multiplex"
         menu
         ref="multiplexInfoTree"
         :empty-text="'暂无可用组件'"
@@ -498,8 +498,8 @@ span {
   align-items: center;
 }
 
-.custom-tree {
-  height: 100%;
+.custom-tree-multiplex {
+  height: calc(100% - 40px);
   overflow-y: auto;
 }
 .m-del-icon-btn {
