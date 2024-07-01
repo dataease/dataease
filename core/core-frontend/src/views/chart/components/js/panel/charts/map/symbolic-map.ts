@@ -25,9 +25,7 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     'basic-style-selector',
     'title-selector',
     'label-selector',
-    'tooltip-selector',
-    'jump-set',
-    'linkage'
+    'tooltip-selector'
   ]
   propertyInner: EditorPropertyInner = {
     ...MAP_EDITOR_PROPERTY_INNER,
