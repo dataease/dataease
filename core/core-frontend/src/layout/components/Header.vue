@@ -129,9 +129,16 @@ onMounted(() => {
       >
         <Icon name="dv-ai" @click="handleAiClick" />
       </el-icon>
-      <el-icon style="margin: 0 10px">
-        <Icon name="dv-preview-download" @click="downloadClick" />
-      </el-icon>
+      <el-tooltip effect="dark" content="数据导出中心" placement="bottom">
+        <el-icon
+          class="preview-download_icon"
+          :class="navigateBg === 'light' && 'is-light-setting'"
+          style="margin: 0 10px"
+        >
+          <Icon name="dv-preview-download" @click="downloadClick" />
+        </el-icon>
+      </el-tooltip>
+
       <ai-tips
         @confirm="aiTipsConfirm"
         v-if="showOverlay && appearanceStore.getShowAi"
@@ -152,6 +159,24 @@ onMounted(() => {
 </template>
 
 <style lang="less" scoped>
+.preview-download_icon {
+  margin: 0 10px;
+  padding: 5px;
+  height: 28px;
+  width: 28px;
+  border-radius: 4px;
+  overflow: hidden;
+  cursor: pointer;
+  &:hover {
+    background-color: #1e2738;
+  }
+  &.is-light-setting {
+    &:hover {
+      background-color: var(--ed-menu-hover-bg-color) !important;
+    }
+  }
+}
+
 .overlay {
   position: fixed;
   top: 0;
