@@ -1147,13 +1147,6 @@ export const CHART_TYPE_CONFIGS = [
         value: 'area-stack',
         title: t('chart.chart_area_stack'),
         icon: 'area-stack'
-      },
-      {
-        render: 'antv',
-        category: 'trend',
-        value: 'stock-line',
-        title: 'K 线图',
-        icon: 'line'
       }
     ]
   },
@@ -1245,6 +1238,13 @@ export const CHART_TYPE_CONFIGS = [
         value: 'progress-bar',
         title: t('chart.chart_progress_bar'),
         icon: 'progress-bar'
+      },
+      {
+        render: 'antv',
+        category: 'trend',
+        value: 'stock-line',
+        title: 'K 线图',
+        icon: 'stock-line'
       }
     ]
   },
