@@ -2210,8 +2210,26 @@ onMounted(() => {
                     <!-- extBubble -->
                     <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
                       <div class="form-draggable-title">
-                        <span>
-                          {{ chartViewInstance.axisConfig.extBubble.name }}
+                        <span class="data-area-label">
+                          <span style="margin-right: 4px">
+                            {{ chartViewInstance.axisConfig.extBubble.name }}
+                          </span>
+                          <el-tooltip
+                            v-if="chartViewInstance.axisConfig.extBubble.tooltip"
+                            class="item"
+                            :effect="toolTip"
+                            placement="top"
+                          >
+                            <template #content>
+                              <span> {{ chartViewInstance.axisConfig.extBubble.tooltip }}</span>
+                            </template>
+                            <el-icon
+                              class="hint-icon"
+                              :class="{ 'hint-icon--dark': themes === 'dark' }"
+                            >
+                              <Icon name="icon_info_outlined" />
+                            </el-icon>
+                          </el-tooltip>
                         </span>
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon

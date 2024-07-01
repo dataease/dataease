@@ -373,7 +373,7 @@ onMounted(() => {
       <el-form-item v-if="showProperty('customContent')" :class="'form-item-' + themes">
         <template #label>
           <span class="data-area-label">
-            <span>
+            <span style="margin-right: 4px">
               {{ t('chart.content_formatter') }}
             </span>
             <el-tooltip class="item" :effect="toolTip" placement="bottom">
@@ -995,5 +995,13 @@ onMounted(() => {
   &.divider-dark {
     border-color: rgba(255, 255, 255, 0.15);
   }
+}
+.data-area-label {
+  text-align: left;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>
