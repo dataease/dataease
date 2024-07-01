@@ -349,7 +349,7 @@ onMounted(() => {
         </el-tooltip>
       </el-form-item>
     </el-space>
-    <div v-if="showProperty('showFields')">
+    <div v-if="showProperty('showFields') && !batchOptStatus">
       <el-form-item :label="t('chart.label')" class="form-item" :class="'form-item-' + themes">
         <el-select
           size="small"
