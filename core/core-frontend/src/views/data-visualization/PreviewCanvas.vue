@@ -76,7 +76,7 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
   const attachParamsEncode = router.currentRoute.value.query.attachParams
   if (attachParamsEncode || hasTicketArgs) {
     try {
-      if (!attachParam) {
+      if (!!attachParamsEncode) {
         attachParam = JSON.parse(Base64.decode(decodeURIComponent(attachParamsEncode)))
       }
       if (hasTicketArgs) {
