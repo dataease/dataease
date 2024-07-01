@@ -375,7 +375,7 @@ em {
 }
 
 .color-dataV {
-  background: rgb(0, 214, 185)!important;
+  background: rgb(0, 214, 185) !important;
 }
 
 .color-dataset {
@@ -426,7 +426,11 @@ strong {
     color: #1f2329;
     display: flex;
     align-items: center;
-    padding-right: 20px;
+    padding-right: 24px;
+  }
+
+  .m50-export {
+    max-width: 200px;
   }
 
   .btn-text {
@@ -498,9 +502,9 @@ strong {
 
 // 解决screenfull全屏时 部分嵌入到body中的组件（如 下来框 消息通知框等）被覆盖问题
 // 这里使用的方案为直接将body全屏 区间组件覆盖整个body
-.de-screen-full{
-  position:fixed !important;
-  z-index:200;
+.de-screen-full {
+  position: fixed !important;
+  z-index: 200;
   top: 0;
   left: 0;
   right: 0;

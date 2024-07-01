@@ -123,9 +123,16 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   }
 
   if (firstLoad && !selectValue?.length) {
-    return defaultValueCheck ? defaultValue : multiple ? [] : ''
+    return defaultValueCheck
+      ? Array.isArray(defaultValue)
+        ? defaultValue
+        : [defaultValue]
+      : multiple
+      ? []
+      : ''
   }
-  return selectValue || ''
+
+  return selectValue ? (Array.isArray(selectValue) ? selectValue : [selectValue]) : ''
 }
 
 export const useFilter = (curComponentId: string, firstLoad = false) => {

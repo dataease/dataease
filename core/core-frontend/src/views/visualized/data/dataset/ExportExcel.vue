@@ -174,7 +174,14 @@ const openMessageLoading = (text, type = 'success', cb) => {
   const customClass = `de-message-${type || 'success'} de-message-export`
   ElMessage({
     message: h('p', null, [
-      t(text),
+      h(
+        'span',
+        {
+          title: t(text),
+          class: 'ellipsis m50-export'
+        },
+        t(text)
+      ),
       h(
         ElButton,
         {
