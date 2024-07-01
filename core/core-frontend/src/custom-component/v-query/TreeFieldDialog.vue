@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { guid } from '@/views/visualized/data/dataset/form/util.js'
 import { ElMessage } from 'element-plus-secondary'
-import { ref, shallowRef } from 'vue'
+import { ref, shallowRef, computed } from 'vue'
 import { cloneDeep } from 'lodash-es'
 
 const dialogVisible = ref(false)
@@ -23,6 +23,10 @@ const init = (arr, treeArr) => {
   treeList.value = cloneDeep(treeArr).map(ele => ({ field: ele, id: ele.id }))
   dialogVisible.value = true
 }
+
+const disableFieldArr = computed(() => {
+  return treeList.value.map(ele => ele.field)
+})
 
 const cancelClick = () => {
   handleBeforeClose()
@@ -87,8 +91,19 @@ defineExpose({
       <div class="cascade-item" v-for="(ele, idx) in treeList" :key="ele.id">
         <div class="label">层级{{ indexCascade[idx + 1] }}</div>
         <div class="item-name">
-          <el-select value-key="id" v-model="ele.field" style="width: 300px">
-            <el-option v-for="item in datasetMap" :key="item.id" :label="item.name" :value="item" />
+          <el-select
+            :disabled="idx === 0 && ele.field"
+            value-key="id"
+            v-model="ele.field"
+            style="width: 300px"
+          >
+            <el-option
+              :disabled="disableFieldArr.includes(item.id)"
+              v-for="item in datasetMap"
+              :key="item.id"
+              :label="item.name"
+              :value="item"
+            />
           </el-select>
         </div>
         <el-button v-show="idx !== 0" @click="deleteCascade(idx)" class="cascade-delete" text>
