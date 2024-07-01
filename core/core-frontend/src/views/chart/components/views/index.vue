@@ -516,7 +516,9 @@ const listenerEnable = computed(() => {
   return !showPosition.value.includes('viewDialog')
 })
 onMounted(() => {
-  queryData(true && !showPosition.value.includes('viewDialog'))
+  if (!view.value.isPlugin) {
+    queryData(true && !showPosition.value.includes('viewDialog'))
+  }
   if (!listenerEnable.value) {
     return
   }
