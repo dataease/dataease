@@ -401,7 +401,6 @@ onMounted(() => {
     label-position="top"
   >
     <el-form-item
-      v-if="props.chart.type !== 'symbolic-map'"
       :label="t('chart.background') + t('chart.color')"
       class="form-item"
       :class="'form-item-' + themes"
@@ -479,7 +478,7 @@ onMounted(() => {
           />
         </el-select>
       </el-form-item>
-      <el-form-item v-if="showProperty('customContent')" class="form-item">
+      <el-form-item v-if="showProperty('customContent')" :class="'form-item-' + themes">
         <template #label>
           <span class="data-area-label">
             <span>
@@ -497,6 +496,7 @@ onMounted(() => {
         </template>
         <el-input
           style="font-size: smaller; font-weight: normal"
+          :effect="themes"
           v-model="state.tooltipForm.customContent"
           type="textarea"
           :autosize="{ minRows: 4, maxRows: 4 }"
@@ -811,6 +811,7 @@ onMounted(() => {
     border-right: unset;
   }
 }
+
 .series-select-option {
   display: flex;
   align-items: center;
