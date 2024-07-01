@@ -1,13 +1,13 @@
 package io.dataease.datasource.provider;
 
 
-import io.dataease.api.ds.vo.DatasourceConfiguration;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDeEngine;
 import io.dataease.datasource.request.EngineRequest;
 import io.dataease.datasource.type.H2;
 import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.datasource.dto.TableField;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.utils.BeanUtils;
 import io.dataease.utils.JsonUtil;
 import org.apache.commons.lang3.StringUtils;
