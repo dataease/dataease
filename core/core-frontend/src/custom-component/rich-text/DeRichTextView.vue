@@ -227,14 +227,15 @@ const assignment = content => {
       if (dataRowFiledName.value.includes(itm)) {
         const ele = itm.slice(1, -1)
         let value = dataRowNameSelect.value[ele] !== undefined ? dataRowNameSelect.value[ele] : null
-        if (value && thresholdStyleInfo && thresholdStyleInfo[ele]) {
+        let targetValue = !!value ? value : '-'
+        if (thresholdStyleInfo && thresholdStyleInfo[ele]) {
           const thresholdStyle = thresholdStyleInfo[ele]
-          value = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${value}</span>`
+          targetValue = `<span style="color:${thresholdStyle.color};background-color: ${thresholdStyle.backgroundColor}">${targetValue}</span>`
         }
         if (initReady.value) {
-          content = content.replace(itm, !!value ? value : '-')
+          content = content.replace(itm, targetValue)
         } else {
-          content = content.replace(itm, !!value ? value : '[获取中...]')
+          content = content.replace(itm, !!value ? targetValue : '[获取中...]')
         }
       }
     })
@@ -366,6 +367,7 @@ const calcData = (view: Chart, callback) => {
           const curViewInfo = canvasViewInfo.value[element.value.id]
           curViewInfo['curFields'] = res.data.fields
           dvMainStore.setViewDataDetails(element.value.id, state.data)
+          initReady.value = true
           initCurFields(res)
         }
         callback?.()
