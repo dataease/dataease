@@ -163,6 +163,11 @@ public class DataVisualizationVO implements Serializable {
      */
     private VisualizationWatermarkVO watermarkInfo;
 
+    /**
+     * 权限信息
+     */
+    private Integer weight;
+
 
     public DataVisualizationVO(Long id, String name, String type, Integer version, String canvasStyleData, String componentData, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo) {
         this.id = id;
