@@ -37,6 +37,7 @@ import io.dataease.i18n.Translator;
 import io.dataease.job.schedule.CheckDsStatusJob;
 import io.dataease.job.schedule.ScheduleManager;
 import io.dataease.license.config.XpackInteract;
+import io.dataease.license.utils.LicenseUtil;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
 import io.dataease.model.BusiNodeVO;
@@ -969,9 +970,10 @@ public class DatasourceServer implements DatasourceApi {
         datasources.forEach(datasource -> {
             commonThreadPool.addTask(() -> {
                 try {
+                    LicenseUtil.validate();
                     validate(datasource);
                 } catch (Exception e) {
-                    e.printStackTrace();
+
                 }
             });
         });

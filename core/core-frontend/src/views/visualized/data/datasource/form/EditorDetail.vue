@@ -599,13 +599,18 @@ const handleApiParams = (cmd: string, data) => {
       autofocus: false,
       showClose: false
     }).then(() => {
-      form.value.paramsConfiguration.splice(0, 1)
+      let index = 0
+      for (let i = 0; i < form.value.paramsConfiguration.length; i++) {
+        if (form.value.paramsConfiguration[i].serialNumber === data.serialNumber) {
+          index = i
+        }
+      }
+      form.value.paramsConfiguration.splice(index, 1)
       if (activeParamsName.value === data.name) {
         gridData.value = []
       }
     })
   }
-
   if (cmd === 'edit') {
     addApiItem(data)
   }

@@ -95,10 +95,10 @@ public class DataSourceManage {
         if (ObjectUtils.isNotEmpty(dto.getId())) {
             wrapper.ne("id", dto.getId());
         }
-        if (ObjectUtils.isNotEmpty(dto.getNodeType())   ) {
-            if(dto.getNodeType().equalsIgnoreCase("folder")){
+        if (ObjectUtils.isNotEmpty(dto.getNodeType())) {
+            if (dto.getNodeType().equalsIgnoreCase("folder")) {
                 wrapper.eq("type", dto.getType());
-            }else {
+            } else {
                 wrapper.ne("type", "folder");
             }
 
