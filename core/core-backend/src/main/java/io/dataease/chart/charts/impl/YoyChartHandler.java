@@ -26,6 +26,7 @@ import java.util.Map;
 public class YoyChartHandler extends DefaultChartHandler {
     @Override
     public <T extends CustomFilterResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, AxisFormatResult formatResult) {
+        var result = super.customFilter(view, filterList, formatResult);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         String originFilterJson = (String) JsonUtil.toJSONString(filterList);
         // 如果设置了同环比的指标字段设置了过滤器，那就需要把该过滤器的时间往前回调一年
@@ -37,7 +38,7 @@ public class YoyChartHandler extends DefaultChartHandler {
             formatResult.getContext().put("originFilter", originFilter);
             formatResult.getContext().put("yoyFiltered", true);
         }
-        return (T) new CustomFilterResult(filterList, formatResult.getContext());
+        return (T) result;
     }
 
     @Override
