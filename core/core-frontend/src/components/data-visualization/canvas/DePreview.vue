@@ -80,6 +80,8 @@ const {
 } = toRefs(props)
 const domId = 'preview-' + canvasId.value
 const scaleWidth = ref(100)
+const scaleHeight = ref(100)
+const scaleMin = ref(100)
 const previewCanvas = ref(null)
 const cellWidth = ref(10)
 const cellHeight = ref(10)
@@ -103,7 +105,7 @@ const canvasStyle = computed(() => {
         ? downloadStatus.value
           ? getDownloadStatusMainHeight()
           : '100%'
-        : changeStyleWithScale(canvasStyleData.value?.height, scaleWidth.value) + 'px'
+        : changeStyleWithScale(canvasStyleData.value?.height, scaleMin.value) + 'px'
     }
   }
   if (!dashboardActive.value) {
@@ -150,18 +152,16 @@ const resetLayout = () => {
       let canvasWidth = previewCanvas.value.clientWidth
       let canvasHeight = previewCanvas.value.clientHeight
       scaleWidth.value = Math.floor((canvasWidth * 100) / canvasStyleData.value.width)
+      scaleHeight.value = Math.floor((canvasHeight * 100) / canvasStyleData.value.height)
+      scaleMin.value = Math.min(scaleWidth.value, scaleHeight.value)
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
-        scaleWidth.value = isMainCanvas(canvasId.value)
-          ? scaleWidth.value * 1.2
+        scaleMin.value = isMainCanvas(canvasId.value)
+          ? scaleMin.value * 1.2
           : outerScale.value * 100
       } else {
-        changeRefComponentsSizeWithScale(
-          componentData.value,
-          canvasStyleData.value,
-          scaleWidth.value
-        )
+        changeRefComponentsSizeWithScale(componentData.value, canvasStyleData.value, scaleMin.value)
       }
     }
   })
@@ -216,7 +216,7 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
         waterDomId,
         canvasId.value,
         dvInfo.value.selfWatermarkStatus,
-        scaleWidth.value / 100
+        scaleMin.value / 100
       )
     } else {
       const method = personInfoApi
@@ -229,7 +229,7 @@ const initWatermark = (waterDomId = 'preview-canvas-main') => {
             waterDomId,
             canvasId.value,
             dvInfo.value.selfWatermarkStatus,
-            scaleWidth.value / 100
+            scaleMin.value / 100
           )
         }
       })
@@ -339,7 +339,7 @@ defineExpose({
       :style="getShapeItemShowStyle(item)"
       :show-position="showPosition"
       :search-count="searchCount"
-      :scale="mobileInPc ? 100 : scaleWidth"
+      :scale="mobileInPc ? 100 : scaleMin"
       :is-selector="props.isSelector"
       @userViewEnlargeOpen="userViewEnlargeOpen($event, item)"
       @onPointClick="onPointClick"
