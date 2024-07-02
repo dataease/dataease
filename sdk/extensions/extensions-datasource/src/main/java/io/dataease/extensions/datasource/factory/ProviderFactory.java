@@ -19,4 +19,9 @@ public class ProviderFactory {
         }
         return SpringContextUtil.getApplicationContext().getBean(type + "DsProvider", Provider.class);
     }
+
+    public static Provider getDefaultProvider() {
+        return SpringContextUtil.getApplicationContext().getBean("calciteProvider", Provider.class);
+    }
+
 }
