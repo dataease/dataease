@@ -721,6 +721,7 @@ const initOpenHandler = newWindow => {
       background: #ffffff4d;
       width: 1px;
       height: 18px;
+      margin: 0 10px;
     }
   }
   .custom-el-icon {
