@@ -8,7 +8,7 @@ export function watermark(settings, domId) {
     watermark_x: 20, // 水印起始位置x轴坐标
     watermark_y: 20, // 水印起始位置Y轴坐标
     watermark_rows: 60, // 水印行数
-    watermark_cols: 20, // 水印列数
+    watermark_cols: 60, // 水印列数
     watermark_x_space: 100, // 水印x轴间隔
     watermark_y_space: 50, // 水印y轴间隔
     watermark_color: '#aaa', // 水印字体颜色
@@ -45,7 +45,7 @@ export function watermark(settings, domId) {
       defaultSettings.watermark_x +
         defaultSettings.watermark_width * defaultSettings.watermark_cols +
         defaultSettings.watermark_x_space * (defaultSettings.watermark_cols - 1)
-    ) < page_width
+    ) > page_width
   ) {
     defaultSettings.watermark_cols = Math.floor(
       (page_width - defaultSettings.watermark_x + defaultSettings.watermark_x_space) /
