@@ -12,11 +12,17 @@ import {
   setTooltipContainerStyle,
   Style,
   S2Options,
-  SERIES_NUMBER_FIELD
+  SERIES_NUMBER_FIELD,
+  type PivotSheet,
+  type Node,
+  type Meta
 } from '@antv/s2'
 import { keys, intersection, filter, cloneDeep, merge, find } from 'lodash-es'
 import { createVNode, render } from 'vue'
 import TableTooltip from '@/views/chart/components/editor/common/TableTooltip.vue'
+import Exceljs from 'exceljs'
+import { saveAs } from 'file-saver'
+import { ElMessage } from 'element-plus-secondary'
 
 export function getCustomTheme(chart: Chart): S2Theme {
   const headerColor = hexColorToRGBA(
@@ -834,4 +840,164 @@ function getTooltipPosition(event) {
     }
   }
   return result
+}
+
+export async function exportPivotExcel(instancce: PivotSheet, chart: ChartObj) {
+  const { meta, fields } = instancce.dataCfg
+  const rowLength = fields?.rows?.length || 0
+  const colLength = fields?.columns?.length || 0
+  const valueLength = fields?.values?.length || 0
+  if (!(rowLength && valueLength)) {
+    ElMessage.warning('行维度或指标维度为空不可导出！')
+    return
+  }
+  const workbook = new Exceljs.Workbook()
+  const worksheet = workbook.addWorksheet(chart.title)
+  const metaMap: Record<string, Meta> = meta?.reduce((p, n) => {
+    if (n.field) {
+      p[n.field] = n
+    }
+    return p
+  }, {})
+  // 角头
+  fields.columns?.forEach((column, index) => {
+    const cell = worksheet.getCell(index + 1, 1)
+    cell.value = metaMap[column]?.name ?? column
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    if (rowLength >= 2) {
+      worksheet.mergeCells(index + 1, 1, index + 1, rowLength)
+    }
+  })
+  fields?.rows?.forEach((row, index) => {
+    const cell = worksheet.getCell(colLength + 1, index + 1)
+    cell.value = metaMap[row]?.name ?? row
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+  })
+  const { layoutResult } = instancce.facet
+  // 行头
+  const { rowLeafNodes, rowsHierarchy, rowNodes } = layoutResult
+  const maxColIndex = rowsHierarchy.maxLevel + 1
+  const notLeafNodeHeightMap: Record<string, number> = {}
+  rowLeafNodes.forEach(node => {
+    // 行头的高度由子节点相加决定，也就是行头子节点中包含的叶子节点数量
+    let curNode = node.parent
+    while (curNode) {
+      const height = notLeafNodeHeightMap[curNode.id] ?? 0
+      notLeafNodeHeightMap[curNode.id] = height + 1
+      curNode = curNode.parent
+    }
+    const { rowIndex } = node
+    const writeRowIndex = rowIndex + 1 + colLength + 1
+    const writeColIndex = node.level + 1
+    const cell = worksheet.getCell(writeRowIndex, writeColIndex)
+    cell.value = node.label
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    if (writeColIndex < maxColIndex) {
+      worksheet.mergeCells(writeRowIndex, writeColIndex, writeRowIndex, maxColIndex)
+    }
+  })
+
+  const getNodeStartRowIndex = (node: Node) => {
+    if (!node.children?.length) {
+      return node.rowIndex + 1
+    } else {
+      return getNodeStartRowIndex(node.children[0])
+    }
+  }
+  rowNodes?.forEach(node => {
+    if (node.isLeaf) {
+      return
+    }
+    const rowIndex = getNodeStartRowIndex(node)
+    const height = notLeafNodeHeightMap[node.id]
+    const writeRowIndex = rowIndex + colLength + 1
+    const mergeColCount = node.children[0].level - node.level
+    const value = node.label
+    const cell = worksheet.getCell(writeRowIndex, node.level + 1)
+    cell.value = value
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    if (mergeColCount > 1 || height > 1) {
+      worksheet.mergeCells(
+        writeRowIndex,
+        node.level + 1,
+        writeRowIndex + height - 1,
+        node.level + mergeColCount
+      )
+    }
+  })
+
+  // 列头
+  const { colLeafNodes, colNodes, colsHierarchy } = layoutResult
+  const maxColHeight = colsHierarchy.maxLevel + 1
+  const notLeafNodeWidthMap: Record<string, number> = {}
+  colLeafNodes.forEach(node => {
+    // 列头的宽度由子节点相加决定，也就是列头子节点中包含的叶子节点数量
+    let curNode = node.parent
+    while (curNode) {
+      const width = notLeafNodeWidthMap[curNode.id] ?? 0
+      notLeafNodeWidthMap[curNode.id] = width + 1
+      curNode = curNode.parent
+    }
+    const { colIndex } = node
+    const writeRowIndex = node.level + 1
+    const writeColIndex = colIndex + 1 + rowLength
+    const cell = worksheet.getCell(writeRowIndex, writeColIndex)
+    let value = node.label
+    if (node.field === '$$extra$$' && metaMap[value]?.name) {
+      value = metaMap[value].name
+    }
+    cell.value = value
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    if (writeRowIndex < maxColHeight) {
+      worksheet.mergeCells(writeRowIndex, writeColIndex, maxColHeight, writeColIndex)
+    }
+  })
+  const getNodeStartColIndex = (node: Node) => {
+    if (!node.children?.length) {
+      return node.colIndex + 1
+    } else {
+      return getNodeStartColIndex(node.children[0])
+    }
+  }
+  colNodes.forEach(node => {
+    if (node.isLeaf) {
+      return
+    }
+    const colIndex = getNodeStartColIndex(node)
+    const width = notLeafNodeWidthMap[node.id]
+    const writeRowIndex = node.level + 1
+    const mergeRowCount = node.children[0].level - node.level
+    const value = node.label
+    const writeColIndex = colIndex + rowLength
+    const cell = worksheet.getCell(writeRowIndex, writeColIndex)
+    cell.value = value
+    cell.alignment = { vertical: 'middle', horizontal: 'center' }
+    if (mergeRowCount > 1 || width > 1) {
+      worksheet.mergeCells(
+        writeRowIndex,
+        writeColIndex,
+        writeRowIndex + mergeRowCount - 1,
+        writeColIndex + width - 1
+      )
+    }
+  })
+  //  单元格数据
+  for (let rowIndex = 0; rowIndex < rowLeafNodes.length; rowIndex++) {
+    for (let colIndex = 0; colIndex < colLeafNodes.length; colIndex++) {
+      const dataCellMeta = layoutResult.getCellMeta(rowIndex, colIndex)
+      const { fieldValue } = dataCellMeta
+      if (fieldValue) {
+        const meta = metaMap[dataCellMeta.valueField]
+        const cell = worksheet.getCell(rowIndex + maxColHeight + 1, rowLength + colIndex + 1)
+        const value = meta?.formatter?.(fieldValue) || fieldValue.toString()
+        cell.alignment = { vertical: 'middle', horizontal: 'center' }
+        cell.value = value
+      }
+    }
+  }
+  const buffer = await workbook.xlsx.writeBuffer()
+  const dataBlob = new Blob([buffer], {
+    type: 'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet;charset=UTF-8'
+  })
+  saveAs(dataBlob, `${chart.title ?? '透视表'}.xlsx`)
 }

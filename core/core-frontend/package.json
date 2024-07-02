@@ -61,6 +61,7 @@
     "vue3-ace-editor": "^2.2.2",
     "vuedraggable": "^4.1.0",
     "web-storage-cache": "^1.1.1",
+    "exceljs": "^4.4.0",
     "xss": "^1.0.14"
   },
   "devDependencies": {

@@ -178,6 +178,7 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
     resizeAction
   })
   myChart?.render()
+  dvMainStore.setViewInstanceInfo(viewInfo.id, myChart)
   initScroll()
 }
 

@@ -115,6 +115,11 @@
                 <template #dropdown>
                   <el-dropdown-menu style="width: 120px">
                     <el-dropdown-item @click="exportAsExcel">Excel</el-dropdown-item>
+                    <el-dropdown-item
+                      v-if="element.innerType === 'table-pivot'"
+                      @click="exportAsFormattedExcel"
+                      >Excel(带格式)</el-dropdown-item
+                    >
                     <el-dropdown-item @click="exportAsImage">图片</el-dropdown-item>
                   </el-dropdown-menu>
                 </template>
@@ -140,6 +145,11 @@
       <template #dropdown>
         <el-dropdown-menu style="width: 118px">
           <el-dropdown-item @click="exportAsExcel">Excel</el-dropdown-item>
+          <el-dropdown-item
+            v-if="element.innerType === 'table-pivot'"
+            @click="exportAsFormattedExcel"
+            >Excel(带格式)</el-dropdown-item
+          >
           <el-dropdown-item @click="exportAsImage">图片</el-dropdown-item>
         </el-dropdown-menu>
       </template>
@@ -169,6 +179,7 @@ import FieldsList from '@/custom-component/rich-text/FieldsList.vue'
 import { RefreshLeft } from '@element-plus/icons-vue'
 import { ElMessage, ElTooltip, ElButton } from 'element-plus-secondary'
 import CustomTabsSort from '@/custom-component/de-tabs/CustomTabsSort.vue'
+import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
@@ -367,7 +378,14 @@ const openMessageLoading = cb => {
 const callbackExport = () => {
   useEmitt().emitter.emit('data-export-center', { activeName: 'IN_PROGRESS' })
 }
-
+const exportAsFormattedExcel = () => {
+  const s2Instance = dvMainStore.getViewInstanceInfo(element.value.id)
+  if (!s2Instance) {
+    return
+  }
+  const chart = dvMainStore.getViewDetails(element.value.id)
+  exportPivotExcel(s2Instance, chart)
+}
 const exportAsExcel = () => {
   const viewDataInfo = dvMainStore.getViewDataDetails(element.value.id)
   const chartExtRequest = dvMainStore.getLastViewRequestInfo(element.value.id)
