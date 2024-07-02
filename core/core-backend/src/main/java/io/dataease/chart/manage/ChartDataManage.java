@@ -127,7 +127,8 @@ public class ChartDataManage {
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
-
+        //计数字段
+        dataeaseNames.add("*");
         AxisFormatResult formatResult = chartHandler.formatAxis(view);
         formatResult.getContext().put("desensitizationList", desensitizationList);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
