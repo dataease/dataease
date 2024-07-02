@@ -47,7 +47,7 @@
       </el-button>
       <el-button
         class="m-button"
-        v-if="optType === 'details' && authShow"
+        v-if="optType === 'details' && authShow && viewInfo.type === 'table-pivot'"
         link
         icon="Download"
         size="middle"
