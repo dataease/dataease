@@ -78,6 +78,8 @@ export const dvMainStore = defineStore('dataVisualization', {
       canvasViewInfo: {},
       // 图表展示数据信息
       canvasViewDataInfo: {},
+      // 图表实例信息
+      canvasViewInstanceInfo: {},
       // 图表最新请求信息
       lastViewRequestInfo: {},
       // 仪表板基础矩阵信息
@@ -1148,6 +1150,12 @@ export const dvMainStore = defineStore('dataVisualization', {
     },
     getViewDataDetails(viewId) {
       return this.canvasViewDataInfo[viewId]
+    },
+    setViewInstanceInfo(viewId, instance) {
+      this.canvasViewInstanceInfo[viewId] = instance
+    },
+    getViewInstanceInfo(viewId) {
+      return this.canvasViewInstanceInfo[viewId]
     },
     setLastViewRequestInfo(viewId, viewRequestInfo) {
       this.lastViewRequestInfo[viewId] = viewRequestInfo

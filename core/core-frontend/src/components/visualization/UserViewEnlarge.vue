@@ -45,6 +45,17 @@
       >
         导出Excel
       </el-button>
+      <el-button
+        class="m-button"
+        v-if="optType === 'details' && authShow"
+        link
+        icon="Download"
+        size="middle"
+        :loading="exportLoading"
+        @click="exportAsFormattedExcel"
+      >
+        导出Excel(带格式)
+      </el-button>
       <el-divider class="close-divider" direction="vertical" v-if="authShow" />
     </div>
     <div
@@ -115,6 +126,7 @@ import { RefreshLeft } from '@element-plus/icons-vue'
 import { assign } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { ElMessage, ElButton } from 'element-plus-secondary'
+import { exportPivotExcel } from '@/views/chart/components/js/panel/common/common_table'
 const downLoading = ref(false)
 const dvMainStore = dvMainStoreWithOut()
 const dialogShow = ref(false)
@@ -261,6 +273,15 @@ const downloadViewDetails = () => {
     openMessageLoading(exportData)
   })
   exportLoading.value = false
+}
+
+const exportAsFormattedExcel = () => {
+  const s2Instance = dvMainStore.getViewInstanceInfo(viewInfo.value.id)
+  if (!s2Instance) {
+    return
+  }
+  const chart = dvMainStore.getViewDetails(viewInfo.value.id)
+  exportPivotExcel(s2Instance, chart)
 }
 
 const exportData = () => {
