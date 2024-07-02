@@ -281,6 +281,7 @@ public class ChartDataManage {
                         drillFilter.setFilterType(1);
                         if (datasetTableField.getDeType() == 1) {
                             drillFilter.setOperator("between");
+                            drillFilter.setOriginValue(Collections.singletonList(dim.getValue()));
                             // 把value类似过滤组件处理，获得start time和end time
                             Map<String, Long> stringLongMap = Utils.parseDateTimeValue(dim.getValue());
                             drillFilter.setValue(Arrays.asList(String.valueOf(stringLongMap.get("startTime")), String.valueOf(stringLongMap.get("endTime"))));
