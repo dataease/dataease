@@ -13,7 +13,7 @@
       :title="$t('user.change_password')"
       :show-close="false"
     >
-      <PasswordUpdateForm :old-pwd="defaultPwd" />
+      <PasswordUpdateForm />
     </el-dialog>
   </div>
 </template>
