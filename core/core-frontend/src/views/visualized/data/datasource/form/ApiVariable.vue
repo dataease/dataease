@@ -1,6 +1,6 @@
 <script lang="ts" setup>
 import { propTypes } from '@/utils/propTypes'
-import { computed, onBeforeMount, PropType, toRefs } from 'vue'
+import { computed, onBeforeMount, PropType, toRefs, inject } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { KeyValue } from './ApiTestModel.js'
 import { guid } from '@/views/visualized/data/dataset/form/util'
@@ -91,6 +91,7 @@ const createFilter = (queryString: string) => {
     return restaurant.value.toLowerCase().indexOf(queryString.toLowerCase()) === 0
   }
 }
+const activeName = inject('api-active-name')
 </script>
 
 <template>
@@ -149,7 +150,7 @@ const createFilter = (queryString: string) => {
               />
             </el-col>
 
-            <el-col :span="5">
+            <el-col :span="activeName === 'params' ? 10 : 5">
               <el-input
                 v-model="element.description"
                 maxlength="200"
@@ -157,7 +158,7 @@ const createFilter = (queryString: string) => {
                 show-word-limit
               />
             </el-col>
-            <el-col :span="5">
+            <el-col v-if="activeName !== 'params'" :span="5">
               <el-autocomplete
                 v-if="suggestions"
                 v-model="element.name"

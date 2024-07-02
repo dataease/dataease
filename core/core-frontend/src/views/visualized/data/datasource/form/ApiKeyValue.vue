@@ -82,7 +82,6 @@ const options = [
     value: 'fixed'
   }
 ]
-const value = ref('')
 </script>
 
 <template>

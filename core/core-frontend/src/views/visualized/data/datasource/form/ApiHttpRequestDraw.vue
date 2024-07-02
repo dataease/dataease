@@ -155,7 +155,7 @@ const rule = reactive<FormRules>({
     }
   ]
 })
-const activeName = ref('third')
+const activeName = ref('table')
 provide('api-active-name', activeName)
 const initApiItem = (val: ApiItem, from, name) => {
   activeName.value = name
@@ -469,7 +469,7 @@ defineExpose({
                 {{ active <= 1 ? '2' : '' }}
               </span>
               <span class="title">{{
-                activeName === 'third' ? t('datasource.api_step_2') : '提取参数'
+                activeName === 'table' ? t('datasource.api_step_2') : '提取参数'
               }}</span>
             </div>
           </template>
