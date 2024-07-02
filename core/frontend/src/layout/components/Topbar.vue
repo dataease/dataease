@@ -124,7 +124,6 @@
       </el-dropdown>
     </div>
 
-    <ExportExcel ref="ExportExcelRef" />
     <ai-tips
       v-if="showOverlay"
       class="ai-icon-tips"
@@ -160,7 +159,6 @@
 
 <script>
 import { mapGetters } from 'vuex'
-import ExportExcel from '@/views/dataset/exportExcel/index.vue'
 import AppLink from './Sidebar/Link'
 import variables from '@/styles/variables.scss'
 import { isExternal } from '@/utils/validate'
@@ -184,7 +182,6 @@ export default {
     AppLink,
     Notification,
     LangSelect,
-    ExportExcel
   },
   props: {
     showTips: {
@@ -290,7 +287,6 @@ export default {
     bus.$on('set-top-text-info', this.setTopTextInfo)
     bus.$on('set-top-text-active-info', this.setTopTextActiveInfo)
     bus.$on('sys-logout', this.logout)
-    bus.$on('data-export-center', this.dataExportCenter)
     this.showTips && this.$nextTick(() => {
       const drop = this.$refs['my-drop']
       drop && drop.show && drop.show()
@@ -300,8 +296,6 @@ export default {
   beforeDestroy() {
     window.removeEventListener('beforeunload', (e) => this.beforeunloadHandler(e))
     window.removeEventListener('unload', (e) => this.unloadHandler(e))
-
-    bus.$off('data-export-center', this.dataExportCenter)
     bus.$off('set-top-menu-info', this.setTopMenuInfo)
     bus.$off('set-top-menu-active-info', this.setTopMenuActiveInfo)
     bus.$off('set-top-text-info', this.setTopTextInfo)
@@ -324,8 +318,8 @@ export default {
       localStorage.setItem('DE1.0-AI-TIPS-CHECK', 'CHECKED')
       this.showOverlay = false
     },
-    dataExportCenter() {
-      this.downloadClick()
+    downloadClick() {
+      bus.$emit('data-export-center')
     },
     async initAiBase() {
       const aiTipsCheck = localStorage.getItem('DE1.0-AI-TIPS-CHECK')
@@ -341,9 +335,6 @@ export default {
     },
     beforeunloadHandler() {
       this.beforeUnload_time = new Date().getTime()
-    },
-    downloadClick() {
-      this.$refs.ExportExcelRef.init()
     },
     unloadHandler(e) {
       this.gap_time = new Date().getTime() - this.beforeUnload_time
