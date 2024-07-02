@@ -417,6 +417,7 @@ watch(
 watch(
   () => config.value.optionValueSource,
   (valNew, newOld) => {
+    if (!props.isConfig) return
     if ([valNew, newOld].includes(2)) {
       selectValue.value = Array.isArray(selectValue.value) ? [] : undefined
       config.value.selectValue = cloneDeep(selectValue.value)
