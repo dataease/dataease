@@ -127,7 +127,8 @@ public class ChartDataManage {
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
-
+        //计数字段
+        dataeaseNames.add("*");
         AxisFormatResult formatResult = chartHandler.formatAxis(view);
         formatResult.getContext().put("desensitizationList", desensitizationList);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
@@ -280,6 +281,7 @@ public class ChartDataManage {
                         drillFilter.setFilterType(1);
                         if (datasetTableField.getDeType() == 1) {
                             drillFilter.setOperator("between");
+                            drillFilter.setOriginValue(Collections.singletonList(dim.getValue()));
                             // 把value类似过滤组件处理，获得start time和end time
                             Map<String, Long> stringLongMap = Utils.parseDateTimeValue(dim.getValue());
                             drillFilter.setValue(Arrays.asList(String.valueOf(stringLongMap.get("startTime")), String.valueOf(stringLongMap.get("endTime"))));

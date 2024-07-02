@@ -57,6 +57,22 @@ const emit = defineEmits(['onBasicStyleChange', 'onMiscChange'])
 const changeBasicStyle = (prop?: string, requestData = false) => {
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData }, prop)
 }
+const onAlphaChange = v => {
+  const _v = parseInt(v)
+  if (_v >= 0 && _v <= 100) {
+    state.basicStyleForm.alpha = _v
+  } else if (_v < 0) {
+    state.basicStyleForm.alpha = 0
+  } else if (_v > 100) {
+    state.basicStyleForm.alpha = 100
+  } else {
+    const basicStyle = cloneDeep(props.chart.customAttr.basicStyle)
+    const oldForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
+    state.basicStyleForm.alpha = oldForm.alpha
+  }
+  changeBasicStyle('alpha')
+}
+
 const changeMisc = prop => {
   emit('onMiscChange', { data: state.miscForm, requestData: true }, prop)
 }
@@ -275,7 +291,7 @@ onMounted(() => {
               :max="100"
               class="basic-input-number"
               :controls="false"
-              @change="changeBasicStyle('alpha')"
+              @change="onAlphaChange"
             >
               <template #suffix> % </template>
             </el-input>
@@ -521,7 +537,7 @@ onMounted(() => {
                 :max="100"
                 class="basic-input-number"
                 :controls="false"
-                @change="changeBasicStyle('alpha')"
+                @change="onAlphaChange"
               >
                 <template #suffix> % </template>
               </el-input>
