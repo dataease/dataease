@@ -37,4 +37,11 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     </properties>
 
+    <repositories>
+        <repository>
+            <id>fit2cloud-public</id>
+            <name>Fit2cloud Public</name>
+            <url>https://repository.fit2cloud.com/repository/fit2cloud-public/</url>
+        </repository>
+    </repositories>
 </project>
