@@ -1,8 +1,8 @@
 package io.dataease.engine.sql;
 
+import io.dataease.extensions.datasource.model.SQLMeta;
+import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.ChartViewDTO;
-import io.dataease.extensions.view.model.SQLMeta;
-import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.engine.constant.SQLConstants;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;

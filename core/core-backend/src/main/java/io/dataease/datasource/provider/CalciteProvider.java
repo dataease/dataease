@@ -24,6 +24,7 @@ import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
+import org.apache.calcite.sql.SqlDialect;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -110,26 +111,6 @@ public class CalciteProvider extends Provider {
         return tables;
     }
 
-    private DatasetTableDTO getTableDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
-        DatasetTableDTO tableDesc = new DatasetTableDTO();
-        tableDesc.setDatasourceId(datasourceRequest.getDatasource().getId());
-        tableDesc.setType("db");
-        tableDesc.setTableName(resultSet.getString(1));
-        if (resultSet.getMetaData().getColumnCount() > 1) {
-            tableDesc.setName(resultSet.getString(2));
-        } else {
-            tableDesc.setName(resultSet.getString(1));
-        }
-        return tableDesc;
-    }
-
-    private List<String> getDriver() {
-        List<String> drivers = new ArrayList<>();
-        Map<String, DatasourceConfiguration> beansOfType = CommonBeanFactory.getApplicationContext().getBeansOfType((DatasourceConfiguration.class));
-        beansOfType.keySet().forEach(key -> drivers.add(beansOfType.get(key).getDriver()));
-        return drivers;
-    }
-
     @Override
     public String checkStatus(DatasourceRequest datasourceRequest) throws Exception {
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceRequest.getDatasource().getType());
@@ -201,6 +182,151 @@ public class CalciteProvider extends Provider {
         map.put("fields", datasetTableFields);
         map.put("data", list);
         return map;
+    }
+
+    @Override
+    public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException {
+        List<TableField> datasetTableFields = new ArrayList<>();
+        DatasourceSchemaDTO datasourceSchemaDTO = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
+        datasourceRequest.setDatasource(datasourceSchemaDTO);
+
+        DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
+
+        String table = datasourceRequest.getTable();
+        if (StringUtils.isEmpty(table)) {
+            ResultSet resultSet = null;
+            try (Connection con = getConnection(datasourceRequest.getDatasource());
+                 Statement statement = getStatement(con, 30)) {
+                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                }
+                resultSet = statement.executeQuery(datasourceRequest.getQuery());
+                datasetTableFields.addAll(getField(resultSet, datasourceRequest));
+            } catch (Exception e) {
+                DEException.throwException(e.getMessage());
+            } finally {
+                if (resultSet != null) {
+                    try {
+                        resultSet.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        } else {
+            ResultSet resultSet = null;
+            try (Connection con = getConnection(datasourceRequest.getDatasource());
+                 Statement statement = getStatement(con, 30)) {
+                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
+                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
+                }
+                resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
+                while (resultSet.next()) {
+                    TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet);
+                    boolean repeat = false;
+                    for (TableField ele : datasetTableFields) {
+                        if (StringUtils.equalsIgnoreCase(ele.getOriginName(), tableFieldDesc.getOriginName())) {
+                            repeat = true;
+                            break;
+                        }
+                    }
+                    if (!repeat) {
+                        datasetTableFields.add(tableFieldDesc);
+                    }
+                }
+            } catch (Exception e) {
+                DEException.throwException(e.getMessage());
+            } finally {
+                if (resultSet != null) {
+                    try {
+                        resultSet.close();
+                    } catch (SQLException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }
+        }
+
+        return datasetTableFields;
+    }
+
+    @Override
+    public Connection getConnection(DatasourceDTO coreDatasource) throws DEException {
+        DatasourceConfiguration configuration = null;
+        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
+        switch (datasourceType) {
+            case mysql:
+            case mongo:
+            case StarRocks:
+            case doris:
+            case TiDB:
+            case mariadb:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
+                break;
+            case impala:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Impala.class);
+                break;
+            case sqlServer:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Sqlserver.class);
+                break;
+            case oracle:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Oracle.class);
+                break;
+            case db2:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Db2.class);
+                break;
+            case pg:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Pg.class);
+                break;
+            case redshift:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Redshift.class);
+                break;
+            case ck:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), CK.class);
+                break;
+            case h2:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), H2.class);
+                break;
+            default:
+                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
+        }
+        Properties props = new Properties();
+        if (StringUtils.isNotBlank(configuration.getUsername())) {
+            props.setProperty("user", configuration.getUsername());
+        }
+        if (StringUtils.isNotBlank(configuration.getPassword())) {
+            props.setProperty("password", configuration.getPassword());
+        }
+        String driverClassName = configuration.getDriver();
+        ExtendedJdbcClassLoader jdbcClassLoader = extendedJdbcClassLoader;
+        Connection conn = null;
+        try {
+            Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
+            conn = driverClass.connect(configuration.getJdbc(), props);
+        } catch (Exception e) {
+            DEException.throwException(e.getMessage());
+        }
+        return conn;
+    }
+
+    private DatasetTableDTO getTableDesc(DatasourceRequest datasourceRequest, ResultSet resultSet) throws SQLException {
+        DatasetTableDTO tableDesc = new DatasetTableDTO();
+        tableDesc.setDatasourceId(datasourceRequest.getDatasource().getId());
+        tableDesc.setType("db");
+        tableDesc.setTableName(resultSet.getString(1));
+        if (resultSet.getMetaData().getColumnCount() > 1) {
+            tableDesc.setName(resultSet.getString(2));
+        } else {
+            tableDesc.setName(resultSet.getString(1));
+        }
+        return tableDesc;
+    }
+
+    private List<String> getDriver() {
+        List<String> drivers = new ArrayList<>();
+        Map<String, DatasourceConfiguration> beansOfType = CommonBeanFactory.getApplicationContext().getBeansOfType((DatasourceConfiguration.class));
+        beansOfType.keySet().forEach(key -> drivers.add(beansOfType.get(key).getDriver()));
+        return drivers;
     }
 
     public Map<String, Object> jdbcFetchResultField(DatasourceRequest datasourceRequest) throws DEException {
@@ -548,73 +674,6 @@ public class CalciteProvider extends Provider {
         tableField.setName(resultSet.getString(3));
         return tableField;
     }
-
-    @Override
-    public List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException {
-        List<TableField> datasetTableFields = new ArrayList<>();
-        DatasourceSchemaDTO datasourceSchemaDTO = datasourceRequest.getDsList().entrySet().iterator().next().getValue();
-        datasourceRequest.setDatasource(datasourceSchemaDTO);
-
-        DatasourceConfiguration datasourceConfiguration = JsonUtil.parseObject(datasourceRequest.getDatasource().getConfiguration(), DatasourceConfiguration.class);
-
-        String table = datasourceRequest.getTable();
-        if (StringUtils.isEmpty(table)) {
-            ResultSet resultSet = null;
-            try (Connection con = getConnection(datasourceRequest.getDatasource());
-                 Statement statement = getStatement(con, 30)) {
-                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
-                }
-                resultSet = statement.executeQuery(datasourceRequest.getQuery());
-                datasetTableFields.addAll(getField(resultSet, datasourceRequest));
-            } catch (Exception e) {
-                DEException.throwException(e.getMessage());
-            } finally {
-                if (resultSet != null) {
-                    try {
-                        resultSet.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        } else {
-            ResultSet resultSet = null;
-            try (Connection con = getConnection(datasourceRequest.getDatasource());
-                 Statement statement = getStatement(con, 30)) {
-                if (DatasourceConfiguration.DatasourceType.valueOf(datasourceSchemaDTO.getType()) == DatasourceConfiguration.DatasourceType.oracle) {
-                    statement.executeUpdate("ALTER SESSION SET CURRENT_SCHEMA = " + datasourceConfiguration.getSchema());
-                }
-                resultSet = statement.executeQuery(getTableFiledSql(datasourceRequest));
-                while (resultSet.next()) {
-                    TableField tableFieldDesc = getTableFieldDesc(datasourceRequest, resultSet);
-                    boolean repeat = false;
-                    for (TableField ele : datasetTableFields) {
-                        if (StringUtils.equalsIgnoreCase(ele.getOriginName(), tableFieldDesc.getOriginName())) {
-                            repeat = true;
-                            break;
-                        }
-                    }
-                    if (!repeat) {
-                        datasetTableFields.add(tableFieldDesc);
-                    }
-                }
-            } catch (Exception e) {
-                DEException.throwException(e.getMessage());
-            } finally {
-                if (resultSet != null) {
-                    try {
-                        resultSet.close();
-                    } catch (SQLException e) {
-                        e.printStackTrace();
-                    }
-                }
-            }
-        }
-
-        return datasetTableFields;
-    }
-
 
     public Connection initConnection(Map<Long, DatasourceSchemaDTO> dsMap) {
         Connection connection = getCalciteConnection();
@@ -986,65 +1045,6 @@ public class CalciteProvider extends Provider {
             default:
                 return "show tables;";
         }
-    }
-
-    @Override
-    public Connection getConnection(DatasourceDTO coreDatasource) throws DEException {
-        DatasourceConfiguration configuration = null;
-        DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(coreDatasource.getType());
-        switch (datasourceType) {
-            case mysql:
-            case mongo:
-            case StarRocks:
-            case doris:
-            case TiDB:
-            case mariadb:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
-                break;
-            case impala:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Impala.class);
-                break;
-            case sqlServer:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Sqlserver.class);
-                break;
-            case oracle:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Oracle.class);
-                break;
-            case db2:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Db2.class);
-                break;
-            case pg:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Pg.class);
-                break;
-            case redshift:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Redshift.class);
-                break;
-            case ck:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), CK.class);
-                break;
-            case h2:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), H2.class);
-                break;
-            default:
-                configuration = JsonUtil.parseObject(coreDatasource.getConfiguration(), Mysql.class);
-        }
-        Properties props = new Properties();
-        if (StringUtils.isNotBlank(configuration.getUsername())) {
-            props.setProperty("user", configuration.getUsername());
-        }
-        if (StringUtils.isNotBlank(configuration.getPassword())) {
-            props.setProperty("password", configuration.getPassword());
-        }
-        String driverClassName = configuration.getDriver();
-        ExtendedJdbcClassLoader jdbcClassLoader = extendedJdbcClassLoader;
-        Connection conn = null;
-        try {
-            Driver driverClass = (Driver) jdbcClassLoader.loadClass(driverClassName).newInstance();
-            conn = driverClass.connect(configuration.getJdbc(), props);
-        } catch (Exception e) {
-            DEException.throwException(e.getMessage());
-        }
-        return conn;
     }
 
     public Statement getStatement(Connection connection, int queryTimeout) {
