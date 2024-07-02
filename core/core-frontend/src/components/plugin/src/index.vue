@@ -8,7 +8,7 @@ import { i18n } from '@/plugins/vue-i18n'
 import * as Vue from 'vue'
 import axios from 'axios'
 import * as Pinia from 'pinia'
-import * as vueRouter from 'vue-router'
+import router from '@/router'
 import tinymce from 'tinymce/tinymce'
 import { useEmitt } from '@/hooks/web/useEmitt'
 
@@ -107,7 +107,7 @@ onMounted(async () => {
       window['Vue'] = Vue
       window['Axios'] = axios
       window['Pinia'] = Pinia
-      window['vueRouter'] = vueRouter
+      window['vueRouter'] = router
       window['MittAll'] = useEmitt().emitter.all
       window['I18n'] = i18n
       if (!window.tinymce) {
