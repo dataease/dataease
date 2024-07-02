@@ -139,7 +139,6 @@ public class ApiUtils {
                             if (field.getOriginName().equalsIgnoreCase(param)) {
                                 String resultStr = execHttpRequest(definition, definition.getApiQueryTimeout() == null || apiDefinition.getApiQueryTimeout() <= 0 ? 10 : apiDefinition.getApiQueryTimeout(), null);
                                 List<String[]> dataList = fetchResult(resultStr, definition);
-                                System.out.println(dataList.get(0)[i]);
                                 if (dataList.size() > 0) {
                                     httpClientConfig.addHeader(header.get("name").toString(), dataList.get(0)[i]);
                                 }

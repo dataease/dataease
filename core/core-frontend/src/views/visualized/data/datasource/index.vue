@@ -634,7 +634,7 @@ const handleEdit = async data => {
 }
 
 const handleCopy = async data => {
-  getById(nodeInfo.id).then(res => {
+  getById(data.id).then(res => {
     let {
       name,
       createBy,
