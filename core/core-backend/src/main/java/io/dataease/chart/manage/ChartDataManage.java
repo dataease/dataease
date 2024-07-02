@@ -104,6 +104,8 @@ public class ChartDataManage {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_not_handler") + ": " + view.getRender() + "," + view.getType());
         }
 
+        var dillAxis = new ArrayList<ChartViewFieldDTO>();
+
         DatasetGroupInfoDTO table = datasetGroupManage.getDatasetGroupInfoDTO(view.getTableId(), null);
         if (table == null) {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_no_ds"));
@@ -290,6 +292,7 @@ public class ChartDataManage {
                         if (!fields.contains(dim.getId())) {
                             viewField.setSource(FieldSource.DRILL);
                             xAxis.add(viewField);
+                            dillAxis.add(viewField);
                             fields.add(dim.getId());
                         }
                         if (i == drillRequestList.size() - 1) {
@@ -298,13 +301,19 @@ public class ChartDataManage {
                                 viewField.setSource(FieldSource.DRILL);
                                 nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
                                 xAxis.add(nextDrillField);
+                                dillAxis.add(nextDrillField);
                                 fields.add(nextDrillField.getId());
+                            } else {
+                                dillAxis.add(nextDrillField);
                             }
                         }
                     }
                 }
             }
         }
+
+        formatResult.getContext().put("dillAxis", dillAxis);
+
         //转义特殊字符
         extFilterList = extFilterList.stream().peek(ele -> {
             if (ObjectUtils.isNotEmpty(ele.getValue())) {

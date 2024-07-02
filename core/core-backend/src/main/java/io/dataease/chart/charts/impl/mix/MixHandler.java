@@ -45,6 +45,7 @@ public class MixHandler extends YoyChartHandler {
         //图表整体主维度
         axisMap.put(ChartAxis.xAxis, new ArrayList<>(view.getXAxis()));
         context.put("xAxisBase", new ArrayList<>(view.getXAxis()));
+        axisMap.put(ChartAxis.drill, new ArrayList<>(view.getDrillFields()));
         return result;
     }
 
@@ -93,26 +94,46 @@ public class MixHandler extends YoyChartHandler {
         } catch (Exception e) {
             e.printStackTrace();
         }
+
+        AxisFormatResult formatResult2 = new AxisFormatResult();
+        var axisMap = new HashMap<ChartAxis, List<ChartViewFieldDTO>>();
+        axisMap.put(ChartAxis.xAxis, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.xAxis)));
+        axisMap.put(ChartAxis.extStack, new ArrayList<>());
+        axisMap.put(ChartAxis.xAxisExt, new ArrayList<>());
+        axisMap.put(ChartAxis.extBubble, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.extBubble)));
+        axisMap.put(ChartAxis.yAxisExt, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.yAxisExt)));
+        axisMap.put(ChartAxis.extLabel, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.extLabel)));
+        axisMap.put(ChartAxis.extTooltip, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.extTooltip)));
+        axisMap.put(ChartAxis.drill, new ArrayList<>(formatResult.getAxisMap().get(ChartAxis.drill)));
+        formatResult2.setAxisMap(axisMap);
+        formatResult2.setContext(formatResult.getContext());
+
         // 计算右轴，包含 xAxis,xAxisExt,yAxisExt,需要去掉 group 和 stack
-        var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
-        var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);
-        var xAxisExt = formatResult.getAxisMap().get(ChartAxis.xAxisExt);
-        xAxis = xAxis.subList(0, xAxis.size() - extStack.size() - xAxisExt.size());
-        var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);
+        var xAxis = new ArrayList<>(view.getXAxis());
+        var extStack = formatResult2.getAxisMap().get(ChartAxis.extStack);
+        var xAxisExt = formatResult2.getAxisMap().get(ChartAxis.xAxisExt);
+        //xAxis = xAxis.subList(0, xAxis.size() - extStack.size() - xAxisExt.size());
+        var extBubble = formatResult2.getAxisMap().get(ChartAxis.extBubble);
         xAxis.addAll(extBubble);
-        formatResult.getAxisMap().put(ChartAxis.xAxis, xAxis);
-        formatResult.getAxisMap().put(ChartAxis.xAxisExt, extBubble);
-        var yAxisExt = formatResult.getAxisMap().get(ChartAxis.yAxisExt);
-        formatResult.getAxisMap().put(ChartAxis.yAxis, yAxisExt);
-        formatResult.getContext().remove("yoyFiltered");
+        var dillAxis = (ArrayList<ChartViewFieldDTO>) formatResult.getContext().get("dillAxis");
+        xAxis.addAll(dillAxis);
+        formatResult2.getAxisMap().put(ChartAxis.xAxis, xAxis);
+        formatResult2.getAxisMap().put(ChartAxis.xAxisExt, extBubble);
+        var yAxisExt = formatResult2.getAxisMap().get(ChartAxis.yAxisExt);
+        formatResult2.getAxisMap().put(ChartAxis.yAxis, yAxisExt);
+        formatResult2.getContext().remove("yoyFiltered");
+
+
+        formatResult.getContext().put("subAxisMap", axisMap);
+
         // 右轴重新检测同环比过滤
-        customFilter(view, filterResult.getFilterList(), formatResult);
-        var rightResult = (T) super.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
+        customFilter(view, filterResult.getFilterList(), formatResult2);
+        var rightResult = (T) super.calcChartResult(view, formatResult2, filterResult, sqlMap, sqlMeta, provider);
         try {
             //如果有同环比过滤,应该用原始sql
             var originSql = rightResult.getQuerySql();
             var rightAssistFields = dynamicAssistFields.stream().filter(x -> StringUtils.equalsAnyIgnoreCase(x.getYAxisType(), "right")).toList();
-            var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+            var yAxis = formatResult2.getAxisMap().get(ChartAxis.yAxis);
             var assistFields = getAssistFields(rightAssistFields, yAxis);
             if (CollectionUtils.isNotEmpty(assistFields)) {
                 var req = new DatasourceRequest();
@@ -140,8 +161,8 @@ public class MixHandler extends YoyChartHandler {
         var desensitizationList = (Map<String, ColumnPermissionItem>) filterResult.getContext().get("desensitizationList");
         var leftCalcResult = (ChartCalcDataResult) calcResult.getData().get("left");
         var leftFields = new ArrayList<ChartViewFieldDTO>();
-        leftFields.addAll(view.getXAxis());
-        leftFields.addAll(view.getYAxis());
+        leftFields.addAll(formatResult.getAxisMap().get(ChartAxis.xAxis));
+        leftFields.addAll(formatResult.getAxisMap().get(ChartAxis.yAxis));
         mergeAssistField(leftCalcResult.getDynamicAssistFields(), leftCalcResult.getAssistData());
         var leftOriginData = leftCalcResult.getOriginData();
         var leftTable = ChartDataBuild.transTableNormal(leftFields, view, leftOriginData, desensitizationList);
@@ -151,13 +172,14 @@ public class MixHandler extends YoyChartHandler {
 
         var rightCalcResult = (ChartCalcDataResult) calcResult.getData().get("right");
         var rightFields = new ArrayList<ChartViewFieldDTO>();
-        rightFields.addAll(view.getXAxis());
-        rightFields.addAll(view.getExtBubble());
-        rightFields.addAll(view.getYAxisExt());
+
+        var subAxisMap = (HashMap<ChartAxis, List<ChartViewFieldDTO>>) formatResult.getContext().get("subAxisMap");
+        rightFields.addAll(subAxisMap.get(ChartAxis.xAxis));
+        rightFields.addAll(subAxisMap.get(ChartAxis.yAxis));
+
         mergeAssistField(rightCalcResult.getDynamicAssistFields(), rightCalcResult.getAssistData());
         var rightOriginData = rightCalcResult.getOriginData();
         var rightTable = ChartDataBuild.transTableNormal(rightFields, view, rightOriginData, desensitizationList);
-        mergeAssistField(rightCalcResult.getDynamicAssistFields(), rightCalcResult.getAssistData());
         var rightData = new HashMap<String, Object>(rightTable);
         rightData.putAll(rightCalcResult.getData());
         rightData.put("dynamicAssistLines", rightCalcResult.getDynamicAssistFields());
