@@ -95,10 +95,10 @@ function matrixAdaptor(componentItem) {
   componentItem.y = 1 + (componentItem.y - 1) * 2
   componentItem.sizeX = componentItem.sizeX * 2
   componentItem.sizeY = componentItem.sizeY * 2
-  componentItem.mx = 1 + (componentItem.mx - 1) * 2
-  componentItem.my = 1 + (componentItem.my - 1) * 2
-  componentItem.mSizeX = componentItem.mSizeX * 2
-  componentItem.mSizeY = componentItem.mSizeY * 2
+  componentItem['mx'] = 1 + (componentItem.mx - 1) * 2
+  componentItem['my'] = 1 + (componentItem.my - 1) * 2
+  componentItem['mSizeX'] = componentItem.mSizeX * 2
+  componentItem['mSizeY'] = componentItem.mSizeY * 2
   if (componentItem.component === 'Group') {
     componentItem.propValue.forEach(groupItem => {
       matrixAdaptor(groupItem)
@@ -498,10 +498,7 @@ export async function decompressionPre(params, callBack) {
           (!deTemplateDataTemp.version || deTemplateDataTemp.version === 2) &&
           deTemplateDataTemp.type === 'dashboard'
         ) {
-          componentItem.x = 1 + (componentItem.x - 1) * 2
-          componentItem.y = 1 + (componentItem.y - 1) * 2
-          componentItem.sizeX = componentItem.sizeX * 2
-          componentItem.sizeY = componentItem.sizeY * 2
+          matrixAdaptor(componentItem)
         }
       })
       const sourceCanvasStyle = JSON.parse(deTemplateDataTemp['canvasStyleData'])

@@ -403,7 +403,8 @@ public class DataVisualizationServer implements DataVisualizationApi {
                 request.setPid(result.getPid());
             }
             if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt())
-                    || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt())) {
+                    || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt())
+                    || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt())) {
                 wrapper.ne("id", request.getId());
             }
         }
