@@ -255,7 +255,8 @@
         LEFT JOIN visualization_link_jump_info lji ON jtvi.link_jump_info_id = lji.id
         LEFT JOIN visualization_link_jump lj ON lji.link_jump_id = lj.id
         WHERE
-        lj.source_dv_id = #{request.sourceDvId}
+        lji.checked = 1
+        and lj.source_dv_id = #{request.sourceDvId}
         AND lj.source_view_id = #{request.sourceViewId}
         AND lji.target_dv_id = #{request.targetDvId}
         <if test="request.sourceFieldId != null">

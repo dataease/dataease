@@ -139,10 +139,8 @@ const varStyle = computed(() => [
 const init = () => {
   timeId = setInterval(() => {
     if (textOut.value && text.value) {
-      const result =
+      scrollScale.value =
         (element.value.style.width * canvasStyleData.value.scale) / text.value.clientWidth + '%'
-      console.log('===result=' + result)
-      scrollScale.value = result
     } else {
       scrollScale.value = '100%'
     }
@@ -180,12 +178,11 @@ onMounted(() => {
       @mousedown="handleMousedown"
       @blur="handleBlur"
       @input="handleInput"
-    >
-      {{ element['propValue'] }}
-    </div>
+      v-html="element['propValue']"
+    ></div>
   </div>
   <div v-else class="v-text preview" ref="textOut" :style="varStyle">
-    <div class="marquee-txt" :style="textStyle" ref="text">{{ element['propValue'] }}</div>
+    <div class="marquee-txt" :style="textStyle" ref="text" v-html="element['propValue']"></div>
   </div>
 </template>
 
