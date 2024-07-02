@@ -1,6 +1,7 @@
 package io.dataease.extensions.view.dto;
 
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import lombok.Data;
 
@@ -19,5 +20,7 @@ public class ChartExtFilterDTO {
     private List<DatasetTableFieldDTO> datasetTableFieldList;
     private String dateStyle;
     private String datePattern;
+    @JsonIgnore
+    private List<String> originValue;
     private int filterType;// 0-过滤组件，1-下钻，2-联动，外部参数
 }
