@@ -137,6 +137,12 @@ public class DefaultChartHandler extends AbstractChartPlugin {
 
         Map<String, Object> mapTableNormal = ChartDataBuild.transTableNormal(xAxis, yAxis, view, calcResult.getOriginData(), extStack, desensitizationList);
         var drillFilters = filterResult.getFilterList().stream().filter(f -> f.getFilterType() == 1).collect(Collectors.toList());
+        // 日期下钻替换回去
+        drillFilters.forEach(f -> {
+            if (CollectionUtils.isNotEmpty(f.getOriginValue())) {
+                f.setValue(f.getOriginValue());
+            }
+        });
         var isDrill = CollectionUtils.isNotEmpty(drillFilters);
         // 构建结果
         Map<String, Object> dataMap = new HashMap<>();
