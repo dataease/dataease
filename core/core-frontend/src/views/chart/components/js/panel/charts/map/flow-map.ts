@@ -6,7 +6,7 @@ import {
   L7Wrapper
 } from '@/views/chart/components/js/panel/types/impl/l7'
 import { MAP_EDITOR_PROPERTY_INNER } from '@/views/chart/components/js/panel/charts/map/common'
-import { flow, parseJson } from '@/views/chart/components/js/util'
+import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
 import { deepCopy } from '@/utils/utils'
 import { GaodeMap } from '@antv/l7-maps'
 import { Scene } from '@antv/l7-scene'
@@ -49,22 +49,21 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
     const { chart, container } = drawOption
     const xAxis = deepCopy(chart.xAxis)
     const xAxisExt = deepCopy(chart.xAxisExt)
-    let basicStyle
-    let miscStyle
-    if (chart.customAttr) {
-      basicStyle = parseJson(chart.customAttr).basicStyle
-      miscStyle = parseJson(chart.customAttr).misc
-    }
+    const { basicStyle, misc } = deepCopy(parseJson(chart.customAttr))
     const flowLineStyle = {
-      type: miscStyle.mapLineType,
-      size: miscStyle.mapLineType === 'line' ? miscStyle.mapLineWidth / 2 : miscStyle.mapLineWidth,
-      animate: miscStyle.mapLineAnimate,
-      animateDuration: miscStyle.mapLineAnimateDuration,
-      gradient: miscStyle.mapLineGradient,
-      sourceColor: miscStyle.mapLineSourceColor,
-      targetColor: miscStyle.mapLineTargetColor,
+      type: misc.mapLineType,
+      size: misc.mapLineType === 'line' ? misc.mapLineWidth / 2 : misc.mapLineWidth,
+      animate: misc.mapLineAnimate,
+      animateDuration: misc.mapLineAnimateDuration,
+      gradient: misc.mapLineGradient,
+      sourceColor: misc.mapLineSourceColor,
+      targetColor: misc.mapLineTargetColor,
       alpha: basicStyle.alpha
     }
+    const colorsWithAlpha = basicStyle.colors.map(color => hexColorToRGBA(color, basicStyle.alpha))
+    flowLineStyle.sourceColor = colorsWithAlpha[0]
+    flowLineStyle.targetColor = colorsWithAlpha[1]
+
     const mapStyle = `amap://styles/${basicStyle.mapStyle ? basicStyle.mapStyle : 'normal'}`
     const key = await this.getMapKey()
     // 底层
@@ -74,7 +73,7 @@ export class FlowMap extends L7ChartView<Scene, L7Config> {
       map: new GaodeMap({
         token: key ?? undefined,
         style: mapStyle,
-        pitch: miscStyle.mapPitch,
+        pitch: misc.mapPitch,
         zoom: 2.5
       })
     })
