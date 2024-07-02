@@ -538,7 +538,9 @@ const openCascadeDialog = () => {
         name: next.name,
         queryId: next.id,
         fieldId: next.field.id,
-        deType: next.field.deType
+        deType: datasetMap[next.dataset.id].fields?.dimensionList.find(
+          ele => ele.id === next.field.id
+        )?.deType
       }
       return pre
     }, {})
@@ -764,7 +766,6 @@ const confirmClick = () => {
 const cancelValueSource = () => {
   valueSource.value = cloneDeep(curComponent.value.valueSource)
   if (!valueSource.value.length) {
-    valueSource.value.push('')
     valueSource.value.push('')
   }
   manual.value.hide()
