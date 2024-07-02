@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { toRefs, computed, watch, nextTick } from 'vue'
+import { toRefs, computed, watch, nextTick, onMounted } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import CanvasGroup from '@/custom-component/common/CanvasGroup.vue'
 import { deepCopy } from '@/utils/utils'
 import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
+import { groupSizeStyleAdaptor } from '@/utils/style'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, curComponent } = storeToRefs(dvMainStore)
 const sourceCanvasStyle = deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK)
@@ -16,6 +17,7 @@ const props = defineProps({
   },
   element: {
     type: Object,
+    required: true,
     default() {
       return {
         propValue: null
@@ -86,6 +88,12 @@ watch(
   },
   { deep: true }
 )
+
+onMounted(() => {
+  nextTick(() => {
+    groupSizeStyleAdaptor(element.value)
+  })
+})
 </script>
 
 <template>
