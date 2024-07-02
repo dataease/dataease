@@ -27,6 +27,7 @@ import jakarta.annotation.PostConstruct;
 import jakarta.annotation.Resource;
 import lombok.Getter;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.collections4.MapUtils;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.slf4j.Logger;
@@ -71,6 +72,12 @@ public class DefaultChartHandler extends AbstractChartPlugin {
 
     @Override
     public <T extends CustomFilterResult> T customFilter(ChartViewDTO view, List<ChartExtFilterDTO> filterList, AxisFormatResult formatResult) {
+        var desensitizationList = (Map<String, ColumnPermissionItem>) formatResult.getContext().get("desensitizationList");
+        if (MapUtils.isNotEmpty(desensitizationList)) {
+            formatResult.getAxisMap().forEach((axis, fields) -> {
+                fields.removeIf(f -> desensitizationList.containsKey(f.getDataeaseName()));
+            });
+        }
         return (T) new CustomFilterResult(filterList, formatResult.getContext());
     }
 

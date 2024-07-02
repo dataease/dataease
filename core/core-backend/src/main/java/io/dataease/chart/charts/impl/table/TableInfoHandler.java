@@ -62,7 +62,7 @@ public class TableInfoHandler extends DefaultChartHandler {
                 chartExtRequest.setPageSize(null);
             }
         }
-        return super.customFilter(view, filterList, formatResult);
+        return (T) new CustomFilterResult(filterList, formatResult.getContext());
     }
 
     @Override
@@ -73,7 +73,6 @@ public class TableInfoHandler extends DefaultChartHandler {
         for (Map.Entry<Long, DatasourceSchemaDTO> next : dsMap.entrySet()) {
             dsList.add(next.getValue().getType());
         }
-        boolean needOrder = Utils.isNeedOrder(dsList);
         boolean crossDs = Utils.isCrossDs(dsMap);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);

@@ -136,18 +136,8 @@ public class ChartDataManage {
         formatResult.getContext().put("allFields", allFields);
         var axisMap = formatResult.getAxisMap();
         axisMap.forEach((axis, fields) -> {
-            Iterator<ChartViewFieldDTO> iterator = fields.iterator();
-            while (iterator.hasNext()) {
-                ChartViewFieldDTO fieldDTO = iterator.next();
-                if (!dataeaseNames.contains(fieldDTO.getDataeaseName())) {
-                    iterator.remove();
-                }
-            }
+            fields.removeIf(fieldDTO -> !dataeaseNames.contains(fieldDTO.getDataeaseName()));
         });
-
-        if (ObjectUtils.isEmpty(xAxis) && ObjectUtils.isEmpty(yAxis)) {
-            return emptyChartViewDTO(view);
-        }
 
         // 过滤来自仪表板的条件
         List<ChartExtFilterDTO> extFilterList = new ArrayList<>();
@@ -325,6 +315,10 @@ public class ChartDataManage {
         }).collect(Collectors.toList());
         // 视图自定义过滤逻辑
         CustomFilterResult filterResult = chartHandler.customFilter(view, extFilterList, formatResult);
+
+        if (ObjectUtils.isEmpty(xAxis) && ObjectUtils.isEmpty(yAxis)) {
+            return emptyChartViewDTO(view);
+        }
         // 字段过滤器
         FilterTreeObj fieldCustomFilter = view.getCustomFilter();
         chartFilterTreeService.searchFieldAndSet(fieldCustomFilter);
