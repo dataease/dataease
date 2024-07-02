@@ -191,10 +191,12 @@
         :open-type="showChartInfoType"
       />
     </el-dialog>
+    <ExportExcel ref="ExportExcelRef" />
   </div>
 </template>
 
 <script>
+import ExportExcel from '@/views/dataset/exportExcel/index.vue'
 import { getStyle } from '@/components/canvas/utils/style'
 import { mapState } from 'vuex'
 import ComponentWrapper from './ComponentWrapper'
@@ -220,7 +222,7 @@ import LinkOptBar from '@/components/canvas/components/editor/LinkOptBar'
 
 const erd = elementResizeDetectorMaker()
 export default {
-  components: { LinkOptBar, UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport },
+  components: { LinkOptBar, UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport, ExportExcel },
   model: {
     prop: 'show',
     event: 'change'
@@ -562,8 +564,10 @@ export default {
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
     this.initPdfTemplate()
+    bus.$on('data-export-center', this.downloadClick)
   },
   beforeDestroy() {
+    bus.$off('data-export-center', this.downloadClick)
     if (this.$refs[this.previewTempRefId]) {
       erd.uninstall(this.$refs[this.previewTempRefId])
     }
@@ -578,6 +582,9 @@ export default {
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
+    downloadClick() {
+      this.$refs.ExportExcelRef.init()
+    },
     reloadWatermark() {
       if (this.screenShotStatues) {
         this.initWatermark('preview-temp-canvas-main')
