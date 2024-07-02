@@ -964,7 +964,6 @@ const handleCondition = item => {
   valueSource.value = cloneDeep(curComponent.value.valueSource)
   if (!valueSource.value.length) {
     valueSource.value.push('')
-    valueSource.value.push('')
   }
   parameterCompletion()
   nextTick(() => {
