@@ -8,7 +8,6 @@ import eventBus from '@/utils/eventBus'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
-import { groupSizeStyleAdaptor } from '@/utils/style'
 
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
@@ -124,9 +123,6 @@ export const copyStore = defineStore('copy', {
               component: newComponent,
               index: componentData.value.length - 1
             })
-          }
-          if (newComponent.component === 'Group') {
-            groupSizeStyleAdaptor(newComponent)
           }
           i++
         }
