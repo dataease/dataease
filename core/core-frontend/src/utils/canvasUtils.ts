@@ -8,6 +8,7 @@ import eventBus from '@/utils/eventBus'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import {
   decompression,
+  dvNameCheck,
   findById,
   findCopyResource,
   saveCanvas,
@@ -298,7 +299,7 @@ export function checkIsBatchOptView(viewId) {
   return curBatchOptComponents.value.includes(viewId)
 }
 
-export function canvasSave(callBack) {
+export async function canvasSave(callBack) {
   const componentDataToSave = cloneDeep(componentData.value)
   componentDataToSave.forEach(item => {
     if (item.component === 'UserView') {
@@ -324,6 +325,15 @@ export function canvasSave(callBack) {
   }
 
   const method = dvInfo.value.id && dvInfo.value.optType !== 'copy' ? updateCanvas : saveCanvas
+  if (method === updateCanvas) {
+    await dvNameCheck({
+      opt: 'edit',
+      nodeType: 'leaf',
+      name: dvInfo.value.name,
+      type: dvInfo.value.type,
+      id: dvInfo.value.id
+    })
+  }
   method(canvasInfo).then(res => {
     dvMainStore.updateDvInfoId(res.data)
     snapshotStore.resetStyleChangeTimes()
