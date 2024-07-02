@@ -3,6 +3,7 @@
     v-if="state.tabShow"
     style="width: 100%; height: 100%"
     :class="headClass"
+    class="custom-tabs-head"
     ref="tabComponentRef"
   >
     <de-custom-tab
@@ -160,7 +161,8 @@ const props = defineProps({
     default: 1
   }
 })
-const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo } = toRefs(props)
+const { element, isEdit, showPosition, canvasStyleData, canvasViewInfo, dvInfo, scale } =
+  toRefs(props)
 
 const state = reactive({
   activeTabName: '',
@@ -316,11 +318,11 @@ const headClass = computed(() => {
 const titleStyle = itemName => {
   if (editableTabsValue.value === itemName) {
     return {
-      fontSize: (element.value.style.activeFontSize || 18) + 'px'
+      fontSize: (element.value.style.activeFontSize || 18) * scale.value + 'px'
     }
   } else {
     return {
-      fontSize: (element.value.style.fontSize || 16) + 'px'
+      fontSize: (element.value.style.fontSize || 16) * scale.value + 'px'
     }
   }
 }
