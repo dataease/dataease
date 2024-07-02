@@ -630,15 +630,59 @@ const editDatasource = (editType?: number) => {
 }
 
 const handleEdit = async data => {
-  await handleNodeClick(data)
-  datasourceEditor.value.init(nodeInfo)
+  editDatasource()
 }
 
 const handleCopy = async data => {
-  await handleNodeClick(data)
-  nodeInfo.id = ''
-  nodeInfo.name = '复制数据源'
-  datasourceEditor.value.init(nodeInfo)
+  getById(nodeInfo.id).then(res => {
+    let {
+      name,
+      createBy,
+      id,
+      createTime,
+      creator,
+      type,
+      pid,
+      configuration,
+      syncSetting,
+      apiConfigurationStr,
+      paramsStr,
+      fileName,
+      size,
+      description,
+      lastSyncTime
+    } = res.data
+    if (configuration) {
+      configuration = JSON.parse(Base64.decode(configuration))
+    }
+    if (paramsStr) {
+      paramsStr = JSON.parse(Base64.decode(paramsStr))
+    }
+    if (apiConfigurationStr) {
+      apiConfigurationStr = JSON.parse(Base64.decode(apiConfigurationStr))
+    }
+    let datasource = reactive<Node>(cloneDeep(defaultInfo))
+    Object.assign(datasource, {
+      name,
+      pid,
+      description,
+      fileName,
+      size,
+      createTime,
+      creator,
+      createBy,
+      id,
+      type,
+      configuration,
+      syncSetting,
+      apiConfiguration: apiConfigurationStr,
+      paramsConfiguration: paramsStr,
+      lastSyncTime
+    })
+    datasource.id = ''
+    datasource.name = '复制数据源'
+    datasourceEditor.value.init(datasource)
+  })
 }
 
 const handleDatasourceTree = (cmd: string, data?: Tree) => {

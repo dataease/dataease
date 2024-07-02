@@ -70,6 +70,7 @@ public class ExportCenterManage {
     public void init() {
         scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(corePoolSize);
         scheduledThreadPoolExecutor.setKeepAliveTime(keepAliveSeconds, TimeUnit.SECONDS);
+        scheduledThreadPoolExecutor.setMaximumPoolSize(10);
     }
 
     @Scheduled(fixedRate = 5000)
@@ -154,6 +155,9 @@ public class ExportCenterManage {
 
     public void retry(String id) {
         CoreExportTask exportTask = exportTaskMapper.selectById(id);
+        if(!exportTask.getExportStatus().equalsIgnoreCase("FAILED")){
+            DEException.throwException("正在导出中!");
+        }
         exportTask.setExportStatus("PENDING");
         exportTask.setExportProgress("0");
         exportTask.setExportMachineName(hostName());
