@@ -487,7 +487,7 @@ onMounted(() => {
       <el-form-item v-if="showProperty('customContent')" :class="'form-item-' + themes">
         <template #label>
           <span class="data-area-label">
-            <span>
+            <span style="margin-right: 4px">
               {{ t('chart.content_formatter') }}
             </span>
             <el-tooltip class="item" :effect="toolTip" placement="bottom">
@@ -827,5 +827,13 @@ onMounted(() => {
 }
 .form-item-checkbox {
   margin-bottom: 8px !important;
+}
+.data-area-label {
+  text-align: left;
+  position: relative;
+  width: 100%;
+  display: flex;
+  flex-direction: row;
+  align-items: center;
 }
 </style>

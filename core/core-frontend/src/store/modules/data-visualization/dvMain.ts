@@ -393,6 +393,7 @@ export const dvMainStore = defineStore('dataVisualization', {
           id: component.id,
           type: component.innerType,
           render: component.render,
+          isPlugin: component.isPlugin,
           plugin: {
             isPlugin: component.isPlugin,
             staticMap: component.staticMap

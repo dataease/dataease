@@ -18,7 +18,7 @@ public abstract class AbstractChartPlugin implements DataEasePlugin {
     @Override
     public void loadPlugin() {
         XpackPluginsViewVO viewConfig = getConfig();
-        PluginsChartFactory.loadPlugin(viewConfig.getRender(), viewConfig.getCategory(), this);
+        PluginsChartFactory.loadPlugin(viewConfig.getRender(), viewConfig.getChartValue(), this);
     }
 
 

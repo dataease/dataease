@@ -41,6 +41,7 @@ public class GroupMixHandler extends MixHandler {
         xAxisGroup.addAll(view.getXAxisExt());
         axisMap.put(ChartAxis.xAxis, xAxisGroup);
         context.put("xAxisBase", xAxis);
+        axisMap.put(ChartAxis.drill, new ArrayList<>(view.getDrillFields()));
         return result;
     }
 
@@ -49,45 +50,4 @@ public class GroupMixHandler extends MixHandler {
         return super.buildNormalResult(view, formatResult, filterResult, data);
     }
 
-    @Override
-    public ChartViewDTO buildChart(ChartViewDTO view, ChartCalcDataResult calcResult, AxisFormatResult formatResult, CustomFilterResult filterResult) {
-        var desensitizationList = (Map<String, ColumnPermissionItem>) filterResult.getContext().get("desensitizationList");
-        var leftCalcResult = (ChartCalcDataResult) calcResult.getData().get("left");
-        var leftFields = new ArrayList<ChartViewFieldDTO>();
-        leftFields.addAll(view.getXAxis());
-        leftFields.addAll(view.getXAxisExt());
-        leftFields.addAll(view.getYAxis());
-        var leftOriginData = leftCalcResult.getOriginData();
-        var leftTable = ChartDataBuild.transTableNormal(leftFields, view, leftOriginData, desensitizationList);
-        mergeAssistField(leftCalcResult.getDynamicAssistFields(), leftCalcResult.getAssistData());
-        var leftData = new HashMap<String, Object>(leftTable);
-        leftData.putAll(leftCalcResult.getData());
-        leftData.put("dynamicAssistLines", leftCalcResult.getDynamicAssistFields());
-
-        var rightCalcResult = (ChartCalcDataResult) calcResult.getData().get("right");
-        var rightFields = new ArrayList<ChartViewFieldDTO>();
-        rightFields.addAll(view.getXAxis());
-        rightFields.addAll(view.getExtBubble());
-        rightFields.addAll(view.getYAxisExt());
-        var rightOriginData = rightCalcResult.getOriginData();
-        var rightTable = ChartDataBuild.transTableNormal(rightFields, view, rightOriginData, desensitizationList);
-        mergeAssistField(rightCalcResult.getDynamicAssistFields(), rightCalcResult.getAssistData());
-        var rightData = new HashMap<String, Object>(rightTable);
-        rightData.putAll(rightCalcResult.getData());
-        rightData.put("dynamicAssistLines", rightCalcResult.getDynamicAssistFields());
-
-        var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
-        // 构建结果
-        Map<String, Object> chartData = new TreeMap<>();
-        chartData.put("left", leftData);
-        chartData.put("right", rightData);
-
-        var drillFilters = filterResult.getFilterList().stream().filter(f -> f.getFilterType() == 1).collect(Collectors.toList());
-        var isDrill = CollectionUtils.isNotEmpty(drillFilters);
-        view.setDrillFilters(drillFilters);
-        view.setDrill(isDrill);
-        view.setSql(leftCalcResult.getQuerySql());
-        view.setData(chartData);
-        return view;
-    }
 }

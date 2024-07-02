@@ -104,9 +104,7 @@ public class ChartDataManage {
             DEException.throwException(ResultCode.DATA_IS_WRONG.code(), Translator.get("i18n_chart_not_handler") + ": " + view.getRender() + "," + view.getType());
         }
 
-        AxisFormatResult formatResult = chartHandler.formatAxis(view);
-        var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
-        var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+        var dillAxis = new ArrayList<ChartViewFieldDTO>();
 
         DatasetGroupInfoDTO table = datasetGroupManage.getDatasetGroupInfoDTO(view.getTableId(), null);
         if (table == null) {
@@ -122,7 +120,6 @@ public class ChartDataManage {
         }
 
         List<ChartViewFieldDTO> allFields = getAllChartFields(view);
-        formatResult.getContext().put("allFields", allFields);
         // column permission
         Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
         List<DatasetTableFieldDTO> columnPermissionFields = permissionManage.filterColumnPermissions(transFields(allFields), desensitizationList, table.getId(), chartExtRequest.getUser());
@@ -130,13 +127,18 @@ public class ChartDataManage {
         List<DataSetRowPermissionsTreeDTO> rowPermissionsTree = permissionManage.getRowPermissionsTree(table.getId(), chartExtRequest.getUser());
         //将没有权限的列删掉
         List<String> dataeaseNames = columnPermissionFields.stream().map(DatasetTableFieldDTO::getDataeaseName).collect(Collectors.toList());
-        dataeaseNames.add("*");
+
+        AxisFormatResult formatResult = chartHandler.formatAxis(view);
+        formatResult.getContext().put("desensitizationList", desensitizationList);
+        var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
+        var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+        formatResult.getContext().put("allFields", allFields);
         var axisMap = formatResult.getAxisMap();
         axisMap.forEach((axis, fields) -> {
             Iterator<ChartViewFieldDTO> iterator = fields.iterator();
             while (iterator.hasNext()) {
                 ChartViewFieldDTO fieldDTO = iterator.next();
-                if (desensitizationList.containsKey(fieldDTO.getDataeaseName()) || !dataeaseNames.contains(fieldDTO.getDataeaseName())) {
+                if (!dataeaseNames.contains(fieldDTO.getDataeaseName())) {
                     iterator.remove();
                 }
             }
@@ -290,6 +292,7 @@ public class ChartDataManage {
                         if (!fields.contains(dim.getId())) {
                             viewField.setSource(FieldSource.DRILL);
                             xAxis.add(viewField);
+                            dillAxis.add(viewField);
                             fields.add(dim.getId());
                         }
                         if (i == drillRequestList.size() - 1) {
@@ -298,13 +301,19 @@ public class ChartDataManage {
                                 viewField.setSource(FieldSource.DRILL);
                                 nextDrillField.setSort(getDrillSort(xAxis, drill.get(0)));
                                 xAxis.add(nextDrillField);
+                                dillAxis.add(nextDrillField);
                                 fields.add(nextDrillField.getId());
+                            } else {
+                                dillAxis.add(nextDrillField);
                             }
                         }
                     }
                 }
             }
         }
+
+        formatResult.getContext().put("dillAxis", dillAxis);
+
         //转义特殊字符
         extFilterList = extFilterList.stream().peek(ele -> {
             if (ObjectUtils.isNotEmpty(ele.getValue())) {
@@ -352,10 +361,10 @@ public class ChartDataManage {
             Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
             Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
             String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
+            querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
             filterResult.getContext().put("querySql", querySql);
         }
         ChartCalcDataResult calcResult = chartHandler.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, calciteProvider);
-        formatResult.getContext().put("desensitizationList", desensitizationList);
         return chartHandler.buildChart(view, calcResult, formatResult, filterResult);
     }
 

@@ -55,7 +55,8 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
     extBubble: {
       name: `${t('chart.bubble_size')} / ${t('chart.quota')}`,
       type: 'q',
-      limit: 1
+      limit: 1,
+      tooltip: '该指标生效时，样式基础样式中的大小属性将失效'
     }
   }
   constructor() {
@@ -139,7 +140,30 @@ export class SymbolicMap extends L7ChartView<Scene, L7Config> {
         }
       })
     })
+    scene.once('loaded', () => {
+      this.autoZoom(symbolicLayer, scene)
+    })
     return new L7Wrapper(scene, configList)
+  }
+
+  /**
+   * 根据数据自动缩放大小及位置
+   * @param symbolicLayer
+   * @param scene
+   */
+  autoZoom = (symbolicLayer, scene) => {
+    const roamMap = flag => {
+      return flag ? scene.zoomIn() : scene.zoomOut()
+    }
+    const resetZoom = () => {
+      symbolicLayer.fitBounds()
+    }
+    symbolicLayer && resetZoom()
+    // 自动放大两级
+    let index = 2
+    while (index--) {
+      roamMap(true)
+    }
   }
 
   /**

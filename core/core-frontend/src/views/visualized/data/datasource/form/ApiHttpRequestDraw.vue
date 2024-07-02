@@ -155,7 +155,7 @@ const rule = reactive<FormRules>({
     }
   ]
 })
-const activeName = ref('third')
+const activeName = ref('table')
 provide('api-active-name', activeName)
 const initApiItem = (val: ApiItem, from, name) => {
   activeName.value = name
@@ -220,6 +220,21 @@ const saveItem = () => {
     ElMessage.error(t('datasource.api_field_not_empty'))
     return
   }
+  if (apiItem.type === 'params') {
+    for (let i = 0; i < apiItem.fields.length; i++) {
+      for (let j = 0; j < paramsList.length; j++) {
+        for (let k = 0; k < paramsList[j].fields.length; k++) {
+          if (
+            apiItem.fields[i].name === paramsList[j].fields[k].name &&
+            apiItem.serialNumber !== paramsList[j].serialNumber
+          ) {
+            ElMessage.error('已经存在同名参数：' + apiItem.fields[i].name)
+            return
+          }
+        }
+      }
+    }
+  }
   for (let i = 0; i < apiItem.fields.length - 1; i++) {
     for (let j = i + 1; j < apiItem.fields.length; j++) {
       if (apiItem.fields[i].name === apiItem.fields[j].name) {
@@ -241,15 +256,28 @@ const next = () => {
         ElMessage.error(t('datasource.please_input_dataPath'))
         return
       }
-      for (let i = 0; i < apiItemList.length; i++) {
-        if (
-          apiItemList[i].name === apiItem.name &&
-          apiItem.serialNumber !== apiItemList[i].serialNumber
-        ) {
-          ElMessage.error(t('datasource.has_repeat_name'))
-          return
+      if (apiItem.type === 'params') {
+        for (let i = 0; i < paramsList.length; i++) {
+          if (
+            paramsList[i].name === apiItem.name &&
+            apiItem.serialNumber !== paramsList[i].serialNumber
+          ) {
+            ElMessage.error('已经存在同名的参数表')
+            return
+          }
+        }
+      } else {
+        for (let i = 0; i < apiItemList.length; i++) {
+          if (
+            apiItemList[i].name === apiItem.name &&
+            apiItem.serialNumber !== apiItemList[i].serialNumber
+          ) {
+            ElMessage.error(t('datasource.has_repeat_name'))
+            return
+          }
         }
       }
+
       cancelMap['/datasource/checkApiDatasource']?.()
 
       const params = Base64.encode(JSON.stringify(paramsList))
@@ -441,7 +469,7 @@ defineExpose({
                 {{ active <= 1 ? '2' : '' }}
               </span>
               <span class="title">{{
-                activeName === 'third' ? t('datasource.api_step_2') : '提取参数'
+                activeName === 'table' ? t('datasource.api_step_2') : '提取参数'
               }}</span>
             </div>
           </template>

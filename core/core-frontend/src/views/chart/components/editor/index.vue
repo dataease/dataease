@@ -262,9 +262,6 @@ const chartStyleShow = computed(() => {
 })
 
 const chartViewInstance = computed(() => {
-  if (view.value.render === 'highchart') {
-    return chartViewManager.getChartView('antv', view.value.type)
-  }
   return chartViewManager.getChartView(view.value.render, view.value.type)
 })
 const showAxis = (axis: AxisType) => chartViewInstance.value?.axis?.includes(axis)
@@ -557,6 +554,33 @@ const showAggregate = computed<boolean>(() => {
     }
   }
   return false
+})
+
+const disableUpdate = computed(() => {
+  let flag = false
+  if (view.value.type === 'table-info') {
+    return flag
+  }
+  if (!chartViewInstance.value) {
+    return flag
+  }
+  const axisConfig = chartViewInstance.value.axisConfig
+  if (!axisConfig) {
+    return flag
+  }
+  for (const key in axisConfig) {
+    if (Object.prototype.hasOwnProperty.call(axisConfig, key)) {
+      const axis = view.value[key]
+      if (axis instanceof Array) {
+        axis.forEach(a => {
+          if (a.desensitized) {
+            flag = true
+          }
+        })
+      }
+    }
+  }
+  return flag
 })
 
 const addAxis = (e, axis: AxisType) => {
@@ -2210,8 +2234,26 @@ onMounted(() => {
                     <!-- extBubble -->
                     <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
                       <div class="form-draggable-title">
-                        <span>
-                          {{ chartViewInstance.axisConfig.extBubble.name }}
+                        <span class="data-area-label">
+                          <span style="margin-right: 4px">
+                            {{ chartViewInstance.axisConfig.extBubble.name }}
+                          </span>
+                          <el-tooltip
+                            v-if="chartViewInstance.axisConfig.extBubble.tooltip"
+                            class="item"
+                            :effect="toolTip"
+                            placement="top"
+                          >
+                            <template #content>
+                              <span> {{ chartViewInstance.axisConfig.extBubble.tooltip }}</span>
+                            </template>
+                            <el-icon
+                              class="hint-icon"
+                              :class="{ 'hint-icon--dark': themes === 'dark' }"
+                            >
+                              <Icon name="icon_info_outlined" />
+                            </el-icon>
+                          </el-tooltip>
                         </span>
                         <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
                           <el-icon
@@ -2464,6 +2506,7 @@ onMounted(() => {
                       </div>
 
                       <el-button
+                        :disabled="disableUpdate"
                         type="primary"
                         class="result-style-button"
                         @click="updateChartData(view)"

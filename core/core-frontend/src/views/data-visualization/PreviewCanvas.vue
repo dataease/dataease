@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
-import { onMounted, reactive } from 'vue'
+import { onMounted, reactive, ref } from 'vue'
 import DePreview from '@/components/data-visualization/canvas/DePreview.vue'
 import router from '@/router'
+import { useEmitt } from '@/hooks/web/useEmitt'
+import ExportExcel from '@/views/visualized/data/dataset/ExportExcel.vue'
 import { initCanvasData } from '@/utils/canvasUtils'
 import { queryTargetVisualizationJumpInfo } from '@/api/visualization/linkJump'
 import { Base64 } from 'js-base64'
@@ -119,6 +121,12 @@ const loadCanvasDataAsync = async (dvId, dvType) => {
 let p = null
 const XpackLoaded = () => p(true)
 onMounted(async () => {
+  useEmitt({
+    name: 'data-export-center',
+    callback: function (params) {
+      ExportExcelRef.value.init(params)
+    }
+  })
   await new Promise(r => (p = r))
   const dvId = embeddedStore.dvId || router.currentRoute.value.query.dvId
   const { dvType, callBackFlag, taskId } = router.currentRoute.value.query
@@ -132,6 +140,7 @@ onMounted(async () => {
   dvMainStore.setEmbeddedCallBack(callBackFlag || 'no')
   dvMainStore.setPublicLinkStatus(props.publicLinkStatus)
 })
+const ExportExcelRef = ref()
 
 defineExpose({
   loadCanvasDataAsync
@@ -156,6 +165,7 @@ defineExpose({
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
   />
+  <ExportExcel ref="ExportExcelRef"></ExportExcel>
 </template>
 
 <style lang="less">

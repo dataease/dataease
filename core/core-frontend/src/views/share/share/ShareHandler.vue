@@ -42,7 +42,7 @@
             :disabled="!linkCustom"
             @blur="finishEditUuid"
           >
-            <template #prefix>
+            <template v-if="!linkCustom" #prefix>
               {{ formatLinkBase() }}
             </template>
           </el-input>
@@ -122,7 +122,6 @@
     </div>
     <div v-if="shareEnable && showTicket" class="share-ticket-container">
       <share-ticket
-        :link-url="linkAddr"
         :uuid="state.detailInfo.uuid"
         :resource-id="props.resourceId"
         :ticket-require="state.detailInfo.ticketRequire"
@@ -150,7 +149,8 @@ import { ShareInfo, SHARE_BASE, shortcuts } from './option'
 import { ElMessage, ElLoading } from 'element-plus-secondary'
 import useClipboard from 'vue-clipboard3'
 import ShareTicket from './ShareTicket.vue'
-
+import { useEmbedded } from '@/store/modules/embedded'
+const embeddedStore = useEmbedded()
 const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const props = defineProps({
@@ -311,8 +311,8 @@ const formatLinkAddr = () => {
 }
 const formatLinkBase = () => {
   let prefix = '/'
-  if (window.DataEaseBi?.baseUrl) {
-    prefix = window.DataEaseBi.baseUrl + '#'
+  if (embeddedStore.baseUrl) {
+    prefix = embeddedStore.baseUrl + '#'
   } else {
     const href = window.location.href
     prefix = href.substring(0, href.indexOf('#') + 1)
