@@ -1,9 +1,9 @@
 package io.dataease.engine.trans;
 
-import io.dataease.extensions.view.model.SQLMeta;
-import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.engine.constant.SQLConstants;
-import io.dataease.engine.constant.SqlPlaceholderConstants;
+import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
+import io.dataease.extensions.datasource.model.SQLMeta;
+import io.dataease.extensions.datasource.model.SQLObj;
 
 /**
  * @Author Junjun

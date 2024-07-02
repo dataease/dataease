@@ -1,7 +1,7 @@
 package io.dataease.api.dataset.union;
 
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
-import io.dataease.extensions.view.model.SQLObj;
+import io.dataease.extensions.datasource.model.SQLObj;
 import lombok.Data;
 
 import java.io.Serializable;

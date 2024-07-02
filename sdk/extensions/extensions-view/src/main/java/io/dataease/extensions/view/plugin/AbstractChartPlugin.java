@@ -1,11 +1,12 @@
 package io.dataease.extensions.view.plugin;
 
+import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
-import io.dataease.extensions.view.model.SQLMeta;
 
 import java.util.List;
 import java.util.Map;
+
 
 public abstract class AbstractChartPlugin {
 
@@ -49,9 +50,12 @@ public abstract class AbstractChartPlugin {
      *
      * @param view         原视图对象
      * @param calcResult   计算结果
+     * @param view         原视图对象
+     * @param calcResult   计算结果
      * @param formatResult 轴字段处理结果
      * @param filterResult 过滤条件处理结果
      * @return 返回前端的视图，建议数据放在 data 中，过滤条件放在 filter 中，其他字段可自行添加，可参考主工程。
      */
     public abstract ChartViewDTO buildChart(ChartViewDTO view, ChartCalcDataResult calcResult, AxisFormatResult formatResult, CustomFilterResult filterResult);
 }
+

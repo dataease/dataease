@@ -2,13 +2,13 @@ package io.dataease.engine.trans;
 
 import io.dataease.api.chart.dto.DeSortField;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.view.model.SQLMeta;
-import io.dataease.extensions.view.model.SQLObj;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.engine.utils.Utils;
+import io.dataease.extensions.datasource.model.SQLMeta;
+import io.dataease.extensions.datasource.model.SQLObj;
 import org.apache.commons.lang3.ObjectUtils;
 import org.apache.commons.lang3.StringUtils;
 

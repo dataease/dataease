@@ -4,9 +4,9 @@ import io.dataease.chart.charts.impl.YoyChartHandler;
 import io.dataease.engine.utils.Utils;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
-import io.dataease.extensions.view.model.SQLMeta;
 import org.apache.commons.collections4.CollectionUtils;
 import org.springframework.stereotype.Component;
 

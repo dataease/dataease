@@ -1,4 +1,4 @@
-package io.dataease.extensions.view.model;
+package io.dataease.extensions.datasource.model;
 
 import lombok.AllArgsConstructor;
 import lombok.Builder;
