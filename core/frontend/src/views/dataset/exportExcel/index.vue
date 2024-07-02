@@ -231,6 +231,9 @@ export default {
   mounted() {
     bus.$on('task-export-topic-call', this.taskExportTopicCall)
   },
+  beforeDestroy() {
+    bus.$off('task-export-topic-call', this.taskExportTopicCall)
+  },
   methods: {
     init() {
       this.drawer = true
@@ -267,9 +270,6 @@ export default {
           )
         }
       }, 5000)
-    },
-    format(percentage) {
-      return ''
     },
     taskExportTopicCall(task) {
       if (JSON.parse(task).exportStatus === 'SUCCESS') {
