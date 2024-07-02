@@ -9,7 +9,6 @@ import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
 import io.dataease.auth.bo.TokenUserBO;
-import io.dataease.chart.manage.ChartViewManege;
 import io.dataease.chart.utils.ChartDataBuild;
 import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
@@ -20,7 +19,6 @@ import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
 import io.dataease.datasource.manage.EngineManage;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.datasource.utils.DatasourceUtils;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
@@ -31,9 +29,10 @@ import io.dataease.engine.utils.SQLUtils;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.ChartExtFilterDTO;
 import io.dataease.extensions.view.dto.ChartExtRequest;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.extensions.view.model.SQLMeta;
@@ -63,8 +62,6 @@ public class DatasetDataManage {
     @Resource
     private DatasetSQLManage datasetSQLManage;
     @Resource
-    private CalciteProvider calciteProvider;
-    @Resource
     private CoreDatasourceMapper coreDatasourceMapper;
     @Resource
     private DatasetTableFieldManage datasetTableFieldManage;
@@ -76,8 +73,6 @@ public class DatasetDataManage {
     private PermissionManage permissionManage;
     @Resource
     private DatasetTableSqlLogManage datasetTableSqlLogManage;
-    @Resource
-    private ChartViewManege chartViewManege;
 
     private static Logger logger = LoggerFactory.getLogger(DatasetDataManage.class);
 
@@ -125,10 +120,9 @@ public class DatasetDataManage {
             // 获取数据源表的原始字段
             if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
                 datasourceRequest.setTable(tableInfoDTO.getTable());
-                tableFields = calciteProvider.fetchTableField(datasourceRequest);
-            } else {
-                tableFields = calciteProvider.fetchTableField(datasourceRequest);
             }
+            Provider provider = ProviderFactory.getDefaultProvider();
+            tableFields = provider.fetchTableField(datasourceRequest);
         } else {
             // excel,api
             CoreDatasource coreDatasource = engineManage.getDeEngine();
@@ -144,7 +138,8 @@ public class DatasetDataManage {
             sql = SqlUtils.transSqlDialect(sql, datasourceRequest.getDsList());
             datasourceRequest.setQuery(sql);
             logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
-            tableFields = calciteProvider.fetchTableField(datasourceRequest);
+            Provider provider = ProviderFactory.getDefaultProvider();
+            tableFields = provider.fetchTableField(datasourceRequest);
         }
         return transFields(tableFields, true);
     }
@@ -227,7 +222,15 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
-        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsList.getFirst());
+        }
+        Map<String, Object> data = provider.fetchResultField(datasourceRequest);
+
         Map<String, Object> map = new LinkedHashMap<>();
         // 重新构造data
         Map<String, Object> previewData = buildPreviewData(data, fields, desensitizationList);
@@ -255,11 +258,10 @@ public class DatasetDataManage {
     public Long getDatasetTotal(DatasetGroupInfoDTO datasetGroupInfoDTO, String s, ChartExtRequest request) throws Exception {
         Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, request);
         Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
-
+        boolean crossDs = Utils.isCrossDs(dsMap);
         String sql;
         if (StringUtils.isEmpty(s)) {
             sql = (String) sqlMap.get("sql");
-            boolean crossDs = Utils.isCrossDs(dsMap);
             if (!crossDs) {
                 sql = Utils.replaceSchemaAlias(sql, dsMap);
             }
@@ -274,7 +276,14 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
-        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
+        }
+        Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         List<String[]> dataList = (List<String[]>) data.get("data");
         if (ObjectUtils.isNotEmpty(dataList) && ObjectUtils.isNotEmpty(dataList.get(0)) && ObjectUtils.isNotEmpty(dataList.get(0)[0])) {
             return Long.valueOf(dataList.get(0)[0]);
@@ -334,6 +343,7 @@ public class DatasetDataManage {
 
         // sql 作为临时表，外层加上limit
         String sql;
+        Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
         if (Utils.isNeedOrder(List.of(datasourceSchemaDTO.getType()))) {
             // 先根据sql获取表字段
             String sqlField = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
@@ -342,8 +352,9 @@ public class DatasetDataManage {
             // replace placeholder
             sqlField = SqlUtils.replaceTablePlaceHolder(sqlField, originSql);
             datasourceRequest.setQuery(sqlField);
+
             // 获取数据源表的原始字段
-            List<TableField> list = calciteProvider.fetchTableField(datasourceRequest);
+            List<TableField> list = provider.fetchTableField(datasourceRequest);
             if (ObjectUtils.isEmpty(list)) {
                 return null;
             }
@@ -357,7 +368,7 @@ public class DatasetDataManage {
 
         logger.info("calcite data preview sql: " + sql);
         datasourceRequest.setQuery(sql);
-        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+        Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         // 重新构造data
         List<TableField> fList = (List<TableField>) data.get("fields");
         List<DatasetTableFieldDTO> fields = transFields(fList, false);
@@ -487,7 +498,14 @@ public class DatasetDataManage {
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setQuery(querySQL);
             datasourceRequest.setDsList(dsMap);
-            Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+
+            Provider provider;
+            if (crossDs) {
+                provider = ProviderFactory.getDefaultProvider();
+            } else {
+                provider = ProviderFactory.getProvider(dsList.getFirst());
+            }
+            Map<String, Object> data = provider.fetchResultField(datasourceRequest);
             List<String[]> dataList = (List<String[]>) data.get("data");
             dataList = dataList.stream().filter(row -> {
                 boolean hasEmpty = false;
@@ -712,7 +730,14 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
-        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsList.getFirst());
+        }
+        Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         List<String[]> dataList = (List<String[]>) data.get("data");
         dataList = dataList.stream().filter(row -> {
             boolean hasEmpty = false;
@@ -829,7 +854,14 @@ public class DatasetDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
-        Map<String, Object> data = calciteProvider.fetchResultField(datasourceRequest);
+
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsList.getFirst());
+        }
+        Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         List<String[]> rows = (List<String[]>) data.get("data");
 
         // 重新构造data
