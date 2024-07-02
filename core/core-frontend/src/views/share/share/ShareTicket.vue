@@ -156,11 +156,14 @@ import { useI18n } from '@/hooks/web/useI18n'
 import request from '@/config/axios'
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import useClipboard from 'vue-clipboard3'
+import { useEmbedded } from '@/store/modules/embedded'
+import { SHARE_BASE } from './option'
+
+const embeddedStore = useEmbedded()
 const { toClipboard } = useClipboard()
 const { t } = useI18n()
 const props = defineProps({
-  linkUrl: propTypes.string.def(null),
-  uuid: propTypes.string.def(null),
+  uuid: propTypes.string.def(''),
   resourceId: propTypes.string.def(null),
   ticketRequire: propTypes.bool
 })
@@ -234,9 +237,21 @@ const addRow = () => {
     state.tableData.splice(0, 0, row)
   })
 }
-
+const formatLinkAddr = () => {
+  return formatLinkBase() + props.uuid
+}
+const formatLinkBase = () => {
+  let prefix = '/'
+  if (embeddedStore.baseUrl) {
+    prefix = embeddedStore.baseUrl + '#'
+  } else {
+    const href = window.location.href
+    prefix = href.substring(0, href.indexOf('#') + 1)
+  }
+  return prefix + SHARE_BASE
+}
 const copyTicket = async ticket => {
-  const url = `${props.linkUrl}?ticket=${ticket}`
+  const url = `${formatLinkAddr()}?ticket=${ticket}`
   try {
     await toClipboard(url)
     ElMessage.success(t('common.copy_success'))
