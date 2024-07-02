@@ -128,6 +128,9 @@ public class DefaultChartHandler extends AbstractChartPlugin {
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         // 如果是表格导出查询 则在此处直接就可以返回
         var extStack = formatResult.getAxisMap().get(ChartAxis.extStack);
+        if (CollectionUtils.isNotEmpty(extStack) && xAxis.size() > extStack.size()) {
+            xAxis = xAxis.subList(0, xAxis.size() - extStack.size());
+        }
         if (view.getIsExcelExport()) {
             Map<String, Object> sourceInfo = ChartDataBuild.transTableNormal(xAxis, yAxis, view, calcResult.getOriginData(), extStack, desensitizationList);
             sourceInfo.put("sourceData", calcResult.getOriginData());
