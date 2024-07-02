@@ -132,7 +132,8 @@ const state = reactive({
     templateData: null,
     dynamicData: null,
     staticResource: null,
-    snapshot: ''
+    snapshot: '',
+    version: null
   }
 })
 
@@ -266,6 +267,7 @@ const handleFileChange = e => {
     state.templateInfo.dynamicData = state.importTemplateInfo['dynamicData']
     state.templateInfo.staticResource = state.importTemplateInfo['staticResource']
     state.templateInfo['nodeType'] = 'template'
+    state.templateInfo['version'] = state.importTemplateInfo['version']
   }
   reader.readAsText(file)
 }
