@@ -282,7 +282,7 @@ const initTitle = () => {
       )
     }
 
-    state.title_remark.show = customStyle.text.remarkShow
+    state.title_remark.show = customStyle.text.show && customStyle.text.remarkShow
     state.title_remark.remark = customStyle.text.remark
   }
 }
