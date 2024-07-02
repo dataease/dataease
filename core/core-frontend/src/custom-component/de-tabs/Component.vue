@@ -18,7 +18,7 @@
       <template :key="tabItem.name" v-for="(tabItem, index) in element.propValue">
         <el-tab-pane
           class="el-tab-pane-custom"
-          :lazy="true"
+          :lazy="isEditMode"
           :label="tabItem.title"
           :name="tabItem.name"
         >
