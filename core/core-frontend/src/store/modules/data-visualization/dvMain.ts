@@ -236,6 +236,9 @@ export const dvMainStore = defineStore('dataVisualization', {
         style.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
       this.canvasStyleData = style
     },
+    setCanvasStyleScale(value) {
+      this.canvasStyleData.scale = value
+    },
     setCanvasViewInfo(canvasViewInfo) {
       this.canvasViewInfo = canvasViewInfo
     },
