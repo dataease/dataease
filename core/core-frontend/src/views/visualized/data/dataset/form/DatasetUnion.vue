@@ -1044,7 +1044,7 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
         </div>
         <div class="info">
           <span class="label">表备注</span>
-          <span :title="currentNode.noteName" class="name ellipsis">{{
+          <span :title="currentNode.noteName" style="max-width: 240px" class="name ellipsis">{{
             currentNode.noteName || '-'
           }}</span>
         </div>

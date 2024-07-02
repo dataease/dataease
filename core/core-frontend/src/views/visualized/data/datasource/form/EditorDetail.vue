@@ -858,13 +858,13 @@ defineExpose({
           </el-form-item>
 
           <el-form-item
-            label="JDBC连接字符串"
+            label=" JDBC 连接字符串"
             prop="configuration.jdbcUrl"
             v-if="form.configuration.urlType === 'jdbcUrl'"
           >
             <el-input
               v-model="form.configuration.jdbcUrl"
-              placeholder="JDBC连接字符串"
+              placeholder=" JDBC 连接字符串"
               autocomplete="off"
             />
           </el-form-item>
