@@ -973,7 +973,6 @@ public class DatasourceServer implements DatasourceApi {
                     LicenseUtil.validate();
                     validate(datasource);
                 } catch (Exception e) {
-
                 }
             });
         });

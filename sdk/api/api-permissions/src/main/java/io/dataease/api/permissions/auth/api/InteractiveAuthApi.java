@@ -85,4 +85,6 @@ public interface InteractiveAuthApi {
 
     @GetMapping("/OrgNameForResource")
     String OrgNameForResource(Long id);
+
+    void editResourceExtraFlag(BusiResourceEditor editor);
 }
