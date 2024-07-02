@@ -55,6 +55,16 @@ watch(
 )
 const emit = defineEmits(['onBasicStyleChange', 'onMiscChange'])
 const changeBasicStyle = (prop?: string, requestData = false) => {
+  const mapLineColorStyle = prop?.split('@')
+  if (mapLineColorStyle.length === 2) {
+    if (mapLineColorStyle[1].toLowerCase() === 'SourceColor'.toLowerCase()) {
+      state.basicStyleForm.colors[0] = state.miscForm.mapLineSourceColor
+    }
+    if (mapLineColorStyle[1].toLowerCase() === 'TargetColor'.toLowerCase()) {
+      state.basicStyleForm.colors[1] = state.miscForm.mapLineTargetColor
+    }
+    changeMisc(state.basicStyleForm.colors[0] + state.basicStyleForm.colors[1])
+  }
   emit('onBasicStyleChange', { data: state.basicStyleForm, requestData }, prop)
 }
 const onAlphaChange = v => {
@@ -82,6 +92,10 @@ const init = () => {
   configCompat(basicStyle)
   state.basicStyleForm = defaultsDeep(basicStyle, cloneDeep(DEFAULT_BASIC_STYLE)) as ChartBasicStyle
   state.miscForm = defaultsDeep(miscStyle, cloneDeep(DEFAULT_MISC)) as ChartMiscAttr
+  if (props.chart.type === 'flow-map') {
+    state.miscForm.mapLineSourceColor = state.basicStyleForm.colors[0]
+    state.miscForm.mapLineTargetColor = state.basicStyleForm.colors[1]
+  }
   if (!state.customColor) {
     state.customColor = state.basicStyleForm.colors[0]
     state.colorIndex = 0
@@ -467,7 +481,7 @@ onMounted(() => {
                 :effect="themes"
                 :trigger-width="108"
                 :predefine="predefineColors"
-                @change="changeMisc('mapLineSourceColor')"
+                @change="changeBasicStyle('mapLine@SourceColor')"
               />
             </el-form-item>
           </el-col>
@@ -485,7 +499,7 @@ onMounted(() => {
                 :effect="themes"
                 :trigger-width="108"
                 :predefine="predefineColors"
-                @change="changeMisc('mapLineTargetColor')"
+                @change="changeBasicStyle('mapLine@TargetColor')"
               />
             </el-form-item>
           </el-col>
@@ -507,7 +521,7 @@ onMounted(() => {
                 :effect="themes"
                 :trigger-width="108"
                 :predefine="predefineColors"
-                @change="changeMisc('mapLineSourceColor')"
+                @change="changeBasicStyle('mapLine@SourceColor')"
               />
             </el-form-item>
           </el-col>

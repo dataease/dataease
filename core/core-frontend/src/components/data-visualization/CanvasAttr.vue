@@ -5,7 +5,7 @@ import { storeToRefs } from 'pinia'
 import { nextTick, onMounted, ref } from 'vue'
 import { ElFormItem } from 'element-plus-secondary'
 
-import { merge } from 'lodash-es'
+import { merge, cloneDeep } from 'lodash-es'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import ComponentColorSelector from '@/components/dashboard/subject-setting/dashboard-style/ComponentColorSelector.vue'
 import OverallSetting from '@/components/dashboard/subject-setting/dashboard-style/OverallSetting.vue'
@@ -38,7 +38,19 @@ const themeAttrChange = (custom, property, value) => {
       try {
         const viewInfo = canvasViewInfo.value[viewId]
         if (custom === 'customAttr') {
-          merge(viewInfo['customAttr'], value)
+          if (viewInfo.type === 'flow-map') {
+            const { customAttr } = viewInfo
+            const tmpValue = cloneDeep(value)
+            const miscObj = cloneDeep(customAttr.misc)
+            for (const key in miscObj) {
+              if (miscObj.hasOwnProperty(key) && tmpValue.misc?.[key] !== undefined) {
+                tmpValue.misc[key] = miscObj[key]
+              }
+            }
+            merge(viewInfo['customAttr'], tmpValue)
+          } else {
+            merge(viewInfo['customAttr'], value)
+          }
         } else {
           Object.keys(value).forEach(function (key) {
             if (viewInfo[custom][property][key] !== undefined) {
