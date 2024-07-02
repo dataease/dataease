@@ -680,7 +680,7 @@ export function getAnalyse(chart: Chart) {
             chart.type.includes('chart-mix')))
       )
     })
-    const lines = fixedLines.concat(dynamicLines)
+    const lines = fixedLines.concat(dynamicLines || [])
     lines.forEach(ele => {
       const value = parseFloat(ele.value)
       const content =
