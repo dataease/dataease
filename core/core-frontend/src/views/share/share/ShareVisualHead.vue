@@ -123,7 +123,6 @@
     </div>
     <div v-if="shareEnable && showTicket" class="share-ticket-container">
       <share-ticket
-        :link-url="linkAddr"
         :uuid="state.detailInfo.uuid"
         :resource-id="props.resourceId"
         :ticket-require="state.detailInfo.ticketRequire"
