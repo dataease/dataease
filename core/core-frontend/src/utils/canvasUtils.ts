@@ -89,6 +89,28 @@ export function commonHandleDragEnd(e, dvModel) {
   }
 }
 
+function matrixAdaptor(componentItem) {
+  componentItem.x = 1 + (componentItem.x - 1) * 2
+  componentItem.y = 1 + (componentItem.y - 1) * 2
+  componentItem.sizeX = componentItem.sizeX * 2
+  componentItem.sizeY = componentItem.sizeY * 2
+  componentItem.mx = 1 + (componentItem.mx - 1) * 2
+  componentItem.my = 1 + (componentItem.my - 1) * 2
+  componentItem.mSizeX = componentItem.mSizeX * 2
+  componentItem.mSizeY = componentItem.mSizeY * 2
+  if (componentItem.component === 'Group') {
+    componentItem.propValue.forEach(groupItem => {
+      matrixAdaptor(groupItem)
+    })
+  } else if (componentItem.component === 'DeTabs') {
+    componentItem.propValue.forEach(tabItem => {
+      tabItem.componentData.forEach(tabComponent => {
+        matrixAdaptor(tabComponent)
+      })
+    })
+  }
+}
+
 export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   const copyFlag = busiFlag != null && busiFlag.includes('-copy')
   const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag
@@ -116,6 +138,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       createTime: canvasInfo.createTime,
       updateTime: canvasInfo.updateTime,
       watermarkInfo: watermarkInfo,
+      weight: canvasInfo.weight,
       mobileLayout: canvasInfo.mobileLayout || false
     }
     const canvasVersion = canvasInfo.version
@@ -151,14 +174,7 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
       }
       // 2 为基础版本 此处需要增加仪表板矩阵密度
       if ((!canvasVersion || canvasVersion === 2) && canvasInfo.type === 'dashboard') {
-        componentItem.x = 1 + (componentItem.x - 1) * 2
-        componentItem.y = 1 + (componentItem.y - 1) * 2
-        componentItem.sizeX = componentItem.sizeX * 2
-        componentItem.sizeY = componentItem.sizeY * 2
-        componentItem.mx = 1 + (componentItem.mx - 1) * 2
-        componentItem.my = 1 + (componentItem.my - 1) * 2
-        componentItem.mSizeX = componentItem.mSizeX * 2
-        componentItem.mSizeY = componentItem.mSizeY * 2
+        matrixAdaptor(componentItem)
       }
     })
     const curPreviewGap =

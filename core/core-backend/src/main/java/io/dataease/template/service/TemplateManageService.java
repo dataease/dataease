@@ -107,6 +107,9 @@ public class TemplateManageService implements TemplateManageApi {
 
                 VisualizationTemplate template = new VisualizationTemplate();
                 BeanUtils.copyBean(template, request);
+                if(template.getVersion() == null){
+                    template.setVersion(2);
+                }
                 templateMapper.insert(template);
                 // 插入分类关系
                 request.getCategories().forEach(categoryId -> {
@@ -134,6 +137,9 @@ public class TemplateManageService implements TemplateManageApi {
                 }
                 VisualizationTemplate template = new VisualizationTemplate();
                 BeanUtils.copyBean(template, request);
+                if(template.getVersion() == null){
+                    template.setVersion(2);
+                }
                 templateMapper.updateById(template);
                 //更新分类
                 // 分类映射删除
