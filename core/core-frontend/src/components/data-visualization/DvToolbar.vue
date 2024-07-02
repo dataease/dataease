@@ -460,6 +460,7 @@ const multiplexingCanvasOpen = () => {
   background: #ffffff4d;
   width: 1px;
   height: 18px;
-  margin-right: 12px;
+  margin-right: 20px;
+  margin-left: 10px;
 }
 </style>
