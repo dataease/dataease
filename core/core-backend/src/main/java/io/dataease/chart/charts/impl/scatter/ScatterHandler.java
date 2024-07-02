@@ -7,6 +7,7 @@ import lombok.Getter;
 import org.springframework.stereotype.Component;
 
 import java.util.ArrayList;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -35,6 +36,17 @@ public class ScatterHandler extends YoyChartHandler {
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
         var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);
+        if (!extBubble.isEmpty()) {
+            // 剔除气泡大小，移除一个
+            Iterator<ChartViewFieldDTO> iterator = yAxis.iterator();
+            while (iterator.hasNext()) {
+                ChartViewFieldDTO obj = iterator.next();
+                if (obj.getId().equals(extBubble.getFirst().getId())) {
+                    iterator.remove();
+                    break;
+                }
+            }
+        }
         Map<String, Object> result = ChartDataBuild.transScatterDataAntV(xAxis, yAxis, view, data, extBubble, isDrill);
         return result;
     }
