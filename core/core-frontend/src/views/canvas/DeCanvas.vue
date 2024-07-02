@@ -10,7 +10,7 @@ import elementResizeDetectorMaker from 'element-resize-detector'
 import { getCanvasStyle, syncShapeItemStyle } from '@/utils/style'
 import { adaptCurThemeCommonStyle } from '@/utils/canvasStyle'
 import CanvasCore from '@/components/data-visualization/canvas/CanvasCore.vue'
-import { isMainCanvas } from '@/utils/canvasUtils'
+import { isMainCanvas, isDashboard } from '@/utils/canvasUtils'
 
 // change-begin
 const props = defineProps({
@@ -34,9 +34,15 @@ const props = defineProps({
   canvasActive: {
     type: Boolean,
     default: true
+  },
+  outerScale: {
+    type: Number,
+    required: false,
+    default: 1
   }
 })
-const { canvasStyleData, componentData, canvasViewInfo, canvasId, canvasActive } = toRefs(props)
+const { canvasStyleData, componentData, canvasViewInfo, canvasId, canvasActive, outerScale } =
+  toRefs(props)
 const domId = ref('de-canvas-' + canvasId.value)
 // change-end
 
@@ -46,6 +52,9 @@ const { pcMatrixCount, curOriginThemes } = storeToRefs(dvMainStore)
 const canvasOut = ref(null)
 const canvasInner = ref(null)
 const canvasInitStatus = ref(false)
+const scaleWidth = ref(100)
+const scaleHeight = ref(100)
+const scaleMin = ref(100)
 
 const state = reactive({
   screenWidth: 1920,
@@ -151,7 +160,25 @@ const canvasSizeInit = () => {
       dashboardCanvasSizeInit()
       nextTick(() => {
         cyGridster.value.canvasSizeInit() //在适当的时候初始化布局组件
+        // 缩放比例变化
+        scaleInit()
       })
+    }
+  })
+}
+
+const scaleInit = () => {
+  nextTick(() => {
+    if (canvasOut.value) {
+      //div容器获取tableBox.value.clientWidth
+      let canvasWidth = canvasOut.value.clientWidth
+      let canvasHeight = canvasOut.value.clientHeight
+      scaleWidth.value = Math.floor((canvasWidth * 100) / canvasStyleData.value.width)
+      scaleHeight.value = Math.floor((canvasHeight * 100) / canvasStyleData.value.height)
+      scaleMin.value = Math.min(scaleWidth.value, scaleHeight.value)
+      if (isDashboard() && isMainCanvas(canvasId.value)) {
+        dvMainStore.setCanvasStyleScale(scaleMin.value)
+      }
     }
   })
 }

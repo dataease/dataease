@@ -279,7 +279,7 @@ const { emitter } = useEmitt()
 
 const curScale = computed(() => {
   if (dashboardActive.value) {
-    return (canvasStyleData.value.scale * 1.5) / 100
+    return (canvasStyleData.value.scale * 1.2) / 100
   } else {
     return canvasStyleData.value.scale / 100
   }
@@ -287,7 +287,7 @@ const curScale = computed(() => {
 
 const curBaseScale = computed(() => {
   if (dashboardActive.value) {
-    return (dvMainStore.canvasStyleData.scale * 1.5) / 100
+    return (dvMainStore.canvasStyleData.scale * 1.2) / 100
   } else {
     return dvMainStore.canvasStyleData.scale / 100
   }

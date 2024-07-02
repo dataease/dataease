@@ -520,6 +520,10 @@ export async function decompressionPre(params, callBack) {
   callBack(deTemplateData)
 }
 
+export function isDashboard() {
+  return dvInfo.value.type === 'dashboard'
+}
+
 export function trackBarStyleCheck(element, trackbarStyle, _scale, trackMenuNumber) {
   const { width, height } = element.style
   const widthReal = width
