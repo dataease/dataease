@@ -396,6 +396,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         QueryWrapper<DataVisualizationInfo> wrapper = new QueryWrapper<>();
         if (DataVisualizationConstants.RESOURCE_OPT_TYPE.MOVE.equals(request.getOpt())
                 || DataVisualizationConstants.RESOURCE_OPT_TYPE.RENAME.equals(request.getOpt())
+                || DataVisualizationConstants.RESOURCE_OPT_TYPE.EDIT.equals(request.getOpt())
                 || DataVisualizationConstants.RESOURCE_OPT_TYPE.COPY.equals(request.getOpt())) {
             if (request.getPid() == null) {
                 DataVisualizationInfo result = visualizationInfoMapper.selectById(request.getId());

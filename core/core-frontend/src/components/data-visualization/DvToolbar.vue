@@ -98,12 +98,12 @@ const saveCanvasWithCheck = () => {
 }
 
 const saveResource = () => {
-  wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   if (styleChangeTimes.value > 0) {
     eventBus.emit('hideArea-canvas-main')
     nextTick(() => {
-      snapshotStore.resetStyleChangeTimes()
       canvasSave(() => {
+        snapshotStore.resetStyleChangeTimes()
+        wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         ElMessage.success('保存成功')
         window.history.pushState({}, '', `#/dvCanvas?dvId=${dvInfo.value.id}`)
       })
