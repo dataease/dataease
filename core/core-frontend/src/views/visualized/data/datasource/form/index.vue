@@ -260,7 +260,10 @@ const validateDS = () => {
       ElMessage.error('需要添加数据表')
       return
     }
-    request.configuration = Base64.encode(JSON.stringify(request.apiConfiguration))
+    let apiItems = []
+    apiItems = apiItems.concat(request.apiConfiguration)
+    apiItems = apiItems.concat(request.paramsConfiguration)
+    request.configuration = Base64.encode(JSON.stringify(apiItems))
     request.syncSetting.startTime = new Date(request.syncSetting.startTime).getTime()
     request.syncSetting.endTime = new Date(request.syncSetting.endTime).getTime()
   } else {
@@ -272,10 +275,15 @@ const validateDS = () => {
       validate(request).then(res => {
         if (res.data.type === 'API') {
           let error = 0
-          const status = JSON.parse(res.data.status) as Array<{ status: string }>
+          const status = JSON.parse(res.data.status) as Array<{ status: string; name: string }>
           for (let i = 0; i < status.length; i++) {
             if (status[i].status === 'Error') {
               error++
+            }
+            for (let j = 0; j < form.apiConfiguration.length; j++) {
+              if (status[i].name === form.apiConfiguration[j].name) {
+                form.apiConfiguration[j].status = status[i].status
+              }
             }
           }
           if (error === 0) {

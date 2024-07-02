@@ -480,7 +480,8 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         checkDatasourceStatus(dataSourceDTO);
         DatasourceDTO result = new DatasourceDTO();
-        result.setStatus(coreDatasource.getStatus());
+        result.setType(dataSourceDTO.getType());
+        result.setStatus(dataSourceDTO.getStatus());
         return result;
     }
 
@@ -679,57 +680,22 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private DatasourceDTO validate(CoreDatasource coreDatasource) {
-        String lastStatus = coreDatasource.getStatus();
         DatasourceDTO datasourceDTO = new DatasourceDTO();
         BeanUtils.copyBean(datasourceDTO, coreDatasource);
         try {
             checkDatasourceStatus(datasourceDTO);
-            calciteProvider.updateDsPoolAfterCheckStatus(datasourceDTO);
+            if (!Arrays.asList("API", "Excel", "folder").contains(coreDatasource.getType())) {
+                calciteProvider.updateDsPoolAfterCheckStatus(datasourceDTO);
+            }
         } catch (Exception e) {
             coreDatasource.setStatus("Error");
             DEException.throwException(e.getMessage());
         } finally {
-            datasourceDTO.setStatus(coreDatasource.getStatus());
-            QueryWrapper<CoreDatasource> wrapper = new QueryWrapper<>();
-            wrapper.eq("id", coreDatasource.getId());
-            CoreDatasource originData = datasourceMapper.selectById(coreDatasource.getId());
-            String originStatus = originData.getStatus();
+            coreDatasource.setStatus(datasourceDTO.getStatus());
             dataSourceManage.innerEditStatus(coreDatasource);
         }
         datasourceDTO.setConfiguration("");
         return datasourceDTO;
-    }
-
-    private int getExtraFlag(Object typeObj, Object statusObj) {
-        if (ObjectUtils.isNotEmpty(statusObj)) {
-            String status = statusObj.toString();
-            if (typeObj.toString().equalsIgnoreCase("API")) {
-                TypeReference<List<ObjectNode>> listTypeReference = new TypeReference<List<ObjectNode>>() {
-                };
-                List<ObjectNode> apiStatus = JsonUtil.parseList(status, listTypeReference);
-                boolean hasError = false;
-                for (ObjectNode jsonNodes : apiStatus) {
-                    if (jsonNodes.get("status") != null && jsonNodes.get("status").asText().equalsIgnoreCase("Error")) {
-                        hasError = true;
-                        break;
-                    }
-                }
-                if (hasError) {
-                    return -DataSourceType.valueOf(typeObj.toString()).getFlag();
-                } else {
-                    return DataSourceType.valueOf(typeObj.toString()).getFlag();
-                }
-
-            } else {
-                if (StringUtils.equalsIgnoreCase(status, "Error")) {
-                    return -DataSourceType.valueOf(typeObj.toString()).getFlag();
-                } else {
-                    return DataSourceType.valueOf(typeObj.toString()).getFlag();
-                }
-            }
-        } else {
-            return DataSourceType.valueOf(typeObj.toString()).getFlag();
-        }
     }
 
     @Override

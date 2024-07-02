@@ -112,21 +112,21 @@ public class DatasourceSyncManage {
             LogUtil.info("Skip synchronization task for datasource due to exist others, datasource ID : " + datasourceId);
             return;
         }
-
-        DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(coreDatasourceTask.getUpdateType());
-        if (context != null) {
-            UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
-            updateWrapper.eq("id", datasourceId);
-            CoreDatasource record = new CoreDatasource();
-            record.setQrtzInstance(context.getFireInstanceId());
-            datasourceMapper.update(record, updateWrapper);
-        }
-        extractedData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
         try {
+            DatasourceServer.UpdateType updateType = DatasourceServer.UpdateType.valueOf(coreDatasourceTask.getUpdateType());
+            if (context != null) {
+                UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+                updateWrapper.eq("id", datasourceId);
+                CoreDatasource record = new CoreDatasource();
+                record.setQrtzInstance(context.getFireInstanceId());
+                datasourceMapper.update(record, updateWrapper);
+            }
+            extractedData(taskId, coreDatasource, updateType, coreDatasourceTask.getSyncRate());
+        } catch (Exception e) {
+            LogUtil.error(e);
+        } finally {
             datasourceTaskServer.updateTaskStatus(coreDatasourceTask);
             updateDsTaskStatus(datasourceId);
-        } catch (Exception ignore) {
-            LogUtil.error(ignore);
         }
     }
 

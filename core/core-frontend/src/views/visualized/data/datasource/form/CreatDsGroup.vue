@@ -236,7 +236,6 @@ const saveDataset = () => {
         nodeType: nodeType.value as 'folder' | 'datasource',
         name: datasetForm.name
       }
-
       switch (cmd.value) {
         case 'move':
           params.pid = activeAll.value ? '0' : (datasetForm.pid as string)
@@ -276,8 +275,8 @@ const saveDataset = () => {
         checkRepeat(request).then(res => {
           let method = request.id === '' ? save : update
           if (res) {
-            ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions).then(
-              () => {
+            ElMessageBox.confirm(t('datasource.has_same_ds'), options as ElMessageBoxOptions)
+              .then(() => {
                 method({ ...request, name: datasetForm.name, pid: params.pid })
                   .then(res => {
                     if (res !== undefined) {
@@ -290,8 +289,12 @@ const saveDataset = () => {
                   .finally(() => {
                     loading.value = false
                   })
-              }
-            )
+              })
+              .catch(() => {
+                console.log('aaa')
+                loading.value = false
+                createDataset.value = false
+              })
           } else {
             method({ ...request, name: datasetForm.name, pid: params.pid })
               .then(res => {
