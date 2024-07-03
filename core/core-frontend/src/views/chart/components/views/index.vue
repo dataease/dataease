@@ -545,7 +545,7 @@ onMounted(() => {
           cacheViewInfo.snapshotCacheViewRender.includes(view.value.id) ||
           cacheViewInfo.snapshotCacheViewRender.includes('all')
         ) {
-          chartComponent?.value?.renderChart(view.value)
+          chartComponent?.value?.renderChart?.(view.value)
         }
       })
     }
@@ -572,7 +572,7 @@ onMounted(() => {
       initTitle()
       const viewInfo = val ? val : view.value
       nextTick(() => {
-        chartComponent?.value?.renderChart(viewInfo)
+        chartComponent?.value?.renderChart?.(viewInfo)
       })
     }
   })
@@ -591,7 +591,7 @@ onMounted(() => {
         return
       }
       setTimeout(function () {
-        chartComponent?.value?.renderChart(view.value)
+        chartComponent?.value?.renderChart?.(view.value)
       }, 200)
     }
   })
@@ -622,7 +622,7 @@ const chartAreaShow = computed(() => {
   if (view.value.type === 'rich-text') {
     return true
   }
-  if (view.value?.plugin?.isPlugin) {
+  if (view.value?.isPlugin) {
     return true
   }
   if (view.value['dataFrom'] === 'template') {
