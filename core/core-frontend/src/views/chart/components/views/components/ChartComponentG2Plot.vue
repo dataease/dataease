@@ -73,6 +73,9 @@ const emit = defineEmits([
   'resetLoading'
 ])
 
+const g2TypeSeries1 = ['bidirectional-bar']
+const g2TypeSeries0 = ['bar-range']
+
 const { view, showPosition, scale, terminal } = toRefs(props)
 
 const isError = ref(false)
@@ -117,7 +120,7 @@ const linkageActivePre = () => {
 }
 const linkageActive = () => {
   linkageActiveHistory.value = true
-  myChart?.setState('selected', param => {
+  myChart?.setState('active', param => {
     if (Array.isArray(param)) {
       return false
     } else {
@@ -137,10 +140,16 @@ const linkageActive = () => {
   })
 }
 const checkSelected = param => {
-  return (
-    state.linkageActiveParam.name.indexOf(param.name) > -1 &&
-    state.linkageActiveParam.category === param.category
-  )
+  if (g2TypeSeries1.includes(view.value.type)) {
+    return state.linkageActiveParam.name === param.field
+  } else if (g2TypeSeries0.includes(view.value.type)) {
+    return state.linkageActiveParam.category === param.category
+  } else {
+    return (
+      state.linkageActiveParam.name === param.name &&
+      state.linkageActiveParam.category === param.category
+    )
+  }
 }
 
 const calcData = async (view, callback) => {

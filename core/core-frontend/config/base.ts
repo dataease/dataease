@@ -26,6 +26,6 @@ export default {
         }
       }
     },
-    sourcemap: true
+    sourcemap: false
   }
 }
