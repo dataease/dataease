@@ -630,6 +630,7 @@ const editDatasource = (editType?: number) => {
 }
 
 const handleEdit = async data => {
+  await handleNodeClick(data)
   editDatasource()
 }
 
