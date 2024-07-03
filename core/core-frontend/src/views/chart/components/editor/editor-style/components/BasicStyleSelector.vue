@@ -1402,7 +1402,7 @@ onMounted(() => {
     }
   }
   .ed-input-group {
-    width: 124px;
+    width: 120px;
     :deep(.ed-input__wrapper) {
       border-radius: 0 !important;
     }
@@ -1413,7 +1413,7 @@ onMounted(() => {
 }
 .table-column-mode {
   :deep(.ed-radio) {
-    margin-right: 12px !important;
+    margin-right: 10px !important;
   }
 }
 .basic-input-number {
