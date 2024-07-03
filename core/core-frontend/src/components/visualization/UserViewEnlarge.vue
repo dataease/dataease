@@ -142,12 +142,13 @@ const { dvInfo, editMode } = storeToRefs(dvMainStore)
 const exportLoading = ref(false)
 const sourceViewType = ref()
 const activeName = ref('left')
-const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
+const DETAIL_CHART_ATTR: DeepPartial<ChartObj> = {
   render: 'antv',
   type: 'table-info',
   customAttr: {
     basicStyle: {
-      tableColumnMode: 'dialog'
+      tableColumnMode: 'dialog',
+      tablePageMode: 'pull'
     },
     tableHeader: {
       tableHeaderBgColor: '#F8F8F9',
@@ -160,6 +161,18 @@ const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
     },
     tooltip: {
       show: false
+    }
+  },
+  senior: {
+    scrollCfg: {
+      open: false
+    }
+  }
+}
+const DETAIL_TABLE_ATTR: DeepPartial<ChartObj> = {
+  senior: {
+    scrollCfg: {
+      open: false
     }
   }
 }
@@ -226,6 +239,8 @@ const dialogInit = (canvasStyle, view, item, opt) => {
   canvasStyleData.value = canvasStyle
   if (opt === 'details') {
     if (!viewInfo.value.type?.includes('table')) {
+      assign(viewInfo.value, DETAIL_CHART_ATTR)
+    } else {
       assign(viewInfo.value, DETAIL_TABLE_ATTR)
     }
     dataDetailsOpt()
