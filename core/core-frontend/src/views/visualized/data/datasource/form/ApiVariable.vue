@@ -150,7 +150,7 @@ const activeName = inject('api-active-name')
               />
             </el-col>
 
-            <el-col :span="activeName === 'params' ? 10 : 5">
+            <el-col :span="10">
               <el-input
                 v-model="element.description"
                 maxlength="200"
@@ -158,17 +158,6 @@ const activeName = inject('api-active-name')
                 show-word-limit
               />
             </el-col>
-            <el-col v-if="activeName !== 'params'" :span="5">
-              <el-autocomplete
-                v-if="suggestions"
-                v-model="element.name"
-                :disabled="isReadOnly"
-                :fetch-suggestions="querySearch"
-                :placeholder="keyText"
-                show-word-limit
-              />
-            </el-col>
-
             <el-col :span="1">
               <el-button text :disabled="isDisable() || isReadOnly" @click="remove(index)">
                 <template #icon>

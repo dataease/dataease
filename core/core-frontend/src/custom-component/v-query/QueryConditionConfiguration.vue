@@ -257,6 +257,15 @@ const handleCheckedFieldsChange = (value: string[]) => {
   checkAll.value = checkedCount === fields.value.length
   isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
   if (curComponent.value.displayType === '8') return
+  setType()
+}
+
+const handleCheckedFieldsChangeTree = (value: string[]) => {
+  handleDialogClick()
+  const checkedCount = value.length
+  checkAll.value = checkedCount === fields.value.length
+  isIndeterminate.value = checkedCount > 0 && checkedCount < fields.value.length
+  if (curComponent.value.displayType === '8') return
   if (curComponent.value.displayType === '9') {
     setTreeDefault()
     return
@@ -1008,8 +1017,8 @@ const showError = computed(() => {
   if (displayType === '9') {
     let displayField = null
     return checkedFields.some(id => {
-      const arr = fields.value.find(itx => itx.componentId === id)
-      const field = arr.id
+      const arr = (fields.value || []).find(itx => itx.componentId === id)
+      const field = arr?.id
       if (!field) return false
       if (displayField === null) {
         displayField = field
@@ -1332,7 +1341,7 @@ defineExpose({
         <div class="field-list">
           <el-checkbox-group
             v-model="curComponent.checkedFields"
-            @change="handleCheckedFieldsChange"
+            @change="handleCheckedFieldsChangeTree"
           >
             <div v-for="field in fields" :key="field.componentId" class="list-item">
               <el-checkbox :label="field.componentId"
@@ -1477,14 +1486,18 @@ defineExpose({
           <div class="list-item" v-if="curComponent.displayType === '9'">
             <div class="label" style="width: 135px; height: 26px; line-height: 26px">
               下拉树结构设计
-              <el-button v-if="!!curComponent.treeFieldList.length" text @click="startTreeDesign">
+              <el-button
+                v-if="curComponent.treeFieldList && !!curComponent.treeFieldList.length"
+                text
+                @click="startTreeDesign"
+              >
                 <template #icon>
                   <icon name="icon_edit_outlined"></icon>
                 </template>
               </el-button>
             </div>
             <div class="search-tree">
-              <template v-if="!!curComponent.treeFieldList.length">
+              <template v-if="curComponent.treeFieldList && !!curComponent.treeFieldList.length">
                 <div
                   v-for="(ele, index) in curComponent.treeFieldList"
                   :key="ele.id"
