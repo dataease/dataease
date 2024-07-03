@@ -518,9 +518,16 @@ const linkageFieldAdaptor = async data => {
         if (data.linkageFields && data.linkageFields.length === 0) {
           const curCheckAllAxisStr =
             JSON.stringify(state.curLinkageViewInfo.xAxis) +
-            JSON.stringify(state.curLinkageViewInfo.xAxisExt)
+            JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
+            (state.curLinkageViewInfo.type.includes('chart-mix')
+              ? JSON.stringify(state.curLinkageViewInfo.extBubble)
+              : '')
           const targetCheckAllAxisStr =
-            JSON.stringify(targetChartDetails.xAxis) + JSON.stringify(targetChartDetails.xAxisExt)
+            JSON.stringify(targetChartDetails.xAxis) +
+            JSON.stringify(targetChartDetails.xAxisExt) +
+            (targetChartDetails.type.includes('chart-mix')
+              ? JSON.stringify(targetChartDetails.extBubble)
+              : '')
           state.sourceLinkageInfo.targetViewFields.forEach(item => {
             if (
               curCheckAllAxisStr.includes(item.id) &&
@@ -542,7 +549,10 @@ const sourceLinkageInfoFilter = computed(() => {
   if (state.sourceLinkageInfo.targetViewFields) {
     const curCheckAllAxisStr =
       JSON.stringify(state.curLinkageViewInfo.xAxis) +
-      JSON.stringify(state.curLinkageViewInfo.xAxisExt)
+      JSON.stringify(state.curLinkageViewInfo.xAxisExt) +
+      (state.curLinkageViewInfo.type.includes('chart-mix')
+        ? JSON.stringify(state.curLinkageViewInfo.extBubble)
+        : '')
     return state.sourceLinkageInfo.targetViewFields.filter(item =>
       curCheckAllAxisStr.includes(item.id)
     )
