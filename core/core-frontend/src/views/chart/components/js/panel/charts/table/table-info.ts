@@ -77,7 +77,7 @@ export class TableInfo extends S2ChartView<TableSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (f.groupType === 'd' || !isNumber(value)) {
+          if (![2, 3].includes(f.deType) || !isNumber(value)) {
             return value
           }
           let formatCfg = f.formatterCfg
