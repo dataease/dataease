@@ -669,6 +669,7 @@ export default {
       form_update_rule_none: '请配置更新规则',
       form_components_cannot_null: '请添加表单组件',
       option_list_cannot_empty: '选项值不能为空',
+      option_list_datasource_cannot_empty: '选项值绑定数据源配置不能为空',
       component_setting_error: '组件设置错误',
       table_name: '数据库表名',
       form_column: '表单字段',

@@ -671,6 +671,7 @@ export default {
       form_update_rule_none: '請配置更新規則',
       form_components_cannot_null: '請添加表單組件',
       option_list_cannot_empty: '選項值不能為空',
+      option_list_datasource_cannot_empty: '選項值綁定數據源配置不能為空',
       component_setting_error: '組件設置錯誤',
       table_name: '數據庫表名',
       form_column: '表單字段',
