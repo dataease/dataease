@@ -1555,16 +1555,10 @@ const dragOver = (ev: MouseEvent) => {
 }
 
 const drop = (ev: MouseEvent, type = 'xAxis') => {
-  let hasSesensitized = false
   ev.preventDefault()
   const arr = activeDimension.value.length ? activeDimension.value : activeQuota.value
   for (let i = 0; i < arr.length; i++) {
     const obj = cloneDeep(arr[i])
-    if (obj.desensitized && view.value.type !== 'table-info') {
-      hasSesensitized = true
-      continue
-    }
-
     state.moveId = obj.id as unknown as number
     view.value[type].push(obj)
     const e = { newDraggableIndex: view.value[type].length - 1 }
@@ -1574,10 +1568,6 @@ const drop = (ev: MouseEvent, type = 'xAxis') => {
     } else {
       addAxis(e, type as AxisType)
     }
-  }
-
-  if (hasSesensitized) {
-    ElMessage.error('脱敏字段不能用于制作该图表!')
   }
 }
 
