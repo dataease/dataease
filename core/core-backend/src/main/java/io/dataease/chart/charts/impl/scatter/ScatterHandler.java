@@ -35,10 +35,11 @@ public class ScatterHandler extends YoyChartHandler {
         boolean isDrill = filterResult.getFilterList().stream().anyMatch(ele -> ele.getFilterType() == 1);
         var xAxis = formatResult.getAxisMap().get(ChartAxis.xAxis);
         var yAxis = formatResult.getAxisMap().get(ChartAxis.yAxis);
+        var yAxisTemp = new ArrayList<>(yAxis);
         var extBubble = formatResult.getAxisMap().get(ChartAxis.extBubble);
         if (!extBubble.isEmpty()) {
             // 剔除气泡大小，移除一个
-            Iterator<ChartViewFieldDTO> iterator = yAxis.iterator();
+            Iterator<ChartViewFieldDTO> iterator = yAxisTemp.iterator();
             while (iterator.hasNext()) {
                 ChartViewFieldDTO obj = iterator.next();
                 if (obj.getId().equals(extBubble.getFirst().getId())) {
@@ -47,7 +48,7 @@ public class ScatterHandler extends YoyChartHandler {
                 }
             }
         }
-        Map<String, Object> result = ChartDataBuild.transScatterDataAntV(xAxis, yAxis, view, data, extBubble, isDrill);
+        Map<String, Object> result = ChartDataBuild.transScatterDataAntV(xAxis, yAxisTemp, view, data, extBubble, isDrill);
         return result;
     }
 }
