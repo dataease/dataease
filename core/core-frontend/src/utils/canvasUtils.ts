@@ -546,3 +546,17 @@ export function trackBarStyleCheck(element, trackbarStyle, _scale, trackMenuNumb
     trackbarStyle.top = trackbarStyle.top - trackMenuHeight
   }
 }
+
+// 优化仪表板图层排序 根据所处的Y轴位置预先进行排序再渲染矩阵 防止出现串位
+export function componentPreSort(componentData) {
+  if (componentData && Array.isArray(componentData)) {
+    componentData.sort((c1, c2) => c1.y - c2.y)
+    componentData.forEach(componentItem => {
+      if (componentItem.component === 'DeTabs') {
+        componentItem.propValue.forEach(tabItem => {
+          componentPreSort(tabItem.componentData)
+        })
+      }
+    })
+  }
+}

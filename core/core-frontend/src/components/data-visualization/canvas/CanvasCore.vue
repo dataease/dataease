@@ -25,8 +25,10 @@ import _ from 'lodash'
 import DragShadow from '@/components/data-visualization/canvas/DragShadow.vue'
 import {
   canvasSave,
+  componentPreSort,
   findDragComponent,
   findNewComponent,
+  isDashboard,
   isGroupCanvas,
   isMainCanvas,
   isSameCanvas
@@ -1088,7 +1090,10 @@ const canvasInit = () => {
 
   reCalcCellWidth()
   resetPositionBox()
-
+  // 根据高度排序
+  if (isDashboard()) {
+    componentPreSort(componentData.value)
+  }
   let i = 0
   let timeId = setInterval(function () {
     if (i >= componentData.value.length) {
