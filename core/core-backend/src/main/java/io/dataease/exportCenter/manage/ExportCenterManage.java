@@ -51,6 +51,10 @@ public class ExportCenterManage {
     private WsService wsService;
     @Resource
     private SysParameterManage sysParameterManage;
+    @Value("${export.core.size:10}")
+    private int core;
+    @Value("${export.max.size:10}")
+    private int max;
 
     @Value("${export.dataset.limit:100000}")
     private int limit;
@@ -60,7 +64,6 @@ public class ExportCenterManage {
     private Integer extractPageSize;
     static private List<String> STATUS = Arrays.asList("SUCCESS", "FAILED", "PENDING", "IN_PROGRESS", "ALL");
     private ScheduledThreadPoolExecutor scheduledThreadPoolExecutor;
-    private int corePoolSize = 10;
     private int keepAliveSeconds = 600;
     private Map<String, Future> Running_Task = new HashMap<>();
     @Resource
@@ -68,9 +71,9 @@ public class ExportCenterManage {
 
     @PostConstruct
     public void init() {
-        scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(corePoolSize);
+        scheduledThreadPoolExecutor = new ScheduledThreadPoolExecutor(core);
         scheduledThreadPoolExecutor.setKeepAliveTime(keepAliveSeconds, TimeUnit.SECONDS);
-        scheduledThreadPoolExecutor.setMaximumPoolSize(10);
+        scheduledThreadPoolExecutor.setMaximumPoolSize(max);
     }
 
     @Scheduled(fixedRate = 5000)
