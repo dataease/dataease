@@ -526,7 +526,7 @@ onMounted(() => {
     name: 'clearPanelLinkage',
     callback: function (param) {
       if (param.viewId === 'all' || param.viewId === element.value.id) {
-        chartComponent?.value?.clearLinkage()
+        chartComponent?.value?.clearLinkage?.()
       }
     }
   })
