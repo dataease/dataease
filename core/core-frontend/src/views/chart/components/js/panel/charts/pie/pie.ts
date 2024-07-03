@@ -100,7 +100,12 @@ export class Pie extends G2PlotChartView<PieOptions, G2Pie> {
             end: [{ trigger: 'interval:mouseleave', action: 'active-region:hide' }]
           }
         }
-      ]
+      ],
+      meta: {
+        field: {
+          type: 'cat'
+        }
+      }
     }
     const options = this.setupOptions(chart, initOptions)
 
