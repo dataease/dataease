@@ -164,13 +164,19 @@ export class Quadrant extends G2PlotChartView<ScatterOptions, G2Scatter> {
       defaultBaselineQuadrant.xBaseline = xBaseline
       defaultBaselineQuadrant.yBaseline = yBaseline
     }
+    const getQuotaList = d => {
+      const eQuotaList = eData.find(item => item.field === d.field)?.quotaList
+      const yQuotaList = yData.find(item => item.field === d.field)?.quotaList
+      if (JSON.stringify(eQuotaList) === JSON.stringify(yQuotaList)) {
+        return yQuotaList
+      }
+      return [...(eQuotaList || []), ...(yQuotaList || [])]
+    }
     const data = map(defaultTo(xData, []), d => {
       return {
         ...d,
         yAxis: d.value,
-        quotaList: d.quotaList
-          .concat(yData.find(item => item.field === d.field)?.quotaList)
-          .concat(eData.find(item => item.field === d.field)?.quotaList),
+        quotaList: getQuotaList(d),
         yAxisExt: yData.find(item => item.field === d.field)?.value,
         extBubble: eData.find(item => item.field === d.field)?.value
       }
