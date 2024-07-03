@@ -7,6 +7,7 @@ import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import ComponentSelector from '@/components/visualization/ComponentSelector.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
+import Board from '@/components/de-board/Board.vue'
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
@@ -216,12 +217,11 @@ const deepScale = computed(() => scale.value / 100)
     />
     <div class="wrapper-inner" ref="componentWrapperInnerRef" :style="componentBackgroundStyle">
       <!--边框背景-->
-      <Icon
+      <Board
         v-if="svgInnerEnable"
         :style="{ color: config.commonBackground.innerImageColor }"
-        class-name="svg-background"
         :name="commonBackgroundSvgInner"
-      ></Icon>
+      ></Board>
       <div class="wrapper-inner-adaptor">
         <component
           :is="findComponent(config['component'])"
@@ -293,6 +293,7 @@ const deepScale = computed(() => scale.value / 100)
   position: absolute;
   top: 0;
   left: 0;
+  z-index: 0;
   width: 100% !important;
   height: 100% !important;
 }

@@ -1,10 +1,10 @@
 <template>
-  <Icon class-name="de-svg-main" :name="element.innerType" />
+  <Board :name="element.innerType"></Board>
 </template>
 
 <script setup lang="ts">
-import Icon from '@/components/icon-custom/src/Icon.vue'
 import { toRefs } from 'vue'
+import Board from '@/components/de-board/Board.vue'
 const props = defineProps({
   propValue: {
     type: String,
@@ -24,9 +24,4 @@ const props = defineProps({
 const { element } = toRefs(props)
 </script>
 
-<style lang="less" scoped>
-.de-svg-main {
-  width: 100%;
-  height: 100%;
-}
-</style>
+<style lang="less" scoped></style>

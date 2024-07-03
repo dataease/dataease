@@ -43,12 +43,11 @@
       >
         <Icon v-show="shapeLock" class="iconfont icon-suo" name="dv-lock"></Icon>
         <!--边框背景-->
-        <Icon
+        <Board
           v-if="svgInnerEnable"
           :style="{ color: element.commonBackground.innerImageColor }"
-          class-name="svg-background"
           :name="commonBackgroundSvgInner"
-        ></Icon>
+        ></Board>
         <div class="component-slot">
           <slot></slot>
         </div>
@@ -108,6 +107,7 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { groupSizeStyleAdaptor, groupStyleRevert } from '@/utils/style'
 import { isGroupCanvas, isMainCanvas } from '@/utils/canvasUtils'
+import Board from '@/components/de-board/Board.vue'
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
