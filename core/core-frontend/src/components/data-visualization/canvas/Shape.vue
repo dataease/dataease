@@ -933,7 +933,7 @@ const htmlToImage = () => {
 
 const handleGroupComponent = () => {
   if (element.value.canvasId.includes('Group')) {
-    composeStore.updateGroupBorder()
+    composeStore.updateGroupBorder(element.value.canvasId)
   }
 }
 
