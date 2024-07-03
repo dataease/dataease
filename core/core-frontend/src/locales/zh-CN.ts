@@ -409,7 +409,7 @@ export default {
     direct: '直连模式',
     extract: '抽取模式',
     all_compute_mode: '直连、抽取模式',
-    extra_params: '额外的JDBC连接字符串',
+    extra_params: '额外的 JDBC 连接字符串',
     jdbcUrl: 'JDBC 连接',
     please_input_dataPath: '请输入 JsonPath 数据路径',
     show_api_data: '查看API数据结构',
