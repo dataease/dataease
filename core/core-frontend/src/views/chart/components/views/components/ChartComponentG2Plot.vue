@@ -146,7 +146,8 @@ const checkSelected = param => {
     return state.linkageActiveParam.category === param.category
   } else {
     return (
-      state.linkageActiveParam.name === param.name &&
+      (state.linkageActiveParam.name === param.name ||
+        (state.linkageActiveParam.name === 'NO_DATA' && !param.name)) &&
       state.linkageActiveParam.category === param.category
     )
   }
