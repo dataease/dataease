@@ -236,7 +236,7 @@ export class Gauge extends G2PlotChartView<GaugeOptions, G2Gauge> {
     if (label.show) {
       labelContent = {
         style: {
-          fontSize: `${label.fontSize}`,
+          fontSize: `${label.fontSize}px`,
           color: label.color
         },
         formatter: function () {
