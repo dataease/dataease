@@ -116,6 +116,7 @@ public class DataSourceManage {
         updateWrapper.eq("id", coreDatasource.getId());
         coreDatasource.setUpdateTime(System.currentTimeMillis());
         coreDatasource.setUpdateBy(AuthUtils.getUser().getUserId());
+        coreDatasource.setTaskStatus(TaskStatus.WaitingForExecution.name());
         coreDatasourceMapper.update(coreDatasource, updateWrapper);
         coreOptRecentManage.saveOpt(coreDatasource.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
@@ -125,7 +126,8 @@ public class DataSourceManage {
     public void innerEditStatus(CoreDatasource coreDatasource) {
         UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
         updateWrapper.eq("id", coreDatasource.getId());
-        coreDatasourceMapper.update(coreDatasource, updateWrapper);
+        updateWrapper.set("status", coreDatasource.getStatus());
+        coreDatasourceMapper.update(null, updateWrapper);
     }
 
 
@@ -136,12 +138,16 @@ public class DataSourceManage {
         if (ObjectUtils.isEmpty(id) || ObjectUtils.isEmpty(sourceData = coreDatasourceMapper.selectById(id))) {
             DEException.throwException("resource not exist");
         }
-        sourceData.setUpdateTime(System.currentTimeMillis());
-        sourceData.setUpdateBy(AuthUtils.getUser().getUserId());
-        sourceData.setPid(dataSourceDTO.getPid());
-        sourceData.setName(dataSourceDTO.getName());
         checkName(dataSourceDTO);
-        coreDatasourceMapper.updateById(sourceData);
+
+        UpdateWrapper<CoreDatasource> updateWrapper = new UpdateWrapper<>();
+        updateWrapper.eq("id", id);
+        updateWrapper.set("update_time", System.currentTimeMillis());
+        updateWrapper.set("pid", dataSourceDTO.getPid());
+        updateWrapper.set("name", dataSourceDTO.getName());
+        updateWrapper.set("update_by", AuthUtils.getUser().getUserId());
+        coreDatasourceMapper.update(null, updateWrapper);
+
         coreOptRecentManage.saveOpt(sourceData.getId(), OptConstants.OPT_RESOURCE_TYPE.DATASOURCE, OptConstants.OPT_TYPE.UPDATE);
     }
 
