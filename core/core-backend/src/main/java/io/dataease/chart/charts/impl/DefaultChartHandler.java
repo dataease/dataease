@@ -484,7 +484,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
                                    List<ChartViewFieldDTO> drillFields,
                                    List<ChartDrillRequest> drillRequestList) {
         var fields = xAxis.stream().map(ChartViewFieldDTO::getId).collect(Collectors.toSet());
-        ChartDrillRequest head = drillRequestList.get(0);
+        ChartDrillRequest head = drillRequestList.getFirst();
         Map<Long, String> dimValMap = new HashMap<>();
         head.getDimensionList().forEach(item -> dimValMap.put(item.getId(), item.getValue()));
         Map<Long, ChartViewFieldDTO> fieldMap = xAxis.stream().collect(Collectors.toMap(ChartViewFieldDTO::getId, o -> o, ((p, n) -> p)));
@@ -525,6 +525,7 @@ public class DefaultChartHandler extends AbstractChartPlugin {
             tmpFilter.setFieldId(String.valueOf(tmpField.getId()));
             tmpFilter.setFilterType(1);
             if (datasetTableField.getDeType() == 1) {
+                tmpFilter.setOriginValue(Collections.singletonList(dimValMap.get(tmpField.getId())));
                 tmpFilter.setOperator("between");
                 // 把value类似过滤组件处理，获得start time和end time
                 Map<String, Long> stringLongMap = Utils.parseDateTimeValue(dimValMap.get(tmpField.getId()));
