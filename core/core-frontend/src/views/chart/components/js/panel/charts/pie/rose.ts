@@ -71,7 +71,12 @@ export class Rose extends G2PlotChartView<RoseOptions, G2Rose> {
             end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
           }
         }
-      ]
+      ],
+      meta: {
+        field: {
+          type: 'cat'
+        }
+      }
     }
     const options = this.setupOptions(chart, baseOptions)
     // custom color
