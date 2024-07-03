@@ -1048,7 +1048,10 @@ const emits = defineEmits(['addComplete', 'joinEditor', 'updateAllfields', 'chan
             currentNode.noteName || '-'
           }}</span>
         </div>
-        <span :title="getDsName(currentNode.datasourceId)" class="ds ellipsis"
+        <span
+          :title="getDsName(currentNode.datasourceId)"
+          style="max-width: 550px"
+          class="ds ellipsis"
           >{{ t('auth.datasource') }}:{{ getDsName(currentNode.datasourceId) }}</span
         >
       </div>
