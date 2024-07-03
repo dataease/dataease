@@ -10,8 +10,6 @@ import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.manage.PermissionManage;
-import io.dataease.dataset.utils.SqlUtils;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.*;
 import io.dataease.engine.utils.SQLUtils;
@@ -20,7 +18,9 @@ import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
 import io.dataease.extensions.datasource.dto.DatasourceRequest;
 import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.model.SQLMeta;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.view.dto.*;
 import io.dataease.extensions.view.factory.PluginsChartFactory;
 import io.dataease.extensions.view.filter.FilterTreeObj;
@@ -55,8 +55,6 @@ public class ChartDataManage {
     private DatasetGroupManage datasetGroupManage;
     @Resource
     private DatasetSQLManage datasetSQLManage;
-    @Resource
-    private CalciteProvider calciteProvider;
     @Resource
     private ChartViewManege chartViewManege;
     @Resource
@@ -342,6 +340,13 @@ public class ChartDataManage {
             }
         }
 
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
+        }
+
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
         CustomWhere2Str.customWhere2sqlObj(sqlMeta, fieldCustomFilter, transFields(allFields), crossDs, dsMap);
@@ -357,10 +362,11 @@ public class ChartDataManage {
             Dimension2SQLObj.dimension2sqlObj(sqlMeta, xAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
             Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
             String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-            querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
+            querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
             filterResult.getContext().put("querySql", querySql);
         }
-        ChartCalcDataResult calcResult = chartHandler.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, calciteProvider);
+
+        ChartCalcDataResult calcResult = chartHandler.calcChartResult(view, formatResult, filterResult, sqlMap, sqlMeta, provider);
         return chartHandler.buildChart(view, calcResult, formatResult, filterResult);
     }
 
@@ -661,6 +667,13 @@ public class ChartDataManage {
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDsList(dsMap);
 
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsMap.entrySet().iterator().next().getValue().getType());
+        }
+
         List<String[]> data = new ArrayList<>();
 
         String querySql = null;
@@ -706,11 +719,11 @@ public class ChartDataManage {
                 querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
             }
 
-            querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
+            querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(querySql);
             logger.info("calcite chart get field enum sql: " + querySql);
 
-            data = (List<String[]>) calciteProvider.fetchResultField(datasourceRequest).get("data");
+            data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
         }
         return data;
     }

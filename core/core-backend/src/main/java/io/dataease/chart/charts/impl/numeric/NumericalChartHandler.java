@@ -2,7 +2,6 @@ package io.dataease.chart.charts.impl.numeric;
 
 import io.dataease.chart.charts.impl.DefaultChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
-import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Quota2SQLObj;
 import io.dataease.engine.utils.Utils;
@@ -40,7 +39,7 @@ public class NumericalChartHandler extends DefaultChartHandler {
         var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-        querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
+        querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
         logger.info("calcite chart sql: " + querySql);
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");

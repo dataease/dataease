@@ -2,7 +2,6 @@ package io.dataease.chart.charts.impl.map;
 
 import io.dataease.chart.charts.impl.GroupChartHandler;
 import io.dataease.chart.utils.ChartDataBuild;
-import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.trans.Quota2SQLObj;
@@ -70,7 +69,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
         yAxis.addAll(yFields);
         Quota2SQLObj.quota2sqlObj(sqlMeta, yAxis, FieldUtil.transFields(allFields), crossDs, dsMap);
         String querySql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-        querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
+        querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
         logger.info("calcite chart sql: " + querySql);
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");
@@ -86,7 +85,7 @@ public class SymbolicMapHandler extends GroupChartHandler {
             String defaultResultMode = view.getResultMode();
             view.setResultMode("");
             String originSql = SQLProvider.createQuerySQL(sqlMeta1, false, needOrder, view);
-            originSql = SqlUtils.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
+            originSql = provider.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(originSql);
             logger.info("calcite detail field sql: " + querySql);
             detailData = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");

@@ -2,7 +2,6 @@ package io.dataease.chart.charts.impl;
 
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.ExtWhere2Str;
 import io.dataease.engine.utils.Utils;
@@ -84,7 +83,7 @@ public class YoyChartHandler extends DefaultChartHandler {
             var allFields = (List<ChartViewFieldDTO>) filterResult.getContext().get("allFields");
             ExtWhere2Str.extWhere2sqlOjb(sqlMeta, originFilter, FieldUtil.transFields(allFields), crossDs, dsMap);
             var originSql = SQLProvider.createQuerySQL(sqlMeta, true, needOrder, view);
-            originSql = SqlUtils.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
+            originSql = provider.rebuildSQL(originSql, sqlMeta, crossDs, dsMap);
             var request = new DatasourceRequest();
             request.setDsList(dsMap);
             request.setQuery(originSql);
