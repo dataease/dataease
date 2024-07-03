@@ -96,7 +96,12 @@ export class Funnel extends G2PlotChartView<FunnelOptions, G2Funnel> {
             end: [{ trigger: 'interval:mouseleave', action: 'tooltip:hide' }]
           }
         }
-      ]
+      ],
+      meta: {
+        field: {
+          type: 'cat'
+        }
+      }
     }
     const options = this.setupOptions(chart, baseOptions)
     const newChart = new G2Funnel(container, options)
