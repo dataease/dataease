@@ -733,7 +733,7 @@ const mousedownDrag = () => {
         <template #default="scope">
           <el-cascader
             class="select-type"
-            popper-class="cascader-panel"
+            popper-class="cascader-panel no-scroll_bar"
             v-model="scope.row.type"
             :options="fieldOptions"
             @change="scope.row.defaultValue = ''"
@@ -1162,6 +1162,11 @@ const mousedownDrag = () => {
 }
 </style>
 <style lang="less">
+.no-scroll_bar {
+  .ed-cascader-menu__wrap.ed-scrollbar__wrap {
+    height: 240px;
+  }
+}
 .de-hover-icon-primary {
   color: var(--ed-color-primary) !important;
 }
