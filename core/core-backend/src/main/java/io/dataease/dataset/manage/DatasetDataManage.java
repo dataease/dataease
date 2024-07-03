@@ -14,7 +14,6 @@ import io.dataease.commons.utils.SqlparserUtils;
 import io.dataease.dataset.constant.DatasetTableType;
 import io.dataease.dataset.utils.DatasetUtils;
 import io.dataease.dataset.utils.FieldUtils;
-import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.dataset.utils.TableUtils;
 import io.dataease.datasource.dao.auto.entity.CoreDatasource;
 import io.dataease.datasource.dao.auto.mapper.CoreDatasourceMapper;
@@ -94,6 +93,7 @@ public class DatasetDataManage {
             }
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+            Provider provider = ProviderFactory.getDefaultProvider();
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
@@ -103,16 +103,16 @@ public class DatasetDataManage {
                 sql = TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0";
                 // replace schema alias, trans dialect
                 sql = Utils.replaceSchemaAlias(sql, datasourceRequest.getDsList());
-                sql = SqlUtils.transSqlDialect(sql, datasourceRequest.getDsList());
+                sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             } else {
                 // parser sql params and replace default value
                 String originSql = SqlparserUtils.handleVariableDefaultValue(new String(Base64.getDecoder().decode(tableInfoDTO.getSql())), datasetTableDTO.getSqlVariableDetails(), false, false, null, false, datasourceRequest.getDsList());
                 // add sql table schema
 
                 sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
-                sql = SqlUtils.transSqlDialect(sql, datasourceRequest.getDsList());
+                sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
                 // replace placeholder
-                sql = SqlUtils.replaceTablePlaceHolder(sql, originSql);
+                sql = provider.replaceTablePlaceHolder(sql, originSql);
             }
             datasourceRequest.setQuery(sql.replaceAll("\r\n", " ")
                     .replaceAll("\n", " "));
@@ -121,7 +121,7 @@ public class DatasetDataManage {
             if (StringUtils.equalsIgnoreCase(type, DatasetTableType.DB)) {
                 datasourceRequest.setTable(tableInfoDTO.getTable());
             }
-            Provider provider = ProviderFactory.getDefaultProvider();
+
             tableFields = provider.fetchTableField(datasourceRequest);
         } else {
             // excel,api
@@ -129,16 +129,16 @@ public class DatasetDataManage {
             DatasourceSchemaDTO datasourceSchemaDTO = new DatasourceSchemaDTO();
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
+            Provider provider = ProviderFactory.getDefaultProvider();
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             String sql = TableUtils.tableName2Sql(datasourceSchemaDTO, tableInfoDTO.getTable()) + " LIMIT 0 OFFSET 0";
             // replace schema alias, trans dialect
             sql = Utils.replaceSchemaAlias(sql, datasourceRequest.getDsList());
-            sql = SqlUtils.transSqlDialect(sql, datasourceRequest.getDsList());
+            sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
             datasourceRequest.setQuery(sql);
             logger.info("calcite data table field sql: " + datasourceRequest.getQuery());
-            Provider provider = ProviderFactory.getDefaultProvider();
             tableFields = provider.fetchTableField(datasourceRequest);
         }
         return transFields(tableFields, true);
@@ -202,6 +202,13 @@ public class DatasetDataManage {
             rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
         }
 
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsList.getFirst());
+        }
+
         // build query sql
         SQLMeta sqlMeta = new SQLMeta();
         Table2SQLObj.table2sqlobj(sqlMeta, null, "(" + sql + ")", crossDs);
@@ -214,7 +221,7 @@ public class DatasetDataManage {
         } else {
             querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, start, count);
         }
-        querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
+        querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("calcite data preview sql: " + querySQL);
 
         // 通过数据源请求数据
@@ -223,12 +230,6 @@ public class DatasetDataManage {
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
 
-        Provider provider;
-        if (crossDs) {
-            provider = ProviderFactory.getDefaultProvider();
-        } else {
-            provider = ProviderFactory.getProvider(dsList.getFirst());
-        }
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
 
         Map<String, Object> map = new LinkedHashMap<>();
@@ -242,7 +243,7 @@ public class DatasetDataManage {
             map.put("allFields", fieldList);
         }
         map.put("sql", Base64.getEncoder().encodeToString(querySQL.getBytes()));
-        String replaceSql = SqlUtils.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
+        String replaceSql = provider.rebuildSQL(SQLProvider.createQuerySQL(sqlMeta, false, false, false), sqlMeta, crossDs, dsMap);
         map.put("total", getDatasetTotal(datasetGroupInfoDTO, replaceSql, null));
         return map;
     }
@@ -348,9 +349,9 @@ public class DatasetDataManage {
             // 先根据sql获取表字段
             String sqlField = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 0, 0);
 
-            sqlField = SqlUtils.transSqlDialect(sqlField, datasourceRequest.getDsList());
+            sqlField = provider.transSqlDialect(sqlField, datasourceRequest.getDsList());
             // replace placeholder
-            sqlField = SqlUtils.replaceTablePlaceHolder(sqlField, originSql);
+            sqlField = provider.replaceTablePlaceHolder(sqlField, originSql);
             datasourceRequest.setQuery(sqlField);
 
             // 获取数据源表的原始字段
@@ -362,9 +363,9 @@ public class DatasetDataManage {
         } else {
             sql = SQLUtils.buildOriginPreviewSql(SqlPlaceholderConstants.TABLE_PLACEHOLDER, 100, 0);
         }
-        sql = SqlUtils.transSqlDialect(sql, datasourceRequest.getDsList());
+        sql = provider.transSqlDialect(sql, datasourceRequest.getDsList());
         // replace placeholder
-        sql = SqlUtils.replaceTablePlaceHolder(sql, originSql);
+        sql = provider.replaceTablePlaceHolder(sql, originSql);
 
         logger.info("calcite data preview sql: " + sql);
         datasourceRequest.setQuery(sql);
@@ -486,11 +487,18 @@ public class DatasetDataManage {
                 rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
             }
 
+            Provider provider;
+            if (crossDs) {
+                provider = ProviderFactory.getDefaultProvider();
+            } else {
+                provider = ProviderFactory.getProvider(dsList.getFirst());
+            }
+
             Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap);
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap);
             Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap);
             String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
-            querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
+            querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
             logger.info("calcite data enum sql: " + querySQL);
 
             // 通过数据源请求数据
@@ -499,12 +507,6 @@ public class DatasetDataManage {
             datasourceRequest.setQuery(querySQL);
             datasourceRequest.setDsList(dsMap);
 
-            Provider provider;
-            if (crossDs) {
-                provider = ProviderFactory.getDefaultProvider();
-            } else {
-                provider = ProviderFactory.getProvider(dsList.getFirst());
-            }
             Map<String, Object> data = provider.fetchResultField(datasourceRequest);
             List<String[]> dataList = (List<String[]>) data.get("data");
             dataList = dataList.stream().filter(row -> {
@@ -717,12 +719,19 @@ public class DatasetDataManage {
             sortDistinct = false;
         }
 
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsList.getFirst());
+        }
+
         Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap);
         ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, allFields, crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap);
         String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1, 0, 1000);
-        querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
+        querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("calcite data enum sql: " + querySQL);
 
         // 通过数据源请求数据
@@ -731,12 +740,6 @@ public class DatasetDataManage {
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
 
-        Provider provider;
-        if (crossDs) {
-            provider = ProviderFactory.getDefaultProvider();
-        } else {
-            provider = ProviderFactory.getProvider(dsList.getFirst());
-        }
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         List<String[]> dataList = (List<String[]>) data.get("data");
         dataList = dataList.stream().filter(row -> {
@@ -842,11 +845,18 @@ public class DatasetDataManage {
             rowPermissionsTree = permissionManage.getRowPermissionsTree(datasetGroupInfoDTO.getId(), user.getUserId());
         }
 
+        Provider provider;
+        if (crossDs) {
+            provider = ProviderFactory.getDefaultProvider();
+        } else {
+            provider = ProviderFactory.getProvider(dsList.getFirst());
+        }
+
         Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap);
         String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, 1000);
-        querySQL = SqlUtils.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
+        querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("filter tree sql: " + querySQL);
 
         // 通过数据源请求数据
@@ -855,12 +865,6 @@ public class DatasetDataManage {
         datasourceRequest.setQuery(querySQL);
         datasourceRequest.setDsList(dsMap);
 
-        Provider provider;
-        if (crossDs) {
-            provider = ProviderFactory.getDefaultProvider();
-        } else {
-            provider = ProviderFactory.getProvider(dsList.getFirst());
-        }
         Map<String, Object> data = provider.fetchResultField(datasourceRequest);
         List<String[]> rows = (List<String[]>) data.get("data");
 
