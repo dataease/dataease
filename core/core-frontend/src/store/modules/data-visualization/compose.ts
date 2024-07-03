@@ -9,7 +9,7 @@ import {
   commonAttr,
   COMMON_COMPONENT_BACKGROUND_MAP
 } from '@/custom-component/component-list'
-import { createGroupStyle, getComponentRotatedStyle } from '@/utils/style'
+import { createGroupStyle, getComponentRotatedStyle, groupStyleRevert } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
 
 const dvMainStore = dvMainStoreWithOut()
@@ -52,8 +52,39 @@ export const composeStore = defineStore('compose', {
     setAreaData(data) {
       this.areaData = data
     },
-    updateGroupBorder() {
-      // do updateGroupBorder
+    updateGroupBorder(canvasId) {
+      if (canvasId) {
+        // 1.查找所属分组
+        const groupId = canvasId.replace('Group-', '')
+        const sourceGroupComponent = componentData.value.filter(ele => ele.id === groupId)[0]
+        const sourceSubComponents = sourceGroupComponent.propValue
+        // 2. 还原分组内部组件再主画布位置
+        const sourceParentStyle = { ...sourceGroupComponent.style }
+        sourceSubComponents.forEach(subcomponent => {
+          decomposeComponent(subcomponent, null, sourceParentStyle)
+        })
+        const newAreaData = {
+          // 选中区域包含的组件以及区域位移信息
+          style: {
+            top: 0,
+            left: 0,
+            width: 0,
+            height: 0
+          },
+          components: sourceSubComponents
+        }
+        // 3.重新计算分组区域边界
+        this.calcComposeArea(newAreaData)
+        sourceGroupComponent.style = {
+          ...sourceGroupComponent.style,
+          ...newAreaData.style
+        }
+        sourceSubComponents.forEach(component => {
+          component.canvasId = canvasId
+        })
+        // 4.计算内部子组件位置
+        createGroupStyle(sourceGroupComponent)
+      }
     },
 
     alignment: function (params) {
@@ -191,8 +222,8 @@ export const composeStore = defineStore('compose', {
         dvMainStore.addComponent({ component: component, index: undefined, isFromGroup: true })
       })
     },
-    calcComposeArea() {
-      if (this.areaData.components <= 1) {
+    calcComposeArea(areaDataValue = this.areaData) {
+      if (areaDataValue.components <= 1) {
         return
       }
       // 根据选中区域和区域中每个组件的位移信息来创建 Group 组件
@@ -201,7 +232,7 @@ export const composeStore = defineStore('compose', {
         left = Infinity
       let right = -Infinity,
         bottom = -Infinity
-      this.areaData.components.forEach(component => {
+      areaDataValue.components.forEach(component => {
         let style = { left: 0, top: 0, right: 0, bottom: 0 }
         style = getComponentRotatedStyle(component.style)
 
@@ -212,7 +243,7 @@ export const composeStore = defineStore('compose', {
       })
 
       // 设置选中区域位移大小信息和区域内的组件数据
-      this.areaData.style = {
+      areaDataValue.style = {
         left,
         top,
         width: right - left,
