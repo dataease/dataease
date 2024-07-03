@@ -123,16 +123,9 @@ const getValueByDefaultValueCheckOrFirstLoad = (
   }
 
   if (firstLoad && !selectValue?.length) {
-    return defaultValueCheck
-      ? Array.isArray(defaultValue)
-        ? defaultValue
-        : [defaultValue]
-      : multiple
-      ? []
-      : ''
+    return defaultValueCheck ? defaultValue : multiple ? [] : ''
   }
-
-  return selectValue ? (Array.isArray(selectValue) ? selectValue : [selectValue]) : ''
+  return selectValue ? selectValue : ''
 }
 
 export const useFilter = (curComponentId: string, firstLoad = false) => {
@@ -310,8 +303,10 @@ export const searchQuery = (queryComponentList, filter, curComponentId, firstLoa
             }
             if (
               !!selectValue?.length ||
-              displayType === '8' ||
-              Object.prototype.toString.call(selectValue) === '[object Date]'
+              ['[object Number]', '[object Date]'].includes(
+                Object.prototype.toString.call(selectValue)
+              ) ||
+              displayType === '8'
             ) {
               const result = forMatterValue(
                 +displayType,
