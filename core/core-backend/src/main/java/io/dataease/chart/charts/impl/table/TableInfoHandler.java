@@ -2,7 +2,6 @@ package io.dataease.chart.charts.impl.table;
 
 import io.dataease.api.chart.dto.PageInfo;
 import io.dataease.chart.charts.impl.DefaultChartHandler;
-import io.dataease.dataset.utils.SqlUtils;
 import io.dataease.engine.sql.SQLProvider;
 import io.dataease.engine.trans.Dimension2SQLObj;
 import io.dataease.engine.utils.Utils;
@@ -93,7 +92,7 @@ public class TableInfoHandler extends DefaultChartHandler {
         var tablePageMode = (String) filterResult.getContext().get("tablePageMode");
         var totalPageSql = "SELECT COUNT(*) FROM (" + SQLProvider.createQuerySQL(sqlMeta, false, false, view) + ") COUNT_TEMP";
         if (StringUtils.isNotEmpty(totalPageSql) && StringUtils.equalsIgnoreCase(tablePageMode, "page")) {
-            totalPageSql = SqlUtils.rebuildSQL(totalPageSql, sqlMeta, crossDs, dsMap);
+            totalPageSql = provider.rebuildSQL(totalPageSql, sqlMeta, crossDs, dsMap);
             datasourceRequest.setQuery(totalPageSql);
             datasourceRequest.setTotalPageFlag(true);
             logger.info("calcite total sql: " + totalPageSql);
@@ -107,7 +106,7 @@ public class TableInfoHandler extends DefaultChartHandler {
             view.setTotalPage(totalPage);
         }
 
-        querySql = SqlUtils.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
+        querySql = provider.rebuildSQL(querySql, sqlMeta, crossDs, dsMap);
         datasourceRequest.setQuery(querySql);
         logger.info("calcite chart sql: " + querySql);
         List<String[]> data = (List<String[]>) provider.fetchResultField(datasourceRequest).get("data");

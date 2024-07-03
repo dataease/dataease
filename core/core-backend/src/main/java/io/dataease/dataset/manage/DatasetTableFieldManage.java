@@ -2,10 +2,8 @@ package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
-import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.utils.TableUtils;
-import io.dataease.datasource.provider.CalciteProvider;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.utils.Utils;
@@ -37,10 +35,6 @@ public class DatasetTableFieldManage {
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
     @Resource
     private PermissionManage permissionManage;
-    @Resource
-    private CoreDatasetGroupMapper coreDatasetGroupMapper;
-    @Resource
-    private CalciteProvider calciteProvider;
 
     public void save(CoreDatasetTableField coreDatasetTableField) {
         checkNameLength(coreDatasetTableField.getName());

@@ -6,13 +6,14 @@ import com.baomidou.mybatisplus.extension.plugins.pagination.Page;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.JsonNode;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.fasterxml.jackson.databind.node.ObjectNode;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.ds.DatasourceApi;
-import io.dataease.api.ds.vo.*;
+import io.dataease.api.ds.vo.ApiDefinition;
+import io.dataease.api.ds.vo.CoreDatasourceTaskLogDTO;
+import io.dataease.api.ds.vo.ExcelFileData;
+import io.dataease.api.ds.vo.ExcelSheetData;
 import io.dataease.commons.constants.TaskStatus;
 import io.dataease.commons.utils.CommonThreadPool;
-import io.dataease.constant.DataSourceType;
 import io.dataease.constant.LogOT;
 import io.dataease.constant.LogST;
 import io.dataease.dataset.manage.DatasetDataManage;
@@ -32,6 +33,8 @@ import io.dataease.datasource.provider.ExcelUtils;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
+import io.dataease.extensions.datasource.factory.ProviderFactory;
+import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.i18n.Translator;
 import io.dataease.job.schedule.CheckDsStatusJob;
@@ -492,7 +495,8 @@ public class DatasourceServer implements DatasourceApi {
         BeanUtils.copyBean(coreDatasource, dataSourceDTO);
         DatasourceRequest datasourceRequest = new DatasourceRequest();
         datasourceRequest.setDatasource(dataSourceDTO);
-        return calciteProvider.getSchema(datasourceRequest);
+        Provider provider = ProviderFactory.getProvider(dataSourceDTO.getType());
+        return provider.getSchema(datasourceRequest);
     }
 
     @Override
@@ -724,7 +728,8 @@ public class DatasourceServer implements DatasourceApi {
         if (coreDatasource.getType().equals("Excel")) {
             return ExcelUtils.getTables(datasourceRequest);
         }
-        return calciteProvider.getTables(datasourceRequest);
+        Provider provider = ProviderFactory.getProvider(datasourceDTO.getType());
+        return provider.getTables(datasourceRequest);
     }
 
     @Override
@@ -742,7 +747,8 @@ public class DatasourceServer implements DatasourceApi {
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
             datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
             datasourceRequest.setTable(tableName);
-            List<TableField> tableFields = (List<TableField>) calciteProvider.fetchTableField(datasourceRequest);
+            Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
+            List<TableField> tableFields = (List<TableField>) provider.fetchTableField(datasourceRequest);
             return tableFields.stream().filter(tableField -> {
                 return !tableField.getOriginName().equalsIgnoreCase("dataease_uuid");
             }).collect(Collectors.toList());
@@ -754,7 +760,8 @@ public class DatasourceServer implements DatasourceApi {
         datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
         datasourceRequest.setQuery(TableUtils.tableName2Sql(datasourceSchemaDTO, tableName) + " LIMIT 0 OFFSET 0");
         datasourceRequest.setTable(tableName);
-        return (List<TableField>) calciteProvider.fetchTableField(datasourceRequest);
+        Provider provider = ProviderFactory.getProvider(datasourceSchemaDTO.getType());
+        return (List<TableField>) provider.fetchTableField(datasourceRequest);
     }
 
     @Override
