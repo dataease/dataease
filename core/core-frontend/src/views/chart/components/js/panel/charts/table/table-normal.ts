@@ -68,9 +68,13 @@ export class TableNormal extends S2ChartView<TableSheet> {
       })
       fields.splice(drillFieldIndex, 0, ...curDrillField)
     }
+    const axisMap = [...chart.xAxis, ...chart.yAxis].reduce((pre, cur) => {
+      pre[cur.dataeaseName] = cur
+      return pre
+    }, {})
     // add drill list
     fields.forEach(ele => {
-      const f = getCurrentField(chart.yAxis, ele)
+      const f = axisMap[ele.dataeaseName]
       columns.push(ele.dataeaseName)
       meta.push({
         field: ele.dataeaseName,
@@ -82,7 +86,7 @@ export class TableNormal extends S2ChartView<TableSheet> {
           if (value === null || value === undefined) {
             return value
           }
-          if (f.groupType === 'd' || !isNumber(value)) {
+          if (![2, 3].includes(f.deType) || !isNumber(value)) {
             return value
           }
           let formatCfg = f.formatterCfg
