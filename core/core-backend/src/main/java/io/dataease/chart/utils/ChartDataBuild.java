@@ -437,11 +437,11 @@ public class ChartDataBuild {
                     axisChartDataDTO.setValue(new BigDecimal(0));
                 }
                 axisChartDataDTO.setCategory(StringUtils.defaultIfBlank(yAxis.get(j).getChartShowName(), yAxis.get(j).getName()));
-                buildDynamicValue(view, axisChartDataDTO, row, size, extSize);
+                buildDynamicValue(view, axisChartDataDTO, row, size, ObjectUtils.isNotEmpty(extBubble)?extSize-1:extSize);
                 // pop
                 if (ObjectUtils.isNotEmpty(extBubble)) {
                     try {
-                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[size - extBubble.size()]) ? null : new BigDecimal(row[size - extBubble.size()]));
+                        axisChartDataDTO.setPopSize(StringUtils.isEmpty(row[2]) ? null : new BigDecimal(row[2]));
                         ChartQuotaDTO bubbleQuotaDTO = new ChartQuotaDTO();
                         bubbleQuotaDTO.setId(extBubble.get(0).getId());
                         quotaList.add(bubbleQuotaDTO);
