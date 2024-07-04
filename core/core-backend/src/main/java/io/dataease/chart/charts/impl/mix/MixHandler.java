@@ -190,6 +190,12 @@ public class MixHandler extends YoyChartHandler {
         chartData.put("right", rightData);
 
         var drillFilters = filterResult.getFilterList().stream().filter(f -> f.getFilterType() == 1).collect(Collectors.toList());
+        // 日期下钻替换回去
+        drillFilters.forEach(f -> {
+            if (CollectionUtils.isNotEmpty(f.getOriginValue())) {
+                f.setValue(f.getOriginValue());
+            }
+        });
         var isDrill = CollectionUtils.isNotEmpty(drillFilters);
         view.setDrillFilters(drillFilters);
         view.setDrill(isDrill);

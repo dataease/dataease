@@ -46,11 +46,14 @@ import ChartEmptyInfo from '@/views/chart/components/views/components/ChartEmpty
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { viewFieldTimeTrans } from '@/utils/viewUtils'
 import { CHART_TYPE_CONFIGS } from '@/views/chart/components/editor/util/chart'
+import request from '@/config/axios'
+import { store } from '@/store'
 
 const { wsCache } = useCache()
 const chartComponent = ref<any>()
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
+const { emitter } = useEmitt()
 
 let innerRefreshTimer = null
 const appStore = useAppStoreWithOut()
@@ -495,7 +498,7 @@ const calcData = params => {
 const showChartView = (...libs: ChartLibraryType[]) => {
   if (view.value?.render && view.value?.type) {
     const chartView = chartViewManager.getChartView(view.value.render, view.value.type)
-    return libs?.includes(chartView.library)
+    return chartView && libs?.includes(chartView.library)
   } else {
     return false
   }
@@ -825,13 +828,16 @@ const loadPluginCategory = data => {
     <!--这里去渲染不同图库的图表-->
     <div v-if="chartAreaShow" style="flex: 1; overflow: hidden">
       <plugin-component
-        v-if="view.isPlugin"
+        v-if="view.plugin?.isPlugin"
         :jsname="view.plugin.staticMap['index']"
         :scale="scale"
         :dynamic-area-id="dynamicAreaId"
         :view="view"
         :show-position="showPosition"
         :element="element"
+        :request="request"
+        :emitter="emitter"
+        :store="store"
         ref="chartComponent"
         @onChartClick="chartClick"
         @onPointClick="onPointClick"

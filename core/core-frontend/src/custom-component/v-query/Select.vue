@@ -211,8 +211,8 @@ const handleFieldIdDefaultChange = (val: string[]) => {
         .filter(ele => ele !== null)
         .map(ele => {
           return {
-            label: ele,
-            value: ele
+            label: `${ele}`,
+            value: `${ele}`
           }
         })
     })
@@ -267,14 +267,14 @@ const handleFieldIdChange = (val: EnumValue) => {
         ...new Set(
           (res || [])
             .map(ele => {
-              return ele[val.displayId || val.queryId]
+              return `${ele[val.displayId || val.queryId]}`
             })
             .concat(oldArr)
         )
       ].map(ele => {
         return {
-          label: ele,
-          value: ele,
+          label: `${ele}`,
+          value: `${ele}`,
           checked: oldArr.includes(ele)
         }
       })
@@ -498,8 +498,8 @@ const setOptions = (num: number) => {
       options.value = cloneDeep(
         (valueSource || []).map(ele => {
           return {
-            label: ele,
-            value: ele
+            label: `${ele}`,
+            value: `${ele}`
           }
         })
       )
