@@ -230,7 +230,6 @@ onMounted(async () => {
   if (!checkPlatform()) {
     const res = await loginCategoryApi()
     if (res.data) {
-      debugger
       loadingText.value = '加载中...'
       document.getElementsByClassName('ed-loading-text')?.length &&
         (document.getElementsByClassName('ed-loading-text')[0]['innerText'] = loadingText.value)
