@@ -9,4 +9,5 @@ public class XpackSettingConstants {
     public static final String PLATFORM_RID = "basic.platformRid";
     public static final String DIP = "basic.dip";
     public static final String PVP = "basic.pvp";
+    public static final String DEFAULT_LOGIN = "basic.defaultLogin";
 }

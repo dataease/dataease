@@ -65,4 +65,9 @@ public class SysParameterServer implements SysParameterApi {
     public List<Object> ui() {
         return sysParameterManage.getUiList();
     }
+
+    @Override
+    public Integer defaultLogin() {
+        return sysParameterManage.defaultLogin();
+    }
 }

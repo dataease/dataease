@@ -29,6 +29,12 @@ const pvpOptions = [
   { value: '3', label: '三个月' },
   { value: '4', label: '一个月' }
 ]
+const loginOptions = [
+  { value: '0', label: '普通登录' },
+  { value: '1', label: 'LDAP' },
+  { value: '2', label: 'OIDC' },
+  { value: '3', label: 'CAS' }
+]
 const tooltips = [
   {
     key: 'setting_basic.frontTimeOut',
@@ -104,6 +110,8 @@ const search = cb => {
       } else if (item.pkey === 'basic.pvp') {
         selectedPvp.value = item.pval || '0'
         item.pval = pvpOptions.filter(cur => cur.value === selectedPvp.value)[0].label
+      } else if (item.pkey === 'basic.defaultLogin') {
+        item.pval = item.pval ? loginOptions[parseInt(item.pval)].label : loginOptions[0].label
       } else {
         item.pval = item.pval
       }

@@ -13,7 +13,8 @@ public class SystemSettingUtils {
                 XpackSettingConstants.PLATFORM_OID,
                 XpackSettingConstants.DIP,
                 XpackSettingConstants.PVP,
-                XpackSettingConstants.PLATFORM_RID);
+                XpackSettingConstants.PLATFORM_RID,
+                XpackSettingConstants.DEFAULT_LOGIN);
         return xpackSettingList.contains(pkey);
     }
 }
