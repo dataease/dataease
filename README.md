@@ -51,7 +51,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
 -   [入门视频](https://www.bilibili.com/video/BV1Z84y1X7eF/)
 -   [模版市场](https://templates.dataease.cn/)
 
-## DataEase 的 UI 展示
+## UI 展示
 
 <table style="border-collapse: collapse; border: 1px solid black;">
   <tr>
@@ -65,7 +65,7 @@ curl -sSL https://dataease.oss-cn-hangzhou.aliyuncs.com/quick_start_v2.sh | bash
   </tr>
 </table>
 
-## DataEase 的技术栈
+## 技术栈
 
 -   前端：[Vue.js](https://vuejs.org/)、[Element](https://element.eleme.cn/)
 -   图库：[AntV](https://antv.vision/zh)
