@@ -112,6 +112,50 @@ function matrixAdaptor(componentItem) {
   }
 }
 
+export function historyAdaptor(
+  canvasStyleResult,
+  canvasDataResult,
+  canvasInfo,
+  attachInfo,
+  canvasVersion
+) {
+  //历史字段适配
+  canvasStyleResult.component['seniorStyleSetting'] =
+    canvasStyleResult.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
+  const reportFilterInfo = canvasInfo.reportFilterInfo
+  canvasDataResult.forEach(componentItem => {
+    componentItem['canvasActive'] = false
+    // 定时报告过滤组件适配 如果当前是定时报告默认切有设置对应的过滤组件默认值，则替换过滤组件
+    if (
+      componentItem.component === 'VQuery' &&
+      attachInfo.source === 'report' &&
+      !!reportFilterInfo
+    ) {
+      componentItem.propValue.forEach((filterItem, index) => {
+        if (reportFilterInfo[filterItem.id]) {
+          componentItem.propValue[index] = JSON.parse(reportFilterInfo[filterItem.id].filterInfo)
+        }
+      })
+    }
+    if (componentItem.component === 'Group') {
+      componentItem.expand = componentItem.expand || false
+    }
+
+    if (componentItem.component === 'Picture') {
+      componentItem.style['adaptation'] = componentItem.style['adaptation'] || 'adaptation'
+    }
+    componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
+    componentItem['aspectRatio'] = componentItem['aspectRatio'] || 1
+    if (componentItem.component === 'UserView') {
+      componentItem.actionSelection = componentItem.actionSelection || deepCopy(ACTION_SELECTION)
+    }
+    // 2 为基础版本 此处需要增加仪表板矩阵密度
+    if ((!canvasVersion || canvasVersion === 2) && canvasInfo.type === 'dashboard') {
+      matrixAdaptor(componentItem)
+    }
+  })
+}
+
 export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
   const copyFlag = busiFlag != null && busiFlag.includes('-copy')
   const busiFlagCustom = copyFlag ? busiFlag.split('-')[0] : busiFlag
@@ -147,37 +191,10 @@ export function initCanvasDataPrepare(dvId, busiFlag, callBack) {
     const canvasDataResult = JSON.parse(canvasInfo.componentData)
     const canvasStyleResult = JSON.parse(canvasInfo.canvasStyleData)
     const canvasViewInfoPreview = canvasInfo.canvasViewInfo
+    historyAdaptor(canvasStyleResult, canvasDataResult, canvasInfo, attachInfo, canvasVersion)
     //历史字段适配
     canvasStyleResult.component['seniorStyleSetting'] =
       canvasStyleResult.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
-    const reportFilterInfo = canvasInfo.reportFilterInfo
-    canvasDataResult.forEach(componentItem => {
-      componentItem['canvasActive'] = false
-      // 定时报告过滤组件适配 如果当前是定时报告默认切有设置对应的过滤组件默认值，则替换过滤组件
-      if (
-        componentItem.component === 'VQuery' &&
-        attachInfo.source === 'report' &&
-        !!reportFilterInfo
-      ) {
-        componentItem.propValue.forEach((filterItem, index) => {
-          if (reportFilterInfo[filterItem.id]) {
-            componentItem.propValue[index] = JSON.parse(reportFilterInfo[filterItem.id].filterInfo)
-          }
-        })
-      }
-      if (componentItem.component === 'Group') {
-        componentItem.expand = componentItem.expand || false
-      }
-      componentItem['maintainRadio'] = componentItem['maintainRadio'] || false
-      componentItem['aspectRatio'] = componentItem['aspectRatio'] || 1
-      if (componentItem.component === 'UserView') {
-        componentItem.actionSelection = componentItem.actionSelection || deepCopy(ACTION_SELECTION)
-      }
-      // 2 为基础版本 此处需要增加仪表板矩阵密度
-      if ((!canvasVersion || canvasVersion === 2) && canvasInfo.type === 'dashboard') {
-        matrixAdaptor(componentItem)
-      }
-    })
     const curPreviewGap =
       dvInfo.type === 'dashboard' && canvasStyleResult['dashboard'].gap === 'yes'
         ? canvasStyleResult['dashboard'].gapSize

@@ -50,6 +50,10 @@ async function upload(file) {
   })
 }
 
+const onStyleChange = () => {
+  snapshotStore.recordSnapshotCache()
+}
+
 const goFile = () => {
   files.value.click()
 }
@@ -135,7 +139,7 @@ onBeforeUnmount(() => {
             <img-view-dialog v-model="dialogVisible" :image-url="dialogImageUrl"></img-view-dialog>
           </el-col>
         </el-row>
-        <el-row style="margin-bottom: 16px">
+        <el-row>
           <span
             style="margin-top: 2px"
             v-if="!curComponent.propValue.url"
@@ -154,6 +158,27 @@ onBeforeUnmount(() => {
           >
             重新上传
           </el-button>
+        </el-row>
+        <el-row class="pic-adaptor">
+          <el-form-item
+            v-if="curComponent.style.adaptation"
+            class="form-item"
+            label="图片适应方式"
+            size="small"
+            :effect="themes"
+            :class="'form-item-' + themes"
+          >
+            <el-radio-group
+              size="small"
+              v-model="curComponent.style.adaptation"
+              @change="onStyleChange"
+              :effect="themes"
+            >
+              <el-radio label="adaptation" :effect="themes">适应组件</el-radio>
+              <el-radio label="original" :effect="themes">原始尺寸</el-radio>
+              <el-radio label="equiratio" :effect="themes">等比适应</el-radio>
+            </el-radio-group>
+          </el-form-item>
         </el-row>
       </el-collapse-item>
     </CommonAttr>
@@ -264,5 +289,18 @@ onBeforeUnmount(() => {
   size: 14px;
   line-height: 22px;
   font-weight: 400;
+}
+
+.pic-adaptor {
+  margin: 8px 0 16px 0;
+  :deep(.ed-form-item__content) {
+    margin-top: 8px !important;
+  }
+}
+
+.form-item-dark {
+  .ed-radio {
+    margin-right: 4px !important;
+  }
 }
 </style>

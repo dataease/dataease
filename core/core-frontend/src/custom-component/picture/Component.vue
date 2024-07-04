@@ -36,13 +36,19 @@ const props = defineProps({
   }
 })
 
-const { propValue } = toRefs(props)
+const { propValue, element } = toRefs(props)
 
 const imageAdapter = computed(() => {
   const style = {
     position: 'relative',
     width: '100%',
     height: '100%'
+  }
+  if (element.value.style.adaptation === 'original') {
+    style.width = 'auto'
+    style.height = 'auto'
+  } else if (element.value.style.adaptation === 'equiratio') {
+    style.height = 'auto'
   }
   return style as CSSProperties
 })

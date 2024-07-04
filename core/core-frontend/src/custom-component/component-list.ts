@@ -362,6 +362,7 @@ const list = [
       }
     },
     style: {
+      adaptation: 'adaptation',
       width: 300,
       height: 200
     },
