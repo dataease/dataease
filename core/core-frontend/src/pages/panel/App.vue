@@ -12,6 +12,9 @@ const Dashboard = defineAsyncComponent(() => import('./DashboardPreview.vue'))
 const ViewWrapper = defineAsyncComponent(() => import('./ViewWrapper.vue'))
 const Iframe = defineAsyncComponent(() => import('./Iframe.vue'))
 const Dataset = defineAsyncComponent(() => import('@/views/visualized/data/dataset/index.vue'))
+const DatasetEditor = defineAsyncComponent(
+  () => import('@/views/visualized/data/dataset/form/index.vue')
+)
 const Datasource = defineAsyncComponent(
   () => import('@/views/visualized/data/datasource/index.vue')
 )
@@ -37,7 +40,8 @@ const componentMap = {
   Iframe,
   Datasource,
   ScreenPanel,
-  DashboardPanel
+  DashboardPanel,
+  DatasetEditor
 }
 
 const changeCurrentComponent = val => {

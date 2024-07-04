@@ -581,8 +581,14 @@ const getTableName = async (datasourceId, tableName) => {
 }
 
 const initEdite = async () => {
-  const { id, datasourceId, tableName } = route.query
-  const { id: copyId } = route.params
+  let { id, datasourceId, tableName } = route.query
+  let { id: copyId } = route.params
+  if (appStore.getIsDataEaseBi) {
+    id = embeddedStore.datasetId
+    datasourceId = embeddedStore.datasourceId
+    tableName = embeddedStore.tableName
+    copyId = embeddedStore.datasetCopyId || copyId
+  }
   if (copyId || id) {
     const barRes = await barInfoApi(copyId || id)
     if (!barRes || !barRes['id']) {
@@ -954,7 +960,7 @@ const datasetSave = () => {
   }
   let union = []
   dfsNodeList(union, datasetDrag.value.getNodeList())
-  const pid = route.query.pid || nodeInfo.pid
+  const pid = appStore.getIsDataEaseBi ? embeddedStore.datasetPid : route.query.pid || nodeInfo.pid
   if (!union.length) {
     ElMessage.error('数据集不能为空')
     return

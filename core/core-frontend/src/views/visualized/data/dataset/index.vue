@@ -2,6 +2,8 @@
 import { useI18n } from '@/hooks/web/useI18n'
 import { ref, reactive, shallowRef, computed, watch, onBeforeMount, nextTick, unref } from 'vue'
 import ArrowSide from '@/views/common/DeResourceArrow.vue'
+import { useEmbedded } from '@/store/modules/embedded'
+import { useEmitt } from '@/hooks/web/useEmitt'
 import {
   ElIcon,
   ElMessageBox,
@@ -284,8 +286,15 @@ const handleNodeClick = (data: BusiTreeNode) => {
 const editorDataset = () => {
   handleEdit(nodeInfo.id)
 }
+const embedded = useEmbedded()
 
 const handleEdit = id => {
+  if (isDataEaseBi.value) {
+    embedded.clearState()
+    embedded.setDatasetId(id as string)
+    useEmitt().emitter.emit('changeCurrentComponent', 'DatasetEditor')
+    return
+  }
   router.push({
     path: '/dataset-form',
     query: {
@@ -295,6 +304,12 @@ const handleEdit = id => {
 }
 
 const createDataset = (data?: BusiTreeNode) => {
+  if (isDataEaseBi.value) {
+    embedded.clearState()
+    embedded.setdatasetPid(data?.id as string)
+    useEmitt().emitter.emit('changeCurrentComponent', 'DatasetEditor')
+    return
+  }
   router.push({
     path: '/dataset-form',
     query: {
@@ -340,6 +355,12 @@ const handleClick = (tabName: TabPaneName) => {
 
 const operation = (cmd: string, data: BusiTreeNode, nodeType: string) => {
   if (cmd === 'copy') {
+    if (isDataEaseBi.value) {
+      embedded.clearState()
+      embedded.setDatasetCopyId(data.id as string)
+      useEmitt().emitter.emit('changeCurrentComponent', 'DatasetEditor')
+      return
+    }
     router.push({
       name: 'dataset-form',
       params: {
