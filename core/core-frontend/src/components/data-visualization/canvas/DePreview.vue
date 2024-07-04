@@ -9,7 +9,7 @@ import { storeToRefs } from 'pinia'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import UserViewEnlarge from '@/components/visualization/UserViewEnlarge.vue'
 import CanvasOptBar from '@/components/visualization/CanvasOptBar.vue'
-import { isMainCanvas } from '@/utils/canvasUtils'
+import { isDashboard, isMainCanvas } from '@/utils/canvasUtils'
 import { activeWatermark } from '@/components/watermark/watermark'
 import { personInfoApi } from '@/api/user'
 import router from '@/router'
@@ -153,7 +153,9 @@ const resetLayout = () => {
       let canvasHeight = previewCanvas.value.clientHeight
       scaleWidth.value = Math.floor((canvasWidth * 100) / canvasStyleData.value.width)
       scaleHeight.value = Math.floor((canvasHeight * 100) / canvasStyleData.value.height)
-      scaleMin.value = Math.min(scaleWidth.value, scaleHeight.value)
+      scaleMin.value = isDashboard()
+        ? Math.min(scaleWidth.value, scaleHeight.value)
+        : (canvasWidth * 100) / canvasStyleData.value.width
       if (dashboardActive.value) {
         cellWidth.value = canvasWidth / pcMatrixCount.value.x
         cellHeight.value = canvasHeight / pcMatrixCount.value.y
