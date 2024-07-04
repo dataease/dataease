@@ -540,14 +540,20 @@ const CascadeDialog = defineAsyncComponent(() => import('./QueryCascade.vue'))
 const cascadeDialog = ref()
 const openCascadeDialog = () => {
   const cascadeMap = conditions.value
-    .filter(ele => [0, 2, 5].includes(+ele.displayType) && ele.optionValueSource === 1)
+    .filter(
+      ele =>
+        [0, 2, 5].includes(+ele.displayType) &&
+        ele.optionValueSource === 1 &&
+        !!ele.checkedFields?.length &&
+        !!Object.values(ele.checkedFieldsMap).filter(item => !!item).length
+    )
     .reduce((pre, next) => {
       pre[next.id] = {
         datasetId: next.dataset.id,
         name: next.name,
         queryId: next.id,
         fieldId: next.field.id,
-        deType: datasetMap[next.dataset.id].fields?.dimensionList.find(
+        deType: (datasetMap[next.dataset.id]?.fields?.dimensionList || next.dataset.fields).find(
           ele => ele.id === next.field.id
         )?.deType
       }
@@ -1417,6 +1423,7 @@ defineExpose({
                   </div>
                 </el-option>
               </el-select>
+              <span style="width: 172px; margin-left: 12px" v-else></span>
             </div>
           </el-checkbox-group>
         </div>

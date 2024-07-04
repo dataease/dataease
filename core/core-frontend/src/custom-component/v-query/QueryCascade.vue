@@ -209,7 +209,7 @@ defineExpose({
       <el-icon style="font-size: 16px">
         <Icon name="icon_info_colorful"></Icon>
       </el-icon>
-      基于当前查询组件的查询条件，如果需要进行级联联配置，需要满足以下条件：<br />
+      基于当前查询组件的查询条件，如果需要进行级联配置，需要满足以下条件：<br />
       1. 展示类型：文本下拉组件和数字下拉组件；2. 选项值来源：选择数据集<br />
     </div>
     <el-button text @click="addCascadeBlock">
