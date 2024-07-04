@@ -187,11 +187,13 @@ import checkArrayRepeat from '@/utils/check'
 import HandleMore from '@/components/handle-more/src/HandleMore.vue'
 import { fieldType } from '@/utils/attr'
 import EmptyBackground from '@/components/empty-background/src/EmptyBackground.vue'
+import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, componentData } = storeToRefs(dvMainStore)
 const outerParamsInfoTree = ref(null)
 const { t } = useI18n()
 const curEditDataId = ref(null)
+const snapshotStore = snapshotStoreWithOut()
 
 const state = reactive({
   loading: false,
@@ -319,6 +321,7 @@ const save = () => {
       type: 'success',
       showClose: true
     })
+    snapshotStore.recordSnapshotCache('renderChart')
     cancel()
   })
 }
