@@ -3,7 +3,7 @@ import { ref, reactive, onMounted, computed, nextTick } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { FormRules, FormInstance } from 'element-plus-secondary'
 import { Icon } from '@/components/icon-custom'
-import { loginApi, queryDekey } from '@/api/login'
+import { loginApi, queryDekey, loginCategoryApi } from '@/api/login'
 import { useCache } from '@/hooks/web/useCache'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { CustomPassword } from '@/components/custom-password'
@@ -151,7 +151,7 @@ const xpackLoaded = info => {
   tablePaneList.value.push(info)
 }
 const xpackLoadFail = ref(false)
-
+const loadingText = ref('登录中...')
 const loginContainer = ref()
 const loginContainerWidth = ref(0)
 const showLoginImage = computed<boolean>(() => {
@@ -225,10 +225,27 @@ const loadArrearance = () => {
     }
   }
 }
-onMounted(() => {
+onMounted(async () => {
   loadArrearance()
   if (!checkPlatform()) {
-    preheat.value = false
+    const res = await loginCategoryApi()
+    if (res.data) {
+      debugger
+      loadingText.value = '加载中...'
+      document.getElementsByClassName('ed-loading-text')?.length &&
+        (document.getElementsByClassName('ed-loading-text')[0]['innerText'] = loadingText.value)
+      nextTick(() => {
+        const param = { methodName: 'ssoLogin', args: res.data }
+        const timer = setInterval(() => {
+          if (xpackLoginHandler?.value.invokeMethod) {
+            xpackLoginHandler?.value.invokeMethod(param)
+            clearInterval(timer)
+          }
+        }, 1000)
+      })
+    } else {
+      preheat.value = false
+    }
   }
   if (localStorage.getItem('DE-GATEWAY-FLAG')) {
     const msg = localStorage.getItem('DE-GATEWAY-FLAG')
@@ -257,7 +274,7 @@ onMounted(() => {
     ref="loginContainer"
     class="preheat-container"
     v-loading="true"
-    element-loading-text="登录中..."
+    :element-loading-text="loadingText"
     element-loading-background="#F5F6F7"
   />
   <div v-show="contentShow" class="login-background" v-loading="duringLogin">

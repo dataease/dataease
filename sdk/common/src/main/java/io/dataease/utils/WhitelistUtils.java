@@ -42,6 +42,7 @@ public class WhitelistUtils {
             "/sysParameter/requestTimeOut",
             "/setting/authentication/status",
             "/sysParameter/ui",
+            "/sysParameter/defaultLogin",
             "/embedded/initIframe",
             "/");
 

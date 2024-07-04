@@ -19,6 +19,12 @@ const pvpOptions = [
   { value: '3', label: '三个月' },
   { value: '4', label: '一个月' }
 ]
+const loginOptions = [
+  { value: '0', label: '普通登录' },
+  { value: '1', label: 'LDAP' },
+  { value: '2', label: 'OIDC' },
+  { value: '3', label: 'CAS' }
+]
 const state = reactive({
   form: reactive({
     dsIntervalTime: '30',
@@ -322,6 +328,13 @@ defineExpose({
             controls-position="right"
             type="number"
           />
+        </div>
+        <div v-else-if="item.pkey === 'defaultLogin'">
+          <el-radio-group v-model="state.form[item.pkey]">
+            <el-radio v-for="item in loginOptions" :key="item.value" :label="item.value">
+              {{ item.label }}
+            </el-radio>
+          </el-radio-group>
         </div>
         <v-else />
       </el-form-item>

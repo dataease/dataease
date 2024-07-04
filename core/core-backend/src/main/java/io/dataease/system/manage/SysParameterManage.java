@@ -105,6 +105,11 @@ public class SysParameterManage {
         return result;
     }
 
+    @XpackInteract(value = "perSetting", replace = true)
+    public Integer defaultLogin() {
+        return 0;
+    }
+
     private Map<String, Object> buildSettingItem(String pkey, Object pval) {
         Map<String, Object> item = new HashMap<>();
         item.put("pkey", pkey);

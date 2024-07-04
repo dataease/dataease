@@ -2305,7 +2305,8 @@ export default {
     platformRid: '第三方平台用户角色',
     pwdStrategy: '开启密码策略',
     dip: '禁用初始密码',
-    pvp: '密码有效期'
+    pvp: '密码有效期',
+    defaultLogin: '默认登录方式'
   },
   setting_email: {
     title: '邮件设置',

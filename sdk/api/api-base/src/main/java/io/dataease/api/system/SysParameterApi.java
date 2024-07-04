@@ -48,4 +48,8 @@ public interface SysParameterApi {
     @GetMapping("/ui")
     List<Object> ui();
 
+    @Hidden
+    @GetMapping("/defaultLogin")
+    Integer defaultLogin();
+
 }
