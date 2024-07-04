@@ -19,12 +19,7 @@ const pvpOptions = [
   { value: '3', label: '三个月' },
   { value: '4', label: '一个月' }
 ]
-const loginOptions = [
-  { value: '0', label: '普通登录' },
-  { value: '1', label: 'LDAP' },
-  { value: '2', label: 'OIDC' },
-  { value: '3', label: 'CAS' }
-]
+
 const state = reactive({
   form: reactive({
     dsIntervalTime: '30',
@@ -33,7 +28,13 @@ const state = reactive({
   }),
   settingList: [],
   orgOptions: [],
-  roleOptions: []
+  roleOptions: [],
+  loginOptions: [
+    { value: '0', label: '普通登录' },
+    { value: '1', label: 'LDAP' },
+    { value: '2', label: 'OIDC' },
+    { value: '3', label: 'CAS' }
+  ]
 })
 
 const rule = reactive<FormRules>({
@@ -117,9 +118,10 @@ const closeLoading = () => {
   loadingInstance.value?.close()
 }
 
-const edit = (list, orgOptions, roleOptions) => {
+const edit = (list, orgOptions, roleOptions, loginOptions) => {
   state.orgOptions = orgOptions || []
   state.roleOptions = roleOptions || []
+  state.loginOptions = loginOptions || []
   state.settingList = list.map(item => {
     const pkey = item.pkey
     if (pkey === 'basic.logLiveTime') {
@@ -331,7 +333,7 @@ defineExpose({
         </div>
         <div v-else-if="item.pkey === 'defaultLogin'">
           <el-radio-group v-model="state.form[item.pkey]">
-            <el-radio v-for="item in loginOptions" :key="item.value" :label="item.value">
+            <el-radio v-for="item in state.loginOptions" :key="item.value" :label="item.value">
               {{ item.label }}
             </el-radio>
           </el-radio-group>

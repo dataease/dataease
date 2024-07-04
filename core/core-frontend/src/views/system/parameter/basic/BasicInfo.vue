@@ -22,18 +22,13 @@ import { useI18n } from '@/hooks/web/useI18n'
 const { t } = useI18n()
 const editor = ref()
 const infoTemplate = ref()
+const showDefaultLogin = ref(false)
 const pvpOptions = [
   { value: '0', label: '永久' },
   { value: '1', label: '一年' },
   { value: '2', label: '半年' },
   { value: '3', label: '三个月' },
   { value: '4', label: '一个月' }
-]
-const loginOptions = [
-  { value: '0', label: '普通登录' },
-  { value: '1', label: 'LDAP' },
-  { value: '2', label: 'OIDC' },
-  { value: '3', label: 'CAS' }
 ]
 const tooltips = [
   {
@@ -65,6 +60,12 @@ const state = reactive({
       children: null,
       disabled: false
     }
+  ],
+  loginOptions: [
+    { value: '0', label: '普通登录' },
+    { value: '1', label: 'LDAP' },
+    { value: '2', label: 'OIDC' },
+    { value: '3', label: 'CAS' }
   ]
 })
 let originData = []
@@ -111,12 +112,27 @@ const search = cb => {
         selectedPvp.value = item.pval || '0'
         item.pval = pvpOptions.filter(cur => cur.value === selectedPvp.value)[0].label
       } else if (item.pkey === 'basic.defaultLogin') {
-        item.pval = item.pval ? loginOptions[parseInt(item.pval)].label : loginOptions[0].label
+        await queryCategoryStatus()
+        if (showDefaultLogin.value) {
+          if (item.pval) {
+            const r = state.loginOptions.filter(cur => cur.value === item.pval)
+            if (r?.length) {
+              item.pval = r[0].label
+            } else {
+              item.pval = state.loginOptions[0].label
+              resetDefaultLogin()
+            }
+          } else {
+            item.pval = state.loginOptions[0].label
+          }
+        }
       } else {
         item.pval = item.pval
       }
       item.pkey = 'setting_' + item.pkey
-      state.templateList.push(item)
+      if (!item.pkey.includes('defaultLogin') || showDefaultLogin.value) {
+        state.templateList.push(item)
+      }
     }
     cb && cb()
   })
@@ -132,7 +148,8 @@ const edit = () => {
   editor?.value.edit(
     cloneDeep(originData),
     cloneDeep(state.orgOptions),
-    cloneDeep(state.roleOptions)
+    cloneDeep(state.roleOptions),
+    cloneDeep(state.loginOptions)
   )
 }
 const loadOrgOptions = async () => {
@@ -180,5 +197,40 @@ const groupBy = list => {
     map.set(readonly, arr)
   })
   return map
+}
+const queryCategoryStatus = async () => {
+  const url = `/setting/authentication/status`
+  const res = await request.get({ url })
+  const data = res.data
+  const map = data.reduce((acc, { name, enable }) => {
+    acc[name] = enable
+    return acc
+  }, {})
+  let len = state.loginOptions.length
+  while (len--) {
+    const item = state.loginOptions[len]
+    if (item.value !== '0' && !map[item.label.toLocaleLowerCase()]) {
+      state.loginOptions.splice(len, 1)
+    }
+  }
+  showDefaultLogin.value = state.loginOptions.length > 1
+  if (!showDefaultLogin.value) {
+    let len = originData.length
+    while (len--) {
+      const item = originData[len]
+      if (item.pkey === 'basic.defaultLogin') {
+        originData.splice(len, 1)
+      }
+    }
+  }
+}
+const resetDefaultLogin = () => {
+  let len = originData.length
+  while (len--) {
+    const item = originData[len]
+    if (item.pkey === 'basic.defaultLogin') {
+      item.pval = '0'
+    }
+  }
 }
 </script>
