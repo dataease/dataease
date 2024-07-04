@@ -15,6 +15,11 @@ interface AppState {
   templateParams: string
   jumpInfoParam: string
   outerUrl: string
+  datasourceId: string
+  tableName: string
+  datasetId: string
+  datasetCopyId: string
+  datasetPid: string
 }
 
 export const userStore = defineStore('embedded', {
@@ -33,7 +38,12 @@ export const userStore = defineStore('embedded', {
       createType: '',
       templateParams: '',
       outerUrl: '',
-      jumpInfoParam: ''
+      jumpInfoParam: '',
+      datasourceId: '',
+      tableName: '',
+      datasetId: '',
+      datasetCopyId: '',
+      datasetPid: ''
     }
   },
   getters: {
@@ -96,6 +106,21 @@ export const userStore = defineStore('embedded', {
     setType(type: string) {
       this.type = type
     },
+    setdatasetPid(datasetPid: string) {
+      this.datasetPid = datasetPid
+    },
+    setDatasourceId(datasourceId: string) {
+      this.datasourceId = datasourceId
+    },
+    setTableName(tableName: string) {
+      this.tableName = tableName
+    },
+    setDatasetId(datasetId: string) {
+      this.datasetId = datasetId
+    },
+    setDatasetCopyId(datasetCopyId: string) {
+      this.datasetCopyId = datasetCopyId
+    },
     setOuterUrl(outerUrl: string) {
       this.outerUrl = outerUrl
     },
@@ -154,6 +179,11 @@ export const userStore = defineStore('embedded', {
       this.setDvId('')
       this.setJumpInfoParam('')
       this.setOuterUrl('')
+      this.setDatasourceId('')
+      this.setTableName('')
+      this.setDatasetId('')
+      this.setDatasetCopyId('')
+      this.setdatasetPid('')
     }
   }
 })
