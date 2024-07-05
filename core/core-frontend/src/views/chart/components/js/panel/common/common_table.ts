@@ -842,8 +842,8 @@ function getTooltipPosition(event) {
   return result
 }
 
-export async function exportPivotExcel(instancce: PivotSheet, chart: ChartObj) {
-  const { meta, fields } = instancce.dataCfg
+export async function exportPivotExcel(instance: PivotSheet, chart: ChartObj) {
+  const { meta, fields } = instance.dataCfg
   const rowLength = fields?.rows?.length || 0
   const colLength = fields?.columns?.length || 0
   const valueLength = fields?.values?.length || 0
@@ -873,7 +873,7 @@ export async function exportPivotExcel(instancce: PivotSheet, chart: ChartObj) {
     cell.value = metaMap[row]?.name ?? row
     cell.alignment = { vertical: 'middle', horizontal: 'center' }
   })
-  const { layoutResult } = instancce.facet
+  const { layoutResult } = instance.facet
   // 行头
   const { rowLeafNodes, rowsHierarchy, rowNodes } = layoutResult
   const maxColIndex = rowsHierarchy.maxLevel + 1
