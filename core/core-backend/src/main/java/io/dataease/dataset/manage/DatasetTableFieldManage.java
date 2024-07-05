@@ -1,6 +1,7 @@
 package io.dataease.dataset.manage;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
 import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
 import io.dataease.dataset.utils.TableUtils;
@@ -9,6 +10,7 @@ import io.dataease.engine.func.FunctionConstant;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
 import io.dataease.extensions.datasource.model.SQLObj;
 import io.dataease.extensions.view.dto.ColumnPermissionItem;
 import io.dataease.i18n.Translator;
@@ -35,6 +37,10 @@ public class DatasetTableFieldManage {
     private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
     @Resource
     private PermissionManage permissionManage;
+    @Resource
+    private DatasetSQLManage datasetSQLManage;
+    @Resource
+    private DatasetGroupManage datasetGroupManage;
 
     public void save(CoreDatasetTableField coreDatasetTableField) {
         checkNameLength(coreDatasetTableField.getName());
@@ -190,6 +196,28 @@ public class DatasetTableFieldManage {
         QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
         wrapper.eq("dataset_group_id", id);
         wrapper.eq("checked", true);
+        List<DatasetTableFieldDTO> list = transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
+        List<DatasetTableFieldDTO> dimensionList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).collect(Collectors.toList());
+        List<DatasetTableFieldDTO> quotaList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).collect(Collectors.toList());
+        Map<String, List<DatasetTableFieldDTO>> map = new LinkedHashMap<>();
+        map.put("dimensionList", dimensionList);
+        map.put("quotaList", quotaList);
+        return map;
+    }
+
+    public Map<String, List<DatasetTableFieldDTO>> copilotFields(Long id) throws Exception {
+        DatasetGroupInfoDTO datasetGroupInfoDTO = datasetGroupManage.get(id, null);
+        Map<String, Object> sqlMap = datasetSQLManage.getUnionSQLForEdit(datasetGroupInfoDTO, null);
+        Map<Long, DatasourceSchemaDTO> dsMap = (Map<Long, DatasourceSchemaDTO>) sqlMap.get("dsMap");
+        boolean crossDs = Utils.isCrossDs(dsMap);
+        if (crossDs) {
+            DEException.throwException("跨源数据集不支持该功能");
+        }
+
+        QueryWrapper<CoreDatasetTableField> wrapper = new QueryWrapper<>();
+        wrapper.eq("dataset_group_id", id);
+        wrapper.eq("checked", true);
+        wrapper.eq("ext_field", 0);
         List<DatasetTableFieldDTO> list = transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
         List<DatasetTableFieldDTO> dimensionList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).collect(Collectors.toList());
         List<DatasetTableFieldDTO> quotaList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).collect(Collectors.toList());
