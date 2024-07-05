@@ -4,7 +4,7 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { storeToRefs } from 'pinia'
 import CanvasGroup from '@/custom-component/common/CanvasGroup.vue'
 import { deepCopy } from '@/utils/utils'
-import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualiztion'
+import { DEFAULT_CANVAS_STYLE_DATA_DARK } from '@/views/chart/components/editor/util/dataVisualization'
 import { groupSizeStyleAdaptor } from '@/utils/style'
 const dvMainStore = dvMainStoreWithOut()
 const { canvasStyleData, curComponent } = storeToRefs(dvMainStore)

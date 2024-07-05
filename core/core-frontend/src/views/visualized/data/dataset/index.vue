@@ -32,7 +32,7 @@ import treeSort from '@/utils/treeSortUtils'
 import {
   DEFAULT_CANVAS_STYLE_DATA_LIGHT,
   DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
-} from '@/views/chart/components/editor/util/dataVisualiztion'
+} from '@/views/chart/components/editor/util/dataVisualization'
 import type { TabPaneName } from 'element-plus-secondary'
 import { timestampFormatDate } from './form/util'
 import { interactiveStoreWithOut } from '@/store/modules/interactive'
