@@ -52,6 +52,10 @@ public interface DatasetTableApi {
     @PostMapping("listByDQ/{id}")
     Map<String, List<DatasetTableFieldDTO>> listByDQ(@PathVariable Long id);
 
+    @Operation(summary = "获取copilot字段分组")
+    @PostMapping("copilotFields/{id}")
+    Map<String, List<DatasetTableFieldDTO>> copilotFields(@PathVariable Long id) throws Exception;
+
     @Operation(summary = "获取字段")
     @GetMapping("listWithPermissions/{id}")
     List<DatasetTableFieldDTO> listFieldsWithPermissions(@PathVariable Long id);

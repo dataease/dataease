@@ -59,6 +59,11 @@ public class DatasetFieldServer implements DatasetTableApi {
     }
 
     @Override
+    public Map<String, List<DatasetTableFieldDTO>> copilotFields(Long id) throws Exception {
+        return datasetTableFieldManage.copilotFields(id);
+    }
+
+    @Override
     public List<DatasetTableFieldDTO> listFieldsWithPermissions(Long id) {
         return datasetTableFieldManage.listFieldsWithPermissionsRemoveAgg(id);
     }
