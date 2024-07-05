@@ -11,7 +11,7 @@ import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
   DEFAULT_CANVAS_STYLE_DATA_LIGHT,
   DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
-} from '@/views/chart/components/editor/util/dataVisualiztion'
+} from '@/views/chart/components/editor/util/dataVisualization'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import chartViewManager from '@/views/chart/components/js/panel'
 import {
