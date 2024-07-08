@@ -1,15 +1,11 @@
-import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
-import { S2Event, S2Options, TableSheet, TableColCell, ViewMeta, TableDataCell } from '@antv/s2'
-import { parseJson } from '@/views/chart/components/js/util'
-import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
-import {
-  copyContent,
-  getCurrentField,
-  SortTooltip
-} from '@/views/chart/components/js/panel/common/common_table'
-import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 import { useI18n } from '@/hooks/web/useI18n'
+import { formatterItem, valueFormatter } from '@/views/chart/components/js/formatter'
+import { copyContent, SortTooltip } from '@/views/chart/components/js/panel/common/common_table'
+import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
+import { parseJson } from '@/views/chart/components/js/util'
+import { S2Event, S2Options, TableColCell, TableDataCell, TableSheet, ViewMeta } from '@antv/s2'
 import { isNumber } from 'lodash-es'
+import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 
 const { t } = useI18n()
 /**
@@ -17,12 +13,17 @@ const { t } = useI18n()
  */
 export class TableNormal extends S2ChartView<TableSheet> {
   properties = TABLE_EDITOR_PROPERTY
-  propertyInner = {
+  propertyInner: EditorPropertyInner = {
     ...TABLE_EDITOR_PROPERTY_INNER,
     'table-header-selector': [
       ...TABLE_EDITOR_PROPERTY_INNER['table-header-selector'],
       'tableHeaderSort',
       'showTableHeader'
+    ],
+    'basic-style-selector': [
+      ...TABLE_EDITOR_PROPERTY_INNER['basic-style-selector'],
+      'showSummary',
+      'summaryLabel'
     ]
   }
   axis: AxisType[] = ['xAxis', 'yAxis', 'drill', 'filter']
@@ -160,6 +161,43 @@ export class TableNormal extends S2ChartView<TableSheet> {
       // header interaction
       this.configHeaderInteraction(chart, s2Options)
     }
+
+    // 总计
+    if (customAttr.basicStyle.showSummary) {
+      // 设置汇总行高度和表头一致
+      const heightByField = {}
+      heightByField[newData.length] = customAttr.tableHeader.tableTitleHeight
+      s2Options.style.rowCfg = { heightByField }
+      // 计算汇总加入到数据里，冻结最后一行
+      s2Options.frozenTrailingRowCount = 1
+      const yAxis = chart.yAxis
+      const xAxis = chart.xAxis
+      const summaryObj = newData.reduce(
+        (p, n) => {
+          yAxis.forEach(axis => {
+            p[axis.dataeaseName] = (n[axis.dataeaseName] || 0) + (p[axis.dataeaseName] || 0)
+          })
+          return p
+        },
+        { SUMMARY: true }
+      )
+      newData.push(summaryObj)
+      s2Options.dataCell = viewMeta => {
+        if (viewMeta.rowIndex !== newData.length - 1) {
+          return new TableDataCell(viewMeta, viewMeta.spreadsheet)
+        }
+        if (viewMeta.colIndex === 0) {
+          if (customAttr.tableHeader.showIndex) {
+            viewMeta.fieldValue = customAttr.basicStyle.summaryLabel ?? '总计'
+          } else {
+            if (xAxis.length) {
+              viewMeta.fieldValue = customAttr.basicStyle.summaryLabel ?? '总计'
+            }
+          }
+        }
+        return new SummaryCell(viewMeta, viewMeta.spreadsheet)
+      }
+    }
     // 开始渲染
     const newChart = new TableSheet(containerDom, s2DataConfig, s2Options)
 
@@ -209,5 +247,15 @@ export class TableNormal extends S2ChartView<TableSheet> {
   }
   constructor() {
     super('table-normal', [])
+  }
+}
+
+class SummaryCell extends TableDataCell {
+  getTextStyle() {
+    return this.theme.colCell.bolderText
+  }
+  getBackgroundColor() {
+    const { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
+    return { backgroundColor, backgroundColorOpacity }
   }
 }

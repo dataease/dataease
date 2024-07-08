@@ -957,6 +957,33 @@ onMounted(() => {
         <template #append>%</template>
       </el-input>
     </el-form-item>
+    <el-form-item
+      v-if="showProperty('showSummary')"
+      class="form-item"
+      :class="'form-item-' + themes"
+    >
+      <el-checkbox
+        size="small"
+        :effect="themes"
+        v-model="state.basicStyleForm.showSummary"
+        @change="changeBasicStyle('showSummary')"
+      >
+        {{ t('chart.table_show_summary') }}
+      </el-checkbox>
+    </el-form-item>
+    <el-form-item
+      v-if="showProperty('summaryLabel') && state.basicStyleForm.showSummary"
+      :label="$t('chart.table_summary_label')"
+      :class="'form-item-' + themes"
+      class="form-item"
+    >
+      <el-input
+        v-model="state.basicStyleForm.summaryLabel"
+        type="text"
+        :max-length="10"
+        @blur="changeBasicStyle('summaryLabel')"
+      />
+    </el-form-item>
     <!--table2 end-->
     <!--gauge start-->
     <el-form-item
