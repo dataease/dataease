@@ -195,15 +195,22 @@ public class PermissionManage {
                 DatasetRowPermissionsTreeObj tree = JsonUtil.parseObject(record.getExpressionTree(), DatasetRowPermissionsTreeObj.class);
                 List<DatasetRowPermissionsTreeItem> items = new ArrayList<>();
                 for (DatasetRowPermissionsTreeItem datasetRowPermissionsTreeItem : tree.getItems()) {
-                    if (StringUtils.isNotEmpty(userEntity.getAccount()) && datasetRowPermissionsTreeItem.getValue().equalsIgnoreCase("\\$\\{sysParams\\.userId}")) {
+                    if (StringUtils.isNotEmpty(userEntity.getAccount()) && datasetRowPermissionsTreeItem.getValue().equalsIgnoreCase("${sysParams.userId}")) {
                         datasetRowPermissionsTreeItem.setValue(userEntity.getAccount());
+                        items.add(datasetRowPermissionsTreeItem);
+                        continue;
                     }
-                    if (StringUtils.isNotEmpty(userEntity.getEmail()) && datasetRowPermissionsTreeItem.getValue().equalsIgnoreCase("\\$\\{sysParams\\.userEmail}")) {
+                    if (StringUtils.isNotEmpty(userEntity.getEmail()) && datasetRowPermissionsTreeItem.getValue().equalsIgnoreCase("${sysParams.userEmail}")) {
                         datasetRowPermissionsTreeItem.setValue(userEntity.getEmail());
+                        items.add(datasetRowPermissionsTreeItem);
+                        continue;
                     }
-                    if (StringUtils.isNotEmpty(userEntity.getName()) && datasetRowPermissionsTreeItem.getValue().equalsIgnoreCase("\\$\\{sysParams\\.userName}")) {
+                    if (StringUtils.isNotEmpty(userEntity.getName()) && datasetRowPermissionsTreeItem.getValue().equalsIgnoreCase("${sysParams.userName}")) {
                         datasetRowPermissionsTreeItem.setValue(userEntity.getName());
+                        items.add(datasetRowPermissionsTreeItem);
+                        continue;
                     }
+
                     String value = handleSysVariable(userEntity, datasetRowPermissionsTreeItem.getValue());
                     if (value == null) {
                         continue;
