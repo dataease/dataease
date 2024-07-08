@@ -8,6 +8,18 @@ export const commonStyle = {
   opacity: 1
 }
 
+export const BASE_EVENTS = {
+  checked: false,
+  type: 'displayChange', // openHidden  jump
+  jump: {
+    value: null
+  },
+  displayChange: {
+    value: true, // 事件当前值 false
+    target: 'all'
+  }
+}
+
 // 流媒体视频信息配置
 export const STREAMMEDIALINKS = {
   videoType: 'flv',
@@ -159,12 +171,13 @@ export const COMMON_COMPONENT_BACKGROUND_MAP = {
 export const commonAttr = {
   animations: [],
   canvasId: 'canvas-main',
-  events: {},
+  events: BASE_EVENTS,
   groupStyle: {}, // 当一个组件成为 Group 的子组件时使用
   isLock: false, // 是否锁定组件
   maintainRadio: false, // 布局时保持宽高比例
   aspectRatio: 1, // 锁定时的宽高比例
   isShow: true, // 是否显示组件
+  category: 'base', //组件类型 base 基础组件 hidden隐藏组件
   // 当前组件动作
   dragging: false,
   resizing: false,
