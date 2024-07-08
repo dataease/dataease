@@ -4,13 +4,15 @@ import { equalsAny, includesAny } from '../editor/util/StringUtils'
 import { FeatureCollection } from '@antv/l7plot/dist/esm/plots/choropleth/types'
 import { useMapStoreWithOut } from '@/store/modules/map'
 import { getGeoJson } from '@/api/map'
-import { toRaw } from 'vue'
+import { computed, toRaw } from 'vue'
 import { Options } from '@antv/g2plot/esm'
 import { PickOptions } from '@antv/g2plot/esm/core/plot'
 import { innerExportDetails } from '@/api/chart'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useLinkStoreWithOut } from '@/store/modules/link'
+
+const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const { t } = useI18n()
 // 同时支持将hex和rgb，转换成rgba
@@ -511,7 +513,7 @@ export const exportExcelDownload = (chart, callBack?) => {
 
   innerExportDetails(request)
     .then(res => {
-      if (linkStore.getLinkToken) {
+      if (linkStore.getLinkToken || isDataEaseBi.value) {
         const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
         const link = document.createElement('a')
         link.style.display = 'none'

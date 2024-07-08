@@ -219,6 +219,10 @@ public class DatasetTableFieldManage {
         wrapper.eq("checked", true);
         wrapper.eq("ext_field", 0);
         List<DatasetTableFieldDTO> list = transDTO(coreDatasetTableFieldMapper.selectList(wrapper));
+
+        Map<String, ColumnPermissionItem> desensitizationList = new HashMap<>();
+        list = permissionManage.filterColumnPermissions(list, desensitizationList, id, null);
+
         List<DatasetTableFieldDTO> dimensionList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "d")).collect(Collectors.toList());
         List<DatasetTableFieldDTO> quotaList = list.stream().filter(ele -> StringUtils.equalsIgnoreCase(ele.getGroupType(), "q")).collect(Collectors.toList());
         Map<String, List<DatasetTableFieldDTO>> map = new LinkedHashMap<>();
