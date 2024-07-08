@@ -1,5 +1,5 @@
 <template>
-  <div class="pic-main">
+  <div class="pic-main" @click="onPictureClick">
     <img
       draggable="false"
       v-if="propValue['url']"
@@ -20,6 +20,8 @@
 import { CSSProperties, computed, nextTick, toRefs } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
+import { eventStoreWithOut } from '@/store/modules/data-visualization/event'
+const eventStore = eventStoreWithOut()
 const props = defineProps({
   propValue: {
     type: String,
@@ -46,7 +48,14 @@ const imageAdapter = computed(() => {
   }
   return style as CSSProperties
 })
-
+const onPictureClick = e => {
+  if (element.value.events && element.value.events.checked) {
+    if (element.value.events.type === 'displayChange') {
+      // 打开隐藏组件
+      eventStore.displayEventChange(element.value)
+    }
+  }
+}
 const uploadImg = () => {
   nextTick(() => {
     eventBus.emit('uploadImg')
