@@ -1483,7 +1483,9 @@ export const DEFAULT_BASIC_STYLE: ChartBasicStyle = {
   topN: 5,
   topNLabel: '其他',
   gaugeAxisLine: true,
-  gaugePercentLabel: true
+  gaugePercentLabel: true,
+  showSummary: false,
+  summaryLabel: '总计'
 }
 
 export const BASE_VIEW_CONFIG = {

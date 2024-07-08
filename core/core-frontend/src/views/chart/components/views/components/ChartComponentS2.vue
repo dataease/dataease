@@ -116,7 +116,6 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
   } else {
     delete view.chartExtRequest.pageSize
   }
-  console.log(view)
   if (view.tableId || view['dataFrom'] === 'template') {
     isError.value = false
     const v = JSON.parse(JSON.stringify(view))

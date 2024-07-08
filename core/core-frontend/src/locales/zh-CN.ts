@@ -733,6 +733,8 @@ export default {
     table_show_col_tooltip: '开启列头提示',
     table_show_cell_tooltip: '开启单元格提示',
     table_show_header_tooltip: '开启表头提示',
+    table_show_summary: '显示总计',
+    table_summary_label: '总计标签',
     stripe: '斑马纹',
     start_angle: '起始角度',
     end_angle: '结束角度',
