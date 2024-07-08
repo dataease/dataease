@@ -1,6 +1,7 @@
 import { cloneDeep } from 'lodash-es'
 import componentList, {
   ACTION_SELECTION,
+  BASE_EVENTS,
   COMMON_COMPONENT_BACKGROUND_DARK,
   COMMON_COMPONENT_BACKGROUND_LIGHT
 } from '@/custom-component/component-list'
@@ -153,6 +154,12 @@ export function historyAdaptor(
     if ((!canvasVersion || canvasVersion === 2) && canvasInfo.type === 'dashboard') {
       matrixAdaptor(componentItem)
     }
+    // 组件事件适配
+    componentItem.events =
+      componentItem.events && componentItem.events.checked !== undefined
+        ? componentItem.events
+        : deepCopy(BASE_EVENTS)
+    componentItem['category'] = componentItem['category'] || 'base'
   })
 }
 
