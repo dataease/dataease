@@ -19,6 +19,7 @@ import AiComponent from '@/layout/components/AiComponent.vue'
 import { findBaseParams } from '@/api/aiComponent'
 import ExportExcel from '@/views/visualized/data/dataset/ExportExcel.vue'
 import AiTips from '@/layout/components/AiTips.vue'
+import Copilot from '@/layout/components/Copilot.vue'
 
 const appearanceStore = useAppearanceStoreWithOut()
 const { push } = useRouter()
@@ -33,6 +34,10 @@ const handleIconClick = () => {
 
 const handleAiClick = () => {
   useEmitt().emitter.emit('aiComponentChange')
+}
+
+const handleCopilotClick = () => {
+  push('/copilot/index')
 }
 
 const desktop = isDesktop()
@@ -52,6 +57,7 @@ const routers: any[] = formatRoute(permissionStore.getRoutersNotHidden as AppCus
 const showSystem = ref(false)
 const showToolbox = ref(false)
 const showOverlay = ref(true)
+const showOverlayCopilot = ref(true)
 const handleSelect = (index: string) => {
   // 自定义事件
   if (isExternal(index)) {
@@ -84,14 +90,30 @@ const initAiBase = async () => {
   })
 }
 
+const initCopilotBase = async () => {
+  const aiCopilotCheck = wsCache.get('DE-COPILOT-TIPS-CHECK')
+  if (aiCopilotCheck === 'CHECKED') {
+    showOverlayCopilot.value = false
+  } else {
+    showOverlayCopilot.value = true
+  }
+}
+
 const aiTipsConfirm = () => {
   wsCache.set('DE-AI-TIPS-CHECK', 'CHECKED')
   showOverlay.value = false
 }
+
+const copilotConfirm = () => {
+  wsCache.set('DE-COPILOT-TIPS-CHECK', 'CHECKED')
+  showOverlayCopilot.value = false
+}
+
 onMounted(() => {
   initShowSystem()
   initShowToolbox()
   initAiBase()
+  initCopilotBase()
   useEmitt({
     name: 'data-export-center',
     callback: function (params) {
@@ -122,6 +144,11 @@ onMounted(() => {
     </el-menu>
     <div class="operate-setting" v-if="!desktop">
       <XpackComponent jsname="c3dpdGNoZXI=" />
+      <el-icon style="margin: 0 10px" class="ai-icon copilot-icon" v-if="!showOverlayCopilot">
+        <Icon name="copilot" @click="handleCopilotClick" />
+      </el-icon>
+      <Copilot @confirm="copilotConfirm" v-if="showOverlayCopilot" class="copilot-icon-tips" />
+
       <el-icon
         style="margin: 0 10px"
         class="ai-icon"
@@ -152,6 +179,7 @@ onMounted(() => {
         :base-url="aiBaseUrl"
       ></ai-component>
       <div v-if="showOverlay && appearanceStore.getShowAi" class="overlay"></div>
+      <div v-if="showOverlayCopilot" class="overlay"></div>
     </div>
   </el-header>
   <ExportExcel ref="ExportExcelRef"></ExportExcel>
@@ -284,7 +312,8 @@ onMounted(() => {
   font-size: 24px !important;
 }
 
-.ai-icon-tips {
+.ai-icon-tips,
+.copilot-icon-tips {
   font-size: 24px !important;
   z-index: 10001;
 }

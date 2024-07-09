@@ -202,6 +202,10 @@ export const listFieldsWithPermissions = (datasetId: number) => {
   return request.get({ url: '/datasetField/listWithPermissions/' + datasetId })
 }
 
+export const copilotFields = (datasetId: number) => {
+  return request.post({ url: '/datasetField/copilotFields/' + datasetId })
+}
+
 export const saveRowPermission = (data = {}) => {
   return request.post({ url: '/dataset/rowPermissions/save', data })
 }
@@ -296,6 +300,24 @@ export const listByDsIds = async (data): Promise<IResponse> => {
 
 export const getFieldTree = async (data): Promise<IResponse> => {
   return request.post({ url: 'datasetData/getFieldTree', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const copilotChat = async (data): Promise<IResponse> => {
+  return request.post({ url: '/copilot/chat', data }).then(res => {
+    return res?.data
+  })
+}
+
+export const getListCopilot = async (): Promise<IResponse> => {
+  return request.post({ url: '/copilot/getList' }).then(res => {
+    return res?.data
+  })
+}
+
+export const clearAllCopilot = async (): Promise<IResponse> => {
+  return request.post({ url: '/copilot/clearAll' }).then(res => {
     return res?.data
   })
 }
