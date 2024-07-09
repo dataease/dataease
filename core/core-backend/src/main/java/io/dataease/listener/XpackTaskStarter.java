@@ -21,6 +21,7 @@ public class XpackTaskStarter implements ApplicationRunner {
         try {
             LicenseUtil.validate();
             deTaskExecutor.init();
+            deTaskExecutor.clearRetryTask();
         } catch (Exception e) {
             LogUtil.error(e.getMessage(), e.getCause());
         }

@@ -105,4 +105,8 @@ public class DeTaskExecutor {
         TriggerKey triggerKey = new TriggerKey(key, RETRY_JOB_GROUP);
         scheduleManager.removeJob(jobKey, triggerKey);
     }
+
+    public void clearRetryTask() throws Exception {
+        scheduleManager.clearByGroup(RETRY_JOB_GROUP);
+    }
 }
