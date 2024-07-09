@@ -1,10 +1,7 @@
 package io.dataease.copilot.manage;
 
 import com.fasterxml.jackson.core.type.TypeReference;
-import io.dataease.api.copilot.dto.DESendDTO;
-import io.dataease.api.copilot.dto.MsgDTO;
-import io.dataease.api.copilot.dto.ReceiveDTO;
-import io.dataease.api.copilot.dto.TokenDTO;
+import io.dataease.api.copilot.dto.*;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.UnionDTO;
 import io.dataease.chart.utils.ChartDataBuild;
@@ -176,7 +173,8 @@ public class CopilotManage {
 //        String querySQL = SQLProvider.createQuerySQL(sqlMeta, false, false, needOrder);
 //        querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
 //        logger.info("preview sql: " + querySQL);
-        // todo test
+
+        // 无法加行权限的情况下，直接用sql
         String querySQL = sql;
 
         String copilotSQL = receiveDTO.getSql();
@@ -228,14 +226,10 @@ public class CopilotManage {
         Map<String, Object> previewData = buildPreviewData(data, fields, desensitizationList);
 
         map.put("data", previewData);
-//            map.put("allFields", allFields);// map.data 中包含了fields和data
-//            if (ObjectUtils.isEmpty(dto.getId())) {
-//                map.put("allFields", allFields);
-//            } else {
-//                List<DatasetTableFieldDTO> fieldList = datasetTableFieldManage.selectByDatasetGroupId(dto.getId());
-//                map.put("allFields", fieldList);
-//            }
         map.put("sql", Base64.getEncoder().encodeToString(s.getBytes()));
+
+        // 重构chart结构，补全缺失字段
+        rebuildChart(receiveDTO, fields);
 
         MsgDTO result = new MsgDTO();
         result.setDatasetGroupId(dto.getId());
@@ -292,6 +286,17 @@ public class CopilotManage {
         logger.info("Copilot Service SQL: " + receiveDTO.getSql());
         logger.info("Copilot Service Chart: " + JsonUtil.toJSONString(receiveDTO.getChart()));
         return receiveDTO;
+    }
+
+    public void rebuildChart(ReceiveDTO receiveDTO, List<TableField> fields) {
+        if (StringUtils.equalsIgnoreCase(receiveDTO.getChart().getType(), "pie")) {
+            if (fields.size() != 2) {
+                DEException.throwException("当前字段不足以构建饼图");
+            }
+            AxisDTO axisDTO = new AxisDTO();
+            axisDTO.setX(fields.get(0).getOriginName());
+            axisDTO.setY(fields.get(1).getOriginName());
+        }
     }
 
     public List<MsgDTO> getList(Long userId) {
