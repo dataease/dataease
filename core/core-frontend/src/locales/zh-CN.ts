@@ -2427,6 +2427,7 @@ export default {
     add_task: '添加任务',
     lark_groups: '飞书群',
     send_setting: '发送设置',
+    retrying_settings: '发送失败重试设置',
     start_time: '开始时间',
     end_time: '结束时间',
     once_a_day: '每天',

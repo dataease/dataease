@@ -16,8 +16,10 @@ import java.util.Map;
 public class DeTaskExecutor {
 
     protected static final String IS_TEMP_TASK = "isTempTask";
+    protected static final String IS_RETRY_TASK = "isRetryTask";
 
     private static final String JOB_GROUP = "REPORT_TASK";
+    private static final String RETRY_JOB_GROUP = "RETRY_REPORT_TASK";
     private static final String TEMP_JOB_GROUP = "TEMP_REPORT_TASK";
 
     @Resource
@@ -42,6 +44,28 @@ public class DeTaskExecutor {
         JobDataMap jobDataMap = new JobDataMap();
         jobDataMap.put("taskId", taskId);
         jobDataMap.put(IS_TEMP_TASK, false);
+        Date end = null;
+        if (ObjectUtils.isNotEmpty(endTime)) end = new Date(endTime);
+        scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(startTime), end, jobDataMap);
+    }
+
+    public void addRetryTask(Long taskId, Integer retryLimit, Integer retryInterval) {
+        long saltTime = 3000L;
+        long interval = retryInterval == null ? 0L : retryInterval;
+        long intervalMill = interval * 60000L;
+        long now = System.currentTimeMillis();
+        long startTime = now - saltTime + intervalMill;
+        String cron = "0 */" + retryInterval + " * * * ?";
+        long endTime = (retryLimit - 1) * intervalMill + startTime + saltTime;
+        String key = taskId.toString();
+        if (CronUtils.taskExpire(endTime)) {
+            return;
+        }
+        JobKey jobKey = new JobKey(key, RETRY_JOB_GROUP);
+        TriggerKey triggerKey = new TriggerKey(key, RETRY_JOB_GROUP);
+        JobDataMap jobDataMap = new JobDataMap();
+        jobDataMap.put("taskId", taskId);
+        jobDataMap.put(IS_RETRY_TASK, true);
         Date end = null;
         if (ObjectUtils.isNotEmpty(endTime)) end = new Date(endTime);
         scheduleManager.addOrUpdateCronJob(jobKey, triggerKey, DeXpackScheduleJob.class, cron, new Date(startTime), end, jobDataMap);
@@ -72,6 +96,13 @@ public class DeTaskExecutor {
         String key = taskId.toString();
         JobKey jobKey = new JobKey(key, isTemp ? TEMP_JOB_GROUP : JOB_GROUP);
         TriggerKey triggerKey = new TriggerKey(key, isTemp ? TEMP_JOB_GROUP : JOB_GROUP);
+        scheduleManager.removeJob(jobKey, triggerKey);
+    }
+
+    public void removeRetryTask(Long taskId) {
+        String key = taskId.toString();
+        JobKey jobKey = new JobKey(key, RETRY_JOB_GROUP);
+        TriggerKey triggerKey = new TriggerKey(key, RETRY_JOB_GROUP);
         scheduleManager.removeJob(jobKey, triggerKey);
     }
 }
