@@ -472,7 +472,7 @@ export function exportExcelDownload(chart, snapshot, width, height, loadingWrapp
   if (chart.type === 'race-bar' && !chart.data?.data?.length) {
     callBack()
     return
-  } else if ((chart.render === 'echarts' && chart.type !== 'race-bar' || ['text', 'label'].includes(chart.type)) && !(chart.data?.series?.length && chart.data?.series[0].data?.length)) {
+  } else if ((chart.render === 'echarts' && chart.type !== 'race-bar' && chart.type.indexOf('table') === -1 || ['text', 'label'].includes(chart.type)) && !(chart.data?.series?.length && chart.data?.series[0].data?.length)) {
     callBack()
     return
   } else if ((chart.render === 'antv' && !['text', 'label', 'flow-map'].includes(chart.type)) && !chart.data?.data?.length) {
