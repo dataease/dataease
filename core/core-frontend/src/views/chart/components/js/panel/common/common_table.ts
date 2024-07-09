@@ -598,7 +598,7 @@ export function mappingColor(value, defaultColor, field, type) {
 }
 
 export function handleTableEmptyStrategy(chart: Chart) {
-  let newData = chart.data?.tableRow as Record<string, any>[]
+  let newData = (chart.data?.tableRow || []) as Record<string, any>[]
   let intersectionArr = []
   const senior = parseJson(chart.senior)
   let emptyDataStrategy = senior?.functionCfg?.emptyDataStrategy
