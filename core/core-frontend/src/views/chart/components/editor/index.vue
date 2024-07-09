@@ -354,9 +354,9 @@ const realQuota = computed(() => {
 })
 provide('quotaData', realQuota)
 
-const startToMove = (e, item) => {
+const startToMove = (e: DragEvent, item) => {
   e.dataTransfer.setData(
-    'dimension',
+    'fields',
     JSON.stringify(
       item
         .filter(ele => ele.id)
@@ -1533,6 +1533,7 @@ const singleDragStart = (e: DragEvent, ele, type) => {
   if (!activeChild.value.length) {
     activeChild.value = [ele]
   }
+  startToMove(e, unref(activeQuota.value))
 }
 
 const dragEnd = () => {
@@ -1594,16 +1595,6 @@ const deleteChartFieldItem = id => {
       fieldLoading.value = false
     })
 }
-
-const callMethod = (method, ...args) => {
-  editorInstance?.setupState[method](...args)
-}
-
-let editorInstance = null
-onMounted(() => {
-  editorInstance = getCurrentInstance()
-  console.log(editorInstance)
-})
 </script>
 
 <template>
@@ -1658,7 +1649,7 @@ onMounted(() => {
               :quota="state.quota"
               :themes="themes"
               :emitter="emitter"
-              :call-method="callMethod"
+              @onTypeChange="onTypeChange"
             />
             <el-tabs
               v-else
