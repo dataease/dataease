@@ -54,4 +54,10 @@ public class ReportInfoVO implements Serializable {
     private Long startTime;
 
     private Long endTime;
+
+    private Boolean retryEnable;
+
+    private Integer retryLimit;
+
+    private Integer retryInterval;
 }

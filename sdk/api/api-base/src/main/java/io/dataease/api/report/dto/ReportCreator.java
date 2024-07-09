@@ -22,7 +22,7 @@ public class ReportCreator implements Serializable {
 
     private Integer rtid;
 
-    @JsonSerialize(using= ToStringSerializer.class)
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long rid;
 
     private Integer format;
@@ -52,6 +52,12 @@ public class ReportCreator implements Serializable {
     private Long startTime;
 
     private Long endTime;
+
+    private Boolean retryEnable;
+
+    private Integer retryLimit;
+
+    private Integer retryInterval;
 
     private List<VisualizationReportFilterVO> reportFilter;
 }
