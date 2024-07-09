@@ -270,6 +270,7 @@ const syncFree = () => {
     position: absolute;
     top: -40px;
     left: 228px;
+    color: #fff;
   }
 
   .content {
