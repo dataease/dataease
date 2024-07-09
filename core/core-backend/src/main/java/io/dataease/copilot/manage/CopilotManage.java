@@ -296,6 +296,7 @@ public class CopilotManage {
             AxisDTO axisDTO = new AxisDTO();
             axisDTO.setX(fields.get(0).getOriginName());
             axisDTO.setY(fields.get(1).getOriginName());
+            receiveDTO.getChart().setAxis(axisDTO);
         }
     }
 
