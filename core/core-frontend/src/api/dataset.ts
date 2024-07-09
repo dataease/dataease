@@ -310,14 +310,14 @@ export const copilotChat = async (data): Promise<IResponse> => {
   })
 }
 
-export const getListCopilot = async (data): Promise<IResponse> => {
-  return request.post({ url: '/copilot/getList/' + data }).then(res => {
+export const getListCopilot = async (): Promise<IResponse> => {
+  return request.post({ url: '/copilot/getList' }).then(res => {
     return res?.data
   })
 }
 
-export const clearAllCopilot = async (data): Promise<IResponse> => {
-  return request.post({ url: '/copilot/clearAll/' + data }).then(res => {
+export const clearAllCopilot = async (): Promise<IResponse> => {
+  return request.post({ url: '/copilot/clearAll' }).then(res => {
     return res?.data
   })
 }

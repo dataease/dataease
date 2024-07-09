@@ -1,5 +1,6 @@
 <script lang="ts" setup>
 import { ref, shallowRef, computed, watch } from 'vue'
+import { ElMessageBox } from 'element-plus-secondary'
 import {
   getDatasetTree,
   clearAllCopilot,
@@ -11,6 +12,7 @@ import { useElementSize } from '@vueuse/core'
 import { fieldType } from '@/utils/attr'
 import DialogueChart from '@/views/copilot/DialogueChart.vue'
 import { type Tree } from '@/views/visualized/data/dataset/form/CreatDsGroup.vue'
+import { cloneDeep } from 'lodash-es'
 const quota = shallowRef([])
 const dimensions = shallowRef([])
 const datasetTree = shallowRef([])
@@ -55,10 +57,35 @@ const initDataset = () => {
     datasetTree.value = (res as unknown as Tree[]) || []
   })
 }
-const handleDatasetChange = () => {
-  getOptions(datasetId.value)
-}
 
+const treeSelectRef = ref()
+let oldId = ''
+let currentId = ''
+let oldName = ''
+const handleDatasetChange = () => {
+  if (!!oldId) {
+    currentId = datasetId.value
+    datasetId.value = oldId
+    const msg = `当前数据集为【${oldName}】，切换数据集将清空当前会话。`
+    ElMessageBox.confirm('确定要切换数据集吗？', {
+      confirmButtonType: 'primary',
+      type: 'warning',
+      tip: msg,
+      autofocus: false,
+      showClose: false
+    }).then(() => {
+      datasetId.value = currentId
+      oldId = datasetId.value
+      oldName = treeSelectRef.value.getCurrentNode().name
+      getOptions(datasetId.value)
+      clearAllCopilot()
+    })
+  } else {
+    oldId = datasetId.value
+    oldName = treeSelectRef.value.getCurrentNode().name
+    getOptions(datasetId.value)
+  }
+}
 const getOptions = id => {
   copilotFields(id).then(res => {
     dimensions.value = res.data?.dimensionList || []
@@ -66,6 +93,11 @@ const getOptions = id => {
   })
 }
 initDataset()
+let historyBack = []
+getListCopilot().then(res => {
+  historyBack = (res as unknown as string[]) || []
+  historyArr.value = cloneDeep(historyBack)
+})
 const questionInputRef = ref()
 const overHeight = ref(false)
 const { height } = useElementSize(questionInputRef)
@@ -75,14 +107,33 @@ watch(
     overHeight.value = val > 48
   }
 )
-
+const copilotChatLoading = ref(false)
 const queryAnswer = () => {
-  if (!isActive.value) return
+  if (!isActive.value || copilotChatLoading.value) return
+  historyArr.value.push({
+    msgType: 'user',
+    chart: {},
+    id: `${+new Date()}`,
+    question: questionInput.value,
+    chartData: {
+      data: {},
+      title: ''
+    },
+    msgStatus: 1
+  })
+  copilotChatLoading.value = true
   copilotChat({
     datasetGroupId: datasetId.value,
     question: questionInput.value,
-    history: historyArr.value
+    history: historyBack
   })
+    .then(res => {
+      historyArr.value.push(res)
+      historyBack = res.history || []
+    })
+    .finally(() => {
+      copilotChatLoading.value = false
+    })
 }
 </script>
 
@@ -96,21 +147,25 @@ const queryAnswer = () => {
     </div>
     <div class="copilot-service">
       <div class="dialogue">
-        <div class="copilot-dialogue">
+        <div class="copilot-dialogue" :style="{ height: `calc(100vh - ${height + 152}px)` }">
           <DialogueChart key="isWelcome" isWelcome></DialogueChart>
           <DialogueChart :copilotInfo="ele" v-for="ele in historyArr" :key="ele.id"></DialogueChart>
-          <div class="question-input" :class="overHeight && 'over-height'" ref="questionInputRef">
-            <el-input
-              v-model="questionInput"
-              :autosize="{ minRows: 1, maxRows: 8 }"
-              type="textarea"
-              :placeholder="$t('common.inputText')"
-            >
-            </el-input>
-            <el-icon class="copilot-icon" @click="queryAnswer" :class="isActive && 'active'">
-              <Icon :name="isActive ? 'active-btn_copilot' : 'btn_copilot'"></Icon>
-            </el-icon>
-          </div>
+          <DialogueChart v-if="copilotChatLoading" key="isAnswer" isAnswer></DialogueChart>
+        </div>
+        <div class="question-input" :class="overHeight && 'over-height'" ref="questionInputRef">
+          <el-input
+            v-model="questionInput"
+            :autosize="{ minRows: 1, maxRows: 8 }"
+            type="textarea"
+            :placeholder="$t('common.inputText')"
+          >
+          </el-input>
+          <el-icon v-if="copilotChatLoading" class="copilot-icon circular-input_icon">
+            <Icon name="icon_loading_outlined"></Icon>
+          </el-icon>
+          <el-icon v-else class="copilot-icon" @click="queryAnswer" :class="isActive && 'active'">
+            <Icon :name="isActive ? 'active-btn_copilot' : 'btn_copilot'"></Icon>
+          </el-icon>
         </div>
       </div>
       <div class="dataset-select" :style="{ width: showLeft ? 0 : '280px' }">
@@ -138,6 +193,7 @@ const queryAnswer = () => {
             @change="handleDatasetChange"
             :props="dsSelectProps"
             style="width: 100%"
+            ref="treeSelectRef"
             placement="bottom"
             :render-after-expand="false"
             filterable
@@ -232,78 +288,93 @@ const queryAnswer = () => {
     .dialogue {
       flex: 1;
       padding: 0 160px;
+      position: relative;
       .copilot-dialogue {
-        height: calc(100vh - 113px);
         padding-top: 24px;
         position: relative;
+        overflow-y: auto;
+        padding-bottom: 25px;
+      }
+      .question-input {
+        min-height: 47px;
+        width: calc(100% - 400px);
+        margin-left: 20px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        position: absolute;
+        border: 1px solid #fff;
+        bottom: 25px;
+        border-radius: 8px;
+        left: 180px;
+        box-sizing: border-box;
+        background: #fff;
+        box-shadow: 0px 6px 24px 0px #1f232914;
+        &:hover {
+          border: 1px solid var(--ed-color-primary);
+        }
 
-        .question-input {
-          width: calc(100% - 40px);
-          min-height: 47px;
-          margin-left: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          position: absolute;
-          border: 1px solid #fff;
-          bottom: 24px;
-          border-radius: 8px;
-          left: 0;
-          box-sizing: border-box;
-          background: #fff;
-          box-shadow: 0px 6px 24px 0px #1f232914;
-          &:hover {
-            border: 1px solid var(--ed-color-primary);
-          }
+        &:has(.ed-textarea__inner:focus) {
+          border: 1px solid var(--ed-color-primary);
+        }
 
-          &:has(.ed-textarea__inner:focus) {
-            border: 1px solid var(--ed-color-primary);
-          }
+        :deep(.ed-textarea__inner) {
+          border-radius: 8px !important;
+          box-shadow: none;
+          resize: none;
+          padding: 12px 16px;
+          max-height: 200px;
+        }
 
-          :deep(.ed-textarea__inner) {
-            border-radius: 8px !important;
-            box-shadow: none;
-            resize: none;
-            padding: 12px 16px;
-            max-height: 200px;
-          }
+        &.over-height :deep(.ed-textarea__inner) {
+          padding-bottom: 40px;
+        }
 
-          &.over-height :deep(.ed-textarea__inner) {
-            padding-bottom: 40px;
-          }
-
-          .copilot-icon {
-            position: absolute !important;
-            bottom: 12px;
-            right: 16px;
-            font-size: 24px;
-            cursor: not-allowed;
-            position: relative;
-            &.active {
-              cursor: pointer;
+        .copilot-icon {
+          position: absolute !important;
+          bottom: 12px;
+          right: 16px;
+          font-size: 24px;
+          cursor: not-allowed;
+          position: relative;
+          &.active {
+            cursor: pointer;
+            &::after {
+              content: '';
+              position: absolute;
+              height: 32px;
+              width: 32px;
+              border-radius: 8px;
+              display: none;
+              background: #3370ff1a;
+            }
+            &:hover {
               &::after {
-                content: '';
-                position: absolute;
-                height: 32px;
-                width: 32px;
-                border-radius: 8px;
-                display: none;
-                background: #3370ff1a;
-              }
-              &:hover {
-                &::after {
-                  display: block;
-                }
+                display: block;
               }
             }
           }
+        }
+
+        @keyframes circular {
+          0% {
+            transform: rotate(0);
+          }
+
+          100% {
+            transform: rotate(360deg);
+          }
+        }
+
+        .circular-input_icon {
+          animation: circular 1s infinite;
         }
       }
     }
 
     .dataset-select {
       width: 280px;
-      height: 100%;
+      height: calc(100vh - 115px);
       background: #fff;
       border-left: 1px solid #1f232926;
       position: relative;
