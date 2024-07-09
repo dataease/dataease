@@ -113,11 +113,12 @@ onMounted(() => {
 })
 
 const onClick = () => {
-  const events = config.value.events
-  Object.keys(events).forEach(event => {
-    currentInstance.ctx[event](events[event])
-  })
-  eventBus.emit('v-click', config.value.id)
+  // do event click
+  // const events = config.value.events
+  // Object.keys(events).forEach(event => {
+  //   currentInstance.ctx[event](events[event])
+  // })
+  // eventBus.emit('v-click', config.value.id)
 }
 
 const getComponentStyleDefault = style => {

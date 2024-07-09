@@ -256,6 +256,14 @@ declare interface ChartBasicStyle {
    * 对称柱状图方向
    */
   layout?: 'horizontal' | 'vertical'
+  /**
+   * 汇总表显示总计
+   */
+  showSummary: boolean
+  /**
+   * 汇总表总计标签
+   */
+  summaryLabel: string
 }
 /**
  * 表头属性

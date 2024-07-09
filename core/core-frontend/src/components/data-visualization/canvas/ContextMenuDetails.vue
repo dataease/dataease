@@ -80,7 +80,12 @@ const show = () => {
   layerStore.showComponent()
   menuOpt('show')
 }
-
+const categoryChange = type => {
+  if (curComponent.value) {
+    snapshotStore.recordSnapshotCache()
+    curComponent.value['category'] = type
+  }
+}
 const rename = () => {
   emit('rename')
   menuOpt('rename')
@@ -222,6 +227,12 @@ const editQueryCriteria = () => {
           <el-divider class="custom-divider" />
           <li @click="hide" v-show="curComponent['isShow']">隐藏</li>
           <li @click="show" v-show="!curComponent['isShow']">取消隐藏</li>
+          <li @click="categoryChange('hidden')" v-show="curComponent['category'] === 'base'">
+            转为隐藏组件
+          </li>
+          <li @click="categoryChange('base')" v-show="curComponent['category'] === 'hidden'">
+            转为基础组件
+          </li>
           <li @click="lock">锁定</li>
           <el-divider class="custom-divider" />
           <li v-if="activePosition === 'aside'" @click="rename">重命名</li>
