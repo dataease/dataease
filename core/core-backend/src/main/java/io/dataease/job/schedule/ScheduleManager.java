@@ -6,12 +6,10 @@ import io.dataease.i18n.Translator;
 import io.dataease.utils.LogUtil;
 import jakarta.annotation.Resource;
 import org.quartz.*;
+import org.quartz.impl.matchers.GroupMatcher;
 import org.springframework.stereotype.Component;
 
-import java.util.Date;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
+import java.util.*;
 
 @Component
 public class ScheduleManager {
@@ -440,4 +438,11 @@ public class ScheduleManager {
         }
     }
 
+    public void clearByGroup(String groupName) throws Exception {
+        Set<JobKey> jobKeys = scheduler.getJobKeys(GroupMatcher.groupEquals(groupName));
+        Set<TriggerKey> triggerKeys = scheduler.getTriggerKeys(GroupMatcher.groupEquals(groupName));
+        scheduler.pauseTriggers(GroupMatcher.groupEquals(groupName));
+        scheduler.unscheduleJobs(new ArrayList<>(triggerKeys));
+        scheduler.deleteJobs(new ArrayList<>(jobKeys));
+    }
 }
