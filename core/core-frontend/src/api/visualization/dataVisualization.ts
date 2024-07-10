@@ -94,3 +94,11 @@ export const getComponentInfo = dvId => {
     loading: false
   })
 }
+
+export const export2AppCheck = dvId => {
+  return request.get({
+    url: '/dataVisualization/export2AppCheck/' + dvId,
+    method: 'get',
+    loading: true
+  })
+}

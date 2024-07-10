@@ -2,7 +2,13 @@ package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
-import io.dataease.api.visualization.vo.VisualizationReportFilterVO;
+import io.dataease.api.visualization.vo.*;
+import io.dataease.dataset.manage.DatasetDataManage;
+import io.dataease.dataset.manage.DatasetGroupManage;
+import io.dataease.dataset.manage.DatasetTableManage;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
@@ -10,9 +16,6 @@ import io.dataease.api.visualization.DataVisualizationApi;
 import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
-import io.dataease.api.visualization.vo.DataVisualizationVO;
-import io.dataease.api.visualization.vo.VisualizationResourceVO;
-import io.dataease.api.visualization.vo.VisualizationWatermarkVO;
 import io.dataease.chart.dao.auto.entity.CoreChartView;
 import io.dataease.chart.dao.auto.mapper.CoreChartViewMapper;
 import io.dataease.chart.manage.ChartDataManage;
@@ -22,6 +25,7 @@ import io.dataease.commons.constants.OptConstants;
 import io.dataease.constant.CommonConstants;
 import io.dataease.constant.LogOT;
 import io.dataease.exception.DEException;
+import io.dataease.i18n.Translator;
 import io.dataease.license.config.XpackInteract;
 import io.dataease.log.DeLog;
 import io.dataease.model.BusiNodeRequest;
@@ -41,6 +45,7 @@ import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -90,6 +95,12 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Resource
     private VisualizationWatermarkMapper watermarkMapper;
+
+    @Resource
+    private DatasetGroupManage datasetGroupManage;
+
+    @Resource
+    private DatasetDataManage datasetDataManage;
 
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
@@ -388,6 +399,41 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }else{
             return result;
         }
+    }
+
+    @Override
+    public VisualizationExport2AppVO export2AppCheck(Long dvId) {
+        //1.获取所有视图信息
+        List<ChartViewDTO> chartViewsInfo = chartViewManege.listBySceneId(dvId);
+        //2.获取视图扩展字段信息 获取所有数据集信息
+        List<Long> allTableIds = chartViewsInfo.stream().map(ChartViewDTO::getTableId).collect(Collectors.toList());
+        List<DatasetTableDTO> datasetTablesInfo = datasetGroupManage.getDetail(allTableIds);
+        // dataset check
+        if (CollectionUtils.isEmpty(datasetTablesInfo)) {
+            return new VisualizationExport2AppVO(Translator.get("I18N_APP_NO_DATASET_ERROR"));
+        }
+        //4.获取所有数据集字段信息
+        List<DatasetTableFieldDTO> datasetTableFieldsInfo = new ArrayList<>();
+        datasetTablesInfo.stream().forEach(datasetTable ->{
+            try {
+                List<DatasetTableFieldDTO> result =  datasetDataManage.getTableFields(datasetTable);
+               if(!CollectionUtils.isEmpty(result)){
+                   datasetTableFieldsInfo.addAll(result);
+               }
+            } catch (Exception e) {
+                throw new RuntimeException(e);
+            }
+        });
+
+        //校验标准 1.存在视图且所有视图的数据来源必须是dataset 2.存在数据集且没有excel数据集 3.存在数据源且是单数据源
+        //1.view check
+        if (CollectionUtils.isEmpty(chartViewsInfo)) {
+            return new VisualizationExport2AppVO(Translator.get("I18N_APP_NO_VIEW_ERROR"));
+        } else if (chartViewsInfo.stream().filter(chartView -> chartView.getDataFrom().equals("template")).collect(Collectors.toList()).size() > 0) {
+            return new VisualizationExport2AppVO(Translator.get("I18N_APP_TEMPLATE_VIEW_ERROR"));
+        }
+        return new VisualizationExport2AppVO(chartViewsInfo, null, datasetTablesInfo, datasetTableFieldsInfo,
+                null, null, null, null, null);
     }
 
 
