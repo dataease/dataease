@@ -110,7 +110,11 @@ const setCascadeValueBack = val => {
   cascade.value.forEach(ele => {
     ele.forEach(item => {
       if (item.datasetId.split('--')[1] === config.value.id) {
-        item.selectValue = Array.isArray(val) ? [...val] : val
+        if (props.isConfig) {
+          item.selectValue = Array.isArray(val) ? [...val] : val
+        } else {
+          item.currentSelectValue = Array.isArray(val) ? [...val] : val
+        }
       }
     })
   })
@@ -158,11 +162,21 @@ const getCascadeFieldId = () => {
         }
         filter.push(condition)
       } else {
-        if (!!item.selectValue.length) {
-          condition = {
-            fieldId: fieldId,
-            operator: 'in',
-            value: [...item.selectValue]
+        if (props.isConfig) {
+          if (!!item.selectValue?.length) {
+            condition = {
+              fieldId: fieldId,
+              operator: 'in',
+              value: [...item.selectValue]
+            }
+          }
+        } else {
+          if (!!item.currentSelectValue?.length) {
+            condition = {
+              fieldId: fieldId,
+              operator: 'in',
+              value: [...item.currentSelectValue]
+            }
           }
         }
       }
