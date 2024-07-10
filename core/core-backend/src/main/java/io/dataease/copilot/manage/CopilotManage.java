@@ -12,6 +12,7 @@ import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetSQLManage;
 import io.dataease.dataset.manage.DatasetTableFieldManage;
 import io.dataease.dataset.manage.PermissionManage;
+import io.dataease.dataset.utils.FieldUtils;
 import io.dataease.engine.constant.DeTypeConstants;
 import io.dataease.engine.utils.Utils;
 import io.dataease.exception.DEException;
@@ -221,6 +222,7 @@ public class CopilotManage {
         }
 
         List<TableField> fields = (List<TableField>) data.get("fields");
+        fields = transField(fields);
         Map<String, Object> map = new LinkedHashMap<>();
         // 重新构造data
         Map<String, Object> previewData = buildPreviewData(data, fields, desensitizationList);
@@ -325,6 +327,14 @@ public class CopilotManage {
         dto.setErrMsg(errMsg);
         msgManage.save(dto);
         return dto;
+    }
+
+    public List<TableField> transField(List<TableField> fields) {
+        fields.forEach(field -> {
+            field.setDeExtractType(FieldUtils.transType2DeType(field.getFieldType()));
+            field.setDeType(FieldUtils.transType2DeType(field.getFieldType()));
+        });
+        return fields;
     }
 
     public Map<String, Object> buildPreviewData(Map<String, Object> data, List<TableField> fields, Map<String, ColumnPermissionItem> desensitizationList) {
