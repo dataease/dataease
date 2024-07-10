@@ -356,7 +356,7 @@ provide('quotaData', realQuota)
 
 const startToMove = (e: DragEvent, item) => {
   e.dataTransfer.setData(
-    'fields',
+    'dimension',
     JSON.stringify(
       item
         .filter(ele => ele.id)

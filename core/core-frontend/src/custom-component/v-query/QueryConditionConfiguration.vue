@@ -328,6 +328,9 @@ const setParameters = () => {
     }
   })
   setType()
+  if (curComponent.value.displayType === '9') {
+    setTreeDefault()
+  }
 }
 
 const setType = () => {
