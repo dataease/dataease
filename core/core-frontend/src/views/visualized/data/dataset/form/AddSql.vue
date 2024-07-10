@@ -506,7 +506,7 @@ const mousedownDrag = () => {
           :itemSize="40"
           :data="datasourceTableData"
           :total="datasourceTableData.length"
-          :width="223"
+          :width="LeftWidth - 7"
           :height="windowHeight - 350"
           :scrollbarAlwaysOn="false"
           class-name="el-select-dropdown__list"
