@@ -758,7 +758,7 @@ export default {
       forEach(this.formSettings.forms, f => {
         const temp = find(this.tempForms, tf => tf.id === f.id)
         if (temp) {
-          f.settings.updateRuleCheck = temp.updateRuleCheck
+          this.$set(f.settings, 'updateRuleCheck', temp.updateRuleCheck)
         }
       })
       this.closeEditCommitRule()
