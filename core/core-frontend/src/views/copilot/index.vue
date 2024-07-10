@@ -78,7 +78,10 @@ const handleDatasetChange = () => {
       oldId = datasetId.value
       oldName = treeSelectRef.value.getCurrentNode().name
       getOptions(datasetId.value)
-      clearAllCopilot()
+      clearAllCopilot().then(() => {
+        historyArr.value = []
+        historyBack = []
+      })
     })
   } else {
     oldId = datasetId.value
@@ -97,6 +100,10 @@ let historyBack = []
 getListCopilot().then(res => {
   historyBack = (res as unknown as string[]) || []
   historyArr.value = cloneDeep(historyBack)
+  if (!!historyBack.length) {
+    datasetId.value = historyBack[0].datasetGroupId
+    datasetId.value && getOptions(datasetId.value)
+  }
 })
 const questionInputRef = ref()
 const overHeight = ref(false)
