@@ -212,7 +212,7 @@ const showTypeError = computed(() => {
 })
 
 const showDatasetError = computed(() => {
-  if (!curComponent.value) return false
+  if (!curComponent.value || curComponent.value.displayType !== '9') return false
   if (!curComponent.value.checkedFields?.length) return false
   if (!fields.value?.length) return false
   let displayField = null
