@@ -15,9 +15,9 @@ import { Icon } from '@/components/icon-custom'
 import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
 import MultiplexPreviewShow from '@/views/data-visualization/MultiplexPreviewShow.vue'
 import DvPreview from '@/views/data-visualization/DvPreview.vue'
-import AppExportForm from "@/components/de-app/AppExportForm.vue";
-import {personInfoApi} from "@/api/user";
-import {ElMessage} from "element-plus-secondary";
+import AppExportForm from '@/components/de-app/AppExportForm.vue'
+import { personInfoApi } from '@/api/user'
+import { ElMessage } from 'element-plus-secondary'
 
 const dvMainStore = dvMainStoreWithOut()
 const { dvInfo, canvasViewDataInfo } = storeToRefs(dvMainStore)
@@ -114,10 +114,10 @@ const downloadAsAppTemplate = downloadType => {
   })
 }
 
-const downLoadToAppPre =()=>{
+const downLoadToAppPre = () => {
   const result = checkTemplate()
   if (result && result.length > 0) {
-    ElMessage.warning(`当前仪表板中[${result}]属于模版视图，无法导出，请先设置数据集！`,)
+    ElMessage.warning(`当前仪表板中[${result}]属于模版视图，无法导出，请先设置数据集！`)
   } else {
     appExportFormRef.value.init({
       appName: dvInfo.value.name,
@@ -129,7 +129,7 @@ const downLoadToAppPre =()=>{
     })
   }
 }
-const checkTemplate =()=> {
+const checkTemplate = () => {
   let templateViewNames = ','
   Object.keys(canvasViewDataInfo.value).forEach(key => {
     const viewInfo = canvasViewDataInfo.value[key]
@@ -139,20 +139,9 @@ const checkTemplate =()=> {
   })
   return templateViewNames.slice(1)
 }
-const downLoadToApp = (appAttachInfo) =>{
-  this.dataLoading = true
-  export2AppCheck(this.$store.state.panel.panelInfo.id).then(rsp => {
-    if (rsp.data.checkStatus) {
-      this.saveAppFile(rsp.data, appAttachInfo)
-    } else {
-      this.dataLoading = false
-      this.$message({
-        message: rsp.data.checkMes,
-        type: 'error'
-      })
-    }
-  })
-},
+const downLoadToApp = appAttachInfo => {
+  // do attach
+}
 
 const slideOpenChange = () => {
   slideShow.value = !slideShow.value
@@ -192,7 +181,7 @@ const getPreviewStateInfo = () => {
   return state
 }
 
-const downLoadApp = (appAttachInfo) =>{
+const downLoadApp = appAttachInfo => {
   downLoadToApp(appAttachInfo)
 }
 
@@ -302,8 +291,7 @@ onBeforeMount(() => {
       </template>
     </el-container>
   </div>
-  <app-export-form ref="appExportFormRef"
-                   @downLoadApp="downLoadApp"></app-export-form>
+  <app-export-form ref="appExportFormRef" @downLoadApp="downLoadApp"></app-export-form>
 </template>
 
 <style lang="less">
