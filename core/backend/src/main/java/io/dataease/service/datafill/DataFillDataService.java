@@ -227,16 +227,29 @@ public class DataFillDataService {
         String whereSql = "";
         if (StringUtils.isNotBlank(searchRequest.getPrimaryKeyValue())) {
             whereSql = extDDLProvider.whereSql(dataFillForm.getTableName(), List.of(pk));
-        }
-
-        String countSql = extDDLProvider.countSql(dataFillForm.getTableName(), searchFields, whereSql);
-        if (StringUtils.isNotBlank(searchRequest.getPrimaryKeyValue())) {
             datasourceRequest.setTableFieldWithValues(List.of(new DatasourceRequest.TableFieldWithValue()
                     .setValue(searchRequest.getPrimaryKeyValue())
                     .setFiledName(pk.getFieldName())
                     .setTypeName(pk.getFieldType())
                     .setType(pk.getType())));
         }
+
+        if (CollectionUtils.isNotEmpty(searchRequest.getPrimaryKeyValueList())) {
+            pk.setInCount(searchRequest.getPrimaryKeyValueList().size());
+            whereSql = extDDLProvider.whereSql(dataFillForm.getTableName(), List.of(pk));
+            List<DatasourceRequest.TableFieldWithValue> ids = new ArrayList<>();
+            for (String s : searchRequest.getPrimaryKeyValueList()) {
+                ids.add(new DatasourceRequest.TableFieldWithValue()
+                        .setValue(s)
+                        .setFiledName(pk.getFieldName())
+                        .setTypeName(pk.getFieldType())
+                        .setType(pk.getType()));
+            }
+            datasourceRequest.setTableFieldWithValues(ids);
+        }
+
+        String countSql = extDDLProvider.countSql(dataFillForm.getTableName(), searchFields, whereSql);
+
         datasourceRequest.setQuery(countSql);
         List<String[]> countData = datasourceProvider.getData(datasourceRequest);
         long count = NumberUtils.toLong(countData.get(0)[0]);
