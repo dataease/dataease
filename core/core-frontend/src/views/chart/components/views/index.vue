@@ -242,7 +242,7 @@ watch([() => resultMode.value], () => {
 
 watch([() => scale.value], () => {
   nextTick(() => {
-    chartComponent?.value?.renderChart(view.value)
+    chartComponent?.value?.renderChart?.(view.value)
   })
 })
 
