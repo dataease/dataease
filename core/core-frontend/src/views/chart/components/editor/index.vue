@@ -1533,7 +1533,14 @@ const singleDragStart = (e: DragEvent, ele, type) => {
   if (!activeChild.value.length) {
     activeChild.value = [ele]
   }
-  startToMove(e, unref(activeQuota.value))
+  e.dataTransfer.setData(
+    'quota',
+    JSON.stringify(
+      activeQuota.value
+        .filter(ele => ele.id)
+        .map(ele => ({ ...cloneDeep(unref(ele)), datasetId: view.value.tableId }))
+    )
+  )
 }
 
 const dragEnd = () => {
@@ -1613,25 +1620,25 @@ const deleteChartFieldItem = id => {
           size="20px"
           @click="collapseChange('chartAreaCollapse')"
         >
-          <Fold class="collapse-icon" v-if="canvasCollapse.chartAreaCollapse" />
-          <Expand class="collapse-icon" v-else />
+          <Fold v-if="canvasCollapse.chartAreaCollapse" class="collapse-icon" />
+          <Expand v-else class="collapse-icon" />
         </el-icon>
-        <div class="collapse-title" v-if="canvasCollapse.chartAreaCollapse">
+        <div v-if="canvasCollapse.chartAreaCollapse" class="collapse-title">
           <span style="font-size: 14px">{{ view.title }}</span>
         </div>
         <div v-if="!canvasCollapse.chartAreaCollapse" style="width: 240px" class="view-panel-row">
           <el-row class="editor-title">
             <span
+              id="component-name"
               class="name-area"
               :class="{ 'component-name-dark': themes === 'dark' }"
               @dblclick="editComponentName"
-              id="component-name"
               >{{ view.title }}</span
             >
           </el-row>
 
           <el-row style="height: calc(100vh - 110px); overflow-y: auto">
-            <div class="query-style-tab" v-if="view.type === 'VQuery' && curComponent">
+            <div v-if="view.type === 'VQuery' && curComponent" class="query-style-tab">
               <div style="padding-top: 1px">
                 <VQueryChartStyle
                   :element="curComponent"
@@ -1641,16 +1648,6 @@ const deleteChartFieldItem = id => {
                 />
               </div>
             </div>
-            <plugin-component
-              v-else-if="view.plugin?.isPlugin"
-              :jsname="view.plugin.staticMap['editor']"
-              :view="view"
-              :dimension="state.dimension"
-              :quota="state.quota"
-              :themes="themes"
-              :emitter="emitter"
-              @onTypeChange="onTypeChange"
-            />
             <el-tabs
               v-else
               v-model="tabActive"
@@ -1676,16 +1673,22 @@ const deleteChartFieldItem = id => {
                       >
                         <template #reference>
                           <el-select
+                            v-model="state.useless"
                             popper-class="chart-type-hide-options"
                             class="chart-type-select"
-                            v-model="state.useless"
-                            :suffixIcon="arrowIcon()"
+                            :suffix-icon="arrowIcon()"
                             size="small"
                           >
                             <template #prefix>
                               <Icon
                                 class-name="chart-type-select-icon"
-                                :name="state.chartTypeOptions[0].icon"
+                                v-if="state.chartTypeOptions[0]?.isPlugin"
+                                :static-content="state.chartTypeOptions[0]?.icon"
+                              />
+                              <Icon
+                                v-else
+                                class-name="chart-type-select-icon"
+                                :name="state.chartTypeOptions[0]['icon']"
                               />
                             </template>
                             <template #default>
@@ -1702,200 +1705,51 @@ const deleteChartFieldItem = id => {
                           <chart-type
                             :themes="themes"
                             :type="view.type"
-                            @onTypeChange="onTypeChange"
+                            @on-type-change="onTypeChange"
                           />
                         </template>
                       </el-popover>
                     </el-row>
-                    <!--area-->
-                    <el-row class="padding-lr drag-data" v-if="showAxis('area')">
-                      <span class="data-area-label">
-                        {{ t('chart.area') }}
-                      </span>
-                      <div class="area-tree-select">
-                        <el-tree-select
-                          v-model="state.areaId"
-                          :effect="themes"
-                          :data="state.worldTree"
-                          :props="treeProps"
-                          :filterNodeMethod="filterNode"
-                          :current-node-key="state.areaId"
-                          :teleported="false"
-                          :default-expanded-keys="expandKeys"
-                          ref="areaSelect"
-                          empty-text="请选择区域"
-                          node-key="id"
-                          check-strictly
-                          filterable
-                          @node-click="onAreaChange"
-                        />
-                      </div>
-                    </el-row>
-
-                    <!--xAxis-->
-                    <el-row class="padding-lr drag-data" v-if="showAxis('xAxis')">
-                      <div class="form-draggable-title">
-                        <span>
-                          {{ chartViewInstance.axisConfig.xAxis.name }}
+                    <template v-if="view.plugin?.isPlugin">
+                      <plugin-component
+                        :jsname="view.plugin.staticMap['editor-data']"
+                        :view="view"
+                        :dimension="state.dimension"
+                        :quota="state.quota"
+                        :themes="themes"
+                        :emitter="emitter"
+                      />
+                    </template>
+                    <template v-else>
+                      <!--area-->
+                      <el-row v-if="showAxis('area')" class="padding-lr drag-data">
+                        <span class="data-area-label">
+                          {{ t('chart.area') }}
                         </span>
-                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon
-                            class="remove-icon"
-                            :class="{ 'remove-icon--dark': themes === 'dark' }"
-                            size="14px"
-                            @click="removeItems('xAxis')"
-                          >
-                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
-                          </el-icon>
-                        </el-tooltip>
-                      </div>
-                      <div
-                        @drop="$event => drop($event)"
-                        @dragenter="dragEnter"
-                        class="qw"
-                        @dragover="$event => dragOver($event)"
-                      >
-                        <draggable
-                          :list="view.xAxis"
-                          :move="onMove"
-                          item-key="id"
-                          group="drag"
-                          animation="300"
-                          class="drag-block-style"
-                          :class="{ dark: themes === 'dark' }"
-                          @add="addXaxis"
-                        >
-                          <template #item="{ element, index }">
-                            <dimension-item
-                              :dimension-data="state.dimension"
-                              :quota-data="state.quota"
-                              :chart="view"
-                              :item="element"
-                              :index="index"
-                              :themes="props.themes"
-                              type="dimension"
-                              @onDimensionItemChange="dimensionItemChange"
-                              @onDimensionItemRemove="dimensionItemRemove"
-                              @onNameEdit="showRename"
-                              @onCustomSort="onCustomSort"
-                              @valueFormatter="valueFormatter"
-                            />
-                          </template>
-                        </draggable>
-                        <drag-placeholder :themes="themes" :drag-list="view.xAxis" />
-                      </div>
-                    </el-row>
-
-                    <!--xAxisExt-->
-                    <el-row class="padding-lr drag-data" v-if="showAxis('xAxisExt')">
-                      <div class="form-draggable-title">
-                        <span>
-                          {{ chartViewInstance.axisConfig.xAxisExt.name }}
-                        </span>
-                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon
-                            class="remove-icon"
-                            :class="{ 'remove-icon--dark': themes === 'dark' }"
-                            size="14px"
-                            @click="removeItems('xAxisExt')"
-                          >
-                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
-                          </el-icon>
-                        </el-tooltip>
-                      </div>
-                      <div
-                        @drop="$event => drop($event, 'xAxisExt')"
-                        @dragenter="dragEnter"
-                        @dragover="$event => dragOver($event)"
-                      >
-                        <draggable
-                          :list="view.xAxisExt"
-                          :move="onMove"
-                          item-key="id"
-                          group="drag"
-                          animation="300"
-                          class="drag-block-style"
-                          :class="{ dark: themes === 'dark' }"
-                          @add="addXaxisExt"
-                        >
-                          <template #item="{ element, index }">
-                            <dimension-item
-                              :dimension-data="state.dimension"
-                              :quota-data="state.quota"
-                              :chart="view"
-                              :item="element"
-                              :index="index"
-                              :themes="props.themes"
-                              type="dimensionExt"
-                              @onDimensionItemChange="dimensionItemChange"
-                              @onDimensionItemRemove="dimensionItemRemove"
-                              @onNameEdit="showRename"
-                              @onCustomSort="onExtCustomSort"
-                            />
-                          </template>
-                        </draggable>
-                        <drag-placeholder :drag-list="view.xAxisExt" />
-                      </div>
-                    </el-row>
-
-                    <!--extStack-->
-                    <el-row class="padding-lr drag-data" v-if="showAxis('extStack')">
-                      <div class="form-draggable-title">
-                        <span>
-                          {{ chartViewInstance.axisConfig.extStack.name }}
-                        </span>
-                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon
-                            class="remove-icon"
-                            :class="{ 'remove-icon--dark': themes === 'dark' }"
-                            size="14px"
-                            @click="removeItems('extStack')"
-                          >
-                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
-                          </el-icon>
-                        </el-tooltip>
-                      </div>
-                      <div
-                        @drop="$event => drop($event, 'extStack')"
-                        @dragenter="dragEnter"
-                        @dragover="$event => dragOver($event)"
-                      >
-                        <draggable
-                          :list="view.extStack"
-                          :move="onMove"
-                          item-key="id"
-                          group="drag"
-                          animation="300"
-                          class="drag-block-style"
-                          :class="{ dark: themes === 'dark' }"
-                          @add="addExtStack"
-                        >
-                          <template #item="{ element, index }">
-                            <dimension-item
-                              :dimension-data="state.dimension"
-                              :quota-data="state.quota"
-                              :chart="view"
-                              :item="element"
-                              :index="index"
-                              :themes="props.themes"
-                              type="dimensionStack"
-                              @onDimensionItemChange="dimensionItemChange"
-                              @onDimensionItemRemove="dimensionItemRemove"
-                              @onNameEdit="showRename"
-                              @onCustomSort="onStackCustomSort"
-                            />
-                          </template>
-                        </draggable>
-                        <drag-placeholder :drag-list="view.extStack" />
-                      </div>
-                    </el-row>
-
-                    <template v-if="view.type !== 'bar-range'">
-                      <!--yAxis-->
-                      <el-row class="padding-lr drag-data" v-if="showAxis('yAxis')">
+                        <div class="area-tree-select">
+                          <el-tree-select
+                            ref="areaSelect"
+                            v-model="state.areaId"
+                            :effect="themes"
+                            :data="state.worldTree"
+                            :props="treeProps"
+                            :filterNodeMethod="filterNode"
+                            :current-node-key="state.areaId"
+                            :teleported="false"
+                            :default-expanded-keys="expandKeys"
+                            empty-text="请选择区域"
+                            node-key="id"
+                            check-strictly
+                            filterable
+                            @node-click="onAreaChange"
+                          />
+                        </div>
+                      </el-row>
+                      <!--xAxis-->
+                      <el-row v-if="showAxis('xAxis')" class="padding-lr drag-data">
                         <div class="form-draggable-title">
                           <span>
-                            {{ chartViewInstance.axisConfig.yAxis.name }}
+                            {{ chartViewInstance.axisConfig.xAxis.name }}
                           </span>
                           <el-tooltip
                             :effect="toolTip"
@@ -1906,54 +1760,506 @@ const deleteChartFieldItem = id => {
                               class="remove-icon"
                               :class="{ 'remove-icon--dark': themes === 'dark' }"
                               size="14px"
-                              @click="removeItems('yAxis')"
+                              @click="removeItems('xAxis')"
                             >
                               <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                             </el-icon>
                           </el-tooltip>
                         </div>
                         <div
-                          @drop="$event => drop($event, 'yAxis')"
+                          class="qw"
+                          @drop="$event => drop($event)"
                           @dragenter="dragEnter"
                           @dragover="$event => dragOver($event)"
                         >
                           <draggable
-                            :list="view.yAxis"
+                            :list="view.xAxis"
                             :move="onMove"
                             item-key="id"
                             group="drag"
                             animation="300"
                             class="drag-block-style"
                             :class="{ dark: themes === 'dark' }"
-                            @add="addYaxis"
-                            @change="e => onAxisChange(e, 'yAxis')"
+                            @add="addXaxis"
                           >
                             <template #item="{ element, index }">
-                              <quota-item
+                              <dimension-item
                                 :dimension-data="state.dimension"
                                 :quota-data="state.quota"
                                 :chart="view"
                                 :item="element"
                                 :index="index"
-                                type="quota"
                                 :themes="props.themes"
-                                @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
-                                @onQuotaItemRemove="quotaItemRemove"
+                                type="dimension"
+                                @onDimensionItemChange="dimensionItemChange"
+                                @onDimensionItemRemove="dimensionItemRemove"
                                 @onNameEdit="showRename"
-                                @editItemFilter="showQuotaEditFilter"
-                                @editItemCompare="showQuotaEditCompare"
+                                @onCustomSort="onCustomSort"
                                 @valueFormatter="valueFormatter"
                               />
                             </template>
                           </draggable>
-                          <drag-placeholder :drag-list="view.yAxis" />
+                          <drag-placeholder :themes="themes" :drag-list="view.xAxis" />
                         </div>
                       </el-row>
-                      <!-- xAxisExtRight -->
-                      <el-row class="padding-lr drag-data" v-if="showAxis('xAxisExtRight')">
+
+                      <!--xAxisExt-->
+                      <el-row v-if="showAxis('xAxisExt')" class="padding-lr drag-data">
                         <div class="form-draggable-title">
                           <span>
-                            {{ chartViewInstance.axisConfig.extBubble.name }}
+                            {{ chartViewInstance.axisConfig.xAxisExt.name }}
+                          </span>
+                          <el-tooltip
+                            :effect="toolTip"
+                            placement="top"
+                            :content="t('common.delete')"
+                          >
+                            <el-icon
+                              class="remove-icon"
+                              :class="{ 'remove-icon--dark': themes === 'dark' }"
+                              size="14px"
+                              @click="removeItems('xAxisExt')"
+                            >
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                            </el-icon>
+                          </el-tooltip>
+                        </div>
+                        <div
+                          @drop="$event => drop($event, 'xAxisExt')"
+                          @dragenter="dragEnter"
+                          @dragover="$event => dragOver($event)"
+                        >
+                          <draggable
+                            :list="view.xAxisExt"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            :class="{ dark: themes === 'dark' }"
+                            @add="addXaxisExt"
+                          >
+                            <template #item="{ element, index }">
+                              <dimension-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                :themes="props.themes"
+                                type="dimensionExt"
+                                @onDimensionItemChange="dimensionItemChange"
+                                @onDimensionItemRemove="dimensionItemRemove"
+                                @onNameEdit="showRename"
+                                @onCustomSort="onExtCustomSort"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :drag-list="view.xAxisExt" />
+                        </div>
+                      </el-row>
+
+                      <!--extStack-->
+                      <el-row v-if="showAxis('extStack')" class="padding-lr drag-data">
+                        <div class="form-draggable-title">
+                          <span>
+                            {{ chartViewInstance.axisConfig.extStack.name }}
+                          </span>
+                          <el-tooltip
+                            :effect="toolTip"
+                            placement="top"
+                            :content="t('common.delete')"
+                          >
+                            <el-icon
+                              class="remove-icon"
+                              :class="{ 'remove-icon--dark': themes === 'dark' }"
+                              size="14px"
+                              @click="removeItems('extStack')"
+                            >
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                            </el-icon>
+                          </el-tooltip>
+                        </div>
+                        <div
+                          @drop="$event => drop($event, 'extStack')"
+                          @dragenter="dragEnter"
+                          @dragover="$event => dragOver($event)"
+                        >
+                          <draggable
+                            :list="view.extStack"
+                            :move="onMove"
+                            item-key="id"
+                            group="drag"
+                            animation="300"
+                            class="drag-block-style"
+                            :class="{ dark: themes === 'dark' }"
+                            @add="addExtStack"
+                          >
+                            <template #item="{ element, index }">
+                              <dimension-item
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
+                                :chart="view"
+                                :item="element"
+                                :index="index"
+                                :themes="props.themes"
+                                type="dimensionStack"
+                                @onDimensionItemChange="dimensionItemChange"
+                                @onDimensionItemRemove="dimensionItemRemove"
+                                @onNameEdit="showRename"
+                                @onCustomSort="onStackCustomSort"
+                              />
+                            </template>
+                          </draggable>
+                          <drag-placeholder :drag-list="view.extStack" />
+                        </div>
+                      </el-row>
+
+                      <template v-if="view.type !== 'bar-range'">
+                        <!--yAxis-->
+                        <el-row v-if="showAxis('yAxis')" class="padding-lr drag-data">
+                          <div class="form-draggable-title">
+                            <span>
+                              {{ chartViewInstance.axisConfig.yAxis.name }}
+                            </span>
+                            <el-tooltip
+                              :effect="toolTip"
+                              placement="top"
+                              :content="t('common.delete')"
+                            >
+                              <el-icon
+                                class="remove-icon"
+                                :class="{ 'remove-icon--dark': themes === 'dark' }"
+                                size="14px"
+                                @click="removeItems('yAxis')"
+                              >
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              </el-icon>
+                            </el-tooltip>
+                          </div>
+                          <div
+                            @drop="$event => drop($event, 'yAxis')"
+                            @dragenter="dragEnter"
+                            @dragover="$event => dragOver($event)"
+                          >
+                            <draggable
+                              :list="view.yAxis"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              :class="{ dark: themes === 'dark' }"
+                              @add="addYaxis"
+                              @change="e => onAxisChange(e, 'yAxis')"
+                            >
+                              <template #item="{ element, index }">
+                                <quota-item
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  type="quota"
+                                  :themes="props.themes"
+                                  @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
+                                  @onQuotaItemRemove="quotaItemRemove"
+                                  @onNameEdit="showRename"
+                                  @editItemFilter="showQuotaEditFilter"
+                                  @editItemCompare="showQuotaEditCompare"
+                                  @valueFormatter="valueFormatter"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :drag-list="view.yAxis" />
+                          </div>
+                        </el-row>
+                        <!-- xAxisExtRight -->
+                        <el-row v-if="showAxis('xAxisExtRight')" class="padding-lr drag-data">
+                          <div class="form-draggable-title">
+                            <span>
+                              {{ chartViewInstance.axisConfig.extBubble.name }}
+                            </span>
+                            <el-tooltip
+                              :effect="toolTip"
+                              placement="top"
+                              :content="t('common.delete')"
+                            >
+                              <el-icon
+                                class="remove-icon"
+                                :class="{ 'remove-icon--dark': themes === 'dark' }"
+                                size="14px"
+                                @click="removeItems('extBubble')"
+                              >
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              </el-icon>
+                            </el-tooltip>
+                          </div>
+                          <div
+                            @drop="$event => drop($event, 'extBubble')"
+                            @dragenter="dragEnter"
+                            @dragover="$event => dragOver($event)"
+                          >
+                            <draggable
+                              :list="view.extBubble"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              :class="{ dark: themes === 'dark' }"
+                              @add="addExtBubble"
+                              @change="e => onAxisChange(e, 'extBubble')"
+                            >
+                              <template #item="{ element, index }">
+                                <dimension-item
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  :themes="props.themes"
+                                  type="xAxisExtRight"
+                                  @onDimensionItemChange="dimensionItemChange"
+                                  @onDimensionItemRemove="dimensionItemRemove"
+                                  @onNameEdit="showRename"
+                                  @onCustomSort="onExtCustomRightSort"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :drag-list="view.extBubble" />
+                          </div>
+                        </el-row>
+                        <!--yAxisExt-->
+                        <el-row v-if="showAxis('yAxisExt')" class="padding-lr drag-data">
+                          <div class="form-draggable-title">
+                            <span>
+                              {{ chartViewInstance.axisConfig.yAxisExt.name }}
+                            </span>
+                            <el-tooltip
+                              :effect="toolTip"
+                              placement="top"
+                              :content="t('common.delete')"
+                            >
+                              <el-icon
+                                class="remove-icon"
+                                :class="{ 'remove-icon--dark': themes === 'dark' }"
+                                size="14px"
+                                @click="removeItems('yAxisExt')"
+                              >
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              </el-icon>
+                            </el-tooltip>
+                          </div>
+                          <div
+                            @drop="$event => drop($event, 'yAxisExt')"
+                            @dragenter="dragEnter"
+                            @dragover="$event => dragOver($event)"
+                          >
+                            <draggable
+                              :list="view.yAxisExt"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              :class="{ dark: themes === 'dark' }"
+                              @add="addYaxisExt"
+                              @change="e => onAxisChange(e, 'yAxisExt')"
+                            >
+                              <template #item="{ element, index }">
+                                <quota-item
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  type="quotaExt"
+                                  :themes="props.themes"
+                                  @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
+                                  @onQuotaItemRemove="quotaItemRemove"
+                                  @onNameEdit="showRename"
+                                  @editItemFilter="showQuotaEditFilter"
+                                  @editItemCompare="showQuotaEditCompare"
+                                  @valueFormatter="valueFormatter"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :drag-list="view.yAxisExt" />
+                          </div>
+                        </el-row>
+                      </template>
+                      <template v-else-if="view.type === 'bar-range'">
+                        <!--yAxis-->
+                        <el-row v-if="showAxis('yAxis')" class="padding-lr drag-data">
+                          <div class="form-draggable-title">
+                            <span>
+                              {{ chartViewInstance.axisConfig.yAxis.name }}
+                            </span>
+                            <el-tooltip
+                              :effect="toolTip"
+                              placement="top"
+                              :content="t('common.delete')"
+                            >
+                              <el-icon
+                                class="remove-icon"
+                                :class="{ 'remove-icon--dark': themes === 'dark' }"
+                                size="14px"
+                                @click="removeItems('yAxis')"
+                              >
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              </el-icon>
+                            </el-tooltip>
+                          </div>
+                          <div
+                            @drop="$event => drop($event, 'yAxis')"
+                            @dragenter="dragEnter"
+                            @dragover="$event => dragOver($event)"
+                          >
+                            <draggable
+                              :list="view.yAxis"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              :class="{ dark: themes === 'dark' }"
+                              @add="addYaxis"
+                              @change="e => onAxisChange(e, 'yAxis')"
+                            >
+                              <template #item="{ element, index }">
+                                <dimension-item
+                                  v-if="element.groupType === 'd'"
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  :themes="props.themes"
+                                  type="quota"
+                                  @onDimensionItemChange="dimensionItemChange"
+                                  @onDimensionItemRemove="dimensionItemRemove"
+                                  @onNameEdit="showRename"
+                                  @onCustomSort="onExtCustomSort"
+                                />
+                                <quota-item
+                                  v-else-if="element.groupType === 'q'"
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  type="quota"
+                                  :themes="props.themes"
+                                  @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
+                                  @onQuotaItemRemove="quotaItemRemove"
+                                  @onNameEdit="showRename"
+                                  @editItemFilter="showQuotaEditFilter"
+                                  @editItemCompare="showQuotaEditCompare"
+                                  @valueFormatter="valueFormatter"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :drag-list="view.yAxis" />
+                          </div>
+                        </el-row>
+                        <!--yAxisExt-->
+                        <el-row v-if="showAxis('yAxisExt')" class="padding-lr drag-data">
+                          <div class="form-draggable-title">
+                            <span>
+                              {{ chartViewInstance.axisConfig.yAxisExt.name }}
+                            </span>
+                            <el-tooltip
+                              :effect="toolTip"
+                              placement="top"
+                              :content="t('common.delete')"
+                            >
+                              <el-icon
+                                class="remove-icon"
+                                :class="{ 'remove-icon--dark': themes === 'dark' }"
+                                size="14px"
+                                @click="removeItems('yAxisExt')"
+                              >
+                                <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                              </el-icon>
+                            </el-tooltip>
+                          </div>
+                          <div
+                            @drop="$event => drop($event, 'yAxisExt')"
+                            @dragenter="dragEnter"
+                            @dragover="$event => dragOver($event)"
+                          >
+                            <draggable
+                              :list="view.yAxisExt"
+                              :move="onMove"
+                              item-key="id"
+                              group="drag"
+                              animation="300"
+                              class="drag-block-style"
+                              :class="{ dark: themes === 'dark' }"
+                              @add="addYaxisExt"
+                              @change="e => onAxisChange(e, 'yAxisExt')"
+                            >
+                              <template #item="{ element, index }">
+                                <dimension-item
+                                  v-if="element.groupType === 'd'"
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  :themes="props.themes"
+                                  type="quotaExt"
+                                  @onDimensionItemChange="dimensionItemChange"
+                                  @onDimensionItemRemove="dimensionItemRemove"
+                                  @onNameEdit="showRename"
+                                  @onCustomSort="onExtCustomSort"
+                                />
+                                <quota-item
+                                  v-else-if="element.groupType === 'q'"
+                                  :dimension-data="state.dimension"
+                                  :quota-data="state.quota"
+                                  :chart="view"
+                                  :item="element"
+                                  :index="index"
+                                  type="quotaExt"
+                                  :themes="props.themes"
+                                  @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
+                                  @onQuotaItemRemove="quotaItemRemove"
+                                  @onNameEdit="showRename"
+                                  @editItemFilter="showQuotaEditFilter"
+                                  @editItemCompare="showQuotaEditCompare"
+                                  @valueFormatter="valueFormatter"
+                                />
+                              </template>
+                            </draggable>
+                            <drag-placeholder :drag-list="view.yAxisExt" />
+                          </div>
+                        </el-row>
+                      </template>
+                      <!-- extBubble -->
+                      <el-row v-if="showAxis('extBubble')" class="padding-lr drag-data">
+                        <div class="form-draggable-title">
+                          <span class="data-area-label">
+                            <span style="margin-right: 4px">
+                              {{ chartViewInstance.axisConfig.extBubble.name }}
+                            </span>
+                            <el-tooltip
+                              v-if="chartViewInstance.axisConfig.extBubble.tooltip"
+                              class="item"
+                              :effect="toolTip"
+                              placement="top"
+                            >
+                              <template #content>
+                                <span> {{ chartViewInstance.axisConfig.extBubble.tooltip }}</span>
+                              </template>
+                              <el-icon
+                                class="hint-icon"
+                                :class="{ 'hint-icon--dark': themes === 'dark' }"
+                              >
+                                <Icon name="icon_info_outlined" />
+                              </el-icon>
+                            </el-tooltip>
                           </span>
                           <el-tooltip
                             :effect="toolTip"
@@ -1987,29 +2293,45 @@ const deleteChartFieldItem = id => {
                             @change="e => onAxisChange(e, 'extBubble')"
                           >
                             <template #item="{ element, index }">
-                              <dimension-item
+                              <quota-item
                                 :dimension-data="state.dimension"
                                 :quota-data="state.quota"
                                 :chart="view"
                                 :item="element"
                                 :index="index"
+                                type="extBubble"
                                 :themes="props.themes"
-                                type="xAxisExtRight"
-                                @onDimensionItemChange="dimensionItemChange"
-                                @onDimensionItemRemove="dimensionItemRemove"
+                                @onQuotaItemChange="item => quotaItemChange(item, 'extBubble')"
+                                @onQuotaItemRemove="quotaItemRemove"
                                 @onNameEdit="showRename"
-                                @onCustomSort="onExtCustomRightSort"
+                                @editItemFilter="showQuotaEditFilter"
+                                @editItemCompare="showQuotaEditCompare"
+                                @valueFormatter="valueFormatter"
                               />
                             </template>
                           </draggable>
                           <drag-placeholder :drag-list="view.extBubble" />
                         </div>
                       </el-row>
-                      <!--yAxisExt-->
-                      <el-row class="padding-lr drag-data" v-if="showAxis('yAxisExt')">
+
+                      <!--drill-->
+                      <el-row v-if="showAxis('drill')" class="padding-lr drag-data">
                         <div class="form-draggable-title">
-                          <span>
-                            {{ chartViewInstance.axisConfig.yAxisExt.name }}
+                          <span class="data-area-label">
+                            <span style="margin-right: 4px">
+                              {{ t('chart.drill') }} / {{ t('chart.dimension') }}
+                            </span>
+                            <el-tooltip class="item" :effect="toolTip" placement="top">
+                              <template #content>
+                                <span> {{ t('chart.drill_dimension_tip') }}</span>
+                              </template>
+                              <el-icon
+                                class="hint-icon"
+                                :class="{ 'hint-icon--dark': themes === 'dark' }"
+                              >
+                                <Icon name="icon_info_outlined" />
+                              </el-icon>
+                            </el-tooltip>
                           </span>
                           <el-tooltip
                             :effect="toolTip"
@@ -2020,379 +2342,95 @@ const deleteChartFieldItem = id => {
                               class="remove-icon"
                               :class="{ 'remove-icon--dark': themes === 'dark' }"
                               size="14px"
-                              @click="removeItems('yAxisExt')"
+                              @click="removeItems('drillFields')"
                             >
                               <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
                             </el-icon>
                           </el-tooltip>
                         </div>
                         <div
-                          @drop="$event => drop($event, 'yAxisExt')"
+                          @drop="$event => drop($event, 'drillFields')"
                           @dragenter="dragEnter"
                           @dragover="$event => dragOver($event)"
                         >
                           <draggable
-                            :list="view.yAxisExt"
-                            :move="onMove"
+                            :list="view.drillFields"
                             item-key="id"
                             group="drag"
                             animation="300"
+                            :move="onMove"
                             class="drag-block-style"
                             :class="{ dark: themes === 'dark' }"
-                            @add="addYaxisExt"
-                            @change="e => onAxisChange(e, 'yAxisExt')"
+                            @add="addDrill"
                           >
                             <template #item="{ element, index }">
-                              <quota-item
-                                :dimension-data="state.dimension"
-                                :quota-data="state.quota"
+                              <drill-item
+                                :key="element.id"
+                                :index="index"
                                 :chart="view"
                                 :item="element"
-                                :index="index"
-                                type="quotaExt"
+                                :dimension-data="state.dimension"
+                                :quota-data="state.quota"
                                 :themes="props.themes"
-                                @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
-                                @onQuotaItemRemove="quotaItemRemove"
-                                @onNameEdit="showRename"
-                                @editItemFilter="showQuotaEditFilter"
-                                @editItemCompare="showQuotaEditCompare"
-                                @valueFormatter="valueFormatter"
+                                @onDimensionItemChange="drillItemChange"
+                                @onDimensionItemRemove="drillItemRemove"
                               />
                             </template>
                           </draggable>
-                          <drag-placeholder :drag-list="view.yAxisExt" />
+                          <drag-placeholder :drag-list="view.drillFields" />
                         </div>
+                      </el-row>
+
+                      <!--filter-->
+                      <el-row class="padding-lr drag-data no-top-border no-top-padding">
+                        <div class="form-draggable-title">
+                          <span>
+                            {{ t('chart.result_filter') }}
+                          </span>
+                          <el-tooltip
+                            :effect="toolTip"
+                            placement="top"
+                            :content="t('common.delete')"
+                          >
+                            <el-icon
+                              class="remove-icon"
+                              :class="{ 'remove-icon--dark': themes === 'dark' }"
+                              size="14px"
+                              @click="removeItems('customFilter')"
+                            >
+                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
+                            </el-icon>
+                          </el-tooltip>
+                        </div>
+                        <div
+                          class="tree-btn"
+                          :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
+                          @click="openTreeFilter"
+                        >
+                          <el-icon>
+                            <Icon class="svg-background" name="icon-filter"></Icon>
+                          </el-icon>
+
+                          <span>{{ $t('chart.filter') }}</span>
+                        </div>
+                      </el-row>
+
+                      <el-row v-if="showAggregate" class="refresh-area">
+                        <el-form-item
+                          class="form-item no-margin-bottom"
+                          :class="'form-item-' + themes"
+                        >
+                          <el-checkbox
+                            v-model="view.aggregate"
+                            :effect="themes"
+                            size="small"
+                            @change="aggregateChange"
+                          >
+                            {{ t('chart.aggregate_time') }}
+                          </el-checkbox>
+                        </el-form-item>
                       </el-row>
                     </template>
-                    <template v-else-if="view.type === 'bar-range'">
-                      <!--yAxis-->
-                      <el-row class="padding-lr drag-data" v-if="showAxis('yAxis')">
-                        <div class="form-draggable-title">
-                          <span>
-                            {{ chartViewInstance.axisConfig.yAxis.name }}
-                          </span>
-                          <el-tooltip
-                            :effect="toolTip"
-                            placement="top"
-                            :content="t('common.delete')"
-                          >
-                            <el-icon
-                              class="remove-icon"
-                              :class="{ 'remove-icon--dark': themes === 'dark' }"
-                              size="14px"
-                              @click="removeItems('yAxis')"
-                            >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
-                            </el-icon>
-                          </el-tooltip>
-                        </div>
-                        <div
-                          @drop="$event => drop($event, 'yAxis')"
-                          @dragenter="dragEnter"
-                          @dragover="$event => dragOver($event)"
-                        >
-                          <draggable
-                            :list="view.yAxis"
-                            :move="onMove"
-                            item-key="id"
-                            group="drag"
-                            animation="300"
-                            class="drag-block-style"
-                            :class="{ dark: themes === 'dark' }"
-                            @add="addYaxis"
-                            @change="e => onAxisChange(e, 'yAxis')"
-                          >
-                            <template #item="{ element, index }">
-                              <dimension-item
-                                v-if="element.groupType === 'd'"
-                                :dimension-data="state.dimension"
-                                :quota-data="state.quota"
-                                :chart="view"
-                                :item="element"
-                                :index="index"
-                                :themes="props.themes"
-                                type="quota"
-                                @onDimensionItemChange="dimensionItemChange"
-                                @onDimensionItemRemove="dimensionItemRemove"
-                                @onNameEdit="showRename"
-                                @onCustomSort="onExtCustomSort"
-                              />
-                              <quota-item
-                                v-else-if="element.groupType === 'q'"
-                                :dimension-data="state.dimension"
-                                :quota-data="state.quota"
-                                :chart="view"
-                                :item="element"
-                                :index="index"
-                                type="quota"
-                                :themes="props.themes"
-                                @onQuotaItemChange="item => quotaItemChange(item, 'yAxis')"
-                                @onQuotaItemRemove="quotaItemRemove"
-                                @onNameEdit="showRename"
-                                @editItemFilter="showQuotaEditFilter"
-                                @editItemCompare="showQuotaEditCompare"
-                                @valueFormatter="valueFormatter"
-                              />
-                            </template>
-                          </draggable>
-                          <drag-placeholder :drag-list="view.yAxis" />
-                        </div>
-                      </el-row>
-                      <!--yAxisExt-->
-                      <el-row class="padding-lr drag-data" v-if="showAxis('yAxisExt')">
-                        <div class="form-draggable-title">
-                          <span>
-                            {{ chartViewInstance.axisConfig.yAxisExt.name }}
-                          </span>
-                          <el-tooltip
-                            :effect="toolTip"
-                            placement="top"
-                            :content="t('common.delete')"
-                          >
-                            <el-icon
-                              class="remove-icon"
-                              :class="{ 'remove-icon--dark': themes === 'dark' }"
-                              size="14px"
-                              @click="removeItems('yAxisExt')"
-                            >
-                              <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
-                            </el-icon>
-                          </el-tooltip>
-                        </div>
-                        <div
-                          @drop="$event => drop($event, 'yAxisExt')"
-                          @dragenter="dragEnter"
-                          @dragover="$event => dragOver($event)"
-                        >
-                          <draggable
-                            :list="view.yAxisExt"
-                            :move="onMove"
-                            item-key="id"
-                            group="drag"
-                            animation="300"
-                            class="drag-block-style"
-                            :class="{ dark: themes === 'dark' }"
-                            @add="addYaxisExt"
-                            @change="e => onAxisChange(e, 'yAxisExt')"
-                          >
-                            <template #item="{ element, index }">
-                              <dimension-item
-                                v-if="element.groupType === 'd'"
-                                :dimension-data="state.dimension"
-                                :quota-data="state.quota"
-                                :chart="view"
-                                :item="element"
-                                :index="index"
-                                :themes="props.themes"
-                                type="quotaExt"
-                                @onDimensionItemChange="dimensionItemChange"
-                                @onDimensionItemRemove="dimensionItemRemove"
-                                @onNameEdit="showRename"
-                                @onCustomSort="onExtCustomSort"
-                              />
-                              <quota-item
-                                v-else-if="element.groupType === 'q'"
-                                :dimension-data="state.dimension"
-                                :quota-data="state.quota"
-                                :chart="view"
-                                :item="element"
-                                :index="index"
-                                type="quotaExt"
-                                :themes="props.themes"
-                                @onQuotaItemChange="item => quotaItemChange(item, 'yAxisExt')"
-                                @onQuotaItemRemove="quotaItemRemove"
-                                @onNameEdit="showRename"
-                                @editItemFilter="showQuotaEditFilter"
-                                @editItemCompare="showQuotaEditCompare"
-                                @valueFormatter="valueFormatter"
-                              />
-                            </template>
-                          </draggable>
-                          <drag-placeholder :drag-list="view.yAxisExt" />
-                        </div>
-                      </el-row>
-                    </template>
-                    <!-- extBubble -->
-                    <el-row class="padding-lr drag-data" v-if="showAxis('extBubble')">
-                      <div class="form-draggable-title">
-                        <span class="data-area-label">
-                          <span style="margin-right: 4px">
-                            {{ chartViewInstance.axisConfig.extBubble.name }}
-                          </span>
-                          <el-tooltip
-                            v-if="chartViewInstance.axisConfig.extBubble.tooltip"
-                            class="item"
-                            :effect="toolTip"
-                            placement="top"
-                          >
-                            <template #content>
-                              <span> {{ chartViewInstance.axisConfig.extBubble.tooltip }}</span>
-                            </template>
-                            <el-icon
-                              class="hint-icon"
-                              :class="{ 'hint-icon--dark': themes === 'dark' }"
-                            >
-                              <Icon name="icon_info_outlined" />
-                            </el-icon>
-                          </el-tooltip>
-                        </span>
-                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon
-                            class="remove-icon"
-                            :class="{ 'remove-icon--dark': themes === 'dark' }"
-                            size="14px"
-                            @click="removeItems('extBubble')"
-                          >
-                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
-                          </el-icon>
-                        </el-tooltip>
-                      </div>
-                      <div
-                        @drop="$event => drop($event, 'extBubble')"
-                        @dragenter="dragEnter"
-                        @dragover="$event => dragOver($event)"
-                      >
-                        <draggable
-                          :list="view.extBubble"
-                          :move="onMove"
-                          item-key="id"
-                          group="drag"
-                          animation="300"
-                          class="drag-block-style"
-                          :class="{ dark: themes === 'dark' }"
-                          @add="addExtBubble"
-                          @change="e => onAxisChange(e, 'extBubble')"
-                        >
-                          <template #item="{ element, index }">
-                            <quota-item
-                              :dimension-data="state.dimension"
-                              :quota-data="state.quota"
-                              :chart="view"
-                              :item="element"
-                              :index="index"
-                              type="extBubble"
-                              :themes="props.themes"
-                              @onQuotaItemChange="item => quotaItemChange(item, 'extBubble')"
-                              @onQuotaItemRemove="quotaItemRemove"
-                              @onNameEdit="showRename"
-                              @editItemFilter="showQuotaEditFilter"
-                              @editItemCompare="showQuotaEditCompare"
-                              @valueFormatter="valueFormatter"
-                            />
-                          </template>
-                        </draggable>
-                        <drag-placeholder :drag-list="view.extBubble" />
-                      </div>
-                    </el-row>
-
-                    <!--drill-->
-                    <el-row class="padding-lr drag-data" v-if="showAxis('drill')">
-                      <div class="form-draggable-title">
-                        <span class="data-area-label">
-                          <span style="margin-right: 4px">
-                            {{ t('chart.drill') }} / {{ t('chart.dimension') }}
-                          </span>
-                          <el-tooltip class="item" :effect="toolTip" placement="top">
-                            <template #content>
-                              <span> {{ t('chart.drill_dimension_tip') }}</span>
-                            </template>
-                            <el-icon
-                              class="hint-icon"
-                              :class="{ 'hint-icon--dark': themes === 'dark' }"
-                            >
-                              <Icon name="icon_info_outlined" />
-                            </el-icon>
-                          </el-tooltip>
-                        </span>
-                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon
-                            class="remove-icon"
-                            :class="{ 'remove-icon--dark': themes === 'dark' }"
-                            size="14px"
-                            @click="removeItems('drillFields')"
-                          >
-                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
-                          </el-icon>
-                        </el-tooltip>
-                      </div>
-                      <div
-                        @drop="$event => drop($event, 'drillFields')"
-                        @dragenter="dragEnter"
-                        @dragover="$event => dragOver($event)"
-                      >
-                        <draggable
-                          :list="view.drillFields"
-                          item-key="id"
-                          group="drag"
-                          animation="300"
-                          :move="onMove"
-                          class="drag-block-style"
-                          :class="{ dark: themes === 'dark' }"
-                          @add="addDrill"
-                        >
-                          <template #item="{ element, index }">
-                            <drill-item
-                              :key="element.id"
-                              :index="index"
-                              :chart="view"
-                              :item="element"
-                              :dimension-data="state.dimension"
-                              :quota-data="state.quota"
-                              :themes="props.themes"
-                              @onDimensionItemChange="drillItemChange"
-                              @onDimensionItemRemove="drillItemRemove"
-                            />
-                          </template>
-                        </draggable>
-                        <drag-placeholder :drag-list="view.drillFields" />
-                      </div>
-                    </el-row>
-
-                    <!--filter-->
-                    <el-row class="padding-lr drag-data no-top-border no-top-padding">
-                      <div class="form-draggable-title">
-                        <span>
-                          {{ t('chart.result_filter') }}
-                        </span>
-                        <el-tooltip :effect="toolTip" placement="top" :content="t('common.delete')">
-                          <el-icon
-                            class="remove-icon"
-                            :class="{ 'remove-icon--dark': themes === 'dark' }"
-                            size="14px"
-                            @click="removeItems('customFilter')"
-                          >
-                            <Icon class-name="inner-class" name="icon_delete-trash_outlined" />
-                          </el-icon>
-                        </el-tooltip>
-                      </div>
-                      <div
-                        class="tree-btn"
-                        :class="{ 'tree-btn--dark': themes === 'dark', active: isFilterActive }"
-                        @click="openTreeFilter"
-                      >
-                        <el-icon>
-                          <Icon class="svg-background" name="icon-filter"></Icon>
-                        </el-icon>
-
-                        <span>{{ $t('chart.filter') }}</span>
-                      </div>
-                    </el-row>
-
-                    <el-row class="refresh-area" v-if="showAggregate">
-                      <el-form-item
-                        class="form-item no-margin-bottom"
-                        :class="'form-item-' + themes"
-                      >
-                        <el-checkbox
-                          :effect="themes"
-                          size="small"
-                          v-model="view.aggregate"
-                          @change="aggregateChange"
-                        >
-                          {{ t('chart.aggregate_time') }}
-                        </el-checkbox>
-                      </el-form-item>
-                    </el-row>
                   </el-scrollbar>
                   <el-footer :class="{ 'refresh-active-footer': view.refreshViewEnable }">
                     <el-row class="refresh-area">
@@ -2401,9 +2439,9 @@ const deleteChartFieldItem = id => {
                         :class="'form-item-' + themes"
                       >
                         <el-checkbox
+                          v-model="view.refreshViewEnable"
                           :effect="themes"
                           size="small"
-                          v-model="view.refreshViewEnable"
                           @change="recordSnapshotInfo('render')"
                         >
                           {{ t('visualization.refresh_frequency') }}
@@ -2426,12 +2464,12 @@ const deleteChartFieldItem = id => {
                           >
                             <template #append>
                               <el-select
-                                :effect="themes"
                                 v-model="view.refreshUnit"
-                                @change="recordSnapshotInfo('render')"
+                                :effect="themes"
                                 size="small"
                                 placeholder="Select"
                                 style="width: 80px"
+                                @change="recordSnapshotInfo('render')"
                               >
                                 <el-option
                                   :effect="themes"
@@ -2456,8 +2494,8 @@ const deleteChartFieldItem = id => {
                         </span>
                         <span v-if="view.type !== 'richTextView'">
                           <el-radio-group
-                            :effect="themes"
                             v-model="view.resultMode"
+                            :effect="themes"
                             class="radio-span"
                             size="small"
                             @change="recordSnapshotInfo('render')"
@@ -2469,6 +2507,7 @@ const deleteChartFieldItem = id => {
                             </el-radio>
                             <el-radio label="custom">
                               <el-input-number
+                                v-model="view.resultCount"
                                 :min="1"
                                 :max="1000000"
                                 :controls="false"
@@ -2476,7 +2515,6 @@ const deleteChartFieldItem = id => {
                                 :step-strictly="true"
                                 :value-on-clear="1000"
                                 :disabled="view.resultMode === 'all'"
-                                v-model="view.resultCount"
                                 class="result-count"
                                 size="small"
                                 @change="recordSnapshotInfo('calcData')"
@@ -2509,37 +2547,49 @@ const deleteChartFieldItem = id => {
               >
                 <el-container direction="vertical">
                   <el-scrollbar class="drag_main_area">
-                    <chart-style
-                      v-if="chartStyleShow"
-                      :properties="chartViewInstance.properties"
-                      :property-inner-all="chartViewInstance.propertyInner"
-                      :selector-spec="chartViewInstance.selectorSpec"
-                      :common-background-pop="curComponent?.commonBackground"
-                      :chart="view"
-                      :themes="themes"
-                      :dimension-data="state.dimension"
-                      :quota-data="state.quota"
-                      :all-fields="allFields"
-                      @onColorChange="onColorChange"
-                      @onMiscChange="onMiscChange"
-                      @onLabelChange="onLabelChange"
-                      @onTooltipChange="onTooltipChange"
-                      @onChangeXAxisForm="onChangeXAxisForm"
-                      @onChangeYAxisForm="onChangeYAxisForm"
-                      @onChangeYAxisExtForm="onChangeYAxisExtForm"
-                      @onTextChange="onTextChange"
-                      @onIndicatorChange="onIndicatorChange"
-                      @onIndicatorNameChange="onIndicatorNameChange"
-                      @onLegendChange="onLegendChange"
-                      @onBackgroundChange="onBackgroundChange"
-                      @onBasicStyleChange="onBasicStyleChange"
-                      @onTableHeaderChange="onTableHeaderChange"
-                      @onTableCellChange="onTableCellChange"
-                      @onTableTotalChange="onTableTotalChange"
-                      @onChangeMiscStyleForm="onChangeMiscStyleForm"
-                      @onExtTooltipChange="onExtTooltipChange"
-                      @onChangeQuadrantForm="onChangeQuadrantForm"
-                    />
+                    <template v-if="view.plugin?.isPlugin">
+                      <plugin-component
+                        :jsname="view.plugin.staticMap['editor-style']"
+                        :view="view"
+                        :dimension="state.dimension"
+                        :quota="state.quota"
+                        :themes="themes"
+                        :emitter="emitter"
+                      />
+                    </template>
+                    <template v-else>
+                      <chart-style
+                        v-if="chartStyleShow"
+                        :properties="chartViewInstance.properties"
+                        :property-inner-all="chartViewInstance.propertyInner"
+                        :selector-spec="chartViewInstance.selectorSpec"
+                        :common-background-pop="curComponent?.commonBackground"
+                        :chart="view"
+                        :themes="themes"
+                        :dimension-data="state.dimension"
+                        :quota-data="state.quota"
+                        :all-fields="allFields"
+                        @onColorChange="onColorChange"
+                        @onMiscChange="onMiscChange"
+                        @onLabelChange="onLabelChange"
+                        @onTooltipChange="onTooltipChange"
+                        @onChangeXAxisForm="onChangeXAxisForm"
+                        @onChangeYAxisForm="onChangeYAxisForm"
+                        @onChangeYAxisExtForm="onChangeYAxisExtForm"
+                        @onTextChange="onTextChange"
+                        @onIndicatorChange="onIndicatorChange"
+                        @onIndicatorNameChange="onIndicatorNameChange"
+                        @onLegendChange="onLegendChange"
+                        @onBackgroundChange="onBackgroundChange"
+                        @onBasicStyleChange="onBasicStyleChange"
+                        @onTableHeaderChange="onTableHeaderChange"
+                        @onTableCellChange="onTableCellChange"
+                        @onTableTotalChange="onTableTotalChange"
+                        @onChangeMiscStyleForm="onChangeMiscStyleForm"
+                        @onExtTooltipChange="onExtTooltipChange"
+                        @onChangeQuadrantForm="onChangeQuadrantForm"
+                      />
+                    </template>
                   </el-scrollbar>
                 </el-container>
               </el-tab-pane>
@@ -2552,20 +2602,32 @@ const deleteChartFieldItem = id => {
               >
                 <el-container direction="vertical">
                   <el-scrollbar class="drag_main_area">
-                    <senior
-                      :chart="view"
-                      :quota-data="view.yAxis"
-                      :quota-ext-data="view.yAxisExt"
-                      :fields-data="allFields"
-                      :themes="themes"
-                      :properties="chartViewInstance.properties"
-                      :property-inner-all="chartViewInstance.propertyInner"
-                      @onFunctionCfgChange="onFunctionCfgChange"
-                      @onAssistLineChange="onAssistLineChange"
-                      @onScrollCfgChange="onScrollCfgChange"
-                      @onThresholdChange="onThresholdChange"
-                      @onMapMappingChange="onMapMappingChange"
-                    />
+                    <template v-if="view.plugin?.isPlugin">
+                      <plugin-component
+                        :jsname="view.plugin.staticMap['editor-senior']"
+                        :view="view"
+                        :dimension="state.dimension"
+                        :quota="state.quota"
+                        :themes="themes"
+                        :emitter="emitter"
+                      />
+                    </template>
+                    <template v-else>
+                      <senior
+                        :chart="view"
+                        :quota-data="view.yAxis"
+                        :quota-ext-data="view.yAxisExt"
+                        :fields-data="allFields"
+                        :themes="themes"
+                        :properties="chartViewInstance.properties"
+                        :property-inner-all="chartViewInstance.propertyInner"
+                        @onFunctionCfgChange="onFunctionCfgChange"
+                        @onAssistLineChange="onAssistLineChange"
+                        @onScrollCfgChange="onScrollCfgChange"
+                        @onThresholdChange="onThresholdChange"
+                        @onMapMappingChange="onMapMappingChange"
+                      />
+                    </template>
                   </el-scrollbar>
                 </el-container>
               </el-tab-pane>
@@ -2586,15 +2648,15 @@ const deleteChartFieldItem = id => {
           size="20px"
           @click="collapseChange('datasetAreaCollapse')"
         >
-          <Fold class="collapse-icon" v-if="canvasCollapse.datasetAreaCollapse" />
-          <Expand class="collapse-icon" v-else />
+          <Fold v-if="canvasCollapse.datasetAreaCollapse" class="collapse-icon" />
+          <Expand v-else class="collapse-icon" />
         </el-icon>
-        <div class="collapse-title" v-if="canvasCollapse.datasetAreaCollapse">
+        <div v-if="canvasCollapse.datasetAreaCollapse" class="collapse-title">
           <span style="font-size: 14px">数据集</span>
         </div>
         <el-container
-          direction="vertical"
           v-if="!canvasCollapse.datasetAreaCollapse"
+          direction="vertical"
           class="dataset-area view-panel-row"
         >
           <el-header class="editor-title">
@@ -2604,21 +2666,21 @@ const deleteChartFieldItem = id => {
             <el-row class="dataset-select">
               <dataset-select
                 ref="datasetSelector"
+                v-model="view.tableId"
                 style="flex: 1"
                 :view-id="view.id"
                 :state-obj="state"
-                v-model="view.tableId"
                 :themes="themes"
                 @add-ds-window="addDsWindow"
-                @onDatasetChange="recordSnapshotInfo('calcData')"
+                @on-dataset-change="recordSnapshotInfo('calcData')"
               />
               <el-tooltip :effect="toolTip" content="编辑数据集" placement="top">
                 <el-icon
+                  v-if="curDatasetWeight >= 7 && !isDataEaseBi"
                   class="field-search-icon-btn"
                   :class="{ dark: themes === 'dark' }"
                   style="margin-left: 8px"
                   @click="editDs"
-                  v-if="curDatasetWeight >= 7 && !isDataEaseBi"
                 >
                   <Icon name="icon_edit_outlined" class="el-icon-arrow-down el-icon-delete" />
                 </el-icon>
@@ -2651,9 +2713,9 @@ const deleteChartFieldItem = id => {
                 </span>
               </div>
               <el-input
+                v-model="state.searchField"
                 size="middle"
                 :effect="themes"
-                v-model="state.searchField"
                 class="dataset-search-input"
                 :class="{ dark: themes === 'dark' }"
                 :placeholder="t('chart.search') + t('chart.field')"
@@ -2667,8 +2729,8 @@ const deleteChartFieldItem = id => {
               </el-input>
             </el-row>
             <div
-              v-loading="fieldLoading"
               ref="elDrag"
+              v-loading="fieldLoading"
               style="height: calc(100% - 137px); min-height: 120px"
             >
               <div
@@ -2681,16 +2743,16 @@ const deleteChartFieldItem = id => {
                 <label>{{ t('chart.dimension') }}</label>
                 <el-scrollbar class="drag-list">
                   <div
+                    v-for="element in dimensionData"
+                    :key="element.id"
+                    :draggable="true"
+                    class="item father"
                     @click.ctrl="setActiveCtrl(element)"
                     @click.meta="setActiveCtrl(element)"
                     @click.exact="setActive(element)"
                     @click.shift="setActiveShift(element)"
                     @dragstart="$event => singleDragStartD($event, element, 'dimension')"
-                    :draggable="true"
                     @dragend="singleDragEnd"
-                    class="item father"
-                    v-for="element in dimensionData"
-                    :key="element.id"
                   >
                     <div
                       class="items flex-align-center"
@@ -2702,7 +2764,7 @@ const deleteChartFieldItem = id => {
                     >
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${fieldType[element.deType]}`"
+                          :class-name="`field-icon-${fieldType[element.deType]}`"
                           :name="`field_${fieldType[element.deType]}`"
                         />
                       </el-icon>
@@ -2760,22 +2822,22 @@ const deleteChartFieldItem = id => {
                       </el-dropdown>
                     </div>
                     <div
-                      @dragstart="dragStartD"
-                      :draggable="true"
-                      @dragend="dragEnd"
                       v-if="activeDimension.map(itx => itx.id).includes(element.id)"
+                      :draggable="true"
                       class="shadow"
                       :class="isDraggingItem && 'is-dragging'"
+                      @dragstart="dragStartD"
+                      @dragend="dragEnd"
                     >
                       <template v-if="isDrag">
                         <div
-                          class="items flex-align-center"
                           v-for="ele in activeDimension"
                           :key="ele.id"
+                          class="items flex-align-center"
                         >
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${fieldType[ele.deType]}`"
+                              :class-name="`field-icon-${fieldType[ele.deType]}`"
                               :name="`field_${fieldType[ele.deType]}`"
                             />
                           </el-icon>
@@ -2830,16 +2892,16 @@ const deleteChartFieldItem = id => {
                 <label>{{ t('chart.quota') }}</label>
                 <el-scrollbar class="drag-list">
                   <div
+                    v-for="element in quotaData"
+                    :key="element.id"
+                    class="item father"
+                    :draggable="true"
                     @click.ctrl="setActiveCtrl(element, 'quota')"
                     @click.meta="setActiveCtrl(element, 'quota')"
                     @click.exact="setActive(element, 'quota')"
                     @click.shift="setActiveShift(element, 'quota')"
-                    class="item father"
                     @dragstart="$event => singleDragStart($event, element, 'quota')"
-                    :draggable="true"
                     @dragend="singleDragEnd"
-                    v-for="element in quotaData"
-                    :key="element.id"
                   >
                     <div
                       class="items flex-align-center"
@@ -2851,7 +2913,7 @@ const deleteChartFieldItem = id => {
                     >
                       <el-icon>
                         <Icon
-                          :className="`field-icon-${fieldType[element.deType]}`"
+                          :class-name="`field-icon-${fieldType[element.deType]}`"
                           :name="`field_${fieldType[element.deType]}`"
                         ></Icon>
                       </el-icon>
@@ -2909,22 +2971,22 @@ const deleteChartFieldItem = id => {
                       </el-dropdown>
                     </div>
                     <div
-                      @dragstart="dragStart"
-                      :draggable="true"
-                      @dragend="dragEnd"
                       v-if="activeQuota.map(itx => itx.id).includes(element.id)"
+                      :draggable="true"
                       class="shadow"
                       :class="isDraggingItem && 'is-dragging'"
+                      @dragstart="dragStart"
+                      @dragend="dragEnd"
                     >
                       <template v-if="isDrag">
                         <div
-                          class="items flex-align-center"
                           v-for="ele in activeQuota"
                           :key="ele.id"
+                          class="items flex-align-center"
                         >
                           <el-icon>
                             <Icon
-                              :className="`field-icon-${fieldType[ele.deType]}`"
+                              :class-name="`field-icon-${fieldType[ele.deType]}`"
                               :name="`field_${fieldType[ele.deType]}`"
                             ></Icon>
                           </el-icon>
@@ -2973,9 +3035,9 @@ const deleteChartFieldItem = id => {
     <chart-template-info v-if="templateStatusShow"></chart-template-info>
     <!--显示名修改-->
     <el-dialog
+      v-model="state.renameItem"
       :title="t('chart.show_name_set')"
       :visible="state.renameItem"
-      v-model="state.renameItem"
       width="420px"
       :close-on-click-modal="false"
     >
@@ -2986,8 +3048,8 @@ const deleteChartFieldItem = id => {
           require-asterisk-position="right"
           :model="state.itemForm"
           :rules="itemFormRules"
-          @submit.prevent
           label-position="top"
+          @submit.prevent
         >
           <el-form-item :label="t('dataset.field_origin_name')" class="name-edit-form">
             <span class="text">{{ state.itemForm.name }}</span>
@@ -2998,8 +3060,8 @@ const deleteChartFieldItem = id => {
             prop="chartShowName"
           >
             <el-input
-              class="text"
               v-model="state.itemForm.chartShowName"
+              class="text"
               :maxlength="20"
               clearable
             />
@@ -3018,8 +3080,8 @@ const deleteChartFieldItem = id => {
 
     <!--指标过滤器-->
     <el-dialog
-      v-model="state.quotaFilterEdit"
       v-if="state.quotaFilterEdit"
+      v-model="state.quotaFilterEdit"
       :title="t('chart.add_filter')"
       :visible="state.quotaFilterEdit"
       :close-on-click-modal="false"
@@ -3035,8 +3097,8 @@ const deleteChartFieldItem = id => {
       </template>
     </el-dialog>
     <el-dialog
-      v-model="state.resultFilterEdit"
       v-if="state.resultFilterEdit"
+      v-model="state.resultFilterEdit"
       :title="t('chart.add_filter')"
       :visible="state.resultFilterEdit"
       :close-on-click-modal="false"
@@ -3054,8 +3116,8 @@ const deleteChartFieldItem = id => {
 
     <!--同环比设置-->
     <el-dialog
-      v-model="state.showEditQuotaCompare"
       v-if="state.showEditQuotaCompare"
+      v-model="state.showEditQuotaCompare"
       :title="t('chart.yoy_setting')"
       :visible="state.showEditQuotaCompare"
       :close-on-click-modal="false"
@@ -3075,8 +3137,8 @@ const deleteChartFieldItem = id => {
 
     <!--数值格式化-->
     <el-dialog
-      v-model="state.showValueFormatter"
       v-if="state.showValueFormatter"
+      v-model="state.showValueFormatter"
       :title="t('chart.value_formatter') + ' - ' + state.valueFormatterItem.name"
       :visible="state.showValueFormatter"
       :close-on-click-modal="false"
@@ -3096,8 +3158,8 @@ const deleteChartFieldItem = id => {
 
     <!--xAxis自定义排序-->
     <el-dialog
-      v-model="state.showCustomSort"
       v-if="state.showCustomSort"
+      v-model="state.showCustomSort"
       :title="t('chart.custom_sort') + t('chart.sort')"
       :visible="state.showCustomSort"
       :close-on-click-modal="false"
@@ -3108,7 +3170,7 @@ const deleteChartFieldItem = id => {
         :chart="view"
         :field-type="customSortAxis"
         :field="state.customSortField"
-        @onSortChange="customSortChange"
+        @on-sort-change="customSortChange"
       />
       <template #footer>
         <div class="dialog-footer">
@@ -3136,11 +3198,11 @@ const deleteChartFieldItem = id => {
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
   <Teleport v-if="componentNameEdit" :to="'#component-name'">
     <input
+      ref="componentNameInput"
+      v-model="inputComponentName"
       :effect="themes"
       width="100%"
       @change="onComponentNameChange"
-      ref="componentNameInput"
-      v-model="inputComponentName"
       @blur="closeEditComponentName"
     />
   </Teleport>
