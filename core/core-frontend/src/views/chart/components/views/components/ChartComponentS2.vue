@@ -2,6 +2,7 @@
 import {
   computed,
   inject,
+  nextTick,
   onBeforeUnmount,
   onMounted,
   PropType,
@@ -393,6 +394,11 @@ const trackMenu = computed(() => {
 })
 
 const resizeAction = resizeColumn => {
+  // 从头开始滚动
+  if (myChart?.facet.timer) {
+    myChart?.facet.timer.stop()
+    nextTick(initScroll)
+  }
   if (showPosition.value !== 'canvas') {
     return
   }
