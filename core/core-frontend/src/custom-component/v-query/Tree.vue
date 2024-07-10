@@ -211,6 +211,8 @@ const selectStyle = computed(() => {
     @change="handleValueChange"
     :render-after-expand="false"
     show-checkbox
+    collapse-tags
+    collapse-tags-tooltip
     key="multipleTree"
     filterable
     :style="selectStyle"
