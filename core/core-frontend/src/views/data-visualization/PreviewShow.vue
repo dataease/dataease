@@ -15,9 +15,12 @@ import { Icon } from '@/components/icon-custom'
 import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
 import MultiplexPreviewShow from '@/views/data-visualization/MultiplexPreviewShow.vue'
 import DvPreview from '@/views/data-visualization/DvPreview.vue'
+import AppExportForm from "@/components/de-app/AppExportForm.vue";
+import {personInfoApi} from "@/api/user";
+import {ElMessage} from "element-plus-secondary";
 
 const dvMainStore = dvMainStoreWithOut()
-const { dvInfo } = storeToRefs(dvMainStore)
+const { dvInfo, canvasViewDataInfo } = storeToRefs(dvMainStore)
 const previewCanvasContainer = ref(null)
 const dvPreviewRef = ref(null)
 const slideShow = ref(true)
@@ -26,6 +29,7 @@ const permissionStore = usePermissionStoreWithOut()
 const dataInitState = ref(true)
 const downloadStatus = ref(false)
 const { width, node } = useMoveLine('DASHBOARD')
+const appExportFormRef = ref(null)
 const props = defineProps({
   showPosition: {
     required: false,
@@ -110,6 +114,46 @@ const downloadAsAppTemplate = downloadType => {
   })
 }
 
+const downLoadToAppPre =()=>{
+  const result = checkTemplate()
+  if (result && result.length > 0) {
+    ElMessage.warning(`当前仪表板中[${result}]属于模版视图，无法导出，请先设置数据集！`,)
+  } else {
+    appExportFormRef.value.init({
+      appName: dvInfo.value.name,
+      icon: null,
+      version: '2.0',
+      creator: state.userLoginInfo?.nickName,
+      required: '2.9.0',
+      description: null
+    })
+  }
+}
+const checkTemplate =()=> {
+  let templateViewNames = ','
+  Object.keys(canvasViewDataInfo.value).forEach(key => {
+    const viewInfo = canvasViewDataInfo.value[key]
+    if (viewInfo.dataFrom === 'template') {
+      templateViewNames = templateViewNames + viewInfo.title + ','
+    }
+  })
+  return templateViewNames.slice(1)
+}
+const downLoadToApp = (appAttachInfo) =>{
+  this.dataLoading = true
+  export2AppCheck(this.$store.state.panel.panelInfo.id).then(rsp => {
+    if (rsp.data.checkStatus) {
+      this.saveAppFile(rsp.data, appAttachInfo)
+    } else {
+      this.dataLoading = false
+      this.$message({
+        message: rsp.data.checkMes,
+        type: 'error'
+      })
+    }
+  })
+},
+
 const slideOpenChange = () => {
   slideShow.value = !slideShow.value
 }
@@ -127,7 +171,8 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  curPreviewGap: 0
+  curPreviewGap: 0,
+  userLoginInfo: {}
 })
 
 const sideTreeStatus = ref(true)
@@ -147,6 +192,16 @@ const getPreviewStateInfo = () => {
   return state
 }
 
+const downLoadApp = (appAttachInfo) =>{
+  downLoadToApp(appAttachInfo)
+}
+
+const findUserData = callback => {
+  personInfoApi().then(rsp => {
+    callback(rsp)
+  })
+}
+
 defineExpose({
   getPreviewStateInfo
 })
@@ -155,6 +210,9 @@ onBeforeMount(() => {
   if (props.showPosition === 'preview') {
     dvMainStore.canvasDataInit()
   }
+  findUserData(res => {
+    state.userLoginInfo = res.data
+  })
 })
 </script>
 
@@ -244,6 +302,8 @@ onBeforeMount(() => {
       </template>
     </el-container>
   </div>
+  <app-export-form ref="appExportFormRef"
+                   @downLoadApp="downLoadApp"></app-export-form>
 </template>
 
 <style lang="less">

@@ -7,6 +7,7 @@ import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
+import io.dataease.api.visualization.vo.VisualizationExport2AppVO;
 import io.dataease.api.visualization.vo.VisualizationResourceVO;
 import io.dataease.auth.DeApiPath;
 import io.dataease.auth.DePermit;
@@ -110,4 +111,8 @@ public interface DataVisualizationApi {
     @GetMapping("/viewDetailList/{dvId}")
     @Operation(summary = "仪表板视图明细数据")
     List<VisualizationViewTableDTO> detailList(@PathVariable("dvId") Long dvId);
+
+    @GetMapping("/export2AppCheck/{dvId}")
+    @Operation(summary = "仪表板视图明细数据")
+    VisualizationExport2AppVO export2AppCheck(@PathVariable("dvId") Long dvId);
 }
