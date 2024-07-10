@@ -223,7 +223,7 @@ export const DEFAULT_MISC: ChartMiscAttr = {
     id: '',
     summary: ''
   },
-  gaugeMax: 100,
+  gaugeMax: 1,
   gaugeStartAngle: 225,
   gaugeEndAngle: -45,
   nameFontSize: 18,
@@ -244,7 +244,7 @@ export const DEFAULT_MISC: ChartMiscAttr = {
   nameFontShadow: false,
   treemapWidth: 80,
   treemapHeight: 80,
-  liquidMax: 100,
+  liquidMax: 1,
   liquidMaxType: 'fix',
   liquidMaxField: {
     id: '',
