@@ -1,6 +1,7 @@
 <script lang="ts" setup>
 import { PropType, computed, onMounted, shallowRef, ref, nextTick } from 'vue'
-import { Column, Line } from '@antv/g2plot'
+import { Column, Line, Pie } from '@antv/g2plot'
+import { useElementSize } from '@vueuse/core'
 import { downloadCanvas } from '@/utils/imgUtils'
 import ExcelJS from 'exceljs'
 interface Copilot {
@@ -37,20 +38,33 @@ const props = defineProps({
 const content = ref()
 const chartTypeList = ref()
 let columnPlot = null
+const chartRef = ref()
+const { width } = useElementSize(chartRef)
 onMounted(() => {
   const { chart, msgType, msgStatus, chartData, id } = props.copilotInfo
   if (msgStatus === 1 && msgType === 'api' && chartData) {
     if (['bar', 'line'].includes(chart.type)) {
-      isLine.value = chart.type === 'line'
+      activeCommand.value = chart.type
       const chartType = chart.type === 'bar' ? Column : Line
       columnPlot = new chartType(`de-${id}-ed`, {
         data: chartData.data.data,
-        xField: chart.axis.x,
-        yField: chart.axis.y,
+        xField: chart.axis?.x,
+        yField: chart.axis?.y,
         legend: {
           layout: 'horizontal',
           position: 'left'
         }
+      })
+      columnPlot.render()
+    } else if (chart.type === 'pie') {
+      activeCommand.value = chart.type
+      columnPlot = new Pie(`de-${id}-ed`, {
+        appendPadding: 10,
+        data: chartData.data.data,
+        angleField: chart.axis?.y,
+        colorField: chart.axis?.x,
+        radius: 0.9,
+        interactions: [{ type: 'element-active' }]
       })
       columnPlot.render()
     } else {
@@ -104,43 +118,71 @@ const exportExcel = () => {
   })
 }
 const renderTableLocal = ref(false)
+const changeChartType = () => {
+  switchChartType(activeCommand.value)
+}
 const switchChartType = type => {
-  columnPlot?.destroy()
-  isLine.value = type === 'line'
-  const { chart, msgType, msgStatus, chartData, id } = props.copilotInfo
   renderTableLocal.value = false
-  if (msgStatus === 1 && msgType === 'api' && chartData) {
-    if (['bar', 'line'].includes(type)) {
-      const chartType = type === 'bar' ? Column : Line
-      const columnPlot = new chartType(`de-${id}-ed`, {
-        data: chartData.data.data,
-        xField: chart.axis.x,
-        yField: chart.axis.y,
-        legend: {
-          layout: 'horizontal',
-          position: 'left'
-        }
-      })
-      columnPlot.render()
-      return
+  nextTick(() => {
+    if (columnPlot?.chart && !columnPlot.chart.wrapperElement) {
+      columnPlot.chart.wrapperElement = document.querySelector(
+        `#de-${props.copilotInfo.id}-ed > div`
+      )
     }
 
-    columns.value = chartData.data.fields.map(_ => ({
-      key: `${_.originName}`,
-      dataKey: `${_.originName}`,
-      title: `${_.originName}`,
-      width: 150
-    }))
-
-    data.value = chartData.data.data.map((ele, index) => {
-      return {
-        ...ele,
-        id: index + 'row'
+    if (columnPlot?.chart?.wrapperElement) {
+      columnPlot.destroy()
+    }
+    if (['bar', 'line', 'pie'].includes(type)) {
+      activeCommand.value = type
+    }
+    const { chart, msgType, msgStatus, chartData, id } = props.copilotInfo
+    if (msgStatus === 1 && msgType === 'api' && chartData) {
+      if (['bar', 'line'].includes(type)) {
+        const chartType = type === 'bar' ? Column : Line
+        const columnPlot = new chartType(`de-${id}-ed`, {
+          data: chartData.data.data,
+          xField: chart.axis?.x,
+          yField: chart.axis?.y,
+          legend: {
+            layout: 'horizontal',
+            position: 'left'
+          }
+        })
+        columnPlot.render()
+        return
       }
-    })
 
-    renderTableLocal.value = true
-  }
+      if (type === 'pie') {
+        columnPlot = new Pie(`de-${id}-ed`, {
+          appendPadding: 10,
+          data: chartData.data.data,
+          angleField: chart.axis?.y,
+          colorField: chart.axis?.x,
+          radius: 0.9,
+          interactions: [{ type: 'element-active' }]
+        })
+        columnPlot.render()
+        return
+      }
+
+      columns.value = chartData.data.fields.map(_ => ({
+        key: `${_.originName}`,
+        dataKey: `${_.originName}`,
+        title: `${_.originName}`,
+        width: 150
+      }))
+
+      data.value = chartData.data.data.map((ele, index) => {
+        return {
+          ...ele,
+          id: index + 'row'
+        }
+      })
+
+      renderTableLocal.value = true
+    }
+  })
 }
 const chartTypeRef = ref()
 const downloadChart = () => {
@@ -154,11 +196,30 @@ const downloadChart = () => {
 const renderTable = computed(() => {
   const { chart, msgType, msgStatus, chartData } = props.copilotInfo
   return (
-    msgType === 'api' && msgStatus === 1 && !['bar', 'line'].includes(chart?.type) && chartData.data
+    msgType === 'api' &&
+    msgStatus === 1 &&
+    !['bar', 'line', 'pie'].includes(chart?.type) &&
+    chartData.data
   )
 })
-
-const isLine = ref(false)
+const activeCommand = ref('')
+const curTypeList = [
+  {
+    label: '折线图',
+    value: 'line',
+    icon: 'icon_chart-line-c'
+  },
+  {
+    label: '柱状图',
+    icon: 'icon_dashboard_outlined-c',
+    value: 'bar'
+  },
+  {
+    label: '饼图',
+    icon: 'icon_pie_outlined-c',
+    value: 'pie'
+  }
+]
 
 const columns = shallowRef([])
 const data = shallowRef([])
@@ -204,12 +265,12 @@ const tips = computed(() => {
         class="chart-type"
         ref="chartTypeRef"
       >
-        <div class="column-plot_de" :id="`de-${copilotInfo.id}-ed`">
+        <div ref="chartRef" class="column-plot_de" :id="`de-${copilotInfo.id}-ed`">
           <el-table-v2
             v-if="renderTable || renderTableLocal"
             :columns="columns"
             :data="data"
-            :width="718"
+            :width="width"
             :height="335"
             fixed
           />
@@ -222,28 +283,34 @@ const tips = computed(() => {
       class="chart-type_list"
       v-if="copilotInfo.msgType === 'api' && copilotInfo.msgStatus === 1"
     >
-      <el-tooltip effect="dark" content="切换至柱状图" placement="top">
-        <el-icon v-show="isLine" @click="switchChartType('bar')">
-          <Icon name="chart-bar" />
+      <template v-if="!renderTable">
+        <el-icon v-if="activeCommand" class="select-prefix">
+          <Icon :name="curTypeList.find(ele => ele.value === activeCommand).icon" />
         </el-icon>
-      </el-tooltip>
-
-      <el-tooltip effect="dark" content="切换至折线图" placement="top">
-        <el-icon style="font-size: 16px" v-show="!isLine" @click="switchChartType('line')">
-          <Icon name="icon_chart-line" />
-        </el-icon>
-      </el-tooltip>
-
-      <el-divider direction="vertical" />
+        <el-select
+          popper-class="copilot-select_popper"
+          class="select-copilot-list"
+          v-model="activeCommand"
+          size="small"
+          @change="changeChartType"
+        >
+          <el-option
+            v-for="item in curTypeList"
+            :key="item.label"
+            :label="item.label"
+            :value="item.value"
+          />
+        </el-select>
+        <el-divider direction="vertical" />
+      </template>
       <el-tooltip effect="dark" content="切换至明细表" placement="top">
-        <el-icon @click="switchChartType('table')">
+        <el-icon class="ed-icon_chart" @click="switchChartType('table')">
           <Icon name="chart-table" />
         </el-icon>
       </el-tooltip>
-
       <el-divider direction="vertical" />
       <el-tooltip effect="dark" content="下载" placement="top">
-        <el-icon @click="downloadChart">
+        <el-icon class="ed-icon_chart" @click="downloadChart">
           <Icon name="chart-download" />
         </el-icon>
       </el-tooltip>
@@ -257,6 +324,21 @@ const tips = computed(() => {
   margin-top: 24px;
   position: relative;
 
+  .select-copilot-list {
+    width: 40px;
+    position: relative;
+    z-index: 100;
+
+    :deep(.ed-input__wrapper) {
+      background: #3370ff1a;
+      box-shadow: none !important;
+      padding-right: 4px;
+      .ed-input__inner {
+        visibility: hidden;
+      }
+    }
+  }
+
   .chart-type_list {
     position: absolute;
     bottom: -36px;
@@ -264,7 +346,7 @@ const tips = computed(() => {
     display: flex;
     align-items: center;
     font-size: 24px;
-    .ed-icon {
+    .ed-icon_chart {
       position: relative;
       cursor: pointer;
       &::after {
@@ -285,6 +367,15 @@ const tips = computed(() => {
           display: block;
         }
       }
+    }
+
+    .select-prefix {
+      position: absolute;
+      left: 4px;
+      top: 50%;
+      transform: translateY(-50%);
+      font-size: 16px;
+      color: var(--ed-color-primary, #3370ff);
     }
     .ed-divider--vertical {
       border-color: #1f232926;
@@ -311,7 +402,7 @@ const tips = computed(() => {
   }
 
   .column-plot_de {
-    width: 718px;
+    width: calc(100% - 32px);
     height: 335px;
   }
 
@@ -363,5 +454,10 @@ const tips = computed(() => {
       margin: -8px 16px 12px 16px;
     }
   }
+}
+</style>
+<style lang="less">
+.copilot-select_popper {
+  width: 128px;
 }
 </style>
