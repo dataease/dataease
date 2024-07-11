@@ -502,7 +502,7 @@ const queryAnswer = () => {
             color: #1f2329;
             display: flex;
             align-items: center;
-            z-index: 10;
+            z-index: 9;
             background-color: #fff;
 
             .expand {
