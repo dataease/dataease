@@ -1287,6 +1287,7 @@ defineExpose({
           <template #item="{ element, index }">
             <div
               :key="element.id"
+              @dblclick.stop="addOperation('rename', element, index)"
               @click.stop="handleCondition(element)"
               class="list-item_primary"
               :class="element.id === activeCondition && 'active'"
