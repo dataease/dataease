@@ -94,7 +94,7 @@ const invokeMethod = param => {
   if (pluginProxy.value['invokeMethod']) {
     pluginProxy.value['invokeMethod'](param)
   } else {
-    pluginProxy.value[param.methodName]?.(param.args)
+    pluginProxy.value[param.methodName]?.(...param.args)
   }
 }
 
