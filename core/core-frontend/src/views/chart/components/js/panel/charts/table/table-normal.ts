@@ -4,7 +4,7 @@ import { copyContent, SortTooltip } from '@/views/chart/components/js/panel/comm
 import { S2ChartView, S2DrawOptions } from '@/views/chart/components/js/panel/types/impl/s2'
 import { parseJson } from '@/views/chart/components/js/util'
 import { S2Event, S2Options, TableColCell, TableDataCell, TableSheet, ViewMeta } from '@antv/s2'
-import { isNumber } from 'lodash-es'
+import { cloneDeep, isNumber } from 'lodash-es'
 import { TABLE_EDITOR_PROPERTY, TABLE_EDITOR_PROPERTY_INNER } from './common'
 
 const { t } = useI18n()
@@ -252,7 +252,9 @@ export class TableNormal extends S2ChartView<TableSheet> {
 
 class SummaryCell extends TableDataCell {
   getTextStyle() {
-    return this.theme.colCell.bolderText
+    const textStyle = cloneDeep(this.theme.colCell.bolderText)
+    textStyle.textAlign = this.theme.dataCell.text.textAlign
+    return textStyle
   }
   getBackgroundColor() {
     const { backgroundColor, backgroundColorOpacity } = this.theme.colCell.cell
