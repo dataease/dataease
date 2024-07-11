@@ -473,6 +473,7 @@ const queryAnswer = () => {
           .label-tooltip {
             margin-left: 5.33px;
             width: 70%;
+            font-size: 14px;
             overflow: hidden;
             white-space: nowrap;
             text-overflow: ellipsis;

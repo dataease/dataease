@@ -69,32 +69,22 @@ const datasetMap = {}
 const snapshotStore = snapshotStoreWithOut()
 
 const dfsComponentData = () => {
-  const isMain = componentData.value.some(ele => ele.id === queryElement.value.id)
-  let isGroup = false
   let arr = componentData.value.filter(
     com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
   )
-  let tabArr = []
-  let groupArr = []
   componentData.value.forEach(ele => {
     if (ele.innerType === 'DeTabs') {
       ele.propValue.forEach(itx => {
-        if (itx.componentData.some(item => item.id === queryElement.value.id) && !isMain) {
-          tabArr = itx.componentData.filter(
+        arr = [
+          ...arr,
+          ...itx.componentData.filter(
             com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
           )
-        } else {
-          arr = [
-            ...arr,
-            ...itx.componentData.filter(
-              com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
-            )
-          ]
-        }
+        ]
       })
     } else if (ele.component === 'Group') {
-      isGroup = ele.propValue.some(item => item.id === queryElement.value.id)
-      groupArr = [
+      arr = [
+        ...arr,
         ele.propValue.filter(
           com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
         )
@@ -102,25 +92,19 @@ const dfsComponentData = () => {
       ele.propValue.forEach(element => {
         if (element.innerType === 'DeTabs') {
           element.propValue.forEach(itx => {
-            if (itx.componentData.some(item => item.id === queryElement.value.id) && !isMain) {
-              tabArr = itx.componentData.filter(
+            arr = [
+              ...arr,
+              ...itx.componentData.filter(
                 com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
               )
-            } else {
-              groupArr = [
-                ...groupArr,
-                ...itx.componentData.filter(
-                  com => !['VQuery', 'DeTabs'].includes(com.innerType) && com.component !== 'Group'
-                )
-              ]
-            }
+            ]
           })
         }
       })
     }
   })
 
-  return isMain || isGroup ? [...arr, ...groupArr].flat() : tabArr
+  return arr.flat()
 }
 
 const datasetFieldList = computed(() => {
