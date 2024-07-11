@@ -22,6 +22,7 @@ services:
       - ${DE_BASE}/dataease2.0/apisix/apisix_conf/config.yaml:/usr/local/apisix/conf/config.yaml:ro
       - ${DE_BASE}/dataease2.0/apisix/logs:/usr/local/apisix/logs
       - ${DE_BASE}/dataease2.0/apisix/plugins/cas-auth.lua:/usr/local/apisix/apisix/plugins/cas-auth.lua
+      - ${DE_BASE}/dataease2.0/apisix/plugins/openid-connect.lua:/usr/local/apisix/apisix/plugins/openid-connect.lua
     depends_on:
       - etcd
     ports:
