@@ -44,7 +44,7 @@ public class WhereTree2Str {
                 res.add(treeExp);
             }
         }
-        meta.setWhereTrees(CollectionUtils.isNotEmpty(res) ? "(" + String.join(" AND ", res) + ")" : null);
+        meta.setWhereTrees(CollectionUtils.isNotEmpty(res) ? "(" + String.join(" OR ", res) + ")" : null);
         meta.setWhereTreesDialect(fieldsDialect);
     }
 
