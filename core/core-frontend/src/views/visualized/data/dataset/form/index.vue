@@ -1257,9 +1257,11 @@ const getDsIconName = data => {
         <div class="table-list-top">
           <p class="select-ds">
             选择数据源
-            <el-icon class="left-outlined" @click="showLeft = false">
-              <Icon name="group-3400"></Icon>
-            </el-icon>
+            <span class="left-outlined">
+              <el-icon style="color: #1f2329" @click="showLeft = false">
+                <Icon name="icon_left_outlined" />
+              </el-icon>
+            </span>
           </p>
           <el-tree-select
             :check-strictly="false"
@@ -2111,10 +2113,19 @@ const getDsIconName = data => {
 
         .left-outlined {
           position: absolute;
-          font-size: 36px;
+          font-size: 12px;
           right: -30px;
           top: -5px;
-          z-index: 5;
+          height: 24px;
+          border: 1px solid #dee0e3;
+          width: 24px;
+          border-radius: 50%;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          background: #fff;
+          box-shadow: 0px 5px 10px 0px #1f23291a;
+          z-index: 10;
         }
       }
 
