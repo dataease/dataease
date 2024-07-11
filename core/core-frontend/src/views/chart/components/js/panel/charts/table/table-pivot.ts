@@ -191,10 +191,12 @@ export class TablePivot extends S2ChartView<PivotSheet> {
       sortParams: sortParams
     }
     // options
+    const style = this.configStyle(chart)
+    style.hierarchyCollapse = true
     const s2Options: S2Options = {
       width: containerDom.offsetWidth,
       height: containerDom.offsetHeight,
-      style: this.configStyle(chart),
+      style,
       totals: tableTotal as Totals,
       conditions: this.configConditions(chart),
       tooltip: {
