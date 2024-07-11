@@ -28,6 +28,7 @@ import { customAttrTrans, customStyleTrans, recursionTransObj } from '@/utils/ca
 import { deepCopy } from '@/utils/utils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { trackBarStyleCheck } from '@/utils/canvasUtils'
+import { type SpreadSheet } from '@antv/s2'
 
 const dvMainStore = dvMainStoreWithOut()
 const {
@@ -142,7 +143,7 @@ const calcData = (view: Chart, callback, resetPageInfo = true) => {
   }
 }
 // 图表对象不用响应式
-let myChart = null
+let myChart: SpreadSheet = null
 // 实际渲染的视图信息，适应缩放
 let actualChart: ChartObj
 const renderChartFromDialog = (viewInfo: Chart, chartDataInfo) => {
@@ -164,7 +165,9 @@ const renderChart = (viewInfo: Chart, resetPageInfo: boolean) => {
 
   setupPage(actualChart, resetPageInfo)
   myChart?.facet.timer?.stop()
+  myChart?.facet.cancelScrollFrame()
   myChart?.destroy()
+  myChart = null
   const chartView = chartViewManager.getChartView(
     viewInfo.render,
     viewInfo.type
@@ -207,21 +210,28 @@ const setupPage = (chart: ChartObj, resetPageInfo?: boolean) => {
   }
 }
 
+const mouseMove = () => {
+  myChart?.facet.timer?.stop()
+}
+
+const mouseLeave = () => {
+  initScroll()
+}
+
 const initScroll = () => {
   // 首先回到最顶部，然后计算行高*行数作为top，最后判断：如果top<数据量*行高，继续滚动，否则回到顶部
   const customAttr = actualChart?.customAttr
   const senior = actualChart?.senior
   if (
+    myChart &&
     senior?.scrollCfg?.open &&
     chartData.value.tableRow?.length &&
     (view.value.type === 'table-normal' || (view.value.type === 'table-info' && !state.showPage))
   ) {
     // 防止多次渲染
     myChart.facet.timer?.stop()
-    if (myChart.store.get('scrollY') !== 0) {
-      myChart.store.set('scrollY', 0)
-      myChart.render()
-    }
+    // 已滚动的距离
+    let scrolledOffset = myChart.store.get('scrollY') || 0
     // 平滑滚动，兼容原有的滚动速率设置
     // 假设原设定为 2 行间隔 2 秒，换算公式为: 滚动到底部的时间 = 未展示部分行数 / 2行 * 2秒
     const offsetHeight = document.getElementById(containerId).offsetHeight
@@ -239,8 +249,14 @@ const initScroll = () => {
     if (scrollHeight < scrollBarSize) {
       return
     }
-    const viewHeight = offsetHeight - headerHeight - scrollBarSize
-    const scrollViewCount = chartData.value.tableRow.length - viewHeight / rowHeight
+    // 到底了重置一下,1是误差
+    if (scrolledOffset >= scrollHeight - 1) {
+      myChart.store.set('scrollY', 0)
+      myChart.render()
+      scrolledOffset = 0
+    }
+    const viewedHeight = offsetHeight - headerHeight - scrollBarSize + scrolledOffset
+    const scrollViewCount = chartData.value.tableRow.length - viewedHeight / rowHeight
     const duration = (scrollViewCount / senior.scrollCfg.row) * senior.scrollCfg.interval
     myChart.facet.scrollWithAnimation(
       { offsetY: { value: scrollHeight, animate: false } },
@@ -462,6 +478,7 @@ onMounted(() => {
 onBeforeUnmount(() => {
   myChart?.facet.timer?.stop()
   myChart?.destroy()
+  myChart = null
   resizeObserver?.disconnect()
 })
 
@@ -501,9 +518,15 @@ const tablePageClass = computed(() => {
       class="track-bar"
       :style="state.trackBarStyle"
       @trackClick="trackClick"
+      @mousemove="mouseMove"
     />
     <div v-if="!isError" class="canvas-content">
-      <div style="position: relative; height: 100%" :id="containerId"></div>
+      <div
+        :id="containerId"
+        style="position: relative; height: 100%"
+        @mousemove="mouseMove"
+        @mouseleave="mouseLeave"
+      ></div>
     </div>
     <el-row :style="autoStyle" v-if="showPage && !isError">
       <div
