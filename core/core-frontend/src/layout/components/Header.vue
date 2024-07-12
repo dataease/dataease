@@ -26,7 +26,7 @@ const { push } = useRouter()
 const route = useRoute()
 import { useCache } from '@/hooks/web/useCache'
 const { wsCache } = useCache('localStorage')
-const aiBaseUrl = ref(null)
+const aiBaseUrl = ref('https://maxkb.fit2cloud.com/ui/chat/2ddd8b594ce09dbb?mode=embed')
 const handleIconClick = () => {
   if (route.path === '/workbranch/index') return
   push('/workbranch/index')
@@ -56,7 +56,7 @@ const downloadClick = params => {
 const routers: any[] = formatRoute(permissionStore.getRoutersNotHidden as AppCustomRouteRecordRaw[])
 const showSystem = ref(false)
 const showToolbox = ref(false)
-const showOverlay = ref(true)
+const showOverlay = ref(false)
 const showOverlayCopilot = ref(true)
 const handleSelect = (index: string) => {
   // 自定义事件
@@ -76,16 +76,18 @@ const navigateBg = computed(() => appearanceStore.getNavigateBg)
 const navigate = computed(() => appearanceStore.getNavigate)
 
 const initAiBase = async () => {
-  const aiTipsCheck = wsCache.get('DE-AI-TIPS-CHECK')
-  if (aiTipsCheck === 'CHECKED') {
-    showOverlay.value = false
-  } else {
-    showOverlay.value = true
-  }
+  // const aiTipsCheck = wsCache.get('DE-AI-TIPS-CHECK')
+  // if (aiTipsCheck === 'CHECKED') {
+  //   showOverlay.value = false
+  // } else {
+  //   showOverlay.value = true
+  // }
   await findBaseParams().then(rsp => {
     const params = rsp.data
     if (params && params['ai.baseUrl']) {
       aiBaseUrl.value = params['ai.baseUrl']
+    } else {
+      aiBaseUrl.value = null
     }
   })
 }

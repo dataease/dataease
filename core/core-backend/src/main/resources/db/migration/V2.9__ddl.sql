@@ -46,3 +46,5 @@ CREATE TABLE `core_copilot_config`  (
 
 INSERT INTO `core_copilot_config` VALUES (1, 'https://copilot-demo.test.fit2cloud.dev:5000', 'xlab', 'Q2Fsb25nQDIwMTU=');
 
+UPDATE `core_sys_setting` SET `pkey` = 'ai.baseUrl', `pval` = 'https://maxkb.fit2cloud.com/ui/chat/2ddd8b594ce09dbb?mode=embed', `type` = 'text', `sort` = 0 WHERE `id` = 3;
+
