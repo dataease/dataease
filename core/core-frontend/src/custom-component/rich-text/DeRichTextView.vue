@@ -509,7 +509,7 @@ defineExpose({
   height: 100%;
   overflow-y: auto !important;
   position: relative;
-  ::-webkit-scrollbar {
+  div::-webkit-scrollbar {
     width: 0px !important;
     height: 0px !important;
   }
