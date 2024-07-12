@@ -155,6 +155,7 @@ const backHandler = (url: string) => {
     openHandler.value.invokeMethod(pm)
     return
   }
+  dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
   wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
   window.open(url, '_self')
 }
@@ -190,6 +191,11 @@ const openOuterParamsSet = () => {
 
 const multiplexingCanvasOpen = () => {
   multiplexingRef.value.dialogInit('dataV')
+}
+
+const fullScreenPreview = () => {
+  dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
+  fullScreeRef.value.toggleFullscreen()
 }
 </script>
 
@@ -305,12 +311,7 @@ const multiplexingCanvasOpen = () => {
         >
           编辑
         </el-button>
-        <el-button
-          v-else
-          class="preview-button"
-          @click="() => fullScreeRef.toggleFullscreen()"
-          style="float: right"
-        >
+        <el-button v-else class="preview-button" @click="fullScreenPreview" style="float: right">
           预览
         </el-button>
         <el-button
