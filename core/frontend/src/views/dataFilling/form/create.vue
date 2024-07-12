@@ -2,16 +2,17 @@
 import DeContainer from '@/components/dataease/DeContainer.vue'
 import DataFillingFormSave from './save.vue'
 import clickoutside from 'element-ui/src/utils/clickoutside.js'
-import { filter, cloneDeep, find, concat, forEach, groupBy, keys } from 'lodash-es'
+import { filter, cloneDeep, find, concat, forEach, groupBy, keys, map, join } from 'lodash-es'
 import { v4 as uuidv4 } from 'uuid'
 import { EMAIL_REGEX, PHONE_REGEX } from '@/utils/validate'
 import { getTableColumnData, getWithPrivileges } from '@/views/dataFilling/form/dataFilling'
 import { getColumnList, listDatasource } from '@/api/dataset/dataset'
 import { getTableList } from '@/api/system/datasource'
+import GridTable from '@/components/gridTable/index.vue'
 
 export default {
   name: 'DataFillingFormCreate',
-  components: { DeContainer, DataFillingFormSave },
+  components: { GridTable, DeContainer, DataFillingFormSave },
   directives: {
     clickoutside
   },
@@ -72,6 +73,7 @@ export default {
         }
       ],
       showEditBindColumn: false,
+      showCommitUpdateRule: false,
       asyncOptions: {},
       componentList: [
         {
@@ -249,12 +251,21 @@ export default {
         createIndex: false,
         tableIndexes: [],
         folder: undefined,
-        level: undefined
+        level: undefined,
+        commitNewUpdate: false
       },
-      selectedItemId: undefined
+      selectedItemId: undefined,
+      tempForms: []
     }
   },
   computed: {
+    ruleUpdateFormList() {
+      const filterList = filter(this.formSettings?.forms, f => !!f.settings?.updateRuleCheck)
+      return map(filterList, f => { return f.settings?.name })
+    },
+    ruleUpdateFormListNames() {
+      return join(this.ruleUpdateFormList, ', ')
+    },
     datasourceList() {
       const dsMap = groupBy(this.allDatasourceList, d => d.type)
       const _types = []
@@ -312,6 +323,7 @@ export default {
       const id = this.$route.query.copy
       getWithPrivileges(id).then(res => {
         const tempData = res.data
+        this.formSettings.commitNewUpdate = !!tempData.commitNewUpdate
         this.formSettings.folder = tempData.pid
         this.formSettings.level = tempData.level
         this.baseLoading = true
@@ -325,6 +337,7 @@ export default {
         this.isEdit = true
         const tempData = cloneDeep(res.data)
         this.formSettings = tempData
+        this.formSettings.commitNewUpdate = !!tempData.commitNewUpdate
         this.formSettings.table = tempData.tableName
         this.formSettings.folder = tempData.pid
         this.baseLoading = true
@@ -362,6 +375,7 @@ export default {
         if (f.type === 'dateRange' && f.settings.dateType === undefined) { // 兼容旧的
           f.settings.dateType = f.settings.enableTime ? 'datetimerange' : 'daterange'
         }
+        f.settings.updateRuleCheck = !!f.settings.updateRuleCheck
       })
       this.initFormOptionsData(tempForms, () => {
         this.formSettings.forms = tempForms
@@ -654,6 +668,15 @@ export default {
         this.lostFocus()
         return
       }
+      if (this.formSettings.commitNewUpdate && this.ruleUpdateFormList.length === 0) {
+        this.$message({
+          message: this.$t('data_fill.form.form_update_rule_none'),
+          type: 'error',
+          showClose: true
+        })
+        this.lostFocus()
+        return
+      }
       if (this.formSettings.forms.length === 0) {
         this.$message({
           message: this.$t('data_fill.form.form_components_cannot_null'),
@@ -699,11 +722,46 @@ export default {
                 }
               }
             }
+          } else {
+            if (f.settings.optionDatasource === undefined ||
+                  f.settings.optionTable === undefined ||
+                  f.settings.optionColumn === undefined) {
+              this.selectItem(f.id)
+              this.$message({
+                message: this.$t('data_fill.form.option_list_datasource_cannot_empty'),
+                type: 'error',
+                showClose: true
+              })
+              return
+            }
           }
         }
       }
 
       this.showDrawer = true
+    },
+    openEditCommitRule() {
+      this.tempForms = map(this.formSettings.forms, f => {
+        return {
+          id: f.id,
+          updateRuleCheck: !!f.settings?.updateRuleCheck,
+          typeName: f.typeName,
+          name: f.settings?.name
+        }
+      })
+      this.showCommitUpdateRule = true
+    },
+    closeEditCommitRule() {
+      this.showCommitUpdateRule = false
+    },
+    confirmEditCommitRule() {
+      forEach(this.formSettings.forms, f => {
+        const temp = find(this.tempForms, tf => tf.id === f.id)
+        if (temp) {
+          this.$set(f.settings, 'updateRuleCheck', temp.updateRuleCheck)
+        }
+      })
+      this.closeEditCommitRule()
     }
 
   }
@@ -1325,6 +1383,55 @@ export default {
                 />
               </el-form-item>
 
+              <el-divider class="m-divider" />
+
+              <el-form-item
+                prop="commitNewUpdate"
+                class="form-item"
+                :rules="[requiredRule]"
+              >
+                <template #label>
+                  {{ $t('data_fill.form.commit_type') }}
+                </template>
+                <el-radio-group
+                  v-model="formSettings.commitNewUpdate"
+                  size="small"
+                >
+                  <el-radio :label="false">
+                    {{ $t('data_fill.form.commit_type_append') }}
+                  </el-radio>
+                  <el-radio :label="true">
+                    {{ $t('data_fill.form.commit_type_update') }}
+                  </el-radio>
+                </el-radio-group>
+              </el-form-item>
+
+              <template v-if="formSettings.commitNewUpdate">
+                <el-button
+                  v-if="ruleUpdateFormList.length === 0"
+                  type="text"
+                  @click="openEditCommitRule"
+                >+ {{ $t('data_fill.form.commit_rule_add') }}
+                </el-button>
+                <template v-else>
+                  <div
+                    style="display: flex; flex-direction: row; align-items: center; font-size: 14px;"
+                  >
+                    <div style="width: 28px;" />
+                    <div style="flex:2">
+                      {{ $t('data_fill.form.commit_rule_settings') }}
+                    </div>
+                    <div style="flex:1; color: #8F959E;">{{ $t('data_fill.form.commit_rule_set') }}</div>
+                    <el-button
+                      :title="$t('chart.edit')"
+                      icon="el-icon-edit"
+                      type="text"
+                      @click="openEditCommitRule"
+                    />
+                  </div>
+                  <div style="padding-left: 28px; font-size: 14px;">{{ $t('data_fill.form.commit_rule') }}:&nbsp; {{ ruleUpdateFormListNames }}</div>
+                </template>
+              </template>
             </el-form>
           </el-main>
         </template>
@@ -1465,15 +1572,83 @@ export default {
             </el-form-item>
           </el-main>
         </el-form>
-        <el-footer class="de-footer">
-          <el-button @click="closeEditBindColumn">{{ $t("commons.cancel") }}</el-button>
-          <el-button
-            type="primary"
-            @click="doEditBindColumn"
-          >{{ $t("commons.confirm") }}
-          </el-button>
-        </el-footer>
       </el-container>
+      <el-footer class="de-footer">
+        <el-button @click="closeEditBindColumn">{{ $t("commons.cancel") }}</el-button>
+        <el-button
+          type="primary"
+          @click="doEditBindColumn"
+        >{{ $t("commons.confirm") }}
+        </el-button>
+      </el-footer>
+    </el-dialog>
+
+    <el-dialog
+      v-dialogDrag
+      append-to-body
+      :title="$t('data_fill.form.commit_rule_settings')"
+      :visible.sync="showCommitUpdateRule"
+      :show-close="true"
+      width="600px"
+      class="m-dialog"
+    >
+      <el-container
+        v-if="showCommitUpdateRule"
+        v-loading="loading"
+        style="width: 100%"
+        direction="vertical"
+      >
+        <div style="padding: 10px 18px;display: flex;flex-direction: row; background: #c0cef3; margin-bottom: 12px; margin-top: -20px;">
+          <i
+            class="el-icon-info"
+            style="color: #0049e0; margin-right: 4px;"
+          />
+          <div>
+            提交数据时，将选择的组件作为更新条件，对表单中的已有数据进行匹配更新，更新规则如下：<br>
+            1、当组件值与表单字段值同时匹配时，则更新表单数据；<br>
+            2、当组件值与表单字段值不同时匹配时，将数据插入表单。
+          </div>
+        </div>
+        <el-table
+          ref="dataTable"
+          style="width: 100%; height: 100%"
+          height="600"
+          stripe
+          :data="tempForms"
+          :columns="[]"
+        >
+          <el-table-column
+            :label="$t('data_fill.data.recent_committer')"
+          >
+            <template slot-scope="scope">
+              <el-checkbox v-model="scope.row.updateRuleCheck" />
+            </template>
+          </el-table-column>
+          <el-table-column
+            :label="$t('data_fill.data.recent_committer')"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.name }}
+            </template>
+          </el-table-column>
+          <el-table-column
+            :label="$t('data_fill.data.recent_committer')"
+          >
+            <template slot-scope="scope">
+              {{ scope.row.typeName }}
+            </template>
+          </el-table-column>
+        </el-table>
+
+      </el-container>
+      <el-footer class="de-footer">
+        <el-button @click="closeEditCommitRule">{{ $t("commons.cancel") }}</el-button>
+        <el-button
+          type="primary"
+          @click="confirmEditCommitRule"
+        >{{ $t("commons.confirm") }}
+        </el-button>
+      </el-footer>
     </el-dialog>
 
   </div>
@@ -1481,6 +1656,10 @@ export default {
 
 <style lang="scss" scoped>
 .data-filling-form {
+  .m-divider {
+    width: 320px;
+    margin: 24px -20px;
+  }
   ::v-deep .el-form-item__error {
     position: relative;
   }

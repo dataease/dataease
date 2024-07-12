@@ -269,7 +269,7 @@ public class DataFillTaskService {
         String taskName = StringUtils.isNotBlank(request.getTaskName()) ? request.getTaskName() : null;
 
         if (StringUtils.equalsIgnoreCase(type, "finished")) {
-            list = extDataFillFormMapper.listFinishedUserTask(userId, taskName);
+            list = extDataFillFormMapper.listFinishedUserTask(userId, new Date(), taskName);
         } else if (StringUtils.equalsIgnoreCase(type, "expired")) {
             list = extDataFillFormMapper.listExpiredUserTask(userId, new Date(), taskName);
         } else {

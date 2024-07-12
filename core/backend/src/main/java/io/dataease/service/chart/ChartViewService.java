@@ -343,6 +343,7 @@ public class ChartViewService {
                 //downloadType = dataset 为下载原始名字 这里做数据转换模拟 table-info类型图表导出
                 if ("dataset".equals(request.getDownloadType())) {
                     view.setType("table-info");
+                    view.setIsPlugin(false);
                     List<DatasetTableField> sourceFields = dataSetTableFieldsService.getFieldsByTableId(view.getTableId());
                     dsHeader = sourceFields.stream()
                             .map(DatasetTableField::getName)

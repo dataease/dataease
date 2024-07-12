@@ -1,5 +1,5 @@
 <script>
-import { forEach, find, concat, cloneDeep, floor, map, filter, includes } from 'lodash-es'
+import { forEach, find, concat, cloneDeep, floor, map, filter, includes, split, keys, parseInt } from 'lodash-es'
 import { PHONE_REGEX, EMAIL_REGEX } from '@/utils/validate'
 import {
   getTableColumnData,
@@ -11,6 +11,10 @@ import {
 export default {
   name: 'EditFormData',
   props: {
+    keyName: {
+      type: String,
+      required: false
+    },
     id: {
       type: String,
       required: false
@@ -36,6 +40,10 @@ export default {
       required: true
     },
     data: {
+      type: Object,
+      required: false
+    },
+    dataList: {
       type: Object,
       required: false
     },
@@ -65,9 +73,10 @@ export default {
       callback()
     }
     return {
+      currentPage: 1,
       loading: false,
       asyncOptions: {},
-      formData: {},
+      formData: [],
       requiredRule: { required: true, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       dateRangeRequiredRule: { validator: checkDateRangeRequireValidator, message: this.$t('commons.required'), trigger: ['blur', 'change'] },
       inputTypes: [
@@ -91,69 +100,89 @@ export default {
       }
     }
   },
+  computed: {
+    allData() {
+      if (this.dataList && this.dataList.length > 0) {
+        return this.dataList
+      }
+      if (this.data) {
+        return [this.data]
+      }
+      return [{}]
+    }
+  },
   watch: {},
   mounted() {
     const _tempForms = []
     this.formData = []
     this.asyncOptions = {}
-    forEach(this.forms, v => {
-      if (!v.removed) {
-        const f = cloneDeep(v)
-        if (f.type === 'date' && f.settings.dateType === undefined) { // 兼容旧的
-          f.settings.dateType = f.settings.enableTime ? 'datetime' : 'date'
+    this.currentPage = 1
+    forEach(this.allData, _data => {
+      const _tempFormRow = []
+      forEach(this.forms, v => {
+        if (!v.removed) {
+          const f = cloneDeep(v)
+          if (f.type === 'date' && f.settings.dateType === undefined) { // 兼容旧的
+            f.settings.dateType = f.settings.enableTime ? 'datetime' : 'date'
+          }
+          if (f.type === 'dateRange' && f.settings.dateType === undefined) { // 兼容旧的
+            f.settings.dateType = f.settings.enableTime ? 'datetimerange' : 'daterange'
+          }
+          if (f.type === 'dateRange') {
+            const _start = _data[f.settings.mapping.columnName1]
+            const _end = _data[f.settings.mapping.columnName2]
+            f.value = [_start, _end]
+          } else {
+            const _value = _data[f.settings.mapping.columnName]
+            // 交给后面处理
+            f.value = _value
+          }
+          _tempFormRow.push(f)
         }
-        if (f.type === 'dateRange' && f.settings.dateType === undefined) { // 兼容旧的
-          f.settings.dateType = f.settings.enableTime ? 'datetimerange' : 'daterange'
-        }
-        if (f.type === 'dateRange') {
-          const _start = this.data[f.settings.mapping.columnName1]
-          const _end = this.data[f.settings.mapping.columnName2]
-          f.value = [_start, _end]
-        } else {
-          const _value = this.data[f.settings.mapping.columnName]
-          // 交给后面处理
-          f.value = _value
-        }
-        _tempForms.push(f)
-      }
+      })
+      _tempForms.push(_tempFormRow)
     })
 
     this.loading = true
     this.initFormOptionsData(_tempForms, () => {
       // 最后处理选项值
-      _tempForms.forEach(f => {
-        if (f.type !== 'dateRange') {
-          const _value = this.data[f.settings.mapping.columnName]
-          if (f.type === 'select' && f.settings.multiple || f.type === 'checkbox') {
-            if (_value) {
+      for (let i = 0; i < _tempForms.length; i++) {
+        const row = _tempForms[i]
+        row.forEach(f => {
+          if (f.type !== 'dateRange') {
+            const _value = this.allData[i][f.settings.mapping.columnName]
+            if (f.type === 'select' && f.settings.multiple || f.type === 'checkbox') {
+              if (_value) {
               // 过滤一下选项值
-              if (this.readonly) {
-                f.value = JSON.parse(_value)
+                if (this.readonly) {
+                  f.value = JSON.parse(_value)
+                } else {
+                  const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
+                  const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
+                  f.value = filter(JSON.parse(_value), v => includes(options, v))
+                }
               } else {
-                const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
-                const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
-                f.value = filter(JSON.parse(_value), v => includes(options, v))
+                f.value = []
               }
-            } else {
-              f.value = []
-            }
-          } else if (f.type === 'select' && !f.settings.multiple || f.type === 'radio') {
-            if (_value) {
-              if (!this.readonly) {
-                const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
-                const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
-                if (!includes(options, _value)) {
-                  f.value = undefined
+            } else if (f.type === 'select' && !f.settings.multiple || f.type === 'radio') {
+              if (_value) {
+                if (!this.readonly) {
+                  const tempId = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
+                  const options = map(f.settings.optionSourceType === 1 ? f.settings.options : (this.asyncOptions[tempId] ? this.asyncOptions[tempId] : []), f => f.value)
+                  if (!includes(options, _value)) {
+                    f.value = undefined
+                  } else {
+                    f.value = _value
+                  }
                 } else {
                   f.value = _value
                 }
-              } else {
-                f.value = _value
               }
             }
           }
-        }
-      })
+          f.tempId = f.settings ? f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder : 'unset'
+        })
+      }
       // 赋值到表单
       this.formData = _tempForms
       this.loading = false
@@ -163,7 +192,8 @@ export default {
     initFormOptionsData(forms, callback) {
       const queries = []
       const queryIds = []
-      forEach(forms, f => {
+      // 同一个表单多条数据，展示的肯定也是相同的，所以取第一个
+      forEach(forms[0], f => {
         if (f.type === 'checkbox' || f.type === 'select' || f.type === 'radio') {
           if (f.settings && f.settings.optionSourceType === 2 && f.settings.optionDatasource && f.settings.optionTable && f.settings.optionColumn && f.settings.optionOrder) {
             const id = f.settings.optionDatasource + '_' + f.settings.optionTable + '_' + f.settings.optionColumn + '_' + f.settings.optionOrder
@@ -222,54 +252,69 @@ export default {
         item.value = value
       })
     },
+    onPageChange(page) {
+      this.currentPage = page
+    },
     doSave() {
       this.loading = true
-      this.$refs['mForm'].validate((valid) => {
+      this.$refs['mForm'].validate((valid, invalidFields) => {
         if (valid) {
-          const _data = {}
-          forEach(this.formData, f => {
-            if (f.type === 'dateRange') {
-              const _start = f.settings.mapping.columnName1
-              const _end = f.settings.mapping.columnName2
-              if (f.value) {
-                if (f.value[0]) {
-                  _data[_start] = f.value[0].getTime()
-                }
-                if (f.value[1]) {
-                  _data[_end] = f.value[1].getTime()
-                }
-              }
-            } else {
-              const name = f.settings.mapping.columnName
-              if (f.type === 'select' && f.settings.multiple || f.type === 'checkbox') {
+          const req = []
+
+          for (let i = 0; i < this.formData.length; i++) {
+            const row = this.formData[i]
+            const _data = {}
+            forEach(row, f => {
+              if (f.type === 'dateRange') {
+                const _start = f.settings.mapping.columnName1
+                const _end = f.settings.mapping.columnName2
                 if (f.value) {
-                  _data[name] = JSON.stringify(f.value)
+                  if (f.value[0]) {
+                    _data[_start] = f.value[0].getTime()
+                  }
+                  if (f.value[1]) {
+                    _data[_end] = f.value[1].getTime()
+                  }
                 }
-              } else if (f.type === 'date' && f.value) {
-                _data[name] = f.value.getTime()
               } else {
-                _data[name] = f.value
+                const name = f.settings.mapping.columnName
+                if (f.type === 'select' && f.settings.multiple || f.type === 'checkbox') {
+                  if (f.value) {
+                    _data[name] = JSON.stringify(f.value)
+                  }
+                } else if (f.type === 'date' && f.value) {
+                  _data[name] = f.value.getTime()
+                } else {
+                  _data[name] = f.value
+                }
               }
+            })
+
+            if (this.keyName) {
+              _data[this.keyName] = this.allData[i][this.keyName]
             }
-          })
+
+            req.push(_data)
+          }
 
           if (this.userTaskId) {
-            userFillFormData(this.userTaskId, _data).then(res => {
+            userFillFormData(this.userTaskId, req).then(res => {
               this.$emit('save-success')
             }).finally(() => {
               this.loading = false
             })
           } else {
+            // 非任务都是针对单条数据进行提交
             if (this.id !== undefined) {
               // update
-              saveFormRowData(this.formId, this.id, _data).then(res => {
+              saveFormRowData(this.formId, this.id, req[0]).then(res => {
                 this.$emit('save-success')
               }).finally(() => {
                 this.loading = false
               })
             } else {
               // insert
-              newFormRowData(this.formId, _data).then(res => {
+              newFormRowData(this.formId, req[0]).then(res => {
                 this.$emit('save-success')
               }).finally(() => {
                 this.loading = false
@@ -277,6 +322,11 @@ export default {
             }
           }
         } else {
+          // 获取第几页，切换到对应的页面
+          const _key = keys(invalidFields)[0]
+          const index = split(_key, ']')[0].replace('[', '')
+          this.currentPage = parseInt(index) + 1
+
           this.loading = false
         }
       })
@@ -319,142 +369,157 @@ export default {
         @submit.native.prevent
       >
         <div
-          v-for="(item, $index) in formData"
-          :key="item.id"
-          :data-var="tempId = item.settings ? item.settings.optionDatasource + '_' + item.settings.optionTable + '_' + item.settings.optionColumn + '_' + item.settings.optionOrder : 'unset'"
-          class="m-item m-form-item"
+          v-for="(row, $index1) in formData"
+          v-show="currentPage === $index1 + 1"
+          :key="$index1"
         >
-
-          <div class="m-label-container">
-            <span style="width: unset">
-              {{ item.settings.name }}
-              <span
-                v-if="item.settings.required"
-                style="color: red"
-              >*</span>
-            </span>
-          </div>
-          <el-form-item
-            :prop="'['+ $index +'].value'"
-            class="form-item"
-            :readonly="readonly"
-            :rules="getRules(item)"
+          <div
+            v-for="(item, $index2) in row"
+            :key="item.id"
+            class="m-item m-form-item"
           >
-            <el-input
-              v-if="item.type === 'input' && item.settings.inputType !== 'number'"
-              v-model="item.value"
-              :type="item.settings.inputType"
-              :required="item.settings.required"
-              :readonly="readonly"
-              :placeholder="item.settings.placeholder"
-              size="small"
-              :show-word-limit="item.value !== undefined && item.value !== null && item.value.length > 250"
-              maxlength="255"
-            />
-            <el-input-number
-              v-if="item.type === 'input' && item.settings.inputType === 'number'"
-              v-model="item.value"
-              :required="item.settings.required"
-              :disabled="readonly"
-              :placeholder="item.settings.placeholder"
-              style="width: 100%"
-              controls-position="right"
-              :precision="item.settings.mapping.type === 'number' ? 0 : undefined"
-              size="small"
-              :min="-999999999999"
-              :max="999999999999"
-              @change="onNumberChange(item)"
-              @blur="onNumberChange(item)"
-              @keyup.enter.native="onNumberChange(item)"
-            />
-            <el-input
-              v-else-if="item.type === 'textarea'"
-              v-model="item.value"
-              type="textarea"
-              :required="item.settings.required"
-              :readonly="readonly"
-              :placeholder="item.settings.placeholder"
-              size="small"
-            />
-            <el-select
-              v-else-if="item.type === 'select'"
-              v-model="item.value"
-              :required="item.settings.required"
-              :disabled="readonly"
-              :placeholder="item.settings.placeholder"
-              style="width: 100%"
-              size="small"
-              :multiple="item.settings.multiple"
-              clearable
-            >
-              <el-option
-                v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
-                :key="$index"
-                :label="x.name"
-                :value="x.value"
-              />
-            </el-select>
-            <el-radio-group
-              v-else-if="item.type === 'radio'"
-              v-model="item.value"
-              :required="item.settings.required"
-              :disabled="readonly"
-              style="width: 100%"
-              size="small"
-            >
-              <el-radio
-                v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
-                :key="$index"
-                :label="x.value"
-              >{{ x.name }}
-              </el-radio>
-            </el-radio-group>
-            <el-checkbox-group
-              v-else-if="item.type === 'checkbox'"
-              v-model="item.value"
-              :required="item.settings.required"
-              :disabled="readonly"
-              size="small"
-            >
-              <el-checkbox
-                v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[tempId] ? asyncOptions[tempId] : [])"
-                :key="$index"
-                :label="x.value"
-              >{{ x.name }}
-              </el-checkbox>
-            </el-checkbox-group>
-            <el-date-picker
-              v-else-if="item.type === 'date'"
-              v-model="item.value"
-              :required="item.settings.required"
-              :readonly="readonly"
-              :type="item.settings.dateType"
-              :placeholder="item.settings.placeholder"
-              style="width: 100%"
-              size="small"
-              :picker-options="pickerOptions"
-            />
-            <el-date-picker
-              v-else-if="item.type === 'dateRange'"
-              v-model="item.value"
-              :required="item.settings.required"
-              :readonly="readonly"
-              :type="item.settings.dateType"
-              :range-separator="item.settings.rangeSeparator"
-              :start-placeholder="item.settings.startPlaceholder"
-              :end-placeholder="item.settings.endPlaceholder"
-              style="width: 100%"
-              size="small"
-              :picker-options="pickerOptions"
-            />
 
-          </el-form-item>
+            <div class="m-label-container">
+              <span style="width: unset">
+                {{ item.settings.name }}
+                <span
+                  v-if="item.settings.required"
+                  style="color: red"
+                >*</span>
+              </span>
+            </div>
+            <el-form-item
+              :prop="'['+ $index1 +']['+ $index2 +'].value'"
+              class="form-item"
+              :readonly="readonly"
+              :rules="getRules(item)"
+            >
+              <el-input
+                v-if="item.type === 'input' && item.settings.inputType !== 'number'"
+                v-model="item.value"
+                :type="item.settings.inputType"
+                :required="item.settings.required"
+                :readonly="readonly"
+                :placeholder="item.settings.placeholder"
+                size="small"
+                :show-word-limit="item.value !== undefined && item.value !== null && item.value.length > 250"
+                maxlength="255"
+              />
+              <el-input-number
+                v-if="item.type === 'input' && item.settings.inputType === 'number'"
+                v-model="item.value"
+                :required="item.settings.required"
+                :disabled="readonly"
+                :placeholder="item.settings.placeholder"
+                style="width: 100%"
+                controls-position="right"
+                :precision="item.settings.mapping.type === 'number' ? 0 : undefined"
+                size="small"
+                :min="-999999999999"
+                :max="999999999999"
+                @change="onNumberChange(item)"
+                @blur="onNumberChange(item)"
+                @keyup.enter.native="onNumberChange(item)"
+              />
+              <el-input
+                v-else-if="item.type === 'textarea'"
+                v-model="item.value"
+                type="textarea"
+                :required="item.settings.required"
+                :readonly="readonly"
+                :placeholder="item.settings.placeholder"
+                size="small"
+              />
+              <el-select
+                v-else-if="item.type === 'select'"
+                v-model="item.value"
+                :required="item.settings.required"
+                :disabled="readonly"
+                :placeholder="item.settings.placeholder"
+                style="width: 100%"
+                size="small"
+                :multiple="item.settings.multiple"
+                clearable
+              >
+                <el-option
+                  v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[item.tempId] ? asyncOptions[item.tempId] : [])"
+                  :key="$index"
+                  :label="x.name"
+                  :value="x.value"
+                />
+              </el-select>
+              <el-radio-group
+                v-else-if="item.type === 'radio'"
+                v-model="item.value"
+                :required="item.settings.required"
+                :disabled="readonly"
+                style="width: 100%"
+                size="small"
+              >
+                <el-radio
+                  v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[item.tempId] ? asyncOptions[item.tempId] : [])"
+                  :key="$index"
+                  :label="x.value"
+                >{{ x.name }}
+                </el-radio>
+              </el-radio-group>
+              <el-checkbox-group
+                v-else-if="item.type === 'checkbox'"
+                v-model="item.value"
+                :required="item.settings.required"
+                :disabled="readonly"
+                size="small"
+              >
+                <el-checkbox
+                  v-for="(x, $index) in item.settings.optionSourceType === 1 ? item.settings.options : (asyncOptions[item.tempId] ? asyncOptions[item.tempId] : [])"
+                  :key="$index"
+                  :label="x.value"
+                >{{ x.name }}
+                </el-checkbox>
+              </el-checkbox-group>
+              <el-date-picker
+                v-else-if="item.type === 'date'"
+                v-model="item.value"
+                :required="item.settings.required"
+                :readonly="readonly"
+                :type="item.settings.dateType"
+                :placeholder="item.settings.placeholder"
+                style="width: 100%"
+                size="small"
+                :picker-options="pickerOptions"
+              />
+              <el-date-picker
+                v-else-if="item.type === 'dateRange'"
+                v-model="item.value"
+                :required="item.settings.required"
+                :readonly="readonly"
+                :type="item.settings.dateType"
+                :range-separator="item.settings.rangeSeparator"
+                :start-placeholder="item.settings.startPlaceholder"
+                :end-placeholder="item.settings.endPlaceholder"
+                style="width: 100%"
+                size="small"
+                :picker-options="pickerOptions"
+              />
+            </el-form-item>
+          </div>
         </div>
       </el-form>
     </el-main>
     <el-footer
       class="de-footer"
     >
+      <div class="de-footer-container">
+        <el-pagination
+          v-if="allData.length > 1"
+          ref="mPagerRef"
+          layout="prev, pager, next"
+          page-size="1"
+          :total="allData.length"
+          :current-page="currentPage"
+          @current-change="onPageChange"
+        />
+      </div>
       <el-button @click="closeDrawer">{{ $t("commons.cancel") }}</el-button>
       <el-button
         v-if="!readonly"
@@ -487,7 +552,15 @@ export default {
     display: flex;
     flex-direction: row;
     align-items: center;
-    justify-content: flex-end
+    justify-content: flex-end;
+
+    .de-footer-container{
+      flex: 1;
+      display: flex;
+      flex-direction: row;
+      align-items: center;
+      justify-content: center;
+    }
   }
 
   .panel-info-area {

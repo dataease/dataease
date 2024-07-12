@@ -6,8 +6,8 @@ import com.alibaba.excel.context.AnalysisContext;
 import com.alibaba.excel.event.AnalysisEventListener;
 import com.alibaba.excel.metadata.CellData;
 import com.alibaba.excel.read.metadata.ReadSheet;
-import com.google.common.reflect.TypeToken;
 import com.google.gson.Gson;
+import com.google.gson.reflect.TypeToken;
 import io.dataease.auth.service.AuthUserService;
 import io.dataease.commons.utils.CommonBeanFactory;
 import io.dataease.controller.request.datafill.DataFillFormTableDataRequest;
@@ -32,6 +32,7 @@ import io.dataease.service.datasource.DatasourceService;
 import io.dataease.service.sys.SysAuthService;
 import lombok.Data;
 import org.apache.commons.collections4.CollectionUtils;
+import org.apache.commons.lang3.BooleanUtils;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.math.NumberUtils;
 import org.pentaho.di.core.util.UUIDUtil;
@@ -145,6 +146,10 @@ public class DataFillDataService {
     }
 
     public DataFillFormTableDataResponse listData(DataFillFormTableDataRequest searchRequest) throws Exception {
+        return listData(searchRequest, true);
+    }
+
+    public DataFillFormTableDataResponse listData(DataFillFormTableDataRequest searchRequest, boolean withLogs) throws Exception {
 
         DataFillFormWithBLOBs dataFillForm = dataFillFormMapper.selectByPrimaryKey(searchRequest.getId());
 
@@ -220,23 +225,36 @@ public class DataFillDataService {
 
 
         String whereSql = "";
-        if (StringUtils.isNoneBlank(searchRequest.getPrimaryKeyValue())) {
+        if (StringUtils.isNotBlank(searchRequest.getPrimaryKeyValue())) {
             whereSql = extDDLProvider.whereSql(dataFillForm.getTableName(), List.of(pk));
-        }
-
-        String countSql = extDDLProvider.countSql(dataFillForm.getTableName(), searchFields, whereSql);
-        if (StringUtils.isNoneBlank(searchRequest.getPrimaryKeyValue())) {
             datasourceRequest.setTableFieldWithValues(List.of(new DatasourceRequest.TableFieldWithValue()
                     .setValue(searchRequest.getPrimaryKeyValue())
                     .setFiledName(pk.getFieldName())
                     .setTypeName(pk.getFieldType())
                     .setType(pk.getType())));
         }
+
+        if (CollectionUtils.isNotEmpty(searchRequest.getPrimaryKeyValueList())) {
+            pk.setInCount(searchRequest.getPrimaryKeyValueList().size());
+            whereSql = extDDLProvider.whereSql(dataFillForm.getTableName(), List.of(pk));
+            List<DatasourceRequest.TableFieldWithValue> ids = new ArrayList<>();
+            for (String s : searchRequest.getPrimaryKeyValueList()) {
+                ids.add(new DatasourceRequest.TableFieldWithValue()
+                        .setValue(s)
+                        .setFiledName(pk.getFieldName())
+                        .setTypeName(pk.getFieldType())
+                        .setType(pk.getType()));
+            }
+            datasourceRequest.setTableFieldWithValues(ids);
+        }
+
+        String countSql = extDDLProvider.countSql(dataFillForm.getTableName(), searchFields, whereSql);
+
         datasourceRequest.setQuery(countSql);
         List<String[]> countData = datasourceProvider.getData(datasourceRequest);
         long count = NumberUtils.toLong(countData.get(0)[0]);
 
-        long totalPage = new BigDecimal(count).divide(new BigDecimal(searchRequest.getPageSize()), 0, RoundingMode.CEILING).longValue();
+        long totalPage = searchRequest.getPageSize() <= 0 ? 1L : new BigDecimal(count).divide(new BigDecimal(searchRequest.getPageSize()), 0, RoundingMode.CEILING).longValue();
 
         long currentPage = totalPage < searchRequest.getCurrentPage() ? totalPage - 1 : searchRequest.getCurrentPage();
 
@@ -294,23 +312,28 @@ public class DataFillDataService {
 
 
         List<DataFillCommitLogDTO> list = new ArrayList<>();
-        if (CollectionUtils.isNotEmpty(ids)) {
+        if (CollectionUtils.isNotEmpty(ids) && withLogs) {
             list = extDataFillFormMapper.selectLatestLogByFormDataIds(dataFillForm.getId(), ids);
         }
-        Map<String, DataFillCommitLogDTO> logMap = list.stream().collect(Collectors.toMap(log -> log.getFormId() + "__" + log.getDataId(), log -> log));
+        Map<String, DataFillCommitLogDTO> logMap = new HashMap<>();
+        for (DataFillCommitLogDTO log : list) {
+            logMap.put(log.getFormId() + "__" + log.getDataId(), log);
+        }
 
-        for (Map<String, Object> object : result) {
-            Map<String, Object> temp = new HashMap<>();
-            temp.put("data", object);
-            temp.put("logInfo", logMap.get(dataFillForm.getId() + "__" + object.get(key)));
+        if (withLogs) {
+            for (Map<String, Object> object : result) {
+                Map<String, Object> temp = new HashMap<>();
+                temp.put("data", object);
+                temp.put("logInfo", logMap.get(dataFillForm.getId() + "__" + object.get(key)));
 
-            resultList.add(temp);
+                resultList.add(temp);
+            }
         }
 
 
         return new DataFillFormTableDataResponse()
                 .setKey(key)
-                .setData(resultList)
+                .setData(withLogs ? resultList : result)
                 .setFields(fields)
                 .setTotal(count)
                 .setPageSize(searchRequest.getPageSize())
@@ -979,12 +1002,141 @@ public class DataFillDataService {
             dataList.add(new RowDataDatum().setData(rowData));
         }
 
+        List<RowDataDatum> valueList = new ArrayList<>();
         if (CollectionUtils.isNotEmpty(dataList)) {
 
-            updateOrInsertRowData(formId, dataList);
+            //表单提交模式为更新时，需要根据条件加上主键id
+            boolean updateMode = false;
+            List<ExtTableField> fieldsForCheck = new ArrayList<>();
+            if (BooleanUtils.isTrue(dataFillForm.getCommitNewUpdate())) {
+                //这里把所有数据都拿出来遍历真的合适吗？
+                for (ExtTableField field : fields) {
+                    if (field.getSettings().isUpdateRuleCheck()) {
+                        updateMode = true;
+                        fieldsForCheck.add(field);
+                    }
+                }
+            }
+
+            if (!updateMode) {
+                valueList = new ArrayList<>(dataList);
+            } else {
+                DataFillFormTableDataRequest req = new DataFillFormTableDataRequest();
+                req.setId(dataFillForm.getId());
+                DataFillFormTableDataResponse res = listData(req, false);
+                List<Map<String, Object>> searchData = new ArrayList<>();
+                String key = "";
+
+                if (res != null && res.getData() != null) {
+                    searchData = (List<Map<String, Object>>) res.getData();
+
+                    Datasource ds = getDataSource(dataFillForm.getDatasource());
+                    DatasourceRequest datasourceRequest = new DatasourceRequest();
+                    datasourceRequest.setDatasource(ds);
+                    datasourceRequest.setTable(dataFillForm.getTableName());
+                    Provider datasourceProvider = ProviderFactory.getProvider(ds.getType());
+                    List<TableField> tableFields = datasourceProvider.getTableFields(datasourceRequest);
+
+                    for (TableField tableField : tableFields) {
+                        if (tableField.isPrimaryKey()) {
+                            //先把ID放进来
+                            key = tableField.getFieldName();
+                        }
+                    }
+                }
+
+                for (RowDataDatum datum : dataList) {
+                    boolean hasUpdate = false;
+                    for (Map<String, Object> searchDatum : searchData) {
+                        if (processValueList(valueList, key, datum, searchDatum, fieldsForCheck)) {
+                            hasUpdate = true;
+                        }
+                    }
+                    if (!hasUpdate) {
+                        RowDataDatum row = new RowDataDatum()
+                                .setInsert(true)
+                                .setData(new HashMap<>(datum.getData()));
+                        valueList.add(row);
+                    }
+                }
+
+            }
+
+            updateOrInsertRowData(formId, valueList);
 
         }
 
+    }
+
+    public static boolean processValueList(List<RowDataDatum> valueList, String key, RowDataDatum datum, Map<String, Object> searchDatum, List<ExtTableField> fieldsForCheck) {
+        int count = 0;
+        for (ExtTableField field : fieldsForCheck) {
+            if (StringUtils.equalsIgnoreCase(field.getType(), "checkbox") ||
+                    StringUtils.equalsIgnoreCase(field.getType(), "select") && field.getSettings().isMultiple()) {
+                List<String> data1 = gson.fromJson((String) datum.getData().get(field.getSettings().getMapping().getColumnName()), new TypeToken<List<String>>() {
+                }.getType());
+                List<String> data2 = gson.fromJson((String) searchDatum.get(field.getSettings().getMapping().getColumnName()), new TypeToken<List<String>>() {
+                }.getType());
+                if (data1 == data2) {
+                    count++;
+                    continue;
+                }
+                if (data1 != null && data2 != null) {
+                    if (data1.size() != data2.size()) {
+                        continue;
+                    }
+                    if (CollectionUtils.isEqualCollection(data1, data2)) {
+                        count++;
+                    }
+                }
+            } else {
+                if (datum.getData() != null && searchDatum != null) {
+                    Object data1 = datum.getData().get(field.getSettings().getMapping().getColumnName());
+                    Object data2 = searchDatum.get(field.getSettings().getMapping().getColumnName());
+                    if (data1 == data2) {
+                        count++;
+                        continue;
+                    }
+                    if (data1 != null && data2 != null) {
+                        if (data1.equals(data2)) {
+                            count++;
+                            continue;
+                        }
+                        switch (field.getSettings().getMapping().getType()) {
+                            case number:
+                                if (((Long) data1).longValue() == ((Long) data2).longValue()) {
+                                    count++;
+                                }
+                                continue;
+                            case decimal:
+                                if (((BigDecimal) data1).compareTo((BigDecimal) data2) == 0) {
+                                    count++;
+                                }
+                                continue;
+                            case datetime:
+                                if ((Long) data1 == ((Date) data2).getTime()) {
+                                    count++;
+                                }
+                                continue;
+                            default:
+                                if (((String) data1).equals((String) data2)) {
+                                    count++;
+                                }
+                        }
+
+                    }
+                }
+            }
+        }
+        if (count == fieldsForCheck.size()) {
+            RowDataDatum row = new RowDataDatum()
+                    .setId((String) searchDatum.get(key))
+                    .setInsert(datum.isInsert())
+                    .setData(new HashMap<>(datum.getData()));
+            valueList.add(row);
+            return true;
+        }
+        return false;
     }
 
     private static Date getDate(ExtTableField field, String excelRowData) throws ParseException {

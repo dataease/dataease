@@ -784,7 +784,6 @@ export default {
               {
                 props: {
                   type: 'text',
-                  size: 'mini'
                 },
                 class: 'btn-text',
                 on: {
@@ -814,7 +813,6 @@ export default {
             {
               props: {
                 type: 'text',
-                size: 'mini'
               },
               class: 'btn-text',
               on: {

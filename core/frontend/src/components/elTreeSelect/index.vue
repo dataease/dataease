@@ -464,13 +464,6 @@ export default {
     _treeCheckFun(data, node, vm) {
       this.ids = []
       const { propsValue } = this
-      const checkKeys = this.$refs.tree.getCheckedKeys()
-      checkKeys.forEach((i, n) => {
-        const node = this.$refs.tree.getNode(i)
-        if (!node.visible && node.checked) {
-          this.$refs.tree.setChecked(i, false)
-        }
-      })
 
       const checkedNodes = this.$refs.tree.getCheckedNodes()
 

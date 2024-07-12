@@ -226,10 +226,12 @@ export default {
     }
   },
   created() {
-    this.handleClick()
   },
   mounted() {
     bus.$on('task-export-topic-call', this.taskExportTopicCall)
+  },
+  beforeDestroy() {
+    bus.$off('task-export-topic-call', this.taskExportTopicCall)
   },
   methods: {
     init() {
@@ -268,9 +270,6 @@ export default {
         }
       }, 5000)
     },
-    format(percentage) {
-      return ''
-    },
     taskExportTopicCall(task) {
       if (JSON.parse(task).exportStatus === 'SUCCESS') {
         this.openMessageLoading(JSON.parse(task).exportFromName + ' ' + this.$t('excel.export') + this.$t('dataset.completed') + this.$t('dataset.goto'), 'success', this.callbackExport)
@@ -291,7 +290,6 @@ export default {
             {
               props: {
                 type: 'text',
-                size: 'mini'
               },
               class: 'btn-text',
               on: {

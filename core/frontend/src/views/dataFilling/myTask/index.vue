@@ -5,7 +5,7 @@ import DeAsideContainer from '@/components/dataease/DeAsideContainer.vue'
 import GridTable from '@/components/gridTable/index.vue'
 import { getForm, searchFormMyTasks, searchTable } from '@/views/dataFilling/form/dataFilling'
 import EditFormData from '@/views/dataFilling/form/EditFormData.vue'
-import { forIn, includes, map, filter, forEach } from 'lodash-es'
+import { forIn, includes, split, filter, forEach } from 'lodash-es'
 import { hasPermission } from '@/directive/Permission'
 
 export default {
@@ -23,6 +23,7 @@ export default {
       showDrawer: false,
       selectedDataId: undefined,
       selectedData: undefined,
+      selectedKeyName: undefined,
       selectedTaskId: undefined,
       selectedFormTitle: '',
       selectedFormId: undefined,
@@ -206,7 +207,8 @@ export default {
       this.selectedTaskId = row.id
 
       this.selectedDataId = row.valueId
-      this.selectedData = {}
+      this.selectedData = [{}]
+      this.selectedKeyName = undefined
       if (row.valueId) {
         getForm(row.formId).then(res => {
           this.selectedFormTitle = res.data.name
@@ -225,12 +227,11 @@ export default {
           })
 
           searchTable(row.formId, {
-            primaryKeyValue: row.valueId,
+            primaryKeyValueList: split(row.valueId, ','),
             currentPage: 1,
-            pageSize: 10
+            pageSize: 0
           }).then(res => {
             if (res.data) {
-              const obj = {}
               if (res.data.data.length === 0) {
                 this.$message({
                   message: this.$t('data_fill.data.id_is') + row.valueId + this.$t('data_fill.data.data_not_found'),
@@ -239,19 +240,25 @@ export default {
                 })
                 return
               }
-              forIn(res.data.data[0].data, (value, key) => {
-                if (includes(dateFormatColumns, key)) {
-                  if (value) {
-                    obj[key] = new Date(value)
+              this.selectedKeyName = res.data.key
+              const _list = []
+              for (let i = 0; i < res.data.data.length; i++) {
+                const obj = {}
+                forIn(res.data.data[i].data, (value, key) => {
+                  if (includes(dateFormatColumns, key)) {
+                    if (value) {
+                      obj[key] = new Date(value)
+                    } else {
+                      obj[key] = undefined
+                    }
                   } else {
-                    obj[key] = undefined
+                    obj[key] = value === null ? undefined : value
                   }
-                } else {
-                  obj[key] = value === null ? undefined : value
-                }
-              })
+                })
+                _list.push(obj)
+              }
 
-              this.selectedData = obj
+              this.selectedData = _list
 
               this.showDrawer = true
             }
@@ -602,7 +609,8 @@ export default {
       <edit-form-data
         v-if="showDrawer"
         :id="selectedDataId"
-        :data.sync="selectedData"
+        :data-list.sync="selectedData"
+        :key-name.sync="selectedKeyName"
         :user-task-id="selectedTaskId"
         :form-title.sync="selectedFormTitle"
         :form-id="selectedFormId"

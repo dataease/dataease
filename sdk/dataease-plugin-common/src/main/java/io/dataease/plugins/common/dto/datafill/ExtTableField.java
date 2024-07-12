@@ -63,6 +63,8 @@ public class ExtTableField implements Serializable {
 
         private boolean multiple;
 
+        private boolean updateRuleCheck;
+
         private List<Option> options;
     }
 

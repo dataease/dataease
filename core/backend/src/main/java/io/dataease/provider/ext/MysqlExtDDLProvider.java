@@ -76,7 +76,10 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
 
     @Override
     public String searchSql(String table, List<TableField> formFields, String whereSql, long limit, long offset) {
-        String baseSql = "SELECT $Column_Fields$ FROM `$TABLE_NAME$` $WHERE_SQL$ LIMIT $OFFSET_COUNT$, $LIMIT_COUNT$ ;";
+        String baseSql = "SELECT $Column_Fields$ FROM `$TABLE_NAME$` $WHERE_SQL$ ;";
+        if (limit > 0) {
+            baseSql = "SELECT $Column_Fields$ FROM `$TABLE_NAME$` $WHERE_SQL$ LIMIT $OFFSET_COUNT$, $LIMIT_COUNT$ ;";
+        }
         baseSql = baseSql.replace("$TABLE_NAME$", table)
                 .replace("$OFFSET_COUNT$", Long.toString(offset))
                 .replace("$LIMIT_COUNT$", Long.toString(limit));
@@ -106,7 +109,16 @@ public class MysqlExtDDLProvider extends DefaultExtDDLProvider {
         StringBuilder builder = new StringBuilder("WHERE 1 = 1 ");
         for (TableField searchField : searchFields) {
             //目前只考虑等于
-            builder.append("AND $Column_Field$ = ? ".replace("$Column_Field$", searchField.getFieldName()));
+            if (searchField.getInCount() > 1) {
+                List<String> pList = new ArrayList<>();
+                for (int i = 0; i < searchField.getInCount(); i++) {
+                    pList.add("?");
+                }
+                String str = "AND $Column_Field$ IN (" + String.join(", ", pList) + ")";
+                builder.append(str.replace("$Column_Field$", searchField.getFieldName()));
+            } else {
+                builder.append("AND $Column_Field$ = ? ".replace("$Column_Field$", searchField.getFieldName()));
+            }
         }
         return builder.toString();
     }

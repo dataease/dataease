@@ -171,8 +171,13 @@ export function userFillFormData(userTaskId, data) {
 
 export function getTableColumnData(optionDatasource, optionTable, optionColumn, optionOrder) {
   return request({
-    url: `dataFilling/form/${optionDatasource}/${optionTable}/${optionColumn}/options/${optionOrder}`,
+    url: `dataFilling/form/${optionDatasource}/options`,
     method: 'post',
-    loading: true
+    loading: true,
+    data: {
+      optionTable: optionTable,
+      optionColumn: optionColumn,
+      optionOrder: optionOrder
+    }
   })
 }
