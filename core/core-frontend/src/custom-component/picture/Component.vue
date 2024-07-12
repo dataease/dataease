@@ -20,8 +20,9 @@
 import { CSSProperties, computed, nextTick, toRefs } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
-import { eventStoreWithOut } from '@/store/modules/data-visualization/event'
-const eventStore = eventStoreWithOut()
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
+
 const props = defineProps({
   propValue: {
     type: String,
@@ -51,8 +52,10 @@ const imageAdapter = computed(() => {
 const onPictureClick = e => {
   if (element.value.events && element.value.events.checked) {
     if (element.value.events.type === 'displayChange') {
-      // 打开隐藏组件
-      eventStore.displayEventChange(element.value)
+      // 打开弹框区域
+      nextTick(() => {
+        dvMainStore.popAreaActiveSwitch()
+      })
     }
   }
 }

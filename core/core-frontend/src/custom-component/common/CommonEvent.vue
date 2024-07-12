@@ -45,8 +45,7 @@ const onEventChange = () => {
           class="radio-span"
           @change="onEventChange"
         >
-          <el-radio label="displayChange" :effect="themes"> 开启隐藏组件 </el-radio>
-          <el-radio label="jump" :effect="themes"> 跳转 </el-radio>
+          <el-radio label="displayChange" :effect="themes"> 开启弹框区 </el-radio>
         </el-radio-group>
       </el-form-item>
     </el-form>
