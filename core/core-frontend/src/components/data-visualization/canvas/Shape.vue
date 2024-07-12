@@ -304,7 +304,7 @@ const boardMoveActive = computed(() => {
     'symbolic-map',
     'heat-map'
   ]
-  return CHARTS.includes(element.value.innerType)
+  return element.value.isPlugin || CHARTS.includes(element.value.innerType)
 })
 
 const dashboardActive = computed(() => {
