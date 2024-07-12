@@ -11,7 +11,9 @@ import { innerExportDetails } from '@/api/chart'
 import { ElMessage } from 'element-plus-secondary'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useLinkStoreWithOut } from '@/store/modules/link'
+import { useAppStoreWithOut } from '@/store/modules/app'
 
+const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 
 const { t } = useI18n()
@@ -513,7 +515,7 @@ export const exportExcelDownload = (chart, callBack?) => {
 
   innerExportDetails(request)
     .then(res => {
-      if (linkStore.getLinkToken || isDataEaseBi.value) {
+      if (linkStore.getLinkToken || isDataEaseBi.value || appStore.getIsIframe) {
         const blob = new Blob([res.data], { type: 'application/vnd.ms-excel' })
         const link = document.createElement('a')
         link.style.display = 'none'
