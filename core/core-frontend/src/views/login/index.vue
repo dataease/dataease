@@ -229,7 +229,12 @@ onMounted(async () => {
   loadArrearance()
   if (!checkPlatform()) {
     const res = await loginCategoryApi()
-    if (res.data) {
+    const adminLogin = router.currentRoute?.value?.name === 'admin-login'
+    if (adminLogin && !res.data) {
+      router.push('/401')
+      return
+    }
+    if (res.data && !adminLogin) {
       loadingText.value = '加载中...'
       document.getElementsByClassName('ed-loading-text')?.length &&
         (document.getElementsByClassName('ed-loading-text')[0]['innerText'] = loadingText.value)

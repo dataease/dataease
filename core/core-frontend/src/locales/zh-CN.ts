@@ -48,7 +48,8 @@ export default {
     copy_unsupported: '您的浏览器不支持复制',
     filter: '筛选',
     filter_condition: '筛选条件',
-    no_auth_tips: '缺少菜单权限，请联系管理员'
+    no_auth_tips: '缺少菜单权限，请联系管理员',
+    no_menu_tips: '未找到资源 401错误'
   },
   dynamic_time: {
     set_default: '设置默认值',
