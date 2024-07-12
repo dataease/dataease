@@ -71,6 +71,7 @@ const uploadImg = () => {
   overflow: hidden;
   width: 100%;
   height: 100%;
+  cursor: pointer;
 }
 .pic-upload {
   display: flex;

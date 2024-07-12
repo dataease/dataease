@@ -15,9 +15,11 @@ import { personInfoApi } from '@/api/user'
 import router from '@/router'
 import { XpackComponent } from '@/components/plugin'
 import PopArea from '@/custom-component/pop-area/Component.vue'
+import CanvasFilterBtn from '@/custom-component/canvas-filter-btn/Component.vue'
 const dvMainStore = dvMainStoreWithOut()
 const { pcMatrixCount, curComponent, mobileInPc, canvasState } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
+
 const props = defineProps({
   canvasStyleData: {
     type: Object,
@@ -295,6 +297,9 @@ const userViewEnlargeOpen = (opt, item) => {
 }
 const handleMouseDown = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
+  if (!curComponent.value || (curComponent.value && curComponent.value.category !== 'hidden')) {
+    dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
+  }
 }
 
 const onPointClick = param => {
@@ -328,6 +333,10 @@ const popAreaAvailable = computed(
   () => canvasStyleData.value?.popupAvailable && isMainCanvas(canvasId.value)
 )
 
+const filterBtnShow = computed(
+  () => popAreaAvailable.value && popComponentData.value && popComponentData.value.length > 0
+)
+
 defineExpose({
   restore
 })
@@ -341,6 +350,8 @@ defineExpose({
     ref="previewCanvas"
     @mousedown="handleMouseDown"
   >
+    <!--弹框触发区域-->
+    <canvas-filter-btn v-if="filterBtnShow"></canvas-filter-btn>
     <!-- 弹框区域 -->
     <PopArea
       v-if="popAreaAvailable"
