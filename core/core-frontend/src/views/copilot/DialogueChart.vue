@@ -48,8 +48,8 @@ onMounted(() => {
       const chartType = chart.type === 'bar' ? Column : Line
       columnPlot = new chartType(`de-${id}-ed`, {
         data: chartData.data.data,
-        xField: chart.axis?.x,
-        yField: chart.axis?.y,
+        xField: chart.axis?.x?.value,
+        yField: chart.axis?.y?.value,
         legend: {
           layout: 'horizontal',
           position: 'left'
@@ -61,17 +61,17 @@ onMounted(() => {
       columnPlot = new Pie(`de-${id}-ed`, {
         appendPadding: 10,
         data: chartData.data.data,
-        angleField: chart.axis?.y,
-        colorField: chart.axis?.x,
+        angleField: chart.axis?.y?.value,
+        colorField: chart.axis?.x?.value,
         radius: 0.9,
         interactions: [{ type: 'element-active' }]
       })
       columnPlot.render()
     } else {
-      columns.value = chartData.data.fields.map(_ => ({
-        key: `${_.originName}`,
-        dataKey: `${_.originName}`,
-        title: `${_.originName}`,
+      columns.value = chart.columns.map(_ => ({
+        key: `${_.value}`,
+        dataKey: `${_.value}`,
+        title: `${_.name}`,
         width: 150
       }))
 
@@ -97,10 +97,10 @@ const exportExcel = () => {
   const workbook = new ExcelJS.Workbook()
   const worksheet = workbook.addWorksheet('Sheet1')
   // 设置列标题
-  worksheet.columns = chartData.data.fields.map(ele => {
-    return { header: ele.originName, key: ele.originName }
+  worksheet.columns = chart.columns.map(ele => {
+    return { header: ele.name, key: ele.value }
   })
-  const arr = chartData.data.fields.map(ele => ele.originName)
+  const arr = chart.columns.map(ele => ele.value)
   chartData.data.data.forEach(item => {
     worksheet.addRow(arr.map(ele => item[ele]))
   })
@@ -142,8 +142,8 @@ const switchChartType = type => {
         const chartType = type === 'bar' ? Column : Line
         const columnPlot = new chartType(`de-${id}-ed`, {
           data: chartData.data.data,
-          xField: chart.axis?.x,
-          yField: chart.axis?.y,
+          xField: chart.axis?.x?.value,
+          yField: chart.axis?.y?.value,
           legend: {
             layout: 'horizontal',
             position: 'left'
@@ -157,8 +157,8 @@ const switchChartType = type => {
         columnPlot = new Pie(`de-${id}-ed`, {
           appendPadding: 10,
           data: chartData.data.data,
-          angleField: chart.axis?.y,
-          colorField: chart.axis?.x,
+          angleField: chart.axis?.y?.value,
+          colorField: chart.axis?.x?.value,
           radius: 0.9,
           interactions: [{ type: 'element-active' }]
         })
@@ -166,10 +166,10 @@ const switchChartType = type => {
         return
       }
 
-      columns.value = chartData.data.fields.map(_ => ({
-        key: `${_.originName}`,
-        dataKey: `${_.originName}`,
-        title: `${_.originName}`,
+      columns.value = chart.columns.map(_ => ({
+        key: `${_.value}`,
+        dataKey: `${_.value}`,
+        title: `${_.name}`,
         width: 150
       }))
 
@@ -411,7 +411,7 @@ const tips = computed(() => {
     margin-left: 8px;
     border-radius: 8px;
     .question-or-title {
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
@@ -445,7 +445,7 @@ const tips = computed(() => {
     }
 
     .is-welcome {
-      font-family: PingFang SC;
+      font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
       font-size: 14px;
       font-weight: 400;
       line-height: 22px;
