@@ -26,7 +26,7 @@ const DashboardPanel = defineAsyncComponent(
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
 
 const props = defineProps({
-  componentName: propTypes.string.def('DashboardEditor')
+  componentName: propTypes.string.def('Iframe')
 })
 const currentComponent = shallowRef()
 

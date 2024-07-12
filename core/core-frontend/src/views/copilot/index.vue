@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { ref, shallowRef, computed, watch } from 'vue'
+import { ref, shallowRef, computed, watch, onBeforeUnmount } from 'vue'
 import { ElMessageBox } from 'element-plus-secondary'
 import {
   getDatasetTree,
@@ -63,7 +63,7 @@ let oldId = ''
 let currentId = ''
 let oldName = ''
 const handleDatasetChange = () => {
-  if (!!oldId) {
+  if (!!oldId && !!historyArr.value.length) {
     currentId = datasetId.value
     datasetId.value = oldId
     const msg = `当前数据集为【${oldName}】，切换数据集将清空当前会话。`
@@ -115,8 +115,16 @@ watch(
   }
 )
 const copilotChatLoading = ref(false)
+const inputRef = ref()
+let time = null
 const queryAnswer = () => {
+  let copyAuestionInput = questionInput.value
   if (!isActive.value || copilotChatLoading.value) return
+  clearTimeout(time)
+  time = setTimeout(() => {
+    questionInput.value = copyAuestionInput
+    inputRef.value.blur()
+  }, 0)
   historyArr.value.push({
     msgType: 'user',
     chart: {},
@@ -142,6 +150,9 @@ const queryAnswer = () => {
       copilotChatLoading.value = false
     })
 }
+onBeforeUnmount(() => {
+  clearTimeout(time)
+})
 </script>
 
 <template>
@@ -162,6 +173,9 @@ const queryAnswer = () => {
         <div class="question-input" :class="overHeight && 'over-height'" ref="questionInputRef">
           <el-input
             v-model="questionInput"
+            @keydown.stop
+            ref="inputRef"
+            @keydown.enter="queryAnswer"
             :autosize="{ minRows: 1, maxRows: 8 }"
             type="textarea"
             :placeholder="$t('common.inputText')"
@@ -284,6 +298,7 @@ const queryAnswer = () => {
     padding: 16px 24px;
     display: flex;
     align-items: center;
+    font-weight: 500;
     border-bottom: 1px solid #1f232926;
   }
 
@@ -294,9 +309,9 @@ const queryAnswer = () => {
     overflow-y: auto;
     .dialogue {
       flex: 1;
-      padding: 0 160px;
       position: relative;
       .copilot-dialogue {
+        padding: 0 160px;
         padding-top: 24px;
         position: relative;
         overflow-y: auto;
@@ -440,7 +455,7 @@ const queryAnswer = () => {
       .title-dataset_select {
         width: 100%;
         margin: 16px 16px 12px 16px;
-        font-family: PingFang SC;
+        font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
         font-size: 14px;
         font-weight: 500;
         line-height: 22px;
