@@ -6,7 +6,7 @@ import lombok.Data;
  * @Author Junjun
  */
 @Data
-public class AxisDTO {
-    private AxisFieldDTO x;
-    private AxisFieldDTO y;
+public class AxisFieldDTO {
+    private String name;
+    private String value;
 }

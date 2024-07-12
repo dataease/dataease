@@ -292,13 +292,41 @@ public class CopilotManage {
 
     public void rebuildChart(ReceiveDTO receiveDTO, List<TableField> fields) {
         if (StringUtils.equalsIgnoreCase(receiveDTO.getChart().getType(), "pie")) {
-            if (fields.size() != 2) {
+            AxisFieldDTO column = receiveDTO.getChart().getColumn();
+            if (fields.size() != 2 || column == null) {
                 DEException.throwException("当前字段不足以构建饼图");
             }
             AxisDTO axisDTO = new AxisDTO();
-            axisDTO.setX(fields.get(0).getOriginName());
-            axisDTO.setY(fields.get(1).getOriginName());
+            AxisFieldDTO x = new AxisFieldDTO();
+            AxisFieldDTO y = new AxisFieldDTO();
+            if (StringUtils.equals(fields.get(0).getOriginName(), column.getValue())) {
+                x.setName(column.getName());
+                x.setValue(column.getValue());
+                y.setName(fields.get(1).getOriginName());
+                y.setValue(fields.get(1).getOriginName());
+            } else if (StringUtils.equals(fields.get(1).getOriginName(), column.getValue())) {
+                x.setName(fields.get(0).getOriginName());
+                x.setValue(fields.get(0).getOriginName());
+                y.setName(column.getName());
+                y.setValue(column.getValue());
+            } else {
+                DEException.throwException("当前字段不足以构建饼图");
+            }
+            axisDTO.setX(x);
+            axisDTO.setY(y);
             receiveDTO.getChart().setAxis(axisDTO);
+        } else if (StringUtils.equalsIgnoreCase(receiveDTO.getChart().getType(), "table")) {
+            // 将fields赋值给columns
+            if (ObjectUtils.isEmpty(receiveDTO.getChart().getColumns())) {
+                List<AxisFieldDTO> columns = new ArrayList<>();
+                for (TableField field : fields) {
+                    AxisFieldDTO dto = new AxisFieldDTO();
+                    dto.setName(field.getOriginName());
+                    dto.setValue(field.getOriginName());
+                    columns.add(dto);
+                }
+                receiveDTO.getChart().setColumns(columns);
+            }
         }
     }
 
