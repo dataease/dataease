@@ -403,9 +403,13 @@ defineExpose({
   overflow-x: hidden;
   overflow-y: auto;
   position: relative;
-  ::-webkit-scrollbar {
+  div::-webkit-scrollbar {
     width: 0px !important;
     height: 0px !important;
+  }
+  div {
+    -ms-overflow-style: none; /* IE and Edge */
+    scrollbar-width: none; /* Firefox */
   }
 }
 
