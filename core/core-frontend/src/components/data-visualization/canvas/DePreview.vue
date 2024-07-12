@@ -283,6 +283,8 @@ onMounted(() => {
 })
 
 onBeforeUnmount(() => {
+  //初始化隐藏弹框区
+  dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
   clearInterval(refreshTimer.value)
   window.removeEventListener('message', winMsgHandle)
 })
