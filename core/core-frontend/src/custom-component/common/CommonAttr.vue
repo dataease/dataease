@@ -9,6 +9,7 @@ import { useI18n } from '@/hooks/web/useI18n'
 import elementResizeDetectorMaker from 'element-resize-detector'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import CommonStyleSet from '@/custom-component/common/CommonStyleSet.vue'
+import CommonEvent from '@/custom-component/common/CommonEvent.vue'
 const snapshotStore = snapshotStoreWithOut()
 
 const { t } = useI18n()
@@ -87,6 +88,12 @@ const colorPickerWidth = computed(() => {
   }
 })
 
+// 暂时关闭
+const eventsShow = computed(() => {
+  return false
+  // return !dashboardActive.value && ['Picture'].includes(element.value.component)
+})
+
 const backgroundCustomShow = computed(() => {
   return (
     dashboardActive.value ||
@@ -148,6 +155,15 @@ const stopEvent = e => {
           :themes="themes"
           :element="element"
         ></common-style-set>
+      </el-collapse-item>
+      <el-collapse-item
+        v-if="element && element.events && eventsShow"
+        :effect="themes"
+        title="事件"
+        name="style"
+        class="common-style-area"
+      >
+        <common-event :themes="themes" :element="element"></common-event>
       </el-collapse-item>
     </el-collapse>
   </div>

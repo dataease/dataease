@@ -33,6 +33,8 @@ import DeStreamMedia from '@/custom-component/de-stream-media/Component.vue'
 import DeStreamMediaAttr from '@/custom-component/de-stream-media/Attr.vue'
 import ScrollText from '@/custom-component/scroll-text/Component.vue'
 import ScrollTextAttr from '@/custom-component/scroll-text/Attr.vue'
+import PopArea from '@/custom-component/pop-area/Component.vue'
+import PopAreaAttr from '@/custom-component/pop-area/Attr.vue'
 export const componentsMap = {
   VText: VText,
   VQuery,
@@ -68,7 +70,9 @@ export const componentsMap = {
   DeStreamMedia: DeStreamMedia,
   DeStreamMediaAttr: DeStreamMediaAttr,
   ScrollText: ScrollText,
-  ScrollTextAttr: ScrollTextAttr
+  ScrollTextAttr: ScrollTextAttr,
+  PopArea: PopArea,
+  PopAreaAttr: PopAreaAttr
 }
 
 export default function findComponent(key) {

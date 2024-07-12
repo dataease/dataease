@@ -14,9 +14,12 @@ import { activeWatermark } from '@/components/watermark/watermark'
 import { personInfoApi } from '@/api/user'
 import router from '@/router'
 import { XpackComponent } from '@/components/plugin'
+import PopArea from '@/custom-component/pop-area/Component.vue'
+import CanvasFilterBtn from '@/custom-component/canvas-filter-btn/Component.vue'
 const dvMainStore = dvMainStoreWithOut()
-const { pcMatrixCount, curComponent, mobileInPc } = storeToRefs(dvMainStore)
+const { pcMatrixCount, curComponent, mobileInPc, canvasState } = storeToRefs(dvMainStore)
 const openHandler = ref(null)
+
 const props = defineProps({
   canvasStyleData: {
     type: Object,
@@ -96,6 +99,14 @@ const dashboardActive = computed(() => {
 const isReport = computed(() => {
   return !!router.currentRoute.value.query?.report
 })
+
+const popComponentData = computed(() =>
+  componentData.value.filter(ele => ele.category && ele.category === 'hidden')
+)
+
+const baseComponentData = computed(() =>
+  componentData.value.filter(ele => ele.category !== 'hidden' && ele.component !== 'GroupArea')
+)
 const canvasStyle = computed(() => {
   let style = {}
   if (canvasStyleData.value && canvasStyleData.value.width && isMainCanvas(canvasId.value)) {
@@ -163,7 +174,11 @@ const resetLayout = () => {
           ? scaleMin.value * 1.2
           : outerScale.value * 100
       } else {
-        changeRefComponentsSizeWithScale(componentData.value, canvasStyleData.value, scaleMin.value)
+        changeRefComponentsSizeWithScale(
+          baseComponentData.value,
+          canvasStyleData.value,
+          scaleMin.value
+        )
       }
     }
   })
@@ -250,7 +265,7 @@ const winMsgHandle = event => {
   ) {
     const attachParams = msgInfo.params
     if (attachParams) {
-      dvMainStore.addOuterParamsFilter(attachParams, componentData.value, 'outer')
+      dvMainStore.addOuterParamsFilter(attachParams, baseComponentData.value, 'outer')
     }
   }
 }
@@ -282,6 +297,9 @@ const userViewEnlargeOpen = (opt, item) => {
 }
 const handleMouseDown = () => {
   dvMainStore.setCurComponent({ component: null, index: null })
+  if (!curComponent.value || (curComponent.value && curComponent.value.category !== 'hidden')) {
+    dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'base' })
+  }
 }
 
 const onPointClick = param => {
@@ -309,6 +327,16 @@ const onPointClick = param => {
     console.warn('de_inner_params send error')
   }
 }
+
+// v-if 使用 内容不渲染 默认参数不起用
+const popAreaAvailable = computed(
+  () => canvasStyleData.value?.popupAvailable && isMainCanvas(canvasId.value)
+)
+
+const filterBtnShow = computed(
+  () => popAreaAvailable.value && popComponentData.value && popComponentData.value.length > 0
+)
+
 defineExpose({
   restore
 })
@@ -322,13 +350,27 @@ defineExpose({
     ref="previewCanvas"
     @mousedown="handleMouseDown"
   >
+    <!--弹框触发区域-->
+    <canvas-filter-btn v-if="filterBtnShow"></canvas-filter-btn>
+    <!-- 弹框区域 -->
+    <PopArea
+      v-if="popAreaAvailable"
+      :dv-info="dvInfo"
+      :canvas-id="canvasId"
+      :canvas-style-data="canvasStyleData"
+      :canvasViewInfo="canvasViewInfo"
+      :pop-component-data="popComponentData"
+      :scale="scaleMin"
+      :canvas-state="canvasState"
+      :show-position="'preview'"
+    ></PopArea>
     <canvas-opt-bar
       :canvas-id="canvasId"
       :canvas-style-data="canvasStyleData"
-      :component-data="componentData"
+      :component-data="baseComponentData"
     ></canvas-opt-bar>
     <ComponentWrapper
-      v-for="(item, index) in componentData"
+      v-for="(item, index) in baseComponentData"
       v-show="item.isShow"
       :active="item.id === (curComponent || {})['id']"
       :canvas-id="canvasId"

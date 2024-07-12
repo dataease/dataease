@@ -11,7 +11,7 @@ import {
   DEFAULT_CANVAS_STYLE_DATA_DARK,
   DEFAULT_CANVAS_STYLE_DATA_LIGHT,
   DEFAULT_CANVAS_STYLE_DATA_SCREEN_DARK
-} from '@/views/chart/components/editor/util/dataVisualiztion'
+} from '@/views/chart/components/editor/util/dataVisualization'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import chartViewManager from '@/views/chart/components/js/panel'
 import {
@@ -35,6 +35,9 @@ export const dvMainStore = defineStore('dataVisualization', {
         componentProp: false,
         chartAreaCollapse: false,
         datasetAreaCollapse: false
+      },
+      canvasState: {
+        curPointArea: 'base' // 当前焦点所在画布区域  base 主画布区域 hidden 隐藏画布区域
       },
       embeddedCallBack: 'no', // 嵌入模式是否允许反馈参数
       editMode: 'preview', // 编辑器模式 edit preview
@@ -278,6 +281,18 @@ export const dvMainStore = defineStore('dataVisualization', {
       }
       this.curComponent = component
       this.curComponentIndex = index
+      // 更新当前活动区域
+      if (this.curComponent && this.curComponent['category']) {
+        // 如果是图片 且图片配置了切换显示区
+        if (
+          this.curComponent.component !== 'Picture' ||
+          (this.curComponent.component === 'Picture' &&
+            (!this.curComponent.events?.checked ||
+              this.curComponent.events?.type !== 'displayChange'))
+        ) {
+          this.canvasState['curPointArea'] = this.curComponent['category']
+        }
+      }
     },
     setBashMatrixInfo(bashMatrixInfo) {
       this.bashMatrixInfo = bashMatrixInfo
@@ -1176,6 +1191,18 @@ export const dvMainStore = defineStore('dataVisualization', {
         if (newId) {
           this.dvInfo.id = newId
         }
+      }
+    },
+    popAreaActiveSwitch() {
+      if (this.canvasState['curPointArea'] === 'base') {
+        this.canvasState['curPointArea'] = 'hidden'
+      } else {
+        this.canvasState['curPointArea'] = 'base'
+      }
+    },
+    canvasStateChange({ key, value }) {
+      if (this.canvasState[key] && value) {
+        this.canvasState[key] = value
       }
     },
     createInit(dvType, resourceId?, pid?, watermarkInfo?) {

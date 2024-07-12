@@ -19,7 +19,7 @@ const layerStore = layerStoreWithOut()
 const composeStore = composeStoreWithOut()
 
 const { areaData } = storeToRefs(composeStore)
-const { curComponent } = storeToRefs(dvMainStore)
+const { curComponent, componentData } = storeToRefs(dvMainStore)
 const emit = defineEmits(['close', 'rename'])
 const { emitter } = useEmitt()
 const props = defineProps({
@@ -30,6 +30,10 @@ const props = defineProps({
 })
 
 const { activePosition } = toRefs(props)
+
+const popComponentDataLength = computed(
+  () => componentData.value.filter(ele => ele.category === 'hidden').length
+)
 
 const lock = () => {
   snapshotStore.recordSnapshotCache()
@@ -80,7 +84,15 @@ const show = () => {
   layerStore.showComponent()
   menuOpt('show')
 }
-
+const categoryChange = type => {
+  if (curComponent.value) {
+    snapshotStore.recordSnapshotCache()
+    curComponent.value['category'] = type
+    if (type === 'hidden') {
+      dvMainStore.canvasStateChange({ key: 'curPointArea', value: 'hidden' })
+    }
+  }
+}
 const rename = () => {
   emit('rename')
   menuOpt('rename')
@@ -153,7 +165,12 @@ const handleComposeMouseDown = e => {
 }
 
 const composeDivider = computed(() => {
-  return !(!curComponent || curComponent['isLock'] || curComponent['component'] != 'Group')
+  return !(
+    !curComponent ||
+    curComponent['isLock'] ||
+    curComponent['component'] != 'Group' ||
+    curComponent.category === 'hidden'
+  )
 })
 
 const isGroupArea = computed(() => {
@@ -211,14 +228,33 @@ const editQueryCriteria = () => {
         取消组合
       </li>
       <el-divider class="custom-divider" v-show="composeDivider" />
-      <template v-if="curComponent && !isGroupArea">
-        <template v-if="!curComponent['isLock']">
+      <template v-if="curComponent">
+        <template v-if="!curComponent['isLock'] && curComponent.category === 'hidden'">
+          <li @click="categoryChange('base')">移动到大屏显示区</li>
+          <li @click="editQueryCriteria">编辑</li>
+          <li v-if="activePosition === 'aside'" @click="rename">重命名</li>
+          <li @click="copy">复制</li>
+          <li @click="paste">粘贴</li>
+          <el-divider class="custom-divider" />
+          <li @click="deleteComponent">删除</li>
+        </template>
+        <template v-if="!curComponent['isLock'] && curComponent.category !== 'hidden'">
           <li v-if="curComponent.component === 'VQuery'" @click="editQueryCriteria">编辑</li>
           <li @click="upComponent">上移一层</li>
           <li @click="upComponent">上移一层</li>
           <li @click="downComponent">下移一层</li>
           <li @click="topComponent">置于顶层</li>
           <li @click="bottomComponent">置于底层</li>
+          <li
+            @click="categoryChange('hidden')"
+            v-show="
+              curComponent['category'] === 'base' &&
+              curComponent.component === 'VQuery' &&
+              popComponentDataLength === 0
+            "
+          >
+            移动到大屏弹框区
+          </li>
           <el-divider class="custom-divider" />
           <li @click="hide" v-show="curComponent['isShow']">隐藏</li>
           <li @click="show" v-show="!curComponent['isShow']">取消隐藏</li>
@@ -231,7 +267,7 @@ const editQueryCriteria = () => {
           <el-divider class="custom-divider" />
           <li @click="deleteComponent">删除</li>
         </template>
-        <li v-else @click="unlock">解锁</li>
+        <li v-if="curComponent['isLock']" @click="unlock">解锁</li>
       </template>
       <li v-else-if="!curComponent && !areaData.components.length" @click="paste">粘贴</li>
     </ul>

@@ -1,5 +1,5 @@
 <template>
-  <div class="pic-main">
+  <div class="pic-main" @click="onPictureClick">
     <img
       draggable="false"
       v-if="propValue['url']"
@@ -20,6 +20,9 @@
 import { CSSProperties, computed, nextTick, toRefs } from 'vue'
 import { imgUrlTrans } from '@/utils/imgUtils'
 import eventBus from '@/utils/eventBus'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
+const dvMainStore = dvMainStoreWithOut()
+
 const props = defineProps({
   propValue: {
     type: String,
@@ -46,7 +49,16 @@ const imageAdapter = computed(() => {
   }
   return style as CSSProperties
 })
-
+const onPictureClick = e => {
+  if (element.value.events && element.value.events.checked) {
+    if (element.value.events.type === 'displayChange') {
+      // 打开弹框区域
+      nextTick(() => {
+        dvMainStore.popAreaActiveSwitch()
+      })
+    }
+  }
+}
 const uploadImg = () => {
   nextTick(() => {
     eventBus.emit('uploadImg')
@@ -59,6 +71,7 @@ const uploadImg = () => {
   overflow: hidden;
   width: 100%;
   height: 100%;
+  cursor: pointer;
 }
 .pic-upload {
   display: flex;
