@@ -214,6 +214,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
               <el-input-number
                 v-model="chart.customStyle.component.queryConditionWidth"
                 :min="0"
+                :effect="themes"
                 controls-position="right"
               />
             </el-form-item>
@@ -226,6 +227,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
               <el-input-number
                 v-model="chart.customStyle.component.queryConditionSpacing"
                 :min="0"
+                :effect="themes"
                 controls-position="right"
               />
             </el-form-item>
@@ -249,8 +251,8 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
               :class="'form-item-' + themes"
             >
               <el-radio-group :effect="themes" v-model="chart.customStyle.component.layout">
-                <el-radio label="vertical"> 上侧 </el-radio>
-                <el-radio label="horizontal"> 左侧 </el-radio>
+                <el-radio label="vertical" :effect="themes"> 上侧 </el-radio>
+                <el-radio label="horizontal" :effect="themes"> 左侧 </el-radio>
               </el-radio-group>
             </el-form-item>
             <el-form-item
