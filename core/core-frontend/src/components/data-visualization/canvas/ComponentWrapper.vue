@@ -1,16 +1,18 @@
 <script setup lang="ts">
 import { getStyle } from '@/utils/style'
 import eventBus from '@/utils/eventBus'
-import { ref, onMounted, toRefs, getCurrentInstance, computed } from 'vue'
+import { ref, onMounted, toRefs, getCurrentInstance, computed, nextTick } from 'vue'
 import findComponent from '@/utils/components'
 import { downloadCanvas, imgUrlTrans } from '@/utils/imgUtils'
 import ComponentEditBar from '@/components/visualization/ComponentEditBar.vue'
 import ComponentSelector from '@/components/visualization/ComponentSelector.vue'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import Board from '@/components/de-board/Board.vue'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 
 const componentWrapperInnerRef = ref(null)
 const componentEditBarRef = ref(null)
+const dvMainStore = dvMainStoreWithOut()
 
 const props = defineProps({
   active: {
@@ -100,6 +102,9 @@ const handleInnerMouseDown = e => {
     e.stopPropagation()
     e.preventDefault()
   }
+  if (showPosition.value.includes('popEdit')) {
+    onClick(e)
+  }
 }
 
 onMounted(() => {
@@ -112,13 +117,14 @@ onMounted(() => {
   })
 })
 
-const onClick = () => {
-  // do event click
-  // const events = config.value.events
-  // Object.keys(events).forEach(event => {
-  //   currentInstance.ctx[event](events[event])
-  // })
-  // eventBus.emit('v-click', config.value.id)
+const onClick = e => {
+  e.preventDefault()
+  e.stopPropagation()
+  // 将当前点击组件的事件传播出去
+  eventBus.emit('componentClick')
+  dvMainStore.setInEditorStatus(true)
+  dvMainStore.setClickComponentStatus(true)
+  dvMainStore.setCurComponent({ component: config.value, index: index.value })
 }
 
 const getComponentStyleDefault = style => {
@@ -193,7 +199,6 @@ const deepScale = computed(() => scale.value / 100)
   <div
     class="wrapper-outer"
     :class="showPosition + '-' + config.component"
-    @click="onClick"
     @mousedown="handleInnerMouseDown"
     @mouseenter="onMouseEnter"
   >

@@ -3,9 +3,9 @@ import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { layerStoreWithOut } from '@/store/modules/data-visualization/layer'
 import { storeToRefs } from 'pinia'
-import { ElIcon, ElRow } from 'element-plus-secondary'
+import { ElIcon, ElRow, ElSwitch } from 'element-plus-secondary'
 import Icon from '../icon-custom/src/Icon.vue'
-import { nextTick, ref } from 'vue'
+import { computed, nextTick, ref } from 'vue'
 import draggable from 'vuedraggable'
 import { lockStoreWithOut } from '@/store/modules/data-visualization/lock'
 import ContextMenuAsideDetails from '@/components/data-visualization/canvas/ContextMenuAsideDetails.vue'
@@ -22,7 +22,8 @@ const composeStore = composeStoreWithOut()
 
 const { areaData, isCtrlOrCmdDown, isShiftDown, laterIndex } = storeToRefs(composeStore)
 
-const { componentData, curComponent, canvasViewInfo } = storeToRefs(dvMainStore)
+const { componentData, canvasStyleData, curComponent, canvasViewInfo, canvasState } =
+  storeToRefs(dvMainStore)
 const getComponent = index => {
   return componentData.value[componentData.value.length - 1 - index]
 }
@@ -34,6 +35,13 @@ const areaDataPush = component => {
     areaData.value.components.push(component)
   }
 }
+
+const hiddenAreaActive = computed(
+  () => canvasState.value.curPointArea === 'hidden' && !curComponent.value
+)
+const baseAreaActive = computed(
+  () => canvasState.value.curPointArea === 'base' && !curComponent.value
+)
 // shift 选择算法逻辑
 // 1.记录上次点击的laterIndex（初始状态laterIndex=0）;
 // 2.获取当前index curClickIndex;
@@ -57,6 +65,16 @@ const shiftDataPush = curClickIndex => {
     )
   areaData.value.components.push(...shiftAreaComponents)
   dvMainStore.setCurComponent({ component: null, index: null })
+}
+
+const hiddenAreaOnClick = (e, element) => {
+  let indexResult
+  componentData.value.forEach((component, index) => {
+    if (element.id === component.id) {
+      indexResult = index
+    }
+  })
+  dvMainStore.setCurComponent({ component: element, index: indexResult })
 }
 
 const onClick = (e, index) => {
@@ -149,6 +167,14 @@ const showComponent = () => {
   })
 }
 
+const popComponentData = computed(() =>
+  componentData.value.filter(ele => ele.category && ele.category === 'hidden')
+)
+
+const baseComponentData = computed(() =>
+  componentData.value.filter(ele => ele.category !== 'hidden' && ele.component !== 'GroupArea')
+)
+
 const dragOnEnd = ({ oldIndex, newIndex }) => {
   const source = componentData.value[newIndex]
   const comLength = componentData.value.length
@@ -204,12 +230,94 @@ const handleContextMenu = e => {
     document.body.removeChild(customContextMenu)
   })
 }
+
+const areaClick = area => {
+  dvMainStore.setCurComponent({ component: null, index: null })
+  dvMainStore.canvasStateChange({ key: 'curPointArea', value: area })
+}
 </script>
 
 <template>
   <!--为了保持图层视觉上的一致性 这里进行数组的倒序排列 相应的展示和移动按照倒序处理-->
   <div class="real-time-component-list">
     <button hidden="true" id="close-button"></button>
+    <div class="layer-area" @click="areaClick('hidden')" :class="{ activated: hiddenAreaActive }">
+      <span>弹窗区域({{ popComponentData.length }})</span>
+      <el-switch v-model="canvasStyleData.popupAvailable" size="small" />
+    </div>
+    <el-row class="list-wrap">
+      <div class="list-container" @contextmenu="handleContextMenu">
+        <draggable
+          @end="dragOnEnd"
+          :list="popComponentData"
+          animation="100"
+          class="drag-list"
+          item-key="id"
+        >
+          <template #item="{ element, index }">
+            <div>
+              <div
+                :title="element.name"
+                class="component-item"
+                :class="{
+                  'container-item-not-show': !element.isShow,
+                  activated:
+                    (curComponent && curComponent?.id === element?.id) ||
+                    areaData.components.includes(element)
+                }"
+                @click="hiddenAreaOnClick($event, element)"
+              >
+                <div style="width: 22px; padding-left: 3px"></div>
+                <el-icon class="component-icon">
+                  <Icon :name="getIconName(element)"></Icon>
+                </el-icon>
+                <span
+                  :id="`component-label-${element?.id}`"
+                  class="component-label"
+                  @dblclick="editComponentName(element)"
+                >
+                  {{ element?.name }}
+                </span>
+                <div
+                  v-show="!nameEdit || (nameEdit && curComponent?.id !== element?.id)"
+                  class="icon-container"
+                  :class="{
+                    'icon-container-show': !element?.isShow
+                  }"
+                >
+                  <el-dropdown
+                    ref="dropdownMore"
+                    trigger="click"
+                    placement="bottom-start"
+                    effect="dark"
+                    :hide-timeout="0"
+                  >
+                    <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
+                      <el-icon class="component-base">
+                        <Icon name="dv-more" class="opt-icon"></Icon>
+                      </el-icon>
+                    </span>
+                    <template #dropdown>
+                      <context-menu-aside-details
+                        :element="element"
+                        @close="menuAsideClose($event, index)"
+                      ></context-menu-aside-details>
+                    </template>
+                  </el-dropdown>
+                </div>
+              </div>
+            </div>
+          </template>
+        </draggable>
+      </div>
+    </el-row>
+    <div
+      class="layer-area layer-screen"
+      @click="areaClick('base')"
+      :class="{ activated: baseAreaActive }"
+    >
+      <span>大屏区域({{ baseComponentData.length }})</span>
+    </div>
     <el-row class="list-wrap">
       <div class="list-container" @contextmenu="handleContextMenu">
         <draggable
@@ -222,7 +330,10 @@ const handleContextMenu = e => {
           <template #item="{ index }">
             <div>
               <div
-                v-show="getComponent(index)?.component !== 'GroupArea'"
+                v-show="
+                  getComponent(index)?.component !== 'GroupArea' &&
+                  getComponent(index)?.category !== 'hidden'
+                "
                 :title="getComponent(index)?.name"
                 class="component-item"
                 :class="{
@@ -518,6 +629,43 @@ const handleContextMenu = e => {
   :deep(.component-label) {
     color: #5f5f5f !important;
   }
+}
+
+.layer-area {
+  font-size: 12px;
+  font-weight: bold;
+  height: 36px;
+  line-height: 36px;
+  padding: 0 8px;
+  display: flex;
+  cursor: pointer;
+  align-items: center;
+  justify-content: space-between;
+  &:hover {
+    background-color: rgba(235, 235, 235, 0.1);
+  }
+  :deep(.ed-switch.is-checked .ed-switch__core > .ed-switch__action) {
+    left: calc(100% - 12px);
+  }
+  :deep(span.ed-switch__core) {
+    min-width: 24px;
+    border: none;
+    height: 6px;
+    border-radius: 3px;
+    .ed-switch__action {
+      left: 0;
+      box-shadow: 0 2px 4px rgba(31, 35, 41, 0.12);
+    }
+  }
+}
+
+.activated {
+  background-color: var(--ed-color-primary-1a, rgba(51, 112, 255, 0.1)) !important;
+  color: var(--ed-color-primary);
+}
+
+.layer-screen {
+  border-top: rgba(255, 255, 255, 0.15) 1px solid;
 }
 </style>
 

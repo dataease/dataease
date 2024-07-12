@@ -44,14 +44,15 @@ import PointShadow from '@/components/data-visualization/canvas/PointShadow.vue'
 import DragInfo from '@/components/visualization/common/DragInfo.vue'
 import { activeWatermark } from '@/components/watermark/watermark'
 import { personInfoApi } from '@/api/user'
-import ComponentHangPopver from '@/custom-component/independent-hang/ComponentHangPopver.vue'
+import PopArea from '@/custom-component/pop-area/Component.vue'
 
 const snapshotStore = snapshotStoreWithOut()
 const dvMainStore = dvMainStoreWithOut()
 const composeStore = composeStoreWithOut()
 const contextmenuStore = contextmenuStoreWithOut()
 
-const { curComponent, dvInfo, editMode, tabMoveOutComponentId } = storeToRefs(dvMainStore)
+const { curComponent, dvInfo, editMode, tabMoveOutComponentId, canvasState } =
+  storeToRefs(dvMainStore)
 const { editorMap, areaData } = storeToRefs(composeStore)
 const emits = defineEmits(['scrollCanvasToTop'])
 const props = defineProps({
@@ -66,6 +67,11 @@ const props = defineProps({
   componentData: {
     type: Array,
     required: true
+  },
+  popComponentData: {
+    type: Array,
+    required: false,
+    default: () => []
   },
   canvasViewInfo: {
     type: Object,
@@ -1398,6 +1404,11 @@ const groupAreaClickChange = async () => {
   }
 }
 
+// v-if 使用 内容不渲染 默认参数不起用
+const popAreaAvailable = computed(
+  () => canvasStyleData.value?.popupAvailable && isMainCanvas(canvasId.value)
+)
+
 onMounted(() => {
   if (isMainCanvas(canvasId.value)) {
     initSnapshotTimer()
@@ -1460,6 +1471,18 @@ defineExpose({
       :component-data="componentData"
       :canvas-id="canvasId"
     ></canvas-opt-bar>
+    <!-- 弹框区域 -->
+    <PopArea
+      v-if="popAreaAvailable"
+      :dv-info="dvInfo"
+      :canvas-id="canvasId"
+      :canvas-style-data="canvasStyleData"
+      :canvasViewInfo="canvasViewInfo"
+      :pop-component-data="popComponentData"
+      :scale="curBaseScale"
+      :canvas-state="canvasState"
+      :show-position="'popEdit'"
+    ></PopArea>
     <!-- 网格线 -->
     <drag-shadow
       v-if="infoBox && infoBox.moveItem && editMode !== 'preview'"
