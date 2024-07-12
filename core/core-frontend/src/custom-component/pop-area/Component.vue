@@ -1,6 +1,6 @@
 <template>
   <!--此区域暂时放到类似视图和分组平行的组件作为后续扩展使用，但当前版本只作为类似MarkLine 和canvasCore平行组件 仅做区域显示使用-->
-  <div class="pop-area" :style="popCanvasStyle" @mousedown="handleMouseDown">
+  <div class="pop-area" :style="popCanvasStyle" @mousedown.stop @mousedup.stop>
     <div style="width: 100%; height: 100%">
       <div v-if="popComponentData && popComponentData.length > 0" class="pop-content">
         <!--使用ComponentWrapper 保留扩展能力-->
