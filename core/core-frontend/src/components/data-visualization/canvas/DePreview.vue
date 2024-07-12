@@ -349,6 +349,7 @@ defineExpose({
     :id="domId"
     class="canvas-container"
     :style="canvasStyle"
+    :class="{ 'de-download-custom': downloadStatus }"
     ref="previewCanvas"
     @mousedown="handleMouseDown"
   >
