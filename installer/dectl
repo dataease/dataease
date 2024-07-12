@@ -298,13 +298,13 @@ function clear_images() {
          component_version=$(echo ${component_image_defined} | awk -F":" '{print $3}' | uniq)
          component_image=$(echo ${component_image_defined} | awk -F'image: ' '{print $2}' | awk -F':' '{print $1}')
 
-         if [[ $(docker images | grep "$component_image" | grep -v " $component_version ") == 0 ]]; then
+         if [[ $(docker images | grep "$component_image[[:space:]]" | grep -v " $component_version " | wc -l) == 0 ]]; then
             echo "$component_image 不存在旧版本镜像"
          else
-            echo "存在旧版本镜像 : "
-            docker images | grep "$component_image" | grep -v " $component_version "
+            echo "存在非当前版本镜像 : "
+            docker images | grep "$component_image[[:space:]]" | grep -v " $component_version "
             echo "清理${component}镜像"
-            docker rmi $(docker images | grep "$component_image" | grep -v " $component_version " | awk -F' ' '{print $1":"$2}')
+            docker rmi $(docker images | grep "$component_image[[:space:]]" | grep -v " $component_version " | awk -F' ' '{print $1":"$2}')
             echo "清理完毕"
          fi
       done
