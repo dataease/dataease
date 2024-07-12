@@ -67,6 +67,9 @@ export function download2AppTemplate(downloadType, canvasDom, name, callBack?) {
       })
     })
   } catch (e) {
+    if (callBack) {
+      callBack()
+    }
     console.error(e)
   }
 }
@@ -96,6 +99,9 @@ export function downloadCanvas2(type, canvasDom, name, callBack?) {
       }
     })
     .catch(error => {
+      if (callBack) {
+        callBack()
+      }
       console.error('oops, something went wrong!', error)
     })
 }
