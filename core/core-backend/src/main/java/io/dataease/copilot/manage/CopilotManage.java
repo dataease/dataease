@@ -71,6 +71,8 @@ public class CopilotManage {
     @Resource
     private F2CLicManage f2CLicManage;
 
+    private String[] chartType = {"bar", "line", "pie"};
+
     public MsgDTO chat(MsgDTO msgDTO) throws Exception {
         CoreDatasetGroup coreDatasetGroup = coreDatasetGroupMapper.selectById(msgDTO.getDatasetGroupId());
         if (coreDatasetGroup == null) {
@@ -294,7 +296,7 @@ public class CopilotManage {
         if (StringUtils.equalsIgnoreCase(receiveDTO.getChart().getType(), "pie")) {
             AxisFieldDTO column = receiveDTO.getChart().getColumn();
             if (fields.size() != 2 || column == null) {
-                DEException.throwException("当前字段不足以构建饼图");
+                DEException.throwException("当前字段不足以构建饼图: " + JsonUtil.toJSONString(receiveDTO));
             }
             AxisDTO axisDTO = new AxisDTO();
             AxisFieldDTO x = new AxisFieldDTO();
@@ -310,7 +312,7 @@ public class CopilotManage {
                 y.setName(column.getName());
                 y.setValue(column.getValue());
             } else {
-                DEException.throwException("当前字段不足以构建饼图");
+                DEException.throwException("当前字段不足以构建饼图: " + JsonUtil.toJSONString(receiveDTO));
             }
             axisDTO.setX(x);
             axisDTO.setY(y);
@@ -327,6 +329,14 @@ public class CopilotManage {
                 }
                 receiveDTO.getChart().setColumns(columns);
             }
+        }
+
+        // 所有图表都加上columns字段用于切换明细表展示
+        if (Arrays.asList(chartType).contains(receiveDTO.getChart().getType())) {
+            List<AxisFieldDTO> columns = new ArrayList<>();
+            columns.add(receiveDTO.getChart().getAxis().getX());
+            columns.add(receiveDTO.getChart().getAxis().getY());
+            receiveDTO.getChart().setColumns(columns);
         }
     }
 
