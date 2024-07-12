@@ -1,7 +1,7 @@
 <!-- IconSlider.vue -->
 <template>
   <el-tooltip offset="18" effect="dark" placement="left" content="查询">
-    <div class="canvas-filter">
+    <div class="canvas-filter" @mousedown.stop @mousedup.stop>
       <div class="icon-slider" @mouseenter="slideOut" @mouseleave="slideBack">
         <div
           class="icon-container"
