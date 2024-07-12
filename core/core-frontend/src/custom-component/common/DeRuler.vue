@@ -99,6 +99,8 @@ const outerStyle = computed(() => {
   }
 })
 
+const curShadowShow = computed(() => curComponent.value && curComponent.value.category !== 'hidden')
+
 defineExpose({
   rulerScroll
 })
@@ -115,7 +117,7 @@ defineExpose({
     <div class="ruler-shadow" :style="outerStyle"></div>
     <div :style="wStyle" class="ruler-outer-scroll">
       <div class="ruler" :style="{ width: `${scaleWidth}px` }">
-        <div v-if="curComponent" :style="curComponentShadow" class="cur-shadow"></div>
+        <div v-if="curShadowShow" :style="curComponentShadow" class="cur-shadow"></div>
         <div class="ruler-line" :style="{ width: `${scaleWidth}px` }"></div>
         <div
           v-for="(tick, index) in ticks"
@@ -144,7 +146,7 @@ defineExpose({
   transform: rotate(90deg);
   overflow-y: auto;
   overflow-x: hidden;
-  z-index: 1;
+  z-index: 2;
   .ruler {
     .ruler-line {
       top: 0;

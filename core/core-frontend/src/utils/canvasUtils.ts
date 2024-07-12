@@ -123,6 +123,8 @@ export function historyAdaptor(
   //历史字段适配
   canvasStyleResult.component['seniorStyleSetting'] =
     canvasStyleResult.component['seniorStyleSetting'] || deepCopy(SENIOR_STYLE_SETTING_LIGHT)
+  canvasStyleResult['popupAvailable'] =
+    canvasStyleResult['popupAvailable'] === undefined ? true : canvasStyleResult['popupAvailable'] //兼容弹框区域开关
   const reportFilterInfo = canvasInfo.reportFilterInfo
   canvasDataResult.forEach(componentItem => {
     componentItem['canvasActive'] = false

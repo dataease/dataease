@@ -78,7 +78,8 @@ const {
   canvasStyleData,
   canvasViewInfo,
   editMode,
-  dvInfo
+  dvInfo,
+  canvasState
 } = storeToRefs(dvMainStore)
 const { editorMap } = storeToRefs(composeStore)
 const canvasOut = ref(null)
@@ -122,6 +123,18 @@ const handleNew = newComponentInfo => {
     component.style.top = ((height - component.style.height) * scale) / 200
     component.style.left = ((width - component.style.width) * scale) / 200
     component.id = guid()
+    const popComponents = componentData.value.filter(
+      ele => ele.category && ele.category === 'hidden'
+    )
+    // 弹框区域组件 只允许有一个过滤组件
+    if (
+      canvasState.value.curPointArea === 'hidden' &&
+      component.component === 'VQuery' &&
+      (!popComponents || popComponents.length === 0)
+    ) {
+      component.category = canvasState.value.curPointArea
+      component.commonBackground.backgroundColor = 'rgba(41, 41, 41, 1)'
+    }
     changeComponentSizeWithScale(component)
     dvMainStore.addComponent({ component: component, index: undefined })
     adaptCurThemeCommonStyle(component)
@@ -130,6 +143,7 @@ const handleNew = newComponentInfo => {
 }
 
 const handleDrop = e => {
+  console.log('===handleDrop2')
   e.preventDefault()
   e.stopPropagation()
   const componentInfo = e.dataTransfer.getData('id')
@@ -369,6 +383,14 @@ const scrollCanvas = e => {
   deHRulerRef.value.rulerScroll(e)
 }
 
+const coreComponentData = computed(() =>
+  componentData.value.filter(ele => !ele.category || ele.category !== 'hidden')
+)
+
+const popComponentData = computed(() =>
+  componentData.value.filter(ele => ele.category && ele.category === 'hidden')
+)
+
 eventBus.on('handleNew', handleNew)
 </script>
 
@@ -389,7 +411,7 @@ eventBus.on('handleNew', handleNew)
     >
       <!-- 左侧组件列表 -->
       <dv-sidebar
-        :title="'图层'"
+        :title="'图层管理'"
         :width="180"
         :scroll-width="3"
         :aside-position="'left'"
@@ -429,7 +451,8 @@ eventBus.on('handleNew', handleNew)
                 class="canvas-area-shadow editor-main"
                 v-if="state.canvasInitStatus"
                 ref="mainCanvasCoreRef"
-                :component-data="componentData"
+                :component-data="coreComponentData"
+                :pop-component-data="popComponentData"
                 :canvas-style-data="canvasStyleData"
                 :canvas-view-info="canvasViewInfo"
                 :canvas-id="state.canvasId"
