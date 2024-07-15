@@ -290,7 +290,12 @@ const updateQueryCriteria = () => {
         ele.checkedFields = checkedFields
         ele.checkedFieldsMap = checkedFieldsMap
       } else {
-        if (!ele.dataset.id || ele.optionValueSource !== 1 || ![0, 2, 5].includes(+ele.displayType))
+        if (
+          !ele.dataset.id ||
+          !!ele.parameters.length ||
+          ele.optionValueSource !== 1 ||
+          ![0, 2, 5].includes(+ele.displayType)
+        )
           return
         const checkedFields = []
         datasetFieldList.value.forEach(itx => {
