@@ -12,6 +12,7 @@ import ContextMenuAsideDetails from '@/components/data-visualization/canvas/Cont
 import ComposeShow from '@/components/data-visualization/canvas/ComposeShow.vue'
 import { composeStoreWithOut } from '@/store/modules/data-visualization/compose'
 import RealTimeGroup from '@/components/data-visualization/RealTimeGroup.vue'
+import { contextmenuStoreWithOut } from '@/store/modules/data-visualization/contextmenu'
 const dropdownMore = ref(null)
 const lockStore = lockStoreWithOut()
 
@@ -19,6 +20,7 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const layerStore = layerStoreWithOut()
 const composeStore = composeStoreWithOut()
+const contextmenuStore = contextmenuStoreWithOut()
 
 const { areaData, isCtrlOrCmdDown, isShiftDown, laterIndex } = storeToRefs(composeStore)
 
@@ -78,6 +80,7 @@ const hiddenAreaOnClick = (e, element) => {
 }
 
 const onClick = (e, index) => {
+  contextmenuStore.hideContextMenu()
   // 初始化点击是 laterIndex=0
   if (!curComponent.value) {
     composeStore.setLaterIndex(null)
@@ -198,12 +201,24 @@ const getIconName = item => {
   }
 }
 
+const menuAsideHiddenClose = (param, element) => {
+  const iconDom = document.getElementById('close-button')
+  if (iconDom) {
+    iconDom.click()
+  }
+  if (param?.opt === 'rename') {
+    setTimeout(() => {
+      editComponentName(element)
+    }, 200)
+  }
+}
+
 const menuAsideClose = (param, index) => {
   const iconDom = document.getElementById('close-button')
   if (iconDom) {
     iconDom.click()
   }
-  if (param.opt === 'rename') {
+  if (param?.opt === 'rename') {
     setTimeout(() => {
       editComponentName(getComponent(index))
     }, 200)
@@ -292,7 +307,10 @@ const areaClick = area => {
                     effect="dark"
                     :hide-timeout="0"
                   >
-                    <span :class="'dropdownMore-' + index" @click="onClick(transformIndex(index))">
+                    <span
+                      :class="'dropdownMore-' + index"
+                      @click="hiddenAreaOnClick($event, element)"
+                    >
                       <el-icon class="component-base">
                         <Icon name="dv-more" class="opt-icon"></Icon>
                       </el-icon>
@@ -300,7 +318,7 @@ const areaClick = area => {
                     <template #dropdown>
                       <context-menu-aside-details
                         :element="element"
-                        @close="menuAsideClose($event, index)"
+                        @close="menuAsideHiddenClose($event, element)"
                       ></context-menu-aside-details>
                     </template>
                   </el-dropdown>
@@ -545,7 +563,6 @@ const areaClick = area => {
           justify-content: flex-end;
           align-items: center;
           flex-grow: 1;
-          cursor: none;
           i {
             font-size: 16px;
             cursor: pointer;
