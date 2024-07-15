@@ -1,7 +1,6 @@
 import { createApp } from 'vue'
 import '../../assets/font/index.css'
 import '@/style/index.less'
-import '@/plugins/svg-icon'
 import 'normalize.css/normalize.css'
 import '@antv/s2/dist/style.min.css'
 import App from './App.vue'

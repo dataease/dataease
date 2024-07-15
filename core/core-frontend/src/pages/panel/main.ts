@@ -56,7 +56,6 @@ document.querySelector('head').appendChild = <T extends Node>(node: T) => {
 import { App, createApp } from 'vue'
 import '../../assets/font/index.css'
 import '@/style/index.less'
-import '@/plugins/svg-icon'
 import 'normalize.css/normalize.css'
 import '@antv/s2/dist/style.min.css'
 import AppElement from './App.vue'
