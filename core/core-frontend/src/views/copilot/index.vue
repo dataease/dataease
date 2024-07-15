@@ -99,7 +99,7 @@ initDataset()
 let historyBack = []
 getListCopilot().then(res => {
   historyBack = (res as unknown as string[]) || []
-  historyArr.value = cloneDeep(historyBack)
+  historyArr.value = cloneDeep(historyBack).map(ele => ({ ...ele, loading: false }))
   if (!!historyBack.length) {
     datasetId.value = historyBack[0].datasetGroupId
     datasetId.value && getOptions(datasetId.value)
@@ -114,6 +114,19 @@ watch(
     overHeight.value = val > 48
   }
 )
+
+const handleShowLeft = val => {
+  showLeft.value = val
+  historyArr.value.forEach(ele => {
+    ele.loading = true
+  })
+
+  setTimeout(() => {
+    historyArr.value.forEach(ele => {
+      ele.loading = false
+    })
+  }, 300)
+}
 const copilotChatLoading = ref(false)
 const inputRef = ref()
 let time = null
@@ -143,7 +156,7 @@ const queryAnswer = () => {
     history: historyBack
   })
     .then(res => {
-      historyArr.value.push(res)
+      historyArr.value.push({ ...(res || {}), loading: false })
       historyBack = res.history || []
     })
     .finally(() => {
@@ -191,7 +204,7 @@ onBeforeUnmount(() => {
       </div>
       <div class="dataset-select" :style="{ width: showLeft ? 0 : '280px' }">
         <el-tooltip effect="dark" content="收起" placement="left">
-          <p v-show="!showLeft" class="arrow-right" @click="showLeft = true">
+          <p v-show="!showLeft" class="arrow-right" @click="handleShowLeft(true)">
             <el-icon>
               <Icon name="icon_right_outlined"></Icon>
             </el-icon>
@@ -199,7 +212,7 @@ onBeforeUnmount(() => {
         </el-tooltip>
 
         <el-tooltip effect="dark" content="展开" placement="left">
-          <p v-show="showLeft" class="left-outlined" @click="showLeft = false">
+          <p v-show="showLeft" class="left-outlined" @click="handleShowLeft(false)">
             <el-icon>
               <Icon name="icon_left_outlined"></Icon>
             </el-icon>
