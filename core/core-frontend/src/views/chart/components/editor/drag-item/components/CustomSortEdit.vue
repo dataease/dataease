@@ -80,7 +80,6 @@ init()
     <draggable
       v-loading="loading"
       :list="state.sortList"
-      group="drag"
       animation="300"
       class="drag-list"
       item-key="name"
