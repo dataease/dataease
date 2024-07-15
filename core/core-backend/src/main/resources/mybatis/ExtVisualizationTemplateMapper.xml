@@ -172,4 +172,120 @@
         GROUP BY
         vtcm.template_id
     </select>
+    <select id="findAppViewInfo" resultType="io.dataease.api.visualization.vo.AppCoreChartViewVO">
+        SELECT
+            core_chart_view.*
+        FROM
+            core_chart_view
+        WHERE
+            core_chart_view.id in
+        <foreach collection="viewIds" item="viewId" index="index" open="(" close=")" separator=",">
+            #{viewId}
+        </foreach>
+    </select>
+    <select id="findAppDatasetGroupInfo" resultType="io.dataease.api.visualization.vo.AppCoreDatasetGroupVO">
+        SELECT
+        DISTINCT core_dataset_group.*
+        FROM
+        	core_dataset_group
+        WHERE
+        	core_dataset_group.id in
+        <foreach collection="dsIds" item="dsId" index="index" open="(" close=")" separator=",">
+            #{dsId}
+        </foreach>
+    </select>
+    <select id="findAppDatasetTableInfo" resultType="io.dataease.api.visualization.vo.AppCoreDatasetTableVO">
+        SELECT
+        DISTINCT core_dataset_table.*
+        FROM
+        	core_dataset_table
+        WHERE
+         	core_dataset_table.dataset_group_id in
+         <foreach collection="dsIds" item="dsId" index="index" open="(" close=")" separator=",">
+             #{dsId}
+         </foreach>
+    </select>
+    <select id="findAppDatasetTableFieldInfo" resultType="io.dataease.api.visualization.vo.AppCoreDatasetTableFieldVO">
+        SELECT DISTINCT
+        	core_dataset_table_field.*
+        FROM
+        	core_dataset_table_field
+        	INNER JOIN core_dataset_table ON core_dataset_table_field.dataset_table_id = core_dataset_table.id
+        WHERE
+         	core_dataset_table.dataset_group_id in
+         <foreach collection="dsIds" item="dsId" index="index" open="(" close=")" separator=",">
+             #{dsId}
+         </foreach>
+    </select>
+    <select id="findAppDatasourceInfo" resultType="io.dataease.api.visualization.vo.AppCoreDatasourceVO">
+        SELECT
+        DISTINCT core_datasource.*
+        FROM core_datasource inner join
+        	core_dataset_table on core_dataset_table.datasource_id = core_datasource.id
+        WHERE
+         	core_dataset_table.dataset_group_id in
+         <foreach collection="dsIds" item="dsId" index="index" open="(" close=")" separator=",">
+             #{dsId}
+         </foreach>
+    </select>
+    <select id="findAppDatasourceTaskInfo" resultType="io.dataease.api.visualization.vo.AppCoreDatasourceTaskVO">
+        SELECT
+        	core_datasource_task.*
+        FROM
+        	core_datasource_task
+        	INNER JOIN core_datasource ON core_datasource_task.ds_id = core_datasource.id
+        	INNER JOIN core_dataset_table ON core_dataset_table.datasource_id = core_datasource.id
+        WHERE
+         	core_dataset_table.dataset_group_id in
+         <foreach collection="dsIds" item="dsId" index="index" open="(" close=")" separator=",">
+             #{dsId}
+         </foreach>
+    </select>
+
+    <select id="findAppLinkageInfo" resultType="io.dataease.api.visualization.vo.VisualizationLinkageVO">
+        SELECT
+            visualization_linkage.*
+        FROM
+            visualization_linkage
+        WHERE
+            visualization_linkage.dv_id = #{dvId}
+    </select>
+    <select id="findAppLinkageFieldInfo" resultType="io.dataease.api.visualization.vo.VisualizationLinkageFieldVO">
+        SELECT
+        	visualization_linkage_field.*
+        FROM
+        	visualization_linkage_field
+        	INNER JOIN visualization_linkage ON visualization_linkage.id = visualization_linkage_field.linkage_id
+        WHERE
+        	visualization_linkage.dv_id = #{dvId}
+    </select>
+
+    <select id="findAppLinkJumpInfo" resultType="io.dataease.api.visualization.vo.VisualizationLinkJumpVO">
+        SELECT
+        	visualization_link_jump.*
+        FROM
+        	visualization_link_jump
+        WHERE
+        	visualization_link_jump.source_dv_id = #{dvId}
+    </select>
+
+    <select id="findAppLinkJumpInfoInfo" resultType="io.dataease.api.visualization.vo.VisualizationLinkJumpInfoVO">
+        SELECT
+        	visualization_link_jump_info.*
+        FROM
+        	visualization_link_jump_info
+        	INNER JOIN visualization_link_jump ON visualization_link_jump.id = visualization_link_jump_info.link_jump_id
+        WHERE
+        	visualization_link_jump.source_dv_id = #{dvId}
+    </select>
+    <select id="findAppLinkJumpTargetViewInfoInfo" resultType="io.dataease.api.visualization.vo.VisualizationLinkJumpTargetViewInfoVO">
+        SELECT
+        	visualization_link_jump_target_view_info.*
+        FROM
+        	visualization_link_jump_target_view_info
+        	INNER JOIN visualization_link_jump_info ON visualization_link_jump_target_view_info.link_jump_info_id = visualization_link_jump_info.id
+        	INNER JOIN visualization_link_jump ON visualization_link_jump.id = visualization_link_jump_info.link_jump_id
+        WHERE
+        	visualization_link_jump.source_dv_id = #{dvId}
+    </select>
 </mapper>

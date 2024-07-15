@@ -1,11 +1,6 @@
 package io.dataease.api.visualization.vo;
 
 import com.google.gson.Gson;
-import io.dataease.extensions.datasource.dto.DatasetTableDTO;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.extensions.datasource.dto.DatasourceDTO;
-import io.dataease.extensions.view.dto.ChartViewDTO;
-import io.dataease.extensions.view.dto.ChartViewFieldDTO;
 import lombok.Data;
 
 import java.util.ArrayList;
@@ -24,19 +19,21 @@ public class VisualizationExport2AppVO {
 
     private String chartViewsInfo;
 
-    private String chartViewFieldsInfo;
+    private String datasetGroupsInfo;
 
     private String datasetTablesInfo;
 
     private String datasetTableFieldsInfo;
 
-    private String datasetTasksInfo;
-
     private String datasourceInfo;
+
+    private String datasourceTaskInfo;
 
     private String linkJumps;
 
     private String linkJumpInfos;
+
+    private String linkJumpTargetInfos;
 
     private String linkages;
 
@@ -50,23 +47,31 @@ public class VisualizationExport2AppVO {
         this.checkMes = checkMes;
     }
 
-    public VisualizationExport2AppVO(List<ChartViewDTO> chartViewsInfo, List<ChartViewFieldDTO> chartViewFieldsInfo,
-                                     List<DatasetTableDTO> datasetTablesInfo, List<DatasetTableFieldDTO> datasetTableFieldsInfo, List<DatasourceDTO> datasourceInfo, List<VisualizationLinkJumpVO> linkJumps, List<VisualizationLinkJumpInfoVO> linkJumpInfos,
-                                     List<VisualizationLinkageVO> linkages, List<VisualizationLinkageFieldVO> linkageFields) {
-        List empty = new ArrayList();
+    public VisualizationExport2AppVO(List<AppCoreChartViewVO> chartViewVOInfo,
+                                     List<AppCoreDatasetGroupVO> datasetGroupVOInfo,
+                                     List<AppCoreDatasetTableVO> datasetTableVOInfo,
+                                     List<AppCoreDatasetTableFieldVO> datasetTableFieldVOInfo,
+                                     List<AppCoreDatasourceVO> datasourceVOInfo,
+                                     List<AppCoreDatasourceTaskVO> datasourceTaskVOInfo,
+                                     List<VisualizationLinkJumpVO> linkJumpVOInfo,
+                                     List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo,
+                                     List<VisualizationLinkJumpTargetViewInfoVO> linkJumpTargetViewVOInfo,
+                                     List<VisualizationLinkageVO> linkagesVOInfo,
+                                     List<VisualizationLinkageFieldVO> linkageFieldVOInfo) {
+        List<Object> empty = new ArrayList<>();
         Gson gson = new Gson();
         this.checkStatus = true;
         this.checkMes = "success";
-        this.chartViewsInfo = gson.toJson(chartViewsInfo != null ? chartViewsInfo : empty);
-        this.chartViewFieldsInfo = gson.toJson(chartViewFieldsInfo != null ? chartViewFieldsInfo : empty);
-        this.datasetTablesInfo = gson.toJson(datasetTablesInfo != null ? datasetTablesInfo : empty);
-        this.datasetTableFieldsInfo = gson.toJson(datasetTableFieldsInfo != null ? datasetTableFieldsInfo : empty);
-        this.datasetTasksInfo = gson.toJson(datasetTasksInfo != null ? datasetTasksInfo : empty);
-        this.datasourceInfo = gson.toJson(datasourceInfo != null ? datasourceInfo : empty);
-        this.visualizationViewsInfo = gson.toJson(visualizationViewsInfo != null ? visualizationViewsInfo : empty);
-        this.linkJumps = gson.toJson(linkJumps != null ? linkJumps : empty);
-        this.linkJumpInfos = gson.toJson(linkJumpInfos != null ? linkJumpInfos : empty);
-        this.linkages = gson.toJson(linkages != null ? linkages : empty);
-        this.linkageFields = gson.toJson(linkJumpInfos != null ? linkageFields : empty);
+        this.chartViewsInfo = gson.toJson(chartViewVOInfo != null ? chartViewVOInfo : empty);
+        this.datasetGroupsInfo = gson.toJson(datasetGroupVOInfo != null ? datasetGroupVOInfo : empty);
+        this.datasetTablesInfo = gson.toJson(datasetTableVOInfo != null ? datasetTableVOInfo : empty);
+        this.datasetTableFieldsInfo = gson.toJson(datasetTableFieldVOInfo != null ? datasetTableFieldVOInfo : empty);
+        this.datasourceTaskInfo = gson.toJson(datasourceTaskVOInfo != null ? datasourceTaskVOInfo : empty);
+        this.datasourceInfo = gson.toJson(datasourceVOInfo != null ? datasourceVOInfo : empty);
+        this.linkJumps = gson.toJson(linkJumpVOInfo != null ? linkJumpVOInfo : empty);
+        this.linkJumpInfos = gson.toJson(linkJumpInfoVOInfo != null ? linkJumpInfoVOInfo : empty);
+        this.linkJumpTargetInfos = gson.toJson(linkJumpTargetViewVOInfo != null ? linkJumpTargetViewVOInfo : empty);
+        this.linkages = gson.toJson(linkagesVOInfo != null ? linkagesVOInfo : empty);
+        this.linkageFields = gson.toJson(linkageFieldVOInfo != null ? linkageFieldVOInfo : empty);
     }
 }
