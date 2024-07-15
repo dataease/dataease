@@ -108,6 +108,7 @@ export const copyStore = defineStore('copy', {
           // 旧-新ID映射关系
           const idMap = {}
           const newComponent = deepCopyHelper(data, idMap)
+          newComponent['category'] = 'base'
           if (newComponent.canvasId.includes('Group')) {
             newComponent.canvasId = 'canvas-main'
           }
