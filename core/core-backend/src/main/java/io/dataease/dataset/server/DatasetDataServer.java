@@ -3,6 +3,7 @@ package io.dataease.dataset.server;
 import io.dataease.api.dataset.DatasetDataApi;
 import io.dataease.api.dataset.dto.BaseTreeNodeDTO;
 import io.dataease.api.dataset.dto.EnumValueRequest;
+import io.dataease.api.dataset.dto.MultFieldValuesRequest;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.dataset.manage.DatasetDataManage;
@@ -46,9 +47,9 @@ public class DatasetDataServer implements DatasetDataApi {
     }
 
     @Override
-    public List<String> getFieldEnum(List<Long> ids) {
+    public List<String> getFieldEnum(MultFieldValuesRequest multFieldValuesRequest) {
         try {
-            return datasetDataManage.getFieldEnum(ids);
+            return datasetDataManage.getFieldEnum(multFieldValuesRequest);
         } catch (Exception e) {
             e.printStackTrace();
             LogUtil.error(e);
@@ -73,9 +74,9 @@ public class DatasetDataServer implements DatasetDataApi {
     }
 
     @Override
-    public List<BaseTreeNodeDTO> getFieldValueTree(List<Long> ids) throws Exception {
+    public List<BaseTreeNodeDTO> getFieldValueTree(MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         try {
-            return datasetDataManage.getFieldValueTree(ids);
+            return datasetDataManage.getFieldValueTree(multFieldValuesRequest);
         } catch (Exception e) {
             e.printStackTrace();
             LogUtil.error(e);

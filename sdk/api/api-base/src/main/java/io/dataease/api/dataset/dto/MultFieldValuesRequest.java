@@ -9,8 +9,9 @@ import java.util.List;
 @Data
 public class MultFieldValuesRequest {
     List<Long> fieldIds = new ArrayList<>();
-    Long userId= null;
+    Long userId = null;
 
     private DeSortDTO sort;
+    private Integer resultMode = 0;
 
 }
