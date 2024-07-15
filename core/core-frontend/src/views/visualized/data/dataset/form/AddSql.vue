@@ -943,6 +943,11 @@ const mousedownDrag = () => {
         background: #fff;
         box-shadow: 0px 5px 10px 0px #1f23291a;
         z-index: 10;
+        &:hover {
+          .ed-icon {
+            color: var(--ed-color-primary, #3370ff) !important;
+          }
+        }
       }
     }
 

@@ -138,7 +138,7 @@ onUnmounted(() => {
       <el-icon @click="scaleIncrease(1)" class="hover-icon-custom">
         <Icon name="dv-max"></Icon
       ></el-icon>
-      <el-divider direction="vertical" class="custom-divider" />
+      <el-divider direction="vertical" class="custom-divider_scale" />
       <el-tooltip effect="ndark" content="定位到中心点" placement="top">
         <el-icon @click="reposition" class="hover-icon-custom" style="margin-right: 12px">
           <Icon name="dv-reposition"></Icon
@@ -163,6 +163,16 @@ onUnmounted(() => {
     display: flex;
     align-items: center;
   }
+}
+:deep(.ed-input--dark .ed-input__wrapper),
+:deep(.ed-input-number--dark:not(.is-disabled) .ed-input-number__decrease:not(.is-disabled)),
+:deep(.ed-input-number--dark:not(.is-disabled) .ed-input-number__increase:not(.is-disabled)) {
+  background-color: #1a1a1a;
+}
+
+.custom-divider_scale {
+  height: 18px;
+  border-color: #ffffff26;
 }
 
 .scale-input-number {

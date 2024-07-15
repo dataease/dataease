@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { PropType, computed, onMounted, shallowRef, ref, nextTick } from 'vue'
+import { PropType, computed, onMounted, shallowRef, ref, nextTick, watch } from 'vue'
 import { Column, Line, Pie } from '@antv/g2plot'
 import { useElementSize } from '@vueuse/core'
 import { downloadCanvas } from '@/utils/imgUtils'
@@ -8,6 +8,7 @@ interface Copilot {
   msgType: string
   question: string
   chart: object
+  loading: boolean
   chartData: object
   msgStatus: number
   id: string
@@ -19,6 +20,7 @@ const props = defineProps({
       msgType: 'api',
       chart: {},
       id: '',
+      loading: false,
       question: '',
       chartData: {
         data: {},
@@ -192,6 +194,14 @@ const downloadChart = () => {
   }
   downloadCanvas('img', chartTypeRef.value, '图表')
 }
+watch(
+  () => props.copilotInfo.loading,
+  val => {
+    if (!val) {
+      switchChartType(renderTableLocal.value ? 'table' : activeCommand.value)
+    }
+  }
+)
 
 const renderTable = computed(() => {
   const { chart, msgType, msgStatus, chartData } = props.copilotInfo
@@ -265,7 +275,12 @@ const tips = computed(() => {
         class="chart-type"
         ref="chartTypeRef"
       >
-        <div ref="chartRef" class="column-plot_de" :id="`de-${copilotInfo.id}-ed`">
+        <div
+          v-if="!copilotInfo.loading"
+          ref="chartRef"
+          class="column-plot_de"
+          :id="`de-${copilotInfo.id}-ed`"
+        >
           <el-table-v2
             v-if="renderTable || renderTableLocal"
             :columns="columns"

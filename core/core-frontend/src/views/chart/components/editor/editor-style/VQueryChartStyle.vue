@@ -328,6 +328,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                 v-model="chart.customStyle.component.nameboxSpacing"
                 :min="0"
                 :max="50"
+                :effect="themes"
                 controls-position="right"
               />
             </el-form-item>
