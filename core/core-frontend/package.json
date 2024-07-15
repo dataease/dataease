@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@antv/g2plot": "^2.4.29",
-    "@antv/l7": "^2.22.0",
+    "@antv/l7": "2.21.1",
     "@antv/l7plot": "^0.5.5",
     "@antv/s2": "^1.49.0",
     "@codemirror/lang-sql": "^6.4.0",
