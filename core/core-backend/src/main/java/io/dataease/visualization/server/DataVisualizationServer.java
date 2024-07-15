@@ -2,13 +2,12 @@ package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import io.dataease.api.visualization.request.VisualizationAppExportRequest;
 import io.dataease.api.visualization.vo.*;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetGroupManage;
-import io.dataease.dataset.manage.DatasetTableManage;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
 import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.extensions.datasource.dto.DatasourceDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
 import io.dataease.api.template.dto.TemplateManageFileDTO;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
@@ -35,6 +34,7 @@ import io.dataease.template.dao.auto.entity.VisualizationTemplate;
 import io.dataease.template.dao.auto.entity.VisualizationTemplateExtendData;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateExtendDataMapper;
 import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
+import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
@@ -45,7 +45,6 @@ import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -102,6 +101,9 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private DatasetDataManage datasetDataManage;
 
+    @Resource
+    private ExtVisualizationTemplateMapper appTemplateMapper;
+
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
         DataVisualizationVO result = findById(new DataVisualizationBaseRequest(dvId, busiFlag));
@@ -131,11 +133,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
             BeanUtils.copyBean(watermarkVO, watermark);
             result.setWatermarkInfo(watermarkVO);
 
-            if(DataVisualizationConstants.QUERY_SOURCE.REPORT.equals(request.getSource()) && request.getTaskId() != null){
+            if (DataVisualizationConstants.QUERY_SOURCE.REPORT.equals(request.getSource()) && request.getTaskId() != null) {
                 //获取定时报告过自定义过滤组件信息
-                List<VisualizationReportFilterVO> filterVOS = extDataVisualizationMapper.queryReportFilter(dvId,request.getTaskId());
+                List<VisualizationReportFilterVO> filterVOS = extDataVisualizationMapper.queryReportFilter(dvId, request.getTaskId());
                 if (!CollectionUtils.isEmpty(filterVOS)) {
-                    Map<Long, VisualizationReportFilterVO> reportFilterInfo = filterVOS.stream().collect(Collectors.toMap(VisualizationReportFilterVO::getFilterId, filterVo ->filterVo));
+                    Map<Long, VisualizationReportFilterVO> reportFilterInfo = filterVOS.stream().collect(Collectors.toMap(VisualizationReportFilterVO::getFilterId, filterVo -> filterVo));
                     result.setReportFilterInfo(reportFilterInfo);
                 }
             }
@@ -350,13 +352,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
         for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
             String originViewId = entry.getKey();
             Object viewInfo = entry.getValue();
-            try{
+            try {
                 // 旧模板图表过滤器适配
-                if(viewInfo instanceof Map && ((Map)viewInfo).get("customFilter") instanceof ArrayList){
-                    ((Map)viewInfo).put("customFilter",new HashMap<>());
+                if (viewInfo instanceof Map && ((Map) viewInfo).get("customFilter") instanceof ArrayList) {
+                    ((Map) viewInfo).put("customFilter", new HashMap<>());
                 }
-            }catch(Exception e){
-                LogUtil.error("History Adaptor Error",e);
+            } catch (Exception e) {
+                LogUtil.error("History Adaptor Error", e);
             }
             String originViewData = JsonUtil.toJSONString(entry.getValue()).toString();
             ChartViewDTO chartView = JsonUtil.parseObject(originViewData, ChartViewDTO.class);
@@ -381,7 +383,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         request.setCanvasStyleData(templateStyle);
         //Store static resource into the server
         staticResourceServer.saveFilesToServe(staticResource);
-        return new DataVisualizationVO(newDvId, name, dvType,version, templateStyle, templateData, canvasViewInfo, null);
+        return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData, canvasViewInfo, null);
     }
 
     @Override
@@ -393,47 +395,46 @@ public class DataVisualizationServer implements DataVisualizationApi {
     public List<VisualizationViewTableDTO> detailList(Long dvId) {
         List<VisualizationViewTableDTO> result = extDataVisualizationMapper.getVisualizationViewDetails(dvId);
         DataVisualizationInfo dvInfo = visualizationInfoMapper.selectById(dvId);
-        if(dvInfo != null && !CollectionUtils.isEmpty(result)){
+        if (dvInfo != null && !CollectionUtils.isEmpty(result)) {
             String componentData = dvInfo.getComponentData();
-            return result.stream().filter(item ->componentData.indexOf(String.valueOf(item.getId()))>0).toList();
-        }else{
+            return result.stream().filter(item -> componentData.indexOf(String.valueOf(item.getId())) > 0).toList();
+        } else {
             return result;
         }
     }
 
     @Override
-    public VisualizationExport2AppVO export2AppCheck(Long dvId) {
-        //1.获取所有视图信息
-        List<ChartViewDTO> chartViewsInfo = chartViewManege.listBySceneId(dvId);
-        //2.获取视图扩展字段信息 获取所有数据集信息
-        List<Long> allTableIds = chartViewsInfo.stream().map(ChartViewDTO::getTableId).collect(Collectors.toList());
-        List<DatasetTableDTO> datasetTablesInfo = datasetGroupManage.getDetail(allTableIds);
-        // dataset check
-        if (CollectionUtils.isEmpty(datasetTablesInfo)) {
-            return new VisualizationExport2AppVO(Translator.get("I18N_APP_NO_DATASET_ERROR"));
+    public VisualizationExport2AppVO export2AppCheck(VisualizationAppExportRequest appExportRequest) {
+        List<Long> viewIds = appExportRequest.getViewIds();
+        List<Long> dsIds = appExportRequest.getDsIds();
+        Long dvId = appExportRequest.getDvId();
+        List<AppCoreChartViewVO> chartViewVOInfo = null;
+        List<AppCoreDatasetGroupVO> datasetGroupVOInfo = null;
+        List<AppCoreDatasetTableVO> datasetTableVOInfo = null;
+        List<AppCoreDatasetTableFieldVO> datasetTableFieldVOInfo = null;
+        List<AppCoreDatasourceVO> datasourceVOInfo = null;
+        List<AppCoreDatasourceTaskVO> datasourceTaskVOInfo = null;
+        //TODO 获取所有视图信息
+        if (CollectionUtils.isEmpty(viewIds)) {
+            chartViewVOInfo = appTemplateMapper.findAppViewInfo(viewIds);
         }
-        //4.获取所有数据集字段信息
-        List<DatasetTableFieldDTO> datasetTableFieldsInfo = new ArrayList<>();
-        datasetTablesInfo.stream().forEach(datasetTable ->{
-            try {
-                List<DatasetTableFieldDTO> result =  datasetDataManage.getTableFields(datasetTable);
-               if(!CollectionUtils.isEmpty(result)){
-                   datasetTableFieldsInfo.addAll(result);
-               }
-            } catch (Exception e) {
-                throw new RuntimeException(e);
-            }
-        });
+        if (CollectionUtils.isEmpty(dsIds)) {
+            datasetGroupVOInfo = appTemplateMapper.findAppDatasetGroupInfo(dsIds);
+            datasetTableVOInfo = appTemplateMapper.findAppDatasetTableInfo(dsIds);
+            datasetTableFieldVOInfo = appTemplateMapper.findAppDatasetTableFieldInfo(dsIds);
+            datasourceVOInfo = appTemplateMapper.findAppDatasourceInfo(dsIds);
+            datasourceTaskVOInfo = appTemplateMapper.findAppDatasourceTaskInfo(dsIds);
+        }
 
-        //校验标准 1.存在视图且所有视图的数据来源必须是dataset 2.存在数据集且没有excel数据集 3.存在数据源且是单数据源
-        //1.view check
-        if (CollectionUtils.isEmpty(chartViewsInfo)) {
-            return new VisualizationExport2AppVO(Translator.get("I18N_APP_NO_VIEW_ERROR"));
-        } else if (chartViewsInfo.stream().filter(chartView -> chartView.getDataFrom().equals("template")).collect(Collectors.toList()).size() > 0) {
-            return new VisualizationExport2AppVO(Translator.get("I18N_APP_TEMPLATE_VIEW_ERROR"));
-        }
-        return new VisualizationExport2AppVO(chartViewsInfo, null, datasetTablesInfo, datasetTableFieldsInfo,
-                null, null, null, null, null);
+        List<VisualizationLinkageVO> linkageVOInfo = appTemplateMapper.findAppLinkageInfo(dvId);
+        List<VisualizationLinkageFieldVO> linkageFieldVOInfo = appTemplateMapper.findAppLinkageFieldInfo(dvId);
+        List<VisualizationLinkJumpVO> linkJumpVOInfo = appTemplateMapper.findAppLinkJumpInfo(dvId);
+        List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = appTemplateMapper.findAppLinkJumpInfoInfo(dvId);
+        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = appTemplateMapper.findAppJumpTargetViewInfo(dvId);
+
+        return new VisualizationExport2AppVO(chartViewVOInfo, datasetGroupVOInfo, datasetTableVOInfo,
+                datasetTableFieldVOInfo, datasourceVOInfo, datasourceTaskVOInfo,
+                linkJumpVOInfo, linkJumpInfoVOInfo, listJumpTargetViewInfoVO, linkageVOInfo, linkageFieldVOInfo);
     }
 
 
@@ -466,7 +467,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
     }
 
-    public String getAbsPath(String  id) {
+    public String getAbsPath(String id) {
         CoreChartView coreChartView = coreChartViewMapper.selectById(id);
         if (coreChartView == null) {
             return null;

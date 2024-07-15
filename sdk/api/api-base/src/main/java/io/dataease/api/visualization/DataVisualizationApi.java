@@ -5,6 +5,7 @@ import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.visualization.dto.VisualizationViewTableDTO;
 import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
+import io.dataease.api.visualization.request.VisualizationAppExportRequest;
 import io.dataease.api.visualization.request.VisualizationWorkbranchQueryRequest;
 import io.dataease.api.visualization.vo.DataVisualizationVO;
 import io.dataease.api.visualization.vo.VisualizationExport2AppVO;
@@ -112,7 +113,7 @@ public interface DataVisualizationApi {
     @Operation(summary = "仪表板视图明细数据")
     List<VisualizationViewTableDTO> detailList(@PathVariable("dvId") Long dvId);
 
-    @GetMapping("/export2AppCheck/{dvId}")
+    @GetMapping("/export2AppCheck")
     @Operation(summary = "仪表板视图明细数据")
-    VisualizationExport2AppVO export2AppCheck(@PathVariable("dvId") Long dvId);
+    VisualizationExport2AppVO export2AppCheck(@RequestBody VisualizationAppExportRequest appExportRequest);
 }
