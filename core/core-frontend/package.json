@@ -29,6 +29,7 @@
     "dayjs": "^1.11.9",
     "element-plus-secondary": "^0.5.11",
     "element-resize-detector": "^1.2.4",
+    "exceljs": "^4.4.0",
     "file-saver": "^2.0.5",
     "flv.js": "^1.6.2",
     "html-to-image": "^1.11.11",
@@ -61,7 +62,6 @@
     "vue3-ace-editor": "^2.2.2",
     "vuedraggable": "^4.1.0",
     "web-storage-cache": "^1.1.1",
-    "exceljs": "^4.4.0",
     "xss": "^1.0.14"
   },
   "devDependencies": {
@@ -106,6 +106,7 @@
     "vite-plugin-style-import-secondary": "^2.0.0",
     "vite-plugin-stylelint": "^4.2.0",
     "vite-plugin-svg-icons": "^2.0.1",
+    "vite-svg-loader": "^5.1.0",
     "vue-tsc": "^1.0.24",
     "xss": "^1.0.14"
   }

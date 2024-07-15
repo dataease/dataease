@@ -9,9 +9,7 @@ import {
   ElementPlusSecondaryResolve
 } from 'vite-plugin-style-import-secondary'
 import VueI18nPlugin from '@intlify/unplugin-vue-i18n/vite'
-
-import { createSvgIconsPlugin } from 'vite-plugin-svg-icons'
-
+import svgLoader from 'vite-svg-loader'
 import AutoImport from 'unplugin-auto-import/vite'
 import Components from 'unplugin-vue-components-secondary/vite'
 import { ElementPlusResolver } from 'unplugin-vue-components-secondary/resolvers'
@@ -24,6 +22,10 @@ export default {
   base: './',
   plugins: [
     Vue(),
+    svgLoader({
+      svgo: false,
+      defaultImport: 'component' // or 'raw'
+    }),
     VueJsx(),
     createStyleImportPlugin({
       resolves: [ElementPlusSecondaryResolve()],
@@ -42,11 +44,6 @@ export default {
     }),
     Components({
       resolvers: [ElementPlusResolver()]
-    }),
-    createSvgIconsPlugin({
-      iconDirs: [pathResolve('src/assets/svg')],
-      symbolId: 'icon-[dir]-[name]',
-      customDomId: '__svg__icons__dom__de'
     }),
     VueI18nPlugin({
       runtimeOnly: false,
