@@ -3,6 +3,7 @@ package io.dataease.api.dataset;
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.dataset.dto.BaseTreeNodeDTO;
 import io.dataease.api.dataset.dto.EnumValueRequest;
+import io.dataease.api.dataset.dto.MultFieldValuesRequest;
 import io.dataease.api.dataset.dto.PreviewSqlDTO;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
@@ -39,7 +40,7 @@ public interface DatasetDataApi {
 
     @Operation(summary = "获取字段枚举值")
     @PostMapping("enumValue")
-    List<String> getFieldEnum(@RequestBody List<Long> ids) throws Exception;
+    List<String> getFieldEnum(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;
 
     @Operation(summary = "获取字段枚举值(多字段)")
     @PostMapping("enumValueObj")
@@ -51,5 +52,5 @@ public interface DatasetDataApi {
 
     @Operation(summary = "获取下拉树数据", hidden = true)
     @PostMapping("getFieldTree")
-    List<BaseTreeNodeDTO> getFieldValueTree(@RequestBody List<Long> ids) throws Exception;
+    List<BaseTreeNodeDTO> getFieldValueTree(@RequestBody MultFieldValuesRequest multFieldValuesRequest) throws Exception;
 }

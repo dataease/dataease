@@ -1,10 +1,7 @@
 package io.dataease.dataset.manage;
 
 import io.dataease.api.chart.dto.DeSortField;
-import io.dataease.api.dataset.dto.BaseTreeNodeDTO;
-import io.dataease.api.dataset.dto.EnumValueRequest;
-import io.dataease.api.dataset.dto.PreviewSqlDTO;
-import io.dataease.api.dataset.dto.SqlLogDTO;
+import io.dataease.api.dataset.dto.*;
 import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.dataset.union.DatasetTableInfoDTO;
 import io.dataease.api.permissions.dataset.dto.DataSetRowPermissionsTreeDTO;
@@ -435,10 +432,10 @@ public class DatasetDataManage {
         }
     }
 
-    public List<String> getFieldEnum(List<Long> ids) throws Exception {
+    public List<String> getFieldEnum(MultFieldValuesRequest multFieldValuesRequest) throws Exception {
         // 根据前端传的查询组件field ids，获取所有字段枚举值并去重合并
         List<List<String>> list = new ArrayList<>();
-        for (Long id : ids) {
+        for (Long id : multFieldValuesRequest.getFieldIds()) {
             DatasetTableFieldDTO field = datasetTableFieldManage.selectById(id);
             if (field == null) {
                 DEException.throwException(Translator.get("i18n_no_field"));
@@ -497,7 +494,12 @@ public class DatasetDataManage {
             Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap);
             WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap);
             Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap);
-            String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
+            String querySQL;
+            if (multFieldValuesRequest.getResultMode() == 0) {
+                querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, true, 0, 1000);
+            } else {
+                querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, true);
+            }
             querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
             logger.info("calcite data enum sql: " + querySQL);
 
@@ -730,7 +732,12 @@ public class DatasetDataManage {
         ExtWhere2Str.extWhere2sqlOjb(sqlMeta, extFilterList, allFields, crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap);
-        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1, 0, 1000);
+        String querySQL;
+        if (request.getResultMode() == 0) {
+            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1, 0, 1000);
+        } else {
+            querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, sortDistinct && ids.size() == 1);
+        }
         querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("calcite data enum sql: " + querySQL);
 
@@ -785,7 +792,8 @@ public class DatasetDataManage {
         return previewData;
     }
 
-    public List<BaseTreeNodeDTO> getFieldValueTree(List<Long> ids) throws Exception {
+    public List<BaseTreeNodeDTO> getFieldValueTree(MultFieldValuesRequest multFieldValuesRequest) throws Exception {
+        List<Long> ids = multFieldValuesRequest.getFieldIds();
         if (ids.isEmpty()) {
             DEException.throwException("no field selected.");
         }
@@ -855,7 +863,12 @@ public class DatasetDataManage {
         Field2SQLObj.field2sqlObj(sqlMeta, fields, allFields, crossDs, dsMap);
         WhereTree2Str.transFilterTrees(sqlMeta, rowPermissionsTree, allFields, crossDs, dsMap);
         Order2SQLObj.getOrders(sqlMeta, datasetGroupInfoDTO.getSortFields(), allFields, crossDs, dsMap);
-        String querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, 1000);
+        String querySQL;
+        if (multFieldValuesRequest.getResultMode() == 0) {
+            querySQL = SQLProvider.createQuerySQLWithLimit(sqlMeta, false, needOrder, false, 0, 1000);
+        } else {
+            querySQL = SQLProvider.createQuerySQL(sqlMeta, false, needOrder, false);
+        }
         querySQL = provider.rebuildSQL(querySQL, sqlMeta, crossDs, dsMap);
         logger.info("filter tree sql: " + querySQL);
 
