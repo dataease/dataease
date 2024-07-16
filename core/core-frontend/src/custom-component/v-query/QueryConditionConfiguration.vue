@@ -257,8 +257,6 @@ const setTreeDefault = () => {
         }
       })
       const fieldObj = fieldArr.find(element => element.id === checkId)
-      console.log(fieldObj, 'fieldObj', fieldArr, checkId)
-
       if (!!curComponent.value.treeFieldList.length) {
         const [fir] = curComponent.value.treeFieldList
         if (fir && fir.field !== checkId) {
@@ -1515,6 +1513,15 @@ defineExpose({
                   value="7"
                 />
               </el-select>
+            </div>
+          </div>
+          <div class="list-item" v-if="curComponent.displayType === '9'">
+            <div class="label">选项值数量</div>
+            <div class="value">
+              <el-radio-group v-model="curComponent.resultMode">
+                <el-radio :label="0">默认</el-radio>
+                <el-radio :label="1">全部</el-radio>
+              </el-radio-group>
             </div>
           </div>
           <div class="list-item" v-if="curComponent.displayType === '9'">
