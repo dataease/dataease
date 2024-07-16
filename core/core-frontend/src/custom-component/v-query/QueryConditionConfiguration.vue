@@ -245,11 +245,10 @@ const setTreeDefault = () => {
     })
     if (checkId && tableId) {
       const componentObj = fields.value.find(ele => ele.componentId === comId)
-      const fieldArr = (
+      const fieldArr =
         curComponent.value.optionValueSource === 0
           ? componentObj?.fields?.dimensionList
-          : curComponent.value.dataset?.fields
-      ).filter(ele => ele.deType === +curComponent.value.field.deType)
+          : (fields.value.find(itx => itx.id === tableId) || {}).fields?.dimensionList
       fields.value.forEach(ele => {
         if (curComponent.value.checkedFields.includes(ele.componentId)) {
           if (datasetFieldList.value.find(itx => itx.id === ele.componentId)?.tableId === tableId) {
@@ -258,12 +257,14 @@ const setTreeDefault = () => {
         }
       })
       const fieldObj = fieldArr.find(element => element.id === checkId)
+      console.log(fieldObj, 'fieldObj', fieldArr, checkId)
+
       if (!!curComponent.value.treeFieldList.length) {
         const [fir] = curComponent.value.treeFieldList
-        if (fir.field !== checkId) {
+        if (fir && fir.field !== checkId) {
           curComponent.value.treeFieldList = [fieldObj]
         }
-      } else {
+      } else if (fieldObj) {
         curComponent.value.treeFieldList = [fieldObj]
       }
     }
@@ -1484,7 +1485,10 @@ defineExpose({
                   value="8"
                 />
                 <el-option
-                  :disabled="!['0', '8', '9'].includes(curComponent.displayType)"
+                  :disabled="
+                    !['0', '8', '9'].includes(curComponent.displayType) ||
+                    !!curComponent.parameters.length
+                  "
                   label="下拉树"
                   value="9"
                 />
