@@ -423,7 +423,17 @@ const queryData = () => {
         requiredName = next.name
       }
 
-      if (
+      if (next.displayType === '8') {
+        const { conditionValueF, conditionValueS, conditionType } = next
+        if (conditionType === 0) {
+          requiredName = conditionValueF === '' ? next.name : ''
+        } else {
+          requiredName = [conditionValueF || '', conditionValueS || ''].filter(ele => ele !== '')
+            .length
+            ? next.name
+            : ''
+        }
+      } else if (
         (Array.isArray(next.selectValue) && !next.selectValue.length) ||
         (next.selectValue !== 0 && !next.selectValue)
       ) {
