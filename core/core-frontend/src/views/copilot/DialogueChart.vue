@@ -299,27 +299,45 @@ const tips = computed(() => {
       v-if="copilotInfo.msgType === 'api' && copilotInfo.msgStatus === 1"
     >
       <template v-if="!renderTable">
-        <el-icon v-if="activeCommand" class="select-prefix">
+        <el-icon
+          :class="!(renderTable || renderTableLocal) && 'active'"
+          v-if="activeCommand"
+          class="select-prefix"
+        >
           <Icon :name="curTypeList.find(ele => ele.value === activeCommand).icon" />
         </el-icon>
-        <el-select
-          popper-class="copilot-select_popper"
-          class="select-copilot-list"
-          v-model="activeCommand"
-          size="small"
-          @change="changeChartType"
-        >
-          <el-option
-            v-for="item in curTypeList"
-            :key="item.label"
-            :label="item.label"
-            :value="item.value"
-          />
-        </el-select>
+        <el-tooltip effect="dark" content="切换图表类型" placement="top">
+          <div
+            v-show="renderTable || renderTableLocal"
+            @click="switchChartType(activeCommand)"
+            class="fake-mask_select"
+          ></div>
+        </el-tooltip>
+        <el-tooltip effect="dark" content="切换图表类型" placement="top">
+          <el-select
+            popper-class="copilot-select_popper"
+            class="select-copilot-list"
+            :class="!(renderTable || renderTableLocal) && 'active'"
+            v-model="activeCommand"
+            size="small"
+            @change="changeChartType"
+          >
+            <el-option
+              v-for="item in curTypeList"
+              :key="item.label"
+              :label="item.label"
+              :value="item.value"
+            />
+          </el-select>
+        </el-tooltip>
         <el-divider direction="vertical" />
       </template>
       <el-tooltip effect="dark" content="切换至明细表" placement="top">
-        <el-icon class="ed-icon_chart" @click="switchChartType('table')">
+        <el-icon
+          :class="(renderTable || renderTableLocal) && 'active'"
+          class="ed-icon_chart"
+          @click="switchChartType('table')"
+        >
           <Icon name="chart-table" />
         </el-icon>
       </el-tooltip>
@@ -345,11 +363,17 @@ const tips = computed(() => {
     z-index: 100;
 
     :deep(.ed-input__wrapper) {
-      background: #3370ff1a;
+      background: transparent;
       box-shadow: none !important;
       padding-right: 4px;
       .ed-input__inner {
         visibility: hidden;
+      }
+    }
+
+    &.active {
+      :deep(.ed-input__wrapper) {
+        background: #3370ff1a;
       }
     }
   }
@@ -361,9 +385,24 @@ const tips = computed(() => {
     display: flex;
     align-items: center;
     font-size: 24px;
+    .fake-mask_select {
+      width: 40px;
+      height: 24px;
+      cursor: pointer;
+      border-radius: 4px;
+      position: absolute;
+      top: 50%;
+      left: 0;
+      transform: translateY(-50%);
+      z-index: 101;
+      &:hover {
+        background: #1f23291a;
+      }
+    }
     .ed-icon_chart {
       position: relative;
       cursor: pointer;
+      color: #646a73;
       &::after {
         content: '';
         position: absolute;
@@ -382,6 +421,14 @@ const tips = computed(() => {
           display: block;
         }
       }
+
+      &.active {
+        color: var(--ed-color-primary, #3370ff);
+        &::after {
+          display: block;
+          background: #3370ff1a;
+        }
+      }
     }
 
     .select-prefix {
@@ -390,7 +437,10 @@ const tips = computed(() => {
       top: 50%;
       transform: translateY(-50%);
       font-size: 16px;
-      color: var(--ed-color-primary, #3370ff);
+      color: #646a73;
+      &.active {
+        color: var(--ed-color-primary, #3370ff);
+      }
     }
     .ed-divider--vertical {
       border-color: #1f232926;
