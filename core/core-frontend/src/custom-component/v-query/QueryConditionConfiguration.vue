@@ -922,6 +922,7 @@ const parameterCompletion = () => {
     conditionValueF: '',
     conditionValueOperatorS: 'like',
     conditionValueS: '',
+    resultMode: 0,
     defaultConditionValueOperatorF: 'eq',
     defaultConditionValueF: '',
     defaultConditionValueOperatorS: 'like',
@@ -1849,6 +1850,13 @@ defineExpose({
                   已配置
                 </div>
               </div>
+            </div>
+            <div class="label">选项值数量</div>
+            <div class="value">
+              <el-radio-group v-model="curComponent.resultMode">
+                <el-radio :label="0">默认</el-radio>
+                <el-radio :label="1">全部</el-radio>
+              </el-radio-group>
             </div>
           </div>
           <div class="list-item top-item" v-if="curComponent.displayType === '8'">

@@ -25,6 +25,7 @@ interface SelectConfig {
   displayType: string
   showEmpty: boolean
   id: string
+  resultMode: number
   displayId: string
   sort: string
   sortId: string
@@ -50,6 +51,7 @@ const props = defineProps({
     default: () => {
       return {
         selectValue: '',
+        resultMode: 0,
         defaultValue: '',
         displayType: '',
         defaultValueCheck: false,
@@ -219,7 +221,10 @@ const displayTypeChange = () => {
 
 const handleFieldIdDefaultChange = (val: string[]) => {
   loading.value = true
-  getEnumValue(val)
+  getEnumValue({
+    fieldIds: val,
+    resultMode: config.value.resultMode || 0
+  })
     .then(res => {
       options.value = (res || [])
         .filter(ele => ele !== null)
@@ -501,6 +506,7 @@ const setOptions = (num: number) => {
           displayId: displayId || field.id,
           sort,
           sortId,
+          resultMode: config.value.resultMode || 0,
           searchText: searchText.value,
           filter: getCascadeFieldId()
         })
