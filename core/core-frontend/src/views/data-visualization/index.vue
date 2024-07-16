@@ -116,10 +116,10 @@ const contentStyle = computed(() => {
 
 // 通过实时监听的方式直接添加组件
 const handleNew = newComponentInfo => {
-  const { componentName, innerType, isPlugin } = newComponentInfo
+  const { componentName, innerType, staticMap } = newComponentInfo
   if (componentName) {
     const { width, height, scale } = canvasStyleData.value
-    const component = findNewComponent(componentName, innerType, isPlugin)
+    const component = findNewComponent(componentName, innerType, staticMap)
     component.style.top = ((height - component.style.height) * scale) / 200
     component.style.left = ((width - component.style.width) * scale) / 200
     component.id = guid()
