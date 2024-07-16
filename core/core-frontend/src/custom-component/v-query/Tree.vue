@@ -16,6 +16,7 @@ interface SelectConfig {
   selectValue: any
   defaultMapValue: any
   defaultValue: any
+  resultMode: number
   checkedFieldsMap: object
   displayType: string
   id: string
@@ -39,6 +40,7 @@ const props = defineProps({
         selectValue: '',
         defaultValue: '',
         displayType: '',
+        resultMode: 0,
         defaultValueCheck: false,
         multiple: false,
         checkedFieldsMap: {},
@@ -176,7 +178,10 @@ const loading = ref(false)
 
 const getTreeOption = debounce(() => {
   loading.value = true
-  getFieldTree(props.config.treeFieldList.map(ele => ele.id))
+  getFieldTree({
+    fieldIds: props.config.treeFieldList.map(ele => ele.id),
+    resultMode: config.value.resultMode || 0
+  })
     .then(res => {
       treeOptionList.value = dfs(res)
     })
