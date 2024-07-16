@@ -57,7 +57,7 @@ public class DeTrafficAop {
                 coreApiTrafficMapper.releaseAlive(api);
             }
         }
-        DEException.throwException(errorMsg);
+        DEException.throwException(String.format(errorMsg, api, value));
         return null;
     }
 }
