@@ -1336,7 +1336,14 @@ const svgClass = computed(() => {
 </script>
 
 <template>
-  <component :class="svgClass" :is="iconMap[name]"></component>
+  <div
+    class="svg-container"
+    v-if="staticContent"
+    v-html="staticContent"
+    :class="svgClass"
+    aria-hidden="true"
+  ></div>
+  <component v-else :class="svgClass" :is="iconMap[name]"></component>
 </template>
 <style lang="less" scope>
 .svg-icon {
