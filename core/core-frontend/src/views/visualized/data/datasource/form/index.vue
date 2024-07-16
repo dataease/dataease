@@ -135,6 +135,25 @@ const getDatasourceTypes = () => {
   })
 }
 getDatasourceTypes()
+const loadDsPlugin = data => {
+  data.forEach(item => {
+    const { name, category, type, icon, extraParams, staticMap } = item
+    const node = {
+      name,
+      category,
+      type,
+      icon,
+      extraParams,
+      isPlugin: true,
+      staticMap
+    }
+
+    const index = typeList.findIndex(ele => ele === node.catalog)
+    if (index !== -1) {
+      databaseList[index].push(node)
+    }
+  })
+}
 
 const getLatestUseTypes = () => {
   latestUse({}).then(res => {
@@ -726,6 +745,10 @@ defineExpose({
     @finish="complete"
     ref="creatDsFolder"
   ></creat-ds-group>
+  <XpackComponent
+    jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
+    @load-ds-plugin="loadDsPlugin"
+  />
 </template>
 
 <style lang="less">
