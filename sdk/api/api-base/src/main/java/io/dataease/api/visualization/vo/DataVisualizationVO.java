@@ -168,8 +168,13 @@ public class DataVisualizationVO implements Serializable {
      */
     private Integer weight;
 
+    /**
+     * 应用信息
+     */
+    private String appData;
 
-    public DataVisualizationVO(Long id, String name, String type, Integer version, String canvasStyleData, String componentData, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo) {
+
+    public DataVisualizationVO(Long id, String name, String type, Integer version, String canvasStyleData, String componentData,String appData, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -177,6 +182,7 @@ public class DataVisualizationVO implements Serializable {
         this.componentData = componentData;
         this.canvasViewInfo = canvasViewInfo;
         this.extendDataInfo = extendDataInfo;
+        this.appData = appData;
         this.version = version;
     }
 }

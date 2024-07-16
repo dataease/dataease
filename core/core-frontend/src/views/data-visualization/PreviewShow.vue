@@ -104,14 +104,23 @@ const download = type => {
   }, 200)
 }
 
-const downloadAsAppTemplate = downloadType => {
+const fileDownload = (downloadType, attachParams) => {
   downloadStatus.value = true
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
-    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, () => {
+    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, attachParams, () => {
       downloadStatus.value = false
     })
   })
+}
+
+const downloadAsAppTemplate = downloadType => {
+  console.log('===test===' + downloadType)
+  if (downloadType === 'template') {
+    fileDownload(downloadType, null)
+  } else if (downloadType === 'app') {
+    downLoadToAppPre()
+  }
 }
 
 const downLoadToAppPre = () => {
@@ -123,7 +132,7 @@ const downLoadToAppPre = () => {
       appName: dvInfo.value.name,
       icon: null,
       version: '2.0',
-      creator: state.userLoginInfo?.nickName,
+      creator: state.userLoginInfo?.name,
       required: '2.9.0',
       description: null
     })
@@ -138,9 +147,6 @@ const checkTemplate = () => {
     }
   })
   return templateViewNames.slice(1)
-}
-const downLoadToApp = appAttachInfo => {
-  // do attach
 }
 
 const slideOpenChange = () => {
@@ -182,7 +188,7 @@ const getPreviewStateInfo = () => {
 }
 
 const downLoadApp = appAttachInfo => {
-  downLoadToApp(appAttachInfo)
+  fileDownload('app', appAttachInfo)
 }
 
 const findUserData = callback => {
@@ -291,7 +297,13 @@ onBeforeMount(() => {
       </template>
     </el-container>
   </div>
-  <app-export-form ref="appExportFormRef" @downLoadApp="downLoadApp"></app-export-form>
+  <app-export-form
+    ref="appExportFormRef"
+    :dv-info="state.dvInfo"
+    :component-data="state.canvasDataPreview"
+    :canvas-view-info="state.canvasViewInfoPreview"
+    @downLoadApp="downLoadApp"
+  ></app-export-form>
 </template>
 
 <style lang="less">

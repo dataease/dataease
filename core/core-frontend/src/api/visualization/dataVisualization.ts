@@ -95,10 +95,10 @@ export const getComponentInfo = dvId => {
   })
 }
 
-export const export2AppCheck = dvId => {
-  return request.get({
-    url: '/dataVisualization/export2AppCheck/' + dvId,
-    method: 'get',
+export const export2AppCheck = params => {
+  return request.post({
+    url: '/dataVisualization/export2AppCheck',
+    data: params,
     loading: true
   })
 }

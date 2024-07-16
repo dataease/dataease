@@ -304,6 +304,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         String templateData = null;
         String dynamicData = null;
         String staticResource = null;
+        String appData = null;
         String name = null;
         String dvType = null;
         Integer version = null;
@@ -316,6 +317,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             name = visualizationTemplate.getName();
             dvType = visualizationTemplate.getDvType();
             version = visualizationTemplate.getVersion();
+            appData = visualizationTemplate.getAppData();
             // 模板市场记录
             coreOptRecentManage.saveOpt(request.getTemplateId(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
             VisualizationTemplate visualizationTemplateUpdate = new VisualizationTemplate();
@@ -327,6 +329,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             templateData = request.getComponentData();
             dynamicData = request.getDynamicData();
             staticResource = request.getStaticResource();
+            appData = request.getAppData();
             name = request.getName();
             dvType = request.getType();
         } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(newFrom)) {
@@ -341,6 +344,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             name = templateFileInfo.getName();
             dvType = templateFileInfo.getDvType();
             version = templateFileInfo.getVersion();
+            appData = templateFileInfo.getAppData();
             // 模板市场记录
             coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
         }
@@ -383,7 +387,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         request.setCanvasStyleData(templateStyle);
         //Store static resource into the server
         staticResourceServer.saveFilesToServe(staticResource);
-        return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData, canvasViewInfo, null);
+        return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData,appData, canvasViewInfo, null);
     }
 
     @Override
@@ -415,10 +419,10 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<AppCoreDatasourceVO> datasourceVOInfo = null;
         List<AppCoreDatasourceTaskVO> datasourceTaskVOInfo = null;
         //TODO 获取所有视图信息
-        if (CollectionUtils.isEmpty(viewIds)) {
+        if (!CollectionUtils.isEmpty(viewIds)) {
             chartViewVOInfo = appTemplateMapper.findAppViewInfo(viewIds);
         }
-        if (CollectionUtils.isEmpty(dsIds)) {
+        if (!CollectionUtils.isEmpty(dsIds)) {
             datasetGroupVOInfo = appTemplateMapper.findAppDatasetGroupInfo(dsIds);
             datasetTableVOInfo = appTemplateMapper.findAppDatasetTableInfo(dsIds);
             datasetTableFieldVOInfo = appTemplateMapper.findAppDatasetTableFieldInfo(dsIds);
@@ -430,7 +434,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         List<VisualizationLinkageFieldVO> linkageFieldVOInfo = appTemplateMapper.findAppLinkageFieldInfo(dvId);
         List<VisualizationLinkJumpVO> linkJumpVOInfo = appTemplateMapper.findAppLinkJumpInfo(dvId);
         List<VisualizationLinkJumpInfoVO> linkJumpInfoVOInfo = appTemplateMapper.findAppLinkJumpInfoInfo(dvId);
-        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = appTemplateMapper.findAppJumpTargetViewInfo(dvId);
+        List<VisualizationLinkJumpTargetViewInfoVO> listJumpTargetViewInfoVO = appTemplateMapper.findAppLinkJumpTargetViewInfoInfo(dvId);
 
         return new VisualizationExport2AppVO(chartViewVOInfo, datasetGroupVOInfo, datasetTableVOInfo,
                 datasetTableFieldVOInfo, datasourceVOInfo, datasourceTaskVOInfo,

@@ -113,7 +113,7 @@ public interface DataVisualizationApi {
     @Operation(summary = "仪表板视图明细数据")
     List<VisualizationViewTableDTO> detailList(@PathVariable("dvId") Long dvId);
 
-    @GetMapping("/export2AppCheck")
+    @PostMapping("/export2AppCheck")
     @Operation(summary = "仪表板视图明细数据")
     VisualizationExport2AppVO export2AppCheck(@RequestBody VisualizationAppExportRequest appExportRequest);
 }

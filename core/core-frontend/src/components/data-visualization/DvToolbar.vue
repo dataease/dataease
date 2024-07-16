@@ -24,6 +24,7 @@ import OuterParamsSet from '@/components/visualization/OuterParamsSet.vue'
 import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabel.vue'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
+import DeAppApply from '@/views/common/DeAppApply.vue'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -32,7 +33,8 @@ const snapshotStore = snapshotStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const resourceGroupOpt = ref(null)
 const dvToolbarMain = ref(null)
-const { componentData, canvasStyleData, dvInfo, editMode } = storeToRefs(dvMainStore)
+const { componentData, canvasStyleData, canvasViewInfo, dvInfo, editMode } =
+  storeToRefs(dvMainStore)
 let scaleEdit = 100
 const { wsCache } = useCache('localStorage')
 const dvModel = 'dataV'
@@ -342,6 +344,12 @@ const fullScreenPreview = () => {
       cur-canvas-type="dataV"
       ref="resourceGroupOpt"
     />
+    <de-app-apply
+      ref="resourceGroupOpt"
+      :component-data="componentData"
+      :dv-info="dvInfo"
+      :canvas-view-info="canvasViewInfo"
+    ></de-app-apply>
   </div>
   <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>
   <multiplexing-canvas ref="multiplexingRef"></multiplexing-canvas>

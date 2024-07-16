@@ -48,3 +48,7 @@ INSERT INTO `core_copilot_config` VALUES (1, 'https://copilot-demo.test.fit2clou
 
 UPDATE `core_sys_setting` SET `pkey` = 'ai.baseUrl', `pval` = 'https://maxkb.fit2cloud.com/ui/chat/2ddd8b594ce09dbb?mode=embed', `type` = 'text', `sort` = 0 WHERE `id` = 3;
 
+ALTER TABLE `visualization_template`
+    MODIFY COLUMN `node_type` varchar(255) NULL DEFAULT NULL COMMENT '节点类型  app or template 应用 或者 模板' AFTER `dv_type`,
+    ADD COLUMN `app_data` longtext NULL COMMENT 'app数据' AFTER `dynamic_data`;
+
