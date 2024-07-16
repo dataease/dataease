@@ -537,7 +537,8 @@ export async function decompressionPre(params, callBack) {
       deTemplateData = {
         canvasStyleData: sourceCanvasStyle,
         componentData: sourceComponentData,
-        canvasViewInfo: deTemplateDataTemp['canvasViewInfo']
+        canvasViewInfo: deTemplateDataTemp['canvasViewInfo'],
+        appData: deTemplateDataTemp['appData']
       }
     })
     .catch(e => {

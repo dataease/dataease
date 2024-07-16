@@ -1,7 +1,7 @@
 <template>
   <el-drawer
     :title="'应用导出'"
-    v-model:visible="state.applyDownloadDrawer"
+    v-model="state.applyDownloadDrawer"
     custom-class="de-user-drawer"
     size="600px"
     direction="rtl"
@@ -11,13 +11,12 @@
         ref="applyDownloadForm"
         :model="state.form"
         :rules="state.rule"
-        size="small"
         class="de-form-item"
         label-width="180px"
-        label-position="right"
+        label-position="top"
       >
         <el-form-item :label="'应用名称'" prop="appName">
-          <el-input v-model="form.appName" autocomplete="off" :placeholder="'请输入名称'" />
+          <el-input v-model="state.form.appName" autocomplete="off" :placeholder="'请输入名称'" />
         </el-form-item>
         <el-form-item :label="'应用版本号'" prop="version">
           <el-input v-model="state.form.version" autocomplete="off" />
@@ -38,22 +37,43 @@
         </el-form-item>
       </el-form>
     </div>
-    <div class="app-export-bottom">
+    <template #footer>
       <div class="apply" style="width: 100%">
         <el-button secondary @click="close">{{ $t('commons.cancel') }} </el-button>
-        <el-button type="primary" @click="downloadApp">{{ $t('app_template.export') }} </el-button>
+        <el-button type="primary" @click="downloadApp">导出</el-button>
       </div>
-    </div>
+    </template>
   </el-drawer>
 </template>
 
 <script lang="ts" setup>
 import { ElButton, ElDrawer, ElForm, ElFormItem, ElInput } from 'element-plus-secondary'
-import { reactive, ref } from 'vue'
+import { reactive, ref, toRefs } from 'vue'
 import { useI18n } from '@/hooks/web/useI18n'
+import { export2AppCheck } from '@/api/visualization/dataVisualization'
+import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 const { t } = useI18n()
 const emits = defineEmits(['closeDraw', 'downLoadApp'])
 const applyDownloadForm = ref(null)
+const dvMainStore = dvMainStoreWithOut()
+
+const props = defineProps({
+  componentData: {
+    type: Object,
+    required: true
+  },
+  canvasViewInfo: {
+    type: Object,
+    required: true
+  },
+  dvInfo: {
+    type: Object,
+    required: true
+  }
+})
+
+const { componentData, canvasViewInfo, dvInfo } = toRefs(props)
+
 const state = reactive({
   applyDownloadDrawer: false,
   form: {
@@ -61,7 +81,7 @@ const state = reactive({
     icon: null,
     version: null,
     creator: null,
-    required: '1.16.0',
+    required: '2.8.0',
     description: null
   },
   rule: {
@@ -105,6 +125,7 @@ const state = reactive({
 })
 
 const init = params => {
+  console.log('init==')
   state.applyDownloadDrawer = true
   state.form = params
 }
@@ -114,11 +135,44 @@ const close = () => {
   state.applyDownloadDrawer = false
 }
 
+const gatherAppInfo = (viewIds, dsIds) => {
+  componentData.value.forEach(item => {
+    if (item.component === 'UserView' && canvasViewInfo.value[item.id]) {
+      const viewDetails = canvasViewInfo.value[item.id]
+      const { id, tableId } = viewDetails
+      viewIds.push(id)
+      dsIds.push(tableId)
+    } else if (item.component === 'Group') {
+      item.propValue.forEach(groupItem => {
+        const viewDetails = canvasViewInfo.value[groupItem.id]
+        const { id, tableId } = viewDetails
+        viewIds.push(id)
+        dsIds.push(tableId)
+      })
+    } else if (item.component === 'DeTabs') {
+      item.propValue.forEach(tabItem => {
+        tabItem.componentData.forEach(tabComponent => {
+          const viewDetails = canvasViewInfo.value[tabComponent.id]
+          const { id, tableId } = viewDetails
+          viewIds.push(id)
+          dsIds.push(tableId)
+        })
+      })
+    }
+  })
+}
+
 const downloadApp = () => {
   applyDownloadForm.value?.validate(valid => {
     if (valid) {
-      emits('downLoadApp', state.form)
-      state.applyDownloadDrawer = false
+      const viewIds = []
+      const dsIds = []
+      gatherAppInfo(viewIds, dsIds)
+      export2AppCheck({ dvId: dvInfo.value.id, viewIds, dsIds }).then(rsp => {
+        const params = { ...rsp.data, ...state.form }
+        emits('downLoadApp', params)
+        state.applyDownloadDrawer = false
+      })
     } else {
       return false
     }
