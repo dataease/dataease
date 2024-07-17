@@ -75,7 +75,7 @@ onBeforeMount(async () => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
-      if (!isPc && !dvInfo.mobileLayout) {
+      if (!isPc.value && !dvInfo.mobileLayout) {
         dvMainStore.setMobileInPc(true)
         dvMainStore.setInMobile(true)
         useEmitt().emitter.emit('changeCurrentComponent', 'DashboardEmpty')
