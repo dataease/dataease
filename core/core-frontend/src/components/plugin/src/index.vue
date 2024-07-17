@@ -49,6 +49,18 @@ const importProxy = (bytesArray: any[]) => {
     })
 }
 
+const loadXpack = async () => {
+  if (window['DEXPack']) {
+    const xpack = await window['DEXPack'].mapping[attrs.jsname]
+    plugin.value = xpack.default
+  }
+}
+
+useEmitt({
+  name: 'load-xpack',
+  callback: loadXpack
+})
+
 const loadComponent = () => {
   loading.value = true
   const byteArray = wsCache.get(`de-plugin-proxy`)
@@ -103,7 +115,8 @@ onMounted(async () => {
     if (window['DEXPack']) {
       const xpack = await window['DEXPack'].mapping[attrs.jsname]
       plugin.value = xpack.default
-    } else {
+    } else if (!window._de_xpack_not_loaded) {
+      window._de_xpack_not_loaded = true
       window['Vue'] = Vue
       window['Axios'] = axios
       window['Pinia'] = Pinia
@@ -115,8 +128,7 @@ onMounted(async () => {
       }
       loadDistributed().then(async res => {
         new Function(res.data)()
-        const xpack = await window['DEXPack'].mapping[attrs.jsname]
-        plugin.value = xpack.default
+        useEmitt().emitter.emit('load-xpack')
       })
     }
   } else {
