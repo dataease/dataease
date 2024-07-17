@@ -2,6 +2,7 @@
 import { shallowRef, defineAsyncComponent, ref, onBeforeUnmount, onBeforeMount } from 'vue'
 import { debounce } from 'lodash-es'
 import { XpackComponent } from '@/components/plugin'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const currentComponent = shallowRef()
 
@@ -49,6 +50,11 @@ onBeforeUnmount(() => {
 const initIframe = (name: string) => {
   currentComponent.value = componentMap[name || 'ViewWrapper']
 }
+
+useEmitt({
+  name: 'changeCurrentComponent',
+  callback: initIframe
+})
 </script>
 
 <template>
