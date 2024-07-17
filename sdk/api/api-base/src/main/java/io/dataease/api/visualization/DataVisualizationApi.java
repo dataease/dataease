@@ -46,7 +46,7 @@ public interface DataVisualizationApi {
     @PostMapping("/saveCanvas")
     @DePermit(value = {"#p0.pid + ':manage'"}, busiFlag = "#p0.type")
     @Operation(summary = "画布保存")
-    String saveCanvas(@RequestBody DataVisualizationBaseRequest request);
+    String saveCanvas(@RequestBody DataVisualizationBaseRequest request) throws Exception;
 
     @PostMapping("/updateCanvas")
     @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")

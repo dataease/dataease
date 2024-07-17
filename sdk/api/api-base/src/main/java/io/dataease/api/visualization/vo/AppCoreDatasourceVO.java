@@ -79,4 +79,9 @@ public class AppCoreDatasourceVO implements Serializable {
      */
     private String taskStatus;
 
+    /**
+     * 映射系统数据源ID
+     */
+    private Long systemDatasourceId;
+
 }

@@ -80,6 +80,7 @@ public class DatasetGroupManage {
     private Lock lock = new ReentrantLock();
 
 
+    @Transactional
     public DatasetGroupInfoDTO save(DatasetGroupInfoDTO datasetGroupInfoDTO, boolean rename) throws Exception {
         lock.lock();
         try {
