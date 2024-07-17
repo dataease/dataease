@@ -24,6 +24,7 @@ const DashboardPanel = defineAsyncComponent(
 )
 
 const Preview = defineAsyncComponent(() => import('@/views/data-visualization/PreviewCanvas.vue'))
+const DashboardEmpty = defineAsyncComponent(() => import('@/views/mobile/panel/DashboardEmpty.vue'))
 
 const props = defineProps({
   componentName: propTypes.string.def('Iframe')
@@ -41,7 +42,8 @@ const componentMap = {
   Datasource,
   ScreenPanel,
   DashboardPanel,
-  DatasetEditor
+  DatasetEditor,
+  DashboardEmpty
 }
 
 const changeCurrentComponent = val => {
