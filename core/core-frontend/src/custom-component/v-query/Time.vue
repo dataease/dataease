@@ -132,7 +132,7 @@ const handleValueChange = () => {
       : selectValue.value
     return
   }
-  config.value.defaultValue = value
+  config.value.defaultValue = new Date(value).toLocaleString()
 }
 
 const init = () => {
