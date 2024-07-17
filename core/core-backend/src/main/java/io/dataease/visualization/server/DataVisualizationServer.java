@@ -2,8 +2,16 @@ package io.dataease.visualization.server;
 
 import com.baomidou.mybatisplus.core.conditions.query.QueryWrapper;
 import com.baomidou.mybatisplus.core.metadata.IPage;
+import com.google.gson.Gson;
+import io.dataease.api.dataset.union.DatasetGroupInfoDTO;
 import io.dataease.api.visualization.request.VisualizationAppExportRequest;
 import io.dataease.api.visualization.vo.*;
+import io.dataease.dataset.dao.auto.entity.CoreDatasetGroup;
+import io.dataease.dataset.dao.auto.entity.CoreDatasetTable;
+import io.dataease.dataset.dao.auto.entity.CoreDatasetTableField;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetGroupMapper;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableFieldMapper;
+import io.dataease.dataset.dao.auto.mapper.CoreDatasetTableMapper;
 import io.dataease.dataset.manage.DatasetDataManage;
 import io.dataease.dataset.manage.DatasetGroupManage;
 import io.dataease.extensions.datasource.dto.DatasetTableDTO;
@@ -37,6 +45,7 @@ import io.dataease.template.dao.auto.mapper.VisualizationTemplateMapper;
 import io.dataease.template.dao.ext.ExtVisualizationTemplateMapper;
 import io.dataease.template.manage.TemplateCenterManage;
 import io.dataease.utils.*;
+import io.dataease.visualization.dao.auto.entity.CoreStore;
 import io.dataease.visualization.dao.auto.entity.DataVisualizationInfo;
 import io.dataease.visualization.dao.auto.entity.VisualizationWatermark;
 import io.dataease.visualization.dao.auto.mapper.DataVisualizationInfoMapper;
@@ -45,6 +54,7 @@ import io.dataease.visualization.dao.ext.mapper.ExtDataVisualizationMapper;
 import io.dataease.visualization.manage.CoreVisualizationManage;
 import jakarta.annotation.Resource;
 import org.apache.commons.lang3.ObjectUtils;
+import org.apache.commons.lang3.StringUtils;
 import org.springframework.transaction.annotation.Transactional;
 import org.springframework.util.CollectionUtils;
 import org.springframework.web.bind.annotation.RequestBody;
@@ -104,6 +114,15 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Resource
     private ExtVisualizationTemplateMapper appTemplateMapper;
 
+    @Resource
+    private CoreDatasetGroupMapper coreDatasetGroupMapper;
+
+    @Resource
+    private CoreDatasetTableMapper coreDatasetTableMapper;
+
+    @Resource
+    private CoreDatasetTableFieldMapper coreDatasetTableFieldMapper;
+
     @Override
     public DataVisualizationVO findCopyResource(Long dvId, String busiFlag) {
         DataVisualizationVO result = findById(new DataVisualizationBaseRequest(dvId, busiFlag));
@@ -152,7 +171,84 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @DeLog(id = "#p0.id", pid = "#p0.pid", ot = LogOT.CREATE, stExp = "#p0.type")
     @Override
     @Transactional
-    public String saveCanvas(DataVisualizationBaseRequest request) {
+    public String saveCanvas(DataVisualizationBaseRequest request) throws Exception{
+        Long time = System.currentTimeMillis();
+        // 如果是应用 则新进行应用校验 数据集名称和 数据源名称校验
+        VisualizationExport2AppVO appData = request.getAppData();
+        Map<Long,Long> dsGroupIdMap = new HashMap<>();
+        Map<Long,Long> dsTableIdMap = new HashMap<>();
+        Map<Long,Long> dsTableFieldsIdMap = new HashMap<>();
+        if(appData != null){
+            try {
+                Map<Long,Long> datasourceIdMap = appData.getDatasourceInfo().stream()
+                        .collect(Collectors.toMap(AppCoreDatasourceVO::getId, AppCoreDatasourceVO::getSystemDatasourceId));
+                Long datasetFolderPid = request.getDatasetFolderPid();
+                String datasetFolderName = request.getDatasetFolderName();
+                QueryWrapper<CoreDatasetGroup> queryWrapper = new QueryWrapper<>();
+                queryWrapper.eq("name", datasetFolderName);
+                queryWrapper.eq("pid", datasetFolderPid);
+                if (coreDatasetGroupMapper.exists(queryWrapper)) {
+                    DEException.throwException("当前数据集分组名称已存在");
+                }
+                //新建数据集分组
+                DatasetGroupInfoDTO datasetFolderNewRequest = new DatasetGroupInfoDTO();
+                datasetFolderNewRequest.setName(datasetFolderName);
+                datasetFolderNewRequest.setNodeType("folder");
+                datasetFolderNewRequest.setPid(datasetFolderPid);
+                DatasetGroupInfoDTO datasetFolderNew = datasetGroupManage.save(datasetFolderNewRequest, false);
+                Long datasetFolderNewId = datasetFolderNew.getId();
+                //新建数据集
+                appData.getDatasetGroupsInfo().forEach(appDatasetGroup -> {
+                    if ("dataset".equals(appDatasetGroup.getNodeType())) {
+                        Long oldId = appDatasetGroup.getId();
+                        Long newId = IDUtils.snowID();
+                        DatasetGroupInfoDTO datasetNewRequest = new DatasetGroupInfoDTO();
+                        BeanUtils.copyBean(datasetNewRequest, appDatasetGroup);
+                        datasetNewRequest.setId(newId);
+                        datasetNewRequest.setCreateBy(AuthUtils.getUser().getUserId() + "");
+                        datasetNewRequest.setUpdateBy(AuthUtils.getUser().getUserId() + "");
+                        datasetNewRequest.setCreateTime(time);
+                        datasetNewRequest.setLastUpdateTime(time);
+                        datasetNewRequest.setPid(datasetFolderNewId);
+                        try {
+                            datasetGroupManage.innerSave(datasetNewRequest);
+                            dsGroupIdMap.put(oldId,newId);
+                        } catch (Exception e) {
+                            throw new RuntimeException(e);
+                        }
+                    }
+
+                });
+                // 新建数据集表
+                appData.getDatasetTablesInfo().forEach(appCoreDatasetTableVO -> {
+                    Long oldId = appCoreDatasetTableVO.getId();
+                    Long newId = IDUtils.snowID();
+                    CoreDatasetTable datasetTable = new CoreDatasetTable();
+                    BeanUtils.copyBean(datasetTable,appCoreDatasetTableVO);
+                    datasetTable.setDatasetGroupId(dsGroupIdMap.get(datasetTable.getDatasetGroupId()));
+                    datasetTable.setId(newId);
+                    datasetTable.setDatasourceId(datasourceIdMap.get(datasetTable.getDatasourceId()));
+                    coreDatasetTableMapper.insert(datasetTable);
+                    dsTableIdMap.put(oldId,newId);
+
+                });
+                // 新建数据字段
+                appData.getDatasetTableFieldsInfo().forEach( appDsTableFields ->{
+                    Long oldId = appDsTableFields.getId();
+                    Long newId = IDUtils.snowID();
+                    CoreDatasetTableField dsDsField = new CoreDatasetTableField();
+                    BeanUtils.copyBean(dsDsField,appDsTableFields);
+                    dsDsField.setDatasetGroupId(dsGroupIdMap.get(dsDsField.getDatasetGroupId()));
+                    dsDsField.setDatasetTableId(dsTableIdMap.get(dsDsField.getDatasetTableId()));
+                    dsDsField.setDatasourceId(datasourceIdMap.get(dsDsField.getDatasourceId()));
+                    dsDsField.setId(newId);
+                    coreDatasetTableFieldMapper.insert(dsDsField);
+                    dsTableFieldsIdMap.put(oldId,newId);
+                });
+            }catch (Exception e){
+                DEException.throwException("应用创建失败");
+            }
+        }
         DataVisualizationInfo visualizationInfo = new DataVisualizationInfo();
         BeanUtils.copyBean(visualizationInfo, request);
         visualizationInfo.setNodeType(request.getNodeType() == null ? DataVisualizationConstants.NODE_TYPE.LEAF : request.getNodeType());
@@ -168,6 +264,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         }
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
         request.setId(newDvId);
+        // TODO 还原ID信息
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), newDvId, request.getCanvasViewInfo());
         return newDvId.toString();
@@ -378,6 +475,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
             VisualizationTemplateExtendDataDTO extendDataDTO = new VisualizationTemplateExtendDataDTO(newDvId, newViewId, originViewData);
             extendDataInfo.put(newViewId, extendDataDTO);
             templateData = templateData.replaceAll(originViewId, newViewId.toString());
+            if(appData != null){
+                Map appDataFormat = JsonUtil.parse(appData,Map.class);
+                String sourceDvId = (String) appDataFormat.get("id");
+                appData =  appData.replaceAll(originViewId, newViewId.toString()).replaceAll(sourceDvId, newDvId.toString());
+            }
             canvasViewInfo.put(chartView.getId(), chartView);
             //插入模板数据 此处预先插入减少数据交互量
             VisualizationTemplateExtendData extendData = new VisualizationTemplateExtendData();
