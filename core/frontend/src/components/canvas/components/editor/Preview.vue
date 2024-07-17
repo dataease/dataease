@@ -172,7 +172,7 @@
         <el-button
           v-if="showChartInfoType==='details' && showChartInfo.dataFrom !== 'template' && !userId && hasDataPermission('export',panelInfo.privileges)"
           size="mini"
-          :disabled="$store.getters.loadingMap[$store.getters.currentPath] || dialogLoading"
+          :disabled="$store.getters.loadingMap[$store.getters.currentPath]"
           @click="exportSourceDetails"
         >
           <svg-icon
@@ -191,12 +191,11 @@
         :open-type="showChartInfoType"
       />
     </el-dialog>
-    <ExportExcel ref="ExportExcelRef" />
   </div>
 </template>
 
 <script>
-import ExportExcel from '@/views/dataset/exportExcel/index.vue'
+import { Button } from 'element-ui'
 import { getStyle } from '@/components/canvas/utils/style'
 import { mapState } from 'vuex'
 import ComponentWrapper from './ComponentWrapper'
@@ -222,7 +221,7 @@ import LinkOptBar from '@/components/canvas/components/editor/LinkOptBar'
 
 const erd = elementResizeDetectorMaker()
 export default {
-  components: { LinkOptBar, UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport, ExportExcel },
+  components: { LinkOptBar, UserViewDialog, ComponentWrapper, CanvasOptBar, PDFPreExport },
   model: {
     prop: 'show',
     event: 'change'
@@ -564,10 +563,8 @@ export default {
     bus.$on('trigger-search-button', this.triggerSearchButton)
     bus.$on('trigger-reset-button', this.triggerResetButton)
     this.initPdfTemplate()
-    bus.$on('data-export-center', this.downloadClick)
   },
   beforeDestroy() {
-    bus.$off('data-export-center', this.downloadClick)
     if (this.$refs[this.previewTempRefId]) {
       erd.uninstall(this.$refs[this.previewTempRefId])
     }
@@ -582,9 +579,6 @@ export default {
     bus.$off('trigger-reset-button', this.triggerResetButton)
   },
   methods: {
-    downloadClick() {
-      this.$refs.ExportExcelRef.init()
-    },
     reloadWatermark() {
       if (this.screenShotStatues) {
         this.initWatermark('preview-temp-canvas-main')
@@ -881,11 +875,89 @@ export default {
         this.$nextTick(() => (eventBus.$emit('resizing', '')))
       }
     },
+    openMessageLoading(cb) {
+      const h = this.$createElement
+      const iconClass = `el-icon-loading`
+      const customClass = `de-message-loading de-message-export`
+      this.$message({
+        message: h('p', null, [
+          this.$t('data_export.exporting'),
+          h(
+              Button,
+              {
+                props: {
+                  type: 'text',
+                },
+                class: 'btn-text',
+                on: {
+                  click: () => {
+                    cb()
+                  }
+                }
+              },
+              this.$t('data_export.export_center')
+            ),
+          this.$t('data_export.export_info')
+        ]),
+        iconClass,
+        showClose: true,
+        customClass
+      })
+    },
+    openMessageSuccess(text, type, cb) {
+      const h = this.$createElement
+      const iconClass = `el-icon-${type || 'success'}`
+      const customClass = `de-message-${type || 'success'} de-message-export`
+      this.$message({
+        message: h('p', null, [
+          h('span', null, text),
+          h(
+            Button,
+            {
+              props: {
+                type: 'text',
+              },
+              class: 'btn-text',
+              on: {
+                click: () => {
+                  cb()
+                }
+              }
+            },
+            this.$t('data_export.export_center')
+          )
+        ]),
+        iconClass,
+        showClose: true,
+        customClass
+      })
+    },
+    exportData() {
+      bus.$emit('data-export-center')
+    },
     exportExcel() {
-      this.$refs['userViewDialog-canvas-main'].exportExcel()
+      this.$refs['userViewDialog-canvas-main'].exportExcel((val) => {
+        if (val && val.success) {
+          this.openMessageLoading(this.exportData)
+        }
+
+        if (val && val.success === false) {
+          this.openMessageSuccess(`${this.showChartTableInfo.title ? this.showChartTableInfo.title : this.showChartTableInfo.name} 导出失败，前往`, 'error', this.exportData)
+        }
+        this.dialogLoading = false
+      })
     },
     exportSourceDetails() {
-      this.$refs['userViewDialog-canvas-main'].exportExcel()
+      this.$refs['userViewDialog-canvas-main'].exportExcel((val) => {
+        if (val && val.success) {
+          this.openMessageLoading(this.exportData)
+        }
+
+        if (val && val.success === false) {
+          this.openMessageSuccess(`${this.showChartTableInfo.title ? this.showChartTableInfo.title : this.showChartTableInfo.name} 导出失败，前往`, 'error', this.exportData)
+        }
+        this.dialogLoading = false
+      })
     },
     exportViewImg() {
       this.imageDownloading = true
