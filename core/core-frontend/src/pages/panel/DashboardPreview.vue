@@ -75,11 +75,14 @@ onBeforeMount(async () => {
       canvasViewInfoPreview,
       curPreviewGap
     }) {
-      if (!isPc.value && !dvInfo.mobileLayout) {
-        dvMainStore.setMobileInPc(true)
-        dvMainStore.setInMobile(true)
-        useEmitt().emitter.emit('changeCurrentComponent', 'DashboardEmpty')
-        return
+      if (!isPc.value) {
+        if (!dvInfo.mobileLayout) {
+          useEmitt().emitter.emit('changeCurrentComponent', 'DashboardEmpty')
+          return
+        } else {
+          dvMainStore.setMobileInPc(true)
+          dvMainStore.setInMobile(true)
+        }
       }
       state.canvasDataPreview = canvasDataResult
       state.canvasStylePreview = canvasStyleResult
