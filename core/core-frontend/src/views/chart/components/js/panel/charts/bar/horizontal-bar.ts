@@ -5,7 +5,12 @@ import {
 import { Bar, BarOptions } from '@antv/g2plot/esm/plots/bar'
 import { getPadding, setGradientColor } from '@/views/chart/components/js/panel/common/common_antv'
 import { cloneDeep } from 'lodash-es'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  hexColorToRGBA,
+  parseJson,
+  setUpStackSeriesColor
+} from '@/views/chart/components/js/util'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
   BAR_AXIS_TYPE,
@@ -33,6 +38,7 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   properties = BAR_EDITOR_PROPERTY
   propertyInner = {
     ...BAR_EDITOR_PROPERTY_INNER,
+    'basic-style-selector': [...BAR_EDITOR_PROPERTY_INNER['basic-style-selector'], 'seriesColor'],
     'label-selector': ['hPosition', 'seriesLabelFormatter'],
     'tooltip-selector': ['fontSize', 'color', 'backgroundColor', 'seriesTooltipFormatter', 'show'],
     'x-axis-selector': [...BAR_EDITOR_PROPERTY_INNER['x-axis-selector'], 'axisLabelFormatter']
@@ -257,6 +263,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
+      this.configColor,
       this.configBasicStyle,
       this.configLabel,
       this.configTooltip,
@@ -264,9 +272,8 @@ export class HorizontalBar extends G2PlotChartView<BarOptions, Bar> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyseHorizontal,
-      this.configEmptyDataStrategy
-    )(chart, options)
+      this.configAnalyseHorizontal
+    )(chart, options, {}, this)
   }
 
   constructor(name = 'bar-horizontal') {
@@ -323,7 +330,12 @@ export class HorizontalStackBar extends HorizontalBar {
       tooltip
     }
   }
-
+  protected configColor(chart: Chart, options: BarOptions): BarOptions {
+    return this.configStackColor(chart, options)
+  }
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setUpStackSeriesColor(chart, data)
+  }
   constructor(name = 'bar-stack-horizontal') {
     super(name)
     this.baseOptions = {
@@ -393,15 +405,16 @@ export class HorizontalPercentageStackBar extends HorizontalStackBar {
   protected setupOptions(chart: Chart, options: BarOptions): BarOptions {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
+      this.configColor,
       this.configBasicStyle,
       this.configLabel,
       this.configTooltip,
       this.configLegend,
       this.configXAxis,
       this.configYAxis,
-      this.configSlider,
-      this.configEmptyDataStrategy
-    )(chart, options)
+      this.configSlider
+    )(chart, options, {}, this)
   }
 
   constructor() {

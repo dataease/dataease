@@ -4,7 +4,12 @@ import {
 } from '@/views/chart/components/js/panel/types/impl/g2plot'
 import { Line as G2Line, LineOptions } from '@antv/g2plot/esm/plots/line'
 import { getPadding } from '../../common/common_antv'
-import { flow, hexColorToRGBA, parseJson } from '@/views/chart/components/js/util'
+import {
+  flow,
+  hexColorToRGBA,
+  parseJson,
+  setUpGroupSeriesColor
+} from '@/views/chart/components/js/util'
 import { cloneDeep, isEmpty } from 'lodash-es'
 import { valueFormatter } from '@/views/chart/components/js/formatter'
 import {
@@ -25,6 +30,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
   properties = LINE_EDITOR_PROPERTY
   propertyInner = {
     ...LINE_EDITOR_PROPERTY_INNER,
+    'basic-style-selector': [...LINE_EDITOR_PROPERTY_INNER['basic-style-selector'], 'seriesColor'],
     'label-selector': ['seriesLabelFormatter'],
     'tooltip-selector': [
       ...LINE_EDITOR_PROPERTY_INNER['tooltip-selector'],
@@ -270,10 +276,14 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       tooltip
     }
   }
-
+  public setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+    return setUpGroupSeriesColor(chart, data)
+  }
   protected setupOptions(chart: Chart, options: LineOptions): LineOptions {
     return flow(
       this.configTheme,
+      this.configEmptyDataStrategy,
+      this.configGroupColor,
       this.configLabel,
       this.configTooltip,
       this.configBasicStyle,
@@ -282,8 +292,7 @@ export class Line extends G2PlotChartView<LineOptions, G2Line> {
       this.configXAxis,
       this.configYAxis,
       this.configSlider,
-      this.configAnalyse,
-      this.configEmptyDataStrategy
+      this.configAnalyse
     )(chart, options)
   }
 

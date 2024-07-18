@@ -418,12 +418,16 @@ export function parseJson<T>(str: T | JSONString<T>): T {
   return JSON.parse(str) as T
 }
 
-type FlowFunction<P, R> = (param: P, result: R, context?: Record<string, any>) => R
+type FlowFunction<P, R> = (param: P, result: R, context?: Record<string, any>, thisArg?: any) => R
 
 export function flow<P, R>(...flows: FlowFunction<P, R>[]): FlowFunction<P, R> {
-  return (param: P, result: R, context?: Record<string, any>) => {
+  return (param: P, result: R, context?: Record<string, any>, thisArg?: any) => {
     return flows.reduce((result: R, flow: FlowFunction<P, R>) => {
-      return flow(param, result, context)
+      if (thisArg) {
+        return flow.call(thisArg, param, result, context)
+      } else {
+        return flow(param, result, context)
+      }
     }, result)
   }
 }
@@ -676,4 +680,203 @@ export const getMapColorCases = colorCases => {
     }
     return itemResult
   })
+}
+
+export function getColor(chart: Chart) {
+  const basicStyle = parseJson(chart.customAttr).basicStyle
+  const { seriesColor } = basicStyle
+  if (seriesColor?.length) {
+    const { yAxis } = chart
+    const seriesMap = seriesColor.reduce((p, n) => {
+      p[n.id] = n
+      return p
+    }, {})
+    yAxis?.forEach((axis, index) => {
+      const curAxisColor = seriesMap[axis.id]
+      if (curAxisColor) {
+        if (index + 1 > basicStyle.colors.length) {
+          basicStyle.colors.push(curAxisColor.color)
+        } else {
+          basicStyle.colors[index] = curAxisColor.color
+        }
+      }
+    })
+    const color = basicStyle.colors.map(c => hexColorToRGBA(c, basicStyle.alpha))
+    return color
+  }
+}
+
+export function setupSeriesColor(chart: ChartObj, data?: any[]): ChartBasicStyle['seriesColor'] {
+  const result: ChartBasicStyle['seriesColor'] = []
+  const seriesSet = new Set<string>()
+  const colors = chart.customAttr.basicStyle.colors
+  const yAxis = chart.yAxis
+  yAxis?.forEach(axis => {
+    if (seriesSet.has(axis.id)) {
+      return
+    }
+    seriesSet.add(axis.id)
+    result.push({
+      id: axis.id,
+      name: axis.chartShowName ?? axis.name,
+      color: colors[(seriesSet.size - 1) % colors.length]
+    })
+  })
+  return result
+}
+
+export function getGroupColor<O extends PickOptions = Options>(chart: Chart, options: O) {
+  const { basicStyle } = parseJson(chart.customAttr)
+  const { seriesColor } = basicStyle
+  if (!seriesColor?.length) {
+    return
+  }
+  const seriesMap = seriesColor.reduce((p, n) => {
+    p[n.id] = n
+    return p
+  }, {})
+  const { yAxis, xAxisExt } = chart
+  const { data } = options as unknown as Options
+  if (xAxisExt?.length) {
+    const seriesSet = new Set()
+    data?.forEach(d => d.category !== null && seriesSet.add(d.category))
+    const tmp = [...seriesSet]
+    tmp.forEach((c, i) => {
+      const curAxisColor = seriesMap[c as string]
+      if (curAxisColor) {
+        if (i + 1 > basicStyle.colors.length) {
+          basicStyle.colors.push(curAxisColor.color)
+        } else {
+          basicStyle.colors[i] = curAxisColor.color
+        }
+      }
+    })
+  } else {
+    yAxis?.forEach((axis, index) => {
+      const curAxisColor = seriesMap[axis.id]
+      if (curAxisColor) {
+        if (index + 1 > basicStyle.colors.length) {
+          basicStyle.colors.push(curAxisColor.color)
+        } else {
+          basicStyle.colors[index] = curAxisColor.color
+        }
+      }
+    })
+  }
+  const color = basicStyle.colors.map(c => hexColorToRGBA(c, basicStyle.alpha))
+  return color
+}
+
+export function setUpGroupSeriesColor(
+  chart: ChartObj,
+  data?: any[]
+): ChartBasicStyle['seriesColor'] {
+  const result: ChartBasicStyle['seriesColor'] = []
+  const seriesSet = new Set<string>()
+  const colors = chart.customAttr.basicStyle.colors
+  const { yAxis, xAxisExt } = chart
+  if (xAxisExt?.length) {
+    data?.forEach(d => {
+      if (d.value === null || d.category === null || seriesSet.has(d.category)) {
+        return
+      }
+      seriesSet.add(d.category)
+      result.push({
+        id: d.category,
+        name: d.category,
+        color: colors[(seriesSet.size - 1) % colors.length]
+      })
+    })
+  } else {
+    yAxis?.forEach(axis => {
+      if (seriesSet.has(axis.id)) {
+        return
+      }
+      seriesSet.add(axis.id)
+      result.push({
+        id: axis.id,
+        name: axis.chartShowName ?? axis.name,
+        color: colors[(seriesSet.size - 1) % colors.length]
+      })
+    })
+  }
+  return result
+}
+
+export function getStackColor<O extends PickOptions = Options>(chart: Chart, options: O) {
+  const { basicStyle } = parseJson(chart.customAttr)
+  const { seriesColor } = basicStyle
+  if (!seriesColor?.length) {
+    return
+  }
+  const seriesMap = seriesColor.reduce((p, n) => {
+    p[n.id] = n
+    return p
+  }, {})
+  const { yAxis, extStack } = chart
+  const { data } = options as unknown as Options
+  if (extStack?.length) {
+    const seriesSet = new Set()
+    data?.forEach(d => d.category !== null && seriesSet.add(d.category))
+    const tmp = [...seriesSet]
+    tmp.forEach((c, i) => {
+      const curAxisColor = seriesMap[c as string]
+      if (curAxisColor) {
+        if (i + 1 > basicStyle.colors.length) {
+          basicStyle.colors.push(curAxisColor.color)
+        } else {
+          basicStyle.colors[i] = curAxisColor.color
+        }
+      }
+    })
+  } else {
+    yAxis?.forEach((axis, index) => {
+      const curAxisColor = seriesMap[axis.id]
+      if (curAxisColor) {
+        if (index + 1 > basicStyle.colors.length) {
+          basicStyle.colors.push(curAxisColor.color)
+        } else {
+          basicStyle.colors[index] = curAxisColor.color
+        }
+      }
+    })
+  }
+  const color = basicStyle.colors.map(c => hexColorToRGBA(c, basicStyle.alpha))
+  return color
+}
+
+export function setUpStackSeriesColor(
+  chart: ChartObj,
+  data?: any[]
+): ChartBasicStyle['seriesColor'] {
+  const result: ChartBasicStyle['seriesColor'] = []
+  const seriesSet = new Set<string>()
+  const colors = chart.customAttr.basicStyle.colors
+  const { yAxis, extStack } = chart
+  if (extStack?.length) {
+    data?.forEach(d => {
+      if (d.value === null || d.category === null || seriesSet.has(d.category)) {
+        return
+      }
+      seriesSet.add(d.category)
+      result.push({
+        id: d.category,
+        name: d.category,
+        color: colors[(seriesSet.size - 1) % colors.length]
+      })
+    })
+  } else {
+    yAxis?.forEach(axis => {
+      if (seriesSet.has(axis.id)) {
+        return
+      }
+      seriesSet.add(axis.id)
+      result.push({
+        id: axis.id,
+        name: axis.chartShowName ?? axis.name,
+        color: colors[(seriesSet.size - 1) % colors.length]
+      })
+    })
+  }
+  return result
 }
