@@ -94,7 +94,7 @@
 <g opacity="0.8" filter="url(#filter0_d_3828_138019)">
 <path d="M408.823 52.121H221.143C219.655 52.0559 218.201 52.5834 217.101 53.5881C216.001 54.5928 215.343 55.9927 215.273 57.481V169.781C215.323 170.793 215.772 171.744 216.522 172.424C217.272 173.105 218.262 173.46 219.273 173.411H410.723C411.735 173.46 412.725 173.105 413.475 172.424C414.225 171.744 414.674 170.793 414.723 169.781V57.481C414.689 56.7414 414.509 56.0159 414.193 55.346C413.878 54.6761 413.433 54.075 412.885 53.5771C412.337 53.0792 411.696 52.6943 410.999 52.4445C410.302 52.1946 409.563 52.0847 408.823 52.121Z" fill="white"/>
 </g>
-<rect opacity="0.5" x="206" y="111" width="105" height="71" fill="url(#pattern0)"/>
+<rect opacity="0.5" x="206" y="111" width="105" height="71" fill="url(#pattern29)"/>
 <path d="M294.353 126.421H225.573C224.585 126.421 223.783 127.222 223.783 128.211V163.491C223.783 164.479 224.585 165.281 225.573 165.281H294.353C295.342 165.281 296.143 164.479 296.143 163.491V128.211C296.143 127.222 295.342 126.421 294.353 126.421Z" fill="white"/>
 <g opacity="0.3">
 <rect x="291.713" y="117.111" width="105" height="71" fill="url(#pattern1)"/>
@@ -215,7 +215,7 @@
 <feBlend mode="normal" in2="BackgroundImageFix" result="effect1_dropShadow_3828_138019"/>
 <feBlend mode="normal" in="SourceGraphic" in2="effect1_dropShadow_3828_138019" result="shape"/>
 </filter>
-<pattern id="pattern0" patternContentUnits="objectBoundingBox" width="1" height="1">
+<pattern id="pattern29" patternContentUnits="objectBoundingBox" width="1" height="1">
 <use xlink:href="#image0_3828_138019" transform="scale(0.00952381 0.0140845)"/>
 </pattern>
 <pattern id="pattern1" patternContentUnits="objectBoundingBox" width="1" height="1">

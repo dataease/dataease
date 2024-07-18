@@ -45,6 +45,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       inMobile: false,
       firstLoadMap: [],
       canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
+      appData: {}, //应用信息
       // 当前展示画布缓存数据
       componentDataCache: null,
       // PC布局画布组件数据
@@ -245,7 +246,12 @@ export const dvMainStore = defineStore('dataVisualization', {
     setCanvasViewInfo(canvasViewInfo) {
       this.canvasViewInfo = canvasViewInfo
     },
-
+    getAppDataInfo() {
+      return this.appData
+    },
+    setAppDataInfo(appDataInfo) {
+      this.appData = appDataInfo
+    },
     setCurComponent({ component, index }) {
       if (!component && this.curComponent) {
         this.curComponent['editing'] = false
@@ -1205,13 +1211,14 @@ export const dvMainStore = defineStore('dataVisualization', {
         this.canvasState[key] = value
       }
     },
-    createInit(dvType, resourceId?, pid?, watermarkInfo?) {
+    createInit(dvType, resourceId?, pid?, watermarkInfo?, preName) {
       const optName = dvType === 'dashboard' ? '新建仪表板' : '新建数据大屏'
+      const name = preName ? preName : optName
       this.dvInfo = {
         dataState: 'prepare',
         optType: null,
         id: resourceId,
-        name: optName,
+        name: name,
         pid: pid,
         type: dvType,
         status: 1,

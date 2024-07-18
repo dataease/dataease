@@ -186,6 +186,7 @@ if (uid.value === '1') {
 }
 .is-light-top-info {
   .uname-span {
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     color: var(--ed-color-black) !important;
   }
   &:hover {
@@ -209,6 +210,7 @@ if (uid.value === '1') {
     border-radius: 50%;
   }
   .uname-span {
+    font-family: '阿里巴巴普惠体 3.0 55 Regular L3';
     font-size: 14px;
     color: rgba(255, 255, 255, 0.8);
   }

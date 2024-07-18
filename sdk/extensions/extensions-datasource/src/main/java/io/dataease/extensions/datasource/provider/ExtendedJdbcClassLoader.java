@@ -1,4 +1,4 @@
-package io.dataease.datasource.provider;
+package io.dataease.extensions.datasource.provider;
 
 
 import java.io.File;

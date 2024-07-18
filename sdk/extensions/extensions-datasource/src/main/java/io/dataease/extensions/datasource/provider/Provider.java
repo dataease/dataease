@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.sql.Connection;
+import java.sql.Statement;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -37,6 +38,22 @@ public abstract class Provider {
     public abstract Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException;
 
     public abstract List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException;
+
+    public abstract void hidePW(DatasourceDTO datasourceDTO);
+
+    public Statement getStatement(Connection connection, int queryTimeout) {
+        if (connection == null) {
+            DEException.throwException("Failed to get connection!");
+        }
+        Statement stat = null;
+        try {
+            stat = connection.createStatement();
+            stat.setQueryTimeout(queryTimeout);
+        } catch (Exception e) {
+            DEException.throwException(e.getMessage());
+        }
+        return stat;
+    }
 
     public String rebuildSQL(String sql, SQLMeta sqlMeta, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap) {
         logger.info("calcite sql: " + sql);

@@ -326,13 +326,15 @@ onMounted(async () => {
       console.error('can not find watermark info')
     }
     let deTemplateData
+    let preName
     if (createType === 'template') {
       const templateParamsApply = JSON.parse(Base64.decode(decodeURIComponent(templateParams + '')))
       await decompressionPre(templateParamsApply, result => {
         deTemplateData = result
+        preName = deTemplateData.baseInfo?.preName
       })
     }
-    dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo)
+    dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo, preName)
     nextTick(() => {
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)
@@ -342,6 +344,7 @@ onMounted(async () => {
         dvMainStore.setComponentData(deTemplateData['componentData'])
         dvMainStore.setCanvasStyle(deTemplateData['canvasStyleData'])
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
+        dvMainStore.setAppDataInfo(deTemplateData['appData'])
         setTimeout(() => {
           snapshotStore.recordSnapshotCache()
         }, 1500)

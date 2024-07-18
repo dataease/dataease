@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
-import { ref, nextTick, computed } from 'vue'
+import { ref, nextTick, computed, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { useAppStoreWithOut } from '@/store/modules/app'
@@ -32,6 +32,7 @@ const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const resourceGroupOpt = ref(null)
+const resourceAppOpt = ref(null)
 const dvToolbarMain = ref(null)
 const { componentData, canvasStyleData, canvasViewInfo, dvInfo, editMode } =
   storeToRefs(dvMainStore)
@@ -40,6 +41,15 @@ const { wsCache } = useCache('localStorage')
 const dvModel = 'dataV'
 const outerParamsSetRef = ref(null)
 const fullScreeRef = ref(null)
+
+const props = defineProps({
+  createType: {
+    type: String,
+    default: 'create'
+  }
+})
+
+const { createType } = toRefs(props)
 
 const closeEditCanvasName = () => {
   nameEdit.value = false
@@ -91,9 +101,24 @@ const resourceOptFinish = param => {
 }
 
 const saveCanvasWithCheck = () => {
+  const appData = dvMainStore.getAppDataInfo()
   if (dvInfo.value.dataState === 'prepare') {
-    const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid }
-    resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
+    if (appData) {
+      // 应用保存
+      const params = {
+        base: {
+          pid: '',
+          name: dvInfo.value.name,
+          datasetFolderPid: null,
+          datasetFolderName: dvInfo.value.name
+        },
+        appData: appData
+      }
+      resourceAppOpt.value.init(params)
+    } else {
+      const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid }
+      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
+    }
     return
   }
   saveResource()
@@ -345,10 +370,12 @@ const fullScreenPreview = () => {
       ref="resourceGroupOpt"
     />
     <de-app-apply
-      ref="resourceGroupOpt"
+      ref="resourceAppOpt"
       :component-data="componentData"
       :dv-info="dvInfo"
       :canvas-view-info="canvasViewInfo"
+      cur-canvas-type="dataV"
+      @saveApp="saveCanvasWithCheck"
     ></de-app-apply>
   </div>
   <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>

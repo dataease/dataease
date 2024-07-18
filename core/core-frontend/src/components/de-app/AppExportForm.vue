@@ -169,7 +169,11 @@ const downloadApp = () => {
       const dsIds = []
       gatherAppInfo(viewIds, dsIds)
       export2AppCheck({ dvId: dvInfo.value.id, viewIds, dsIds }).then(rsp => {
-        const params = { ...rsp.data, ...state.form }
+        const params = {
+          ...rsp.data,
+          ...state.form,
+          visualizationInfo: JSON.stringify(dvInfo.value)
+        }
         emits('downLoadApp', params)
         state.applyDownloadDrawer = false
       })

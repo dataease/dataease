@@ -20,12 +20,16 @@ import java.util.concurrent.ConcurrentHashMap;
  */
 public class ProviderFactory {
 
-    public static Provider getProvider(String type) {
+    public static Provider getProvider(String type) throws DEException {
         List<String> list = Arrays.stream(DatasourceConfiguration.DatasourceType.values()).map(DatasourceConfiguration.DatasourceType::getType).toList();
         if (list.contains(type)) {
             return SpringContextUtil.getApplicationContext().getBean("calciteProvider", Provider.class);
         }
-        return getInstance(type);
+        Provider instance = getInstance(type);
+        if (instance == null) {
+            DEException.throwException("插件异常，请检查插件");
+        }
+        return instance;
     }
 
     public static Provider getDefaultProvider() {
