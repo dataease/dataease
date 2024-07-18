@@ -1,10 +1,12 @@
 package io.dataease.extensions.datasource.provider;
 
+import com.jcraft.jsch.Session;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.constant.SqlPlaceholderConstants;
 import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.model.SQLMeta;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import lombok.Getter;
 import org.apache.calcite.config.Lex;
 import org.apache.calcite.sql.SqlDialect;
 import org.apache.calcite.sql.SqlNode;
@@ -13,7 +15,8 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.sql.Connection;
+import java.io.IOException;
+import java.net.Socket;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -30,13 +33,18 @@ public abstract class Provider {
 
     public abstract List<DatasetTableDTO> getTables(DatasourceRequest datasourceRequest);
 
-    public abstract Connection getConnection(DatasourceDTO coreDatasource) throws DEException;
+    public abstract ConnectionObj getConnection(DatasourceDTO coreDatasource) throws Exception;
 
     public abstract String checkStatus(DatasourceRequest datasourceRequest) throws Exception;
 
     public abstract Map<String, Object> fetchResultField(DatasourceRequest datasourceRequest) throws DEException;
 
     public abstract List<TableField> fetchTableField(DatasourceRequest datasourceRequest) throws DEException;
+
+    @Getter
+    private static final Map<Long, Integer> lPorts = new HashMap<>();
+    @Getter
+    private static final Map<Long, Session> sessions = new HashMap<>();
 
     public String rebuildSQL(String sql, SQLMeta sqlMeta, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap) {
         logger.info("calcite sql: " + sql);
@@ -140,5 +148,29 @@ public abstract class Provider {
                 sqlDialect = MysqlSqlDialect.DEFAULT;
         }
         return sqlDialect;
+    }
+
+    synchronized public Integer getLport(Long datasourceId) throws Exception {
+        for (int i = 10000; i < 20000; i++) {
+            if (isPortAvailable(i) && !lPorts.values().contains(i)) {
+                if (datasourceId == null) {
+                    lPorts.put((long) i, i);
+                } else {
+                    lPorts.put(datasourceId, i);
+                }
+                return i;
+            }
+        }
+        throw new Exception("localhost无可用端口！");
+    }
+
+    public boolean isPortAvailable(int port) {
+        try {
+            Socket socket = new Socket("127.0.0.1", port);
+            socket.close();
+            return false;
+        } catch (IOException e) {
+            return true;
+        }
     }
 }

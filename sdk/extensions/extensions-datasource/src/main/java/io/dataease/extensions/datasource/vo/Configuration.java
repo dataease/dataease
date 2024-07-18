@@ -32,5 +32,31 @@ public class Configuration {
     private int minPoolSize = 5;
     private int maxPoolSize = 50;
     private int queryTimeout = 30;
+    private boolean useSSH = false;
+    private String sshHost;
+    private Integer sshPort;
+    private Integer lPort;
+    private String sshUserName;
+    private String sshType = "password";
+    private String sshPassword;
+    private String sshKey;
+    private String sshKeyPassword;
+
+
+    public String getLHost(){
+        if(useSSH){
+            return "127.0.0.1";
+        }else {
+            return this.host;
+        }
+    }
+
+    public Integer getLPort(){
+        if(useSSH && lPort != null){
+            return lPort;
+        }else {
+            return this.port;
+        }
+    }
 
 }

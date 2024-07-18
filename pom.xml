@@ -52,6 +52,7 @@
         <flexmark.version>0.62.2</flexmark.version>
         <mybatis-spring.version>3.0.3</mybatis-spring.version>
         <commons-compress.version>1.26.2</commons-compress.version>
+        <jsch.version>0.1.55</jsch.version>
     </properties>
 
     <dependencyManagement>
