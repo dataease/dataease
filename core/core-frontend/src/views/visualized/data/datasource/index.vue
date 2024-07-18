@@ -45,6 +45,7 @@ import { interactiveStoreWithOut } from '@/store/modules/interactive'
 import treeSort from '@/utils/treeSortUtils'
 import { useCache } from '@/hooks/web/useCache'
 import { useEmbedded } from '@/store/modules/embedded'
+import { XpackComponent } from '@/components/plugin'
 const route = useRoute()
 const interactiveStore = interactiveStoreWithOut()
 interface Field {
@@ -300,6 +301,26 @@ const formatSimpleCron = (info?: SyncSetting) => {
 const showErrorInfo = info => {
   dialogMsg.value = info
   dialogErrorInfo.value = true
+}
+
+const pluginDs = ref([])
+const loadDsPlugin = data => {
+  pluginDs.value = data
+}
+const getDsIcon = data => {
+  if (pluginDs?.value.length === 0) return null
+  if (!data.leaf) return null
+
+  const arr = pluginDs.value.filter(ele => {
+    return ele.type === data.type
+  })
+  return arr && arr.length > 0 ? arr[0].icon : null
+}
+const getDsIconType = type => {
+  const arr = pluginDs.value.filter(ele => {
+    return ele.type === type
+  })
+  return arr && arr.length > 0 ? arr[0].icon : null
 }
 
 const getDsIconName = data => {
@@ -945,7 +966,7 @@ const getMenuList = (val: boolean) => {
             <template #default="{ node, data }">
               <span class="custom-tree-node">
                 <el-icon :class="data.leaf && 'icon-border'" style="font-size: 18px">
-                  <Icon :name="getDsIconName(data)"></Icon>
+                  <Icon :static-content="getDsIcon(data)" :name="getDsIconName(data)"></Icon>
                 </el-icon>
                 <span
                   :title="node.label"
@@ -1004,7 +1025,10 @@ const getMenuList = (val: boolean) => {
         <div class="datasource-info">
           <div class="info-method">
             <el-icon class="icon-border">
-              <Icon :name="`${nodeInfo.type}-ds`"></Icon>
+              <Icon
+                :static-content="getDsIconType(nodeInfo.type)"
+                :name="`${nodeInfo.type}-ds`"
+              ></Icon>
             </el-icon>
             <span :title="nodeInfo.name" class="name ellipsis">
               {{ nodeInfo.name }}
@@ -1584,6 +1608,11 @@ const getMenuList = (val: boolean) => {
         </span>
       </template>
     </el-dialog>
+
+    <XpackComponent
+      jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
+      @load-ds-plugin="loadDsPlugin"
+    />
   </div>
 </template>
 

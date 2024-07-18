@@ -90,7 +90,7 @@ public class DatasetDataManage {
             }
             BeanUtils.copyBean(datasourceSchemaDTO, coreDatasource);
             datasourceSchemaDTO.setSchemaAlias(String.format(SQLConstants.SCHEMA, datasourceSchemaDTO.getId()));
-            Provider provider = ProviderFactory.getDefaultProvider();
+            Provider provider = ProviderFactory.getProvider(coreDatasource.getType());
 
             DatasourceRequest datasourceRequest = new DatasourceRequest();
             datasourceRequest.setDsList(Map.of(datasourceSchemaDTO.getId(), datasourceSchemaDTO));
@@ -149,9 +149,9 @@ public class DatasetDataManage {
             dto.setChecked(defaultStatus);
             dto.setType(ele.getType());
             int deType = FieldUtils.transType2DeType(ele.getType());
-            dto.setDeExtractType(deType);
-            dto.setDeType(deType);
-            dto.setGroupType(FieldUtils.transDeType2DQ(deType));
+            dto.setDeExtractType(ObjectUtils.isEmpty(ele.getDeExtractType()) ? deType : ele.getDeExtractType());
+            dto.setDeType(ObjectUtils.isEmpty(ele.getDeType()) ? deType : ele.getDeType());
+            dto.setGroupType(FieldUtils.transDeType2DQ(dto.getDeType()));
             dto.setExtField(0);
             dto.setDescription(StringUtils.isNotEmpty(ele.getName()) ? ele.getName() : null);
             return dto;

@@ -1,13 +1,5 @@
 package io.dataease.dataset.manage;
 
-import io.dataease.extensions.datasource.dto.DatasetTableDTO;
-import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
-import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
-import io.dataease.extensions.datasource.model.SQLObj;
-import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
-import io.dataease.extensions.view.dto.ChartExtFilterDTO;
-import io.dataease.extensions.view.dto.ChartExtRequest;
-import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.api.dataset.union.*;
 import io.dataease.api.permissions.auth.dto.BusiPerCheckDTO;
 import io.dataease.commons.utils.SqlparserUtils;
@@ -22,6 +14,16 @@ import io.dataease.datasource.manage.EngineManage;
 import io.dataease.engine.constant.ExtFieldConstant;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
+import io.dataease.extensions.datasource.dto.DatasetTableDTO;
+import io.dataease.extensions.datasource.dto.DatasetTableFieldDTO;
+import io.dataease.extensions.datasource.dto.DatasourceSchemaDTO;
+import io.dataease.extensions.datasource.dto.DsTypeDTO;
+import io.dataease.extensions.datasource.model.SQLObj;
+import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import io.dataease.extensions.datasource.vo.PluginDatasourceType;
+import io.dataease.extensions.view.dto.ChartExtFilterDTO;
+import io.dataease.extensions.view.dto.ChartExtRequest;
+import io.dataease.extensions.view.dto.SqlVariableDetails;
 import io.dataease.i18n.Translator;
 import io.dataease.system.manage.CorePermissionManage;
 import io.dataease.utils.BeanUtils;
@@ -135,7 +137,7 @@ public class DatasetSQLManage {
                                 prefix = "`";
                                 suffix = "`";
                             } else {
-                                DatasourceConfiguration.DatasourceType datasourceType = getDatasourceType(dsMap, datasetTable.getDatasourceId());
+                                DsTypeDTO datasourceType = getDatasourceType(dsMap, datasetTable.getDatasourceId());
                                 prefix = datasourceType.getPrefix();
                                 suffix = datasourceType.getSuffix();
                             }
@@ -188,7 +190,7 @@ public class DatasetSQLManage {
                         tablePrefix = "`";
                         tableSuffix = "`";
                     } else {
-                        DatasourceConfiguration.DatasourceType datasourceType = getDatasourceType(dsMap, currentDs1.getDatasourceId());
+                        DsTypeDTO datasourceType = getDatasourceType(dsMap, currentDs1.getDatasourceId());
                         tablePrefix = datasourceType.getPrefix();
                         tableSuffix = datasourceType.getSuffix();
                     }
@@ -214,7 +216,7 @@ public class DatasetSQLManage {
                             pPrefix = "`";
                             pSuffix = "`";
                         } else {
-                            DatasourceConfiguration.DatasourceType datasourceType = getDatasourceType(dsMap, parentDs.getDatasourceId());
+                            DsTypeDTO datasourceType = getDatasourceType(dsMap, parentDs.getDatasourceId());
                             pPrefix = datasourceType.getPrefix();
                             pSuffix = datasourceType.getSuffix();
                         }
@@ -226,7 +228,7 @@ public class DatasetSQLManage {
                             cPrefix = "`";
                             cSuffix = "`";
                         } else {
-                            DatasourceConfiguration.DatasourceType datasourceType = getDatasourceType(dsMap, currentDs1.getDatasourceId());
+                            DsTypeDTO datasourceType = getDatasourceType(dsMap, currentDs1.getDatasourceId());
                             cPrefix = datasourceType.getPrefix();
                             cSuffix = datasourceType.getSuffix();
                         }
@@ -305,7 +307,7 @@ public class DatasetSQLManage {
                                 prefix = "`";
                                 suffix = "`";
                             } else {
-                                DatasourceConfiguration.DatasourceType datasourceType = getDatasourceType(dsMap, datasetTable.getDatasourceId());
+                                DsTypeDTO datasourceType = getDatasourceType(dsMap, datasetTable.getDatasourceId());
                                 prefix = datasourceType.getPrefix();
                                 suffix = datasourceType.getSuffix();
                             }
@@ -348,7 +350,7 @@ public class DatasetSQLManage {
         }
     }
 
-    private DatasourceConfiguration.DatasourceType getDatasourceType(Map<Long, DatasourceSchemaDTO> dsMap, Long datasourceId) {
+    private DsTypeDTO getDatasourceType(Map<Long, DatasourceSchemaDTO> dsMap, Long datasourceId) {
         DatasourceSchemaDTO datasourceSchemaDTO = dsMap.get(datasourceId);
         String type;
         if (datasourceSchemaDTO == null) {
@@ -360,7 +362,17 @@ public class DatasetSQLManage {
         } else {
             type = datasourceSchemaDTO.getType();
         }
-        return DatasourceConfiguration.DatasourceType.valueOf(type);
+        if (Arrays.stream(DatasourceConfiguration.DatasourceType.values()).map(DatasourceConfiguration.DatasourceType::getType).toList().contains(type)) {
+            DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(type);
+            DsTypeDTO dto = new DsTypeDTO();
+            BeanUtils.copyBean(dto, datasourceType);
+            return dto;
+        } else {
+            PluginDatasourceType.DatasourceType datasourceType = PluginDatasourceType.DatasourceType.valueOf(type);
+            DsTypeDTO dto = new DsTypeDTO();
+            BeanUtils.copyBean(dto, datasourceType);
+            return dto;
+        }
     }
 
     public String subPrefixSuffixChar(String str) {
