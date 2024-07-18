@@ -36,6 +36,7 @@ import io.dataease.extensions.datasource.dto.*;
 import io.dataease.extensions.datasource.factory.ProviderFactory;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
+import io.dataease.extensions.datasource.vo.PluginDatasourceType;
 import io.dataease.i18n.Translator;
 import io.dataease.job.schedule.CheckDsStatusJob;
 import io.dataease.job.schedule.ScheduleManager;
@@ -575,7 +576,8 @@ public class DatasourceServer implements DatasourceApi {
             }
         } else {
             if (hidePw) {
-                calciteProvider.hidePW(datasourceDTO);
+                Provider provider = ProviderFactory.getProvider(datasourceDTO.getType());
+                provider.hidePW(datasourceDTO);
             }
 
         }
@@ -851,7 +853,8 @@ public class DatasourceServer implements DatasourceApi {
     }
 
     private void preCheckDs(DatasourceDTO datasource) throws DEException {
-        if (!datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).toList().contains(datasource.getType())) {
+        if (!datasourceTypes().stream().map(DatasourceConfiguration.DatasourceType::getType).toList().contains(datasource.getType())
+                && !Arrays.stream(PluginDatasourceType.DatasourceType.values()).map(PluginDatasourceType.DatasourceType::getType).toList().contains(datasource.getType())) {
             DEException.throwException("Datasource type not supported.");
         }
     }
@@ -867,7 +870,8 @@ public class DatasourceServer implements DatasourceApi {
             if (coreDatasource.getType().equals("API")) {
                 status = ApiUtils.checkStatus(datasourceRequest);
             } else {
-                status = calciteProvider.checkStatus(datasourceRequest);
+                Provider provider = ProviderFactory.getProvider(coreDatasource.getType());
+                status = provider.checkStatus(datasourceRequest);
             }
             coreDatasource.setStatus(status);
         } catch (Exception e) {

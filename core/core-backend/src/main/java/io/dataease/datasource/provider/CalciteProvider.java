@@ -11,6 +11,8 @@ import io.dataease.datasource.type.*;
 import io.dataease.engine.constant.SQLConstants;
 import io.dataease.exception.DEException;
 import io.dataease.extensions.datasource.dto.*;
+import io.dataease.extensions.datasource.provider.DriverShim;
+import io.dataease.extensions.datasource.provider.ExtendedJdbcClassLoader;
 import io.dataease.extensions.datasource.provider.Provider;
 import io.dataease.extensions.datasource.vo.DatasourceConfiguration;
 import io.dataease.i18n.Translator;
@@ -24,7 +26,6 @@ import org.apache.calcite.adapter.jdbc.JdbcSchema;
 import org.apache.calcite.jdbc.CalciteConnection;
 import org.apache.calcite.schema.Schema;
 import org.apache.calcite.schema.SchemaPlus;
-import org.apache.calcite.sql.SqlDialect;
 import org.apache.commons.dbcp2.BasicDataSource;
 import org.apache.commons.lang3.StringUtils;
 import org.springframework.stereotype.Component;
@@ -442,6 +443,7 @@ public class CalciteProvider extends Provider {
         return list;
     }
 
+    @Override
     public void hidePW(DatasourceDTO datasourceDTO) {
         DatasourceConfiguration configuration = null;
         DatasourceConfiguration.DatasourceType datasourceType = DatasourceConfiguration.DatasourceType.valueOf(datasourceDTO.getType());
@@ -1045,20 +1047,6 @@ public class CalciteProvider extends Provider {
             default:
                 return "show tables;";
         }
-    }
-
-    public Statement getStatement(Connection connection, int queryTimeout) {
-        if (connection == null) {
-            DEException.throwException("Failed to get connection!");
-        }
-        Statement stat = null;
-        try {
-            stat = connection.createStatement();
-            stat.setQueryTimeout(queryTimeout);
-        } catch (Exception e) {
-            DEException.throwException(e.getMessage());
-        }
-        return stat;
     }
 
     protected boolean isDefaultClassLoader(String customDriver) {
