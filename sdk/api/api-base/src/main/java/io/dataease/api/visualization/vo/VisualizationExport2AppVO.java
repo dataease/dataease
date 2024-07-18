@@ -1,6 +1,7 @@
 package io.dataease.api.visualization.vo;
 
 import com.google.gson.Gson;
+import io.dataease.api.visualization.request.DataVisualizationBaseRequest;
 import lombok.Data;
 
 import java.util.ArrayList;

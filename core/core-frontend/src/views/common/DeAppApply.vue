@@ -207,8 +207,6 @@ const state = reactive({
     pid: [
       {
         required: true,
-        min: 2,
-        max: 25,
         message: '请选择所属文件夹',
         trigger: 'blur'
       }

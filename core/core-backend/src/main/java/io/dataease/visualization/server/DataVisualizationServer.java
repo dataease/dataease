@@ -172,6 +172,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
     @Override
     @Transactional
     public String saveCanvas(DataVisualizationBaseRequest request) throws Exception{
+        Boolean isAppSave = false;
         Long time = System.currentTimeMillis();
         // 如果是应用 则新进行应用校验 数据集名称和 数据源名称校验
         VisualizationExport2AppVO appData = request.getAppData();
@@ -179,6 +180,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Map<Long,Long> dsTableIdMap = new HashMap<>();
         Map<Long,Long> dsTableFieldsIdMap = new HashMap<>();
         if(appData != null){
+            isAppSave = true;
             try {
                 Map<Long,Long> datasourceIdMap = appData.getDatasourceInfo().stream()
                         .collect(Collectors.toMap(AppCoreDatasourceVO::getId, AppCoreDatasourceVO::getSystemDatasourceId));
@@ -265,6 +267,13 @@ public class DataVisualizationServer implements DataVisualizationApi {
         Long newDvId = coreVisualizationManage.innerSave(visualizationInfo);
         request.setId(newDvId);
         // TODO 还原ID信息
+        if(isAppSave){
+            request.getCanvasViewInfo().forEach((key,viewInfo) ->{
+                viewInfo.setTableId(dsGroupIdMap.get(viewInfo.getTableId()));
+                viewInfo.setDataFrom("dataset");
+            });
+
+        }
         //保存图表信息
         chartDataManage.saveChartViewFromVisualization(request.getComponentData(), newDvId, request.getCanvasViewInfo());
         return newDvId.toString();
@@ -395,101 +404,112 @@ public class DataVisualizationServer implements DataVisualizationApi {
 
     @Override
     public DataVisualizationVO decompression(DataVisualizationBaseRequest request) throws Exception {
-        Long newDvId = IDUtils.snowID();
-        String newFrom = request.getNewFrom();
-        String templateStyle = null;
-        String templateData = null;
-        String dynamicData = null;
-        String staticResource = null;
-        String appDataStr = null;
-        String name = null;
-        String dvType = null;
-        Integer version = null;
-        //内部模板新建
-        if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_INNER_TEMPLATE.equals(newFrom)) {
-            VisualizationTemplate visualizationTemplate = templateMapper.selectById(request.getTemplateId());
-            templateStyle = visualizationTemplate.getTemplateStyle();
-            templateData = visualizationTemplate.getTemplateData();
-            dynamicData = visualizationTemplate.getDynamicData();
-            name = visualizationTemplate.getName();
-            dvType = visualizationTemplate.getDvType();
-            version = visualizationTemplate.getVersion();
-            appDataStr = visualizationTemplate.getAppData();
-            // 模板市场记录
-            coreOptRecentManage.saveOpt(request.getTemplateId(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
-            VisualizationTemplate visualizationTemplateUpdate = new VisualizationTemplate();
-            visualizationTemplateUpdate.setId(visualizationTemplate.getId());
-            visualizationTemplateUpdate.setUseCount(visualizationTemplate.getUseCount() == null ? 0 : visualizationTemplate.getUseCount() + 1);
-            templateMapper.updateById(visualizationTemplateUpdate);
-        } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
-            templateStyle = request.getCanvasStyleData();
-            templateData = request.getComponentData();
-            dynamicData = request.getDynamicData();
-            staticResource = request.getStaticResource();
-            name = request.getName();
-            dvType = request.getType();
-        } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(newFrom)) {
-            TemplateManageFileDTO templateFileInfo = templateCenterManage.getTemplateFromMarket(request.getTemplateUrl());
-            if (templateFileInfo == null) {
-                DEException.throwException("Can't find the template's info from market,please check");
-            }
-            templateStyle = templateFileInfo.getCanvasStyleData();
-            templateData = templateFileInfo.getComponentData();
-            dynamicData = templateFileInfo.getDynamicData();
-            staticResource = templateFileInfo.getStaticResource();
-            name = templateFileInfo.getName();
-            dvType = templateFileInfo.getDvType();
-            version = templateFileInfo.getVersion();
-            appDataStr = templateFileInfo.getAppData();
-            // 模板市场记录
-            coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
-        }
-        // 解析动态数据
-        Map<String, String> dynamicDataMap = JsonUtil.parseObject(dynamicData, Map.class);
-        List<ChartViewDTO> chartViews = new ArrayList<>();
-        Map<Long, ChartViewDTO> canvasViewInfo = new HashMap<>();
-        Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
-        for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
-            String originViewId = entry.getKey();
-            Object viewInfo = entry.getValue();
-            try {
-                // 旧模板图表过滤器适配
-                if (viewInfo instanceof Map && ((Map) viewInfo).get("customFilter") instanceof ArrayList) {
-                    ((Map) viewInfo).put("customFilter", new HashMap<>());
+        try{
+            Long newDvId = IDUtils.snowID();
+            String newFrom = request.getNewFrom();
+            String templateStyle = null;
+            String templateData = null;
+            String dynamicData = null;
+            String staticResource = null;
+            String appDataStr = null;
+            String name = null;
+            String dvType = null;
+            Integer version = null;
+            //内部模板新建
+            if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_INNER_TEMPLATE.equals(newFrom)) {
+                VisualizationTemplate visualizationTemplate = templateMapper.selectById(request.getTemplateId());
+                templateStyle = visualizationTemplate.getTemplateStyle();
+                templateData = visualizationTemplate.getTemplateData();
+                dynamicData = visualizationTemplate.getDynamicData();
+                name = visualizationTemplate.getName();
+                dvType = visualizationTemplate.getDvType();
+                version = visualizationTemplate.getVersion();
+                appDataStr = visualizationTemplate.getAppData();
+                // 模板市场记录
+                coreOptRecentManage.saveOpt(request.getTemplateId(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
+                VisualizationTemplate visualizationTemplateUpdate = new VisualizationTemplate();
+                visualizationTemplateUpdate.setId(visualizationTemplate.getId());
+                visualizationTemplateUpdate.setUseCount(visualizationTemplate.getUseCount() == null ? 0 : visualizationTemplate.getUseCount() + 1);
+                templateMapper.updateById(visualizationTemplateUpdate);
+            } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_OUTER_TEMPLATE.equals(newFrom)) {
+                templateStyle = request.getCanvasStyleData();
+                templateData = request.getComponentData();
+                dynamicData = request.getDynamicData();
+                staticResource = request.getStaticResource();
+                name = request.getName();
+                dvType = request.getType();
+            } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(newFrom)) {
+                TemplateManageFileDTO templateFileInfo = templateCenterManage.getTemplateFromMarket(request.getTemplateUrl());
+                if (templateFileInfo == null) {
+                    DEException.throwException("Can't find the template's info from market,please check");
                 }
-            } catch (Exception e) {
-                LogUtil.error("History Adaptor Error", e);
+                templateStyle = templateFileInfo.getCanvasStyleData();
+                templateData = templateFileInfo.getComponentData();
+                dynamicData = templateFileInfo.getDynamicData();
+                staticResource = templateFileInfo.getStaticResource();
+                name = templateFileInfo.getName();
+                dvType = templateFileInfo.getDvType();
+                version = templateFileInfo.getVersion();
+                appDataStr = templateFileInfo.getAppData();
+                // 模板市场记录
+                coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
             }
-            String originViewData = JsonUtil.toJSONString(entry.getValue()).toString();
-            ChartViewDTO chartView = JsonUtil.parseObject(originViewData, ChartViewDTO.class);
-            if (chartView == null) {
-                continue;
-            }
-            Long newViewId = IDUtils.snowID();
-            chartView.setId(newViewId);
-            chartView.setSceneId(newDvId);
-            chartView.setTableId(null);
-            chartView.setDataFrom(CommonConstants.VIEW_DATA_FROM.TEMPLATE);
-            // 数据处理 1.替换viewId 2.加入模板view data数据
-            VisualizationTemplateExtendDataDTO extendDataDTO = new VisualizationTemplateExtendDataDTO(newDvId, newViewId, originViewData);
-            extendDataInfo.put(newViewId, extendDataDTO);
-            templateData = templateData.replaceAll(originViewId, newViewId.toString());
             if(StringUtils.isNotEmpty(appDataStr)){
-                VisualizationExport2AppVO appDataFormat = JsonUtil.parse(appDataStr,VisualizationExport2AppVO.class);
-                Map dvInfo  = JsonUtil.parse(appDataFormat.getVisualizationInfo(),Map.class);
-                String sourceDvId = (String) dvInfo.get("id");
-                appDataStr =  appDataStr.replaceAll(originViewId, newViewId.toString()).replaceAll(sourceDvId, newDvId.toString());
+                VisualizationExport2AppVO appDataFormat = JsonUtil.parseObject(appDataStr,VisualizationExport2AppVO.class);
+                String dvInfo  = appDataFormat.getVisualizationInfo();
+                VisualizationBaseInfoVO baseInfoVO = JsonUtil.parseObject(dvInfo,VisualizationBaseInfoVO.class);
+                Long sourceDvId = baseInfoVO.getId();
+                appDataStr =  appDataStr.replaceAll(sourceDvId.toString(), newDvId.toString());
             }
-            canvasViewInfo.put(chartView.getId(), chartView);
-            //插入模板数据 此处预先插入减少数据交互量
-            VisualizationTemplateExtendData extendData = new VisualizationTemplateExtendData();
-            templateExtendDataMapper.insert(BeanUtils.copyBean(extendData, extendDataDTO));
+            // 解析动态数据
+            Map<String, String> dynamicDataMap = JsonUtil.parseObject(dynamicData, Map.class);
+            List<ChartViewDTO> chartViews = new ArrayList<>();
+            Map<Long, ChartViewDTO> canvasViewInfo = new HashMap<>();
+            Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo = new HashMap<>();
+            for (Map.Entry<String, String> entry : dynamicDataMap.entrySet()) {
+                String originViewId = entry.getKey();
+                Object viewInfo = entry.getValue();
+                try {
+                    // 旧模板图表过滤器适配
+                    if (viewInfo instanceof Map && ((Map) viewInfo).get("customFilter") instanceof ArrayList) {
+                        ((Map) viewInfo).put("customFilter", new HashMap<>());
+                    }
+                } catch (Exception e) {
+                    LogUtil.error("History Adaptor Error", e);
+                }
+                String originViewData = JsonUtil.toJSONString(entry.getValue()).toString();
+                ChartViewDTO chartView = JsonUtil.parseObject(originViewData, ChartViewDTO.class);
+                if (chartView == null) {
+                    continue;
+                }
+                Long newViewId = IDUtils.snowID();
+                chartView.setId(newViewId);
+                chartView.setSceneId(newDvId);
+                chartView.setTableId(null);
+                chartView.setDataFrom(CommonConstants.VIEW_DATA_FROM.TEMPLATE);
+                // 数据处理 1.替换viewId 2.加入模板view data数据
+                VisualizationTemplateExtendDataDTO extendDataDTO = new VisualizationTemplateExtendDataDTO(newDvId, newViewId, originViewData);
+                extendDataInfo.put(newViewId, extendDataDTO);
+                templateData = templateData.replaceAll(originViewId, newViewId.toString());
+                if(StringUtils.isNotEmpty(appDataStr)){
+                    appDataStr =  appDataStr.replaceAll(originViewId, newViewId.toString());
+                }
+                canvasViewInfo.put(chartView.getId(), chartView);
+                //插入模板数据 此处预先插入减少数据交互量
+                VisualizationTemplateExtendData extendData = new VisualizationTemplateExtendData();
+                templateExtendDataMapper.insert(BeanUtils.copyBean(extendData, extendDataDTO));
+            }
+            request.setComponentData(templateData);
+            request.setCanvasStyleData(templateStyle);
+            //Store static resource into the server
+            staticResourceServer.saveFilesToServe(staticResource);
+            return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData,appDataStr, canvasViewInfo, null);
+        }catch (Exception e){
+            e.printStackTrace();
+            DEException.throwException("解析错误");
+            return null;
         }
-        request.setComponentData(templateData);
-        request.setCanvasStyleData(templateStyle);
-        //Store static resource into the server
-        staticResourceServer.saveFilesToServe(staticResource);
-        return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData,appDataStr, canvasViewInfo, null);
+
     }
 
     @Override

@@ -99,13 +99,6 @@ const resourceOptFinish = param => {
     saveCanvasWithCheck()
   }
 }
-const appOptFinish = param => {
-  if (param && param.opt === 'newLeaf') {
-    dvInfo.value.dataState = 'ready'
-    dvInfo.value.pid = param.pid
-    dvInfo.value.name = param.name
-  }
-}
 
 const saveCanvasWithCheck = () => {
   const appData = dvMainStore.getAppDataInfo()
@@ -382,7 +375,7 @@ const fullScreenPreview = () => {
       :dv-info="dvInfo"
       :canvas-view-info="canvasViewInfo"
       cur-canvas-type="dataV"
-      @saveApp="appOptFinish"
+      @saveApp="saveCanvasWithCheck"
     ></de-app-apply>
   </div>
   <de-fullscreen ref="fullScreeRef" show-position="dvEdit"></de-fullscreen>

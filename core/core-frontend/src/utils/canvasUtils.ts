@@ -522,10 +522,7 @@ export async function decompressionPre(params, callBack) {
     .then(response => {
       const deTemplateDataTemp = response.data
       const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
-      let appData
-      if (deTemplateDataTemp['appData']) {
-        appData = JSON.parse(deTemplateDataTemp['appData'])
-      }
+      const appData = deTemplateDataTemp['appData']
       sourceComponentData.forEach(componentItem => {
         // 2 为基础版本 此处需要增加仪表板矩阵密度
         if (
