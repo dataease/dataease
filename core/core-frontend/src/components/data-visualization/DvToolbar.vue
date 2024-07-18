@@ -13,7 +13,7 @@ import MediaGroup from '@/custom-component/component-group/MediaGroup.vue'
 import TextGroup from '@/custom-component/component-group/TextGroup.vue'
 import CommonGroup from '@/custom-component/component-group/CommonGroup.vue'
 import DeResourceGroupOpt from '@/views/common/DeResourceGroupOpt.vue'
-import { canvasSave } from '@/utils/canvasUtils'
+import { canvasSave, initCanvasData } from '@/utils/canvasUtils'
 import { changeSizeWithScale } from '@/utils/changeComponentsSizeWithScale'
 import MoreComGroup from '@/custom-component/component-group/MoreComGroup.vue'
 import { XpackComponent } from '@/components/plugin'
@@ -25,6 +25,7 @@ import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import ComponentButtonLabel from '@/components/visualization/ComponentButtonLabel.vue'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
 import DeAppApply from '@/views/common/DeAppApply.vue'
+import { useEmitt } from '@/hooks/web/useEmitt'
 let nameEdit = ref(false)
 let inputName = ref('')
 let nameInput = ref(null)
@@ -34,7 +35,7 @@ const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
 const resourceGroupOpt = ref(null)
 const resourceAppOpt = ref(null)
 const dvToolbarMain = ref(null)
-const { componentData, canvasStyleData, canvasViewInfo, dvInfo, editMode } =
+const { componentData, canvasStyleData, canvasViewInfo, dvInfo, editMode, appData } =
   storeToRefs(dvMainStore)
 let scaleEdit = 100
 const { wsCache } = useCache('localStorage')
@@ -101,9 +102,8 @@ const resourceOptFinish = param => {
 }
 
 const saveCanvasWithCheck = () => {
-  const appData = dvMainStore.getAppDataInfo()
   if (dvInfo.value.dataState === 'prepare') {
-    if (appData) {
+    if (appData.value) {
       // 应用保存
       const params = {
         base: {
@@ -112,7 +112,7 @@ const saveCanvasWithCheck = () => {
           datasetFolderPid: null,
           datasetFolderName: dvInfo.value.name
         },
-        appData: appData
+        appData: appData.value
       }
       resourceAppOpt.value.init(params)
     } else {
@@ -133,6 +133,12 @@ const saveResource = () => {
         wsCache.delete('DE-DV-CATCH-' + dvInfo.value.id)
         ElMessage.success('保存成功')
         window.history.pushState({}, '', `#/dvCanvas?dvId=${dvInfo.value.id}`)
+        if (appData.value) {
+          initCanvasData(dvInfo.value.id, 'dataV', () => {
+            useEmitt().emitter.emit('refresh-dataset-selector')
+            resourceAppOpt.value.close()
+          })
+        }
       })
     })
   }

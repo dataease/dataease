@@ -115,7 +115,6 @@ const fileDownload = (downloadType, attachParams) => {
 }
 
 const downloadAsAppTemplate = downloadType => {
-  console.log('===test===' + downloadType)
   if (downloadType === 'template') {
     fileDownload(downloadType, null)
   } else if (downloadType === 'app') {
@@ -129,7 +128,7 @@ const downLoadToAppPre = () => {
     ElMessage.warning(`当前仪表板中[${result}]属于模版视图，无法导出，请先设置数据集！`)
   } else {
     appExportFormRef.value.init({
-      appName: dvInfo.value.name,
+      appName: state.dvInfo.name,
       icon: null,
       version: '2.0',
       creator: state.userLoginInfo?.name,

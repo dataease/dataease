@@ -14,6 +14,10 @@ import { useMoveLine } from '@/hooks/web/useMoveLine'
 import { Icon } from '@/components/icon-custom'
 import { download2AppTemplate, downloadCanvas2 } from '@/utils/imgUtils'
 import { storeToRefs } from 'pinia'
+import { ElMessage } from 'element-plus-secondary'
+import { personInfoApi } from '@/api/user'
+import AppExportForm from '@/components/de-app/AppExportForm.vue'
+const appExportFormRef = ref(null)
 
 const dvMainStore = dvMainStoreWithOut()
 const previewCanvasContainer = ref(null)
@@ -29,10 +33,11 @@ const state = reactive({
   canvasStylePreview: null,
   canvasViewInfoPreview: null,
   dvInfo: null,
-  curPreviewGap: 0
+  curPreviewGap: 0,
+  userLoginInfo: {}
 })
 
-const { fullscreenFlag } = storeToRefs(dvMainStore)
+const { fullscreenFlag, canvasViewDataInfo } = storeToRefs(dvMainStore)
 
 const { width, node } = useMoveLine('DASHBOARD')
 
@@ -108,10 +113,45 @@ const downloadH2 = type => {
 }
 
 const downloadAsAppTemplate = downloadType => {
+  if (downloadType === 'template') {
+    fileDownload(downloadType, null)
+  } else if (downloadType === 'app') {
+    downLoadToAppPre()
+  }
+}
+
+const downLoadToAppPre = () => {
+  const result = checkTemplate()
+  if (result && result.length > 0) {
+    ElMessage.warning(`当前仪表板中[${result}]属于模版视图，无法导出，请先设置数据集！`)
+  } else {
+    appExportFormRef.value.init({
+      appName: state.dvInfo.name,
+      icon: null,
+      version: '2.0',
+      creator: state.userLoginInfo?.name,
+      required: '2.9.0',
+      description: null
+    })
+  }
+}
+
+const checkTemplate = () => {
+  let templateViewNames = ','
+  Object.keys(canvasViewDataInfo.value).forEach(key => {
+    const viewInfo = canvasViewDataInfo.value[key]
+    if (viewInfo.dataFrom === 'template') {
+      templateViewNames = templateViewNames + viewInfo.title + ','
+    }
+  })
+  return templateViewNames.slice(1)
+}
+
+const fileDownload = (downloadType, attachParams) => {
   downloadStatus.value = true
   nextTick(() => {
     const vueDom = previewCanvasContainer.value.querySelector('.canvas-container')
-    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, () => {
+    download2AppTemplate(downloadType, vueDom, state.dvInfo.name, attachParams, () => {
       downloadStatus.value = false
     })
   })
@@ -137,11 +177,18 @@ const resourceNodeClick = data => {
 }
 
 const previewShowFlag = computed(() => !!dvMainStore.dvInfo?.name)
-
+const findUserData = callback => {
+  personInfoApi().then(rsp => {
+    callback(rsp)
+  })
+}
 onBeforeMount(() => {
   if (showPosition.value === 'preview') {
     dvMainStore.canvasDataInit()
   }
+  findUserData(res => {
+    state.userLoginInfo = res.data
+  })
 })
 const sideTreeStatus = ref(true)
 const changeSideTreeStatus = val => {
@@ -154,6 +201,10 @@ const mouseenter = () => {
 
 const mouseleave = () => {
   appStore.setArrowSide(false)
+}
+
+const downLoadApp = appAttachInfo => {
+  fileDownload('app', appAttachInfo)
 }
 
 defineExpose({
@@ -246,6 +297,13 @@ defineExpose({
       </template>
     </el-container>
   </div>
+  <app-export-form
+    ref="appExportFormRef"
+    :dv-info="state.dvInfo"
+    :component-data="state.canvasDataPreview"
+    :canvas-view-info="state.canvasViewInfoPreview"
+    @downLoadApp="downLoadApp"
+  ></app-export-form>
 </template>
 
 <style lang="less">

@@ -30,4 +30,9 @@ public class ChartViewDTO extends ChartViewBaseDTO {
     private ChartExtRequest chartExtRequest;
     private Boolean isExcelExport = false;
     private boolean cache;
+    /**
+     * 原始数据集表ID
+     */
+    @JsonSerialize(using = ToStringSerializer.class)
+    private Long sourceTableId;
 }

@@ -45,7 +45,7 @@ export const dvMainStore = defineStore('dataVisualization', {
       inMobile: false,
       firstLoadMap: [],
       canvasStyleData: { ...deepCopy(DEFAULT_CANVAS_STYLE_DATA_DARK), backgroundColor: null },
-      appData: {}, //应用信息
+      appData: null, //应用信息
       // 当前展示画布缓存数据
       componentDataCache: null,
       // PC布局画布组件数据

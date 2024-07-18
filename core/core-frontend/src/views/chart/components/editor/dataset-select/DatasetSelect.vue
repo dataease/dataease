@@ -7,7 +7,7 @@ import { useAppStoreWithOut } from '@/store/modules/app'
 import _ from 'lodash'
 import { getDatasetTree, getDatasourceList } from '@/api/dataset'
 import { ElFormItem, FormInstance } from 'element-plus-secondary'
-import type { DataSource } from '@/views/visualized/data/dataset/form/util'
+import { useEmitt } from '@/hooks/web/useEmitt'
 
 const props = withDefaults(
   defineProps<{
@@ -193,6 +193,10 @@ const appStore = useAppStoreWithOut()
 const isDataEaseBi = computed(() => appStore.getIsDataEaseBi)
 onMounted(() => {
   initDataset()
+  useEmitt({
+    name: 'refresh-dataset-selector',
+    callback: () => refresh()
+  })
 })
 </script>
 

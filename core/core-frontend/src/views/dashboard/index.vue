@@ -30,6 +30,7 @@ import { deepCopy } from '@/utils/utils'
 const interactiveStore = interactiveStoreWithOut()
 import { useRequestStoreWithOut } from '@/store/modules/request'
 import { usePermissionStoreWithOut } from '@/store/modules/permission'
+import eventBus from '@/utils/eventBus'
 const embeddedStore = useEmbedded()
 const { wsCache } = useCache()
 const canvasCacheOutRef = ref(null)
@@ -194,23 +195,29 @@ onMounted(async () => {
       console.error('can not find watermark info')
     }
     let deTemplateData
+    let preName
     if (createType === 'template') {
       const templateParamsApply = JSON.parse(Base64.decode(decodeURIComponent(templateParams + '')))
       await decompressionPre(templateParamsApply, result => {
         deTemplateData = result
+        preName = deTemplateData.baseInfo?.preName
       })
     }
     nextTick(() => {
-      dvMainStore.createInit('dashboard', null, pid, watermarkBaseInfo)
+      dvMainStore.createInit('dashboard', null, pid, watermarkBaseInfo, preName)
       // 从模板新建
       if (createType === 'template') {
         wsCache.delete('de-template-data')
         dvMainStore.setComponentData(deTemplateData['componentData'])
         dvMainStore.setCanvasStyle(deTemplateData['canvasStyleData'])
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
+        dvMainStore.setAppDataInfo(deTemplateData['appData'])
         setTimeout(() => {
           snapshotStore.recordSnapshotCache()
         }, 1500)
+        if (dvMainStore.getAppDataInfo()) {
+          eventBus.emit('save')
+        }
       }
       dataInitState.value = true
       // preOpt

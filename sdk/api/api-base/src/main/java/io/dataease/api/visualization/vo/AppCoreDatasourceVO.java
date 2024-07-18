@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,6 +14,7 @@ public class AppCoreDatasourceVO implements Serializable {
     /**
      * 主键
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -32,6 +35,7 @@ public class AppCoreDatasourceVO implements Serializable {
     /**
      * 父级ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long pid;
 
     /**
