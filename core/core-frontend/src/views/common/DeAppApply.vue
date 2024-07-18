@@ -306,7 +306,8 @@ const saveApp = () => {
 }
 
 defineExpose({
-  init
+  init,
+  close
 })
 </script>
 <style lang="less" scoped>

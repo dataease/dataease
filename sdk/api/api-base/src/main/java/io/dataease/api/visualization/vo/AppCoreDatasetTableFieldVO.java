@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -11,26 +13,31 @@ public class AppCoreDatasetTableFieldVO implements Serializable {
     /**
      * ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
      * 数据源ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasourceId;
 
     /**
      * 数据表ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasetTableId;
 
     /**
      * 数据集ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long datasetGroupId;
 
     /**
      * 图表ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long chartId;
 
     /**

@@ -2,7 +2,7 @@
 import { ElMessage, ElMessageBox } from 'element-plus-secondary'
 import eventBus from '@/utils/eventBus'
 import { deepCopy } from '@/utils/utils'
-import { nextTick, reactive, ref, computed } from 'vue'
+import { nextTick, reactive, ref, computed, toRefs } from 'vue'
 import { dvMainStoreWithOut } from '@/store/modules/data-visualization/dvMain'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
@@ -19,7 +19,7 @@ import MultiplexingCanvas from '@/views/common/MultiplexingCanvas.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { getPanelAllLinkageInfo, saveLinkage } from '@/api/visualization/linkage'
 import { queryVisualizationJumpInfo } from '@/api/visualization/linkJump'
-import { canvasSave } from '@/utils/canvasUtils'
+import { canvasSave, initCanvasData } from '@/utils/canvasUtils'
 import { useEmitt } from '@/hooks/web/useEmitt'
 import { copyStoreWithOut } from '@/store/modules/data-visualization/copy'
 import TabsGroup from '@/custom-component/component-group/TabsGroup.vue'
@@ -29,11 +29,13 @@ import { XpackComponent } from '@/components/plugin'
 import DbMoreComGroup from '@/custom-component/component-group/DbMoreComGroup.vue'
 import { useCache } from '@/hooks/web/useCache'
 import DeFullscreen from '@/components/visualization/common/DeFullscreen.vue'
+import DeAppApply from '@/views/common/DeAppApply.vue'
 const { t } = useI18n()
 const dvMainStore = dvMainStoreWithOut()
 const snapshotStore = snapshotStoreWithOut()
 const copyStore = copyStoreWithOut()
 const { styleChangeTimes, snapshotIndex } = storeToRefs(snapshotStore)
+const resourceAppOpt = ref(null)
 const {
   linkageSettingStatus,
   curLinkageView,
@@ -43,7 +45,8 @@ const {
   editMode,
   batchOptStatus,
   targetLinkageInfo,
-  curBatchOptComponents
+  curBatchOptComponents,
+  appData
 } = storeToRefs(dvMainStore)
 const dvModel = 'dashboard'
 const multiplexingRef = ref(null)
@@ -58,6 +61,15 @@ const state = reactive({
 const resourceGroupOpt = ref(null)
 const outerParamsSetRef = ref(null)
 const { wsCache } = useCache('localStorage')
+
+const props = defineProps({
+  createType: {
+    type: String,
+    default: 'create'
+  }
+})
+
+const { createType } = toRefs(props)
 
 const editCanvasName = () => {
   nameEdit.value = true
@@ -143,9 +155,23 @@ const resourceOptFinish = param => {
 
 const saveCanvasWithCheck = () => {
   if (dvInfo.value.dataState === 'prepare') {
-    const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid }
-    resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
-    return
+    if (appData.value) {
+      // 应用保存
+      const params = {
+        base: {
+          pid: '',
+          name: dvInfo.value.name,
+          datasetFolderPid: null,
+          datasetFolderName: dvInfo.value.name
+        },
+        appData: appData.value
+      }
+      resourceAppOpt.value.init(params)
+    } else {
+      const params = { name: dvInfo.value.name, leaf: true, id: dvInfo.value.pid }
+      resourceGroupOpt.value.optInit('leaf', params, 'newLeaf', true)
+      return
+    }
   }
   saveResource()
 }
@@ -163,6 +189,12 @@ const saveResource = () => {
       snapshotStore.resetStyleChangeTimes()
       ElMessage.success('保存成功')
       window.history.pushState({}, '', `#/dashboard?resourceId=${dvInfo.value.id}`)
+      if (appData.value) {
+        initCanvasData(dvInfo.value.id, 'dashboard', () => {
+          useEmitt().emitter.emit('refresh-dataset-selector')
+          resourceAppOpt.value.close()
+        })
+      }
     })
   }
 }
@@ -623,6 +655,14 @@ const initOpenHandler = newWindow => {
   </div>
   <de-fullscreen show-position="edit" ref="fullScreeRef"></de-fullscreen>
   <XpackComponent ref="openHandler" jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvT3BlbkhhbmRsZXI=" />
+  <de-app-apply
+    ref="resourceAppOpt"
+    :component-data="componentData"
+    :dv-info="dvInfo"
+    :canvas-view-info="canvasViewInfo"
+    cur-canvas-type="dashboard"
+    @saveApp="saveCanvasWithCheck"
+  ></de-app-apply>
 </template>
 
 <style lang="less" scoped>

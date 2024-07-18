@@ -349,6 +349,9 @@ onMounted(async () => {
           snapshotStore.recordSnapshotCache()
         }, 1500)
       }
+      if (dvMainStore.getAppDataInfo()) {
+        eventBus.emit('save')
+      }
     })
   } else {
     let url = '#/screen/index'

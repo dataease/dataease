@@ -1,5 +1,7 @@
 package io.dataease.api.visualization.vo;
 
+import com.fasterxml.jackson.databind.annotation.JsonSerialize;
+import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
 import lombok.Data;
 
 import java.io.Serializable;
@@ -12,6 +14,7 @@ public class AppCoreChartViewVO implements Serializable {
     /**
      * ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long id;
 
     /**
@@ -22,11 +25,13 @@ public class AppCoreChartViewVO implements Serializable {
     /**
      * 场景ID chart_type为private的时候 是仪表板id
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long sceneId;
 
     /**
      * 数据集表ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long tableId;
 
     /**
@@ -187,11 +192,13 @@ public class AppCoreChartViewVO implements Serializable {
     /**
      * 复制来源
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long copyFrom;
 
     /**
      * 复制ID
      */
+    @JsonSerialize(using = ToStringSerializer.class)
     private Long copyId;
 
     /**

@@ -125,7 +125,6 @@ const state = reactive({
 })
 
 const init = params => {
-  console.log('init==')
   state.applyDownloadDrawer = true
   state.form = params
 }
