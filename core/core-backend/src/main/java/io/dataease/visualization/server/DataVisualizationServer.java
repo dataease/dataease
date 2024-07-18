@@ -401,7 +401,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         String templateData = null;
         String dynamicData = null;
         String staticResource = null;
-        String appData = null;
+        String appDataStr = null;
         String name = null;
         String dvType = null;
         Integer version = null;
@@ -414,7 +414,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             name = visualizationTemplate.getName();
             dvType = visualizationTemplate.getDvType();
             version = visualizationTemplate.getVersion();
-            appData = visualizationTemplate.getAppData();
+            appDataStr = visualizationTemplate.getAppData();
             // 模板市场记录
             coreOptRecentManage.saveOpt(request.getTemplateId(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
             VisualizationTemplate visualizationTemplateUpdate = new VisualizationTemplate();
@@ -426,7 +426,6 @@ public class DataVisualizationServer implements DataVisualizationApi {
             templateData = request.getComponentData();
             dynamicData = request.getDynamicData();
             staticResource = request.getStaticResource();
-            appData = request.getAppData();
             name = request.getName();
             dvType = request.getType();
         } else if (DataVisualizationConstants.NEW_PANEL_FROM.NEW_MARKET_TEMPLATE.equals(newFrom)) {
@@ -441,7 +440,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
             name = templateFileInfo.getName();
             dvType = templateFileInfo.getDvType();
             version = templateFileInfo.getVersion();
-            appData = templateFileInfo.getAppData();
+            appDataStr = templateFileInfo.getAppData();
             // 模板市场记录
             coreOptRecentManage.saveOpt(request.getResourceName(), OptConstants.OPT_RESOURCE_TYPE.TEMPLATE, OptConstants.OPT_TYPE.NEW);
         }
@@ -475,10 +474,11 @@ public class DataVisualizationServer implements DataVisualizationApi {
             VisualizationTemplateExtendDataDTO extendDataDTO = new VisualizationTemplateExtendDataDTO(newDvId, newViewId, originViewData);
             extendDataInfo.put(newViewId, extendDataDTO);
             templateData = templateData.replaceAll(originViewId, newViewId.toString());
-            if(appData != null){
-                Map appDataFormat = JsonUtil.parse(appData,Map.class);
-                String sourceDvId = (String) appDataFormat.get("id");
-                appData =  appData.replaceAll(originViewId, newViewId.toString()).replaceAll(sourceDvId, newDvId.toString());
+            if(StringUtils.isNotEmpty(appDataStr)){
+                VisualizationExport2AppVO appDataFormat = JsonUtil.parse(appDataStr,VisualizationExport2AppVO.class);
+                Map dvInfo  = JsonUtil.parse(appDataFormat.getVisualizationInfo(),Map.class);
+                String sourceDvId = (String) dvInfo.get("id");
+                appDataStr =  appDataStr.replaceAll(originViewId, newViewId.toString()).replaceAll(sourceDvId, newDvId.toString());
             }
             canvasViewInfo.put(chartView.getId(), chartView);
             //插入模板数据 此处预先插入减少数据交互量
@@ -489,7 +489,7 @@ public class DataVisualizationServer implements DataVisualizationApi {
         request.setCanvasStyleData(templateStyle);
         //Store static resource into the server
         staticResourceServer.saveFilesToServe(staticResource);
-        return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData,appData, canvasViewInfo, null);
+        return new DataVisualizationVO(newDvId, name, dvType, version, templateStyle, templateData,appDataStr, canvasViewInfo, null);
     }
 
     @Override
