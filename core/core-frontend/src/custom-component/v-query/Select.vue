@@ -75,6 +75,7 @@ const options = shallowRef([])
 const unMountSelect: Ref = inject('unmount-select')
 const releaseSelect = inject('release-unmount-select', Function, true)
 const queryDataForId = inject('query-data-for-id', Function, true)
+const isConfirmSearch = inject('is-confirm-search', Function, true)
 const queryConditionWidth = inject('com-width', Function, true)
 const cascadeList = inject('cascade-list', Function, true)
 const setCascadeDefault = inject('set-cascade-default', Function, true)
@@ -198,6 +199,9 @@ const handleValueChange = () => {
     )
     setCascadeValueBack(config.value.mapValue)
     emitCascade()
+    nextTick(() => {
+      isConfirmSearch(config.value.id)
+    })
     return
   }
 

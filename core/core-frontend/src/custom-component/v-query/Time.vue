@@ -130,6 +130,9 @@ const handleValueChange = () => {
     config.value.selectValue = Array.isArray(selectValue.value)
       ? [...selectValue.value]
       : selectValue.value
+    nextTick(() => {
+      isConfirmSearch(config.value.id)
+    })
     return
   }
   config.value.defaultValue = new Date(value).toLocaleString()
@@ -149,6 +152,7 @@ const init = () => {
 }
 
 const queryConditionWidth = inject('com-width', Function, true)
+const isConfirmSearch = inject('is-confirm-search', Function, true)
 const selectStyle = computed(() => {
   return props.isConfig
     ? {}

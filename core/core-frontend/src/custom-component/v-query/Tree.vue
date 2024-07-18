@@ -63,6 +63,9 @@ const handleValueChange = () => {
     config.value.selectValue = Array.isArray(treeValue.value)
       ? [...treeValue.value]
       : treeValue.value
+    nextTick(() => {
+      isConfirmSearch(config.value.id)
+    })
     return
   }
   config.value.defaultValue = value
@@ -114,6 +117,7 @@ watch(
 )
 const showOrHide = ref(true)
 const queryConditionWidth = inject('com-width', Function, true)
+const isConfirmSearch = inject('is-confirm-search', Function, true)
 watch(
   () => config.value.id,
   () => {
