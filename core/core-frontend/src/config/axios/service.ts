@@ -111,8 +111,6 @@ service.interceptors.request.use(
       ;(config.headers as AxiosRequestHeaders)['X-DE-LINK-TOKEN'] = linkStore.getLinkToken
     } else if (embeddedStore.token) {
       ;(config.headers as AxiosRequestHeaders)['X-EMBEDDED-TOKEN'] = embeddedStore.token
-    } else if (wsCache.get('de-ldap-token')) {
-      ;(config.headers as AxiosRequestHeaders)['Authorization'] = wsCache.get('de-ldap-token')
     }
     if (wsCache.get('user.language')) {
       const key = wsCache.get('user.language')

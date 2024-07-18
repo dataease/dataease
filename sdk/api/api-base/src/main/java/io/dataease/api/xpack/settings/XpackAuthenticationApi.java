@@ -2,10 +2,7 @@ package io.dataease.api.xpack.settings;
 
 import com.github.xiaoymin.knife4j.annotations.ApiSupport;
 import io.dataease.api.xpack.settings.request.XpackAuthenticationEditor;
-import io.dataease.api.xpack.settings.vo.XpackCasVO;
-import io.dataease.api.xpack.settings.vo.XpackOidcVO;
-import io.dataease.api.xpack.settings.vo.XpackAuthenticationStatusVO;
-import io.dataease.api.xpack.settings.vo.XpackAuthenticationVO;
+import io.dataease.api.xpack.settings.vo.*;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import org.springframework.web.bind.annotation.GetMapping;
@@ -34,6 +31,9 @@ public interface XpackAuthenticationApi {
     @PostMapping("/save/cas")
     String saveCas(@RequestBody XpackCasVO editor);
 
+    @PostMapping("/save/ldap")
+    String saveLdap(@RequestBody XpackLdapVO editor);
+
 
     @GetMapping("/info/oidc")
     XpackOidcVO oidcInfo();
@@ -41,12 +41,18 @@ public interface XpackAuthenticationApi {
     @GetMapping("/info/cas")
     XpackCasVO casInfo();
 
+    @GetMapping("/info/ldap")
+    XpackLdapVO ldapInfo();
+
 
     @PostMapping("/validate/oidc")
     String validateOidc(@RequestBody XpackOidcVO editor);
 
     @PostMapping("/validate/cas")
     String validateCas(@RequestBody XpackCasVO editor);
+
+    @PostMapping("/validate/ldap")
+    String validateLdap(@RequestBody XpackLdapVO editor);
 
     @PostMapping("/validateId/{id}")
     String validate(@PathVariable("id") Long id);
