@@ -2,7 +2,6 @@
 import { computed, nextTick, onMounted, PropType, reactive, ref, watch } from 'vue'
 import { getGeoJsonFile, parseJson } from '../../../js/util'
 import { forEach, debounce } from 'lodash-es'
-import { EmptyBackground } from '@/components/empty-background'
 
 const props = defineProps({
   chart: {
@@ -159,7 +158,7 @@ onMounted(() => {
           </el-button>
         </template>
       </el-table-column>
-      <template #empty> <empty-background description="暂无数据" img-type="none" /> </template>
+      <template #empty> 暂无数据 </template>
     </el-table>
     <el-pagination
       small
