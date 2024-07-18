@@ -2,10 +2,13 @@ package io.dataease.api.visualization.vo;
 
 import com.fasterxml.jackson.databind.annotation.JsonSerialize;
 import com.fasterxml.jackson.databind.ser.std.ToStringSerializer;
+import com.google.gson.Gson;
 import io.dataease.api.template.dto.VisualizationTemplateExtendDataDTO;
 import io.dataease.extensions.view.dto.ChartViewDTO;
+import io.dataease.utils.JsonUtil;
 import lombok.Data;
 import lombok.NoArgsConstructor;
+import org.apache.commons.lang3.StringUtils;
 
 import java.io.Serializable;
 import java.util.HashMap;
@@ -156,7 +159,7 @@ public class DataVisualizationVO implements Serializable {
     /**
      * 定时报告自定义过滤数据
      */
-    private Map<Long,VisualizationReportFilterVO> reportFilterInfo = new HashMap<>();
+    private Map<Long, VisualizationReportFilterVO> reportFilterInfo = new HashMap<>();
 
     /**
      * 水印信息
@@ -171,10 +174,10 @@ public class DataVisualizationVO implements Serializable {
     /**
      * 应用信息
      */
-    private String appData;
+    private VisualizationExport2AppVO appData;
 
 
-    public DataVisualizationVO(Long id, String name, String type, Integer version, String canvasStyleData, String componentData,String appData, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo) {
+    public DataVisualizationVO(Long id, String name, String type, Integer version, String canvasStyleData, String componentData,String appDataStr, Map<Long, ChartViewDTO> canvasViewInfo, Map<Long, VisualizationTemplateExtendDataDTO> extendDataInfo) {
         this.id = id;
         this.name = name;
         this.type = type;
@@ -182,7 +185,9 @@ public class DataVisualizationVO implements Serializable {
         this.componentData = componentData;
         this.canvasViewInfo = canvasViewInfo;
         this.extendDataInfo = extendDataInfo;
-        this.appData = appData;
+        if(StringUtils.isNotEmpty(appDataStr)){
+            this.appData= JsonUtil.parse(appDataStr,VisualizationExport2AppVO.class);
+        }
         this.version = version;
     }
 }

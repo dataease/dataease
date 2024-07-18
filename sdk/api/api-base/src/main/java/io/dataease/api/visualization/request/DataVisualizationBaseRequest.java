@@ -42,8 +42,6 @@ public class DataVisualizationBaseRequest extends DataVisualizationVO {
     @JsonSerialize(using = ToStringSerializer.class)
     private Long taskId;
 
-    private VisualizationExport2AppVO appData;
-
     @JsonSerialize(using = ToStringSerializer.class)
     // 数据集分组PID
     private Long datasetFolderPid;
