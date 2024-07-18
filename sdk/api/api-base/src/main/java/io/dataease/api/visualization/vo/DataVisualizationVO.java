@@ -186,7 +186,7 @@ public class DataVisualizationVO implements Serializable {
         this.canvasViewInfo = canvasViewInfo;
         this.extendDataInfo = extendDataInfo;
         if(StringUtils.isNotEmpty(appDataStr)){
-            this.appData= JsonUtil.parse(appDataStr,VisualizationExport2AppVO.class);
+            this.appData= JsonUtil.parseObject(appDataStr,VisualizationExport2AppVO.class);
         }
         this.version = version;
     }
