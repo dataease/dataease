@@ -34,7 +34,7 @@ router.beforeEach(async (to, from, next) => {
     await appStore.setAppModel()
     isDesktop = appStore.getDesktop
   }
-  if (isMobile() && to.path !== '/notSupport') {
+  if (isMobile() && !['/notSupport', '/chart-view'].includes(to.path)) {
     done()
     loadDone()
     if (to.name === 'link') {

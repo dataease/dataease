@@ -33,4 +33,33 @@ public class AesUtils {
             throw new RuntimeException("decrypt error，please check parameters", e);
         }
     }
+
+    public static String aesEncrypt(String src, String secretKey, String iv) {
+        if (StringUtils.isBlank(secretKey)) {
+            throw new RuntimeException("secretKey is empty");
+        }
+
+        try {
+            byte[] raw = secretKey.getBytes(UTF_8);
+            SecretKeySpec secretKeySpec = new SecretKeySpec(raw, "AES");
+            // "算法/模式/补码方式" ECB
+            Cipher cipher = Cipher.getInstance("AES/CBC/PKCS5Padding");
+            IvParameterSpec iv1 = new IvParameterSpec(iv.getBytes());
+            cipher.init(Cipher.ENCRYPT_MODE, secretKeySpec, iv1);
+            byte[] encrypted = cipher.doFinal(src.getBytes(UTF_8));
+            return Base64.encodeBase64String(encrypted);
+        } catch (Exception e) {
+            throw new RuntimeException("AES encrypt error:", e);
+        }
+
+    }
+
+    public static Object aesEncrypt(Object o) {
+
+        return o == null ? null : aesEncrypt(o.toString(), "www.fit2cloud.co", "1234567890123456");
+    }
+
+    public static Object aesDecrypt(Object o) {
+        return o == null ? null : aesDecrypt(o.toString(), "www.fit2cloud.co", "1234567890123456");
+    }
 }

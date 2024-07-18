@@ -5,11 +5,11 @@ import java.io.Serializable;
 
 /**
  * <p>
- * 
+ * 模板表
  * </p>
  *
  * @author fit2cloud
- * @since 2024-04-11
+ * @since 2024-07-17
  */
 @TableName("visualization_template")
 public class VisualizationTemplate implements Serializable {
@@ -37,12 +37,12 @@ public class VisualizationTemplate implements Serializable {
     private Integer level;
 
     /**
-     * 模版种类  dataV or dashboard 目录或者文件夹
+     * 模板种类  dataV or dashboard 目录或者文件夹
      */
     private String dvType;
 
     /**
-     * 节点类型  folder or panel 目录或者文件夹
+     * 节点类型  app or template 应用 或者 模板
      */
     private String nodeType;
 
@@ -62,7 +62,7 @@ public class VisualizationTemplate implements Serializable {
     private String snapshot;
 
     /**
-     * 模版类型 system 系统内置 self 用户自建 
+     * 模板类型 system 系统内置 self 用户自建 
      */
     private String templateType;
 
@@ -82,13 +82,15 @@ public class VisualizationTemplate implements Serializable {
     private String dynamicData;
 
     /**
+     * app数据
+     */
+    private String appData;
+
+    /**
      * 使用次数
      */
     private Integer useCount;
 
-    /**
-     * 使用仪表板的版本
-     */
     private Integer version;
 
     public String getId() {
@@ -195,6 +197,14 @@ public class VisualizationTemplate implements Serializable {
         this.dynamicData = dynamicData;
     }
 
+    public String getAppData() {
+        return appData;
+    }
+
+    public void setAppData(String appData) {
+        this.appData = appData;
+    }
+
     public Integer getUseCount() {
         return useCount;
     }
@@ -227,6 +237,7 @@ public class VisualizationTemplate implements Serializable {
         ", templateStyle = " + templateStyle +
         ", templateData = " + templateData +
         ", dynamicData = " + dynamicData +
+        ", appData = " + appData +
         ", useCount = " + useCount +
         ", version = " + version +
         "}";

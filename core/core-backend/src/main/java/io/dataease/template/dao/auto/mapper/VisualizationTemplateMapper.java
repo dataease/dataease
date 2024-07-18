@@ -6,11 +6,11 @@ import org.apache.ibatis.annotations.Mapper;
 
 /**
  * <p>
- *  Mapper 接口
+ * 模板表 Mapper 接口
  * </p>
  *
  * @author fit2cloud
- * @since 2024-04-11
+ * @since 2024-07-17
  */
 @Mapper
 public interface VisualizationTemplateMapper extends BaseMapper<VisualizationTemplate> {

@@ -88,6 +88,7 @@ const leftSidebarRef = ref(null)
 const dvLayout = ref(null)
 const canvasCenterRef = ref(null)
 const mainHeight = ref(300)
+let createType = null
 const state = reactive({
   datasetTree: [],
   scaleHistory: null,
@@ -295,7 +296,7 @@ onMounted(async () => {
   const pid = embeddedStore.pid || router.currentRoute.value.query.pid
   const templateParams =
     embeddedStore.templateParams || router.currentRoute.value.query.templateParams
-  const createType = embeddedStore.createType || router.currentRoute.value.query.createType
+  createType = embeddedStore.createType || router.currentRoute.value.query.createType
   const opt = embeddedStore.opt || router.currentRoute.value.query.opt
   const checkResult = await checkPer(dvId)
   if (!checkResult) {
@@ -325,13 +326,15 @@ onMounted(async () => {
       console.error('can not find watermark info')
     }
     let deTemplateData
+    let preName
     if (createType === 'template') {
       const templateParamsApply = JSON.parse(Base64.decode(decodeURIComponent(templateParams + '')))
       await decompressionPre(templateParamsApply, result => {
         deTemplateData = result
+        preName = deTemplateData.baseInfo?.preName
       })
     }
-    dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo)
+    dvMainStore.createInit('dataV', null, pid, watermarkBaseInfo, preName)
     nextTick(() => {
       state.canvasInitStatus = true
       dvMainStore.setDataPrepareState(true)
@@ -341,6 +344,7 @@ onMounted(async () => {
         dvMainStore.setComponentData(deTemplateData['componentData'])
         dvMainStore.setCanvasStyle(deTemplateData['canvasStyleData'])
         dvMainStore.setCanvasViewInfo(deTemplateData['canvasViewInfo'])
+        dvMainStore.setAppDataInfo(deTemplateData['appData'])
         setTimeout(() => {
           snapshotStore.recordSnapshotCache()
         }, 1500)

@@ -15,6 +15,8 @@ import org.apache.calcite.sql.parser.SqlParser;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.sql.Connection;
+import java.sql.Statement;
 import java.io.IOException;
 import java.net.Socket;
 import java.util.HashMap;
@@ -45,6 +47,22 @@ public abstract class Provider {
     private static final Map<Long, Integer> lPorts = new HashMap<>();
     @Getter
     private static final Map<Long, Session> sessions = new HashMap<>();
+
+    public abstract void hidePW(DatasourceDTO datasourceDTO);
+
+    public Statement getStatement(Connection connection, int queryTimeout) {
+        if (connection == null) {
+            DEException.throwException("Failed to get connection!");
+        }
+        Statement stat = null;
+        try {
+            stat = connection.createStatement();
+            stat.setQueryTimeout(queryTimeout);
+        } catch (Exception e) {
+            DEException.throwException(e.getMessage());
+        }
+        return stat;
+    }
 
     public String rebuildSQL(String sql, SQLMeta sqlMeta, boolean crossDs, Map<Long, DatasourceSchemaDTO> dsMap) {
         logger.info("calcite sql: " + sql);

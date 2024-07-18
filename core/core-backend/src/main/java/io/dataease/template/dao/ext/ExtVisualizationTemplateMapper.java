@@ -52,6 +52,6 @@ public interface ExtVisualizationTemplateMapper{
 
     List<VisualizationLinkJumpInfoVO> findAppLinkJumpInfoInfo(@Param("dvId") Long dvId);
 
-    List<VisualizationLinkJumpTargetViewInfoVO> findAppJumpTargetViewInfo(@Param("dvId") Long dvId);
+    List<VisualizationLinkJumpTargetViewInfoVO> findAppLinkJumpTargetViewInfoInfo(@Param("dvId") Long dvId);
 
 }

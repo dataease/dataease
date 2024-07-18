@@ -2,11 +2,11 @@
 import { reactive, ref, computed, watch, nextTick } from 'vue'
 import { ElIcon, ElMessage, ElMessageBox, ElMessageBoxOptions } from 'element-plus-secondary'
 import CreatDsGroup from './CreatDsGroup.vue'
-import { Icon } from '@/components/icon-custom'
 import type { DsType } from './DsTypeList.vue'
 import DsTypeList from './DsTypeList.vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import EditorDetail from './EditorDetail.vue'
+import EditorDetailPlugin from './EditorDetailPlugin.vue'
 import ExcelDetail from './ExcelDetail.vue'
 import { save, update, validate, latestUse, isShowFinishPage, checkRepeat } from '@/api/datasource'
 import { Base64 } from 'js-base64'
@@ -19,6 +19,9 @@ import { useEmitt } from '@/hooks/web/useEmitt'
 import FinishPage from '../FinishPage.vue'
 import { cloneDeep } from 'lodash-es'
 import { useCache } from '@/hooks/web/useCache'
+import Icon from '@/components/icon-custom/src/Icon.vue'
+import { XpackComponent, PluginComponent } from '@/components/plugin'
+
 interface Node {
   name: string
   id: string
@@ -70,6 +73,7 @@ const filterText = ref('')
 const currentDsType = ref('')
 const emits = defineEmits(['refresh'])
 const { emitter } = useEmitt()
+const isPlugin = ref(false)
 const selectDsType = (type: string) => {
   currentDsType.value = type
   activeStep.value = 1
@@ -83,6 +87,7 @@ const selectDsType = (type: string) => {
       .some(ele => {
         if (ele.type === currentDsType.value) {
           dsTree.value.setCurrentNode(ele)
+          isPlugin.value = ele['isPlugin']
           return true
         }
         return false
@@ -93,6 +98,7 @@ const selectDsType = (type: string) => {
 const handleDsNodeClick = data => {
   if (!data.type) return
   selectDsType(data.type)
+  isPlugin.value = data['isPlugin']
 }
 const handleNodeClick = (data: Node) => {
   currentType.value = data.type
@@ -135,24 +141,32 @@ const getDatasourceTypes = () => {
   })
 }
 getDatasourceTypes()
+
+const pluginDs = ref([])
 const loadDsPlugin = data => {
+  pluginDs.value = data
   data.forEach(item => {
     const { name, category, type, icon, extraParams, staticMap } = item
     const node = {
       name,
-      category,
+      catalog: category,
       type,
       icon,
       extraParams,
       isPlugin: true,
       staticMap
     }
-
     const index = typeList.findIndex(ele => ele === node.catalog)
     if (index !== -1) {
-      databaseList[index].push(node)
+      databaseList.value[index].push(node)
     }
   })
+}
+const getPluginStatic = type => {
+  const arr = pluginDs.value.filter(ele => {
+    return ele.type === type
+  })
+  return arr && arr.length > 0 ? arr[0].staticMap?.index : null
 }
 
 const getLatestUseTypes = () => {
@@ -666,7 +680,8 @@ defineExpose({
           <template #default="{ node, data }">
             <span class="custom-tree-node flex-align-center">
               <el-icon v-if="!!data.catalog" class="icon-border" style="width: 18px; height: 18px">
-                <Icon :name="`${data.type}-ds`"></Icon>
+                <Icon v-if="data['isPlugin']" :static-content="data.icon"></Icon>
+                <Icon v-else :name="`${data.type}-ds`"></Icon>
               </el-icon>
               <span :title="node.label" class="label-tooltip">{{ node.label }}</span>
             </span>
@@ -690,8 +705,21 @@ defineExpose({
             :form="form"
             :editDs="editDs"
             :active-step="activeApiStep"
-            v-if="activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible"
+            v-if="
+              activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible && !isPlugin
+            "
           ></editor-detail>
+          <plugin-component
+            :jsname="getPluginStatic(currentDsType)"
+            ref="detail"
+            :form="form"
+            :editDs="editDs"
+            :active-step="activeApiStep"
+            v-if="
+              activeStep !== 0 && currentDsType && currentDsType !== 'Excel' && visible && isPlugin
+            "
+          >
+          </plugin-component>
           <template v-if="activeStep !== 0 && currentDsType == 'Excel'">
             <excel-detail :editDs="editDs" ref="excel" :param="form2"></excel-detail>
           </template>
@@ -741,6 +769,11 @@ defineExpose({
         :name="dsInfo.name"
         v-if="showFinishPage"
       ></FinishPage>
+
+      <XpackComponent
+        jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
+        @load-ds-plugin="loadDsPlugin"
+      />
     </div>
   </el-drawer>
   <creat-ds-group
@@ -748,10 +781,6 @@ defineExpose({
     @finish="complete"
     ref="creatDsFolder"
   ></creat-ds-group>
-  <XpackComponent
-    jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
-    @load-ds-plugin="loadDsPlugin"
-  />
 </template>
 
 <style lang="less">

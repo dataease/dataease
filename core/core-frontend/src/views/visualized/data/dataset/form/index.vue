@@ -1200,6 +1200,21 @@ const treeProps = {
     return (!data.children?.length && !data.leaf) || data.extraFlag < 0
   }
 }
+
+const pluginDs = ref([])
+const loadDsPlugin = data => {
+  pluginDs.value = data
+}
+const getDsIcon = data => {
+  if (pluginDs?.value.length === 0) return null
+  if (!data.leaf) return null
+
+  const arr = pluginDs.value.filter(ele => {
+    return ele.type === data.type
+  })
+  return arr && arr.length > 0 ? arr[0].icon : null
+}
+
 const getDsIconName = data => {
   if (!data.leaf) return 'dv-folder'
   return `${data.type}-ds`
@@ -1280,7 +1295,10 @@ const getDsIconName = data => {
             <template #default="{ data: { name, leaf, type, extraFlag } }">
               <div class="flex-align-center icon">
                 <el-icon>
-                  <icon :name="getDsIconName({ leaf, type })"></icon>
+                  <icon
+                    :static-content="getDsIcon({ leaf, type })"
+                    :name="getDsIconName({ leaf, type })"
+                  ></icon>
                 </el-icon>
                 <span v-if="!leaf || extraFlag > -1">{{ name }}</span>
                 <el-tooltip effect="dark" v-else :content="`无效数据源:${name}`" placement="top">
@@ -1974,6 +1992,10 @@ const getDsIconName = data => {
     jsname="L2NvbXBvbmVudC9lbWJlZGRlZC1pZnJhbWUvTmV3V2luZG93SGFuZGxlcg=="
     @loaded="XpackLoaded"
     @load-fail="XpackLoaded"
+  />
+  <XpackComponent
+    jsname="L2NvbXBvbmVudC9wbHVnaW5zLWhhbmRsZXIvRHNDYXRlZ29yeUhhbmRsZXI="
+    @load-ds-plugin="loadDsPlugin"
   />
 </template>
 

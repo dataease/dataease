@@ -46,7 +46,7 @@ public interface DataVisualizationApi {
     @PostMapping("/saveCanvas")
     @DePermit(value = {"#p0.pid + ':manage'"}, busiFlag = "#p0.type")
     @Operation(summary = "画布保存")
-    String saveCanvas(@RequestBody DataVisualizationBaseRequest request);
+    String saveCanvas(@RequestBody DataVisualizationBaseRequest request) throws Exception;
 
     @PostMapping("/updateCanvas")
     @DePermit(value = {"#p0.id + ':manage'"}, busiFlag = "#p0.type")
@@ -113,7 +113,7 @@ public interface DataVisualizationApi {
     @Operation(summary = "仪表板视图明细数据")
     List<VisualizationViewTableDTO> detailList(@PathVariable("dvId") Long dvId);
 
-    @GetMapping("/export2AppCheck")
+    @PostMapping("/export2AppCheck")
     @Operation(summary = "仪表板视图明细数据")
     VisualizationExport2AppVO export2AppCheck(@RequestBody VisualizationAppExportRequest appExportRequest);
 }

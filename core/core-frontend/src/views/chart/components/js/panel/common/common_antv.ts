@@ -751,7 +751,7 @@ export function getAnalyseHorizontal(chart: Chart) {
         dynamicLineFields?.includes(item.fieldId) &&
         !!_.find(quotaFields, d => d.id === item.fieldId)
     )
-    const lines = fixedLines.concat(dynamicLines)
+    const lines = fixedLines.concat(dynamicLines || [])
 
     lines.forEach(ele => {
       const value = parseFloat(ele.value)

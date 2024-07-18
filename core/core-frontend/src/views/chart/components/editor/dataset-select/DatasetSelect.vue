@@ -5,8 +5,9 @@ import { Plus, Search } from '@element-plus/icons-vue'
 import { useI18n } from '@/hooks/web/useI18n'
 import { useAppStoreWithOut } from '@/store/modules/app'
 import _ from 'lodash'
-import { getDatasetTree } from '@/api/dataset'
+import { getDatasetTree, getDatasourceList } from '@/api/dataset'
 import { ElFormItem, FormInstance } from 'element-plus-secondary'
+import type { DataSource } from '@/views/visualized/data/dataset/form/util'
 
 const props = withDefaults(
   defineProps<{
@@ -14,10 +15,12 @@ const props = withDefaults(
     modelValue?: string | number
     stateObj: any
     viewId: string
+    sourceType: string
   }>(),
   {
     datasetTree: () => [],
-    themes: 'dark'
+    themes: 'dark',
+    sourceType: 'dataset'
   }
 )
 
@@ -29,9 +32,13 @@ const datasetTree = ref<Tree[]>([])
 const toolTip = computed(() => {
   return props.themes === 'dark' ? 'ndark' : 'dark'
 })
+
+const sourceName = computed(() => (props.sourceType === 'datasource' ? '数据源' : '数据集'))
+
 const initDataset = () => {
   loadingDatasetTree.value = true
-  getDatasetTree({})
+  const method = props.sourceType === 'datasource' ? getDatasourceList : getDatasetTree
+  method({})
     .then(res => {
       datasetTree.value = (res as unknown as Tree[]) || []
     })
@@ -110,7 +117,7 @@ const exist = computed(() => {
 
 const selectedNodeName = computed(() => {
   if (!exist.value) {
-    return '数据集不存在'
+    return sourceName.value + '不存在'
   }
   return selectedNode.value?.name
 })
@@ -212,7 +219,7 @@ onMounted(() => {
               v-model="selectedNodeName"
               readonly
               class="data-set-dark"
-              placeholder="请选择数据集"
+              :placeholder="'请选择' + sourceName"
             >
               <template #suffix>
                 <el-icon class="input-arrow-icon" :class="{ reverse: _popoverShow }">
@@ -227,7 +234,7 @@ onMounted(() => {
         <el-container :class="themes">
           <el-header>
             <div class="m-title" :class="{ dark: themes === 'dark' }">
-              <div>{{ t('dataset.datalist') }}</div>
+              <div>{{ sourceName }}</div>
               <el-button type="primary" link class="refresh-btn" @click="refresh">
                 {{ t('commons.refresh') }}
               </el-button>
@@ -244,7 +251,7 @@ onMounted(() => {
           <el-main :class="{ dark: themes === 'dark' }">
             <el-scrollbar max-height="252px" always>
               <div class="m-loading" v-if="loadingDatasetTree" v-loading="loadingDatasetTree"></div>
-              <div class="empty-info" v-if="showEmptyInfo">暂无数据集</div>
+              <div class="empty-info" v-if="showEmptyInfo">暂无{{ sourceName }}</div>
               <!--          <div class="empty-info" v-if="showEmptySearchInfo">暂无相关数据</div>-->
               <el-tree
                 :class="{ dark: themes === 'dark' }"
@@ -294,7 +301,7 @@ onMounted(() => {
           <el-footer v-if="!isDataEaseBi">
             <div class="footer-container">
               <el-button type="primary" :icon="Plus" link class="add-btn" @click="addDataset">
-                新建数据集
+                新建{{ sourceName }}
               </el-button>
             </div>
           </el-footer>

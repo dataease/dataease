@@ -17,7 +17,7 @@
             id="input"
             ref="filesRef"
             type="file"
-            accept=".DET2"
+            accept=".DET2,.DET2APP"
             hidden
             @change="handleFileChange"
           />
@@ -127,10 +127,12 @@ const state = reactive({
     pid: props.pid,
     categories: [],
     dvType: 'dashboard',
+    nodeType: 'template',
     name: '',
     templateStyle: null,
     templateData: null,
     dynamicData: null,
+    appData: null,
     staticResource: null,
     snapshot: '',
     version: null
@@ -265,8 +267,9 @@ const handleFileChange = e => {
     state.templateInfo.templateData = state.importTemplateInfo['componentData']
     state.templateInfo.snapshot = state.importTemplateInfo.snapshot
     state.templateInfo.dynamicData = state.importTemplateInfo['dynamicData']
+    state.templateInfo.appData = state.importTemplateInfo['appData']
     state.templateInfo.staticResource = state.importTemplateInfo['staticResource']
-    state.templateInfo['nodeType'] = 'template'
+    state.templateInfo['nodeType'] = state.importTemplateInfo['nodeType'] || 'template'
     state.templateInfo['version'] = state.importTemplateInfo['version']
   }
   reader.readAsText(file)

@@ -281,7 +281,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                   />
                 </el-select>
               </el-tooltip>
-              <el-tooltip effect="dark" placement="bottom">
+              <el-tooltip :effect="toolTip" placement="bottom">
                 <template #content>
                   {{ t('chart.bolder') }}
                 </template>
@@ -300,7 +300,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                 </div>
               </el-tooltip>
 
-              <el-tooltip effect="dark" placement="bottom">
+              <el-tooltip :effect="toolTip" placement="bottom">
                 <template #content>
                   {{ t('chart.italic') }}
                 </template>
@@ -343,9 +343,19 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
               :class="'form-item-' + themes"
             >
               <el-checkbox-group :effect="themes" v-model="chart.customStyle.component.btnList">
-                <el-checkbox :effect="themes" size="small" disabled label="sure">
+                <el-checkbox class="checkbox-with_icon" :effect="themes" size="small" label="sure">
                   {{ t('commons.adv_search.search') }}
+                  <el-tooltip
+                    :effect="toolTip"
+                    content="如果展示查询按钮，需要点击该按钮后才能触发图表查询；如果不展示查询按钮，选择完查询条件后立即触发图表查询"
+                    placement="top"
+                  >
+                    <el-icon class="hint-icon" :class="{ 'hint-icon--dark': themes === 'dark' }">
+                      <Icon name="icon_info_outlined" />
+                    </el-icon>
+                  </el-tooltip>
                 </el-checkbox>
+
                 <el-checkbox :effect="themes" size="small" label="clear">
                   {{ t('commons.clear') }}
                 </el-checkbox>
@@ -389,7 +399,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                   />
                 </el-select>
               </el-tooltip>
-              <el-tooltip effect="dark" placement="bottom">
+              <el-tooltip :effect="toolTip" placement="bottom">
                 <template #content>
                   {{ t('chart.bolder') }}
                 </template>
@@ -408,7 +418,7 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
                 </div>
               </el-tooltip>
 
-              <el-tooltip effect="dark" placement="bottom">
+              <el-tooltip :effect="toolTip" placement="bottom">
                 <template #content>
                   {{ t('chart.italic') }}
                 </template>
@@ -454,6 +464,27 @@ if (!chart.value.customStyle.component.hasOwnProperty('labelShow')) {
   }
   &.no-margin-bottom {
     margin-bottom: 0 !important;
+  }
+
+  .checkbox-with_icon {
+    :deep(.ed-checkbox__label) {
+      display: inline-flex;
+      align-items: center;
+
+      .ed-icon {
+        margin-left: 5px;
+      }
+    }
+  }
+
+  .hint-icon {
+    cursor: pointer;
+    font-size: 14px;
+    color: #646a73;
+
+    &.hint-icon--dark {
+      color: #a6a6a6;
+    }
   }
 }
 .m-divider {

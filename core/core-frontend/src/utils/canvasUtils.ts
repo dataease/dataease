@@ -25,7 +25,7 @@ import {
 import { snapshotStoreWithOut } from '@/store/modules/data-visualization/snapshot'
 import { deepCopy } from '@/utils/utils'
 const dvMainStore = dvMainStoreWithOut()
-const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasViewInfo } =
+const { curBatchOptComponents, dvInfo, canvasStyleData, componentData, canvasViewInfo, appData } =
   storeToRefs(dvMainStore)
 const snapshotStore = snapshotStoreWithOut()
 
@@ -349,6 +349,7 @@ export async function canvasSave(callBack) {
     canvasStyleData: JSON.stringify(canvasStyleData.value),
     componentData: JSON.stringify(componentDataToSave),
     canvasViewInfo: canvasViewInfo.value,
+    appData: appData.value,
     ...dvInfo.value,
     watermarkInfo: null
   }
@@ -521,6 +522,7 @@ export async function decompressionPre(params, callBack) {
     .then(response => {
       const deTemplateDataTemp = response.data
       const sourceComponentData = JSON.parse(deTemplateDataTemp['componentData'])
+      const appData = deTemplateDataTemp['appData']
       sourceComponentData.forEach(componentItem => {
         // 2 为基础版本 此处需要增加仪表板矩阵密度
         if (
@@ -537,7 +539,11 @@ export async function decompressionPre(params, callBack) {
       deTemplateData = {
         canvasStyleData: sourceCanvasStyle,
         componentData: sourceComponentData,
-        canvasViewInfo: deTemplateDataTemp['canvasViewInfo']
+        canvasViewInfo: deTemplateDataTemp['canvasViewInfo'],
+        appData: appData,
+        baseInfo: {
+          preName: deTemplateDataTemp.name
+        }
       }
     })
     .catch(e => {

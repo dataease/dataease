@@ -69,3 +69,7 @@ CREATE TABLE `core_api_traffic`
     PRIMARY KEY (`id`)
 );
 
+ALTER TABLE `visualization_template`
+    MODIFY COLUMN `node_type` varchar(255) NULL DEFAULT NULL COMMENT '节点类型  app or template 应用 或者 模板' AFTER `dv_type`,
+    ADD COLUMN `app_data` longtext NULL COMMENT 'app数据' AFTER `dynamic_data`;
+

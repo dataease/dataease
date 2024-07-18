@@ -141,9 +141,13 @@ const ldapValidate = callback => {
   if (!formRef.value) return
   formRef.value.validate((valid: boolean) => {
     if (valid && callback) {
+      duringLogin.value = true
       callback()
     }
   })
+}
+const ldapFeedback = () => {
+  duringLogin.value = false
 }
 const activeType = ref('account')
 const tablePaneList = ref([{ title: '普通登录', name: 'simple' }])
@@ -230,23 +234,28 @@ onMounted(async () => {
   if (!checkPlatform()) {
     const res = await loginCategoryApi()
     const adminLogin = router.currentRoute?.value?.name === 'admin-login'
-    if (adminLogin && !res.data) {
+    if (adminLogin && (!res.data || res.data === 1)) {
       router.push('/401')
       return
     }
     if (res.data && !adminLogin) {
-      loadingText.value = '加载中...'
-      document.getElementsByClassName('ed-loading-text')?.length &&
-        (document.getElementsByClassName('ed-loading-text')[0]['innerText'] = loadingText.value)
-      nextTick(() => {
-        const param = { methodName: 'ssoLogin', args: res.data }
-        const timer = setInterval(() => {
-          if (xpackLoginHandler?.value.invokeMethod) {
-            xpackLoginHandler?.value.invokeMethod(param)
-            clearInterval(timer)
-          }
-        }, 1000)
-      })
+      if (res.data === 1) {
+        activeName.value = 'LDAP'
+        preheat.value = false
+      } else {
+        loadingText.value = '加载中...'
+        document.getElementsByClassName('ed-loading-text')?.length &&
+          (document.getElementsByClassName('ed-loading-text')[0]['innerText'] = loadingText.value)
+        nextTick(() => {
+          const param = { methodName: 'ssoLogin', args: res.data }
+          const timer = setInterval(() => {
+            if (xpackLoginHandler?.value.invokeMethod) {
+              xpackLoginHandler?.value.invokeMethod(param)
+              clearInterval(timer)
+            }
+          }, 1000)
+        })
+      }
     } else {
       preheat.value = false
     }
@@ -325,7 +334,9 @@ onMounted(async () => {
               <XpackComponent
                 class="default-login-tabs"
                 :active-name="activeName"
+                :login-form="state.loginForm"
                 @validate="ldapValidate"
+                @feedback="ldapFeedback"
                 jsname="L2NvbXBvbmVudC9sb2dpbi9MZGFw"
               />
 

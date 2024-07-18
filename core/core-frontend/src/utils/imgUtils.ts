@@ -35,7 +35,7 @@ export function imgUrlTrans(url) {
   }
 }
 
-export function download2AppTemplate(downloadType, canvasDom, name, callBack?) {
+export function download2AppTemplate(downloadType, canvasDom, name, attachParams, callBack?) {
   try {
     findStaticSource(function (staticResource) {
       html2canvas(canvasDom).then(canvas => {
@@ -50,11 +50,13 @@ export function download2AppTemplate(downloadType, canvasDom, name, callBack?) {
             templateType: 'self',
             snapshot: snapshot,
             dvType: dvInfo.value.type,
+            nodeType: downloadType,
             version: 3,
             canvasStyleData: JSON.stringify(canvasStyleData.value),
             componentData: JSON.stringify(componentData.value),
             dynamicData: JSON.stringify(canvasViewDataTemplate),
-            staticResource: JSON.stringify(staticResource || {})
+            staticResource: JSON.stringify(staticResource || {}),
+            appData: JSON.stringify(attachParams || {})
           }
           const blob = new Blob([JSON.stringify(templateInfo)], { type: '' })
           if (downloadType === 'template') {
