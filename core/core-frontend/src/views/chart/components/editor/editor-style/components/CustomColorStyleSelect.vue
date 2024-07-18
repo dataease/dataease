@@ -402,7 +402,12 @@ const colorItemBorderColor = (index, state) => {
               }"
             ></div>
           </div>
-          <span :title="item.name" class="color-item-name">{{ item.name }}</span>
+          <span
+            :title="item.name"
+            class="color-item-name"
+            :class="themes === 'dark' ? 'dark' : ''"
+            >{{ item.name }}</span
+          >
           <div :id="'series-color-picker-' + index"></div>
         </div>
       </div>
@@ -561,6 +566,9 @@ const colorItemBorderColor = (index, state) => {
         white-space: nowrap;
         overflow: hidden;
         text-overflow: ellipsis;
+        &.dark {
+          color: white;
+        }
       }
     }
     .color-item {
